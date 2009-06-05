@@ -134,9 +134,9 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixgsi=/nwprod/fix
+##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -235,34 +235,34 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fixgsi/rtma_regional_nmm_berror.f77
+berror=$fix_file/rtma_regional_nmm_berror.f77
 
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif/global_satinfo.txt
-satangl=$fixjif/global_satangbias.txt
-ozinfo=$fixjif/global_ozinfo.txt
-convinfo=$fixjif/global_convinfo.txt
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
 
-errtable=$fixgsi/rtma_nam_errtable.r3dv
+errtable=$fix_file/rtma_nam_errtable.r3dv
 ##convinfo=$fixgsi/rtma_regional_convinfo.txt
 
-uselist=$fixgsi/rtma_mesonet_uselist.txt
-bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
-reject=$fixgsi/rtma_mass_rejectlist_static.txt
-slmask=$fixgsi/rtma_ndfd_slmask_umd_grads.dat
+uselist=$fix_file/rtma_mesonet_uselist.txt
+bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
+reject=$fix_file/rtma_mass_rejectlist_static.txt
+slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fixgsi/rtma_fltnorm.dat_chi
-flt_ist=$fixgsi/rtma_fltnorm.dat_ist
-flt_ps=$fixgsi/rtma_fltnorm.dat_ps
-flt_lst=$fixgsi/rtma_fltnorm.dat_lst
-flt_oz=$fixgsi/rtma_fltnorm.dat_oz
-flt_pseudorh=$fixgsi/rtma_fltnorm.dat_pseudorh
-flt_psi=$fixgsi/rtma_fltnorm.dat_psi
-flt_qw=$fixgsi/rtma_fltnorm.dat_qw
-flt_sst=$fixgsi/rtma_fltnorm.dat_sst
-flt_t=$fixgsi/rtma_fltnorm.dat_t
+flt_chi=$fix_file/rtma_fltnorm.dat_chi
+flt_ist=$fix_file/rtma_fltnorm.dat_ist
+flt_ps=$fix_file/rtma_fltnorm.dat_ps
+flt_lst=$fix_file/rtma_fltnorm.dat_lst
+flt_oz=$fix_file/rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/rtma_fltnorm.dat_psi
+flt_qw=$fix_file/rtma_fltnorm.dat_qw
+flt_sst=$fix_file/rtma_fltnorm.dat_sst
+flt_t=$fix_file/rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -296,8 +296,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -359,9 +359,9 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixgsi=/nwprod/fix
+##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -460,34 +460,34 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fixgsi/rtma_regional_nmm_berror.f77
+berror=$fix_file/rtma_regional_nmm_berror.f77
 
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif/global_satinfo.txt
-satangl=$fixjif/global_satangbias.txt
-ozinfo=$fixjif/global_ozinfo.txt
-convinfo=$fixjif/global_convinfo.txt
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
 
-errtable=$fixgsi/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
+errtable=$fix_file/rtma_nam_errtable.r3dv
+##convinfo=$fix/rtma_regional_convinfo.txt
 
-uselist=$fixgsi/rtma_mesonet_uselist.txt
-bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
-reject=$fixgsi/rtma_mass_rejectlist_static.txt
-slmask=$fixgsi/rtma_ndfd_slmask_umd_grads.dat
+uselist=$fix_file/rtma_mesonet_uselist.txt
+bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
+reject=$fix_file/rtma_mass_rejectlist_static.txt
+slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fixgsi/rtma_fltnorm.dat_chi
-flt_ist=$fixgsi/rtma_fltnorm.dat_ist
-flt_ps=$fixgsi/rtma_fltnorm.dat_ps
-flt_lst=$fixgsi/rtma_fltnorm.dat_lst
-flt_oz=$fixgsi/rtma_fltnorm.dat_oz
-flt_pseudorh=$fixgsi/rtma_fltnorm.dat_pseudorh
-flt_psi=$fixgsi/rtma_fltnorm.dat_psi
-flt_qw=$fixgsi/rtma_fltnorm.dat_qw
-flt_sst=$fixgsi/rtma_fltnorm.dat_sst
-flt_t=$fixgsi/rtma_fltnorm.dat_t
+flt_chi=$fix_file/rtma_fltnorm.dat_chi
+flt_ist=$fix_file/rtma_fltnorm.dat_ist
+flt_ps=$fix_file/rtma_fltnorm.dat_ps
+flt_lst=$fix_file/rtma_fltnorm.dat_lst
+flt_oz=$fix_file/rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/rtma_fltnorm.dat_psi
+flt_qw=$fix_file/rtma_fltnorm.dat_qw
+flt_sst=$fix_file/rtma_fltnorm.dat_sst
+flt_t=$fix_file/rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -521,8 +521,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -584,9 +584,9 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixgsi=/nwprod/fix
+##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -685,34 +685,34 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fixgsi/rtma_regional_nmm_berror.f77
+berror=$fix_file/rtma_regional_nmm_berror.f77
 
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif/global_satinfo.txt
-satangl=$fixjif/global_satangbias.txt
-ozinfo=$fixjif/global_ozinfo.txt
-convinfo=$fixjif/global_convinfo.txt
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
 
-errtable=$fixgsi/rtma_nam_errtable.r3dv
+errtable=$fix_file/rtma_nam_errtable.r3dv
 ##convinfo=$fixgsi/rtma_regional_convinfo.txt
 
-uselist=$fixgsi/rtma_mesonet_uselist.txt
-bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
-reject=$fixgsi/rtma_mass_rejectlist_static.txt
-slmask=$fixgsi/rtma_ndfd_slmask_umd_grads.dat
+uselist=$fix_file/rtma_mesonet_uselist.txt
+bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
+reject=$fix_file/rtma_mass_rejectlist_static.txt
+slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fixgsi/rtma_fltnorm.dat_chi
-flt_ist=$fixgsi/rtma_fltnorm.dat_ist
-flt_ps=$fixgsi/rtma_fltnorm.dat_ps
-flt_lst=$fixgsi/rtma_fltnorm.dat_lst
-flt_oz=$fixgsi/rtma_fltnorm.dat_oz
-flt_pseudorh=$fixgsi/rtma_fltnorm.dat_pseudorh
-flt_psi=$fixgsi/rtma_fltnorm.dat_psi
-flt_qw=$fixgsi/rtma_fltnorm.dat_qw
-flt_sst=$fixgsi/rtma_fltnorm.dat_sst
-flt_t=$fixgsi/rtma_fltnorm.dat_t
+flt_chi=$fix_file/rtma_fltnorm.dat_chi
+flt_ist=$fix_file/rtma_fltnorm.dat_ist
+flt_ps=$fix_file/rtma_fltnorm.dat_ps
+flt_lst=$fix_file/rtma_fltnorm.dat_lst
+flt_oz=$fix_file/rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/rtma_fltnorm.dat_psi
+flt_qw=$fix_file/rtma_fltnorm.dat_qw
+flt_sst=$fix_file/rtma_fltnorm.dat_sst
+flt_t=$fix_file/rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -746,8 +746,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -808,9 +808,9 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixgsi=/nwprod/fix
+##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -909,34 +909,34 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fixgsi/rtma_regional_nmm_berror.f77
+berror=$fix_file/rtma_regional_nmm_berror.f77
 
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif/global_satinfo.txt
-satangl=$fixjif/global_satangbias.txt
-ozinfo=$fixjif/global_ozinfo.txt
-convinfo=$fixjif/global_convinfo.txt
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
 
-errtable=$fixgsi/rtma_nam_errtable.r3dv
+errtable=$fix_file/rtma_nam_errtable.r3dv
 ##convinfo=$fixgsi/rtma_regional_convinfo.txt
 
-uselist=$fixgsi/rtma_mesonet_uselist.txt
-bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
-reject=$fixgsi/rtma_mass_rejectlist_static.txt
-slmask=$fixgsi/rtma_ndfd_slmask_umd_grads.dat
+uselist=$fix_file/rtma_mesonet_uselist.txt
+bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
+reject=$fix_file/rtma_mass_rejectlist_static.txt
+slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fixgsi/rtma_fltnorm.dat_chi
-flt_ist=$fixgsi/rtma_fltnorm.dat_ist
-flt_ps=$fixgsi/rtma_fltnorm.dat_ps
-flt_lst=$fixgsi/rtma_fltnorm.dat_lst
-flt_oz=$fixgsi/rtma_fltnorm.dat_oz
-flt_pseudorh=$fixgsi/rtma_fltnorm.dat_pseudorh
-flt_psi=$fixgsi/rtma_fltnorm.dat_psi
-flt_qw=$fixgsi/rtma_fltnorm.dat_qw
-flt_sst=$fixgsi/rtma_fltnorm.dat_sst
-flt_t=$fixgsi/rtma_fltnorm.dat_t
+flt_chi=$fix_file/rtma_fltnorm.dat_chi
+flt_ist=$fix_file/rtma_fltnorm.dat_ist
+flt_ps=$fix_file/rtma_fltnorm.dat_ps
+flt_lst=$fix_file/rtma_fltnorm.dat_lst
+flt_oz=$fix_file/rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/rtma_fltnorm.dat_psi
+flt_qw=$fix_file/rtma_fltnorm.dat_qw
+flt_sst=$fix_file/rtma_fltnorm.dat_sst
+flt_t=$fix_file/rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -970,8 +970,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `

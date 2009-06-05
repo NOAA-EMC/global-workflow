@@ -141,10 +141,10 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 ##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+##fixgsi=/nwprod/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -415,22 +415,22 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixjif09/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif09/global_satinfo.txt
-satangl=$fixjif09/global_satangbias.txt
-pcpinfo=$fixgsi/global_pcpinfo.txt
-ozinfo=$fixjif10/global_ozinfo.txt
-convinfo=$fixjif09/global_convinfo.txt
-errtable=/nwprod/fix/prepobs_errtable.global
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+pcpinfo=$fix_file/global_pcpinfo.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
+errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
-bufrtable=/nwprod/fix/prepobs_prep.bufrtable
+bufrtable=$fix_file/prepobs_prep.bufrtable
 
 # Only need this file for sst retrieval
-bftab_sst=/nwprod/fix/bufrtab.012
+bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -458,8 +458,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -557,10 +557,10 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 ##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+##fixgsi=/nwprod/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -831,22 +831,22 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixjif09/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif09/global_satinfo.txt
-satangl=$fixjif09/global_satangbias.txt
-pcpinfo=$fixgsi/global_pcpinfo.txt
-ozinfo=$fixjif10/global_ozinfo.txt
-convinfo=$fixjif09/global_convinfo.txt
-errtable=/nwprod/fix/prepobs_errtable.global
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+pcpinfo=$fix_file/global_pcpinfo.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
+errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
-bufrtable=/nwprod/fix/prepobs_prep.bufrtable
+bufrtable=$fix_file/prepobs_prep.bufrtable
 
 # Only need this file for sst retrieval
-bftab_sst=/nwprod/fix/bufrtab.012
+bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -874,8 +874,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -975,10 +975,10 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 ##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+##fixgsi=/nwprod/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1248,22 +1248,22 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixjif09/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif09/global_satinfo.txt
-satangl=$fixjif09/global_satangbias.txt
-pcpinfo=$fixgsi/global_pcpinfo.txt
-ozinfo=$fixjif10/global_ozinfo.txt
-convinfo=$fixjif09/global_convinfo.txt
-errtable=/nwprod/fix/prepobs_errtable.global
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+pcpinfo=$fix_file/global_pcpinfo.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
+errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
-bufrtable=/nwprod/fix/prepobs_prep.bufrtable
+bufrtable=$fix_file/prepobs_prep.bufrtable
 
 # Only need this file for sst retrieval
-bftab_sst=/nwprod/fix/bufrtab.012
+bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -1291,8 +1291,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -1391,10 +1391,10 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 ##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-fixgsi=/nwprod/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+##fixgsi=/nwprod/fix
+##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
+##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
+##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1664,22 +1664,22 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixjif09/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixjif09/global_satinfo.txt
-satangl=$fixjif09/global_satangbias.txt
-pcpinfo=$fixgsi/global_pcpinfo.txt
-ozinfo=$fixjif10/global_ozinfo.txt
-convinfo=$fixjif09/global_convinfo.txt
-errtable=/nwprod/fix/prepobs_errtable.global
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fix_file/global_satinfo.txt
+satangl=$fix_file/global_satangbias.txt
+pcpinfo=$fix_file/global_pcpinfo.txt
+ozinfo=$fix_file/global_ozinfo.txt
+convinfo=$fix_file/global_convinfo.txt
+errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
-bufrtable=/nwprod/fix/prepobs_prep.bufrtable
+bufrtable=$fix_file/prepobs_prep.bufrtable
 
 # Only need this file for sst retrieval
-bftab_sst=/nwprod/fix/bufrtab.012
+bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -1707,8 +1707,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `

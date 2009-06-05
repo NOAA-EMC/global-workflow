@@ -1,3 +1,7 @@
+# Define path to fix file directory
+
+export fix_file="/global/save/wx20ml/svn1/fix"
+
 # Define work directories (location of executables)
 
 export subversion="/global/save/wx20ml/mlueken/src/global_gsi"
