@@ -970,6 +970,7 @@ odate=`$ndate +12 $adate`
 hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
+prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
 suffix=tm12.bufr_d
 
