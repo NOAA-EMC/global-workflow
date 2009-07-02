@@ -1,7 +1,5 @@
 #!/bin/sh
 
-. regression_var.sh
-
 #@ job_name=regression_test
 #@ step_name=gsi_nmm_netcdf_update
 #@ error=gsi_nmm_netcdf_update.e$(jobid)
@@ -9,7 +7,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
@@ -20,12 +18,12 @@
 #@ queue
 
 #@ step_name=gsi_nmm_netcdf_update2
-#@ error=gsi_nmm_netcdf_update.e$(jobid)
+#@ error=gsi_nmm_netcdf_update2.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
@@ -42,7 +40,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
@@ -59,7 +57,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
@@ -82,13 +80,15 @@
 #@ dependency=(gsi_nmm_netcdf_benchmark2==0)
 #@ queue
 
+. regression_var.sh
+
 case $LOADL_STEP_NAME in
   gsi_nmm_netcdf_update)
 
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-export BIND_TASKS=yes
+##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
 export MP_USE_BULK_XFER=yes
@@ -108,8 +108,8 @@ export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
 
 # Variables for debugging (don't always need)
-export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
+##export XLFRTEOPTS="buffering=disable_all"
+##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
 adate=$adate_regional
@@ -201,7 +201,7 @@ GRIDOPTS="JCAP_B=$JCAP_B"
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -370,6 +370,8 @@ cat << EOF > gsiparm.anl
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /
+ &LAG_DATA
+ /
 EOF
 
 # Set fixed files
@@ -477,6 +479,15 @@ cp wrf_inout wrf_ges
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp1_nmm_netcdf_sub_1node' has failed to run to completion, with an error code of '$rc''
+   } >> $nmm_netcdf_regression
+   $step_name==$rc
+   exit
+fi
+
 exit ;;
 
   gsi_nmm_netcdf_update2)
@@ -484,7 +495,7 @@ exit ;;
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-export BIND_TASKS=yes
+##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
 export MP_USE_BULK_XFER=yes
@@ -504,8 +515,8 @@ export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
 
 # Variables for debugging (don't always need)
-export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
+##export XLFRTEOPTS="buffering=disable_all"
+##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
 adate=$adate_regional
@@ -597,7 +608,7 @@ GRIDOPTS="JCAP_B=$JCAP_B"
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -766,6 +777,8 @@ cat << EOF > gsiparm.anl
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /
+ &LAG_DATA
+ /
 EOF
 
 # Set fixed files
@@ -873,6 +886,15 @@ cp wrf_inout wrf_ges
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp2_nmm_netcdf_sub_2node' has failed to run to completion, with an error code of '$rc''
+   } >> $nmm_netcdf_regression
+   $step_name==$rc
+   exit
+fi
+
 exit ;;
 
   gsi_nmm_netcdf_benchmark)
@@ -882,7 +904,7 @@ set -x
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-export BIND_TASKS=yes
+##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
 export MP_USE_BULK_XFER=yes
@@ -902,8 +924,8 @@ export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
 
 # Variables for debugging (don't always need)
-export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
+##export XLFRTEOPTS="buffering=disable_all"
+##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
 adate=$adate_regional
@@ -997,7 +1019,7 @@ GRIDOPTS="JCAP_B=$JCAP_B"
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1166,6 +1188,8 @@ cat << EOF > gsiparm.anl
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /
+ &LAG_DATA
+ /
 EOF
 
 # Set fixed files
@@ -1271,6 +1295,21 @@ cp wrf_inout wrf_ges
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp1_nmm_netcdf_bench_1node' has failed to run to completion, with an error code of '$rc''
+   } >> $nmm_netcdf_regression
+   $step_name==$rc
+   exit
+fi
+
+mkdir $noscrub/tmpreg_${nmm_netcdf}
+mkdir $control_nmm_netcdf
+cp -rp stdout $control_nmm_netcdf
+cp -rp fort.220 $control_nmm_netcdf
+cp -rp siganl $control_nmm_netcdf
+
 exit ;;
 
   gsi_nmm_netcdf_benchmark2)
@@ -1280,7 +1319,7 @@ set -x
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-export BIND_TASKS=yes
+##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
 export MP_USE_BULK_XFER=yes
@@ -1300,8 +1339,8 @@ export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
 
 # Variables for debugging (don't always need)
-export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
+##export XLFRTEOPTS="buffering=disable_all"
+##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
 adate=$adate_regional
@@ -1394,7 +1433,7 @@ GRIDOPTS="JCAP_B=$JCAP_B"
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1563,6 +1602,8 @@ cat << EOF > gsiparm.anl
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /
+ &LAG_DATA
+ /
 EOF
 
 # Set fixed files
@@ -1668,6 +1709,21 @@ cp wrf_inout wrf_ges
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp2_nmm_netcdf_bench_2node' has failed to run to completion, with an error code of '$rc''
+   } >> $nmm_netcdf_regression
+   $step_name==$rc
+   exit
+fi
+
+mkdir $noscrub/tmpreg_${nmm_netcdf}
+mkdir $control_nmm_netcdf2
+cp -rp stdout $control_nmm_netcdf2
+cp -rp fort.220 $control_nmm_netcdf2
+cp -rp siganl $control_nmm_netcdf2
+
 exit ;;
 
   nmm_netcdf_regression)
@@ -1715,6 +1771,7 @@ list="$exp1 $exp2 $exp3"
 for exp in $list; do
    $ncp $savdir/$exp/stdout ./stdout.$exp
    $ncp $savdir/$exp/fort.220 ./fort.220.$exp
+   $ncp $savdir/$exp/siganl ./siganl.$exp
 done
 
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
@@ -1726,6 +1783,7 @@ for exp in $list; do
 done
 
 # Difference the 2 files (i.e., penalty.1node.txt with penalty.10node.txt)
+diff penalty.$exp1.txt penalty.$exp2.txt > penalty.${exp1}-${exp2}.txt
 diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
@@ -1767,21 +1825,17 @@ memthresh=$((mem / memdiff + mem))
 
 # Fill time variables with scalability data
 
-if [[ -n $exp2_scale ]]; then
-
 time_scale1=$(awk '{ print $8 }' runtime.$exp1_scale.txt)
 time_scale2=$(awk '{ print $8 }' runtime.$exp2_scale.txt)
 
 # Now, figure out difference in time between two runs
 
-scale1=$((time1 / time_scale1))
-scale2=$((time2 / time_scale2))
+scale1=$((time1 - time_scale1))
+scale2=$((time2 - time_scale2))
 
 # Calculate maximum allowable deviation for scalability
 
-scalability=$((scale2 / scaledif + scale2))
-
-fi
+timethresh2=$((time_scale2 / timedif + time_scale2))
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
@@ -1802,17 +1856,32 @@ fi
 
 } >> $output
 
-# This part is for deviation of wall time
+# This part is for deviation of wall time for 1 node
 
 {
 
   if [[ $(awk '{ print $8 }' runtime.$exp1.txt) -gt $timethresh ]]; then
-    echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has
-exceeded maximum allowable threshold time of '$timethresh' seconds,'
+    echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh' seconds,'
     echo 'resulting in failure of the regression test.'
     echo
   else
     echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds and is within the allowable threshold time of '$timethresh' seconds,'
+    echo 'continuing with regression test.'
+    echo
+  fi
+
+} >> $output
+
+# This part is for deviation of wall time for 2 node
+
+{
+
+  if [[ $(awk '{ print $8 }' runtime.$exp1_scale.txt) -gt $timethresh2 ]]; then
+    echo 'The runtime for '$exp1_scale' is '$(awk '{ print $8 }' runtime.$exp1_scale.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh2' seconds,'
+    echo 'resulting in failure of the regression test.'
+    echo
+  else
+    echo 'The runtime for '$exp1_scale' is '$(awk '{ print $8 }' runtime.$exp1_scale.txt)' seconds and is within the allowable threshold time of '$timethresh2' seconds,'
     echo 'continuing with regression test.'
     echo
   fi
@@ -1852,7 +1921,36 @@ exceeded maximum allowable threshold time of '$timethresh' seconds,'
 
 } >> $output
 
-# Next, reproducibility
+# Next, reproducibility between a 1 node and 1 node experiment
+
+{
+
+if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo
+else
+   echo 'The results between the two runs are nonreproducible,'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo
+fi
+
+} >> $output
+
+# Next, check reproducibility of results between a 1 node branch and 1 node trunk experiment
+
+{
+
+if cmp -s siganl.${exp1} siganl.${exp2} 
+then
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
+   echo 'since the corresponding results are identical.'
+   echo
+fi
+
+} >> $output
+
+# Next, reproducibility between a 1 node and 2 node experiment
 
 {
 
@@ -1868,17 +1966,29 @@ fi
 
 } >> $output
 
+# Next, check reproducibility of results between a 1 node branch and 2 node trunk experiment
+
+{
+
+if cmp -s siganl.${exp1} siganl.${exp3} 
+then
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+   echo 'since the corresponding results are identical.'
+   echo
+fi
+
+} >> $output
+
 # Finally, scalability
 
 {
 
-if [[ -z $exp1_scale ]]; then
-   echo 'No scalability test will be run due to no additional cases selected'
-elif [[ $scale1 -gt $scalability ]]; then
-   echo 'The case has failed the scalability regression test.'
-   echo 'Please make sure that the same number of nodes/tasks were used.'
+if [[ $scale1 -ge $scale2 ]]; then
+   echo 'The case has passed the scalability regression test.'
+   echo 'The slope for the branch ('$scale1' seconds per node) is greater than or equal to that for the benchmark ('$scale2' seconds per node).'
 else
-   echo 'The case has successfully passed the scalability test.'
+   echo 'The case has failed the scalability test.'
+   echo 'The slope for the branch ('$scale1' seconds per node) is less than that for the benchmark ('$scale2' seconds per node).'
 fi
 
 } >> $output
@@ -1887,6 +1997,13 @@ fi
 mkdir -p $vfydir
 
 $ncp $output                        $vfydir/
+
+cd $scripts
+rm -f gsi_nmm_netcdf_update.e*
+rm -f gsi_nmm_netcdf_update2.e*
+rm -f gsi_nmm_netcdf_benchmark.e*
+rm -f gsi_nmm_netcdf_benchmark2.e*
+rm -f nmm_netcdf_regression.e*
 
 exit ;;
 

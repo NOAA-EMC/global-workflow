@@ -40,46 +40,6 @@
 #@ dependency = (gsi_rtma_update==0)
 #@ queue
 
-#@ step_name=gsi_rtma_benchmark
-#@ error=gsi_rtma_benchmark.e$(jobid)
-#@ job_type=parallel
-#@ network.MPI=sn_all,shared,us
-#@ node = 1
-#@ node_usage=not_shared
-#@ tasks_per_node=10
-#@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
-#@ bulkxfer=yes
-#@ class= dev
-#@ group=dev
-#@ account_no = RDAS-T2O
-#@ wall_clock_limit = 0:15:00
-#@ startdate = 10/27/05 20:00
-#@ notification=error
-#@ dependency = (gsi_rtma_update2==0)
-#@ queue
-
-#@ step_name=gsi_rtma_benchmark2
-#@ error=gsi_rtma_benchmark2.e$(jobid)
-#@ job_type=parallel
-#@ network.MPI=sn_all,shared,us
-#@ node = 2
-#@ node_usage=not_shared
-#@ tasks_per_node=10
-#@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
-#@ bulkxfer=yes
-#@ class= dev
-#@ group=dev
-#@ account_no = RDAS-T2O
-#@ wall_clock_limit = 0:15:00
-#@ startdate = 10/27/05 20:00
-#@ notification=error
-#@ dependency = (gsi_rtma_benchmark==0)
-#@ queue
-
 #@ step_name=rtma_regression
 #@ error=rtma_regression.e$(jobid)
 #@ job_type=serial
@@ -89,7 +49,7 @@
 #@ wall_clock_limit = 00:10:00
 #@ account_no = GDAS-MTN
 #@ notification=error
-#@ dependency=(gsi_rtma_benchmark2==0)
+#@ dependency=(gsi_rtma_update2==0)
 #@ queue
 
 . regression_var.sh
@@ -326,6 +286,7 @@ if [[ "$rc" != "0" ]]; then
     echo ''$exp1_rtma_sub_1node' has failed to run to completion, with an error code of '$rc''
    } >> $rtma_regression
    $step_name==$rc
+   exit
 fi
 
 exit ;;
@@ -566,489 +527,6 @@ fi
 
 exit ;;
 
-  gsi_rtma_benchmark)
-
-set -x
-
-# Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
-export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_SYNC_QP=yes
-
-# Set environment variables for no threads
-export AIXTHREAD_SCOPE=S
-export XLSMPOPTS="parthds=1:stack=128000000"
-
-# Set environment variables for user preferences
-export XLFRTEOPTS="nlwidth=80"
-export MP_LABELIO=yes
-
-# Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
-
-# Set experiment name and analysis date
-exp=$exp1_rtma_bench_1node
-adate=$adate_regional
-
-# Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
-gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
-
-# Set resoltion and other dependent parameters
-export JCAP=62
-export LEVS=60
-export JCAP_B=62
-export DELTIM=1200
-
-# Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
-savdir=$ptmp_loc/outreg/${rtma}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-datobs=$datobs_rtma/$adate
-datges=$datobs
-
-# Set variables used in script
-#   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ncp is cp replacement, currently keep as /bin/cp
-
-CLEAN=NO
-ndate=/nwprod/util/exec/ndate
-ncp=/bin/cp
-
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-gdate=`$ndate -12 $adate`
-cya=`echo $adate | cut -c9-10`
-cyg=`echo $gdate | cut -c9-10`
-prefixa=nam.t${cya}z
-prefixg=na12snmm.t${cyg}z
-suffix=tm00.bufr_d
-
-# Set up $tmpdir
-rm -rf $tmpdir
-mkdir -p $tmpdir
-chgrp rstprod $tmpdir
-chmod 750 $tmpdir
-cd $tmpdir
-rm -rf core*
-
-# Make gsi namelist
-
-GRIDOPTS="JCAP_B=$JCAP_B"
-
-cat << EOF > gsiparm.anl
- &SETUP
-   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
-   write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=5,iguess=-1,
-   oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,
-   nhr_assimilation=3,
- /
- &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
-   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
-   diagnostic_reg=.false.,
-   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
- /
- &BKGERR
-   as=0.35,0.35,0.35,0.50,0.50,0.80,1.00,1.00,
-   hzscl=1.414,1.000,0.707,
-   vs=0.5,bw=0.0,
- /
- &ANBKGERR
-   anisotropic=.true.,an_vs=0.5,ngauss=1,
-   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=2.,nord_f2a=4,
- /
- &JCOPTS
- /
- &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
-   baldiag_full=.true.,baldiag_inc=.true.,
- /
- &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
- /
- &OBS_INPUT
-   dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=1.5,
-   dfile(01)='prepbufr',  dtype(01)='ps',  dplat(01)=' ', dsis(01)='ps',  dval(01)=1.0,  dthin(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',   dplat(02)=' ', dsis(02)='t',   dval(02)=1.0,  dthin(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',   dplat(03)=' ', dsis(03)='q',   dval(03)=1.0,  dthin(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='spd', dplat(05)=' ', dsis(05)='spd', dval(05)=1.0,  dthin(05)=0,
- /
- &SUPEROB_RADAR
- /
- &SINGLEOB_TEST
-   maginnov=0.1,magoberr=0.1,oneob_type='t',
-   oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
-   obhourset=0.,
- /
- &LAG_DATA
- /
-EOF
-
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   uselist  =
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   reject   =
-#   slmask   =
-#   flt*     =
-
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
-bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
-
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
-
-# Copy executable and fixed files to $tmpdir
-$ncp $gsiexec ./gsi.x
-
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
-
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
-
-# Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
-done
-
-# Copy observational data to $tmpdir
-$ncp $datobs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
-
-# Copy first guess
-$ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-##poe hpmcount $tmpdir/gsi.x < gsiparm.anl > stdout
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
-rc=$?
-
-if [[ "$rc" != "0" ]]; then
-   cd $regression_vfydir
-   {
-    echo ''$exp1_rtma_bench_1node' has failed to run to completion, with an error code of '$rc''
-   } >> $rtma_regression
-   $step_name==$rc
-   exit
-fi
-
-mkdir $noscrub/tmpreg_${rtma}
-mkdir $control_RTMA
-cp -rp stdout $control_RTMA
-cp -rp fort.220 $control_RTMA
-cp -rp siganl $control_RTMA
-
-exit ;;
-
-  gsi_rtma_benchmark2)
-
-set -x
-
-# Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
-export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_SYNC_QP=yes
-
-# Set environment variables for no threads
-export AIXTHREAD_SCOPE=S
-export XLSMPOPTS="parthds=1:stack=128000000"
-
-# Set environment variables for user preferences
-export XLFRTEOPTS="nlwidth=80"
-export MP_LABELIO=yes
-
-# Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
-
-# Set experiment name and analysis date
-exp=$exp2_rtma_bench_2node
-adate=$adate_regional
-
-# Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
-gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
-
-# Set resoltion and other dependent parameters
-export JCAP=62
-export LEVS=60
-export JCAP_B=62
-export DELTIM=1200
-
-# Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
-savdir=$ptmp_loc/outreg/${rtma}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-datobs=$datobs_rtma/$adate
-datges=$datobs
-
-# Set variables used in script
-#   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ncp is cp replacement, currently keep as /bin/cp
-
-CLEAN=NO
-ndate=/nwprod/util/exec/ndate
-ncp=/bin/cp
-
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-gdate=`$ndate -12 $adate`
-cya=`echo $adate | cut -c9-10`
-cyg=`echo $gdate | cut -c9-10`
-prefixa=nam.t${cya}z
-prefixg=na12snmm.t${cyg}z
-suffix=tm00.bufr_d
-
-# Set up $tmpdir
-rm -rf $tmpdir
-mkdir -p $tmpdir
-chgrp rstprod $tmpdir
-chmod 750 $tmpdir
-cd $tmpdir
-rm -rf core*
-
-# Make gsi namelist
-
-GRIDOPTS="JCAP_B=$JCAP_B"
-
-cat << EOF > gsiparm.anl
- &SETUP
-   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
-   write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=5,iguess=-1,
-   oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,
-   nhr_assimilation=3,
- /
- &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
-   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
-   diagnostic_reg=.false.,
-   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
- /
- &BKGERR
-   as=0.35,0.35,0.35,0.50,0.50,0.80,1.00,1.00,
-   hzscl=1.414,1.000,0.707,
-   vs=0.5,bw=0.0,
- /
- &ANBKGERR
-   anisotropic=.true.,an_vs=0.5,ngauss=1,
-   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=2.,nord_f2a=4,
- /
- &JCOPTS
- /
- &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
-   baldiag_full=.true.,baldiag_inc=.true.,
- /
- &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
- /
- &OBS_INPUT
-   dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=1.5,
-   dfile(01)='prepbufr',  dtype(01)='ps',  dplat(01)=' ', dsis(01)='ps',  dval(01)=1.0,  dthin(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',   dplat(02)=' ', dsis(02)='t',   dval(02)=1.0,  dthin(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',   dplat(03)=' ', dsis(03)='q',   dval(03)=1.0,  dthin(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='spd', dplat(05)=' ', dsis(05)='spd', dval(05)=1.0,  dthin(05)=0,
- /
- &SUPEROB_RADAR
- /
- &SINGLEOB_TEST
-   maginnov=0.1,magoberr=0.1,oneob_type='t',
-   oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
-   obhourset=0.,
- /
- &LAG_DATA
- /
-EOF
-
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   uselist  =
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   reject   =
-#   slmask   =
-#   flt*     =
-
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
-bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
-
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
-
-# Copy executable and fixed files to $tmpdir
-$ncp $gsiexec ./gsi.x
-
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
-
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
-
-# Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
-done
-
-# Copy observational data to $tmpdir
-$ncp $datobs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
-
-# Copy first guess
-$ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-##poe hpmcount $tmpdir/gsi.x < gsiparm.anl > stdout
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
-rc=$?
-
-if [[ "$rc" != "0" ]]; then
-   cd $regression_vfydir
-   {
-    echo ''$exp2_rtma_bench_2node' has failed to run to completion, with an error code of '$rc''
-   } >> $rtma_regression
-   $step_name==$rc
-   exit
-fi
-
-mkdir $noscrub/tmpreg_${rtma}
-mkdir $control_RTMA2
-cp -rp stdout $control_RTMA2
-cp -rp fort.220 $control_RTMA2
-cp -rp siganl $control_RTMA2
-
-exit ;;
-
   rtma_regression)
 
 set -ax
@@ -1069,6 +547,7 @@ output=$rtma_regression
 
 # Give location of analysis results, and choose location for regression output
 savdir=$ptmp_loc/$input
+savdir2=$noscrub/$input
 vfydir=$regression_vfydir
 
 ncp=/bin/cp
@@ -1090,11 +569,17 @@ maxmem=$((3400000*1))
 
 # Copy stdout and fort.220 files 
 # from $savdir to $tmpdir
-list="$exp1 $exp2 $exp3"
+list="$exp1 $exp3"
 for exp in $list; do
    $ncp $savdir/$exp/stdout ./stdout.$exp
    $ncp $savdir/$exp/fort.220 ./fort.220.$exp
    $ncp $savdir/$exp/siganl ./siganl.$exp
+done
+list="$exp2"
+for exp in $list; do
+   $ncp $savdir2/$exp/stdout ./stdout.$exp
+   $ncp $savdir2/$exp/fort.220 ./fort.220.$exp
+   $ncp $savdir2/$exp/siganl ./siganl.$exp
 done
 
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
@@ -1116,9 +601,13 @@ exp1_scale=$exp2_rtma_sub_2node
 exp2_scale=$exp2_rtma_bench_2node
 
 # Copy stdout for additional scalability testing
-list="$exp1_scale $exp2_scale"
+list="$exp1_scale"
 for exp_scale in $list; do
    $ncp $savdir/$exp_scale/stdout ./stdout.$exp_scale
+done
+list="$exp2_scale"
+for exp_scale in $list; do
+   $ncp $savdir2/$exp_scale/stdout ./stdout.$exp_scale
 done
 
 # Grep out run time from stdout file
@@ -1264,7 +753,7 @@ fi
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp2}
+if cmp -s siganl.${exp1} siganl.${exp2} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
@@ -1324,8 +813,6 @@ $ncp $output                        $vfydir/
 cd $scripts
 rm -f gsi_rtma_update.e*
 rm -f gsi_rtma_update2.e*
-rm -f gsi_rtma_benchmark.e*
-rm -f gsi_rtma_benchmark2.e*
 rm -f rtma_regression.e*
 
 exit ;;

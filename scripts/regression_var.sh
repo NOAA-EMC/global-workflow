@@ -1,11 +1,16 @@
+# Define global noscrub directory
+
+export noscrub="/global/noscrub/$USER"
+
 # Define path to fix file directory
 
-export fix_file="/global/save/wx20ml/svn1/fix"
+export fix_file="/global/save/$USER/svn1/fix"
+export scripts="/global/save/$USER/mlueken/scripts"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/wx20ml/mlueken/src/global_gsi"
-export benchmark="/global/save/wx20ml/svn1/src/global_gsi"
+export subversion="/global/save/$USER/mlueken/src/global_gsi"
+export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
 
@@ -47,7 +52,7 @@ export exp2_rtma_bench_2node="rtma.bench.2node"
 
 # Define ptmp location
 
-export ptmp_loc="/ptmp/wx20ml"
+export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
@@ -77,5 +82,23 @@ export arw_netcdf_regression="arw_netcdf_regression_results.txt"
 
 # Regression vfydir
 
-export regression_vfydir="/global/noscrub/wx20ml/benchmark"
+export regression_vfydir="$noscrub/benchmark"
 
+# Control run option
+
+export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
+
+# Define location for copying control run data to
+
+export control_RTMA="$noscrub/tmpreg_${rtma}/$exp1_rtma_bench_1node"
+export control_RTMA2="$noscrub/tmpreg_${rtma}/$exp2_rtma_bench_2node"
+export control_global_T62="$noscrub/tmp${global}/$exp1_global_bench_1node"
+export control_global_T622="$noscrub/tmp${global}/$exp2_global_bench_2node"
+export control_nmm_binary="$noscrub/tmpreg_${nmm_binary}/$exp1_nmm_binary_bench_2node"
+export control_nmm_binary2="$noscrub/tmpreg_${nmm_binary}/$exp2_nmm_binary_bench_3node"
+export control_nmm_netcdf="$noscrub/tmpreg_${nmm_netcdf}/$exp1_nmm_netcdf_bench_1node"
+export control_nmm_netcdf2="$noscrub/tmpreg_${nmm_netcdf}/$exp2_nmm_netcdf_bench_2node"
+export control_arw_binary="$noscrub/tmpreg_${arw_binary}/$exp1_arw_binary_bench_1node"
+export control_arw_binary2="$noscrub/tmpreg_${arw_binary}/$exp2_arw_binary_bench_2node"
+export control_arw_netcdf="$noscrub/tmpreg_${arw_netcdf}/$exp1_arw_netcdf_bench_1node"
+export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_bench_2node"
