@@ -5,7 +5,7 @@ export noscrub="/global/noscrub/$USER"
 # Define path to fix file directory
 
 export fix_file="/global/save/$USER/svn1/fix"
-export scripts="/global/save/$USER/mlueken/scripts"
+export scripts="/global/save/$USER/svn1/scripts"
 
 # Define work directories (location of executables)
 

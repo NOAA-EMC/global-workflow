@@ -133,62 +133,11 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
-
-GRIDOPTS="JCAP_B=$JCAP_B"
-
+. $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
- &SETUP
-   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
-   write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=5,iguess=-1,
-   oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,
-   nhr_assimilation=3,
- /
- &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
-   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
-   diagnostic_reg=.false.,
-   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
- /
- &BKGERR
-   as=0.35,0.35,0.35,0.50,0.50,0.80,1.00,1.00,
-   hzscl=1.414,1.000,0.707,
-   vs=0.5,bw=0.0,
- /
- &ANBKGERR
-   anisotropic=.true.,an_vs=0.5,ngauss=1,
-   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=2.,nord_f2a=4,
- /
- &JCOPTS
- /
- &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
-   baldiag_full=.true.,baldiag_inc=.true.,
- /
- &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
- /
- &OBS_INPUT
-   dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=1.5,
-   dfile(01)='prepbufr',  dtype(01)='ps',  dplat(01)=' ', dsis(01)='ps',  dval(01)=1.0,  dthin(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',   dplat(02)=' ', dsis(02)='t',   dval(02)=1.0,  dthin(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',   dplat(03)=' ', dsis(03)='q',   dval(03)=1.0,  dthin(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='spd', dplat(05)=' ', dsis(05)='spd', dval(05)=1.0,  dthin(05)=0,
- /
- &SUPEROB_RADAR
- /
- &SINGLEOB_TEST
-   maginnov=0.1,magoberr=0.1,oneob_type='t',
-   oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
-   obhourset=0.,
- /
- &LAG_DATA
- /
+
+$RTMA_namelist
+
 EOF
 
 # Set fixed files
@@ -289,6 +238,58 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
+# Save output
+mkdir -p $savdir
+chgrp rstprod $savdir
+chmod 750 $savdir
+
+cat stdout fort.2* > $savdir/stdout.anl.${adate}
+$ncp wrf_inout       $savdir/wrfanl.${adate}
+$ncp siganl          $savdir/siganl.${adate}
+$ncp sigf03          $savdir/sigf03.${adate}
+$ncp bckg_dxdy.dat   $savdir/bckg_dxdy.${adate}.dat
+$ncp bckg_qsat.dat   $savdir/bckg_qsat.${adate}.dat
+$ncp bckg_psfc.dat   $savdir/bckg_psfc.${adate}.dat
+$ncp bckgvar.dat_psi $savdir/bckgvar_psi.${adate}.dat
+$ncp bckgvar.dat_chi $savdir/bckgvar_chi.${adate}.dat
+$ncp bckgvar.dat_ps  $savdir/bckgvar_ps.${adate}.dat
+$ncp bckgvar.dat_t   $savdir/bckgvar_t0.${adate}.dat
+$ncp bckgvar.dat_pseudorh $savdir/bckgvar_pseudorh.${adate}.dat
+
+
+# Loop over first and last outer loops to generate innovation
+# diagnostic files for indicated observation types (groups)
+#
+# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+#        loop 03 will contain innovations with respect to
+#        the analysis.  Creation of o-a innovation files
+#        is triggered by write_diag(3)=.true.  The setting
+#        write_diag(1)=.true. turns on creation of o-g
+#        innovation files.
+#
+
+cd $tmpdir
+loops="01 03"
+for loop in $loops; do
+
+case $loop in
+  01) string=ges;;
+  03) string=anl;;
+   *) string=$loop;;
+esac
+
+# Collect diagnostic files for obs types (groups) below
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   for type in $listall; do
+      count=`ls dir.*/${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
+         compress diag_${type}_${string}.${adate}
+         $ncp diag_${type}_${string}.${adate}.Z $savdir/
+      fi
+   done
+done
+
 exit ;;
 
   gsi_rtma_update2)
@@ -369,62 +370,11 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
-
-GRIDOPTS="JCAP_B=$JCAP_B"
-
+. $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
- &SETUP
-   miter=2,niter(1)=50,niter(2)=50,jiterend=2,
-   write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=5,iguess=-1,
-   oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,
-   nhr_assimilation=3,
- /
- &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
-   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
-   diagnostic_reg=.false.,
-   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
- /
- &BKGERR
-   as=0.35,0.35,0.35,0.50,0.50,0.80,1.00,1.00,
-   hzscl=1.414,1.000,0.707,
-   vs=0.5,bw=0.0,
- /
- &ANBKGERR
-   anisotropic=.true.,an_vs=0.5,ngauss=1,
-   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=2.,nord_f2a=4,
- /
- &JCOPTS
- /
- &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
-   baldiag_full=.true.,baldiag_inc=.true.,
- /
- &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
- /
- &OBS_INPUT
-   dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=1.5,
-   dfile(01)='prepbufr',  dtype(01)='ps',  dplat(01)=' ', dsis(01)='ps',  dval(01)=1.0,  dthin(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',   dplat(02)=' ', dsis(02)='t',   dval(02)=1.0,  dthin(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',   dplat(03)=' ', dsis(03)='q',   dval(03)=1.0,  dthin(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='spd', dplat(05)=' ', dsis(05)='spd', dval(05)=1.0,  dthin(05)=0,
- /
- &SUPEROB_RADAR
- /
- &SINGLEOB_TEST
-   maginnov=0.1,magoberr=0.1,oneob_type='t',
-   oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
-   obhourset=0.,
- /
- &LAG_DATA
- /
+
+$RTMA_namelist
+
 EOF
 
 # Set fixed files
@@ -524,6 +474,58 @@ if [[ "$rc" != "0" ]]; then
    $step_name==$rc
    exit
 fi
+
+# Save output
+mkdir -p $savdir
+chgrp rstprod $savdir
+chmod 750 $savdir
+
+cat stdout fort.2* > $savdir/stdout.anl.${adate}
+$ncp wrf_inout       $savdir/wrfanl.${adate}
+$ncp siganl          $savdir/siganl.${adate}
+$ncp sigf03          $savdir/sigf03.${adate}
+$ncp bckg_dxdy.dat   $savdir/bckg_dxdy.${adate}.dat
+$ncp bckg_qsat.dat   $savdir/bckg_qsat.${adate}.dat
+$ncp bckg_psfc.dat   $savdir/bckg_psfc.${adate}.dat
+$ncp bckgvar.dat_psi $savdir/bckgvar_psi.${adate}.dat
+$ncp bckgvar.dat_chi $savdir/bckgvar_chi.${adate}.dat
+$ncp bckgvar.dat_ps  $savdir/bckgvar_ps.${adate}.dat
+$ncp bckgvar.dat_t   $savdir/bckgvar_t0.${adate}.dat
+$ncp bckgvar.dat_pseudorh $savdir/bckgvar_pseudorh.${adate}.dat
+
+
+# Loop over first and last outer loops to generate innovation
+# diagnostic files for indicated observation types (groups)
+#
+# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+#        loop 03 will contain innovations with respect to
+#        the analysis.  Creation of o-a innovation files
+#        is triggered by write_diag(3)=.true.  The setting
+#        write_diag(1)=.true. turns on creation of o-g
+#        innovation files.
+#
+
+cd $tmpdir
+loops="01 03"
+for loop in $loops; do
+
+case $loop in
+  01) string=ges;;
+  03) string=anl;;
+   *) string=$loop;;
+esac
+
+# Collect diagnostic files for obs types (groups) below
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   for type in $listall; do
+      count=`ls dir.*/${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
+         compress diag_${type}_${string}.${adate}
+         $ncp diag_${type}_${string}.${adate}.Z $savdir/
+      fi
+   done
+done
 
 exit ;;
 
