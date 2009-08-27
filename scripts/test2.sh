@@ -47,7 +47,7 @@ exp=bal14.8
 
 
 # Set path/file for gsi executable
-basedir=/global/save
+basedir=/global/noscrub
 gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=/global/save/wx****/gmao/gsi9/global_gsi
 # gsiexec=/$gsipath/sorc/q1fy10x/global_gsi
