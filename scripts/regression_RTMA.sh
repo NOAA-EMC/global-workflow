@@ -123,9 +123,7 @@ exp=$exp1_rtma_sub_1node
 adate=$adate_regional
 
 # Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
 gsiexec=$subversion
-##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -138,9 +136,6 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -190,57 +185,62 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
+berror=$fix_file/new_rtma_regional_nmm_berror.f77
+errtable=$fix_file/new_rtma_nam_errtable.r3dv
+convinfo=$fix_file/new_rtma_regional_convinfo.txt
+mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
+mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+slmask=$fix_file/new_rtma_conus_slmask.dat
+terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
+t_rejectlist=$fix_file/new_rtma_t_rejectlist
+p_rejectlist=$fix_file/new_rtma_p_rejectlist
+q_rejectlist=$fix_file/new_rtma_q_rejectlist
+w_rejectlist=$fix_file/new_rtma_w_rejectlist
+
+random_flips=$fix_file/new_rtma_random_flips
+
+flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/new_rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
+$ncp $berror             ./berror_stats
+$ncp $convinfo           ./convinfo
+$ncp $errtable           ./errtable
+$ncp $mesonetuselist     ./mesonetuselist
+$ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $slmask             ./rtma_slmask.dat
+$ncp $terrain            ./rtma_terrain.dat
+$ncp $bufrtable          ./prepobs_prep.bufrtable
 
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
+$ncp $t_rejectlist       ./t_rejectlist
+$ncp $p_rejectlist       ./p_rejectlist
+$ncp $q_rejectlist       ./q_rejectlist
+$ncp $w_rejectlist       ./w_rejectlist
+
+$ncp $random_flips        ./random_flips
+
+$ncp $flt_chi            ./fltnorm.dat_chi
+$ncp $flt_ist            ./fltnorm.dat_ist
+$ncp $flt_ps             ./fltnorm.dat_ps
+$ncp $flt_lst            ./fltnorm.dat_lst
+$ncp $flt_oz             ./fltnorm.dat_oz
+$ncp $flt_pseudorh       ./fltnorm.dat_pseudorh
+$ncp $flt_psi            ./fltnorm.dat_psi
+$ncp $flt_qw             ./fltnorm.dat_qw
+$ncp $flt_sst            ./fltnorm.dat_sst
+$ncp $flt_t              ./fltnorm.dat_t
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -319,7 +319,7 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="conv"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -360,9 +360,7 @@ exp=$exp2_rtma_sub_2node
 adate=$adate_regional
 
 # Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
 gsiexec=$subversion
-##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -375,9 +373,6 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -427,46 +422,51 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fix/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
+berror=$fix_file/new_rtma_regional_nmm_berror.f77
+errtable=$fix_file/new_rtma_nam_errtable.r3dv
+convinfo=$fix_file/new_rtma_regional_convinfo.txt
+mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
+mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+slmask=$fix_file/new_rtma_conus_slmask.dat
+terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
+t_rejectlist=$fix_file/new_rtma_t_rejectlist
+p_rejectlist=$fix_file/new_rtma_p_rejectlist
+q_rejectlist=$fix_file/new_rtma_q_rejectlist
+w_rejectlist=$fix_file/new_rtma_w_rejectlist
+
+random_flips=$fix_file/new_rtma_random_flips
+
+flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/new_rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
+$ncp $berror             ./berror_stats
+$ncp $convinfo           ./convinfo
+$ncp $errtable           ./errtable
+$ncp $mesonetuselist     ./mesonetuselist
+$ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $slmask             ./rtma_slmask.dat
+$ncp $terrain            ./rtma_terrain.dat
+$ncp $bufrtable          ./prepobs_prep.bufrtable
+
+$ncp $t_rejectlist       ./t_rejectlist
+$ncp $p_rejectlist       ./p_rejectlist
+$ncp $q_rejectlist       ./q_rejectlist
+$ncp $w_rejectlist       ./w_rejectlist
+
+$ncp $random_flips        ./random_flips
 
 $ncp $flt_chi       ./fltnorm.dat_chi
 $ncp $flt_ist       ./fltnorm.dat_ist
@@ -556,7 +556,7 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="conv"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -596,10 +596,7 @@ exp=$exp1_rtma_bench_1node
 adate=$adate_regional
 
 # Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -612,9 +609,6 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -664,46 +658,51 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
+berror=$fix_file/new_rtma_regional_nmm_berror.f77
+errtable=$fix_file/new_rtma_nam_errtable.r3dv
+convinfo=$fix_file/new_rtma_regional_convinfo.txt
+mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
+mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+slmask=$fix_file/new_rtma_conus_slmask.dat
+terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
+t_rejectlist=$fix_file/new_rtma_t_rejectlist
+p_rejectlist=$fix_file/new_rtma_p_rejectlist
+q_rejectlist=$fix_file/new_rtma_q_rejectlist
+w_rejectlist=$fix_file/new_rtma_w_rejectlist
+
+random_flips=$fix_file/new_rtma_random_flips
+
+flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/new_rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
+$ncp $berror             ./berror_stats
+$ncp $convinfo           ./convinfo
+$ncp $errtable           ./errtable
+$ncp $mesonetuselist     ./mesonetuselist
+$ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $slmask             ./rtma_slmask.dat
+$ncp $terrain            ./rtma_terrain.dat
+$ncp $bufrtable          ./prepobs_prep.bufrtable
+
+$ncp $t_rejectlist       ./t_rejectlist
+$ncp $p_rejectlist       ./p_rejectlist
+$ncp $q_rejectlist       ./q_rejectlist
+$ncp $w_rejectlist       ./w_rejectlist
+
+$ncp $random_flips        ./random_flips
 
 $ncp $flt_chi       ./fltnorm.dat_chi
 $ncp $flt_ist       ./fltnorm.dat_ist
@@ -799,7 +798,7 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="conv"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -839,9 +838,7 @@ exp=$exp2_rtma_bench_2node
 adate=$adate_regional
 
 # Set path/file for gsi executable
-gsipath=/global/save/wx20rt/gsi_anl
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -854,9 +851,6 @@ tmpdir=$ptmp_loc/tmpreg_${rtma}/${exp}
 savdir=$ptmp_loc/outreg/${rtma}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 datobs=$datobs_rtma/$adate
 datges=$datobs
@@ -906,46 +900,51 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/rtma_regional_nmm_berror.f77
-
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
-
-errtable=$fix_file/rtma_nam_errtable.r3dv
-##convinfo=$fixgsi/rtma_regional_convinfo.txt
-
-uselist=$fix_file/rtma_mesonet_uselist.txt
+berror=$fix_file/new_rtma_regional_nmm_berror.f77
+errtable=$fix_file/new_rtma_nam_errtable.r3dv
+convinfo=$fix_file/new_rtma_regional_convinfo.txt
+mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
+mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+slmask=$fix_file/new_rtma_conus_slmask.dat
+terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
-reject=$fix_file/rtma_mass_rejectlist_static.txt
-slmask=$fix_file/rtma_ndfd_slmask_umd_grads.dat
 
-flt_chi=$fix_file/rtma_fltnorm.dat_chi
-flt_ist=$fix_file/rtma_fltnorm.dat_ist
-flt_ps=$fix_file/rtma_fltnorm.dat_ps
-flt_lst=$fix_file/rtma_fltnorm.dat_lst
-flt_oz=$fix_file/rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/rtma_fltnorm.dat_psi
-flt_qw=$fix_file/rtma_fltnorm.dat_qw
-flt_sst=$fix_file/rtma_fltnorm.dat_sst
-flt_t=$fix_file/rtma_fltnorm.dat_t
+t_rejectlist=$fix_file/new_rtma_t_rejectlist
+p_rejectlist=$fix_file/new_rtma_p_rejectlist
+q_rejectlist=$fix_file/new_rtma_q_rejectlist
+w_rejectlist=$fix_file/new_rtma_w_rejectlist
+
+random_flips=$fix_file/new_rtma_random_flips
+
+flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/new_rtma_fltnorm.dat_t
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
-$ncp $berror        ./berror_stats
-$ncp $errtable      ./errtable
-$ncp $convinfo      ./convinfo
-$ncp $errtable      ./errtable
-$ncp $uselist       ./mesonetuselist
-$ncp $bufrtable     ./prepobs_prep.bufrtable
-$ncp $reject        ./mass_rejectlist_tmp
-$ncp $slmask        ./ndfd_slmask_umd_grads.dat
+$ncp $berror             ./berror_stats
+$ncp $convinfo           ./convinfo
+$ncp $errtable           ./errtable
+$ncp $mesonetuselist     ./mesonetuselist
+$ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $slmask             ./rtma_slmask.dat
+$ncp $terrain            ./rtma_terrain.dat
+$ncp $bufrtable          ./prepobs_prep.bufrtable
+
+$ncp $t_rejectlist       ./t_rejectlist
+$ncp $p_rejectlist       ./p_rejectlist
+$ncp $q_rejectlist       ./q_rejectlist
+$ncp $w_rejectlist       ./w_rejectlist
+
+$ncp $random_flips        ./random_flips
 
 $ncp $flt_chi       ./fltnorm.dat_chi
 $ncp $flt_ist       ./fltnorm.dat_ist
@@ -1041,7 +1040,7 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="conv"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
