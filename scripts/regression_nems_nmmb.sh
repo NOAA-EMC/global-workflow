@@ -1,89 +1,91 @@
 #!/bin/sh
-
+#
+#  test nems nmmb regional option for gsi
+#
 #@ job_name=regression_test
-#@ step_name=gsi_arw_netcdf_update
-#@ error=gsi_arw_netcdf_update.e$(jobid)
-#@ job_type=parallel
-#@ network.MPI=sn_all,shared,us
-#@ node = 1
-#@ node_usage=not_shared
-#@ tasks_per_node=16
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
-#@ wall_clock_limit = 0:10:00
-#@ notification=error
-#@ queue
-
-#@ step_name=gsi_arw_netcdf_update2
-#@ error=gsi_arw_netcdf_update2.e$(jobid)
+#@ step_name=gsi_nems_nmmb_update
+#@ error= gsi_nems_nmmb_update.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=16
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
+#@ tasks_per_node=32
+#@ task_affinity = core(1)
+#@ node_resources = ConsumableMemory(110GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-MTN
-#@ wall_clock_limit = 0:10:00
+#@ wall_clock_limit = 0:15:00
 #@ notification=error
-#@ dependency=(gsi_arw_netcdf_update==0)
 #@ queue
 
-#@ step_name=gsi_arw_netcdf_benchmark
-#@ error=gsi_arw_netcdf_benchmark.e$(jobid)
+#@ step_name=gsi_nems_nmmb_update2
+#@ error=gsi_nems_nmmb_update2.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 1
+#@ node = 3
 #@ node_usage=not_shared
-#@ tasks_per_node=16
+#@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-MTN
-#@ wall_clock_limit = 0:10:00
+#@ wall_clock_limit = 0:15:00
 #@ notification=error
-#@ dependency=(gsi_arw_netcdf_update2==0)
+#@ dependency=(gsi_nems_nmmb_update==0)
 #@ queue
 
-#@ step_name=gsi_arw_netcdf_benchmark2
-#@ error=gsi_arw_netcdf_benchmark2.e$(jobid)
+#@ step_name=gsi_nems_nmmb_benchmark
+#@ error=gsi_nems_nmmb_benchmark.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=16
+#@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-MTN
-#@ wall_clock_limit = 0:10:00
+#@ wall_clock_limit = 0:15:00
 #@ notification=error
-#@ dependency=(gsi_arw_netcdf_benchmark==0)
+#@ dependency=(gsi_nems_nmmb_update2==0)
 #@ queue
 
-#@ step_name=arw_netcdf_regression
-#@ error=arw_netcdf_regression.e$(jobid)
+#@ step_name=gsi_nems_nmmb_benchmark2
+#@ error=gsi_nems_nmmb_benchmark2.e$(jobid)
+#@ job_type=parallel
+#@ network.MPI=sn_all,shared,us
+#@ node = 3
+#@ node_usage=not_shared
+#@ tasks_per_node=32
+#@ task_affinity=core(1)
+#@ node_resources=ConsumableMemory(110 GB)
+#@ class=dev
+#@ group=dev
+#@ account_no = RDAS-MTN
+#@ wall_clock_limit = 0:15:00
+#@ notification=error
+#@ dependency=(gsi_nems_nmmb_benchmark==0)
+#@ queue
+
+#@ step_name=nems_nmmb_regression
+#@ error=nems_nmmb_regression.e$(jobid)
 #@ job_type=serial
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
-#@ class=dev
-#@ group=dev
+#@ class= dev
+#@ group= dev
 #@ wall_clock_limit = 00:10:00
 #@ account_no = GDAS-MTN
 #@ notification=error
-#@ dependency=(gsi_arw_netcdf_benchmark2==0)
+#@ dependency=(gsi_nems_nmmb_benchmark2==0)
 #@ queue
 
 . regression_var.sh
 
 case $LOADL_STEP_NAME in
-  gsi_arw_netcdf_update)
+  gsi_nems_nmmb_update)
 
 set -x
 
@@ -114,26 +116,10 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
-
-# Set guess/analysis (i/o) file format.  Two
-# option are available:  binary or netcdf
-##io_format=binary
-io_format=netcdf
-
-if [[ "$io_format" = "binary" ]]; then
-   NETCDF=.false.
-   FORMAT=binary
-elif [[ "$io_format" = "netcdf" ]]; then
-   NETCDF=.true.
-   FORMAT=netcdf
-else
-   echo "***ERRROR*** INVALID io_format = $io_format"
-   exit
-fi
+#adate=$adate_regional
 
 # Set experiment name
-exp=$exp1_arw_netcdf_sub_1node
+exp=$exp1_nems_nmmb_sub_2node
 
 # Set path/file for gsi executable
 gsiexec=$subversion
@@ -142,28 +128,12 @@ gsiexec=$subversion
 export JCAP=62
 export LEVS=60
 export JCAP_B=62
-if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
-elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
-fi
+export LEVS=60
 export DELTIM=1200
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
-savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+tmpdir=$ptmp_loc/tmpreg_${nems_nmmb}/${exp}
+savdir=$ptmp_loc/outreg/${nems_nmmb}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -174,20 +144,20 @@ CLEAN=NO
 ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
-hho=`echo $odate | cut -c9-10`
-prefixo=ndas.t${hho}z
-prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+## Given the analysis date, compute the date from which the
+## first guess comes.  Extract cycle and set prefix and suffix
+## for guess and observation data files
+#sdate=`echo $adate |cut -c1-8`
+#odate=`$ndate +12 $adate`
+#hha=`echo $adate | cut -c9-10`
+#hho=`echo $odate | cut -c9-10`
+#prefixo=ndas.t${hho}z
+#prefixa=ndas.t${hha}z
+###suffix=tm00.bufr_d
+#suffix=tm12.bufr_d
 
-datobs=$datobs_arw_netcdf/$adate
-datges=$datges_arw_netcdf/$adate
+datobs=$datobs_nems_nmmb
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -201,33 +171,11 @@ rm -rf core*
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
-$arw_netcdf_namelist
+$nems_nmmb_namelist
 
 EOF
 
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   specoef  = CRTM spectral coefficients
-#   trncoef  = CRTM transmittance coefficients
-#   emiscoef = CRTM coefficients for IR sea surface emissivity model
-#   aerocoef = CRTM coefficients for aerosol effects
-#   cldcoef  = CRTM coefficients for cloud effects
-#   satinfo  = text file with information about assimilation of brightness temperatures
-#   satangl  = angle dependent bias correction file (fixed in time)
-#   pcpinfo  = text file with information about assimilation of prepcipitation rates
-#   ozinfo   = text file with information about assimilation of ozone data
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
-
-if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
-elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
-fi
+berror=$fix_file/nam_glb_berror.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -238,12 +186,6 @@ ozinfo=$fix_file/global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/global_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
-
-# Only need this file for single obs test
-bufrtable=$fix_file/prepobs_prep.bufrtable
-
-# Only need this file for sst retrieval
-bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -259,9 +201,6 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
-
-$ncp $bufrtable ./prepobs_prep.bufrtable
-$ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -280,32 +219,28 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-if [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
-fi
+$ncp $datobs/ndas.t12z.prepbufr.tm12      ./prepbufr
+$ncp $datobs/ndas.t12z.1bhrs3.tm12.bufr_d ./hirs3bufr
+$ncp $datobs/ndas.t12z.1bhrs4.tm12.bufr_d ./hirs4bufr
+$ncp $datobs/ndas.t12z.1bamua.tm12.bufr_d ./amsuabufr
+$ncp $datobs/ndas.t12z.1bamub.tm12.bufr_d ./amsubbufr
+$ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
+$ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
+$ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
+$ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
-if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
-elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
-fi
-cp wrf_inout wrf_ges
+$ncp $datges/ndas.t06z.satang.tm09 ./satbias_angle
+$ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
+
+$ncp $datges/nmm_b_history_nemsio.012 wrf_inout
+$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp wrf_inout wrf_ges
+$ncp wrf_inout.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -314,8 +249,8 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_arw_netcdf_sub_1node' has failed to run to completion, with an error code of '$rc''
-   } >> $arw_netcdf_regression
+    echo ''$exp1_nems_nmmb_sub_2node' has failed to run to completion, with an error code of '$rc''
+   } >> $nems_nmmb_regression
    $step_name==$rc
    exit
 fi
@@ -354,7 +289,8 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp
+pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -367,7 +303,7 @@ done
 
 exit ;;
 
-  gsi_arw_netcdf_update2)
+  gsi_nems_nmmb_update2)
 
 set -x
 
@@ -398,26 +334,10 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
-
-# Set guess/analysis (i/o) file format.  Two
-# option are available:  binary or netcdf
-##io_format=binary
-io_format=netcdf
-
-if [[ "$io_format" = "binary" ]]; then
-   NETCDF=.false.
-   FORMAT=binary
-elif [[ "$io_format" = "netcdf" ]]; then
-   NETCDF=.true.
-   FORMAT=netcdf
-else
-   echo "***ERRROR*** INVALID io_format = $io_format"
-   exit
-fi
+#adate=$adate_regional
 
 # Set experiment name
-exp=$exp2_arw_netcdf_sub_2node
+exp=$exp2_nems_nmmb_sub_3node
 
 # Set path/file for gsi executable
 gsiexec=$subversion
@@ -426,28 +346,12 @@ gsiexec=$subversion
 export JCAP=62
 export LEVS=60
 export JCAP_B=62
-if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
-elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
-fi
+export LEVS=60
 export DELTIM=1200
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
-savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+tmpdir=$ptmp_loc/tmpreg_${nems_nmmb}/${exp}
+savdir=$ptmp_loc/outreg/${nems_nmmb}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -458,20 +362,20 @@ CLEAN=NO
 ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
-hho=`echo $odate | cut -c9-10`
-prefixo=ndas.t${hho}z
-prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+## Given the analysis date, compute the date from which the
+## first guess comes.  Extract cycle and set prefix and suffix
+## for guess and observation data files
+#sdate=`echo $adate |cut -c1-8`
+#odate=`$ndate +12 $adate`
+#hha=`echo $adate | cut -c9-10`
+#hho=`echo $odate | cut -c9-10`
+#prefixo=ndas.t${hho}z
+#prefixa=ndas.t${hha}z
+###suffix=tm00.bufr_d
+#suffix=tm12.bufr_d
 
-datobs=$datobs_arw_netcdf/$adate
-datges=$datges_arw_netcdf/$adate
+datobs=$datobs_nems_nmmb
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -485,33 +389,11 @@ rm -rf core*
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
-$arw_netcdf_namelist
+$nems_nmmb_namelist
 
 EOF
 
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   specoef  = CRTM spectral coefficients
-#   trncoef  = CRTM transmittance coefficients
-#   emiscoef = CRTM coefficients for IR sea surface emissivity model
-#   aerocoef = CRTM coefficients for aerosol effects
-#   cldcoef  = CRTM coefficients for cloud effects
-#   satinfo  = text file with information about assimilation of brightness temperatures
-#   satangl  = angle dependent bias correction file (fixed in time)
-#   pcpinfo  = text file with information about assimilation of prepcipitation rates
-#   ozinfo   = text file with information about assimilation of ozone data
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
-
-if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
-elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
-fi
+berror=$fix_file/nam_glb_berror.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -522,12 +404,6 @@ ozinfo=$fix_file/global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/global_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
-
-# Only need this file for single obs test
-bufrtable=$fix_file/prepobs_prep.bufrtable
-
-# Only need this file for sst retrieval
-bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -543,9 +419,6 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
-
-$ncp $bufrtable ./prepobs_prep.bufrtable
-$ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -564,32 +437,28 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-if [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
-fi
+$ncp $datobs/ndas.t12z.prepbufr.tm12      ./prepbufr
+$ncp $datobs/ndas.t12z.1bhrs3.tm12.bufr_d ./hirs3bufr
+$ncp $datobs/ndas.t12z.1bhrs4.tm12.bufr_d ./hirs4bufr
+$ncp $datobs/ndas.t12z.1bamua.tm12.bufr_d ./amsuabufr
+$ncp $datobs/ndas.t12z.1bamub.tm12.bufr_d ./amsubbufr
+$ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
+$ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
+$ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
+$ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
-if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
-elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
-fi
-cp wrf_inout wrf_ges
+$ncp $datges/ndas.t06z.satang.tm09 ./satbias_angle
+$ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
+
+$ncp $datges/nmm_b_history_nemsio.012 wrf_inout
+$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp wrf_inout wrf_ges
+$ncp wrf_inout.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -598,8 +467,8 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_arw_netcdf_sub_2node' has failed to run to completion, with an error code of '$rc''
-   } >> $arw_netcdf_regression
+    echo ''$exp2_nems_nmmb_sub_3node' has failed to run to completion, with an error code of '$rc''
+   } >> $nems_nmmb_regression
    $step_name==$rc
    exit
 fi
@@ -638,7 +507,8 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp
+pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -649,9 +519,9 @@ esac
    done
 done
 
-exit ;;
+exit;;
 
-  gsi_arw_netcdf_benchmark)
+  gsi_nems_nmmb_benchmark)
 
 set -x
 
@@ -661,7 +531,7 @@ export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=no
+export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -682,58 +552,24 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
-
-# Set guess/analysis (i/o) file format.  Two
-# option are available:  binary or netcdf
-##io_format=binary
-io_format=netcdf
-
-if [[ "$io_format" = "binary" ]]; then
-   NETCDF=.false.
-   FORMAT=binary
-elif [[ "$io_format" = "netcdf" ]]; then
-   NETCDF=.true.
-   FORMAT=netcdf
-else
-   echo "***ERRROR*** INVALID io_format = $io_format"
-   exit
-fi
+#adate=$adate_regional
 
 # Set experiment name
-exp=$exp1_arw_netcdf_bench_1node
+exp=$exp1_nems_nmmb_bench_2node
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
 export LEVS=60
 export JCAP_B=62
-if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
-elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
-fi
+export LEVS=60
 export DELTIM=1200
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
-savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+tmpdir=$ptmp_loc/tmpreg_${nems_nmmb}/${exp}
+savdir=$ptmp_loc/outreg/${nems_nmmb}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -744,20 +580,20 @@ CLEAN=NO
 ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
-hho=`echo $odate | cut -c9-10`
-prefixo=ndas.t${hho}z
-prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+## Given the analysis date, compute the date from which the
+## first guess comes.  Extract cycle and set prefix and suffix
+## for guess and observation data files
+#sdate=`echo $adate |cut -c1-8`
+#odate=`$ndate +12 $adate`
+#hha=`echo $adate | cut -c9-10`
+#hho=`echo $odate | cut -c9-10`
+#prefixo=ndas.t${hho}z
+#prefixa=ndas.t${hha}z
+###suffix=tm00.bufr_d
+#suffix=tm12.bufr_d
 
-datobs=$datobs_arw_netcdf/$adate
-datges=$datges_arw_netcdf/$adate
+datobs=$datobs_nems_nmmb
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -771,33 +607,11 @@ rm -rf core*
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
-$arw_netcdf_namelist
+$nems_nmmb_namelist
 
 EOF
 
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   specoef  = CRTM spectral coefficients
-#   trncoef  = CRTM transmittance coefficients
-#   emiscoef = CRTM coefficients for IR sea surface emissivity model
-#   aerocoef = CRTM coefficients for aerosol effects
-#   cldcoef  = CRTM coefficients for cloud effects
-#   satinfo  = text file with information about assimilation of brightness temperatures
-#   satangl  = angle dependent bias correction file (fixed in time)
-#   pcpinfo  = text file with information about assimilation of prepcipitation rates
-#   ozinfo   = text file with information about assimilation of ozone data
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
-
-if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
-elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
-fi
+berror=$fix_file/nam_glb_berror.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -808,12 +622,6 @@ ozinfo=$fix_file/global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/global_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
-
-# Only need this file for single obs test
-bufrtable=$fix_file/prepobs_prep.bufrtable
-
-# Only need this file for sst retrieval
-bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -829,9 +637,6 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
-
-$ncp $bufrtable ./prepobs_prep.bufrtable
-$ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -850,32 +655,28 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-if [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
-fi
+$ncp $datobs/ndas.t12z.prepbufr.tm12      ./prepbufr
+$ncp $datobs/ndas.t12z.1bhrs3.tm12.bufr_d ./hirs3bufr
+$ncp $datobs/ndas.t12z.1bhrs4.tm12.bufr_d ./hirs4bufr
+$ncp $datobs/ndas.t12z.1bamua.tm12.bufr_d ./amsuabufr
+$ncp $datobs/ndas.t12z.1bamub.tm12.bufr_d ./amsubbufr
+$ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
+$ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
+$ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
+$ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
-if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
-elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
-fi
-cp wrf_inout wrf_ges
+$ncp $datges/ndas.t06z.satang.tm09 ./satbias_angle
+$ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
+
+$ncp $datges/nmm_b_history_nemsio.012 wrf_inout
+$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp wrf_inout wrf_ges
+$ncp wrf_inout.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -884,17 +685,17 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_arw_netcdf_bench_1node' has failed to run to completion, with an error code of '$rc''
-   } >> $arw_netcdf_regression
+    echo ''$exp1_nems_nmmb_bench_2node' has failed to run to completion, with an error code of '$rc''
+   } >> $nems_nmmb_regression
    $step_name==$rc
    exit
 fi
 
-mkdir $noscrub/tmpreg_${arw_netcdf}
-mkdir $control_arw_netcdf
-cp -rp stdout $control_arw_netcdf
-cp -rp fort.220 $control_arw_netcdf
-cp -rp siganl $control_arw_netcdf
+mkdir $noscrub/tmpreg_${nems_nmmb}
+mkdir $control_nems_nmmb
+cp -rp stdout $control_nems_nmmb
+cp -rp fort.220 $control_nems_nmmb
+cp -rp wrf_inout $control_nems_nmmb
 
 # Save output
 mkdir -p $savdir
@@ -930,7 +731,8 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp
+pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -943,7 +745,7 @@ done
 
 exit ;;
 
-  gsi_arw_netcdf_benchmark2)
+  gsi_nems_nmmb_benchmark2)
 
 set -x
 
@@ -953,7 +755,7 @@ export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
 export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=no
+export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -974,57 +776,24 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
-
-# Set guess/analysis (i/o) file format.  Two
-# option are available:  binary or netcdf
-##io_format=binary
-io_format=netcdf
-
-if [[ "$io_format" = "binary" ]]; then
-   NETCDF=.false.
-   FORMAT=binary
-elif [[ "$io_format" = "netcdf" ]]; then
-   NETCDF=.true.
-   FORMAT=netcdf
-else
-   echo "***ERRROR*** INVALID io_format = $io_format"
-   exit
-fi
+#adate=$adate_regional
 
 # Set experiment name
-exp=$exp2_arw_netcdf_bench_2node
+exp=$exp2_nems_nmmb_bench_3node
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
 export LEVS=60
 export JCAP_B=62
-if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
-elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
-fi
+export LEVS=60
 export DELTIM=1200
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
-savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
-
-# Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-
-##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+tmpdir=$ptmp_loc/tmpreg_${nems_nmmb}/${exp}
+savdir=$ptmp_loc/outreg/${nems_nmmb}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1035,20 +804,20 @@ CLEAN=NO
 ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
-# Given the analysis date, compute the date from which the
-# first guess comes.  Extract cycle and set prefix and suffix
-# for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
-hho=`echo $odate | cut -c9-10`
-prefixo=ndas.t${hho}z
-prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+## Given the analysis date, compute the date from which the
+## first guess comes.  Extract cycle and set prefix and suffix
+## for guess and observation data files
+#sdate=`echo $adate |cut -c1-8`
+#odate=`$ndate +12 $adate`
+#hha=`echo $adate | cut -c9-10`
+#hho=`echo $odate | cut -c9-10`
+#prefixo=ndas.t${hho}z
+#prefixa=ndas.t${hha}z
+###suffix=tm00.bufr_d
+#suffix=tm12.bufr_d
 
-datobs=$datobs_arw_netcdf/$adate
-datges=$datges_arw_netcdf/$adate
+datobs=$datobs_nems_nmmb
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -1062,33 +831,11 @@ rm -rf core*
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
-$arw_netcdf_namelist
+$nems_nmmb_namelist
 
 EOF
 
-# Set fixed files
-#   berror   = forecast model background error statistics
-#   specoef  = CRTM spectral coefficients
-#   trncoef  = CRTM transmittance coefficients
-#   emiscoef = CRTM coefficients for IR sea surface emissivity model
-#   aerocoef = CRTM coefficients for aerosol effects
-#   cldcoef  = CRTM coefficients for cloud effects
-#   satinfo  = text file with information about assimilation of brightness temperatures
-#   satangl  = angle dependent bias correction file (fixed in time)
-#   pcpinfo  = text file with information about assimilation of prepcipitation rates
-#   ozinfo   = text file with information about assimilation of ozone data
-#   errtable = text file with obs error for conventional data (regional only)
-#   convinfo = text file with information about assimilation of conventional data
-#   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
-#   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
-
-if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
-elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
-fi
+berror=$fix_file/nam_glb_berror.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1099,12 +846,6 @@ ozinfo=$fix_file/global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/global_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
-
-# Only need this file for single obs test
-bufrtable=$fix_file/prepobs_prep.bufrtable
-
-# Only need this file for sst retrieval
-bftab_sst=$fix_file/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -1120,9 +861,6 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
-
-$ncp $bufrtable ./prepobs_prep.bufrtable
-$ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -1141,32 +879,28 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-if [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
-fi
+$ncp $datobs/ndas.t12z.prepbufr.tm12      ./prepbufr
+$ncp $datobs/ndas.t12z.1bhrs3.tm12.bufr_d ./hirs3bufr
+$ncp $datobs/ndas.t12z.1bhrs4.tm12.bufr_d ./hirs4bufr
+$ncp $datobs/ndas.t12z.1bamua.tm12.bufr_d ./amsuabufr
+$ncp $datobs/ndas.t12z.1bamub.tm12.bufr_d ./amsubbufr
+$ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
+$ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
+$ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
+$ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
-if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
-elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
-fi
-cp wrf_inout wrf_ges
+$ncp $datges/ndas.t06z.satang.tm09 ./satbias_angle
+$ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
+
+$ncp $datges/nmm_b_history_nemsio.012 wrf_inout
+$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp wrf_inout wrf_ges
+$ncp wrf_inout.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -1175,17 +909,17 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_arw_netcdf_bench_2node' has failed to run to completion, with an error code of '$rc''
-   } >> $arw_netcdf_regression
+    echo ''$exp2_nems_nmmb_bench_3node' has failed to run to completion, with an error code of '$rc''
+   } >> $nems_nmmb_regression
    $step_name==$rc
    exit
 fi
 
-mkdir $noscrub/tmpreg_${arw_netcdf}
-mkdir $control_arw_netcdf2
-cp -rp stdout $control_arw_netcdf2
-cp -rp fort.220 $control_arw_netcdf2
-cp -rp siganl $control_arw_netcdf2
+mkdir $noscrub/tmpreg_${nems_nmmb}
+mkdir $control_nems_nmmb2
+cp -rp stdout $control_nems_nmmb2
+cp -rp fort.220 $control_nems_nmmb2
+cp -rp wrf_inout $control_nems_nmmb2
 
 # Save output
 mkdir -p $savdir
@@ -1221,7 +955,8 @@ case $loop in
 esac
 
 # Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g12 sndr_g08_prep sndr_g10_prep sndr_g12_prep sndrd1_g08 sndrd2_g08 sndrd3_g08 sndrd4_g08 sndrd1_g10 sndrd2_g10 sndrd3_g10 sndrd4_g10 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp
+pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -1234,7 +969,7 @@ done
 
 exit ;;
 
-  arw_netcdf_regression)
+  nems_nmmb_regression)
 
 set -ax
 
@@ -1242,15 +977,15 @@ set -ax
 # Here, exp1 is the run using the latest modified version of the code
 # and exp2 is the benchmark run
 
-exp1=$exp1_arw_netcdf_sub_1node
-exp2=$exp1_arw_netcdf_bench_1node
-exp3=$exp2_arw_netcdf_sub_2node
+exp1=$exp1_nems_nmmb_sub_2node
+exp2=$exp1_nems_nmmb_bench_2node
+exp3=$exp2_nems_nmmb_sub_3node
 
 # Choose global, regional, or RTMA
-input=tmpreg_$arw_netcdf
+input=tmpreg_${nems_nmmb}
 
 # Name output file
-output=$arw_netcdf_regression
+output=$nems_nmmb_regression
 
 # Give location of analysis results, and choose location for regression output
 savdir=$ptmp_loc/$input
@@ -1273,13 +1008,13 @@ maxtime=1200
 # Cirrus=110 GB/32 tasks per node
 maxmem=$((3400000*1))
 
-# Copy stdout and fort.220 files 
+# Copy stdout and fort.220 files
 # from $savdir to $tmpdir
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
    $ncp $savdir/$exp/stdout ./stdout.$exp
    $ncp $savdir/$exp/fort.220 ./fort.220.$exp
-   $ncp $savdir/$exp/siganl ./siganl.$exp
+   $ncp $savdir/$exp/wrf_inout ./wrf_inout.$exp
 done
 
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
@@ -1296,9 +1031,8 @@ diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
 # (i.e., output from increased number of nodes)
-
-exp1_scale=$exp2_arw_netcdf_sub_2node
-exp2_scale=$exp2_arw_netcdf_bench_2node
+exp1_scale=$exp2_nems_nmmb_sub_3node
+exp2_scale=$exp2_nems_nmmb_bench_3node
 
 # Copy stdout for additional scalability testing
 list="$exp1_scale $exp2_scale"
@@ -1317,9 +1051,9 @@ done
 # Values below can be fine tuned to make the regression more or less aggressive
 # Currently using a value of 10%
 
-timedif=4
+timedif=8
 memdiff=10
-scaledif=4
+scaledif=8
 
 # timethresh = avgtime*timedif+avgtime
 # memthresh = avgmem*memdiff+avgmem
@@ -1346,7 +1080,7 @@ scale2=$((time2 - time_scale2))
 
 # Calculate maximum allowable deviation for scalability
 
-scale1thresh=$((scale1 / scaledif + scale1 + 3))
+scale1thresh=$((scale1 / scaledif + scale1))
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
@@ -1399,7 +1133,7 @@ scale1thresh=$((scale1 / scaledif + scale1 + 3))
 
 } >> $output
 
-# Next, maximum residence set size (both harware limitation and percent difference)
+# Next, maximum residence set size (both hardware limitation and percent difference)
 # First, hardware limitation
 
 {
@@ -1452,7 +1186,7 @@ fi
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp2} 
+if cmp -s wrf_inout.${exp1} wrf_inout.${exp2}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
@@ -1481,7 +1215,7 @@ fi
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp3} 
+if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
    echo 'since the corresponding results are identical.'
@@ -1494,7 +1228,7 @@ fi
 
 {
 
-if [[ $scale1thresh -gt $scale2 ]]; then
+if [[ $scale1thresh -ge $scale2 ]]; then
    echo 'The case has passed the scalability regression test.'
    echo 'The slope for the branch ('$scale1thresh' seconds per node) is greater than or equal to that for the benchmark ('$scale2' seconds per node).'
 else
@@ -1510,11 +1244,11 @@ mkdir -p $vfydir
 $ncp $output                        $vfydir/
 
 cd $scripts
-rm -f gsi_arw_netcdf_update.e*
-rm -f gsi_arw_netcdf_update2.e*
-rm -f gsi_arw_netcdf_benchmark.e*
-rm -f gsi_arw_netcdf_benchmark2.e*
-rm -f arw_netcdf_regression.e*
+rm -f gsi_nems_nmmb_update.e*
+rm -f gsi_nems_nmmb_update2.e*
+rm -f gsi_nems_nmmb_benchmark.e*
+rm -f gsi_nems_nmmb_benchmark2.e*
+rm -f nems_nmmb_regression.e*
 
 exit ;;
 

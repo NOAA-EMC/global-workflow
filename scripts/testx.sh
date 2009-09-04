@@ -60,6 +60,7 @@ gsiexec=/global/save/wx****/gmao/gsi4/global_gsi
 # All resolutions use LEVS=64
 export JCAP=382
 export LEVS=64
+export JCAP_B=382
 
 
 # Set runtime and save directories
@@ -144,7 +145,7 @@ cat << EOF > gsiparm.anl
    use_pbl=.false.,
  /
  &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
    regional=.false.,nlayers(63)=3,nlayers(64)=6,
  /
  &BKGERR
@@ -237,6 +238,8 @@ cat << EOF > gsiparm.anl
    dfile(62)='gomebufr',  dtype(62)='gome',      dplat(62)='metop-a',   dsis(62)='gome_metop-a',        dval(62)=1.0,  dthin(62)=6,
  /
  &SUPEROB_RADAR
+ /
+ &LAG_DATA
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',

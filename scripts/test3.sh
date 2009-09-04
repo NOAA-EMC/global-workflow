@@ -176,7 +176,7 @@ cat << EOF > gsiparm.anl
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
    regional=.false.,nlayers(63)=3,nlayers(64)=6,
    $GRIDOPTS
  /
@@ -280,6 +280,8 @@ cat << EOF > gsiparm.anl
  /
   &SUPEROB_RADAR
    $SUPERRAD
+ /
+ &LAG_DATA
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',

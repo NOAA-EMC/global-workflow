@@ -62,7 +62,7 @@ exp=gmao_gsi7.t62.subversion
 
 
 # Set path/file for gsi executable
-basedir=/global/save
+basedir=/global/noscrub
 gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=/global/save/wx****/workspace/gsi7/global_gsi
 ##gsiexec=$gsipath/sorc/q1fy10/global_gsi
@@ -281,6 +281,8 @@ cat << EOF > gsiparm.anl
  /
   &SUPEROB_RADAR
    $SUPERRAD
+ /
+ &LAG_DATA
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',

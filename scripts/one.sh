@@ -281,6 +281,8 @@ cat << EOF > gsiparm.anl
   &SUPEROB_RADAR
    $SUPERRAD
  /
+ &LAG_DATA
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${ADATE},

@@ -537,7 +537,7 @@ set -ax
 # and exp2 is the benchmark run
 
 exp1=$exp1_rtma_sub_1node
-exp2=$exp2_rtma_sub_2node        #exp1_rtma_bench_1node
+exp2=$exp1_rtma_bench_1node
 exp3=$exp2_rtma_sub_2node
 
 # Choose global, regional, or RTMA
@@ -615,6 +615,7 @@ done
 list="$exp1_scale $exp2_scale"
 for exp_scale in $list; do
    grep 'The total amount of wall time' stdout.$exp_scale > runtime.$exp_scale.txt
+   grep 'The maximum resident set size' stdout.$exp_scale > memory.$exp_scale.txt
 done
 
 # Important values used to calculate timethresh and memthresh below
@@ -641,6 +642,8 @@ memthresh=$((mem / memdiff + mem))
 time_scale1=$(awk '{ print $8 }' runtime.$exp1_scale.txt)
 time_scale2=$(awk '{ print $8 }' runtime.$exp2_scale.txt)
 
+timethresh2=$((time_scale2 / timedif + time_scale2))
+
 # Now, figure out difference in time between two runs
 
 scale1=$((time1 - time_scale1))
@@ -648,7 +651,7 @@ scale2=$((time2 - time_scale2))
 
 # Calculate maximum allowable deviation for 2 nodes
 
-timethresh2=$((time_scale2 / timedif + time_scale2))
+scale1thresh=$((scale1 / scaledif + scale1))
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
@@ -796,12 +799,12 @@ fi
 
 {
 
-if [[ $scale1 -ge $scale2 ]]; then
+if [[ $scale1thresh -ge $scale2 ]]; then
    echo 'The case has passed the scalability regression test.'
-   echo 'The slope for the branch ('$scale1' seconds per node) is greater than or equal to that for the benchmark ('$scale2' seconds per node).'
+   echo 'The slope for the branch ('$scale1thresh' seconds per node) is greater than or equal to that for the benchmark ('$scale2' seconds per node).'
 else
    echo 'The case has failed the scalability test.'
-   echo 'The slope for the branch ('$scale1' seconds per node) is less than that for the benchmark ('$scale2' seconds per node).'
+   echo 'The slope for the branch ('$scale1thresh' seconds per node) is less than that for the benchmark ('$scale2' seconds per node).'
 fi
 
 } >> $output

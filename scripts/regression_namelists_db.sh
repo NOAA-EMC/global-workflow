@@ -3,7 +3,7 @@
 export global_T62_namelist=" 
 
  &SETUP
-   miter=2,niter(1)=100,niter(2)=150,
+   miter=2,niter(1)=1,niter(2)=2,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
@@ -130,7 +130,7 @@ export global_T62_namelist="
 export RTMA_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,
    factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
@@ -187,7 +187,7 @@ export RTMA_namelist="
 export arw_binary_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -302,7 +302,7 @@ export arw_binary_namelist="
 export arw_netcdf_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -417,7 +417,7 @@ export arw_netcdf_namelist="
 export nmm_binary_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -532,7 +532,7 @@ export nmm_binary_namelist="
 export nmm_netcdf_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -647,7 +647,7 @@ export nmm_netcdf_namelist="
 export nems_nmmb_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
