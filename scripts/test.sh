@@ -59,8 +59,6 @@ exp=test25
 
 
 # Set path/file for gsi executable
-basedir=/global/noscrub
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=/global/save/wx****/gmao/gsi/global_gsi
 
 
@@ -80,9 +78,9 @@ savdir=/ptmp/wx****/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 fixgsi=/nwprod/fix
-fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+fixcrtm=/global/save/wx****/svn/fix/crtm_gfsgsi
+fixjif09=/global/save/wx****/svn/fix
+fixjif10=/global/save/wx****/svn/fix
 
 
 
@@ -405,13 +403,13 @@ $ncp satbias_out     $savdir/biascr.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
-ss2gg=$gsipath/util/ss2gg.fd/ss2gg
+ss2gg=/global/save/wx20mi/bin/ss2gg
 $ss2gg siganl siganl.bin siganl.ctl 4 768 384
 $ss2gg sigf06 sigges.bin sigges.ctl 4 768 384
 
 ##exit
 
-sfc2gg=$gsipath/util/sfc2gg.fd/sfc2gg
+sfc2gg=/u/wx20mi/bin/sfc2gg
 $sfc2gg sfcanl.gsi sfcanl.bin sfcanl.ctl
 $sfc2gg sfcf06     sfcges.bin sfcges.ctl
 

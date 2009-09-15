@@ -155,15 +155,8 @@ savdir=$ptmp_loc/outreg/${arw_binary}/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -440,15 +433,8 @@ savdir=$ptmp_loc/outreg/${arw_binary}/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -706,8 +692,6 @@ exp=$exp1_arw_binary_bench_1node
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -726,15 +710,8 @@ savdir=$ptmp_loc/outreg/${arw_binary}/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -998,7 +975,6 @@ exp=$exp2_arw_binary_bench_2node
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -1017,15 +993,8 @@ savdir=$ptmp_loc/outreg/${arw_binary}/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixjif=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
 
 ##fixgsi=/nwprod/fix
-##fixupd=/global/save/wx20rt/gsi_anl/fix/update
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)

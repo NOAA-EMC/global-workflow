@@ -46,13 +46,7 @@ exp=test2
 
 
 # Set path/file for gsi executable
-basedir=/global/noscrub
-gsipath=$basedir/wx20rt/gsi_anl
-##gsiexec=$gsipath/sorc/q1fy10/global_gsi
 gsiexec=/global/save/wx****/gmao/gsi9/global_gsi
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/exec/global_gsi
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd.bufr/global_gsi
 
 
 
@@ -74,8 +68,8 @@ savdir=/ptmp/wx****/out${JCAP}/sigmap/${exp}
 fixgsi=/nwprod/fix
 ##fixcrtm=/nwprod/fix/crtm_gfsgsi
 
-fixcrtm10=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi.rev1855.AAPP_AC
-fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
+fixcrtm10=/global/save/wx****/svn/fix/crtm_gfsgsi
+fixjif10=/global/save/wx****/svn/fix
 
 dumpobs=gdas
 dumpges=gdas
@@ -84,8 +78,6 @@ datobs=/global/shared/dump/$adate/$dumpobs
 datobx=/global/shared/dump/$adate/${dumpobs}x
 datoby=/global/shared/dump/$adate/${dumpobs}y
 
-##datges=/global/shared/glopara/prd09q1oz
-##datges=/global/noscrub/wx20rt/prd10q1g
 datges=/global/noscrub/wx20rt/gsi_anl/cases/global/sigmap/$adate
 
 
@@ -442,13 +434,13 @@ mkdir -p $savdir
 ##$ncp sfcf06          $savdir/sfcf06.${gdate}
 ##$ncp sigf06          $savdir/sigf06.${gdate}
 
-ss2gg=$gsipath/util/ss2gg.fd/ss2gg
+ss2gg=/global/save/wx20mi/bin/ss2gg
 $ss2gg siganl siganl.bin siganl.ctl 4 768 384
 $ss2gg sigf06 sigges.bin sigges.ctl 4 768 384
 
 exit
 
-##sfc2gg=$gsipath/util/sfc2gg.fd/sfc2gg
+##sfc2gg=/u/wx20mi/bin/sfc2gg
 ##$sfc2gg sfcanl.gsi sfcanl.bin sfcanl.ctl
 ##$sfc2gg sfcf06     sfcges.bin sfcges.ctl
 

@@ -123,8 +123,6 @@ exp=$exp1_global_sub_1node
 ##exp=gmao_gsi7.t62.subversion.1node
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$subversion
 ##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
@@ -142,9 +140,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -416,8 +411,6 @@ exp=$exp2_global_sub_2node
 ##exp=gmao_gsi7.t62.subversion.2node
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$subversion
 ##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
@@ -435,9 +428,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -708,11 +698,7 @@ exp=$exp1_global_bench_1node
 ##exp=q1fy10.t62.2node.orig_mpi_io
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
 ##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 
 # Set the JCAP resolution which you want.
@@ -729,9 +715,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1008,11 +991,7 @@ exp=$exp2_global_bench_2node
 ##exp=q1fy10.t62.2node.modified_mpi_io
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/versions/global_gsi.fd.old_mpio.May07_0819/global_gsi
-##gsiexec=/global/save/wx20rt/2jif/Q1FY10_DA/sorc/global_gsi.fd/global_gsi
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -1028,9 +1007,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)

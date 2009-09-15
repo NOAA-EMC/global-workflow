@@ -47,10 +47,7 @@ exp=bal14.8
 
 
 # Set path/file for gsi executable
-basedir=/global/noscrub
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=/global/save/wx****/gmao/gsi9/global_gsi
-# gsiexec=/$gsipath/sorc/q1fy10x/global_gsi
 
 
 
@@ -268,7 +265,7 @@ satinfo=/global/save/wx23jd/gmao/gsi9/satinfo
 satangl=$fixgsi/global_satangbias.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
-convinfo=/global/save/wx20rt/2jif/Q1FY10_DA/fix/global_convinfo.txt
+convinfo=$fixgsi/global_convinfo.txt
 errtable=/nwprod/fix/prepobs_errtable.global
 
 
@@ -367,13 +364,13 @@ $ncp satbias_out     $savdir/biascr.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
-ss2gg=$gsipath/util/ss2gg.fd/ss2gg
+ss2gg=/u/wx20mi/bin/ss2gg
 $ss2gg siganl siganl.bin siganl.ctl 4 768 384
 $ss2gg sigf06 sigges.bin sigges.ctl 4 768 384
 
 ##exit
 
-sfc2gg=$gsipath/util/sfc2gg.fd/sfc2gg
+sfc2gg=/u/wx20mi/bin/sfc2gg
 $sfc2gg sfcanl.gsi sfcanl.bin sfcanl.ctl
 $sfc2gg sfcf06     sfcges.bin sfcges.ctl
 

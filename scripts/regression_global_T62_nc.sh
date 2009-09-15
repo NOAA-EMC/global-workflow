@@ -87,8 +87,6 @@ exp=$exp1_global_sub_1node
 ##exp=gmao_gsi7.t62.subversion.1node
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$subversion
 ##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
@@ -106,9 +104,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -379,8 +374,6 @@ exp=$exp2_global_sub_2node
 ##exp=gmao_gsi7.t62.subversion.2node
 
 # Set path/file for gsi executable
-basedir=/global/save
-gsipath=$basedir/wx20rt/gsi_anl
 gsiexec=$subversion
 ##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
@@ -398,9 +391,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
 ##fixgsi=/nwprod/fix
-##fixcrtm=/global/save/wx20rt/2jif/Q1FY10_DA/fix/crtm_gfsgsi
-##fixjif09=/global/save/wx20rt/2jif/Q1FY09_DA/fix
-##fixjif10=/global/save/wx20rt/2jif/Q1FY10_DA/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
