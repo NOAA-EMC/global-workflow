@@ -1,81 +1,63 @@
 #!/bin/sh
 
+#@ error=$(job_name).$(step_name).e$(jobid)
+#@ job_type=parallel
+#@ class=dev
+#@ group=dev
+#@ account_no = RDAS-MTN
+
 #@ job_name=regression_test
 #@ step_name=gsi_nmm_binary_update
-#@ error=gsi_nmm_binary_update.e$(jobid)
-#@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ queue
 
 #@ step_name=gsi_nmm_binary_update2
-#@ error=gsi_nmm_binary_update2.e$(jobid)
-#@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ dependency=(gsi_nmm_binary_update==0)
 #@ queue
 
 #@ step_name=gsi_nmm_binary_benchmark
-#@ error=gsi_nmm_binary_benchmark.e$(jobid)
-#@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ dependency=(gsi_nmm_binary_update2==0)
 #@ queue
 
 #@ step_name=gsi_nmm_binary_benchmark2
-#@ error=gsi_nmm_binary_benchmark2.e$(jobid)
-#@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ dependency=(gsi_nmm_binary_benchmark==0)
 #@ queue
 
 #@ step_name=nmm_binary_regression
-#@ error=nmm_binary_regression.e$(jobid)
 #@ job_type=serial
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
-#@ class=dev
-#@ group=dev
 #@ wall_clock_limit = 00:10:00
-#@ account_no = GDAS-MTN
 #@ notification=error
 #@ dependency=(gsi_nmm_binary_benchmark2==0)
 #@ queue
@@ -1472,11 +1454,11 @@ mkdir -p $vfydir
 $ncp $output                        $vfydir/
 
 cd $scripts
-rm -f gsi_nmm_binary_update.e*
-rm -f gsi_nmm_binary_update2.e*
-rm -f gsi_nmm_binary_benchmark.e*
-rm -f gsi_nmm_binary_benchmark2.e*
-rm -f nmm_binary_regression.e*
+rm -f regression_test.gsi_nmm_binary_update.e*
+rm -f regression_test.gsi_nmm_binary_update2.e*
+rm -f regression_test.gsi_nmm_binary_benchmark.e*
+rm -f regression_test.gsi_nmm_binary_benchmark2.e*
+rm -f regression_test.nmm_binary_regression.e*
 
 exit ;;
 

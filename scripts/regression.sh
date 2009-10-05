@@ -1,37 +1,28 @@
 #!/bin/sh
 
-#@ job_name=regression_driver
-#@ step_name=driver
-#@ error=regression_driver.e$(jobid)
+#@ error=$(job_name).$(step_name).e$(jobid)
 #@ job_type=serial
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ class=dev
 #@ group=dev
-#@ wall_clock_limit = 01:05:00
 #@ account_no = GDAS-MTN
+
+#@ job_name=regression_driver
+#@ step_name=driver
+#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ wall_clock_limit = 01:15:00
 #@ notification=error
 #@ queue
 
 #@ step_name=table_creation
-#@ error=table_creation.e$(jobid)
-#@ job_type=serial
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
-#@ class=dev
-#@ group=dev
 #@ wall_clock_limit = 00:10:00
-#@ account_no = GDAS-MTN
 #@ notification=error
 #@ dependency = (driver == 0)
 #@ queue
 
 #@ step_name=debug_tests
-#@ error=debug_tests.e$(jobid)
-#@ job_type=serial
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
-#@ class=dev
-#@ group=dev
 #@ wall_clock_limit = 00:10:00
-#@ account_no = GDAS-MTN
 #@ notification=error
 #@ dependency = (table_creation == 0)
 #@ queue
@@ -58,7 +49,7 @@ if [[ $control == true ]]; then
        llsubmit regression_$configuration.sh
    done
 
-sleep 3600 ## sleep for an hour to allow for jobs to finish running before attempting to generate table
+sleep 4200 ## sleep for an hour and 10 minutes to allow for jobs to finish running before attempting to generate table
 
 elif [[ $control == false ]]; then
      list="global_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
@@ -66,11 +57,11 @@ elif [[ $control == false ]]; then
          llsubmit regression_$configuration.sh
      done
 
-sleep 1800 ## sleep for half an hour to allow for jobs to finish running before attmepting to generate table
+sleep 2100 ## sleep for 35 minutes to allow for jobs to finish running before attempting to generate table
 
 fi
 
-rm -f regression_driver.e*
+rm -f regression_driver.driver.e*
 
 exit ;;
 
@@ -208,7 +199,7 @@ mkdir -p $regression_vfydir
 $ncp $output                  $regression_vfydir/
 
 cd $scripts
-rm -f table_creation.e*
+rm -f regression_driver.table_creation.e*
 
 exit ;;
 
@@ -232,6 +223,8 @@ cd $scripts
 elif [[ $debug = "false" ]]; then
       echo 'No debug runs made'
 fi
+
+rm -f regression_driver.debug_tests.e*
 
 exit ;;
 
