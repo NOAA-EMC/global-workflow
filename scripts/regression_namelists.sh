@@ -116,13 +116,15 @@ export global_T62_namelist="
   &SUPEROB_RADAR
    $SUPERRAD
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
    $SINGLEOB
- /
- &LAG_DATA
  /"
 
 # Define namelist for RTMA runs
@@ -174,12 +176,14 @@ export RTMA_namelist="
  /
  &SUPEROB_RADAR
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
- /
- &LAG_DATA
  /"
 
 # Define namelist for arw binary run
@@ -289,12 +293,14 @@ export arw_binary_namelist="
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /
- &LAG_DATA
  /"
 
 # Define namelist for arw netcdf run
@@ -404,12 +410,14 @@ export arw_netcdf_namelist="
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /
- &LAG_DATA
  /"
 
 # Define namelist for nmm binary run
@@ -519,12 +527,14 @@ export nmm_binary_namelist="
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /
- &LAG_DATA
  /"
 
 # Define namelist for nmm netcdf run
@@ -634,12 +644,14 @@ export nmm_netcdf_namelist="
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
  /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /
- &LAG_DATA
  /"
 
 # Define namelist for nems nmmb run
@@ -755,6 +767,8 @@ export nems_nmmb_namelist="
    l2superob_only=.false.,
  /
  &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
