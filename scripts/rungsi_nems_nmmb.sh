@@ -220,6 +220,8 @@ cat << EOF > gsiparm.anl
  /
  &LAG_DATA
  /
+ &HYBRID_ENSEMBLE
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
