@@ -208,12 +208,12 @@ fi
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-pcpinfo=$fix_file/global_pcpinfo.txt
-ozinfo=$fix_file/global_ozinfo.txt
+satinfo=$fix_file/nam_regional_satinfo.txt
+satangl=$fix_file/nam_global_satangbias.txt
+pcpinfo=$fix_file/nam_global_pcpinfo.txt
+ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 
@@ -484,12 +484,12 @@ fi
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-pcpinfo=$fix_file/global_pcpinfo.txt
-ozinfo=$fix_file/global_ozinfo.txt
+satinfo=$fix_file/nam_regional_satinfo.txt
+satangl=$fix_file/nam_global_satangbias.txt
+pcpinfo=$fix_file/nam_global_pcpinfo.txt
+ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 
@@ -761,12 +761,12 @@ fi
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-pcpinfo=$fix_file/global_pcpinfo.txt
-ozinfo=$fix_file/global_ozinfo.txt
+satinfo=$fix_file/nam_regional_satinfo.txt
+satangl=$fix_file/nam_global_satangbias.txt
+pcpinfo=$fix_file/nam_global_pcpinfo.txt
+ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
@@ -1041,12 +1041,12 @@ fi
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-pcpinfo=$fix_file/global_pcpinfo.txt
-ozinfo=$fix_file/global_ozinfo.txt
+satinfo=$fix_file/nam_regional_satinfo.txt
+satangl=$fix_file/nam_global_satangbias.txt
+pcpinfo=$fix_file/nam_global_pcpinfo.txt
+ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
@@ -1403,35 +1403,6 @@ fi
 if cmp -s wrf_inout.${exp1} wrf_inout.${exp2} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
-
-} >> $output
-
-# Next, reproducibility between a 1 node and 2 node experiment
-
-{
-
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
-   echo
-else
-   echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
-   echo
-fi
-
-} >> $output
-
-# Next, check reproducibility of results between a 1 node branch and 2 node trunk experiment
-
-{
-
-if cmp -s wrf_inout.${exp1} wrf_inout.${exp3} 
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
 fi

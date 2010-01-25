@@ -155,12 +155,12 @@ fi
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
-satangl=$fix_file/global_satangbias.txt
-pcpinfo=$fix_file/global_pcpinfo.txt
-ozinfo=$fix_file/global_ozinfo.txt
+satinfo=$fix_file/nam_regional_satinfo.txt
+satangl=$fix_file/nam_global_satangbias.txt
+pcpinfo=$fix_file/nam_global_pcpinfo.txt
+ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 
