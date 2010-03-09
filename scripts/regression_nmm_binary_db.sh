@@ -14,6 +14,7 @@
 #@ account_no = RDAS-MTN
 #@ wall_clock_limit = 3:00:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 . regression_var.sh

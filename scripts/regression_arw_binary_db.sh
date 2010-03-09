@@ -14,6 +14,7 @@
 #@ account_no = RDAS-T2O
 #@ wall_clock_limit = 1:00:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 . regression_var.sh

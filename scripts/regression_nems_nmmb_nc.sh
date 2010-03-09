@@ -19,6 +19,7 @@
 #@ node_resources = ConsumableMemory(110GB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 #@ step_name=gsi_nems_nmmb_update2
@@ -30,6 +31,7 @@
 #@ node_resources=ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_nems_nmmb_update==0)
 #@ queue
 
@@ -38,6 +40,7 @@
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_nems_nmmb_update2==0)
 #@ queue
 

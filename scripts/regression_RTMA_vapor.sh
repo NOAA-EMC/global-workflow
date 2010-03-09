@@ -21,6 +21,7 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 #@ step_name=gsi_rtma_update2
@@ -35,6 +36,7 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
+#@ restart=no
 #@ dependency = (gsi_rtma_update==0)
 #@ queue
 
@@ -50,6 +52,7 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
+#@ restart=no
 #@ dependency = (gsi_rtma_update2==0)
 #@ queue
 
@@ -65,6 +68,7 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
+#@ restart=no
 #@ dependency = (gsi_rtma_benchmark==0)
 #@ queue
 
@@ -76,6 +80,7 @@
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_rtma_benchmark2==0)
 #@ queue
 

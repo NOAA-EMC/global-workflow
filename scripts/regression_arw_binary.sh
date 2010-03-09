@@ -16,6 +16,7 @@
 #@ node_resources=ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 #@ step_name=gsi_arw_binary_update2
@@ -27,6 +28,7 @@
 #@ node_resources=ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_arw_binary_update==0)
 #@ queue
 
@@ -39,6 +41,7 @@
 #@ node_resources=ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_arw_binary_update2==0)
 #@ queue
 
@@ -51,6 +54,7 @@
 #@ node_resources=ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_arw_binary_benchmark==0)
 #@ queue
 
@@ -59,6 +63,7 @@
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_arw_binary_benchmark2==0)
 #@ queue
 

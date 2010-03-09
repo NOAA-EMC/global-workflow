@@ -14,6 +14,7 @@
 #@ account_no = GDAS-T2O
 #@ wall_clock_limit = 3:00:00
 #@ startdate = 09/27/06 05:00
+#@ restart=no
 #@ notification=error
 #@ queue
 

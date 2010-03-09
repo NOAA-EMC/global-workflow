@@ -11,12 +11,14 @@
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 01:15:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 #@ step_name=table_creation
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency = (driver == 0)
 #@ queue
 
@@ -24,6 +26,7 @@
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency = (table_creation == 0)
 #@ queue
 

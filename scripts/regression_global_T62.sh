@@ -17,6 +17,7 @@
 #@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
+#@ restart=no
 #@ queue
 
 #@ step_name=gsi_global_update2
@@ -29,6 +30,7 @@
 #@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_global_update==0)
 #@ queue
 
@@ -42,6 +44,7 @@
 #@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_global_update2==0)
 #@ queue
 
@@ -55,6 +58,7 @@
 #@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_global_benchmark==0)
 #@ queue
 
@@ -63,6 +67,7 @@
 #@ resources = consumablecpus(1) consumablememory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
+#@ restart=no
 #@ dependency=(gsi_global_benchmark2==0)
 #@ queue
 
