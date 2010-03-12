@@ -4,7 +4,7 @@
 #@ error=global_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 2
+#@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
@@ -168,11 +168,11 @@ berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
+satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -215,36 +215,42 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+$ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
+$ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
+$ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
+$ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
+$ncp $datobs/${prefix_obs}.goesfv.${suffix}        ./gsnd1bufr
+$ncp $datobs/${prefix_obs}.1bamua.${suffix}        ./amsuabufr
+$ncp $datobs/${prefix_obs}.1bamub.${suffix}        ./amsubbufr
+$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}        ./hirs2bufr
+$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}        ./hirs3bufr
+$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
+$ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
+$ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
+$ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
+$ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
+$ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
+$ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
+$ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
+$ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
+$ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
+$ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
+$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-$ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+$ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
+$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
+$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout

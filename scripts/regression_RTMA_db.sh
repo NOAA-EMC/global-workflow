@@ -1,13 +1,12 @@
 #!/bin/sh
 
-#@ job_name=regression_test
-#@ step_name=gsi_rtma_update
-#@ error=gsi_rtma_update.e$(jobid)
+#@ job_name=regression_debug_test
+#@ error=RTMA_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=10
+#@ tasks_per_node=32
 #@ node_resources = ConsumableMemory(110 GB)
 #@ parallel_threads = 1
 #@ task_affinity = core(1)
@@ -195,65 +194,12 @@ $ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
-if [[ "$rc" != "0" ]]; then
+if [[ "$rc" = "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_rtma_sub_1node' has failed to run to completion, with an error code of '$rc''
+    echo
+    echo 'RTMA debug test has passed'
    } >> $rtma_regression
-   $step_name==$rc
-   exit
 fi
-
-# Save output
-mkdir -p $savdir
-chgrp rstprod $savdir
-chmod 750 $savdir
-
-cat stdout fort.2* > $savdir/stdout.anl.${adate}
-$ncp wrf_inout       $savdir/wrfanl.${adate}
-$ncp siganl          $savdir/siganl.${adate}
-$ncp sigf03          $savdir/sigf03.${adate}
-$ncp bckg_dxdy.dat   $savdir/bckg_dxdy.${adate}.dat
-$ncp bckg_qsat.dat   $savdir/bckg_qsat.${adate}.dat
-$ncp bckg_psfc.dat   $savdir/bckg_psfc.${adate}.dat
-$ncp bckgvar.dat_psi $savdir/bckgvar_psi.${adate}.dat
-$ncp bckgvar.dat_chi $savdir/bckgvar_chi.${adate}.dat
-$ncp bckgvar.dat_ps  $savdir/bckgvar_ps.${adate}.dat
-$ncp bckgvar.dat_t   $savdir/bckgvar_t0.${adate}.dat
-$ncp bckgvar.dat_pseudorh $savdir/bckgvar_pseudorh.${adate}.dat
-
-
-# Loop over first and last outer loops to generate innovation
-# diagnostic files for indicated observation types (groups)
-#
-# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
-#        loop 03 will contain innovations with respect to
-#        the analysis.  Creation of o-a innovation files
-#        is triggered by write_diag(3)=.true.  The setting
-#        write_diag(1)=.true. turns on creation of o-g
-#        innovation files.
-#
-
-cd $tmpdir
-loops="01 03"
-for loop in $loops; do
-
-case $loop in
-  01) string=ges;;
-  03) string=anl;;
-   *) string=$loop;;
-esac
-
-# Collect diagnostic files for obs types (groups) below
-   listall="conv"
-   for type in $listall; do
-      count=`ls dir.*/${type}_${loop}* | wc -l`
-      if [[ $count -gt 0 ]]; then
-         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
-         compress diag_${type}_${string}.${adate}
-         $ncp diag_${type}_${string}.${adate}.Z $savdir/
-      fi
-   done
-done
 
 exit

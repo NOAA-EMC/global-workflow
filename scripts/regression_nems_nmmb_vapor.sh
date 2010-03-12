@@ -86,8 +86,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -108,7 +108,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-#adate=$adate_regional
+adate=$adate_regional_nems_nmmb
 
 # Set experiment name
 exp=$exp1_nems_nmmb_sub_2node
@@ -304,8 +304,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -326,7 +326,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-#adate=$adate_regional
+adate=$adate_regional_nems_nmmb
 
 # Set experiment name
 exp=$exp2_nems_nmmb_sub_3node
@@ -522,8 +522,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -544,7 +544,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-#adate=$adate_regional
+adate=$adate_regional_nems_nmmb
 
 # Set experiment name
 exp=$exp1_nems_nmmb_bench_2node
@@ -746,8 +746,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -768,7 +768,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-#adate=$adate_regional
+adate=$adate_regional_nems_nmmb
 
 # Set experiment name
 exp=$exp2_nems_nmmb_bench_3node

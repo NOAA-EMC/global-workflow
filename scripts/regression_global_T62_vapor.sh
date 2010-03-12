@@ -229,11 +229,11 @@ berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
+satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -276,36 +276,42 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+$ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
+$ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
+$ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
+$ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
+$ncp $datobs/${prefix_obs}.goesfv.${suffix}        ./gsnd1bufr
+$ncp $datobs/${prefix_obs}.1bamua.${suffix}        ./amsuabufr
+$ncp $datobs/${prefix_obs}.1bamub.${suffix}        ./amsubbufr
+$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}        ./hirs2bufr
+$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}        ./hirs3bufr
+$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
+$ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
+$ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
+$ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
+$ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
+$ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
+$ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
+$ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
+$ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
+$ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
+$ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
+$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-$ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+$ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
+$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
+$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -352,7 +358,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19"
    for type in $listall; do
       count=`ls ${tmpdir}/dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -516,11 +522,11 @@ berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
+satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -563,36 +569,42 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+$ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
+$ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
+$ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
+$ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
+$ncp $datobs/${prefix_obs}.goesfv.${suffix}        ./gsnd1bufr
+$ncp $datobs/${prefix_obs}.1bamua.${suffix}        ./amsuabufr
+$ncp $datobs/${prefix_obs}.1bamub.${suffix}        ./amsubbufr
+$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}        ./hirs2bufr
+$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}        ./hirs3bufr
+$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
+$ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
+$ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
+$ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
+$ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
+$ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
+$ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
+$ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
+$ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
+$ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
+$ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
+$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-$ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+$ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
+$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
+$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -639,7 +651,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19"
    for type in $listall; do
       count=`ls ${tmpdir}/dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -803,11 +815,11 @@ berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
+satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -850,36 +862,42 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+$ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
+$ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
+$ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
+$ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
+$ncp $datobs/${prefix_obs}.goesfv.${suffix}        ./gsnd1bufr
+$ncp $datobs/${prefix_obs}.1bamua.${suffix}        ./amsuabufr
+$ncp $datobs/${prefix_obs}.1bamub.${suffix}        ./amsubbufr
+$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}        ./hirs2bufr
+$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}        ./hirs3bufr
+$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
+$ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
+$ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
+$ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
+$ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
+$ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
+$ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
+$ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
+$ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
+$ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
+$ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
+$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-$ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+$ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
+$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
+$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -932,7 +950,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19"
    for type in $listall; do
       count=`ls ${tmpdir}/dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
@@ -1095,11 +1113,11 @@ berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/global_satinfo.txt
+satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo.txt
+convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -1142,36 +1160,42 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+$ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
+$ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
+$ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
+$ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
+$ncp $datobs/${prefix_obs}.goesfv.${suffix}        ./gsnd1bufr
+$ncp $datobs/${prefix_obs}.1bamua.${suffix}        ./amsuabufr
+$ncp $datobs/${prefix_obs}.1bamub.${suffix}        ./amsubbufr
+$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}        ./hirs2bufr
+$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}        ./hirs3bufr
+$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
+$ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
+$ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
+$ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
+$ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
+$ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
+$ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
+$ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
+$ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
+$ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
+$ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
+$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-$ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+$ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
+$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
+$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -1224,7 +1248,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19"
    for type in $listall; do
       count=`ls ${tmpdir}/dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then

@@ -103,7 +103,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -263,6 +263,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -278,11 +279,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -377,7 +378,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -537,6 +538,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -552,11 +554,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -653,7 +655,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -812,6 +814,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -827,11 +830,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -934,7 +937,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -1092,6 +1095,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -1107,11 +1111,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi

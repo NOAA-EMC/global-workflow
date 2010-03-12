@@ -83,8 +83,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -105,7 +105,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -218,7 +218,7 @@ satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/nam_regional_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 
@@ -265,6 +265,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -280,11 +281,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -359,8 +360,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -381,7 +382,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -494,7 +495,7 @@ satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/nam_regional_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 
@@ -541,6 +542,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -556,11 +558,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -635,8 +637,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -657,7 +659,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -771,7 +773,7 @@ satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/nam_regional_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
@@ -816,6 +818,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -831,11 +834,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
@@ -916,8 +919,8 @@ export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
 ##export BIND_TASKS=yes
 export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+##export MP_BULK_MIN_MSG_SIZE=10k
+##export MP_USE_BULK_XFER=yes
 
 # Set environment variables for threads
 export AIXTHREAD_GUARDPAGES=4
@@ -938,7 +941,7 @@ export MP_LABELIO=yes
 ##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -1051,7 +1054,7 @@ satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/nam_regional_convinfo.txt
+convinfo=$fix_file/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
@@ -1096,6 +1099,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -1111,11 +1115,11 @@ $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm12        ./satbias_angle
 ##$ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixa}.wrfrst_d01.tm12    ./wrf_inout
+   $ncp $datges/${prefixo}.wrfinput_d01.init    ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi

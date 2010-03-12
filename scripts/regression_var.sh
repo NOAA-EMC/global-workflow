@@ -4,13 +4,13 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export fix_file="/global/save/$USER/mlueken/fix"
+export scripts="/global/save/$USER/mlueken/scripts"
+export src="/global/save/$USER/mlueken/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/svn1/src/global_gsi"
+export subversion="/global/save/$USER/mlueken/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -62,8 +62,10 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2008082212"
+export adate_global="2010020112"
 export adate_regional="2007122000"
+export adate_regional_nmm_binary="2010021600"
+export adate_regional_nems_nmmb="2009031600"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
@@ -74,9 +76,9 @@ machine="cirrus"
 # Define obs directory
 
 if [[ $machine = "stratus" ]]; then
-   export datobs_global="/global/noscrub/wx23jd/gsi_anl/cases/global/sigmap"
+   export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
    export datobs_rtma="/global/noscrub/wx23jd/gsi_anl/cases/regional/rtma_binary"
-   export datobs_nmm_binary="/global/noscrub/wx23jd/gsi_anl/cases/regional/ndas_binary"
+   export datobs_nmm_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
    export datobs_nems_nmmb="/global/noscrub/wx20ml/nmmb_regression_case"
    export datobs_nmm_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/ndas_binary"
    export datges_nmm_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/nmm_netcdf"
@@ -85,9 +87,9 @@ if [[ $machine = "stratus" ]]; then
    export datobs_arw_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/ndas_binary"
    export datges_arw_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/arw_netcdf"
 elif [[ $machine = "cirrus" ]]; then
-     export datobs_global="/global/noscrub/wx20rt/gsi_anl/cases/global/sigmap"
+     export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/global/noscrub/wx20rt/gsi_anl/cases/regional/rtma_binary"
-     export datobs_nmm_binary="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
+     export datobs_nmm_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
      export datobs_nems_nmmb="/meso/noscrub/wx23dp/nmmb_regression_case"
      export datobs_nmm_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_nmm_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/nmm_netcdf"
@@ -96,9 +98,9 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
-     export datobs_global="/jcsda/noscrub/wx20rt/gsi_anl/cases/global/sigmap"
+     export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/rtma_binary"
-     export datobs_nmm_binary="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
+     export datobs_nmm_binary="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
      export datobs_nems_nmmb="/jcsda/noscrub/wx20ml/nmmb_regression_case"
      export datobs_nmm_netcdf="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_nmm_netcdf="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/nmm_netcdf"
