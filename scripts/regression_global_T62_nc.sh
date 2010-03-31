@@ -193,9 +193,9 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
@@ -235,8 +235,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -486,9 +486,9 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
@@ -528,8 +528,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `

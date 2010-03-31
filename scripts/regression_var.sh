@@ -4,13 +4,14 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/mlueken/fix"
-export scripts="/global/save/$USER/mlueken/scripts"
-export src="/global/save/$USER/mlueken/src"
+export fix_file="/global/save/$USER/svn1/fix"
+export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
+export scripts="/global/save/$USER/svn1/scripts"
+export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/mlueken/src/global_gsi"
+export subversion="/global/save/$USER/svn1/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -98,6 +99,8 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
+# Update location of coefficient files for vapor, then give obs locations
+     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
      export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/rtma_binary"
      export datobs_nmm_binary="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"

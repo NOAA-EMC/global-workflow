@@ -213,9 +213,9 @@ elif [[ "$io_format" = "netcdf" ]]; then
      berror=$fix_file/nam_glb_berror.f77
 ##     berror=$fixgsi/nam_regional_glb_berror.f77
 fi
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
@@ -257,8 +257,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -490,9 +490,9 @@ elif [[ "$io_format" = "netcdf" ]]; then
      berror=$fix_file/nam_glb_berror.f77
 ##     berror=$fixupd/nam_regional_glb_berror.f77
 fi
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
@@ -534,8 +534,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -767,9 +767,9 @@ elif [[ "$io_format" = "netcdf" ]]; then
      berror=$fix_file/nam_glb_berror.f77
 ##     berror=$fixgsi/nam_regional_glb_berror.f77
 fi
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
@@ -811,8 +811,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
@@ -1050,9 +1050,9 @@ elif [[ "$io_format" = "netcdf" ]]; then
      berror=$fix_file/nam_glb_berror.f77
 ##     berror=$fixgsi/nam_regional_glb_berror.f77
 fi
-emiscoef=$fix_file/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fix_file/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fix_file/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
@@ -1094,8 +1094,8 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $fix_file/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fix_file/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi
    isatsen=` expr $isatsen + 1 `
