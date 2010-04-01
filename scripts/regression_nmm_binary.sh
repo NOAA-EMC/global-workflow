@@ -483,7 +483,7 @@ if [[ "$io_format" = "binary" ]]; then
 elif [[ "$io_format" = "netcdf" ]]; then
    berror=$fix_file/nam_glb_berror.f77
 fi
-emiscoef=$crtm_coefi/EmisCoeff/Big_Endian/EmisCoeff.bin
+emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
