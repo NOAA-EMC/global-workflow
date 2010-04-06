@@ -476,7 +476,7 @@ while [[ $isatsen -le $nsatsen ]]; do
       satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
       spccoeff=${satsen}.SpcCoeff.bin
       if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff ./
+         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
          $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
       fi
    fi

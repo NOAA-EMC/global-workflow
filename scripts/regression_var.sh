@@ -4,14 +4,14 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/RR_cloud_analysis/fix"
+export fix_file="/global/save/$USER/svn1/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/RR_cloud_analysis/scripts"
-export src="/global/save/$USER/RR_cloud_analysis/src"
+export scripts="/global/save/$USER/svn1/scripts"
+export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/RR_cloud_analysis/src/global_gsi"
+export subversion="/global/save/$USER/mlueken/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
