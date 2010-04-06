@@ -4,14 +4,14 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
+export fix_file="/global/save/$USER/RR_cloud_analysis/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export scripts="/global/save/$USER/RR_cloud_analysis/scripts"
+export src="/global/save/$USER/RR_cloud_analysis/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/svn1/src/global_gsi"
+export subversion="/global/save/$USER/RR_cloud_analysis/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -67,6 +67,7 @@ export adate_global="2010020112"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
+export adate_regional_arw_netcdf="2008051112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
@@ -96,8 +97,7 @@ elif [[ $machine = "cirrus" ]]; then
      export datges_nmm_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/nmm_netcdf"
      export datobs_arw_binary="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_arw_binary="/global/noscrub/wx20rt/gsi_anl/cases/regional/arw_binary"
-     export datobs_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
-     export datges_arw_netcdf="/global/noscrub/wx20rt/gsi_anl/cases/regional/arw_netcdf"
+     export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
      export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"

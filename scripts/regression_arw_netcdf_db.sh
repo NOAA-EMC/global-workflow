@@ -113,8 +113,8 @@ prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
 suffix=tm12.bufr_d
 
-datobs=$datobs_arw_netcdf/$adate
-datges=$datges_arw_netcdf/$adate
+datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -207,7 +207,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/gdas1.t12z.prepbufr.nr     ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -228,9 +228,9 @@ fi
 $ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
 $ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
+   $ncp $datges/wrfinput_d01_arw_binary        ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
+   $ncp $datges/wrfout_d01_2008-05-11_12:00:00 ./wrf_inout
 fi
 cp wrf_inout wrf_ges
 

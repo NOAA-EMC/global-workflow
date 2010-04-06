@@ -121,6 +121,10 @@ export global_T62_namelist="
  /
  &HYBRID_ENSEMBLE
  /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${adate},
@@ -180,6 +184,10 @@ export RTMA_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -295,6 +303,10 @@ export arw_binary_namelist="
  /
  &HYBRID_ENSEMBLE
  /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
@@ -408,6 +420,10 @@ export arw_netcdf_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -523,6 +539,10 @@ export nmm_binary_namelist="
  /
  &HYBRID_ENSEMBLE
  /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
@@ -636,6 +656,10 @@ export nmm_netcdf_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -755,6 +779,10 @@ export nems_nmmb_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
