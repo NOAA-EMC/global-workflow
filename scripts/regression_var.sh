@@ -86,8 +86,7 @@ if [[ $machine = "stratus" ]]; then
    export datges_nmm_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/nmm_netcdf"
    export datobs_arw_binary="/global/noscrub/wx23jd/gsi_anl/cases/regional/ndas_binary"
    export datges_arw_binary="/global/noscrub/wx23jd/gsi_anl/cases/regional/arw_binary"
-   export datobs_arw_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/ndas_binary"
-   export datges_arw_netcdf="/global/noscrub/wx23jd/gsi_anl/cases/regional/arw_netcdf"
+   export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "cirrus" ]]; then
      export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/global/noscrub/wx20rt/gsi_anl/cases/regional/rtma_binary"
@@ -109,8 +108,7 @@ elif [[ $machine = "vapor" ]]; then
      export datges_nmm_netcdf="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/nmm_netcdf"
      export datobs_arw_binary="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
      export datges_arw_binary="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/arw_binary"
-     export datobs_arw_netcdf="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/ndas_binary"
-     export datges_arw_netcdf="/jcsda/noscrub/wx20rt/gsi_anl/cases/regional/arw_netcdf"
+     export datobs_arw_netcdf="/jcsda/noscrub/wx20ml/cases/regional/arw_netcdf"
 fi
 
 # Regression output filename

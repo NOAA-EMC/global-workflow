@@ -162,13 +162,13 @@ ncp=/bin/cp
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
 sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
+odate=`$ndate +18 $adate`
 hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
 datges=$datobs
@@ -264,7 +264,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/gdas1.t12z.prepbufr.nr     ./prepbufr
+$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -282,8 +282,8 @@ fi
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm06        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
    $ncp $datges/wrfinput_d01_arw_binary        ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -439,13 +439,13 @@ ncp=/bin/cp
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
 sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
+odate=`$ndate +18 $adate`
 hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
 datges=$datobs
@@ -541,7 +541,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/gdas1.t12z.prepbufr.nr     ./prepbufr
+$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -559,8 +559,8 @@ fi
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm06        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
    $ncp $datges/wrfinput_d01_arw_binary        ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -717,13 +717,13 @@ ncp=/bin/cp
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
 sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
+odate=`$ndate +18 $adate`
 hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
 datges=$datobs
@@ -819,7 +819,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/gdas1.t12z.prepbufr.nr     ./prepbufr
+$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -837,8 +837,8 @@ fi
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm06        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
    $ncp $datges/wrfinput_d01_arw_binary        ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -1000,13 +1000,13 @@ ncp=/bin/cp
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
 sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
+odate=`$ndate +18 $adate`
 hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
 ##suffix=tm00.bufr_d
-suffix=tm12.bufr_d
+suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
 datges=$datobs
@@ -1102,7 +1102,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/gdas1.t12z.prepbufr.nr     ./prepbufr
+$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -1120,8 +1120,8 @@ fi
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixo}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm06        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
    $ncp $datges/wrfinput_d01_arw_binary        ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
