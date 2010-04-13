@@ -201,12 +201,15 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+anavinfo=$fix_file/anavinfo_arw_binary
 if [[ "$io_format" = "binary" ]]; then
 ##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fix_file/nam_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
+##   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fixgsi/nam_regional_glb_berror.f77
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -228,6 +231,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -478,12 +482,15 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+anavinfo=$fix_file/anavinfo_arw_binary
 if [[ "$io_format" = "binary" ]]; then
 ##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fix_file/nam_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
+##   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fixgsi/nam_regional_glb_berror.f77
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -505,6 +512,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -756,12 +764,15 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+anavinfo=$fix_file/anavinfo_arw_binary
 if [[ "$io_format" = "binary" ]]; then
 ##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fix_file/nam_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
+##   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fixgsi/nam_regional_glb_berror.f77
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -783,6 +794,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -1039,12 +1051,15 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+anavinfo=$fix_file/anavinfo_arw_binary
 if [[ "$io_format" = "binary" ]]; then
 ##   berror=$fixgsi/nam_nmmstat_na
-   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fix_file/nam_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+     berror=$fix_file/nam_glb_berror.f77.gcv
+##   berror=$fix_file/nam_glb_berror.f77
+##   berror=$fixgsi/nam_regional_glb_berror.f77
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -1066,6 +1081,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin

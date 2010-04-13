@@ -160,7 +160,7 @@ export RTMA_namelist="
  &ANBKGERR
    anisotropic=.true.,an_vs=0.5,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=2.,nord_f2a=4,
+   ifilt_ord=2,npass=3,normal=0,grid_ratio=2.,nord_f2a=4,
  /
  &JCOPTS
  /

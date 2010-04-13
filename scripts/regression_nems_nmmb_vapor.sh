@@ -167,7 +167,9 @@ $nems_nmmb_namelist
 
 EOF
 
-berror=$fix_file/nam_glb_berror.f77
+anavinfo=$fix_file/anavinfo_nems_nmmb
+#berror=$fix_file/nam_glb_berror.f77
+berror=$fix_file/nam_glb_berror.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -182,6 +184,7 @@ mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -385,7 +388,9 @@ $nems_nmmb_namelist
 
 EOF
 
-berror=$fix_file/nam_glb_berror.f77
+anavinfo=$fix_file/anavinfo_nems_nmmb
+#berror=$fix_file/nam_glb_berror.f77
+berror=$fix_file/nam_glb_berror.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -400,6 +405,7 @@ mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -603,7 +609,9 @@ $nems_nmmb_namelist
 
 EOF
 
-berror=$fix_file/nam_glb_berror.f77
+anavinfo=$fix_file/anavinfo_nems_nmmb
+#berror=$fix_file/nam_glb_berror.f77
+berror=$fix_file/nam_glb_berror.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -618,6 +626,7 @@ mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -827,7 +836,9 @@ $nems_nmmb_namelist
 
 EOF
 
-berror=$fix_file/nam_glb_berror.f77
+anavinfo=$fix_file/anavinfo_nems_nmmb
+#berror=$fix_file/nam_glb_berror.f77
+berror=$fix_file/nam_glb_berror.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -842,6 +853,7 @@ mesonetuselist=$fix_file/nam_mesonet_uselist.txt
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin

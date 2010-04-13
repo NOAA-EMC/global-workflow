@@ -225,7 +225,9 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+anavinfo=$fix_file/anavinfo_62_sigmap
+#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -245,6 +247,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -518,7 +521,9 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+anavinfo=$fix_file/anavinfo_62_sigmap
+#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -538,6 +543,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -811,7 +817,9 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+anavinfo=$fix_file/anavinfo_62_sigmap
+#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -831,6 +839,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
@@ -1109,7 +1118,9 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+anavinfo=$fix_file/anavinfo_62_sigmap
+#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1129,6 +1140,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin

@@ -177,7 +177,9 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/new_rtma_regional_nmm_berror.f77
+anavinfo=$fix_file/anavinfo_rtma
+#berror=$fix_file/new_rtma_regional_nmm_berror.f77
+berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
@@ -207,6 +209,7 @@ flt_t=$fix_file/new_rtma_fltnorm.dat_t
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
@@ -414,7 +417,9 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/new_rtma_regional_nmm_berror.f77
+anavinfo=$fix_file/anavinfo_rtma
+#berror=$fix_file/new_rtma_regional_nmm_berror.f77
+berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
@@ -444,6 +449,7 @@ flt_t=$fix_file/new_rtma_fltnorm.dat_t
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
@@ -650,7 +656,9 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/new_rtma_regional_nmm_berror.f77
+anavinfo=$fix_file/anavinfo_rtma
+#berror=$fix_file/new_rtma_regional_nmm_berror.f77
+berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
@@ -680,6 +688,7 @@ flt_t=$fix_file/new_rtma_fltnorm.dat_t
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
@@ -892,7 +901,9 @@ EOF
 #   slmask   =
 #   flt*     =
 
-berror=$fix_file/new_rtma_regional_nmm_berror.f77
+anavinfo=$fix_file/anavinfo_rtma
+#berror=$fix_file/new_rtma_regional_nmm_berror.f77
+berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
@@ -922,6 +933,7 @@ flt_t=$fix_file/new_rtma_fltnorm.dat_t
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
