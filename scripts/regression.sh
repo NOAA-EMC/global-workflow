@@ -41,13 +41,14 @@ if [[ $control == true ]]; then
 
    rm -rf $noscrub/tmpreg_${rtma}
    rm -rf $noscrub/tmp${global}
+   rm -rf $noscrub/tmp${global_lanczos}
    rm -rf $noscrub/tmpreg_${arw_binary}
    rm -rf $noscrub/tmpreg_${arw_netcdf}
    rm -rf $noscrub/tmpreg_${nmm_binary}
    rm -rf $noscrub/tmpreg_${nmm_netcdf}
    rm -rf $noscrub/tmpreg_${nems_nmmb}
 
-   list="global_T62 RTMA nmm_binary nmm_netcdf arw_binary arw_netcdf nems_nmmb"
+   list="global_T62 global_lanczos_T62 RTMA nmm_binary nmm_netcdf arw_binary arw_netcdf nems_nmmb"
    for configuration in $list; do
        llsubmit regression_$configuration.sh
    done
@@ -55,7 +56,7 @@ if [[ $control == true ]]; then
 sleep 4200 ## sleep for an hour and 10 minutes to allow for jobs to finish running before attempting to generate table
 
 elif [[ $control == false ]]; then
-     list="global_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
+     list="global_T62_nc global_lanczos_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
      for configuration in $list; do
          llsubmit regression_$configuration.sh
      done
@@ -94,9 +95,10 @@ tmpdir_arw_netcdf=$ptmp_loc/$compare/tmpreg_${arw_netcdf}/${exp1_arw_netcdf_sub_
 tmpdir_arw_binary=$ptmp_loc/$compare/tmpreg_${arw_binary}/${exp1_arw_binary_sub_1node}_vs_${exp1_arw_binary_bench_1node}
 tmpdir_nems_nmmb=$ptmp_loc/$compare/tmpreg_${nems_nmmb}/${exp1_nems_nmmb_sub_2node}_vs_${exp1_nems_nmmb_bench_2node}
 tmpdir_global=$ptmp_loc/$compare/tmp${global}/${exp1_global_sub_1node}_vs_${exp1_global_bench_1node}
+tmpdir_global_lanczos=$ptmp_loc/$compare/tmp${global_lanczos}/${exp1_global_lanczos_sub_1node}_vs_${exp1_global_lanczos_bench_1node}
 
 # Copy grepped out files
-list="$tmpdir_RTMA $tmpdir_nmm_binary $tmpdir_nmm_netcdf $tmpdir_arw_netcdf $tmpdir_arw_binary $tmpdir_nems_nmmb $tmpdir_global"
+list="$tmpdir_RTMA $tmpdir_nmm_binary $tmpdir_nmm_netcdf $tmpdir_arw_netcdf $tmpdir_arw_binary $tmpdir_nems_nmmb $tmpdir_global $tmpdir_global_lanczos"
 for dir in $list; do
    $ncp $dir/runtime* ./
    $ncp $dir/memory* ./
@@ -113,6 +115,17 @@ glob_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_global_sub_1node.txt)
 glob_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_global_sub_2node.txt)
 glob_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_global_bench_1node.txt)
 glob_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_global_bench_2node.txt)
+
+# Now, global GSI lanczos results
+glob_lanczos_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_sub_1node.txt)
+glob_lanczos_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_sub_2node.txt)
+glob_lanczos_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_bench_1node.txt)
+glob_lanczos_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_bench_2node.txt)
+
+glob_lanczos_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_sub_1node.txt)
+glob_lanczos_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_sub_2node.txt)
+glob_lanczos_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_bench_1node.txt)
+glob_lanczos_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_bench_2node.txt)
 
 # Now, RTMA
 rtma_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_sub_1node.txt)
@@ -188,6 +201,7 @@ echo "Experimental Case      low task time(s)     high task time(s)   low task t
 echo "                                    subversion                                benchmark                            subversion                       benchmark           "
 echo
 echo "T"$global"             "$glob_sub_1_time"           "$glob_sub_2_time"          "$glob_bench_1_time"           "$glob_bench_2_time"          "$glob_sub_1_mem"            "$glob_sub_2_mem"         "$glob_bench_1_mem"           "$glob_bench_2_mem""
+echo "T"$global_lanczos"     "$glob_lanczos_sub_1_time"           "$glob_lanczos_sub_2_time"          "$glob_lanczos_bench_1_time"           "$glob_lanczos_bench_2_time"          "$glob_lanczos_sub_1_mem"            "$glob_lanczos_sub_2_mem"         "$glob_lanczos_bench_1_mem"           "$glob_lanczos_bench_2_mem""
 echo ""$rtma"                   "$rtma_sub_1_time"           "$rtma_sub_2_time"          "$rtma_bench_1_time"           "$rtma_bench_2_time"          "$rtma_sub_1_mem"            "$rtma_sub_2_mem"         "$rtma_bench_1_mem"           "$rtma_bench_2_mem""
 echo ""$nmm_binary"            "$nmm_binary_sub_1_time"           "$nmm_binary_sub_2_time"          "$nmm_binary_bench_1_time"           "$nmm_binary_bench_2_time"          "$nmm_binary_sub_1_mem"            "$nmm_binary_sub_2_mem"         "$nmm_binary_bench_1_mem"           "$nmm_binary_bench_2_mem""
 echo ""$nems_nmmb"              "$nems_nmmb_sub_1_time"           "$nems_nmmb_sub_2_time"          "$nems_nmmb_bench_1_time"           "$nems_nmmb_bench_2_time"          "$nems_nmmb_sub_1_mem"            "$nems_nmmb_sub_2_mem"         "$nems_nmmb_bench_1_mem"           "$nems_nmmb_bench_2_mem""
@@ -218,7 +232,7 @@ make debug
 # Now, return back to script directory to submit scripts for debug mode testing
 cd $scripts
 
-   list="global_T62_db RTMA_db nmm_binary_db nmm_netcdf_db arw_binary_db arw_netcdf_db nems_nmmb_db"
+   list="global_T62_db global_lanczos_T62_db RTMA_db nmm_binary_db nmm_netcdf_db arw_binary_db arw_netcdf_db nems_nmmb_db"
    for configuration in $list; do
        llsubmit regression_$configuration.sh
    done
