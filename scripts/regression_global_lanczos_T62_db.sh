@@ -126,7 +126,29 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
-SETUP=""
+
+# CO2 namelist and file decisions
+ICO2=${ICO2:-2}
+[ -n "$(echo $LOADL_STEP_NAME|grep update)" ] && ICO2=2
+SETUP=" igfsco2=$ICO2, "
+if [ $ICO2 -gt 0 ] ; then
+        # Copy co2 files to $tmpdir
+        co2dir=${CO2DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./global_co2_data.txt
+        while [ $yyyy -ge 1957 ] ;do
+                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                if [ -s $co2 ] ; then
+                        $ncp $co2 ./global_co2_data.txt
+                break
+                fi
+                ((yyyy-=1))
+        done
+        if [ ! -s ./global_co2_data.txt ] ; then
+                echo "\./global_co2_data.txt" not created
+                exit 1
+   fi
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
