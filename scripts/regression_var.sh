@@ -4,14 +4,14 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
+export fix_file="/global/save/$USER/RR_cloudanalysis/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export scripts="/global/save/$USER/RR_cloudanalysis/scripts"
+export src="/global/save/$USER/RR_cloudanalysis/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/mlueken/src/global_gsi"
+export subversion="/global/save/$USER/RR_cloudanalysis/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -136,7 +136,7 @@ export regression_vfydir="$noscrub/benchmark"
 
 # Control run option
 
-export control="false" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
+export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
 export debug="false" # If true, run the extra debug run for each configuration.  If false, skip the debug runs.
 
 # Define location for copying control run data to

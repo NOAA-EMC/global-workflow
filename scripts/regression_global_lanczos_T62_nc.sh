@@ -156,8 +156,7 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
-[ -n "$(echo $LOADL_STEP_NAME|grep update)" ] && ICO2=2
+ICO2=${ICO2:-0}
 SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
@@ -474,8 +473,7 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
-[ -n "$(echo $LOADL_STEP_NAME|grep update)" ] && ICO2=2
+ICO2=${ICO2:-0}
 SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
