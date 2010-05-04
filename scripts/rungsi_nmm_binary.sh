@@ -117,6 +117,28 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
+
+# CO2 namelist and file decisions
+ICO2=${ICO2:-0}
+SETUP=" igfsco2=$ICO2, "
+if [ $ICO2 -gt 0 ] ; then
+        # Copy co2 files to $tmpdir
+        co2dir=${CO2DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./global_co2_data.txt
+        while [ $yyyy -ge 1957 ] ;do
+                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                if [ -s $co2 ] ; then
+                        $ncp $co2 ./global_co2_data.txt
+                break
+                fi
+                ((yyyy-=1))
+        done
+        if [ ! -s ./global_co2_data.txt ] ; then
+                echo "\./global_co2_data.txt" not created
+                exit 1
+   fi
+fi
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -140,10 +162,11 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+anavinfo=$fix_file/anavinfo_ndas_binary
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_nmmstat_na
+   berror=$fix_file/nam_nmmstat_na.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77
+   berror=$fix_file/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -167,6 +190,7 @@ bftab_sst=$fix_file/bufrtab.012
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
 
+$ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
