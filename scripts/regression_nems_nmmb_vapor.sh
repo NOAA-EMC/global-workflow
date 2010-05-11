@@ -202,6 +202,7 @@ ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
+stnuselist=$fix_file/nam_mesonet_stnuselist.txt
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -218,6 +219,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
+$ncp $stnuselist ./mesonet_stnuselist
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -245,6 +247,7 @@ $ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
 $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
+$ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
 
 # Copy bias correction, sigma, and surface files
 #
@@ -256,6 +259,7 @@ $ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
 
 $ncp $datges/nmm_b_history_nemsio.012 wrf_inout
 $ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp $datges/gdas1.t00z.sgesprep  ./gfs_sigf03
 $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 
@@ -445,6 +449,7 @@ ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
+stnuselist=$fix_file/nam_mesonet_stnuselist.txt
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -461,6 +466,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
+$ncp $stnuselist ./mesonet_stnuselist
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -488,6 +494,7 @@ $ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
 $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
+$ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
 
 # Copy bias correction, sigma, and surface files
 #
@@ -499,6 +506,7 @@ $ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
 
 $ncp $datges/nmm_b_history_nemsio.012 wrf_inout
 $ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp $datges/gdas1.t00z.sgesprep  ./gfs_sigf03
 $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 
@@ -688,6 +696,7 @@ ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
+stnuselist=$fix_file/nam_mesonet_stnuselist.txt
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -704,6 +713,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
+$ncp $stnuselist ./mesonet_stnuselist
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -731,6 +741,7 @@ $ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
 $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
+$ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
 
 # Copy bias correction, sigma, and surface files
 #
@@ -742,6 +753,7 @@ $ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
 
 $ncp $datges/nmm_b_history_nemsio.012 wrf_inout
 $ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp $datges/gdas1.t00z.sgesprep  ./gfs_sigf03
 $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 
@@ -937,6 +949,7 @@ ozinfo=$fix_file/nam_global_ozinfo.txt
 errtable=$fix_file/nam_errtable.r3dv
 convinfo=$fix_file/nam_regional_convinfo.txt
 mesonetuselist=$fix_file/nam_mesonet_uselist.txt
+stnuselist=$fix_file/nam_mesonet_stnuselist.txt
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -953,6 +966,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
+$ncp $stnuselist ./mesonet_stnuselist
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -980,6 +994,7 @@ $ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
 $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
+$ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
 
 # Copy bias correction, sigma, and surface files
 #
@@ -991,6 +1006,7 @@ $ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
 
 $ncp $datges/nmm_b_history_nemsio.012 wrf_inout
 $ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp $datges/gdas1.t00z.sgesprep  ./gfs_sigf03
 $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 
