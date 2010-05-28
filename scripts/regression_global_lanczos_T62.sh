@@ -131,7 +131,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
 #   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
@@ -449,7 +448,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
 #   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
@@ -765,7 +763,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
@@ -1087,7 +1084,6 @@ savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 

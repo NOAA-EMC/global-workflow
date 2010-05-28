@@ -21,11 +21,14 @@
 
 #@ step_name=gsi_nmm_binary_update2
 #@ network.MPI=sn_all,shared,us
-#@ node = 3
+#@ node = 4
 #@ node_usage=not_shared
-#@ tasks_per_node=32
-#@ task_affinity=core(1)
+#@ tasks_per_node=16
+#@ resources=consumablecpus(2)
+##@ tasks_per_node=32
+##@ task_affinity=core(1)
 #@ node_resources=ConsumableMemory(110 GB)
+#@ parallel_threads=2
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -366,8 +369,8 @@ export AIXTHREAD_RWLOCK_DEBUG=OFF
 export AIXTHREAD_COND_DEBUG=OFF
 export AIXTHREAD_MNRATIO=1:1
 export AIXTHREAD_SCOPE=S
-export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+##export XLSMPOPTS="parthds=1:stack=128000000"
+export XLSMPOPTS="parthds=2:stack=128000000"
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
