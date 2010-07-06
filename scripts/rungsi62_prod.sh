@@ -109,6 +109,7 @@ dumpobs=gdas
 dumpges=gdas
 datobs=$datobs_global/$adate
 datges=$datobs
+myobs=/global/noscrub/wx23ch/MODIS/BUFF_DUMP
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -176,6 +177,7 @@ EOF
 #   convinfo = text file with information about assimilation of conventional data
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
+#   aeroinfo = text file with information about assimilation of aerosol data
 
 anavinfo=$fix_file/anavinfo_62_sigmap
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
@@ -188,6 +190,7 @@ pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
+aeroinfo=$fix_file/global_aeroinfo.txt
 
 # Only need this file for single obs test
 bufrtable=$fix_file/prepobs_prep.bufrtable
@@ -209,6 +212,7 @@ $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
+$ncp $aeroinfo ./aeroinfo
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
@@ -255,6 +259,9 @@ $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
+## hchuang
+$ncp $myobs/modis.${gdate0}.buff.dump.dat     ./modisbufr
+
 # Copy bias correction, atmospheric and surface files
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
@@ -290,6 +297,24 @@ $ncp satbias_out     $savdir/biascr.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
+#hchuang
+#ss2gg=/global/save/wx20mi/bin/ss2gg
+#$ss2gg siganl siganl.bin siganl.ctl 4 768 384
+#$ss2gg sigf06 sigges.bin sigges.ctl 4 768 384
+
+exit
+
+## Gaussian grid idrt=4, regular lat-lon idrt=0
+sfc2gg=/u/wx20mi/bin/sfc2gg
+$sfc2gg sfcanl.gsi sfcanl.bin sfcanl.ctl 4
+$sfc2gg sfcf06     sfcges.bin sfcges.ctl 4
+
+$ncp s*anl.bin $savdir/
+$ncp s*anl.ctl $savdir/
+$ncp s*ges.bin $savdir/
+$ncp s*ges.ctl $savdir/
+#hchuang
+
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)
 #
@@ -324,4 +349,13 @@ esac
 done
 echo "Time after diagnostic loop is `date` "
 
+# If requested, clean up $tmpdir
+if [[ "$CLEAN" = "YES" ]];then
+   if [[ $rc -eq 0 ]];then
+      rm -rf $tmpdir
+      cd $tmpdir
+      cd ../
+      rmdir $tmpdir
+   fi
+fi
 exit

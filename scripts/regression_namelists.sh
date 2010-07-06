@@ -8,7 +8,7 @@ export global_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=64,npred=5,iguess=-1,
+   ndat=66,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,
    $SETUP
@@ -112,6 +112,8 @@ export global_T62_namelist="
    dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='n19',     dsis(62)='amsua_n19',       dval(62)=10.0, dthin(62)=2,  dsfcalc(62)=0,
    dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='n19',     dsis(63)='mhs_n19',         dval(63)=3.0,  dthin(63)=3,  dsfcalc(63)=0,
    dfile(64)='tcvitl'     dtype(64)='tcp',       dplat(64)=' ',       dsis(64)='tcp',             dval(64)=1.0,  dthin(64)=0,  dsfcalc(64)=0,
+   dfile(65)='modisbufr', dtype(65)='modis',     dplat(65)='aqua',    dsis(65)='modis_aqua',      dval(65)=1.0,  dthin(65)=6,  dsfcalc(65)=0,
+   dfile(66)='modisbufr', dtype(66)='modis',     dplat(66)='terra',   dsis(66)='modis_terra',     dval(66)=1.0,  dthin(66)=6,  dsfcalc(66)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR

@@ -11,7 +11,7 @@ export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/wwu/src/global_gsi"
+export subversion="/global/save/$USER/mlueken/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
