@@ -109,7 +109,6 @@ dumpobs=gdas
 dumpges=gdas
 datobs=$datobs_global/$adate
 datges=$datobs
-myobs=/global/noscrub/wx23ch/MODIS/BUFF_DUMP
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -259,8 +258,8 @@ $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
-## hchuang
-$ncp $myobs/modis.${gdate0}.buff.dump.dat     ./modisbufr
+## hchuang - use symbolic link tp point at MODIS data
+ln -s /global/noscrub/wx23ch/MODIS/BUFF_DUMP/modis.${gdate0}.buff.dump.dat     ./modisbufr
 
 # Copy bias correction, atmospheric and surface files
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
@@ -296,24 +295,6 @@ $ncp sfcanl.gsi      $savdir/sfcanl.${adate}
 $ncp satbias_out     $savdir/biascr.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
-
-#hchuang
-#ss2gg=/global/save/wx20mi/bin/ss2gg
-#$ss2gg siganl siganl.bin siganl.ctl 4 768 384
-#$ss2gg sigf06 sigges.bin sigges.ctl 4 768 384
-
-exit
-
-## Gaussian grid idrt=4, regular lat-lon idrt=0
-sfc2gg=/u/wx20mi/bin/sfc2gg
-$sfc2gg sfcanl.gsi sfcanl.bin sfcanl.ctl 4
-$sfc2gg sfcf06     sfcges.bin sfcges.ctl 4
-
-$ncp s*anl.bin $savdir/
-$ncp s*anl.ctl $savdir/
-$ncp s*ges.bin $savdir/
-$ncp s*ges.ctl $savdir/
-#hchuang
 
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)
