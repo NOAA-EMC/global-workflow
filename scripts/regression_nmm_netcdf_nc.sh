@@ -34,7 +34,7 @@
 
 #@ step_name=nmm_netcdf_regression
 #@ job_type=serial
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ restart=no

@@ -14,7 +14,7 @@
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 ##@ node_resources=ConsumableMemory(110 GB)
-#@ resources = consumablememory(3000 MB)
+#@ resources = ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -25,11 +25,11 @@
 #@ node = 4
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ resources=consumablecpus(2)
+#@ resources=ConsumableCpus(2)
 ##@ tasks_per_node=32
 ##@ task_affinity=core(1)
 ##@ node_resources=ConsumableMemory(110 GB)
-##@ resources = consumablememory(3000 MB)
+##@ resources = ConsumableMemory(3000 MB)
 #@ parallel_threads=2
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
@@ -55,7 +55,7 @@
 #@ node = 4
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ resources=consumablecpus(2)
+#@ resources=ConsumableCpus(2)
 ##@ tasks_per_node=32
 ##@ task_affinity=core(1)
 ##@ node_resources=ConsumableMemory(110 GB)
@@ -68,7 +68,7 @@
 
 #@ step_name=nmm_binary_regression
 #@ job_type=serial
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ class = 1
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00

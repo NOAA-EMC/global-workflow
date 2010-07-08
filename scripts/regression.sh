@@ -8,14 +8,14 @@
 
 #@ job_name=regression_driver
 #@ step_name=driver
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 01:15:00
 #@ notification=error
 #@ restart=no
 #@ queue
 
 #@ step_name=table_creation
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ restart=no
@@ -23,7 +23,7 @@
 #@ queue
 
 #@ step_name=debug_tests
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ restart=no

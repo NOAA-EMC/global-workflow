@@ -17,7 +17,7 @@
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
 ##@ node_resources = ConsumableMemory(110GB)
-#@ resources = consumablecpus(1) consumablememory(3000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -30,7 +30,7 @@
 #@ tasks_per_node=32
 #@ task_affinity=core(1)
 ##@ node_resources=ConsumableMemory(110 GB)
-#@ resources = consumablecpus(1) consumablememory(3000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -65,7 +65,7 @@
 
 #@ step_name=nems_nmmb_regression
 #@ job_type=serial
-#@ resources = consumablecpus(1) consumablememory(2000 MB)
+#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ class = 1
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00
