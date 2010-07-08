@@ -7,9 +7,7 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ bulkxfer=yes
 #@ class=dev
 #@ group=dev

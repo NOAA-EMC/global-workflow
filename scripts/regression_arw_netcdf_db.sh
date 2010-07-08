@@ -7,8 +7,7 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-MTN

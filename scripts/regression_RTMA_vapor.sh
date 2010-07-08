@@ -13,10 +13,7 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=10
-##@ node_resources = ConsumableMemory(110 GB)
-#@ resources = ConsumableMemory (3 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory (3 GB)
 #@ bulkxfer=yes
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
@@ -29,9 +26,7 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=10
-##@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ bulkxfer=yes
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
@@ -45,9 +40,7 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=10
-##@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ bulkxfer=yes
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
@@ -61,9 +54,7 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=10
-##@ node_resources = ConsumableMemory(110 GB)
-#@ parallel_threads = 1
-#@ task_affinity = core(1)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ bulkxfer=yes
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 10/27/05 20:00
@@ -75,7 +66,7 @@
 #@ step_name=rtma_regression
 #@ job_type=serial
 #@ task_affinity = cpu(1)
-#@ resources = ConsumableMemory(2000 MB)
+#@ node_resources = ConsumableMemory(2000 MB)
 #@ class = 1
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00

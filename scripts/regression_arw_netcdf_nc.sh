@@ -12,8 +12,7 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ queue
@@ -23,8 +22,7 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ dependency=(gsi_arw_netcdf_update==0)
@@ -32,7 +30,7 @@
 
 #@ step_name=arw_netcdf_regression
 #@ job_type=serial
-#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ dependency=(gsi_arw_netcdf_update2==0)

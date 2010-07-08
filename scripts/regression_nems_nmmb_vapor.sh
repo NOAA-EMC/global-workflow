@@ -15,9 +15,7 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ task_affinity = core(1)
-##@ node_resources = ConsumableMemory(110GB)
-#@ resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -28,9 +26,7 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ task_affinity=core(1)
-##@ node_resources=ConsumableMemory(110 GB)
-#@ resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -42,8 +38,7 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ task_affinity=core(1)
-##@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -55,8 +50,7 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ task_affinity=core(1)
-##@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
 #@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
@@ -65,7 +59,7 @@
 
 #@ step_name=nems_nmmb_regression
 #@ job_type=serial
-#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ node_resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
 #@ class = 1
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00

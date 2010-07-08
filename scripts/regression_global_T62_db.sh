@@ -7,8 +7,7 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ task_affinity=core(1)
-#@ node_resources=ConsumableMemory(110 GB)
+#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = GDAS-T2O
