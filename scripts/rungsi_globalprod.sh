@@ -171,7 +171,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -222,13 +221,11 @@ cat << EOF > gsiparm.anl
    $GRIDOPTS
  /
  &BKGERR
-   as=0.6,0.6,0.75,0.75,0.75,0.75,1.0,1.0
    vs=0.7,
    hzscl=1.7,0.8,0.5,
    hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
-   tsfc_sdv(1)=3.0,tsfc_sdv(2)=3.0,
    $BKGVERR
  /
  &ANBKGERR

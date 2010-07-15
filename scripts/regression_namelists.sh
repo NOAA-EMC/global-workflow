@@ -19,13 +19,11 @@ export global_T62_namelist="
    $GRIDOPTS
  /
  &BKGERR
-   as=0.6,0.6,0.75,0.75,0.75,0.75,1.0,1.0
    vs=0.7,
    hzscl=1.7,0.8,0.5,
    hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
-   tsfc_sdv(1)=3.0,tsfc_sdv(2)=3.0,
    $BKGVERR
  /
  &ANBKGERR
@@ -156,13 +154,11 @@ export global_lanczos_T62_namelist="
    $GRIDOPTS
  /
  &BKGERR
-   as=0.6,0.6,0.75,0.75,0.75,0.75,1.0,1.0
    vs=0.7,
    hzscl=1.7,0.8,0.5,
    hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
-   tsfc_sdv(1)=3.0,tsfc_sdv(2)=3.0,
    $BKGVERR
  /
  &ANBKGERR
@@ -291,7 +287,6 @@ export RTMA_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
  /
  &BKGERR
-   as=0.35,0.35,0.35,0.50,0.50,0.80,1.00,1.00,
    hzscl=1.414,1.000,0.707,
    vs=0.5,bw=0.0,
  /
@@ -354,7 +349,6 @@ export arw_binary_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
-   as=1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
  /
@@ -473,7 +467,6 @@ export arw_netcdf_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
-   as=1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
  /
@@ -592,7 +585,6 @@ export nmm_binary_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
-   as=1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
  /
@@ -711,7 +703,6 @@ export nmm_netcdf_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
-   as=1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
  /
@@ -832,7 +823,6 @@ export nems_nmmb_namelist="
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
  /
  &BKGERR
-   as=0.28,0.28,0.3,0.7,0.1,0.1,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=0.6,bw=0.,fstat=.false.,
  /

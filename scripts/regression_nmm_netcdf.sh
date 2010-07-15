@@ -68,6 +68,8 @@
 case $LOADL_STEP_NAME in
   gsi_nmm_netcdf_update)
 
+set -x
+
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
@@ -175,7 +177,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
 	# Copy co2 files to $tmpdir
 	co2dir=${CO2DIR:-$fix_file}
@@ -368,6 +369,8 @@ exit ;;
 
   gsi_nmm_netcdf_update2)
 
+set -x
+
 # Set environment variables for NCEP IBM
 export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
@@ -475,7 +478,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
 	# Copy co2 files to $tmpdir
 	co2dir=${CO2DIR:-$fix_file}
@@ -778,7 +780,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
 	# Copy co2 files to $tmpdir
 	co2dir=${CO2DIR:-$fix_file}
@@ -1084,7 +1085,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
 	# Copy co2 files to $tmpdir
 	co2dir=${CO2DIR:-$fix_file}

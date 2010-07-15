@@ -182,7 +182,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -499,7 +498,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -815,7 +813,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -1136,7 +1133,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}

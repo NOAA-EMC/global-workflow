@@ -80,7 +80,6 @@ rm -rf core*
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
-SETUP=" igfsco2=$ICO2, "
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -117,7 +116,6 @@ cat << EOF > gsiparm.anl
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
  /
  &BKGERR
-   as=1.0,1.0,0.5 ,0.7,0.7,0.5,1.0,1.0,
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
  /
