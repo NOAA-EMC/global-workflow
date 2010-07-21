@@ -8,9 +8,9 @@
 #@ node_usage = not_shared
 #@ tasks_per_node = 32
 #@ node = 1
-#@ node_resources = ConsumableMemory(110 GB)
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ class= dev
 #@ group= devonprod
 #@ account_no = GDAS-T2O
@@ -25,19 +25,17 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-
 # Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
-# Environment variables from Carolyn
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
 export LAPI_DEBUG_ENABLE_AFFINITY=YES
 export MP_FIFO_MTU=4K
 export MP_SYNC_QP=YES
-export MP_RFIFO_SIZE=16777216
 export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
 export MP_EUIDEVELOP=min
-#RDMA specific tunables:
 export MP_USE_BULK_XFER=yes
 export MP_BULK_MIN_MSG_SIZE=64k
 export MP_RC_MAX_QP=8192
@@ -50,10 +48,9 @@ export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
-
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
+##export MP_COREFILE_FORMAT=lite
 
 
 # Set experiment name and analysis date

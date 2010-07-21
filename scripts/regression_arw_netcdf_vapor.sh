@@ -12,7 +12,9 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
@@ -23,7 +25,9 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
@@ -35,7 +39,9 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
@@ -47,7 +53,9 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(3000 MB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
@@ -56,7 +64,8 @@
 
 #@ step_name=arw_netcdf_regression
 #@ job_type=serial
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ task_affinity = cpu(1)
+#@ node_resources = ConsumableMemory(2000 MB)
 #@ class = 1
 #@ node_usage = shared
 #@ wall_clock_limit = 00:10:00
@@ -73,30 +82,36 @@ case $LOADL_STEP_NAME in
 set -x
 
 # Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
+# Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
+
 
 # Set analysis date
 adate=$adate_regional
@@ -139,9 +154,7 @@ tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
 savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
 
-##fixgsi=/nwprod/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -161,7 +174,6 @@ hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
 suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
@@ -222,13 +234,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-##   berror=$fix_file/nam_glb_berror.f77
-     berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-       berror=$fix_file/nam_glb_berror.f77.gcv
-##     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+   berror=$fix_file/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -375,30 +383,36 @@ exit ;;
 set -x
 
 # Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
+export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
+# Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
+
 
 # Set analysis date
 adate=$adate_regional
@@ -441,9 +455,7 @@ tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
 savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
 
-##fixgsi=/nwprod/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -463,7 +475,6 @@ hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
 suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
@@ -524,13 +535,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-##   berror=$fix_file/nam_glb_berror.f77
-     berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-       berror=$fix_file/nam_glb_berror.f77.gcv
-##     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+   berror=$fix_file/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -677,30 +684,36 @@ exit ;;
 set -x
 
 # Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=no
+export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
+# Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
+
 
 # Set analysis date
 adate=$adate_regional
@@ -726,7 +739,6 @@ exp=$exp1_arw_netcdf_bench_1node
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -744,9 +756,7 @@ tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
 savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
 
-##fixgsi=/nwprod/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -766,7 +776,6 @@ hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
 suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
@@ -827,13 +836,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-##   berror=$fix_file/nam_glb_berror.f77
-     berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-       berror=$fix_file/nam_glb_berror.f77.gcv
-##     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+   berror=$fix_file/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -986,30 +991,36 @@ exit ;;
 set -x
 
 # Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=no
+export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
+# Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
+
 
 # Set analysis date
 adate=$adate_regional
@@ -1052,9 +1063,7 @@ tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
 savdir=$ptmp_loc/outreg/${arw_netcdf}/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
 
-##fixgsi=/nwprod/fix
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1074,7 +1083,6 @@ hha=`echo $adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
-##suffix=tm00.bufr_d
 suffix=tm06.bufr_d
 
 datobs=$datobs_arw_netcdf/$adate_regional_arw_netcdf
@@ -1135,13 +1143,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-##   berror=$fixgsi/nam_nmmstat_na
-##   berror=$fix_file/nam_glb_berror.f77
-     berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-       berror=$fix_file/nam_glb_berror.f77.gcv
-##     berror=$fix_file/nam_glb_berror.f77
-##     berror=$fixgsi/nam_regional_glb_berror.f77
+   berror=$fix_file/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
