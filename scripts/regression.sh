@@ -8,14 +8,16 @@
 
 #@ job_name=regression_driver
 #@ step_name=driver
-#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ task_affinity = cpu(1)
+#@ resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 01:15:00
 #@ notification=error
 #@ restart=no
 #@ queue
 
 #@ step_name=table_creation
-#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ task_affinity = cpu(1)
+#@ resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ restart=no
@@ -23,12 +25,15 @@
 #@ queue
 
 #@ step_name=debug_tests
-#@ resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ task_affinity = cpu(1)
+#@ resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ restart=no
 #@ dependency = (table_creation == 0)
 #@ queue
+
+set -x
 
 . regression_var.sh
 

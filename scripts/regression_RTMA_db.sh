@@ -7,8 +7,9 @@
 #@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(110 GB)
-#@ bulkxfer=yes
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-T2O
@@ -23,23 +24,36 @@
 set -x
 
 # Set environment variables for NCEP IBM
-export MP_SHARED_MEMORY=yes
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_SYNC_QP=yes
+export MP_SHARED_MEMORY=yes
 
 # Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
+
 
 # Set experiment name and analysis date
 exp=$exp1_rtma_sub_1node
@@ -130,7 +144,6 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma
-#berror=$fix_file/new_rtma_regional_nmm_berror.f77
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -212,7 +225,6 @@ $ncp $datobs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
 $ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-##poe hpmcount $tmpdir/gsi.x < gsiparm.anl > stdout
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 

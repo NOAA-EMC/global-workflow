@@ -12,7 +12,9 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:40:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
@@ -24,7 +26,9 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:40:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
@@ -37,7 +41,9 @@
 #@ node = 2
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:40:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
@@ -50,7 +56,9 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=32
-#@ node_resources=ConsumableCpus(1) ConsumableMemory(110 GB)
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:40:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
@@ -60,7 +68,8 @@
 
 #@ step_name=global_lanczos_regression
 #@ job_type=serial
-#@ node_resources = ConsumableCpus(1) ConsumableMemory(2000 MB)
+#@ task_affinity = cpu(1)
+#@ node_resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
 #@ dependency=(gsi_global_lanczos_benchmark2==0)
@@ -76,38 +85,42 @@ set -x
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
 export MP_SHARED_MEMORY=yes
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
 
 # Set environment variables for no threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
+
 # Set experiment name and analysis date
 adate=$adate_global
 exp=$exp1_global_lanczos_sub_1node
-##exp=gmao_gsi7.t62.subversion.1node
 
 # Set path/file for gsi executable
 gsiexec=$subversion
-##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -118,11 +131,9 @@ export JCAP_B=62
 # Set runtime and save directories
 tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
-##tmpdir=/ptmp/wx20ml/tmp${JCAP}_sigmap/${exp}
-##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
+
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -237,7 +248,6 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/anavinfo_62_sigmap
-#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -392,38 +402,42 @@ set -x
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
 export MP_SHARED_MEMORY=yes
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
 
 # Set environment variables for no threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
+
 # Set experiment name and analysis date
 adate=$adate_global
 exp=$exp2_global_lanczos_sub_2node
-##exp=gmao_gsi7.t62.subversion.2node
 
 # Set path/file for gsi executable
 gsiexec=$subversion
-##gsiexec=/global/save/wx20ml/regional/src/global_gsi
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -434,11 +448,9 @@ export JCAP_B=62
 # Set runtime and save directories
 tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
-##tmpdir=/ptmp/wx20ml/tmp${JCAP}_sigmap/${exp}
-##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
+
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -552,7 +564,6 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/anavinfo_62_sigmap
-#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -707,38 +718,42 @@ set -x
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
 export MP_SHARED_MEMORY=yes
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
 
 # Set environment variables for no threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
+
 # Set experiment name and analysis date
 adate=$adate_global
 exp=$exp1_global_lanczos_bench_1node
-##exp=q1fy10.t62.2node.orig_mpi_io
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
-##gsiexec=/global/save/wx20ml/q1fy10_new/global_gsi
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -749,11 +764,9 @@ export JCAP_B=62
 # Set runtime and save directories
 tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
-##tmpdir=/ptmp/wx20ml/tmp${JCAP}_sigmap/${exp}
-##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
+
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -867,7 +880,6 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/anavinfo_62_sigmap
-#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -1028,34 +1040,39 @@ set -x
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
-##export BIND_TASKS=yes
-export MP_PULSE=0
 export MP_SHARED_MEMORY=yes
-export MP_BULK_MIN_MSG_SIZE=10k
-export MP_USE_BULK_XFER=yes
 
 # Set environment variables for no threads
-export AIXTHREAD_GUARDPAGES=4
-export AIXTHREAD_MUTEX_DEBUG=OFF
-export AIXTHREAD_RWLOCK_DEBUG=OFF
-export AIXTHREAD_COND_DEBUG=OFF
-export AIXTHREAD_MNRATIO=1:1
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
-##export XLSMPOPTS="parthds=2:stack=128000000"
+
+# Recommended MPI environment variable setttings from IBM
+# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+export LAPI_DEBUG_ENABLE_AFFINITY=YES
+export MP_FIFO_MTU=4K
+export MP_SYNC_QP=YES
+export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+export MP_EUIDEVELOP=min
+export MP_USE_BULK_XFER=yes
+export MP_BULK_MIN_MSG_SIZE=64k
+export MP_RC_MAX_QP=8192
+export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+export LAPI_DEBUG_QP_NOTIFICATION=no
+export LAPI_DEBUG_RC_INIT_SETUP=yes
 
 # Set environment variables for user preferences
 export XLFRTEOPTS="nlwidth=80"
 export MP_LABELIO=yes
+export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
+
 # Set experiment name and analysis date
 adate=$adate_global
 exp=$exp2_global_lanczos_bench_2node
-##exp=q1fy10.t62.2node.modified_mpi_io
 
 # Set path/file for gsi executable
 gsiexec=$benchmark
@@ -1069,11 +1086,9 @@ export JCAP_B=62
 # Set runtime and save directories
 tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
-##tmpdir=/ptmp/wx20ml/tmp${JCAP}_sigmap/${exp}
-##savdir=/ptmp/wx20ml/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
-##fixgsi=/nwprod/fix
+
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -1187,7 +1202,6 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/anavinfo_62_sigmap
-#berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
