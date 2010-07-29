@@ -11,8 +11,7 @@ export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export subversion="/global/save/$USER/svn1/src/global_gsi"
-##export subversion="/global/save/$USER/mlueken_exttest2/src/global_gsi"
+export subversion="/global/save/$USER/mlueken/src/global_gsi"
 export benchmark="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -74,6 +73,7 @@ export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
 export adate_regional_arw_netcdf="2008051112"
+export adate_regional_arw_binary="2010072412"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
@@ -91,8 +91,7 @@ if [[ $machine = "stratus" ]]; then
    export datobs_nems_nmmb="/global/noscrub/wx20ml/nmmb_regression_case"
    export datobs_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/ndas_binary"
    export datges_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/nmm_netcdf"
-   export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
-   export datges_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
+   export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
    export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "cirrus" ]]; then
      export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
@@ -102,8 +101,7 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_nems_nmmb="/global/noscrub/wx20ml/nmmb_regression_case"
      export datobs_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/ndas_binary"
      export datges_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/nmm_netcdf"
-     export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
-     export datges_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
+     export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
      export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
@@ -115,8 +113,7 @@ elif [[ $machine = "vapor" ]]; then
      export datobs_nems_nmmb="/jcsda/noscrub/wx20ml/nmmb_regression_case"
      export datobs_nmm_netcdf="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
      export datges_nmm_netcdf="/jcsda/noscrub/wx20ml/cases/regional/nmm_netcdf"
-     export datobs_arw_binary="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
-     export datges_arw_binary="/jcsda/noscrub/wx20ml/cases/regional/arw_binary"
+     export datobs_arw_binary="/jcsda/noscrub/wx20ml/cases/regional/arw_binary"
      export datobs_arw_netcdf="/jcsda/noscrub/wx20ml/cases/regional/arw_netcdf"
 fi
 

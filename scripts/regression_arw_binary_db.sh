@@ -55,7 +55,7 @@ export MP_INFOLEVEL=1
 
 
 # Set analysis date
-adate=$adate_regional
+adate=$adate_regional_arw_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -109,16 +109,12 @@ ncp=/bin/cp
 # Given the analysis date, compute the date from which the
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
-hho=`echo $odate | cut -c9-10`
-prefixo=ndas.t${hho}z
-prefixa=ndas.t${hha}z
-suffix=tm12.bufr_d
+prefixo=ndas.t18z
+prefixa=ndas.t18z
+suffix=tm06.bufr_d
 
 datobs=$datobs_arw_binary/$adate
-datges=$datges_arw_binary/$adate
+datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -232,7 +228,7 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
@@ -250,10 +246,10 @@ fi
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixa}.satbias.tm03      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm03        ./satbias_angle
+$ncp $datobs/${prefixa}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixa}.satang.tm06        ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_arw_binary       ./wrf_inout
+   $ncp $datges/wrfinput_d01_2010-07-24_12:00:00       ./wrf_inout
 elif [[ "$io_format" = "netcdf" ]]; then
    $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
 fi
