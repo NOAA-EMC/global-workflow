@@ -39,6 +39,7 @@
 #@ step_name=global_regression
 #@ job_type=serial
 #@ task_affinity = cpu(1)
+#@ parallel_threads=1
 #@ node_resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 00:10:00
 #@ notification=error
