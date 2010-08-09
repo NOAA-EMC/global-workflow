@@ -473,7 +473,7 @@ $ncp $datobs/ndas.t12z.1bmhs.tm12.bufr_d  ./mhsbufr
 $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
-$ncp $datobs/ndas.t12z.osbuv8.tm12.bufr_d ./sbuvbufr
+$ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
 
 # Copy bias correction, sigma, and surface files
 #
@@ -781,6 +781,35 @@ fi
 if cmp -s wrf_inout.${exp1} wrf_inout.${exp2}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
+   echo 'since the corresponding results are identical.'
+   echo
+fi
+
+} >> $output
+
+# Next, reproducibility between a 1 node and 2 node experiment
+
+{
+
+if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo
+else
+   echo 'The results between the two runs are nonreproducible,'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo
+fi
+
+} >> $output
+
+# Next, check reproducibility of results between a 1 node branch and 2 node trunk experiment
+
+{
+
+if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
+then
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
 fi
