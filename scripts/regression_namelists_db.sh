@@ -274,7 +274,7 @@ export RTMA_namelist="
    factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
    ndat=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,
+   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
    nhr_assimilation=3,
    $SETUP
  /
