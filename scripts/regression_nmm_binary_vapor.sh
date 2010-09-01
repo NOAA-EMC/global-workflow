@@ -9,7 +9,7 @@
 #@ job_name=regression_test
 #@ step_name=gsi_nmm_binary_update
 #@ network.MPI=sn_all,shared,us
-#@ node = 2
+#@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -22,7 +22,7 @@
 
 #@ step_name=gsi_nmm_binary_update2
 #@ network.MPI=sn_all,shared,us
-#@ node = 4
+#@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=16
 #@ task_affinity = core(1)
@@ -36,7 +36,7 @@
 
 #@ step_name=gsi_nmm_binary_benchmark
 #@ network.MPI=sn_all,shared,us
-#@ node = 2
+#@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -50,7 +50,7 @@
 
 #@ step_name=gsi_nmm_binary_benchmark2
 #@ network.MPI=sn_all,shared,us
-#@ node = 4
+#@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=16
 #@ task_affinity = core(1)
@@ -1515,35 +1515,6 @@ fi
 if cmp -s wrf_inout.${exp1} wrf_inout.${exp2} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
-
-} >> $output
-
-# Next, reproducibility between a 1 node and 2 node experiment
-
-{
-
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
-   echo
-else
-   echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
-   echo
-fi
-
-} >> $output
-
-# Next, check reproducibility of results between a 1 node branch and 2 node trunk experiment
-
-{
-
-if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
 fi
