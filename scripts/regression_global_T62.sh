@@ -26,7 +26,7 @@
 #@ node = 3
 #@ node_usage=not_shared
 #@ tasks_per_node=16
-#@ task_affinity = core(1)
+v#@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
 #@ wall_clock_limit = 0:20:00
