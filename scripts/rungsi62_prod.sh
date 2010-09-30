@@ -28,7 +28,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -58,10 +58,10 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_bench_1node
+exp=$exp1_global_cntrl
 
 # Set path/file for gsi executable
-gsiexec=$benchmark
+gsiexec=$cntrl
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -288,7 +288,7 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_global_sub_1node' has failed to run to completion, with an error code of '$rc''
+    echo ''$exp1_global_updat' has failed to run to completion, with an error code of '$rc''
    } >> $global_regression
    $step_name==$rc
    exit

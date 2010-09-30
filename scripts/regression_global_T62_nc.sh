@@ -7,7 +7,7 @@
 #@ account_no = GDAS-T2O
 
 #@ job_name=regression_test
-#@ step_name=gsi_global_update
+#@ step_name=gsi_global_updat
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
@@ -15,42 +15,43 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ restart=no
 #@ queue
 
-#@ step_name=gsi_global_update2
+#@ step_name=gsi_global_updat2
 #@ network.MPI=sn_all,shared,us
-#@ node = 3
+#@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=16
+#@ tasks_per_node=32
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ restart=no
-#@ dependency=(gsi_global_update==0)
+#@ dependency=(gsi_global_updat==0)
 #@ queue
 
 #@ step_name=global_regression
 #@ job_type=serial
 #@ task_affinity = cpu(1)
-#@ parallel_threads=1
+#@ parallel_threads = 1
+#@ node_usage = shared
 #@ node_resources = ConsumableMemory(2000 MB)
-#@ wall_clock_limit = 00:10:00
+#@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
-#@ dependency=(gsi_global_update2==0)
+#@ dependency=(gsi_global_updat2==0)
 #@ queue
 
 . regression_var.sh
 
 case $LOADL_STEP_NAME in
-  gsi_global_update)
+  gsi_global_updat)
 
 set -x
 
@@ -58,7 +59,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -88,10 +89,10 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_sub_1node
+exp=$exp1_global_updat
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -314,7 +315,7 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_global_sub_1node' has failed to run to completion, with an error code of '$rc''
+    echo ''$exp1_global_updat' has failed to run to completion, with an error code of '$rc''
    } >> $global_regression
    $step_name==$rc
    exit
@@ -366,7 +367,7 @@ echo "Time after diagnostic loop is `date` "
 
 exit ;;
 
-  gsi_global_update2)
+  gsi_global_updat2)
 
 set -x
 
@@ -374,7 +375,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=2:stack=128000000"
 
@@ -404,10 +405,10 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp2_global_sub_2node
+exp=$exp2_global_updat
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -630,7 +631,7 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_global_sub_2node' has failed to run to completion, with an error code of '$rc''
+    echo ''$exp2_global_updat' has failed to run to completion, with an error code of '$rc''
    } >> $global_regression
    $step_name==$rc
    exit
@@ -690,11 +691,11 @@ JCAP=62
 
 # Choose the results that you wish to test.
 # Here, exp1 is the run using the latest modified version of the code
-# and exp2 is the benchmark run
+# and exp2 is the control run
 
-exp1=$exp1_global_sub_1node
-exp2=$exp1_global_bench_1node
-exp3=$exp2_global_sub_2node
+exp1=$exp1_global_updat
+exp2=$exp1_global_cntrl
+exp3=$exp2_global_updat
 
 # Choose global, regional, or RTMA
 input=tmp${global}
@@ -747,15 +748,13 @@ for exp in $list; do
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
 
-# Difference the 2 files (i.e., penalty.1node.txt with penalty.10node.txt)
+# Difference the 2 files (i.e., penalty.exp1.txt with penalty.exp2.txt)
 diff penalty.$exp1.txt penalty.$exp2.txt > penalty.${exp1}-${exp2}.txt
 diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
-# (i.e., output from increased number of nodes)
-
-exp1_scale=$exp2_global_sub_2node
-exp2_scale=$exp2_global_bench_2node
+exp1_scale=$exp2_global_updat
+exp2_scale=$exp2_global_cntrl
 
 # Copy stdout for additional scalability testing
 list="$exp1_scale"
@@ -780,11 +779,11 @@ done
 
 timedif=10
 memdiff=8
-scaledif=10
+scaledif=4
 
 # timethresh = avgtime*timedif+avgtime
 # memthresh = avgmem*memdiff+avgmem
-# Note: using wall time/maximum residence memory from benchmark as avg values here
+# Note: using wall time/maximum residence memory from control as avg values here
 
 time2=$(awk '{ print $8 }' runtime.$exp2.txt)
 time1=$(awk '{ print $8 }' runtime.$exp1.txt)
@@ -828,7 +827,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 } >> $output
 
-# This part is for deviation of wall time for 1 node
+# This part is for deviation of wall time for timethresh
 
 {
 
@@ -844,7 +843,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 } >> $output
 
-# This part is for deviation of wall time for 2 node
+# This part is for deviation of wall time for timethresh2
 
 {
 
@@ -893,7 +892,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 } >> $output
 
-# Next, reproducibility between a 1 node and 1 node experiment
+# Next, reproducibility between exp1 and exp2
 
 {
 
@@ -909,7 +908,7 @@ fi
 
 } >> $output
 
-# Next, check reproducibility of results between a 1 node branch and 1 node trunk experiment
+# Next, check reproducibility of results between exp1 and exp2
 
 {
 
@@ -922,7 +921,7 @@ fi
 
 } >> $output
 
-# Next, reproducibility between a 1 node and 2 node experiment
+# Next, reproducibility between exp1 and exp3
 
 {
 
@@ -938,7 +937,7 @@ fi
 
 } >> $output
 
-# Next, check reproducibility of results between a 1 node branch and 2 node trunk experiment
+# Next, check reproducibility of results between exp1 and exp3
 
 {
 
@@ -957,10 +956,10 @@ fi
 
 if [[ $scale1thresh -ge $scale2 ]]; then
    echo 'The case has passed the scalability regression test.'
-   echo 'The slope for the branch ('$scale1thresh' seconds per node) is greater than or equal to that for the benchmark ('$scale2' seconds per node).'
+   echo 'The slope for the update ('$scale1thresh' seconds per node) is greater than or equal to that for the control ('$scale2' seconds per node).'
 else
    echo 'The case has failed the scalability test.'
-   echo 'The slope for the branch ('$scale1thresh' seconds per node) is less than that for the benchmark ('$scale2' seconds per node).'
+   echo 'The slope for the update ('$scale1thresh' seconds per node) is less than that for the control ('$scale2' seconds per node).'
 fi
 
 } >> $output
@@ -971,8 +970,8 @@ mkdir -p $vfydir
 $ncp $output                        $vfydir/
 
 cd $scripts
-rm -f regression_test.gsi_global_update.e*
-rm -f regression_test.gsi_global_update2.e*
+rm -f regression_test.gsi_global_updat.e*
+rm -f regression_test.gsi_global_updat2.e*
 rm -f regression_test.global_regression.e*
 
 exit ;;

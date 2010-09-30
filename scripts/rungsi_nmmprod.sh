@@ -25,7 +25,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
