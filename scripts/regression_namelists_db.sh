@@ -10,7 +10,7 @@ export global_T62_namelist="
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
    ndat=64,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -142,7 +142,7 @@ export global_lanczos_T62_namelist="
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
    ndat=64,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
    $SETUP
  /
@@ -275,7 +275,7 @@ export RTMA_namelist="
    ndat=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=3,
+   nhr_assimilation=3,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -338,7 +338,7 @@ export arw_binary_namelist="
    ndat=59,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -456,7 +456,7 @@ export arw_netcdf_namelist="
    ndat=59,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -574,7 +574,7 @@ export nmm_binary_namelist="
    ndat=59,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -692,7 +692,7 @@ export nmm_netcdf_namelist="
    ndat=59,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -810,7 +810,7 @@ export nems_nmmb_namelist="
    ndat=64,npred=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,preserve_restart_date=.true.,
+   use_pbl=.false.,use_compress=.false.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.
    $SETUP
  /
