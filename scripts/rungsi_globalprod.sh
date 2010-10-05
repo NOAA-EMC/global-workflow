@@ -349,7 +349,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fixgsi/anavinfo_62_sigmap
+anavinfo=$fixgsi/global_anavinfo.l64.txt
 if [[ "$JCAP" -ne "878" ]]; then
    berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77.gcv
 elif [[ "$JCAP" = "878" ]]; then

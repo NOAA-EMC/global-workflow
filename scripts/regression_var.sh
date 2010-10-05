@@ -1,18 +1,23 @@
+# It is now possible to run all regression tests (except RTMA) using the hybrid ensemble option with
+#  internally generated random ensemble perturbations.  No script changes are required.
+#  To run with hybrid ensemble option on, change HYBENS_GLOBAL and/or HYBENS_REGIONAL from "false" to "true".
+#  These are located at the end of this script.
+
 # Define global noscrub directory
 
 export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
+export fix_file="/global/save/$USER/trunk/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export scripts="/global/save/$USER/trunk/scripts"
+export src="/global/save/$USER/trunk/src"
 
 # Define work directories (location of executables)
 
-export updat="/global/save/$USER/mlueken/src/global_gsi"
-export cntrl="/global/save/$USER/svn1/src/global_gsi"
+export updat="/global/save/$USER/trunk/src/global_gsi"
+export cntrl="/global/save/$USER/trunk/src/global_gsi"
 
 # Define experiment names
 
@@ -77,8 +82,8 @@ export adate_regional_arw_binary="2010072412"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-machine="cirrus"
-#machine="stratus"
+#machine="cirrus"
+machine="stratus"
 #machine="vapor"
 
 # Define obs directory
@@ -134,7 +139,7 @@ export regression_vfydir="$noscrub/regression"
 
 # Control run option
 
-export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
+export control="false" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
 export debug="false" # If true, run the extra debug run for each configuration.  If false, skip the debug runs.
 
 # Define location for copying control run data to
@@ -155,3 +160,28 @@ export control_arw_netcdf="$noscrub/tmpreg_${arw_netcdf}/$exp1_arw_netcdf_cntrl"
 export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_cntrl"
 export control_nems_nmmb="$noscrub/tmpreg_${nems_nmmb}/$exp1_nems_nmmb_cntrl"
 export control_nems_nmmb2="$noscrub/tmpreg_${nems_nmmb}/$exp2_nems_nmmb_cntrl"
+
+# Define parameters for hybrid ensemble option test.
+#   (default is set to false, so no hybrid ensemble option test.)
+
+export HYBENS_GLOBAL=".false."
+export ENSEMBLE_SIZE_GLOBAL="10"
+export HYBENS_UV_GLOBAL=".true."
+export BETA1_INV_GLOBAL="0.5"
+export HYBENS_HOR_SCALE_GLOBAL="1500"
+export HYBENS_VER_SCALE_GLOBAL="20"
+export GENERATE_ENS_GLOBAL=".true."
+export HYBENS_ANISO_GLOBAL=".false."
+
+export HYBENS_REGIONAL=".false."
+export ENSEMBLE_SIZE_REGIONAL="10"
+export HYBENS_UV_REGIONAL=".true."
+export BETA1_INV_REGIONAL="0.5"
+export HYBENS_HOR_SCALE_REGIONAL="1500"
+export HYBENS_VER_SCALE_REGIONAL="20"
+export GENERATE_ENS_REGIONAL=".true."
+export HYBENS_ANISO_REGIONAL=".false."
+export NLON_ENS_REGIONAL="0"
+export NLAT_ENS_REGIONAL="0"
+export JCAP_ENS_REGIONAL="0"
+export JCAP_ENS_TEST_REGIONAL="0"
