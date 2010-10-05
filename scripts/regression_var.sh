@@ -9,15 +9,15 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/trunk/fix"
+export fix_file="/global/save/$USER/svn1/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/trunk/scripts"
-export src="/global/save/$USER/trunk/src"
+export scripts="/global/save/$USER/svn1/scripts"
+export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export updat="/global/save/$USER/trunk/src/global_gsi"
-export cntrl="/global/save/$USER/trunk/src/global_gsi"
+export updat="/global/save/$USER/mlueken/src/global_gsi"
+export cntrl="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
 

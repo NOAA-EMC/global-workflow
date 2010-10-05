@@ -116,7 +116,7 @@ elif [[ "$SINGLE_OBS_TEST" = ".false." ]]; then
 fi
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set runtime and save directories
 tmpdir=$ptmp_loc/tmpreg_${arw_netcdf}/${exp}
