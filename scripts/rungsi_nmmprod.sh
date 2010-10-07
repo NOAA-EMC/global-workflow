@@ -109,7 +109,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,npred=5,iguess=-1,
+   ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,

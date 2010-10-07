@@ -139,7 +139,7 @@ export regression_vfydir="$noscrub/regression"
 
 # Control run option
 
-export control="false" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
+export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
 export debug="false" # If true, run the extra debug run for each configuration.  If false, skip the debug runs.
 
 # Define location for copying control run data to

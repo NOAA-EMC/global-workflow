@@ -207,7 +207,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=64,npred=5,iguess=-1,
+   ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,
    $SETUP
