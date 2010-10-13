@@ -10,7 +10,7 @@
 #@ step_name=driver
 #@ task_affinity = cpu(1)
 #@ resources = ConsumableMemory(2000 MB)
-#@ wall_clock_limit = 01:15:00
+#@ wall_clock_limit = 1:15:00
 #@ notification=error
 #@ restart=no
 #@ queue
@@ -18,7 +18,7 @@
 #@ step_name=table_creation
 #@ task_affinity = cpu(1)
 #@ resources = ConsumableMemory(2000 MB)
-#@ wall_clock_limit = 00:10:00
+#@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
 #@ dependency = (driver == 0)
@@ -27,7 +27,7 @@
 #@ step_name=debug_tests
 #@ task_affinity = cpu(1)
 #@ resources = ConsumableMemory(2000 MB)
-#@ wall_clock_limit = 00:10:00
+#@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
 #@ dependency = (table_creation == 0)
@@ -59,6 +59,7 @@ if [[ $control == true ]]; then
    done
 
 sleep 4200 ## sleep for an hour and 10 minutes to allow for jobs to finish running before attempting to generate table
+
 
 elif [[ $control == false ]]; then
      list="global_T62_nc global_lanczos_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
@@ -93,14 +94,15 @@ output=regression_test_table.out
 ncp=/bin/cp
 
 # Name temporary directories holding regression test files
-tmpdir_RTMA=$ptmp_loc/$compare/tmpreg_${rtma}/${exp1_rtma_sub_1node}_vs_${exp1_rtma_bench_1node}
-tmpdir_nmm_binary=$ptmp_loc/$compare/tmpreg_${nmm_binary}/${exp1_nmm_binary_sub_2node}_vs_${exp1_nmm_binary_bench_2node}
-tmpdir_nmm_netcdf=$ptmp_loc/$compare/tmpreg_${nmm_netcdf}/${exp1_nmm_netcdf_sub_1node}_vs_${exp1_nmm_netcdf_bench_1node}
-tmpdir_arw_netcdf=$ptmp_loc/$compare/tmpreg_${arw_netcdf}/${exp1_arw_netcdf_sub_1node}_vs_${exp1_arw_netcdf_bench_1node}
-tmpdir_arw_binary=$ptmp_loc/$compare/tmpreg_${arw_binary}/${exp1_arw_binary_sub_1node}_vs_${exp1_arw_binary_bench_1node}
-tmpdir_nems_nmmb=$ptmp_loc/$compare/tmpreg_${nems_nmmb}/${exp1_nems_nmmb_sub_2node}_vs_${exp1_nems_nmmb_bench_2node}
-tmpdir_global=$ptmp_loc/$compare/tmp${global}/${exp1_global_sub_1node}_vs_${exp1_global_bench_1node}
-tmpdir_global_lanczos=$ptmp_loc/$compare/tmp${global_lanczos}/${exp1_global_lanczos_sub_1node}_vs_${exp1_global_lanczos_bench_1node}
+tmpdir_RTMA=$ptmp_loc/$compare/tmpreg_${rtma}/${exp1_rtma_updat}_vs_${exp1_rtma_cntrl}
+tmpdir_nmm_binary=$ptmp_loc/$compare/tmpreg_${nmm_binary}/${exp1_nmm_binary_updat}_vs_${exp1_nmm_binary_cntrl}
+tmpdir_nmm_netcdf=$ptmp_loc/$compare/tmpreg_${nmm_netcdf}/${exp1_nmm_netcdf_updat}_vs_${exp1_nmm_netcdf_cntrl}
+tmpdir_arw_netcdf=$ptmp_loc/$compare/tmpreg_${arw_netcdf}/${exp1_arw_netcdf_updat}_vs_${exp1_arw_netcdf_cntrl}
+tmpdir_arw_binary=$ptmp_loc/$compare/tmpreg_${arw_binary}/${exp1_arw_binary_updat}_vs_${exp1_arw_binary_cntrl}
+tmpdir_nems_nmmb=$ptmp_loc/$compare/tmpreg_${nems_nmmb}/${exp1_nems_nmmb_updat}_vs_${exp1_nems_nmmb_cntrl}
+tmpdir_global=$ptmp_loc/$compare/tmp${global}/${exp1_global_updat}_vs_${exp1_global_cntrl}
+tmpdir_global_lanczos=$ptmp_loc/$compare/tmp${global_lanczos}/${exp1_global_lanczos_updat}_vs_${exp1_global_lanczos_cntrl}
+
 
 # Copy grepped out files
 list="$tmpdir_RTMA $tmpdir_nmm_binary $tmpdir_nmm_netcdf $tmpdir_arw_netcdf $tmpdir_arw_binary $tmpdir_nems_nmmb $tmpdir_global $tmpdir_global_lanczos"
@@ -111,110 +113,109 @@ done
 
 # At this time, creating table one experiment at a time.
 # Beginning with global GSI results
-glob_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_global_sub_1node.txt)
-glob_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_global_sub_2node.txt)
-glob_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_global_bench_1node.txt)
-glob_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_global_bench_2node.txt)
+glob_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_global_updat.txt)
+glob_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_global_updat.txt)
+glob_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_global_cntrl.txt)
+glob_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_global_cntrl.txt)
 
-glob_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_global_sub_1node.txt)
-glob_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_global_sub_2node.txt)
-glob_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_global_bench_1node.txt)
-glob_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_global_bench_2node.txt)
+glob_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_global_updat.txt)
+glob_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_global_updat.txt)
+glob_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_global_cntrl.txt)
+glob_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_global_cntrl.txt)
 
 # Now, global GSI lanczos results
-glob_lanczos_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_sub_1node.txt)
-glob_lanczos_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_sub_2node.txt)
-glob_lanczos_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_bench_1node.txt)
-glob_lanczos_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_bench_2node.txt)
+glob_lanczos_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_updat.txt)
+glob_lanczos_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_updat.txt)
+glob_lanczos_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_global_lanczos_cntrl.txt)
+glob_lanczos_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_global_lanczos_cntrl.txt)
 
-glob_lanczos_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_sub_1node.txt)
-glob_lanczos_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_sub_2node.txt)
-glob_lanczos_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_bench_1node.txt)
-glob_lanczos_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_bench_2node.txt)
+glob_lanczos_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_updat.txt)
+glob_lanczos_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_updat.txt)
+glob_lanczos_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_cntrl.txt)
+glob_lanczos_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_cntrl.txt)
 
 # Now, RTMA
-rtma_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_sub_1node.txt)
-rtma_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_rtma_sub_2node.txt)
-rtma_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_bench_1node.txt)
-rtma_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_rtma_bench_2node.txt)
+rtma_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_updat.txt)
+rtma_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_rtma_updat.txt)
+rtma_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_cntrl.txt)
+rtma_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_rtma_cntrl.txt)
 
-rtma_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_rtma_sub_1node.txt)
-rtma_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_rtma_sub_2node.txt)
-rtma_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_rtma_bench_1node.txt)
-rtma_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_rtma_bench_2node.txt)
+rtma_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_rtma_updat.txt)
+rtma_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_rtma_updat.txt)
+rtma_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_rtma_cntrl.txt)
+rtma_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_rtma_cntrl.txt)
 
 # Now, nmm_binary
-nmm_binary_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_binary_sub_2node.txt)
-nmm_binary_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_binary_sub_3node.txt)
-nmm_binary_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_binary_bench_2node.txt)
-nmm_binary_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_binary_bench_3node.txt)
+nmm_binary_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_binary_updat.txt)
+nmm_binary_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_binary_updat.txt)
+nmm_binary_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_binary_cntrl.txt)
+nmm_binary_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_binary_cntrl.txt)
 
-nmm_binary_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_binary_sub_2node.txt)
-nmm_binary_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_binary_sub_3node.txt)
-nmm_binary_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_binary_bench_2node.txt)
-nmm_binary_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_binary_bench_3node.txt)
+nmm_binary_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_binary_updat.txt)
+nmm_binary_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_binary_updat.txt)
+nmm_binary_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_binary_cntrl.txt)
+nmm_binary_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_binary_cntrl.txt)
 
 # Now nems_nmmb
-nems_nmmb_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_nems_nmmb_sub_2node.txt)
-nems_nmmb_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_nems_nmmb_sub_3node.txt)
-nems_nmmb_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_nems_nmmb_bench_2node.txt)
-nems_nmmb_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_nems_nmmb_bench_3node.txt)
+nems_nmmb_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_nems_nmmb_updat.txt)
+nems_nmmb_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_nems_nmmb_updat.txt)
+nems_nmmb_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_nems_nmmb_cntrl.txt)
+nems_nmmb_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_nems_nmmb_cntrl.txt)
 
-nems_nmmb_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_nems_nmmb_sub_2node.txt)
-nems_nmmb_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_nems_nmmb_sub_3node.txt)
-nems_nmmb_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_nems_nmmb_bench_2node.txt)
-nems_nmmb_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_nems_nmmb_bench_3node.txt)
+nems_nmmb_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_nems_nmmb_updat.txt)
+nems_nmmb_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_nems_nmmb_updat.txt)
+nems_nmmb_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_nems_nmmb_cntrl.txt)
+nems_nmmb_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_nems_nmmb_cntrl.txt)
 
 # Now nmm_netcdf
-nmm_netcdf_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_netcdf_sub_1node.txt)
-nmm_netcdf_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_netcdf_sub_2node.txt)
-nmm_netcdf_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_netcdf_bench_1node.txt)
-nmm_netcdf_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_netcdf_bench_2node.txt)
+nmm_netcdf_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_netcdf_updat.txt)
+nmm_netcdf_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_netcdf_updat.txt)
+nmm_netcdf_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_nmm_netcdf_cntrl.txt)
+nmm_netcdf_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_nmm_netcdf_cntrl.txt)
 
-nmm_netcdf_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_netcdf_sub_1node.txt)
-nmm_netcdf_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_netcdf_sub_2node.txt)
-nmm_netcdf_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_netcdf_bench_1node.txt)
-nmm_netcdf_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_netcdf_bench_2node.txt)
+nmm_netcdf_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_netcdf_updat.txt)
+nmm_netcdf_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_netcdf_updat.txt)
+nmm_netcdf_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_nmm_netcdf_cntrl.txt)
+nmm_netcdf_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_nmm_netcdf_cntrl.txt)
 
 # Now arw_netcdf
-arw_netcdf_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_netcdf_sub_1node.txt)
-arw_netcdf_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_netcdf_sub_2node.txt)
-arw_netcdf_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_netcdf_bench_1node.txt)
-arw_netcdf_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_netcdf_bench_2node.txt)
+arw_netcdf_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_netcdf_updat.txt)
+arw_netcdf_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_netcdf_updat.txt)
+arw_netcdf_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_netcdf_cntrl.txt)
+arw_netcdf_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_netcdf_cntrl.txt)
 
-arw_netcdf_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_netcdf_sub_1node.txt)
-arw_netcdf_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_netcdf_sub_2node.txt)
-arw_netcdf_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_netcdf_bench_1node.txt)
-arw_netcdf_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_netcdf_bench_2node.txt)
+arw_netcdf_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_netcdf_updat.txt)
+arw_netcdf_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_netcdf_updat.txt)
+arw_netcdf_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_netcdf_cntrl.txt)
+arw_netcdf_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_netcdf_cntrl.txt)
 
 # Finally arw_binary
-arw_binary_sub_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_binary_sub_1node.txt)
-arw_binary_sub_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_binary_sub_2node.txt)
-arw_binary_bench_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_binary_bench_1node.txt)
-arw_binary_bench_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_binary_bench_2node.txt)
+arw_binary_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_binary_updat.txt)
+arw_binary_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_binary_updat.txt)
+arw_binary_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_arw_binary_cntrl.txt)
+arw_binary_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_arw_binary_cntrl.txt)
 
-arw_binary_sub_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_binary_sub_1node.txt)
-arw_binary_sub_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_binary_sub_2node.txt)
-arw_binary_bench_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_binary_bench_1node.txt)
-arw_binary_bench_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_binary_bench_2node.txt)
+arw_binary_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_binary_updat.txt)
+arw_binary_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_binary_updat.txt)
+arw_binary_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_arw_binary_cntrl.txt)
+arw_binary_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_arw_binary_cntrl.txt)
 
 # Now create table layout
 
 {
 
 echo "Experimental Case      low task time(s)     high task time(s)   low task time(s)     high task time(s)   low task mem      high task mem  low task mem     high task mem"
-echo "                                    subversion                                benchmark                            subversion                       benchmark           "
+echo "                                    update                                control                            update                       control           "
 echo
-echo "T"$global"             "$glob_sub_1_time"           "$glob_sub_2_time"          "$glob_bench_1_time"           "$glob_bench_2_time"          "$glob_sub_1_mem"            "$glob_sub_2_mem"         "$glob_bench_1_mem"           "$glob_bench_2_mem""
-echo "T"$global_lanczos"     "$glob_lanczos_sub_1_time"           "$glob_lanczos_sub_2_time"          "$glob_lanczos_bench_1_time"           "$glob_lanczos_bench_2_time"          "$glob_lanczos_sub_1_mem"            "$glob_lanczos_sub_2_mem"         "$glob_lanczos_bench_1_mem"           "$glob_lanczos_bench_2_mem""
-echo ""$rtma"                   "$rtma_sub_1_time"           "$rtma_sub_2_time"          "$rtma_bench_1_time"           "$rtma_bench_2_time"          "$rtma_sub_1_mem"            "$rtma_sub_2_mem"         "$rtma_bench_1_mem"           "$rtma_bench_2_mem""
-echo ""$nmm_binary"            "$nmm_binary_sub_1_time"           "$nmm_binary_sub_2_time"          "$nmm_binary_bench_1_time"           "$nmm_binary_bench_2_time"          "$nmm_binary_sub_1_mem"            "$nmm_binary_sub_2_mem"         "$nmm_binary_bench_1_mem"           "$nmm_binary_bench_2_mem""
-echo ""$nems_nmmb"              "$nems_nmmb_sub_1_time"           "$nems_nmmb_sub_2_time"          "$nems_nmmb_bench_1_time"           "$nems_nmmb_bench_2_time"          "$nems_nmmb_sub_1_mem"            "$nems_nmmb_sub_2_mem"         "$nems_nmmb_bench_1_mem"           "$nems_nmmb_bench_2_mem""
-echo ""$nmm_netcdf"            "$nmm_netcdf_sub_1_time"            "$nmm_netcdf_sub_2_time"           "$nmm_netcdf_bench_1_time"            "$nmm_netcdf_bench_2_time"           "$nmm_netcdf_sub_1_mem"            "$nmm_netcdf_sub_2_mem"         "$nmm_netcdf_bench_1_mem"           "$nmm_netcdf_bench_2_mem""
-echo ""$arw_netcdf"             "$arw_netcdf_sub_1_time"            "$arw_netcdf_sub_2_time"           "$arw_netcdf_bench_1_time"            "$arw_netcdf_bench_2_time"           "$arw_netcdf_sub_1_mem"            "$arw_netcdf_sub_2_mem"         "$arw_netcdf_bench_1_mem"           "$arw_netcdf_bench_2_mem""
-echo ""$arw_binary"             "$arw_binary_sub_1_time"            "$arw_binary_sub_2_time"           "$arw_binary_bench_1_time"            "$arw_binary_bench_2_time"           "$arw_binary_sub_1_mem"            "$arw_binary_sub_2_mem"         "$arw_binary_bench_1_mem"           "$arw_binary_bench_2_mem""
-
-} >> $output
+echo "T"$global"             "$glob_updat_1_time"           "$glob_updat_2_time"          "$glob_cntrl_1_time"           "$glob_cntrl_2_time"          "$glob_updat_1_mem"            "$glob_updat_2_mem"         "$glob_cntrl_1_mem"           "$glob_cntrl_2_mem""
+echo "T"$global_lanczos"     "$glob_lanczos_updat_1_time"           "$glob_lanczos_updat_2_time"          "$glob_lanczos_cntrl_1_time"           "$glob_lanczos_cntrl_2_time"          "$glob_lanczos_updat_1_mem"           "$glob_lanczos_updat_2_mem"         "$glob_lanczos_cntrl_1_mem"          "$glob_lanczos_cntrl_2_mem""
+echo ""$rtma"                   "$rtma_updat_1_time"            "$rtma_updat_2_time"           "$rtma_cntrl_1_time"            "$rtma_cntrl_2_time"           "$rtma_updat_1_mem"            "$rtma_updat_2_mem"         "$rtma_cntrl_1_mem"           "$rtma_cntrl_2_mem""
+echo ""$nmm_binary"            "$nmm_binary_updat_1_time"           "$nmm_binary_updat_2_time"          "$nmm_binary_cntrl_1_time"           "$nmm_binary_cntrl_2_time"          "$nmm_binary_updat_1_mem"           "$nmm_binary_updat_2_mem"        "$nmm_binary_cntrl_1_mem"          "$nmm_binary_cntrl_2_mem""
+echo ""$nems_nmmb"              "$nems_nmmb_updat_1_time"           "$nems_nmmb_updat_2_time"          "$nems_nmmb_cntrl_1_time"           "$nems_nmmb_cntrl_2_time"          "$nems_nmmb_updat_1_mem"           "$nems_nmmb_updat_2_mem"         "$nems_nmmb_cntrl_1_mem"          "$nems_nmmb_cntrl_2_mem""
+echo ""$nmm_netcdf"            "$nmm_netcdf_updat_1_time"            "$nmm_netcdf_updat_2_time"           "$nmm_netcdf_cntrl_1_time"            "$nmm_netcdf_cntrl_2_time"           "$nmm_netcdf_updat_1_mem"            "$nmm_netcdf_updat_2_mem"         "$nmm_netcdf_cntrl_1_mem"           "$nmm_netcdf_cntrl_2_mem""
+echo ""$arw_netcdf"             "$arw_netcdf_updat_1_time"            "$arw_netcdf_updat_2_time"           "$arw_netcdf_cntrl_1_time"            "$arw_netcdf_cntrl_2_time"           "$arw_netcdf_updat_1_mem"            "$arw_netcdf_updat_2_mem"         "$arw_netcdf_cntrl_1_mem"           "$arw_netcdf_cntrl_2_mem""
+echo ""$arw_binary"             "$arw_binary_updat_1_time"            "$arw_binary_updat_2_time"           "$arw_binary_cntrl_1_time"            "$arw_binary_cntrl_2_time"           "$arw_binary_updat_1_mem"            "$arw_binary_updat_2_mem"         "$arw_binary_cntrl_1_mem"           "$arw_binary_cntrl_2_mem""
+ } >> $output
 
 mkdir -p $regression_vfydir
 

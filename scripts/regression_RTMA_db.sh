@@ -27,7 +27,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -56,11 +56,11 @@ export MP_INFOLEVEL=1
 
 
 # Set experiment name and analysis date
-exp=$exp1_rtma_sub_1node
+exp=$exp1_rtma_updat
 adate=$adate_regional
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set resoltion and other dependent parameters
 export JCAP=62

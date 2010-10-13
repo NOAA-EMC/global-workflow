@@ -28,7 +28,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -60,10 +60,10 @@ export MP_INFOLEVEL=1
 adate=$adate_regional_nems_nmmb
 
 # Set experiment name
-exp=$exp1_nems_nmmb_sub_2node
+exp=$exp1_nems_nmmb_updat
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set resoltion and other dependent parameters
 export JCAP=62

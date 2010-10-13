@@ -25,7 +25,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -207,7 +207,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=64,npred=5,iguess=-1,
+   ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,
    $SETUP
@@ -349,7 +349,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fixgsi/anavinfo_62_sigmap
+anavinfo=$fixgsi/global_anavinfo.l64.txt
 if [[ "$JCAP" -ne "878" ]]; then
    berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77.gcv
 elif [[ "$JCAP" = "878" ]]; then

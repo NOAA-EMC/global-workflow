@@ -27,7 +27,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for no threads
+# Set environment variables for threading and stacksize
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -57,10 +57,10 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_sub_1node
+exp=$exp1_global_updat
 
 # Set path/file for gsi executable
-gsiexec=$subversion
+gsiexec=$updat
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -186,7 +186,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_62_sigmap
+anavinfo=$fix_file/global_anavinfo.l64.txt
 berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin

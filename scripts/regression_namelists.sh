@@ -8,9 +8,9 @@ export global_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=66,npred=5,iguess=-1,
+   ndat=66,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -120,6 +120,18 @@ export global_T62_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_GLOBAL},
+   n_ens=${ENSEMBLE_SIZE_GLOBAL},
+   uv_hyb_ens=${HYBENS_UV_GLOBAL},
+   beta1_inv=${BETA1_INV_GLOBAL},
+   s_ens_h=${HYBENS_HOR_SCALE_GLOBAL},
+   s_ens_v=${HYBENS_VER_SCALE_GLOBAL},
+   generate_ens=${GENERATE_ENS_GLOBAL},
+   aniso_a_en=${HYBENS_ANISO_GLOBAL},
+   nlon_ens=${LONA},
+   nlat_ens=${NLAT},
+   jcap_ens=${JCAP},
+   jcap_ens_test=${JCAP},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
@@ -142,9 +154,9 @@ export global_lanczos_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=64,npred=5,iguess=-1,
+   ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
    $SETUP
  /
@@ -277,7 +289,7 @@ export RTMA_namelist="
    ndat=5,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=3,
+   nhr_assimilation=3,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -337,10 +349,10 @@ export arw_binary_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,npred=5,iguess=-1,
+   ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -435,6 +447,18 @@ export arw_binary_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_REGIONAL},
+   n_ens=${ENSEMBLE_SIZE_REGIONAL},
+   uv_hyb_ens=${HYBENS_UV_REGIONAL},
+   beta1_inv=${BETA1_INV_REGIONAL},
+   s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
+   s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
+   generate_ens=${GENERATE_ENS_REGIONAL},
+   aniso_a_en=${HYBENS_ANISO_REGIONAL},
+   nlon_ens=${NLON_ENS_REGIONAL},
+   nlat_ens=${NLAT_ENS_REGIONAL},
+   jcap_ens=${JCAP_ENS_REGIONAL},
+   jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
@@ -455,10 +479,10 @@ export arw_netcdf_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,npred=5,iguess=-1,
+   ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -553,6 +577,18 @@ export arw_netcdf_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_REGIONAL},
+   n_ens=${ENSEMBLE_SIZE_REGIONAL},
+   uv_hyb_ens=${HYBENS_UV_REGIONAL},
+   beta1_inv=${BETA1_INV_REGIONAL},
+   s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
+   s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
+   generate_ens=${GENERATE_ENS_REGIONAL},
+   aniso_a_en=${HYBENS_ANISO_REGIONAL},
+   nlon_ens=${NLON_ENS_REGIONAL},
+   nlat_ens=${NLAT_ENS_REGIONAL},
+   jcap_ens=${JCAP_ENS_REGIONAL},
+   jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
@@ -573,10 +609,10 @@ export nmm_binary_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,npred=5,iguess=-1,
+   ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -671,6 +707,18 @@ export nmm_binary_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_REGIONAL},
+   n_ens=${ENSEMBLE_SIZE_REGIONAL},
+   uv_hyb_ens=${HYBENS_UV_REGIONAL},
+   beta1_inv=${BETA1_INV_REGIONAL},
+   s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
+   s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
+   generate_ens=${GENERATE_ENS_REGIONAL},
+   aniso_a_en=${HYBENS_ANISO_REGIONAL},
+   nlon_ens=${NLON_ENS_REGIONAL},
+   nlat_ens=${NLAT_ENS_REGIONAL},
+   jcap_ens=${JCAP_ENS_REGIONAL},
+   jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
@@ -691,10 +739,10 @@ export nmm_netcdf_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,npred=5,iguess=-1,
+   ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -789,6 +837,18 @@ export nmm_netcdf_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_REGIONAL},
+   n_ens=${ENSEMBLE_SIZE_REGIONAL},
+   uv_hyb_ens=${HYBENS_UV_REGIONAL},
+   beta1_inv=${BETA1_INV_REGIONAL},
+   s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
+   s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
+   generate_ens=${GENERATE_ENS_REGIONAL},
+   aniso_a_en=${HYBENS_ANISO_REGIONAL},
+   nlon_ens=${NLON_ENS_REGIONAL},
+   nlat_ens=${NLAT_ENS_REGIONAL},
+   jcap_ens=${JCAP_ENS_REGIONAL},
+   jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
@@ -809,10 +869,10 @@ export nems_nmmb_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=64,npred=5,iguess=-1,
+   ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,preserve_restart_date=.true.,
+   use_pbl=.false.,use_compress=.false.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,
    $SETUP
  /
@@ -913,6 +973,18 @@ export nems_nmmb_namelist="
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
+   l_hyb_ens=${HYBENS_REGIONAL},
+   n_ens=${ENSEMBLE_SIZE_REGIONAL},
+   uv_hyb_ens=${HYBENS_UV_REGIONAL},
+   beta1_inv=${BETA1_INV_REGIONAL},
+   s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
+   s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
+   generate_ens=${GENERATE_ENS_REGIONAL},
+   aniso_a_en=${HYBENS_ANISO_REGIONAL},
+   nlon_ens=${NLON_ENS_REGIONAL},
+   nlat_ens=${NLAT_ENS_REGIONAL},
+   jcap_ens=${JCAP_ENS_REGIONAL},
+   jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
