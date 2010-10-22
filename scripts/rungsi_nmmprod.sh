@@ -229,6 +229,7 @@ emiscoef=$CRTMnam/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$CRTMnam/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$CRTMnam/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
+scaninfo=$fix_file/global_scaninfo.txt
 satangl=$FIXnam/nam_global_satangbias.txt
 pcpinfo=$FIXnam/nam_global_pcpinfo.txt
 ozinfo=$FIXnam/nam_global_ozinfo.txt
@@ -244,6 +245,7 @@ cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satangl  ./satbias_angle
 cp $satinfo  ./satinfo
+cp $scaninfo ./scaninfo
 cp $pcpinfo  ./pcpinfo
 cp $ozinfo   ./ozinfo
 cp $convinfo ./convinfo

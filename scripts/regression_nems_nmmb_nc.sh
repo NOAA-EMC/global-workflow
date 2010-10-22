@@ -174,6 +174,7 @@ emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
+scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
@@ -192,6 +193,7 @@ $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
+$ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
@@ -424,6 +426,7 @@ emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
+scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
@@ -442,6 +445,7 @@ $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
+$ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
