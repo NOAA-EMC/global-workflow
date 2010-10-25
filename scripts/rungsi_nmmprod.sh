@@ -82,12 +82,14 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
+FIXnam=/global/save/$USER/mlueken/fix
+CRTMnam=/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
-        co2dir=${CO2DIR:-$fix_file}
+        co2dir=${CO2DIR:-$FIXnam}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
         while [ $yyyy -ge 1957 ] ;do
@@ -219,9 +221,6 @@ cat << EOF > gsiparm.anl
  /
 EOF
 
-FIXnam=/global/save/$USER/mlueken/fix
-CRTMnam=/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
-
 anavinfo=$FIXnam/anavinfo_ndas_binary
 berror=$FIXnam/nam_nmmstat_na.gcv
 
@@ -229,7 +228,7 @@ emiscoef=$CRTMnam/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$CRTMnam/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$CRTMnam/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
-scaninfo=$fix_file/global_scaninfo.txt
+scaninfo=$FIXnam/global_scaninfo.txt
 satangl=$FIXnam/nam_global_satangbias.txt
 pcpinfo=$FIXnam/nam_global_pcpinfo.txt
 ozinfo=$FIXnam/nam_global_ozinfo.txt
