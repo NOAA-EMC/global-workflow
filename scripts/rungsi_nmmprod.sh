@@ -82,12 +82,14 @@ cd $tmpdir
 rm -rf core*
 
 # Make gsi namelist
+FIXnam=/global/save/$USER/mlueken/fix
+CRTMnam=/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
-        co2dir=${CO2DIR:-$fix_file}
+        co2dir=${CO2DIR:-$FIXnam}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
         while [ $yyyy -ge 1957 ] ;do
@@ -112,7 +114,7 @@ cat << EOF > gsiparm.anl
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -219,9 +221,6 @@ cat << EOF > gsiparm.anl
  /
 EOF
 
-FIXnam=/global/save/$USER/mlueken/fix
-CRTMnam=/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
-
 anavinfo=$FIXnam/anavinfo_ndas_binary
 berror=$FIXnam/nam_nmmstat_na.gcv
 
@@ -229,6 +228,7 @@ emiscoef=$CRTMnam/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$CRTMnam/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$CRTMnam/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
+scaninfo=$FIXnam/global_scaninfo.txt
 satangl=$FIXnam/nam_global_satangbias.txt
 pcpinfo=$FIXnam/nam_global_pcpinfo.txt
 ozinfo=$FIXnam/nam_global_ozinfo.txt
@@ -244,6 +244,7 @@ cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satangl  ./satbias_angle
 cp $satinfo  ./satinfo
+cp $scaninfo ./scaninfo
 cp $pcpinfo  ./pcpinfo
 cp $ozinfo   ./ozinfo
 cp $convinfo ./convinfo
