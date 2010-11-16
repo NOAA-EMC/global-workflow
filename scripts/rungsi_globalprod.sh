@@ -209,7 +209,7 @@ cat << EOF > gsiparm.anl
    gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
    ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS

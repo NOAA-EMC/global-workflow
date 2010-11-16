@@ -114,7 +114,7 @@ cat << EOF > gsiparm.anl
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,
+   use_pbl=.false.,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
