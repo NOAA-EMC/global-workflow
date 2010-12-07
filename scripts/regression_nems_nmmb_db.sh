@@ -15,7 +15,7 @@
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-MTN
-#@ wall_clock_limit = 3:00:00
+#@ wall_clock_limit = 1:00:00
 #@ notification=error
 #@ restart=no
 #@ queue
@@ -52,8 +52,8 @@ export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
+export XLFRTEOPTS="buffering=disable_all"
+export MP_COREFILE_FORMAT=lite
 
 
 # Set analysis date

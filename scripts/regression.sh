@@ -232,9 +232,6 @@ set -ax
 
 if [[ $debug = "true" ]]; then
 
-cd $src
-make debug
-
 # Now, return back to script directory to submit scripts for debug mode testing
 cd $scripts
 
