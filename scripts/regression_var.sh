@@ -23,6 +23,8 @@ export cntrl="/global/save/$USER/svn1/src/global_gsi"
 
 export global="62_sigmap"
 export global_lanczos="62_sigmap_lanczos"
+export global_3d4dvar="62_sigmap_3d4dvar"
+export global_4dvar="62_sigmap_4dvar"
 export arw_binary="arw_binary"
 export arw_netcdf="arw_netcdf"
 export nmm_binary="nmm_binary"
@@ -33,6 +35,8 @@ export compare="compare"
 
 export exp1_global_updat="global.updat.exp1"
 export exp1_global_lanczos_updat="global_lanczos.updat.exp1"
+export exp1_global_3d4dvar_updat="global_3d4dvar.updat.exp1"
+export exp1_global_4dvar_updat="global_4dvar.updat.exp1"
 export exp1_nmm_binary_updat="nmm_binary.updat.exp1"
 export exp1_nmm_netcdf_updat="nmm_netcdf.updat.exp1"
 export exp1_arw_binary_updat="arw_binary.updat.exp1"
@@ -42,6 +46,8 @@ export exp1_nems_nmmb_updat="nems_nmmb.updat.exp1"
 
 export exp2_global_updat="global.updat.exp2"
 export exp2_global_lanczos_updat="global_lanczos.updat.exp2"
+export exp2_global_3d4dvar_updat="global_3d4dvar.updat.exp2"
+export exp2_global_4dvar_updat="global_4dvar.updat.exp2"
 export exp2_nmm_binary_updat="nmm_binary.updat.exp2"
 export exp2_nmm_netcdf_updat="nmm_netcdf.updat.exp2"
 export exp2_arw_binary_updat="arw_binary.updat.exp2"
@@ -51,6 +57,8 @@ export exp2_nems_nmmb_updat="nems_nmmb.updat.exp2"
 
 export exp1_global_cntrl="global.cntrl.exp1"
 export exp1_global_lanczos_cntrl="global_lanczos.cntrl.exp1"
+export exp1_global_3d4dvar_cntrl="global_3d4dvar.cntrl.exp1"
+export exp1_global_4dvar_cntrl="global_4dvar.cntrl.exp1"
 export exp1_nmm_binary_cntrl="nmm_binary.cntrl.exp1"
 export exp1_nmm_netcdf_cntrl="nmm_netcdf.cntrl.exp1"
 export exp1_arw_binary_cntrl="arw_binary.cntrl.exp1"
@@ -60,6 +68,8 @@ export exp1_nems_nmmb_cntrl="nems_nmmb.cntrl.exp1"
 
 export exp2_global_cntrl="global.cntrl.exp2"
 export exp2_global_lanczos_cntrl="global_lanczos.cntrl.exp2"
+export exp2_global_3d4dvar_cntrl="global_3d4dvar.cntrl.exp2"
+export exp2_global_4dvar_cntrl="global_4dvar.cntrl.exp2"
 export exp2_nmm_binary_cntrl="nmm_binary.cntrl.exp2"
 export exp2_nmm_netcdf_cntrl="nmm_netcdf.cntrl.exp2"
 export exp2_arw_binary_cntrl="arw_binary.cntrl.exp2"
@@ -91,6 +101,8 @@ machine="cirrus"
 if [[ $machine = "stratus" ]]; then
    export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
    export datobs_global_lanczos="/global/noscrub/wx20ml/cases/global/sigmap"
+   export datobs_global_3d4dvar="/global/noscrub/wx20ml/cases/global/sigmap"
+   export datobs_global_4dvar="/global/noscrub/wx20ml/cases/global/sigmap"
    export datobs_rtma="/global/noscrub/wx20ml/cases/regional/rtma_binary"
    export datobs_nmm_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
    export datobs_nems_nmmb="/global/noscrub/wx20ml/nmmb_regression_case"
@@ -101,6 +113,8 @@ if [[ $machine = "stratus" ]]; then
 elif [[ $machine = "cirrus" ]]; then
      export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/global/noscrub/wx20ml/cases/global/sigmap"
+     export datobs_global_3d4dvar="/global/noscrub/wx20ml/cases/global/sigmap"
+     export datobs_global_4dvar="/global/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/global/noscrub/wx20ml/cases/regional/rtma_binary"
      export datobs_nmm_binary="/global/noscrub/wx20ml/cases/regional/ndas_binary"
      export datobs_nems_nmmb="/global/noscrub/wx20ml/nmmb_regression_case"
@@ -113,6 +127,8 @@ elif [[ $machine = "vapor" ]]; then
      export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
      export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/jcsda/noscrub/wx20ml/cases/global/sigmap"
+     export datobs_global_3d4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
+     export datobs_global_4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_rtma="/jcsda/noscrub/wx20ml/cases/regional/rtma_binary"
      export datobs_nmm_binary="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
      export datobs_nems_nmmb="/jcsda/noscrub/wx20ml/nmmb_regression_case"
@@ -126,6 +142,8 @@ fi
 
 export global_regression="global_regression_results.txt"
 export global_lanczos_regression="global_lanczos_regression_results.txt"
+export global_3d4dvar_regression="global_3d4dvar_regression_results.txt"
+export global_4dvar_regression="global_4dvar_regression_results.txt"
 export rtma_regression="rtma_regression_results.txt"
 export nmm_binary_regression="nmm_binary_regression_results.txt"
 export nmm_netcdf_regression="nmm_netcdf_regression_results.txt"
@@ -139,8 +157,8 @@ export regression_vfydir="$noscrub/regression"
 
 # Control run option
 
-export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.
-export debug="false" # If true, run the extra debug run for each configuration.  If false, skip the debug runs.
+export control="true" # If true, run the extra two control runs for each configuration.  If false, skip the control runs and use data from /noscrub.  If skip, do not run control runs or update runs.  Use skip if only want to run debug scripts.
+export debug="false"  # If true, run the extra debug run for each configuration.  If false, skip the debug runs.
 
 # Define location for copying control run data to
 
@@ -150,6 +168,10 @@ export control_global_T62="$noscrub/tmp${global}/$exp1_global_cntrl"
 export control_global_T622="$noscrub/tmp${global}/$exp2_global_cntrl"
 export control_global_lanczos_T62="$noscrub/tmp${global_lanczos}/$exp1_global_lanczos_cntrl"
 export control_global_lanczos_T622="$noscrub/tmp${global_lanczos}/$exp2_global_lanczos_cntrl"
+export control_global_3d4dvar_T62="$noscrub/tmp${global_3d4dvar}/$exp1_global_3d4dvar_cntrl"
+export control_global_3d4dvar_T622="$noscrub/tmp${global_3d4dvar}/$exp2_global_3d4dvar_cntrl"
+export control_global_4dvar_T62="$noscrub/tmp${global_4dvar}/$exp1_global_4dvar_cntrl"
+export control_global_4dvar_T622="$noscrub/tmp${global_4dvar}/$exp2_global_4dvar_cntrl"
 export control_nmm_binary="$noscrub/tmpreg_${nmm_binary}/$exp1_nmm_binary_cntrl"
 export control_nmm_binary2="$noscrub/tmpreg_${nmm_binary}/$exp2_nmm_binary_cntrl"
 export control_nmm_netcdf="$noscrub/tmpreg_${nmm_netcdf}/$exp1_nmm_netcdf_cntrl"
@@ -160,6 +182,11 @@ export control_arw_netcdf="$noscrub/tmpreg_${arw_netcdf}/$exp1_arw_netcdf_cntrl"
 export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_cntrl"
 export control_nems_nmmb="$noscrub/tmpreg_${nems_nmmb}/$exp1_nems_nmmb_cntrl"
 export control_nems_nmmb2="$noscrub/tmpreg_${nems_nmmb}/$exp2_nems_nmmb_cntrl"
+
+# Define parameters for global_T62_3d4dvar and global_T62_4dvar
+export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
+export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
+
 
 # Define parameters for hybrid ensemble option test.
 #   (default is set to false, so no hybrid ensemble option test.)

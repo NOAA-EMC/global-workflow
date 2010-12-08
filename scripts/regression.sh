@@ -47,13 +47,15 @@ if [[ $control == true ]]; then
    rm -rf $noscrub/tmpreg_${rtma}
    rm -rf $noscrub/tmp${global}
    rm -rf $noscrub/tmp${global_lanczos}
+   rm -rf $noscrub/tmp${global_3d4dvar}
+   rm -rf $noscrub/tmp${global_4dvar}
    rm -rf $noscrub/tmpreg_${arw_binary}
    rm -rf $noscrub/tmpreg_${arw_netcdf}
    rm -rf $noscrub/tmpreg_${nmm_binary}
    rm -rf $noscrub/tmpreg_${nmm_netcdf}
    rm -rf $noscrub/tmpreg_${nems_nmmb}
 
-   list="global_T62 global_lanczos_T62 RTMA nmm_binary nmm_netcdf arw_binary arw_netcdf nems_nmmb"
+   list="global_T62 global_lanczos_T62 global_3d4dvar_T62 global_4dvar_T62 RTMA nmm_binary nmm_netcdf arw_binary arw_netcdf nems_nmmb"
    for configuration in $list; do
        llsubmit regression_$configuration.sh
    done
@@ -62,7 +64,7 @@ sleep 4200 ## sleep for an hour and 10 minutes to allow for jobs to finish runni
 
 
 elif [[ $control == false ]]; then
-     list="global_T62_nc global_lanczos_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
+     list="global_T62_nc global_lanczos_T62_nc global_3d4dvar_T62_nc global_4dvar_T62_nc RTMA_nc nmm_binary_nc nmm_netcdf_nc arw_binary_nc arw_netcdf_nc nems_nmmb_nc"
      for configuration in $list; do
          llsubmit regression_$configuration.sh
      done
@@ -102,10 +104,12 @@ tmpdir_arw_binary=$ptmp_loc/$compare/tmpreg_${arw_binary}/${exp1_arw_binary_upda
 tmpdir_nems_nmmb=$ptmp_loc/$compare/tmpreg_${nems_nmmb}/${exp1_nems_nmmb_updat}_vs_${exp1_nems_nmmb_cntrl}
 tmpdir_global=$ptmp_loc/$compare/tmp${global}/${exp1_global_updat}_vs_${exp1_global_cntrl}
 tmpdir_global_lanczos=$ptmp_loc/$compare/tmp${global_lanczos}/${exp1_global_lanczos_updat}_vs_${exp1_global_lanczos_cntrl}
+tmpdir_global_3d4dvar=$ptmp_loc/$compare/tmp${global_3d4dvar}/${exp1_global_3d4dvar_updat}_vs_${exp1_global_3d4dvar_cntrl}
+tmpdir_global_4dvar=$ptmp_loc/$compare/tmp${global_4dvar}/${exp1_global_4dvar_updat}_vs_${exp1_global_4dvar_cntrl}
 
 
 # Copy grepped out files
-list="$tmpdir_RTMA $tmpdir_nmm_binary $tmpdir_nmm_netcdf $tmpdir_arw_netcdf $tmpdir_arw_binary $tmpdir_nems_nmmb $tmpdir_global $tmpdir_global_lanczos"
+list="$tmpdir_RTMA $tmpdir_nmm_binary $tmpdir_nmm_netcdf $tmpdir_arw_netcdf $tmpdir_arw_binary $tmpdir_nems_nmmb $tmpdir_global $tmpdir_global_lanczos $tmpdir_global_3d4dvar $tmpdir_global_4dvar"
 for dir in $list; do
    $ncp $dir/runtime* ./
    $ncp $dir/memory* ./
@@ -133,6 +137,28 @@ glob_lanczos_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_updat.
 glob_lanczos_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_updat.txt)
 glob_lanczos_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_global_lanczos_cntrl.txt)
 glob_lanczos_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_global_lanczos_cntrl.txt)
+
+# Now, global GSI 3d4dvar results
+glob_3d4dvar_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_global_3d4dvar_updat.txt)
+glob_3d4dvar_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_global_3d4dvar_updat.txt)
+glob_3d4dvar_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_global_3d4dvar_cntrl.txt)
+glob_3d4dvar_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_global_3d4dvar_cntrl.txt)
+
+glob_3d4dvar_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_global_3d4dvar_updat.txt)
+glob_3d4dvar_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_global_3d4dvar_updat.txt)
+glob_3d4dvar_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_global_3d4dvar_cntrl.txt)
+glob_3d4dvar_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_global_3d4dvar_cntrl.txt)
+
+# Now, global GSI 4dvar results
+glob_4dvar_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_global_4dvar_updat.txt)
+glob_4dvar_updat_2_time=$(awk '{ print $8 }' runtime.$exp2_global_4dvar_updat.txt)
+glob_4dvar_cntrl_1_time=$(awk '{ print $8 }' runtime.$exp1_global_4dvar_cntrl.txt)
+glob_4dvar_cntrl_2_time=$(awk '{ print $8 }' runtime.$exp2_global_4dvar_cntrl.txt)
+
+glob_4dvar_updat_1_mem=$(awk '{ print $8 }' memory.$exp1_global_4dvar_updat.txt)
+glob_4dvar_updat_2_mem=$(awk '{ print $8 }' memory.$exp2_global_4dvar_updat.txt)
+glob_4dvar_cntrl_1_mem=$(awk '{ print $8 }' memory.$exp1_global_4dvar_cntrl.txt)
+glob_4dvar_cntrl_2_mem=$(awk '{ print $8 }' memory.$exp2_global_4dvar_cntrl.txt)
 
 # Now, RTMA
 rtma_updat_1_time=$(awk '{ print $8 }' runtime.$exp1_rtma_updat.txt)
@@ -209,6 +235,8 @@ echo "                                    update                                
 echo
 echo "T"$global"             "$glob_updat_1_time"           "$glob_updat_2_time"          "$glob_cntrl_1_time"           "$glob_cntrl_2_time"          "$glob_updat_1_mem"            "$glob_updat_2_mem"         "$glob_cntrl_1_mem"           "$glob_cntrl_2_mem""
 echo "T"$global_lanczos"     "$glob_lanczos_updat_1_time"           "$glob_lanczos_updat_2_time"          "$glob_lanczos_cntrl_1_time"           "$glob_lanczos_cntrl_2_time"          "$glob_lanczos_updat_1_mem"           "$glob_lanczos_updat_2_mem"         "$glob_lanczos_cntrl_1_mem"          "$glob_lanczos_cntrl_2_mem""
+echo "T"$global_3d4dvar"     "$glob_3d4dvar_updat_1_time"           "$glob_3d4dvar_updat_2_time"           "$glob_3d4dvar_cntrl_1_time"           "$glob_3d4dvar_cntrl_2_time"           "$glob_3d4dvar_updat_1_mem"            "$glob_3d4dvar_updat_2_mem"         "$glob_3d4dvar_cntrl_1_mem"           "$glob_3d4dvar_cntrl_2_mem""
+echo "T"$global_4dvar"       "$glob_4dvar_updat_1_time"           "$glob_4dvar_updat_2_time"           "$glob_4dvar_cntrl_1_time"           "$glob_4dvar_cntrl_2_time"           "$glob_4dvar_updat_1_mem"            "$glob_4dvar_updat_2_mem"         "$glob_4dvar_cntrl_1_mem"           "$glob_4dvar_cntrl_2_mem""
 echo ""$rtma"                   "$rtma_updat_1_time"            "$rtma_updat_2_time"           "$rtma_cntrl_1_time"            "$rtma_cntrl_2_time"           "$rtma_updat_1_mem"            "$rtma_updat_2_mem"         "$rtma_cntrl_1_mem"           "$rtma_cntrl_2_mem""
 echo ""$nmm_binary"            "$nmm_binary_updat_1_time"           "$nmm_binary_updat_2_time"          "$nmm_binary_cntrl_1_time"           "$nmm_binary_cntrl_2_time"          "$nmm_binary_updat_1_mem"           "$nmm_binary_updat_2_mem"        "$nmm_binary_cntrl_1_mem"          "$nmm_binary_cntrl_2_mem""
 echo ""$nems_nmmb"              "$nems_nmmb_updat_1_time"           "$nems_nmmb_updat_2_time"          "$nems_nmmb_cntrl_1_time"           "$nems_nmmb_cntrl_2_time"          "$nems_nmmb_updat_1_mem"           "$nems_nmmb_updat_2_mem"         "$nems_nmmb_cntrl_1_mem"          "$nems_nmmb_cntrl_2_mem""
@@ -235,7 +263,7 @@ if [[ $debug = "true" ]]; then
 # Now, return back to script directory to submit scripts for debug mode testing
 cd $scripts
 
-   list="global_T62_db global_lanczos_T62_db RTMA_db nmm_binary_db nmm_netcdf_db arw_binary_db arw_netcdf_db nems_nmmb_db"
+   list="global_T62_db global_lanczos_T62_db global_4dvar_T62_db RTMA_db nmm_binary_db nmm_netcdf_db arw_binary_db arw_netcdf_db nems_nmmb_db"
    for configuration in $list; do
        llsubmit regression_$configuration.sh
    done
