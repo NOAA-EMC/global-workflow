@@ -137,6 +137,8 @@ export global_T62_namelist="
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${adate},
@@ -270,6 +272,8 @@ export global_lanczos_T62_namelist="
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${adate},
@@ -333,6 +337,8 @@ export RTMA_namelist="
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
+ /
+ &CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -464,6 +470,8 @@ export arw_binary_namelist="
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
@@ -593,6 +601,8 @@ export arw_netcdf_namelist="
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
+ /
+ &CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -724,6 +734,8 @@ export nmm_binary_namelist="
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
@@ -853,6 +865,8 @@ export nmm_netcdf_namelist="
  &RAPIDREFRESH_CLDSURF
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
+ /
+ &CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -990,8 +1004,84 @@ export nems_nmmb_namelist="
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
+   obhourset=0.,
+ /"
+
+# Define namelist for cmaq binary run
+
+ export cmaq_binary_namelist="
+
+ &SETUP
+   miter=2,niter(1)=50,niter(2)=50,
+   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
+   gencode=78,qoption=2,
+   factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
+   ndat=1,iguess=-1,
+   oneobtest=.false.,retrieval=.false.,
+   nhr_assimilation=3,l_foto=.false.,
+   use_pbl=.false.,use_compress=.false.,
+   $SETUP
+ /
+ &GRIDOPTS
+   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,
+   cmaq_regional=.true.,diagnostic_reg=.true.,
+   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
+ /
+ &BKGERR
+   hzscl=0.373,0.746,1.50,
+   vs=1.0,bw=0.,fstat=.true.,
+ /
+ &ANBKGERR
+   anisotropic=.false.,an_vs=1.0,ngauss=1,
+   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
+   ifilt_ord=2,npass=3,normal=-200,grid_ratio=4.,nord_f2a=4,
+ /
+ &JCOPTS
+ /
+ &STRONGOPTS
+   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,
+   period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
+ /
+ &OBSQC
+   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',
+ /
+ &OBS_INPUT
+   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,
+   dmesh(5)=120,time_window_max=1.5,
+   dfile(01)='anowbufr',  dtype(01)='pm2_5',        dplat(01)=' ',         dsis(01)='TEOM',             dval(01)=1.0,  dthin(01)=0,
+ /
+!max name length for dfile=13
+!max name length for dtype=10
+ &SUPEROB_RADAR
+   del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
+   l2superob_only=.false.,
+ /
+ &LAG_DATA
+ /
+ &HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   l_cloud_analysis=.false.,
+   dfi_radar_latent_heat_time_period=30.0,
+ /
+ &CHEM
+   berror_chem=.true.,
+   oneobtest_chem=.true.,
+   maginnov_chem=60,magoberr_chem=2.,oneob_type_chem='pm2_5',
+   oblat_chem=45.,oblon_chem=270.,obpres_chem=1000.,
+   diag_incr=.true.,elev_tolerance=500.,tunable_error=0.5,
+   in_fname="\""${cmaq_input}"\"",out_fname="\""${cmaq_output}"\"",
+   incr_fname="\""${chem_increment}"\"",
+!diag_incr for diagnostic increment output
+ /
+ &SINGLEOB_TEST
+   maginnov=5,magoberr=0.1,oneob_type='t',
+   oblat=45.,oblon=270.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
  /"

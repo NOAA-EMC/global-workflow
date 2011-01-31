@@ -9,14 +9,14 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
+export fix_file="/global/save/$USER/trunk/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export scripts="/global/save/$USER/trunk/scripts"
+export src="/global/save/$USER/trunk/src"
 
 # Define work directories (location of executables)
 
-export updat="/global/save/$USER/mlueken/src/global_gsi"
+export updat="/global/save/$USER/trunk/src/global_gsi"
 export cntrl="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
@@ -89,11 +89,12 @@ export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
 export adate_regional_arw_netcdf="2008051112"
 export adate_regional_arw_binary="2010072412"
+export adate_regional_cmaq_binary="2010090112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-machine="cirrus"
-#machine="stratus"
+#machine="cirrus"
+machine="stratus"
 #machine="vapor"
 
 # Define obs directory
@@ -110,6 +111,7 @@ if [[ $machine = "stratus" ]]; then
    export datges_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/nmm_netcdf"
    export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
    export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
+   export datobs_cmaq_binary="/global/noscrub/wx20ml/cases/regional/cmaq"
 elif [[ $machine = "cirrus" ]]; then
      export datobs_global="/global/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/global/noscrub/wx20ml/cases/global/sigmap"
