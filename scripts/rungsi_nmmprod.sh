@@ -58,7 +58,7 @@ ndate=/nwprod/util/exec/ndate
 
 adate=2010051600
 
-exp=${USER}_nmm.$adate
+exp=${USER}_nmm.$adate.$gps_dtype
 
 TM=00
 TM2=03
@@ -114,7 +114,7 @@ cat << EOF > gsiparm.anl
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -151,7 +151,7 @@ cat << EOF > gsiparm.anl
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0,
    dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps_ref',             dval(10)=1.0,  dthin(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps',                 dval(10)=1.0,  dthin(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0,

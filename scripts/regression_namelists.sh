@@ -10,7 +10,7 @@ export global_T62_namelist="
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
    ndat=66,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -55,7 +55,7 @@ export global_T62_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',              dval(07)=1.0,  dthin(07)=0,  dsfcalc(07)=0,
    dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',              dval(08)=1.0,  dthin(08)=0,  dsfcalc(08)=0,
    dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',             dval(09)=1.0,  dthin(09)=0,  dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps_ref',         dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',             dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',        dval(11)=1.0,  dthin(11)=-1, dsfcalc(11)=0,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',         dval(12)=1.0,  dthin(12)=-1, dsfcalc(12)=0,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',       dval(13)=1.0,  dthin(13)=0,  dsfcalc(13)=0,
@@ -158,7 +158,7 @@ export global_lanczos_T62_namelist="
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
    ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
    $SETUP
  /
@@ -204,7 +204,7 @@ export global_lanczos_T62_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',              dval(07)=1.0,  dthin(07)=0,  dsfcalc(07)=0,
    dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',              dval(08)=1.0,  dthin(08)=0,  dsfcalc(08)=0,
    dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',             dval(09)=1.0,  dthin(09)=0,  dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps_ref',         dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',             dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',        dval(11)=1.0,  dthin(11)=-1, dsfcalc(11)=0,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',         dval(12)=1.0,  dthin(12)=-1, dsfcalc(12)=0,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',       dval(13)=1.0,  dthin(13)=0,  dsfcalc(13)=0,
@@ -358,7 +358,7 @@ export arw_binary_namelist="
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -395,7 +395,7 @@ export arw_binary_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0,
    dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps_ref',             dval(10)=1.0,  dthin(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',         dsis(10)='gps',                 dval(10)=1.0,  dthin(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0,
@@ -490,7 +490,7 @@ export arw_netcdf_namelist="
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -527,7 +527,7 @@ export arw_netcdf_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0,
    dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps_ref',             dval(10)=1.0,  dthin(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',         dsis(10)='gps',                 dval(10)=1.0,  dthin(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0,
@@ -622,7 +622,7 @@ export nmm_binary_namelist="
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -659,7 +659,7 @@ export nmm_binary_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0,
    dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps_ref',             dval(10)=1.0,  dthin(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',         dsis(10)='gps',                 dval(10)=1.0,  dthin(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0,
@@ -754,7 +754,7 @@ export nmm_netcdf_namelist="
    ndat=59,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
    $SETUP
  /
  &GRIDOPTS
@@ -791,7 +791,7 @@ export nmm_netcdf_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0,
    dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',         dsis(10)='gps_ref',             dval(10)=1.0,  dthin(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',         dsis(10)='gps',                 dval(10)=1.0,  dthin(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0,
@@ -886,7 +886,7 @@ export nems_nmmb_namelist="
    ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,preserve_restart_date=.true.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,
    $SETUP
  /
@@ -924,7 +924,7 @@ export nems_nmmb_namelist="
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',                    dval(07)=1.0,  dthin(07)=0,  dsfcalc(07)=0,
    dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',                    dval(08)=1.0,  dthin(08)=0,  dsfcalc(08)=0,
    dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',                   dval(09)=1.0,  dthin(09)=0,  dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps_ref',               dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',                   dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',              dval(11)=1.0,  dthin(11)=-1, dsfcalc(11)=0,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',               dval(12)=1.0,  dthin(12)=-1, dsfcalc(12)=0,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',             dval(13)=1.0,  dthin(13)=0,  dsfcalc(13)=0,

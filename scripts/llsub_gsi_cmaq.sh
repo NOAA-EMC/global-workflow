@@ -19,7 +19,7 @@
 
 . regression_var.sh
 
-exp=cmaq_test
+exp=cmaq_test.$gps_dtype
 hour=12
 
 tmpdir=$ptmp_loc/tmpreg_${cmaq}/${exp}

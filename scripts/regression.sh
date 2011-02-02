@@ -40,7 +40,16 @@ set -x
 case $LOADL_STEP_NAME in
   driver)
 
-rm -rf $regression_vfydir
+rm -rf $regression_vfydir/$global_regression
+rm -rf $regression_vfydir/$global_lanczos_regression
+rm -rf $regression_vfydir/$global_3d4dvar_regression
+rm -rf $regression_vfydir/$global_4dvar_regression
+rm -rf $regression_vfydir/$rtma_regression
+rm -rf $regression_vfydir/$nmm_binary_regression
+rm -rf $regression_vfydir/$nmm_netcdf_regression
+rm -rf $regression_vfydir/$arw_binary_regression
+rm -rf $regression_vfydir/$arw_netcdf_regression
+rm -rf $regression_vfydir/$nems_nmmb_regression
 
 if [[ $control == true ]]; then
 
@@ -91,7 +100,7 @@ mkdir -p $tmpdir_table
 cd $tmpdir_table
 
 # Define output name for table
-output=regression_test_table.out
+output=regression_test_table.$gps_dtype.out
 
 ncp=/bin/cp
 
