@@ -268,6 +268,7 @@ cat << EOF > gsiparm.anl
    ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
+   use_gfs_nemsio=.false.,
    $SETUP
  /
  &GRIDOPTS

@@ -11,6 +11,7 @@ export global_T62_namelist="
    ndat=66,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
+   use_gfs_nemsio=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -160,6 +161,7 @@ export global_lanczos_T62_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
+   use_gfs_nemsio=.false.,
    $SETUP
  /
  &GRIDOPTS
