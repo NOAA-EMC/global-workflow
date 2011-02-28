@@ -255,6 +255,7 @@ SUPERRAD=""
 LAGDATA=""
 HYBRID_ENSEMBLE=""
 RAPIDREFRESH_CLDSURF=""
+CHEM=""
 SINGLEOB=""
 
 
@@ -383,6 +384,9 @@ cat << EOF > gsiparm.anl
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
    $RAPIDREFRESH_CLDSURF
+ /
+ &CHEM
+   $CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',

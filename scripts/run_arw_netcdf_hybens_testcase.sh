@@ -310,6 +310,8 @@ cat << EOF > gsiparm.anl
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=${MAGINNO},
    magoberr=${MAGOERR},

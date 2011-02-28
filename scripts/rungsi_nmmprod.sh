@@ -214,6 +214,8 @@ cat << EOF > gsiparm.anl
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
+ &CHEM
+ /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
