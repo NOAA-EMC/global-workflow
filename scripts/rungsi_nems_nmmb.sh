@@ -198,6 +198,7 @@ $ncp $datobs/ndas.t12z.goesfv.tm12.bufr_d ./gsnd1bufr
 $ncp $datobs/ndas.t12z.airsev.tm12.bufr_d ./airsbufr
 $ncp $datobs/ndas.t12z.radwnd.tm12.bufr_d ./radarbufr
 $ncp $datobs/gdas1.t00z.osbuv8.tm00.bufr_d ./sbuvbufr
+$ncp $datobs/gdas1.t00z.mls.tm00.bufr_d ./mlsbufr
 
 # Copy bias correction, sigma, and surface files
 #
