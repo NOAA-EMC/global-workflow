@@ -13,7 +13,7 @@
 #@ class=dev
 #@ group=dev
 #@ account_no = GDAS-T2O
-#@ wall_clock_limit = 3:00:00
+#@ wall_clock_limit = 1:00:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ restart=no
@@ -51,8 +51,8 @@ export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
+export XLFRTEOPTS="buffering=disable_all"
+export MP_COREFILE_FORMAT=lite
 
 
 # Set experiment name and analysis date
@@ -164,7 +164,7 @@ SINGLEOB=""
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
 OBSQC="noiqc=.false.,"
-SETUPmin="miter=1,niter(1)=50,niter_no_qc(1)=500,"
+SETUPmin="miter=1,niter(1)=10,niter_no_qc(1)=500,"
 SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
@@ -249,16 +249,35 @@ $ncp $errtable ./errtable
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
-# Adjust data usage flags in convinfo file.
-rm new
-cp convinfo old
-mv convinfo convinfo_original
-sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < old > new
-mv new old
-sed 's/uv       243   56    1     3.0/uv       243   56   -1     3.0/' < old > new
-mv new old
-sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > new
-mv new convinfo
+# Extract subset of data types to process from convinfo
+cp convinfo convinfo_original
+rm -rf type*
+grep "   112   " convinfo > type112
+grep "   120   " convinfo > type120
+grep "   121   " convinfo > type121
+grep "   130   " convinfo > type130
+grep "   131   " convinfo > type131
+grep "   132   " convinfo > type132
+grep "   180   " convinfo > type180
+grep "   182   " convinfo > type182
+grep "   220   " convinfo > type220
+grep "   221   " convinfo > type221
+grep "   230   " convinfo > type230
+grep "   231   " convinfo > type231
+grep "   232   " convinfo > type232
+grep "   242   " convinfo > type242
+grep "   252   " convinfo > type252
+grep "   280   " convinfo > type280
+grep "   282   " convinfo > type282
+grep "   004   " convinfo > type004
+grep "   722   " convinfo > type722
+grep "   741   " convinfo > type741
+
+sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < type180 > type180_new
+mv type180_new type180
+
+cat type* > convinfo_subset
+mv convinfo_subset convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
