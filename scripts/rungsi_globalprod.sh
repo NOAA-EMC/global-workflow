@@ -39,7 +39,7 @@ fi
 
 # Set experiment name and analysis date
 adate=2010121512
-exp=globalprod.$adate.$gps_dtype
+exp=globalprod.$adate
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
@@ -64,7 +64,16 @@ savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 # Use with CRTM REL-2.0
 fixcrtm=${TOPDIR}/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
 
+# Other Executables and scripts
+export SIGHDR=/nwprod/exec/global_sighdr
+export CHGRESSH=/nwprod/ush/global_chgres.sh
+export ndate=/nwprod/util/exec/ndate
+export ncp=/bin/cp
+
 #=================================================================================================
+
+# Refractive Index or Bending Angle for GPS?
+export gps_dtype="gps_ref"
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
@@ -103,8 +112,6 @@ export MP_INFOLEVEL=1
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-ndate=/nwprod/util/exec/ndate
-ncp=/bin/cp
 
 # Given the requested resolution, set dependent resolution parameters
 if [[ "$JCAP" = "878" ]]; then
@@ -314,7 +321,7 @@ cat << EOF > gsiparm.anl
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',                 dval(07)=1.0, dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',                 dval(08)=1.0, dthin(08)=0, dsfcalc(08)=0,
    dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',                dval(09)=1.0, dthin(09)=0, dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps',                dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',                dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',           dval(11)=1.0, dthin(11)=-1,dsfcalc(11)=0,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',            dval(12)=1.0, dthin(12)=-1,dsfcalc(12)=0,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',          dval(13)=1.0, dthin(13)=0, dsfcalc(13)=0,
@@ -517,7 +524,12 @@ ln -s -f $datobs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
 ln -s -f $datges/${prefix_tbc}.abias              ./satbias_in
 ln -s -f $datges/${prefix_tbc}.satang             ./satbias_angle
 
-if [[ "$JCAP" = "382" ]]; then
+# Determine resolution of the guess files
+JCAP_GUESS=`$SIGHDR $datprep/${prefix_atm}.sgesprep JCAP`
+
+# Change resolution of input files with chgres if $JCAP is 
+# inconsistent with $JCAP_GUESS 
+if [[ "$JCAP" = "$JCAP_GUESS" ]]; then
    ln -s -f $datges/${prefix_sfc}.bf03               ./sfcf03
    ln -s -f $datges/${prefix_sfc}.bf06               ./sfcf06
    ln -s -f $datges/${prefix_sfc}.bf09               ./sfcf09
@@ -525,9 +537,7 @@ if [[ "$JCAP" = "382" ]]; then
    ln -s -f $datprep/${prefix_atm}.sgm3prep           ./sigf03
    ln -s -f $datprep/${prefix_atm}.sgesprep           ./sigf06
    ln -s -f $datprep/${prefix_atm}.sgp3prep           ./sigf09
-elif [[ "$JCAP" -ne "382" ]]; then
-# Use chgres to change resolution from T382/64L to T62/64L
-
+else
 # first copy required files to working directory
 
    ln -s -f $datges/gdas1.t${hhg}z.bf03               ./gdas1.t${hhg}z.bf03
@@ -551,7 +561,6 @@ elif [[ "$JCAP" -ne "382" ]]; then
 
    # Operational chgres for operational sigio
    export DATA=$tmpdir
-   export CHGRESSH=/nwprod/ush/global_chgres.sh
 
    list="sgm3prep sgesprep sgp3prep"
    for fhr in $list; do
