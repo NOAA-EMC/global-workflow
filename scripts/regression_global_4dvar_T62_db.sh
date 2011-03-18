@@ -1,10 +1,10 @@
 #!/bin/sh
 
-#@ job_name=regression_debug_test
-#@ error=global_debug_test.e$(jobid)
+#@ job_name=regression_4dvar_debug_test
+#@ error=global_4dvar_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 1
+#@ node = 4
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -13,10 +13,10 @@
 #@ class=dev
 #@ group=dev
 #@ account_no = GDAS-T2O
-#@ wall_clock_limit = 2:00:00
+#@ wall_clock_limit = 1:00:00
 #@ startdate = 09/27/06 05:00
-#@ restart=no
 #@ notification=error
+#@ restart=no
 #@ queue
 
 . regression_var.sh
@@ -57,7 +57,7 @@ export MP_COREFILE_FORMAT=lite
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_updat
+exp=$exp1_global_4dvar_updat
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -69,7 +69,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global}/${exp}
+tmpdir=$ptmp_loc/tmp${global_4dvar}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -118,7 +118,7 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global/$adate
+datobs=$datobs_global_4dvar/$adate
 datges=$datobs
 
 # Set up $tmpdir
@@ -132,23 +132,25 @@ rm -rf core*
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
-	# Copy co2 files to $tmpdir
-	co2dir=${CO2DIR:-$fix_file}
-	yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-	rm ./global_co2_data.txt
-	while [ $yyyy -ge 1957 ] ;do
-		co2=$co2dir/global_co2historicaldata_$yyyy.txt
-		if [ -s $co2 ] ; then
-			$ncp $co2 ./global_co2_data.txt
-		break
-		fi
-		((yyyy-=1))
-	done
-	if [ ! -s ./global_co2_data.txt ] ; then
-		echo "\./global_co2_data.txt" not created
-		exit 1
+        # Copy co2 files to $tmpdir
+        co2dir=${CO2DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./global_co2_data.txt
+        while [ $yyyy -ge 1957 ] ;do
+                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                if [ -s $co2 ] ; then
+                        $ncp $co2 ./global_co2_data.txt
+                break
+                fi
+                ((yyyy-=1))
+        done
+        if [ ! -s ./global_co2_data.txt ] ; then
+                echo "\./global_co2_data.txt" not created
+                exit 1
    fi
 fi
+
+SETUP=""
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -158,17 +160,40 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+# Set variables for requested minimization (pcgsoi or lanczos)
+JCOPTS="ljcpdry=.false.,"
+OBSQC="noiqc=.false.,"
+SETUPmin="miter=1,niter(1)=10,niter_no_qc(1)=500,"
+SETUPlan=""
+export minimization=${minimization:-"pcgsoi"}
+if [ "$minimization" = "lanczos" ]; then
+   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+fi
+
+# Create namelist for observer run
+export nhr_obsbin=${nhr_obsbin:-1}
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,lwrtinc=.true.,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists_db.sh
-
-##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
-##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
-##!   idmodel=.true.,lwrtinc=.false.,
-
-cat << EOF > gsiparm.anl
+rm gsiparm.anl.obsvr
+cat << EOF > gsiparm.anl.obsvr
 
 $global_T62_namelist
 
 EOF
+
+# Create namelist for identity model 4dvar run
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,lwrtinc=.true.,lanczosave=.true.,"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+. $scripts/regression_namelists_db.sh
+rm gsiparm.anl.4dvar
+cat << EOF > gsiparm.anl.4dvar
+
+$global_T62_namelist
+
+EOF
+
 
 # Set fixed files
 #   berror   = forecast model background error statistics
@@ -224,6 +249,36 @@ $ncp $errtable ./errtable
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
+# Extract subset of data types to process from convinfo
+cp convinfo convinfo_original
+rm -rf type*
+grep "   112   " convinfo > type112
+grep "   120   " convinfo > type120
+grep "   121   " convinfo > type121
+grep "   130   " convinfo > type130
+grep "   131   " convinfo > type131
+grep "   132   " convinfo > type132
+grep "   180   " convinfo > type180
+grep "   182   " convinfo > type182
+grep "   220   " convinfo > type220
+grep "   221   " convinfo > type221
+grep "   230   " convinfo > type230
+grep "   231   " convinfo > type231
+grep "   232   " convinfo > type232
+grep "   242   " convinfo > type242
+grep "   252   " convinfo > type252
+grep "   280   " convinfo > type280
+grep "   282   " convinfo > type282
+grep "   004   " convinfo > type004
+grep "   722   " convinfo > type722
+grep "   741   " convinfo > type741
+
+sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < type180 > type180_new
+mv type180_new type180
+
+cat type* > convinfo_subset
+mv convinfo_subset convinfo
+
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
 isatsen=1
@@ -271,24 +326,49 @@ $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+##$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
+##$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+##$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
 $ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+##$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
+# Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
+poe $tmpdir/gsi.x < gsiparm.anl.obsvr > stdout.obsvr
 rc=$?
-
-if [[ "$rc" = "0" ]]; then
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp1_global_4dvar_updat' has FAILED to run observer to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
+   exit
+else
    cd $regression_vfydir
    {
     echo
-    echo 'global debug test has passed'
-   } >> $global_regression
+    echo 'global_4dvar observer debug test has passed'
+   } >> $global_4dvar_regression
+fi
+
+# Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
+cd $tmpdir
+rm -f siganl sfcanl.gsi satbias_out fort.2*
+rm -rf dir.0*
+poe $tmpdir/gsi.x < gsiparm.anl.4dvar > stdout
+rc=$?
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp1_global_4dvar_updat' has FAILED to run id4dvar to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
+   exit
+else
+   cd $regression_vfydir
+   {
+    echo
+    echo 'global_4dvar minimization debug test has passed'
+   } >> $global_4dvar_regression
 fi
 
 exit

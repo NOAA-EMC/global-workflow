@@ -4,7 +4,7 @@
 #@ error=global_lanczos_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 4
+#@ node = 1
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -13,7 +13,7 @@
 #@ class=dev
 #@ group=dev
 #@ account_no = GDAS-T2O
-#@ wall_clock_limit = 3:00:00
+#@ wall_clock_limit = 2:00:00
 #@ startdate = 09/27/06 05:00
 #@ restart=no
 #@ notification=error
@@ -51,8 +51,8 @@ export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
+export XLFRTEOPTS="buffering=disable_all"
+export MP_COREFILE_FORMAT=lite
 
 
 # Set experiment name and analysis date
@@ -261,6 +261,7 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
+$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears

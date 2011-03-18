@@ -7,7 +7,7 @@
 #@ account_no = GDAS-T2O
 
 #@ job_name=regression_test
-#@ step_name=gsi_global_lanczos_updat
+#@ step_name=gsi_global_4dvar_updat
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
@@ -15,13 +15,13 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:10:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ restart=no
 #@ queue
 
-#@ step_name=gsi_global_lanczos_updat2
+#@ step_name=gsi_global_4dvar_updat2
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
@@ -29,14 +29,14 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:10:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
+#@ dependency=(gsi_global_4dvar_updat==0)
 #@ restart=no
-#@ dependency=(gsi_global_lanczos_updat==0)
 #@ queue
 
-#@ step_name=global_lanczos_regression
+#@ step_name=global_4dvar_regression
 #@ job_type=serial
 #@ task_affinity = cpu(1)
 #@ parallel_threads = 1
@@ -44,14 +44,14 @@
 #@ node_resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
+#@ dependency=(gsi_global_4dvar_updat2==0)
 #@ restart=no
-#@ dependency=(gsi_global_lanczos_updat2==0)
 #@ queue
 
 . regression_var.sh
 
 case $LOADL_STEP_NAME in
-  gsi_global_lanczos_updat)
+  gsi_global_4dvar_updat)
 
 set -x
 
@@ -89,7 +89,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_lanczos_updat
+exp=$exp1_global_4dvar_updat
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -101,7 +101,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_4dvar}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -150,7 +150,7 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
+datobs=$datobs_global_4dvar/$adate
 datges=$datobs
 
 # Set up $tmpdir
@@ -181,6 +181,8 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+
+SETUP=""
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -190,17 +192,40 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+# Set variables for requested minimization (pcgsoi or lanczos)
+JCOPTS="ljcpdry=.false.,"
+OBSQC="noiqc=.false.,"
+SETUPmin="miter=1,niter(1)=50,niter_no_qc(1)=500,"
+SETUPlan=""
+export minimization=${minimization:-"pcgsoi"}
+if [ "$minimization" = "lanczos" ]; then
+   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+fi
+
+# Create namelist for observer run
+export nhr_obsbin=${nhr_obsbin:-1}
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,lwrtinc=.true.,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
+rm gsiparm.anl.obsvr
+cat << EOF > gsiparm.anl.obsvr
 
-##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
-##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
-##!   idmodel=.true.,lwrtinc=.false.,
-
-cat << EOF > gsiparm.anl
-
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
+
+# Create namelist for identity model 4dvar run
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,lwrtinc=.true.,lanczosave=.true.,"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+. $scripts/regression_namelists.sh
+rm gsiparm.anl.4dvar
+cat << EOF > gsiparm.anl.4dvar
+
+$global_T62_namelist
+
+EOF
+
 
 # Set fixed files
 #   berror   = forecast model background error statistics
@@ -255,6 +280,17 @@ $ncp $errtable ./errtable
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
+
+# Adjust data usage flags in convinfo file.
+rm new
+cp convinfo old
+mv convinfo convinfo_original
+sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < old > new
+mv new old
+sed 's/uv       243   56    1     3.0/uv       243   56   -1     3.0/' < old > new
+mv new old
+sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > new
+mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -303,52 +339,36 @@ $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+##$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
+##$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+##$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
 $ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+##$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
+# Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
+poe $tmpdir/gsi.x < gsiparm.anl.obsvr > stdout.obsvr
 rc=$?
-
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_global_lanczos_updat' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp1_global_4dvar_updat' has FAILED to run observer to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
    $step_name==$rc
    exit
 fi
 
 # Save output
 mkdir -p $savdir
-
-cat stdout fort.2* > $savdir/stdout.anl.${adate}
-$ncp siganl          $savdir/siganl.${adate}
-$ncp sfcanl.gsi      $savdir/sfcanl.${adate}
-$ncp satbias_out     $savdir/biascr.${adate}
+cat stdout.obsvr fort.2* > $savdir/stdout.anl.${adate}.obsvr
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)
-#
-# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
-#        loop 03 will contain innovations with respect to
-#        the analysis.  Creation of o-a innovation files
-#        is triggered by write_diag(3)=.true.  The setting
-#        write_diag(1)=.true. turns on creation of o-g
-#        innovation files.
-#
-
-echo "Time before diagnostic loop is `date` "
 loops="01 03"
 for loop in $loops; do
-
 case $loop in
   01) string=ges;;
   03) string=anl;;
@@ -366,11 +386,31 @@ esac
       fi
    done
 done
-echo "Time after diagnostic loop is `date` "
+
+# Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
+rm -f siganl sfcanl.gsi satbias_out fort.2*
+rm -rf dir.0*
+poe $tmpdir/gsi.x < gsiparm.anl.4dvar > stdout
+rc=$?
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp1_global_4dvar_updat' has FAILED to run id4dvar to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
+   $step_name==$rc
+   exit
+fi
+
+# Save output
+mkdir -p $savdir
+cat stdout fort.2* > $savdir/stdout.anl.${adate}
+$ncp siganl          $savdir/siganl.${adate}
+$ncp sfcanl.gsi      $savdir/sfcanl.${adate}
+$ncp satbias_out     $savdir/biascr.${adate}
 
 exit ;;
 
-  gsi_global_lanczos_updat2)
+  gsi_global_4dvar_updat2)
 
 set -x
 
@@ -408,7 +448,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp2_global_lanczos_updat
+exp=$exp2_global_4dvar_updat
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -420,7 +460,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_4dvar}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -469,7 +509,7 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
+datobs=$datobs_global_4dvar/$adate
 datges=$datobs
 
 # Set up $tmpdir
@@ -500,6 +540,8 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+
+SETUP=""
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -509,17 +551,40 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+# Set variables for requested minimization (pcgsoi or lanczos)
+JCOPTS="ljcpdry=.false.,"
+OBSQC="noiqc=.false.,"
+SETUPmin="miter=1,niter(1)=50,niter_no_qc(1)=500,"
+SETUPlan=""
+export minimization=${minimization:-"pcgsoi"}
+if [ "$minimization" = "lanczos" ]; then
+   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+fi
+
+# Create namelist for observer run
+export nhr_obsbin=${nhr_obsbin:-1}
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,lwrtinc=.true.,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
+rm gsiparm.anl.obsvr
+cat << EOF > gsiparm.anl.obsvr
 
-##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
-##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
-##!   idmodel=.true.,lwrtinc=.false.,
-
-cat << EOF > gsiparm.anl
-
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
+
+# Create namelist for identity model 4dvar run
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,lwrtinc=.true.,lanczosave=.true.,"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+. $scripts/regression_namelists.sh
+rm gsiparm.anl.4dvar
+cat << EOF > gsiparm.anl.4dvar
+
+$global_T62_namelist
+
+EOF
+
 
 # Set fixed files
 #   berror   = forecast model background error statistics
@@ -575,6 +640,17 @@ $ncp $errtable ./errtable
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
+# Adjust data usage flags in convinfo file.
+rm new
+cp convinfo old
+mv convinfo convinfo_original
+sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < old > new
+mv new old
+sed 's/uv       243   56    1     3.0/uv       243   56   -1     3.0/' < old > new
+mv new old
+sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > new
+mv new convinfo
+
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
 isatsen=1
@@ -621,52 +697,36 @@ $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
-$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
+##$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
-$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
+##$ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
+##$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
 $ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+##$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
+# Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
+poe $tmpdir/gsi.x < gsiparm.anl.obsvr > stdout.obsvr
 rc=$?
-
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_global_lanczos_updat' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp2_global_4dvar_updat' has FAILED to run observer to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
    $step_name==$rc
    exit
 fi
 
 # Save output
 mkdir -p $savdir
-
-cat stdout fort.2* > $savdir/stdout.anl.${adate}
-$ncp siganl          $savdir/siganl.${adate}
-$ncp sfcanl.gsi      $savdir/sfcanl.${adate}
-$ncp satbias_out     $savdir/biascr.${adate}
+cat stdout.obsvr fort.2* > $savdir/stdout.anl.${adate}.obsvr
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)
-#
-# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
-#        loop 03 will contain innovations with respect to
-#        the analysis.  Creation of o-a innovation files
-#        is triggered by write_diag(3)=.true.  The setting
-#        write_diag(1)=.true. turns on creation of o-g
-#        innovation files.
-#
-
-echo "Time before diagnostic loop is `date` "
 loops="01 03"
 for loop in $loops; do
-
 case $loop in
   01) string=ges;;
   03) string=anl;;
@@ -684,11 +744,31 @@ esac
       fi
    done
 done
-echo "Time after diagnostic loop is `date` "
+
+# Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
+rm -f siganl sfcanl.gsi satbias_out fort.2*
+rm -rf dir.0*
+poe $tmpdir/gsi.x < gsiparm.anl.4dvar > stdout
+rc=$?
+if [[ "$rc" != "0" ]]; then
+   cd $regression_vfydir
+   {
+    echo ''$exp2_global_4dvar_updat' has FAILED to run id4dvar to completion, with an error code of '$rc''
+   } >> $global_4dvar_regression
+   $step_name==$rc
+   exit
+fi
+
+# Save output
+mkdir -p $savdir
+cat stdout fort.2* > $savdir/stdout.anl.${adate}
+$ncp siganl          $savdir/siganl.${adate}
+$ncp sfcanl.gsi      $savdir/sfcanl.${adate}
+$ncp satbias_out     $savdir/biascr.${adate}
 
 exit ;;
 
-  global_lanczos_regression)
+  global_4dvar_regression)
 
 set -ax
 
@@ -698,15 +778,15 @@ JCAP=62
 # Here, exp1 is the run using the latest modified version of the code
 # and exp2 is the control run
 
-exp1=$exp1_global_lanczos_updat
-exp2=$exp1_global_lanczos_cntrl
-exp3=$exp2_global_lanczos_updat
+exp1=$exp1_global_4dvar_updat
+exp2=$exp1_global_4dvar_cntrl
+exp3=$exp2_global_4dvar_updat
 
 # Choose global, regional, or RTMA
-input=tmp${global_lanczos}
+input=tmp${global_4dvar}
 
 # Name output file
-output=$global_lanczos_regression
+output=$global_4dvar_regression
 
 # Give location of analysis results, and choose location for regression output
 savdir=$ptmp_loc/$input
@@ -722,7 +802,7 @@ mkdir -p $tmpdir
 cd $tmpdir
 
 # Other required constants for regression testing
-maxtime=1200
+maxtime=240
 # Dew/Mist=26 GB/16 tasks per node
 ##maxmem=$((1500000*1))
 # Vapor=110 GB/48 tasks per node
@@ -734,9 +814,9 @@ maxmem=$((3400000*1))
 # from $savdir to $tmpdir
 list="$exp1 $exp3"
 for exp in $list; do
-   $ncp $savdir/$exp/stdout ./stdout.$exp
-   $ncp $savdir/$exp/fort.220 ./fort.220.$exp
-   $ncp $savdir/$exp/siganl ./siganl.$exp
+   $ncp $savdir/$exp/stdout    ./stdout.$exp
+   $ncp $savdir/$exp/fort.220  ./fort.220.$exp
+   $ncp $savdir/$exp/siganl    ./siganl.$exp
 done
 list="$exp2"
 for exp in $list; do
@@ -748,9 +828,9 @@ done
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep 'a,b' fort.220.$exp > penalty.$exp.txt
-   grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
-   grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
+   grep 'grepcost J,Jb' stdout.$exp                  > penalty.$exp.txt
+   grep 'The total amount of wall time' stdout.$exp  > runtime.$exp.txt
+   grep 'The maximum resident set size' stdout.$exp  > memory.$exp.txt
 done
 
 # Difference the 2 files (i.e., penalty.exp1.txt with penalty.exp2.txt)
@@ -758,13 +838,13 @@ diff penalty.$exp1.txt penalty.$exp2.txt > penalty.${exp1}-${exp2}.txt
 diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
-exp1_scale=$exp2_global_lanczos_updat
-exp2_scale=$exp2_global_lanczos_cntrl
+exp1_scale=$exp2_global_4dvar_updat
+exp2_scale=$exp2_global_4dvar_cntrl
 
 # Copy stdout for additional scalability testing
 list="$exp1_scale"
 for exp_scale in $list; do
-   $ncp $savdir/$exp_scale/stdout ./stdout.$exp_scale
+   $ncp $savdir/$exp_scale/stdout  ./stdout.$exp_scale
 done
 list="$exp2_scale"
 for exp_scale in $list; do
@@ -774,17 +854,17 @@ done
 # Grep out run time from stdout file
 list="$exp1_scale $exp2_scale"
 for exp_scale in $list; do
-   grep 'The total amount of wall time' stdout.$exp_scale > runtime.$exp_scale.txt
-   grep 'The maximum resident set size' stdout.$exp_scale > memory.$exp_scale.txt
+   grep 'The total amount of wall time'  stdout.$exp_scale > runtime.$exp_scale.txt
+   grep 'The maximum resident set size'  stdout.$exp_scale > memory.$exp_scale.txt
 done
 
 # Important values used to calculate timethresh and memthresh below
 # Values below can be fine tuned to make the regression more or less aggressive
 # Currently using a value of 10%
 
-timedif=10
+timedif=5
 memdiff=8
-scaledif=4
+scaledif=2
 
 # timethresh = avgtime*timedif+avgtime
 # memthresh = avgmem*memdiff+avgmem
@@ -822,7 +902,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
   if [[ $(awk '{ print $8 }' runtime.$exp1.txt) -gt $maxtime ]]; then
     echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has exceeded maximum allowable operational time of '$maxtime' seconds,'
-    echo 'resulting in failure of the regression test.'
+    echo 'resulting in FAILURE of the regression test.'
     echo
   else
     echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds and is within the maximum allowable operational time of '$maxtime' seconds,'
@@ -838,7 +918,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
   if [[ $(awk '{ print $8 }' runtime.$exp1.txt) -gt $timethresh ]]; then
     echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh' seconds,'
-    echo 'resulting in failure of the regression test.'
+    echo 'resulting in FAILURE of the regression test.'
     echo
   else
     echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds and is within the allowable threshold time of '$timethresh' seconds,'
@@ -854,7 +934,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
   if [[ $(awk '{ print $8 }' runtime.$exp1_scale.txt) -gt $timethresh2 ]]; then
     echo 'The runtime for '$exp1_scale' is '$(awk '{ print $8 }' runtime.$exp1_scale.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh2' seconds,'
-    echo 'resulting in failure of the regression test.'
+    echo 'resulting in FAILURE of the regression test.'
     echo
   else
     echo 'The runtime for '$exp1_scale' is '$(awk '{ print $8 }' runtime.$exp1_scale.txt)' seconds and is within the allowable threshold time of '$timethresh2' seconds,'
@@ -871,7 +951,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
   if [[ $(awk '{ print $8 }' memory.$exp1.txt) -gt $maxmem ]]; then
     echo 'The memory for '$exp1' is '$(awk '{ print $8 }' memory.$exp1.txt)' KBs.  This has exceeded maximum allowable hardware memory limit of '$maxmem' KBs,'
-    echo 'resulting in failure of the regression test.'
+    echo 'resulting in FAILURE of the regression test.'
     echo
   else
     echo 'The memory for '$exp1' is '$(awk '{ print $8 }' memory.$exp1.txt)' KBs and is within the maximum allowable hardware memory limit of '$maxmem' KBs,'
@@ -887,7 +967,7 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
   if [[ $(awk '{ print $8 }' memory.$exp1.txt) -gt $memthresh ]]; then
     echo 'The memory for '$exp1' is '$(awk '{ print $8 }' memory.$exp1.txt)' KBs.  This has exceeded maximum allowable memory of '$memthresh' KBs,'
-    echo 'resulting in failure of the regression test.'
+    echo 'resulting in FAILURE of the regression test.'
     echo
   else
     echo 'The memory for '$exp1' is '$(awk '{ print $8 }' memory.$exp1.txt)' KBs and is within the maximum allowable memory of '$memthresh' KBs,'
@@ -901,13 +981,13 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has FAILED for '${exp1}' and '${exp2}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 fi
 
@@ -920,7 +1000,11 @@ fi
 if cmp -s siganl.${exp1} siganl.${exp2} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding results are identical.'
+   echo 'since the corresponding siganl files are IDENTICAL.'
+   echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are NOT reproducible'
+   echo 'since the corresponding siganl files DIFFER.'
    echo
 fi
 
@@ -936,20 +1020,24 @@ if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has FAILED for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 
 } >> $output
 
-# Next, check reproducibility of results between exp1 and exp2
+# Next, check reproducibility of results between exp1 and exp3
 
 {
 
 if cmp -s siganl.${exp1} siganl.${exp3} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding results are identical.'
+   echo 'since the corresponding siganl files are IDENTICAL.'
+   echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are NOT reproducible'
+   echo 'since the corresponding siganl files DIFFER.'
    echo
 fi
 
@@ -963,7 +1051,7 @@ if [[ $scale1thresh -ge $scale2 ]]; then
    echo 'The case has passed the scalability regression test.'
    echo 'The slope for the update ('$scale1thresh' seconds per node) is greater than or equal to that for the control ('$scale2' seconds per node).'
 else
-   echo 'The case has failed the scalability test.'
+   echo 'The case has FAILED the scalability test.'
    echo 'The slope for the update ('$scale1thresh' seconds per node) is less than that for the control ('$scale2' seconds per node).'
 fi
 
@@ -975,9 +1063,11 @@ mkdir -p $vfydir
 $ncp $output                        $vfydir/
 
 cd $scripts
-rm -f regression_test.gsi_global_lanczos_updat.e*
-rm -f regression_test.gsi_global_lanczos_updat2.e*
-rm -f regression_test.global_lanczos_regression.e*
+rm -f regression_test.gsi_global_4dvar_updat.e*
+rm -f regression_test.gsi_global_4dvar_updat2.e*
+rm -f regression_test.gsi_global_4dvar_cntrl.e*
+rm -f regression_test.gsi_global_4dvar_cntrl2.e*
+rm -f regression_test.global_4dvar_regression.e*
 
 exit ;;
 

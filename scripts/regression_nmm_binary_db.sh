@@ -50,8 +50,8 @@ export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
+export XLFRTEOPTS="buffering=disable_all"
+export MP_COREFILE_FORMAT=lite
 
 
 # Set analysis date

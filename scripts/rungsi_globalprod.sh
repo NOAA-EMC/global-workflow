@@ -11,15 +11,69 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ class= dev
-#@ group= devonprod
-#@ account_no = GDAS-T2O
+#@ class= jcsda
+#@ group= jcsda
+#@ account_no = JCSDA014-RES
 #@ wall_clock_limit = 0:20:00
 #@ startdate = 07/06/09 10:15
 #@ notification=error
 #@ queue
 
 set -x
+
+# Set default top-level directory
+if [ -d /global ]; then
+  TOPDIR=/global   # This would be the CCS
+  MACHINE=CSS
+elif [ -d /jcsda ]; then
+  TOPDIR=/jcsda    # This is vapor
+  MACHINE=VAPOR
+else 
+  echo CANNOT FIND A VALID TOP-LEVEL DIRECTORY
+  exit 1
+fi
+
+#=================================================================================================
+#  Most commom parameters to edit:
+#=================================================================================================
+
+# Set experiment name and analysis date
+adate=2010121512
+exp=globalprod.$adate
+
+# Set path/file for gsi executable
+#gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+
+
+# Specify GSI fixed field
+fixgsi=${TOPDIR}/save/$USER/GSI/trunk/fix
+
+# Set the JCAP resolution which you want.
+# All resolutions use LEVS=64
+export JCAP=62
+export LEVS=64
+export JCAP_B=$JCAP
+
+
+# Set data, runtime and save directories
+datdir=/ptmp/${USER}/data_sigmap/${exp}
+tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
+savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
+
+# Use with CRTM REL-2.0
+fixcrtm=${TOPDIR}/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
+
+# Other Executables and scripts
+export SIGHDR=/nwprod/exec/global_sighdr
+export CHGRESSH=/nwprod/ush/global_chgres.sh
+export ndate=/nwprod/util/exec/ndate
+export ncp=/bin/cp
+
+#=================================================================================================
+
+# Refractive Index or Bending Angle for GPS?
+export gps_dtype="gps_ref"
 
 # Set environment variables for NCEP IBM
 export MEMORY_AFFINITY=MCM
@@ -52,44 +106,12 @@ export MP_INFOLEVEL=1
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
-
-# Set experiment name and analysis date
-adate=2010052500
-exp=${USER}_global.$adate
-
-# Set path/file for gsi executable
-gsiexec=/global/save/$USER/svn1/src/global_gsi
-
-
-
-# Set the JCAP resolution which you want.
-# All resolutions use LEVS=64
-export JCAP=62
-export LEVS=64
-export JCAP_B=$JCAP
-
-
-# Set runtime and save directories
-tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
-savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
-
-# Specify GSI fixed field
-fixgsi=/global/save/$USER/mlueken/fix
-
-# Use with CRTM REL-2.0
-fixcrtm=/global/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
-
-
-
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-ndate=/nwprod/util/exec/ndate
-ncp=/bin/cp
-
 
 # Given the requested resolution, set dependent resolution parameters
 if [[ "$JCAP" = "878" ]]; then
@@ -141,7 +163,8 @@ export NLON_A=$LONA
 gdate=`$ndate -06 $adate`
 hha=`echo $adate | cut -c9-10`
 hhg=`echo $gdate | cut -c9-10`
-prefix_obs=gdas1.t${hha}z
+prefix_obs=gdas1.t${hha}z.
+prefix_prep=$prefix_obs
 prefix_tbc=gdas1.t${hhg}z
 prefix_sfc=gdas${resol}.t${hhg}z
 prefix_atm=gdas${resol}.t${hha}z
@@ -151,13 +174,55 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=/com/gfs/prod/gdas.$adate0
-datges=/com/gfs/prod/gdas.$gdate0
 
+# Look for required input files in ${datdir}
+# if ${datdir}/gdas1.t${hha}z.sgm3prep is present assume we have 
+# everything we need, else look elsewhere.
 
-
+if [ $MACHINE = CSS ]; then
+  if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
+    datobs=${datdir}
+    datges=${datdir}
+    datprep=${datobs}
+  elif [ -s /com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then
+    datges=/com/gfs/prod/gdas.$gdate0
+    datobs=/com/gfs/prod/gdas.$adate0
+    datprep=${datobs}
+  else
+    echo Initital files are missing from disk.  
+    echo Use Get_Initial_Files.sh to get them
+    exit 1
+  fi
+elif  [ $MACHINE = VAPOR ]; then    
+  if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
+    datobs=${datdir}
+    datges=${datdir}
+    datprep=${datobs}
+  elif [ -s /com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
+    datges=/com/gfs/prod/gdas.$gdate0
+    if [ -s /shared/glopara/dump/${gdate}/gdas -a \
+         -s /shared/glopara/dump/${adate}/gdas ]; then
+      datobs=/shared/glopara/dump/${adate}/gdas
+      datprep=/com/gfs/prod/gdas.${adate0}
+      prefix_obs=
+      suffix=gdas.$adate 
+    else
+      echo Initital files are missing from disk.  
+      echo Use Get_Initial_Files.sh to get them
+      exit 1
+    fi
+  else
+    echo Initital files are missing from disk.  
+    echo Use Get_Initial_Files.sh to get them
+    exit 1
+  fi
+else
+  echo "Unsupported machine $MACHINE (not sure how you got to here)"
+  exit 1
+fi
 
 # Set up $tmpdir
+ 
 rm -rf $tmpdir
 mkdir -p $tmpdir
 cd $tmpdir
@@ -170,7 +235,7 @@ rm -rf core*
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
-        co2dir=${CO2DIR:-$fix_file}
+        co2dir=${CO2DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
         while [ $yyyy -ge 1957 ] ;do
@@ -197,6 +262,7 @@ SUPERRAD=""
 LAGDATA=""
 HYBRID_ENSEMBLE=""
 RAPIDREFRESH_CLDSURF=""
+CHEM=""
 SINGLEOB=""
 
 
@@ -207,9 +273,10 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=64,iguess=-1,
+   ndat=67,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,
+   use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
+   use_gfs_nemsio=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -254,7 +321,7 @@ cat << EOF > gsiparm.anl
    dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',                 dval(07)=1.0, dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',                 dval(08)=1.0, dthin(08)=0, dsfcalc(08)=0,
    dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',                dval(09)=1.0, dthin(09)=0, dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps_ref',            dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
+   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',                dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
    dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',           dval(11)=1.0, dthin(11)=-1,dsfcalc(11)=0,
    dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',            dval(12)=1.0, dthin(12)=-1,dsfcalc(12)=0,
    dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',          dval(13)=1.0, dthin(13)=0, dsfcalc(13)=0,
@@ -309,12 +376,15 @@ cat << EOF > gsiparm.anl
    dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='n19',     dsis(62)='amsua_n19',          dval(62)=10.0,dthin(62)=2, dsfcalc(62)=0,
    dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='n19',     dsis(63)='mhs_n19',            dval(63)=3.0, dthin(63)=3, dsfcalc(63)=0,
    dfile(64)='tcvitl'     dtype(64)='tcp',       dplat(64)=' ',       dsis(64)='tcp',                dval(64)=1.0, dthin(64)=0, dsfcalc(64)=0,
+   dfile(65)='modisbufr', dtype(65)='modis',     dplat(65)='aqua',    dsis(65)='modis_aqua',         dval(65)=1.0, dthin(65)=6, dsfcalc(65)=0,
+   dfile(66)='modisbufr', dtype(66)='modis',     dplat(66)='terra',   dsis(66)='modis_terra',        dval(66)=1.0, dthin(66)=6, dsfcalc(66)=0,
+   dfile(67)='mlsbufr',   dtype(67)='mls',       dplat(67)='aura',    dsis(67)='mls_aura',           dval(67)=1.0, dthin(67)=0, dsfcalc(67)=0,
    $OBSINPUT
  /
  &SUPEROB_RADAR
    $SUPERRAD
  /
- &LAG_DATA
+&LAG_DATA
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
@@ -324,6 +394,9 @@ cat << EOF > gsiparm.anl
    l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
    $RAPIDREFRESH_CLDSURF
+ /
+ &CHEM
+   $CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
@@ -359,7 +432,7 @@ emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
-scaninfo=$fix_file/global_scaninfo.txt
+scaninfo=$fixgsi/global_scaninfo.txt
 satangl=$fixgsi/global_satangbias.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
@@ -413,57 +486,67 @@ done
 
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefix_obs}.prepbufr           ./prepbufr
-$ncp $datobs/${prefix_obs}.gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}.spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}.sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./gomebufr
-$ncp $datobs/${prefix_obs}.omi.${suffix}      ./omibufr
-$ncp $datobs/${prefix_obs}.osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}.goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}.1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}.1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}.1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}.1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}.1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}.1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}.1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}.airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}.mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}.esamua.${suffix}   ./amsuabufrears
-$ncp $datobs/${prefix_obs}.esamub.${suffix}   ./amsubbufrears
-$ncp $datobs/${prefix_obs}.eshrs3.${suffix}   ./hirs3bufrears
-$ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00 ./tcvitl
+if [ -r $datprep/${prefix_prep}prepbufr ]; then
+  ln -s -f $datprep/${prefix_prep}prepbufr           ./prepbufr
+elif [ -r $datprep/${prefix_prep}prepbufr.nr ]; then    # Look for this file if you do not have restricted data access
+  ln -s -f $datprep/${prefix_prep}prepbufr.nr           ./prepbufr
+else
+  echo You do not have access to a readable prepbufr file
+  exit 1
+fi
+ln -s -f $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
+ln -s -f $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
+ln -s -f $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
+ln -s -f $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+ln -s -f $datobs/${prefix_obs}omi.${suffix}      ./omibufr
+ln -s -f $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
+ln -s -f $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
+ln -s -f $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
+ln -s -f $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
+ln -s -f $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
+ln -s -f $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
+ln -s -f $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
+ln -s -f $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
+ln -s -f $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
+ln -s -f $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+ln -s -f $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
+ln -s -f $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
+ln -s -f $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
+ln -s -f $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
+ln -s -f $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
-$ncp $datobs/${prefix_obs}.ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}.amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}.ssmis.${suffix}    ./ssmisbufr
+ln -s -f $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
+ln -s -f $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
+ln -s -f $datobs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
 
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+ln -s -f $datges/${prefix_tbc}.abias              ./satbias_in
+ln -s -f $datges/${prefix_tbc}.satang             ./satbias_angle
 
-if [[ "$JCAP" = "382" ]]; then
-   $ncp $datges/${prefix_sfc}.bf03               ./sfcf03
-   $ncp $datges/${prefix_sfc}.bf06               ./sfcf06
-   $ncp $datges/${prefix_sfc}.bf09               ./sfcf09
+# Determine resolution of the guess files
+JCAP_GUESS=`$SIGHDR $datprep/${prefix_atm}.sgesprep JCAP`
 
-   $ncp $datobs/${prefix_atm}.sgm3prep           ./sigf03
-   $ncp $datobs/${prefix_atm}.sgesprep           ./sigf06
-   $ncp $datobs/${prefix_atm}.sgp3prep           ./sigf09
-elif [[ "$JCAP" -ne "382" ]]; then
-# Use chgres to change resolution from T382/64L to T62/64L
+# Change resolution of input files with chgres if $JCAP is 
+# inconsistent with $JCAP_GUESS 
+if [[ "$JCAP" = "$JCAP_GUESS" ]]; then
+   ln -s -f $datges/${prefix_sfc}.bf03               ./sfcf03
+   ln -s -f $datges/${prefix_sfc}.bf06               ./sfcf06
+   ln -s -f $datges/${prefix_sfc}.bf09               ./sfcf09
 
+   ln -s -f $datprep/${prefix_atm}.sgm3prep           ./sigf03
+   ln -s -f $datprep/${prefix_atm}.sgesprep           ./sigf06
+   ln -s -f $datprep/${prefix_atm}.sgp3prep           ./sigf09
+else
 # first copy required files to working directory
 
-   $ncp $datges/gdas1.t${hhg}z.bf03               ./gdas1.t${hhg}z.bf03
-   $ncp $datges/gdas1.t${hhg}z.bf06               ./gdas1.t${hhg}z.bf06
-   $ncp $datges/gdas1.t${hhg}z.bf09               ./gdas1.t${hhg}z.bf09
+   ln -s -f $datges/gdas1.t${hhg}z.bf03               ./gdas1.t${hhg}z.bf03
+   ln -s -f $datges/gdas1.t${hhg}z.bf06               ./gdas1.t${hhg}z.bf06
+   ln -s -f $datges/gdas1.t${hhg}z.bf09               ./gdas1.t${hhg}z.bf09
 
-   $ncp $datobs/gdas1.t${hha}z.sgm3prep           ./gdas1.t${hha}z.sgm3prep
-   $ncp $datobs/gdas1.t${hha}z.sgesprep           ./gdas1.t${hha}z.sgesprep
-   $ncp $datobs/gdas1.t${hha}z.sgp3prep           ./gdas1.t${hha}z.sgp3prep
+   ln -s -f $datprep/gdas1.t${hha}z.sgm3prep           ./gdas1.t${hha}z.sgm3prep
+   ln -s -f $datprep/gdas1.t${hha}z.sgesprep           ./gdas1.t${hha}z.sgesprep
+   ln -s -f $datprep/gdas1.t${hha}z.sgp3prep           ./gdas1.t${hha}z.sgp3prep
 
    export SIGLEVEL=/nwprod/fix/global_hyblev.l64.txt
    SDATE=`echo $adate | cut -c1-8`
@@ -478,7 +561,6 @@ elif [[ "$JCAP" -ne "382" ]]; then
 
    # Operational chgres for operational sigio
    export DATA=$tmpdir
-   export CHGRESSH=/nwprod/ush/global_chgres.sh
 
    list="sgm3prep sgesprep sgp3prep"
    for fhr in $list; do
@@ -526,8 +608,6 @@ fi
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
-exit
-
 # Save output
 mkdir -p $savdir
 
@@ -538,7 +618,7 @@ mkdir -p $savdir
 ##$ncp sfcf06          $savdir/sfcf06.${gdate}
 ##$ncp sigf06          $savdir/sigf06.${gdate}
 
-##ss2gg=/global/save/wx20mi/bin/ss2gg
+##ss2gg=${TOPDIR}/save/wx20mi/bin/ss2gg
 ##$ss2gg siganl siganl.bin siganl.ctl 4 $NLON_A $NLAT_A
 ##$ss2gg sigf06 sigges.bin sigges.ctl 4 $NLON_A $NLAT_A
 

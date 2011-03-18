@@ -1,24 +1,43 @@
 #!/bin/sh
 
-#@ job_name=regression_debug_test
-#@ error=arw_binary_debug_test.e$(jobid)
 #@ job_type=parallel
-#@ network.MPI=sn_all,shared,us
-#@ node = 1
-#@ node_usage=not_shared
-#@ tasks_per_node=16
-#@ task_affinity = core(1)
-#@ parallel_threads = 1
-#@ node_resources = ConsumableMemory (110 GB)
 #@ class=dev
 #@ group=dev
-#@ account_no = RDAS-T2O
-#@ wall_clock_limit = 0:30:00
+#@ account_no = RDAS-MTN
+
+#@ job_name=cmaq
+#@ error=$(job_name).e$(jobid)
+#@ network.MPI=sn_all,shared,us
+#@ total_tasks=16
+#@ task_affinity = core(1)
+#@ parallel_threads = 1
+#@ resources = ConsumableMemory (2 GB)
+#@ wall_clock_limit = 0:10:00
 #@ notification=error
 #@ restart=no
 #@ queue
 
 . regression_var.sh
+
+exp=cmaq_test.$gps_dtype
+hour=12
+
+tmpdir=$ptmp_loc/tmpreg_${cmaq}/${exp}
+savdir=$ptmp_loc/out/${cmaq}/${exp}
+
+datobs=$datobs_cmaq_binary
+datges=$datobs
+
+cmaq_ges=${datges}/cmaq2gsi_20100901_${hour}0000.bin
+anowbufr=${datobs}/hourly.20100901/aqm.t${hour}z.anowpm.pb.tm216
+anavinfo=${fix_file}/anavinfo_cmaq_binary
+berror=$fix_file/cmaq_pm2_5_reg_berror_${hour}z.bin
+
+cmaq_input='cmaq_input.bin'
+cmaq_output='cmaq_output.bin'
+chem_increment='chem_increment.bin'
+
+gsiexec=$updat
 
 set -x
 
@@ -26,7 +45,7 @@ set -x
 export MEMORY_AFFINITY=MCM
 export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threading and stacksize
+# Set environment variables for no threads
 export AIXTHREAD_SCOPE=S
 export XLSMPOPTS="parthds=1:stack=128000000"
 
@@ -50,17 +69,16 @@ export MP_LABELIO=yes
 export MP_INFOLEVEL=1
 
 # Variables for debugging (don't always need)
-export XLFRTEOPTS="buffering=disable_all"
-export MP_COREFILE_FORMAT=lite
-
+##export XLFRTEOPTS="buffering=disable_all"
+##export MP_COREFILE_FORMAT=lite
 
 # Set analysis date
-adate=$adate_regional_arw_binary
+adate=$adate_regional_cmaq_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
 io_format=binary
-##io_format=netcdf
+#io_format=netcdf
 
 if [[ "$io_format" = "binary" ]]; then
    NETCDF=.false.
@@ -73,11 +91,7 @@ else
    exit
 fi
 
-# Set experiment name
-exp=$exp1_arw_binary_updat
-
 # Set path/file for gsi executable
-gsiexec=$updat
 
 # Set resoltion and other dependent parameters
 export JCAP=62
@@ -89,12 +103,6 @@ elif [[ "$io_format" = "netcdf" ]]; then
    export LEVS=45
 fi
 export DELTIM=1200
-
-# Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${arw_binary}/${exp}
-savdir=$ptmp_loc/outreg/${arw_binary}/${exp}
-
-# Specify GSI fixed field and data directories.
 
 
 # Set variables used in script
@@ -109,47 +117,25 @@ ncp=/bin/cp
 # Given the analysis date, compute the date from which the
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
-prefixo=ndas.t18z
-prefixa=ndas.t18z
+sdate=`echo $adate |cut -c1-8`
+odate=`$ndate +6 $adate`
+hha=`echo $adate | cut -c9-10`
+hho=`echo $odate | cut -c9-10`
+prefixo=ndas.t${hho}z
+prefixa=ndas.t${hha}z
 suffix=tm06.bufr_d
 
-datobs=$datobs_arw_binary/$adate
-datges=$datobs
-
-# Set up $tmpdir
 rm -rf $tmpdir
 mkdir -p $tmpdir
-chgrp rstprod $tmpdir
-chmod 750 $tmpdir
 cd $tmpdir
-rm -rf core*
 
 # Make gsi namelist
 
-# CO2 namelist and file decisions
-ICO2=${ICO2:-0}
-if [ $ICO2 -gt 0 ] ; then
-	# Copy co2 files to $tmpdir
-	co2dir=${CO2DIR:-$fix_file}
-	yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-	rm ./global_co2_data.txt
-	while [ $yyyy -ge 1957 ] ;do
-		co2=$co2dir/global_co2historicaldata_$yyyy.txt
-		if [ -s $co2 ] ; then
-			$ncp $co2 ./global_co2_data.txt
-		break
-		fi
-		((yyyy-=1))
-	done
-	if [ ! -s ./global_co2_data.txt ] ; then
-		echo "\./global_co2_data.txt" not created
-		exit 1
-   fi
-fi
-. $scripts/regression_namelists_db.sh
+. $scripts/regression_namelists.sh
+
 cat << EOF > gsiparm.anl
 
-$arw_binary_namelist
+$cmaq_binary_namelist
 
 EOF
 
@@ -169,17 +155,11 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_arw_binary
-if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
-elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
-fi
+
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/nam_regional_satinfo.txt
-scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/nam_global_satangbias.txt
 pcpinfo=$fix_file/nam_global_pcpinfo.txt
 ozinfo=$fix_file/nam_global_ozinfo.txt
@@ -203,12 +183,12 @@ $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
-$ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $mesonetuselist ./mesonetuselist
+$ncp $anowbufr ./anowbufr
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
@@ -230,43 +210,67 @@ while [[ $isatsen -le $nsatsen ]]; do
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-if [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
-fi
+
+$ncp $cmaq_ges ./${cmaq_input}
+
+$ncp $datobs/${prefixo}.satbias.tm06      ./satbias_in
+$ncp $datobs/${prefixo}.satang.tm06        ./satbias_angle
+#$ncp $datobs/${prefixo}.prepbufr.tm06   ./prepbufr
+#$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
+#$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
+#$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
+#$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
+#$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
+#$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
+#$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
+##$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
+#if [[ "$io_format" = "netcdf" ]]; then
+#   $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
+#fi
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
-#             the input guess field file (wrf_inout)
+#             the input guess field file (cmaq_input.bin)
 #
-$ncp $datobs/${prefixa}.satbias.tm06      ./satbias_in
-$ncp $datobs/${prefixa}.satang.tm06        ./satbias_angle
-if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/wrfinput_d01_2010-07-24_12:00:00       ./wrf_inout
-elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_arw_netcdf       ./wrf_inout
-fi
-cp wrf_inout wrf_ges
+
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
 rc=$?
 
-if [[ "$rc" = "0" ]]; then
-   cd $regression_vfydir
+if [[ "$rc" != "0" ]]; then
    {
-    echo
-    echo 'arw_binary debug test has passed'
-   } >> $arw_binary_regression
+    echo "'cmaq test' has failed to run to completion, with an error code of '$rc'"
+   } >> ${scripts}/qslogs/error.txt
+   exit
 fi
+
+if [ ! -r ${savdir} ]
+    then
+    mkdir -p $savdir
+fi
+
+$ncp $cmaq_output       $savdir
+
+if [ -r ${chem_increment} ]
+    then
+    $ncp $chem_increment    $savdir
+fi
+
+exit
+
+
+$ncp cmaq_output       $savdir/cmaq_output.${adate}
+$ncp -rp stdout $savdir
+$ncp -rp fort.220 $savdir
+$ncp -rp siganl $savdir
+
+cat stdout fort.2* > $savdir/stdout.anl.${adate}
+$ncp cmaq_output       $savdir/cmaq_output.${adate}
+$ncp satbias_out     $savdir/biascr.${adate}
+
+# If desired, copy guess file to unique filename in $savdir
+$ncp cmaq_input         $savdir/cmaq_ges.${adate}
 
 exit
