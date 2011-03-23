@@ -11,7 +11,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=16
+#@ tasks_per_node=8
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
@@ -24,7 +24,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
@@ -38,7 +38,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=16
+#@ tasks_per_node=8
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
@@ -52,7 +52,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
-#@ tasks_per_node=32
+#@ tasks_per_node=16
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
