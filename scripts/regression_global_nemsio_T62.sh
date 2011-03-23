@@ -7,7 +7,7 @@
 #@ account_no = GDAS-T2O
 
 #@ job_name=regression_test
-#@ step_name=gsi_global_lanczos_updat
+#@ step_name=gsi_global_nemsio_updat
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
@@ -21,7 +21,7 @@
 #@ restart=no
 #@ queue
 
-#@ step_name=gsi_global_lanczos_updat2
+#@ step_name=gsi_global_nemsio_updat2
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
@@ -32,11 +32,11 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_lanczos_updat==0)
+#@ dependency=(gsi_global_nemsio_updat==0)
 #@ restart=no
 #@ queue
 
-#@ step_name=gsi_global_lanczos_cntrl
+#@ step_name=gsi_global_nemsio_cntrl
 #@ network.MPI=sn_all,shared,us
 #@ node = 1
 #@ node_usage=not_shared
@@ -47,11 +47,11 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_lanczos_updat2==0)
+#@ dependency=(gsi_global_nemsio_updat2==0)
 #@ restart=no
 #@ queue
 
-#@ step_name=gsi_global_lanczos_cntrl2
+#@ step_name=gsi_global_nemsio_cntrl2
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
@@ -62,11 +62,11 @@
 #@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_lanczos_cntrl==0)
+#@ dependency=(gsi_global_nemsio_cntrl==0)
 #@ restart=no
 #@ queue
 
-#@ step_name=global_lanczos_regression
+#@ step_name=global_nemsio_regression
 #@ job_type=serial
 #@ task_affinity = cpu(1)
 #@ parallel_threads = 1
@@ -74,14 +74,14 @@
 #@ node_resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
-#@ dependency=(gsi_global_lanczos_cntrl2==0)
+#@ dependency=(gsi_global_nemsio_cntrl2==0)
 #@ restart=no
 #@ queue
 
 . regression_var.sh
 
 case $LOADL_STEP_NAME in
-  gsi_global_lanczos_updat)
+  gsi_global_nemsio_updat)
 
 set -x
 
@@ -119,7 +119,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_lanczos_updat
+exp=$exp1_global_nemsio_updat
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -131,7 +131,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_nemsio}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -180,8 +180,8 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
-datges=$datobs
+datobs=$datobs_global_nemsio/$adate
+datges=$datges_global_nemsio/$adate
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -220,6 +220,9 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+SETUP="use_gfs_nemsio=.true."
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -228,7 +231,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
 
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
 
@@ -324,23 +327,23 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
 $ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+$ncp $datges/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datges/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datges/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -349,8 +352,8 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_global_lanczos_updat' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp1_global_nemsio_updat' has failed to run to completion, with an error code of '$rc''
+   } >> $global_nemsio_regression
    $step_name==$rc
    exit
 fi
@@ -401,7 +404,7 @@ echo "Time after diagnostic loop is `date` "
 
 exit ;;
 
-  gsi_global_lanczos_updat2)
+  gsi_global_nemsio_updat2)
 
 set -x
 
@@ -439,7 +442,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp2_global_lanczos_updat
+exp=$exp2_global_nemsio_updat
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -451,7 +454,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_nemsio}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -500,8 +503,8 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
-datges=$datobs
+datobs=$datobs_global_nemsio/$adate
+datges=$datges_global_nemsio/$adate
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -540,6 +543,9 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+SETUP="use_gfs_nemsio=.true."
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -548,7 +554,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
 
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
 
@@ -643,23 +649,23 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
 $ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+$ncp $datges/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datges/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datges/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -668,8 +674,8 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_global_lanczos_updat' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp2_global_nemsio_updat' has failed to run to completion, with an error code of '$rc''
+   } >> $global_nemsio_regression
    $step_name==$rc
    exit
 fi
@@ -720,7 +726,7 @@ echo "Time after diagnostic loop is `date` "
 
 exit ;;
 
-  gsi_global_lanczos_cntrl)
+  gsi_global_nemsio_cntrl)
 
 set -x
 
@@ -758,7 +764,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp1_global_lanczos_cntrl
+exp=$exp1_global_nemsio_cntrl
 
 # Set path/file for gsi executable
 gsiexec=$cntrl
@@ -770,7 +776,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_nemsio}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -819,8 +825,8 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
-datges=$datobs
+datobs=$datobs_global_nemsio/$adate
+datges=$datges_global_nemsio/$adate
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -859,6 +865,9 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+SETUP="use_gfs_nemsio=.true."
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -867,7 +876,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
 
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
 
@@ -962,23 +971,23 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
 $ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+$ncp $datges/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datges/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datges/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -987,17 +996,17 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp1_global_lanczos_cntrl' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp1_global_nemsio_cntrl' has failed to run to completion, with an error code of '$rc''
+   } >> $global_nemsio_regression
    $step_name==$rc
    exit
 fi
 
-mkdir $noscrub/tmp${global_lanczos}
-mkdir $control_global_lanczos_T62
-cp -rp stdout $control_global_lanczos_T62
-cp -rp fort.220 $control_global_lanczos_T62
-cp -rp siganl $control_global_lanczos_T62
+mkdir $noscrub/tmp${global_nemsio}
+mkdir $control_global_nemsio_T62
+cp -rp stdout $control_global_nemsio_T62
+cp -rp fort.220 $control_global_nemsio_T62
+cp -rp siganl $control_global_nemsio_T62
 
 # Save output
 mkdir -p $savdir
@@ -1045,7 +1054,7 @@ echo "Time after diagnostic loop is `date` "
 
 exit ;;
 
-  gsi_global_lanczos_cntrl2)
+  gsi_global_nemsio_cntrl2)
 
 set -x
 
@@ -1083,7 +1092,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 adate=$adate_global
-exp=$exp2_global_lanczos_cntrl
+exp=$exp2_global_nemsio_cntrl
 
 # Set path/file for gsi executable
 gsiexec=$cntrl
@@ -1095,7 +1104,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmp${global_lanczos}/${exp}
+tmpdir=$ptmp_loc/tmp${global_nemsio}/${exp}
 savdir=$ptmp_loc/out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -1144,8 +1153,8 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-datobs=$datobs_global_lanczos/$adate
-datges=$datobs
+datobs=$datobs_global_nemsio/$adate
+datges=$datges_global_nemsio/$adate
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -1184,6 +1193,9 @@ OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
+SETUP="use_gfs_nemsio=.true."
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -1192,7 +1204,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
 
-$global_lanczos_T62_namelist
+$global_T62_namelist
 
 EOF
 
@@ -1287,23 +1299,23 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
 $ncp $datges/${prefix_sfc}.bf09                    ./sfcf09
 
-$ncp $datobs/${prefix_atm}.sgm3prep                ./sigf03
-$ncp $datobs/${prefix_atm}.sgesprep                ./sigf06
-$ncp $datobs/${prefix_atm}.sgp3prep                ./sigf09
+$ncp $datges/${prefix_atm}.sgm3prep                ./sigf03
+$ncp $datges/${prefix_atm}.sgesprep                ./sigf06
+$ncp $datges/${prefix_atm}.sgp3prep                ./sigf09
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -1312,17 +1324,17 @@ rc=$?
 if [[ "$rc" != "0" ]]; then
    cd $regression_vfydir
    {
-    echo ''$exp2_global_lanczos_cntrl' has failed to run to completion, with an error code of '$rc''
-   } >> $global_lanczos_regression
+    echo ''$exp2_global_nemsio_cntrl' has failed to run to completion, with an error code of '$rc''
+   } >> $global_nemsio_regression
    $step_name==$rc
    exit
 fi
 
-mkdir $noscrub/tmp${global_lanczos}
-mkdir $control_global_lanczos_T622
-cp -rp stdout $control_global_lanczos_T622
-cp -rp fort.220 $control_global_lanczos_T622
-cp -rp siganl $control_global_lanczos_T622
+mkdir $noscrub/tmp${global_nemsio}
+mkdir $control_global_nemsio_T622
+cp -rp stdout $control_global_nemsio_T622
+cp -rp fort.220 $control_global_nemsio_T622
+cp -rp siganl $control_global_nemsio_T622
 
 # Save output
 mkdir -p $savdir
@@ -1370,7 +1382,7 @@ echo "Time after diagnostic loop is `date` "
 
 exit ;;
 
-  global_lanczos_regression)
+  global_nemsio_regression)
 
 set -ax
 
@@ -1380,15 +1392,15 @@ JCAP=62
 # Here, exp1 is the run using the latest modified version of the code
 # and exp2 is the control run
 
-exp1=$exp1_global_lanczos_updat
-exp2=$exp1_global_lanczos_cntrl
-exp3=$exp2_global_lanczos_updat
+exp1=$exp1_global_nemsio_updat
+exp2=$exp1_global_nemsio_cntrl
+exp3=$exp2_global_nemsio_updat
 
 # Choose global, regional, or RTMA
-input=tmp${global_lanczos}
+input=tmp${global_nemsio}
 
 # Name output file
-output=$global_lanczos_regression
+output=$global_nemsio_regression
 
 # Give location of analysis results, and choose location for regression output
 savdir=$ptmp_loc/$input
@@ -1433,8 +1445,8 @@ diff penalty.$exp1.txt penalty.$exp2.txt > penalty.${exp1}-${exp2}.txt
 diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
-exp1_scale=$exp2_global_lanczos_updat
-exp2_scale=$exp2_global_lanczos_cntrl
+exp1_scale=$exp2_global_nemsio_updat
+exp2_scale=$exp2_global_nemsio_cntrl
 
 # Copy stdout for additional scalability testing
 list="$exp1_scale $exp2_scale"
@@ -1646,11 +1658,11 @@ mkdir -p $vfydir
 $ncp $output                        $vfydir/
 
 cd $scripts
-rm -f regression_test.gsi_global_lanczos_updat.e*
-rm -f regression_test.gsi_global_lanczos_updat2.e*
-rm -f regression_test.gsi_global_lanczos_cntrl.e*
-rm -f regression_test.gsi_global_lanczos_cntrl2.e*
-rm -f regression_test.global_lanczos_regression.e*
+rm -f regression_test.gsi_global_nemsio_updat.e*
+rm -f regression_test.gsi_global_nemsio_updat2.e*
+rm -f regression_test.gsi_global_nemsio_cntrl.e*
+rm -f regression_test.gsi_global_nemsio_cntrl2.e*
+rm -f regression_test.global_nemsio_regression.e*
 
 exit ;;
 
