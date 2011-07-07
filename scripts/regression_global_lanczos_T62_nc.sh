@@ -15,7 +15,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ restart=no

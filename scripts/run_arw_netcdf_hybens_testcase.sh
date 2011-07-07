@@ -307,7 +307,6 @@ cat << EOF > gsiparm.anl
    jcap_ens_test=0,
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
