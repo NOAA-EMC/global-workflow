@@ -136,7 +136,6 @@ export global_T62_namelist="
    jcap_ens_test=${JCAP},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -273,7 +272,6 @@ export global_lanczos_T62_namelist="
  &HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -339,7 +337,6 @@ export RTMA_namelist="
  &HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -472,7 +469,6 @@ export arw_binary_namelist="
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -605,7 +601,6 @@ export arw_netcdf_namelist="
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -738,7 +733,6 @@ export nmm_binary_namelist="
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -871,7 +865,6 @@ export nmm_netcdf_namelist="
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -1010,7 +1003,6 @@ export nems_nmmb_namelist="
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM
@@ -1076,7 +1068,6 @@ export nems_nmmb_namelist="
  &HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
-   l_cloud_analysis=.false.,
    dfi_radar_latent_heat_time_period=30.0,
  /
  &CHEM

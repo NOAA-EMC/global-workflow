@@ -205,7 +205,7 @@ fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
-SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,lwrtinc=.true.,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
@@ -216,7 +216,7 @@ $global_T62_namelist
 EOF
 
 # Create namelist for identity model 4dvar run
-SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,lwrtinc=.true.,lanczosave=.true.,"
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 SETUP="$SETUPmin $SETUPlan $SETUP4dv"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
@@ -564,7 +564,7 @@ fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
-SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,lwrtinc=.true.,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
@@ -575,7 +575,7 @@ $global_T62_namelist
 EOF
 
 # Create namelist for identity model 4dvar run
-SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,lwrtinc=.true.,lanczosave=.true.,"
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 SETUP="$SETUPmin $SETUPlan $SETUP4dv"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar

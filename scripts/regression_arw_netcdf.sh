@@ -231,7 +231,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_arw_binary
+anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
    berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -534,7 +534,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_arw_binary
+anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
    berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -837,7 +837,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_arw_binary
+anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
    berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
@@ -1146,7 +1146,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_arw_binary
+anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
    berror=$fix_file/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
