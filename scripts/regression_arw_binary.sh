@@ -142,9 +142,9 @@ export JCAP=62
 export LEVS=60
 export JCAP_B=62
 if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
+   export LEVS=50
 elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
+   export LEVS=30
 fi
 export DELTIM=1200
 
@@ -441,9 +441,9 @@ export JCAP=62
 export LEVS=60
 export JCAP_B=62
 if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
+   export LEVS=50
 elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
+   export LEVS=30
 fi
 export DELTIM=1200
 
@@ -740,9 +740,9 @@ export JCAP=62
 export LEVS=60
 export JCAP_B=62
 if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
+   export LEVS=50
 elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
+   export LEVS=30
 fi
 export DELTIM=1200
 
@@ -1045,9 +1045,9 @@ export JCAP=62
 export LEVS=60
 export JCAP_B=62
 if [[ "$io_format" = "binary" ]]; then
-   export LEVS=45
+   export LEVS=50
 elif [[ "$io_format" = "netcdf" ]]; then
-   export LEVS=45
+   export LEVS=30
 fi
 export DELTIM=1200
 
