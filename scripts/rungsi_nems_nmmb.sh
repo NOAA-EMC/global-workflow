@@ -189,6 +189,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/ndas.t12z.prepbufr.tm12      ./prepbufr
+$ncp $datobs/ndas.t12z.satwnd.tm12.bufr_d ./satwnd
 $ncp $datobs/ndas.t12z.1bhrs3.tm12.bufr_d ./hirs3bufr
 $ncp $datobs/ndas.t12z.1bhrs4.tm12.bufr_d ./hirs4bufr
 $ncp $datobs/ndas.t12z.1bamua.tm12.bufr_d ./amsuabufr

@@ -62,7 +62,7 @@ tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
 savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 
 # Use with CRTM REL-2.0
-fixcrtm=${TOPDIR}/save/wx20ml/CRTM_REL-2.0/CRTM_Coefficients
+fixcrtm=/nwprod/fix/crtm_2.0.2
 
 # Other Executables and scripts
 export SIGHDR=/nwprod/exec/global_sighdr
@@ -273,7 +273,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=67,iguess=-1,
+   ndat=71,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    use_gfs_nemsio=.false.,
@@ -311,74 +311,78 @@ cat << EOF > gsiparm.anl
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=180.0,dmesh(2)=145.0,dmesh(3)=240.0,dmesh(4)=160.0,dmesh(5)=180.0,dmesh(6)=150.0,time_window_max=3.0,
+   dmesh(1)=180.0,dmesh(2)=145.0,dmesh(3)=240.0,dmesh(4)=160.0,dmesh(5)=180.0,dmesh(6)=150.0,dmesh(7)=145.0,time_window_max=3.0,
    dfile(01)='prepbufr',  dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                 dval(01)=1.0, dthin(01)=0, dsfcalc(01)=0,
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                  dval(02)=1.0, dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                  dval(03)=1.0, dthin(03)=0, dsfcalc(03)=0,
    dfile(04)='prepbufr',  dtype(04)='pw',        dplat(04)=' ',       dsis(04)='pw',                 dval(04)=1.0, dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='uv',        dplat(05)=' ',       dsis(05)='uv',                 dval(05)=1.0, dthin(05)=0, dsfcalc(05)=0,
-   dfile(06)='prepbufr',  dtype(06)='spd',       dplat(06)=' ',       dsis(06)='spd',                dval(06)=1.0, dthin(06)=0, dsfcalc(06)=0,
-   dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',                 dval(07)=1.0, dthin(07)=0, dsfcalc(07)=0,
-   dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',                 dval(08)=1.0, dthin(08)=0, dsfcalc(08)=0,
-   dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',                dval(09)=1.0, dthin(09)=0, dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',       dsis(10)='gps',                dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
-   dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',           dval(11)=1.0, dthin(11)=-1,dsfcalc(11)=0,
-   dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',            dval(12)=1.0, dthin(12)=-1,dsfcalc(12)=0,
-   dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',          dval(13)=1.0, dthin(13)=0, dsfcalc(13)=0,
-   dfile(14)='sbuvbufr',  dtype(14)='sbuv2',     dplat(14)='n17',     dsis(14)='sbuv8_n17',          dval(14)=1.0, dthin(14)=0, dsfcalc(14)=0,
-   dfile(15)='sbuvbufr',  dtype(15)='sbuv2',     dplat(15)='n18',     dsis(15)='sbuv8_n18',          dval(15)=1.0, dthin(15)=0, dsfcalc(15)=0,
-   dfile(16)='hirs2bufr', dtype(16)='hirs2',     dplat(16)='n14',     dsis(16)='hirs2_n14',          dval(16)=6.0, dthin(16)=1, dsfcalc(16)=0,
-   dfile(17)='hirs3bufr', dtype(17)='hirs3',     dplat(17)='n16',     dsis(17)='hirs3_n16',          dval(17)=0.0, dthin(17)=1, dsfcalc(17)=0,
-   dfile(18)='hirs3bufr', dtype(18)='hirs3',     dplat(18)='n17',     dsis(18)='hirs3_n17',          dval(18)=6.0, dthin(18)=1, dsfcalc(18)=0,
-   dfile(19)='hirs4bufr', dtype(19)='hirs4',     dplat(19)='n18',     dsis(19)='hirs4_n18',          dval(19)=0.0, dthin(19)=1, dsfcalc(19)=0,
-   dfile(20)='hirs4bufr', dtype(20)='hirs4',     dplat(20)='metop-a', dsis(20)='hirs4_metop-a',      dval(20)=6.0, dthin(20)=1, dsfcalc(20)=0,
-   dfile(21)='gsndrbufr', dtype(21)='sndr',      dplat(21)='g11',     dsis(21)='sndr_g11',           dval(21)=0.0, dthin(21)=1, dsfcalc(21)=0,
-   dfile(22)='gsndrbufr', dtype(22)='sndr',      dplat(22)='g12',     dsis(22)='sndr_g12',           dval(22)=0.0, dthin(22)=1, dsfcalc(22)=0,
-   dfile(23)='gimgrbufr', dtype(23)='goes_img',  dplat(23)='g11',     dsis(23)='imgr_g11',           dval(23)=0.0, dthin(23)=1, dsfcalc(23)=0,
-   dfile(24)='gimgrbufr', dtype(24)='goes_img',  dplat(24)='g12',     dsis(24)='imgr_g12',           dval(24)=0.0, dthin(24)=1, dsfcalc(24)=0,
-   dfile(25)='airsbufr',  dtype(25)='airs',      dplat(25)='aqua',    dsis(25)='airs281SUBSET_aqua', dval(25)=20.0,dthin(25)=1, dsfcalc(25)=0,
-   dfile(26)='msubufr',   dtype(26)='msu',       dplat(26)='n14',     dsis(26)='msu_n14',            dval(26)=2.0, dthin(26)=2, dsfcalc(26)=0,
-   dfile(27)='amsuabufr', dtype(27)='amsua',     dplat(27)='n15',     dsis(27)='amsua_n15',          dval(27)=10.0,dthin(27)=2, dsfcalc(27)=0,
-   dfile(28)='amsuabufr', dtype(28)='amsua',     dplat(28)='n16',     dsis(28)='amsua_n16',          dval(28)=0.0, dthin(28)=2, dsfcalc(28)=0,
-   dfile(29)='amsuabufr', dtype(29)='amsua',     dplat(29)='n17',     dsis(29)='amsua_n17',          dval(29)=0.0, dthin(29)=2, dsfcalc(29)=0,
-   dfile(30)='amsuabufr', dtype(30)='amsua',     dplat(30)='n18',     dsis(30)='amsua_n18',          dval(30)=10.0,dthin(30)=2, dsfcalc(30)=0,
-   dfile(31)='amsuabufr', dtype(31)='amsua',     dplat(31)='metop-a', dsis(31)='amsua_metop-a',      dval(31)=10.0,dthin(31)=2, dsfcalc(31)=0,
-   dfile(32)='airsbufr',  dtype(32)='amsua',     dplat(32)='aqua',    dsis(32)='amsua_aqua',         dval(32)=5.0, dthin(32)=2, dsfcalc(32)=0,
-   dfile(33)='amsubbufr', dtype(33)='amsub',     dplat(33)='n15',     dsis(33)='amsub_n15',          dval(33)=3.0, dthin(33)=3, dsfcalc(33)=0,
-   dfile(34)='amsubbufr', dtype(34)='amsub',     dplat(34)='n16',     dsis(34)='amsub_n16',          dval(34)=3.0, dthin(34)=3, dsfcalc(34)=0,
-   dfile(35)='amsubbufr', dtype(35)='amsub',     dplat(35)='n17',     dsis(35)='amsub_n17',          dval(35)=3.0, dthin(35)=3, dsfcalc(35)=0,
-   dfile(36)='mhsbufr',   dtype(36)='mhs',       dplat(36)='n18',     dsis(36)='mhs_n18',            dval(36)=3.0, dthin(36)=3, dsfcalc(36)=0,
-   dfile(37)='mhsbufr',   dtype(37)='mhs',       dplat(37)='metop-a', dsis(37)='mhs_metop-a',        dval(37)=3.0, dthin(37)=3, dsfcalc(37)=0,
-   dfile(38)='ssmitbufr', dtype(38)='ssmi',      dplat(38)='f13',     dsis(38)='ssmi_f13',           dval(38)=0.0, dthin(38)=4, dsfcalc(38)=0,
-   dfile(39)='ssmitbufr', dtype(39)='ssmi',      dplat(39)='f14',     dsis(39)='ssmi_f14',           dval(39)=0.0, dthin(39)=4, dsfcalc(39)=0,
-   dfile(40)='ssmitbufr', dtype(40)='ssmi',      dplat(40)='f15',     dsis(40)='ssmi_f15',           dval(40)=0.0, dthin(40)=4, dsfcalc(40)=0,
-   dfile(41)='amsrebufr', dtype(41)='amsre_low', dplat(41)='aqua',    dsis(41)='amsre_aqua',         dval(41)=0.0, dthin(41)=4, dsfcalc(41)=0,
-   dfile(42)='amsrebufr', dtype(42)='amsre_mid', dplat(42)='aqua',    dsis(42)='amsre_aqua',         dval(42)=0.0, dthin(42)=4, dsfcalc(42)=0,
-   dfile(43)='amsrebufr', dtype(43)='amsre_hig', dplat(43)='aqua',    dsis(43)='amsre_aqua',         dval(43)=0.0, dthin(43)=4, dsfcalc(43)=0,
-   dfile(44)='ssmisbufr', dtype(44)='ssmis',     dplat(44)='f16',     dsis(44)='ssmis_f16',          dval(44)=0.0, dthin(44)=4, dsfcalc(44)=0,
-   dfile(45)='gsnd1bufr', dtype(45)='sndrd1',    dplat(45)='g12',     dsis(45)='sndrD1_g12',         dval(45)=1.5, dthin(45)=5, dsfcalc(45)=0,
-   dfile(46)='gsnd1bufr', dtype(46)='sndrd2',    dplat(46)='g12',     dsis(46)='sndrD2_g12',         dval(46)=1.5, dthin(46)=5, dsfcalc(46)=0,
-   dfile(47)='gsnd1bufr', dtype(47)='sndrd3',    dplat(47)='g12',     dsis(47)='sndrD3_g12',         dval(47)=1.5, dthin(47)=5, dsfcalc(47)=0,
-   dfile(48)='gsnd1bufr', dtype(48)='sndrd4',    dplat(48)='g12',     dsis(48)='sndrD4_g12',         dval(48)=1.5, dthin(48)=5, dsfcalc(48)=0,
-   dfile(49)='gsnd1bufr', dtype(49)='sndrd1',    dplat(49)='g11',     dsis(49)='sndrD1_g11',         dval(49)=1.5, dthin(49)=5, dsfcalc(49)=0,
-   dfile(50)='gsnd1bufr', dtype(50)='sndrd2',    dplat(50)='g11',     dsis(50)='sndrD2_g11',         dval(50)=1.5, dthin(50)=5, dsfcalc(50)=0,
-   dfile(51)='gsnd1bufr', dtype(51)='sndrd3',    dplat(51)='g11',     dsis(51)='sndrD3_g11',         dval(51)=1.5, dthin(51)=5, dsfcalc(51)=0,
-   dfile(52)='gsnd1bufr', dtype(52)='sndrd4',    dplat(52)='g11',     dsis(52)='sndrD4_g11',         dval(52)=1.5, dthin(52)=5, dsfcalc(52)=0,
-   dfile(53)='gsnd1bufr', dtype(53)='sndrd1',    dplat(53)='g13',     dsis(53)='sndrD1_g13',         dval(53)=1.5, dthin(53)=5, dsfcalc(53)=0,
-   dfile(54)='gsnd1bufr', dtype(54)='sndrd2',    dplat(54)='g13',     dsis(54)='sndrD2_g13',         dval(54)=1.5, dthin(54)=5, dsfcalc(54)=0,
-   dfile(55)='gsnd1bufr', dtype(55)='sndrd3',    dplat(55)='g13',     dsis(55)='sndrD3_g13',         dval(55)=1.5, dthin(55)=5, dsfcalc(55)=0,
-   dfile(56)='gsnd1bufr', dtype(56)='sndrd4',    dplat(56)='g13',     dsis(56)='sndrD4_g13',         dval(56)=1.5, dthin(56)=5, dsfcalc(56)=0,
-   dfile(57)='iasibufr',  dtype(57)='iasi',      dplat(57)='metop-a', dsis(57)='iasi616_metop-a',    dval(57)=20.0,dthin(57)=1, dsfcalc(57)=0,
-   dfile(58)='gomebufr',  dtype(58)='gome',      dplat(58)='metop-a', dsis(58)='gome_metop-a',       dval(58)=1.0, dthin(58)=6, dsfcalc(58)=0,
-   dfile(59)='omibufr',   dtype(59)='omi',       dplat(59)='aura',    dsis(59)='omi_aura',           dval(59)=1.0, dthin(59)=6, dsfcalc(59)=0,
-   dfile(60)='sbuvbufr',  dtype(60)='sbuv2',     dplat(60)='n19',     dsis(60)='sbuv8_n19',          dval(60)=1.0, dthin(60)=0, dsfcalc(60)=0,
-   dfile(61)='hirs4bufr', dtype(61)='hirs4',     dplat(61)='n19',     dsis(61)='hirs4_n19',          dval(61)=6.0, dthin(61)=1, dsfcalc(61)=0,
-   dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='n19',     dsis(62)='amsua_n19',          dval(62)=10.0,dthin(62)=2, dsfcalc(62)=0,
-   dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='n19',     dsis(63)='mhs_n19',            dval(63)=3.0, dthin(63)=3, dsfcalc(63)=0,
-   dfile(64)='tcvitl'     dtype(64)='tcp',       dplat(64)=' ',       dsis(64)='tcp',                dval(64)=1.0, dthin(64)=0, dsfcalc(64)=0,
-   dfile(65)='modisbufr', dtype(65)='modis',     dplat(65)='aqua',    dsis(65)='modis_aqua',         dval(65)=1.0, dthin(65)=6, dsfcalc(65)=0,
-   dfile(66)='modisbufr', dtype(66)='modis',     dplat(66)='terra',   dsis(66)='modis_terra',        dval(66)=1.0, dthin(66)=6, dsfcalc(66)=0,
-   dfile(67)='mlsbufr',   dtype(67)='mls',       dplat(67)='aura',    dsis(67)='mls_aura',           dval(67)=1.0, dthin(67)=0, dsfcalc(67)=0,
+   dfile(05)='satwnd',  dtype(05)='uv',          dplat(05)=' ',       dsis(05)='uv',                 dval(05)=1.0, dthin(05)=0, dsfcalc(05)=0,
+   dfile(06)='prepbufr',  dtype(06)='uv',        dplat(06)=' ',       dsis(06)='uv',                 dval(06)=1.0, dthin(06)=0, dsfcalc(06)=0,
+   dfile(07)='prepbufr',  dtype(07)='spd',       dplat(07)=' ',       dsis(07)='spd',                dval(07)=1.0, dthin(07)=0, dsfcalc(07)=0,
+   dfile(08)='prepbufr',  dtype(08)='dw',        dplat(08)=' ',       dsis(08)='dw',                 dval(08)=1.0, dthin(08)=0, dsfcalc(08)=0,
+   dfile(09)='radarbufr', dtype(09)='rw',        dplat(09)=' ',       dsis(09)='rw',                 dval(09)=1.0, dthin(09)=0, dsfcalc(09)=0,
+   dfile(10)='prepbufr',  dtype(10)='sst',       dplat(10)=' ',       dsis(10)='sst',                dval(10)=1.0, dthin(10)=0, dsfcalc(10)=0,
+   dfile(11)='gpsrobufr', dtype(11)='gps_ref',   dplat(11)=' ',       dsis(11)='gps_ref',            dval(11)=1.0, dthin(11)=0, dsfcalc(11)=0,
+   dfile(12)='ssmirrbufr',dtype(12)='pcp_ssmi',  dplat(12)='dmsp',    dsis(12)='pcp_ssmi',           dval(12)=1.0, dthin(12)=-1,dsfcalc(12)=0,
+   dfile(13)='tmirrbufr', dtype(13)='pcp_tmi',   dplat(13)='trmm',    dsis(13)='pcp_tmi',            dval(13)=1.0, dthin(13)=-1,dsfcalc(13)=0,
+   dfile(14)='sbuvbufr',  dtype(14)='sbuv2',     dplat(14)='n16',     dsis(14)='sbuv8_n16',          dval(14)=1.0, dthin(14)=0, dsfcalc(14)=0,
+   dfile(15)='sbuvbufr',  dtype(15)='sbuv2',     dplat(15)='n17',     dsis(15)='sbuv8_n17',          dval(15)=1.0, dthin(15)=0, dsfcalc(15)=0,
+   dfile(16)='sbuvbufr',  dtype(16)='sbuv2',     dplat(16)='n18',     dsis(16)='sbuv8_n18',          dval(16)=1.0, dthin(16)=0, dsfcalc(16)=0,
+   dfile(17)='hirs2bufr', dtype(17)='hirs2',     dplat(17)='n14',     dsis(17)='hirs2_n14',          dval(17)=6.0, dthin(16)=1, dsfcalc(17)=0,
+   dfile(18)='hirs3bufr', dtype(18)='hirs3',     dplat(18)='n16',     dsis(18)='hirs3_n16',          dval(18)=0.0, dthin(18)=1, dsfcalc(18)=0,
+   dfile(19)='hirs3bufr', dtype(19)='hirs3',     dplat(19)='n17',     dsis(19)='hirs3_n17',          dval(19)=6.0, dthin(19)=1, dsfcalc(19)=0,
+   dfile(20)='hirs4bufr', dtype(20)='hirs4',     dplat(20)='n18',     dsis(20)='hirs4_n18',          dval(20)=0.0, dthin(20)=1, dsfcalc(20)=0,
+   dfile(21)='hirs4bufr', dtype(21)='hirs4',     dplat(21)='metop-a', dsis(21)='hirs4_metop-a',      dval(21)=6.0, dthin(21)=1, dsfcalc(21)=0,
+   dfile(22)='gsndrbufr', dtype(22)='sndr',      dplat(22)='g11',     dsis(22)='sndr_g11',           dval(22)=0.0, dthin(22)=1, dsfcalc(22)=0,
+   dfile(23)='gsndrbufr', dtype(23)='sndr',      dplat(23)='g12',     dsis(23)='sndr_g12',           dval(23)=0.0, dthin(23)=1, dsfcalc(23)=0,
+   dfile(24)='gimgrbufr', dtype(24)='goes_img',  dplat(24)='g11',     dsis(24)='imgr_g11',           dval(24)=0.0, dthin(24)=1, dsfcalc(24)=0,
+   dfile(25)='gimgrbufr', dtype(25)='goes_img',  dplat(25)='g12',     dsis(25)='imgr_g12',           dval(25)=0.0, dthin(25)=1, dsfcalc(25)=0,
+   dfile(26)='airsbufr',  dtype(26)='airs',      dplat(26)='aqua',    dsis(26)='airs281SUBSET_aqua', dval(26)=20.0,dthin(26)=1, dsfcalc(26)=0,
+   dfile(27)='msubufr',   dtype(27)='msu',       dplat(27)='n14',     dsis(27)='msu_n14',            dval(27)=2.0, dthin(27)=2, dsfcalc(27)=0,
+   dfile(28)='amsuabufr', dtype(28)='amsua',     dplat(28)='n15',     dsis(28)='amsua_n15',          dval(28)=10.0,dthin(28)=2, dsfcalc(28)=0,
+   dfile(29)='amsuabufr', dtype(29)='amsua',     dplat(29)='n16',     dsis(29)='amsua_n16',          dval(29)=0.0, dthin(29)=2, dsfcalc(29)=0,
+   dfile(30)='amsuabufr', dtype(30)='amsua',     dplat(30)='n17',     dsis(30)='amsua_n17',          dval(30)=0.0, dthin(30)=2, dsfcalc(30)=0,
+   dfile(31)='amsuabufr', dtype(31)='amsua',     dplat(31)='n18',     dsis(31)='amsua_n18',          dval(31)=10.0,dthin(31)=2, dsfcalc(31)=0,
+   dfile(32)='amsuabufr', dtype(32)='amsua',     dplat(32)='metop-a', dsis(32)='amsua_metop-a',      dval(32)=10.0,dthin(32)=2, dsfcalc(32)=0,
+   dfile(33)='airsbufr',  dtype(33)='amsua',     dplat(33)='aqua',    dsis(33)='amsua_aqua',         dval(33)=5.0, dthin(33)=2, dsfcalc(33)=0,
+   dfile(34)='amsubbufr', dtype(34)='amsub',     dplat(34)='n15',     dsis(34)='amsub_n15',          dval(34)=3.0, dthin(34)=3, dsfcalc(34)=0,
+   dfile(35)='amsubbufr', dtype(35)='amsub',     dplat(35)='n16',     dsis(35)='amsub_n16',          dval(35)=3.0, dthin(35)=3, dsfcalc(35)=0,
+   dfile(36)='amsubbufr', dtype(36)='amsub',     dplat(36)='n17',     dsis(36)='amsub_n17',          dval(36)=3.0, dthin(36)=3, dsfcalc(36)=0,
+   dfile(37)='mhsbufr',   dtype(37)='mhs',       dplat(37)='n18',     dsis(37)='mhs_n18',            dval(37)=3.0, dthin(37)=3, dsfcalc(37)=0,
+   dfile(38)='mhsbufr',   dtype(38)='mhs',       dplat(38)='metop-a', dsis(38)='mhs_metop-a',        dval(38)=3.0, dthin(38)=3, dsfcalc(38)=0,
+   dfile(39)='ssmitbufr', dtype(39)='ssmi',      dplat(39)='f13',     dsis(39)='ssmi_f13',           dval(39)=0.0, dthin(39)=4, dsfcalc(39)=0,
+   dfile(40)='ssmitbufr', dtype(40)='ssmi',      dplat(40)='f14',     dsis(40)='ssmi_f14',           dval(40)=0.0, dthin(40)=4, dsfcalc(40)=0,
+   dfile(41)='ssmitbufr', dtype(41)='ssmi',      dplat(41)='f15',     dsis(41)='ssmi_f15',           dval(41)=0.0, dthin(41)=4, dsfcalc(41)=0,
+   dfile(42)='amsrebufr', dtype(42)='amsre_low', dplat(42)='aqua',    dsis(42)='amsre_aqua',         dval(42)=0.0, dthin(42)=4, dsfcalc(42)=0,
+   dfile(43)='amsrebufr', dtype(43)='amsre_mid', dplat(43)='aqua',    dsis(43)='amsre_aqua',         dval(43)=0.0, dthin(43)=4, dsfcalc(43)=0,
+   dfile(44)='amsrebufr', dtype(44)='amsre_hig', dplat(44)='aqua',    dsis(44)='amsre_aqua',         dval(44)=0.0, dthin(44)=4, dsfcalc(44)=0,
+   dfile(45)='ssmisbufr', dtype(45)='ssmis',     dplat(45)='f16',     dsis(45)='ssmis_f16',          dval(45)=0.0, dthin(45)=4, dsfcalc(45)=0,
+   dfile(46)='gsnd1bufr', dtype(46)='sndrd1',    dplat(46)='g12',     dsis(46)='sndrD1_g12',         dval(46)=1.5, dthin(46)=5, dsfcalc(46)=0,
+   dfile(47)='gsnd1bufr', dtype(47)='sndrd2',    dplat(47)='g12',     dsis(47)='sndrD2_g12',         dval(47)=1.5, dthin(47)=5, dsfcalc(47)=0,
+   dfile(48)='gsnd1bufr', dtype(48)='sndrd3',    dplat(48)='g12',     dsis(48)='sndrD3_g12',         dval(48)=1.5, dthin(48)=5, dsfcalc(48)=0,
+   dfile(49)='gsnd1bufr', dtype(49)='sndrd4',    dplat(49)='g12',     dsis(49)='sndrD4_g12',         dval(49)=1.5, dthin(49)=5, dsfcalc(49)=0,
+   dfile(50)='gsnd1bufr', dtype(50)='sndrd1',    dplat(50)='g11',     dsis(50)='sndrD1_g11',         dval(50)=1.5, dthin(50)=5, dsfcalc(50)=0,
+   dfile(51)='gsnd1bufr', dtype(51)='sndrd2',    dplat(51)='g11',     dsis(51)='sndrD2_g11',         dval(51)=1.5, dthin(51)=5, dsfcalc(51)=0,
+   dfile(52)='gsnd1bufr', dtype(52)='sndrd3',    dplat(52)='g11',     dsis(52)='sndrD3_g11',         dval(52)=1.5, dthin(52)=5, dsfcalc(52)=0,
+   dfile(53)='gsnd1bufr', dtype(53)='sndrd4',    dplat(53)='g11',     dsis(53)='sndrD4_g11',         dval(53)=1.5, dthin(53)=5, dsfcalc(53)=0,
+   dfile(54)='gsnd1bufr', dtype(54)='sndrd1',    dplat(54)='g13',     dsis(54)='sndrD1_g13',         dval(54)=1.5, dthin(54)=5, dsfcalc(54)=0,
+   dfile(55)='gsnd1bufr', dtype(55)='sndrd2',    dplat(55)='g13',     dsis(55)='sndrD2_g13',         dval(55)=1.5, dthin(55)=5, dsfcalc(55)=0,
+   dfile(56)='gsnd1bufr', dtype(56)='sndrd3',    dplat(56)='g13',     dsis(56)='sndrD3_g13',         dval(56)=1.5, dthin(56)=5, dsfcalc(56)=0,
+   dfile(57)='gsnd1bufr', dtype(57)='sndrd4',    dplat(57)='g13',     dsis(57)='sndrD4_g13',         dval(57)=1.5, dthin(57)=5, dsfcalc(57)=0,
+   dfile(58)='iasibufr',  dtype(58)='iasi',      dplat(58)='metop-a', dsis(58)='iasi616_metop-a',    dval(58)=20.0,dthin(58)=1, dsfcalc(58)=0,
+   dfile(59)='gomebufr',  dtype(59)='gome',      dplat(59)='metop-a', dsis(59)='gome_metop-a',       dval(59)=1.0, dthin(59)=6, dsfcalc(59)=0,
+   dfile(60)='omibufr',   dtype(60)='omi',       dplat(60)='aura',    dsis(60)='omi_aura',           dval(60)=1.0, dthin(60)=6, dsfcalc(60)=0,
+   dfile(61)='sbuvbufr',  dtype(61)='sbuv2',     dplat(61)='n19',     dsis(61)='sbuv8_n19',          dval(61)=1.0, dthin(61)=0, dsfcalc(61)=0,
+   dfile(62)='hirs4bufr', dtype(62)='hirs4',     dplat(62)='n19',     dsis(62)='hirs4_n19',          dval(62)=6.0, dthin(62)=1, dsfcalc(62)=0,
+   dfile(63)='amsuabufr', dtype(63)='amsua',     dplat(63)='n19',     dsis(63)='amsua_n19',          dval(63)=10.0,dthin(63)=2, dsfcalc(63)=0,
+   dfile(64)='mhsbufr',   dtype(64)='mhs',       dplat(64)='n19',     dsis(64)='mhs_n19',            dval(64)=3.0, dthin(64)=3, dsfcalc(64)=0,
+   dfile(65)='tcvitl'     dtype(65)='tcp',       dplat(65)=' ',       dsis(65)='tcp',                dval(65)=1.0, dthin(65)=0, dsfcalc(65)=0,
+   dfile(66)='modisbufr', dtype(66)='modis',     dplat(66)='aqua',    dsis(66)='modis_aqua',         dval(66)=1.0, dthin(66)=6, dsfcalc(66)=0,
+   dfile(67)='modisbufr', dtype(67)='modis',     dplat(67)='terra',   dsis(67)='modis_terra',        dval(67)=1.0, dthin(67)=6, dsfcalc(67)=0,
+   dfile(68)='mlsbufr',   dtype(68)='mls',       dplat(68)='aura',    dsis(68)='mls_aura',           dval(68)=1.0, dthin(68)=0, dsfcalc(68)=0,
+   dfile(69)='seviribufr',dtype(68)='seviri',    dplat(68)='m08',     dsis(68)='seviri_m08',         dval(68)=0.0, dthin(68)=7, dsfcalc(68)=0,
+   dfile(70)='seviribufr',dtype(69)='seviri',    dplat(69)='m09',     dsis(69)='seviri_m09',         dval(69)=0.0, dthin(69)=7, dsfcalc(69)=0,
+   dfile(71)='seviribufr',dtype(70)='seviri',    dplat(70)='m10',     dsis(70)='seviri_m10',         dval(70)=0.0, dthin(70)=7, dsfcalc(70)=0,
    $OBSINPUT
  /
  &SUPEROB_RADAR
@@ -493,6 +497,7 @@ else
   echo You do not have access to a readable prepbufr file
   exit 1
 fi
+ln -s -f $datobs/${prefix_obs}satwnd.${suffix}    ./satwnd
 ln -s -f $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 ln -s -f $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 ln -s -f $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
@@ -508,6 +513,7 @@ ln -s -f $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
 ln -s -f $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
 ln -s -f $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
 ln -s -f $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+ln -s -f $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
 ln -s -f $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
 ln -s -f $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
 ln -s -f $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
@@ -656,7 +662,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then

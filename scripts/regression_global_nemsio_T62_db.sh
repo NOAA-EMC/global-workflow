@@ -245,6 +245,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
+$ncp $datobs/${prefix_obs}.satwnd.${suffix}         ./satwnd
 $ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
 $ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
@@ -258,6 +259,7 @@ $ncp $datobs/${prefix_obs}.1bhrs4.${suffix}        ./hirs4bufr
 $ncp $datobs/${prefix_obs}.1bmhs.${suffix}         ./mhsbufr
 $ncp $datobs/${prefix_obs}.1bmsu.${suffix}         ./msubufr
 $ncp $datobs/${prefix_obs}.airsev.${suffix}        ./airsbufr
+$ncp $datobs/${prefix_obs}.sevcsr.${suffix}        ./seviribufr
 $ncp $datobs/${prefix_obs}.mtiasi.${suffix}        ./iasibufr
 $ncp $datobs/${prefix_obs}.ssmit.${suffix}         ./ssmitbufr
 $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
