@@ -296,6 +296,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.satwnd.$suffix   ./satwnd
 $ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
@@ -600,6 +601,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.satwnd.$suffix   ./satwnd
 $ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
@@ -902,6 +904,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.satwnd.$suffix   ./satwnd
 $ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
@@ -1210,6 +1213,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $datobs/${prefixo}.satwnd.$suffix   ./satwnd
 $ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr

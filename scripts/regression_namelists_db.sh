@@ -8,7 +8,7 @@ export global_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=67,iguess=-1,
+   ndat=70,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    use_gfs_nemsio=.false.,
@@ -46,7 +46,7 @@ export global_T62_namelist="
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=5000.0,dmesh(4)=10000.0,time_window_max=0.5,
+   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=5000.0,dmesh(4)=10000.0,dmesh(5)=1450.0,time_window_max=0.5,
    dfile(01)='prepbufr',       dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                dval(01)=0.0,  dthin(01)=0,  dsfcalc(01)=0,
    dfile(02)='prepbufr'        dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                 dval(02)=0.0,  dthin(02)=0,  dsfcalc(02)=0,
    dfile(03)='prepbufr',       dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                 dval(03)=0.0,  dthin(03)=0,  dsfcalc(03)=0,
@@ -114,6 +114,9 @@ export global_T62_namelist="
    dfile(65)='modisbufr',      dtype(65)='modis',     dplat(65)='aqua',    dsis(65)='modis_aqua',        dval(65)=0.0,  dthin(65)=1,  dsfcalc(65)=0,
    dfile(66)='modisbufr',      dtype(66)='modis',     dplat(66)='terra',   dsis(66)='modis_terra',       dval(66)=0.0,  dthin(66)=1,  dsfcalc(66)=0,
    dfile(67)='mlsbufr',        dtype(67)='mls',       dplat(67)='aura',    dsis(67)='mls_aura',          dval(67)=1.0,  dthin(67)=0,  dsfcalc(67)=0,
+   dfile(68)='seviribufr',     dtype(68)='seviri',    dplat(68)='m08',     dsis(68)='seviri_m08',        dval(68)=0.0,  dthin(68)=5,  dsfcalc(68)=0,
+   dfile(69)='seviribufr',     dtype(69)='seviri',    dplat(69)='m09',     dsis(69)='seviri_m09',        dval(69)=0.0,  dthin(69)=5,  dsfcalc(69)=0,
+   dfile(70)='seviribufr',     dtype(70)='seviri',    dplat(70)='m10',     dsis(70)='seviri_m10',        dval(70)=0.0,  dthin(70)=5,  dsfcalc(70)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR
@@ -196,7 +199,7 @@ export global_lanczos_T62_namelist="
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=5000.0,dmesh(4)=10000.0,time_window_max=0.5,
+   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=5000.0,dmesh(4)=10000.0,dmesh(5)=1450.0,time_window_max=0.5,
    dfile(01)='prepbufr',       dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                dval(01)=0.0,  dthin(01)=0,  dsfcalc(01)=0,
    dfile(02)='prepbufr'        dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                 dval(02)=0.0,  dthin(02)=0,  dsfcalc(02)=0,
    dfile(03)='prepbufr',       dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                 dval(03)=0.0,  dthin(03)=0,  dsfcalc(03)=0,
@@ -264,6 +267,9 @@ export global_lanczos_T62_namelist="
    dfile(65)='modisbufr',      dtype(65)='modis',     dplat(65)='aqua',    dsis(65)='modis_aqua',        dval(65)=0.0,  dthin(65)=1,  dsfcalc(65)=0,
    dfile(66)='modisbufr',      dtype(66)='modis',     dplat(66)='terra',   dsis(66)='modis_terra',       dval(66)=0.0,  dthin(66)=1,  dsfcalc(66)=0,
    dfile(67)='mlsbufr',        dtype(67)='mls',       dplat(67)='aura',    dsis(67)='mls_aura',          dval(67)=1.0,  dthin(67)=0,  dsfcalc(67)=0,
+   dfile(68)='seviribufr',     dtype(68)='seviri',    dplat(68)='m08',     dsis(68)='seviri_m08',        dval(68)=0.0,  dthin(68)=5,  dsfcalc(68)=0,
+   dfile(69)='seviribufr',     dtype(69)='seviri',    dplat(69)='m09',     dsis(69)='seviri_m09',        dval(69)=0.0,  dthin(69)=5,  dsfcalc(69)=0,
+   dfile(70)='seviribufr',     dtype(70)='seviri',    dplat(70)='m10',     dsis(70)='seviri_m10',        dval(70)=0.0,  dthin(70)=5,  dsfcalc(70)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR

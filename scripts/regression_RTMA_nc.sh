@@ -2,7 +2,7 @@
 
 #@ error=$(job_name).$(step_name).e$(jobid)
 #@ job_type=parallel
-#@ class= dev
+#@ class=dev
 #@ group=dev
 #@ account_no = RDAS-T2O
 
@@ -251,6 +251,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
+$ncp $datobs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwnd
 
 # Copy first guess
 $ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
@@ -522,6 +523,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
+$ncp $datobs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwnd
 
 # Copy first guess
 $ncp $datges/rtma.t${cya}z.2dvar_input   ./wrf_inout
