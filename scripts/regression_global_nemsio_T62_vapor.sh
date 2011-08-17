@@ -118,7 +118,7 @@ export MP_INFOLEVEL=1
 
 
 # Set experiment name and analysis date
-adate=$adate_global
+adate=$adate_global_nemsio
 exp=$exp1_global_nemsio_updat
 
 # Set path/file for gsi executable
@@ -443,7 +443,7 @@ export MP_INFOLEVEL=1
 
 
 # Set experiment name and analysis date
-adate=$adate_global
+adate=$adate_global_nemsio
 exp=$exp2_global_nemsio_updat
 
 # Set path/file for gsi executable
@@ -767,7 +767,7 @@ export MP_INFOLEVEL=1
 
 
 # Set experiment name and analysis date
-adate=$adate_global
+adate=$adate_global_nemsio
 exp=$exp1_global_nemsio_cntrl
 
 # Set path/file for gsi executable
@@ -1097,7 +1097,7 @@ export MP_INFOLEVEL=1
 
 
 # Set experiment name and analysis date
-adate=$adate_global
+adate=$adate_global_nemsio
 exp=$exp2_global_nemsio_cntrl
 
 # Set path/file for gsi executable

@@ -316,7 +316,7 @@ cat << EOF > gsiparm.anl
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                  dval(02)=1.0, dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                  dval(03)=1.0, dthin(03)=0, dsfcalc(03)=0,
    dfile(04)='prepbufr',  dtype(04)='pw',        dplat(04)=' ',       dsis(04)='pw',                 dval(04)=1.0, dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='satwnd',  dtype(05)='uv',          dplat(05)=' ',       dsis(05)='uv',                 dval(05)=1.0, dthin(05)=0, dsfcalc(05)=0,
+   dfile(05)='satwnd',    dtype(05)='uv',        dplat(05)=' ',       dsis(05)='uv',                 dval(05)=1.0, dthin(05)=0, dsfcalc(05)=0,
    dfile(06)='prepbufr',  dtype(06)='uv',        dplat(06)=' ',       dsis(06)='uv',                 dval(06)=1.0, dthin(06)=0, dsfcalc(06)=0,
    dfile(07)='prepbufr',  dtype(07)='spd',       dplat(07)=' ',       dsis(07)='spd',                dval(07)=1.0, dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='prepbufr',  dtype(08)='dw',        dplat(08)=' ',       dsis(08)='dw',                 dval(08)=1.0, dthin(08)=0, dsfcalc(08)=0,
@@ -380,9 +380,9 @@ cat << EOF > gsiparm.anl
    dfile(66)='modisbufr', dtype(66)='modis',     dplat(66)='aqua',    dsis(66)='modis_aqua',         dval(66)=1.0, dthin(66)=6, dsfcalc(66)=0,
    dfile(67)='modisbufr', dtype(67)='modis',     dplat(67)='terra',   dsis(67)='modis_terra',        dval(67)=1.0, dthin(67)=6, dsfcalc(67)=0,
    dfile(68)='mlsbufr',   dtype(68)='mls',       dplat(68)='aura',    dsis(68)='mls_aura',           dval(68)=1.0, dthin(68)=0, dsfcalc(68)=0,
-   dfile(69)='seviribufr',dtype(68)='seviri',    dplat(68)='m08',     dsis(68)='seviri_m08',         dval(68)=0.0, dthin(68)=7, dsfcalc(68)=0,
-   dfile(70)='seviribufr',dtype(69)='seviri',    dplat(69)='m09',     dsis(69)='seviri_m09',         dval(69)=0.0, dthin(69)=7, dsfcalc(69)=0,
-   dfile(71)='seviribufr',dtype(70)='seviri',    dplat(70)='m10',     dsis(70)='seviri_m10',         dval(70)=0.0, dthin(70)=7, dsfcalc(70)=0,
+   dfile(69)='seviribufr',dtype(69)='seviri',    dplat(69)='m08',     dsis(69)='seviri_m08',         dval(69)=0.0, dthin(69)=7, dsfcalc(69)=0,
+   dfile(70)='seviribufr',dtype(70)='seviri',    dplat(70)='m09',     dsis(70)='seviri_m09',         dval(69)=0.0, dthin(70)=7, dsfcalc(70)=0,
+   dfile(71)='seviribufr',dtype(71)='seviri',    dplat(71)='m10',     dsis(71)='seviri_m10',         dval(71)=0.0, dthin(71)=7, dsfcalc(71)=0,
    $OBSINPUT
  /
  &SUPEROB_RADAR
