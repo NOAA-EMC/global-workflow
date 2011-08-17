@@ -56,7 +56,7 @@ export MP_COREFILE_FORMAT=lite
 
 
 # Set experiment name and analysis date
-adate=$adate_global
+adate=$adate_global_nemsio
 exp=$exp1_global_nemsio_updat
 
 # Set path/file for gsi executable

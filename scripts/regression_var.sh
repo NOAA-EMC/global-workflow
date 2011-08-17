@@ -22,8 +22,8 @@ export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
-export updat="/global/save/wx20ml/mlueken/src/global_gsi"
-export cntrl="/global/save/wx20ml/svn1/src/global_gsi"
+export updat="/global/save/$USER/mlueken/src/global_gsi"
+export cntrl="/global/save/$USER/svn1/src/global_gsi"
 
 # Define experiment names
 
@@ -94,8 +94,8 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2010020112"
-#export adate_global="2011050700"
+export adate_global="2011080100"
+export adate_global_nemsio="2010020112"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
