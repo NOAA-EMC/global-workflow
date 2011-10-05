@@ -945,7 +945,7 @@ export nems_nmmb_namelist="
    dfile(14)='sbuvbufr',  dtype(14)='sbuv2',     dplat(14)='n16',     dsis(14)='sbuv8_n16',          dval(14)=1.0, dthin(14)=0, dsfcalc(14)=0,
    dfile(15)='sbuvbufr',  dtype(15)='sbuv2',     dplat(15)='n17',     dsis(15)='sbuv8_n17',          dval(15)=1.0, dthin(15)=0, dsfcalc(15)=0,
    dfile(16)='sbuvbufr',  dtype(16)='sbuv2',     dplat(16)='n18',     dsis(16)='sbuv8_n18',          dval(16)=1.0, dthin(16)=0, dsfcalc(16)=0,
-   dfile(17)='hirs2bufr', dtype(17)='hirs2',     dplat(17)='n14',     dsis(17)='hirs2_n14',          dval(17)=6.0, dthin(16)=1, dsfcalc(17)=1,
+   dfile(17)='hirs2bufr', dtype(17)='hirs2',     dplat(17)='n14',     dsis(17)='hirs2_n14',          dval(17)=6.0, dthin(17)=1, dsfcalc(17)=1,
    dfile(18)='hirs3bufr', dtype(18)='hirs3',     dplat(18)='n16',     dsis(18)='hirs3_n16',          dval(18)=0.0, dthin(18)=1, dsfcalc(18)=1,
    dfile(19)='hirs3bufr', dtype(19)='hirs3',     dplat(19)='n17',     dsis(19)='hirs3_n17',          dval(19)=6.0, dthin(19)=1, dsfcalc(19)=1,
    dfile(20)='hirs4bufr', dtype(20)='hirs4',     dplat(20)='n18',     dsis(20)='hirs4_n18',          dval(20)=0.0, dthin(20)=1, dsfcalc(20)=1,
