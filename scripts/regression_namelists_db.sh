@@ -313,12 +313,12 @@ export RTMA_namelist="
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,
+   gencode=78,qoption=1,tsensible=.true.
    factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=6,iguess=-1,
+   ndat=8,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=3,use_compress=.false.,
+   nhr_assimilation=6,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -334,7 +334,8 @@ export RTMA_namelist="
  &ANBKGERR
    anisotropic=.true.,an_vs=0.5,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=0,grid_ratio=2.,nord_f2a=4,
+   ifilt_ord=2,npass=3,normal=-200,grid_ratio=1.,nord_f2a=4,
+   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.
  /
  &JCOPTS
  /
@@ -344,6 +345,7 @@ export RTMA_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
+   hilbert_curve=.true.,
  /
  &OBS_INPUT
    dmesh(1)=600.0,dmesh(2)=600.0,dmesh(3)=600.0,dmesh(4)=600.0,time_window_max=0.5,
@@ -353,6 +355,8 @@ export RTMA_namelist="
    dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
    dfile(05)='satwnd',    dtype(05)='uv',  dplat(05)=' ', dsis(05)='uv',  dval(05)=1.0,  dthin(05)=0,
    dfile(06)='prepbufr',  dtype(06)='spd', dplat(06)=' ', dsis(06)='spd', dval(06)=1.0,  dthin(06)=0,
+   dfile(07)='prepbufr',  dtype(07)='gust',dplat(07)=' ', dsis(07)='gust',dval(07)=1.0,  dthin(07)=0,
+   dfile(08)='prepbufr',  dtype(08)='vis', dplat(08)=' ', dsis(08)='vis', dval(08)=1.0,  dthin(08)=0,
  /
  &SUPEROB_RADAR
  /

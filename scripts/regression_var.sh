@@ -102,6 +102,7 @@ export adate_regional_nems_nmmb="2009031600"
 export adate_regional_arw_netcdf="2008051112"
 export adate_regional_arw_binary="2010072412"
 export adate_regional_cmaq_binary="2010090112"
+export adate_regional_rtma_binary="2011083112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
