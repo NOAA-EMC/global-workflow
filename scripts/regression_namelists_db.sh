@@ -10,7 +10,7 @@ export global_T62_namelist="
    factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
    ndat=67,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-   use_pbl=.false.,use_compress=.false.,nsig_ext=12,gpstop=50.,
+   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,
    $SETUP
  /
@@ -32,7 +32,7 @@ export global_T62_namelist="
    $ANBKGERR
  /
  &JCOPTS
-   ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=2.5e7,
+   ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=5.0e7,
    $JCOPTS
  /
  &STRONGOPTS
@@ -46,7 +46,7 @@ export global_T62_namelist="
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=5000.0,dmesh(4)=10000.0,dmesh(5)=1450.0,time_window_max=0.5,
+   dmesh(1)=1450.0,dmesh(2)=1500.0,time_window_max=0.5,
    dfile(01)='prepbufr',       dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                dval(01)=0.0,  dthin(01)=0,  dsfcalc(01)=0,
    dfile(02)='prepbufr'        dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                 dval(02)=0.0,  dthin(02)=0,  dsfcalc(02)=0,
    dfile(03)='prepbufr',       dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                 dval(03)=0.0,  dthin(03)=0,  dsfcalc(03)=0,
@@ -67,7 +67,7 @@ export global_T62_namelist="
    dfile(18)='hirs4bufr_skip', dtype(18)='hirs4',     dplat(18)='metop-a', dsis(18)='hirs4_metop-a',     dval(18)=0.0,  dthin(18)=1,  dsfcalc(18)=1,
    dfile(19)='gimgrbufr',      dtype(19)='goes_img',  dplat(19)='g11',     dsis(19)='imgr_g11',          dval(19)=0.0,  dthin(19)=1,  dsfcalc(19)=0,
    dfile(20)='gimgrbufr',      dtype(20)='goes_img',  dplat(20)='g12',     dsis(20)='imgr_g12',          dval(20)=0.0,  dthin(20)=1,  dsfcalc(20)=0,
-   dfile(21)='airsbufr',       dtype(21)='airs',      dplat(21)='aqua',    dsis(21)='airs281SUBSET_aqua',dval(21)=0.0,  dthin(21)=3,  dsfcalc(21)=1,
+   dfile(21)='airsbufr',       dtype(21)='airs',      dplat(21)='aqua',    dsis(21)='airs281SUBSET_aqua',dval(21)=0.0,  dthin(21)=1,  dsfcalc(21)=1,
    dfile(22)='amsuabufr_skip', dtype(22)='amsua',     dplat(22)='n15',     dsis(22)='amsua_n15',         dval(22)=0.0,  dthin(22)=1,  dsfcalc(22)=1,
    dfile(23)='amsuabufr_skip', dtype(23)='amsua',     dplat(23)='n18',     dsis(23)='amsua_n18',         dval(23)=0.0,  dthin(23)=1,  dsfcalc(23)=1,
    dfile(24)='amsuabufr_skip', dtype(24)='amsua',     dplat(24)='metop-a', dsis(24)='amsua_metop-a',     dval(24)=0.0,  dthin(24)=1,  dsfcalc(24)=1,
@@ -96,7 +96,7 @@ export global_T62_namelist="
    dfile(47)='gsnd1bufr_skip', dtype(47)='sndrd2',    dplat(47)='g13',     dsis(47)='sndrD2_g13',        dval(47)=0.0,  dthin(47)=1,  dsfcalc(47)=0,
    dfile(48)='gsnd1bufr_skip', dtype(48)='sndrd3',    dplat(48)='g13',     dsis(48)='sndrD3_g13',        dval(48)=0.0,  dthin(48)=1,  dsfcalc(48)=0,
    dfile(49)='gsnd1bufr_skip', dtype(49)='sndrd4',    dplat(49)='g13',     dsis(49)='sndrD4_g13',        dval(49)=0.0,  dthin(49)=1,  dsfcalc(49)=0,
-   dfile(50)='iasibufr',       dtype(50)='iasi',      dplat(50)='metop-a', dsis(50)='iasi616_metop-a',   dval(50)=0.0,  dthin(50)=4,  dsfcalc(50)=1,
+   dfile(50)='iasibufr',       dtype(50)='iasi',      dplat(50)='metop-a', dsis(50)='iasi616_metop-a',   dval(50)=0.0,  dthin(50)=1,  dsfcalc(50)=1,
    dfile(51)='gomebufr',       dtype(51)='gome',      dplat(51)='metop-a', dsis(51)='gome_metop-a',      dval(51)=0.0,  dthin(51)=2,  dsfcalc(51)=0,
    dfile(52)='omibufr',        dtype(52)='omi',       dplat(52)='aura',    dsis(52)='omi_aura',          dval(52)=0.0,  dthin(52)=2,  dsfcalc(52)=0,
    dfile(53)='sbuvbufr',       dtype(53)='sbuv2',     dplat(53)='n19',     dsis(53)='sbuv8_n19',         dval(53)=0.0,  dthin(53)=0,  dsfcalc(53)=0,
@@ -104,9 +104,9 @@ export global_T62_namelist="
    dfile(55)='amsuabufr',      dtype(55)='amsua',     dplat(55)='n19',     dsis(55)='amsua_n19',         dval(55)=0.0,  dthin(55)=1,  dsfcalc(55)=1,
    dfile(56)='mhsbufr',        dtype(56)='mhs',       dplat(56)='n19',     dsis(56)='mhs_n19',           dval(56)=0.0,  dthin(56)=1,  dsfcalc(56)=1,
    dfile(57)='tcvitl'          dtype(57)='tcp',       dplat(57)=' ',       dsis(57)='tcp',               dval(57)=0.0,  dthin(57)=0,  dsfcalc(57)=0,
-   dfile(58)='seviribufr',     dtype(58)='seviri',    dplat(58)='m08',     dsis(58)='seviri_m08',        dval(58)=0.0,  dthin(58)=5,  dsfcalc(58)=0,
-   dfile(59)='seviribufr',     dtype(59)='seviri',    dplat(59)='m09',     dsis(59)='seviri_m09',        dval(59)=0.0,  dthin(59)=5,  dsfcalc(59)=0,
-   dfile(60)='seviribufr',     dtype(60)='seviri',    dplat(60)='m10',     dsis(60)='seviri_m10',        dval(60)=0.0,  dthin(60)=5,  dsfcalc(60)=0,
+   dfile(58)='seviribufr',     dtype(58)='seviri',    dplat(58)='m08',     dsis(58)='seviri_m08',        dval(58)=0.0,  dthin(58)=1,  dsfcalc(58)=0,
+   dfile(59)='seviribufr',     dtype(59)='seviri',    dplat(59)='m09',     dsis(59)='seviri_m09',        dval(59)=0.0,  dthin(59)=1,  dsfcalc(59)=0,
+   dfile(60)='seviribufr',     dtype(60)='seviri',    dplat(60)='m10',     dsis(60)='seviri_m10',        dval(60)=0.0,  dthin(60)=1,  dsfcalc(60)=0,
    dfile(61)='hirs4bufr',      dtype(61)='hirs4',     dplat(61)='metop-b', dsis(61)='hirs4_metop-b',     dval(61)=0.0,  dthin(61)=1,  dsfcalc(61)=0,
    dfile(62)='amsuabufr',      dtype(62)='amsua',     dplat(62)='metop-b', dsis(62)='amsua_metop-b',     dval(62)=0.0,  dthin(62)=1,  dsfcalc(62)=0,
    dfile(63)='mhsbufr',        dtype(63)='mhs',       dplat(63)='metop-b', dsis(63)='mhs_metop-b',       dval(63)=0.0,  dthin(63)=1,  dsfcalc(63)=0,
