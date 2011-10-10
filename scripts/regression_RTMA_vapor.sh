@@ -118,7 +118,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 exp=$exp1_rtma_updat
-adate=$adate_regional
+adate=$adate_regional_rtma_binary
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -391,7 +391,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 exp=$exp2_rtma_updat
-adate=$adate_regional
+adate=$adate_regional_rtma_binary
 
 # Set path/file for gsi executable
 gsiexec=$updat
@@ -664,7 +664,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 exp=$exp1_rtma_cntrl
-adate=$adate_regional
+adate=$adate_regional_rtma_binary
 
 # Set path/file for gsi executable
 gsiexec=$cntrl
@@ -943,7 +943,7 @@ export MP_INFOLEVEL=1
 
 # Set experiment name and analysis date
 exp=$exp2_rtma_cntrl
-adate=$adate_regional
+adate=$adate_regional_rtma_binary
 
 # Set path/file for gsi executable
 gsiexec=$cntrl
