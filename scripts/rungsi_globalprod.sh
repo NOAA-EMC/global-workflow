@@ -61,8 +61,8 @@ datdir=/ptmp/${USER}/data_sigmap/${exp}
 tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
 savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 
-# Use with CRTM REL-2.0
-fixcrtm=/nwprod/fix/crtm_2.0.2
+# Use with CRTM REL-2.0.4-p1
+fixcrtm=/global/save/wx20rt/svn/crtm_2.0.4-p1/fix
 
 # Other Executables and scripts
 export SIGHDR=/nwprod/exec/global_sighdr
@@ -422,11 +422,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fixgsi/global_anavinfo.l64.txt
-if [[ "$JCAP" -ne "878" ]]; then
-   berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77.gcv
-elif [[ "$JCAP" = "878" ]]; then
-   berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77_SL878.gcv
-fi
+berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin

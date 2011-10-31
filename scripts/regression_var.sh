@@ -6,7 +6,7 @@
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
 #default will be refractivity for now
 
-export gps_dtype="gps_ref"
+export gps_dtype="gps_bnd"
 
 # Define global noscrub directory
 
@@ -15,7 +15,7 @@ export noscrub="/global/noscrub/$USER"
 # Define path to fix file directory
 
 export fix_file="/global/save/$USER/svn1/fix"
-export crtm_coef="/nwprod/fix/crtm_2.0.2"
+export crtm_coef="/global/save/wx20rt/svn/crtm_2.0.4-p1/fix"
 export scripts="/global/save/$USER/svn1/scripts"
 export src="/global/save/$USER/svn1/src"
 
