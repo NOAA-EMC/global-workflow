@@ -231,6 +231,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -274,7 +275,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -592,6 +593,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -635,7 +637,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -953,6 +955,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -996,7 +999,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1321,6 +1324,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -1364,7 +1368,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin

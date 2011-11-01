@@ -18,7 +18,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:10:00
+#@ wall_clock_limit = 0:15:00
 #@ notification=error
 #@ restart=no
 #@ queue

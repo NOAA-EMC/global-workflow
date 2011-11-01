@@ -15,7 +15,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:30:00
 #@ notification=error
 #@ restart=no
 #@ queue
@@ -42,7 +42,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:30:00
 #@ notification=error
 #@ restart=no
 #@ dependency=(gsi_nmm_binary_updat2==0)
@@ -1336,7 +1336,7 @@ mkdir -p $tmpdir
 cd $tmpdir
 
 # Other required constants for regression testing
-maxtime=1200
+maxtime=1800
 # Dew/Mist=26 GB/16 tasks per node
 ##maxmem=$((1500000*1))
 # Vapor=110 GB/48 tasks per node

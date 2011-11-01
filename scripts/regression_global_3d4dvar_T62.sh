@@ -230,6 +230,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for 3dvar run
@@ -260,7 +261,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -559,6 +560,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -602,7 +604,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -919,6 +921,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for 3dvar run
@@ -951,7 +954,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1256,6 +1259,7 @@ SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
    SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
@@ -1299,7 +1303,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77.gcv
+berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1674,33 +1678,33 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 } >> $output
 
-# Next, reproducibility between exp1 and exp2
+# Next, reproducibility between exp1 and exp3
 
 {
 
-if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
-   echo 'The results between the two runs ('${exp1}' and '${exp2}') are REPRODUCIBLE'
-   echo 'since the corresponding penalties and gradients are IDENTICAL with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are REPRODUCIBLE'
+   echo 'since the corresponding penalties and gradients are IDENTICAL with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are NOT REPRODUCIBLE,'
-   echo 'thus the regression test has FAILED for '${exp1}' and '${exp2}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has FAILED for '${exp1}' and '${exp3}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 
 } >> $output
 
-# Next, check reproducibility of results between exp1 and exp2
+# Next, check reproducibility of results between exp1 and exp3
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp2} 
+if cmp -s siganl.${exp1} siganl.${exp3} 
 then
-   echo 'The results between the two runs ('${exp1}' and '${exp2}') are REPRODUCIBLE'
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are REPRODUCIBLE'
    echo 'since the corresponding siganl files are IDENTICAL.'
    echo
 else
-   echo 'The results between the two runs ('${exp1}' and '${exp2}') are NOT REPRODUCIBLE'
+   echo 'The results between the two runs ('${exp1}' and '${exp3}') are NOT REPRODUCIBLE'
    echo 'since the corresponding siganl files DIFFER.'
    echo
 fi
@@ -1711,13 +1715,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp2}-${exp4}.txt) = 0 ]]; then
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp2}-${exp4}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp2}' and '${exp4}') are REPRODUCIBLE'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp2}-${exp4}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp2}-${exp4}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are NOT REPRODUCIBLE,'
-   echo 'thus the regression test has FAILED for '${exp2}' and '${exp4}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp2}-${exp4}.txt)' lines different.'
+   echo 'thus the regression test has FAILED for '${exp2}' and '${exp4}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp2}-${exp4}.txt)' lines different.'
    echo
 fi
 
