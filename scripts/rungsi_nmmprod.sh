@@ -86,7 +86,7 @@ rm -rf core*
 # Make gsi namelist
 #FIXnam=/global/save/$USER/mlueken/fix
 FIXnam=/u/wx20xs/home/gsi/xsu/fix
-CRTMnam=/global/save/wx20rt/svn/crtm_2.0.4-p1/fix
+CRTMnam=/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}

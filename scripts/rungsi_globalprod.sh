@@ -62,7 +62,7 @@ tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
 savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 
 # Use with CRTM REL-2.0.4-p1
-fixcrtm=/global/save/wx20rt/svn/crtm_2.0.4-p1/fix
+fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix
 
 # Other Executables and scripts
 export SIGHDR=/nwprod/exec/global_sighdr
