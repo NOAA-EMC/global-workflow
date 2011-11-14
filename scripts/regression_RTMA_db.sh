@@ -6,14 +6,14 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=20
+#@ tasks_per_node=18
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-T2O
-#@ wall_clock_limit = 1:00:00
+#@ wall_clock_limit = 2:30:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
 #@ restart=no
@@ -143,7 +143,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fix_file/anavinfo_rtma
+anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -170,6 +170,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+
+prmcard=$fix_file/new_rtma_parmcard_input
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -201,6 +205,10 @@ $ncp $flt_psi            ./fltnorm.dat_psi
 $ncp $flt_qw             ./fltnorm.dat_qw
 $ncp $flt_sst            ./fltnorm.dat_sst
 $ncp $flt_t              ./fltnorm.dat_t
+$ncp $flt_gust           ./fltnorm.dat_gust
+$ncp $flt_vis            ./fltnorm.dat_vis
+
+$ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
