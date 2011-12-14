@@ -11,10 +11,10 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ class= jcsda
-#@ group= jcsda
-#@ account_no = JCSDA014-RES
-#@ wall_clock_limit = 0:20:00
+#@ class= dev
+#@ group= dev
+#@ account_no = GFS-MTN
+#@ wall_clock_limit = 0:22:00
 #@ startdate = 07/06/09 10:15
 #@ notification=error
 #@ queue
@@ -38,16 +38,18 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2010121512
-exp=globalprod.$adate
+adate=2011120800
+exp=globalprod.${adate}.EXP-hybens_ATMS_John1
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+#gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/GSI/EXP-hybens_ATMS/src/global_gsi
+#gsiexec=${TOPDIR}/save/${USER}/GSI/EXP-hybens/src/global_gsi
 
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/GSI/trunk/fix
+fixgsi=${TOPDIR}/save/$USER/GSI/EXP-hybens_ATMS/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -61,8 +63,8 @@ datdir=/ptmp/${USER}/data_sigmap/${exp}
 tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
 savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 
-# Use with CRTM REL-2.0.4-p1
-fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix
+# Use with CRTM REL-2.0.5
+fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
 
 # Other Executables and scripts
 export SIGHDR=/nwprod/exec/global_sighdr
@@ -432,7 +434,7 @@ satangl=$fixgsi/global_satangbias.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 convinfo=$fixgsi/global_convinfo.txt
-atmsbeamdat=$fixgsi/atms_beamwidth.dat
+atmsbeamdat=$fixgsi/atms_beamwidth.txt
 
 errtable=$fixgsi/prepobs_errtable.global
 
@@ -459,7 +461,7 @@ $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
-$ncp $atmsbeamdat ./atms_beamwidth.dat
+$ncp $atmsbeamdat ./atms_beamwidth.txt
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
@@ -548,8 +550,6 @@ else
    ln -s -f $datprep/gdas1.t${hha}z.sgp3prep           ./gdas1.t${hha}z.sgp3prep
 
    export SIGLEVEL=/nwprod/fix/global_hyblev.l64.txt
-   SDATE=`echo $adate | cut -c1-8`
-   HH=`echo $adate | cut -c9-10`
 
    export JCAP=$JCAP
    export LEVS=$LEVS

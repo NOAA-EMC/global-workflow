@@ -14,16 +14,16 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/svn1/fix"
-export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
-export scripts="/global/save/$USER/svn1/scripts"
-export src="/global/save/$USER/svn1/src"
+export fix_file="/global/save/$USER/GSI/EXP-hybens_ATMS/fix"
+export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.5/fix"
+export scripts="/global/save/$USER/GSI/EXP-hybens_ATMS/scripts"
+export src="/global/save/$USER/GSI/EXP-hybens_ATMS/src"
 
 
 # Define work directories (location of executables)
 
-export updat="/global/save/$USER/mlueken/src/global_gsi"
-export cntrl="/global/save/$USER/svn1/src/global_gsi"
+export updat="/global/save/$USER/GSI/EXP-hybens_ATMS/src/global_gsi"
+export cntrl="/global/save/$USER/GSI/EXP-hybens_control/src/global_gsi"
 
 # Define experiment names
 
@@ -144,7 +144,7 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
-     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.5/fix"
      export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_3d4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
