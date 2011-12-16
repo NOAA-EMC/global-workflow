@@ -1055,6 +1055,7 @@ export nems_nmmb_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,
+   diag_conv=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -1101,7 +1102,7 @@ export nems_nmmb_namelist="
  /
  &CHEM
    berror_chem=.true.,
-   oneobtest_chem=.true.,
+   oneobtest_chem=.false.,
    maginnov_chem=60,magoberr_chem=2.,oneob_type_chem='pm2_5',
    oblat_chem=45.,oblon_chem=270.,obpres_chem=1000.,
    diag_incr=.true.,elev_tolerance=500.,tunable_error=0.5,
