@@ -95,7 +95,7 @@ export ptmp_loc="/ptmp/$USER"
 # Define analysis date
 
 export adate_global="2011080100"
-export adate_global_nemsio="2010020112"
+export adate_global_nemsio="2011080100"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
