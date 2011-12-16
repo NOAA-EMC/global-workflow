@@ -201,10 +201,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
 
-prmcard=$fix_file/new_rtma_parmcard_input
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -236,10 +236,10 @@ $ncp $flt_psi            ./fltnorm.dat_psi
 $ncp $flt_qw             ./fltnorm.dat_qw
 $ncp $flt_sst            ./fltnorm.dat_sst
 $ncp $flt_t              ./fltnorm.dat_t
-$ncp $flt_gust           ./fltnorm.dat_gust
-$ncp $flt_vis            ./fltnorm.dat_vis
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
 
-$ncp $prmcard            ./parmcard_input
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -481,10 +481,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
 
-prmcard=$fix_file/new_rtma_parmcard_input
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -516,10 +516,10 @@ $ncp $flt_psi            ./fltnorm.dat_psi
 $ncp $flt_qw             ./fltnorm.dat_qw
 $ncp $flt_sst            ./fltnorm.dat_sst
 $ncp $flt_t              ./fltnorm.dat_t
-$ncp $flt_gust           ./fltnorm.dat_gust
-$ncp $flt_vis            ./fltnorm.dat_vis
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
 
-$ncp $prmcard            ./parmcard_input
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
