@@ -253,6 +253,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -268,6 +269,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -288,6 +290,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -596,6 +599,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -611,6 +615,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -631,6 +636,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -946,6 +952,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -961,6 +968,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -981,6 +989,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -1295,6 +1304,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -1310,6 +1320,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -1330,6 +1341,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo

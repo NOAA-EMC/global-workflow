@@ -235,6 +235,7 @@ cldcoef=$CRTMnam/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
 scaninfo=$FIXnam/global_scaninfo.txt
 satangl=$FIXnam/nam_global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$FIXnam/nam_global_pcpinfo.txt
 ozinfo=$FIXnam/nam_global_ozinfo.txt
 errtable=$FIXnam/nam_errtable.r3dv
