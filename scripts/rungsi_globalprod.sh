@@ -39,7 +39,7 @@ fi
 
 # Set experiment name and analysis date
 adate=2011120800
-exp=globalprod.${adate}.EXP-hybens_ATMS_John1
+exp=globalprod.${adate}.EXP-hybens_ATMS_John1a
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
@@ -59,7 +59,7 @@ export JCAP_B=$JCAP
 
 
 # Set data, runtime and save directories
-datdir=/ptmp/${USER}/data_sigmap/${exp}
+datdir=/ptmp/${USER}/data_sigmap/globalprod.${adate}
 tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
 savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
 

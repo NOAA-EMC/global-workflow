@@ -14,11 +14,10 @@ export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
 
-export fix_file="/global/save/$USER/GSI/EXP-hybens_ATMS/fix"
+export fix_file="/global/save/$USER/svn1/fix"
 export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.5/fix"
-export scripts="/global/save/$USER/GSI/EXP-hybens_ATMS/scripts"
-export src="/global/save/$USER/GSI/EXP-hybens_ATMS/src"
-
+export scripts="/global/save/$USER/svn1/scripts"
+export src="/global/save/$USER/svn1/src"
 
 # Define work directories (location of executables)
 
@@ -95,7 +94,7 @@ export ptmp_loc="/ptmp/$USER"
 # Define analysis date
 
 export adate_global="2011080100"
-export adate_global_nemsio="2010020112"
+export adate_global_nemsio="2011080100"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
