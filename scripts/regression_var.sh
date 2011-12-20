@@ -19,11 +19,10 @@ export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.5/fix"
 export scripts="/global/save/$USER/svn1/scripts"
 export src="/global/save/$USER/svn1/src"
 
-
 # Define work directories (location of executables)
 
-export updat="/global/save/$USER/mlueken/src/global_gsi"
-export cntrl="/global/save/$USER/svn1/src/global_gsi"
+export updat="/global/save/$USER/GSI/EXP-hybens_ATMS/src/global_gsi"
+export cntrl="/global/save/$USER/GSI/EXP-hybens_control/src/global_gsi"
 
 # Define experiment names
 
