@@ -10,6 +10,8 @@ export gps_dtype="gps_bnd"
 
 # Define global noscrub directory
 
+if [[ 1 == 2 ]]; then   # gsi trunk setting
+
 export noscrub="/global/noscrub/$USER"
 
 # Define path to fix file directory
@@ -25,6 +27,35 @@ export src="/global/save/$USER/svn1/src"
 export updat="/global/save/$USER/mlueken/src/global_gsi"
 export cntrl="/global/save/$USER/svn1/src/global_gsi"
 
+else       ## personal gsi testing script
+
+
+# Define global noscrub directory
+if [[ -e where.am.i.now ]]; then
+  /bin/rm where.am.i.now
+fi
+hostname > where.am.i.now
+id_gpfs=`cut -c 1-1 where.am.i.now`
+
+export noscrub="/gpfs/t2${id_gpfs}/global/noscrub/$USER"
+export svn1="svn.projects/proj_nsst"
+export t2gsi="$noscrub/$svn1"
+
+# Define path to fix file directory
+
+export fix_file="$t2gsi/fix"
+export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+export scripts="$t2gsi/scripts"
+export src="$t2gsi/src"
+
+# Define work directories (location of executables)
+
+export updat="$t2gsi/src/global_gsi"
+##export cntrl="/global/save/wx20ml/svn1/src/global_gsi"
+##export cntrl="$t2gsi/src/global_gsi"
+export cntrl="/global/noscrub/$USER/svn.projects/gsi_trunk/src/global_gsi"
+
+fi
 # Define experiment names
 
 export global="62_sigmap.$gps_dtype"
