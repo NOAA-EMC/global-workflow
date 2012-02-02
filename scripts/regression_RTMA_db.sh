@@ -13,7 +13,7 @@
 #@ class=dev
 #@ group=dev
 #@ account_no = RDAS-T2O
-#@ wall_clock_limit = 1:00:00
+#@ wall_clock_limit = 2:30:00
 #@ startdate = 10/27/05 20:00
 #@ notification=error
 #@ restart=no
