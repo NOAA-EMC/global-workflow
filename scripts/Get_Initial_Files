@@ -85,8 +85,8 @@ if [[ $adate -lt $SWITCH ]]; then
     hpssdira=/hpssuser/g02/wx15gv/s70/hsmprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}
     hpssdirg=/hpssuser/g02/wx15gv/s70/hsmprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}
 else
-    hpssdira=/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}
-    hpssdirg=/hpssprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}
+    hpssdira=/NCEPPROD/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}
+    hpssdirg=/NCEPPROD/hpssprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}
 fi
 
 tag=gdas

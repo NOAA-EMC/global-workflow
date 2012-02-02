@@ -15,10 +15,9 @@ export noscrub="/global/noscrub/$USER"
 # Define path to fix file directory
 
 export fix_file="/global/save/$USER/svn1/fix"
-export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.5/fix"
 export scripts="/global/save/$USER/svn1/scripts"
 export src="/global/save/$USER/svn1/src"
-
 
 # Define work directories (location of executables)
 
@@ -144,7 +143,7 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
-     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.5/fix"
      export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_3d4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
