@@ -11,15 +11,17 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
-#@ class= jcsda
-#@ group= jcsda
-#@ account_no = JCSDA014-RES
-#@ wall_clock_limit = 0:20:00
+#@ class= dev
+#@ group= dev
+#@ account_no = GDAS-T2O
+#@ wall_clock_limit = 0:40:00
 #@ startdate = 07/06/09 10:15
 #@ notification=error
 #@ queue
 
 set -x
+
+echo "Time starting the job is `date` "
 
 # Set default top-level directory
 if [ -d /global ]; then
@@ -174,6 +176,10 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
+#datobs=/com/gfs/prod/gdas.$adate0
+#datges=/com/gfs/prod/gdas.$gdate0
+datobs=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$adate0
+datges=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$gdate0
 
 # Look for required input files in ${datdir}
 # if ${datdir}/gdas1.t${hha}z.sgm3prep is present assume we have 
@@ -232,20 +238,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -421,7 +423,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fixgsi/global_anavinfo.l64.txt
+anavinfo=$fixgsi/global_anavinfo.l64.co2.txt
 berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -512,11 +514,10 @@ ln -s -f $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
 ln -s -f $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
 ln -s -f $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
 ln -s -f $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
-ln -s -f $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
-
 ln -s -f $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
 ln -s -f $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
 ln -s -f $datobs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
+ln -s -f $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 ln -s -f /global/shared/dump/${adate}/gdasx/atms.gdas.${adate} ./atmsbufr
 
