@@ -191,20 +191,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -524,20 +520,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -888,20 +880,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -1229,20 +1217,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1

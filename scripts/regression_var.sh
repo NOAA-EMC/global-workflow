@@ -105,8 +105,8 @@ export adate_regional_rtma_binary="2011083112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-#machine="cirrus"
-machine="stratus"
+machine="cirrus"
+#machine="stratus"
 #machine="vapor"
 #machine="jet"
 
