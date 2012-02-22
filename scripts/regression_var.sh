@@ -15,10 +15,9 @@ export noscrub="/global/noscrub/$USER"
 # Define path to fix file directory
 
 export fix_file="/global/save/$USER/svn1/fix"
-export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+export crtm_coef="/global/save/wx20ml/CRTM_REL-2.0.5/fix"
 export scripts="/global/save/$USER/svn1/scripts"
 export src="/global/save/$USER/svn1/src"
-
 
 # Define work directories (location of executables)
 
@@ -95,7 +94,7 @@ export ptmp_loc="/ptmp/$USER"
 # Define analysis date
 
 export adate_global="2011080100"
-export adate_global_nemsio="2010020112"
+export adate_global_nemsio="2011080100"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
@@ -106,8 +105,8 @@ export adate_regional_rtma_binary="2011083112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-#machine="cirrus"
-machine="stratus"
+machine="cirrus"
+#machine="stratus"
 #machine="vapor"
 #machine="jet"
 
@@ -144,7 +143,7 @@ elif [[ $machine = "cirrus" ]]; then
      export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "vapor" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
-     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.4-p1/fix"
+     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.5/fix"
      export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_lanczos="/jcsda/noscrub/wx20ml/cases/global/sigmap"
      export datobs_global_3d4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"

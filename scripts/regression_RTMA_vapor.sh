@@ -204,7 +204,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fix_file/anavinfo_rtma
+anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -231,6 +231,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
+
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -262,6 +266,10 @@ $ncp $flt_psi            ./fltnorm.dat_psi
 $ncp $flt_qw             ./fltnorm.dat_qw
 $ncp $flt_sst            ./fltnorm.dat_sst
 $ncp $flt_t              ./fltnorm.dat_t
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
+
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -477,7 +485,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fix_file/anavinfo_rtma
+anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -504,6 +512,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
+
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -525,16 +537,20 @@ $ncp $w_rejectlist       ./w_rejectlist
 
 $ncp $random_flips        ./random_flips
 
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
+$ncp $flt_chi            ./fltnorm.dat_chi
+$ncp $flt_ist            ./fltnorm.dat_ist
+$ncp $flt_ps             ./fltnorm.dat_ps
+$ncp $flt_lst            ./fltnorm.dat_lst
+$ncp $flt_oz             ./fltnorm.dat_oz
+$ncp $flt_pseudorh       ./fltnorm.dat_pseudorh
+$ncp $flt_psi            ./fltnorm.dat_psi
+$ncp $flt_qw             ./fltnorm.dat_qw
+$ncp $flt_sst            ./fltnorm.dat_sst
+$ncp $flt_t              ./fltnorm.dat_t
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
+
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -750,7 +766,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fix_file/anavinfo_rtma
+anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -777,6 +793,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
+
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -798,16 +818,20 @@ $ncp $w_rejectlist       ./w_rejectlist
 
 $ncp $random_flips        ./random_flips
 
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
+$ncp $flt_chi            ./fltnorm.dat_chi
+$ncp $flt_ist            ./fltnorm.dat_ist
+$ncp $flt_ps             ./fltnorm.dat_ps
+$ncp $flt_lst            ./fltnorm.dat_lst
+$ncp $flt_oz             ./fltnorm.dat_oz
+$ncp $flt_pseudorh       ./fltnorm.dat_pseudorh
+$ncp $flt_psi            ./fltnorm.dat_psi
+$ncp $flt_qw             ./fltnorm.dat_qw
+$ncp $flt_sst            ./fltnorm.dat_sst
+$ncp $flt_t              ./fltnorm.dat_t
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
+
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`
@@ -1029,7 +1053,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fix_file/anavinfo_rtma
+anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
 berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
@@ -1056,6 +1080,10 @@ flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
 flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
 flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
 flt_t=$fix_file/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
+
+prmcard=$fix_file/new_rtma_parmcard_input 
 
 # Copy executable and fixed files to $tmpdir
 $ncp $gsiexec ./gsi.x
@@ -1077,16 +1105,20 @@ $ncp $w_rejectlist       ./w_rejectlist
 
 $ncp $random_flips        ./random_flips
 
-$ncp $flt_chi       ./fltnorm.dat_chi
-$ncp $flt_ist       ./fltnorm.dat_ist
-$ncp $flt_ps        ./fltnorm.dat_ps
-$ncp $flt_lst       ./fltnorm.dat_lst
-$ncp $flt_oz        ./fltnorm.dat_oz
-$ncp $flt_pseudorh  ./fltnorm.dat_pseudorh
-$ncp $flt_psi       ./fltnorm.dat_psi
-$ncp $flt_qw        ./fltnorm.dat_qw
-$ncp $flt_sst       ./fltnorm.dat_sst
-$ncp $flt_t         ./fltnorm.dat_t
+$ncp $flt_chi            ./fltnorm.dat_chi
+$ncp $flt_ist            ./fltnorm.dat_ist
+$ncp $flt_ps             ./fltnorm.dat_ps
+$ncp $flt_lst            ./fltnorm.dat_lst
+$ncp $flt_oz             ./fltnorm.dat_oz
+$ncp $flt_pseudorh       ./fltnorm.dat_pseudorh
+$ncp $flt_psi            ./fltnorm.dat_psi
+$ncp $flt_qw             ./fltnorm.dat_qw
+$ncp $flt_sst            ./fltnorm.dat_sst
+$ncp $flt_t              ./fltnorm.dat_t
+$ncp $flt_gust           ./fltnorm.dat_gust 
+$ncp $flt_vis            ./fltnorm.dat_vis 
+
+$ncp $prmcard            ./parmcard_input 
 
 # Copy CRTM coefficient files based on entries in satinfo file
 nsatsen=`cat $satinfo | wc -l`

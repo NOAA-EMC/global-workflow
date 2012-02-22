@@ -191,20 +191,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -253,6 +249,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -268,6 +265,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -288,6 +286,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -521,20 +520,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -596,6 +591,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -611,6 +607,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -631,6 +628,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -882,20 +880,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -946,6 +940,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -961,6 +956,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -981,6 +977,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -1220,20 +1217,16 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-0}
+ICO2=${ICO2:-2}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
+                co2=$co2dir/global_co2.gcmscl_$yyyy.txt
                 if [ -s $co2 ] ; then
                         $ncp $co2 ./global_co2_data.txt
-                break
                 fi
-                ((yyyy-=1))
-        done
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -1295,6 +1288,7 @@ EOF
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
 #   satangl  = angle dependent bias correction file (fixed in time)
+#   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -1310,6 +1304,7 @@ cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
+atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -1330,6 +1325,7 @@ $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
