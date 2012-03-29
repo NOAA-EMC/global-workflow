@@ -1322,7 +1322,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmp${global}
 mkdir $control_global_T622
 cp -rp stdout $control_global_T622
 cp -rp fort.220 $control_global_T622

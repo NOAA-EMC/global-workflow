@@ -4,7 +4,7 @@
 #@ error=nmm_binary_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 5
+#@ node = 7
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
