@@ -1259,7 +1259,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmpreg_${nmm_netcdf}
 mkdir $control_nmm_netcdf2
 cp -rp stdout $control_nmm_netcdf2
 cp -rp fort.220 $control_nmm_netcdf2

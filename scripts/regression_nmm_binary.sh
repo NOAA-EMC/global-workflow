@@ -28,7 +28,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:20:00
 #@ notification=error
 #@ restart=no
 #@ dependency=(gsi_nmm_binary_updat==0)
@@ -56,7 +56,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:20:00
 #@ notification=error
 #@ restart=no
 #@ dependency=(gsi_nmm_binary_cntrl==0)
@@ -1264,7 +1264,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmpreg_${nmm_binary}
 mkdir $control_nmm_binary2
 cp -rp stdout $control_nmm_binary2
 cp -rp fort.220 $control_nmm_binary2

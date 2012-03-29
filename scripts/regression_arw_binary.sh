@@ -1247,7 +1247,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmpreg_${arw_binary}
 mkdir $control_arw_binary2
 cp -rp stdout $control_arw_binary2
 cp -rp fort.220 $control_arw_binary2

@@ -1175,7 +1175,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmpreg_${rtma}
 mkdir $control_RTMA2
 cp -rp stdout $control_RTMA2
 cp -rp fort.220 $control_RTMA2

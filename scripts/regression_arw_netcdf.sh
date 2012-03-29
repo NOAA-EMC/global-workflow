@@ -1263,7 +1263,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmpreg_${arw_netcdf}
 mkdir $control_arw_netcdf2
 cp -rp stdout $control_arw_netcdf2
 cp -rp fort.220 $control_arw_netcdf2

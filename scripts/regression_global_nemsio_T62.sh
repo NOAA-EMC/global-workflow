@@ -29,7 +29,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ dependency=(gsi_global_nemsio_updat==0)
@@ -59,7 +59,7 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
+#@ wall_clock_limit = 0:20:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
 #@ dependency=(gsi_global_nemsio_cntrl==0)
@@ -1334,7 +1334,6 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
-mkdir $noscrub/tmp${global_nemsio}
 mkdir $control_global_nemsio_T622
 cp -rp stdout $control_global_nemsio_T622
 cp -rp fort.220 $control_global_nemsio_T622
