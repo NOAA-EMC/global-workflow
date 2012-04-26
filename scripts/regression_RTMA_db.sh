@@ -6,7 +6,7 @@
 #@ network.MPI=sn_all,shared,us
 #@ node = 2
 #@ node_usage=not_shared
-#@ tasks_per_node=20
+#@ tasks_per_node=32
 #@ task_affinity = core(1)
 #@ parallel_threads = 1
 #@ node_resources = ConsumableMemory (110 GB)
