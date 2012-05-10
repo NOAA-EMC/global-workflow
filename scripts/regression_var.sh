@@ -3,6 +3,57 @@
 #  To run with hybrid ensemble option on, change HYBENS_GLOBAL and/or HYBENS_REGIONAL from "false" to "true".
 #  These are located at the end of this script.
 
+# What version of sub is required (use uname -s)
+
+export arch="`uname -s | awk '{print $1}'`"
+
+# Variables with the same values are defined below.
+
+export global_T62_adate=2011080100
+export nmmb_nems_adate=2009031600
+export JCAP=62
+
+# Set predefined paths and variables here.
+# Note that experiment name is same as that entered in -j option below.
+
+if [[ "$arch" = "Linux" ]]; then
+
+   export global_T62_updat_exp1=T${JCAP}_36proc
+   export global_T62_updat_exp2=T${JCAP}_48proc
+   export nmmb_nems_updat_exp1=nmmb_nems_36proc
+   export nmmb_nems_updat_exp2=nmmb_nems_48proc
+   export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
+   export gsiexec=$basedir/EXP-port/src/global_gsi
+   export fixgsi=$basedir/EXP-port/fix
+   export fixcrtm=$basedir/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
+   export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
+   export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
+   export global_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
+   export global_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
+   export nmmb_nems_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
+   export nmmb_nems_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
+   export ndate=$basedir/nwprod/util/exec/ndate
+
+elif [[ "$arch" = "AIX" ]]; then
+
+   export global_T62_updat_exp1=T${JCAP}_32proc
+   export global_T62_updat_exp2=T${JCAP}_64proc
+   export nmmb_nems_updat_exp1=nmmb_nems_32proc
+   export nmmb_nems_updat_exp2=nmmb_nems_64proc
+   export basedir=/global/save/$LOGNAME
+   export gsiexec=$basedir/EXP-port/src/global_gsi
+   export fixgsi=$basedir/EXP-port/fix
+   export fixcrtm=$basedir/CRTM_REL-2.0.5/fix
+   export tmpdir=/ptmp/$LOGNAME
+   export savdir=/ptmp/$LOGNAME
+   export global_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
+   export global_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
+   export nmmb_nems_obs=/global/noscrub/wx20ml/nmmb_regression_case
+   export nmmb_nems_ges=/global/noscrub/wx20ml/nmmb_regression_case
+   export ndate=/nwprod/util/exec/ndate
+
+fi
+
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
 #default will be refractivity for now
 
@@ -105,8 +156,8 @@ export adate_regional_rtma_binary="2011083112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-machine="cirrus"
-#machine="stratus"
+#machine="cirrus"
+machine="stratus"
 #machine="vapor"
 #machine="jet"
 

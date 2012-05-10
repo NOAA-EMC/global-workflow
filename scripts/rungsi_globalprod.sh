@@ -423,7 +423,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fixgsi/global_anavinfo.l64.co2.txt
+anavinfo=$fixgsi/global_anavinfo.l64.txt
 berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
