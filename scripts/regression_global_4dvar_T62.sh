@@ -207,6 +207,52 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+                if [ -s $ch4 ] ; then
+                        $ncp $ch4 ./ch4globaldata.txt
+                fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+                if [ -s $n2o ] ; then
+                        $ncp $n2o ./n2oglobaldata.txt
+                fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+                co=$codir/global_co_esrlctm_$yyyy.txt
+                if [ -s $co ] ; then
+                        $ncp $co ./coglobaldata.txt
+                fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
+                exit 1
+   fi
+fi
 
 SETUP=""
 GRIDOPTS=""
@@ -568,6 +614,52 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+                if [ -s $ch4 ] ; then
+                        $ncp $ch4 ./ch4globaldata.txt
+                fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+                if [ -s $n2o ] ; then
+                        $ncp $n2o ./n2oglobaldata.txt
+                fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+                co=$codir/global_co_esrlctm_$yyyy.txt
+                if [ -s $co ] ; then
+                        $ncp $co ./coglobaldata.txt
+                fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
+                exit 1
+   fi
+fi
 
 SETUP=""
 GRIDOPTS=""
@@ -926,6 +1018,52 @@ if [ $ICO2 -gt 0 ] ; then
                 fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
+                exit 1
+   fi
+fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+                if [ -s $ch4 ] ; then
+                        $ncp $ch4 ./ch4globaldata.txt
+                fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+                if [ -s $n2o ] ; then
+                        $ncp $n2o ./n2oglobaldata.txt
+                fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+                co=$codir/global_co_esrlctm_$yyyy.txt
+                if [ -s $co ] ; then
+                        $ncp $co ./coglobaldata.txt
+                fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
@@ -1294,6 +1432,52 @@ if [ $ICO2 -gt 0 ] ; then
                 fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
+                exit 1
+   fi
+fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+                if [ -s $ch4 ] ; then
+                        $ncp $ch4 ./ch4globaldata.txt
+                fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+                if [ -s $n2o ] ; then
+                        $ncp $n2o ./n2oglobaldata.txt
+                fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fix_file}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+                co=$codir/global_co_esrlctm_$yyyy.txt
+                if [ -s $co ] ; then
+                        $ncp $co ./coglobaldata.txt
+                fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
