@@ -144,7 +144,7 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
-berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
+berror=$fix_file/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
@@ -160,18 +160,18 @@ w_rejectlist=$fix_file/new_rtma_w_rejectlist
 
 random_flips=$fix_file/new_rtma_random_flips
 
-flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
-flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
-flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
-flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
-flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
-flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
-flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
-flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust 
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis 
+flt_chi=$fix_file/$endianness/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/$endianness/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/$endianness/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/$endianness/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/$endianness/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/$endianness/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/$endianness/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/$endianness/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/$endianness/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/$endianness/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/$endianness/new_rtma_fltnorm.dat_gust 
+flt_vis=$fix_file/$endianness/new_rtma_fltnorm.dat_vis 
 
 prmcard=$fix_file/new_rtma_parmcard_input 
 

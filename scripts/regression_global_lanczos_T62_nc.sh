@@ -263,7 +263,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -630,7 +630,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -845,7 +845,7 @@ done
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep 'a,b' fort.220.$exp > penalty.$exp.txt
+   grep 'grepcost J,Jb' fort.220.$exp > penalty.$exp.txt
    grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
@@ -998,13 +998,13 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 fi
 
@@ -1027,13 +1027,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 
