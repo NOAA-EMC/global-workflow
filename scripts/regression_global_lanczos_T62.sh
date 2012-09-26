@@ -294,7 +294,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -661,7 +661,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1028,7 +1028,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1401,7 +1401,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1792,13 +1792,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 

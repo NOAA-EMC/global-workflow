@@ -238,7 +238,7 @@ cat << EOF > gsiparm.anl
 EOF
 
 anavinfo=$fixgsi/anavinfo_nems_nmmb
-berror=$fixgsi/nam_glb_berror.f77.gcv
+berror=$fixgsi/$endianness/nam_glb_berror.f77.gcv
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -254,7 +254,15 @@ mesonetuselist=$fixgsi/nam_mesonet_uselist.txt
 stnuselist=$fixgsi/nam_mesonet_stnuselist.txt
 
 # Copy executable and fixed files to $tmpdir
-$ncp $gsiexec ./gsi.x
+if [[ "$exp" = $nmmb_nems_updat_exp1 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ "$exp" = $nmmb_nems_updat_exp2 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ "$exp" = $nmmb_nems_contrl_exp1 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+elif [[ "$exp" = $nmmb_nems_contrl_exp2 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+fi
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
@@ -312,7 +320,11 @@ $ncp $nmmb_nems_ges/ndas.t06z.satbias.tm09 ./satbias_in
 
 $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout
 $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout.ctl
-$ncp $nmmb_nems_ges/gdas1.t00z.sgesprep  ./gfs_sigf03
+if [[ "$endianness" = "Big_Endian" ]]; then
+   $ncp $nmmb_nems_ges/gdas1.t00z.sgesprep     ./gfs_sigf03
+elif [[ "$endianness" = "Little_Endian" ]]; then
+   $ncp $nmmb_nems_ges/gdas1.t00z.sgesprep.le  ./gfs_sigf03
+fi
 $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 

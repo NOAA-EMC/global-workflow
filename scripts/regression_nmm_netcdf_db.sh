@@ -176,9 +176,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_ndas_netcdf
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_nmmstat_na.gcv
+   berror=$fix_file/$endianness/nam_nmmstat_na.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -251,7 +251,7 @@ $ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
 $ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
 $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 
-# Copy bias correction, sigma, and surface files
+# Copy bias correction and atmosphere/surface guess files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)

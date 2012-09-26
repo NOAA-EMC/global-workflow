@@ -139,7 +139,7 @@ $nems_nmmb_namelist
 EOF
 
 anavinfo=$fix_file/anavinfo_nems_nmmb
-berror=$fix_file/nam_glb_berror.f77.gcv
+berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
