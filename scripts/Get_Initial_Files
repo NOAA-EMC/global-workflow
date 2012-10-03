@@ -46,7 +46,8 @@ JCAP=382   # We only get 382 for now  (emily: not used)
 #tmpdir=/stmp/${uname}/get_initial_files.${adate}
 #savdir=/ptmp/${USER}/data_sigmap/${exp}
 tmpdir=$stmp/${uname}/get_initial_files.${adate}
-savdir=$ptmp/${USER}/data_sigmap/${exp}
+#savdir=$ptmp/${USER}/data_sigmap/${exp}
+savdir=/global/noscrub/${USER}/data_sigmap/${exp}
 
 # Specify name of files to retrieve from this cycle
 DFILESA="$DFILESA sgm3prep sgesprep sgp3prep prepbufr"
