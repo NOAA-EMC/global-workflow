@@ -52,9 +52,6 @@ export MP_INFOLEVEL=1
 ##export XLFRTEOPTS="buffering=disable_all"
 ##export MP_COREFILE_FORMAT=lite
 
-# What is the endianness of the machine? (default is Big_Endian)
-export endianness=Big_Endian
-
 # Choose type of GPSRO data to assimilate (default is gps_ref)
 export gps_dtype="gps_ref"
 
@@ -230,7 +227,7 @@ cat << EOF > gsiparm.anl
 EOF
 
 anavinfo=$FIXnam/anavinfo_ndas_binary
-berror=$FIXnam/$endianness/nam_nmmstat_na.gcv
+berror=$FIXnam/nam_nmmstat_na.gcv
 
 emiscoef=$CRTMnam/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$CRTMnam/AerosolCoeff/Big_Endian/AerosolCoeff.bin
