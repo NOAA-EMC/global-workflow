@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -35,6 +35,7 @@
 # 2010-05-05  George Gayno   add ANAVINFO file
 # 2011-05-10  EMC/SPA        update RTMFIX defaults to ${FIXGLOBAL}/crtm_2.0.2, instead of crtm_gfsgsi
 # 2012-01-16  Treadon        add hooks for hybrid ensemble
+# 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 #
 # Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GSATANG
 #                            SFCANL SIGANL ABIAS ABIASPC IGEN
@@ -442,7 +443,7 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: IBM SP
+#   Machine: IBM SP / Zeus / Gaea
 #
 ################################################################################
 #  Set environment.
@@ -452,7 +453,15 @@ then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
+export machine=${machine:-IBMP6}
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+if [ $machine = ZEUS ] ; then
+ /bin/ksh --login
+ module load intel
+ module load mpt
+fi
 #  Command line arguments.
+export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
 export SIGGES=${2:-${SIGGES:?}}
 export GBIAS=${3:-${GBIAS:?}}
@@ -598,21 +607,31 @@ export LAGDATA=${LAGDATA:-""}
 export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
 export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
 export CHEM=${CHEM:-""}
-export NTHREADS=${NTHREADS:-1}
-export NTHSTACK=${NTHSTACK:-1024000000}
-export NTHREADS_GSI=${NTHREADS_GSI:-1}
-export NTHSTACK_GSI=${NTHSTACK_GSI:-1024000000}
 export FILESTYLE=${FILESTYLE:-'X'}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export OBERRFLAG=${OBERRFLAG:-.false.}
 export NCP=${NCP:-cp}
-typeset -L1 l=$PGMOUT
-[[ $l = '&' ]]&&a=''||a='>'
-export REDOUT=${REDOUT:-'1>'$a}
-typeset -L1 l=$PGMERR
-[[ $l = '&' ]]&&a=''||a='>'
-export REDERR=${REDERR:-'2>'$a}
+export NTHREADS=${NTHREADS:-1}
+export NTHREADS_GSI=${NTHREADS_GSI:-1}
+if [ $machine = IBMP6 ] ; then
+  export NTHSTACK=${NTHSTACK:-1024000000}
+  export NTHSTACK_GSI=${NTHSTACK_GSI:-1024000000}
+  typeset -L1 l=$PGMOUT
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDOUT=${REDOUT:-'1>'$a}
+  typeset -L1 l=$PGMERR
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDERR=${REDERR:-'2>'$a}
+  COMPRESS=compress
+  UNCOMPRESS=uncompress
+else
+  export REDOUT=${REDOUT:-'1>'}
+  export REDERR=${REDERR:-'2>'}
+  COMPRESS=gzip
+  UNCOMPRESS=gunzip
+fi
+export wc=${wc:-/usr/bin/wc}
 
 ################################################################################
 #  Preprocessing
@@ -632,11 +651,19 @@ cd $DATA||exit 99
 
 $CYCLESH  $SFCGES $SFCANL
 
+rc=$?
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 11
+
 
 ################################################################################
 #  Make atmospheric analysis
-export XLSMPOPTS="parthds=$NTHREADS_GSI:stack=$NTHSTACK_GSI"
-export PGM=$DATA/$(basename $GSIEXEC)
+if [ $machine = IBMP6 ] ; then
+ export XLSMPOPTS="parthds=$NTHREADS_GSI:stack=$NTHSTACK_GSI"
+fi
+export OMP_NUM_THREADS=$NTHREADS_GSI
+export PGM='$APRUN $DATA/$(basename $GSIEXEC)'
 export pgm=$PGM
 $LOGSCRIPT
 
@@ -673,7 +700,7 @@ then
    $NCP $OBERROR  errtable
 
    # CRTM Spectral and Transmittance coefficients
-   nsatsen=`cat satinfo | wc -l`
+   nsatsen=`cat satinfo | $wc -l`
    isatsen=1
    while [[ $isatsen -le $nsatsen ]]; do
       flag=`head -n $isatsen satinfo | tail -1 | cut -c1-1`
@@ -816,7 +843,7 @@ else
 
 
    # CRTM Spectral and Transmittance coefficients
-   nsatsen=`cat satinfo | wc -l`
+   nsatsen=`cat satinfo | $wc -l`
    isatsen=1
    while [[ $isatsen -le $nsatsen ]]; do
       flag=`head -n $isatsen satinfo | tail -1 | cut -c1-1`
@@ -917,7 +944,7 @@ if [[ "$USE_NEWRADBC" = "YES" ]]; then
       diag_file=`echo $type | cut -d',' -f1`
       fname=`echo $diag_file | cut -d'.' -f1`
       date=`echo $diag_file | cut -d'.' -f2`
-      uncompress $diag_file
+      $UNCOMPRESS $diag_file
       fnameanl=$(echo $fname|sed 's/_anl//g')
       mv $fname.$date $fnameanl
    done
@@ -1157,24 +1184,32 @@ esac
 #  Collect diagnostic files for obs types (groups) below
    listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura mls_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b gome_metop-b"
    for type in $listall; do
-      count=`ls dir.*/${type}_${loop}* | wc -l`
+     if [ $machine = IBMP6 ]; then
+      count=`ls dir.*/${type}_${loop}* | $wc -l`
       if [[ $count -gt 0 ]]; then
          cat dir.*/${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
       fi
+     else
+      count=`ls pe*${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat pe*${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+      fi
+    
+     fi
    done
 done
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
 # If requested, compress diagnostic files
-if [[ "$DIAG_COMPRESS" = "YES" ]]; then
+if [[ $DIAG_COMPRESS = YES ]]; then
    for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
-      compress $file
+      $COMPRESS $file
    done
 fi
 
 # if requested, create diagnostic file tarballs
-if [[ "$DIAG_TARBALL" = "YES" ]]; then
+if [[ $DIAG_TARBALL = YES ]]; then
    TAROPTS="-uvf"
    if [ ! -s $RADSTAT ]; then
       TAROPTS="-cvf"

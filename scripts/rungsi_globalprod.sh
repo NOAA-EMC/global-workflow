@@ -1,5 +1,16 @@
-#!/bin/sh
+#!/bin/ksh
 
+#=======================================================
+## Below are PBS (Linux queueing system) commands
+#PBS -o gsi_global.e${jobid} 
+#PBS -N gsi_global
+#PBS -q batch
+#PBS -l walltime=00:30:00 
+#PBS -l nodes=2:ppn=12
+#PBS -j eo                
+#PBS -A ada
+#PBS -V
+#-------------------------------------------------------                        
 ## Below are LoadLeveler (IBM queueing system) commands
 #@ job_name=gsi_global
 #@ error=gsi_global.e$(jobid)
@@ -18,18 +29,19 @@
 #@ startdate = 07/06/09 10:15
 #@ notification=error
 #@ queue
+#=======================================================
 
 set -x
 
+arch="`uname -s | awk '{print $1}'`"        
 echo "Time starting the job is `date` "
-
 # Set default top-level directory
 if [ -d /global ]; then
   TOPDIR=/global   # This would be the CCS
-  MACHINE=CSS
-elif [ -d /jcsda ]; then
-  TOPDIR=/jcsda    # This is vapor
-  MACHINE=VAPOR
+  MACHINE=CCS
+elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
+  TOPDIR=/scratch1/portfolios/NCEPDEV/da     #This is zeus 
+  MACHINE=ZEUS
 else 
   echo CANNOT FIND A VALID TOP-LEVEL DIRECTORY
   exit 1
@@ -40,16 +52,18 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2010121512
+adate=2012051506
+expnm=globalprod    
 exp=globalprod.$adate
+expid=${expnm}.$adate.zeus
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
-
+#gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/EXP-port/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/GSI/trunk/fix
+fixgsi=${TOPDIR}/save/$USER/EXP-port/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -59,50 +73,78 @@ export JCAP_B=$JCAP
 
 
 # Set data, runtime and save directories
-datdir=/ptmp/${USER}/data_sigmap/${exp}
-tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${exp}
-savdir=/ptmp/$USER/out${JCAP}/sigmap/${exp}
-
-# Use with CRTM REL-2.0.5
-fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
+if [ $MACHINE = CCS ]; then
+   datdir=/ptmp/$USER/data_sigmap/${exp}
+   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
+   fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
+   endianness=Big_Endian
+elif [ $MACHINE = ZEUS ]; then
+   datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
+   tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
+   fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
+   endianness=Big_Endian
+#  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
+else
+  echo "Unsupported machine $MACHINE (not sure how you got to here)"
+  exit 1
+fi
 
 # Other Executables and scripts
-export SIGHDR=/nwprod/exec/global_sighdr
-export CHGRESSH=/nwprod/ush/global_chgres.sh
-export ndate=/nwprod/util/exec/ndate
-export ncp=/bin/cp
+if [ $MACHINE = CCS ]; then
+   export SIGHDR=/nwprod/exec/global_sighdr
+   export CHGRESSH=/nwprod/ush/global_chgres.sh
+   export ndate=/nwprod/util/exec/ndate
+   export ncp=/bin/cp
+elif [ $MACHINE = ZEUS ]; then
+   export SIGHDR=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para/exec/global_sighdr
+   export FIXGLOBAL=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para/fix/fix_am 
+   export CHGRESEXEC=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para/exec/global_chgres
+   export CHGRESSH=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para/ush/global_chgres_uf_gaea.sh 
+   export ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
+   export ncp=/bin/cp
+else
+  echo "Unsupported machine $MACHINE (not sure how you got to here)"
+  exit 1
+fi
 
 #=================================================================================================
 
 # Refractive Index or Bending Angle for GPS?
 export gps_dtype="gps_ref"
 
-# Set environment variables for NCEP IBM
-export MEMORY_AFFINITY=MCM
-export MP_SHARED_MEMORY=yes
 
-# Set environment variables for threading and stacksize
-export AIXTHREAD_SCOPE=S
-export XLSMPOPTS="parthds=1:stack=128000000"
+if [[  $MACHINE = CCS  ]]; then
 
-# Recommended MPI environment variable setttings from IBM
-# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
-export LAPI_DEBUG_ENABLE_AFFINITY=YES
-export MP_FIFO_MTU=4K
-export MP_SYNC_QP=YES
-export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
-export MP_EUIDEVELOP=min
-export MP_USE_BULK_XFER=yes
-export MP_BULK_MIN_MSG_SIZE=64k
-export MP_RC_MAX_QP=8192
-export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
-export LAPI_DEBUG_QP_NOTIFICATION=no
-export LAPI_DEBUG_RC_INIT_SETUP=yes
+   # Set environment variables for NCEP IBM
+   export MEMORY_AFFINITY=MCM
+   export MP_SHARED_MEMORY=yes
 
-# Set environment variables for user preferences
-export XLFRTEOPTS="nlwidth=80"
-export MP_LABELIO=yes
-export MP_INFOLEVEL=1
+   # Set environment variables for threading and stacksize
+   export AIXTHREAD_SCOPE=S
+   export XLSMPOPTS="parthds=1:stack=128000000"
+ 
+   # Recommended MPI environment variable setttings from IBM
+   # (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
+   export LAPI_DEBUG_ENABLE_AFFINITY=YES
+   export MP_FIFO_MTU=4K
+   export MP_SYNC_QP=YES
+   export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
+   export MP_EUIDEVELOP=min
+   export MP_USE_BULK_XFER=yes
+   export MP_BULK_MIN_MSG_SIZE=64k
+   export MP_RC_MAX_QP=8192
+   export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
+   export LAPI_DEBUG_QP_NOTIFICATION=no
+   export LAPI_DEBUG_RC_INIT_SETUP=yes
+
+   # Set environment variables for user preferences
+   export XLFRTEOPTS="nlwidth=80"
+   export MP_LABELIO=yes
+   export MP_INFOLEVEL=1
+
+fi
 
 # Variables for debugging (don't always need)
 ##export XLFRTEOPTS="buffering=disable_all"
@@ -150,6 +192,7 @@ elif [[ "$JCAP" = "62" ]]; then
    export LONA=192
    export LATA=94
    export DELTIM=1200
+   export resol=2     # emily: test this
    export resol=1
 else
    echo "INVALID JCAP = $JCAP"
@@ -176,16 +219,16 @@ adate0=`echo $adate | cut -c1-8`
 gdate0=`echo $gdate | cut -c1-8`
 dumpobs=gdas
 dumpges=gdas
-#datobs=/com/gfs/prod/gdas.$adate0
-#datges=/com/gfs/prod/gdas.$gdate0
-datobs=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$adate0
-datges=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$gdate0
+datobs=/com/gfs/prod/gdas.$adate0
+datges=/com/gfs/prod/gdas.$gdate0
+#datobs=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$adate0
+#datges=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$gdate0
 
 # Look for required input files in ${datdir}
 # if ${datdir}/gdas1.t${hha}z.sgm3prep is present assume we have 
 # everything we need, else look elsewhere.
 
-if [ $MACHINE = CSS ]; then
+if [ $MACHINE = CCS ]; then
   if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
     datobs=${datdir}
     datges=${datdir}
@@ -199,17 +242,17 @@ if [ $MACHINE = CSS ]; then
     echo Use Get_Initial_Files.sh to get them
     exit 1
   fi
-elif  [ $MACHINE = VAPOR ]; then    
+elif  [ $MACHINE = ZEUS ]; then    
   if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
     datobs=${datdir}
     datges=${datdir}
     datprep=${datobs}
-  elif [ -s /com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
-    datges=/com/gfs/prod/gdas.$gdate0
-    if [ -s /shared/glopara/dump/${gdate}/gdas -a \
-         -s /shared/glopara/dump/${adate}/gdas ]; then
-      datobs=/shared/glopara/dump/${adate}/gdas
-      datprep=/com/gfs/prod/gdas.${adate0}
+  elif [ -s /NCEPPROD/com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
+    datges=/NCEPPROD/com/gfs/prod/gdas.$gdate0
+    if [ -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${gdate}/gdas -a \
+         -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas ]; then
+      datobs=/scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas
+      datprep=/NCEPPROD/com/gfs/prod/gdas.${adate0}
       prefix_obs=
       suffix=gdas.$adate 
     else
@@ -253,6 +296,53 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+                if [ -s $ch4 ] ; then
+                        $ncp $ch4 ./ch4globaldata.txt
+                fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+                if [ -s $n2o ] ; then
+                        $ncp $n2o ./n2oglobaldata.txt
+                fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+                co=$codir/global_co_esrlctm_$yyyy.txt
+                if [ -s $co ] ; then
+                        $ncp $co ./coglobaldata.txt
+                fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
+                exit 1
+   fi
+fi
+
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -318,7 +408,7 @@ cat << EOF > gsiparm.anl
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                  dval(02)=0.0, dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                  dval(03)=0.0, dthin(03)=0, dsfcalc(03)=0,
    dfile(04)='prepbufr',  dtype(04)='pw',        dplat(04)=' ',       dsis(04)='pw',                 dval(04)=0.0, dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='satwnd',    dtype(05)='uv',        dplat(05)=' ',       dsis(05)='uv',                 dval(05)=0.0, dthin(05)=0, dsfcalc(05)=0,
+   dfile(05)='satwndbufr',dtype(05)='uv',        dplat(05)=' ',       dsis(05)='uv',                 dval(05)=0.0, dthin(05)=0, dsfcalc(05)=0,
    dfile(06)='prepbufr',  dtype(06)='uv',        dplat(06)=' ',       dsis(06)='uv',                 dval(06)=0.0, dthin(06)=0, dsfcalc(06)=0,
    dfile(07)='prepbufr',  dtype(07)='spd',       dplat(07)=' ',       dsis(07)='spd',                dval(07)=0.0, dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='prepbufr',  dtype(08)='dw',        dplat(08)=' ',       dsis(08)='dw',                 dval(08)=0.0, dthin(08)=0, dsfcalc(08)=0,
@@ -347,10 +437,10 @@ cat << EOF > gsiparm.anl
    dfile(31)='amsrebufr', dtype(31)='amsre_low', dplat(31)='aqua',    dsis(31)='amsre_aqua',         dval(31)=0.0, dthin(31)=1, dsfcalc(31)=0,
    dfile(32)='amsrebufr', dtype(32)='amsre_mid', dplat(32)='aqua',    dsis(32)='amsre_aqua',         dval(32)=0.0, dthin(32)=1, dsfcalc(32)=0,
    dfile(33)='amsrebufr', dtype(33)='amsre_hig', dplat(33)='aqua',    dsis(33)='amsre_aqua',         dval(33)=0.0, dthin(33)=1, dsfcalc(33)=0,
-   dfile(34)='ssmisbufr', dtype(34)='ssmis_las', dplat(34)='f16',     dsis(34)='ssmis_f16',          dval(34)=0.0, dthin(34)=1, dsfcalc(34)=0,
-   dfile(35)='ssmisbufr', dtype(35)='ssmis_uas', dplat(35)='f16',     dsis(35)='ssmis_f16',          dval(35)=0.0, dthin(35)=1, dsfcalc(35)=0,
-   dfile(36)='ssmisbufr', dtype(36)='ssmis_img', dplat(36)='f16',     dsis(36)='ssmis_f16',          dval(36)=0.0, dthin(36)=1, dsfcalc(36)=0,
-   dfile(37)='ssmisbufr', dtype(37)='ssmis_env', dplat(37)='f16',     dsis(37)='ssmis_f16',          dval(37)=0.0, dthin(37)=1, dsfcalc(37)=0,
+   dfile(34)='ssmisbufr', dtype(34)='ssmis',     dplat(34)='f16',     dsis(34)='ssmis_f16',          dval(34)=0.0, dthin(34)=1, dsfcalc(34)=0,
+   dfile(35)='ssmisbufr', dtype(35)='ssmis',     dplat(35)='f17',     dsis(35)='ssmis_f17',          dval(35)=0.0, dthin(35)=1, dsfcalc(35)=0,
+   dfile(36)='ssmisbufr', dtype(36)='ssmis',     dplat(36)='f18',     dsis(36)='ssmis_f18',          dval(36)=0.0, dthin(36)=1, dsfcalc(36)=0,
+   dfile(37)='ssmisbufr', dtype(37)='ssmis',     dplat(37)='f19',     dsis(37)='ssmis_f19',          dval(37)=0.0, dthin(37)=1, dsfcalc(37)=0,
    dfile(38)='gsnd1bufr', dtype(38)='sndrd1',    dplat(38)='g12',     dsis(38)='sndrD1_g12',         dval(38)=0.0, dthin(38)=1, dsfcalc(38)=0,
    dfile(39)='gsnd1bufr', dtype(39)='sndrd2',    dplat(39)='g12',     dsis(39)='sndrD2_g12',         dval(39)=0.0, dthin(39)=1, dsfcalc(39)=0,
    dfile(40)='gsnd1bufr', dtype(40)='sndrd3',    dplat(40)='g12',     dsis(40)='sndrD3_g12',         dval(40)=0.0, dthin(40)=1, dsfcalc(40)=0,
@@ -424,7 +514,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fixgsi/global_anavinfo.l64.txt
-berror=$fixgsi/global_berror.l${LEVS}y${NLAT_A}.f77
+berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT_A}.f77
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -486,40 +576,53 @@ done
 
 # Copy observational data to $tmpdir
 if [ -r $datprep/${prefix_prep}prepbufr ]; then
-  ln -s -f $datprep/${prefix_prep}prepbufr           ./prepbufr
+  $ncp $datprep/${prefix_prep}prepbufr           ./prepbufr
 elif [ -r $datprep/${prefix_prep}prepbufr.nr ]; then    # Look for this file if you do not have restricted data access
-  ln -s -f $datprep/${prefix_prep}prepbufr.nr           ./prepbufr
+  $ncp $datprep/${prefix_prep}prepbufr.nr        ./prepbufr
 else
   echo You do not have access to a readable prepbufr file
   exit 1
 fi
-ln -s -f $datobs/${prefix_obs}satwnd.${suffix}    ./satwnd
-ln -s -f $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
-ln -s -f $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
-ln -s -f $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-ln -s -f $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
-ln -s -f $datobs/${prefix_obs}omi.${suffix}      ./omibufr
-ln -s -f $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
-ln -s -f $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
-ln -s -f $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
-ln -s -f $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
-ln -s -f $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
-ln -s -f $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
-ln -s -f $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
-ln -s -f $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
-ln -s -f $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
-ln -s -f $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
-ln -s -f $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
-ln -s -f $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
-ln -s -f $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
-ln -s -f $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
-ln -s -f $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
-ln -s -f $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
-ln -s -f $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
-ln -s -f $datobs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
-ln -s -f $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
-ln -s -f /global/shared/dump/${adate}/gdasx/atms.gdas.${adate} ./atmsbufr
+$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+$ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
+$ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
+$ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
+$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+$ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
+$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
+$ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
+$ncp $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
+$ncp $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
+$ncp $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
+$ncp $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
+$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
+$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
+$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
+$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
+$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
+$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
+$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
+$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
+$ncp $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
+$ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
+$ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
+$ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
+$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
+$ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
+
+
+# If not CCS, check bufr files.  Bit-swap as necessary
+if [  $MACHINE = ZEUS  ]; then
+   for file in `ls *bufr* `; do
+      c=`/home/Jack.Woollen/bin/binv $file`
+      d=`echo $?`
+      if [ $d != "0" ]; then
+         sh /home/Jack.Woollen/bin/gbqx $file
+      fi
+   done
+fi
 
 
 # Copy bias correction, atmospheric and surface files
@@ -550,7 +653,12 @@ else
    ln -s -f $datprep/gdas1.t${hha}z.sgesprep           ./gdas1.t${hha}z.sgesprep
    ln -s -f $datprep/gdas1.t${hha}z.sgp3prep           ./gdas1.t${hha}z.sgp3prep
 
-   export SIGLEVEL=/nwprod/fix/global_hyblev.l64.txt
+   #emily
+   if [  $MACHINE = CCS  ]; then
+      export SIGLEVEL=/NCEPDEV/rstprod/nwprod/fix/global_hyblev.l64.txt
+   elif [  $MACHINE = ZEUS  ]; then
+      export SIGLEVEL=/NCEPPROD/nwprod/fix/global_hyblev.l64.txt
+   fi
 
    export JCAP=$JCAP
    export LEVS=$LEVS
@@ -562,25 +670,23 @@ else
    # Operational chgres for operational sigio
    export DATA=$tmpdir
 
-   list="sgm3prep sgesprep sgp3prep"
-   for fhr in $list; do
-      export SIGINP=$tmpdir/gdas1.t${hha}z.${fhr}
-      export SFCINP=/dev/null
-      export SIGOUT=$tmpdir/gdas2.t${hha}z.${fhr}
-      export SFCOUT=
-      export GFSOUT=
-      $CHGRESSH
-   done
+   export SIGINP=$tmpdir/gdas1.t${hha}z.sgm3prep
+   export SFCINP=$tmpdir/gdas1.t${hhg}z.bf03
+   export SIGOUT=$tmpdir/gdas2.t${hha}z.sgm3prep
+   export SFCOUT=$tmpdir/gdas2.t${hhg}z.bf03
+   $CHGRESSH
 
-   list="bf03 bf06 bf09"
-   for fhr in $list; do
-      export SIGINP=/dev/null
-      export SFCINP=$tmpdir/gdas1.t${hhg}z.${fhr}
-      export SIGOUT=/dev/null
-      export SFCOUT=$tmpdir/gdas2.t${hhg}z.${fhr}
-      export GFSOUT=
-      $CHGRESSH
-   done
+   export SIGINP=$tmpdir/gdas1.t${hha}z.sgesprep
+   export SFCINP=$tmpdir/gdas1.t${hhg}z.bf06
+   export SIGOUT=$tmpdir/gdas2.t${hha}z.sgesprep
+   export SFCOUT=$tmpdir/gdas2.t${hhg}z.bf06
+   $CHGRESSH
+
+   export SIGINP=$tmpdir/gdas1.t${hha}z.sgp3prep
+   export SFCINP=$tmpdir/gdas1.t${hhg}z.bf09
+   export SIGOUT=$tmpdir/gdas2.t${hha}z.sgp3prep
+   export SFCOUT=$tmpdir/gdas2.t${hhg}z.bf09
+   $CHGRESSH
 
    mv gdas2.t${hhg}z.bf03       sfcf03
    mv gdas2.t${hhg}z.bf06       sfcf06
@@ -605,8 +711,32 @@ else
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
-rc=$?
+if [  $MACHINE = ZEUS  ]; then
+
+   cd $tmpdir/
+   echo "run gsi now"
+
+   export MPI_BUFS_PER_PROC=256
+   export MPI_BUFS_PER_HOST=256
+   export MPI_GROUP_MAX=256
+   #export OMP_NUM_THREADS=1
+
+   /bin/ksh --login
+   module load intel
+   module load mpt
+
+   echo "JOB ID : $PBS_JOBID"
+   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   rc=$?
+
+elif [  $MACHINE = CCS  ]; then
+
+   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+
+   # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
+   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   rc=$?
+fi
 
 # Save output
 mkdir -p $savdir
@@ -657,18 +787,33 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10  atms_npp cris_npp"
-   for type in $listall; do
-      count=`ls dir.*/${type}_${loop}* | wc -l`
-      if [[ $count -gt 0 ]]; then
-         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
-         compress diag_${type}_${string}.${adate}
-         $ncp diag_${type}_${string}.${adate}.Z $savdir/
-      fi
-   done
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10  atms_npp cris_npp"
+
+   if [  $MACHINE = ZEUS  ]; then
+      for type in $listall; do
+         count=`ls pe*.${type}_${loop}* | wc -l`
+         if [[ $count -gt 0 ]]; then
+            cat pe*.${type}_${loop}* > diag_${type}_${string}.${adate}
+            gzip diag_${type}_${string}.${adate}
+            $ncp diag_${type}_${string}.${adate}.gz $savdir/
+         fi
+      done
+   elif [ $MACHINE = CCS ]; then
+      for type in $listall; do
+         count=`ls dir.*/${type}_${loop}* | wc -l`
+         if [[ $count -gt 0 ]]; then
+            cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
+            compress diag_${type}_${string}.${adate}
+            $ncp diag_${type}_${string}.${adate}.Z $savdir/
+         fi
+      done
+   else
+      echo "Unsupported machine $MACHINE (not sure how you got to here)"
+      exit 1
+   fi
+
 done
 echo "Time after diagnostic loop is `date` "
-
 
 
 # If requested, clean up $tmpdir

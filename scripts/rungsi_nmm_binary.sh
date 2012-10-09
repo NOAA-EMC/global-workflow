@@ -174,9 +174,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_ndas_binary
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_nmmstat_na.gcv
+   berror=$fix_file/$endianness/nam_nmmstat_na.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin

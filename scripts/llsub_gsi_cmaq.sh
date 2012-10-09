@@ -31,7 +31,7 @@ datges=$datobs
 cmaq_ges=${datges}/cmaq2gsi_20100901_${hour}0000.bin
 anowbufr=${datobs}/hourly.20100901/aqm.t${hour}z.anowpm.pb.tm216
 anavinfo=${fix_file}/anavinfo_cmaq_binary
-berror=$fix_file/cmaq_pm2_5_reg_berror_${hour}z.bin
+berror=$fix_file/$endianness/cmaq_pm2_5_reg_berror_${hour}z.bin
 
 cmaq_input='cmaq_input.bin'
 cmaq_output='cmaq_output.bin'
