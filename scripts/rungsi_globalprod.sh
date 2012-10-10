@@ -52,18 +52,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2012051506
+adate=2012091506
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.zeus
 
 # Set path/file for gsi executable
-#gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-#gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/EXP-port/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/trunk/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/EXP-port/fix
+fixgsi=${TOPDIR}/save/$USER/trunk/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -221,8 +219,6 @@ dumpobs=gdas
 dumpges=gdas
 datobs=/com/gfs/prod/gdas.$adate0
 datges=/com/gfs/prod/gdas.$gdate0
-#datobs=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$adate0
-#datges=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$gdate0
 
 # Look for required input files in ${datdir}
 # if ${datdir}/gdas1.t${hha}z.sgm3prep is present assume we have 
@@ -287,10 +283,14 @@ if [ $ICO2 -gt 0 ] ; then
         co2dir=${CO2DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -303,10 +303,14 @@ if [ $ICH4 -gt 0 ] ; then
         ch4dir=${CH4DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
@@ -314,14 +318,18 @@ if [ $ICH4 -gt 0 ] ; then
 fi
 IN2O=${IN2O:-2}
 if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
+#        # Copy n2o files to $tmpdir
         n2odir=${N2ODIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
@@ -333,10 +341,14 @@ if [ $ICO -gt 0 ] ; then
         codir=${CODIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
@@ -365,7 +377,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
-   ndat=67,iguess=-1,
+   ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,
@@ -438,39 +450,36 @@ cat << EOF > gsiparm.anl
    dfile(32)='amsrebufr', dtype(32)='amsre_mid', dplat(32)='aqua',    dsis(32)='amsre_aqua',         dval(32)=0.0, dthin(32)=1, dsfcalc(32)=0,
    dfile(33)='amsrebufr', dtype(33)='amsre_hig', dplat(33)='aqua',    dsis(33)='amsre_aqua',         dval(33)=0.0, dthin(33)=1, dsfcalc(33)=0,
    dfile(34)='ssmisbufr', dtype(34)='ssmis',     dplat(34)='f16',     dsis(34)='ssmis_f16',          dval(34)=0.0, dthin(34)=1, dsfcalc(34)=0,
-   dfile(35)='ssmisbufr', dtype(35)='ssmis',     dplat(35)='f17',     dsis(35)='ssmis_f17',          dval(35)=0.0, dthin(35)=1, dsfcalc(35)=0,
-   dfile(36)='ssmisbufr', dtype(36)='ssmis',     dplat(36)='f18',     dsis(36)='ssmis_f18',          dval(36)=0.0, dthin(36)=1, dsfcalc(36)=0,
-   dfile(37)='ssmisbufr', dtype(37)='ssmis',     dplat(37)='f19',     dsis(37)='ssmis_f19',          dval(37)=0.0, dthin(37)=1, dsfcalc(37)=0,
-   dfile(38)='gsnd1bufr', dtype(38)='sndrd1',    dplat(38)='g12',     dsis(38)='sndrD1_g12',         dval(38)=0.0, dthin(38)=1, dsfcalc(38)=0,
-   dfile(39)='gsnd1bufr', dtype(39)='sndrd2',    dplat(39)='g12',     dsis(39)='sndrD2_g12',         dval(39)=0.0, dthin(39)=1, dsfcalc(39)=0,
-   dfile(40)='gsnd1bufr', dtype(40)='sndrd3',    dplat(40)='g12',     dsis(40)='sndrD3_g12',         dval(40)=0.0, dthin(40)=1, dsfcalc(40)=0,
-   dfile(41)='gsnd1bufr', dtype(41)='sndrd4',    dplat(41)='g12',     dsis(41)='sndrD4_g12',         dval(41)=0.0, dthin(41)=1, dsfcalc(41)=0,
-   dfile(42)='gsnd1bufr', dtype(42)='sndrd1',    dplat(42)='g11',     dsis(42)='sndrD1_g11',         dval(42)=0.0, dthin(42)=1, dsfcalc(42)=0,
-   dfile(43)='gsnd1bufr', dtype(43)='sndrd2',    dplat(43)='g11',     dsis(43)='sndrD2_g11',         dval(43)=0.0, dthin(43)=1, dsfcalc(43)=0,
-   dfile(44)='gsnd1bufr', dtype(44)='sndrd3',    dplat(44)='g11',     dsis(44)='sndrD3_g11',         dval(44)=0.0, dthin(44)=1, dsfcalc(44)=0,
-   dfile(45)='gsnd1bufr', dtype(45)='sndrd4',    dplat(45)='g11',     dsis(45)='sndrD4_g11',         dval(45)=0.0, dthin(45)=1, dsfcalc(45)=0,
-   dfile(46)='gsnd1bufr', dtype(46)='sndrd1',    dplat(46)='g13',     dsis(46)='sndrD1_g13',         dval(46)=0.0, dthin(46)=1, dsfcalc(46)=0,
-   dfile(47)='gsnd1bufr', dtype(47)='sndrd2',    dplat(47)='g13',     dsis(47)='sndrD2_g13',         dval(47)=0.0, dthin(47)=1, dsfcalc(47)=0,
-   dfile(48)='gsnd1bufr', dtype(48)='sndrd3',    dplat(48)='g13',     dsis(48)='sndrD3_g13',         dval(48)=0.0, dthin(48)=1, dsfcalc(48)=0,
-   dfile(49)='gsnd1bufr', dtype(49)='sndrd4',    dplat(49)='g13',     dsis(49)='sndrD4_g13',         dval(49)=0.0, dthin(49)=1, dsfcalc(49)=0,
-   dfile(50)='iasibufr',  dtype(50)='iasi',      dplat(50)='metop-a', dsis(50)='iasi616_metop-a',    dval(50)=0.0, dthin(50)=1, dsfcalc(50)=1,
-   dfile(51)='gomebufr',  dtype(51)='gome',      dplat(51)='metop-a', dsis(51)='gome_metop-a',       dval(51)=0.0, dthin(51)=2, dsfcalc(51)=0,
-   dfile(52)='omibufr',   dtype(52)='omi',       dplat(52)='aura',    dsis(52)='omi_aura',           dval(52)=0.0, dthin(52)=2, dsfcalc(52)=0,
-   dfile(53)='sbuvbufr',  dtype(53)='sbuv2',     dplat(53)='n19',     dsis(53)='sbuv8_n19',          dval(53)=0.0, dthin(53)=0, dsfcalc(53)=0,
-   dfile(54)='hirs4bufr', dtype(54)='hirs4',     dplat(54)='n19',     dsis(54)='hirs4_n19',          dval(54)=0.0, dthin(54)=1, dsfcalc(54)=1,
-   dfile(55)='amsuabufr', dtype(55)='amsua',     dplat(55)='n19',     dsis(55)='amsua_n19',          dval(55)=0.0, dthin(55)=1, dsfcalc(55)=1,
-   dfile(56)='mhsbufr',   dtype(56)='mhs',       dplat(56)='n19',     dsis(56)='mhs_n19',            dval(56)=0.0, dthin(56)=1, dsfcalc(56)=1,
-   dfile(57)='tcvitl'     dtype(57)='tcp',       dplat(57)=' ',       dsis(57)='tcp',                dval(57)=0.0, dthin(57)=0, dsfcalc(57)=0,
-   dfile(58)='seviribufr',dtype(58)='seviri',    dplat(58)='m08',     dsis(58)='seviri_m08',         dval(58)=0.0, dthin(58)=1, dsfcalc(58)=0,
-   dfile(59)='seviribufr',dtype(59)='seviri',    dplat(59)='m09',     dsis(59)='seviri_m09',         dval(59)=0.0, dthin(59)=1, dsfcalc(59)=0,
-   dfile(60)='seviribufr',dtype(60)='seviri',    dplat(60)='m10',     dsis(60)='seviri_m10',         dval(60)=0.0, dthin(60)=1, dsfcalc(60)=0,
-   dfile(61)='hirs4bufr', dtype(61)='hirs4',     dplat(61)='metop-b', dsis(61)='hirs4_metop-b',      dval(61)=0.0, dthin(61)=1, dsfcalc(61)=0,
-   dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='metop-b', dsis(62)='amsua_metop-b',      dval(62)=0.0, dthin(62)=1, dsfcalc(62)=0,
-   dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='metop-b', dsis(63)='mhs_metop-b',        dval(63)=0.0, dthin(63)=1, dsfcalc(63)=0,
-   dfile(64)='iasibufr',  dtype(64)='iasi',      dplat(64)='metop-b', dsis(64)='iasi616_metop-b',    dval(64)=0.0, dthin(64)=1, dsfcalc(64)=0,
-   dfile(65)='gomebufr',  dtype(65)='gome',      dplat(65)='metop-b', dsis(65)='gome_metop-b',       dval(65)=0.0, dthin(65)=2, dsfcalc(65)=0,
-   dfile(66)='atmsbufr',  dtype(66)='atms',      dplat(66)='npp',     dsis(66)='atms_npp',           dval(66)=0.0, dthin(66)=1, dsfcalc(66)=0,
-   dfile(67)='crisbufr',  dtype(67)='cris',      dplat(67)='npp',     dsis(67)='cris_npp',           dval(67)=0.0, dthin(67)=1, dsfcalc(67)=0,
+   dfile(35)='gsnd1bufr', dtype(35)='sndrd1',    dplat(35)='g12',     dsis(35)='sndrD1_g12',         dval(35)=0.0, dthin(35)=1, dsfcalc(35)=0,
+   dfile(36)='gsnd1bufr', dtype(36)='sndrd2',    dplat(36)='g12',     dsis(36)='sndrD2_g12',         dval(36)=0.0, dthin(36)=1, dsfcalc(36)=0,
+   dfile(37)='gsnd1bufr', dtype(37)='sndrd3',    dplat(37)='g12',     dsis(37)='sndrD3_g12',         dval(37)=0.0, dthin(37)=1, dsfcalc(37)=0,
+   dfile(38)='gsnd1bufr', dtype(38)='sndrd4',    dplat(38)='g12',     dsis(38)='sndrD4_g12',         dval(38)=0.0, dthin(38)=1, dsfcalc(38)=0,
+   dfile(39)='gsnd1bufr', dtype(39)='sndrd1',    dplat(39)='g11',     dsis(39)='sndrD1_g11',         dval(39)=0.0, dthin(39)=1, dsfcalc(39)=0,
+   dfile(40)='gsnd1bufr', dtype(40)='sndrd2',    dplat(40)='g11',     dsis(40)='sndrD2_g11',         dval(40)=0.0, dthin(40)=1, dsfcalc(40)=0,
+   dfile(41)='gsnd1bufr', dtype(41)='sndrd3',    dplat(41)='g11',     dsis(41)='sndrD3_g11',         dval(41)=0.0, dthin(41)=1, dsfcalc(41)=0,
+   dfile(42)='gsnd1bufr', dtype(42)='sndrd4',    dplat(42)='g11',     dsis(42)='sndrD4_g11',         dval(42)=0.0, dthin(42)=1, dsfcalc(42)=0,
+   dfile(43)='gsnd1bufr', dtype(43)='sndrd1',    dplat(43)='g13',     dsis(43)='sndrD1_g13',         dval(43)=0.0, dthin(43)=1, dsfcalc(43)=0,
+   dfile(44)='gsnd1bufr', dtype(44)='sndrd2',    dplat(44)='g13',     dsis(44)='sndrD2_g13',         dval(44)=0.0, dthin(44)=1, dsfcalc(44)=0,
+   dfile(45)='gsnd1bufr', dtype(45)='sndrd3',    dplat(45)='g13',     dsis(45)='sndrD3_g13',         dval(45)=0.0, dthin(45)=1, dsfcalc(45)=0,
+   dfile(46)='gsnd1bufr', dtype(46)='sndrd4',    dplat(46)='g13',     dsis(46)='sndrD4_g13',         dval(46)=0.0, dthin(46)=1, dsfcalc(46)=0,
+   dfile(47)='iasibufr',  dtype(47)='iasi',      dplat(47)='metop-a', dsis(47)='iasi616_metop-a',    dval(47)=0.0, dthin(47)=1, dsfcalc(47)=1,
+   dfile(48)='gomebufr',  dtype(48)='gome',      dplat(48)='metop-a', dsis(48)='gome_metop-a',       dval(48)=0.0, dthin(48)=2, dsfcalc(48)=0,
+   dfile(49)='omibufr',   dtype(49)='omi',       dplat(49)='aura',    dsis(49)='omi_aura',           dval(49)=0.0, dthin(49)=2, dsfcalc(49)=0,
+   dfile(50)='sbuvbufr',  dtype(50)='sbuv2',     dplat(50)='n19',     dsis(50)='sbuv8_n19',          dval(50)=0.0, dthin(50)=0, dsfcalc(50)=0,
+   dfile(51)='hirs4bufr', dtype(51)='hirs4',     dplat(51)='n19',     dsis(51)='hirs4_n19',          dval(51)=0.0, dthin(51)=1, dsfcalc(51)=1,
+   dfile(52)='amsuabufr', dtype(52)='amsua',     dplat(52)='n19',     dsis(52)='amsua_n19',          dval(52)=0.0, dthin(52)=1, dsfcalc(52)=1,
+   dfile(53)='mhsbufr',   dtype(53)='mhs',       dplat(53)='n19',     dsis(53)='mhs_n19',            dval(53)=0.0, dthin(53)=1, dsfcalc(53)=1,
+   dfile(54)='tcvitl'     dtype(54)='tcp',       dplat(54)=' ',       dsis(54)='tcp',                dval(54)=0.0, dthin(54)=0, dsfcalc(54)=0,
+   dfile(55)='seviribufr',dtype(55)='seviri',    dplat(55)='m08',     dsis(55)='seviri_m08',         dval(55)=0.0, dthin(55)=1, dsfcalc(55)=0,
+   dfile(56)='seviribufr',dtype(56)='seviri',    dplat(56)='m09',     dsis(56)='seviri_m09',         dval(56)=0.0, dthin(56)=1, dsfcalc(56)=0,
+   dfile(57)='seviribufr',dtype(57)='seviri',    dplat(57)='m10',     dsis(57)='seviri_m10',         dval(57)=0.0, dthin(57)=1, dsfcalc(57)=0,
+   dfile(58)='hirs4bufr', dtype(58)='hirs4',     dplat(58)='metop-b', dsis(58)='hirs4_metop-b',      dval(58)=0.0, dthin(58)=1, dsfcalc(58)=0,
+   dfile(59)='amsuabufr', dtype(59)='amsua',     dplat(59)='metop-b', dsis(59)='amsua_metop-b',      dval(59)=0.0, dthin(59)=1, dsfcalc(59)=0,
+   dfile(60)='mhsbufr',   dtype(60)='mhs',       dplat(60)='metop-b', dsis(60)='mhs_metop-b',        dval(60)=0.0, dthin(60)=1, dsfcalc(60)=0,
+   dfile(61)='iasibufr',  dtype(61)='iasi',      dplat(61)='metop-b', dsis(61)='iasi616_metop-b',    dval(61)=0.0, dthin(61)=1, dsfcalc(61)=0,
+   dfile(62)='gomebufr',  dtype(62)='gome',      dplat(62)='metop-b', dsis(62)='gome_metop-b',       dval(62)=0.0, dthin(62)=2, dsfcalc(62)=0,
+   dfile(63)='atmsbufr',  dtype(63)='atms',      dplat(63)='npp',     dsis(63)='atms_npp',           dval(63)=0.0, dthin(63)=1, dsfcalc(63)=0,
+   dfile(64)='crisbufr',  dtype(64)='cris',      dplat(64)='npp',     dsis(64)='cris_npp',           dval(64)=0.0, dthin(64)=1, dsfcalc(64)=0,
    $OBSINPUT
  /
  &SUPEROB_RADAR
@@ -730,8 +739,6 @@ if [  $MACHINE = ZEUS  ]; then
    rc=$?
 
 elif [  $MACHINE = CCS  ]; then
-
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
 
    # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
    poe $tmpdir/gsi.x < gsiparm.anl > stdout

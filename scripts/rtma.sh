@@ -163,6 +163,7 @@ errtable=$fixgsi/new_rtma_nam_errtable.r3dv
 convinfo=$fixgsi/new_rtma_regional_convinfo.txt
 mesonetuselist=$fixgsi/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fixgsi/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fixgsi/new_rtma_wbinuselist
 if [[ "$endianness" = "Little_Endian" ]]; then
    slmask=/scratch2/portfolios/NCEPDEV/meso/save/Manuel.Pondeca/aor_project/conusext_2.5km/hresext_rtma/fix.rtma/rtma_cohresext_slmask.dat_nolakes_le
    terrain=/scratch2/portfolios/NCEPDEV/meso/save/Manuel.Pondeca/aor_project/conusext_2.5km/hresext_rtma/fix.rtma/rtma_cohresext_terrain.dat_le
@@ -215,6 +216,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable

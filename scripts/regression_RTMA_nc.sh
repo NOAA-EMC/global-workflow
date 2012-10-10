@@ -180,6 +180,7 @@ errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -215,6 +216,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
@@ -460,6 +462,7 @@ errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -495,6 +498,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
