@@ -103,7 +103,7 @@ cat << EOF > gsiparm.anl
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=1.412,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,

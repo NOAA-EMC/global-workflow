@@ -111,7 +111,7 @@ cat << EOF > gsiparm.anl
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /

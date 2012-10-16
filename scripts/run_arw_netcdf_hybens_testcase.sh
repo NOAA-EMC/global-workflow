@@ -200,7 +200,7 @@ cat << EOF > gsiparm.anl
    use_compress=.false.,nsig_ext=13,gpstop=30.,
  /
  &GRIDOPTS
-   JCAP=${JCAP},JCAP_B=${JCAP_B},NLAT=${NLAT},NLON=${NLON},nsig=${NLEV},hybrid=.true.,
+   JCAP=${JCAP},JCAP_B=${JCAP_B},NLAT=${NLAT},NLON=${NLON},nsig=${NLEV},
    wrf_nmm_regional=.false.,wrf_mass_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
    nlat_regional=${NLAT},
