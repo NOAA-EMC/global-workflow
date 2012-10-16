@@ -36,8 +36,8 @@ export global_T62_namelist="
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -186,8 +186,8 @@ export global_lanczos_T62_namelist="
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -336,7 +336,7 @@ export RTMA_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=1,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -403,7 +403,7 @@ export arw_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -536,7 +536,7 @@ export arw_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -669,7 +669,7 @@ export nmm_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -802,7 +802,7 @@ export nmm_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -935,7 +935,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=8,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=8,period_max=3.,
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -1076,7 +1076,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
