@@ -52,7 +52,7 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=`cat /u/wx23adc/GSI/trunk/scripts/adate.txt 2> /dev/null`
+adate=`cat /u/wx23adc/GSI/CrIS/scripts/adate.txt 2> /dev/null`
 gdate=`/nwprod/util/exec/ndate -06 $adate`
 
 
@@ -65,15 +65,15 @@ last_expid=${expnm}.$gdate.cris
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/GSI/CrIS/src/global_gsi
 #gsiexec=${TOPDIR}/save/${USER}/EXP-port/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/GSI/trunk/fix
+fixgsi=${TOPDIR}/save/$USER/GSI/CrIS/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
-export JCAP=62
+export JCAP=382
 export LEVS=64
 export JCAP_B=$JCAP
 
@@ -81,8 +81,8 @@ export JCAP_B=$JCAP
 # Set data, runtime and save directories
 if [ $MACHINE = CCS ]; then
    datdir=/global/noscrub/$USER/data_sigmap/${exp}
-   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
-   last_tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${last_expid}  
+   tmpdir=/global/noscrub/$USER/tmp${JCAP}_sigmap/${expid}  
+   last_tmpdir=/global/noscrub/$USER/tmp${JCAP}_sigmap/${last_expid}  
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
    endianness=Big_Endian
@@ -608,9 +608,9 @@ fi
 #$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
 #$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
 #$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
-#$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
 #$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
-#$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
+$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
 #$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
 #$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
 #$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
@@ -856,9 +856,9 @@ cp ./satbias_angle ./satbias_ang.in
 #   stdout.global_angupdate - not saved
 #   $SATANGO = ./satbias_ang.out
 
-/u/wx23adc/GSI/trunk/util/global_angupdate/global_angupdate <<EOF > stdout_ang
+/nwprod/exec/global_angupdate <<EOF > stdout_ang
  &SETUP
-  jpch=2680,nstep=90,nsize=20,wgtang=0.08333333,wgtlap=1.0,
+  jpch=2680,nstep=90,nsize=20,wgtang=0.008333333,wgtlap=1.0,
   iuseqc=1,dtmax=1.0,
   iyy1=${iy},imm1=${im},idd1=${id},ihh1=${ih},
   iyy2=${iy},imm2=${im},idd2=${id},ihh2=${ih},
@@ -929,9 +929,9 @@ EOF
 #EOF
 
 adate=`$ndate +06 $adate`
-echo $adate > /u/wx23adc/GSI/trunk/scripts/adate.txt
+echo $adate > /u/wx23adc/GSI/CrIS/scripts/adate.txt
 if [ $adate -lt 2012062000 ]; then
-  llsubmit /u/wx23adc/GSI/trunk/scripts/cris_spinup.sh
+  llsubmit /u/wx23adc/GSI/CrIS/scripts/cris_spinup.sh
 fi
 
 

@@ -59,11 +59,11 @@ expid=${expnm}.$adate.cris1
 
 # Set path/file for gsi executable
 #gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/GSI/CrIS/src/global_gsi
 #gsiexec=${TOPDIR}/save/${USER}/EXP-port/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/GSI/trunk/fix
+fixgsi=${TOPDIR}/save/$USER/GSI/CrIS/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -360,7 +360,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=100,niter(2)=150,
+   miter=0,niter(1)=100,niter(2)=150,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
@@ -582,34 +582,34 @@ else
   exit 1
 fi
 
-$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
-$ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
-$ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
-$ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
-$ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
-$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
-$ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
-$ncp $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
-$ncp $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
-$ncp $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
-$ncp $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
-$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
-$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
-$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
-$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
-$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
-$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
-$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
-$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
-$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
-$ncp $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
-$ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
-$ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
-$ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
-$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
+#$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+#$ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
+#$ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
+#$ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
+#$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+#$ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
+#$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
+#$ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
+#$ncp $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
+#$ncp $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
+#$ncp $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
+#$ncp $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
+#$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
+#$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
+#$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
+#$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+#$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
+#$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
+#$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
+#$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
+#$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
+#$ncp $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
+#$ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
+#$ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
+#$ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
+#$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp /global/shared/dump/${adate}/gdasx/cris.gdas.${adate}    ./crisbufr
-$ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
+#$ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
 # If not CCS, check bufr files.  Bit-swap as necessary
