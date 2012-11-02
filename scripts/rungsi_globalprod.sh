@@ -52,18 +52,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2012060918
+adate=2012102818
 expnm=globalprod    
 exp=globalprod.$adate
-expid=${expnm}.$adate.cris1
+expid=${expnm}.$adate.ctl
 
 # Set path/file for gsi executable
-#gsiexec=${TOPDIR}/save/$USER/svn1/src/global_gsi
-gsiexec=${TOPDIR}/save/${USER}/GSI/CrIS/src/global_gsi
-#gsiexec=${TOPDIR}/save/${USER}/EXP-port/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/trunk/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/GSI/CrIS/fix
+fixgsi=${TOPDIR}/save/$USER/trunk/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -221,8 +219,6 @@ dumpobs=gdas
 dumpges=gdas
 datobs=/com/gfs/prod/gdas.$adate0
 datges=/com/gfs/prod/gdas.$gdate0
-#datobs=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$adate0
-#datges=/gpfs/t3/global/save/wx23ry/CO2TEST/brch11717/RSTFILE/gdas.$gdate0
 
 # Look for required input files in ${datdir}
 # if ${datdir}/gdas1.t${hha}z.sgm3prep is present assume we have 
@@ -287,10 +283,14 @@ if [ $ICO2 -gt 0 ] ; then
         co2dir=${CO2DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
@@ -303,10 +303,14 @@ if [ $ICH4 -gt 0 ] ; then
         ch4dir=${CH4DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
@@ -314,14 +318,18 @@ if [ $ICH4 -gt 0 ] ; then
 fi
 IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
+#        # Copy n2o files to $tmpdir
         n2odir=${N2ODIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
@@ -333,10 +341,14 @@ if [ $ICO -gt 0 ] ; then
         codir=${CODIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
@@ -582,33 +594,33 @@ else
   exit 1
 fi
 
-#$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
-#$ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
-#$ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
-#$ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-#$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
-#$ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
-#$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
-#$ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
-#$ncp $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
-#$ncp $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
-#$ncp $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
-#$ncp $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
-#$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
-#$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
-#$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
-#$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
-#$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
-#$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
-#$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
-#$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
-#$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
+$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+$ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
+$ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
+$ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
+$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+$ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
+$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
+$ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
+$ncp $datobs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
+$ncp $datobs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
+$ncp $datobs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
+$ncp $datobs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
+$ncp $datobs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
+$ncp $datobs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
+$ncp $datobs/${prefix_obs}1bmsu.${suffix}    ./msubufr
+$ncp $datobs/${prefix_obs}airsev.${suffix}   ./airsbufr
+$ncp $datobs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
+$ncp $datobs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
+$ncp $datobs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
+$ncp $datobs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
+$ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
 #$ncp $datobs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
 #$ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
 #$ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
-#$ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
+$ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 #$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
-$ncp /global/shared/dump/${adate}/gdasx/cris.gdas.${adate}    ./crisbufr
+#$ncp /global/shared/dump/${adate}/gdasx/cris.gdas.${adate}    ./crisbufr
 #$ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
@@ -732,7 +744,6 @@ if [  $MACHINE = ZEUS  ]; then
 elif [  $MACHINE = CCS  ]; then
 
 #   poe $tmpdir/gsi.x < gsiparm.anl > stdout
-
    # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
    poe $tmpdir/gsi.x < gsiparm.anl > stdout
    rc=$?
