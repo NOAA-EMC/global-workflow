@@ -87,8 +87,6 @@ chmod 750 $tmpdir
 cd $tmpdir
 rm -rf core*
 
-# Make gsi namelist
-
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
@@ -106,6 +104,28 @@ if [ $ICO2 -gt 0 ] ; then
    fi
 fi
 
+# Make gsi namelist
+SETUP=""
+GRIDOPTS=""
+BKGVERR=""
+ANBKGERR=""
+JCOPTS=""
+if [[ $exp = $nmm_netcdf_updat_exp1 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $nmm_netcdf_updat_exp2 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $nmm_netcdf_contrl_exp1 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+elif [[ $exp = $nmm_netcdf_contrl_exp2 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+fi
+OBSQC=""
+OBSINPUT=""
+SUPERRAD=""
+SINGLEOB=""
+LAGDATA=""
+HYBRID_ENSEMBLE=""
+
 cat << EOF > gsiparm.anl
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -122,24 +142,30 @@ cat << EOF > gsiparm.anl
    JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
+   $GRIDOPTS
  /
  &BKGERR
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
+   $BKGERR
  /
  &ANBKGERR
    anisotropic=.false.,an_vs=1.0,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
    ifilt_ord=2,npass=3,normal=-200,grid_ratio=4.,nord_f2a=4,
+   $ANBKGERR
  /
  &JCOPTS
+   $JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
+   $STRONGOPTS
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',
+   $OBSQC
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -204,12 +230,15 @@ cat << EOF > gsiparm.anl
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
    dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   $OBSINPUT
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
+   $SUPERRAD
  /
  &LAG_DATA
+   $LAGDATA
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=${HYBENS_REGIONAL},
@@ -224,6 +253,7 @@ cat << EOF > gsiparm.anl
    nlat_ens=${NLAT_ENS_REGIONAL},
    jcap_ens=${JCAP_ENS_REGIONAL},
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
+   $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
    dfi_radar_latent_heat_time_period=30.0,
@@ -234,6 +264,7 @@ cat << EOF > gsiparm.anl
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${nmm_netcdf_adate},
    obhourset=0.,
+   $SINGLEOB
  /
 EOF
 
