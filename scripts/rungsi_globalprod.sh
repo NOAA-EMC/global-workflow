@@ -597,7 +597,7 @@ $ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
 $ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 $ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 $ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+$ncp $datobs/${prefix_obs}gome.${suffix}     ./gomebufr
 $ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
 $ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
 $ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
