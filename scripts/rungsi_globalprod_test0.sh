@@ -80,7 +80,7 @@ if [ $MACHINE = CCS ]; then
    fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
    endianness=Big_Endian
 elif [ $MACHINE = ZEUS ]; then
-   datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
+   datdir=/scratch1/portfolios/NCEPDEV/da/noscrub/$USER/data_sigmap/${exp}
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
    fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
@@ -602,7 +602,7 @@ $ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
 $ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 $ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 $ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-$ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./gomebufr
+$ncp $datobs/${prefix_obs}gome.${suffix}   ./gomebufr
 $ncp $datobs/${prefix_obs}omi.${suffix}      ./omibufr
 $ncp $datobs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
 $ncp $datobs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
@@ -847,7 +847,7 @@ cp ./satbias_angle ./satbias_ang.in
 #   stdout.global_angupdate - not saved
 #   $SATANGO = ./satbias_ang.out
 
-eval /u/wx23adc/GSI/CrIS/util/global_angupdate/global_angupdate <<EOF > stdout_ang
+eval ${TOPDIR}/save/${USER}/GSI/CrIS/util/global_angupdate/global_angupdate <<EOF > stdout_ang
  &SETUP
   jpch=2680,nsize=20,wgtang=0.008333333,wgtlap=1.0,
   iuseqc=1,dtmax=1.0,

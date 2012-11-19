@@ -78,7 +78,7 @@ if [ $MACHINE = CCS ]; then
    fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
    endianness=Big_Endian
 elif [ $MACHINE = ZEUS ]; then
-   datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
+   datdir=/scratch1/portfolios/NCEPDEV/da/noscrub/$USER/data_sigmap/${exp}
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
    fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
@@ -627,11 +627,7 @@ $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 # If not CCS, check bufr files.  Bit-swap as necessary
 if [  $MACHINE = ZEUS  ]; then
    for file in `ls *bufr* `; do
-      c=`/home/Jack.Woollen/bin/binv $file`
-      d=`echo $?`
-      if [ $d != "0" ]; then
-         sh /home/Jack.Woollen/bin/gbqx $file
-      fi
+      sh /home/George.Vandenberghe/scr/gbq $file
    done
 fi
 
@@ -849,7 +845,8 @@ cp ./satbias_angle ./satbias_ang.in
 #   stdout.global_angupdate - not saved
 #   $SATANGO = ./satbias_ang.out
 
-eval /global/save/wx23adc/GSI/trunk/util/global_angupdate/global_angupdate <<EOF > stdout_ang
+
+cat <<EOF > global_angupdate.namelist
  &SETUP
   jpch=2680,nstep=90,nsize=20,wgtang=0.008333333,wgtlap=1.0,
   iuseqc=1,dtmax=1.0,
@@ -911,6 +908,11 @@ eval /global/save/wx23adc/GSI/trunk/util/global_angupdate/global_angupdate <<EOF
  /
 EOF
 
+if [  $MACHINE = ZEUS  ]; then
+  eval "mpiexec_mpt -v -np $PBS_NP  ${TOPDIR}/save/${USER}/GSI/trunk/util/global_angupdate/global_angupdate > stdout_ang" 
+else
+  eval "${TOPDIR}/save/${USER}/GSI/trunk/util/global_angupdate/global_angupdate <global_angupdate.namelist > stdout_ang"
+fi
 
 # If requested, clean up $tmpdir
 if [[ "$CLEAN" = "YES" ]];then
