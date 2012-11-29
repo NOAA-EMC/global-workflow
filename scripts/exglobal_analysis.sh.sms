@@ -988,7 +988,7 @@ cat <<EOF > gsiparm.anl
  /
  &STRONGOPTS
    jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,hybens_inmc_option=2,
    $STRONGOPTS
  /
  &OBSQC
