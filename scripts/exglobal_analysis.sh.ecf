@@ -455,11 +455,7 @@ then
 fi
 export machine=${machine:-IBMP6}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-if [ $machine = ZEUS ] ; then
- /bin/ksh --login
- module load intel
- module load mpt
-fi
+
 #  Command line arguments.
 export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
@@ -561,6 +557,16 @@ export SIGG05=${SIGG05:-${COMOUT}/sigf05}
 export SIGG07=${SIGG07:-${COMOUT}/sigf07}
 export SIGG08=${SIGG08:-${COMOUT}/sigf08}
 export SIGG09=${SIGG09:-${COMOUT}/sigf09}
+
+#export SIGF03ENS=${SIGF03ENS:-${COMROT}/sigf03_ens}
+#export SIGF04ENS=${SIGF04ENS:-${COMROT}/sigf04_ens}
+#export SIGF05ENS=${SIGF05ENS:-${COMROT}/sigf05_ens}
+#export SIGF06ENS=${SIGF06ENS:-${COMROT}/sigf06_ens}
+#export SIGF07ENS=${SIGF07ENS:-${COMROT}/sigf07_ens}
+#export SIGF08ENS=${SIGF08ENS:-${COMROT}/sigf08_ens}
+#export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
+#export SIGGESENS=${SIGGESENS:-${COMROT}/sigf06_ens}
+
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export GRADSTAT=${GRADSTAT:-${COMOUT}/radstat.gdas}
 export SIGGESENS=${SIGGESENS:-${COMOUT}/sigf06_ens}
@@ -626,8 +632,14 @@ if [ $machine = IBMP6 ] ; then
   COMPRESS=compress
   UNCOMPRESS=uncompress
 else
-  export REDOUT=${REDOUT:-'1>'}
-  export REDERR=${REDERR:-'2>'}
+##export REDOUT=${REDOUT:-'1>'}
+##export REDERR=${REDERR:-'2>'}
+  typeset -L1 l=$PGMOUT
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDOUT=${REDOUT:-'1>'$a}
+  typeset -L1 l=$PGMERR
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDERR=${REDERR:-'2>'$a}
   COMPRESS=gzip
   UNCOMPRESS=gunzip
 fi
@@ -655,6 +667,7 @@ rc=$?
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 11
+
 
 
 ################################################################################
@@ -1142,9 +1155,9 @@ fi
 # Add this statement to release the forecast job once the GSI 
 # step is completed.  Do not release forecast when RUN=enkf
 ##############################################################
-if [ $SENDSMS = YES -a $RUN != enkf ]
+if [ $SENDECF = YES -a $RUN != enkf ]
 then
-   $SMSBIN/setev release_fcst
+   ecflow_client --event release_fcst
 fi
 
 # Cat runtime output files.
@@ -1214,25 +1227,37 @@ if [[ $DIAG_TARBALL = YES ]]; then
    if [ ! -s $RADSTAT ]; then
       TAROPTS="-cvf"
    fi
-   tar $TAROPTS $RADSTAT diag_hirs*${CDATE}${SUFFIX}* diag_msu*${CDATE}${SUFFIX}* diag_amsu*${CDATE}${SUFFIX}* diag_sndr*${CDATE}${SUFFIX}* imgr*${CDATE}${SUFFIX}* diag_airs*${CDATE}${SUFFIX}* diag_hsb*${CDATE}${SUFFIX}* diag_ssmi*${CDATE}${SUFFIX}* diag_mhs*${CDATE}${SUFFIX}* diag_amsre*${CDATE}${SUFFIX}* diag_ssmis*${CDATE}${SUFFIX}* diag_iasi*${CDATE}${SUFFIX}* diag_seviri*${CDATE}${SUFFIX}* diag_cris*${CDATE}${SUFFIX}* diag_atms*${CDATE}${SUFFIX}*
+   count=`ls diag_hirs*${CDATE}${SUFFIX}* diag_msu*${CDATE}${SUFFIX}* diag_amsu*${CDATE}${SUFFIX}* diag_sndr*${CDATE}${SUFFIX}* imgr*${CDATE}${SUFFIX}* diag_airs*${CDATE}${SUFFIX}* diag_hsb*${CDATE}${SUFFIX}* diag_ssmi*${CDATE}${SUFFIX}* diag_mhs*${CDATE}${SUFFIX}* diag_amsre*${CDATE}${SUFFIX}* diag_ssmis*${CDATE}${SUFFIX}* diag_iasi*${CDATE}${SUFFIX}* diag_seviri*${CDATE}${SUFFIX}* diag_cris*${CDATE}${SUFFIX}* diag_atms*${CDATE}${SUFFIX}* | wc -l`
+   if [[ $count -gt 0 ]]; then
+      tar $TAROPTS $RADSTAT diag_hirs*${CDATE}${SUFFIX}* diag_msu*${CDATE}${SUFFIX}* diag_amsu*${CDATE}${SUFFIX}* diag_sndr*${CDATE}${SUFFIX}* imgr*${CDATE}${SUFFIX}* diag_airs*${CDATE}${SUFFIX}* diag_hsb*${CDATE}${SUFFIX}* diag_ssmi*${CDATE}${SUFFIX}* diag_mhs*${CDATE}${SUFFIX}* diag_amsre*${CDATE}${SUFFIX}* diag_ssmis*${CDATE}${SUFFIX}* diag_iasi*${CDATE}${SUFFIX}* diag_seviri*${CDATE}${SUFFIX}* diag_cris*${CDATE}${SUFFIX}* diag_atms*${CDATE}${SUFFIX}*
+   fi
 
    TAROPTS="-uvf"
    if [ ! -s $OZNSTAT ]; then
       TAROPTS="-cvf"
    fi
-   tar $TAROPTS $OZNSTAT  diag_sbuv2*${CDATE}${SUFFIX}* diag_gome*${CDATE}${SUFFIX}* diag_omi*${CDATE}${SUFFIX}* diag_mls*${CDATE}${SUFFIX}*
+   count=`ls diag_sbuv2*${CDATE}${SUFFIX}* diag_gome*${CDATE}${SUFFIX}* diag_omi*${CDATE}${SUFFIX}* diag_mls*${CDATE}${SUFFIX}* | wc -l`
+   if [[ $count -gt 0 ]]; then
+      tar $TAROPTS $OZNSTAT  diag_sbuv2*${CDATE}${SUFFIX}* diag_gome*${CDATE}${SUFFIX}* diag_omi*${CDATE}${SUFFIX}* diag_mls*${CDATE}${SUFFIX}*
+   fi
 
    TAROPTS="-uvf"
    if [ ! -s $PCPSTAT ]; then
       TAROPTS="-cvf"
    fi
-   tar $TAROPTS $PCPSTAT diag_pcp*${CDATE}${SUFFIX}*
+   count=`ls diag_pcp*${CDATE}${SUFFIX}* | wc -l`
+   if [[ $count -gt 0 ]]; then
+      tar $TAROPTS $PCPSTAT diag_pcp*${CDATE}${SUFFIX}*
+   fi
 
    TAROPTS="-uvf"
    if [ ! -s $CNVSTAT ]; then
       TAROPTS="-cvf"
    fi
-   tar $TAROPTS $CNVSTAT diag_conv*${CDATE}${SUFFIX}*
+   count=`ls diag_conv*${CDATE}${SUFFIX}* | wc -l`
+   if [[ $count -gt 0 ]]; then
+      tar $TAROPTS $CNVSTAT diag_conv*${CDATE}${SUFFIX}*
+   fi 
    chmod 750 $CNVSTAT
    chgrp rstprod $CNVSTAT
 fi
