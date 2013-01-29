@@ -9,7 +9,7 @@ export arch="`uname -s | awk '{print $1}'`"
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2011080100
+export global_T62_adate=2013011400
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
 export arw_netcdf_adate=2008051112
@@ -133,12 +133,13 @@ elif [[ "$arch" = "AIX" ]]; then
    export group=dev
    export queue=dev
    export basedir=/global/save/$LOGNAME
-   export gsisrc=$basedir/EXP-regtests/src
-   export gsiexec_updat=$basedir/EXP-regtests/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export fixgsi=$basedir/EXP-regtests/fix
+   export gsisrc=$basedir/svn.mls/src.4merge
+   export gsiexec_updat=$basedir/svn.mls/src.4merge/global_gsi.mlsnrt
+   export gsiexec_contrl=$basedir/svn.mls/src.4merge/global_gsi.trunk
+#  export gsiexec_contrl=/global/save/wx20ml/svn1/src/global_gsi
+   export fixgsi=$basedir/svn.mls/fix.svn1
    export fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
-   export scripts=$basedir/EXP-regtests/scripts
+   export scripts=$basedir/svn.mls/scripts.trunk
    export tmpdir=/ptmp/$LOGNAME
    export savdir=/ptmp/$LOGNAME
 
@@ -252,8 +253,8 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2011080100"
-export adate_global_nemsio="2011080100"
+export adate_global="2013011400"
+export adate_global_nemsio="2013011400"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
@@ -264,8 +265,8 @@ export adate_regional_rtma_binary="2011083112"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
-#machine="cirrus"
-machine="stratus"
+machine="cirrus"
+#machine="stratus"
 #machine="vapor"
 #machine="jet"
 
