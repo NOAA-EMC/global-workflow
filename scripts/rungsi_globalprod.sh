@@ -52,13 +52,13 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2012102818
+adate=2012060118
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.ctl
 
 # Set path/file for gsi executable
-gsiexec=${TOPDIR}/save/${USER}/GSI/trunk/src/global_gsi
+gsiexec=${TOPDIR}/save/${USER}/GSI/CrIS/src/global_gsi
 
 # Specify GSI fixed field
 fixgsi=${TOPDIR}/save/$USER/GSI/CrIS/fix
@@ -527,7 +527,7 @@ berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT_A}.f77
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fixgsi/global_satinfo.txt
+satinfo=$fixgsi/global_satinfo_CrIS.txt
 #ADC satinfo=$fixgsi/global_satinfo_cris.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satangl=$fixgsi/global_satangbias.txt
@@ -619,7 +619,7 @@ $ncp $datobs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
 #$ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
 #$ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
 $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
-#$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
+$ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 #$ncp /global/shared/dump/${adate}/gdasx/cris.gdas.${adate}    ./crisbufr
 #$ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 

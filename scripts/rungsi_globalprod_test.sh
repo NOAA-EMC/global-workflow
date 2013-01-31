@@ -52,7 +52,7 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2012102818
+adate=2012060118
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.test
@@ -847,7 +847,7 @@ cp ./satbias_angle ./satbias_ang.in
 #   stdout.global_angupdate - not saved
 #   $SATANGO = ./satbias_ang.out
 
-eval /u/wx23adc/GSI/CrIS/util/global_angupdate/global_angupdate <<EOF > stdout_ang
+mpiexec_mpt -v -np $PBS_NP ${TOPDIR}/save/${USER}/GSI/CrIS/util/global_angupdate/global_angupdate <<EOF > stdout_ang
  &SETUP
   jpch=2680,nsize=20,wgtang=0.008333333,wgtlap=1.0,
   iuseqc=1,dtmax=1.0,
