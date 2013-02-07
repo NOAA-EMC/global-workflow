@@ -109,15 +109,78 @@ if [ $ICO2 -gt 0 ] ; then
         co2dir=${CO2DIR:-$fixgsi}
         yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
    fi
 fi
+#CH4 file decision
+ICH4=${ICH4:-2}
+if [ $ICH4 -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        ch4dir=${CH4DIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
+                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
+        if [ ! -s ./ch4globaldata.txt ] ; then
+                echo "\./ch4globaldata.txt" not created
+                exit 1
+   fi
+fi
+IN2O=${IN2O:-2}
+if [ $IN2O -gt 0 ] ; then
+#        # Copy ch4 files to $tmpdir
+        n2odir=${N2ODIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
+                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
+        if [ ! -s ./n2oglobaldata.txt ] ; then
+                echo "\./n2oglobaldata.txt" not created
+                exit 1
+   fi
+fi
+ICO=${ICO:-2}
+if [ $ICO -gt 0 ] ; then
+#        # Copy CO files to $tmpdir
+        codir=${CODIR:-$fixgsi}
+        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
+                co=$codir/global_co_esrlctm_$yyyy.txt
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
+        if [ ! -s ./coglobaldata.txt ] ; then
+                echo "\./coglobaldata.txt" not created
+                exit 1
+   fi
+fi
+
 # Make gsi namelist
 SETUP=""
 GRIDOPTS=""
@@ -296,7 +359,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixgsi/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -319,7 +382,15 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-$ncp $gsiexec ./gsi.x
+if [[ $exp = $global_T62_updat_exp1 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ $exp = $global_T62_updat_exp2 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ $exp = $global_T62_contrl_exp1 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+elif [[ $exp = $global_T62_contrl_exp2 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+fi
 
 $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
@@ -388,13 +459,25 @@ ln -s -f $global_T62_obs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 ln -s -f $global_T62_ges/${prefix_tbc}.abias              ./satbias_in
 ln -s -f $global_T62_ges/${prefix_tbc}.satang             ./satbias_angle
 
-ln -s -f $global_T62_ges/${prefix_sfc}.bf03               ./sfcf03
-ln -s -f $global_T62_ges/${prefix_sfc}.bf06               ./sfcf06
-ln -s -f $global_T62_ges/${prefix_sfc}.bf09               ./sfcf09
+if [[ "$endianness" = "Big_Endian" ]]; then
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf03            ./sfcf03
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf06            ./sfcf06
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf09            ./sfcf09
+elif [[ "$endianness" = "Little_Endian" ]]; then
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf03.le         ./sfcf03
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf06.le         ./sfcf06
+   ln -s -f $global_T62_ges/${prefix_sfc}.bf09.le         ./sfcf09
+fi
 
-ln -s -f $global_T62_obs/${prefix_atm}.sgm3prep           ./sigf03
-ln -s -f $global_T62_obs/${prefix_atm}.sgesprep           ./sigf06
-ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep           ./sigf09
+if [[ "$endianness" = "Big_Endian" ]]; then
+   ln -s -f $global_T62_obs/${prefix_atm}.sgm3prep        ./sigf03
+   ln -s -f $global_T62_obs/${prefix_atm}.sgesprep        ./sigf06
+   ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep        ./sigf09
+elif [[ "$endianness" = "Little_Endian" ]]; then
+   ln -s -f $global_T62_obs/${prefix_atm}.sgm3prep.le     ./sigf03
+   ln -s -f $global_T62_obs/${prefix_atm}.sgesprep.le     ./sigf06
+   ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep.le     ./sigf09
+fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 if [[ "$arch" = "Linux" ]]; then

@@ -205,11 +205,12 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
-berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
+berror=$fix_file/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -221,18 +222,18 @@ w_rejectlist=$fix_file/new_rtma_w_rejectlist
 
 random_flips=$fix_file/new_rtma_random_flips
 
-flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
-flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
-flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
-flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
-flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
-flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
-flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
-flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_chi=$fix_file/$endianness/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/$endianness/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/$endianness/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/$endianness/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/$endianness/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/$endianness/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/$endianness/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/$endianness/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/$endianness/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/$endianness/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/$endianness/new_rtma_fltnorm.dat_gust
+flt_vis=$fix_file/$endianness/new_rtma_fltnorm.dat_vis
 
 prmcard=$fix_file/new_rtma_parmcard_input
 
@@ -245,6 +246,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
@@ -493,11 +495,12 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
-berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
+berror=$fix_file/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -509,18 +512,18 @@ w_rejectlist=$fix_file/new_rtma_w_rejectlist
 
 random_flips=$fix_file/new_rtma_random_flips
 
-flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
-flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
-flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
-flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
-flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
-flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
-flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
-flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_chi=$fix_file/$endianness/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/$endianness/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/$endianness/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/$endianness/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/$endianness/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/$endianness/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/$endianness/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/$endianness/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/$endianness/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/$endianness/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/$endianness/new_rtma_fltnorm.dat_gust
+flt_vis=$fix_file/$endianness/new_rtma_fltnorm.dat_vis
 
 prmcard=$fix_file/new_rtma_parmcard_input
 
@@ -533,6 +536,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
@@ -780,11 +784,12 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
-berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
+berror=$fix_file/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -796,18 +801,18 @@ w_rejectlist=$fix_file/new_rtma_w_rejectlist
 
 random_flips=$fix_file/new_rtma_random_flips
 
-flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
-flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
-flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
-flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
-flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
-flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
-flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
-flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_chi=$fix_file/$endianness/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/$endianness/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/$endianness/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/$endianness/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/$endianness/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/$endianness/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/$endianness/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/$endianness/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/$endianness/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/$endianness/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/$endianness/new_rtma_fltnorm.dat_gust
+flt_vis=$fix_file/$endianness/new_rtma_fltnorm.dat_vis
 
 prmcard=$fix_file/new_rtma_parmcard_input
 
@@ -820,6 +825,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
@@ -1073,11 +1079,12 @@ EOF
 #   flt*     =
 
 anavinfo=$fix_file/anavinfo_rtma_gust_vis_7vars
-berror=$fix_file/new_rtma_regional_nmm_berror.f77.gcv
+berror=$fix_file/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fix_file/new_rtma_nam_errtable.r3dv
 convinfo=$fix_file/new_rtma_regional_convinfo.txt
 mesonetuselist=$fix_file/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fix_file/new_rtma_ruc2_wind-uselist-noMETAR.dat
+wbinuselist=$fix_file/new_rtma_wbinuselist
 slmask=$fix_file/new_rtma_conus_slmask.dat
 terrain=$fix_file/new_rtma_conus_terrain.dat
 bufrtable=$fix_file/rtma_prepobs_prep.bufrtable
@@ -1089,18 +1096,18 @@ w_rejectlist=$fix_file/new_rtma_w_rejectlist
 
 random_flips=$fix_file/new_rtma_random_flips
 
-flt_chi=$fix_file/new_rtma_fltnorm.dat_chi
-flt_ist=$fix_file/new_rtma_fltnorm.dat_ist
-flt_ps=$fix_file/new_rtma_fltnorm.dat_ps
-flt_lst=$fix_file/new_rtma_fltnorm.dat_lst
-flt_oz=$fix_file/new_rtma_fltnorm.dat_oz
-flt_pseudorh=$fix_file/new_rtma_fltnorm.dat_pseudorh
-flt_psi=$fix_file/new_rtma_fltnorm.dat_psi
-flt_qw=$fix_file/new_rtma_fltnorm.dat_qw
-flt_sst=$fix_file/new_rtma_fltnorm.dat_sst
-flt_t=$fix_file/new_rtma_fltnorm.dat_t
-flt_gust=$fix_file/new_rtma_fltnorm.dat_gust
-flt_vis=$fix_file/new_rtma_fltnorm.dat_vis
+flt_chi=$fix_file/$endianness/new_rtma_fltnorm.dat_chi
+flt_ist=$fix_file/$endianness/new_rtma_fltnorm.dat_ist
+flt_ps=$fix_file/$endianness/new_rtma_fltnorm.dat_ps
+flt_lst=$fix_file/$endianness/new_rtma_fltnorm.dat_lst
+flt_oz=$fix_file/$endianness/new_rtma_fltnorm.dat_oz
+flt_pseudorh=$fix_file/$endianness/new_rtma_fltnorm.dat_pseudorh
+flt_psi=$fix_file/$endianness/new_rtma_fltnorm.dat_psi
+flt_qw=$fix_file/$endianness/new_rtma_fltnorm.dat_qw
+flt_sst=$fix_file/$endianness/new_rtma_fltnorm.dat_sst
+flt_t=$fix_file/$endianness/new_rtma_fltnorm.dat_t
+flt_gust=$fix_file/$endianness/new_rtma_fltnorm.dat_gust
+flt_vis=$fix_file/$endianness/new_rtma_fltnorm.dat_vis
 
 prmcard=$fix_file/new_rtma_parmcard_input
 
@@ -1113,6 +1120,7 @@ $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
@@ -1291,7 +1299,7 @@ done
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep 'a,b' fort.220.$exp > penalty.$exp.txt
+   grep 'cost,grad,step' fort.220.$exp > penalty.$exp.txt
    grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
@@ -1440,13 +1448,13 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 fi
 
@@ -1469,13 +1477,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 
