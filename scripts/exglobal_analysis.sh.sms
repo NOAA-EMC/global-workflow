@@ -607,11 +607,11 @@ export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export OBERRFLAG=${OBERRFLAG:-.false.}
 export NCP=${NCP:-cp}
-typeset -L1 l=$PGMOUT
-[[ $l = '&' ]]&&a=''||a='>'
+#typeset -L1 l=$PGMOUT
+#[[ $l = '&' ]]&&a=''||a='>'
 export REDOUT=${REDOUT:-'1>'$a}
-typeset -L1 l=$PGMERR
-[[ $l = '&' ]]&&a=''||a='>'
+#typeset -L1 l=$PGMERR
+#[[ $l = '&' ]]&&a=''||a='>'
 export REDERR=${REDERR:-'2>'$a}
 
 ################################################################################
@@ -636,7 +636,8 @@ $CYCLESH  $SFCGES $SFCANL
 ################################################################################
 #  Make atmospheric analysis
 export XLSMPOPTS="parthds=$NTHREADS_GSI:stack=$NTHSTACK_GSI"
-export PGM=$DATA/$(basename $GSIEXEC)
+#export PGM=$DATA/$(basename $GSIEXEC)
+export PGM='$APRUN $DATA/$(basename $GSIEXEC)'
 export pgm=$PGM
 $LOGSCRIPT
 
