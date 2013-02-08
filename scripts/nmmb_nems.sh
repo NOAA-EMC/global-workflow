@@ -109,6 +109,7 @@ cat << EOF > gsiparm.anl
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS

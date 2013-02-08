@@ -198,6 +198,7 @@ cat << EOF > gsiparm.anl
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,print_diag_pcg=.true.,
    use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
  /
  &GRIDOPTS
    JCAP=${JCAP},JCAP_B=${JCAP_B},NLAT=${NLAT},NLON=${NLON},nsig=${NLEV},

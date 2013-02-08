@@ -213,7 +213,7 @@ cat << EOF > gsiparm.anl
    ndat=75,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_prepb_satwnd=.false.,
-   nhr_assimilation=6,
+   nhr_assimilation=6,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS

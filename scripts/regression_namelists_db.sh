@@ -11,7 +11,7 @@ export global_T62_namelist="
    ndat=67,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=.false.,
+   use_gfs_nemsio=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -161,7 +161,7 @@ export global_lanczos_T62_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
-   use_gfs_nemsio=.false.,
+   use_gfs_nemsio=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -314,7 +314,7 @@ export RTMA_namelist="
    ndat=8,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,
+   nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -384,6 +384,7 @@ export arw_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -517,6 +518,7 @@ export arw_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -650,6 +652,7 @@ export nmm_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -783,6 +786,7 @@ export nmm_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -917,6 +921,7 @@ export nems_nmmb_namelist="
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,gpstop=30.
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -1055,7 +1060,7 @@ export nems_nmmb_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,
-   diag_conv=.true.,
+   diag_conv=.true.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS

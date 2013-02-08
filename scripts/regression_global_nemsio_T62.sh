@@ -280,7 +280,7 @@ OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
 
-SETUP="use_gfs_nemsio=.true."
+SETUP="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_namelists.sh
 
@@ -667,7 +667,7 @@ OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
 
-SETUP="use_gfs_nemsio=.true."
+SETUP="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_namelists.sh
 
@@ -1053,7 +1053,7 @@ OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
 
-SETUP="use_gfs_nemsio=.true."
+SETUP="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_namelists.sh
 

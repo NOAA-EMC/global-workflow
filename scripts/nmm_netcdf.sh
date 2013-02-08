@@ -136,6 +136,7 @@ cat << EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
