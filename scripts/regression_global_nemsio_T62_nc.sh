@@ -162,7 +162,7 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -182,7 +182,7 @@ if [ $ICO2 -gt 0 ] ; then
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
@@ -201,7 +201,7 @@ if [ $ICH4 -gt 0 ] ; then
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
@@ -220,7 +220,7 @@ if [ $IN2O -gt 0 ] ; then
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
@@ -548,7 +548,7 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -568,7 +568,7 @@ if [ $ICO2 -gt 0 ] ; then
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
@@ -587,7 +587,7 @@ if [ $ICH4 -gt 0 ] ; then
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
@@ -606,7 +606,7 @@ if [ $IN2O -gt 0 ] ; then
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
