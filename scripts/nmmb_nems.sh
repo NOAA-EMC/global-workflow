@@ -198,7 +198,7 @@ cat << EOF > gsiparm.anl
    dfile(63)='amsuabufr', dtype(63)='amsua',     dplat(63)='n19',     dsis(63)='amsua_n19',          dval(63)=10.0,dthin(63)=2, dsfcalc(63)=1,
    dfile(64)='mhsbufr',   dtype(64)='mhs',       dplat(64)='n19',     dsis(64)='mhs_n19',            dval(64)=3.0, dthin(64)=3, dsfcalc(64)=1,
    dfile(65)='tcvitl'     dtype(65)='tcp',       dplat(65)=' ',       dsis(65)='tcp',                dval(65)=1.0, dthin(65)=0, dsfcalc(65)=0,
-   dfile(66)='mlsbufr',   dtype(66)='mls',       dplat(66)='aura',    dsis(66)='mls_aura',           dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
+   dfile(66)='mlsbufr',   dtype(66)='mls30',     dplat(66)='aura',    dsis(66)='mls30_aura',         dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
    $OBSINPUT
 /
  &SUPEROB_RADAR
