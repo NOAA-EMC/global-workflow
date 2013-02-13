@@ -195,7 +195,7 @@ cat << EOF > gsiparm.anl
    dfile(58)='gsnd1bufr', dtype(58)='sndrd4',    dplat(58)='g13',       dsis(58)='sndrD4_g13',          dval(58)=1.5,  dthin(58)=5, dsfcalc(58)=0,
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
-   dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(61)='mlsbufr',   dtype(61)='mls30',     dplat(61)='aura',      dsis(61)='mls30_aura',          dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
