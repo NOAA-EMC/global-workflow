@@ -270,17 +270,32 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
-
-SETUP="use_gfs_nemsio=.true."
 
 . $scripts/regression_namelists.sh
 
@@ -657,17 +672,32 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
-
-SETUP="use_gfs_nemsio=.true."
 
 . $scripts/regression_namelists.sh
 
@@ -1043,17 +1073,32 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
-
-SETUP="use_gfs_nemsio=.true."
 
 . $scripts/regression_namelists.sh
 
@@ -1435,17 +1480,32 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   SETUP="use_gfs_nemsio=.true.,lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   SETUP="use_gfs_nemsio=.true."
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_nemsio_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_nemsio_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
-
-SETUP="use_gfs_nemsio=.true."
 
 . $scripts/regression_namelists.sh
 

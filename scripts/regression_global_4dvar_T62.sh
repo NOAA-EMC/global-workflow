@@ -275,7 +275,15 @@ GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
@@ -294,7 +302,7 @@ fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
-SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,lrun_subdirs=.true.,"
 SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
@@ -305,7 +313,7 @@ $global_T62_namelist
 EOF
 
 # Create namelist for identity model 4dvar run
-SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,lrun_subdirs=.true.,"
 SETUP="$SETUPmin $SETUPlan $SETUP4dv"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
@@ -698,7 +706,15 @@ GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
@@ -711,13 +727,13 @@ SETUPmin="miter=1,niter(1)=50,niter_no_qc(1)=500,"
 SETUPlan=""
 export minimization=${minimization:-"pcgsoi"}
 if [ "$minimization" = "lanczos" ]; then
-   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,lrun_subdirs=.true.,"
    HYBENS_GLOBAL=".false."
 fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
-SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,lrun_subdirs=.true.,"
 SETUP="$SETUPmin $SETUPlan $SETUPobs"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
@@ -1121,7 +1137,15 @@ GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
@@ -1551,7 +1575,15 @@ GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_4dvar_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_4dvar_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""

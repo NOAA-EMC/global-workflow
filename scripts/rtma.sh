@@ -61,8 +61,6 @@ chmod 750 $tmpdir
 cd $tmpdir
 rm -rf core*
 
-# Make gsi namelist
-
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
@@ -80,6 +78,28 @@ if [ $ICO2 -gt 0 ] ; then
    fi
 fi
 
+# Make gsi namelist
+SETUP=""
+GRIDOPTS=""
+BKGVERR=""
+ANBKGERR=""
+JCOPTS=""
+if [[ $exp = $rtma_updat_exp1 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $rtma_updat_exp2 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $rtma_contrl_exp1 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+elif [[ $exp = $rtma_contrl_exp2 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+fi
+OBSQC=""
+OBSINPUT=""
+SUPERRAD=""
+SINGLEOB=""
+LAGDATA=""
+HYBRID_ENSEMBLE=""
+
 cat << EOF > gsiparm.anl
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -90,33 +110,40 @@ cat << EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
    nhr_assimilation=6,use_compress=.false.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
    diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
+   $GRIDOPTS
  /
  &BKGERR
    hzscl=1.414,1.000,0.707,
    vs=0.5,bw=0.0,
+   $BKGERR
  /
  &ANBKGERR
    anisotropic=.true.,an_vs=0.5,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
    ifilt_ord=2,npass=3,normal=-200,grid_ratio=1.,nord_f2a=4,
    rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.
+   $ANBKGERR
  /
  &JCOPTS
+   $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
+   nstrong=1,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
+   $STRONGOPTS
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
    hilbert_curve=.true.,
+   $OBSQC
  /
  &OBS_INPUT
    dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=3.0,
@@ -128,12 +155,16 @@ cat << EOF > gsiparm.anl
    dfile(06)='prepbufr',  dtype(06)='spd', dplat(06)=' ', dsis(06)='spd', dval(06)=1.0,  dthin(06)=0,
    dfile(07)='prepbufr',  dtype(07)='gust',dplat(07)=' ', dsis(07)='gust',dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='vis', dplat(08)=' ', dsis(08)='vis', dval(08)=1.0,  dthin(08)=0,
+   $OBSINPUT
  /
  &SUPEROB_RADAR
+   $SUPPERRAD
  /
  &LAG_DATA
+   $LAGDATA
  /
  &HYBRID_ENSEMBLE
+   $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
    dfi_radar_latent_heat_time_period=30.0,
@@ -144,6 +175,7 @@ cat << EOF > gsiparm.anl
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=36.,oblon=260.,obpres=1000.,obdattim=${rtma_adate},
    obhourset=0.,
+   $SINGLEOB
  /
 EOF
 

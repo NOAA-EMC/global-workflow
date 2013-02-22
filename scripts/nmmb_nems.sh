@@ -75,13 +75,22 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
+
 # Make gsi namelist
 SETUP=""
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $nmmb_nems_updat_exp1 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $nmmb_nems_updat_exp2 ]]; then
+   STRONGOPTS="tlnmc_option=0,tlnmc_type=3"
+elif [[ $exp = $nmmb_nems_contrl_exp1 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+elif [[ $exp = $nmmb_nems_contrl_exp2 ]]; then
+   STRONGOPTS="hybens_inmc_option=0,jcstrong_option=3,jcstrong=.false."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
@@ -100,10 +109,11 @@ cat << EOF > gsiparm.anl
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=1.412,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
@@ -122,7 +132,7 @@ cat << EOF > gsiparm.anl
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=8,period_max=3.,
+   nstrong=0,nvmodes_keep=8,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
@@ -207,7 +217,7 @@ cat << EOF > gsiparm.anl
    $SUPERRAD
  /
  &LAG_DATA
-   $LAG_DATA
+   $LAGDATA
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=${HYBENS_REGIONAL},
@@ -233,7 +243,7 @@ cat << EOF > gsiparm.anl
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${nmmb_nems_adate},
    obhourset=0.,
-   $SINGLEOB_TEST
+   $SINGLEOB
  /
 EOF
 

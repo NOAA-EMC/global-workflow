@@ -270,15 +270,33 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   SETUP=""
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   SETUP=""
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -654,15 +672,33 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   SETUP=""
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   SETUP=""
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -1037,15 +1073,33 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   SETUP=""
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   SETUP=""
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -1426,15 +1480,33 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
+if [[ $exp = $exp1_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp2_global_updat ]]; then
+   SETUP="lrun_subdirs=.true."
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   SETUP=""
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   SETUP=""
+fi
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
 JCOPTS=""
-STRONGOPTS=""
+if [[ $exp = $exp1_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp2_global_updat ]]; then
+   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
+elif [[ $exp = $exp1_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+elif [[ $exp = $exp2_global_cntrl ]]; then
+   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+fi
 OBSQC=""
 OBSINPUT=""
 SUPERRAD=""
 SINGLEOB=""
+
 . $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,

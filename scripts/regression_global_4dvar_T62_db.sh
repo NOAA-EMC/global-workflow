@@ -4,7 +4,7 @@
 #@ error=global_4dvar_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 4
+#@ node = 5
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
