@@ -333,7 +333,7 @@
 #                   defaults to NO
 #     lrun_subdirs  logical to toggle use of subdirectories at runtime for 
 #                   pe-specific files
-#                   defaults to .false.
+#                   defaults to .true.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -631,7 +631,7 @@ else
   UNCOMPRESS=gunzip
 fi
 export wc=${wc:-/usr/bin/wc}
-export lrun_subdirs=${lrun_subdirs:-".false."}
+export lrun_subdirs=${lrun_subdirs:-".true."}
 
 ################################################################################
 #  Preprocessing
@@ -1176,8 +1176,8 @@ numfile[2]=0
 numfile[3]=0
 
 
-# Set diagnostic file prefix based on machine variable
-if [ $machine = IBMP6 ]; then
+# Set diagnostic file prefix based on lrun_subdirs variable
+if [ $lrun_subdirs = ".true." ]; then
    prefix=" dir.*/"
 else
    prefix="pe*"

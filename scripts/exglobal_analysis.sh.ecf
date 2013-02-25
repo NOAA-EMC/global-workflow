@@ -333,7 +333,7 @@
 #                   defaults to NO
 #     lrun_subdirs  logical to toggle use of subdirectories at runtime for 
 #                   pe-specific files
-#                   defaults to .false.
+#                   defaults to .true.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -637,7 +637,7 @@ else
   UNCOMPRESS=gunzip
 fi
 export wc=${wc:-/usr/bin/wc}
-export lrun_subdirs=${lrun_subdirs:-".false."}
+export lrun_subdirs=${lrun_subdirs:-".true."}
 
 ################################################################################
 #  Preprocessing
