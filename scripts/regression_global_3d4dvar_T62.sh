@@ -269,24 +269,17 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2,"
-elif [[ $exp = $exp2_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2,"
-elif [[ $exp = $exp1_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true.,"
-elif [[ $exp = $exp2_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true.,"
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -300,8 +293,8 @@ if [ "$minimization" = "lanczos" ]; then
 fi
 
 # Create namelist for 3dvar run
-SETUPobs="lrun_subdirs=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUPobs=""
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.3dvar
 cat << EOF > gsiparm.anl.3dvar
@@ -658,24 +651,17 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2,"
-elif [[ $exp = $exp2_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2,"
-elif [[ $exp = $exp1_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true.,"
-elif [[ $exp = $exp2_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true.,"
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -690,8 +676,8 @@ fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
-SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,lrun_subdirs=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -701,8 +687,8 @@ $global_T62_namelist
 EOF
 
 # Create namelist for identity model 4dvar run
-SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,lrun_subdirs=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar
@@ -1078,24 +1064,17 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -1110,7 +1089,7 @@ fi
 
 # Create namelist for 3dvar run
 SETUPobs=""
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.3dvar
 cat << EOF > gsiparm.anl.3dvar
@@ -1475,24 +1454,17 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_3d4dvar_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_3d4dvar_contrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -1508,7 +1480,7 @@ fi
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -1519,7 +1491,7 @@ EOF
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar

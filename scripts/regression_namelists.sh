@@ -299,7 +299,7 @@ export RTMA_namelist="
    ndat=8,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
+   nhr_assimilation=6,use_compress=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -321,7 +321,7 @@ export RTMA_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=1,nvmodes_keep=20,period_max=3.,
+   nstrong=1,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -369,7 +369,6 @@ export arw_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
-   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -389,7 +388,7 @@ export arw_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -503,7 +502,6 @@ export arw_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
-   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -523,7 +521,7 @@ export arw_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -637,7 +635,6 @@ export nmm_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
-   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -657,7 +654,7 @@ export nmm_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -771,7 +768,6 @@ export nmm_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
-   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -791,7 +787,7 @@ export nmm_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -906,7 +902,6 @@ export nems_nmmb_namelist="
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,
-   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -925,7 +920,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=8,period_max=3.,
+   nstrong=0,nvmodes_keep=8,period_max=3.,
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -1045,7 +1040,7 @@ export nems_nmmb_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,
-   diag_conv=.true.,lrun_subdirs=.true.,
+   diag_conv=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -1066,7 +1061,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,
+   nstrong=0,nvmodes_keep=20,
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC

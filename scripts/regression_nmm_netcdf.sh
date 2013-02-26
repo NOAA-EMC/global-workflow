@@ -208,6 +208,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -505,6 +519,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -802,6 +830,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -1103,6 +1145,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 

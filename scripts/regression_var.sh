@@ -26,10 +26,10 @@ if [[ "$arch" = "Linux" ]]; then
 
 #  First, experiment names.
 
-   export global_T62_updat_exp1=T${JCAP}_36proc_updat
-   export global_T62_updat_exp2=T${JCAP}_48proc_updat
-   export global_T62_contrl_exp1=T${JCAP}_36proc_contrl
-   export global_T62_contrl_exp2=T${JCAP}_48proc_contrl
+   export global_T62_updat_exp1=global_T${JCAP}_36proc_updat
+   export global_T62_updat_exp2=global_T${JCAP}_48proc_updat
+   export global_T62_contrl_exp1=global_T${JCAP}_36proc_contrl
+   export global_T62_contrl_exp2=global_T${JCAP}_48proc_contrl
    export global_hybrid_T126_updat_exp1=global_hybrid_36proc_updat
    export global_hybrid_T126_updat_exp2=global_hybrid_48proc_updat
    export global_hybrid_T126_contrl_exp1=global_hybrid_36proc_contrl
@@ -105,10 +105,10 @@ elif [[ "$arch" = "AIX" ]]; then
 
 #  First, experiment names.
 
-   export global_T62_updat_exp1=T${JCAP}_32proc_updat
-   export global_T62_updat_exp2=T${JCAP}_64proc_updat
-   export global_T62_contrl_exp1=T${JCAP}_32proc_contrl
-   export global_T62_contrl_exp2=T${JCAP}_64proc_contrl
+   export global_T62_updat_exp1=global_T${JCAP}_32proc_updat
+   export global_T62_updat_exp2=global_T${JCAP}_64proc_updat
+   export global_T62_contrl_exp1=global_T${JCAP}_32proc_contrl
+   export global_T62_contrl_exp2=global_T${JCAP}_64proc_contrl
    export global_hybrid_T126_updat_exp1=global_hybrid_32proc_updat
    export global_hybrid_T126_updat_exp2=global_hybrid_64proc_updat
    export global_hybrid_T126_contrl_exp1=global_hybrid_32proc_contrl

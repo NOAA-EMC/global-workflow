@@ -270,32 +270,18 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   SETUP=""
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   SETUP=""
-fi
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 . $scripts/regression_namelists.sh
 
@@ -662,32 +648,18 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   SETUP=""
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   SETUP=""
-fi
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 . $scripts/regression_namelists.sh
 
@@ -1053,32 +1025,18 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   SETUP=""
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   SETUP=""
-fi
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 . $scripts/regression_namelists.sh
 
@@ -1450,32 +1408,18 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   SETUP="lrun_subdirs=.true."
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   SETUP=""
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   SETUP=""
-fi
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-if [[ $exp = $exp1_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp2_global_lanczos_updat ]]; then
-   STRONGOPTS="tlnmc_option=1,tlnmc_type=2"
-elif [[ $exp = $exp1_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-elif [[ $exp = $exp2_global_lanczos_cntrl ]]; then
-   STRONGOPTS="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
-fi
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 . $scripts/regression_namelists.sh
 
