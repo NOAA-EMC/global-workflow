@@ -2,9 +2,7 @@
 
 # First, generate new variable to hole the first 6 characters of the experiment.
 
-global_test = cut c1-6 $exp
-
-if [[ $gsiexec = $updat ]]; then
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
    export SETUP_update="lrun_subdirs=.true."
 else
    export SETUP_update=""
@@ -13,8 +11,8 @@ export GRIDOPTS_update=""
 export BKGVERR_update=""
 export ANBKGERR_update=""
 export JCOPTS_update=""
-if [[ $global_test = "global" ]]; then
-   if [[ $gsiexec = $updat ]]; then
+if [[ `expr substr $exp 1 6` = "global" ]]; then
+   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
       export STRONGOPTS_update="tlnmc_option=1,tlnmc_type=2"
    else
       export STRONGOPTS_update="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."

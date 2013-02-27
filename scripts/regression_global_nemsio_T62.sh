@@ -270,7 +270,7 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUPnems="use_gfs_nemsio=.true."
+SETUPnems="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_nl_update.sh
 
@@ -650,7 +650,7 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUPnems="use_gfs_nemsio=.true."
+SETUPnems="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_nl_update.sh
 
@@ -1029,7 +1029,7 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUPnems="use_gfs_nemsio=.true."
+SETUPnems="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_nl_update.sh
 
@@ -1414,7 +1414,7 @@ if [ $ICO -gt 0 ] ; then
    fi
 fi
 
-SETUPnems="use_gfs_nemsio=.true."
+SETUPnems="use_gfs_nemsio=.true.,"
 
 . $scripts/regression_nl_update.sh
 
