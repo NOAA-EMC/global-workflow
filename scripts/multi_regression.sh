@@ -10,6 +10,8 @@ fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 
+/bin/sh global_hybrid_T126_regression.sh > global_hybrid_T126.out &
+
 /bin/sh arw_netcdf_regression.sh > arw_netcdf.out &
 
 /bin/sh arw_binary_regression.sh > arw_binary.out &
