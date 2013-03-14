@@ -10,6 +10,7 @@ export arch="`uname -s | awk '{print $1}'`"
 # Variables with the same values are defined below.
 
 export global_T62_adate=2011080100
+export global_hybrid_T126_adate=2012012212
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
 export arw_netcdf_adate=2008051112
@@ -25,10 +26,14 @@ if [[ "$arch" = "Linux" ]]; then
 
 #  First, experiment names.
 
-   export global_T62_updat_exp1=T${JCAP}_36proc_updat
-   export global_T62_updat_exp2=T${JCAP}_48proc_updat
-   export global_T62_contrl_exp1=T${JCAP}_36proc_contrl
-   export global_T62_contrl_exp2=T${JCAP}_48proc_contrl
+   export global_T62_updat_exp1=global_T${JCAP}_36proc_updat
+   export global_T62_updat_exp2=global_T${JCAP}_48proc_updat
+   export global_T62_contrl_exp1=global_T${JCAP}_36proc_contrl
+   export global_T62_contrl_exp2=global_T${JCAP}_48proc_contrl
+   export global_hybrid_T126_updat_exp1=global_hybrid_36proc_updat
+   export global_hybrid_T126_updat_exp2=global_hybrid_48proc_updat
+   export global_hybrid_T126_contrl_exp1=global_hybrid_36proc_contrl
+   export global_hybrid_T126_contrl_exp2=global_hybrid_48proc_contrl
    export nmmb_nems_updat_exp1=nmmb_nems_36proc_updat
    export nmmb_nems_updat_exp2=nmmb_nems_48proc_updat
    export nmmb_nems_contrl_exp1=nmmb_nems_36proc_contrl
@@ -73,6 +78,8 @@ if [[ "$arch" = "Linux" ]]; then
 
    export global_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
    export global_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
+   export global_hybrid_T126_datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_hybrid_T126_adate/obs
+   export global_hybrid_T126_datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_hybrid_T126_adate/ges_lores
    export nmmb_nems_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export nmmb_nems_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export arw_binary_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
@@ -98,10 +105,14 @@ elif [[ "$arch" = "AIX" ]]; then
 
 #  First, experiment names.
 
-   export global_T62_updat_exp1=T${JCAP}_32proc_updat
-   export global_T62_updat_exp2=T${JCAP}_64proc_updat
-   export global_T62_contrl_exp1=T${JCAP}_32proc_contrl
-   export global_T62_contrl_exp2=T${JCAP}_64proc_contrl
+   export global_T62_updat_exp1=global_T${JCAP}_32proc_updat
+   export global_T62_updat_exp2=global_T${JCAP}_64proc_updat
+   export global_T62_contrl_exp1=global_T${JCAP}_32proc_contrl
+   export global_T62_contrl_exp2=global_T${JCAP}_64proc_contrl
+   export global_hybrid_T126_updat_exp1=global_hybrid_32proc_updat
+   export global_hybrid_T126_updat_exp2=global_hybrid_64proc_updat
+   export global_hybrid_T126_contrl_exp1=global_hybrid_32proc_contrl
+   export global_hybrid_T126_contrl_exp2=global_hybrid_64proc_contrl
    export nmmb_nems_updat_exp1=nmmb_nems_32proc_updat
    export nmmb_nems_updat_exp2=nmmb_nems_64proc_updat
    export nmmb_nems_contrl_exp1=nmmb_nems_32proc_contrl
@@ -146,6 +157,8 @@ elif [[ "$arch" = "AIX" ]]; then
 
    export global_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
    export global_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
+   export global_hybrid_T126_datobs=/global/noscrub/wx20ml/cases/global/sigmap/$global_hybrid_T126_adate/obs
+   export global_hybrid_T126_datges=/global/noscrub/wx20ml/cases/global/sigmap/$global_hybrid_T126_adate/ges_lores
    export nmmb_nems_obs=/global/noscrub/wx20ml/nmmb_regression_case
    export nmmb_nems_ges=/global/noscrub/wx20ml/nmmb_regression_case
    export arw_binary_obs=/global/noscrub/wx20ml/cases/regional/arw_binary/$arw_binary_adate
@@ -198,53 +211,53 @@ export nems_nmmb="nems_nmmb.$gps_dtype"
 export rtma="rtma.$gps_dtype"
 export compare="compare.$gps_dtype"
 
-export exp1_global_updat="global.updat.exp1.$gps_dtype"
-export exp1_global_lanczos_updat="global_lanczos.updat.exp1.$gps_dtype"
-export exp1_global_3d4dvar_updat="global_3d4dvar.updat.exp1.$gps_dtype"
-export exp1_global_4dvar_updat="global_4dvar.updat.exp1.$gps_dtype"
-export exp1_global_nemsio_updat="global_nemsio.updat.exp1.$gps_dtype"
-export exp1_nmm_binary_updat="nmm_binary.updat.exp1.$gps_dtype"
-export exp1_nmm_netcdf_updat="nmm_netcdf.updat.exp1.$gps_dtype"
-export exp1_arw_binary_updat="arw_binary.updat.exp1.$gps_dtype"
-export exp1_arw_netcdf_updat="arw_netcdf.updat.exp1.$gps_dtype"
-export exp1_rtma_updat="rtma.updat.exp1.$gps_dtype"
-export exp1_nems_nmmb_updat="nems_nmmb.updat.exp1.$gps_dtype"
+export exp1_global_updat="global.exp1.$gps_dtype.updat"
+export exp1_global_lanczos_updat="global_lanczos.exp1.$gps_dtype.updat"
+export exp1_global_3d4dvar_updat="global_3d4dvar.exp1.$gps_dtype.updat"
+export exp1_global_4dvar_updat="global_4dvar.exp1.$gps_dtype.updat"
+export exp1_global_nemsio_updat="global_nemsio.exp1.$gps_dtype.updat"
+export exp1_nmm_binary_updat="nmm_binary.exp1.$gps_dtype.updat"
+export exp1_nmm_netcdf_updat="nmm_netcdf.exp1.$gps_dtype.updat"
+export exp1_arw_binary_updat="arw_binary.exp1.$gps_dtype.updat"
+export exp1_arw_netcdf_updat="arw_netcdf.exp1.$gps_dtype.updat"
+export exp1_rtma_updat="rtma.exp1.$gps_dtype.updat"
+export exp1_nems_nmmb_updat="nems_nmmb.exp1.$gps_dtype.updat"
 
-export exp2_global_updat="global.updat.exp2.$gps_dtype"
-export exp2_global_lanczos_updat="global_lanczos.updat.exp2.$gps_dtype"
-export exp2_global_3d4dvar_updat="global_3d4dvar.updat.exp2.$gps_dtype"
-export exp2_global_4dvar_updat="global_4dvar.updat.exp2.$gps_dtype"
-export exp2_global_nemsio_updat="global_nemsio.updat.exp2.$gps_dtype"
-export exp2_nmm_binary_updat="nmm_binary.updat.exp2.$gps_dtype"
-export exp2_nmm_netcdf_updat="nmm_netcdf.updat.exp2.$gps_dtype"
-export exp2_arw_binary_updat="arw_binary.updat.exp2.$gps_dtype"
-export exp2_arw_netcdf_updat="arw_netcdf.updat.exp2.$gps_dtype"
-export exp2_rtma_updat="rtma.updat.exp2.$gps_dtype"
-export exp2_nems_nmmb_updat="nems_nmmb.updat.exp2.$gps_dtype"
+export exp2_global_updat="global.exp2.$gps_dtype.updat"
+export exp2_global_lanczos_updat="global_lanczos.exp2.$gps_dtype.updat"
+export exp2_global_3d4dvar_updat="global_3d4dvar.exp2.$gps_dtype.updat"
+export exp2_global_4dvar_updat="global_4dvar.exp2.$gps_dtype.updat"
+export exp2_global_nemsio_updat="global_nemsio.exp2.$gps_dtype.updat"
+export exp2_nmm_binary_updat="nmm_binary.exp2.$gps_dtype.updat"
+export exp2_nmm_netcdf_updat="nmm_netcdf.exp2.$gps_dtype.updat"
+export exp2_arw_binary_updat="arw_binary.exp2.$gps_dtype.updat"
+export exp2_arw_netcdf_updat="arw_netcdf.exp2.$gps_dtype.updat"
+export exp2_rtma_updat="rtma.exp2.$gps_dtype.updat"
+export exp2_nems_nmmb_updat="nems_nmmb.exp2.$gps_dtype.updat"
 
-export exp1_global_cntrl="global.cntrl.exp1.$gps_dtype"
-export exp1_global_lanczos_cntrl="global_lanczos.cntrl.exp1.$gps_dtype"
-export exp1_global_3d4dvar_cntrl="global_3d4dvar.cntrl.exp1.$gps_dtype"
-export exp1_global_4dvar_cntrl="global_4dvar.cntrl.exp1.$gps_dtype"
-export exp1_global_nemsio_cntrl="global_nemsio.cntrl.exp1.$gps_dtype"
-export exp1_nmm_binary_cntrl="nmm_binary.cntrl.exp1.$gps_dtype"
-export exp1_nmm_netcdf_cntrl="nmm_netcdf.cntrl.exp1.$gps_dtype"
-export exp1_arw_binary_cntrl="arw_binary.cntrl.exp1.$gps_dtype"
-export exp1_arw_netcdf_cntrl="arw_netcdf.cntrl.exp1.$gps_dtype"
-export exp1_rtma_cntrl="rtma.cntrl.exp1.$gps_dtype"
-export exp1_nems_nmmb_cntrl="nems_nmmb.cntrl.exp1.$gps_dtype"
+export exp1_global_cntrl="global.exp1.$gps_dtype.cntrl"
+export exp1_global_lanczos_cntrl="global_lanczos.exp1.$gps_dtype.cntrl"
+export exp1_global_3d4dvar_cntrl="global_3d4dvar.exp1.$gps_dtype.cntrl"
+export exp1_global_4dvar_cntrl="global_4dvar.exp1.$gps_dtype.cntrl"
+export exp1_global_nemsio_cntrl="global_nemsio.exp1.$gps_dtype.cntrl"
+export exp1_nmm_binary_cntrl="nmm_binary.exp1.$gps_dtype.cntrl"
+export exp1_nmm_netcdf_cntrl="nmm_netcdf.exp1.$gps_dtype.cntrl"
+export exp1_arw_binary_cntrl="arw_binary.exp1.$gps_dtype.cntrl"
+export exp1_arw_netcdf_cntrl="arw_netcdf.exp1.$gps_dtype.cntrl"
+export exp1_rtma_cntrl="rtma.exp1.$gps_dtype.cntrl"
+export exp1_nems_nmmb_cntrl="nems_nmmb.exp1.$gps_dtype.cntrl"
 
-export exp2_global_cntrl="global.cntrl.exp2.$gps_dtype"
-export exp2_global_lanczos_cntrl="global_lanczos.cntrl.exp2.$gps_dtype"
-export exp2_global_3d4dvar_cntrl="global_3d4dvar.cntrl.exp2.$gps_dtype"
-export exp2_global_4dvar_cntrl="global_4dvar.cntrl.exp2.$gps_dtype"
-export exp2_global_nemsio_cntrl="global_nemsio.cntrl.exp2.$gps_dtype"
-export exp2_nmm_binary_cntrl="nmm_binary.cntrl.exp2.$gps_dtype"
-export exp2_nmm_netcdf_cntrl="nmm_netcdf.cntrl.exp2.$gps_dtype"
-export exp2_arw_binary_cntrl="arw_binary.cntrl.exp2.$gps_dtype"
-export exp2_arw_netcdf_cntrl="arw_netcdf.cntrl.exp2.$gps_dtype"
-export exp2_rtma_cntrl="rtma.cntrl.exp2.$gps_dtype"
-export exp2_nems_nmmb_cntrl="nems_nmmb.cntrl.exp2.$gps_dtype"
+export exp2_global_cntrl="global.exp2.$gps_dtype.cntrl"
+export exp2_global_lanczos_cntrl="global_lanczos.exp2.$gps_dtype.cntrl"
+export exp2_global_3d4dvar_cntrl="global_3d4dvar.exp2.$gps_dtype.cntrl"
+export exp2_global_4dvar_cntrl="global_4dvar.exp2.$gps_dtype.cntrl"
+export exp2_global_nemsio_cntrl="global_nemsio.exp2.$gps_dtype.cntrl"
+export exp2_nmm_binary_cntrl="nmm_binary.exp2.$gps_dtype.cntrl"
+export exp2_nmm_netcdf_cntrl="nmm_netcdf.exp2.$gps_dtype.cntrl"
+export exp2_arw_binary_cntrl="arw_binary.exp2.$gps_dtype.cntrl"
+export exp2_arw_netcdf_cntrl="arw_netcdf.exp2.$gps_dtype.cntrl"
+export exp2_rtma_cntrl="rtma.exp2.$gps_dtype.cntrl"
+export exp2_nems_nmmb_cntrl="nems_nmmb.exp2.$gps_dtype.cntrl"
 
 # Define ptmp location
 
@@ -341,6 +354,7 @@ export global_lanczos_regression="global_lanczos_regression_results.$gps_dtype.t
 export global_3d4dvar_regression="global_3d4dvar_regression_results.$gps_dtype.txt"
 export global_4dvar_regression="global_4dvar_regression_results.$gps_dtype.txt"
 export global_nemsio_regression="global_nemsio_regression_results.$gps_dtype.txt"
+export global_hybrid_regression="global_hybrid_regression_results.$gps_dtype.txt"
 export rtma_regression="rtma_regression_results.$gps_dtype.txt"
 export nmm_binary_regression="nmm_binary_regression_results.$gps_dtype.txt"
 export nmm_netcdf_regression="nmm_netcdf_regression_results.$gps_dtype.txt"
