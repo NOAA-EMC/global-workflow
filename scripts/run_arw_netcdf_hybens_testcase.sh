@@ -198,9 +198,10 @@ cat << EOF > gsiparm.anl
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,print_diag_pcg=.true.,
    use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
  /
  &GRIDOPTS
-   JCAP=${JCAP},JCAP_B=${JCAP_B},NLAT=${NLAT},NLON=${NLON},nsig=${NLEV},hybrid=.true.,
+   JCAP=${JCAP},JCAP_B=${JCAP_B},NLAT=${NLAT},NLON=${NLON},nsig=${NLEV},
    wrf_nmm_regional=.false.,wrf_mass_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
    nlat_regional=${NLAT},
@@ -218,7 +219,7 @@ cat << EOF > gsiparm.anl
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -389,19 +390,9 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 set +x
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 set -x
 

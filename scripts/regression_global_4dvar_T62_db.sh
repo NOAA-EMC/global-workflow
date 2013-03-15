@@ -4,7 +4,7 @@
 #@ error=global_4dvar_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 4
+#@ node = 5
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -342,19 +342,9 @@ cat type* > convinfo_subset
 mv convinfo_subset convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
