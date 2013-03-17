@@ -61,8 +61,6 @@ chmod 750 $tmpdir
 cd $tmpdir
 rm -rf core*
 
-# Make gsi namelist
-
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
@@ -80,71 +78,26 @@ if [ $ICO2 -gt 0 ] ; then
    fi
 fi
 
+# Make gsi namelist
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
+. $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
- &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
-   write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
-   gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=8,iguess=-1,
-   oneobtest=.false.,retrieval=.false.,
-   diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,
-   $SETUP
- /
- &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
-   wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
-   diagnostic_reg=.false.,
-   filled_grid=.false.,half_grid=.true.,netcdf=.false.,
- /
- &BKGERR
-   hzscl=1.414,1.000,0.707,
-   vs=0.5,bw=0.0,
- /
- &ANBKGERR
-   anisotropic=.true.,an_vs=0.5,ngauss=1,
-   an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
-   ifilt_ord=2,npass=3,normal=-200,grid_ratio=1.,nord_f2a=4,
-   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.
- /
- &JCOPTS
- /
- &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
-   baldiag_full=.true.,baldiag_inc=.true.,
- /
- &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
-   hilbert_curve=.true.,
- /
- &OBS_INPUT
-   dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=3.0,
-   dfile(01)='prepbufr',  dtype(01)='ps',  dplat(01)=' ', dsis(01)='ps',  dval(01)=1.0,  dthin(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',   dplat(02)=' ', dsis(02)='t',   dval(02)=1.0,  dthin(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',   dplat(03)=' ', dsis(03)='q',   dval(03)=1.0,  dthin(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',  dplat(04)=' ', dsis(04)='uv',  dval(04)=1.0,  dthin(04)=0,
-   dfile(05)='satwnd',    dtype(05)='uv',  dplat(05)=' ', dsis(05)='uv',  dval(05)=1.0,  dthin(05)=0,
-   dfile(06)='prepbufr',  dtype(06)='spd', dplat(06)=' ', dsis(06)='spd', dval(06)=1.0,  dthin(06)=0,
-   dfile(07)='prepbufr',  dtype(07)='gust',dplat(07)=' ', dsis(07)='gust',dval(07)=1.0,  dthin(07)=0,
-   dfile(08)='prepbufr',  dtype(08)='vis', dplat(08)=' ', dsis(08)='vis', dval(08)=1.0,  dthin(08)=0,
- /
- &SUPEROB_RADAR
- /
- &LAG_DATA
- /
- &HYBRID_ENSEMBLE
- /
- &RAPIDREFRESH_CLDSURF
-   dfi_radar_latent_heat_time_period=30.0,
- /
- &CHEM
- /
- &SINGLEOB_TEST
-   maginnov=0.1,magoberr=0.1,oneob_type='t',
-   oblat=36.,oblon=260.,obpres=1000.,obdattim=${rtma_adate},
-   obhourset=0.,
- /
+
+$RTMA_namelist
+
 EOF
 
 # Set fixed files
@@ -244,19 +197,9 @@ $ncp $flt_vis            ./fltnorm.dat_vis
 $ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -361,3 +304,29 @@ esac
 done
 
 exit
+# Standalone script used to pass namelist updates to the regression tests.
+
+# First, generate new variable to hole the first 6 characters of the experiment.
+
+global_test = cut c1-6 $exp
+
+if [[ $gsiexec = $updat ]]; then
+   export SETUP_update="lrun_subdirs=.true."
+else
+   export SETUP_update=""
+fi
+export GRIDOPTS_update=""
+export BKGVERR_update=""
+export ANBKGERR_update=""
+export JCOPTS_update=""
+if [[ $global_test = "global" ]]; then
+   if [[ $gsiexec = $updat ]]; then
+      export STRONGOPTS_update="tlnmc_option=1,tlnmc_type=2"
+   else
+      export STRONGOPTS_update="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
+   fi
+fi
+export OBSQC_update=""
+export OBSINPUT_update=""
+export SUPERRAD_update=""
+export SINGLEOB_update=""

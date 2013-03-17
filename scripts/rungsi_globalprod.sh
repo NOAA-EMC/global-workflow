@@ -68,6 +68,7 @@ fixgsi=${TOPDIR}/save/$USER/trunk/fix
 export JCAP=62
 export LEVS=64
 export JCAP_B=$JCAP
+export lrun_subdirs=.true.
 
 
 # Set data, runtime and save directories
@@ -77,6 +78,7 @@ if [ $MACHINE = CCS ]; then
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
    endianness=Big_Endian
+   COMPRESS=compress
 elif [ $MACHINE = ZEUS ]; then
    datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
@@ -84,6 +86,7 @@ elif [ $MACHINE = ZEUS ]; then
    fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
+   COMPRESS=gzip
 else
   echo "Unsupported machine $MACHINE (not sure how you got to here)"
   exit 1
@@ -380,11 +383,11 @@ cat << EOF > gsiparm.anl
    ndat=64,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=.false.,
+   use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
    $SETUP
  /
  &GRIDOPTS
-   JCAP_B=$JCAP_B,JCAP=$JCAP,NLAT=$NLAT_A,NLON=$NLON_A,nsig=$LEVS,hybrid=.true.,
+   JCAP_B=$JCAP_B,JCAP=$JCAP,NLAT=$NLAT_A,NLON=$NLON_A,nsig=$LEVS,
    regional=.false.,nlayers(63)=3,nlayers(64)=6,
    $GRIDOPTS
  /
@@ -405,8 +408,8 @@ cat << EOF > gsiparm.anl
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -567,19 +570,9 @@ $ncp $bftab_sst ./bftab_sstphr
 
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $fixcrtm/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $fixcrtm/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 
@@ -796,28 +789,30 @@ esac
 #  Collect diagnostic files for obs types (groups) below
    listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10  atms_npp cris_npp"
 
-   if [  $MACHINE = ZEUS  ]; then
-      for type in $listall; do
-         count=`ls pe*.${type}_${loop}* | wc -l`
-         if [[ $count -gt 0 ]]; then
-            cat pe*.${type}_${loop}* > diag_${type}_${string}.${adate}
-            gzip diag_${type}_${string}.${adate}
-            $ncp diag_${type}_${string}.${adate}.gz $savdir/
-         fi
-      done
-   elif [ $MACHINE = CCS ]; then
-      for type in $listall; do
-         count=`ls dir.*/${type}_${loop}* | wc -l`
-         if [[ $count -gt 0 ]]; then
-            cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
-            compress diag_${type}_${string}.${adate}
-            $ncp diag_${type}_${string}.${adate}.Z $savdir/
-         fi
-      done
-   else
-      echo "Unsupported machine $MACHINE (not sure how you got to here)"
-      exit 1
-   fi
+
+   for type in $listall; do
+     if [ $lrun_subdirs = ".true." ]; then
+      count=`ls dir.*/${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
+      fi
+     else
+      count=`ls pe*${type}_${loop}* | wc -l`
+      if [[ $count -gt 0 ]]; then
+         cat pe*${type}_${loop}* > diag_${type}_${string}.${adate}
+      fi
+     fi
+   done
+
+   for file in `ls diag_*${adate}`; do
+      $COMPRESS $file
+
+      if [ $COMPRESS = "gzip" ]
+         $ncp diag_${type}_${string}.${adate}.gz $savdir/
+      else
+         $ncp diag_${type}_${string}.${adate}.Z $savdir/
+      fi
+   done
 
 done
 echo "Time after diagnostic loop is `date` "

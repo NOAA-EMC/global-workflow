@@ -11,11 +11,11 @@ export global_T62_namelist="
    ndat=67,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=.false.,
+   use_gfs_nemsio=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    regional=.false.,nlayers(63)=3,nlayers(64)=6,
    $GRIDOPTS
  /
@@ -36,8 +36,8 @@ export global_T62_namelist="
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -161,11 +161,11 @@ export global_lanczos_T62_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
-   use_gfs_nemsio=.false.,
+   use_gfs_nemsio=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    regional=.false.,nlayers(63)=3,nlayers(64)=6,
    $GRIDOPTS
  /
@@ -186,8 +186,8 @@ export global_lanczos_T62_namelist="
    $JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.true.,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   jcstrong_option=2,baldiag_full=.true.,baldiag_inc=.true.,
+   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -314,11 +314,11 @@ export RTMA_namelist="
    ndat=8,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,
+   nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,twodvar_regional=.true.,
    diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
@@ -336,7 +336,7 @@ export RTMA_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=1,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=1,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -384,10 +384,11 @@ export arw_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
@@ -403,7 +404,7 @@ export arw_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -517,10 +518,11 @@ export arw_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
@@ -536,7 +538,7 @@ export arw_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -650,10 +652,11 @@ export nmm_binary_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
@@ -669,7 +672,7 @@ export nmm_binary_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -783,10 +786,11 @@ export nmm_netcdf_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
@@ -802,7 +806,7 @@ export nmm_netcdf_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -917,10 +921,11 @@ export nems_nmmb_namelist="
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,preserve_restart_date=.true.,
    use_gfs_ozone=.true.,check_gfs_ozone_date=.true.,regional_ozone=.true.,gpstop=30.
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=1.412,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
@@ -935,7 +940,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=8,period_max=3.,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=8,period_max=3.,
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
@@ -1055,11 +1060,11 @@ export nems_nmmb_namelist="
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,
-   diag_conv=.true.,
+   diag_conv=.true.,lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,
    cmaq_regional=.true.,diagnostic_reg=.true.,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
@@ -1076,7 +1081,7 @@ export nems_nmmb_namelist="
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,
+   tlnmc_option=0,tlnmc_type=3,nstrong=0,nvmodes_keep=20,
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
