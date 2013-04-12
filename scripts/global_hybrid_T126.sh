@@ -14,33 +14,30 @@ elif [[ "$arch" = "AIX" ]]; then
 fi
 
 # Set path/file for gsi executable
-#basedir=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken
-#gsiexec=$gsiexec
-#gsiexec=$basedir/EXP-port/src/global_gsi
-
+#basedir=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist
+#gsipath=$basedir/gsi/
+#gsiexec=$gsipath/trunk/src/global_gsi
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
-#export JCAP=62
+export JCAP=126
 export LEVS=64
-export JCAP_B=$JCAP
+export JCAP_B=126
+export JCAP_EN=62
 
 # Set runtime and save directories
 tmpdir=$tmpdir/tmp${JCAP}/${exp}
-#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/tmp${JCAP}/${exp}
+#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/tmp${JCAP}/${exp}
 savdir=$savdir/out${JCAP}/${exp}
-#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/out${JCAP}/${exp}
+#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
-#fixgsi=$fixgsi
-#fixgsi=$basedir/EXP-port/fix
-#fixcrtm=$fixcrtm
-#fixcrtm=$basedir/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
+#fixgsi=$gsipath/trunk/fix
+#fixcrtm=$gsipath/EXP-port410/lib/CRTM_REL-2.0.5/fix
 
-#datobs=$datobs
-#datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$adate
-#datges=$datges
-#datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$adate
+#datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/obs
+#datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/ges
+#datens=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/ens
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -49,7 +46,7 @@ savdir=$savdir/out${JCAP}/${exp}
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
+#ndate=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 
@@ -84,16 +81,11 @@ export NLAT=$((${LATA}+2))
 # Given the analysis date, compute the date from which the
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
-gdate=`$ndate -06 $global_T62_adate`
-hha=`echo $global_T62_adate | cut -c9-10`
+gdate=`$ndate -06 $global_hybrid_T126_adate`
+yyg=`echo $gdate | cut -c1-8`
 hhg=`echo $gdate | cut -c9-10`
-prefix_obs=gdas1.t${hha}z.
-prefix_prep=$prefix_obs
-prefix_tbc=gdas1.t${hhg}z
-prefix_sfc=gdas${resol}.t${hhg}z
-prefix_atm=gdas${resol}.t${hha}z
-suffix=tm00.bufr_d
-
+yya=`echo $global_hybrid_T126_adate | cut -c1-8`
+hha=`echo $global_hybrid_T126_adate | cut -c9-10`
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -101,13 +93,12 @@ mkdir -p $tmpdir
 cd $tmpdir
 rm -rf core*
 
-
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fixgsi}
-        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        yyyy=$(echo ${CDATE:-$global_hybrid_T126_adate}|cut -c1-4)
         rm ./global_co2_data.txt
         co2=$co2dir/global_co2.gcmscl_$yyyy.txt
         while [ ! -s $co2 ] ; do
@@ -127,7 +118,7 @@ ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fixgsi}
-        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        yyyy=$(echo ${CDATE:-$global_hybrid_T126_adate}|cut -c1-4)
         rm ./ch4globaldata.txt
         ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
         while [ ! -s $ch4 ] ; do
@@ -146,7 +137,7 @@ IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fixgsi}
-        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        yyyy=$(echo ${CDATE:-$global_hybrid_T126_adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
         n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
         while [ ! -s $n2o ] ; do
@@ -165,7 +156,7 @@ ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fixgsi}
-        yyyy=$(echo ${CDATE:-$global_T62_adate}|cut -c1-4)
+        yyyy=$(echo ${CDATE:-$global_hybrid_T126_adate}|cut -c1-4)
         rm ./coglobaldata.txt
         co=$codir/global_co_esrlctm_$yyyy.txt
         while [ ! -s $co ] ; do
@@ -198,13 +189,9 @@ SINGLEOB="$SINGLEOB_update"
 
 . $scripts/regression_namelists.sh
 
-##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
-##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
-##!   idmodel=.true.,lwrtinc=.false.,
-
 cat << EOF > gsiparm.anl
 
-$global_T62_namelist
+$global_hybrid_T126_namelist
 
 EOF
 
@@ -224,7 +211,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fixgsi/Big_Endian/global_berror.l${LEVS}y${NLAT}.f77
 
 emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -236,9 +223,8 @@ convinfo=$fixgsi/global_convinfo.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
-hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
 errtable=$fixgsi/prepobs_errtable.global
-atmsbeaminfo=$fixgsi/atms_beamwidth.txt
+hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
 
 # Only need this file for single obs test
 bufrtable=$fixgsi/prepobs_prep.bufrtable
@@ -247,13 +233,13 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_T62_updat_exp1 ]]; then
+if [[ $exp = $global_hybrid_T126_updat_exp1 ]]; then
    $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_T62_updat_exp2 ]]; then
+elif [[ $exp = $global_hybrid_T126_updat_exp2 ]]; then
    $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_T62_contrl_exp1 ]]; then
+elif [[ $exp = $global_hybrid_T126_contrl_exp1 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $global_T62_contrl_exp2 ]]; then
+elif [[ $exp = $global_hybrid_T126_contrl_exp2 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -269,7 +255,6 @@ $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $anavinfo ./anavinfo
 $ncp $hybens_locinfo ./hybens_locinfo
-$ncp $atmsbeaminfo ./atms_beamwidth.txt
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
@@ -282,72 +267,59 @@ done
 
 
 # Copy observational data to $tmpdir
-ln -s -f $global_T62_obs/${prefix_obs}prepbufr           ./prepbufr
-ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
-ln -s -f $global_T62_obs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
-ln -s -f $global_T62_obs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
-ln -s -f $global_T62_obs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
-ln -s -f $global_T62_obs/${prefix_obs}gome.${suffix}     ./gomebufr
-ln -s -f $global_T62_obs/${prefix_obs}omi.${suffix}      ./omibufr
-ln -s -f $global_T62_obs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
-ln -s -f $global_T62_obs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
-ln -s -f $global_T62_obs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
-ln -s -f $global_T62_obs/${prefix_obs}1bamub.${suffix}   ./amsubbufr
-ln -s -f $global_T62_obs/${prefix_obs}1bhrs2.${suffix}   ./hirs2bufr
-ln -s -f $global_T62_obs/${prefix_obs}1bhrs3.${suffix}   ./hirs3bufr
-ln -s -f $global_T62_obs/${prefix_obs}1bhrs4.${suffix}   ./hirs4bufr
-ln -s -f $global_T62_obs/${prefix_obs}1bmhs.${suffix}    ./mhsbufr
-ln -s -f $global_T62_obs/${prefix_obs}1bmsu.${suffix}    ./msubufr
-ln -s -f $global_T62_obs/${prefix_obs}airsev.${suffix}   ./airsbufr
-ln -s -f $global_T62_obs/${prefix_obs}sevcsr.${suffix}   ./seviribufr
-ln -s -f $global_T62_obs/${prefix_obs}mtiasi.${suffix}   ./iasibufr
-ln -s -f $global_T62_obs/${prefix_obs}esamua.${suffix}   ./amsuabufrears
-ln -s -f $global_T62_obs/${prefix_obs}esamub.${suffix}   ./amsubbufrears
-ln -s -f $global_T62_obs/${prefix_obs}eshrs3.${suffix}   ./hirs3bufrears
-ln -s -f $global_T62_obs/${prefix_obs}ssmit.${suffix}    ./ssmitbufr
-ln -s -f $global_T62_obs/${prefix_obs}amsre.${suffix}    ./amsrebufr
-ln -s -f $global_T62_obs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
-ln -s -f $global_T62_obs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
-
+$ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate   ./prepbufr
+$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwndbufr
+$ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate    ./gpsrobufr
+$ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate   ./tmirrbufr
+$ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate   ./sbuvbufr
+$ncp $global_hybrid_T126_datobs/gome.gdas.$global_hybrid_T126_adate     ./gomebufr
+$ncp $global_hybrid_T126_datobs/omi.gdas.$global_hybrid_T126_adate      ./omibufr
+$ncp $global_hybrid_T126_datobs/tcvitl.gdas.$global_hybrid_T126_adate   ./tcvitl
+$ncp $global_hybrid_T126_datobs/goesfv.gdas.$global_hybrid_T126_adate   ./gsnd1bufr
+$ncp $global_hybrid_T126_datobs/1bamua.gdas.$global_hybrid_T126_adate   ./amsuabufr
+$ncp $global_hybrid_T126_datobs/1bamub.gdas.$global_hybrid_T126_adate   ./amsubbufr
+$ncp $global_hybrid_T126_datobs/1bhrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufr
+$ncp $global_hybrid_T126_datobs/1bhrs4.gdas.$global_hybrid_T126_adate   ./hirs4bufr
+$ncp $global_hybrid_T126_datobs/airsev.gdas.$global_hybrid_T126_adate   ./airsbufr
+$ncp $global_hybrid_T126_datobs/mtiasi.gdas.$global_hybrid_T126_adate   ./iasibufr
+$ncp $global_hybrid_T126_datobs/esamua.gdas.$global_hybrid_T126_adate   ./amsuabufrears
+$ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubbufrears
+$ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-ln -s -f $global_T62_ges/${prefix_tbc}.abias              ./satbias_in
-ln -s -f $global_T62_ges/${prefix_tbc}.satang             ./satbias_angle
+$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate   ./satbias_in
+$ncp $global_hybrid_T126_datges/satang.gdas.$gdate   ./satbias_angle
 
-if [[ "$endianness" = "Big_Endian" ]]; then
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf03            ./sfcf03
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf06            ./sfcf06
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf09            ./sfcf09
-elif [[ "$endianness" = "Little_Endian" ]]; then
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf03.le         ./sfcf03
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf06.le         ./sfcf06
-   ln -s -f $global_T62_ges/${prefix_sfc}.bf09.le         ./sfcf09
-fi
+$ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate.t${JCAP}  ./sfcf03
+$ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate.t${JCAP}  ./sfcf06
+$ncp $global_hybrid_T126_datges/sfcf09.gdas.$gdate.t${JCAP}  ./sfcf09
 
-if [[ "$endianness" = "Big_Endian" ]]; then
-   ln -s -f $global_T62_obs/${prefix_atm}.sgm3prep        ./sigf03
-   ln -s -f $global_T62_obs/${prefix_atm}.sgesprep        ./sigf06
-   ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep        ./sigf09
-elif [[ "$endianness" = "Little_Endian" ]]; then
-   ln -s -f $global_T62_obs/${prefix_atm}.sgm3prep.le     ./sigf03
-   ln -s -f $global_T62_obs/${prefix_atm}.sgesprep.le     ./sigf06
-   ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep.le     ./sigf09
-fi
+$ncp $global_hybrid_T126_datges/siggm3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf03
+$ncp $global_hybrid_T126_datges/sigges.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf06
+$ncp $global_hybrid_T126_datges/siggp3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf09
+
+list="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020"
+
+for file in $list; do
+   ln -s $global_hybrid_T126_datges/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+done
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 if [[ "$arch" = "Linux" ]]; then
-
    cd $tmpdir/
    echo "run gsi now"
+
+   export MPI_DISPLAY_SETTINGS=YES
+   export MPI_STATS=YES
+   export MPI_STATS_FILE=mpi_tmp.out
 
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
+   export OMP_NUM_THREADS=1
 
    module load intel
    module load mpt
-
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
@@ -359,59 +331,4 @@ fi
 
 rc=$?
 
-exit
-
-
-
-
-# Loop over first and last outer loops to generate innovation
-# diagnostic files for indicated observation types (groups)
-#
-# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
-#        loop 03 will contain innovations with respect to 
-#        the analysis.  Creation of o-a innovation files
-#        is triggered by write_diag(3)=.true.  The setting
-#        write_diag(1)=.true. turns on creation of o-g
-#        innovation files.
-#
-
-
-echo "Time before diagnostic loop is `date` "
-cd $tmpdir
-loops="01 03"
-for loop in $loops; do
-
-case $loop in
-  01) string=ges;;
-  03) string=anl;;
-   *) string=$loop;;
-esac
-
-#  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
-   for type in $listall; do
-      count=`ls dir.*/${type}_${loop}* | wc -l`
-      if [[ $count -gt 0 ]]; then
-         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${global_T62_adate}
-         compress diag_${type}_${string}.${global_T62_adate}
-         $ncp diag_${type}_${string}.${global_T62_adate}.Z $savdir/
-      fi
-   done
-done
-echo "Time after diagnostic loop is `date` "
-
-
-
-# If requested, clean up $tmpdir
-if [[ "$CLEAN" = "YES" ]];then
-   if [[ $rc -eq 0 ]];then
-      rm -rf $tmpdir
-      cd $tmpdir
-      cd ../
-      rmdir $tmpdir
-   fi
-fi
-
-
-# End of script
 exit
