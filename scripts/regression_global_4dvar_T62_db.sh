@@ -4,7 +4,7 @@
 #@ error=global_4dvar_debug_test.e$(jobid)
 #@ job_type=parallel
 #@ network.MPI=sn_all,shared,us
-#@ node = 5
+#@ node = 6
 #@ node_usage=not_shared
 #@ tasks_per_node=32
 #@ task_affinity = core(1)
@@ -377,7 +377,7 @@ $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.abias_ssmis             ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
 ##$ncp $datges/${prefix_sfc}.bf03                    ./sfcf03

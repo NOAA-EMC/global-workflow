@@ -1,7 +1,5 @@
 # Standalone script used to pass namelist updates to the regression tests.
 
-# First, generate new variable to hole the first 6 characters of the experiment.
-
 if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
    export SETUP_update=""
 else
@@ -22,3 +20,13 @@ export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
+
+# Include changes to fix files between experiment and control 
+
+if [[ `expr substr $exp 1 6` = "global" ]]; then 
+   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then 
+      export biascr_update="abias_ssmis" 
+   else 
+      export biascr_update="abias" 
+   fi 
+fi 

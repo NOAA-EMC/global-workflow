@@ -389,7 +389,7 @@ $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.${biascr_update}        ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
@@ -766,7 +766,7 @@ $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.${biascr_update}        ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
@@ -1143,7 +1143,7 @@ $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.${biascr_update}        ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
@@ -1526,7 +1526,7 @@ $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datges/${prefix_tbc}.${biascr_update}        ./satbias_in
 $ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
