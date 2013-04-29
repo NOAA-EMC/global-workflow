@@ -2,9 +2,9 @@
 
 #@ error=$(job_name).$(step_name).e$(jobid)
 #@ job_type=parallel
-#@ class=dev
-#@ group=dev
-#@ account_no = GDAS-T2O
+#@ class=jcsda
+#@ group=jcsda
+#@ account_no = JCSDA008-RES
 
 #@ job_name=regression_test
 #@ step_name=gsi_global_nemsio_updat
@@ -29,11 +29,11 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_nemsio_updat==0)
 #@ restart=no
+#@ dependency=(gsi_global_nemsio_updat==0)
 #@ queue
 
 #@ step_name=gsi_global_nemsio_cntrl
@@ -47,8 +47,8 @@
 #@ wall_clock_limit = 0:25:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_nemsio_updat2==0)
 #@ restart=no
+#@ dependency=(gsi_global_nemsio_updat2==0)
 #@ queue
 
 #@ step_name=gsi_global_nemsio_cntrl2
@@ -59,11 +59,11 @@
 #@ task_affinity = core(1)
 #@ parallel_threads = 2
 #@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:20:00
+#@ wall_clock_limit = 0:15:00
 #@ startdate = 09/27/06 05:00
 #@ notification=error
-#@ dependency=(gsi_global_nemsio_cntrl==0)
 #@ restart=no
+#@ dependency=(gsi_global_nemsio_cntrl==0)
 #@ queue
 
 #@ step_name=global_nemsio_regression
@@ -74,11 +74,11 @@
 #@ node_resources = ConsumableMemory(2000 MB)
 #@ wall_clock_limit = 0:10:00
 #@ notification=error
-#@ dependency=(gsi_global_nemsio_cntrl2==0)
 #@ restart=no
+#@ dependency=(gsi_global_nemsio_cntrl2==0)
 #@ queue
 
-. regression_var.sh
+. ./regression_var.sh
 
 case $LOADL_STEP_NAME in
   gsi_global_nemsio_updat)
@@ -207,53 +207,6 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-#CH4 file decision
-ICH4=${ICH4:-2}
-if [ $ICH4 -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        ch4dir=${CH4DIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./ch4globaldata.txt
-                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
-        if [ ! -s ./ch4globaldata.txt ] ; then
-                echo "\./ch4globaldata.txt" not created
-                exit 1
-   fi
-fi
-IN2O=${IN2O:-2}
-if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        n2odir=${N2ODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./n2oglobaldata.txt
-                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
-        if [ ! -s ./n2oglobaldata.txt ] ; then
-                echo "\./n2oglobaldata.txt" not created
-                exit 1
-   fi
-fi
-ICO=${ICO:-2}
-if [ $ICO -gt 0 ] ; then
-#        # Copy CO files to $tmpdir
-        codir=${CODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./coglobaldata.txt
-                co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
-        if [ ! -s ./coglobaldata.txt ] ; then
-                echo "\./coglobaldata.txt" not created
-                exit 1
-   fi
-fi
-
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -578,53 +531,6 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-#CH4 file decision
-ICH4=${ICH4:-2}
-if [ $ICH4 -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        ch4dir=${CH4DIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./ch4globaldata.txt
-                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
-        if [ ! -s ./ch4globaldata.txt ] ; then
-                echo "\./ch4globaldata.txt" not created
-                exit 1
-   fi
-fi
-IN2O=${IN2O:-2}
-if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        n2odir=${N2ODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./n2oglobaldata.txt
-                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
-        if [ ! -s ./n2oglobaldata.txt ] ; then
-                echo "\./n2oglobaldata.txt" not created
-                exit 1
-   fi
-fi
-ICO=${ICO:-2}
-if [ $ICO -gt 0 ] ; then
-#        # Copy CO files to $tmpdir
-        codir=${CODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./coglobaldata.txt
-                co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
-        if [ ! -s ./coglobaldata.txt ] ; then
-                echo "\./coglobaldata.txt" not created
-                exit 1
-   fi
-fi
-
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -948,53 +854,6 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-#CH4 file decision
-ICH4=${ICH4:-2}
-if [ $ICH4 -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        ch4dir=${CH4DIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./ch4globaldata.txt
-                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
-        if [ ! -s ./ch4globaldata.txt ] ; then
-                echo "\./ch4globaldata.txt" not created
-                exit 1
-   fi
-fi
-IN2O=${IN2O:-2}
-if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        n2odir=${N2ODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./n2oglobaldata.txt
-                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
-        if [ ! -s ./n2oglobaldata.txt ] ; then
-                echo "\./n2oglobaldata.txt" not created
-                exit 1
-   fi
-fi
-ICO=${ICO:-2}
-if [ $ICO -gt 0 ] ; then
-#        # Copy CO files to $tmpdir
-        codir=${CODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./coglobaldata.txt
-                co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
-        if [ ! -s ./coglobaldata.txt ] ; then
-                echo "\./coglobaldata.txt" not created
-                exit 1
-   fi
-fi
-
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -1324,53 +1183,6 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-#CH4 file decision
-ICH4=${ICH4:-2}
-if [ $ICH4 -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        ch4dir=${CH4DIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./ch4globaldata.txt
-                ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
-        if [ ! -s ./ch4globaldata.txt ] ; then
-                echo "\./ch4globaldata.txt" not created
-                exit 1
-   fi
-fi
-IN2O=${IN2O:-2}
-if [ $IN2O -gt 0 ] ; then
-#        # Copy ch4 files to $tmpdir
-        n2odir=${N2ODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./n2oglobaldata.txt
-                n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
-        if [ ! -s ./n2oglobaldata.txt ] ; then
-                echo "\./n2oglobaldata.txt" not created
-                exit 1
-   fi
-fi
-ICO=${ICO:-2}
-if [ $ICO -gt 0 ] ; then
-#        # Copy CO files to $tmpdir
-        codir=${CODIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./coglobaldata.txt
-                co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
-        if [ ! -s ./coglobaldata.txt ] ; then
-                echo "\./coglobaldata.txt" not created
-                exit 1
-   fi
-fi
-
 GRIDOPTS=""
 BKGVERR=""
 ANBKGERR=""
@@ -1522,6 +1334,7 @@ if [[ "$rc" != "0" ]]; then
    exit
 fi
 
+mkdir $noscrub/tmp${global_nemsio}
 mkdir $control_global_nemsio_T622
 cp -rp stdout $control_global_nemsio_T622
 cp -rp fort.220 $control_global_nemsio_T622
@@ -1626,7 +1439,7 @@ done
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep 'grepcost J,Jb' stdout.$exp > penalty.$exp.txt
+   grep 'a,b' fort.220.$exp > penalty.$exp.txt
    grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
@@ -1775,13 +1588,13 @@ scale1thresh=$((scale1 / scaledif + scale1))
 
 {
 
-if [[ $(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'grepcost J,Jb' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 fi
 
