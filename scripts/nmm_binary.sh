@@ -1,62 +1,8 @@
-#!/bin/sh
-
-#@ error=$(job_name).e$(jobid)
-#@ job_type=parallel
-#@ class=dev
-#@ group=dev
-#@ account_no = RDAS-MTN
-
-#@ job_name=nmm_binary_gsi
-#@ network.MPI=sn_all,shared,us
-#@ node = 2
-#@ node_usage=not_shared
-#@ tasks_per_node=32
-#@ task_affinity = core(1)
-#@ parallel_threads = 1
-#@ node_resources = ConsumableMemory (110 GB)
-#@ wall_clock_limit = 0:15:00
-#@ notification=error
-#@ restart=no
-#@ queue
-
-. regression_var.sh
 
 set -x
 
-# Set environment variables for NCEP IBM
-export MEMORY_AFFINITY=MCM
-export MP_SHARED_MEMORY=yes
-
-# Set environment variables for threading and stacksize
-export AIXTHREAD_SCOPE=S
-export XLSMPOPTS="parthds=1:stack=128000000"
-
-# Recommended MPI environment variable setttings from IBM
-# (Appendix E, HPC Clusters Using InfiniBand on IBM Power Systems Servers)
-export LAPI_DEBUG_ENABLE_AFFINITY=YES
-export MP_FIFO_MTU=4K
-export MP_SYNC_QP=YES
-export MP_SHM_ATTACH_THRESH=500000 # default is better sometimes
-export MP_EUIDEVELOP=min
-export MP_USE_BULK_XFER=yes
-export MP_BULK_MIN_MSG_SIZE=64k
-export MP_RC_MAX_QP=8192
-export LAPI_DEBUG_RC_DREG_THRESHOLD=1000000
-export LAPI_DEBUG_QP_NOTIFICATION=no
-export LAPI_DEBUG_RC_INIT_SETUP=yes
-
-# Set environment variables for user preferences
-export XLFRTEOPTS="nlwidth=80"
-export MP_LABELIO=yes
-export MP_INFOLEVEL=1
-
-# Variables for debugging (don't always need)
-##export XLFRTEOPTS="buffering=disable_all"
-##export MP_COREFILE_FORMAT=lite
-
-
 # Set analysis date
-adate=$adate_regional_nmm_binary
+#adate=$adate_regional_nmm_binary
 
 # Set guess/analysis (i/o) file format.  Two
 # option are available:  binary or netcdf
@@ -75,13 +21,22 @@ else
 fi
 
 # Set experiment name
-exp=$exp1_nmm_binary_cntrl
+
+if [[ "$arch" = "Linux" ]]; then
+
+   exp=$jobname
+
+elif [[ "$arch" = "AIX" ]]; then
+
+   exp=$LOADL_JOB_NAME
+
+fi
 
 # Set path/file for gsi executable
-gsiexec=$cntrl
+#gsiexec=$updat
 
 # Set resoltion and other dependent parameters
-export JCAP=62
+#export JCAP=62
 export LEVS=60
 export JCAP_B=62
 if [[ "$io_format" = "binary" ]]; then
@@ -92,8 +47,11 @@ fi
 export DELTIM=1200
 
 # Set runtime and save directories
-tmpdir=$ptmp_loc/tmpreg_${nmm_binary}/${exp}
-savdir=$ptmp_loc/outreg/${nmm_binary}/${exp}
+tmpdir=$tmpdir/tmpreg_nmm_binary/${exp}
+savdir=$savdir/outreg/nmm_binary/${exp}
+
+# Specify GSI fixed field and data directories.
+
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -101,22 +59,22 @@ savdir=$ptmp_loc/outreg/${nmm_binary}/${exp}
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-ndate=/nwprod/util/exec/ndate
+#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the analysis date, compute the date from which the
 # first guess comes.  Extract cycle and set prefix and suffix
 # for guess and observation data files
-sdate=`echo $adate |cut -c1-8`
-odate=`$ndate +12 $adate`
-hha=`echo $adate | cut -c9-10`
+sdate=`echo $nmm_binary_adate |cut -c1-8`
+odate=`$ndate +12 $nmm_binary_adate`
+hha=`echo $nmm_binary_adate | cut -c9-10`
 hho=`echo $odate | cut -c9-10`
 prefixo=ndas.t${hho}z
 prefixa=ndas.t${hha}z
 suffix=tm12.bufr_d
 
-datobs=$datobs_nmm_binary/$adate
-datges=$datobs
+#datobs=$datobs_nmm_binary/$adate
+#datges=$datobs
 
 # Set up $tmpdir
 rm -rf $tmpdir
@@ -126,28 +84,38 @@ chmod 750 $tmpdir
 cd $tmpdir
 rm -rf core*
 
-# Make gsi namelist
-
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
-        # Copy co2 files to $tmpdir
-        co2dir=${CO2DIR:-$fix_file}
-        yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
-        rm ./global_co2_data.txt
-        while [ $yyyy -ge 1957 ] ;do
-                co2=$co2dir/global_co2historicaldata_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                break
-                fi
-                ((yyyy-=1))
-        done
-        if [ ! -s ./global_co2_data.txt ] ; then
-                echo "\./global_co2_data.txt" not created
-                exit 1
+	# Copy co2 files to $tmpdir
+	co2dir=${CO2DIR:-$fixgsi}
+	yyyy=$(echo ${CDATE:-$nmm_binary_adate}|cut -c1-4)
+	rm ./global_co2_data.txt
+		co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+		if [ -s $co2 ] ; then
+			$ncp $co2 ./global_co2_data.txt
+		fi
+	if [ ! -s ./global_co2_data.txt ] ; then
+		echo "\./global_co2_data.txt" not created
+		exit 1
    fi
 fi
+
+# Make gsi namelist
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -172,35 +140,43 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fix_file/anavinfo_ndas_binary
+anavinfo=$fixgsi/anavinfo_ndas_binary
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/$endianness/nam_nmmstat_na.gcv
+   berror=$fixgsi/$endianness/nam_nmmstat_na.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
+   berror=$fixgsi/$endianness/nam_glb_berror.f77.gcv
 fi
-emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
-satinfo=$fix_file/nam_regional_satinfo.txt
-scaninfo=$fix_file/global_scaninfo.txt
-satangl=$fix_file/nam_global_satangbias.txt
-atmsbeamdat=$fix_file/atms_beamwidth.txt
-pcpinfo=$fix_file/nam_global_pcpinfo.txt
-ozinfo=$fix_file/nam_global_ozinfo.txt
-errtable=$fix_file/nam_errtable.r3dv
-convinfo=$fix_file/nam_regional_convinfo_reg_test.txt
-mesonetuselist=$fix_file/nam_mesonet_uselist.txt
+emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
+aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
+cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
+satinfo=$fixgsi/nam_regional_satinfo.txt
+scaninfo=$fixgsi/global_scaninfo.txt
+satangl=$fixgsi/nam_global_satangbias.txt
+atmsbeamdat=$fixgsi/atms_beamwidth.txt
+pcpinfo=$fixgsi/nam_global_pcpinfo.txt
+ozinfo=$fixgsi/nam_global_ozinfo.txt
+errtable=$fixgsi/nam_errtable.r3dv
+convinfo=$fixgsi/nam_regional_convinfo_reg_test.txt
+mesonetuselist=$fixgsi/nam_mesonet_uselist.txt
 
 
 # Only need this file for single obs test
-bufrtable=$fix_file/prepobs_prep.bufrtable
+bufrtable=$fixgsi/prepobs_prep.bufrtable
 
 # Only need this file for sst retrieval
-bftab_sst=$fix_file/bufrtab.012
+bftab_sst=$fixgsi/bufrtab.012
 
 
 # Copy executable and fixed files to $tmpdir
-$ncp $gsiexec ./gsi.x
+if [[ "$exp" = $nmm_binary_updat_exp1 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ "$exp" = $nmm_binary_updat_exp2 ]]; then
+   $ncp $gsiexec_updat ./gsi.x
+elif [[ "$exp" = $nmm_binary_contrl_exp1 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+elif [[ "$exp" = $nmm_binary_contrl_exp2 ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+fi
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
@@ -222,62 +198,83 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
-$ncp $datobs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $datobs/${prefixo}.satwnd.$suffix   ./satwnd
-$ncp $datobs/${prefixo}.gpsro.$suffix   ./gpsrobufr
-$ncp $datobs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
-$ncp $datobs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
-$ncp $datobs/${prefixo}.1bamua.$suffix  ./amsuabufr
-$ncp $datobs/${prefixo}.1bamub.$suffix  ./amsubbufr
-$ncp $datobs/${prefixo}.1bmhs.$suffix   ./mhsbufr
-$ncp $datobs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
-$ncp $datobs/${prefixo}.airsev.$suffix  ./airsbufr
-$ncp $datobs/${prefixo}.radwnd.$suffix  ./radarbufr
-$ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
+$ncp $nmm_binary_obs/${prefixo}.prepbufr.tm12   ./prepbufr
+$ncp $nmm_binary_obs/${prefixo}.satwnd.$suffix   ./satwnd
+$ncp $nmm_binary_obs/${prefixo}.gpsro.$suffix   ./gpsrobufr
+$ncp $nmm_binary_obs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
+$ncp $nmm_binary_obs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
+$ncp $nmm_binary_obs/${prefixo}.1bamua.$suffix  ./amsuabufr
+$ncp $nmm_binary_obs/${prefixo}.1bamub.$suffix  ./amsubbufr
+$ncp $nmm_binary_obs/${prefixo}.1bmhs.$suffix   ./mhsbufr
+$ncp $nmm_binary_obs/${prefixo}.goesfv.$suffix  ./gsnd1bufr
+$ncp $nmm_binary_obs/${prefixo}.airsev.$suffix  ./airsbufr
+$ncp $nmm_binary_obs/${prefixo}.radwnd.$suffix  ./radarbufr
+$ncp $nmm_binary_obs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
 #
-$ncp $datobs/${prefixo}.satbias.tm12      ./satbias_in
-$ncp $datobs/${prefixo}.satang.tm12       ./satbias_angle
+$ncp $nmm_binary_obs/${prefixo}.satbias.tm12      ./satbias_in
+$ncp $nmm_binary_obs/${prefixo}.satang.tm12       ./satbias_angle
 if [[ "$io_format" = "binary" ]]; then
-   $ncp $datges/${prefixo}.wrfinput_d01.init  ./wrf_inout
+   $ncp $nmm_binary_ges/${prefixo}.wrfinput_d01.init  ./wrf_inout_orig
 elif [[ "$io_format" = "netcdf" ]]; then
-   $ncp $datges/wrfinput_d01_nmm_netcdf       ./wrf_inout
+   $ncp $nmm_binary_ges/wrfinput_d01_nmm_netcdf       ./wrf_inout
 fi
-cp wrf_inout wrf_ges
+
+if [[ "$arch" = "Linux" ]]; then
+   /home/George.Vandenberghe/utils/fendian.x 4 -i wrf_inout_orig -o wrf_inout
+   cp wrf_inout wrf_ges
+elif [[ "$arch" = "AIX" ]]; then
+   cp wrf_inout_orig wrf_inout
+   cp wrf_inout wrf_ges
+fi
+
+if [[ "$arch" = "Linux" ]]; then
+
+   cd $tmpdir/
+   echo "run gsi now"
+
+   export MPI_BUFS_PER_PROC=256
+   export MPI_BUFS_PER_HOST=256
+   export MPI_GROUP_MAX=256
+   #export OMP_NUM_THREADS=1
+
+   module load intel
+   module load mpt
+
+   echo "JOB ID : $PBS_JOBID"
+   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+
+elif [[ "$arch" = "AIX" ]]; then
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+
+fi
+
 rc=$?
 
-if [[ "$rc" != "0" ]]; then
-   cd $regression_vfydir
-   {
-    echo ''$exp1_nmm_binary_updat' has failed to run to completion, with an error code of '$rc''
-   } >> $nmm_binary_regression
-   $step_name==$rc
-   exit
-fi
+exit
 
 # Save output
 mkdir -p $savdir
 chgrp rstprod $savdir
 chmod 750 $savdir
 
-cat stdout fort.2* > $savdir/stdout.anl.${adate}
-$ncp wrf_inout       $savdir/wrfanl.${adate}
-$ncp satbias_out     $savdir/biascr.${adate}
+cat stdout fort.2* > $savdir/stdout.anl.${nmm_binary_adate}
+$ncp wrf_inout       $savdir/wrfanl.${nmm_binary_adate}
+$ncp satbias_out     $savdir/biascr.${nmm_binary_adate}
 
 # If desired, copy guess file to unique filename in $savdir
-$ncp wrf_ges         $savdir/wrfges.${adate}
+$ncp wrf_ges         $savdir/wrfges.${nmm_binary_adate}
 
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)
@@ -305,9 +302,9 @@ esac
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
-         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${adate}
-         compress diag_${type}_${string}.${adate}
-         $ncp diag_${type}_${string}.${adate}.Z $savdir/
+         cat dir.*/${type}_${loop}* > diag_${type}_${string}.${nmm_binary_adate}
+         compress diag_${type}_${string}.${nmm_binary_adate}
+         $ncp diag_${type}_${string}.${nmm_binary_adate}.Z $savdir/
       fi
    done
 done

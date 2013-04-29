@@ -192,78 +192,95 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-STRONGOPTS=""
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -279,7 +296,7 @@ fi
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -290,7 +307,7 @@ EOF
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar
@@ -318,7 +335,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -369,19 +386,9 @@ sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > n
 mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -599,78 +606,95 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-STRONGOPTS=""
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -686,7 +710,7 @@ fi
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -697,7 +721,7 @@ EOF
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar
@@ -725,7 +749,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -776,19 +800,9 @@ sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > n
 mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -1006,78 +1020,95 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-STRONGOPTS=""
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -1093,7 +1124,7 @@ fi
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -1104,7 +1135,7 @@ EOF
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar
@@ -1132,7 +1163,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1183,19 +1214,9 @@ sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > n
 mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -1420,78 +1441,95 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./global_co2_data.txt
+        co2=$co2dir/global_co2.gcmscl_$yyyy.txt
+        while [ ! -s $co2 ] ; do
+                ((yyyy-=1))
                 co2=$co2dir/global_co2.gcmscl_$yyyy.txt
-                if [ -s $co2 ] ; then
-                        $ncp $co2 ./global_co2_data.txt
-                fi
+        done
+        if [ -s $co2 ] ; then
+                $ncp $co2 ./global_co2_data.txt
+        fi
         if [ ! -s ./global_co2_data.txt ] ; then
                 echo "\./global_co2_data.txt" not created
                 exit 1
    fi
 fi
 #CH4 file decision
-ICH4=${ICH4:-2}
+ICH4=${ICH4:-0}
 if [ $ICH4 -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         ch4dir=${CH4DIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./ch4globaldata.txt
+        ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
+        while [ ! -s $ch4 ] ; do
+                ((yyyy-=1))
                 ch4=$ch4dir/global_ch4_esrlctm_$yyyy.txt
-                if [ -s $ch4 ] ; then
-                        $ncp $ch4 ./ch4globaldata.txt
-                fi
+        done
+        if [ -s $ch4 ] ; then
+                $ncp $ch4 ./ch4globaldata.txt
+        fi
         if [ ! -s ./ch4globaldata.txt ] ; then
                 echo "\./ch4globaldata.txt" not created
                 exit 1
    fi
 fi
-IN2O=${IN2O:-2}
+IN2O=${IN2O:-0}
 if [ $IN2O -gt 0 ] ; then
 #        # Copy ch4 files to $tmpdir
         n2odir=${N2ODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./n2oglobaldata.txt
+        n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
+        while [ ! -s $n2o ] ; do
+                ((yyyy-=1))
                 n2o=$n2odir/global_n2o_esrlctm_$yyyy.txt
-                if [ -s $n2o ] ; then
-                        $ncp $n2o ./n2oglobaldata.txt
-                fi
+        done
+        if [ -s $n2o ] ; then
+                $ncp $n2o ./n2oglobaldata.txt
+        fi
         if [ ! -s ./n2oglobaldata.txt ] ; then
                 echo "\./n2oglobaldata.txt" not created
                 exit 1
    fi
 fi
-ICO=${ICO:-2}
+ICO=${ICO:-0}
 if [ $ICO -gt 0 ] ; then
 #        # Copy CO files to $tmpdir
         codir=${CODIR:-$fix_file}
         yyyy=$(echo ${CDATE:-$adate}|cut -c1-4)
         rm ./coglobaldata.txt
+        co=$codir/global_co_esrlctm_$yyyy.txt
+        while [ ! -s $co ] ; do
+                ((yyyy-=1))
                 co=$codir/global_co_esrlctm_$yyyy.txt
-                if [ -s $co ] ; then
-                        $ncp $co ./coglobaldata.txt
-                fi
+        done
+        if [ -s $co ] ; then
+                $ncp $co ./coglobaldata.txt
+        fi
         if [ ! -s ./coglobaldata.txt ] ; then
                 echo "\./coglobaldata.txt" not created
                 exit 1
    fi
 fi
 
-SETUP=""
-GRIDOPTS=""
-BKGVERR=""
-ANBKGERR=""
-JCOPTS=""
-STRONGOPTS=""
-OBSQC=""
-OBSINPUT=""
-SUPERRAD=""
-SINGLEOB=""
+. $scripts/regression_nl_update.sh
+
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
 
 # Set variables for requested minimization (pcgsoi or lanczos)
 JCOPTS="ljcpdry=.false.,"
@@ -1507,7 +1545,7 @@ fi
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs"
+SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.obsvr
 cat << EOF > gsiparm.anl.obsvr
@@ -1518,7 +1556,7 @@ EOF
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv"
+SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl.4dvar
 cat << EOF > gsiparm.anl.4dvar
@@ -1546,7 +1584,7 @@ EOF
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
-berror=$fix_file/global_berror.l${LEVS}y${NLAT}.f77
+berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
@@ -1597,19 +1635,9 @@ sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > n
 mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -1957,13 +1985,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has FAILED for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has FAILED for '${exp1}' and '${exp3}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 

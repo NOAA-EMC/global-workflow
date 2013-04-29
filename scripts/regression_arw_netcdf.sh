@@ -208,6 +208,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -234,9 +248,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -279,19 +293,9 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -309,7 +313,7 @@ if [[ "$io_format" = "netcdf" ]]; then
    $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 fi
 
-# Copy bias correction, sigma, and surface files
+# Copy bias correction and atmosphere/surface guess files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
@@ -515,6 +519,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -541,9 +559,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -586,19 +604,9 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -616,7 +624,7 @@ if [[ "$io_format" = "netcdf" ]]; then
    $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 fi
 
-# Copy bias correction, sigma, and surface files
+# Copy bias correction and atmosphere/surface guess files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
@@ -822,6 +830,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -848,9 +870,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -893,19 +915,9 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -923,7 +935,7 @@ if [[ "$io_format" = "netcdf" ]]; then
    $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 fi
 
-# Copy bias correction, sigma, and surface files
+# Copy bias correction and atmosphere/surface guess files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
@@ -954,7 +966,7 @@ mkdir $noscrub/tmpreg_${arw_netcdf}
 mkdir $control_arw_netcdf
 cp -rp stdout $control_arw_netcdf
 cp -rp fort.220 $control_arw_netcdf
-cp -rp siganl $control_arw_netcdf
+cp -rp wrf_inout $control_arw_netcdf
 
 # Save output
 mkdir -p $savdir
@@ -1135,6 +1147,20 @@ if [ $ICO2 -gt 0 ] ; then
 		exit 1
    fi
 fi
+
+. $scripts/regression_nl_update.sh
+
+SETUP="$SETUP_update"
+GRIDOPTS="$GRIDOPTS_update"
+BKGVERR="$BKGVERR_update"
+ANBKGERR="$ANBKERR_update"
+JCOPTS="$JCOPTS_update"
+STRONGOPTS="$STRONGOPTS_update"
+OBSQC="$OBSQC_update"
+OBSINPUT="$OBSINPUT_update"
+SUPERRAD="$SUPERRAD_update"
+SINGLEOB="$SINGLEOB_update"
+
 . $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
@@ -1161,9 +1187,9 @@ EOF
 
 anavinfo=$fix_file/anavinfo_arw_netcdf
 if [[ "$io_format" = "binary" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 elif [[ "$io_format" = "netcdf" ]]; then
-   berror=$fix_file/nam_glb_berror.f77.gcv
+   berror=$fix_file/$endianness/nam_glb_berror.f77.gcv
 fi
 emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
 aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
@@ -1206,19 +1232,9 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -1236,7 +1252,7 @@ if [[ "$io_format" = "netcdf" ]]; then
    $ncp $datobs/${prefixo}.nexrad.$suffix  ./l2rwbufr
 fi
 
-# Copy bias correction, sigma, and surface files
+# Copy bias correction and atmosphere/surface guess files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)
 #             the input guess field file (wrf_inout)
@@ -1266,7 +1282,7 @@ fi
 mkdir $control_arw_netcdf2
 cp -rp stdout $control_arw_netcdf2
 cp -rp fort.220 $control_arw_netcdf2
-cp -rp siganl $control_arw_netcdf2
+cp -rp wrf_inout $control_arw_netcdf2
 
 # Save output
 mkdir -p $savdir
@@ -1360,13 +1376,13 @@ list="$exp1 $exp2 $exp3"
 for exp in $list; do
    $ncp $savdir/$exp/stdout ./stdout.$exp
    $ncp $savdir/$exp/fort.220 ./fort.220.$exp
-   $ncp $savdir/$exp/siganl ./siganl.$exp
+   $ncp $savdir/$exp/wrf_inout ./wrf_inout.$exp
 done
 
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep 'a,b' fort.220.$exp > penalty.$exp.txt
+   grep 'cost,grad,step' fort.220.$exp > penalty.$exp.txt
    grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
@@ -1515,13 +1531,13 @@ scale1thresh=$((scale1 / scaledif + scale1 + 3))
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp2}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
    echo
 fi
 
@@ -1531,7 +1547,7 @@ fi
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp2} 
+if cmp -s wrf_inout.${exp1} wrf_inout.${exp2} 
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
@@ -1544,13 +1560,13 @@ fi
 
 {
 
-if [[ $(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
+if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 else
    echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'penalty,grad ,a,b' penalty.${exp1}-${exp3}.txt)' lines different.'
+   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
    echo
 fi
 
@@ -1560,7 +1576,7 @@ fi
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp3}
+if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
    echo 'since the corresponding results are identical.'

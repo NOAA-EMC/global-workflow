@@ -31,7 +31,7 @@ datges=$datobs
 cmaq_ges=${datges}/cmaq2gsi_20100901_${hour}0000.bin
 anowbufr=${datobs}/hourly.20100901/aqm.t${hour}z.anowpm.pb.tm216
 anavinfo=${fix_file}/anavinfo_cmaq_binary
-berror=$fix_file/cmaq_pm2_5_reg_berror_${hour}z.bin
+berror=$fix_file/$endianness/cmaq_pm2_5_reg_berror_${hour}z.bin
 
 cmaq_input='cmaq_input.bin'
 cmaq_output='cmaq_output.bin'
@@ -194,19 +194,9 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
