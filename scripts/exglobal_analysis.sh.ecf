@@ -1253,6 +1253,14 @@ then
     fi
 fi
 
+if test "$RUN" = 'gfs'
+then
+    if test "$SENDDBN" = 'YES'
+    then
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${RUN}.${cycle}.abias
+    fi
+fi
+
 ################################################################################
 #  Postprocessing
 cd $pwd
