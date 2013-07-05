@@ -22,3 +22,13 @@ export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
+
+# Specify CRTM version to use in tests
+
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+   export crtm_rel=""
+   export crtm_coef=""
+else
+   export crtm_rel=""
+   export crtm_coef=""
+fi
