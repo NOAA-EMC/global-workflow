@@ -1159,7 +1159,6 @@ $ncp $bftab_sst ./bftab_sstphr
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
     $ncp $crtm_coef/${file}.SpcCoeff.bin ./
     $ncp $crtm_coef/${file}.TauCoeff.bin ./
-fi
 done
 
 # Copy observational data to $tmpdir

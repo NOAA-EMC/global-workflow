@@ -321,7 +321,7 @@ export ANBKGERR_update=""
 export JCOPTS_update=""
 if [[ $global_test = "global" ]]; then
    if [[ $gsiexec = $updat ]]; then
-      export STRONGOPTS_update="tlnmc_option=1,tlnmc_type=2"
+      export STRONGOPTS_update="tlnmc_option=1"
    else
       export STRONGOPTS_update="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
    fi

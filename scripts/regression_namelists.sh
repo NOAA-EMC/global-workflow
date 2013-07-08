@@ -37,7 +37,7 @@ export global_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -187,7 +187,7 @@ export global_lanczos_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -325,7 +325,7 @@ export global_hybrid_T126_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
