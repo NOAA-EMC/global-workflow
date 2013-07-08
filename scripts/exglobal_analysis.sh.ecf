@@ -33,7 +33,6 @@
 # 2009-03-19  Russ Treadon   add JCAP_A,NLAT_A,NLON_A,JCAP_B
 # 2010-04-28  Russ Treadon   remove global_angupdate
 # 2010-05-05  George Gayno   add ANAVINFO file
-# 2011-05-10  EMC/SPA        update RTMFIX defaults to ${FIXGLOBAL}/crtm_2.0.2, instead of crtm_gfsgsi
 # 2012-01-16  Treadon        add hooks for hybrid ensemble
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 #
@@ -187,14 +186,8 @@
 #                   defaults to ${FIXGLOBAL}/global_satinfo.txt
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
-#     RTMFIX        Input directory containing sensor specific coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_2.0.2
-#     RTMEMIS       Input satellite emissivity coefficients
-#                   defaults to ${RTMFIX}/EmisCoeff/Big_Endian/EmisCoeff.bin
-#     RTMAERO       Input radiative transfer model aerosol coefficients
-#                   defaults to ${RTMFIX}/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-#     RTMCLDS       Input radiative transfer model cloud coefficients
-#                   defaults to ${RTMFIX}/CloudCoeff/Big_Endian/CloudCoeff.bin
+#     RTMFIX        Input directory containing CRTM coefficients
+#                   defaults to ${FIXGLOBAL}/crtm_2.1.3
 #     ANAVINFO      Input analysis variable file
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
@@ -355,9 +348,6 @@
 #                  $SATINFO
 #                  $ATMSFILTER
 #                  $RTMFIX
-#                  $RTMEMIS
-#                  $RTMAERO
-#                  $RTMCLDS
 #                  $ANAVINFO
 #                  $CONVINFO
 #                  $OZINFO
@@ -505,10 +495,7 @@ export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.0.5}
-export RTMEMIS=${RTMEMIS:-${RTMFIX}/EmisCoeff/Big_Endian/EmisCoeff.bin}
-export RTMAERO=${RTMAERO:-${RTMFIX}/AerosolCoeff/Big_Endian/AerosolCoeff.bin}
-export RTMCLDS=${RTMCLDS:-${RTMFIX}/CloudCoeff/Big_Endian/CloudCoeff.bin}
+export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.1.3}
 export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
@@ -625,8 +612,6 @@ if [ $machine = IBMP6 ] ; then
   COMPRESS=compress
   UNCOMPRESS=uncompress
 else
-##export REDOUT=${REDOUT:-'1>'}
-##export REDERR=${REDERR:-'2>'}
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
   export REDOUT=${REDOUT:-'1>'$a}
@@ -693,9 +678,6 @@ then
    $NCP $SATANGL  satbias_angle
    $NCP $SATINFO  satinfo
    $NCP $ATMSFILTER atms_beamwidth.txt 
-   $NCP $RTMEMIS  EmisCoeff.bin
-   $NCP $RTMAERO  AerosolCoeff.bin
-   $NCP $RTMCLDS  CloudCoeff.bin
    $NCP $ANAVINFO anavinfo
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
@@ -707,9 +689,21 @@ then
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ${NCP:-cp} $RTMFIX/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-      ${NCP:-cp} $RTMFIX/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
    done
+
+   $NCP $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
+   $NCP $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    $NCP $PREPQC   prepbufr
@@ -824,9 +818,6 @@ else
    ln -fs $SATANGL  satbias_angle
    ln -fs $SATINFO  satinfo
    ln -fs $ATMSFILTER atms_beamwidth.txt
-   ln -fs $RTMEMIS  EmisCoeff.bin
-   ln -fs $RTMAERO  AerosolCoeff.bin
-   ln -fs $RTMCLDS  CloudCoeff.bin
    ln -fs $ANAVINFO anavinfo
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
@@ -836,12 +827,23 @@ else
    ln -fs $HYBENSINFO hybens_locinfo
    ln -fs $OBERROR  errtable
 
-
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ln -fs $RTMFIX/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-      ln -fs $RTMFIX/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+      ln -fs $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
+      ln -fs $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
    done
+
+   ln -fs $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    ln -fs $PREPQC   prepbufr
@@ -1157,7 +1159,6 @@ fi
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
-
 # Set up lists and variables for various types of diagnostic files.
 ntype=3
 
@@ -1189,8 +1190,6 @@ else
    prefix="pe*"
 fi
 
-
-
 # Collect diagnostic files as a function of loop and type.
 loops="01 03"
 for loop in $loops; do
@@ -1214,14 +1213,12 @@ done
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
-
 # If requested, compress diagnostic files
 if [[ $DIAG_COMPRESS = YES ]]; then
    for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
       $COMPRESS $file
    done
 fi
-
 
 # If requested, create diagnostic file tarballs
 if [[ $DIAG_TARBALL = YES ]]; then
@@ -1240,7 +1237,6 @@ if [[ $DIAG_TARBALL = YES ]]; then
    chmod 750 $CNVSTAT
    chgrp rstprod $CNVSTAT
 fi
-
 
 
 ################################################################################
