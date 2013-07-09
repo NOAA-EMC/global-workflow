@@ -37,7 +37,7 @@ export global_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -189,7 +189,7 @@ export global_lanczos_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -328,7 +328,7 @@ export global_hybrid_T126_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -1055,7 +1055,7 @@ export nmm_netcdf_namelist="
 export nems_nmmb_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1087,11 +1087,11 @@ export nems_nmmb_namelist="
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,
+   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
    vadfile='prepbufr',
  /
  &OBS_INPUT
-   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
+   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,ext_sonde=.true.,
    dfile(01)='prepbufr',  dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                 dval(01)=1.0, dthin(01)=0, dsfcalc(01)=0,
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                  dval(02)=1.0, dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                  dval(03)=1.0, dthin(03)=0, dsfcalc(03)=0,
@@ -1179,6 +1179,7 @@ export nems_nmmb_namelist="
    nlat_ens=${NLAT_ENS_REGIONAL},
    jcap_ens=${JCAP_ENS_REGIONAL},
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
+   full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
  /
  &RAPIDREFRESH_CLDSURF
    dfi_radar_latent_heat_time_period=30.0,
