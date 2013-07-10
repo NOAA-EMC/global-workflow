@@ -334,14 +334,14 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.abias_ssmis             ./satbias_in
 $ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03

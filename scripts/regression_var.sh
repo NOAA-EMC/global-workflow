@@ -9,7 +9,7 @@ export arch="`uname -s | awk '{print $1}'`"
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2011080100
+export global_T62_adate=2013011400
 export global_hybrid_T126_adate=2012012212
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
@@ -265,8 +265,8 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2011080100"
-export adate_global_nemsio="2011080100"
+export adate_global="2013011400"
+export adate_global_nemsio="2013011400"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"

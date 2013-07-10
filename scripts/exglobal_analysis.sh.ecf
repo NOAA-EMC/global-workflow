@@ -206,6 +206,8 @@
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
 #     SATWND        Input satellite wind file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}
+#     OSCATBF       Input OSCAT wind file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}
 #     GSNDBF        Input GOES sounder radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
 #     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
@@ -381,6 +383,7 @@
 #                  $FNSNOA
 #                  $PREPQC
 #                  $SATWND
+#                  $OSCATBF
 #                  $GSNDBF
 #                  $GSNDBF1
 #                  $B1HRS2
@@ -506,6 +509,7 @@ export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
+export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d${SUFINP}}
 export B1HRS2=${B1HRS2:-${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}}
@@ -708,6 +712,7 @@ then
    # Observational data
    $NCP $PREPQC   prepbufr
    $NCP $SATWND   satwndbufr
+   $NCP $OSCATBF  oscatbufr
    $NCP $GSNDBF   gsndrbufr
    $NCP $GSNDBF1  gsnd1bufr
    $NCP $B1HRS2   hirs2bufr
@@ -848,6 +853,7 @@ else
    # Observational data
    ln -fs $PREPQC   prepbufr
    ln -fs $SATWND   satwndbufr
+   ln -fs $OSCATBF  oscatbufr
    ln -fs $GSNDBF   gsndrbufr
    ln -fs $GSNDBF1  gsnd1bufr
    ln -fs $B1HRS2   hirs2bufr
@@ -945,7 +951,7 @@ cat <<EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
-   ndat=75,iguess=-1,
+   ndat=76,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
@@ -1059,6 +1065,7 @@ cat <<EOF > gsiparm.anl
    dfile(73)='gsnd1bufr', dtype(73)='sndrd2',    dplat(73)='g15',     dsis(73)='sndrD2_g15',      dval(73)=0.0,  dthin(73)=1,  dsfcalc(73)=0,
    dfile(74)='gsnd1bufr', dtype(74)='sndrd3',    dplat(74)='g15',     dsis(74)='sndrD3_g15',      dval(74)=0.0,  dthin(74)=1,  dsfcalc(74)=0,
    dfile(75)='gsnd1bufr', dtype(75)='sndrd4',    dplat(75)='g15',     dsis(75)='sndrD4_g15',      dval(75)=0.0,  dthin(75)=1,  dsfcalc(75)=0,
+   dfile(76)='oscatbufr', dtype(76)='uv',        dplat(76)=' ',       dsis(76)='uv',              dval(76)=0.0,  dthin(76)=0,  dsfcalc(76)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR
@@ -1246,6 +1253,14 @@ then
     if test "$SENDDBN" = 'YES'
     then
        $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
+    fi
+fi
+
+if test "$RUN" = 'gfs'
+then
+    if test "$SENDDBN" = 'YES'
+    then
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${RUN}.${cycle}.abias
     fi
 fi
 

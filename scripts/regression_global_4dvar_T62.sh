@@ -430,7 +430,7 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
@@ -860,7 +860,7 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
@@ -1290,7 +1290,7 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
@@ -1727,7 +1727,7 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}        ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears

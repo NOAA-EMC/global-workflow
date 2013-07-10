@@ -305,6 +305,7 @@ ln -s -f $global_T62_obs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 ln -s -f $global_T62_obs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
 ln -s -f $global_T62_obs/${prefix_obs}gome.${suffix}     ./gomebufr
 ln -s -f $global_T62_obs/${prefix_obs}omi.${suffix}      ./omibufr
+ln -s -f $global_T62_obs/${prefix_obs}mls.${suffix}      ./mlsbufr
 ln -s -f $global_T62_obs/${prefix_obs}osbuv8.${suffix}   ./sbuvbufr
 ln -s -f $global_T62_obs/${prefix_obs}goesfv.${suffix}   ./gsnd1bufr
 ln -s -f $global_T62_obs/${prefix_obs}1bamua.${suffix}   ./amsuabufr
