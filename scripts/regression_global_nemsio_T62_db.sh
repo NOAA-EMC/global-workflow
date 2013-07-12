@@ -251,9 +251,17 @@ EOF
 
 anavinfo=$fix_file/global_anavinfo.l64.txt
 berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
-emiscoef=$crtm_coef/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef_IRwater=$crtm_coef/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=$crtm_coef/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=$crtm_coef/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=$crtm_coef/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=$crtm_coef/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=$crtm_coef/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=$crtm_coef/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=$crtm_coef/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=$crtm_coef/FASTEM5.MWwater.EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
 satangl=$fix_file/global_satangbias.txt
@@ -274,7 +282,15 @@ $ncp $gsiexec ./gsi.x
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
-$ncp $emiscoef ./EmisCoeff.bin
+$ncp $emiscoef_IRwater ./Nalli.IRwater.EmisCoeff.bin
+$ncp $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin
+$ncp $emiscoef_IRsnow ./NPOESS.IRsnow.EmisCoeff.bin
+$ncp $emiscoef_IRland ./NPOESS.IRland.EmisCoeff.bin
+$ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
+$ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
+$ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
+$ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
+$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -291,8 +307,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+   $ncp $crtm_coef/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -318,14 +334,14 @@ $ncp $datobs/${prefix_obs}.amsre.${suffix}         ./amsrebufr
 $ncp $datobs/${prefix_obs}.ssmis.${suffix}         ./ssmisbufr
 $ncp $datobs/${prefix_obs}.gome.${suffix}          ./gomebufr
 $ncp $datobs/${prefix_obs}.omi.${suffix}           ./omibufr
-$ncp $datobs/${prefix_obs}.mlsbufr.${suffix}       ./mlsbufr
+$ncp $datobs/${prefix_obs}.mls.${suffix}           ./mlsbufr
 $ncp $datobs/${prefix_obs}.eshrs3.${suffix}        ./hirs3bufrears
 $ncp $datobs/${prefix_obs}.esamua.${suffix}        ./amsuabufrears
 $ncp $datobs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $datobs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $datobs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $datobs/${prefix_tbc}.abias_ssmis             ./satbias_in
 $ncp $datobs/${prefix_tbc}.satang                  ./satbias_angle
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03

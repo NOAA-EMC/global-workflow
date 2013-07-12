@@ -52,16 +52,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2012091506
+adate=2013052500
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.zeus
 
 # Set path/file for gsi executable
-gsiexec=${TOPDIR}/save/${USER}/trunk/src/global_gsi
+gsiexec=/u/wx20gd/Work_Dir/gsi/branches/EXP-testCRTM/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=${TOPDIR}/save/$USER/trunk/fix
+fixgsi=/u/wx20gd/Work_Dir/gsi/branches/EXP-testCRTM/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -76,14 +76,14 @@ if [ $MACHINE = CCS ]; then
    datdir=/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
-   fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
+   fixcrtm=/global/save/wx20ml/CRTM_REL-2.1.3/Big_Endian
    endianness=Big_Endian
    COMPRESS=compress
 elif [ $MACHINE = ZEUS ]; then
    datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
-   fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
+   fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
    COMPRESS=gzip
@@ -409,7 +409,7 @@ cat << EOF > gsiparm.anl
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -527,7 +527,15 @@ EOF
 
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT_A}.f77
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
+emiscoef_IRwater=$fixcrtm/Nalli.IRwater.EmisCoeff.bin   
+emiscoef_IRice=$fixcrtm/NPOESS.IRice.EmisCoeff.bin               
+emiscoef_IRland=$fixcrtm/NPOESS.IRland.EmisCoeff.bin             
+emiscoef_IRsnow=$fixcrtm/NPOESS.IRsnow.EmisCoeff.bin             
+emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin             
+emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin                   
+emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin                   
+emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin                 
+emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
@@ -553,7 +561,15 @@ $ncp $gsiexec ./gsi.x
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
-$ncp $emiscoef ./EmisCoeff.bin
+$ncp $emiscoef_IRwater ./Nalli.IRwater.EmisCoeff.bin
+$ncp $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin               
+$ncp $emiscoef_IRsnow ./NPOESS.IRsnow.EmisCoeff.bin             
+$ncp $emiscoef_IRland ./NPOESS.IRland.EmisCoeff.bin             
+$ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin             
+$ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin           
+$ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin           
+$ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin                 
+$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -571,8 +587,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+   $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 
@@ -807,7 +823,7 @@ esac
    for file in `ls diag_*${adate}`; do
       $COMPRESS $file
 
-      if [ $COMPRESS = "gzip" ]
+      if [ $COMPRESS = "gzip" ]; then
          $ncp diag_${type}_${string}.${adate}.gz $savdir/
       else
          $ncp diag_${type}_${string}.${adate}.Z $savdir/

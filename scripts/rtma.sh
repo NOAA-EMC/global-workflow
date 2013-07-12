@@ -198,8 +198,8 @@ $ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+    $ncp $crtm_coef/${file}.SpcCoeff.bin ./
+    $ncp $crtm_coef/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -321,7 +321,7 @@ export ANBKGERR_update=""
 export JCOPTS_update=""
 if [[ $global_test = "global" ]]; then
    if [[ $gsiexec = $updat ]]; then
-      export STRONGOPTS_update="tlnmc_option=1,tlnmc_type=2"
+      export STRONGOPTS_update="tlnmc_option=1"
    else
       export STRONGOPTS_update="hybens_inmc_option=1,jcstrong_option=2,jcstrong=.true."
    fi

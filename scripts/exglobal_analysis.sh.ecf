@@ -33,7 +33,6 @@
 # 2009-03-19  Russ Treadon   add JCAP_A,NLAT_A,NLON_A,JCAP_B
 # 2010-04-28  Russ Treadon   remove global_angupdate
 # 2010-05-05  George Gayno   add ANAVINFO file
-# 2011-05-10  EMC/SPA        update RTMFIX defaults to ${FIXGLOBAL}/crtm_2.0.2, instead of crtm_gfsgsi
 # 2012-01-16  Treadon        add hooks for hybrid ensemble
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 #
@@ -187,14 +186,8 @@
 #                   defaults to ${FIXGLOBAL}/global_satinfo.txt
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
-#     RTMFIX        Input directory containing sensor specific coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_2.0.2
-#     RTMEMIS       Input satellite emissivity coefficients
-#                   defaults to ${RTMFIX}/EmisCoeff/Big_Endian/EmisCoeff.bin
-#     RTMAERO       Input radiative transfer model aerosol coefficients
-#                   defaults to ${RTMFIX}/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-#     RTMCLDS       Input radiative transfer model cloud coefficients
-#                   defaults to ${RTMFIX}/CloudCoeff/Big_Endian/CloudCoeff.bin
+#     RTMFIX        Input directory containing CRTM coefficients
+#                   defaults to ${FIXGLOBAL}/crtm_2.1.3
 #     ANAVINFO      Input analysis variable file
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
@@ -213,6 +206,8 @@
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
 #     SATWND        Input satellite wind file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}
+#     OSCATBF       Input OSCAT wind file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}
 #     GSNDBF        Input GOES sounder radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
 #     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
@@ -355,9 +350,6 @@
 #                  $SATINFO
 #                  $ATMSFILTER
 #                  $RTMFIX
-#                  $RTMEMIS
-#                  $RTMAERO
-#                  $RTMCLDS
 #                  $ANAVINFO
 #                  $CONVINFO
 #                  $OZINFO
@@ -391,6 +383,7 @@
 #                  $FNSNOA
 #                  $PREPQC
 #                  $SATWND
+#                  $OSCATBF
 #                  $GSNDBF
 #                  $GSNDBF1
 #                  $B1HRS2
@@ -505,10 +498,7 @@ export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.0.5}
-export RTMEMIS=${RTMEMIS:-${RTMFIX}/EmisCoeff/Big_Endian/EmisCoeff.bin}
-export RTMAERO=${RTMAERO:-${RTMFIX}/AerosolCoeff/Big_Endian/AerosolCoeff.bin}
-export RTMCLDS=${RTMCLDS:-${RTMFIX}/CloudCoeff/Big_Endian/CloudCoeff.bin}
+export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.1.3}
 export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
@@ -519,6 +509,7 @@ export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
+export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d${SUFINP}}
 export B1HRS2=${B1HRS2:-${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}}
@@ -625,8 +616,6 @@ if [ $machine = IBMP6 ] ; then
   COMPRESS=compress
   UNCOMPRESS=uncompress
 else
-##export REDOUT=${REDOUT:-'1>'}
-##export REDERR=${REDERR:-'2>'}
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
   export REDOUT=${REDOUT:-'1>'$a}
@@ -693,9 +682,6 @@ then
    $NCP $SATANGL  satbias_angle
    $NCP $SATINFO  satinfo
    $NCP $ATMSFILTER atms_beamwidth.txt 
-   $NCP $RTMEMIS  EmisCoeff.bin
-   $NCP $RTMAERO  AerosolCoeff.bin
-   $NCP $RTMCLDS  CloudCoeff.bin
    $NCP $ANAVINFO anavinfo
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
@@ -707,13 +693,26 @@ then
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ${NCP:-cp} $RTMFIX/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-      ${NCP:-cp} $RTMFIX/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
    done
+
+   $NCP $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   $NCP $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
+   $NCP $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    $NCP $PREPQC   prepbufr
    $NCP $SATWND   satwndbufr
+   $NCP $OSCATBF  oscatbufr
    $NCP $GSNDBF   gsndrbufr
    $NCP $GSNDBF1  gsnd1bufr
    $NCP $B1HRS2   hirs2bufr
@@ -824,9 +823,6 @@ else
    ln -fs $SATANGL  satbias_angle
    ln -fs $SATINFO  satinfo
    ln -fs $ATMSFILTER atms_beamwidth.txt
-   ln -fs $RTMEMIS  EmisCoeff.bin
-   ln -fs $RTMAERO  AerosolCoeff.bin
-   ln -fs $RTMCLDS  CloudCoeff.bin
    ln -fs $ANAVINFO anavinfo
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
@@ -836,16 +832,28 @@ else
    ln -fs $HYBENSINFO hybens_locinfo
    ln -fs $OBERROR  errtable
 
-
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ln -fs $RTMFIX/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-      ln -fs $RTMFIX/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+      ln -fs $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
+      ln -fs $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
    done
+
+   ln -fs $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
+   ln -fs $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    ln -fs $PREPQC   prepbufr
    ln -fs $SATWND   satwndbufr
+   ln -fs $OSCATBF  oscatbufr
    ln -fs $GSNDBF   gsndrbufr
    ln -fs $GSNDBF1  gsnd1bufr
    ln -fs $B1HRS2   hirs2bufr
@@ -943,7 +951,7 @@ cat <<EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
-   ndat=75,iguess=-1,
+   ndat=76,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
@@ -971,7 +979,7 @@ cat <<EOF > gsiparm.anl
    $JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=2,tlnmc_type=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
    baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
@@ -1057,6 +1065,7 @@ cat <<EOF > gsiparm.anl
    dfile(73)='gsnd1bufr', dtype(73)='sndrd2',    dplat(73)='g15',     dsis(73)='sndrD2_g15',      dval(73)=0.0,  dthin(73)=1,  dsfcalc(73)=0,
    dfile(74)='gsnd1bufr', dtype(74)='sndrd3',    dplat(74)='g15',     dsis(74)='sndrD3_g15',      dval(74)=0.0,  dthin(74)=1,  dsfcalc(74)=0,
    dfile(75)='gsnd1bufr', dtype(75)='sndrd4',    dplat(75)='g15',     dsis(75)='sndrD4_g15',      dval(75)=0.0,  dthin(75)=1,  dsfcalc(75)=0,
+   dfile(76)='oscatbufr', dtype(76)='uv',        dplat(76)=' ',       dsis(76)='uv',              dval(76)=0.0,  dthin(76)=0,  dsfcalc(76)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR
@@ -1157,7 +1166,6 @@ fi
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
-
 # Set up lists and variables for various types of diagnostic files.
 ntype=3
 
@@ -1189,8 +1197,6 @@ else
    prefix="pe*"
 fi
 
-
-
 # Collect diagnostic files as a function of loop and type.
 loops="01 03"
 for loop in $loops; do
@@ -1214,14 +1220,12 @@ done
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
-
 # If requested, compress diagnostic files
 if [[ $DIAG_COMPRESS = YES ]]; then
    for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
       $COMPRESS $file
    done
 fi
-
 
 # If requested, create diagnostic file tarballs
 if [[ $DIAG_TARBALL = YES ]]; then
@@ -1242,7 +1246,6 @@ if [[ $DIAG_TARBALL = YES ]]; then
 fi
 
 
-
 ################################################################################
 
 if test "$RUN" = 'gdas1'
@@ -1250,6 +1253,14 @@ then
     if test "$SENDDBN" = 'YES'
     then
        $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
+    fi
+fi
+
+if test "$RUN" = 'gfs'
+then
+    if test "$SENDDBN" = 'YES'
+    then
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${RUN}.${cycle}.abias
     fi
 fi
 
