@@ -100,24 +100,24 @@ time2=$(awk '{ print $8 }' runtime.$exp2.txt)
 time1=$(awk '{ print $8 }' runtime.$exp1.txt)
 mem=$(awk '{ print $8 }' memory.$exp2.txt)
 
-timethresh=$((time2 / timedif + time2))
-memthresh=$((mem / memdiff + mem))
+timethresh=$( echo "$time2 / $timedif + $time2" | bc -l )
+memthresh=$( echo "$mem / $memdiff + $mem" | bc -l )
 
 # Fill time variables with scalability data
 
 time_scale1=$(awk '{ print $8 }' runtime.$exp1_scale.txt)
 time_scale2=$(awk '{ print $8 }' runtime.$exp2_scale.txt)
 
-timethresh2=$((time_scale2 / timedif + time_scale2))
+timethresh2=$( echo "$time_scale2 / $timedif + $time_scale2" | bc -l )
 
 # Now, figure out difference in time between two runs
 
-scale1=$((time1 - time_scale1))
-scale2=$((time2 - time_scale2))
+scale1=$( echo "$time1 - $time_scale1" | bc -l )
+scale2=$( echo "$time2 - $time_scale2" | bc -l )
 
 # Calculate maximum allowable deviation for scalability
 
-scale1thresh=$((scale1 / scaledif + scale1))
+scale1thresh=$( echo "$scale1 / $scaledif + $scale1" | bc -l )
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
