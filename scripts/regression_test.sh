@@ -88,9 +88,9 @@ done
 # Values below can be fine tuned to make the regression more or less aggressive
 # Currently using a value of 10%
 
-timedif=10
-memdiff=8
-scaledif=4
+timedif=$7
+memdiff=$8
+scaledif=$9
 
 # timethresh = avgtime*timedif+avgtime
 # memthresh = avgmem*memdiff+avgmem
