@@ -88,9 +88,9 @@ done
 # Values below can be fine tuned to make the regression more or less aggressive
 # Currently using a value of 10%
 
-timedif=10
-memdiff=8
-scaledif=4
+timedif=$7
+memdiff=$8
+scaledif=$9
 
 # timethresh = avgtime*timedif+avgtime
 # memthresh = avgmem*memdiff+avgmem
@@ -100,35 +100,34 @@ time2=$(awk '{ print $8 }' runtime.$exp2.txt)
 time1=$(awk '{ print $8 }' runtime.$exp1.txt)
 mem=$(awk '{ print $8 }' memory.$exp2.txt)
 
-timethresh=$((time2 / timedif + time2))
-memthresh=$((mem / memdiff + mem))
+timethresh=$( echo "scale=6;$time2 / $timedif + $time2" | bc -l )
+memthresh=$( echo "scale=0;$mem / $memdiff + $mem" | bc -l )
 
 # Fill time variables with scalability data
 
 time_scale1=$(awk '{ print $8 }' runtime.$exp1_scale.txt)
 time_scale2=$(awk '{ print $8 }' runtime.$exp2_scale.txt)
 
-timethresh2=$((time_scale2 / timedif + time_scale2))
+timethresh2=$( echo "scale=6;$time_scale2 / $timedif + $time_scale2" | bc -l )
 
 # Now, figure out difference in time between two runs
 
-scale1=$((time1 - time_scale1))
-scale2=$((time2 - time_scale2))
+scale1=$( echo "scale=6;$time1 - $time_scale1" | bc -l )
+scale2=$( echo "scale=6;$time2 - $time_scale2" | bc -l )
 
 # Calculate maximum allowable deviation for scalability
 
-scale1thresh=$((scale1 / scaledif + scale1))
+scale1thresh=$( echo "scale=6;$scale1 / $scaledif + $scale1" | bc -l )
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
-
-if [[ "$arch" = AIX ]]; then
 
    {
 
    # This part is for the maximum allowable time (operationally)
 
-     if [[ $(awk '{ print $8 }' runtime.$exp1.txt) -gt $maxtime ]]; then
+     timelogic=$( echo "$time1 > $maxtime" | bc )
+     if [[ "$timelogic" = 1 ]]; then
        echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has exceeded maximum allowable operational time of '$maxtime' seconds,'
        echo 'resulting in failure of the regression test.'
        echo
@@ -144,7 +143,8 @@ if [[ "$arch" = AIX ]]; then
 
    {
 
-     if [[ $(awk '{ print $8 }' runtime.$exp1.txt) -gt $timethresh ]]; then
+     timelogic=$( echo "$time1 > $timethresh" | bc )
+     if [[ "$timelogic" = 1 ]]; then
        echo 'The runtime for '$exp1' is '$(awk '{ print $8 }' runtime.$exp1.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh' seconds,'
        echo 'resulting in failure of the regression test.'
        echo
@@ -160,7 +160,8 @@ if [[ "$arch" = AIX ]]; then
 
    {
 
-     if [[ $(awk '{ print $8 }' runtime.$exp1_scale.txt) -gt $timethresh2 ]]; then
+     timelogic=$( echo "$time_scale1 > $timethresh2" | bc )
+     if [[ "$timelogic" = 1 ]]; then
        echo 'The runtime for '$exp1_scale' is '$(awk '{ print $8 }' runtime.$exp1_scale.txt)' seconds.  This has exceeded maximum allowable threshold time of '$timethresh2' seconds,'
        echo 'resulting in failure of the regression test.'
        echo
@@ -204,8 +205,6 @@ if [[ "$arch" = AIX ]]; then
      fi
 
    } >> $output
-
-fi
 
 # Next, reproducibility between exp1 and exp2
 
@@ -297,13 +296,12 @@ fi
 
 fi
 
-if [[ "$arch" = AIX ]]; then
-
    # Finally, scalability
 
    {
 
-   if [[ $scale1thresh -ge $scale2 ]]; then
+   timelogic=$( echo "$scale1thresh >= $scale2" | bc )
+   if [[ "$timelogic" = 1 ]]; then
       echo 'The case has passed the scalability regression test.'
       echo 'The slope for the update ('$scale1thresh' seconds per node) is greater than or equal to that for the control ('$scale2' seconds per node).'
    else
@@ -312,8 +310,6 @@ if [[ "$arch" = AIX ]]; then
    fi
 
    } >> $output
-
-fi
 
 # Copy select results to $savdir
 mkdir -p $vfydir

@@ -29,7 +29,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_nmmb_nems.out
-   /bin/sh sub_zeus -j $nmmb_nems_updat_exp2 -t 0:12:00 -p 6/8/0 $scripts/nmmb_nems.sh
+
+   /bin/sh sub_zeus -j $nmmb_nems_updat_exp2 -t 0:12:00 -p 8/8/0 $scripts/nmmb_nems.sh
 
    while [[ $(grep -c '+ rc=0' ${nmmb_nems_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmmb_nems_updat_exp2}.out > return_code_nmmb_nems.out
@@ -47,7 +48,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_nmmb_nems.out
-   /bin/sh sub_zeus -j $nmmb_nems_contrl_exp1 -t 0:12:00 -p 6/8/0 $scripts/nmmb_nems.sh
+
+   /bin/sh sub_zeus -j $nmmb_nems_contrl_exp1 -t 0:12:00 -p 6/6/0 $scripts/nmmb_nems.sh
 
    while [[ $(grep -c '+ rc=0' ${nmmb_nems_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmmb_nems_contrl_exp1}.out > return_code_nmmb_nems.out
@@ -65,7 +67,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_nmmb_nems.out
-   /bin/sh sub_zeus -j $nmmb_nems_contrl_exp2 -t 0:12:00 -p 6/8/0 $scripts/nmmb_nems.sh
+
+   /bin/sh sub_zeus -j $nmmb_nems_contrl_exp2 -t 0:12:00 -p 8/8/0 $scripts/nmmb_nems.sh
 
    while [[ $(grep -c '+ rc=0' ${nmmb_nems_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmmb_nems_contrl_exp2}.out > return_code_nmmb_nems.out
@@ -83,7 +86,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_nmmb_nems.out
-   /bin/sh $scripts/regression_test.sh $nmmb_nems_updat_exp1 $nmmb_nems_updat_exp2 $nmmb_nems_contrl_exp1 $nmmb_nems_contrl_exp2 tmpreg_nems_nmmb $nems_nmmb_regression
+
+   /bin/sh $scripts/regression_test.sh $nmmb_nems_updat_exp1 $nmmb_nems_updat_exp2 $nmmb_nems_contrl_exp1 $nmmb_nems_contrl_exp2 tmpreg_nems_nmmb $nems_nmmb_regression 8 10 8
 
    rm -f nmmb_nems.out
 
@@ -165,7 +169,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_nmmb_nems.out
-   /bin/sh $scripts/regression_test.sh $nmmb_nems_updat_exp1 $nmmb_nems_updat_exp2 $nmmb_nems_contrl_exp1 $nmmb_nems_contrl_exp2 tmpreg_nems_nmmb $nems_nmmb_regression
+   /bin/sh $scripts/regression_test.sh $nmmb_nems_updat_exp1 $nmmb_nems_updat_exp2 $nmmb_nems_contrl_exp1 $nmmb_nems_contrl_exp2 tmpreg_nems_nmmb $nems_nmmb_regression 8 10 8
 
    rm -f nmmb_nems.out
 

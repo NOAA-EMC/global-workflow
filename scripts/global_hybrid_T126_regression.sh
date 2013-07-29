@@ -29,7 +29,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh sub_zeus -j $global_hybrid_T126_updat_exp2 -t 0:12:00 -p 6/8/0 $scripts/global_hybrid_T126.sh
+
+   /bin/sh sub_zeus -j $global_hybrid_T126_updat_exp2 -t 0:12:00 -p 8/8/0 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_updat_exp2}.out > return_code_global_hybrid_3dvar.out
@@ -47,6 +48,7 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_global_hybrid_3dvar.out
+
    /bin/sh sub_zeus -j $global_hybrid_T126_contrl_exp1 -t 0:15:00 -p 6/6/0 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_contrl_exp1}.out) -ne 1 ]]; do
@@ -65,7 +67,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh sub_zeus -j $global_hybrid_T126_contrl_exp2 -t 0:12:00 -p 6/8/0 $scripts/global_hybrid_T126.sh
+
+   /bin/sh sub_zeus -j $global_hybrid_T126_contrl_exp2 -t 0:12:00 -p 8/8/0 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_contrl_exp2}.out > return_code_global_hybrid_3dvar.out
@@ -83,7 +86,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh $scripts/regression_test.sh $global_hybrid_T126_updat_exp1 $global_hybrid_T126_updat_exp2 $global_hybrid_T126_contrl_exp1 $global_hybrid_T126_contrl_exp2 tmp126 $global_hybrid_regression
+
+   /bin/sh $scripts/regression_test.sh $global_hybrid_T126_updat_exp1 $global_hybrid_T126_updat_exp2 $global_hybrid_T126_contrl_exp1 $global_hybrid_T126_contrl_exp2 tmp126 $global_hybrid_regression 10 8 4
 
    rm -f global_hybrid_T126.out
 
@@ -165,7 +169,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh $scripts/regression_test.sh $global_hybrid_T126_updat_exp1 $global_hybrid_T126_updat_exp2 $global_hybrid_T126_contrl_exp1 $global_hybrid_T126_contrl_exp2 tmp126 $global_hybrid_regression
+   /bin/sh $scripts/regression_test.sh $global_hybrid_T126_updat_exp1 $global_hybrid_T126_updat_exp2 $global_hybrid_T126_contrl_exp1 $global_hybrid_T126_contrl_exp2 tmp126 $global_hybrid_regression 10 8 4
 
    rm -f global_hybrid_T126.out
 
