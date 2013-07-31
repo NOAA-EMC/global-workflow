@@ -3,7 +3,7 @@
 set -x
 
 if [[ "`uname -s | awk '{print $1}'`" = 'Linux' ]]; then
-   echo "/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/EXP-port/scripts/regression_var.sh" > regression_var.out
+   echo "/scratch1/portfolios/NCEPDEV/da/save/Yanqiu.Zhu/EXP-testCRTM_zhu_submit/scripts/regression_var.sh" > regression_var.out
 elif [[ "`uname -s | awk '{print $1}'`" = 'AIX' ]]; then
    echo "/global/save/wx20ml/EXP-port/scripts/regression_var.sh" > regression_var.out
 fi
