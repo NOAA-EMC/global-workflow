@@ -7,7 +7,7 @@ set -x
 #. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
 #. regression_var.sh
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
 
@@ -93,11 +93,11 @@ if [[ "$arch" = "Linux" ]]; then
 
    exit
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_netcdf_updat_exp1 -q $queue -p 16/1/N -r 110/1 -t 0:10:00 $scripts/arw_netcdf.sh
+   /bin/sh sub_wcoss -j $arw_netcdf_updat_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_netcdf_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_netcdf_updat_exp1}.out > return_code_arw_netcdf.out
@@ -115,7 +115,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_arw_netcdf.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_netcdf_updat_exp2 -q $queue -p 32/1/N -r 110/1 -t 0:10:00 $scripts/arw_netcdf.sh
+   /bin/sh sub_wcoss -j $arw_netcdf_updat_exp2 -q $queue -p 16/2/ -r /1 -t 0:10:00 $scripts/arw_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_netcdf_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_netcdf_updat_exp2}.out > return_code_arw_netcdf.out
@@ -133,7 +133,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_arw_netcdf.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_netcdf_contrl_exp1 -q $queue -p 16/1/N -r 110/1 -t 0:10:00 $scripts/arw_netcdf.sh
+   /bin/sh sub_wcoss -j $arw_netcdf_contrl_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_netcdf_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_netcdf_contrl_exp1}.out > return_code_arw_netcdf.out
@@ -151,7 +151,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_arw_netcdf.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_netcdf_contrl_exp2 -q $queue -p 32/1/N -r 110/1 -t 0:10:00 $scripts/arw_netcdf.sh
+   /bin/sh sub_wcoss -j $arw_netcdf_contrl_exp2 -q $queue -p 16/2/ -r /1 -t 0:10:00 $scripts/arw_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_netcdf_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_netcdf_contrl_exp2}.out > return_code_arw_netcdf.out

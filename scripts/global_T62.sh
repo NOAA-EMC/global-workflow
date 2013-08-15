@@ -3,15 +3,7 @@ set -x
 
 # Set experiment name and analysis date
 
-if [[ "$arch" = "Linux" ]]; then
-
-   exp=$jobname
-
-elif [[ "$arch" = "AIX" ]]; then
-
-   exp=$LOADL_JOB_NAME
-
-fi
+exp=$jobname
 
 # Set path/file for gsi executable
 #basedir=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken
@@ -226,17 +218,17 @@ EOF
 
 berror=$fixgsi/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 
-emiscoef_IRwater=$crtm_coef/Nalli.IRwater.EmisCoeff.bin
-emiscoef_IRice=$crtm_coef/NPOESS.IRice.EmisCoeff.bin
-emiscoef_IRland=$crtm_coef/NPOESS.IRland.EmisCoeff.bin
-emiscoef_IRsnow=$crtm_coef/NPOESS.IRsnow.EmisCoeff.bin
-emiscoef_VISice=$crtm_coef/NPOESS.VISice.EmisCoeff.bin
-emiscoef_VISland=$crtm_coef/NPOESS.VISland.EmisCoeff.bin
-emiscoef_VISsnow=$crtm_coef/NPOESS.VISsnow.EmisCoeff.bin
-emiscoef_VISwater=$crtm_coef/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=$crtm_coef/FASTEM5.MWwater.EmisCoeff.bin
-aercoef=$crtm_coef/AerosolCoeff.bin
-cldcoef=$crtm_coef/CloudCoeff.bin
+emiscoef_IRwater=$fixcrtm/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=$fixcrtm/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=$fixcrtm/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=$fixcrtm/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
+aercoef=$fixcrtm/AerosolCoeff.bin
+cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
@@ -292,8 +284,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-    $ncp $crtm_coef/${file}.SpcCoeff.bin ./
-    $ncp $crtm_coef/${file}.TauCoeff.bin ./
+    $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+    $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 
@@ -352,7 +344,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -368,9 +360,9 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
 

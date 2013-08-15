@@ -2,15 +2,8 @@
 set -x
 
 # Set experiment name and analysis date
-if [[ "$arch" = "Linux" ]]; then
 
-   exp=$jobname
-
-elif [[ "$arch" = "AIX" ]]; then
-
-   exp=$LOADL_JOB_NAME
-
-fi
+exp=$jobname
 
 # Set path/file for gsi executable
 #gsiexec=$updat
@@ -287,8 +280,8 @@ mv new convinfo
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/${file}.TauCoeff.bin ./
+   $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -345,7 +338,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -361,9 +354,9 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout.obsvr"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout.obsvr
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout.obsvr
 
 fi
 
@@ -382,7 +375,7 @@ $global_T62_namelist
 
 EOF
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -398,9 +391,9 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
 

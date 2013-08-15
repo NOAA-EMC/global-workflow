@@ -113,7 +113,7 @@ fi
 shift
 args="$*"
 bn=$(basename $exec)
-jobname=${jobname:-$bn}
+export jobname=${jobname:-$bn}
 output=${output:-$jobname.out}
 myuser=$LOGNAME
 myhost=$(hostname)
@@ -144,7 +144,7 @@ if [ "$TASK_GEOMETRY" = NONE ] ; then
  if [ $nodes -eq 1 ] ; then
   task_node=$procs
  fi
- tot_size=$procs
+ tot_size=$((procs*nodes))
 else
  tot_size=$((task_node*nodes))
 fi
@@ -180,7 +180,7 @@ if [ $mpiver = openmp ] ; then
  echo "#BSUB -R affinity[$core]"                                  >> $cfile
  echo "#BSUB -R rusage[mem=$rmem]"                                >> $cfile
 else
- echo "#BSUB -R span[ptile=$task_node]"                           >> $cfile
+ echo "#BSUB -R span[ptile=$procs]"                               >> $cfile
 fi
 if [ $threads -gt 1 ] ; then
   if [ $core = core ] ; then
@@ -302,6 +302,10 @@ fi
 for var in $(eval echo $envars | tr , ' ') ; do
  echo "export $var"                                             >> $cfile
 done
+echo "" >>$cfile
+echo ". "$(awk '{ print $1 }' regression_var.out)  >>$cfile
+echo "" >>$cfile
+
 echo "$exec"                                                    >> $cfile
 
 if [[ $stdin = YES ]];then

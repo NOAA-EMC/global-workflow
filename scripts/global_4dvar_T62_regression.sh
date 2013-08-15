@@ -4,7 +4,7 @@ set -x
 
 . $(awk '{ print $1 }' regression_var.out)
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
 
@@ -90,11 +90,11 @@ if [[ "$arch" = "Linux" ]]; then
 
    exit
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_4dvar_T62_updat_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_4dvar_T62.sh
+   /bin/sh sub_wcoss -j $global_4dvar_T62_updat_exp1 -q $queue -p 16/2/ -r /1 -t 0:35:00 $scripts/global_4dvar_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_4dvar_T62_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_4dvar_T62_updat_exp1}.out > return_code_global_4dvar.out
@@ -112,7 +112,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_4dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_4dvar_T62_updat_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_4dvar_T62.sh
+   /bin/sh sub_wcoss -j $global_4dvar_T62_updat_exp2 -q $queue -p 16/4/ -r /2 -t 0:25:00 $scripts/global_4dvar_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_4dvar_T62_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_4dvar_T62_updat_exp2}.out > return_code_global_4dvar.out
@@ -130,7 +130,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_4dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_4dvar_T62_contrl_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_4dvar_T62.sh
+   /bin/sh sub_wcoss -j $global_4dvar_T62_contrl_exp1 -q $queue -p 16/2/ -r /1 -t 0:35:00 $scripts/global_4dvar_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_4dvar_T62_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_4dvar_T62_contrl_exp1}.out > return_code_global_4dvar.out
@@ -148,7 +148,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_4dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_4dvar_T62_contrl_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_4dvar_T62.sh
+   /bin/sh sub_wcoss -j $global_4dvar_T62_contrl_exp2 -q $queue -p 16/4/ -r /2 -t 0:25:00 $scripts/global_4dvar_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_4dvar_T62_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_4dvar_T62_contrl_exp2}.out > return_code_global_4dvar.out
