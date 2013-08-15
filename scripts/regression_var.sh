@@ -177,7 +177,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/gpfs/td2/emc/da/noscrub/$LOGNAME
+   which=`pwd | cut -f3 -d/`
+   export basedir=/gpfs/$which/emc/da/noscrub/$LOGNAME
    export gsisrc=$basedir/EXP-WCOSS_regtests/src
    export gsiexec_updat=$basedir/EXP-WCOSS_regtests/src/global_gsi
    export gsiexec_contrl=$basedir/svn1/src/global_gsi

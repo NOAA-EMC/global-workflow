@@ -6,7 +6,8 @@ set -x
 #echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-port/scripts/regression_var.sh" > regression_var.out
 
 #For WCOSS
-echo "/gpfs/td2/emc/da/noscrub/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
+which=`pwd | cut -f3 -d/`
+echo "/gpfs/$which/emc/da/noscrub/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 
