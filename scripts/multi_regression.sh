@@ -23,12 +23,12 @@ echo "/gpfs/$which/emc/da/noscrub/$LOGNAME/EXP-WCOSS_regtests/scripts/regression
 
 /bin/sh arw_binary_regression.sh > arw_binary.out &
 
-#/bin/sh nmm_binary_regression.sh > nmm_binary.out &
+/bin/sh nmm_binary_regression.sh > nmm_binary.out &
 
-#/bin/sh nmm_netcdf_regression.sh > nmm_netcdf.out &
+/bin/sh nmm_netcdf_regression.sh > nmm_netcdf.out &
 
-#/bin/sh nmmb_nems_regression.sh > nmmb_nems.out &
+/bin/sh nmmb_nems_regression.sh > nmmb_nems.out &
 
-#/bin/sh rtma_regression.sh > rtma.out &
+/bin/sh rtma_regression.sh > rtma.out &
 
 exit
