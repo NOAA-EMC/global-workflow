@@ -7,7 +7,7 @@ set -x
 #. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
 #. regression_var.sh
 
-if [[ "$amchine" = "Zeus" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub wrapper.
 

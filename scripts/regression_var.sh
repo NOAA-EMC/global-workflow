@@ -5,8 +5,8 @@
 
 # Specify machine that is being used (Zeus or WCOSS)
 
-export machine="WCOSS"
-#export machine="Zeus"
+#export machine="WCOSS"
+export machine="Zeus"
 
 # Variables with the same values are defined below.
 
@@ -81,12 +81,12 @@ if [[ "$machine" = "Zeus" ]]; then
    export group=global
    export queue=batch
    export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/EXP-port/src
-   export gsiexec_updat=$basedir/EXP-port/src/global_gsi
+   export gsisrc=$basedir/EXP-WCOSS_regtests/src
+   export gsiexec_updat=$basedir/EXP-WCOSS_regtests/src/global_gsi
    export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export fixgsi=$basedir/EXP-port/fix
-   export scripts=$basedir/EXP-port/scripts
-   export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
+   export fixgsi=$basedir/EXP-WCOSS_regtests/fix
+   export scripts=$basedir/EXP-WCOSS_regtests/scripts
+   export fixcrtm=/contrib/nceplibs/nwprod/lib/fix/crtm_v2.1.3
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
 
