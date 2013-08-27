@@ -9,8 +9,11 @@ export arch="`uname -s | awk '{print $1}'`"
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2011080100
+export global_T62_adate=2013011400
+export global_4dvar_T62_adate=2013011400
 export global_hybrid_T126_adate=2012012212
+export global_lanczos_T62_adate=2013011400
+export global_nemsio_T62_adate=2013011400
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
 export arw_netcdf_adate=2008051112
@@ -27,37 +30,49 @@ if [[ "$arch" = "Linux" ]]; then
 #  First, experiment names.
 
    export global_T62_updat_exp1=global_T${JCAP}_36proc_updat
-   export global_T62_updat_exp2=global_T${JCAP}_48proc_updat
+   export global_T62_updat_exp2=global_T${JCAP}_64proc_updat
    export global_T62_contrl_exp1=global_T${JCAP}_36proc_contrl
-   export global_T62_contrl_exp2=global_T${JCAP}_48proc_contrl
+   export global_T62_contrl_exp2=global_T${JCAP}_64proc_contrl
+   export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_36proc_updat
+   export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_64proc_updat
+   export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_36proc_contrl
+   export global_4dvar_T62_contrl_exp2=global_4dvar_T${JCAP}_64proc_contrl
    export global_hybrid_T126_updat_exp1=global_hybrid_36proc_updat
-   export global_hybrid_T126_updat_exp2=global_hybrid_48proc_updat
+   export global_hybrid_T126_updat_exp2=global_hybrid_64proc_updat
    export global_hybrid_T126_contrl_exp1=global_hybrid_36proc_contrl
-   export global_hybrid_T126_contrl_exp2=global_hybrid_48proc_contrl
+   export global_hybrid_T126_contrl_exp2=global_hybrid_64proc_contrl
+   export global_lanczos_T62_updat_exp1=global_lanczos_T${JCAP}_36proc_updat
+   export global_lanczos_T62_updat_exp2=global_lanczos_T${JCAP}_64proc_updat
+   export global_lanczos_T62_contrl_exp1=global_lanczos_T${JCAP}_36proc_contrl
+   export global_lanczos_T62_contrl_exp2=global_lanczos_T${JCAP}_64proc_contrl
+   export global_nemsio_T62_updat_exp1=global_nemsio_T${JCAP}_36proc_updat
+   export global_nemsio_T62_updat_exp2=global_nemsio_T${JCAP}_64proc_updat
+   export global_nemsio_T62_contrl_exp1=global_nemsio_T${JCAP}_36proc_contrl
+   export global_nemsio_T62_contrl_exp2=global_nemsio_T${JCAP}_64proc_contrl
    export nmmb_nems_updat_exp1=nmmb_nems_36proc_updat
-   export nmmb_nems_updat_exp2=nmmb_nems_48proc_updat
+   export nmmb_nems_updat_exp2=nmmb_nems_64proc_updat
    export nmmb_nems_contrl_exp1=nmmb_nems_36proc_contrl
-   export nmmb_nems_contrl_exp2=nmmb_nems_48proc_contrl
-   export arw_binary_updat_exp1=arw_binary_36proc_updat
-   export arw_binary_updat_exp2=arw_binary_48proc_updat
-   export arw_binary_contrl_exp1=arw_binary_36proc_contrl
-   export arw_binary_contrl_exp2=arw_binary_48proc_contrl
-   export arw_netcdf_updat_exp1=arw_netcdf_36proc_updat
-   export arw_netcdf_updat_exp2=arw_netcdf_48proc_updat
-   export arw_netcdf_contrl_exp1=arw_netcdf_36proc_contrl
-   export arw_netcdf_contrl_exp2=arw_netcdf_48proc_contrl
+   export nmmb_nems_contrl_exp2=nmmb_nems_64proc_contrl
+   export arw_binary_updat_exp1=arw_binary_16proc_updat
+   export arw_binary_updat_exp2=arw_binary_36proc_updat
+   export arw_binary_contrl_exp1=arw_binary_16proc_contrl
+   export arw_binary_contrl_exp2=arw_binary_36proc_contrl
+   export arw_netcdf_updat_exp1=arw_netcdf_16proc_updat
+   export arw_netcdf_updat_exp2=arw_netcdf_36proc_updat
+   export arw_netcdf_contrl_exp1=arw_netcdf_16proc_contrl
+   export arw_netcdf_contrl_exp2=arw_netcdf_36proc_contrl
    export nmm_binary_updat_exp1=nmm_binary_36proc_updat
-   export nmm_binary_updat_exp2=nmm_binary_48proc_updat
+   export nmm_binary_updat_exp2=nmm_binary_64proc_updat
    export nmm_binary_contrl_exp1=nmm_binary_36proc_contrl
-   export nmm_binary_contrl_exp2=nmm_binary_48proc_contrl
-   export nmm_netcdf_updat_exp1=nmm_netcdf_36proc_updat
-   export nmm_netcdf_updat_exp2=nmm_netcdf_48proc_updat
-   export nmm_netcdf_contrl_exp1=nmm_netcdf_36proc_contrl
-   export nmm_netcdf_contrl_exp2=nmm_netcdf_48proc_contrl
-   export rtma_updat_exp1=rtma_36proc_updat
-   export rtma_updat_exp2=rtma_48proc_updat
-   export rtma_contrl_exp1=rtma_36proc_contrl
-   export rtma_contrl_exp2=rtma_48proc_contrl
+   export nmm_binary_contrl_exp2=nmm_binary_64proc_contrl
+   export nmm_netcdf_updat_exp1=nmm_netcdf_8proc_updat
+   export nmm_netcdf_updat_exp2=nmm_netcdf_16proc_updat
+   export nmm_netcdf_contrl_exp1=nmm_netcdf_8proc_contrl
+   export nmm_netcdf_contrl_exp2=nmm_netcdf_16proc_contrl
+   export rtma_updat_exp1=rtma_10proc_updat
+   export rtma_updat_exp2=rtma_20proc_updat
+   export rtma_contrl_exp1=rtma_10proc_contrl
+   export rtma_contrl_exp2=rtma_20proc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
@@ -70,16 +85,22 @@ if [[ "$arch" = "Linux" ]]; then
    export gsiexec_contrl=$basedir/svn1/src/global_gsi
    export fixgsi=$basedir/EXP-port/fix
    export scripts=$basedir/EXP-port/scripts
-   export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.0.5/fix
+   export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
 
 #  Next, paths for canned case data.
 
-   export global_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
-   export global_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_T62_adate
-   export global_hybrid_T126_datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_hybrid_T126_adate/obs
-   export global_hybrid_T126_datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$global_hybrid_T126_adate/ges_lores
+   export global_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
+   export global_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
+   export global_4dvar_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
+   export global_4dvar_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
+   export global_hybrid_T126_datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/obs
+   export global_hybrid_T126_datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/ges_lores
+   export global_lanczos_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
+   export global_lanczos_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
+   export global_nemsio_T62_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_nemsio_T62_adate
+   export global_nemsio_T62_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
    export nmmb_nems_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export nmmb_nems_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export arw_binary_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
@@ -109,10 +130,22 @@ elif [[ "$arch" = "AIX" ]]; then
    export global_T62_updat_exp2=global_T${JCAP}_64proc_updat
    export global_T62_contrl_exp1=global_T${JCAP}_32proc_contrl
    export global_T62_contrl_exp2=global_T${JCAP}_64proc_contrl
+   export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_36proc_updat
+   export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_48proc_updat
+   export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_36proc_contrl
+   export global_4dvar_T62_contrl_exp2=global_4dvar_T${JCAP}_48proc_contrl
    export global_hybrid_T126_updat_exp1=global_hybrid_32proc_updat
    export global_hybrid_T126_updat_exp2=global_hybrid_64proc_updat
    export global_hybrid_T126_contrl_exp1=global_hybrid_32proc_contrl
    export global_hybrid_T126_contrl_exp2=global_hybrid_64proc_contrl
+   export global_lanczos_T62_updat_exp1=global_lanczos_T${JCAP}_36proc_updat
+   export global_lanczos_T62_updat_exp2=global_lanczos_T${JCAP}_48proc_updat
+   export global_lanczos_T62_contrl_exp1=global_lanczos_T${JCAP}_36proc_contrl
+   export global_lanczos_T62_contrl_exp2=global_lanczos_T${JCAP}_48proc_contrl
+   export global_nemsio_T62_updat_exp1=global_nemsio_T${JCAP}_36proc_updat
+   export global_nemsio_T62_updat_exp2=global_nemsio_T${JCAP}_48proc_updat
+   export global_nemsio_T62_contrl_exp1=global_nemsio_T${JCAP}_36proc_contrl
+   export global_nemsio_T62_contrl_exp2=global_nemsio_T${JCAP}_48proc_contrl
    export nmmb_nems_updat_exp1=nmmb_nems_32proc_updat
    export nmmb_nems_updat_exp2=nmmb_nems_64proc_updat
    export nmmb_nems_contrl_exp1=nmmb_nems_32proc_contrl
@@ -148,7 +181,7 @@ elif [[ "$arch" = "AIX" ]]; then
    export gsiexec_updat=$basedir/EXP-regtests/src/global_gsi
    export gsiexec_contrl=$basedir/svn1/src/global_gsi
    export fixgsi=$basedir/EXP-regtests/fix
-   export fixcrtm=/global/save/wx20ml/CRTM_REL-2.0.5/fix
+   export fixcrtm=/global/save/wx20ml/CRTM_REL-2.1.3/Big_Endian
    export scripts=$basedir/EXP-regtests/scripts
    export tmpdir=/ptmp/$LOGNAME
    export savdir=/ptmp/$LOGNAME
@@ -157,8 +190,14 @@ elif [[ "$arch" = "AIX" ]]; then
 
    export global_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
    export global_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap/$global_T62_adate
+   export global_4dvar_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_4dvar_T62_adate
+   export global_4dvar_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap/$global_4dvar_T62_adate
    export global_hybrid_T126_datobs=/global/noscrub/wx20ml/cases/global/sigmap/$global_hybrid_T126_adate/obs
    export global_hybrid_T126_datges=/global/noscrub/wx20ml/cases/global/sigmap/$global_hybrid_T126_adate/ges_lores
+   export global_lanczos_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_lanczos_T62_adate
+   export global_lanczos_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap/$global_lanczos_T62_adate
+   export global_nemsio_T62_obs=/global/noscrub/wx20ml/cases/global/sigmap/$global_nemsio_T62_adate
+   export global_nemsio_T62_ges=/global/noscrub/wx20ml/cases/global/sigmap_nemsio/$global_nemsio_T62_adate
    export nmmb_nems_obs=/global/noscrub/wx20ml/nmmb_regression_case
    export nmmb_nems_ges=/global/noscrub/wx20ml/nmmb_regression_case
    export arw_binary_obs=/global/noscrub/wx20ml/cases/regional/arw_binary/$arw_binary_adate
@@ -265,8 +304,8 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2011080100"
-export adate_global_nemsio="2011080100"
+export adate_global="2013011400"
+export adate_global_nemsio="2013011400"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
 export adate_regional_nems_nmmb="2009031600"
@@ -279,7 +318,6 @@ export adate_regional_rtma_binary="2011083112"
 
 #machine="cirrus"
 machine="stratus"
-#machine="vapor"
 #machine="jet"
 
 # Define obs directory
@@ -313,22 +351,6 @@ elif [[ $machine = "cirrus" ]]; then
      export datges_nmm_netcdf="/global/noscrub/wx20ml/cases/regional/nmm_netcdf"
      export datobs_arw_binary="/global/noscrub/wx20ml/cases/regional/arw_binary"
      export datobs_arw_netcdf="/global/noscrub/wx20ml/cases/regional/arw_netcdf"
-elif [[ $machine = "vapor" ]]; then
-# Update location of coefficient files for vapor, then give obs locations
-     export crtm_coef="/jcsda/save/wx20ml/CRTM_REL-2.0.5/fix"
-     export datobs_global="/jcsda/noscrub/wx20ml/cases/global/sigmap"
-     export datobs_global_lanczos="/jcsda/noscrub/wx20ml/cases/global/sigmap"
-     export datobs_global_3d4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
-     export datobs_global_4dvar="/jcsda/noscrub/wx20ml/cases/global/sigmap"
-     export datobs_global_nemsio="/jcsda/noscrub/wx20ml/cases/global/sigmap"
-     export datges_global_nemsio="/jcsda/noscrub/wx20ml/cases/global/sigmap_nemsio"
-     export datobs_rtma="/jcsda/noscrub/wx20ml/cases/regional/rtma_binary"
-     export datobs_nmm_binary="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
-     export datobs_nems_nmmb="/jcsda/noscrub/wx20ml/nmmb_regression_case"
-     export datobs_nmm_netcdf="/jcsda/noscrub/wx20ml/cases/regional/ndas_binary"
-     export datges_nmm_netcdf="/jcsda/noscrub/wx20ml/cases/regional/nmm_netcdf"
-     export datobs_arw_binary="/jcsda/noscrub/wx20ml/cases/regional/arw_binary"
-     export datobs_arw_netcdf="/jcsda/noscrub/wx20ml/cases/regional/arw_netcdf"
 elif [[ $machine = "jet" ]]; then
 # Update location of coefficient files for vapor, then give obs locations
      export crtm_coef="/home/mlueken/nwprod/CRTM_Coefficients"

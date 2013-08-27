@@ -33,7 +33,7 @@ savdir=$savdir/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$gsipath/trunk/fix
-#fixcrtm=$gsipath/EXP-port410/lib/CRTM_REL-2.0.5/fix
+#fixcrtm=$gsipath/EXP-port410/lib/CRTM_REL-2.1.3/fix
 
 #datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/obs
 #datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/ges
@@ -213,9 +213,17 @@ EOF
 
 berror=$fixgsi/Big_Endian/global_berror.l${LEVS}y${NLAT}.f77
 
-emiscoef=$fixcrtm/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef_IRwater=$crtm_coef/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=$crtm_coef/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=$crtm_coef/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=$crtm_coef/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=$crtm_coef/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=$crtm_coef/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=$crtm_coef/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=$crtm_coef/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=$crtm_coef/FASTEM5.MWwater.EmisCoeff.bin
+aercoef=$crtm_coef/AerosolCoeff.bin
+cldcoef=$crtm_coef/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
@@ -244,7 +252,15 @@ elif [[ $exp = $global_hybrid_T126_contrl_exp2 ]]; then
 fi
 
 $ncp $berror   ./berror_stats
-$ncp $emiscoef ./EmisCoeff.bin
+$ncp $emiscoef_IRwater ./Nalli.IRwater.EmisCoeff.bin
+$ncp $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin
+$ncp $emiscoef_IRsnow ./NPOESS.IRsnow.EmisCoeff.bin
+$ncp $emiscoef_IRland ./NPOESS.IRland.EmisCoeff.bin
+$ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
+$ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
+$ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
+$ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
+$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -261,8 +277,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $fixcrtm/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $fixcrtm/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+    $ncp $crtm_coef/${file}.SpcCoeff.bin ./
+    $ncp $crtm_coef/${file}.TauCoeff.bin ./
 done
 
 
