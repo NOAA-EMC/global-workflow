@@ -126,7 +126,7 @@ err_chk=${err_chk:-$utilscript/err_chk.sh}
 startmsg=${startmsg:-$utilscript/startmsg.sh}
 ERRSCRIPT=${ERRSCRIPT:-$err_chk}
 LOGSCRIPT=${LOGSCRIPT:-$startmsg}
-export FILESTYLE=${FILESTYLE:-'C'}
+export FILESTYLE=${FILESTYLE:-'L'}
 
 ##############################
 # Run setpdy and initialize PDY variables
