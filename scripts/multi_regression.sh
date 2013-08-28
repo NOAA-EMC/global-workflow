@@ -3,11 +3,10 @@
 set -x
 
 #For Zeus
-echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
+#echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
 
 #For WCOSS
-#which=`pwd | cut -f3 -d/`
-#echo "/gpfs/$which/emc/da/noscrub/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
+echo "/da/save/$LOGNAME/EXP-WCOSS_regtests/scripts/regression_var.sh" > regression_var.out
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 

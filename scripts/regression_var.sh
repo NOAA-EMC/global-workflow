@@ -5,8 +5,8 @@
 
 # Specify machine that is being used (Zeus or WCOSS)
 
-#export machine="WCOSS"
-export machine="Zeus"
+export machine="WCOSS"
+#export machine="Zeus"
 
 # Variables with the same values are defined below.
 
@@ -177,8 +177,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   which=`pwd | cut -f3 -d/`
-   export basedir=/gpfs/$which/emc/da/noscrub/$LOGNAME
+   export basedir=/da/save/$LOGNAME
    export gsisrc=$basedir/EXP-WCOSS_regtests/src
    export gsiexec_updat=$basedir/EXP-WCOSS_regtests/src/global_gsi
    export gsiexec_contrl=$basedir/svn1/src/global_gsi
@@ -190,33 +189,33 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
 #  Next, paths for canned case data.
 
-   export global_T62_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
-   export global_T62_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
-   export global_4dvar_T62_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
-   export global_4dvar_T62_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
-   export global_hybrid_T126_datobs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/obs
-   export global_hybrid_T126_datges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/ges_lores
-   export global_lanczos_T62_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
-   export global_lanczos_T62_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
-   export global_nemsio_T62_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_nemsio_T62_adate
-   export global_nemsio_T62_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
-   export nmmb_nems_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export nmmb_nems_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export arw_binary_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_binary_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_netcdf_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export arw_netcdf_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export nmm_binary_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
-   export nmm_binary_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
-   export nmm_netcdf_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_netcdf_adate
-   export nmm_netcdf_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-   export rtma_obs=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-   export rtma_ges=/gpfs/$which/emc/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+   export global_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
+   export global_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
+   export global_4dvar_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
+   export global_4dvar_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
+   export global_hybrid_T126_datobs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/obs
+   export global_hybrid_T126_datges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/ges_lores
+   export global_lanczos_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
+   export global_lanczos_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
+   export global_nemsio_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_nemsio_T62_adate
+   export global_nemsio_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
+   export nmmb_nems_obs=/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
+   export nmmb_nems_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
+   export arw_binary_obs=/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
+   export arw_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
+   export arw_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
+   export arw_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
+   export nmm_binary_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
+   export nmm_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
+   export nmm_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_netcdf_adate
+   export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
+   export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+   export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
 
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/gpfs/$which/emc/da/noscrub/$USER
+   export noscrub=/da/noscrub/$USER
    export endianness=Big_Endian
 
 fi
