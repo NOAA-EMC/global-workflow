@@ -188,7 +188,7 @@
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
 #     RTMFIX        Input directory containing CRTM coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_2.1.3
+#                   defaults to ${FIXGLOBAL}/crtm_v2.1.3
 #     ANAVINFO      Input analysis variable file
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
@@ -499,7 +499,7 @@ export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.1.3}
+export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
 export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
@@ -694,21 +694,21 @@ then
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
-      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/${file}.SpcCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/${file}.TauCoeff.bin ./
    done
 
-   $NCP $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
-   $NCP $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
+   $NCP $RTMFIX/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   $NCP $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   $NCP $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
+   $NCP $RTMFIX/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    $NCP $PREPQC   prepbufr
@@ -835,21 +835,21 @@ else
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ln -fs $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
-      ln -fs $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
+      ln -fs $RTMFIX/${file}.SpcCoeff.bin ./
+      ln -fs $RTMFIX/${file}.TauCoeff.bin ./
    done
 
-   ln -fs $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
+   ln -fs $RTMFIX/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   ln -fs $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   ln -fs $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
+   ln -fs $RTMFIX/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    ln -fs $PREPQC   prepbufr
