@@ -384,6 +384,9 @@ cat << EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
+   newpc4pred=.true.,adp_anglebc=.true.,angord=4,
+   passive_bc=.true.,use_edges=.false.,diag_precon=.true.,
+   step_start=1.e-3,emiss_bc=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -540,7 +543,7 @@ aercoef=$fixcrtm/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
 scaninfo=$fixgsi/global_scaninfo.txt
-satangl=$fixgsi/global_satangbias.txt
+#satangl=$fixgsi/global_satangbias.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 convinfo=$fixgsi/global_convinfo.txt
@@ -572,7 +575,7 @@ $ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
 $ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
-$ncp $satangl  ./satbias_angle
+#$ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -645,7 +648,20 @@ fi
 
 # Copy bias correction, atmospheric and surface files
 ln -s -f $datges/${prefix_tbc}.abias              ./satbias_in
-ln -s -f $datges/${prefix_tbc}.satang             ./satbias_angle
+ln -s -f $datges/${prefix_tbc}.abias_pc           ./satbias_pc
+#ln -s -f $datges/${prefix_tbc}.satang             ./satbias_angle
+ln -s -f $datges/${prefix_tbc}.radstat            ./radstat.gdas
+
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   fname=`echo $diag_file | cut -d'.' -f1`
+   date=`echo $diag_file | cut -d'.' -f2`
+   $UNCOMPRESS $diag_file
+   fnameanl=$(echo $fname|sed 's/_ges//g')
+   mv $fname.$date $fnameanl
+done
+
 
 # Determine resolution of the guess files
 JCAP_GUESS=`$SIGHDR $datprep/${prefix_atm}.sgesprep JCAP`
