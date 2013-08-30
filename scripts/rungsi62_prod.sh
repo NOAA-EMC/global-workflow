@@ -304,7 +304,7 @@ cat stdout fort.2* > $savdir/stdout.anl.${adate}
 $ncp siganl          $savdir/siganl.${adate}
 $ncp sfcanl.gsi      $savdir/sfcanl.${adate}
 $ncp satbias_out     $savdir/biascr.${adate}
-$ncp satbias.out     $savdir/biascr_pc.${adate}
+$ncp satbias_pc.out  $savdir/biascr_pc.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 
