@@ -114,6 +114,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$global_hybrid_T126_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_global_hybrid_3dvar.out
    /bin/sh sub_wcoss -j $global_hybrid_T126_updat_exp2 -q $queue -p 16/4/ -r /2 -t 0:15:00 $scripts/global_hybrid_T126.sh
 
@@ -128,6 +133,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$global_hybrid_T126_updat_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_updat_exp2}.out) -ne 1 ]]; do
       echo "Job "$global_hybrid_T126_updat_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
@@ -150,6 +160,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$global_hybrid_T126_contrl_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_global_hybrid_3dvar.out
    /bin/sh sub_wcoss -j $global_hybrid_T126_contrl_exp2 -q $queue -p 16/4/ -r /2 -t 0:15:00 $scripts/global_hybrid_T126.sh
 
@@ -164,6 +179,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$global_hybrid_T126_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_contrl_exp2}.out) -ne 1 ]]; do
       echo "Job "$global_hybrid_T126_contrl_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done

@@ -114,6 +114,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${nmmb_nems_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$nmmb_nems_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_nmmb_nems.out
    /bin/sh sub_wcoss -j $nmmb_nems_updat_exp2 -q $queue -p 16/4/ -r /2 -t 0:10:00 $scripts/nmmb_nems.sh
 
@@ -128,6 +133,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$nmmb_nems_updat_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${nmmb_nems_updat_exp2}.out) -ne 1 ]]; do
       echo "Job "$nmmb_nems_updat_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
@@ -150,6 +160,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${nmmb_nems_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$nmmb_nems_contrl_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_nmmb_nems.out
    /bin/sh sub_wcoss -j $nmmb_nems_contrl_exp2 -q $queue -p 16/4/ -r /2 -t 0:10:00 $scripts/nmmb_nems.sh
 
@@ -164,6 +179,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$nmmb_nems_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${nmmb_nems_contrl_exp2}.out) -ne 1 ]]; do
       echo "Job "$nmmb_nems_contrl_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done

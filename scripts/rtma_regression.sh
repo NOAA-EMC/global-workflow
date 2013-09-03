@@ -114,6 +114,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${rtma_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$rtma_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_rtma.out
    /bin/sh sub_wcoss -j $rtma_updat_exp2 -q $queue -p 10/2/N -r /1 -t 0:10:00 $scripts/rtma.sh
 
@@ -128,6 +133,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$rtma_updat_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${rtma_updat_exp2}.out) -ne 1 ]]; do
       echo "Job "$rtma_updat_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
@@ -150,6 +160,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$rtma_contrl_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_rtma.out
    /bin/sh sub_wcoss -j $rtma_contrl_exp2 -q $queue -p 10/2/ -r /1 -t 0:10:00 $scripts/rtma.sh
 
@@ -164,6 +179,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$rtma_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
       echo "Job "$rtma_contrl_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
