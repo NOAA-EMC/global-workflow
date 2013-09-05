@@ -18,15 +18,15 @@ fi
 
 set -ax
 
-arch="`uname -s | awk '{print $1}'`"
-echo "Computing system is `arch` "
+#machine="Zeus"
+machine="WCOSS"
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
    nwprod=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para 
    ptmp=/scratch2/portfolios/NCEPDEV/ptmp
    stmp=/scratch2/portfolios/NCEPDEV/stmp
    ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
    nwprod=/nwprod
    ptmp=/ptmp
    stmp=/stmp
@@ -60,7 +60,7 @@ DFILESA="$DFILESA gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
 DFILESA="$DFILESA atms.tm00.bufr_d"
 
 # These come from the previous cycle
-DFILESG="$DFILESG abias satang"
+DFILESG="$DFILESG abias satang radstat"
 DFILESG="$DFILESG bf03 bf06 bf09"
 
 
@@ -104,10 +104,10 @@ tarfileg=com_gfs_prod_gdas.${gdate}.tar
 #     Loop to pull desired files off tape
 #hpsstar=/nwprod/util/ush/hpsstar
 #hpsstar=/NCEPPROD/nwprod/util/ush/hpsstar   
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
    hpsstar=/home/Emily.Liu/bin/hpsstar #emily:for now
 #  hpsstar=$nwprod/util/ush/hpsstar    #emily:eventually     
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
    hpsstar=$nwprod/util/ush/hpsstar
 fi
 
@@ -149,20 +149,6 @@ echo ${adate}:  File types     copied: $cpy
 echo ${adate}:  File types NOT copied: $cpn
 echo ${gdate}:  File types     copied: $cpy
 echo ${gdate}:  File types NOT copied: $cpn
-
-#Do bit-swapping for bufr files
-if [[ "$arch" = "Linux" ]]; then
-   cd $savdir
-   for file in `ls *bufr* `; do
-      c=`/home/Jack.Woollen/bin/binv $file | head -25`
-      d=`echo $c | cut -c12`
-      if [ $d = "B" ]; then
-         sh /home/Jack.Woollen/bin/gbqx $file
-      else
-         echo "No need to do bit swapping" 
-      fi
-   done
-fi
 
 #Remove temporary directory
 cd $tmpdir
