@@ -33,6 +33,7 @@
 # 2009-03-19  Russ Treadon   add JCAP_A,NLAT_A,NLON_A,JCAP_B
 # 2010-04-28  Russ Treadon   remove global_angupdate
 # 2010-05-05  George Gayno   add ANAVINFO file
+# 2011-05-10  EMC/SPA        update RTMFIX defaults to ${FIXGLOBAL}/crtm_2.0.2, instead of crtm_gfsgsi
 # 2012-01-16  Treadon        add hooks for hybrid ensemble
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 #
@@ -187,7 +188,7 @@
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
 #     RTMFIX        Input directory containing CRTM coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_2.1.3
+#                   defaults to ${FIXGLOBAL}/crtm_v2.1.3
 #     ANAVINFO      Input analysis variable file
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
@@ -498,7 +499,7 @@ export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.1.3}
+export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
 export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
@@ -693,21 +694,21 @@ then
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
-      ${NCP:-cp} $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/${file}.SpcCoeff.bin ./
+      ${NCP:-cp} $RTMFIX/${file}.TauCoeff.bin ./
    done
 
-   $NCP $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
-   $NCP $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
-   $NCP $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
+   $NCP $RTMFIX/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   $NCP $RTMFIX/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   $NCP $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   $NCP $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
+   $NCP $RTMFIX/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    $NCP $PREPQC   prepbufr
@@ -834,21 +835,21 @@ else
 
    # CRTM Spectral and Transmittance coefficients
    for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-      ln -fs $RTMFIX/Big_Endian/${file}.SpcCoeff.bin ./
-      ln -fs $RTMFIX/Big_Endian/${file}.TauCoeff.bin ./
+      ln -fs $RTMFIX/${file}.SpcCoeff.bin ./
+      ln -fs $RTMFIX/${file}.TauCoeff.bin ./
    done
 
-   ln -fs $RTMFIX/Big_Endian/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/AerosolCoeff.bin AerosolCoeff.bin
-   ln -fs $RTMFIX/Big_Endian/CloudCoeff.bin CloudCoeff.bin
+   ln -fs $RTMFIX/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
+   ln -fs $RTMFIX/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
+   ln -fs $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
+   ln -fs $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
+   ln -fs $RTMFIX/CloudCoeff.bin CloudCoeff.bin
 
    # Observational data
    ln -fs $PREPQC   prepbufr
@@ -1171,8 +1172,8 @@ ntype=3
 
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
-diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura mls_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b gome_metop-b"
+diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls_aura"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
@@ -1269,6 +1270,7 @@ fi
 cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
 $ENDSCRIPT
+
 set +x
 if [[ "$VERBOSE" = "YES" ]]
 then
