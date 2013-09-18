@@ -167,21 +167,26 @@ JCOPTS="ljcpdry=.false.,"
 OBSQC="noiqc=.false.,"
 SETUPmin="miter=1,niter(1)=50,niter_no_qc(1)=500,"
 SETUPlan=""
-export minimization=${minimization:-"pcgsoi"}
-if [ "$minimization" = "lanczos" ]; then
-   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
-   HYBENS_GLOBAL=".false."
-fi
+#export minimization=${minimization:-"pcgsoi"}
+#if [ "$minimization" = "lanczos" ]; then
+#   SETUPlan="lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,"
+#   HYBENS_GLOBAL=".false."
+#fi
 
 # Create namelist for observer run
 export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
-SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
+#SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
+SETUP="$SETUPmin $SETUPobs $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 
-$global_T62_namelist
+if [ "$minimization" = "lanczos" ]; then
+   $global_lanczos_T62_namelist
+else
+   $global_T62_namelist
+fi
 
 EOF
 
@@ -314,8 +319,15 @@ $ncp $global_4dvar_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $global_4dvar_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_4dvar_T62_ges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $global_4dvar_T62_ges/${prefix_tbc}.satang                  ./satbias_angle
+if [ "$minimization" = "lanczos" ]; then
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias_orig           ./satbias_in
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang_orig          ./satbias_angle
+else
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias                ./satbias_in
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias_pc             ./satbias_pc
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang               ./satbias_angle
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.radstat              ./radstat.gdas
+fi
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    ##$ncp $global_4dvar_T62_ges/${prefix_sfc}.bf03               ./sfcf03
@@ -366,12 +378,16 @@ rm -rf dir.0*
 
 # Create namelist for identity model 4dvar run
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
-SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
+#SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
+SETUP="$SETUPmin $SETUP4dv $SETUP_update"
 . $scripts/regression_namelists.sh
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
-
-$global_T62_namelist
+if [ "$minimization" = "lanczos" ]; then
+   $global_lanczos_T62_namelist
+else
+   $global_T62_namelist
+fi
 
 EOF
 

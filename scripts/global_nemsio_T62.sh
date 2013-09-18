@@ -293,7 +293,9 @@ $ncp $global_nemsio_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
 $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
 $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $global_nemsio_T62_ges/${prefix_sfc}.bf03                 ./sfcf03
