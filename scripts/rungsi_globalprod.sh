@@ -45,16 +45,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2013090100
+adate=2013100100
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
-gsiexec=/da/save/$USER/trunk/src/global_gsi
+gsiexec=/da/save/$USER/EXP-WCOSS_regtests/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=/da/save/$USER/trunk/fix
+fixgsi=/da/save/$USER/EXP-WCOSS_regtests/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -69,7 +69,7 @@ if [ $MACHINE = WCOSS ]; then
    datdir=/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
-   fixcrtm=/nceplibs/fix/crtm_v2.1.3
+   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
    endianness=Big_Endian
    COMPRESS=gzip 
    DIAG_COMPRESS=YES 
@@ -114,7 +114,7 @@ fi
 #=================================================================================================
 
 # Refractive Index or Bending Angle for GPS?
-export gps_dtype="gps_ref"
+export gps_dtype="gps_bnd"
 
 
 if [[  $MACHINE = WCOSS  ]]; then

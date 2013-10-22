@@ -179,7 +179,11 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 
 cat << EOF > gsiparm.anl
 
@@ -276,7 +280,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate   ./prepbufr
-$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwndbufr
+$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwnd
 $ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate    ./gpsrobufr
 $ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate   ./tmirrbufr
 $ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate   ./sbuvbufr

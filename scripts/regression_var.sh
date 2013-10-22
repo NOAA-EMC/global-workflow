@@ -275,6 +275,9 @@ export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_cntrl
 export control_nems_nmmb="$noscrub/tmpreg_${nems_nmmb}/$exp1_nems_nmmb_cntrl"
 export control_nems_nmmb2="$noscrub/tmpreg_${nems_nmmb}/$exp2_nems_nmmb_cntrl"
 
+# Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
+export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
+
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
 export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
