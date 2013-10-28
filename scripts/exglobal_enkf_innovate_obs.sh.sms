@@ -404,14 +404,8 @@ if [ $machine = IBMP6 ] ; then
   [[ $l = '&' ]]&&a=''||a='>'
   export REDERR=${REDERR:-'2>'$a}
 else
-##export REDOUT=${REDOUT:-'1>'}
-##export REDERR=${REDERR:-'2>'}
-  typeset -L1 l=$PGMOUT
-  [[ $l = '&' ]]&&a=''||a='>'
-  export REDOUT=${REDOUT:-'1>'$a}
-  typeset -L1 l=$PGMERR
-  [[ $l = '&' ]]&&a=''||a='>'
-  export REDERR=${REDERR:-'2>'$a}
+  export REDOUT=${REDOUT:-'1>'}
+  export REDERR=${REDERR:-'2>'}
 fi
 
 ################################################################################
