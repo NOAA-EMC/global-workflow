@@ -433,7 +433,6 @@ rm -f $EOMGGRP
 # Generate ensemble innovations
 imem=$ENSBEG
 while [[ $imem -le $ENSEND ]]; do
-   export FILESTYLE='L'
    export RUN_SELECT=NO
    export USE_SELECT=YES
    export SELECT_OBS=$DATATOP/obsinput_${CDATE}_ensmean

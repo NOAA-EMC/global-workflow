@@ -12,6 +12,7 @@
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
 #BSUB -W 01:00
+#BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
 #PBS -o gsi_global.e${jobid} 
@@ -72,6 +73,7 @@ if [ $MACHINE = WCOSS ]; then
    fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
    endianness=Big_Endian
    COMPRESS=gzip 
+   UNCOMPRESS=gunzip
    DIAG_COMPRESS=YES 
    DIAG_SUFFIX="" 
    DIAG_TARBALL=YES 
@@ -83,6 +85,7 @@ elif [ $MACHINE = ZEUS ]; then
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
    COMPRESS=gzip
+   UNCOMPRESS=gunzip
    DIAG_COMPRESS=YES 
    DIAG_SUFFIX="" 
    DIAG_TARBALL=YES
