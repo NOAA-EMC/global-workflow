@@ -84,6 +84,7 @@ if [[ "$arch" = "Linux" ]]; then
    export gsisrc=$basedir/gsi/xsu_sattype/src
    export gsiexec_updat=$basedir/gsi/xsu_sattype/src/global_gsi
    export gsiexec_contrl=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/src/global_gsi
+#   export gsiexec_contrl=$basedir/gsi/svn1/src/global_gsi
    export fixgsi=$basedir/gsi/xsu_sattype/fix
    export scripts=$basedir/gsi/xsu_sattype/scripts
    export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian

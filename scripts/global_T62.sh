@@ -32,6 +32,8 @@ savdir=$savdir/out${JCAP}/${exp}
 #savdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
+#convinfopath=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/fix
+#convinfo=$convinfopath/global_convinfo.txt
 #fixgsi=$fixgsi
 #fixgsi=$basedir/EXP-port/fix
 #fixcrtm=$fixcrtm
@@ -240,7 +242,8 @@ cldcoef=$crtm_coef/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
-convinfo=$fixgsi/global_convinfo.txt
+#convinfo=$fixgsi/global_convinfo.txt
+convinfo=$convinfopath/global_convinfo.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
@@ -299,8 +302,8 @@ done
 
 # Copy observational data to $tmpdir
 ln -s -f $global_T62_obs/${prefix_obs}prepbufr           ./prepbufr
-#ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
-ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwnd
+ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+#ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwnd
 ln -s -f $global_T62_obs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 ln -s -f $global_T62_obs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 ln -s -f $global_T62_obs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr

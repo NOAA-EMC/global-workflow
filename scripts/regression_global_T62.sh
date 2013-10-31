@@ -1099,6 +1099,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+fix_cnl=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/fix
 anavinfo=$fix_file/global_anavinfo.l64.txt
 berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef_IRwater=$crtm_coef/Nalli.IRwater.EmisCoeff.bin
@@ -1118,7 +1119,8 @@ satangl=$fix_file/global_satangbias.txt
 atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo_reg_test.txt
+#convinfo=$fix_file/global_convinfo_reg_test.txt
+convinfo=$fix_cnl/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -1498,6 +1500,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
+fix_cnl=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/fix
 anavinfo=$fix_file/global_anavinfo.l64.txt
 berror=$fix_file/$endianness/global_berror.l${LEVS}y${NLAT}.f77
 emiscoef_IRwater=$crtm_coef/Nalli.IRwater.EmisCoeff.bin
@@ -1517,7 +1520,8 @@ satangl=$fix_file/global_satangbias.txt
 atmsbeamdat=$fix_file/atms_beamwidth.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
-convinfo=$fix_file/global_convinfo_reg_test.txt
+#convinfo=$fix_file/global_convinfo_reg_test.txt
+convinfo=$fix_cnl/global_convinfo_reg_test.txt
 errtable=$fix_file/prepobs_errtable.global
 
 # Only need this file for single obs test
