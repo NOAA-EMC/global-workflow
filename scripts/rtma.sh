@@ -113,7 +113,7 @@ EOF
 anavinfo=$fixgsi/anavinfo_rtma_gust_vis_7vars
 berror=$fixgsi/$endianness/new_rtma_regional_nmm_berror.f77.gcv
 errtable=$fixgsi/new_rtma_nam_errtable.r3dv
-convinfo=$fixgsi/new_rtma_regional_convinfo.txt
+convinfo=$convinfopath/new_rtma_regional_convinfo.txt
 mesonetuselist=$fixgsi/new_rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fixgsi/new_rtma_ruc2_wind-uselist-noMETAR.dat
 wbinuselist=$fixgsi/new_rtma_wbinuselist

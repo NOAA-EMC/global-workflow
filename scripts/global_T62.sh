@@ -32,8 +32,6 @@ savdir=$savdir/out${JCAP}/${exp}
 #savdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
-#convinfopath=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/fix
-#convinfo=$convinfopath/global_convinfo.txt
 #fixgsi=$fixgsi
 #fixgsi=$basedir/EXP-port/fix
 #fixcrtm=$fixcrtm
@@ -242,8 +240,7 @@ cldcoef=$crtm_coef/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
-#convinfo=$fixgsi/global_convinfo.txt
-convinfo=$convinfopath/global_convinfo.txt
+convinfo=$convinfopath/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt

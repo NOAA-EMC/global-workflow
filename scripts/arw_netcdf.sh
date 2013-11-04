@@ -164,8 +164,7 @@ atmsbeamdat=$fixgsi/atms_beamwidth.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/nam_global_ozinfo.txt
 errtable=$fixgsi/nam_errtable.r3dv
-#convinfo=$fixgsi/nam_regional_convinfo.txt
-convinfo=$convinfopath/nam_regional_convinfo.txt
+convinfo=$convinfopath/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fixgsi/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
