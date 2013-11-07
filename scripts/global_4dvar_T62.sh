@@ -229,7 +229,7 @@ satangl=$fixgsi/global_satangbias.txt
 atmsbeamdat=$fixgsi/atms_beamwidth.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
-convinfo=$fixgsi/global_convinfo_reg_test.txt
+convinfo=$convinfopath/global_convinfo_reg_test.txt
 errtable=$fixgsi/prepobs_errtable.global
 
 # Only need this file for single obs test
@@ -293,7 +293,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $global_4dvar_T62_obs/${prefix_obs}.prepbufr                ./prepbufr
-$ncp $global_4dvar_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwnd
+$ncp $global_4dvar_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwndbufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
