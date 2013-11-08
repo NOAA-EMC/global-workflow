@@ -1010,9 +1010,8 @@ cat <<EOF > gsiparm.anl
  /
  &BKGERR
    vs=0.7,
-   nhscrf=1,
-   hzscl=1.0,0.0,0.0,
-   hswgt=1.0,0.0,0.0,
+   hzscl=1.7,0.8,0.5,
+   hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
    bkgv_write=.false.,
