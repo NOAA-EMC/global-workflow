@@ -300,7 +300,6 @@ done
 # Copy observational data to $tmpdir
 ln -s -f $global_T62_obs/${prefix_obs}prepbufr           ./prepbufr
 ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
-#ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwnd
 ln -s -f $global_T62_obs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 ln -s -f $global_T62_obs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 ln -s -f $global_T62_obs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
