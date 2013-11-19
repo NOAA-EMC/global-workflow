@@ -27,9 +27,9 @@ export SINGLEOB_update=""
 
 if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
    if [[ "$arch" = "Linux" ]]; then
-      export convinfopath="/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/xsu_sattype/fix"
+      export convinfopath="/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/EXP-FY14Q2/fix"
    elif [[ "$machine" = "WCOSS" ]]; then
-      export convinfopath="/da/save/Michael.Lueken/xsu_sattype/fix"
+      export convinfopath="/da/save/Michael.Lueken/EXP-FY14Q2/fix"
    fi
 else
    if [[ "$arch" = "Linux" ]]; then
