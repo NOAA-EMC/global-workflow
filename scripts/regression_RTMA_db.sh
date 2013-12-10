@@ -214,8 +214,8 @@ $ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' $satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
+   $ncp $crtm_coef/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir

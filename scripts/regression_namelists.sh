@@ -8,7 +8,7 @@ export global_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
-   ndat=67,iguess=-1,
+   ndat=69,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=.true.,
@@ -37,7 +37,7 @@ export global_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -114,6 +114,8 @@ export global_T62_namelist="
    dfile(65)='gomebufr',  dtype(65)='gome',      dplat(65)='metop-b', dsis(65)='gome_metop-b',       dval(65)=0.0, dthin(65)=2, dsfcalc(65)=0,
    dfile(66)='atmsbufr',  dtype(66)='atms',      dplat(66)='npp',     dsis(66)='atms_npp',           dval(66)=0.0, dthin(66)=1, dsfcalc(66)=0,
    dfile(67)='crisbufr',  dtype(67)='cris',      dplat(67)='npp',     dsis(67)='cris_npp',           dval(67)=0.0, dthin(67)=1, dsfcalc(67)=0,
+   dfile(68)='mlsbufr',   dtype(68)='mls30',     dplat(68)='aura',    dsis(68)='mls30_aura',         dval(68)=0.0, dthin(68)=0, dsfcalc(68)=0,
+   dfile(69)='oscatbufr', dtype(69)='uv',        dplat(69)=' ',       dsis(69)='uv',                 dval(69)=0.0, dthin(69)=0, dsfcalc(69)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR
@@ -157,7 +159,7 @@ export global_lanczos_T62_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
    factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
-   ndat=69,iguess=-1,
+   ndat=70,iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=10,gpstop=30.,
    lsqrtb=.true.,lcongrad=.true.,ltlint=.true.,ladtest=.true.,lgrtest=.false.,
@@ -187,7 +189,7 @@ export global_lanczos_T62_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -262,10 +264,11 @@ export global_lanczos_T62_namelist="
    dfile(63)='amsuabufr', dtype(63)='amsua',     dplat(63)='n19',     dsis(63)='amsua_n19',          dval(63)=10.0,dthin(63)=2, dsfcalc(63)=1,
    dfile(64)='mhsbufr',   dtype(64)='mhs',       dplat(64)='n19',     dsis(64)='mhs_n19',            dval(64)=3.0, dthin(64)=3, dsfcalc(64)=1,
    dfile(65)='tcvitl'     dtype(65)='tcp',       dplat(65)=' ',       dsis(65)='tcp',                dval(65)=1.0, dthin(65)=0, dsfcalc(65)=0,
-   dfile(66)='mlsbufr',   dtype(66)='mls',       dplat(66)='aura',    dsis(66)='mls_aura',           dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
+   dfile(66)='mlsbufr',   dtype(66)='mls30',     dplat(66)='aura',    dsis(66)='mls30_aura',         dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
    dfile(67)='seviribufr',dtype(67)='seviri',    dplat(67)='m08',     dsis(67)='seviri_m08',         dval(67)=0.0, dthin(67)=7, dsfcalc(67)=0,
    dfile(68)='seviribufr',dtype(68)='seviri',    dplat(68)='m09',     dsis(68)='seviri_m09',         dval(68)=0.0, dthin(68)=7, dsfcalc(68)=0,
    dfile(69)='seviribufr',dtype(69)='seviri',    dplat(69)='m10',     dsis(69)='seviri_m10',         dval(69)=0.0, dthin(69)=7, dsfcalc(69)=0,
+   dfile(70)='oscatbufr', dtype(70)='uv',        dplat(70)=' ',       dsis(70)='uv',                 dval(70)=1.0, dthin(70)=0, dsfcalc(70)=0,
    $OBSINPUT
  /
   &SUPEROB_RADAR
@@ -325,7 +328,7 @@ export global_hybrid_T126_namelist="
  /
  &STRONGOPTS
    tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-   tlnmc_type=2,baldiag_full=.true.,baldiag_inc=.true.,
+   baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
@@ -446,7 +449,7 @@ export RTMA_namelist="
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
    factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
-   ndat=8,iguess=-1,
+   ndat=9,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
    nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
@@ -488,6 +491,7 @@ export RTMA_namelist="
    dfile(06)='prepbufr',  dtype(06)='spd', dplat(06)=' ', dsis(06)='spd', dval(06)=1.0,  dthin(06)=0,
    dfile(07)='prepbufr',  dtype(07)='gust',dplat(07)=' ', dsis(07)='gust',dval(07)=1.0,  dthin(07)=0,
    dfile(08)='prepbufr',  dtype(08)='vis', dplat(08)=' ', dsis(08)='vis', dval(08)=1.0,  dthin(08)=0,
+   dfile(09)='oscatbufr', dtype(09)='uv',  dplat(09)=' ', dsis(09)='uv',  dval(09)=1.0,  dthin(09)=0, 
  /
  &SUPEROB_RADAR
  /
@@ -515,7 +519,7 @@ export arw_binary_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=61,iguess=-1,
+   ndat=62,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
@@ -607,7 +611,8 @@ export arw_binary_namelist="
    dfile(58)='gsnd1bufr', dtype(58)='sndrd4',    dplat(58)='g13',       dsis(58)='sndrD4_g13',          dval(58)=1.5,  dthin(58)=5, dsfcalc(58)=0,
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
-   dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(61)='mlsbufr',   dtype(61)='mls30',     dplat(61)='aura',      dsis(61)='mls30_aura',          dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(62)='oscatbufr', dtype(62)='uv',        dplat(62)=' ',         dsis(62)='uv',                  dval(62)=1.0,  dthin(62)=0, dsfcalc(62)=0,
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
@@ -649,7 +654,7 @@ export arw_netcdf_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=61,iguess=-1,
+   ndat=62,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
@@ -741,7 +746,8 @@ export arw_netcdf_namelist="
    dfile(58)='gsnd1bufr', dtype(58)='sndrd4',    dplat(58)='g13',       dsis(58)='sndrD4_g13',          dval(58)=1.5,  dthin(58)=5, dsfcalc(58)=0,
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
-   dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(61)='mlsbufr',   dtype(61)='mls30',     dplat(61)='aura',      dsis(61)='mls30_aura',          dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(62)='oscatbufr', dtype(62)='uv',        dplat(62)=' ',         dsis(62)='uv',                  dval(62)=1.0,  dthin(62)=0, dsfcalc(62)=0,
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
@@ -783,7 +789,7 @@ export nmm_binary_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=61,iguess=-1,
+   ndat=62,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
@@ -875,7 +881,8 @@ export nmm_binary_namelist="
    dfile(58)='gsnd1bufr', dtype(58)='sndrd4',    dplat(58)='g13',       dsis(58)='sndrD4_g13',          dval(58)=1.5,  dthin(58)=5, dsfcalc(58)=0,
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
-   dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(61)='mlsbufr',   dtype(61)='mls30',     dplat(61)='aura',      dsis(61)='mls30_aura',          dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(62)='oscatbufr', dtype(62)='uv',        dplat(62)=' ',         dsis(62)='uv',                  dval(62)=1.0,  dthin(62)=0, dsfcalc(62)=0,
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
@@ -917,7 +924,7 @@ export nmm_netcdf_namelist="
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=61,iguess=-1,
+   ndat=62,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
@@ -1009,7 +1016,8 @@ export nmm_netcdf_namelist="
    dfile(58)='gsnd1bufr', dtype(58)='sndrd4',    dplat(58)='g13',       dsis(58)='sndrD4_g13',          dval(58)=1.5,  dthin(58)=5, dsfcalc(58)=0,
    dfile(59)='iasibufr',  dtype(59)='iasi',      dplat(59)='metop-a',   dsis(59)='iasi616_metop-a',     dval(59)=20.0, dthin(59)=1, dsfcalc(59)=1,
    dfile(60)='gomebufr',  dtype(60)='gome',      dplat(60)='metop-a',   dsis(60)='gome_metop-a',        dval(60)=1.0,  dthin(60)=6, dsfcalc(60)=0,
-   dfile(61)='mlsbufr',   dtype(61)='mls',       dplat(61)='aura',      dsis(61)='mls_aura',            dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(61)='mlsbufr',   dtype(61)='mls30',     dplat(61)='aura',      dsis(61)='mls30_aura',          dval(61)=1.0,  dthin(61)=0, dsfcalc(61)=0,
+   dfile(62)='oscatbufr', dtype(62)='uv',        dplat(62)=' ',         dsis(62)='uv',                  dval(62)=1.0,  dthin(62)=0, dsfcalc(62)=0,
  /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
@@ -1047,11 +1055,11 @@ export nmm_netcdf_namelist="
 export nems_nmmb_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=66,iguess=-1,
+   ndat=67,iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,preserve_restart_date=.true.,
@@ -1079,11 +1087,11 @@ export nems_nmmb_namelist="
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,
+   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
    vadfile='prepbufr',
  /
  &OBS_INPUT
-   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
+   dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,ext_sonde=.true.,
    dfile(01)='prepbufr',  dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',                 dval(01)=1.0, dthin(01)=0, dsfcalc(01)=0,
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',                  dval(02)=1.0, dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',                  dval(03)=1.0, dthin(03)=0, dsfcalc(03)=0,
@@ -1149,7 +1157,8 @@ export nems_nmmb_namelist="
    dfile(63)='amsuabufr', dtype(63)='amsua',     dplat(63)='n19',     dsis(63)='amsua_n19',          dval(63)=10.0,dthin(63)=2, dsfcalc(63)=1,
    dfile(64)='mhsbufr',   dtype(64)='mhs',       dplat(64)='n19',     dsis(64)='mhs_n19',            dval(64)=3.0, dthin(64)=3, dsfcalc(64)=1,
    dfile(65)='tcvitl'     dtype(65)='tcp',       dplat(65)=' ',       dsis(65)='tcp',                dval(65)=1.0, dthin(65)=0, dsfcalc(65)=0,
-   dfile(66)='mlsbufr',   dtype(66)='mls',       dplat(66)='aura',    dsis(66)='mls_aura',           dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
+   dfile(66)='mlsbufr',   dtype(66)='mls30',     dplat(66)='aura',    dsis(66)='mls30_aura',         dval(66)=1.0, dthin(66)=0, dsfcalc(66)=0,
+   dfile(67)='oscatbufr', dtype(67)='uv',        dplat(67)=' ',       dsis(67)='uv',                 dval(67)=1.0, dthin(67)=0, dsfcalc(67)=0,
 /
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
@@ -1170,6 +1179,7 @@ export nems_nmmb_namelist="
    nlat_ens=${NLAT_ENS_REGIONAL},
    jcap_ens=${JCAP_ENS_REGIONAL},
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
+   full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
  /
  &RAPIDREFRESH_CLDSURF
    dfi_radar_latent_heat_time_period=30.0,
