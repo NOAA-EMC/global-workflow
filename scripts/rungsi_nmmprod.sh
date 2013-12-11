@@ -153,7 +153,7 @@ cat << EOF > gsiparm.anl
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',         dsis(02)='t',                   dval(02)=1.0,  dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',         dsis(03)='q',                   dval(03)=1.0,  dthin(03)=0, dsfcalc(03)=0,
    dfile(04)='prepbufr',  dtype(04)='uv',        dplat(04)=' ',         dsis(04)='uv',                  dval(04)=1.0,  dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='satwnd',    dtype(05)='uv',        dplat(05)=' ',         dsis(05)='uv',                  dval(05)=1.0,  dthin(05)=0, dsfcalc(05)=0,
+   dfile(05)='satwndbufr',    dtype(05)='uv',        dplat(05)=' ',         dsis(05)='uv',                  dval(05)=1.0,  dthin(05)=0, dsfcalc(05)=0,
    dfile(06)='prepbufr',  dtype(06)='spd',       dplat(06)=' ',         dsis(06)='spd',                 dval(06)=1.0,  dthin(06)=0, dsfcalc(06)=0,
    dfile(07)='radarbufr', dtype(07)='rw',        dplat(07)=' ',         dsis(07)='rw',                  dval(07)=1.0,  dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='prepbufr',  dtype(08)='dw',        dplat(08)=' ',         dsis(08)='dw',                  dval(08)=1.0,  dthin(08)=0, dsfcalc(08)=0,
@@ -296,7 +296,7 @@ CYC=`echo $CDATE | cut -c9-10`
 if [ $TM = 00 ] ; then
    datdir=/com/nam/prod/nam.$PDY
    cp $datdir/nam.t${CYC}z.prepbufr.tm${TM}       ./prepbufr
-   cp $datdir/nam.t${CYC}z.satwnd.tm${TM}.bufr_d       ./satwnd
+   cp $datdir/nam.t${CYC}z.satwnd.tm${TM}.bufr_d       ./satwndbufr
    cp $datdir/nam.t${CYC}z.1bhrs3.tm${TM}.bufr_d  ./hirs3bufr
    cp $datdir/nam.t${CYC}z.1bamub.tm${TM}.bufr_d  ./amsubbufr
    cp $datdir/nam.t${CYC}z.1bamua.tm${TM}.bufr_d  ./amsuabufr
@@ -309,7 +309,7 @@ if [ $TM = 00 ] ; then
 else
    datdir=/com/nam/prod/ndas.$PDY
    cp $datdir/ndas.t${CYC}z.prepbufr.tm${TM}       ./prepbufr
-   cp $datdir/ndas.t${CYC}z.satwnd.tm${TM}.bufr_d  ./satwnd
+   cp $datdir/ndas.t${CYC}z.satwnd.tm${TM}.bufr_d  ./satwndbufr
    cp $datdir/ndas.t${CYC}z.1bhrs3.tm${TM}.bufr_d  ./hirs3bufr
    cp $datdir/ndas.t${CYC}z.1bamub.tm${TM}.bufr_d  ./amsubbufr
    cp $datdir/ndas.t${CYC}z.1bamua.tm${TM}.bufr_d  ./amsuabufr

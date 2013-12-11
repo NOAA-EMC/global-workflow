@@ -293,7 +293,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $global_4dvar_T62_obs/${prefix_obs}.prepbufr                ./prepbufr
-$ncp $global_4dvar_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwnd
+$ncp $global_4dvar_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwndbufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $global_4dvar_T62_obs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
