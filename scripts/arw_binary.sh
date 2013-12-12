@@ -160,7 +160,7 @@ atmsbeamdat=$fixgsi/atms_beamwidth.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/nam_global_ozinfo.txt
 errtable=$fixgsi/nam_errtable.r3dv
-convinfo=$fixgsi/nam_regional_convinfo.txt
+convinfo=$fixgsi/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fixgsi/nam_mesonet_uselist.txt
 
 # Only need this file for single obs test
@@ -214,7 +214,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $arw_binary_obs/${prefixo}.prepbufr.tm06   ./prepbufr
-$ncp $arw_binary_obs/${prefixo}.satwnd.$suffix  ./satwnd
+$ncp $arw_binary_obs/${prefixo}.satwnd.$suffix  ./satwndbufr
 $ncp $arw_binary_obs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $arw_binary_obs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $arw_binary_obs/${prefixo}.1bamua.$suffix  ./amsuabufr

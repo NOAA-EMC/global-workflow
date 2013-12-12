@@ -227,7 +227,7 @@ cldcoef=$crtm_coef/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
-convinfo=$fixgsi/global_convinfo.txt
+convinfo=$fixgsi/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
