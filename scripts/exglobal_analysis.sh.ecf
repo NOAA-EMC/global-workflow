@@ -247,6 +247,8 @@
 #                   defaults to ${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}
 #     SSMITBF       Input SSMI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}
+#     SSMISBF       Input SSMIS radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}ssmisu.tm00.bufr_d${SUFINP}
 #     SBUVBF        Input NOAA POES SBUV ozone retrieval file
 #                   defaults to ${COMIN}/${PREINP}osbuv8.tm00.bufr_d${SUFINP}
 #     GOMEBF        Input GOME ozone retrieval file
@@ -404,6 +406,7 @@
 #                  $CRISBF
 #                  $ATMSBF
 #                  $SSMITBF
+#                  $SSMISBF
 #                  $SBUVBF
 #                  $GOMEBF
 #                  $OMIBF
@@ -465,6 +468,7 @@ export SIGANL=${7:-${SIGANL}}
 export ABIAS=${8:-${ABIAS}}
 export ABIASPC=${9:-${ABIASPC}}
 export IGEN=${10:-${IGEN:-0}}
+export ABIASe=${11:-${ABIASe:-satbias_int.out}}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -530,6 +534,7 @@ export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}}
 export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}}
+export SSMISBF=${SSMISBF:-${COMIN}/${PREINP}ssmisu.tm00.bufr_d${SUFINP}}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d${SUFINP}}
 export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d${SUFINP}}
 export OMIBF=${OMIBF:-${COMIN}/${PREINP}omi.tm00.bufr_d${SUFINP}}
@@ -623,8 +628,8 @@ else
   typeset -L1 l=$PGMERR
   [[ $l = '&' ]]&&a=''||a='>'
   export REDERR=${REDERR:-'2>'$a}
-  COMPRESS=gzip
-  UNCOMPRESS=gunzip
+  COMPRESS=${COMPRESS:-gzip}
+  UNCOMPRESS=${UNCOMPRESS:-gunzip}
 fi
 export wc=${wc:-/usr/bin/wc}
 export lrun_subdirs=${lrun_subdirs:-".true."}
@@ -667,9 +672,9 @@ rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr
-rm airsbufr iasibufr amsrebufr ssmitbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
+rm airsbufr iasibufr amsrebufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
 rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
-rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out
+rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09 siganl
 rm gesfile_in gesfiles_out
@@ -739,6 +744,7 @@ then
    $NCP $CRISBF   crisbufr
    $NCP $ATMSBF   atmsbufr
    $NCP $SSMITBF  ssmitbufr
+   $NCP $SSMISBF  ssmisbufr
    $NCP $GPSROBF  gpsrobufr
    $NCP $TCVITL   tcvitl
 
@@ -874,6 +880,7 @@ else
    ln -fs $CRISBF   crisbufr
    ln -fs $ATMSBF   atmsbufr
    ln -fs $SSMITBF  ssmitbufr
+   ln -fs $SSMISBF  ssmisbufr
    ln -fs $SBUVBF   sbuvbufr
    ln -fs $GOMEBF   gomebufr
    ln -fs $OMIBF    omibufr
@@ -888,22 +895,49 @@ else
    ln -fs $GSATANG  satbias_ang.in
    ln -fs $GBIASPC  satbias_pc
    ln -fs $GRADSTAT radstat.gdas
-   ln -fs $GINCIN   gesfile_in
-   ln -fs $BIASIN   biascor_in
+
+   if [[ -s $GINCIN ]]; then
+     ln -fs $GINCIN   gesfile_in
+   fi
+   if [[ -s $BIASIN ]]; then
+     ln -fs $BIASIN   biascor_in
+   fi
+
+
    ln -fs $SIGG03   sigf03
-   ln -fs $SIGG04   sigf04
-   ln -fs $SIGG05   sigf05
    ln -fs $SIGGES   sigf06
-   ln -fs $SIGG07   sigf07
-   ln -fs $SIGG08   sigf08
    ln -fs $SIGG09   sigf09
+
+   if [[ -s $SIGG04 ]]; then
+     ln -fs $SIGG04   sigf04
+   fi
+   if [[ -s $SIGG05 ]]; then
+     ln -fs $SIGG05   sigf05
+   fi 
+   if [[ -s $SIGG07 ]]; then
+     ln -fs $SIGG07   sigf07
+   fi
+   if [[ -s $SIGG08 ]]; then
+     ln -fs $SIGG08   sigf08
+   fi
+
    ln -fs $SFCG03   sfcf03
-   ln -fs $SFCG04   sfcf04
-   ln -fs $SFCG05   sfcf05
    ln -fs $SFCGES   sfcf06
-   ln -fs $SFCG07   sfcf07
-   ln -fs $SFCG08   sfcf08
    ln -fs $SFCG09   sfcf09
+
+   if [[ -s $SFCG04 ]]; then
+     ln -fs $SFCG04   sfcf04
+   fi
+   if [[ -s $SFCG05 ]]; then
+     ln -fs $SFCG05   sfcf05
+   fi
+   if [[ -s $SFCG07 ]]; then
+     ln -fs $SFCG07   sfcf07
+   fi
+   if [[ -s $SFCG08 ]]; then
+     ln -fs $SFCG08   sfcf08
+   fi
+
 
    if [[ "$DOHYBVAR" = "YES" ]]; then
       imem=1
@@ -921,25 +955,36 @@ else
    ln -fs $ABIASPC  satbias_pc.out
    ln -fs $GINCOUT  gesfile_out
    ln -fs $BIASOUT  biascor_out
+
+#  If requested, create obs_input tarball
+   if [[ "$RUN_SELECT" = "YES" ]]; then
+      ln -fs $SELECT_OBS obs_input.tar
+   fi
+
 fi
 
 # If requested, copy and de-tar obs_input
 if [[ "$USE_SELECT" = "YES" ]]; then
   rm obs_input*
-  $NCP $SELECT_OBS ./obs_input.tar
+  if [[ $FILESTYLE = 'C' ]]; then
+     $NCP $SELECT_OBS ./obs_input.tar
+  else
+     ln -fs $SELECT_OBS ./obs_input.tar
+  fi
   tar -xvf obs_input.tar
 fi
 
+
 # If requested, copy and de-tar guess radstat file
 if [[ "$USE_NEWRADBC" = "YES" ]]; then
-   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _anl`
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do
       diag_file=`echo $type | cut -d',' -f1`
       fname=`echo $diag_file | cut -d'.' -f1`
       date=`echo $diag_file | cut -d'.' -f2`
       $UNCOMPRESS $diag_file
-      fnameanl=$(echo $fname|sed 's/_anl//g')
-      mv $fname.$date $fnameanl
+      fnameges=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameges
    done
 fi
 
@@ -965,11 +1010,11 @@ cat <<EOF > gsiparm.anl
  /
  &BKGERR
    vs=0.7,
-   nhscrf=1,
-   hzscl=1.0,0.0,0.0,
-   hswgt=1.0,0.0,0.0,
+   hzscl=1.7,0.8,0.5,
+   hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+   bkgv_write=.false.,
    $BKGVERR
  /
  &ANBKGERR
@@ -1025,10 +1070,10 @@ cat <<EOF > gsiparm.anl
    dfile(31)='amsrebufr', dtype(31)='amsre_low', dplat(31)='aqua',    dsis(31)='amsre_aqua',      dval(31)=0.0,  dthin(31)=1,  dsfcalc(31)=0,
    dfile(32)='amsrebufr', dtype(32)='amsre_mid', dplat(32)='aqua',    dsis(32)='amsre_aqua',      dval(32)=0.0,  dthin(32)=1,  dsfcalc(32)=0,
    dfile(33)='amsrebufr', dtype(33)='amsre_hig', dplat(33)='aqua',    dsis(33)='amsre_aqua',      dval(33)=0.0,  dthin(33)=1,  dsfcalc(33)=0,
-   dfile(34)='ssmisbufr', dtype(34)='ssmis_las', dplat(34)='f16',     dsis(34)='ssmis_f16',       dval(34)=0.0,  dthin(34)=1,  dsfcalc(34)=0,
-   dfile(35)='ssmisbufr', dtype(35)='ssmis_uas', dplat(35)='f16',     dsis(35)='ssmis_f16',       dval(35)=0.0,  dthin(35)=1,  dsfcalc(35)=0,
-   dfile(36)='ssmisbufr', dtype(36)='ssmis_img', dplat(36)='f16',     dsis(36)='ssmis_f16',       dval(36)=0.0,  dthin(36)=1,  dsfcalc(36)=0,
-   dfile(37)='ssmisbufr', dtype(37)='ssmis_env', dplat(37)='f16',     dsis(37)='ssmis_f16',       dval(37)=0.0,  dthin(37)=1,  dsfcalc(37)=0,
+   dfile(34)='ssmisbufr', dtype(34)='ssmis',     dplat(34)='f16',     dsis(34)='ssmis_f16',       dval(34)=0.0,  dthin(34)=1,  dsfcalc(34)=0,
+   dfile(35)='ssmisbufr', dtype(35)='ssmis',     dplat(35)='f17',     dsis(35)='ssmis_f17',       dval(35)=0.0,  dthin(35)=1,  dsfcalc(35)=0,
+   dfile(36)='ssmisbufr', dtype(36)='ssmis',     dplat(36)='f18',     dsis(36)='ssmis_f18',       dval(36)=0.0,  dthin(36)=1,  dsfcalc(36)=0,
+   dfile(37)='ssmisbufr', dtype(37)='ssmis',     dplat(37)='f19',     dsis(37)='ssmis_f19',       dval(37)=0.0,  dthin(37)=1,  dsfcalc(37)=0,
    dfile(38)='gsnd1bufr', dtype(38)='sndrd1',    dplat(38)='g12',     dsis(38)='sndrD1_g12',      dval(38)=0.0,  dthin(38)=1,  dsfcalc(38)=0,
    dfile(39)='gsnd1bufr', dtype(39)='sndrd2',    dplat(39)='g12',     dsis(39)='sndrD2_g12',      dval(39)=0.0,  dthin(39)=1,  dsfcalc(39)=0,
    dfile(40)='gsnd1bufr', dtype(40)='sndrd3',    dplat(40)='g12',     dsis(40)='sndrD3_g12',      dval(40)=0.0,  dthin(40)=1,  dsfcalc(40)=0,
@@ -1070,7 +1115,7 @@ cat <<EOF > gsiparm.anl
    dfile(76)='oscatbufr', dtype(76)='uv',        dplat(76)=' ',       dsis(76)='uv',              dval(76)=0.0,  dthin(76)=0,  dsfcalc(76)=0,
    $OBSINPUT
  /
-  &SUPEROB_RADAR
+ &SUPEROB_RADAR
    $SUPERRAD
  /
  &LAG_DATA
@@ -1118,6 +1163,13 @@ then
    fi
 fi
 
+# For eobs, eomn and eupd
+if [[ -s satbias_out.int ]]; then
+   $NCP satbias_out.int $ABIASe
+else
+   $NCP satbias_in $ABIASe
+fi
+
 if test "$SAVEGES" = "YES"
 then
    cp $SFCANL  $GESdir/${RUN}.${cycle}.sfcanl
@@ -1148,11 +1200,18 @@ cat fort.2*
 
 # If requested, create obs_input tarball
 if [[ "$RUN_SELECT" = "YES" ]]; then
+  echo $(date) START tar obs_input >&2
   rm obs_input.tar
+  if [[ $FILESTYLE = 'L' ]]; then
+     ln -fs $SELECT_OBS ./obs_input.tar
+  fi
   tar -cvf obs_input.tar obs_input*
-  $NCP obs_input.tar $SELECT_OBS
+  if [[ $FILESTYLE = 'C' ]]; then
+     $NCP obs_input.tar $SELECT_OBS
+  fi
   chmod 750 $SELECT_OBS
   chgrp rstprod $SELECT_OBS
+  echo $(date) END tar obs_input >&2
 fi
 
 # Loop over first and last outer loops to generate innovation
@@ -1174,7 +1233,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
@@ -1207,6 +1266,7 @@ for loop in $loops; do
       03) string=anl;;
        *) string=$loop;;
    esac
+   echo $(date) START loop $string >&2
    n=-1
    while [ $((n+=1)) -le $ntype ] ;do
       for type in `echo ${diagtype[n]}`; do
@@ -1218,19 +1278,23 @@ for loop in $loops; do
          fi
       done
    done
+   echo $(date) END loop $string >&2
 done
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
 # If requested, compress diagnostic files
 if [[ $DIAG_COMPRESS = YES ]]; then
+   echo $(date) START $COMPRESS diagnostic files >&2
    for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
       $COMPRESS $file
    done
+   echo $(date) END $COMPRESS diagnostic files >&2
 fi
 
 # If requested, create diagnostic file tarballs
 if [[ $DIAG_TARBALL = YES ]]; then
+   echo $(date) START tar diagnostic files >&2
    n=-1
    while [ $((n+=1)) -le $ntype ] ;do
       TAROPTS="-uvf"
@@ -1245,6 +1309,7 @@ if [[ $DIAG_TARBALL = YES ]]; then
 #  Restrict CNVSTAT 
    chmod 750 $CNVSTAT
    chgrp rstprod $CNVSTAT
+   echo $(date) END tar diagnostic files >&2
 fi
 
 
