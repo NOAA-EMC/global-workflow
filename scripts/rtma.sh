@@ -204,7 +204,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $rtma_obs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
-$ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwnd
+$ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
 
 
 # Copy first guess

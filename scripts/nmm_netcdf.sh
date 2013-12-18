@@ -167,7 +167,7 @@ atmsbeamdat=$fixgsi/atms_beamwidth.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/nam_global_ozinfo.txt
 errtable=$fixgsi/nam_errtable.r3dv
-convinfo=$fixgsi/nam_regional_convinfo.txt
+convinfo=$fixgsi/nam_regional_convinfo_reg_test.txt
 mesonetuselist=$fixgsi/nam_mesonet_uselist.txt
 
 
@@ -223,7 +223,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $nmm_netcdf_obs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $nmm_netcdf_obs/${prefixo}.satwnd.$suffix   ./satwnd
+$ncp $nmm_netcdf_obs/${prefixo}.satwnd.$suffix   ./satwndbufr
 $ncp $nmm_netcdf_obs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $nmm_netcdf_obs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr
 $ncp $nmm_netcdf_obs/${prefixo}.1bamua.$suffix  ./amsuabufr
