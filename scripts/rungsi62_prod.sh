@@ -128,7 +128,7 @@ rm -rf core*
 # Make gsi namelist
 
 # CO2 namelist and file decisions
-ICO2=${ICO2:-2}
+ICO2=${ICO2:-0}
 if [ $ICO2 -gt 0 ] ; then
         # Copy co2 files to $tmpdir
         co2dir=${CO2DIR:-$fix_file}
@@ -189,7 +189,7 @@ aercoef=$crtm_coef/AerosolCoeff/Big_Endian/AerosolCoeff.bin
 cldcoef=$crtm_coef/CloudCoeff/Big_Endian/CloudCoeff.bin
 satinfo=$fix_file/global_satinfo_reg_test.txt
 scaninfo=$fix_file/global_scaninfo.txt
-satangl=$fix_file/global_satangbias.txt
+#satangl=$fix_file/global_satangbias.txt
 pcpinfo=$fix_file/global_pcpinfo.txt
 ozinfo=$fix_file/global_ozinfo.txt
 convinfo=$fix_file/global_convinfo_reg_test.txt
@@ -210,7 +210,7 @@ $ncp $berror   ./berror_stats
 $ncp $emiscoef ./EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
-$ncp $satangl  ./satbias_angle
+#$ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -223,25 +223,15 @@ $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         $ncp $crtm_coef/SpcCoeff/Big_Endian/$spccoeff ./
-         $ncp $crtm_coef/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $crtm_coef/SpcCoeff/Big_Endian/${file}.SpcCoeff.bin ./
+   $ncp $crtm_coef/TauCoeff/Big_Endian/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
 $ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
-$ncp $datobs/${prefix_obs}.satwnd.${suffix}         ./satwnd
+$ncp $datobs/${prefix_obs}.satwnd.${suffix}         ./satwndbufr
 $ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
 $ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
@@ -272,7 +262,19 @@ ln -s /global/noscrub/wx23ch/MODIS/BUFF_DUMP/modis.${gdate0}.buff.dump.dat     .
 
 # Copy bias correction, atmospheric and surface files
 $ncp $datges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $datges/${prefix_tbc}.abias_pc                ./satbias_pc
+#$ncp $datges/${prefix_tbc}.satang                  ./satbias_angle
+ln -s -f $datges/${prefix_tbc}.radstat             ./radstat.gdas
+
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   fname=`echo $diag_file | cut -d'.' -f1`
+   date=`echo $diag_file | cut -d'.' -f2`
+   $UNCOMPRESS $diag_file
+   fnameanl=$(echo $fname|sed 's/_ges//g')
+   mv $fname.$date $fnameanl
+done
 
 $ncp $datges/${prefix_sfc}.bf03                    ./sfcf03
 $ncp $datges/${prefix_sfc}.bf06                    ./sfcf06
@@ -302,6 +304,7 @@ cat stdout fort.2* > $savdir/stdout.anl.${adate}
 $ncp siganl          $savdir/siganl.${adate}
 $ncp sfcanl.gsi      $savdir/sfcanl.${adate}
 $ncp satbias_out     $savdir/biascr.${adate}
+$ncp satbias_pc.out  $savdir/biascr_pc.${adate}
 $ncp sfcf06          $savdir/sfcf06.${gdate}
 $ncp sigf06          $savdir/sigf06.${gdate}
 

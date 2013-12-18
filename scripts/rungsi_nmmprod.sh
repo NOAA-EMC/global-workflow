@@ -89,7 +89,7 @@ rm -rf core*
 # Make gsi namelist
 #FIXnam=/global/save/$USER/mlueken/fix
 FIXnam=/u/wx20xs/home/gsi/xsu/fix
-CRTMnam=/global/save/wx20ml/CRTM_REL-2.0.5/fix
+CRTMnam=/global/save/wx20ml/CRTM_REL-2.1.3/Big_Endian
 
 # CO2 namelist and file decisions
 ICO2=${ICO2:-0}
@@ -121,10 +121,11 @@ cat << EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
    use_pbl=.false.,use_compress=.false.,nsig_ext=13,gpstop=30.,
+   lrun_subdirs=.true.,
    $SETUP
  /
  &GRIDOPTS
-   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
  /
@@ -140,7 +141,7 @@ cat << EOF > gsiparm.anl
  &JCOPTS
  /
  &STRONGOPTS
-   jcstrong=.false.,jcstrong_option=3,nstrong=0,nvmodes_keep=20,period_max=3.,
+   tlnmc_option=0,nstrong=0,nvmodes_keep=20,period_max=3.,
    baldiag_full=.true.,baldiag_inc=.true.,  
  /
  &OBSQC
@@ -152,7 +153,7 @@ cat << EOF > gsiparm.anl
    dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',         dsis(02)='t',                   dval(02)=1.0,  dthin(02)=0, dsfcalc(02)=0,
    dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',         dsis(03)='q',                   dval(03)=1.0,  dthin(03)=0, dsfcalc(03)=0,
    dfile(04)='prepbufr',  dtype(04)='uv',        dplat(04)=' ',         dsis(04)='uv',                  dval(04)=1.0,  dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='satwnd',    dtype(05)='uv',        dplat(05)=' ',         dsis(05)='uv',                  dval(05)=1.0,  dthin(05)=0, dsfcalc(05)=0,
+   dfile(05)='satwndbufr',    dtype(05)='uv',        dplat(05)=' ',         dsis(05)='uv',                  dval(05)=1.0,  dthin(05)=0, dsfcalc(05)=0,
    dfile(06)='prepbufr',  dtype(06)='spd',       dplat(06)=' ',         dsis(06)='spd',                 dval(06)=1.0,  dthin(06)=0, dsfcalc(06)=0,
    dfile(07)='radarbufr', dtype(07)='rw',        dplat(07)=' ',         dsis(07)='rw',                  dval(07)=1.0,  dthin(07)=0, dsfcalc(07)=0,
    dfile(08)='prepbufr',  dtype(08)='dw',        dplat(08)=' ',         dsis(08)='dw',                  dval(08)=1.0,  dthin(08)=0, dsfcalc(08)=0,
@@ -232,9 +233,17 @@ EOF
 anavinfo=$FIXnam/anavinfo_ndas_binary
 berror=$FIXnam/$endianness/nam_nmmstat_na.gcv
 
-emiscoef=$CRTMnam/EmisCoeff/Big_Endian/EmisCoeff.bin
-aercoef=$CRTMnam/AerosolCoeff/Big_Endian/AerosolCoeff.bin
-cldcoef=$CRTMnam/CloudCoeff/Big_Endian/CloudCoeff.bin
+emiscoef_IRwater=$CRTMnam/Nalli.IRwater.EmisCoeff.bin
+emiscoef_IRice=$CRTMnam/NPOESS.IRice.EmisCoeff.bin
+emiscoef_IRland=$CRTMnam/NPOESS.IRland.EmisCoeff.bin
+emiscoef_IRsnow=$CRTMnam/NPOESS.IRsnow.EmisCoeff.bin
+emiscoef_VISice=$CRTMnam/NPOESS.VISice.EmisCoeff.bin
+emiscoef_VISland=$CRTMnam/NPOESS.VISland.EmisCoeff.bin
+emiscoef_VISsnow=$CRTMnam/NPOESS.VISsnow.EmisCoeff.bin
+emiscoef_VISwater=$CRTMnam/NPOESS.VISwater.EmisCoeff.bin
+emiscoef_MWwater=$CRTMnam/FASTEM5.MWwater.EmisCoeff.bin
+aercoef=$CRTMnam/AerosolCoeff.bin
+cldcoef=$CRTMnam/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
 scaninfo=$FIXnam/global_scaninfo.txt
 satangl=$FIXnam/nam_global_satangbias.txt
@@ -249,6 +258,15 @@ cp $anavinfo ./anavinfo
 cp $berror   ./berror_stats
 cp $errtable ./errtable
 cp $emiscoef ./EmisCoeff.bin
+cp $emiscoef_IRwater ./Nalli.IRwater.EmisCoeff.bin
+cp $emiscoef_IRice ./NPOESS.IRice.EmisCoeff.bin
+cp $emiscoef_IRsnow ./NPOESS.IRsnow.EmisCoeff.bin
+cp $emiscoef_IRland ./NPOESS.IRland.EmisCoeff.bin
+cp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
+cp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
+cp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
+cp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
+cp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satangl  ./satbias_angle
@@ -265,20 +283,9 @@ gsiexec=/u/wx20xs/home/gsi/xsu/src/global_gsi
 cp $gsiexec  ./gsi.x
 
 # Copy CRTM coefficient files based on entries in satinfo file
-nsatsen=`cat $satinfo | wc -l`
-isatsen=1
-set +x
-while [[ $isatsen -le $nsatsen ]]; do
-   flag=`head -n $isatsen $satinfo | tail -1 | cut -c1-1`
-   if [[ "$flag" != "!" ]]; then
-      satsen=`head -n $isatsen $satinfo | tail -1 | cut -f 2 -d" "`
-      spccoeff=${satsen}.SpcCoeff.bin
-      if  [[ ! -s $spccoeff ]]; then
-         cp $CRTMnam/SpcCoeff/Big_Endian/$spccoeff ./
-         cp $CRTMnam/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ./
-      fi
-   fi
-   isatsen=` expr $isatsen + 1 `
+for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+   $ncp $CRTMnam/${file}.SpcCoeff.bin ./
+   $ncp $CRTMnam/${file}.TauCoeff.bin ./
 done
 set -x
 
@@ -289,7 +296,7 @@ CYC=`echo $CDATE | cut -c9-10`
 if [ $TM = 00 ] ; then
    datdir=/com/nam/prod/nam.$PDY
    cp $datdir/nam.t${CYC}z.prepbufr.tm${TM}       ./prepbufr
-   cp $datdir/nam.t${CYC}z.satwnd.tm${TM}.bufr_d       ./satwnd
+   cp $datdir/nam.t${CYC}z.satwnd.tm${TM}.bufr_d       ./satwndbufr
    cp $datdir/nam.t${CYC}z.1bhrs3.tm${TM}.bufr_d  ./hirs3bufr
    cp $datdir/nam.t${CYC}z.1bamub.tm${TM}.bufr_d  ./amsubbufr
    cp $datdir/nam.t${CYC}z.1bamua.tm${TM}.bufr_d  ./amsuabufr
@@ -302,7 +309,7 @@ if [ $TM = 00 ] ; then
 else
    datdir=/com/nam/prod/ndas.$PDY
    cp $datdir/ndas.t${CYC}z.prepbufr.tm${TM}       ./prepbufr
-   cp $datdir/ndas.t${CYC}z.satwnd.tm${TM}.bufr_d  ./satwnd
+   cp $datdir/ndas.t${CYC}z.satwnd.tm${TM}.bufr_d  ./satwndbufr
    cp $datdir/ndas.t${CYC}z.1bhrs3.tm${TM}.bufr_d  ./hirs3bufr
    cp $datdir/ndas.t${CYC}z.1bamub.tm${TM}.bufr_d  ./amsubbufr
    cp $datdir/ndas.t${CYC}z.1bamua.tm${TM}.bufr_d  ./amsuabufr

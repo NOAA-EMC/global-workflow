@@ -11,7 +11,7 @@ if [[ "$arch" = "Linux" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub_zeus -j $rtma_updat_exp1 -t 0:15:00 -p 6/6/0 $scripts/rtma.sh
+   /bin/sh sub_zeus -j $rtma_updat_exp1 -t 0:15:00 -p 2/5/0 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_updat_exp1}.out > return_code_rtma.out
@@ -29,7 +29,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_zeus -j $rtma_updat_exp2 -t 0:12:00 -p 6/8/0 $scripts/rtma.sh
+
+   /bin/sh sub_zeus -j $rtma_updat_exp2 -t 0:12:00 -p 4/5/0 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_updat_exp2}.out > return_code_rtma.out
@@ -47,7 +48,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_zeus -j $rtma_contrl_exp1 -t 0:12:00 -p 6/8/0 $scripts/rtma.sh
+
+   /bin/sh sub_zeus -j $rtma_contrl_exp1 -t 0:12:00 -p 2/5/0 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_contrl_exp1}.out > return_code_rtma.out
@@ -65,7 +67,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_zeus -j $rtma_contrl_exp2 -t 0:12:00 -p 6/8/0 $scripts/rtma.sh
+
+   /bin/sh sub_zeus -j $rtma_contrl_exp2 -t 0:12:00 -p 4/5/0 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_contrl_exp2}.out > return_code_rtma.out
@@ -83,7 +86,8 @@ if [[ "$arch" = "Linux" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression
+
+   /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression 10 10 2
 
    rm -f rtma.out
 
@@ -165,7 +169,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression
+   /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression 10 10 2
 
    rm -f rtma.out
 
