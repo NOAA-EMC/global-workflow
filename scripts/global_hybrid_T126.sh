@@ -179,11 +179,7 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
-else
-   . $scripts/regression_namelists_db.sh
-fi
+. $scripts/regression_namelists.sh
 
 cat << EOF > gsiparm.anl
 
@@ -223,7 +219,7 @@ cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
-convinfo=$fixgsi/global_convinfo_reg_test.txt
+convinfo=$fixgsi/global_convinfo.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
@@ -280,7 +276,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate   ./prepbufr
-$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwnd
+$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwndbufr
 $ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate    ./gpsrobufr
 $ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate   ./tmirrbufr
 $ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate   ./sbuvbufr

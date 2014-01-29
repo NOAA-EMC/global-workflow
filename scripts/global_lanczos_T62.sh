@@ -158,11 +158,8 @@ OBSQC="$OBSQC_update"
 OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
-else
-   . $scripts/regression_namelists_db.sh
-fi
+
+. $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
 ##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
@@ -264,7 +261,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $global_lanczos_T62_obs/${prefix_obs}.prepbufr                ./prepbufr
-$ncp $global_lanczos_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwndbufr
+$ncp $global_lanczos_T62_obs/${prefix_obs}.satwnd.${suffix}        ./satwnd
 $ncp $global_lanczos_T62_obs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
 $ncp $global_lanczos_T62_obs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $global_lanczos_T62_obs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr

@@ -83,11 +83,8 @@ OBSQC="$OBSQC_update"
 OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
-else
-   . $scripts/regression_namelists_db.sh
-fi
+
+. $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
 $RTMA_namelist
@@ -198,7 +195,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $rtma_obs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
-$ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
+$ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwnd
 
 
 # Copy first guess

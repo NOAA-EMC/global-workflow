@@ -188,11 +188,7 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
-else
-   . $scripts/regression_namelists_db.sh
-fi
+. $scripts/regression_namelists.sh
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
 ##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
@@ -236,7 +232,7 @@ cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 
 satinfo=$fixgsi/global_satinfo.txt
-convinfo=$fixgsi/global_convinfo_reg_test.txt
+convinfo=$fixgsi/global_convinfo.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
@@ -295,7 +291,7 @@ done
 
 # Copy observational data to $tmpdir
 ln -s -f $global_T62_obs/${prefix_obs}prepbufr           ./prepbufr
-ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwnd
+ln -s -f $global_T62_obs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
 ln -s -f $global_T62_obs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 ln -s -f $global_T62_obs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 ln -s -f $global_T62_obs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr

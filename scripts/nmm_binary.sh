@@ -106,11 +106,8 @@ OBSQC="$OBSQC_update"
 OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
-else
-   . $scripts/regression_namelists_db.sh
-fi
+
+. $scripts/regression_namelists.sh
 cat << EOF > gsiparm.anl
 
 $nmm_binary_namelist
@@ -214,7 +211,7 @@ done
 
 # Copy observational data to $tmpdir
 $ncp $nmm_binary_obs/${prefixo}.prepbufr.tm12   ./prepbufr
-$ncp $nmm_binary_obs/${prefixo}.satwnd.$suffix   ./satwndbufr
+$ncp $nmm_binary_obs/${prefixo}.satwnd.$suffix   ./satwnd
 $ncp $nmm_binary_obs/${prefixo}.gpsro.$suffix   ./gpsrobufr
 $ncp $nmm_binary_obs/${prefixo}.1bhrs3.$suffix  ./hirs3bufr
 $ncp $nmm_binary_obs/${prefixo}.1bhrs4.$suffix  ./hirs4bufr

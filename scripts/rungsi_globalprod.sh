@@ -12,7 +12,6 @@
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
 #BSUB -W 01:00
-#BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
 #PBS -o gsi_global.e${jobid} 
@@ -46,16 +45,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2013100100
+adate=2013090100
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
-gsiexec=/da/save/$USER/EXP-WCOSS_regtests/src/global_gsi
+gsiexec=/da/save/$USER/trunk/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=/da/save/$USER/EXP-WCOSS_regtests/fix
+fixgsi=/da/save/$USER/trunk/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -70,10 +69,9 @@ if [ $MACHINE = WCOSS ]; then
    datdir=/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
-   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   fixcrtm=/nceplibs/fix/crtm_v2.1.3
    endianness=Big_Endian
    COMPRESS=gzip 
-   UNCOMPRESS=gunzip
    DIAG_COMPRESS=YES 
    DIAG_SUFFIX="" 
    DIAG_TARBALL=YES 
@@ -85,7 +83,6 @@ elif [ $MACHINE = ZEUS ]; then
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
    COMPRESS=gzip
-   UNCOMPRESS=gunzip
    DIAG_COMPRESS=YES 
    DIAG_SUFFIX="" 
    DIAG_TARBALL=YES
@@ -117,7 +114,7 @@ fi
 #=================================================================================================
 
 # Refractive Index or Bending Angle for GPS?
-export gps_dtype="gps_bnd"
+export gps_dtype="gps_ref"
 
 
 if [[  $MACHINE = WCOSS  ]]; then
