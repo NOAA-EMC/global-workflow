@@ -97,7 +97,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub_wcoss -j $nmm_binary_updat_exp1 -q $queue -p 6/6/ -r /3 -t 0:40:00 $scripts/nmm_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp1 -q $queue -p 6/6/ -r /3 -t 0:40:00 $scripts/nmm_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_binary_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_binary_updat_exp1}.out > return_code_nmm_binary.out
@@ -120,7 +120,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -j $nmm_binary_updat_exp2 -q $queue -p 8/8/ -r /4 -t 0:30:00 $scripts/nmm_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp2 -q $queue -p 8/8/ -r /4 -t 0:30:00 $scripts/nmm_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_binary_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_binary_updat_exp2}.out > return_code_nmm_binary.out
@@ -143,7 +143,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -j $nmm_binary_contrl_exp1 -q $queue -p 6/6/ -r /3 -t 0:40:00 $scripts/nmm_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp1 -q $queue -p 6/6/ -r /3 -t 0:40:00 $scripts/nmm_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_binary_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_binary_contrl_exp1}.out > return_code_nmm_binary.out
@@ -166,7 +166,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -j $nmm_binary_contrl_exp2 -q $queue -p 8/8/ -r /4 -t 0:30:00 $scripts/nmm_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp2 -q $queue -p 8/8/ -r /4 -t 0:30:00 $scripts/nmm_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_binary_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_binary_contrl_exp2}.out > return_code_nmm_binary.out

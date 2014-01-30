@@ -97,7 +97,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub_wcoss -j $rtma_updat_exp1 -q $queue -p 10/1/ -r /1 -t 0:10:00 $scripts/rtma.sh
+   /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_updat_exp1 -q $queue -p 10/1/ -r /1 -t 0:10:00 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_updat_exp1}.out > return_code_rtma.out
@@ -120,7 +120,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_wcoss -j $rtma_updat_exp2 -q $queue -p 10/2/N -r /1 -t 0:10:00 $scripts/rtma.sh
+   /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_updat_exp2 -q $queue -p 10/2/N -r /1 -t 0:10:00 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_updat_exp2}.out > return_code_rtma.out
@@ -143,7 +143,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_wcoss -j $rtma_contrl_exp1 -q $queue -p 10/1/ -r /1 -t 0:10:00 $scripts/rtma.sh
+   /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_contrl_exp1 -q $queue -p 10/1/ -r /1 -t 0:10:00 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_contrl_exp1}.out > return_code_rtma.out
@@ -166,7 +166,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_rtma.out
-   /bin/sh sub_wcoss -j $rtma_contrl_exp2 -q $queue -p 10/2/ -r /1 -t 0:10:00 $scripts/rtma.sh
+   /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_contrl_exp2 -q $queue -p 10/2/ -r /1 -t 0:10:00 $scripts/rtma.sh
 
    while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${rtma_contrl_exp2}.out > return_code_rtma.out

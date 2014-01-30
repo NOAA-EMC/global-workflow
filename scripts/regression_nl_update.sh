@@ -2,10 +2,19 @@
 
 # First, generate new variable to hole the first 6 characters of the experiment.
 
-if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+#if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+if [ "$machine" = "Zeus" ]; then
    export SETUP_update=""
 else
-   export SETUP_update=""
+   if [[ `expr substr $exp 1 6` = "global" ]]; then
+      if [[ `expr substr $exp 8 5` = "4dvar" ]]; then
+         export SETUP_update=""
+      elif [[ `expr substr $exp 8 7` = "lanczos" ]]; then
+         export SETUP_update=""
+      else
+         export SETUP_update="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.0e-3,emiss_bc=.true.,"
+      fi
+   fi
 fi
 export GRIDOPTS_update=""
 export BKGVERR_update=""

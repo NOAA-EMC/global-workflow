@@ -97,7 +97,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub_wcoss -j $nmm_netcdf_updat_exp1 -q $queue -p 8/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_netcdf_updat_exp1 -q $queue -p 8/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_netcdf_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_netcdf_updat_exp1}.out > return_code_nmm_netcdf.out
@@ -120,7 +120,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_netcdf.out
-   /bin/sh sub_wcoss -j $nmm_netcdf_updat_exp2 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_netcdf_updat_exp2 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_netcdf_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_netcdf_updat_exp2}.out > return_code_nmm_netcdf.out
@@ -143,7 +143,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_netcdf.out
-   /bin/sh sub_wcoss -j $nmm_netcdf_contrl_exp1 -q $queue -p 8/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_netcdf_contrl_exp1 -q $queue -p 8/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_netcdf_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_netcdf_contrl_exp1}.out > return_code_nmm_netcdf.out
@@ -166,7 +166,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_nmm_netcdf.out
-   /bin/sh sub_wcoss -j $nmm_netcdf_contrl_exp2 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_netcdf_contrl_exp2 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/nmm_netcdf.sh
 
    while [[ $(grep -c '+ rc=0' ${nmm_netcdf_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${nmm_netcdf_contrl_exp2}.out > return_code_nmm_netcdf.out
