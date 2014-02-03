@@ -5,8 +5,13 @@
 
 # Specify machine that is being used (Zeus or WCOSS)
 
-export machine="WCOSS"
-#export machine="Zeus"
+if [ -d /da ]; then
+#For WCOSS
+   export machine="WCOSS"
+elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
+#For Zeus
+   export machine="Zeus"
+fi
 
 # Variables with the same values are defined below.
 
