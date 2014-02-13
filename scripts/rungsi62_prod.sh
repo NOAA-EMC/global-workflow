@@ -231,7 +231,7 @@ done
 # Copy observational data to $tmpdir
 $ncp $datobs/${prefix_obs}.prepbufr                ./prepbufr
 $ncp $datobs/${prefix_obs}.gpsro.${suffix}         ./gpsrobufr
-$ncp $datobs/${prefix_obs}.satwnd.${suffix}         ./satwnd
+$ncp $datobs/${prefix_obs}.satwnd.${suffix}         ./satwndbufr
 $ncp $datobs/${prefix_obs}.spssmi.${suffix}        ./ssmirrbufr
 $ncp $datobs/${prefix_obs}.sptrmm.${suffix}        ./tmirrbufr
 $ncp $datobs/${prefix_obs}.osbuv8.${suffix}        ./sbuvbufr
