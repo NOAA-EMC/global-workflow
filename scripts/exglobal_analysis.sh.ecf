@@ -1097,10 +1097,10 @@ cat <<EOF > gsiparm.anl
    dfile(58)='seviribufr',dtype(58)='seviri',    dplat(58)='m08',     dsis(58)='seviri_m08',      dval(58)=0.0,  dthin(58)=1,  dsfcalc(58)=0,
    dfile(59)='seviribufr',dtype(59)='seviri',    dplat(59)='m09',     dsis(59)='seviri_m09',      dval(59)=0.0,  dthin(59)=1,  dsfcalc(59)=0,
    dfile(60)='seviribufr',dtype(60)='seviri',    dplat(60)='m10',     dsis(60)='seviri_m10',      dval(60)=0.0,  dthin(60)=1,  dsfcalc(60)=0,
-   dfile(61)='hirs4bufr', dtype(61)='hirs4',     dplat(61)='metop-b', dsis(61)='hirs4_metop-b',   dval(61)=0.0,  dthin(61)=1,  dsfcalc(61)=0,
-   dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='metop-b', dsis(62)='amsua_metop-b',   dval(62)=0.0,  dthin(62)=1,  dsfcalc(62)=0,
-   dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='metop-b', dsis(63)='mhs_metop-b',     dval(63)=0.0,  dthin(63)=1,  dsfcalc(63)=0,
-   dfile(64)='iasibufr',  dtype(64)='iasi',      dplat(64)='metop-b', dsis(64)='iasi616_metop-b', dval(64)=0.0,  dthin(64)=1,  dsfcalc(64)=0,
+   dfile(61)='hirs4bufr', dtype(61)='hirs4',     dplat(61)='metop-b', dsis(61)='hirs4_metop-b',   dval(61)=0.0,  dthin(61)=1,  dsfcalc(61)=1,
+   dfile(62)='amsuabufr', dtype(62)='amsua',     dplat(62)='metop-b', dsis(62)='amsua_metop-b',   dval(62)=0.0,  dthin(62)=1,  dsfcalc(62)=1,
+   dfile(63)='mhsbufr',   dtype(63)='mhs',       dplat(63)='metop-b', dsis(63)='mhs_metop-b',     dval(63)=0.0,  dthin(63)=1,  dsfcalc(63)=1,
+   dfile(64)='iasibufr',  dtype(64)='iasi',      dplat(64)='metop-b', dsis(64)='iasi616_metop-b', dval(64)=0.0,  dthin(64)=1,  dsfcalc(64)=1,
    dfile(65)='gomebufr',  dtype(65)='gome',      dplat(65)='metop-b', dsis(65)='gome_metop-b',    dval(65)=0.0,  dthin(65)=2,  dsfcalc(65)=0,
    dfile(66)='atmsbufr',  dtype(66)='atms',      dplat(66)='npp',     dsis(66)='atms_npp',        dval(66)=0.0,  dthin(66)=1,  dsfcalc(66)=0,
    dfile(67)='crisbufr',  dtype(67)='cris',      dplat(67)='npp',     dsis(67)='cris_npp',        dval(67)=0.0,  dthin(67)=1,  dsfcalc(67)=0,
@@ -1190,7 +1190,7 @@ fi
 # Add this statement to release the forecast job once the GSI 
 # step is completed.  Do not release forecast when RUN=enkf
 ##############################################################
-if [ $SENDECF = YES -a $RUN != enkf ]
+if [ "$SENDECF" = YES -a "$RUN" != enkf ]
 then
    ecflow_client --event release_fcst
 fi
