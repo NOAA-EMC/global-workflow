@@ -514,6 +514,12 @@ while [[ $imem -le $ENSEND ]]; do
    export SIGGES=$COMINGES/sfg_${GDATE}_fhr06s_${member}
 
    export SFCANL=$COMOUT/sfcanl_${member}.tmp
+
+   export SIGANL=$DATA/sanl
+   export ABIAS=$DATA/abias
+   export ABIASPC=$DATA/abias_pc
+
+#   export SFCANL=$COMOUT/sfcanl_${CDATE}_${member}
    export GSISTAT=$COMOUT/gsistat_${CDATE}_${member}
    export RADSTAT=$COMOUT/radstat_${CDATE}_${member}
    export OZNSTAT=$COMOUT/oznstat_${CDATE}_${member}
