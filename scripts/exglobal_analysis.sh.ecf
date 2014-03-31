@@ -497,13 +497,16 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
-export NSTGES=${2:-${NSTGES:?}}
+
+if [ $NST_GSI -gt 0 ] ; then
+   export NSTGES=${2:-${NSTGES:?}}
+   export NSTANL=${8:-${NSTANL}}
+fi
 export SIGGES=${3:-${SIGGES:?}}
 export GBIAS=${4:-${GBIAS:?}}
 export GBIASPC=${5:-${GBIASPC:?}}
 export GSATANG=${6:-${GSATANG:?}}
 export SFCANL=${7:-${SFCANL}}
-export NSTANL=${8:-${NSTANL}}
 export SIGANL=${9:-${SIGANL}}
 export ABIAS=${10:-${ABIAS}}
 export ABIASPC=${11:-${ABIASPC}}
@@ -511,6 +514,10 @@ export IGEN=${12:-${IGEN:-0}}
 export ABIASe=${13:-${ABIASe:-satbias_int.out}}
 # Options for  Tr Analysis
 NST_GSI=${NST_GSI:-0}
+NST_TZR=${NST_TZR:-0}
+NSTINFO=${NSTINFO:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -608,12 +615,16 @@ export SFCG05=${SFCG05:-${COMOUT}/sfcf05}
 export SFCG07=${SFCG07:-${COMOUT}/sfcf07}
 export SFCG08=${SFCG08:-${COMOUT}/sfcf08}
 export SFCG09=${SFCG09:-${COMOUT}/sfcf09}
-export NSTG03=${NSTG03:-${COMOUT}/nstf03}
-export NSTG04=${NSTG04:-${COMOUT}/nstf04}
-export NSTG05=${NSTG05:-${COMOUT}/nstf05}
-export NSTG07=${NSTG07:-${COMOUT}/nstf07}
-export NSTG08=${NSTG08:-${COMOUT}/nstf08}
-export NSTG09=${NSTG09:-${COMOUT}/nstf09}
+if [ $NST_GSI -gt 0 ] ; then
+   export NSTG03=${NSTG03:-${COMOUT}/nstf03}
+   export NSTG04=${NSTG04:-${COMOUT}/nstf04}
+   export NSTG05=${NSTG05:-${COMOUT}/nstf05}
+   export NSTG07=${NSTG07:-${COMOUT}/nstf07}
+   export NSTG08=${NSTG08:-${COMOUT}/nstf08}
+   export NSTG09=${NSTG09:-${COMOUT}/nstf09}
+   export NSTGESENS=${NSTGESENS:-${COMOUT}/nstf06_ens}
+   export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
+fi
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
@@ -624,12 +635,10 @@ export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export GRADSTAT=${GRADSTAT:-${COMOUT}/radstat.gdas}
 export SIGGESENS=${SIGGESENS:-${COMOUT}/sigf06_ens}
 export SFCGESENS=${SFCGESENS:-${COMOUT}/sfcf06_ens}
-export NSTGESENS=${NSTGESENS:-${COMOUT}/nstf06_ens}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 export NMEM_ENS=${NMEM_ENS:-0}
 export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
-export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
 export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
 export SFCTSK=${SFCTSK:-${COMOUT}/${PREINP}sfctsk}
 export ABIAS=${ABIAS:-${COMOUT}/${PREINP}abias}
@@ -826,9 +835,11 @@ then
    $NCP $SFCG03   sfcf03
    $NCP $SFCGES   sfcf06
    $NCP $SFCG09   sfcf09
-   $NCP $NSTG03   nstf03
-   $NCP $NSTGES   nstf06
-   $NCP $NSTG09   nstf09
+   if [ $NST_GSI -gt 0 ] ; then
+      $NCP $NSTG03   nstf03
+      $NCP $NSTGES   nstf06
+      $NCP $NSTG09   nstf09
+   fi
 
    if [[ "$DOHYBVAR" = "YES" ]]; then
       imem=1
@@ -836,10 +847,12 @@ then
          member="_mem"`printf %03i $imem`
          sigens=${SIGGESENS}${member}
          sfcens=${SFCGESENS}${member}
-         nstens=${NSTGESENS}${member}
          $NCP $sigens sigf06_ens${member}
          $NCP $sfcens sfcf06_ens${member}
-         $NCP $nstens nstf06_ens${member}
+         if [ $NST_GSI -gt 0 ] ; then
+            nstens=${NSTGESENS}${member}
+            $NCP $nstens nstf06_ens${member}
+         fi
          (( imem = $imem + 1 ))
       done
    fi
@@ -1029,9 +1042,11 @@ else
 #    ln -fs $SFCG08   sfcf08
 #  fi
 
-   ln -fs $NSTG03   nstf03
-   ln -fs $NSTGES   nstf06
-   ln -fs $NSTG09   nstf09
+   if [ $NST_GSI -gt 0 ] ; then
+      ln -fs $NSTG03   nstf03
+      ln -fs $NSTGES   nstf06
+      ln -fs $NSTG09   nstf09
+   fi
 
 #  if [[ -s $NSTG04 ]]; then
 #    ln -fs $NSTG04   nstf04
@@ -1053,10 +1068,12 @@ else
          member="_mem"`printf %03i $imem`
          sigens=${SIGGESENS}${member}
          sfcens=${SFCGESENS}${member}
-         nstens=${NSTGESENS}${member}
          ln -fs $sigens sigf06_ens${member}
          ln -fs $sfcens sfcf06_ens${member}
-         ln -fs $nstens nstf06_ens${member}
+         if [ $NST_GSI -gt 0 ] ; then
+            nstens=${NSTGESENS}${member}
+            ln -fs $nstens nstf06_ens${member}
+         fi
          (( imem = $imem + 1 ))
       done
    fi
@@ -1110,7 +1127,7 @@ cat <<EOF > gsiparm.anl
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
    ndat=79,iguess=-1,
-   nst_gsi=$NST_GSI
+   nst_gsi=$NST_GSI,nst_tzr=$NST_TZR,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
@@ -1268,9 +1285,9 @@ if [ $MITER -gt 0 ];then
       JCAP=$JCAP_ENKF
       LONB=$LONB_ENKF
       LATB=$LATB_ENKF
-      FNOROG=$FIXGLOBAL/global_orography.t$JCAP.grb
+      FNOROG=$FIXGLOBAL/global_orography.t$JCAP.$LONB.$LATB.grb
       FNOROG_UF=$FIXGLOBAL/global_orography_uf.t$JCAP.$LONB.$LATB.grb
-      FNMASK=$FIXGLOBAL/global_slmask.t$JCAP.grb
+      FNMASK=$FIXGLOBAL/global_slmask.t$JCAP.$LONB.$LATB.grb
 
       $CYCLESH  $SFCGES_ENS $SFCGCY_ENS
 
@@ -1317,9 +1334,9 @@ if [ $MITER -gt 0 ]; then
     fi
   else
     if [ $NST_GSI -gt 0 ] ; then
-      cp $SFCGCY $SFCANL
-      cp  nstanl $NSTANL
-      cp  sfcanl $SFCTSK
+      cp sfcgcy $SFCANL
+      cp nstanl $NSTANL
+      cp sfcanl $SFCTSK
       if [[ "$DOHYBVAR" = "YES" ]]; then
         imem=1
         while [[ $imem -le $NMEM_ENS ]]; do
@@ -1334,8 +1351,19 @@ if [ $MITER -gt 0 ]; then
         done
       fi
     else
-      cp $SFCGCY $SFCANL
+      cp sfcgcy $SFCANL
       cp sfcanl.gsi $SFCTSK
+      if [[ "$DOHYBVAR" = "YES" ]]; then
+        imem=1
+        while [[ $imem -le $NMEM_ENS ]]; do
+          member="_mem"`printf %03i $imem`
+          SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
+#         SFCTSK_ENS=${COMOUT_GDAS}/sfctsk_${CDATE}${member}
+          $NCP sfcgcy_ens${member} $SFCANL_ENS
+#         $NCP sfcanl_ens${member} $SFCTSK_ENS
+          (( imem = $imem + 1 ))
+        done
+      fi
     fi
   fi
 fi
@@ -1366,7 +1394,9 @@ fi
 if test "$SAVEGES" = "YES"
 then
    cp $SFCANL  $GESdir/${RUN}.${cycle}.sfcanl
-   cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
+   if [ $NST_GSI -gt 0 ] ; then
+      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
+   fi
    cp $SIGANL  $GESdir/${RUN}.${cycle}.sanl
    cp $ABIAS   $GESdir/${RUN}.${cycle}.abias
    cp $ABIASPC $GESdir/${RUN}.${cydle}.abias_pc
@@ -1374,7 +1404,9 @@ fi
 if test "$SENDCOM" = "YES"
 then
    cp $SFCANL  $COMOUT/${RUN}.${cycle}.sfcanl
-   cp $NSTANL  $COMOUT/${RUN}.${cycle}.nstanl
+   if [ $NST_GSI -gt 0 ] ; then
+      cp $NSTANL  $COMOUT/${RUN}.${cycle}.nstanl
+   fi
    cp $SIGANL  $COMOUT/${RUN}.${cycle}.sanl
    cp $ABIAS   $COMOUT/${RUN}.${cycle}.abias
    cp $ABIASPC $COMOUT/${RUN}.${cycle}.abias_pc

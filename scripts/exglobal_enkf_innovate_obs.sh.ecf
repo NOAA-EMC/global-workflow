@@ -363,12 +363,14 @@ export SFCG05=${SFCG05:-${COMOUT}/sfcf05}
 export SFCG07=${SFCG07:-${COMOUT}/sfcf07}
 export SFCG08=${SFCG08:-${COMOUT}/sfcf08}
 export SFCG09=${SFCG09:-${COMOUT}/sfcf09}
-export NSTG03=${NSTG03:-${COMOUT}/nstf03}
-export NSTG04=${NSTG04:-${COMOUT}/nstf04}
-export NSTG05=${NSTG05:-${COMOUT}/nstf05}
-export NSTG07=${NSTG07:-${COMOUT}/nstf07}
-export NSTG08=${NSTG08:-${COMOUT}/nstf08}
-export NSTG09=${NSTG09:-${COMOUT}/nstf09}
+if [ $NST_GSI -gt 0 ]; then
+   export NSTG03=${NSTG03:-${COMOUT}/nstf03}
+   export NSTG04=${NSTG04:-${COMOUT}/nstf04}
+   export NSTG05=${NSTG05:-${COMOUT}/nstf05}
+   export NSTG07=${NSTG07:-${COMOUT}/nstf07}
+   export NSTG08=${NSTG08:-${COMOUT}/nstf08}
+   export NSTG09=${NSTG09:-${COMOUT}/nstf09}
+fi
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
@@ -468,7 +470,6 @@ fi
 EOMGGRP=$COMOUT/omgstat_${CDATE}_grp${ENSGRP}
 rm -f $EOMGGRP
 
-
 ################################################################################
 # Generate ensemble innovations
 imem=$ENSBEG
@@ -476,7 +477,7 @@ while [[ $imem -le $ENSEND ]]; do
    export RUN_SELECT=NO
    export USE_SELECT=YES
    export SELECT_OBS=${SELECT_OBS:-$DATATOP/obsinput_${CDATE}_ensmean}
-   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.false.,adp_anglebc=.false.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nstinfo=4,fac_dtl=1,fac_tsl=1,nst_tzr=2"
+   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.false.,adp_anglebc=.false.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,"
 #   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,"
    export BKGVERR="bkgv_flowdep=.false.,"
    export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,"
@@ -495,14 +496,16 @@ while [[ $imem -le $ENSEND ]]; do
    export SFCG09=$COMINGES/bfg_${GDATE}_fhr09_${member}
    export SFCGES=$COMINGES/bfg_${GDATE}_fhr06_${member}
 
-   export NSTG03=$COMINGES/nfg_${GDATE}_fhr03_${member}
-   export NSTG04=$COMINGES/nfg_${GDATE}_fhr04_${member}
-   export NSTG05=$COMINGES/nfg_${GDATE}_fhr05_${member}
-   export NSTG06=$COMINGES/nfg_${GDATE}_fhr06_${member}
-   export NSTG07=$COMINGES/nfg_${GDATE}_fhr07_${member}
-   export NSTG08=$COMINGES/nfg_${GDATE}_fhr08_${member}
-   export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
-   export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
+   if [ $NST_GSI -gt 0 ]; then
+      export NSTG03=$COMINGES/nfg_${GDATE}_fhr03_${member}
+      export NSTG04=$COMINGES/nfg_${GDATE}_fhr04_${member}
+      export NSTG05=$COMINGES/nfg_${GDATE}_fhr05_${member}
+      export NSTG06=$COMINGES/nfg_${GDATE}_fhr06_${member}
+      export NSTG07=$COMINGES/nfg_${GDATE}_fhr07_${member}
+      export NSTG08=$COMINGES/nfg_${GDATE}_fhr08_${member}
+      export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
+      export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
+   fi
 
    export SIGG03=$COMINGES/sfg_${GDATE}_fhr03s_${member}
    export SIGG04=$COMINGES/sfg_${GDATE}_fhr04s_${member}
