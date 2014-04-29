@@ -120,7 +120,7 @@ if [[ "$arch" = "Linux" ]]; then
    export noscrub=/scratch1/portfolios/NCEPDEV/da/noscrub/$LOGNAME
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=hybrid
+   export accnt=ada
 
 elif [[ "$arch" = "AIX" ]]; then
 
