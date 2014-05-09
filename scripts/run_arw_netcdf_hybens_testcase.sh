@@ -192,7 +192,7 @@ cat << EOF > gsiparm.anl
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
-   ndat=59,iguess=-1,
+   iguess=-1,
    oneobtest=${SINGLE_OBS_TEST},
    retrieval=.false.,
    nhr_assimilation=3,l_foto=.false.,
@@ -227,66 +227,69 @@ cat << EOF > gsiparm.anl
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
-   dfile(01)='prepbufr',  dtype(01)='ps',        dplat(01)=' ',         dsis(01)='ps',                  dval(01)=1.0,  dthin(01)=0, dsfcalc(01)=0,
-   dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',         dsis(02)='t',                   dval(02)=1.0,  dthin(02)=0, dsfcalc(02)=0,
-   dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',         dsis(03)='q',                   dval(03)=1.0,  dthin(03)=0, dsfcalc(03)=0,
-   dfile(04)='prepbufr',  dtype(04)='uv',        dplat(04)=' ',         dsis(04)='uv',                  dval(04)=1.0,  dthin(04)=0, dsfcalc(04)=0,
-   dfile(05)='prepbufr',  dtype(05)='spd',       dplat(05)=' ',         dsis(05)='spd',                 dval(05)=1.0,  dthin(05)=0, dsfcalc(05)=0,
-   dfile(06)='radarbufr', dtype(06)='rw',        dplat(06)=' ',         dsis(06)='rw',                  dval(06)=1.0,  dthin(06)=0, dsfcalc(06)=0,
-   dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',         dsis(07)='dw',                  dval(07)=1.0,  dthin(07)=0, dsfcalc(07)=0,
-   dfile(08)='prepbufr',  dtype(08)='sst',       dplat(08)=' ',         dsis(08)='sst',                 dval(08)=1.0,  dthin(08)=0, dsfcalc(08)=0,
-   dfile(09)='prepbufr',  dtype(09)='pw',        dplat(09)=' ',         dsis(09)='pw',                  dval(09)=1.0,  dthin(09)=0, dsfcalc(09)=0,
-   dfile(10)='gpsrobufr', dtype(10)='$gps_dtype',   dplat(10)=' ',         dsis(10)='gps',             dval(10)=1.0,  dthin(10)=0, dsfcalc(10)=0,
-   dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',      dsis(11)='pcp_ssmi',            dval(11)=1.0,  dthin(11)=-1,dsfcalc(11)=0,
-   dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',      dsis(12)='pcp_tmi',             dval(12)=1.0,  dthin(12)=-1,dsfcalc(12)=0,
-   dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',       dsis(13)='sbuv8_n16',           dval(13)=1.0,  dthin(13)=0, dsfcalc(13)=0,
-   dfile(14)='sbuvbufr',  dtype(14)='sbuv2',     dplat(14)='n17',       dsis(14)='sbuv8_n17',           dval(14)=1.0,  dthin(14)=0, dsfcalc(14)=0,
-   dfile(15)='sbuvbufr',  dtype(15)='sbuv2',     dplat(15)='n18',       dsis(15)='sbuv8_n18',           dval(15)=1.0,  dthin(15)=0, dsfcalc(15)=0,
-   dfile(16)='omi',       dtype(16)='omi',       dplat(16)='aura',      dsis(16)='omi_aura',            dval(16)=1.0,  dthin(16)=6, dsfcalc(16)=0,
-   dfile(17)='hirs2bufr', dtype(17)='hirs2',     dplat(17)='n14',       dsis(17)='hirs2_n14',           dval(17)=6.0,  dthin(17)=1, dsfcalc(17)=1,
-   dfile(18)='hirs3bufr', dtype(18)='hirs3',     dplat(18)='n16',       dsis(18)='hirs3_n16',           dval(18)=0.0,  dthin(18)=1, dsfcalc(18)=1,
-   dfile(19)='hirs3bufr', dtype(19)='hirs3',     dplat(19)='n17',       dsis(19)='hirs3_n17',           dval(19)=6.0,  dthin(19)=1, dsfcalc(19)=1,
-   dfile(20)='hirs4bufr', dtype(20)='hirs4',     dplat(20)='n18',       dsis(20)='hirs4_n18',           dval(20)=0.0,  dthin(20)=1, dsfcalc(20)=1,
-   dfile(21)='hirs4bufr', dtype(21)='hirs4',     dplat(21)='metop-a',   dsis(21)='hirs4_metop-a',       dval(21)=6.0,  dthin(21)=1, dsfcalc(21)=1,
-   dfile(22)='gsndrbufr', dtype(22)='sndr',      dplat(22)='g11',       dsis(22)='sndr_g11',            dval(22)=0.0,  dthin(22)=1, dsfcalc(22)=0,
-   dfile(23)='gsndrbufr', dtype(23)='sndr',      dplat(23)='g12',       dsis(23)='sndr_g12',            dval(23)=0.0,  dthin(23)=1, dsfcalc(23)=0,
-   dfile(24)='gimgrbufr', dtype(24)='goes_img',  dplat(24)='g11',       dsis(24)='imgr_g11',            dval(24)=0.0,  dthin(24)=1, dsfcalc(24)=0,
-   dfile(25)='gimgrbufr', dtype(25)='goes_img',  dplat(25)='g12',       dsis(25)='imgr_g12',            dval(25)=0.0,  dthin(25)=1, dsfcalc(25)=0,
-   dfile(26)='airsbufr',  dtype(26)='airs',      dplat(26)='aqua',      dsis(26)='airs281SUBSET_aqua',  dval(26)=20.0, dthin(26)=1, dsfcalc(26)=1,
-   dfile(27)='msubufr',   dtype(27)='msu',       dplat(27)='n14',       dsis(27)='msu_n14',             dval(27)=2.0,  dthin(27)=2, dsfcalc(27)=1,
-   dfile(28)='amsuabufr', dtype(28)='amsua',     dplat(28)='n15',       dsis(28)='amsua_n15',           dval(28)=10.0, dthin(28)=2, dsfcalc(28)=1,
-   dfile(29)='amsuabufr', dtype(29)='amsua',     dplat(29)='n16',       dsis(29)='amsua_n16',           dval(29)=0.0,  dthin(29)=2, dsfcalc(29)=1,
-   dfile(30)='amsuabufr', dtype(30)='amsua',     dplat(30)='n17',       dsis(30)='amsua_n17',           dval(30)=0.0,  dthin(30)=2, dsfcalc(30)=1,
-   dfile(31)='amsuabufr', dtype(31)='amsua',     dplat(31)='n18',       dsis(31)='amsua_n18',           dval(31)=10.0, dthin(31)=2, dsfcalc(31)=1,
-   dfile(32)='amsuabufr', dtype(32)='amsua',     dplat(32)='metop-a',   dsis(32)='amsua_metop-a',       dval(32)=10.0, dthin(32)=2, dsfcalc(32)=1,
-   dfile(33)='airsbufr',  dtype(33)='amsua',     dplat(33)='aqua',      dsis(33)='amsua_aqua',          dval(33)=5.0,  dthin(33)=2, dsfcalc(33)=1,
-   dfile(34)='amsubbufr', dtype(34)='amsub',     dplat(34)='n15',       dsis(34)='amsub_n15',           dval(34)=3.0,  dthin(34)=3, dsfcalc(34)=1,
-   dfile(35)='amsubbufr', dtype(35)='amsub',     dplat(35)='n16',       dsis(35)='amsub_n16',           dval(35)=3.0,  dthin(35)=3, dsfcalc(35)=1,
-   dfile(36)='amsubbufr', dtype(36)='amsub',     dplat(36)='n17',       dsis(36)='amsub_n17',           dval(36)=3.0,  dthin(36)=3, dsfcalc(36)=1,
-   dfile(37)='mhsbufr',   dtype(37)='mhs',       dplat(37)='n18',       dsis(37)='mhs_n18',             dval(37)=3.0,  dthin(37)=3, dsfcalc(37)=1,
-   dfile(38)='mhsbufr',   dtype(38)='mhs',       dplat(38)='metop-a',   dsis(38)='mhs_metop-a',         dval(38)=3.0,  dthin(38)=3, dsfcalc(38)=1,
-   dfile(39)='ssmitbufr', dtype(39)='ssmi',      dplat(39)='f13',       dsis(39)='ssmi_f13',            dval(39)=0.0,  dthin(39)=4, dsfcalc(39)=0,
-   dfile(40)='ssmitbufr', dtype(40)='ssmi',      dplat(40)='f14',       dsis(40)='ssmi_f14',            dval(40)=0.0,  dthin(40)=4, dsfcalc(40)=0,
-   dfile(41)='ssmitbufr', dtype(41)='ssmi',      dplat(41)='f15',       dsis(41)='ssmi_f15',            dval(41)=0.0,  dthin(41)=4, dsfcalc(41)=0,
-   dfile(42)='amsrebufr', dtype(42)='amsre_low', dplat(42)='aqua',      dsis(42)='amsre_aqua',          dval(42)=0.0,  dthin(42)=4, dsfcalc(42)=1,
-   dfile(43)='amsrebufr', dtype(43)='amsre_mid', dplat(43)='aqua',      dsis(43)='amsre_aqua',          dval(43)=0.0,  dthin(43)=4, dsfcalc(43)=1,
-   dfile(44)='amsrebufr', dtype(44)='amsre_hig', dplat(44)='aqua',      dsis(44)='amsre_aqua',          dval(44)=0.0,  dthin(44)=4, dsfcalc(44)=1,
-   dfile(45)='ssmisbufr', dtype(45)='ssmis',     dplat(45)='f16',       dsis(45)='ssmis_f16',           dval(45)=0.0,  dthin(45)=4, dsfcalc(45)=1,
-   dfile(46)='gsnd1bufr', dtype(46)='sndrd1',    dplat(46)='g12',       dsis(46)='sndrD1_g12',          dval(46)=1.5,  dthin(46)=5, dsfcalc(46)=0,
-   dfile(47)='gsnd1bufr', dtype(47)='sndrd2',    dplat(47)='g12',       dsis(47)='sndrD2_g12',          dval(47)=1.5,  dthin(47)=5, dsfcalc(47)=0,
-   dfile(48)='gsnd1bufr', dtype(48)='sndrd3',    dplat(48)='g12',       dsis(48)='sndrD3_g12',          dval(48)=1.5,  dthin(48)=5, dsfcalc(48)=0,
-   dfile(49)='gsnd1bufr', dtype(49)='sndrd4',    dplat(49)='g12',       dsis(49)='sndrD4_g12',          dval(49)=1.5,  dthin(49)=5, dsfcalc(49)=0,
-   dfile(50)='gsnd1bufr', dtype(50)='sndrd1',    dplat(50)='g11',       dsis(50)='sndrD1_g11',          dval(50)=1.5,  dthin(50)=5, dsfcalc(50)=0,
-   dfile(51)='gsnd1bufr', dtype(51)='sndrd2',    dplat(51)='g11',       dsis(51)='sndrD2_g11',          dval(51)=1.5,  dthin(51)=5, dsfcalc(51)=0,
-   dfile(52)='gsnd1bufr', dtype(52)='sndrd3',    dplat(52)='g11',       dsis(52)='sndrD3_g11',          dval(52)=1.5,  dthin(52)=5, dsfcalc(52)=0,
-   dfile(53)='gsnd1bufr', dtype(53)='sndrd4',    dplat(53)='g11',       dsis(53)='sndrD4_g11',          dval(53)=1.5,  dthin(53)=5, dsfcalc(53)=0,
-   dfile(54)='gsnd1bufr', dtype(54)='sndrd1',    dplat(54)='g13',       dsis(54)='sndrD1_g13',          dval(54)=1.5,  dthin(54)=5, dsfcalc(54)=0,
-   dfile(55)='gsnd1bufr', dtype(55)='sndrd2',    dplat(55)='g13',       dsis(55)='sndrD2_g13',          dval(55)=1.5,  dthin(55)=5, dsfcalc(55)=0,
-   dfile(56)='gsnd1bufr', dtype(56)='sndrd3',    dplat(56)='g13',       dsis(56)='sndrD3_g13',          dval(56)=1.5,  dthin(56)=5, dsfcalc(56)=0,
-   dfile(57)='gsnd1bufr', dtype(57)='sndrd4',    dplat(57)='g13',       dsis(57)='sndrD4_g13',          dval(57)=1.5,  dthin(57)=5, dsfcalc(57)=0,
-   dfile(58)='iasibufr',  dtype(58)='iasi',      dplat(58)='metop-a',   dsis(58)='iasi616_metop-a',     dval(58)=20.0, dthin(58)=1, dsfcalc(58)=1,
-   dfile(59)='gomebufr',  dtype(59)='gome',      dplat(59)='metop-a',   dsis(59)='gome_metop-a',        dval(59)=1.0,  dthin(59)=6, dsfcalc(59)=0,
  /
+OBS_INPUT::
+!  dfile          dtype       dplat       dsis                  dval    dthin  dsfcalc
+   prepbufr       ps          null        ps                    1.0      0      0
+   prepbufr       t           null        t                     1.0      0      0
+   prepbufr       q           null        q                     1.0      0      0
+   prepbufr       uv          null        uv                    1.0      0      0
+   prepbufr       spd         null        spd                   1.0      0      0
+   radarbufr      rw          null        rw                    1.0      0      0
+   prepbufr       dw          null        dw                    1.0      0      0
+   prepbufr       sst         null        sst                   1.0      0      0
+   prepbufr       pw          null        pw                    1.0      0      0
+   gpsrobufr      $gps_dtype  null        gps                   1.0      0      0
+   ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi              1.0     -1      0
+   tmirrbufr      pcp_tmi     trmm        pcp_tmi               1.0     -1      0
+   sbuvbufr       sbuv2       n16         sbuv8_n16             1.0      0      0
+   sbuvbufr       sbuv2       n17         sbuv8_n17             1.0      0      0
+   sbuvbufr       sbuv2       n18         sbuv8_n18             1.0      0      0
+   omi            omi         aura        omi_aura              1.0      6      0
+   hirs2bufr      hirs2       n14         hirs2_n14             6.0      1      1
+   hirs3bufr      hirs3       n16         hirs3_n16             0.0      1      1
+   hirs3bufr      hirs3       n17         hirs3_n17             6.0      1      1
+   hirs4bufr      hirs4       n18         hirs4_n18             0.0      1      1
+   hirs4bufr      hirs4       metop-a     hirs4_metop-a         6.0      1      1
+   gsndrbufr      sndr        g11         sndr_g11              0.0      1      0
+   gsndrbufr      sndr        g12         sndr_g12              0.0      1      0
+   gimgrbufr      goes_img    g11         imgr_g11              0.0      1      0
+   gimgrbufr      goes_img    g12         imgr_g12              0.0      1      0
+   airsbufr       airs        aqua        airs281SUBSET_aqua   20.0      1      1
+   msubufr        msu         n14         msu_n14               2.0      2      1
+   amsuabufr      amsua       n15         amsua_n15            10.0      2      1
+   amsuabufr      amsua       n16         amsua_n16             0.0      2      1
+   amsuabufr      amsua       n17         amsua_n17             0.0      2      1
+   amsuabufr      amsua       n18         amsua_n18            10.0      2      1
+   amsuabufr      amsua       metop-a     amsua_metop-a        10.0      2      1
+   airsbufr       amsua       aqua        amsua_aqua            5.0      2      1
+   amsubbufr      amsub       n15         amsub_n15             3.0      3      1
+   amsubbufr      amsub       n16         amsub_n16             3.0      3      1
+   amsubbufr      amsub       n17         amsub_n17             3.0      3      1
+   mhsbufr        mhs         n18         mhs_n18               3.0      3      1
+   mhsbufr        mhs         metop-a     mhs_metop-a           3.0      3      1
+   ssmitbufr      ssmi        f13         ssmi_f13              0.0      4      0
+   ssmitbufr      ssmi        f14         ssmi_f14              0.0      4      0
+   ssmitbufr      ssmi        f15         ssmi_f15              0.0      4      0
+   amsrebufr      amsre_low   aqua        amsre_aqua            0.0      4      1
+   amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      4      1
+   amsrebufr      amsre_hig   aqua        amsre_aqua            0.0      4      1
+   ssmisbufr      ssmis       f16         ssmis_f16             0.0      4      1
+   gsnd1bufr      sndrd1      g12         sndrD1_g12            1.5      5      0
+   gsnd1bufr      sndrd2      g12         sndrD2_g12            1.5      5      0
+   gsnd1bufr      sndrd3      g12         sndrD3_g12            1.5      5      0
+   gsnd1bufr      sndrd4      g12         sndrD4_g12            1.5      5      0
+   gsnd1bufr      sndrd1      g11         sndrD1_g11            1.5      5      0
+   gsnd1bufr      sndrd2      g11         sndrD2_g11            1.5      5      0
+   gsnd1bufr      sndrd3      g11         sndrD3_g11            1.5      5      0
+   gsnd1bufr      sndrd4      g11         sndrD4_g11            1.5      5      0
+   gsnd1bufr      sndrd1      g13         sndrD1_g13            1.5      5      0
+   gsnd1bufr      sndrd2      g13         sndrD2_g13            1.5      5      0
+   gsnd1bufr      sndrd3      g13         sndrD3_g13            1.5      5      0
+   gsnd1bufr      sndrd4      g13         sndrD4_g13            1.5      5      0
+   iasibufr       iasi        metop-a     iasi616_metop-a      20.0      1      1
+   gomebufr       gome        metop-a     gome_metop-a          1.0      6      0
+::
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
