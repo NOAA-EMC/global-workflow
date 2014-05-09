@@ -494,14 +494,17 @@ fi
 export machine=${machine:-IBMP6}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 
+
+# Options for  Tr Analysis
+NST_GSI=${NST_GSI:-0}
+NST_TZR=${NST_TZR:-0}
+NSTINFO=${NSTINFO:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
+
 #  Command line arguments.
 export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
-
-if [ $NST_GSI -gt 0 ] ; then
-   export NSTGES=${2:-${NSTGES:?}}
-   export NSTANL=${8:-${NSTANL}}
-fi
 export SIGGES=${3:-${SIGGES:?}}
 export GBIAS=${4:-${GBIAS:?}}
 export GBIASPC=${5:-${GBIASPC:?}}
@@ -512,12 +515,10 @@ export ABIAS=${10:-${ABIAS}}
 export ABIASPC=${11:-${ABIASPC}}
 export IGEN=${12:-${IGEN:-0}}
 export ABIASe=${13:-${ABIASe:-satbias_int.out}}
-# Options for  Tr Analysis
-NST_GSI=${NST_GSI:-0}
-NST_TZR=${NST_TZR:-0}
-NSTINFO=${NSTINFO:-0}
-FAC_DTL=${FAC_DTL:-0}
-FAC_TSL=${FAC_TSL:-0}
+if [ $NST_GSI -gt 0 ] ; then
+   export NSTGES=${2:-${NSTGES:?}}
+   export NSTANL=${8:-${NSTANL}}
+fi
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -1121,7 +1122,7 @@ fi
 # Create global_gsi namelist
 cat <<EOF > gsiparm.anl
  &SETUP
-   miter=$MITER,niter(1)=10,niter(2)=10,
+   miter=$MITER,niter(1)=100,niter(2)=100,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
@@ -1322,15 +1323,23 @@ if [ $MITER -gt 0 ]; then
     cp nstanl $NSTANL
 
     if [[ "$DOHYBVAR" = "YES" ]]; then
+      if [[ "$CDUMP" = "gdas" ]]; then
       imem=1
       while [[ $imem -le $NMEM_ENS ]]; do
         member="_mem"`printf %03i $imem`
         SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
         NSTANL_ENS=${COMOUT_GDAS}/nstanl_${CDATE}${member}
+#       SFCANL_ENS=${COMOUT_GDAS}/sfcanl${member}.${CDUMP}.${CDATE}
+#       NSTANL_ENS=${COMOUT_GDAS}/nstanl${member}.${CDUMP}.${CDATE}
         $NCP sfcanl_ens${member} $SFCANL_ENS
+        sleep 8
+#       if [ $? -ne 0 ]; then 
+#          $NCP sfcanl_ens${member} $SFCANL_ENS
+#       fi
         $NCP nstanl_ens${member} $NSTANL_ENS
         (( imem = $imem + 1 ))
       done
+      fi
     fi
   else
     if [ $NST_GSI -gt 0 ] ; then
@@ -1343,10 +1352,19 @@ if [ $MITER -gt 0 ]; then
           member="_mem"`printf %03i $imem`
           SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
           NSTANL_ENS=${COMOUT_GDAS}/nstanl_${CDATE}${member}
-          SFCTSK_ENS=${COMOUT_GDAS}/sfctsk_${CDATE}${member}
+          SFCTSK_ENS=${COMOUT_GDAS}/sfctsk${member}.${CDUMP}.${CDATE}
+#         SFCANL_ENS=${COMOUT_GDAS}/sfcanl${member}.${CDUMP}.${CDATE}
+#         NSTANL_ENS=${COMOUT_GDAS}/nstanl${member}.${CDUMP}.${CDATE}
+#         SFCTSK_ENS=${COMOUT_GDAS}/sfctsk${member}.${CDUMP}.${CDATE}
           $NCP sfcgcy_ens${member} $SFCANL_ENS
+          if [ $? -ne 0 ]; then 
+             $NCP sfcgcy_ens${member} $SFCANL_ENS
+          fi
           $NCP nstanl_ens${member} $NSTANL_ENS
           $NCP sfcanl_ens${member} $SFCTSK_ENS
+          if [ $? -ne 0 ]; then 
+            $NCP sfcanl_ens${member} $SFCTSK_ENS
+          fi
           (( imem = $imem + 1 ))
         done
       fi
@@ -1360,6 +1378,9 @@ if [ $MITER -gt 0 ]; then
           SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
 #         SFCTSK_ENS=${COMOUT_GDAS}/sfctsk_${CDATE}${member}
           $NCP sfcgcy_ens${member} $SFCANL_ENS
+          if [ $? -ne 0 ]; then 
+             $NCP sfcgcy_ens${member} $SFCANL_ENS
+          fi
 #         $NCP sfcanl_ens${member} $SFCTSK_ENS
           (( imem = $imem + 1 ))
         done
@@ -1460,7 +1481,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
