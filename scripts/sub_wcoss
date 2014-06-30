@@ -51,7 +51,7 @@ Usage:  $0 [options] executable [args]
           \"MP_MPILIB\"               (default:-\"NULL\")
           \"MP_LABELIO\"              (default:-\"NULL\")
           \"MP_STDOUTMODE\"           (default:-\"NULL\")
-          \"DATA\"                    (default:-\"/stmp/$LOGNAME/sub\"
+          \"DATA\"                    (default:-\"/stmpp1/$LOGNAME/sub\"
                                        - deleted at the end if created)
 
 Function:  This command submits a job to the batch queue."
@@ -120,8 +120,8 @@ myhost=$(hostname)
 mpiver=${mpiver:-poe}
 envars=$envars
 
-#DATA=/lustre/fs/scratch/$LOGNAME/stmp
-DATA=${DATA:-/stmp/$LOGNAME/sub}
+#DATA=/lustre/fs/scratch/$LOGNAME/stmpp1
+DATA=${DATA:-/stmpp1/$LOGNAME/sub}
 if [ -s $DATA ] ; then
   MKDATA=NO
 else
