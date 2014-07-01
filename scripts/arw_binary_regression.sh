@@ -7,7 +7,7 @@ set -x
 #. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
 #. regression_var.sh
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
 
@@ -93,11 +93,11 @@ if [[ "$arch" = "Linux" ]]; then
 
    exit
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_binary_updat_exp1 -q $queue -p 16/1/N -r 110/1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_updat_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_updat_exp1}.out > return_code_arw_binary.out
@@ -114,8 +114,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${arw_binary_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$arw_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_arw_binary.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_binary_updat_exp2 -q $queue -p 32/1/N -r 110/1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_updat_exp2 -q $queue -p 16/2/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_updat_exp2}.out > return_code_arw_binary.out
@@ -132,8 +137,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${arw_binary_updat_exp2}.out) -ne 1 ]]; do
+      echo "Job "$arw_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_arw_binary.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_binary_contrl_exp1 -q $queue -p 16/1/N -r 110/1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_contrl_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_contrl_exp1}.out > return_code_arw_binary.out
@@ -150,8 +160,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${arw_binary_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$arw_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_arw_binary.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $arw_binary_contrl_exp2 -q $queue -p 32/1/N -r 110/1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_contrl_exp2 -q $queue -p 16/2/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_contrl_exp2}.out > return_code_arw_binary.out
@@ -165,6 +180,11 @@ elif [[ "$arch" = "AIX" ]]; then
          fi
       fi
       echo "Job "$arw_binary_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${arw_binary_contrl_exp2}.out) -ne 1 ]]; do
+      echo "Job "$arw_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
 
