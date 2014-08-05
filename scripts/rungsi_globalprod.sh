@@ -46,16 +46,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2013090100
-expnm=globalprod    
-exp=globalprod.$adate
-expid=${expnm}.$adate.wcoss
+adate=2014080100
+expnm=viirs    
+exp=virrs.$adate
+expid=${expnm}.$adate
 
 # Set path/file for gsi executable
-gsiexec=/da/save/$USER/trunk/src/global_gsi
+gsiexec=/u/Xiujuan.Su/home/gsi/xsu_satnd_viirs/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=/da/save/$USER/trunk/fix
+fixgsi=/u/Xiujuan.Su/home/gsi/xsu_satnd_viirs/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -67,9 +67,9 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-   datdir=/ptmp/$USER/data_sigmap/${exp}
-   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
-   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
+   datdir=/ptmpp1/$USER/data_sigmap/${exp}
+   tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
    endianness=Big_Endian
    COMPRESS=gzip 
@@ -593,7 +593,8 @@ else
   exit 1
 fi
 
-$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+#$ncp $datobs/${prefix_obs}satwnd.${suffix}   ./satwndbufr
+$ncp /ptmpp1/Yangrong.Ling/virrs/com/gfs/prod/gdas.$adate0/${prefix_obs}satwnd.${suffix} ./satwndbufr
 $ncp $datobs/${prefix_obs}gpsro.${suffix}    ./gpsrobufr
 $ncp $datobs/${prefix_obs}spssmi.${suffix}   ./ssmirrbufr
 $ncp $datobs/${prefix_obs}sptrmm.${suffix}   ./tmirrbufr
@@ -628,7 +629,7 @@ $ncp $datges/${prefix_tbc}.abias              ./satbias_in
 $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
 $ncp $datges/${prefix_tbc}.radstat            ./radstat.gdas
 
-/da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
+/u/Xiujuan.Su/home/gsi/xsu_satnd_viirs/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 
 cp satbias_in satbias_in.orig
 cp satbias_in.new satbias_in
