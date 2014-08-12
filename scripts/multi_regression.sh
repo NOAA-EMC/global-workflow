@@ -10,6 +10,8 @@ fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 
+/bin/sh global_T62_ozonly_regression.sh > global_T62_ozonly.out &
+
 /bin/sh global_4dvar_T62_regression.sh > global_4dvar_T62.out &
 
 /bin/sh global_hybrid_T126_regression.sh > global_hybrid_T126.out &
