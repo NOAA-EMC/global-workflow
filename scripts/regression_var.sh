@@ -9,10 +9,10 @@ export arch="`uname -s | awk '{print $1}'`"
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2013011400
-export global_4dvar_T62_adate=2013011400
+export global_T62_adate=2014080400
+export global_4dvar_T62_adate=2014080400
 export global_hybrid_T126_adate=2012012212
-export global_lanczos_T62_adate=2013011400
+export global_lanczos_T62_adate=2014080400
 export global_nemsio_T62_adate=2013011400
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
@@ -84,11 +84,11 @@ if [[ "$arch" = "Linux" ]]; then
    export group=global
    export queue=batch
    export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/EXP-port/src
-   export gsiexec_updat=$basedir/EXP-port/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export fixgsi=$basedir/EXP-port/fix
-   export scripts=$basedir/EXP-port/scripts
+   export gsisrc=$basedir/gsi/xsu_satnd_viirs/src
+   export gsiexec_updat=$basedir/gsi/xsu_satnd_viirs/src/global_gsi
+   export gsiexec_contrl=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/src/global_gsi
+   export fixgsi=$basedir/gsi/xsu_satnd_viirs/fix
+   export scripts=$basedir/gsi/xsu_satnd_viirs/scripts
    export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
@@ -124,7 +124,7 @@ if [[ "$arch" = "Linux" ]]; then
    export noscrub=/scratch1/portfolios/NCEPDEV/da/noscrub/$LOGNAME
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=hybrid
+   export accnt=cloud
 
 elif [[ "$arch" = "AIX" ]]; then
 
@@ -309,7 +309,8 @@ export ptmp_loc="/ptmp/$USER"
 
 # Define analysis date
 
-export adate_global="2013011400"
+#export adate_global="2013011400"
+export adate_global="2014080400"
 export adate_global_nemsio="2013011400"
 export adate_regional="2007122000"
 export adate_regional_nmm_binary="2010021600"
@@ -322,7 +323,7 @@ export adate_regional_rtma_binary="2011083112"
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
 #machine="cirrus"
-machine="stratus"
+machine="zeus"
 #machine="jet"
 
 # Define obs directory
