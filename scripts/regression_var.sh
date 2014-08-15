@@ -33,6 +33,10 @@ if [[ "$arch" = "Linux" ]]; then
    export global_T62_updat_exp2=global_T${JCAP}_64proc_updat
    export global_T62_contrl_exp1=global_T${JCAP}_36proc_contrl
    export global_T62_contrl_exp2=global_T${JCAP}_64proc_contrl
+   export global_T62_ozonly_updat_exp1=global_T${JCAP}_36proc_ozonly_updat
+   export global_T62_ozonly_updat_exp2=global_T${JCAP}_64proc_ozonly_updat
+   export global_T62_ozonly_contrl_exp1=global_T${JCAP}_36proc_ozonly_contrl
+   export global_T62_ozonly_contrl_exp2=global_T${JCAP}_64proc_ozonly_contrl
    export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_36proc_updat
    export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_64proc_updat
    export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_36proc_contrl
@@ -120,7 +124,7 @@ if [[ "$arch" = "Linux" ]]; then
    export noscrub=/scratch1/portfolios/NCEPDEV/da/noscrub/$LOGNAME
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=ada
+   export accnt=hybrid
 
 elif [[ "$arch" = "AIX" ]]; then
 
@@ -238,6 +242,7 @@ export cntrl=$gsiexec_contrl
 # Define experiment names
 
 export global="62_sigmap.$gps_dtype"
+export global_ozonly="62_sigmap_ozonly.$gps_dtype"
 export global_lanczos="62_sigmap_lanczos.$gps_dtype"
 export global_3d4dvar="62_sigmap_3d4dvar.$gps_dtype"
 export global_4dvar="62_sigmap_4dvar.$gps_dtype"
@@ -372,6 +377,7 @@ fi
 # Regression output filename
 
 export global_regression="global_regression_results.$gps_dtype.txt"
+export global_ozonly_regression="global_ozonly_regression_results.$gps_dtype.txt"
 export global_lanczos_regression="global_lanczos_regression_results.$gps_dtype.txt"
 export global_3d4dvar_regression="global_3d4dvar_regression_results.$gps_dtype.txt"
 export global_4dvar_regression="global_4dvar_regression_results.$gps_dtype.txt"
