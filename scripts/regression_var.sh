@@ -15,7 +15,7 @@ fi
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2013011400
+export global_T62_adate=2014080400
 export global_4dvar_T62_adate=2013011400
 export global_hybrid_T126_adate=2012012212
 export global_lanczos_T62_adate=2013011400
@@ -90,11 +90,11 @@ if [[ "$machine" = "Zeus" ]]; then
    export group=global
    export queue=batch
    export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/EXP-WCOSS_regtests/src
-   export gsiexec_updat=$basedir/EXP-WCOSS_regtests/src/global_gsi
+   export gsisrc=$basedir/EXP-meta_data-read_files/src
+   export gsiexec_updat=$basedir/EXP-meta_data-read_files/src/global_gsi
    export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export fixgsi=$basedir/EXP-WCOSS_regtests/fix
-   export scripts=$basedir/EXP-WCOSS_regtests/scripts
+   export fixgsi=$basedir/EXP-meta_data-read_files/fix
+   export scripts=$basedir/EXP-meta_data-read_files/scripts
    export fixcrtm=/contrib/nceplibs/nwprod/lib/fix/crtm_v2.1.3
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
