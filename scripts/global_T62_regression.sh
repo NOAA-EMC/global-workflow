@@ -97,7 +97,7 @@ elif [[ "$arch" = "AIX" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_updat_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_T62.sh
+   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_updat_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:40:00 $scripts/global_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_T62_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_T62_updat_exp1}.out > return_code_global_3dvar.out
@@ -115,7 +115,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_updat_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_T62.sh
+   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_updat_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:30:00 $scripts/global_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_T62_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_T62_updat_exp2}.out > return_code_global_3dvar.out
@@ -133,7 +133,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_contrl_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_T62.sh
+   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_contrl_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:40:00 $scripts/global_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_T62_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_T62_contrl_exp1}.out > return_code_global_3dvar.out
@@ -151,7 +151,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_global_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_contrl_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_T62.sh
+   /bin/sh sub -a GDAS-T2O -g $group -j $global_T62_contrl_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:30:00 $scripts/global_T62.sh
 
    while [[ $(grep -c '+ rc=0' ${global_T62_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_T62_contrl_exp2}.out > return_code_global_3dvar.out
