@@ -20,6 +20,7 @@ export arw_netcdf_adate=2008051112
 export nmm_binary_adate=2010021600
 export nmm_netcdf_adate=2007122000
 export rtma_adate=2011083112
+export hwrf_nmm_adate=2012102812
 export JCAP=62
 
 # Set predefined paths and variables here.
@@ -77,6 +78,14 @@ if [[ "$arch" = "Linux" ]]; then
    export rtma_updat_exp2=rtma_20proc_updat
    export rtma_contrl_exp1=rtma_10proc_contrl
    export rtma_contrl_exp2=rtma_20proc_contrl
+   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_36proc_updat
+   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_64proc_updat
+   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_36proc_contrl
+   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_64proc_contrl
+   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_36proc_updat
+   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_64proc_updat
+   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_36proc_contrl
+   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_64proc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
@@ -117,6 +126,8 @@ if [[ "$arch" = "Linux" ]]; then
    export nmm_netcdf_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
    export rtma_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
    export rtma_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
+   export hwrf_nmm_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 
@@ -174,6 +185,14 @@ elif [[ "$arch" = "AIX" ]]; then
    export rtma_updat_exp2=rtma_20proc_updat
    export rtma_contrl_exp1=rtma_10proc_contrl
    export rtma_contrl_exp2=rtma_20proc_contrl
+   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_32proc_updat
+   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_64proc_updat
+   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_32proc_contrl
+   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_64proc_contrl
+   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_32proc_updat
+   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_64proc_updat
+   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_32proc_contrl
+   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_64proc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
@@ -214,6 +233,8 @@ elif [[ "$arch" = "AIX" ]]; then
    export nmm_netcdf_ges=/global/noscrub/wx20ml/cases/regional/nmm_netcdf/$nmm_netcdf_adate
    export rtma_obs=/global/noscrub/wx20ml/cases/regional/rtma_binary/$rtma_adate
    export rtma_ges=/global/noscrub/wx20ml/cases/regional/rtma_binary/$rtma_adate
+   export hwrf_nmm_obs=/global/noscrub/wx20ml/cases/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_ges=/global/noscrub/wx20ml/cases/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility and noscrub directory.
 
@@ -253,6 +274,8 @@ export nmm_binary="nmm_binary.$gps_dtype"
 export nmm_netcdf="nmm_netcdf.$gps_dtype"
 export nems_nmmb="nems_nmmb.$gps_dtype"
 export rtma="rtma.$gps_dtype"
+export hwrf_nmm_d2="hwrf_nmm_d2.$gps_dtype"
+export hwrf_nmm_d3="hwrf_nmm_d3.$gps_dtype"
 export compare="compare.$gps_dtype"
 
 export exp1_global_updat="global.exp1.$gps_dtype.updat"
@@ -266,6 +289,8 @@ export exp1_arw_binary_updat="arw_binary.exp1.$gps_dtype.updat"
 export exp1_arw_netcdf_updat="arw_netcdf.exp1.$gps_dtype.updat"
 export exp1_rtma_updat="rtma.exp1.$gps_dtype.updat"
 export exp1_nems_nmmb_updat="nems_nmmb.exp1.$gps_dtype.updat"
+export exp1_hwrf_nmm_d2_updat="hwrf_nmm_d2.exp1.$gps_dtype.updat"
+export exp1_hwrf_nmm_d3_updat="hwrf_nmm_d3.exp1.$gps_dtype.updat"
 
 export exp2_global_updat="global.exp2.$gps_dtype.updat"
 export exp2_global_lanczos_updat="global_lanczos.exp2.$gps_dtype.updat"
@@ -278,6 +303,8 @@ export exp2_arw_binary_updat="arw_binary.exp2.$gps_dtype.updat"
 export exp2_arw_netcdf_updat="arw_netcdf.exp2.$gps_dtype.updat"
 export exp2_rtma_updat="rtma.exp2.$gps_dtype.updat"
 export exp2_nems_nmmb_updat="nems_nmmb.exp2.$gps_dtype.updat"
+export exp2_hwrf_nmm_d2_updat="hwrf_nmm_d2.exp2.$gps_dtype.updat"
+export exp2_hwrf_nmm_d3_updat="hwrf_nmm_d3.exp2.$gps_dtype.updat"
 
 export exp1_global_cntrl="global.exp1.$gps_dtype.cntrl"
 export exp1_global_lanczos_cntrl="global_lanczos.exp1.$gps_dtype.cntrl"
@@ -290,6 +317,8 @@ export exp1_arw_binary_cntrl="arw_binary.exp1.$gps_dtype.cntrl"
 export exp1_arw_netcdf_cntrl="arw_netcdf.exp1.$gps_dtype.cntrl"
 export exp1_rtma_cntrl="rtma.exp1.$gps_dtype.cntrl"
 export exp1_nems_nmmb_cntrl="nems_nmmb.exp1.$gps_dtype.cntrl"
+export exp1_hwrf_nmm_d2_cntrl="hwrf_nmm_d2.exp1.$gps_dtype.cntrl"
+export exp1_hwrf_nmm_d3_cntrl="hwrf_nmm_d3.exp1.$gps_dtype.cntrl"
 
 export exp2_global_cntrl="global.exp2.$gps_dtype.cntrl"
 export exp2_global_lanczos_cntrl="global_lanczos.exp2.$gps_dtype.cntrl"
@@ -302,6 +331,8 @@ export exp2_arw_binary_cntrl="arw_binary.exp2.$gps_dtype.cntrl"
 export exp2_arw_netcdf_cntrl="arw_netcdf.exp2.$gps_dtype.cntrl"
 export exp2_rtma_cntrl="rtma.exp2.$gps_dtype.cntrl"
 export exp2_nems_nmmb_cntrl="nems_nmmb.exp2.$gps_dtype.cntrl"
+export exp2_hwrf_nmm_d2_cntrl="hwrf_nmm_d2.exp2.$gps_dtype.cntrl"
+export exp2_hwrf_nmm_d3_cntrl="hwrf_nmm_d3.exp2.$gps_dtype.cntrl"
 
 # Define ptmp location
 
@@ -318,6 +349,8 @@ export adate_regional_arw_netcdf="2008051112"
 export adate_regional_arw_binary="2010072412"
 export adate_regional_cmaq_binary="2010090112"
 export adate_regional_rtma_binary="2011083112"
+export adate_regional_hwrf_nmm_d2="2012102812"
+export adate_regional_hwrf_nmm_d3="2012102812"
 
 # Define machine (added due to almost daily switch between cirrus and stratus and different locations of obs between machines)
 
@@ -372,6 +405,8 @@ elif [[ $machine = "jet" ]]; then
      export datges_nmm_netcdf="/lfs1/projects/emcda/mlueken/cases/regional/nmm_netcdf"
      export datobs_arw_binary="/lfs1/projects/emcda/mlueken/cases/regional/arw_binary"
      export datobs_arw_netcdf="/lfs1/projects/emcda/mlueken/cases/regional/arw_netcdf"
+     export datobs_hwrf_nmm="/lfs1/projects/emcda/mlueken/cases/regional/hwrf_nmm"
+     export datges_hwrf_nmm="/lfs1/projects/emcda/mlueken/cases/regional/hwrf_nmm"
 fi
 
 # Regression output filename
@@ -389,6 +424,8 @@ export nmm_netcdf_regression="nmm_netcdf_regression_results.$gps_dtype.txt"
 export arw_binary_regression="arw_binary_regression_results.$gps_dtype.txt"
 export arw_netcdf_regression="arw_netcdf_regression_results.$gps_dtype.txt"
 export nems_nmmb_regression="nems_nmmb_regression_results.$gps_dtype.txt"
+export hwrf_nmm_d2_regression="hwrf_nmm_d2_regression_results.$gps_dtype.txt"
+export hwrf_nmm_d3_regression="hwrf_nmm_d3_regression_results.$gps_dtype.txt"
 
 # Regression vfydir
 
@@ -423,6 +460,10 @@ export control_arw_netcdf="$noscrub/tmpreg_${arw_netcdf}/$exp1_arw_netcdf_cntrl"
 export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_cntrl"
 export control_nems_nmmb="$noscrub/tmpreg_${nems_nmmb}/$exp1_nems_nmmb_cntrl"
 export control_nems_nmmb2="$noscrub/tmpreg_${nems_nmmb}/$exp2_nems_nmmb_cntrl"
+export control_hwrf_nmm_d2="$noscrub/tmpreg_${hwrf_nmm_d2}/$exp1_hwrf_nmm_d2_cntrl"
+export control_hwrf_nmm_d22="$noscrub/tmpreg_${hwrf_nmm_d2}/$exp2_hwrf_nmm_d2_cntrl"
+export control_hwrf_nmm_d3="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp1_hwrf_nmm_d3_cntrl"
+export control_hwrf_nmm_d32="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp2_hwrf_nmm_d3_cntrl"
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
