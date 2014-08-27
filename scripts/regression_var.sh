@@ -9,7 +9,7 @@ export arch="`uname -s | awk '{print $1}'`"
 
 # Variables with the same values are defined below.
 
-export global_T62_adate=2013011400
+export global_T62_adate=2014080400
 export global_4dvar_T62_adate=2013011400
 export global_hybrid_T126_adate=2012012212
 export global_lanczos_T62_adate=2013011400
@@ -83,12 +83,12 @@ if [[ "$arch" = "Linux" ]]; then
 
    export group=global
    export queue=batch
-   export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/EXP-port/src
-   export gsiexec_updat=$basedir/EXP-port/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export fixgsi=$basedir/EXP-port/fix
-   export scripts=$basedir/EXP-port/scripts
+   export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/gsi
+   export gsisrc=$basedir/AMV_Genkova_AVHRR/src
+   export gsiexec_updat=$basedir/AMV_Genkova_AVHRR/src/global_gsi
+   export gsiexec_contrl=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/svn1/src/global_gsi
+   export fixgsi=$basedir/AMV_Genkova_AVHRR/fix
+   export scripts=$basedir/AMV_Genkova_AVHRR/scripts
    export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
@@ -124,7 +124,7 @@ if [[ "$arch" = "Linux" ]]; then
    export noscrub=/scratch1/portfolios/NCEPDEV/da/noscrub/$LOGNAME
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=hybrid
+   export accnt=cloud
 
 elif [[ "$arch" = "AIX" ]]; then
 
