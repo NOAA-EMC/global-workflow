@@ -2,16 +2,7 @@
 set -x
 
 # Set experiment name and analysis date
-
-if [[ "$arch" = "Linux" ]]; then
-
-   exp=$jobname
-
-elif [[ "$arch" = "AIX" ]]; then
-
-   exp=$LOADL_JOB_NAME
-
-fi
+exp=$jobname
 
 #exp=$exp1_rtma_updat
 #adate=$adate_regional_rtma_binary
@@ -198,8 +189,8 @@ $ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-    $ncp $crtm_coef/${file}.SpcCoeff.bin ./
-    $ncp $crtm_coef/${file}.TauCoeff.bin ./
+    $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+    $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -208,17 +199,10 @@ $ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
 
 
 # Copy first guess
-$ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout_orig
+$ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
+cp wrf_inout wrf_ges
 
-if [[ "$endianness" = "Little_Endian" ]]; then
-   /home/George.Vandenberghe/utils/fendian.x 4 -i wrf_inout_orig -o wrf_inout
-   cp wrf_inout wrf_ges
-elif [[ "$endianness" = "Big_Endian" ]]; then
-   cp wrf_inout_orig wrf_inout
-   cp wrf_inout wrf_ges
-fi
-
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -234,10 +218,10 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
 
