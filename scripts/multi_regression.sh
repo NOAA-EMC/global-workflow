@@ -2,10 +2,12 @@
 
 set -x
 
-if [[ "`uname -s | awk '{print $1}'`" = 'Linux' ]]; then
-   echo "/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/EXP-port/scripts/regression_var.sh" > regression_var.out
-elif [[ "`uname -s | awk '{print $1}'`" = 'AIX' ]]; then
-   echo "/global/save/wx20ml/EXP-port/scripts/regression_var.sh" > regression_var.out
+if [ -d /da ]; then
+#For WCOSS
+   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
+#For Zeus
+   echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-meta_data-read_files/scripts/regression_var.sh" > regression_var.out
 fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
