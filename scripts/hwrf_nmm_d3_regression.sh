@@ -7,7 +7,7 @@ set -x
 #. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
 #. regression_var.sh
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
 
@@ -93,11 +93,11 @@ if [[ "$arch" = "Linux" ]]; then
 
    exit
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a RDAS-MTN -g $group -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 6/6/N -r 110/1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
+   /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
 
    while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${hwrf_nmm_d3_updat_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -115,7 +115,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_hwrf_nmm_d3.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $hwrf_nmm_d3_updat_exp2 -q $queue -p 8/8/N -r 110/1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
+   /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
    while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${hwrf_nmm_d3_updat_exp2}.out > return_code_hwrf_nmm_d3.out
@@ -133,7 +133,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_hwrf_nmm_d3.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $hwrf_nmm_d3_contrl_exp1 -q $queue -p 6/6/N -r 110/1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
+   /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_contrl_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
 
    while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${hwrf_nmm_d3_contrl_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -151,7 +151,7 @@ elif [[ "$arch" = "AIX" ]]; then
    done
 
    rm -f return_code_hwrf_nmm_d3.out
-   /bin/sh sub -a RDAS-MTN -g $group -j $hwrf_nmm_d3_contrl_exp2 -q $queue -p 8/8/N -r 110/1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
+   /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_contrl_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
    while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${hwrf_nmm_d3_contrl_exp2}.out > return_code_hwrf_nmm_d3.out
