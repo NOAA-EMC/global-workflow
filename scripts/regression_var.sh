@@ -195,13 +195,13 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export rtma_updat_exp2=rtma_20proc_updat
    export rtma_contrl_exp1=rtma_10proc_contrl
    export rtma_contrl_exp2=rtma_20proc_contrl
-   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_32proc_updat
+   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_36proc_updat
    export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_64proc_updat
-   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_32proc_contrl
+   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_36proc_contrl
    export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_64proc_contrl
-   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_32proc_updat
+   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_36proc_updat
    export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_64proc_updat
-   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_32proc_contrl
+   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_36proc_contrl
    export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_64proc_contrl
 
 #  Next, paths for experiment and control executables,
@@ -243,8 +243,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
    export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
    export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-   export hwrf_nmm_obs=/global/noscrub/wx20ml/cases/regional/hwrf_nmm/$hwrf_nmm_adate
-   export hwrf_nmm_ges=/global/noscrub/wx20ml/cases/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_obs=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_ges=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility and noscrub directory.
 

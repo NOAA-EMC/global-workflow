@@ -264,6 +264,9 @@ if [[ "$machine" = "Zeus" ]]; then
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
+   export MP_USE_BULK_XFER=yes
+   export MP_BULK_MIN_MSG_SIZE=64k
+
    mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
