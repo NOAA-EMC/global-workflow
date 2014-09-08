@@ -114,6 +114,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${hwrf_nmm_d3_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$hwrf_nmm_d3_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_hwrf_nmm_d3.out
    /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
@@ -128,6 +133,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$hwrf_nmm_d3_updat_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${hwrf_nmm_d3_updat_exp2}.out) -ne 1 ]]; do
       echo "Job "$hwrf_nmm_d3_updat_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
@@ -150,6 +160,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${hwrf_nmm_d3_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$hwrf_nmm_d3_contrl_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_hwrf_nmm_d3.out
    /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_contrl_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
@@ -164,6 +179,11 @@ elif [[ "$machine" = "WCOSS" ]]; then
             fi
          fi
       fi
+      echo "Job "$hwrf_nmm_d3_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${hwrf_nmm_d3_contrl_exp2}.out) -ne 1 ]]; do
       echo "Job "$hwrf_nmm_d3_contrl_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
