@@ -16,9 +16,9 @@ fi
 # Variables with the same values are defined below.
 
 export global_T62_adate=2014080400
-export global_4dvar_T62_adate=2013011400
+export global_4dvar_T62_adate=2014080400
 export global_hybrid_T126_adate=2012012212
-export global_lanczos_T62_adate=2013011400
+export global_lanczos_T62_adate=2014080400
 export global_nemsio_T62_adate=2013011400
 export nmmb_nems_adate=2009031600
 export arw_binary_adate=2010072412
@@ -241,8 +241,6 @@ export gps_dtype="gps_bnd"
 # Define ptmp location
 
 export ptmp_loc="/ptmpp1/$USER"
-
-# Define analysis date
 
 # Regression output filename
 
