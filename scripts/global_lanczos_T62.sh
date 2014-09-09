@@ -2,11 +2,7 @@
 set -x
 
 # Set experiment name and analysis date
-if [[ "$arch" = "Linux" ]]; then
-   exp=$jobname
-elif [[ "$arch" = "AIX" ]]; then
-   exp=$LOADL_JOB_NAME
-fi
+exp=$jobname
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -259,8 +255,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/${file}.TauCoeff.bin ./
+   $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -293,8 +289,8 @@ $ncp $global_lanczos_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrea
 $ncp $global_lanczos_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_lanczos_T62_ges/${prefix_tbc}.abias                   ./satbias_in
-$ncp $global_lanczos_T62_ges/${prefix_tbc}.satang                  ./satbias_angle
+$ncp $global_lanczos_T62_ges/${prefix_tbc}.abias_orig              ./satbias_in
+$ncp $global_lanczos_T62_ges/${prefix_tbc}.satang_orig             ./satbias_angle
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $global_lanczos_T62_ges/${prefix_sfc}.bf03                 ./sfcf03
@@ -317,7 +313,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -333,9 +329,9 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
 
