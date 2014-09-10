@@ -580,6 +580,7 @@ export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${PREINP}obsinput}
 export DIAG_SUFFIX=${DIAG_SUFFIX:-""}
 export DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 export DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
+export CHGRP_CMD=${CHGRP_CMD:-"chgrp rstprod"}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -1215,7 +1216,7 @@ if [[ "$RUN_SELECT" = "YES" ]]; then
      $NCP obs_input.tar $SELECT_OBS
   fi
   chmod 750 $SELECT_OBS
-  chgrp rstprod $SELECT_OBS
+  ${CHGRP_CMD} $SELECT_OBS
   echo $(date) END tar obs_input >&2
 fi
 
@@ -1313,7 +1314,7 @@ if [[ $DIAG_TARBALL = YES ]]; then
 
 #  Restrict CNVSTAT 
    chmod 750 $CNVSTAT
-   chgrp rstprod $CNVSTAT
+   ${CHGRP_CMD} $CNVSTAT
    echo $(date) END tar diagnostic files >&2
 fi
 
