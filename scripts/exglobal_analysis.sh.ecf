@@ -37,59 +37,60 @@
 # 2012-01-16  Treadon        add hooks for hybrid ensemble
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
+# 2014-03-13  X. Li          Add NSST
 #
-# Usage:  global_analysis.sh SFCGES NSTGES SIGGES GBIAS GBIASPC GSATANG
-#                            SFCANL NSTANL SIGANL ABIAS ABIASPC IGEN
+# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GSATANG NSTANL
+#                            SFCANL SIGANL ABIAS ABIASPC NSTGES IGEN
 #
 #   Input script positional parameters:
 #     1             Input surface guess
 #                   defaults to $SFCGES; required
-#     2             Input NSST guess
-#                   defaults to $NSTGES; required
-#     3             Input sigma guess
+#     2             Input sigma guess
 #                   defaults to $SIGGES; required
-#     4             Input guess time dependent bias correction coefficients
+#     3             Input guess time dependent bias correction coefficients
 #                   defaults to $GBIAS; required
-#     5             Input guess radiance bias correction pre-conditioning
+#     4             Input guess radiance bias correction pre-conditioning
 #                   defaults to $GBIASPC; required
-#     6             Input guess angle dependent bias correction
+#     5             Input guess angle dependent bias correction
 #                   defaults to $GSATANG; required
-#     7             Output surface analysis
+#     6             Output surface analysis
 #                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
-#     8             Output NSST analysis
-#                   defaults to $NSTANL, then to ${COMOUT}/nstanl
-#     9             Output sigma analysis
+#     7             Output sigma analysis
 #                   defaults to $SIGANL, then to ${COMOUT}/siganl
-#    10             Output bias correction
+#     8             Output bias correction
 #                   defaults to $ABIAS, then to ${COMOUT}/abias
-#    11             Output bias correction pre-conditioning
+#     9             Output bias correction pre-conditioning
 #                   defaults to $ABIASPC, then to ${COMOUT}/abias_pc
+#    10             Input NSST guess
+#                   defaults to $NSTGES; required
+#    11             Output NSST analysis
+#                   defaults to $NSTANL, then to ${COMOUT}/nstanl
 #    12             Output generating code
 #                   defaults to $IGEN, then to 0
 #
 #   Imported Shell Variables:
 #     SFCGES        Input surface guess
 #                   overridden by $1; required
-#     NSTGES        Input NSST guess
-#                   overridden by $2; required
 #     SIGGES        Input sigma guess
-#                   overridden by $3; required
+#                   overridden by $2; required
 #     GBIAS         Input guess bias correction
-#                   overridden by $4; required
+#                   overridden by $3; required
 #     GBIASPC       Input guess radiance bias correction pre-conditioning
-#                   overridden by $5; required
+#                   overridden by $4; required
 #     GSATANG       Input guess angle dependent bias correction
-#                   overridden by $6; required
+#                   overridden by $5; required
 #     SFCANL        Output surface analysis
-#                   overridden by $7; defaults to ${COMOUT}/sfcanl
-#     NSTANL        Output NSST analysis
-#                   overridden by $8; defaults to ${COMOUT}/nstanl
+#                   overridden by $6; defaults to ${COMOUT}/sfcanl
 #     SIGANL        Output sigma analysis
-#                   overridden by $9; defaults to ${COMOUT}/siganl
+#                   overridden by $7; defaults to ${COMOUT}/siganl
 #     ABIAS         Output bias correction
-#                   overridden by $10; defaults to ${COMOUT}/abias
+#                   overridden by $8; defaults to ${COMOUT}/abias
 #     ABIASPC       Output bias correction pre-conditioning
-#                   overridden by $11; defaults to ${COMOUT}/abias_pc
+#                   overridden by $9; defaults to ${COMOUT}/abias_pc
+#     NSTGES        Input NSST guess
+#                   overridden by $10; required
+#     NSTANL        Output NSST analysis
+#                   overridden by $11; defaults to ${COMOUT}/nstanl
 #     IGEN          Output generating code
 #                   overridden by $12; defaults to 0
 #     SFCG03        Surface guess valid at -03 hour
@@ -130,10 +131,6 @@
 #                   defaults to ${COMOUT}/sigf09; optional input
 #     SIGGESENS     template for ensemble member sigma guess
 #                   defaults to ${COMOUT}/sigf06_ens; optional input
-#     SFCGESENS     template for ensemble member surface guess
-#                   defaults to ${COMOUT}/sfcf06_ens; optional input
-#     NSTGESENS     template for ensemble member NSST guess
-#                   defaults to ${COMOUT}/nstf06_ens; optional input
 #     DOHYBVAR      flag (YES or NO) for hybrid ensemble variational option
 #                   defaults to NO
 #     NMEM_ENS      number of ensemble members included in analysis
@@ -292,6 +289,12 @@
 #                   defaults to ${COMIN}/${PREINP}gpsro.tm00.bufr_d${SUFINP}
 #     TCVITL        Input tcvitals file
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
+#     NSSTBF        Input in situ sea temperature file
+#                   defaults to ${COMIN}/${PREINP}nsstbufr.tm00.bufr_d${SUFINP}
+#     B1AVHAM       Input AVHRR GAC (AM) file
+#                   defaults to ${COMIN}/${PREINP}avcsam.tm00.bufr_d${SUFINP}
+#     B1AVHPM       Input AVHRR GAC (PM) file
+#                   defaults to ${COMIN}/${PREINP}avcspm.tm00.bufr_d${SUFINP}
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
 #     LOGSCRIPT     Log posting script
@@ -390,7 +393,6 @@
 #                  $HYBENSINFO
 #
 #     input data : $SFCGES
-#                  $NSTGES
 #                  $SIGGES
 #                  $GBIAS
 #                  $GBIASPC
@@ -450,9 +452,9 @@
 #                  $TMIPCP
 #                  $GPSROBF
 #                  $TCVITL
-#                  $NSSTBF   
-#                  $B1AVHAM 
-#                  $B1AVHPM 
+#                  $NSSTBF
+#                  $B1AVHAM
+#                  $B1AVHPM
 #
 #     output data: $SFCANL
 #                  $NSTANL
@@ -495,31 +497,21 @@ fi
 export machine=${machine:-IBMP6}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 
-
-# Options for  Tr Analysis
-NST_GSI=${NST_GSI:-0}
-NST_TZR=${NST_TZR:-0}
-NSTINFO=${NSTINFO:-0}
-FAC_DTL=${FAC_DTL:-0}
-FAC_TSL=${FAC_TSL:-0}
-
 #  Command line arguments.
 export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
-export SIGGES=${3:-${SIGGES:?}}
-export GBIAS=${4:-${GBIAS:?}}
-export GBIASPC=${5:-${GBIASPC:?}}
-export GSATANG=${6:-${GSATANG:?}}
-export SFCANL=${7:-${SFCANL}}
-export SIGANL=${9:-${SIGANL}}
-export ABIAS=${10:-${ABIAS}}
-export ABIASPC=${11:-${ABIASPC}}
+export SIGGES=${2:-${SIGGES:?}}
+export GBIAS=${3:-${GBIAS:?}}
+export GBIASPC=${4:-${GBIASPC:?}}
+export GSATANG=${5:-${GSATANG:?}}
+export SFCANL=${6:-${SFCANL}}
+export SIGANL=${7:-${SIGANL}}
+export ABIAS=${8:-${ABIAS}}
+export ABIASPC=${9:-${ABIASPC}}
+export NSTGES=${10:-${NSTGES:?}}
+export NSTANL=${11:-${NSTANL}}
 export IGEN=${12:-${IGEN:-0}}
 export ABIASe=${13:-${ABIASe:-satbias_int.out}}
-if [ $NST_GSI -gt 0 ] ; then
-   export NSTGES=${2:-${NSTGES:?}}
-   export NSTANL=${8:-${NSTANL}}
-fi
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -531,6 +523,12 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+# Control parameters for NSST
+NST_GSI=${NST_GSI:-0}
+NST_TZR=${NST_TZR:-0}
+NSTINFO=${NSTINFO:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
@@ -547,10 +545,6 @@ export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
 export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
-
-export BFCOMB=/scratch2/portfolios/NCEPDEV/global/save/glopara/svn/gfs/trunk/para/exec/bufr_combfr 
-
-export MITER=${MITER:-2}
 export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
 export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
 export CYCLESH=${CYCLESH:-${USHGLOBAL}/global_cycle.sh}
@@ -599,16 +593,13 @@ export SMIPCP=${SMIPCP:-${COMIN}/${PREINP}spssmi.tm00.bufr_d${SUFINP}}
 export TMIPCP=${TMIPCP:-${COMIN}/${PREINP}sptrmm.tm00.bufr_d${SUFINP}}
 export GPSROBF=${GPSROBF:-${COMIN}/${PREINP}gpsro.tm00.bufr_d${SUFINP}}
 export TCVITL=${TCVITL:-${COMIN}/${PREINP}syndata.tcvitals.tm00}
-
 export NSSTBF=${NSSTBF:-nsstbufr.tm00.bufr_d${SUFINP}}
 export B1AVHAM=${B1AVHAM:-$COMIN_DUMP/avcsam.tm00.bufr_d${SUFINP}}
 export B1AVHPM=${B1AVHPM:-$COMIN_DUMP/avcspm.tm00.bufr_d${SUFINP}}
-#export AMSREBF=${AMSREBF:-$COMIN_DUMP/amsre.tm00.bufr_d${SUFINP}}
 export SFCSHPBF=${SFCSHPBF:-$COMIN_DUMP/sfcshp.tm00.bufr_d${SUFINP}}
 export TESACBF=${TESACBF:-$COMIN_DUMP/tesac.tm00.bufr_d${SUFINP}}
 export BATHYBF=${BATHYBF:-$COMIN_DUMP/bathy.tm00.bufr_d${SUFINP}}
 export TRKOBBF=${TRKOBBF:-$COMIN_DUMP/trkob.tm00.bufr_d${SUFINP}}
-
 export GINCIN=${GINCIN:-${COMOUT}/gesfile_in}
 export BIASIN=${BIASIN:-${COMOUT}/biascor_in}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
@@ -624,25 +615,32 @@ if [ $NST_GSI -gt 0 ] ; then
    export NSTG07=${NSTG07:-${COMOUT}/nstf07}
    export NSTG08=${NSTG08:-${COMOUT}/nstf08}
    export NSTG09=${NSTG09:-${COMOUT}/nstf09}
-   export NSTGESENS=${NSTGESENS:-${COMOUT}/nstf06_ens}
-   export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
 fi
+export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
 export SIGG07=${SIGG07:-${COMOUT}/sigf07}
 export SIGG08=${SIGG08:-${COMOUT}/sigf08}
 export SIGG09=${SIGG09:-${COMOUT}/sigf09}
-export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export GRADSTAT=${GRADSTAT:-${COMOUT}/radstat.gdas}
 export SIGGESENS=${SIGGESENS:-${COMOUT}/sigf06_ens}
+export NSTGESENS=${NSTGESENS:-${COMOUT}/nstf06_ens}
 export SFCGESENS=${SFCGESENS:-${COMOUT}/sfcf06_ens}
+export SFCGCYENS=${SFCGCYENS:-${COMOUT}/sfcgcy_ens}
+export NSTGESENS_MEAN=${NSTGESENS_MEAN:-${COMOUT}/nstf06_ensmean}
+export SFCGESENS_MEAN=${SFCGESENS_MEAN:-${COMOUT}/sfcf06_ensmean}
+export SFCGCYENS_MEAN=${SFCGCYENS_MEAN:-${COMOUT}/sfcgcy_ensmean}
+export SFCANLENS_MEAN=${SFCANLENS_MEAN:-${COMOUT}/sfcanl_ensmean}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 export NMEM_ENS=${NMEM_ENS:-0}
-export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
-export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
+#export DTSINC_ENS=${DTSINC_ENS:-${COMOUT}/${PREINP}dtsinc_ens}
+export DTSINC_ENS=${COMOUT_GDAS}/dtsinc_ens_${CDATE}
+export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCTSK=${SFCTSK:-${COMOUT}/${PREINP}sfctsk}
+export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
+export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
 export ABIAS=${ABIAS:-${COMOUT}/${PREINP}abias}
 export ABIASPC=${ABIASPC:-${COMOUT}/${PREINP}abias_pc}
 export GINCOUT=${GINCOUT:-${COMOUT}/${PREINP}gesfile_out}
@@ -727,6 +725,29 @@ else
 fi
 cd $DATA||exit 99
 
+################################################################################
+#  Update surface guess file to produce surface analysis
+if [ $NST_GSI -eq 3 ] ; then
+   $CYCLESH  $SFCGES $SFCGCY
+   if [[ "$DOHYBVAR" = "YES" ]]; then
+      if [ ! -s ${SFCGCYENS_MEAN} ]; then
+      export FNOROG=$FIXGLOBAL/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      export FNOROG_UF=$FIXGLOBAL/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      export FNMASK=$FIXGLOBAL/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      $CYCLESH  $SFCGESENS_MEAN $SFCGCYENS_MEAN
+      fi
+   fi
+else
+   $CYCLESH  $SFCGES $SFCANL
+fi
+
+rc=$?
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 11
+
+
+################################################################################
 #  Make atmospheric analysis
 if [ $machine = IBMP6 ] ; then
  export XLSMPOPTS="parthds=$NTHREADS_GSI:stack=$NTHSTACK_GSI"
@@ -744,17 +765,19 @@ rm airsbufr iasibufr amsrebufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locin
 rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
+rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09 siganl
 rm gesfile_in gesfiles_out
 rm -rf dir*
-
 #
-# combine the sea water temperature in situ observation into a single bufr file
+# combine the sea water temperature in situ observations into a single bufr file
 #
+if [[ $NST_GSI -gt 0 ]]; then
    export XLFUNIT_50='$NSSTBF'
    ls $SFCSHPBF $TESACBF $BATHYBF $TRKOBBF|$BFCOMB
    $NCP fort.50 $NSSTBF
    rm fort.50
+fi
 
 $NCP $GSIEXEC $DATA
 if [[ $FILESTYLE = 'C' ]]
@@ -791,6 +814,7 @@ then
    $NCP $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
    $NCP $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
    $NCP $RTMFIX/CloudCoeff.bin CloudCoeff.bin
+
    # Observational data
    $NCP $PREPQC   prepbufr
    $NCP $SATWND   satwndbufr
@@ -844,21 +868,33 @@ then
       $NCP $NSTG09   nstf09
    fi
 
+   if [[ $NST_GSI -gt 0 ]]; then
+      if [[ $NST_GSI -eq 3 ]]; then
+         $NCP $SFCGCY sfcgcy
+      else
+         $NCP $SFCANL sfcgcy
+      fi
+   fi
+
    if [[ "$DOHYBVAR" = "YES" ]]; then
       imem=1
       while [[ $imem -le $NMEM_ENS ]]; do
          member="_mem"`printf %03i $imem`
          sigens=${SIGGESENS}${member}
-         sfcens=${SFCGESENS}${member}
          $NCP $sigens sigf06_ens${member}
-         $NCP $sfcens sfcf06_ens${member}
-         if [ $NST_GSI -gt 0 ] ; then
-            nstens=${NSTGESENS}${member}
-            $NCP $nstens nstf06_ens${member}
-         fi
          (( imem = $imem + 1 ))
       done
+      if [[ $NST_GSI -gt 0 ]]; then
+         $NCP $NSTGESENS_MEAN nstf06_ensmean
+         $NCP $SFCGESENS_MEAN sfcf06_ensmean
+         if [[ $NST_GSI -eq 3 ]]; then
+            $NCP $SFCGCYENS_MEAN sfcgcy_ensmean
+         else
+            $NCP $SFCANLENS_MEAN sfcgcy_ensmean
+         fi
+      fi
    fi
+
 
 ## NOTE:  10/01/2003, r.treadon
 ##    (1) While the global_gsi can handle hourly forecast
@@ -875,44 +911,44 @@ then
 ##        test for file existence before cp
 
 
-#  if [[ -s $SIGG04 ]]; then 
-#     $NCP $SIGG04   sigf04
-#  fi
-#  if [[ -s $SIGG05 ]]; then
-#     $NCP $SIGG05   sigf05
-#  fi
-#  if [[ -s $SIGG07 ]]; then
-#     $NCP $SIGG07   sigf07
-#  fi
-#  if [[ -s $SIGG08 ]]; then
-#     $NCP $SIGG08   sigf08
-#  fi
+   if [[ -s $SIGG04 ]]; then 
+      $NCP $SIGG04   sigf04
+   fi
+   if [[ -s $SIGG05 ]]; then
+      $NCP $SIGG05   sigf05
+   fi
+   if [[ -s $SIGG07 ]]; then
+      $NCP $SIGG07   sigf07
+   fi
+   if [[ -s $SIGG08 ]]; then
+      $NCP $SIGG08   sigf08
+   fi
 
-#  if [[ -s $SFCG04 ]]; then
-#     $NCP $SFCG04   sfcf04
-#  fi
-#  if [[ -s $SFCG05 ]]; then
-#     $NCP $SFCG05   sfcf05
-#  fi
-#  if [[ -s $SFCG07 ]]; then
-#     $NCP $SFCG07   sfcf07
-#  fi
-#  if [[ -s $SFCG08 ]]; then
-#     $NCP $SFCG08   sfcf08
-#  fi
+   if [[ -s $SFCG04 ]]; then
+      $NCP $SFCG04   sfcf04
+   fi
+   if [[ -s $SFCG05 ]]; then
+      $NCP $SFCG05   sfcf05
+   fi
+   if [[ -s $SFCG07 ]]; then
+      $NCP $SFCG07   sfcf07
+   fi
+   if [[ -s $SFCG08 ]]; then
+      $NCP $SFCG08   sfcf08
+   fi
 
-#  if [[ -s $NSTG04 ]]; then
-#     $NCP $NSTG04   nstf04
-#  fi
-#  if [[ -s $NSTG05 ]]; then
-#     $NCP $NSTG05   nstf05
-#  fi
-#  if [[ -s $NSTG07 ]]; then
-#     $NCP $NSTG07   nstf07
-#  fi
-#  if [[ -s $NSTG08 ]]; then
-#     $NCP $NSTG08   nstf08
-#  fi
+   if [[ -s $NSTG04 ]]; then
+      $NCP $NSTG04   sfcf04
+   fi
+   if [[ -s $NSTG05 ]]; then
+      $NCP $NSTG05   sfcf05
+   fi
+   if [[ -s $NSTG07 ]]; then
+      $NCP $NSTG07   sfcf07
+   fi
+   if [[ -s $NSTG08 ]]; then
+      $NCP $NSTG08   sfcf08
+   fi
 
    if [[ -s $GINCIN ]]; then
       $NCP $GINCIN   gesfile_in
@@ -1045,11 +1081,9 @@ else
 #    ln -fs $SFCG08   sfcf08
 #  fi
 
-   if [ $NST_GSI -gt 0 ] ; then
-      ln -fs $NSTG03   nstf03
-      ln -fs $NSTGES   nstf06
-      ln -fs $NSTG09   nstf09
-   fi
+   ln -fs $NSTG03   nstf03
+   ln -fs $NSTGES   nstf06
+   ln -fs $NSTG09   nstf09
 
 #  if [[ -s $NSTG04 ]]; then
 #    ln -fs $NSTG04   nstf04
@@ -1064,21 +1098,31 @@ else
 #    ln -fs $NSTG08   nstf08
 #  fi
 
+   if [[ $NST_GSI -gt 0 ]]; then
+      if [[ $NST_GSI -eq 3 ]]; then
+         ln -fs $SFCGCY sfcgcy
+      else
+         ln -fs $SFCANL sfcgcy
+      fi
+   fi
 
    if [[ "$DOHYBVAR" = "YES" ]]; then
       imem=1
       while [[ $imem -le $NMEM_ENS ]]; do
          member="_mem"`printf %03i $imem`
          sigens=${SIGGESENS}${member}
-         sfcens=${SFCGESENS}${member}
          ln -fs $sigens sigf06_ens${member}
-         ln -fs $sfcens sfcf06_ens${member}
-         if [ $NST_GSI -gt 0 ] ; then
-            nstens=${NSTGESENS}${member}
-            ln -fs $nstens nstf06_ens${member}
-         fi
          (( imem = $imem + 1 ))
       done
+      if [[ $NST_GSI -gt 0 ]]; then
+         ln -fs $NSTGESENS_MEAN nstf06_ensmean
+         ln -fs $SFCGESENS_MEAN sfcf06_ensmean
+         if [[ $NST_GSI -eq 3 ]]; then
+            ln -fs $SFCGCYENS_MEAN sfcgcy_ensmean
+         else
+            ln -fs $SFCANLENS_MEAN sfcgcy_ensmean
+         fi
+      fi
    fi
 
    # Output files
@@ -1088,6 +1132,16 @@ else
    ln -fs $GINCOUT  gesfile_out
    ln -fs $BIASOUT  biascor_out
 
+   if [ $NST_GSI -gt 0 ] ; then
+      ln -fs $NSTANL nstanl
+      ln -fs $SFCTSK sfctsk
+      if [[ "$DOHYBVAR" = "YES" ]]; then
+         ln -fs $DTSINC_ENS dtsinc_ens
+      fi
+      if [ $NST_GSI -eq 3 ] ; then
+         ln -fs $SFCANL sfcanl
+      fi
+   fi
 #  If requested, create obs_input tarball
    if [[ "$RUN_SELECT" = "YES" ]]; then
       ln -fs $SELECT_OBS obs_input.tar
@@ -1124,7 +1178,7 @@ fi
 # Create global_gsi namelist
 cat <<EOF > gsiparm.anl
  &SETUP
-   miter=$MITER,niter(1)=100,niter(2)=100,
+   miter=2,niter(1)=100,niter(2)=100,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
@@ -1183,7 +1237,8 @@ OBS_INPUT::
    prepbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
    radarbufr      rw          null        rw                  0.0     0     0
-   prepbufr       sst         nsst        sst                 0.0     0     0
+   prepbufr       sst         null        sst                 0.0     0     0
+   nsstbufr       sst         nsst        sst                 0.0     0     0
    gpsrobufr      gps_bnd     null        gps                 0.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
    tmirrbufr      pcp_tmi     trmm        pcp_tmi             0.0    -1     0
@@ -1278,35 +1333,6 @@ OBS_INPUT::
  /
 EOF
 
-################################################################################
-#  Apply global_cycle to surface guess file to update sea ice, SST and others
-if [ $MITER -gt 0 ];then 
-  $CYCLESH  $SFCGES sfcgcy
-  if [[ "$DOHYBVAR" = "YES" ]]; then
-    imem=1
-    while [[ $imem -le $NMEM_ENS ]]; do
-      member="_mem"`printf %03i $imem`
-      SFCGES_ENS=sfcf06_ens${member}
-      SFCGCY_ENS=sfcgcy_ens${member}
-      JCAP=$JCAP_ENKF
-      LONB=$LONB_ENKF
-      LATB=$LATB_ENKF
-      FNOROG=$FIXGLOBAL/global_orography.t$JCAP.$LONB.$LATB.grb
-      FNOROG_UF=$FIXGLOBAL/global_orography_uf.t$JCAP.$LONB.$LATB.grb
-      FNMASK=$FIXGLOBAL/global_slmask.t$JCAP.$LONB.$LATB.grb
-
-      $CYCLESH  $SFCGES_ENS $SFCGCY_ENS
-
-      (( imem = $imem + 1 ))
-    done
-  fi
-fi
-
-rc=$?
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT||exit 11
-################################################################################
 
 # Run global_gsi
 eval $PGM < gsiparm.anl $REDOUT$PGMOUT $REDERR$PGMERR
@@ -1315,85 +1341,6 @@ rc=$?
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 2
-
-################################################################################
-#  Get surface analysis ($SFCANL) and NSST analysis ($NSTANL)
-#  We can choose to save $SFCTSK: tskin analysis (sfcanl.gsi, when nst_gsi < 3 = no Tf analysis)
-#  sfcgcy: from sfcf06 but applied by global_cycle
-#  sfcanl: from sfcf06 tsea updated with (1) Tf + NSSTM (when nst_gsi = 3) or (2)tskin analysis (when nst_gsi < 3 when no Tf analysis) 
-#  nstanl: from nstf06 but updated with Tf analysis (when nst_gsi = 3) or tsea in sfcanl (when nst_gsi < 3) 
-if [ $MITER -gt 0 ]; then 
-  if [ $NST_GSI -gt 2 ] ; then
-    cp sfcanl $SFCANL
-    cp nstanl $NSTANL
-
-    if [[ "$DOHYBVAR" = "YES" ]]; then
-      if [[ "$CDUMP" = "gdas" ]]; then
-      imem=1
-      while [[ $imem -le $NMEM_ENS ]]; do
-        member="_mem"`printf %03i $imem`
-        SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
-        NSTANL_ENS=${COMOUT_GDAS}/nstanl_${CDATE}${member}
-#       SFCANL_ENS=${COMOUT_GDAS}/sfcanl${member}.${CDUMP}.${CDATE}
-#       NSTANL_ENS=${COMOUT_GDAS}/nstanl${member}.${CDUMP}.${CDATE}
-        $NCP sfcanl_ens${member} $SFCANL_ENS
-        sleep 8
-#       if [ $? -ne 0 ]; then 
-#          $NCP sfcanl_ens${member} $SFCANL_ENS
-#       fi
-        $NCP nstanl_ens${member} $NSTANL_ENS
-        (( imem = $imem + 1 ))
-      done
-      fi
-    fi
-  else
-    if [ $NST_GSI -gt 0 ] ; then
-      cp sfcgcy $SFCANL
-      cp nstanl $NSTANL
-      cp sfcanl $SFCTSK
-      if [[ "$DOHYBVAR" = "YES" ]]; then
-        imem=1
-        while [[ $imem -le $NMEM_ENS ]]; do
-          member="_mem"`printf %03i $imem`
-          SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
-          NSTANL_ENS=${COMOUT_GDAS}/nstanl_${CDATE}${member}
-          SFCTSK_ENS=${COMOUT_GDAS}/sfctsk${member}.${CDUMP}.${CDATE}
-#         SFCANL_ENS=${COMOUT_GDAS}/sfcanl${member}.${CDUMP}.${CDATE}
-#         NSTANL_ENS=${COMOUT_GDAS}/nstanl${member}.${CDUMP}.${CDATE}
-#         SFCTSK_ENS=${COMOUT_GDAS}/sfctsk${member}.${CDUMP}.${CDATE}
-          $NCP sfcgcy_ens${member} $SFCANL_ENS
-          if [ $? -ne 0 ]; then 
-             $NCP sfcgcy_ens${member} $SFCANL_ENS
-          fi
-          $NCP nstanl_ens${member} $NSTANL_ENS
-          $NCP sfcanl_ens${member} $SFCTSK_ENS
-          if [ $? -ne 0 ]; then 
-            $NCP sfcanl_ens${member} $SFCTSK_ENS
-          fi
-          (( imem = $imem + 1 ))
-        done
-      fi
-    else
-      cp sfcgcy $SFCANL
-      cp sfcanl.gsi $SFCTSK
-      if [[ "$DOHYBVAR" = "YES" ]]; then
-        imem=1
-        while [[ $imem -le $NMEM_ENS ]]; do
-          member="_mem"`printf %03i $imem`
-          SFCANL_ENS=${COMOUT_GDAS}/sfcanl_${CDATE}${member}
-#         SFCTSK_ENS=${COMOUT_GDAS}/sfctsk_${CDATE}${member}
-          $NCP sfcgcy_ens${member} $SFCANL_ENS
-          if [ $? -ne 0 ]; then 
-             $NCP sfcgcy_ens${member} $SFCANL_ENS
-          fi
-#         $NCP sfcanl_ens${member} $SFCTSK_ENS
-          (( imem = $imem + 1 ))
-        done
-      fi
-    fi
-  fi
-fi
-################################################################################
 
 
 if [[ $FILESTYLE = 'C' ]]
@@ -1407,6 +1354,15 @@ then
    fi
       if [[ -s biascor_out ]]; then
       $NCP biascor_out  $BIASOUT
+   fi
+   if [ $NST_GSI -gt 0 ] ; then
+      $NCP  nstanl $NSTANL
+      if [[ "$DOHYBVAR" = "YES" ]]; then
+         $NCP dtsinc_ens $DTSINC_ENS
+      fi
+      if [ $NST_GSI -eq 3 ] ; then
+         $NCP sfcanl $SFCANL
+      fi
    fi
 fi
 
@@ -1430,12 +1386,12 @@ fi
 if test "$SENDCOM" = "YES"
 then
    cp $SFCANL  $COMOUT/${RUN}.${cycle}.sfcanl
-   if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $COMOUT/${RUN}.${cycle}.nstanl
-   fi
    cp $SIGANL  $COMOUT/${RUN}.${cycle}.sanl
    cp $ABIAS   $COMOUT/${RUN}.${cycle}.abias
    cp $ABIASPC $COMOUT/${RUN}.${cycle}.abias_pc
+   if [ $NST_GSI -gt 0 ] ; then
+      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
+   fi
 fi
 
 ##############################################################
@@ -1486,7 +1442,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
