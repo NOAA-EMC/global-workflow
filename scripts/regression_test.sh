@@ -123,7 +123,12 @@ scale2=$( echo "scale=6;$time2 - $time_scale2" | bc -l )
 
 # Calculate maximum allowable deviation for scalability
 
-scale1thresh=$( echo "scale=6;$scale1 / $scaledif + $scale1" | bc -l )
+scalelogic=$( echo "0 < $scale1" | bc )
+if [[ "$scalelogic" = 1 ]]; then
+   scale1thresh=$( echo "scale=6;$scale1 / $scaledif + $scale1" | bc -l )
+else
+   scale1thresh=$( echo "scale=6;$scale1 / $scaledif - $scale1" | bc -l )
+fi
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
