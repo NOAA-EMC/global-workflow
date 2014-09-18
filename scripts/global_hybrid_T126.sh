@@ -37,6 +37,7 @@ savdir=$savdir/out${JCAP}/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -217,7 +218,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
-
+scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
@@ -256,6 +257,7 @@ $ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $scaninfo ./scaninfo
 $ncp $satinfo  ./satinfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
@@ -295,10 +297,25 @@ $ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubb
 $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate       ./satbias_in
-$ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc  ./satbias_pc
-$ncp $global_hybrid_T126_datges/satang.gdas.$gdate       ./satbias_angle
-$ncp $global_hybrid_T126_datges/gdas1.t06z.radstat       ./radstat.gdas
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}        ./satbias_in
+   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate          ./satbias_angle
+else
+   $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
+   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc     ./satbias_pc
+   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate          ./satbias_angle
+   $ncp $global_hybrid_T126_datges/gdas1.t06z.radstat          ./radstat.gdas
+
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+   for type in $listdiag; do
+      diag_file=`echo $type | cut -d',' -f1`
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameanl=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameanl
+   done
+fi
 
 $ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate.t${JCAP}  ./sfcf03
 $ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate.t${JCAP}  ./sfcf06

@@ -22,6 +22,7 @@ savdir=$savdir/nemsio_out${JCAP}/sigmap/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -292,10 +293,25 @@ $ncp $global_nemsio_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrear
 $ncp $global_nemsio_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+else
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
+
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+   for type in $listdiag; do
+      diag_file=`echo $type | cut -d',' -f1`
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameanl=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameanl
+   done
+fi
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $global_nemsio_T62_ges/${prefix_sfc}.bf03                 ./sfcf03
