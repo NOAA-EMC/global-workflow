@@ -26,6 +26,7 @@ export arw_netcdf_adate=2008051112
 export nmm_binary_adate=2010021600
 export nmm_netcdf_adate=2007122000
 export rtma_adate=2011083112
+export hwrf_nmm_adate=2012102812
 export JCAP=62
 
 # Set predefined paths and variables here.
@@ -83,6 +84,14 @@ if [[ "$machine" = "Zeus" ]]; then
    export rtma_updat_exp2=rtma_20proc_updat
    export rtma_contrl_exp1=rtma_10proc_contrl
    export rtma_contrl_exp2=rtma_20proc_contrl
+   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_36proc_updat
+   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_64proc_updat
+   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_36proc_contrl
+   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_64proc_contrl
+   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_36proc_updat
+   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_64proc_updat
+   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_36proc_contrl
+   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_64proc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
@@ -123,6 +132,8 @@ if [[ "$machine" = "Zeus" ]]; then
    export nmm_netcdf_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
    export rtma_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
    export rtma_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
+   export hwrf_nmm_obs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_ges=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 
@@ -184,6 +195,14 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export rtma_updat_exp2=rtma_20proc_updat
    export rtma_contrl_exp1=rtma_10proc_contrl
    export rtma_contrl_exp2=rtma_20proc_contrl
+   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_36proc_updat
+   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_64proc_updat
+   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_36proc_contrl
+   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_64proc_contrl
+   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_36proc_updat
+   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_64proc_updat
+   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_36proc_contrl
+   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_64proc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
@@ -224,6 +243,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
    export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
    export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+   export hwrf_nmm_obs=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
+   export hwrf_nmm_ges=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility and noscrub directory.
 
@@ -257,6 +278,8 @@ export nmm_netcdf_regression="nmm_netcdf_regression_results.$gps_dtype.txt"
 export arw_binary_regression="arw_binary_regression_results.$gps_dtype.txt"
 export arw_netcdf_regression="arw_netcdf_regression_results.$gps_dtype.txt"
 export nems_nmmb_regression="nems_nmmb_regression_results.$gps_dtype.txt"
+export hwrf_nmm_d2_regression="hwrf_nmm_d2_regression_results.$gps_dtype.txt"
+export hwrf_nmm_d3_regression="hwrf_nmm_d3_regression_results.$gps_dtype.txt"
 
 # Regression vfydir
 
@@ -286,6 +309,10 @@ export control_arw_netcdf="$noscrub/tmpreg_${arw_netcdf}/$exp1_arw_netcdf_cntrl"
 export control_arw_netcdf2="$noscrub/tmpreg_${arw_netcdf}/$exp2_arw_netcdf_cntrl"
 export control_nems_nmmb="$noscrub/tmpreg_${nems_nmmb}/$exp1_nems_nmmb_cntrl"
 export control_nems_nmmb2="$noscrub/tmpreg_${nems_nmmb}/$exp2_nems_nmmb_cntrl"
+export control_hwrf_nmm_d2="$noscrub/tmpreg_${hwrf_nmm_d2}/$exp1_hwrf_nmm_d2_cntrl"
+export control_hwrf_nmm_d22="$noscrub/tmpreg_${hwrf_nmm_d2}/$exp2_hwrf_nmm_d2_cntrl"
+export control_hwrf_nmm_d3="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp1_hwrf_nmm_d3_cntrl"
+export control_hwrf_nmm_d32="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp2_hwrf_nmm_d3_cntrl"
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
