@@ -2,11 +2,7 @@
 set -x
 
 # Set experiment name and analysis date
-if [[ "$arch" = "Linux" ]]; then
-   exp=$jobname
-elif [[ "$arch" = "AIX" ]]; then
-   exp=$LOADL_JOB_NAME
-fi
+exp=$jobname
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -26,6 +22,7 @@ savdir=$savdir/nemsio_out${JCAP}/sigmap/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -262,8 +259,8 @@ $ncp $bftab_sst ./bftab_sstphr
 
 # Copy CRTM coefficient files based on entries in satinfo file
 for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-   $ncp $crtm_coef/${file}.SpcCoeff.bin ./
-   $ncp $crtm_coef/${file}.TauCoeff.bin ./
+   $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+   $ncp $fixcrtm/${file}.TauCoeff.bin ./
 done
 
 # Copy observational data to $tmpdir
@@ -296,8 +293,25 @@ $ncp $global_nemsio_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrear
 $ncp $global_nemsio_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+else
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
+
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+   for type in $listdiag; do
+      diag_file=`echo $type | cut -d',' -f1`
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameanl=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameanl
+   done
+fi
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $global_nemsio_T62_ges/${prefix_sfc}.bf03                 ./sfcf03
@@ -320,7 +334,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -336,9 +350,9 @@ if [[ "$arch" = "Linux" ]]; then
    echo "JOB ID : $PBS_JOBID"
    eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
-   poe $tmpdir/gsi.x < gsiparm.anl > stdout
+   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
 fi
 

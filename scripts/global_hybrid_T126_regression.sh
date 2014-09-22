@@ -7,7 +7,7 @@ set -x
 #. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
 #. regression_var.sh
 
-if [[ "$arch" = "Linux" ]]; then
+if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
 
@@ -93,11 +93,11 @@ if [[ "$arch" = "Linux" ]]; then
 
    exit
 
-elif [[ "$arch" = "AIX" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_hybrid_T126_updat_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_hybrid_T126.sh
+   /bin/sh sub_wcoss -a GDAS-T2O -j $global_hybrid_T126_updat_exp1 -q $queue -p 16/2/ -r /1 -t 0:25:00 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_updat_exp1}.out > return_code_global_hybrid_3dvar.out
@@ -114,8 +114,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_updat_exp1}.out) -ne 1 ]]; do
+      echo "Job "$global_hybrid_T126_updat_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_hybrid_T126_updat_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_hybrid_T126.sh
+   /bin/sh sub_wcoss -a GDAS-T2O -j $global_hybrid_T126_updat_exp2 -q $queue -p 16/4/ -r /2 -t 0:15:00 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_updat_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_updat_exp2}.out > return_code_global_hybrid_3dvar.out
@@ -132,8 +137,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_updat_exp2}.out) -ne 1 ]]; do
+      echo "Job "$global_hybrid_T126_updat_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_hybrid_T126_contrl_exp1 -q $queue -p 32/1/N -r 110/1 -t 0:25:00 $scripts/global_hybrid_T126.sh
+   /bin/sh sub_wcoss -a GDAS-T2O -j $global_hybrid_T126_contrl_exp1 -q $queue -p 16/2/ -r /1 -t 0:25:00 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_contrl_exp1}.out > return_code_global_hybrid_3dvar.out
@@ -150,8 +160,13 @@ elif [[ "$arch" = "AIX" ]]; then
       sleep 60
    done
 
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_contrl_exp1}.out) -ne 1 ]]; do
+      echo "Job "$global_hybrid_T126_contrl_exp1" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
    rm -f return_code_global_hybrid_3dvar.out
-   /bin/sh sub -a GDAS-T2O -g $group -j $global_hybrid_T126_contrl_exp2 -q $queue -p 32/2/N -r 110/2 -t 0:15:00 $scripts/global_hybrid_T126.sh
+   /bin/sh sub_wcoss -a GDAS-T2O -j $global_hybrid_T126_contrl_exp2 -q $queue -p 16/4/ -r /2 -t 0:15:00 $scripts/global_hybrid_T126.sh
 
    while [[ $(grep -c '+ rc=0' ${global_hybrid_T126_contrl_exp2}.out) -ne 1 ]]; do
       grep '+ rc=' ${global_hybrid_T126_contrl_exp2}.out > return_code_global_hybrid_3dvar.out
@@ -164,6 +179,11 @@ elif [[ "$arch" = "AIX" ]]; then
             fi
          fi
       fi
+      echo "Job "$global_hybrid_T126_contrl_exp2" is not complete yet.  Will recheck in a minute."
+      sleep 60
+   done
+
+   while [[ $(grep -c 'Resource usage summary:' ${global_hybrid_T126_contrl_exp2}.out) -ne 1 ]]; do
       echo "Job "$global_hybrid_T126_contrl_exp2" is not complete yet.  Will recheck in a minute."
       sleep 60
    done
