@@ -289,8 +289,8 @@ $ncp $global_lanczos_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrea
 $ncp $global_lanczos_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_lanczos_T62_ges/${prefix_tbc}.abias_orig              ./satbias_in
-$ncp $global_lanczos_T62_ges/${prefix_tbc}.satang_orig             ./satbias_angle
+$ncp $global_lanczos_T62_ges/${prefix_tbc}.abias.orig              ./satbias_in
+$ncp $global_lanczos_T62_ges/${prefix_tbc}.satang.orig             ./satbias_angle
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $global_lanczos_T62_ges/${prefix_sfc}.bf03                 ./sfcf03
