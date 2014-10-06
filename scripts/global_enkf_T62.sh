@@ -147,8 +147,8 @@ done
 
 # Copy bias correction, atmospheric and surface files
 if [[ "$machine" = "Zeus" ]]; then
-   $ncp $global_enkf_T62_datges/biascr.gdas.$gdate          ./satbias_in
-   $ncp $global_enkf_T62_datges/satang.gdas.$gdate          ./satbias_ang.in
+   $ncp $global_enkf_T62_datges/biascr.gdas.$gdate.orig     ./satbias_in
+   $ncp $global_enkf_T62_datges/satang.gdas.$gdate.orig     ./satbias_ang.in
 else
    $ncp $global_enkf_T62_datges/biascr_int_${gdate}_ensmean ./satbias_in
    $ncp $global_enkf_T62_datges/satang.gdas.$gdate          ./satbias_ang.in
