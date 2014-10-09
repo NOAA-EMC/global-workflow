@@ -361,3 +361,10 @@ export NLON_ENS_REGIONAL="0"
 export NLAT_ENS_REGIONAL="0"
 export JCAP_ENS_REGIONAL="0"
 export JCAP_ENS_TEST_REGIONAL="0"
+
+# Toggle EnKF update code bias correction flag
+#  lupd_satbiasc = TRUE  = compute and update radiance bias correction
+#  lupd_satbiasc = FALSE = do NOT compute or update radiance bias correction
+#  default is FALSE (as done in NCEP operations)
+
+export lupd_satbiasc=".false."

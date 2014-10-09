@@ -97,7 +97,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
 
-   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_updat_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_updat_exp1 -q $queue -p 12/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_updat_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_updat_exp1}.out > return_code_arw_binary.out
@@ -143,7 +143,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_arw_binary.out
-   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_contrl_exp1 -q $queue -p 16/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
+   /bin/sh sub_wcoss -a RDAS-T2O -j $arw_binary_contrl_exp1 -q $queue -p 12/1/ -r /1 -t 0:10:00 $scripts/arw_binary.sh
 
    while [[ $(grep -c '+ rc=0' ${arw_binary_contrl_exp1}.out) -ne 1 ]]; do
       grep '+ rc=' ${arw_binary_contrl_exp1}.out > return_code_arw_binary.out
