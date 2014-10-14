@@ -1,0 +1,463 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_enkfcen.sh.sms
+# Script description:  Make global_enkf additive error and recenter
+#
+# Author:        Russ Treadon       Org: NP23         Date: 2011-12-16
+#
+# Abstract: This script performs the global_enkf additive error and recenter
+#
+# Script history log:
+# 2011-12-16  Russ Treadon   based on GCWMB parallel script ecen.sh
+#
+# Usage:  exglobal_enkfcen.sh.sms
+#
+#   Input script positional parameters:
+#
+#   Imported Shell Variables:
+#     FIXGLOBAL     Directory for global fixed files
+#                   defaults to /nwprod/fix
+#     PERTURBDIR    Directory for global enkf perturbation database
+#                   defaults to /nwprod/fix/enkf_gfs
+#     EXECGLOBAL    Directory for global executables
+#                   defaults to /nwprod/exec
+#     USHGLOBAL     Directory for global scripts
+#                   defaults to /nwprod/ush
+#     DATA          working directory
+#                   (if nonexistent will be made, used and deleted)
+#                   defaults to current working directory
+#     COMIN         input directory
+#                   defaults to current working directory
+#     COMOUT        output directory
+#                   (if nonexistent will be made)
+#                   defaults to current working directory
+#     XC            Suffix to add to executables
+#                   defaults to none
+#     PREINP        Prefix to add to input observation files
+#                   defaults to none
+#     SUFINP        Suffix to add to input observation files
+#                   defaults to none
+#     NCP           Copy command
+#                   defaults to cp
+#     GETATMENSMEANEXEC   Compute ensemble mean sigma (optonally smoothed)
+#                         defaults to ${EXECGLOBAL}/getsigensmean_smooth$XC
+#     ADDERRSPECEXEC Perturb sigma files
+#                    defaults to ${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC
+#     RECENATMPEXEC  Recenter sigma files
+#                    defaults to ${EXECGLOBAL}/recentersigp$XC
+#     INISCRIPT     Preprocessing script
+#                   defaults to none
+#     LOGSCRIPT     Log posting script
+#                   defaults to none
+#     ERRSCRIPT     Error processing script
+#                   defaults to 'eval [[ $err = 0 ]]'
+#     ENDSCRIPT     Postprocessing script
+#                   defaults to none
+#     JCAP_ENKF     Spectral truncation for background
+#                   defaults to 254
+#     LEVS_ENKF     Number of levels
+#                   defaults to 64
+#     CDATE         Current analysis date in yyyymmddhh format
+#                   defaults to the value in the input surface file header
+#     LATB_ENKF     Number of latitudes
+#                   defaults to the value in the input surface file header
+#     LONB_ENKF     Number of longitudes
+#                   defaults to the value in the input surface file header
+#     NTHREADS      Number of threads
+#                   defaults to 1
+#     NTHSTACK      Size of stack per thread
+#                   defaults to 1024000000
+#     NTHREADS_ENKF Number of threads for ENKFUPDEXEC
+#                   defaults to 1
+#     NTHSTACK_ENKF Size of stack per thread for ENKFUPDEXEC
+#                   defaults to 1024000000
+#     FILESTYLE     File management style flag
+#                   ('C' to copy to/from $DATA, 'L' for symbolic links in $DATA,
+#                    'X' to use XLFUNIT or symbolic links where appropriate)
+#                   defaults to 'X'
+#     PGMOUT        Executable standard output
+#                   defaults to $pgmout, then to '&1'
+#     PGMERR        Executable standard error
+#                   defaults to $pgmerr, then to '&1'
+#     pgmout        Executable standard output default
+#     pgmerr        Executable standard error default
+#     REDOUT        standard output redirect ('1>' or '1>>')
+#                   defaults to '1>', or to '1>>' to append if $PGMOUT is a file
+#     REDERR        standard error redirect ('2>' or '2>>')
+#                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
+#     VERBOSE       Verbose flag (YES or NO)
+#                   defaults to NO
+#
+#   Exported Shell Variables:
+#     PGM           Current program name
+#     pgm
+#     ERR           Last return code
+#     err
+#
+#   Modules and files referenced:
+#     scripts    : $INISCRIPT
+#                  $LOGSCRIPT
+#                  $ERRSCRIPT
+#                  $ENDSCRIPT
+#
+#     programs   : $GETATMENSMEANEXEC
+#                  $ADDERRSPECEXEC
+#                  $RECENATMPEXEC
+#
+#     fixed data :
+#
+#     input data : $SIGANL_HI
+#                  $SFCANL_HI
+#                  $SIGGES
+#                  $SIGANLENS_IN
+#
+#     output data: $SANLENSMEAN
+#                  $PERTDATES
+#                  $SIGANLENS_OUT
+#
+# Remarks:
+#
+#   Condition codes
+#      0 - no problem encountered
+#     >0 - some problem encountered
+#
+#  Control variable resolution priority
+#    1 Command line argument.
+#    2 Environment variable.
+#    3 Inline default.
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: IBM SP
+#
+################################################################################
+#  Set environment.
+export VERBOSE=${VERBOSE:-"NO"}
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+export machine=${machine:-IBMP6}
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+
+#  Command line arguments.
+
+#  Directories.
+export HOMEDIR=${HOMEDIR:-/nwprod}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
+export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export utilscript=${utilscript:-$NWPROD/util/ush}
+export DATA=${DATA:-$(pwd)}
+export COMIN=${COMIN:-$(pwd)}
+export COMOUT=${COMOUT:-$(pwd)}
+#  Filenames.
+export XC=${XC}
+export PREINP=${PREINP}
+export SUFINP=${SUFINP}
+export JCAP_ENKF=${JCAP_ENKF:-254}
+export LEVS_ENKF=${LEVS_ENKF:-64}
+export LONB_ENKF=${LONB_ENKF:-768}
+export LATB_ENKF=${LATB_ENKF:-384}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGLOBAL}/recentersigp$XC}
+export CHGRESSH=${CHGRESSH:-${USHGLOBAL}/global_chgres.sh}
+export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
+export NMEM_ENKF=${NMEM_ENKF:-0}
+export SCALEFACT=${SCALEFACT:-32}
+export INISCRIPT=${INISCRIPT}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT}
+export ENDSCRIPT=${ENDSCRIPT}
+#  Other variables.
+export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
+export GDATE=${GDATE:-$($NDATE -06 $CDATE)}
+export NDAYS=${NDAYS:-60}
+export NHOURS=$((NDAYS*24))
+export PBDATE=${PBDATE:-2010050100}
+export PEDATE=${PEDATE:-2011043018}
+export SWITCH=${SWITCH:-043018}
+export NTHREADS=${NTHREADS:-1}
+export NTHSTACK=${NTHSTACK:-1024000000}
+export NTHREADS_ENKF=${NTHREADS_ENKF:-1}
+export NTHSTACK_ENKF=${NTHSTACK_ENKF:-1024000000}
+export CHGRESTHREAD=${CHGRESTHREAD:-32}
+export LATCH=${LATCH:-8}
+export IDSL=${IDSL:-1}
+export IDVT=${IDVT:-21}
+export IDVM=${IDVM:-0}
+export IALB=${IALB:-0}
+export IDVC=${IDVC:-2}
+export LSOIL=${LSOIL:-4}
+export FILESTYLE=${FILESTYLE:-'X'}
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
+export OBERRFLAG=${OBERRFLAG:-.false.}
+export NCP=${NCP:-cp}
+export POE=${POE:-NO}
+export APRUN=${APRUN:-""}
+
+if [ $machine = IBMP6 ] ; then
+  typeset -L1 l=$PGMOUT
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDOUT=${REDOUT:-'1>'$a}
+  typeset -L1 l=$PGMERR
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDERR=${REDERR:-'2>'$a}
+else
+  export REDOUT=${REDOUT:-'1>'}
+  export REDERR=${REDERR:-'2>'}
+fi
+
+################################################################################
+#  Preprocessing
+$INISCRIPT
+pwd=$(pwd)
+if [[ -d $DATA ]]; then
+   mkdata=NO
+else
+   mkdir -p $DATA
+   mkdata=YES
+fi
+cd $DATA||exit 99
+
+################################################################################
+
+################################################################################
+# Copy input files
+
+export SIGANL_HI=${SIGANL_HI:-siganl.$CDUMP.$CDATE}
+export SFCANL_HI=${SFCANL_HI:-sfcanl.$CDUMP.$CDATE}
+export SIGGES=${SIGGES:-sfg_${GDATE}_fhr06_ensmean}
+
+if [[ $FILESTYLE = 'C' ]]; then
+   export FCPLN=$NCP
+else
+   export FCPLN="ln -sf"
+fi
+
+imem=1
+while [[ $imem -le $NMEM_ENKF ]]; do
+   member="_mem"`printf %03i $imem`
+   $FCPLN ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
+   (( imem = $imem + 1 ))
+done
+
+
+################################################################################
+# Compute mean for enkf ensemble analysis members
+export DATAPATH2=./
+export FILENAMEOUT=sanl_${CDATE}_ensmean
+export FILEPREFIX=sanl_${CDATE}
+export NANALS=$NMEM_ENKF
+
+if [[ $FILESTYLE = 'L' ]]; then
+   ln -fs $SANLENSMEAN ./sanl_${CDATE}_ensmean
+fi
+
+rm stdout.sanl_ensmean
+if [[ "$POE" = "YES" ]]; then
+   poe $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanl_ensmean
+   rc=$?
+else
+   eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanl_ensmean"
+   rc=$?
+fi
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+cat stdout.sanl_ensmean
+if [[ $FILESTYLE = 'C' ]]; then
+   $NCP sanl_${CDATE}_ensmean $SANLENSMEAN
+fi
+   
+
+################################################################################
+# If requested, perturb and recenter ensemble analysis members
+if [[ $SCALEFACT -gt 0 ]]; then
+
+# Generate sequential list of perturbation dates
+ BDATE=`$NDATE -$NHOURS $CDATE`
+ EDATE=`$NDATE +$NHOURS $CDATE`
+
+ rm temp_all temp_dat temp_new
+ npert=0
+ SDATE=$BDATE
+ while [[ $SDATE -le $EDATE ]]; do
+   MMDDHH=`echo $SDATE | cut -c5-10`
+   YYYY=2010
+   if [[ "$MMDDHH" -le "$SWITCH" ]]; then
+      YYYY=2011
+   fi
+   PDATE=${YYYY}${MMDDHH}
+   echo $PDATE > temp_dat
+   cat temp_all temp_dat > temp_new
+   mv temp_new temp_all
+   IDATE=`$NDATE +06 $SDATE`
+   SDATE=$IDATE
+   npert=$((npert+1))
+ done
+ mv temp_all dates_seq.dat
+ rm temp_dat temp_new
+ 
+ export NPERTURB_PAIRS=$npert
+
+# Perturb and recenter ensemble analysis members
+ export LONB=$LONB_ENKF
+ export LATB=$LATB_ENKF
+ export ADDPERTPATH=$PERTURBDIR/
+ rm dates_ran.dat stdout.adderr
+
+ ln -fs $SIGGES sfg_${CDATE}_fhr06_ensmean
+ if [[ $FILESTYLE = 'L' ]]; then
+    ln -fs $PERTDATES dates_ran.dat
+ fi
+
+ if [[ "$POE" = "YES" ]]; then
+    poe $ADDERRSPECEXEC $NANALS $CDATE $SCALEFACT $ADDPERTPATH $NPERTURB_PAIRS > stdout.adderr
+    rc=$?
+ else
+    eval "$APRUN $ADDERRSPECEXEC $NANALS $CDATE $SCALEFACT $ADDPERTPATH $NPERTURB_PAIRS > stdout.adderr"
+    rc=$?
+ fi
+
+ export ERR=$rc
+ export err=$ERR
+ $ERRSCRIPT||exit 2
+
+ cat stdout.adderr
+ if [[ $FILESTYLE = 'C' ]]; then
+    $NCP dates_ran.dat $PERTDATES
+ fi
+
+################################################################################
+# Compute mean for perturbed and recentered ensemble analysis members
+ export DATAPATH2=./
+ export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+ export FILEPREFIX=sanlpr_${CDATE}
+ export NANALS=$NMEM_ENKF
+ rm stdout.sanlpr_ensmean
+ eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+ rc=$?
+
+ export ERR=$rc
+ export err=$ERR
+ $ERRSCRIPT||exit 2
+
+ cat stdout.sanlpr_ensmean
+
+fi
+
+################################################################################
+# Chgres high resolution analysis to ensemble resolution
+$FCPLN $SIGANL_HI sanl_${CDATE}_highres
+$FCPLN $SFCANL_HI sfcanl_${CDATE}_highres
+export SIGI=sanl_${CDATE}_highres
+export SFCI=sfcanl_${CDATE}_highres
+export SIGO=sanl_${CDATE}_hybrid_lores
+export SFCO=sfcanl_${CDATE}_hybrid_lores
+rm -f $SIGO
+rm -f $SFCO
+
+export JCAP_ens=$JCAP_ENKF
+export LEVS_ens=$LEVS_ENKF
+export LONB_ens=$LONB_ENKF
+export LATB_ens=$LATB_ENKF
+export OUTTYP=2
+export PGMOUT=stdout.chgres
+export PGMERR=stderr.chgres
+
+# specify threads for running chgres
+if [ $machine = IBMP6 ]; then
+   export OMP_NUM_THREADS=$CHGRESTHREAD
+   export NTHREADS=$OMP_NUM_THREADS
+else
+   export OMP_NUM_THREADS=1
+   export NTHREADS=1
+fi
+export OROGRAPHY=$OROGRAPHY_ENKF
+export OROGRAPHY_UF=$OROGRAPHY_UF_ENKF
+export SLMASK=$SLMASK_ENKF
+export LONSPERLAT=$LONSPERLAT_ENKF
+
+export CHGRESVARS=$CHGRESVARS_ENKF
+
+eval "$CHGRESSH $SIGI $SFCI $SIGO $SFCO $JCAP_ens $LEVS_ens $LONB_ens $LATB_ens"
+rc=$?
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+# reduce thread to 1 since post runs with mpi
+export OMP_NUM_THREADS=1
+export NTHREADS=$OMP_NUM_THREADS
+
+cat stderr.chgres
+cat stdout.chgres
+
+
+################################################################################
+# Recenter ensemble member atmospheric analyses about hires analysis
+if [[ $SCALEFACT -gt 0 ]]; then
+ export FILENAME_MEANIN=sanlpr_${CDATE}_ensmean       # current mean (perturbed & recentered)
+ export FILENAMEIN=sanlpr_${CDATE}
+else
+ export FILENAME_MEANIN=sanl_${CDATE}_ensmean       # current mean (unperturbed & recentered)
+ export FILENAMEIN=sanl_${CDATE}
+fi
+export FILENAME_MEANOUT=sanl_${CDATE}_hybrid_lores    # recenter around this mean (hires analysis)
+export FILENAMEOUT=sanlprc_${CDATE}
+
+if [[ $FILESTYLE = 'L' ]]; then
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      ln -fs ${SIGANLENS_OUT}${member} sanlprc_${CDATE}${member}
+      (( imem = $imem + 1 ))
+   done
+fi
+
+rm stdout_recenter_hires
+if [[ "$POE" = "YES" ]]; then
+   poe $RECENATMPEXEC $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NANALS > stdout_recenter_hires
+   rc=$?
+else
+   eval "$APRUN $RECENATMPEXEC $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NANALS > stdout_recenter_hires"
+   rc=$?
+fi
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+cat stdout_recenter_hires
+
+if [[ $FILESTYLE = 'C' ]]; then
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      $NCP sanlprc_${CDATE}${member} ${SIGANLENS_OUT}${member}
+      (( imem = $imem + 1 ))
+   done
+fi
+
+
+################################################################################
+#  Postprocessing
+cd $pwd
+[[ $mkdata = YES ]]&&rmdir $DATA
+$ENDSCRIPT
+set +x
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err

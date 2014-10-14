@@ -1,0 +1,368 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_enkffcs.sh.sms
+# Script description:  Run global_enkf ensemble forecasts
+#
+# Author:        Russ Treadon       Org: NP23         Date: 2011-12-16
+#
+# Abstract: This script runs global_enkf ensemble forecasts
+#
+# Script history log:
+# 2011-12-16  Russ Treadon   based on GCWMB parallel script efcs.sh
+#                            other upgrades related to model changes
+#
+#   Input script positional parameters:
+#
+#   Imported Shell Variables:
+#     FIXGLOBAL     Directory for global fixed files
+#                   defaults to /nwprod/fix
+#     EXECGLOBAL    Directory for global executables
+#                   defaults to /nwprod/exec
+#     DATA          working directory
+#                   (if nonexistent will be made, used and deleted)
+#                   defaults to current working directory
+#     COMIN         Path to input sigma and surface analysis files
+#                   defalts to pwd
+#     COMOUT        output directory
+#                   (if nonexistent will be made)
+#                   defaults to current working directory
+#     SUFOUT        Suffix to add to output filenames
+#                   defaults to unique ensemble member 
+#     NCP           Copy command
+#                   defaults to cp
+#     JCAP          Spectral truncation
+#                   defaults to 254
+#     LEVS          Number of levels
+#                   defaults to 64
+#     FCSTEXEC      Forecast executable
+#                   defaults to ${EXECGLOBAL}/global_fcst$XC
+#     OROGRAPHY     Input orography GRIB file (horiz resolution dependent)
+#                   defaults to ${FIXGLOBAL}/global_orography.t$JCAP.grb
+#     OROGRAPHY_UF  Input unfiltered orography GRIB file (resolution dependent)
+#                   defaults to ${FIXGLOBAL}/global_orography_uf.t$JCAP.grb
+#     LONSPERLAT    Input txt file containing reduced grid information
+#                   defaults to ${FIXGLOBAL}/global_lonsperlat.t$MTNRSL.txt}
+#     FNMSKH        Input high resolution land mask GRIB file
+#                   defaults to ${FIXGLOBAL}/seaice_newland.grb
+#     INISCRIPT     Preprocessing script
+#                   defaults to none
+#     LOGSCRIPT     Log posting script
+#                   defaults to none
+#     ERRSCRIPT     Error processing script
+#                   defaults to 'eval [[ $err = 0 ]]'
+#     ENDSCRIPT     Postprocessing script
+#                   defaults to none
+#     FHDFI_ENKF    Half number of hours of digital filter initialization
+#                   defaults to 0
+#     FHCYC_ENKF    Surface cycling frequency in hours
+#                   defaults to 0 for no cycling
+#     FCSTVARS      Other namelist inputs to the forecast executable
+#                   defaults to none set
+#     FSMCL2        Scale in days to relax to soil moisture climatology
+#                   defaults to 99999 for no relaxation
+#     NTHREADS      Number of threads
+#                   defaults to 2
+#     NTHSTACK      Size of stack per thread
+#                   defaults to 1024000000
+#     FILESTYLE     File management style flag
+#                   ('C' to copy to/from $DATA, 'L' for symbolic links in $DATA,
+#                    'X' to use XLFUNIT or symbolic links where appropriate)
+#                   defaults to 'X'
+#     PGMOUT        Executable standard output
+#                   defaults to $pgmout, then to '&1'
+#     PGMERR        Executable standard error
+#                   defaults to $pgmerr, then to '&1'
+#     pgmout        Executable standard output default
+#     pgmerr        Executable standard error default
+#     REDOUT        standard output redirect ('1>' or '1>>')
+#                   defaults to '1>', or to '1>>' to append if $PGMOUT is a file
+#     REDERR        standard error redirect ('2>' or '2>>')
+#                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
+#     VERBOSE       Verbose flag (YES or NO)
+#                   defaults to YES
+#
+#   Exported Shell Variables:
+#     PGM           Current program name
+#     pgm
+#     ERR           Last return code
+#     err
+#
+#   Modules and files referenced:
+#     scripts    : $INISCRIPT
+#                  $LOGSCRIPT
+#                  $ERRSCRIPT
+#                  $ENDSCRIPT
+#
+#     programs   : $FCSTEXEC
+#
+#     input data :
+#
+#     fixed data : $FNOROG
+#                  $FNMASK
+#                  $OROGRAPHY
+#                  $OROGRAPHY_UF
+#                  $LONSPERLAT
+#                  $SLMASK
+#
+#     output data: 
+#                  $PGMOUT
+#                  $PGMERR
+#
+#     scratch    :
+#
+# Remarks:
+#
+#   Condition codes
+#      0 - no problem encountered
+#     >0 - some problem encountered
+#
+#  Control variable resolution priority
+#    1 Command line argument.
+#    2 Environment variable.
+#    3 Inline default.
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: IBM SP
+#
+####
+################################################################################
+#  Set environment.
+export VERBOSE=${VERBOSE:-"NO"}
+if [[ "$VERBOSE" = "YES" ]] ; then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+export machine=${machine:-WCOSS}
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+
+#  Command line arguments.
+#  *** currently none ***
+
+#  Directories.
+#--------------
+export HOMEDIR=${HOMEDIR:-/nwprod}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
+export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
+export FIX_RAD=${FIX_RAD:-$FIXGLOBAL}
+export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+export DATA=${DATA:-$(pwd)}
+export COMIN=${COMIN:-$(pwd)}
+export COMOUT=${COMOUT:-$(pwd)}
+
+#  Filenames.
+#------------
+export FORECASTSH=${FORECASTSH:-$SCRGLOBAL/exglobal_fcst.sh.sms}
+[[ -n ${AMEXECTMP:-""} ]]&&eval export AM_EXEC=$AMEXECTMP
+export FCSTEXEC=${FCSTEXEC:-$AM_EXEC}
+export JCAP=${JCAP_ENKF:-254}
+export JCAP_A=$JCAP
+export LEVS=${LEVS_ENKF:-64}
+export LONB=${LONB_ENKF:-768}
+export LATB=${LATB_ENKF:-384}
+export LONA=${LONA_ENKF:-512}
+export LATA=${LATA_ENKF:-256}
+export NLON_A=$LONA
+export NLAT_A=$(($LATA+2))
+export DELTIM=${DELTIM_ENKF:-900}
+export DTPHYS=${DTPHYS_ENKF:-300}
+export SET_STP_SEED=${SET_STP_SEED:-"NO"}
+export FSMCL2=99999
+export FNOROG=${FNOROG_ENKF:-$FIXGLOBAL/global_orography.t$JCAP.grb}
+export FNMASK=${FNMASK_ENKF:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
+export OROGRAPHY=${OROGRAPHY_ENKF:-$FIXGLOBAL/global_orography.t$JCAP.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGLOBAL/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGLOBAL}/global_lonsperlat.t$MTNRSL.txt}
+export SLMASK=${SLMASK_ENKF:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
+export MTNVAR=${MTNVAR_ENKF:-$FIXGLOBAL/global_mtnvar.t$JCAP.f77}
+export INISCRIPT=${INISCRIPT}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT}
+export ENDSCRIPT=${ENDSCRIPT}
+
+#  Other variables.
+#------------------
+export NTHREADS=${NTHREADS_EFCS:-2}
+export NTHSTACK=${NTHSTACK_EFCS:-1024000000}
+export FILESTYLE=${FILESTYLE:-'L'}
+
+if [ $machine = IBMP6 ] ; then
+  export MP_BINDPROC=${MP_BINDPROC:-yes}
+  export MEMORY_AFFINIY=${MEMORY_AFFINIY:-MCM}
+  export MP_SYNC_QP=${MP_SYNC_QP:-yes}
+  export MP_SHARED_MEMORY=${MP_SHARED_MEMORY:-"NO"}
+  export MP_COREFILE_FORMAT=${MP_COREFILE_FORMAT:-"lite"}
+  export MP_EAGER_LIMIT=32768
+elif [ $machine = ZEUS ] ; then
+  export MPI_BUFS_PER_PROC=${MPI_BUFS_PER_PROC:-1024}
+  export MPI_BUFS_PER_HOST=${MPI_BUFS_PER_HOST:-1024}
+elif [ $machine = WCOSS ] ; then
+  export MP_EUIDEVICE=${MP_EUIDEVICE:-min}
+  export MPICH_ALLTOALL_THROTTLE=${MPICH_ALLTOALL_THROTTLE:-0}
+  export MP_SINGLE_THREAD=${MP_SINGLE_THREAD:-yes}
+  export MP_COREFILE_FORMAT=${MP_COREFILE_FORMAT:-lite}
+  export MP_EUIDEVELOP=${MP_EUIDEVELOP:-min}
+  export MP_MPILIB=${MP_MPILIB:-mpich2}
+  export MP_LABELIO=${MP_LABELIO:-yes}
+  export MP_SINGLE_THREAD=${MP_SINGLE_THREAD:-yes}
+  export MP_USE_BULK_XFER=${MP_USE_BULK_XFER:-yes}
+  export MP_SHARED_MEMORY=${MP_SHARED_MEMORY:-yes}
+  export MP_COLLECTIVE_OFFLOAD=${MP_COLLECTIVE_OFFLOAD:-no}
+  export KMP_STACKSIZE=${KMP_STACKSIZE:-1024m}
+# export MP_EAGER_LIMIT=${MP_EAGER_LIMIT:-32768}
+# export MP_EUILIB=${MP_EUILIB:-us}
+# export MP_EUIDEVICE=${MP_EUIDEVICE:-sn_all}
+  export NTHREADS_EFCS=${NTHREADS_EFCS:-1}
+fi
+
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
+export NCP=${NCP:-/bin/cp}
+if [ $machine = IBMP6 ] ; then
+  typeset -L1 l=$PGMOUT
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDOUT=${REDOUT:-'1>'$a}
+  typeset -L1 l=$PGMERR
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDERR=${REDERR:-'2>'$a}
+else
+  export REDOUT=${REDOUT:-'1>'}
+  export REDERR=${REDERR:-'2>'}
+fi
+
+
+################################################################################
+#  Preprocessing
+#----------------
+$INISCRIPT
+pwd=$(pwd)
+if [[ -d $DATA ]] ; then
+   mkdata=NO
+else
+   mkdir -p $DATA
+   mkdata=YES
+fi
+cd $DATA||exit 99
+[[ -d $COMOUT ]]||mkdir -p $COMOUT
+export DATATOP=$DATA
+
+
+################################################################################
+# Set output data
+#----------------
+
+EFCSGRP=$COMOUT/fcsstat_${CDATE}_grp${ENSGRP}
+rm -f $EFCSGRP
+
+
+################################################################################
+# Run forecast for ensemble member
+#---------------------------------
+imem=$ENSBEG
+while [[ $imem -le $ENSEND ]]; do
+
+   export member="mem"`printf %03i $imem`
+   export DATA=$DATATOP/$member
+
+   export COMOUTSAVE=$COMOUT
+   export COMOUT=$DATATOP
+
+   export SIGI=$COMIN/siganl_${CDATE}_${member}
+   export SFCI=$COMIN/sfcanl_${CDATE}_${member}
+   export FHROT=${FHROT_ENKF:-0}
+   export FHOUT=${FHOUT_ENKF:-3}
+   export FHMAX=${FHMAX_ENKF:-9}
+   export FHZER=${FHZER_ENKF:-6}
+   export FHCYC=${FHCYC_ENKF:-24}
+   export FHDFI=${FHDFI_ENKF:-3}
+   export FHLWR=${FHLWR_ENKF:-1}
+   export FHSWR=${FHSWR_ENKF:-1}
+   export IEMS=${IEMS_ENKF:-0}
+   export ISOL=${ISOL_ENKF:-0}
+   export IAER=${IAER_ENKF:-111}
+   export ICO2=${ICO2_ENKF:-1}
+   export ICTM=${ICTM_ENKF:-1}
+
+   export FHOUT_HF=${FHOUTHF_ENKF:-3}
+   export FHMAX_HF=${FHMAXHF_ENKF:-9}
+
+   export FHGOC3D=${FHGOC3D_ENKF:-0}
+   export LGOC3D=${LGOC3D_ENKF:-.false.}
+
+   export IALB=${IALB_ENKF:-0}
+   export IOVR_SW=${IOVR_SW_ENKF:-1}
+   export FCSTVARS_TMP=${FCSTVARS_ENKF:-" "}
+
+   if [[ "$SET_STP_SEED" = "YES" ]] ; then
+      ISEED_SPPT=$((CDATE*1000 + imem*10 + 1))
+      ISEED_SKEB=$((CDATE*1000 + imem*10 + 2))
+      ISEED_VC=$((CDATE*1000   + imem*10 + 3))
+      ISEED_SHUM=$((CDATE*1000 + imem*10 + 4))
+      export FCSTVARS_TMP="ISEED_SPPT=$ISEED_SPPT,ISEED_SKEB=$ISEED_SKEB,ISEED_VC=$ISEED_VC,ISEED_SHUM=$ISEED_SHUM,$FCSTVARS_TMP"
+   fi
+   export FCSTVARS=${FCSTVARS_TMP:-" "}
+
+   export SUFOUT="_${member}"
+
+   if [[ $FILESTYLE = 'L' ]]; then
+     FH=$FHOUT
+     while [[ $FH -le $FHMAX ]]; do
+       if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
+       ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr${FH}_${member} sigf${FH}_${member}
+       ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr${FH}_${member} sfcf${FH}_${member}
+       FH=`expr $FH + $FHOUT`
+     done
+   fi
+
+   $FORECASTSH
+   rc=$?
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT||exit 2
+
+   export COMOUT=$COMOUTSAVE
+
+   if [[ $FILESTYLE = 'C' ]]; then
+     FH=$FHOUT
+     while [[ $FH -le $FHMAX ]]; do
+        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
+        $NCP sigf${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
+        $NCP sfcf${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+        FH=$((FH+FHOUT))
+     done
+   fi
+
+   rm log
+   $NCP $DATATOP/log_all ./log_old
+   echo "Process member $imem" > log
+   cat log_old log > log_new
+   $NCP log_new $DATATOP/log_all
+
+   (( imem = $imem + 1 ))
+
+done
+
+################################################################################
+# Save log
+#---------
+
+cd $DATATOP
+$NCP log_all $EFCSGRP
+
+
+################################################################################
+#  Postprocessing
+#----------------
+cd $pwd
+[[ $mkdata = YES ]]&&rmdir $DATA
+$ENDSCRIPT
+set +x
+if [[ $VERBOSE = YES ]] ; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err

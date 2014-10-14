@@ -1,0 +1,530 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_enkfupdat.sh.sms
+# Script description:  Make global_enkf update
+#
+# Author:        Daryl Kleist       Org: NP23         Date: 2011-03-24
+#
+# Abstract: This script runs the global_enkf update
+#
+# Script history log:
+# 2011-03-24  Russ Treadon   copy from enkf/trunk/scripts_ncep
+#
+# Usage:  exglobal_enkfupdat.sh.sms SFCGES SIGGES GBIAS GSATANG
+#
+#   Input script positional parameters:
+#     1             Input surface guess
+#                   defaults to $SFCGES; required
+#     2             Input sigma guess
+#                   defaults to $SIGGES; required
+#     3             Input guess time dependent bias correction coefficients
+#                   defaults to $GBIAS; required
+#     4             Input guess angle dependent bias correction
+#                   defaults to $GSATANG; required
+#
+#   Imported Shell Variables:
+#     SFCGES        Input ensemble mean surface guess
+#                   overridden by $1; required
+#     SIGGES        Input ensemble mean sigma guess
+#                   overridden by $2; required
+#     GBIAS         Input guess bias correction
+#                   overridden by $3; required
+#     GSATANG       Input guess angle dependent bias correction
+#                   overridden by $4; required
+#     ENKFSTAT      Output enkf update statistics
+#                   defaults to ${COMIN}/${PREINP}enkfstat
+#     FIXGLOBAL     Directory for global fixed files
+#                   defaults to /nwprod/fix
+#     EXECGLOBAL    Directory for global executables
+#                   defaults to /nwprod/exec
+#     USHGLOBAL     Directory for global scripts
+#                   defaults to /nwprod/ush
+#     DATA          working directory
+#                   (if nonexistent will be made, used and deleted)
+#                   defaults to current working directory
+#     COMIN         input directory
+#                   defaults to current working directory
+#     COMOUT        output directory
+#                   (if nonexistent will be made)
+#                   defaults to current working directory
+#     XC            Suffix to add to executables
+#                   defaults to none
+#     PREINP        Prefix to add to input observation files
+#                   defaults to none
+#     SUFINP        Suffix to add to input observation files
+#                   defaults to none
+#     NCP           Copy command
+#                   defaults to cp
+#     SIGHDR        Command to read sigma header
+#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
+#     SFCHDR        Command to read surface header
+#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#     ENKFUPDEXEC   Spectral analysis executable
+#                   defaults to ${EXECGLOBAL}/global_enkf$XC
+#     SATINFO       Input satellite information file
+#                   defaults to ${FIXGLOBAL}/global_satinfo.txt
+#     CONVINFO      Input conventional observation information file
+#                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#     OZINFO        Input ozone information file
+#                   defaults to ${FIXGLOBAL}/global_ozone.txt
+#     SCANINFO      Input satellite scan information file
+#                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
+#     HYBENSINFO    Input hybrid ensemble localization information file
+#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#     TCVITL        Input tcvitals file
+#                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
+#     INISCRIPT     Preprocessing script
+#                   defaults to none
+#     LOGSCRIPT     Log posting script
+#                   defaults to none
+#     ERRSCRIPT     Error processing script
+#                   defaults to 'eval [[ $err = 0 ]]'
+#     ENDSCRIPT     Postprocessing script
+#                   defaults to none
+#     LEVS          Number of levels
+#     CDATE         Current analysis date in yyyymmddhh format
+#                   defaults to the value in the input surface file header
+#     LATB          Number of latitudes in surface cycling
+#                   defaults to the value in the input surface file header
+#     LONB          Number of longitudes in surface cycling
+#                   defaults to the value in the input surface file header
+#     LATA          Number of latitudes in spectral analysis
+#                   defaults to $LATB
+#     LONA          Number of longitudes in spectral analysis
+#                   defaults to $LONB
+#     NTHREADS      Number of threads
+#                   defaults to 1
+#     NTHSTACK      Size of stack per thread
+#                   defaults to 1024000000
+#     NTHREADS_ENKF Number of threads for ENKFUPDEXEC
+#                   defaults to 1
+#     NTHSTACK_ENKF Size of stack per thread for ENKFUPDEXEC
+#                   defaults to 1024000000
+#     FILESTYLE     File management style flag
+#                   ('C' to copy to/from $DATA, 'L' for symbolic links in $DATA,
+#                    'X' to use XLFUNIT or symbolic links where appropriate)
+#                   defaults to 'X'
+#     PGMOUT        Executable standard output
+#                   defaults to $pgmout, then to '&1'
+#     PGMERR        Executable standard error
+#                   defaults to $pgmerr, then to '&1'
+#     pgmout        Executable standard output default
+#     pgmerr        Executable standard error default
+#     REDOUT        standard output redirect ('1>' or '1>>')
+#                   defaults to '1>', or to '1>>' to append if $PGMOUT is a file
+#     REDERR        standard error redirect ('2>' or '2>>')
+#                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
+#     VERBOSE       Verbose flag (YES or NO)
+#                   defaults to NO
+#
+#   Exported Shell Variables:
+#     PGM           Current program name
+#     pgm
+#     ERR           Last return code
+#     err
+#
+#   Modules and files referenced:
+#     scripts    : $INISCRIPT
+#                  $LOGSCRIPT
+#                  $ERRSCRIPT
+#                  $ENDSCRIPT
+#
+#     programs   : $CYCLEXEC
+#                  $ENKFUPDEXEC
+#
+#     fixed data : $BERROR
+#                  $SATANGL
+#                  $SATINFO
+#                  $RTMFIX
+#                  $RTMEMIS
+#                  $RTMAERO
+#                  $RTMCLDS
+#                  $ANAVINFO
+#                  $CONVINFO
+#                  $OZINFO
+#                  $PCPINFO
+#                  $AEROINFO
+#                  $SCANINFO
+#                  $HYBENSINFO
+#
+#     input data : $SFCGES
+#                  $SIGGES
+#                  $SIGGESENS
+#                  $GBIAS
+#                  $GSATANG
+#                  $CNVSTAT
+#                  $OZNSTAT
+#                  $RADSTAT
+#
+#     output data:
+#                  $SIGANLENS
+#                  $ENKFSTAT
+#                  $PGMOUT
+#                  $PGMERR
+#
+# Remarks:
+#
+#   Condition codes
+#      0 - no problem encountered
+#     >0 - some problem encountered
+#
+#  Control variable resolution priority
+#    1 Command line argument.
+#    2 Environment variable.
+#    3 Inline default.
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: IBM SP
+#
+################################################################################
+#  Set environment.
+export VERBOSE=${VERBOSE:-"NO"}
+if [[ "$VERBOSE" = "YES" ]]
+then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+export machine=${machine:-IBMP6}
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+if [ $machine = ZEUS ] ; then
+ export MPI_BUFS_PER_PROC=512
+ export MPI_BUFS_PER_HOST=512
+ export MPI_GROUP_MAX=512
+fi
+#  Command line arguments.
+export SFCGES=${1:-${SFCGES:?}}
+export SIGGES=${2:-${SIGGES:?}}
+export GBIAS=${3:-${GBIAS:?}}
+export GSATANG=${4:-${GSATANG:?}}
+export GBIASe=${5:-${GBIASe:-satbias_int}}
+#  Directories.
+export HOMEDIR=${HOMEDIR:-/nwprod}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export utilscript=${utilscript:-$NWPROD/util/ush}
+export DATA=${DATA:-$(pwd)}
+export COMIN=${COMIN:-$(pwd)}
+export COMOUT=${COMOUT:-$(pwd)}
+#  Filenames.
+export XC=${XC}
+export PREINP=${PREINP}
+export SUFINP=${SUFINP}
+export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
+export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+export LATA=${LATA:-$LATB}
+export LONA=${LONA:-$LONB}
+export NPTS=`expr \( $LONA \) \* \( $LATA \)`
+export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGLOBAL}/global_enkf$XC}
+export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
+export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
+export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
+export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl}
+export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
+export NMEM_ENKF=${NMEM_ENKF:-0}
+export ENKFSTAT=${ENKFSTAT:-${COMOUT}/${PREINP}enkfstat}
+export CNVSTAT=${CNVSTAT:-${COMIN}/${PREINP}cnvstat}
+export OZNSTAT=${OZNSTAT:-${COMIN}/${PREINP}oznstat}
+export RADSTAT=${RADSTAT:-${COMIN}/${PREINP}radstat}
+export INISCRIPT=${INISCRIPT}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT}
+export ENDSCRIPT=${ENDSCRIPT}
+#  Other variables.
+export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
+export GDATE=${GDATE:-($NDATE -06 $CDATE)}
+export NANALS=${NANALS:-80}
+export SMOOTHINF=${SMOOTHINF:-24}
+export NTRAC=${NTRAC:-3}
+export NVARS=${NVARS:-5}
+export NAM_ENKF=${NAM_ENKF:-""}
+export SATOBS_ENKF=${SATOBS_ENKF:-""}
+export OZOBS_ENKF=${OZOBS_ENKF:-""}
+export NTHREADS=${NTHREADS:-1}
+export NTHSTACK=${NTHSTACK:-1024000000}
+export NTHREADS_ENKF=${NTHREADS_ENKF:-1}
+export NTHSTACK_ENKF=${NTHSTACK_ENKF:-1024000000}
+export FILESTYLE=${FILESTYLE:-'X'}
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
+export OBERRFLAG=${OBERRFLAG:-.false.}
+export NCP=${NCP:-cp}
+if [ $machine = IBMP6 ] ; then
+  typeset -L1 l=$PGMOUT
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDOUT=${REDOUT:-'1>'$a}
+  typeset -L1 l=$PGMERR
+  [[ $l = '&' ]]&&a=''||a='>'
+  export REDERR=${REDERR:-'2>'$a}
+else
+  export REDOUT=${REDOUT:-'1>'}
+  export REDERR=${REDERR:-'2>'}
+fi
+
+################################################################################
+#  Preprocessing
+$INISCRIPT
+pwd=$(pwd)
+if [[ -d $DATA ]]
+then
+   mkdata=NO
+else
+   mkdir -p $DATA
+   mkdata=YES
+fi
+cd $DATA||exit 99
+
+################################################################################
+
+
+################################################################################
+#  Run enkf update
+if [ $machine = IBMP6 ] ; then
+   export XLSMPOPTS="parthds=$NTHREADS_ENKF:stack=$NTHSTACK_ENKF"
+fi
+export OMP_NUM_THREADS=$NTHREADS_ENKF
+export PGM='$APRUN $DATA/$(basename $ENKFUPDEXEC)'
+export pgm=$PGM
+$LOGSCRIPT
+
+rm convinfo satinfo ozinfo satang satbias_in satbias_angle enkf.nml
+rm hybens_locinfo
+rm sanl*
+
+
+$NCP $ENKFUPDEXEC $DATA
+if [[ $FILESTYLE = 'C' ]]
+then
+   # Fixed fields
+   $NCP $SATANGL  satbias_angle
+   $NCP $SATINFO  satinfo
+   $NCP $SCANINFO scaninfo
+   $NCP $CONVINFO convinfo
+   $NCP $OZINFO   ozinfo
+   $NCP $HYBENSINFO hybens_locinfo
+
+   # Ensemble observational and guess data
+   date
+   list="$CNVSTAT $OZNSTAT $RADSTAT"
+   for type in $list; do
+      $NCP ${type}_ensmean ./
+      tar -xvf ${type}_ensmean
+   done
+   date
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      date
+      member="_mem"`printf %03i $imem`
+      list="$CNVSTAT $OZNSTAT $RADSTAT"
+      for type in $list; do
+         $NCP ${type}${member} ./
+         tar -xvf ${type}${member}
+      done
+      sigens=${SIGGESENS}${member}
+      $NCP $sigens sfg_${CDATE}_fhr06${member}
+      (( imem = $imem + 1 ))
+      date
+   done
+   date
+
+   # Guess fields
+   $NCP $GBIAS    satbias_in
+   $NCP $GSATANG  satbias_ang.in
+   if [[ "$USE_NEWRADBC" = "YES" ]]; then
+      rm satbias_in
+      $NCP $GBIASe   satbias_in
+   fi
+
+   $NCP $SIGGES   sfg_${CDATE}_fhr06_ensmean
+   $NCP $SFCGES   bfg_${CDATE}_fhr06_ensmean
+
+else
+   # Fixed fields
+   ln -fs $SATANGL  satbias_angle
+   ln -fs $SATINFO  satinfo
+   ln -fs $SCANINFO scaninfo
+   ln -fs $CONVINFO convinfo
+   ln -fs $OZINFO   ozinfo
+   ln -fs $HYBENSINFO hybens_locinfo
+
+   # Ensemble observational and guess data
+   date
+   list="$CNVSTAT $OZNSTAT $RADSTAT"
+   for type in $list; do
+      tar -xvf ${type}_ensmean
+   done
+   date
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      date
+      member="_mem"`printf %03i $imem`
+      list="$CNVSTAT $OZNSTAT $RADSTAT"
+      for type in $list; do
+         tar -xvf ${type}${member}
+      done
+      sigens=${SIGGESENS}${member}
+      ln -fs $sigens sfg_${CDATE}_fhr06${member}
+      (( imem = $imem + 1 ))
+   done
+   date
+
+   # Guess fields
+   ln -fs $GBIAS    satbias_in
+   ln -fs $GSATANG  satbias_ang.in
+   if [[ "$USE_NEWRADBC" = "YES" ]]; then
+      rm satbias_in
+      ln -fs $GBIASe   satbias_in
+   fi
+
+   ln -fs $SIGGES   sfg_${CDATE}_fhr06_ensmean
+   ln -fs $SFCGES   bfg_${CDATE}_fhr06_ensmean
+
+   # Output files
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      ln -fs ${SIGANLENS}${member} sanl_${CDATE}${member}
+      (( imem = $imem + 1 ))
+   done
+
+fi
+
+# Create global_enkf namelist
+cat <<EOF > enkf.nml
+ &nam_enkf
+  datestring="$CDATE",datapath="$DATA/",
+  analpertwtnh=0.85,analpertwtsh=0.85,analpertwttr=0.85,
+  covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
+  corrlengthnh=2000,corrlengthsh=2000,corrlengthtr=2000,
+  lnsigcutoffnh=2.0,lnsigcutoffsh=2.0,lnsigcutofftr=2.0,
+  lnsigcutoffpsnh=2.0,lnsigcutoffpssh=2.0,lnsigcutoffpstr=2.0,
+  lnsigcutoffsatnh=2.0,lnsigcutoffsatsh=2.0,lnsigcutoffsattr=2.0,
+  obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
+  saterrfact=1.0,numiter=3,
+  sprd_tol=1.e30,paoverpb_thresh=0.98,
+  nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS,
+  deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
+  reducedgrid=.true.,readin_localization=.true.,
+  $NAM_ENKF
+ /
+ &END
+ &satobs_enkf
+  sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
+  sattypes_rad(2) = 'amsua_n18',     dsis(2) = 'amsua_n18',
+  sattypes_rad(3) = 'amsua_n19',     dsis(3) = 'amsua_n19',
+  sattypes_rad(4) = 'amsub_n16',     dsis(4) = 'amsub_n16',
+  sattypes_rad(5) = 'amsub_n17',     dsis(5) = 'amsub_n17',
+  sattypes_rad(6) = 'amsua_aqua',    dsis(6) = 'amsua_aqua',
+  sattypes_rad(7) = 'amsua_metop-a', dsis(7) = 'amsua_metop-a',
+  sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs281SUBSET_aqua',
+  sattypes_rad(9) = 'hirs3_n17',     dsis(9) = 'hirs3_n17',
+  sattypes_rad(10)= 'hirs4_n19',     dsis(10)= 'hirs4_n19',
+  sattypes_rad(11)= 'hirs4_metop-a', dsis(11)= 'hirs4_metop-a',
+  sattypes_rad(12)= 'mhs_n18',       dsis(12)= 'mhs_n18',
+  sattypes_rad(13)= 'mhs_n19',       dsis(13)= 'mhs_n19',
+  sattypes_rad(14)= 'mhs_metop-a',   dsis(14)= 'mhs_metop-a',
+  sattypes_rad(15)= 'goes_img_g11',  dsis(15)= 'imgr_g11',
+  sattypes_rad(16)= 'goes_img_g12',  dsis(16)= 'imgr_g12',
+  sattypes_rad(17)= 'goes_img_g13',  dsis(17)= 'imgr_g13',
+  sattypes_rad(18)= 'goes_img_g14',  dsis(18)= 'imgr_g14',
+  sattypes_rad(19)= 'goes_img_g15',  dsis(19)= 'imgr_g15',
+  sattypes_rad(20)= 'avhrr3_n18',    dsis(20)= 'avhrr3_n18',
+  sattypes_rad(21)= 'avhrr3_metop-a',dsis(21)= 'avhrr3_metop-a',
+  sattypes_rad(22)= 'avhrr3_n19',    dsis(22)= 'avhrr3_n19',
+  sattypes_rad(23)= 'amsre_aqua',    dsis(23)= 'amsre_aqua',
+  sattypes_rad(24)= 'ssmis_f16',     dsis(24)= 'ssmis_f16',
+  sattypes_rad(25)= 'ssmis_f17',     dsis(25)= 'ssmis_f17',
+  sattypes_rad(26)= 'ssmis_f18',     dsis(26)= 'ssmis_f18',
+  sattypes_rad(27)= 'ssmis_f19',     dsis(27)= 'ssmis_f19',
+  sattypes_rad(28)= 'ssmis_f20',     dsis(28)= 'ssmis_f20',
+  sattypes_rad(29)= 'sndrd1_g11',    dsis(29)= 'sndrD1_g11',
+  sattypes_rad(30)= 'sndrd2_g11',    dsis(30)= 'sndrD2_g11',
+  sattypes_rad(31)= 'sndrd3_g11',    dsis(31)= 'sndrD3_g11',
+  sattypes_rad(32)= 'sndrd4_g11',    dsis(32)= 'sndrD4_g11',
+  sattypes_rad(33)= 'sndrd1_g12',    dsis(33)= 'sndrD1_g12',
+  sattypes_rad(34)= 'sndrd2_g12',    dsis(34)= 'sndrD2_g12',
+  sattypes_rad(35)= 'sndrd3_g12',    dsis(35)= 'sndrD3_g12',
+  sattypes_rad(36)= 'sndrd4_g12',    dsis(36)= 'sndrD4_g12',
+  sattypes_rad(37)= 'sndrd1_g13',    dsis(37)= 'sndrD1_g13',
+  sattypes_rad(38)= 'sndrd2_g13',    dsis(38)= 'sndrD2_g13',
+  sattypes_rad(39)= 'sndrd3_g13',    dsis(39)= 'sndrD3_g13',
+  sattypes_rad(40)= 'sndrd4_g13',    dsis(40)= 'sndrD4_g13',
+  sattypes_rad(41)= 'sndrd1_g14',    dsis(41)= 'sndrD1_g14',
+  sattypes_rad(42)= 'sndrd2_g14',    dsis(42)= 'sndrD2_g14',
+  sattypes_rad(43)= 'sndrd3_g14',    dsis(43)= 'sndrD3_g14',
+  sattypes_rad(44)= 'sndrd4_g14',    dsis(44)= 'sndrD4_g14',
+  sattypes_rad(45)= 'sndrd1_g15',    dsis(45)= 'sndrD1_g15',
+  sattypes_rad(46)= 'sndrd2_g15',    dsis(46)= 'sndrD2_g15',
+  sattypes_rad(47)= 'sndrd3_g15',    dsis(47)= 'sndrD3_g15',
+  sattypes_rad(48)= 'sndrd4_g15',    dsis(48)= 'sndrD4_g15',
+  sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi616_metop-a',
+  sattypes_rad(50)= 'seviri_m08',    dsis(50)= 'seviri_m08',
+  sattypes_rad(51)= 'seviri_m09',    dsis(51)= 'seviri_m09',
+  sattypes_rad(52)= 'seviri_m10',    dsis(52)= 'seviri_m10',
+  sattypes_rad(53)= 'amsua_metop-b', dsis(53)= 'amsua_metop-b',
+  sattypes_rad(54)= 'hirs4_metop-b', dsis(54)= 'hirs4_metop-b',
+  sattypes_rad(55)= 'mhs_metop-b',   dsis(55)= 'mhs_metop-b',
+  sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi616_metop-b',
+  sattypes_rad(57)= 'avhrr3_metop-b',dsis(57)= 'avhrr3_metop-b',
+  sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
+  sattypes_rad(59)= 'cris_npp',      dsis(59)= 'cris_npp',
+  $SATOBS_ENKF
+ /
+ &END
+ &ozobs_enkf
+  sattypes_oz(1) = 'sbuv2_n16',
+  sattypes_oz(2) = 'sbuv2_n17',
+  sattypes_oz(3) = 'sbuv2_n18',
+  sattypes_oz(4) = 'sbuv2_n19',
+  sattypes_oz(5) = 'omi_aura',
+  sattypes_oz(6) = 'gome_metop-a',
+  sattypes_oz(7) = 'gome_metop-b',
+  sattypes_oz(8) = 'mls30_aura',
+  $OZOBS_ENKF
+ /
+ &END
+EOF
+
+# Run global_enkf
+eval $PGM < enkf.nml $REDOUT$PGMOUT $REDERR$PGMERR
+rc=$?
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+if [[ $FILESTYLE = 'C' ]]
+then
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      $NCP sanl_${CDATE}${member} ${SIGANLENS}${member}
+      (( imem = $imem + 1 ))
+   done
+fi
+
+# Cat runtime output files.
+cat $PGMOUT fort.2* > $ENKFSTAT
+
+################################################################################
+#  Postprocessing
+cd $pwd
+[[ $mkdata = YES ]]&&rmdir $DATA
+$ENDSCRIPT
+set +x
+if [[ "$VERBOSE" = "YES" ]]
+then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err
