@@ -87,7 +87,7 @@ if [[ "$machine" = "Zeus" ]]; then
 
    rm -f return_code_global_enkf.out
 
-   /bin/sh $scripts/regression_test_enkf.sh $global_enkf_T62_updat_exp1 $global_enkf_T62_updat_exp2 $global_enkf_T62_contrl_exp1 $global_enkf_T62_contrl_exp2 tmp62_enkf $global_enkf_regression 10 8 4
+   /bin/sh $scripts/regression_test_enkf.sh $global_enkf_T62_updat_exp1 $global_enkf_T62_updat_exp2 $global_enkf_T62_contrl_exp1 $global_enkf_T62_contrl_exp2 tmp62_enkf $global_enkf_regression 10 8 2
 
    rm -f global_enkf_T62.out
 
@@ -189,7 +189,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    done
 
    rm -f return_code_global_enkf.out
-   /bin/sh $scripts/regression_test_enkf.sh $global_enkf_T62_updat_exp1 $global_enkf_T62_updat_exp2 $global_enkf_T62_contrl_exp1 $global_enkf_T62_contrl_exp2 tmp62_enkf $global_enkf_regression 10 8 4
+   /bin/sh $scripts/regression_test_enkf.sh $global_enkf_T62_updat_exp1 $global_enkf_T62_updat_exp2 $global_enkf_T62_contrl_exp1 $global_enkf_T62_contrl_exp2 tmp62_enkf $global_enkf_regression 10 8 2
 
    rm -f global_enkf_T62.out
 
