@@ -302,8 +302,7 @@ if [[ "$machine" = "Zeus" ]]; then
    $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
 else
    $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc     ./satbias_pc
-   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate          ./satbias_angle
+   $ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
    $ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
 
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
