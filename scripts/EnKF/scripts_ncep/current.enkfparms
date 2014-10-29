@@ -1,0 +1,169 @@
+setenv MP_SHARED_MEMORY=yes
+setenv MEMORY_AFFINITY=MCM
+setenv enddate 2008080118
+
+set ensda = "run_enkf"
+set runobs = 'runobs_multi.csh'
+set fg_gfs = "run_fg_gfs_multi.sh"
+set ctrl_gfs = 'gfscontrol.sh'
+set drive_ensmean = "drive_gfs"
+set cleanup_obs = 'false' # remove existing obs files
+set cleanup_anal = 'false' # remove existing anal files
+set cleanup_fg = 'false' # remove existing first guess files
+set cleanup_ensmean = 'false' # remove existing ensmean files
+set fg_only = 'false' # if true, just run first guess forecast
+set do_cleanup = 'false' # if true, create tar files, delete *mem* files.
+
+##setenv basedir `dirname $PWD`
+setenv basedir "/global/save/wx20kd/enkf/work/"
+set datadir="${basedir}"
+
+# where the data will be created
+setenv datapath "/global/noscrub/wx20kd/enkf_a5/"
+
+# Data reside in obs directory set dynamically in loop below ${obsdir}
+# log directory
+setenv logdir "/global/noscrub/wx20kd/logs/enkf_a5/"
+
+# some scripts reside here
+# also need to make this dependent on user or a group writeable area -compo
+
+setenv enkfscripts "${basedir}/scripts/ncep"
+setenv enkfexec "${basedir}/src/"
+
+# name of enkf executable.
+setenv enkfbin "${enkfexec}/global_enkf_gfs"
+
+# Set archive directories
+setenv archdiskdir ${datapath}/archive
+setenv hpssdir /hpssuser/g01/wx20kd/enkfa5
+# remove 24hr old directories and put stuff to tape
+setenv ARCHLAG 24
+
+setenv incdate "${enkfscripts}/incdate"
+
+setenv homedir $PWD
+setenv qcomp ecomp
+
+##########################################################################
+# enkf parameters.
+setenv corrlengthnh 1500
+setenv corrlengthtr 1500
+setenv corrlengthsh 1500
+setenv lnsigcutoffnh 1.5
+setenv lnsigcutofftr 1.5
+setenv lnsigcutoffsh 1.5
+setenv lnsigcutoffpsnh 2.2
+setenv lnsigcutoffpstr 2.2
+setenv lnsigcutoffpssh 2.2
+setenv lnsigcutoffsatnh 3.3
+setenv lnsigcutoffsattr 3.3
+setenv lnsigcutoffsatsh 3.3
+setenv obtimelnh 15.       
+setenv obtimeltr 15.       
+setenv obtimelsh 15.       
+
+# Assimilation parameters
+setenv JCAP 190
+setenv JCAP_HIGH 382
+setenv LEVS 64
+setenv LEVS_ges 64
+setenv LONB 576
+setenv LATB 288
+setenv LONA 576
+setenv LATA 288
+setenv SMOOTHINF 24
+setenv LONB_HIGH 1152
+setenv LATB_HIGH 576
+setenv npts `expr \( $LONA \) \* \( $LATA \)`
+setenv LSOIL 4
+setenv RUN "gdas1"
+
+## DTK FIX OBS PATH
+setenv obs_datapath "/global/shared/dump/"
+##setenv datdump gfs
+setenv datdump gdas
+
+setenv NTRAC 3
+setenv nvars 4
+setenv ntrac_update 2
+setenv LANDICE_OPT 2
+# parameters for additive inflation
+setenv scalefact 40 
+setenv addpertpath "/global/noscrub/wx20kd/sig190/"
+setenv lonscramble 1
+setenv runprefix "gdas1"
+
+setenv random_partition .false.
+setenv simple_partition .false.
+setenv iassim_order 0
+setenv use_height .false.
+setenv use_letkf .false.
+
+setenv covinflatemax 1.e2
+setenv covinflatemin 1.0                                            
+setenv covinflatenh 0.0
+setenv covinflatetr 0.0
+setenv covinflatesh 0.0
+setenv lnsigcovinfcutoff 6.0
+
+setenv analpertwtnh 0.9
+setenv analpertwtsh 0.9
+setenv analpertwttr 0.9
+
+setenv pseudo_rh .true.
+                                                                    
+setenv sprd_tol 1.e30                                               
+                                                                    
+setenv nanals 60
+## DTK : specifiy number of members to process per job/node for first ges (GFS) and obs (GSI) processing
+setenv nmem_per_node 4
+                                                                    
+setenv paoverpb_thresh 1.0                                          
+setenv saterrfact 1.0
+setenv deterministic .true.
+setenv sortinc .true.
+
+setenv numiter 1                                                                    
+setenv nitermax 3
+
+##########################################################################
+# Some binaries and scripts reside here
+#
+
+setenv HOMEGLOBAL ${basedir}
+setenv FIXGLOBAL /nwprod/fix
+setenv FIXGSI /global/save/wx20kd/ensda/ersl/fixgsi
+setenv EXECGLOBAL /global/save/wx20kd/ensda/ersl/bin
+setenv SIGLEVEL ${FIXGLOBAL}/global_hyblev.l64.txt
+setenv GSIEXEC /global/save/wx20kd/gsi/hybrid/src/global_gsi
+setenv CHGRESEXEC ${EXECGLOBAL}/global_chgres_thread_moorthi
+setenv USHGLOBAL $EXECGLOBAL
+setenv CHGRESSH ${enkfscripts}/global_chgres.sh
+setenv CYCLESH ${enkfscripts}/global_cycle.sh
+setenv POSTGPSH ${enkfscripts}/global_postgpp.sh 
+setenv POSTGPLIST ${FIXGLOBAL}/global_kplist.1d.txt
+setenv POSTGPEXEC $EXECGLOBAL/global_postgs 
+setenv POSTPROC "YES" # if yes, compute pgrb files for 6-h forecast for every member.
+setenv IO 360
+setenv JO 181
+
+setenv SATINFO ${FIXGSI}/global_satinfo.txt.n19_off.r2008
+
+# 6-h cycle
+setenv FHMAX 9
+setenv FHMIN 3
+setenv FHDFI 3
+setenv FHOUT 1
+setenv FHLWR $FHOUT
+
+setenv ANALINC 6
+setenv DELTSFC $ANALINC
+
+setenv PARMFILE=/global/save/wx20kd/enkf/work/scripts/ncep/enkfa5.parms
+setenv NODEOBS=1
+setenv NODEENKF=5
+setenv NODEFG=2
+
+# TO GET RID OF EVENTUALLY
+setenv nbackground_max 32
