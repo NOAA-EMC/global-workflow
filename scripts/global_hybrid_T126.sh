@@ -180,7 +180,11 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 
 cat << EOF > gsiparm.anl
 
@@ -343,7 +347,7 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256
-   export OMP_NUM_THREADS=1
+   export OMP_NUM_THREADS=2
 
    module load intel
    module load mpt
