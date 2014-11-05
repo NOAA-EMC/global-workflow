@@ -314,10 +314,12 @@ export control_hwrf_nmm_d22="$noscrub/tmpreg_${hwrf_nmm_d2}/$exp2_hwrf_nmm_d2_cn
 export control_hwrf_nmm_d3="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp1_hwrf_nmm_d3_cntrl"
 export control_hwrf_nmm_d32="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp2_hwrf_nmm_d3_cntrl"
 
+# Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
+export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
+
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
 export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
-
 
 # Define parameters for hybrid ensemble option test.
 #   (default is set to false, so no hybrid ensemble option test.)
