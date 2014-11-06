@@ -453,8 +453,7 @@ fi
 ################################################################################
 #     Update ensemble member surface and nst analyses 
 ################################################################################
-if [ NST_GSI -gt 0 ]
-then
+if [ NST_GSI -gt 0 ]; then
 
    export DTSINC_ENS=${DTSINC_ENS:-${COMIN}/dtsinc_ens_${CDATE}}
    export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
@@ -464,44 +463,32 @@ then
    export SFCANL_ENS=${SFCANL_ENS:-${COMOUT}/sfcanl_${CDATE}}
 
 
-   if [[ $FILESTYLE = 'L' ]]
-   then
-      ln -fs $DTSINC_ENS dtsinc_ens
-      imem=1
+   $FCPLN $DTSINC_ENS dtsinc_ens
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+     member="_mem"`printf %03i $imem`
+     $FCPLN ${NSTGES_ENS}${member} nstf06${member}
+     $FCPLN ${SFCGES_ENS}${member} sfcf06${member}
+     if [ NST_GSI -eq 3 ]; then
+        $FCPLN ${SFCGCY_ENS}${member} sfcgcy${member}
+     else
+        $FCPLN ${SFCANL_ENS}${member} sfcgcy${member}
+     fi
+     (( imem = $imem + 1 ))
+   done
+
+   if [[ $FILESTYLE = 'L' ]]; then
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
-         ln -fs ${NSTGES_ENS}${member} nstf06${member}
-         ln -fs ${SFCGES_ENS}${member} sfcf06${member}
          ln -fs ${NSTANL_ENS}${member} nstanl${member}
-         if [ NST_GSI -eq 3 ]
-         then
-            ln -fs ${SFCGCY_ENS}${member} sfcgcy${member}
-            ln -fs ${SFCANL_ENS}${member} sfcanl${member}
-         else
-            ln -fs ${SFCANL_ENS}${member} sfcgcy${member}
-         fi
-         (( imem = $imem + 1 ))
-      done
-   else
-      $NCP $DTSINC_ENS dtsinc_ens
-      imem=1
-      while [[ $imem -le $NMEM_ENKF ]]; do
-         member="_mem"`printf %03i $imem`
-         $NCP ${NSTGES_ENS}${member} nstf06${member}
-         $NCP ${SFCGES_ENS}${member} sfcf06${member}
-         if [ NST_GSI -eq 3 ]
-         then
-            $NCP ${SFCGCY_ENS}${member} sfcgcy${member}
-         else
-            $NCP ${SFCANL_ENS}${member} sfcgcy${member}
-         fi
+         ln -fs ${SFCANL_ENS}${member} sfcanl${member}
          (( imem = $imem + 1 ))
       done
    fi
 
+   export ERR=$rc
    rm stdout_recenter_sfcnstupd
-   if [[ "$POE" = "YES" ]]
-   then
+   if [[ "$POE" = "YES" ]]; then
       poe $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd
       rc=$?
    else
@@ -509,8 +496,7 @@ then
       rc=$?
    fi
 
-   if [[ $FILESTYLE = 'C' ]]
-   then
+   if [[ $FILESTYLE = 'C' ]]; then
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
          $NCP nstanl${member} ${NSTANL_ENS}${member} 
@@ -518,6 +504,7 @@ then
          (( imem = $imem + 1 ))
       done
    fi
+
    export ERR=$rc
    export err=$ERR
    $ERRSCRIPT||exit 2
