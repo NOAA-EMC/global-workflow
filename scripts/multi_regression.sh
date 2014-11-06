@@ -38,4 +38,6 @@ fi
 
 /bin/sh hwrf_nmm_d3_regression.sh > hwrf_nmm_d3.out &
 
+/bin/sh global_enkf_T62_regression.sh > global_enkf_T62.out &
+
 exit
