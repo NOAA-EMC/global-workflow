@@ -488,7 +488,6 @@ if [ NST_GSI -gt 0 ]; then
       done
    fi
 
-   export ERR=$rc
    rm stdout_recenter_sfcnstupd
    if [[ "$POE" = "YES" ]]; then
       poe $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd
@@ -498,6 +497,10 @@ if [ NST_GSI -gt 0 ]; then
       rc=$?
    fi
 
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT||exit 2
+
    if [[ $FILESTYLE = 'C' ]]; then
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
@@ -506,10 +509,6 @@ if [ NST_GSI -gt 0 ]; then
          (( imem = $imem + 1 ))
       done
    fi
-
-   export ERR=$rc
-   export err=$ERR
-   $ERRSCRIPT||exit 2
 
    cat stdout_recenter_sfcnstupd
 fi
