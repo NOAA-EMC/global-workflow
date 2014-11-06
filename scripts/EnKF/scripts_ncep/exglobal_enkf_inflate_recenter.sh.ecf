@@ -136,8 +136,7 @@
 ################################################################################
 #  Set environment.
 export VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]]
-then
+if [[ "$VERBOSE" = "YES" ]]; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
@@ -179,7 +178,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
-export GDATE=${GDATE:-($NDATE -06 $CDATE)}
+export GDATE=${GDATE:-$($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}
 export NHOURS=$((NDAYS*24))
 export PBDATE=${PBDATE:-2010050100}
@@ -205,8 +204,7 @@ export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
 
-if [ $machine = IBMP6 ] 
-then
+if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
   export REDOUT=${REDOUT:-'1>'$a}
@@ -222,8 +220,7 @@ fi
 #  Preprocessing
 $INISCRIPT
 pwd=$(pwd)
-if [[ -d $DATA ]]
-then
+if [[ -d $DATA ]]; then
    mkdata=NO
 else
    mkdir -p $DATA
@@ -240,22 +237,18 @@ export SIGANL_HI=${SIGANL_HI:-siganl.$CDUMP.$CDATE}
 export SFCANL_HI=${SFCANL_HI:-sfcanl.$CDUMP.$CDATE}
 export SIGGES=${SIGGES:-sfg_${GDATE}_fhr06_ensmean}
 
-if [[ $FILESTYLE = 'C' ]]
-then
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      member="_mem"`printf %03i $imem`
-      $NCP ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
-      (( imem = $imem + 1 ))
-   done
+if [[ $FILESTYLE = 'C' ]]; then
+   export FCPLN=$NCP
 else
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      member="_mem"`printf %03i $imem`
-      ln -fs ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
-      (( imem = $imem + 1 ))
-   done
+   export FCPLN="ln -sf"
 fi
+
+imem=1
+while [[ $imem -le $NMEM_ENKF ]]; do
+   member="_mem"`printf %03i $imem`
+   $FCPLN ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
+   (( imem = $imem + 1 ))
+done
 
 
 ################################################################################
@@ -265,14 +258,12 @@ export FILENAMEOUT=sanl_${CDATE}_ensmean
 export FILEPREFIX=sanl_${CDATE}
 export NANALS=$NMEM_ENKF
 
-if [[ $FILESTYLE = 'L' ]]
-then
-   ln -fs $SANLENSMEAN sanl_${CDATE}_ensmean
+if [[ $FILESTYLE = 'L' ]]; then
+   ln -fs $SANLENSMEAN ./sanl_${CDATE}_ensmean
 fi
 
 rm stdout.sanl_ensmean
-if [[ "$POE" = "YES" ]]
-then
+if [[ "$POE" = "YES" ]]; then
    poe $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanl_ensmean
    rc=$?
 else
@@ -285,16 +276,14 @@ export err=$ERR
 $ERRSCRIPT||exit 2
 
 cat stdout.sanl_ensmean
-if [[ $FILESTYLE = 'C' ]]
-then
+if [[ $FILESTYLE = 'C' ]]; then
    $NCP sanl_${CDATE}_ensmean $SANLENSMEAN
 fi
    
 
 ################################################################################
 # If requested, perturb and recenter ensemble analysis members
-if [[ $SCALEFACT -gt 0 ]]
-then
+if [[ $SCALEFACT -gt 0 ]]; then
 
 # Generate sequential list of perturbation dates
  BDATE=`$NDATE -$NHOURS $CDATE`
@@ -306,8 +295,7 @@ then
  while [[ $SDATE -le $EDATE ]]; do
    MMDDHH=`echo $SDATE | cut -c5-10`
    YYYY=2010
-   if [[ "$MMDDHH" -le "$SWITCH" ]]
-   then
+   if [[ "$MMDDHH" -le "$SWITCH" ]]; then
       YYYY=2011
    fi
    PDATE=${YYYY}${MMDDHH}
@@ -330,14 +318,11 @@ then
  rm dates_ran.dat stdout.adderr
 
  ln -fs $SIGGES sfg_${CDATE}_fhr06_ensmean
- if [[ $FILESTYLE = 'L' ]]
- then
+ if [[ $FILESTYLE = 'L' ]]; then
     ln -fs $PERTDATES dates_ran.dat
  fi
 
-
- if [[ "$POE" = "YES" ]]
- then
+ if [[ "$POE" = "YES" ]]; then
     poe $ADDERRSPECEXEC $NANALS $CDATE $SCALEFACT $ADDPERTPATH $NPERTURB_PAIRS > stdout.adderr
     rc=$?
  else
@@ -350,40 +335,32 @@ then
  $ERRSCRIPT||exit 2
 
  cat stdout.adderr
- if [[ $FILESTYLE = 'C' ]]
- then
+ if [[ $FILESTYLE = 'C' ]]; then
     $NCP dates_ran.dat $PERTDATES
  fi
 
-fi
-
 ################################################################################
 # Compute mean for perturbed and recentered ensemble analysis members
-export DATAPATH2=./
-export FILENAMEOUT=sanlpr_${CDATE}_ensmean
-export FILEPREFIX=sanlpr_${CDATE}
-export NANALS=$NMEM_ENKF
-rm stdout.sanlpr_ensmean
-eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
-rc=$?
+ export DATAPATH2=./
+ export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+ export FILEPREFIX=sanlpr_${CDATE}
+ export NANALS=$NMEM_ENKF
+ rm stdout.sanlpr_ensmean
+ eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+ rc=$?
 
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT||exit 2
+ export ERR=$rc
+ export err=$ERR
+ $ERRSCRIPT||exit 2
 
-cat stdout.sanlpr_ensmean
+ cat stdout.sanlpr_ensmean
 
+fi
 
 ################################################################################
 # Chgres high resolution analysis to ensemble resolution
-if [[ $FILESTYLE = 'C' ]]
-then
-   $NCP $SIGANL_HI sanl_${CDATE}_highres
-   $NCP $SFCANL_HI sfcanl_${CDATE}_highres
-else
-   ln -fs $SIGANL_HI sanl_${CDATE}_highres
-   ln -fs $SFCANL_HI sfcanl_${CDATE}_highres
-fi
+$FCPLN $SIGANL_HI sanl_${CDATE}_highres
+$FCPLN $SFCANL_HI sfcanl_${CDATE}_highres
 export SIGI=sanl_${CDATE}_highres
 export SFCI=sfcanl_${CDATE}_highres
 export SIGO=sanl_${CDATE}_hybrid_lores
@@ -400,8 +377,7 @@ export PGMOUT=stdout.chgres
 export PGMERR=stderr.chgres
 
 # specify threads for running chgres
-if [ $machine = IBMP6 ]
-then
+if [ $machine = IBMP6 ]; then
    export OMP_NUM_THREADS=$CHGRESTHREAD
    export NTHREADS=$OMP_NUM_THREADS
 else
@@ -432,13 +408,17 @@ cat stdout.chgres
 
 ################################################################################
 # Recenter ensemble member atmospheric analyses about hires analysis
-export FILENAME_MEANIN=sanlpr_${CDATE}_ensmean       # current mean (perturbed & recentered)
+if [[ $SCALEFACT -gt 0 ]]; then
+ export FILENAME_MEANIN=sanlpr_${CDATE}_ensmean       # current mean (perturbed & recentered)
+ export FILENAMEIN=sanlpr_${CDATE}
+else
+ export FILENAME_MEANIN=sanl_${CDATE}_ensmean       # current mean (unperturbed & recentered)
+ export FILENAMEIN=sanl_${CDATE}
+fi
 export FILENAME_MEANOUT=sanl_${CDATE}_hybrid_lores    # recenter around this mean (hires analysis)
-export FILENAMEIN=sanlpr_${CDATE}
 export FILENAMEOUT=sanlprc_${CDATE}
 
-if [[ $FILESTYLE = 'L' ]]
-then
+if [[ $FILESTYLE = 'L' ]]; then
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
@@ -448,8 +428,7 @@ then
 fi
 
 rm stdout_recenter_hires
-if [[ "$POE" = "YES" ]]
-then
+if [[ "$POE" = "YES" ]]; then
    poe $RECENATMPEXEC $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NANALS > stdout_recenter_hires
    rc=$?
 else
@@ -463,8 +442,7 @@ $ERRSCRIPT||exit 2
 
 cat stdout_recenter_hires
 
-if [[ $FILESTYLE = 'C' ]]
-then
+if [[ $FILESTYLE = 'C' ]]; then
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
@@ -552,8 +530,7 @@ cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
 $ENDSCRIPT
 set +x
-if [[ "$VERBOSE" = "YES" ]]
-then
+if [[ "$VERBOSE" = "YES" ]]; then
    echo $(date) EXITING $0 with return code $err >&2
 fi
 exit $err

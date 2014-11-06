@@ -12,6 +12,7 @@
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script efcs.sh
 #                            other upgrades related to model changes
+# 2014-05-16  Xu Li          Add NSST
 #
 #   Input script positional parameters:
 #

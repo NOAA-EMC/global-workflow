@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script epos.sh
+# 2014-05-16  Xu Li   Add NSST
 #
 # Usage:  exglobal_enkfpos.sh.sms
 #
@@ -208,7 +209,7 @@ export OMP_NUM_THREADS=$NTHREADS_EPOS
 export XLSMPOPTS="stack=$NTHSTACK"
 $LOGSCRIPT
 
-rm getsigensmean_smooth.x getsfcensmean.x getnstensmean.x hybens_smoothinfo
+rm getsigensmean_smooth.x getsfcensmean_smooth.x hybens_smoothinfo
 rm sfg*fhr03* sfg*f06* sfg*f09*
 rm bfg*fhr03* bfg*f06* bfg*f09*
 rm nfg*fhr03* nfg*f06* nfg*f09*
@@ -319,6 +320,10 @@ if [[ "$MPMD" = "YES" ]]; then
    elif [ $machine = WCOSS ] ; then
       nprocs=$LSB_DJOB_NUMPROC
    fi
+   ncmd=5
+   if [ $NST_GSI -gt 0 ]; then
+      ncmd=8
+   fi
    cmd[0]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr03_ensmean  bfg_${analdate}_fhr03  $NMEM_ENKF"
    cmd[1]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr06_ensmean  bfg_${analdate}_fhr06  $NMEM_ENKF"
    cmd[2]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr09_ensmean  bfg_${analdate}_fhr09  $NMEM_ENKF"
@@ -334,7 +339,7 @@ if [[ "$MPMD" = "YES" ]]; then
    m=-1
    n=0
    while [ $((n+=1)) -le $nprocs ] ;do
-      while [ $((m+=1)) -le 8 ] ;do
+      while [ $((m+=1)) -le $ncmd ] ;do
          echo "${cmd[m]}" >> $DATA/cmdfile
          ((n+=1))
       done
