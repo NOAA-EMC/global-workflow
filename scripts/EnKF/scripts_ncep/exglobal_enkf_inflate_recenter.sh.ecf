@@ -481,7 +481,9 @@ if [ NST_GSI -gt 0 ]; then
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
          ln -fs ${NSTANL_ENS}${member} nstanl${member}
-         ln -fs ${SFCANL_ENS}${member} sfcanl${member}
+         if [ NST_GSI -eq 3 ]; then
+            ln -fs ${SFCANL_ENS}${member} sfcanl${member}
+         fi
          (( imem = $imem + 1 ))
       done
    fi
