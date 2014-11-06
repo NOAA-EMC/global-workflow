@@ -302,13 +302,12 @@ $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3b
 
 # Copy bias correction, atmospheric and surface files
 if [[ "$machine" = "Zeus" ]]; then
-   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}        ./satbias_in
-   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate          ./satbias_angle
+   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}.orig   ./satbias_in
+   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
 else
    $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc     ./satbias_pc
-   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate          ./satbias_angle
-   $ncp $global_hybrid_T126_datges/gdas1.t06z.radstat          ./radstat.gdas
+   $ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
+   $ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
 
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do
@@ -321,18 +320,19 @@ else
    done
 fi
 
-$ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate.t${JCAP}  ./sfcf03
-$ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate.t${JCAP}  ./sfcf06
-$ncp $global_hybrid_T126_datges/sfcf09.gdas.$gdate.t${JCAP}  ./sfcf09
+$ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate  ./sfcf03
+$ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate  ./sfcf06
+$ncp $global_hybrid_T126_datges/sfcf09.gdas.$gdate  ./sfcf09
 
-$ncp $global_hybrid_T126_datges/siggm3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf03
-$ncp $global_hybrid_T126_datges/sigges.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf06
-$ncp $global_hybrid_T126_datges/siggp3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf09
+$ncp $global_hybrid_T126_datges/siggm3.gdas.$global_hybrid_T126_adate  ./sigf03
+$ncp $global_hybrid_T126_datges/sigges.gdas.$global_hybrid_T126_adate  ./sigf06
+$ncp $global_hybrid_T126_datges/siggp3.gdas.$global_hybrid_T126_adate  ./sigf09
 
 list="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020"
 
 for file in $list; do
-   ln -s $global_hybrid_T126_datges/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+## ln -s $global_hybrid_T126_datges/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+   ln -s $global_hybrid_T126_datges/sfg_${gdate}_fhr06s_mem${file} ./sigf06_ens_mem${file}
 done
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
