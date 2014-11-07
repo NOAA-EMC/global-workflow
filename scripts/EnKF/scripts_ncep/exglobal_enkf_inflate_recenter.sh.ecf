@@ -453,7 +453,7 @@ fi
 ################################################################################
 #     Update ensemble member surface and nst analyses 
 ################################################################################
-if [ NST_GSI -gt 0 ]; then
+if [ $NST_GSI -gt 0 ]; then
 
    export DTSINC_ENS=${DTSINC_ENS:-${COMIN}/dtsinc_ens_${CDATE}}
    export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
@@ -469,7 +469,7 @@ if [ NST_GSI -gt 0 ]; then
      member="_mem"`printf %03i $imem`
      $FCPLN ${NSTGES_ENS}${member} nstf06${member}
      $FCPLN ${SFCGES_ENS}${member} sfcf06${member}
-     if [ NST_GSI -eq 3 ]; then
+     if [ $NST_GSI -eq 3 ]; then
         $FCPLN ${SFCGCY_ENS}${member} sfcgcy${member}
      else
         $FCPLN ${SFCANL_ENS}${member} sfcgcy${member}
@@ -482,7 +482,7 @@ if [ NST_GSI -gt 0 ]; then
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
          ln -fs ${NSTANL_ENS}${member} nstanl${member}
-         if [ NST_GSI -eq 3 ]; then
+         if [ $NST_GSI -eq 3 ]; then
             ln -fs ${SFCANL_ENS}${member} sfcanl${member}
          fi
          (( imem = $imem + 1 ))
