@@ -478,6 +478,7 @@ if [ NST_GSI -gt 0 ]; then
    done
 
    if [[ $FILESTYLE = 'L' ]]; then
+      imem=1
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
          ln -fs ${NSTANL_ENS}${member} nstanl${member}
@@ -502,6 +503,7 @@ if [ NST_GSI -gt 0 ]; then
    $ERRSCRIPT||exit 2
 
    if [[ $FILESTYLE = 'C' ]]; then
+      imem=1
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="_mem"`printf %03i $imem`
          $NCP nstanl${member} ${NSTANL_ENS}${member} 
