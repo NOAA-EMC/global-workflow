@@ -37,6 +37,7 @@ savdir=$savdir/out${JCAP}/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -179,7 +180,11 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 
 cat << EOF > gsiparm.anl
 
@@ -217,7 +222,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
-
+scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
@@ -256,6 +261,7 @@ $ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $scaninfo ./scaninfo
 $ncp $satinfo  ./satinfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
@@ -300,18 +306,30 @@ $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc  ./satbias_pc
 $ncp $global_hybrid_T126_datges/satang.gdas.$gdate       ./satbias_angle
 $ncp $global_hybrid_T126_datges/gdas1.t06z.radstat       ./radstat.gdas
 
-$ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate.t${JCAP}  ./sfcf03
-$ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate.t${JCAP}  ./sfcf06
-$ncp $global_hybrid_T126_datges/sfcf09.gdas.$gdate.t${JCAP}  ./sfcf09
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+   for type in $listdiag; do
+      diag_file=`echo $type | cut -d',' -f1`
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameanl=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameanl
+   done
+fi
 
-$ncp $global_hybrid_T126_datges/siggm3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf03
-$ncp $global_hybrid_T126_datges/sigges.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf06
-$ncp $global_hybrid_T126_datges/siggp3.gdas.$global_hybrid_T126_adate.t${JCAP}  ./sigf09
+$ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate  ./sfcf03
+$ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate  ./sfcf06
+$ncp $global_hybrid_T126_datges/sfcf09.gdas.$gdate  ./sfcf09
+
+$ncp $global_hybrid_T126_datges/siggm3.gdas.$global_hybrid_T126_adate  ./sigf03
+$ncp $global_hybrid_T126_datges/sigges.gdas.$global_hybrid_T126_adate  ./sigf06
+$ncp $global_hybrid_T126_datges/siggp3.gdas.$global_hybrid_T126_adate  ./sigf09
 
 list="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020"
 
 for file in $list; do
-   ln -s $global_hybrid_T126_datges/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+## ln -s $global_hybrid_T126_datges/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+   ln -s $global_hybrid_T126_datges/sfg_${gdate}_fhr06s_mem${file} ./sigf06_ens_mem${file}
 done
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
@@ -326,7 +344,7 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256
-   export OMP_NUM_THREADS=1
+   export OMP_NUM_THREADS=2
 
    module load intel
    module load mpt

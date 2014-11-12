@@ -5,6 +5,7 @@
 #if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
 if [ "$machine" = "Zeus" ]; then
    export SETUP_update=""
+   export SETUP_enkf=""
 else
    if [[ `expr substr $exp 1 6` = "global" ]]; then
       if [[ `expr substr $exp 8 5` = "4dvar" ]]; then

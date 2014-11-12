@@ -40,6 +40,7 @@ savdir=$savdir/out${JCAP}/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -188,7 +189,11 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
 ##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
@@ -230,7 +235,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
-
+scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
@@ -270,6 +275,7 @@ $ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
+$ncp $scaninfo ./scaninfo
 $ncp $satinfo  ./satinfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
@@ -326,6 +332,17 @@ ln -s -f $global_T62_ges/${prefix_tbc}.abias              ./satbias_in
 ln -s -f $global_T62_ges/${prefix_tbc}.abias_pc           ./satbias_pc
 ln -s -f $global_T62_ges/${prefix_tbc}.satang             ./satbias_angle
 ln -s -f $global_T62_ges/${prefix_tbc}.radstat            ./radstat.gdas
+
+   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+   for type in $listdiag; do
+      diag_file=`echo $type | cut -d',' -f1`
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameanl=$(echo $fname|sed 's/_ges//g')
+      mv $fname.$date $fnameanl
+   done
+fi
 
 if [[ "$endianness" = "Big_Endian" ]]; then
    ln -s -f $global_T62_ges/${prefix_sfc}.bf03            ./sfcf03
