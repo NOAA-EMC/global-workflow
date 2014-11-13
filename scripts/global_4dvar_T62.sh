@@ -179,7 +179,11 @@ export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 #SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 SETUP="$SETUPmin $SETUPobs $SETUP_update"
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 
@@ -396,7 +400,11 @@ rm -rf dir.0*
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 #SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 SETUP="$SETUPmin $SETUP4dv $SETUP_update"
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 if [ "$minimization" = "lanczos" ]; then
