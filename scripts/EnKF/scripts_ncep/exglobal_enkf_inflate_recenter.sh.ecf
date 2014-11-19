@@ -135,7 +135,8 @@
 ################################################################################
 #  Set environment.
 export VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]]; then
+if [[ "$VERBOSE" = "YES" ]]
+then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
@@ -151,6 +152,14 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+
+export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec}
+
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+
+
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -163,13 +172,14 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth$XC}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGLOBAL}/recentersigp$XC}
-export CHGRESSH=${CHGRESSH:-${USHGLOBAL}/global_chgres.sh}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp$XC}
+export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
+export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
-export SCALEFACT=${SCALEFACT:-32}
+export SCALEFACT=${SCALEFACT:-05}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -177,7 +187,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
-export GDATE=${GDATE:-$($NDATE -06 $CDATE)}
+export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}
 export NHOURS=$((NDAYS*24))
 export PBDATE=${PBDATE:-2010050100}
@@ -219,7 +229,8 @@ fi
 #  Preprocessing
 $INISCRIPT
 pwd=$(pwd)
-if [[ -d $DATA ]]; then
+if [[ -d $DATA ]]
+then
    mkdata=NO
 else
    mkdir -p $DATA
@@ -236,18 +247,22 @@ export SIGANL_HI=${SIGANL_HI:-siganl.$CDUMP.$CDATE}
 export SFCANL_HI=${SFCANL_HI:-sfcanl.$CDUMP.$CDATE}
 export SIGGES=${SIGGES:-sfg_${GDATE}_fhr06_ensmean}
 
-if [[ $FILESTYLE = 'C' ]]; then
-   export FCPLN=$NCP
+if [[ $FILESTYLE = 'C' ]]
+then
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      $NCP ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
+      (( imem = $imem + 1 ))
+   done
 else
-   export FCPLN="ln -sf"
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      ln -fs ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
+      (( imem = $imem + 1 ))
+   done
 fi
-
-imem=1
-while [[ $imem -le $NMEM_ENKF ]]; do
-   member="_mem"`printf %03i $imem`
-   $FCPLN ${SIGANLENS_IN}${member} ./sanl_${CDATE}${member}
-   (( imem = $imem + 1 ))
-done
 
 
 ################################################################################
@@ -257,8 +272,9 @@ export FILENAMEOUT=sanl_${CDATE}_ensmean
 export FILEPREFIX=sanl_${CDATE}
 export NANALS=$NMEM_ENKF
 
-if [[ $FILESTYLE = 'L' ]]; then
-   ln -fs $SANLENSMEAN ./sanl_${CDATE}_ensmean
+if [[ $FILESTYLE = 'L' ]]
+then
+   ln -fs $SANLENSMEAN sanl_${CDATE}_ensmean
 fi
 
 rm stdout.sanl_ensmean
@@ -275,7 +291,8 @@ export err=$ERR
 $ERRSCRIPT||exit 2
 
 cat stdout.sanl_ensmean
-if [[ $FILESTYLE = 'C' ]]; then
+if [[ $FILESTYLE = 'C' ]]
+then
    $NCP sanl_${CDATE}_ensmean $SANLENSMEAN
 fi
    
@@ -317,9 +334,11 @@ if [[ $SCALEFACT -gt 0 ]]; then
  rm dates_ran.dat stdout.adderr
 
  ln -fs $SIGGES sfg_${CDATE}_fhr06_ensmean
- if [[ $FILESTYLE = 'L' ]]; then
+ if [[ $FILESTYLE = 'L' ]]
+ then
     ln -fs $PERTDATES dates_ran.dat
  fi
+
 
  if [[ "$POE" = "YES" ]]; then
     poe $ADDERRSPECEXEC $NANALS $CDATE $SCALEFACT $ADDPERTPATH $NPERTURB_PAIRS > stdout.adderr
@@ -334,32 +353,39 @@ if [[ $SCALEFACT -gt 0 ]]; then
  $ERRSCRIPT||exit 2
 
  cat stdout.adderr
- if [[ $FILESTYLE = 'C' ]]; then
+ if [[ $FILESTYLE = 'C' ]]
+ then
     $NCP dates_ran.dat $PERTDATES
  fi
-
-################################################################################
-# Compute mean for perturbed and recentered ensemble analysis members
- export DATAPATH2=./
- export FILENAMEOUT=sanlpr_${CDATE}_ensmean
- export FILEPREFIX=sanlpr_${CDATE}
- export NANALS=$NMEM_ENKF
- rm stdout.sanlpr_ensmean
- eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
- rc=$?
-
- export ERR=$rc
- export err=$ERR
- $ERRSCRIPT||exit 2
-
- cat stdout.sanlpr_ensmean
 
 fi
 
 ################################################################################
+# Compute mean for perturbed and recentered ensemble analysis members
+export DATAPATH2=./
+export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+export FILEPREFIX=sanlpr_${CDATE}
+export NANALS=$NMEM_ENKF
+rm stdout.sanlpr_ensmean
+eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+rc=$?
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+cat stdout.sanlpr_ensmean
+
+
+################################################################################
 # Chgres high resolution analysis to ensemble resolution
-$FCPLN $SIGANL_HI sanl_${CDATE}_highres
-$FCPLN $SFCANL_HI sfcanl_${CDATE}_highres
+if [[ $FILESTYLE = 'C' ]]; then
+   $NCP $SIGANL_HI sanl_${CDATE}_highres
+   $NCP $SFCANL_HI sfcanl_${CDATE}_highres
+else
+   ln -fs $SIGANL_HI sanl_${CDATE}_highres
+   ln -fs $SFCANL_HI sfcanl_${CDATE}_highres
+fi
 export SIGI=sanl_${CDATE}_highres
 export SFCI=sfcanl_${CDATE}_highres
 export SIGO=sanl_${CDATE}_hybrid_lores
@@ -407,17 +433,13 @@ cat stdout.chgres
 
 ################################################################################
 # Recenter ensemble member atmospheric analyses about hires analysis
-if [[ $SCALEFACT -gt 0 ]]; then
- export FILENAME_MEANIN=sanlpr_${CDATE}_ensmean       # current mean (perturbed & recentered)
- export FILENAMEIN=sanlpr_${CDATE}
-else
- export FILENAME_MEANIN=sanl_${CDATE}_ensmean       # current mean (unperturbed & recentered)
- export FILENAMEIN=sanl_${CDATE}
-fi
+export FILENAME_MEANIN=sanlpr_${CDATE}_ensmean       # current mean (perturbed & recentered)
 export FILENAME_MEANOUT=sanl_${CDATE}_hybrid_lores    # recenter around this mean (hires analysis)
+export FILENAMEIN=sanlpr_${CDATE}
 export FILENAMEOUT=sanlprc_${CDATE}
 
-if [[ $FILESTYLE = 'L' ]]; then
+if [[ $FILESTYLE = 'L' ]]
+then
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
@@ -441,7 +463,8 @@ $ERRSCRIPT||exit 2
 
 cat stdout_recenter_hires
 
-if [[ $FILESTYLE = 'C' ]]; then
+if [[ $FILESTYLE = 'C' ]]
+then
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
@@ -457,7 +480,8 @@ cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
 $ENDSCRIPT
 set +x
-if [[ "$VERBOSE" = "YES" ]]; then
+if [[ "$VERBOSE" = "YES" ]]
+then
    echo $(date) EXITING $0 with return code $err >&2
 fi
 exit $err

@@ -284,20 +284,27 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
 export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
+export SCRGSI=${SCRGSI:-$NWPROD/gsi.${gsi_ver}/scripts}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
 
 # Scripts.
-export ANALYSISSH=${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.sms}
+export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.sms}
 
 #  Variables.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
 export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
 export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
 export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
@@ -312,21 +319,21 @@ export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 
 # Files.
-export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHGLOBAL}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
-export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGLOBAL}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGLOBAL}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
 export SFCG04=${SFCG04:-${COMOUT}/sfcf04}

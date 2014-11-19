@@ -38,7 +38,7 @@
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 #
-# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GSATANG
+# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GRADSTAT
 #                            SFCANL SIGANL ABIAS ABIASPC IGEN
 #
 #   Input script positional parameters:
@@ -50,8 +50,8 @@
 #                   defaults to $GBIAS; required
 #     4             Input guess radiance bias correction pre-conditioning
 #                   defaults to $GBIASPC; required
-#     5             Input guess angle dependent bias correction
-#                   defaults to $GSATANG; required
+#     5             Input guess radiance diagnostic file
+#                   defaults to $GRADSTAT; required
 #     6             Output surface analysis
 #                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
 #     7             Output sigma analysis
@@ -72,7 +72,7 @@
 #                   overridden by $3; required
 #     GBIASPC       Input guess radiance bias correction pre-conditioning
 #                   overridden by $4; required
-#     GSATANG       Input guess angle dependent bias correction
+#     GRADSTAT      Input guess angle dependent bias correction
 #                   overridden by $5; required
 #     SFCANL        Output surface analysis
 #                   overridden by $6; defaults to ${COMOUT}/sfcanl
@@ -120,8 +120,6 @@
 #                   defaults to ${COMOUT}/biascor_in; optional
 #     USE_NEWRADBC  Flag to use new radiance bias correction scheme (YES or NO)
 #                   defaults to NO
-#     GRADSTAT      Guess radiance diagnostic file
-#                   defaults to ${COMOUT}/radstat.gdas; optional input
 #     RADSTAT       Output radiance assimilation statistics
 #                   defaults to ${COMIN}/${PREINP}radstat
 #     GSISTAT       Output gsi (obs-ges), qc, and iteration statistics
@@ -366,7 +364,6 @@
 #                  $SIGGES
 #                  $GBIAS
 #                  $GBIASPC
-#                  $GSATANG
 #                  $GRADSTAT
 #                  $SFCG03
 #                  $SFCG04
@@ -463,7 +460,7 @@ export SFCGES=${1:-${SFCGES:?}}
 export SIGGES=${2:-${SIGGES:?}}
 export GBIAS=${3:-${GBIAS:?}}
 export GBIASPC=${4:-${GBIASPC:?}}
-export GSATANG=${5:-${GSATANG:?}}
+export GRADSTAT=${5:-${GRADSTAT:?}}
 export SFCANL=${6:-${SFCANL}}
 export SIGANL=${7:-${SIGANL}}
 export ABIAS=${8:-${ABIAS}}
@@ -477,6 +474,11 @@ export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -485,8 +487,8 @@ export COMOUT=${COMOUT:-$(pwd)}
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
 export JCAP=${JCAP:-$($SIGHDR $SIGGES JCAP||echo 0)}
 export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES JCAP||echo 0)}
 export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
@@ -497,22 +499,22 @@ export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
 export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
-export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHGLOBAL}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
-export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGLOBAL}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGLOBAL}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export ATMSFILTER=${ATMSFILTER:-${FIXGSI}/atms_beamwidth.txt}
+export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
 export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
@@ -559,7 +561,6 @@ export SIGG07=${SIGG07:-${COMOUT}/sigf07}
 export SIGG08=${SIGG08:-${COMOUT}/sigf08}
 export SIGG09=${SIGG09:-${COMOUT}/sigf09}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
-export GRADSTAT=${GRADSTAT:-${COMOUT}/radstat.gdas}
 export SIGGESENS=${SIGGESENS:-${COMOUT}/sigf06_ens}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 export NMEM_ENS=${NMEM_ENS:-0}
@@ -580,7 +581,6 @@ export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${PREINP}obsinput}
 export DIAG_SUFFIX=${DIAG_SUFFIX:-""}
 export DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 export DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
-export CHGRP_CMD=${CHGRP_CMD:-"chgrp rstprod"}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -610,6 +610,7 @@ export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export OBERRFLAG=${OBERRFLAG:-.false.}
 export NCP=${NCP:-cp}
+export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NTHREADS=${NTHREADS:-1}
 export NTHREADS_GSI=${NTHREADS_GSI:-1}
 if [ $machine = IBMP6 ] ; then
@@ -752,7 +753,6 @@ then
 
    # Required guess fields
    $NCP $GBIAS    satbias_in
-   $NCP $GSATANG  satbias_ang.in
    $NCP $GBIASPC  satbias_pc
    $NCP $GRADSTAT radstat.gdas
    $NCP $SIGG03   sigf03
@@ -894,7 +894,6 @@ else
 
    # Guess fields
    ln -fs $GBIAS    satbias_in
-   ln -fs $GSATANG  satbias_ang.in
    ln -fs $GBIASPC  satbias_pc
    ln -fs $GRADSTAT radstat.gdas
 
@@ -1181,7 +1180,7 @@ then
    cp $SFCANL  $GESdir/${RUN}.${cycle}.sfcanl
    cp $SIGANL  $GESdir/${RUN}.${cycle}.sanl
    cp $ABIAS   $GESdir/${RUN}.${cycle}.abias
-   cp $ABIASPC $GESdir/${RUN}.${cydle}.abias_pc
+   cp $ABIASPC $GESdir/${RUN}.${cycle}.abias_pc
 fi
 if test "$SENDCOM" = "YES"
 then

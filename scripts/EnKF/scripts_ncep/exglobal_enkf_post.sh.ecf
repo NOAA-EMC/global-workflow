@@ -125,9 +125,10 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 # none
 #  Directories.
-export FIXGLOBAL=${FIXGLOBAL:-/nwprod/fix}
-export EXECGLOBAL=${EXECGLOBAL:-/nwprod/exec}
-export USHGLOBAL=${USHGLOBAL:-/nwprod/ush}
+export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
+export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec}
+export USHENKF=${USHENKF:-$NWPROD/enkf.${enkf_ver}/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -139,7 +140,7 @@ export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGLOBAL/global_hybens_smoothinfo.l${LEVS}.txt}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGSI/global_hybens_smoothinfo.l${LEVS}.txt}
 #  I/O filenames.
 export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export SIGENS_IN=${SIGENS_IN:-$COMIN/sfg_${CDATE}_fhr}
@@ -149,8 +150,8 @@ export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/sfg_${CDATE}_fhr}
 export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/bfg_${CDATE}_fhr}
 export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECGLOBAL/getsigensmean_smooth$XC}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECGLOBAL/getsfcensmean_smooth$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECENKF/getsigensmean_smooth$XC}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECENKF/getsfcensmean_smooth$XC}
 #  Other variables.
 export FHOUTEFCS=${FHOUTEFCS:-3}
 export FHMINEFCS=${FHMINEFCS:-3}
@@ -399,6 +400,50 @@ then
    done
 fi
 
+################################################################################
+# If requested, generate low resolution fhr06 ensemble mean and ensemble member
+# files
+
+export JCAP_ENKF=${JCAP_ENKF:-574}
+export JCAP_LORES=${JCAP_LORES:-254}
+export LATB_LORES=${LATB_LORES:-384}
+export LONB_LORES=${LONB_LORES:-768}
+export LEVS_LORES=${LEVS_LORES:-64}
+
+export OROGRAPHY_LORES=$FIXGSM/global_orography.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export OROGRAPHY_UF_LORES=$FIXGSM/global_orography_uf.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export LONSPERLAT_LORES=$FIXGSM/global_lonsperlat.t${JCAP_LORES}.$LONB_LORES.$LATB_LORES.txt
+export SLMASK_LORES=$FIXGSM/global_slmask.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export MTNVAR_LORES=$FIXGSM/global_mtnvar.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.f77
+export SIGLEVEL_LORES=$FIXGSM/global_hyblev.l${LEVS_LORES}.txt
+
+
+if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
+   member="ensmean"
+   export SIGINP=${SIGENS_OUT}06_${member}
+   export SIGOUT=${SIGENS_OUT}06_${member}_t${JCAP_LORES}
+   echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="mem"`printf %03i $imem`
+      export SIGINP=${SIGENS_OUT}06s_${member}
+      export SIGOUT=${SIGENS_OUT}06s_${member}_t${JCAP_LORES}
+      echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript
+      (( imem = $imem + 1 ))
+   done
+   chmod 755 poescript
+   if [ $machine = WCOSS ] ; then
+      export MP_PGMMODEL=mpmd
+      export MP_CMDFILE=$DATA/poescript
+      mpirun.lsf
+      export err=$?; err_chk
+   else
+      $DATA/poescript
+      export err=$?
+   fi
+fi
+
+
 
 ################################################################################
 # Generate status log
@@ -440,6 +485,21 @@ rm log_all
 cat log_allsfc log_allatm > log_all
 cp log_all $ENSSTAT
 
+if [ $SENDDBN = YES ] ; then
+imem=1
+while [[ $imem -le $NMEM_ENKF ]]; do
+   member="_mem"`printf %03i $imem`
+   #FHBEG=$FHMIN
+   FHEND=$FHMAX
+   FH=6
+   until [[ $FH -gt $FHEND ]];do
+      [[ $FH -lt 10 ]]&&FH=0$FH
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}s${member}
+      FH=`expr $FH + $FHOUT`
+   done
+   (( imem = $imem + 1 ))
+done
+fi
 
 ################################################################################
 #  Postprocessing
