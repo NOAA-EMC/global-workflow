@@ -281,8 +281,8 @@ $ncp $bftab_sst ./bftab_sstphr
 rm new
 cp convinfo old
 mv convinfo convinfo_original
-sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < old > new
-mv new old
+#sed 's/sst      180    0   -1     3.0/sst      180    0    1     3.0/' < old > new
+#mv new old
 sed 's/uv       243   56    1     3.0/uv       243   56   -1     3.0/' < old > new
 mv new old
 sed 's/uv       253   56    1     3.0/uv       253   56   -1     3.0/' < old > new
