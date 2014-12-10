@@ -60,7 +60,7 @@ $svnmkdirp $target_shared
 
 
 # Create and populate global_shared fix
-mkdir -p $target_shared/fix
+$svnmkdir $target_shared/fix
 flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_locinfo.l64.txt global_hybens_smoothinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txtk prepobs_errtable.global"
 for file in $flist; do
    $svncopy $source_path/fix/$file $target_shared/fix/
@@ -86,7 +86,15 @@ done
 
 # Create and populate global_shared sorc
 $svnmkdirp $target_shared/sorc/gsi.fd
-$svncopy $source_path/src/* $target_shared/sorc/gsi.fd/
+flist="configure make Make README"
+for file in $flist; do
+   $svncopy $source_path/src/${file}* $target_shared/sorc/gsi.fd/
+done
+flist=".c .f90 .F90 .H"
+for file in $flist; do
+   $svncopy $source_path/src/*${file} $target_shared/sorc/gsi.fd/
+done
+
 
 $svnmkdirp $target_shared/sorc/gsi.fd/enkf
 $svncopy $source_path/src/enkf/* $target_shared/sorc/gsi.fd/enkf/
