@@ -8,10 +8,6 @@ exp1=$1
 exp2=$3
 exp3=$2
 
-#exp1=$global_T62_updat_exp1
-#exp2=$global_T62_contrl_exp1
-#exp3=$global_T62_updat_exp2
-
 input=$5
 
 #input=tmp62
@@ -42,33 +38,31 @@ maxtime=1200
 # Cirrus=110 GB/32 tasks per node
 maxmem=$((3400000*1))
 
-# Copy stdout and fort.220 files 
+# Copy stdout and sanl files 
 # from $savdir to $tmpdir
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
    $ncp $savdir/$exp/stdout ./stdout.$exp
-   $ncp $savdir/$exp/fort.220 ./fort.220.$exp
-   $ncp $savdir/$exp/siganl ./siganl.$exp
-   $ncp $savdir/$exp/siginc ./siginc.$exp
-   $ncp $savdir/$exp/wrf_inout ./wrf_inout.$exp
+   nmem=20
+   imem=1
+   while [[ $imem -le $nmem ]]; do
+      member="_mem"`printf %03i $imem`
+      $ncp $savdir/$exp/sanl_${global_enkf_T62_adate}$member $tmpdir/sanl$member.$exp
+      (( imem = $imem + 1 ))
+   done
 done
 
-# Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
+# Grep out ensemble mean increment information, run time, and maximum resident memory from stdout file
 list="$exp1 $exp2 $exp3"
 for exp in $list; do
-   grep -c 'cost,grad,step' stdout.$exp > minimizer_use.$exp
-   if [ $(awk '{ print $1 }' minimizer_use.$exp) -gt 0 ]; then
-      grep 'cost,grad,step' stdout.$exp > penalty.$exp.txt
-   else
-      grep 'congrad::evaljgrad: grepcost' stdout.$exp > penalty.$exp.txt
-   fi
+   grep 'ens. mean anal. increment' stdout.$exp > increment.$exp.txt
    grep 'The total amount of wall time' stdout.$exp > runtime.$exp.txt
    grep 'The maximum resident set size' stdout.$exp > memory.$exp.txt
 done
 
-# Difference the 2 files (i.e., penalty.exp1.txt with penalty.exp2.txt)
-diff penalty.$exp1.txt penalty.$exp2.txt > penalty.${exp1}-${exp2}.txt
-diff penalty.$exp1.txt penalty.$exp3.txt > penalty.${exp1}-${exp3}.txt
+# Difference the 2 files (i.e., increment.exp1.txt with increment.exp2.txt)
+diff increment.$exp1.txt increment.$exp2.txt > increment.${exp1}-${exp2}.txt
+diff increment.$exp1.txt increment.$exp3.txt > increment.${exp1}-${exp3}.txt
 
 # Give location of additional output files for scalability testing
 exp1_scale=$2
@@ -221,15 +215,15 @@ fi
 
 {
 
-if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
-   if [[ $(grep -c 'congrad::evaljgrad: grepcost' penalty.${exp1}-${exp2}.txt) = 0 ]]; then
+if [[ $(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp2}.txt) = 0 ]]; then
+   if [[ $(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp2}.txt) = 0 ]]; then
       echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible.'
-#      echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
+#      echo 'since the corresponding ens. mean anal. increments are identical with '$(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp2}.txt)' lines different.'
       echo
    else
       echo 'The results between the two runs are nonreproducible,'
       echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses.'
-#     echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp2}.txt)' lines different.'
+#     echo 'thus the regression test has failed for '${exp1}' and '${exp2}' analyses with '$(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp2}.txt)' lines different.'
       echo
    fi
 else
@@ -281,74 +275,62 @@ fi
 } >> $output
    else
 {
-
-if cmp -s siganl.${exp1} siganl.${exp2} 
+nmem=20
+imem=1
+while [[ $imem -le $nmem ]]; do
+   member="_mem"`printf %03i $imem`
+   if cmp -s sanl$member.${exp1} sanl$member.${exp2} 
 then
-   echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
-   echo 'since the corresponding results are identical.'
+   echo 'sanl'$member'.'${exp1}' sanl'$member'.'${exp2}' are identical'
    echo
 fi
-
+   (( imem = $imem + 1 ))
+done
 } >> $output
    fi
 fi
 
 # Next, reproducibility between exp1 and exp3
 
+if [[ `expr substr $exp1 1 4` = "hwrf" ]]; then
+
 {
 
-if [[ $(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
-   if [[ $(grep -c 'congrad::evaljgrad: grepcost' penalty.${exp1}-${exp3}.txt) = 0 ]]; then
-      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-#     echo 'since the corresponding penalties and gradients are identical with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
-      echo
+   echo  'Results are not currently reproducible for different number of processors.  Skipping test.'
+   echo
+
+} >> $output
+
+else
+
+{
+
+   if [[ $(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp3}.txt) = 0 ]]; then
+      if [[ $(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp3}.txt) = 0 ]]; then
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+#        echo 'since the corresponding ens. mean anal. increments are identical with '$(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp3}.txt)' lines different.'
+         echo
+      else
+         echo 'The results between the two runs are nonreproducible,'
+         echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses.'
+#        echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'ens. mean anal. increment' increment.${exp1}-${exp3}.txt)' lines different.'
+         echo
+      fi
    else
       echo 'The results between the two runs are nonreproducible,'
       echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses.'
-#     echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses with '$(grep -c 'cost,grad,step' penalty.${exp1}-${exp3}.txt)' lines different.'
       echo
    fi
-else
-   echo 'The results between the two runs are nonreproducible,'
-   echo 'thus the regression test has failed for '${exp1}' and '${exp3}' analyses.'
-   echo
-fi
 
 } >> $output
 
 # Next, check reproducibility of results between exp1 and exp3
 
-if [[ `expr substr $exp1 1 4` = "rtma" ]]; then
+   if [[ `expr substr $exp1 1 4` = "rtma" ]]; then
 
 {
 
-   if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
-   then
-      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-      echo 'since the corresponding results are identical.'
-      echo
-   fi
-
-} >> $output
-
-elif [[ -f wrf_inout.${exp1} ]]; then
-
-{
-
-   if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
-   then
-      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-      echo 'since the corresponding results are identical.'
-      echo
-   fi
-
-} >> $output
-
-elif [[ `expr substr $exp1 1 6` = "global" ]]; then
-   if [[ -f siginc.${exp1} ]]; then
-{
-
-      if cmp -s siginc.${exp1} siginc.${exp3}
+      if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
       then
          echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
          echo 'since the corresponding results are identical.'
@@ -356,18 +338,49 @@ elif [[ `expr substr $exp1 1 6` = "global" ]]; then
       fi
 
 } >> $output
-   else
+
+   elif [[ -f wrf_inout.${exp1} ]]; then
 
 {
 
-      if cmp -s siganl.${exp1} siganl.${exp3} 
+      if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
       then
          echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-            echo 'since the corresponding results are identical.'
+         echo 'since the corresponding results are identical.'
          echo
       fi
 
 } >> $output
+
+   elif [[ `expr substr $exp1 1 6` = "global" ]]; then
+      if [[ -f siginc.${exp1} ]]; then
+{
+
+         if cmp -s siginc.${exp1} siginc.${exp3}
+         then
+            echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+            echo 'since the corresponding results are identical.'
+            echo
+         fi
+
+} >> $output
+      else
+
+{
+   nmem=20
+   imem=1
+   while [[ $imem -le $nmem ]]; do
+      member="_mem"`printf %03i $imem`
+      if cmp -s sanl$member.${exp1} sanl$member.${exp3}
+      then
+      echo 'sanl'$member'.'${exp1}' sanl'$member'.'${exp3}' are identical'
+      echo
+      fi
+   (( imem = $imem + 1 ))
+   done
+
+} >> $output
+      fi
    fi
 fi
 
