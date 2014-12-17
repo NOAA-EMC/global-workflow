@@ -21,7 +21,7 @@
 #PBS -l walltime=00:30:00 
 #PBS -l nodes=2:ppn=12
 #PBS -j eo                
-#PBS -A ada
+#PBS -A hybrid
 #PBS -V
 #=======================================================
 
@@ -46,16 +46,19 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2013090100
+adate=2014102000
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
-gsiexec=/da/save/$USER/trunk/src/global_gsi
+gsiexec=/home/David.Groff/Work_Dir/GSI/EXP-Wind_Direction_Fix/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=/da/save/$USER/trunk/fix
+fixgsi=/home/David.Groff/Work_Dir/GSI/EXP-Wind_Direction_Fix/fix
+
+# Specify GSI util directory
+utilgsi=/home/David.Groff/Work_Dir/GSI/EXP-Wind_Direction_Fix/util
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -628,7 +631,7 @@ $ncp $datges/${prefix_tbc}.abias              ./satbias_in
 $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
 $ncp $datges/${prefix_tbc}.radstat            ./radstat.gdas
 
-/da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
+$utilgsi/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 
 cp satbias_in satbias_in.orig
 cp satbias_in.new satbias_in
