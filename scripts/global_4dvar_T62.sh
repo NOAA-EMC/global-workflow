@@ -179,7 +179,11 @@ export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 #SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 SETUP="$SETUPmin $SETUPobs $SETUP_update"
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 
@@ -320,14 +324,29 @@ $ncp $global_4dvar_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrears
 $ncp $global_4dvar_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-if [ "$minimization" = "lanczos" ]; then
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias_orig           ./satbias_in
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang_orig          ./satbias_angle
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias.orig           ./satbias_in
+   $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang.orig          ./satbias_angle
 else
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias                ./satbias_in
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias_pc             ./satbias_pc
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang               ./satbias_angle
-   $ncp $global_4dvar_T62_ges/${prefix_tbc}.radstat              ./radstat.gdas
+   if [ "$minimization" = "lanczos" ]; then
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias.orig        ./satbias_in
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang.orig       ./satbias_angle
+   else
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias             ./satbias_in
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.abias_pc          ./satbias_pc
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.satang            ./satbias_angle
+      $ncp $global_4dvar_T62_ges/${prefix_tbc}.radstat           ./radstat.gdas
+
+      listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+      for type in $listdiag; do
+         diag_file=`echo $type | cut -d',' -f1`
+         fname=`echo $diag_file | cut -d'.' -f1`
+         date=`echo $diag_file | cut -d'.' -f2`
+         $UNCOMPRESS $diag_file
+         fnameanl=$(echo $fname|sed 's/_ges//g')
+         mv $fname.$date $fnameanl
+      done
+   fi
 fi
 
       listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
@@ -393,7 +412,11 @@ rm -rf dir.0*
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 #SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 SETUP="$SETUPmin $SETUP4dv $SETUP_update"
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 if [ "$minimization" = "lanczos" ]; then

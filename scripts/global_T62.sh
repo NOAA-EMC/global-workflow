@@ -328,10 +328,14 @@ ln -s -f $global_T62_obs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
 # Copy bias correction, atmospheric and surface files
-ln -s -f $global_T62_ges/${prefix_tbc}.abias              ./satbias_in
-ln -s -f $global_T62_ges/${prefix_tbc}.abias_pc           ./satbias_pc
-ln -s -f $global_T62_ges/${prefix_tbc}.satang             ./satbias_angle
-ln -s -f $global_T62_ges/${prefix_tbc}.radstat            ./radstat.gdas
+if [[ "$machine" = "Zeus" ]]; then
+   ln -s -f $global_T62_ges/${prefix_tbc}.abias.orig         ./satbias_in
+   ln -s -f $global_T62_ges/${prefix_tbc}.satang.orig        ./satbias_angle
+else
+   ln -s -f $global_T62_ges/${prefix_tbc}.abias              ./satbias_in
+   ln -s -f $global_T62_ges/${prefix_tbc}.abias_pc           ./satbias_pc
+   ln -s -f $global_T62_ges/${prefix_tbc}.satang             ./satbias_angle
+   ln -s -f $global_T62_ges/${prefix_tbc}.radstat            ./radstat.gdas
 
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do

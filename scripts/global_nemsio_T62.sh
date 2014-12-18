@@ -297,10 +297,14 @@ $ncp $global_nemsio_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrear
 $ncp $global_nemsio_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
-$ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+else
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias_pc                ./satbias_pc
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
+   $ncp $global_nemsio_T62_obs/${prefix_tbc}.radstat                 ./radstat.gdas
 
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do

@@ -109,29 +109,28 @@ elif [[ "$machine" = "WCOSS" ]]; then
    if [ "$debug" = ".false." ]; then
       /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp1 -q $queue -p 7/12/ -r /1 -t 0:30:00 $scripts/nmm_binary.sh
 
-   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp1 -q $queue -p 7/12/ -r /1 -t 0:30:00 $scripts/nmm_binary.sh
-
-   while [[ $(grep -c '+ rc=0' ${nmm_binary_updat_exp1}.out) -ne 1 ]]; do
-      grep '+ rc=' ${nmm_binary_updat_exp1}.out > return_code_nmm_binary.out
-      if [ -s return_code_nmm_binary.out ]; then
-         if [[ $(stat -c %s return_code_nmm_binary.out) -ne '0' ]]; then
-            if [[ $(awk '{ print $2 }' return_code_nmm_binary.out) -ne 'rc=0' ]]; then
-               echo $nmm_binary_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_nmm_binary.out)"."
-               rm -f return_code_nmm_binary.out
-               exit
+      while [[ $(grep -c '+ rc=0' ${nmm_binary_updat_exp1}.out) -ne 1 ]]; do
+         grep '+ rc=' ${nmm_binary_updat_exp1}.out > return_code_nmm_binary.out
+         if [ -s return_code_nmm_binary.out ]; then
+            if [[ $(stat -c %s return_code_nmm_binary.out) -ne '0' ]]; then
+               if [[ $(awk '{ print $2 }' return_code_nmm_binary.out) -ne 'rc=0' ]]; then
+                  echo $nmm_binary_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_nmm_binary.out)"."
+                  rm -f return_code_nmm_binary.out
+                  exit
+               fi
             fi
          fi
          echo "Job "$nmm_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
          sleep 60
       done
 
-   while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_updat_exp1}.out) -ne 1 ]]; do
-      echo "Job "$nmm_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
-      sleep 60
-   done
+      while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_updat_exp1}.out) -ne 1 ]]; do
+         echo "Job "$nmm_binary_updat_exp1" is not complete yet.  Will recheck in a minute."
+         sleep 60
+      done
 
-   rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
+      rm -f return_code_nmm_binary.out
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
 
       rm -f return_code_nmm_binary.out
       /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_updat_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
@@ -151,13 +150,13 @@ elif [[ "$machine" = "WCOSS" ]]; then
          sleep 60
       done
 
-   while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_updat_exp2}.out) -ne 1 ]]; do
-      echo "Job "$nmm_binary_updat_exp2" is not complete yet.  Will recheck in a minute."
-      sleep 60
-   done
+      while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_updat_exp2}.out) -ne 1 ]]; do
+         echo "Job "$nmm_binary_updat_exp2" is not complete yet.  Will recheck in a minute."
+         sleep 60
+      done
 
-   rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp1 -q $queue -p 7/12/ -r /1 -t 0:30:00 $scripts/nmm_binary.sh
+      rm -f return_code_nmm_binary.out
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp1 -q $queue -p 7/12/ -r /1 -t 0:30:00 $scripts/nmm_binary.sh
 
       rm -f return_code_nmm_binary.out
       /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp1 -q $queue -p 7/12/ -r /1 -t 0:30:00 $scripts/nmm_binary.sh
@@ -177,13 +176,13 @@ elif [[ "$machine" = "WCOSS" ]]; then
          sleep 60
       done
 
-   while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_contrl_exp1}.out) -ne 1 ]]; do
-      echo "Job "$nmm_binary_contrl_exp1" is not complete yet.  Will recheck in a minute."
-      sleep 60
-   done
+      while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_contrl_exp1}.out) -ne 1 ]]; do
+         echo "Job "$nmm_binary_contrl_exp1" is not complete yet.  Will recheck in a minute."
+         sleep 60
+      done
 
-   rm -f return_code_nmm_binary.out
-   /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
+      rm -f return_code_nmm_binary.out
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
 
       rm -f return_code_nmm_binary.out
       /bin/sh sub_wcoss -a RDAS-T2O -j $nmm_binary_contrl_exp2 -q $queue -p 9/12/ -r /2 -t 0:25:00 $scripts/nmm_binary.sh
@@ -203,13 +202,13 @@ elif [[ "$machine" = "WCOSS" ]]; then
          sleep 60
       done
 
-   while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_contrl_exp2}.out) -ne 1 ]]; do
-      echo "Job "$nmm_binary_contrl_exp2" is not complete yet.  Will recheck in a minute."
-      sleep 60
-   done
+      while [[ $(grep -c 'Resource usage summary:' ${nmm_binary_contrl_exp2}.out) -ne 1 ]]; do
+         echo "Job "$nmm_binary_contrl_exp2" is not complete yet.  Will recheck in a minute."
+         sleep 60
+      done
 
-   rm -f return_code_nmm_binary.out
-   /bin/sh $scripts/regression_test.sh $nmm_binary_updat_exp1 $nmm_binary_updat_exp2 $nmm_binary_contrl_exp1 $nmm_binary_contrl_exp2 tmpreg_nmm_binary $nmm_binary_regression 8 10 8
+      rm -f return_code_nmm_binary.out
+      /bin/sh $scripts/regression_test.sh $nmm_binary_updat_exp1 $nmm_binary_updat_exp2 $nmm_binary_contrl_exp1 $nmm_binary_contrl_exp2 tmpreg_nmm_binary $nmm_binary_regression 8 10 8
 
       rm -f return_code_nmm_binary.out
       /bin/sh $scripts/regression_test.sh $nmm_binary_updat_exp1 $nmm_binary_updat_exp2 $nmm_binary_contrl_exp1 $nmm_binary_contrl_exp2 tmpreg_nmm_binary $nmm_binary_regression 8 10 8

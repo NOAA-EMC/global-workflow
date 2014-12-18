@@ -301,10 +301,13 @@ $ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubb
 $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate       ./satbias_in
-$ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}_pc  ./satbias_pc
-$ncp $global_hybrid_T126_datges/satang.gdas.$gdate       ./satbias_angle
-$ncp $global_hybrid_T126_datges/gdas1.t06z.radstat       ./radstat.gdas
+if [[ "$machine" = "Zeus" ]]; then
+   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}.orig   ./satbias_in
+   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
+else
+   $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
+   $ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
+   $ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
 
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do
