@@ -517,7 +517,7 @@ then
 fi
 
 # Cat runtime output files.
-cat $PGMOUT fort.2* > $ENKFSTAT
+cat $PGMOUT $PGMERR fort.2* > $ENKFSTAT
 
 ################################################################################
 #  Postprocessing

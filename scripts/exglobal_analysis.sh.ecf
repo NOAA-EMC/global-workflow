@@ -38,8 +38,8 @@
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 #
-# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GRADSTAT
-#                            SFCANL SIGANL ABIAS ABIASPC IGEN
+# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GBIASPC GRADSTAT GBIASAIR
+#                            SFCANL SIGANL ABIAS ABIASPC ABIASAIR IGEN
 #
 #   Input script positional parameters:
 #     1             Input surface guess
@@ -52,15 +52,19 @@
 #                   defaults to $GBIASPC; required
 #     5             Input guess radiance diagnostic file
 #                   defaults to $GRADSTAT; required
-#     6             Output surface analysis
+#     6             Input guess aircraft bias correction coefficients
+#                   defaults to $GBIASAIR; required
+#     7             Output surface analysis
 #                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
-#     7             Output sigma analysis
+#     8             Output sigma analysis
 #                   defaults to $SIGANL, then to ${COMOUT}/siganl
-#     8             Output bias correction
+#     9             Output bias correction
 #                   defaults to $ABIAS, then to ${COMOUT}/abias
-#     9             Output bias correction pre-conditioning
+#    10             Output bias correction pre-conditioning
 #                   defaults to $ABIASPC, then to ${COMOUT}/abias_pc
-#    10             Output generating code
+#    11             Output aircraft bias correction coefficients
+#                   defaults to $ABIASAIR, then to ${COMOUT}/abias_air
+#    12             Output generating code
 #                   defaults to $IGEN, then to 0
 #
 #   Imported Shell Variables:
@@ -74,16 +78,20 @@
 #                   overridden by $4; required
 #     GRADSTAT      Input guess angle dependent bias correction
 #                   overridden by $5; required
+#     GBIASAIR      Input guess aircraft bias correction
+#                   overridden by $6; required
 #     SFCANL        Output surface analysis
-#                   overridden by $6; defaults to ${COMOUT}/sfcanl
+#                   overridden by $7; defaults to ${COMOUT}/sfcanl
 #     SIGANL        Output sigma analysis
-#                   overridden by $7; defaults to ${COMOUT}/siganl
+#                   overridden by $8; defaults to ${COMOUT}/siganl
 #     ABIAS         Output bias correction
-#                   overridden by $8; defaults to ${COMOUT}/abias
+#                   overridden by $9; defaults to ${COMOUT}/abias
 #     ABIASPC       Output bias correction pre-conditioning
-#                   overridden by $9; defaults to ${COMOUT}/abias_pc
+#                   overridden by $10; defaults to ${COMOUT}/abias_pc
+#     ABIASAIR      Output aircraft bias correction
+#                   overridden by $11; defaults to ${COMOUT}/abias_air
 #     IGEN          Output generating code
-#                   overridden by $10; defaults to 0
+#                   overridden by $12; defaults to 0
 #     SFCG03        Surface guess valid at -03 hour
 #                   defaults to ${COMOUT}/sfcf03; optional input
 #     SFCG04        Surface guess valid at -04 hour
@@ -204,6 +212,8 @@
 #                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
 #     PREPQC        Input QC-ed observation BUFR file
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
+#     PREPQCPF      Input QC-ed observation profile BUFR file
+#                   defaults to ${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}
 #     SATWND        Input satellite wind file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}
 #     OSCATBF       Input OSCAT wind file (bufr format)
@@ -365,6 +375,7 @@
 #                  $GBIAS
 #                  $GBIASPC
 #                  $GRADSTAT
+#                  $GBIASAIR
 #                  $SFCG03
 #                  $SFCG04
 #                  $SFCG05
@@ -383,6 +394,7 @@
 #                  $FNACNA
 #                  $FNSNOA
 #                  $PREPQC
+#                  $PREPQCPF
 #                  $SATWND
 #                  $OSCATBF
 #                  $GSNDBF
@@ -418,6 +430,7 @@
 #                  $SIGANL
 #                  $ABIAS
 #                  $ABIASPC
+#                  $ABIASAIR
 #                  $RADSTAT
 #                  $GSISTAT
 #                  $PCPSTAT
@@ -461,12 +474,14 @@ export SIGGES=${2:-${SIGGES:?}}
 export GBIAS=${3:-${GBIAS:?}}
 export GBIASPC=${4:-${GBIASPC:?}}
 export GRADSTAT=${5:-${GRADSTAT:?}}
-export SFCANL=${6:-${SFCANL}}
-export SIGANL=${7:-${SIGANL}}
-export ABIAS=${8:-${ABIAS}}
-export ABIASPC=${9:-${ABIASPC}}
-export IGEN=${10:-${IGEN:-0}}
-export ABIASe=${11:-${ABIASe:-satbias_int.out}}
+export GBIASAIR=${6:-${GBIASAIR:?}}
+export SFCANL=${7:-${SFCANL}}
+export SIGANL=${8:-${SIGANL}}
+export ABIAS=${9:-${ABIAS}}
+export ABIASPC=${10:-${ABIASPC}}
+export ABIASAIR=${11:-${ABIASAIR}}
+export IGEN=${12:-${IGEN:-0}}
+export ABIASe=${13:-${ABIASe:-satbias_int.out}}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -516,6 +531,7 @@ export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
+export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
 export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}}
@@ -568,6 +584,7 @@ export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
 export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
 export ABIAS=${ABIAS:-${COMOUT}/${PREINP}abias}
 export ABIASPC=${ABIASPC:-${COMOUT}/${PREINP}abias_pc}
+export ABIASAIR=${ABIASAIR:-${COMOUT}/${PREINP}abias_air}
 export GINCOUT=${GINCOUT:-${COMOUT}/${PREINP}gesfile_out}
 export BIASOUT=${BIASOUT:-${COMOUT}/${PREINP}biascor_out}
 export RADSTAT=${RADSTAT:-${COMOUT}/${PREINP}radstat}
@@ -673,11 +690,12 @@ $LOGSCRIPT
 
 rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
-rm errtable prepbufr gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
+rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr
 rm airsbufr iasibufr amsrebufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
 rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
+rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09 siganl
 rm gesfile_in gesfiles_out
@@ -720,6 +738,7 @@ then
 
    # Observational data
    $NCP $PREPQC   prepbufr
+   $NCP $PREPQCPF prepbufr_profl
    $NCP $SATWND   satwndbufr
    $NCP $OSCATBF  oscatbufr
    $NCP $GSNDBF   gsndrbufr
@@ -755,6 +774,7 @@ then
    $NCP $GBIAS    satbias_in
    $NCP $GBIASPC  satbias_pc
    $NCP $GRADSTAT radstat.gdas
+   $NCP $GBIASAIR aircftbias_in
    $NCP $SIGG03   sigf03
    $NCP $SIGGES   sigf06
    $NCP $SIGG09   sigf09
@@ -861,6 +881,7 @@ else
 
    # Observational data
    ln -fs $PREPQC   prepbufr
+   ln -fs $PREPQCPF prepbufr_profl
    ln -fs $SATWND   satwndbufr
    ln -fs $OSCATBF  oscatbufr
    ln -fs $GSNDBF   gsndrbufr
@@ -896,6 +917,7 @@ else
    ln -fs $GBIAS    satbias_in
    ln -fs $GBIASPC  satbias_pc
    ln -fs $GRADSTAT radstat.gdas
+   ln -fs $GBIASAIR aircftbias_in
 
    if [[ -s $GINCIN ]]; then
      ln -fs $GINCIN   gesfile_in
@@ -956,6 +978,7 @@ else
    ln -fs $ABIASPC  satbias_pc.out
    ln -fs $GINCOUT  gesfile_out
    ln -fs $BIASOUT  biascor_out
+   ln -fs $ABIASAIR aircftbias_out
 
 #  If requested, create obs_input tarball
    if [[ "$RUN_SELECT" = "YES" ]]; then
@@ -1034,6 +1057,8 @@ cat <<EOF > gsiparm.anl
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
    use_poq7=.true.,qc_noirjaco3_pole=.true.,
+   aircraft_t_bc=.false.,biaspredt=1000.0,upd_aircraft=.false.,
+   aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -1044,9 +1069,12 @@ OBS_INPUT::
 !  dfile          dtype       dplat       dsis                dval    dthin dsfcalc
    prepbufr       ps          null        ps                  0.0     0     0
    prepbufr       t           null        t                   0.0     0     0
+   prepbufr_profl t           null        t                   0.0     0     0
    prepbufr       q           null        q                   0.0     0     0
+   prepbufr_profl q           null        q                   0.0     0     0
    prepbufr       pw          null        pw                  0.0     0     0
    prepbufr       uv          null        uv                  0.0     0     0
+   prepbufr_profl uv          null        uv                  0.0     0     0
    satwndbufr     uv          null        uv                  0.0     0     0
    prepbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
@@ -1160,6 +1188,7 @@ then
    $NCP siganl          $SIGANL
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
+   $NCP aircftbias_out  $ABIASAIR
    if [[ -s gesfile_out ]]; then
       $NCP gesfile_out  $GINCOUT
    fi
@@ -1177,17 +1206,19 @@ fi
 
 if test "$SAVEGES" = "YES"
 then
-   cp $SFCANL  $GESdir/${RUN}.${cycle}.sfcanl
-   cp $SIGANL  $GESdir/${RUN}.${cycle}.sanl
-   cp $ABIAS   $GESdir/${RUN}.${cycle}.abias
-   cp $ABIASPC $GESdir/${RUN}.${cycle}.abias_pc
+   cp $SFCANL   $GESdir/${RUN}.${cycle}.sfcanl
+   cp $SIGANL   $GESdir/${RUN}.${cycle}.sanl
+   cp $ABIAS    $GESdir/${RUN}.${cycle}.abias
+   cp $ABIASPC  $GESdir/${RUN}.${cycle}.abias_pc
+   cp $ABIASAIR $GESdir/${RUN}.${cycle}.abias_air
 fi
 if test "$SENDCOM" = "YES"
 then
-   cp $SFCANL  $COMOUT/${RUN}.${cycle}.sfcanl
-   cp $SIGANL  $COMOUT/${RUN}.${cycle}.sanl
-   cp $ABIAS   $COMOUT/${RUN}.${cycle}.abias
-   cp $ABIASPC $COMOUT/${RUN}.${cycle}.abias_pc
+   cp $SFCANL   $COMOUT/${RUN}.${cycle}.sfcanl
+   cp $SIGANL   $COMOUT/${RUN}.${cycle}.sanl
+   cp $ABIAS    $COMOUT/${RUN}.${cycle}.abias
+   cp $ABIASPC  $COMOUT/${RUN}.${cycle}.abias_pc
+   cp $ABIASAIR $COMOUT/${RUN}.${cycle}.abias_air
 fi
 
 ##############################################################
