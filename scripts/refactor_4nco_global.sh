@@ -33,6 +33,7 @@ $svnmkdir  $target_path
 $svnmkdirp $target_shared
 
 
+
 # Create and populate gfs directory
 $svnmkdirp $target_gfs
 $svnmkdirp $target_gfs/jobs
@@ -42,8 +43,20 @@ for file in $flist; do
 done
 
 
+
 # Create and populate gdas directory
 $svnmkdirp $target_gdas
+
+
+# Create and populate gdas fix
+$svnmkdirp $target_gdas/fix
+flist="global_hybens_smoothinfo.l64.txt"
+for file in $flist; do
+   $svncopy $source_path/fix/$file $target_gdas/fix/
+done
+
+
+# Create and populate gdas jobs
 $svnmkdirp $target_gdas/jobs
 flist="JGDAS_ANALYSIS_HIGH"
 for file in $flist; do
@@ -55,13 +68,56 @@ for file in $flist; do
 done
 
 
+# Create and populate gdas scripts
+$svnmkdirp $target_gdas/scripts
+flist="exglobal_enkf_innovate_obs.sh.ecf"
+for file in $flist; do
+   $svncopy $source_path/scripts/$file $target_gdas/scripts/
+done
+flist="exglobal_enkf_fcst.sh.ecf exglobal_enkf_inflate_recenter.sh.ecf exglobal_enkf_post.sh.ecf exglobal_enkf_update.sh.ecf"
+for file in $flist; do
+   $svncopy $source_path/scripts/EnKF/scripts_ncep/$file $target_gdas/scripts/
+done
+
+
+# Create and populate gdas sorc
+$svnmkdirp $target_gdas/sorc/enkf_update.fd
+flist="configure make Make README"
+for file in $flist; do
+   $svncopy $source_path/src/${file}* $target_gdas/sorc/enkf_update.fd/
+done
+flist=".c .f90 .F90 .H"
+for file in $flist; do
+   $svncopy $source_path/src/*${file} $target_gdas/sorc/enkf_update.fd/
+done
+$svnmkdirp $target_gdas/sorc/enkf_update.fd/enkf
+$svncopy $source_path/src/enkf/* $target_gdas/sorc/enkf_update.fd/enkf/
+
+flist="adderrspec_nmcmeth_spec.fd getsfcensmeanp.fd getsigensmeanp_smooth_ncep.fd recentersigp.fd"
+for code in $flist; do
+   $svnmkdirp $target_gdas/sorc/$code
+   $svncopy $source_path/util/EnKF/gfs/src/$code/* $target_gdas/sorc/$code/
+done
+
+flist="build_gdas.sh"
+for file in $flist; do
+   $svncopy $source_path/scripts/$file $target_gdas/sorc/build.sh
+done
+
+
+# Create and populate gdas ush
+$svnmkdirp $target_gdas/ush
+$svncopy $source_path/scripts/gfs_truncate_enkf.sh $target_gdas/ush/
+
+
+
 # Create and populate global_shared directory
 $svnmkdirp $target_shared
 
 
 # Create and populate global_shared fix
 $svnmkdir $target_shared/fix
-flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_locinfo.l64.txt global_hybens_smoothinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txtk prepobs_errtable.global"
+flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_locinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txt prepobs_errtable.global"
 for file in $flist; do
    $svncopy $source_path/fix/$file $target_shared/fix/
 done
@@ -74,13 +130,9 @@ done
 
 # Create and populate global_shared scripts
 $svnmkdirp $target_shared/scripts
-flist="exglobal_analysis.sh.ecf exglobal_enkf_innovate_obs.sh.ecf"
+flist="exglobal_analysis.sh.ecf"
 for file in $flist; do
    $svncopy $source_path/scripts/$file $target_shared/scripts/
-done
-flist="exglobal_enkf_fcst.sh.ecf exglobal_enkf_inflate_recenter.sh.ecf exglobal_enkf_post.sh.ecf exglobal_enkf_update.sh.ecf"
-for file in $flist; do
-   $svncopy $source_path/scripts/EnKF/scripts_ncep/$file $target_shared/scripts/
 done
 
 
@@ -95,18 +147,7 @@ for file in $flist; do
    $svncopy $source_path/src/*${file} $target_shared/sorc/gsi.fd/
 done
 
-
-$svnmkdirp $target_shared/sorc/gsi.fd/enkf
-$svncopy $source_path/src/enkf/* $target_shared/sorc/gsi.fd/enkf/
-
-flist="adderrspec_nmcmeth_spec.fd getsfcensmeanp.fd getsigensmeanp_smooth_ncep.fd recentersigp.fd"
-for code in $flist; do
-   $svnmkdirp $target_shared/sorc/$code
-   $svncopy $source_path/util/EnKF/gfs/src/$code/* $target_shared/sorc/$code/
+flist="build_global_shared.sh"
+for file in $flist; do
+   $svncopy $source_path/scripts/$file $target_shared/sorc/build.sh
 done
-
-
-# Create and populate global_shared ush
-$svnmkdirp $target_shared/ush
-$svncopy $source_path/scripts/gfs_truncate_enkf.sh $target_shared/ush/
-
