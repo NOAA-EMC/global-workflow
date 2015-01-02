@@ -8,18 +8,23 @@
 # By default the output goes to  /ptmp/${USER}/data_sigmap/globalprod.${adate}
 #
 
-if [ $# -eq 1 ]; then 
+#if [ $# -eq 1 ]; then    # orig
+#if [ $# -eq 2 ]; then    # emily
+ if [ $# -eq 3 ]; then    # emily
   adate=$1
+  expid=$2                # emily
+  getens=$3               # emily
 else
   echo Incorrect number of arguments.  Usage:
-  echo "  Get_Initial_Files <analysis date>"
+# echo "  Get_Initial_Files <analysis date>"                     # orig
+  echo "  Get_Initial_Files <analysis date> <expid> <getens>"    # emily
   exit 1
 fi
 
 set -ax
 
-#machine="Zeus"
-machine="WCOSS"
+ machine="Zeus"
+#machine="WCOSS"
 
 if [[ "$machine" = "Zeus" ]]; then
    nwprod=/scratch2/portfolios/NCEPDEV/global/save/Shrinivas.Moorthi/para 
@@ -40,29 +45,64 @@ gdate=`$ndate -${incr} $adate`
 # Specify temporary directory (tmpdir) in which to run script.
 # Specify directory in which to store retrieved files (savdir)
 uname=`whoami`
-exp=globalprod.$adate
-JCAP=382   # We only get 382 for now  (emily: not used)
+exp=globalprod.$adate  #orig:  get data from ops
+exp=${expid}.$adate    #emily: get data from exp
 
 #tmpdir=/stmp/${uname}/get_initial_files.${adate}
 #savdir=/ptmp/${USER}/data_sigmap/${exp}
-tmpdir=$stmp/${uname}/get_initial_files.${adate}
+tmpdir=$stmp/${uname}/get_initial_files.${adate}     # orig
+tmpdir=$ptmp/${uname}/get_initial_files.${adate}     # emily
 savdir=$ptmp/${USER}/data_sigmap/${exp}
 
 # Specify name of files to retrieve from this cycle
-DFILESA="$DFILESA sgm3prep sgesprep sgp3prep prepbufr"
-DFILESA="$DFILESA 1bamua.tm00.bufr_d 1bamub.tm00.bufr_d 1bhrs2.tm00.bufr_d 1bhrs3.tm00.bufr_d"
-DFILESA="$DFILESA 1bhrs4.tm00.bufr_d 1bmhs.tm00.bufr_d 1bmsu.tm00.bufr_d esamua.tm00.bufr_d"
-DFILESA="$DFILESA esamub.tm00.bufr_d eshrs3.tm00.bufr_d airsev.tm00.bufr_d mtiasi.tm00.bufr_d"
-DFILESA="$DFILESA goesfv.tm00.bufr_d gpsro.tm00.bufr_d osbuv8.tm00.bufr_d  sptrmm.tm00.bufr_d"
-#DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmis.tm00.bufr_d amsre.tm00.bufr_d"
-DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
-DFILESA="$DFILESA gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
-DFILESA="$DFILESA atms.tm00.bufr_d"
+#>>orig
+#DFILESA="$DFILESA sgm3prep sgesprep sgp3prep prepbufr"
+#DFILESA="$DFILESA 1bamua.tm00.bufr_d 1bamub.tm00.bufr_d 1bhrs2.tm00.bufr_d 1bhrs3.tm00.bufr_d"
+#DFILESA="$DFILESA 1bhrs4.tm00.bufr_d 1bmhs.tm00.bufr_d 1bmsu.tm00.bufr_d esamua.tm00.bufr_d"
+#DFILESA="$DFILESA esamub.tm00.bufr_d eshrs3.tm00.bufr_d airsev.tm00.bufr_d mtiasi.tm00.bufr_d"
+#DFILESA="$DFILESA goesfv.tm00.bufr_d gpsro.tm00.bufr_d osbuv8.tm00.bufr_d  sptrmm.tm00.bufr_d"
+##DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmis.tm00.bufr_d amsre.tm00.bufr_d"
+#DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
+#DFILESA="$DFILESA gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
+#DFILESA="$DFILESA atms.tm00.bufr_d"
+#<<orig
+
+#>>emily
+if [[ "$expid" = "globalprod" ]]; then
+DFILESO="$DFILESO prepbufr"
+else
+DFILESOX="$DFILESOX prepqc"
+fi
+DFILESO="$DFILESO 1bamua.tm00.bufr_d 1bamub.tm00.bufr_d 1bhrs2.tm00.bufr_d 1bhrs3.tm00.bufr_d"
+DFILESO="$DFILESO 1bhrs4.tm00.bufr_d 1bmhs.tm00.bufr_d 1bmsu.tm00.bufr_d esamua.tm00.bufr_d"
+DFILESO="$DFILESO esamub.tm00.bufr_d eshrs3.tm00.bufr_d airsev.tm00.bufr_d mtiasi.tm00.bufr_d"
+DFILESO="$DFILESO goesfv.tm00.bufr_d gpsro.tm00.bufr_d osbuv8.tm00.bufr_d  sptrmm.tm00.bufr_d"
+DFILESO="$DFILESO ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
+DFILESO="$DFILESO gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
+DFILESO="$DFILESO atms.tm00.bufr_d"
+DFILESO="$DFILESO cris.tm00.bufr_d"
+DFILESO="$DFILESO sevcsr.tm00.bufr_d"
+DFILESO="$DFILESO satwnd.tm00.bufr_d"
+DFILESO="$DFILESO oscatw.tm00.bufr_d"
+DFILESO="$DFILESO mls.tm00.bufr_d"
+#<<emily
 
 # These come from the previous cycle
-DFILESG="$DFILESG abias satang radstat"
-DFILESG="$DFILESG bf03 bf06 bf09"
-
+if [[ "$expid" = "globalprod" ]]; then
+   DFILESA="$DFILESA sgm3prep sgesprep sgp3prep" # emily
+   DFILESG="$DFILESG abias satang radstat"       # orig
+   DFILESG="$DFILESG bf03 bf06 bf09"             # orig
+   DFILESGens="${DFILESGens} sfg"                # emily
+else
+   #>>emily
+   DFILESA="$DFILESA gm3 ges gp3"              # guess files for current analysis cycle
+   DFILESG="$DFILESG f03 f06 f09"              # surface guess files from previous cycle
+   DFILESG1="$DFILESG1 biascr"                 # radiance bias correction from previous cycle
+   DFILESG2="$DFILESG2 biascr_pc"              # radiance bias correction from previous cycle
+   DFILESG3="$DFILESG3 radstat"                # radiance diag files from previous cycle
+   DFILESGens="${DFILESGens} sfg"              # get ensemble atmosphere files only (surface files not used)
+   #<<emily
+fi
 
 # Make $tmpdir and $savdir.  Change directory to $tmpdir
 rm -rf $tmpdir
@@ -91,16 +131,47 @@ if [[ $adate -lt $SWITCH ]]; then
     hpssdira=/hpssuser/g02/wx15gv/s70/hsmprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}
     hpssdirg=/hpssuser/g02/wx15gv/s70/hsmprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}
 else
-    hpssdira=/NCEPPROD/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}
-    hpssdirg=/NCEPPROD/hpssprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}
+    
+    if [[ "$expid" = "globalprod" ]]; then
+       hpssdiro=/NCEPPROD/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}  # emily 
+       hpssdira=/NCEPPROD/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}  # orig
+       hpssdirg=/NCEPPROD/hpssprod/runhistory/rh${yyyyg}/${yyyyg}${mmg}/${yyyyg}${mmg}${ddg}  # orig
+    else
+       hpssdiro=/NCEPPROD/hpssprod/runhistory/rh${yyyya}/${yyyya}${mma}/${yyyya}${mma}${dda}  # emily 
+       hpssdira=/NCEPDEV/hpssuser/g01/wx23el/ZEUS/$expid                                      # emily   
+       hpssdirg=/NCEPDEV/hpssuser/g01/wx23el/ZEUS/$expid                                      # emily
+       hpssdira=/NCEPDEV/hpssuser/g01/wx24fy/WCOSS/$expid                                     # emily   
+       hpssdirg=/NCEPDEV/hpssuser/g01/wx24fy/WCOSS/$expid                                     # emily
+       hpssdira=/NCEPDEV/hpssuser/g01/wx23el/ZEUS/$expid                                      # emily   
+       hpssdirg=/NCEPDEV/hpssuser/g01/wx23el/ZEUS/$expid                                      # emily
+       hpssdira=/5year/NCEPDEV/emc-da/Yanqiu.Zhu/ZEUS/$expid                                  # emily   
+       hpssdirg=/5year/NCEPDEV/emc-da/Yanqiu.Zhu/ZEUS/$expid                                  # emily
+       hpssdira=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                  # emily   
+       hpssdirg=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                  # emily
+    fi   
 fi
 
 tag=gdas
-prefixa=./gdas1.t${hha}z
-prefixg=./gdas1.t${hhg}z
-tarfilea=com_gfs_prod_gdas.${adate}.tar
-tarfileg=com_gfs_prod_gdas.${gdate}.tar
+#prefixa=./gdas1.t${hha}z    #orig
+#prefixg=./gdas1.t${hhg}z    #orig
 
+if [[ "$expid" = "globalprod" ]]; then
+   prefixa=./gdas1.t${hha}z
+   prefixg=./gdas1.t${hhg}z
+   prefixens=./
+   tarfilea=com_gfs_prod_gdas.${adate}.tar                             # orig 
+   tarfileg=com_gfs_prod_gdas.${gdate}.tar                             # orig 
+   tarfileo=com_gfs_prod_gdas.${adate}.tar                             # emily 
+   tarfilegens=com_gfs_prod_enkf.${yyyyg}${mmg}${ddg}_${hhg}.fcs.tar   # emily 
+else
+   prefixa=./gdas1.t${hha}z
+   prefixg=./gdas1.t${hhg}z
+   prefixens=""
+   tarfilea=${adate}gdas.tar                                           # emily 
+   tarfileg=${gdate}gdas.tar                                           # emily 
+   tarfileo=com_gfs_prod_gdas.${adate}.tar                             # emily 
+   tarfilegens=${gdate}gdas.enkf.fcs06.tar                             # emily 
+fi
 #     Loop to pull desired files off tape
 #hpsstar=/nwprod/util/ush/hpsstar
 #hpsstar=/NCEPPROD/nwprod/util/ush/hpsstar   
@@ -115,8 +186,15 @@ cpy=""
 cpn=""
 # Files from analysis cycle:
 for ft in $DFILESA; do
-    fto=${prefixa}.$ft
-    ftn=$savdir/$fto
+    
+    if [[ "$expid" = "globalprod" ]]; then
+        fto=${prefixa}.$ft            # orig
+        ftn=$savdir/$fto              # orig
+    else
+        fto=sig$ft.gdas.${adate}      # emily
+        ftn=${prefixa}.s${ft}prep     # emily
+        ftn=$savdir/$ftn              # emily
+    fi
 
     $hpsstar get $hpssdira/$tarfilea $fto
     chmod 644 $fto
@@ -128,12 +206,55 @@ for ft in $DFILESA; do
 	cpn="$cpn $ft"
     fi
 done
+#>>emily
+# Observation files for analysis cycle from OPS archive
+for ft in $DFILESO; do
+    fto=${prefixa}.$ft
+    ftn=$savdir/$fto
+
+    $hpsstar get $hpssdiro/$tarfileo $fto
+    chmod 644 $fto
+    cp $fto $ftn
+
+    if [[ $? -eq 0 ]]; then
+       cpy="$cpy $ft"
+    else
+       cpn="$cpn $ft"
+    fi
+done
+#<<emily
+
+#>>emily
+# Conventional data for analysis cycle from parallel experiment archive  
+if [[ "$expid" != "globalprod" ]]; then
+for ft in $DFILESOX; do
+    fto=$ft.gdas.$adate
+    ftn=$savdir/$fto
+
+    $hpsstar get $hpssdira/$tarfilea $fto
+    chmod 644 $fto
+    cp $fto $ftn
+
+    if [[ $? -eq 0 ]]; then
+       cpy="$cpy $ft"
+    else
+       cpn="$cpn $ft"
+    fi
+done
+fi
+#<<emily
 
 # Files from guess cycle
 for ft in $DFILESG; do
-    fto=${prefixg}.$ft
-    ftn=$savdir/$fto
-  
+    if [[ "$expid" = "globalprod" ]]; then
+       fto=${prefixg}.$ft            # orig
+       ftn=$savdir/$fto              # orig
+    else
+       fto=sfc${ft}.gdas.${gdate}    # emily
+       ftn=${prefixg}.b${ft}         # emily
+       ftn=$savdir/$ftn              # emily
+    fi 
+ 
     $hpsstar get $hpssdirg/$tarfileg $fto
     chmod 644 $fto
     cp $fto $ftn
@@ -145,10 +266,95 @@ for ft in $DFILESG; do
     fi
 done
 
+#>>emily
+# Files from guess cycle   (abias)
+for ft in $DFILESG1; do
+    fto=${ft}.gdas.${gdate}
+    ftn=${prefixg}.abias
+    ftn=$savdir/$ftn
+
+    $hpsstar get $hpssdirg/$tarfileg $fto
+    chmod 644 $fto
+    cp $fto $ftn
+
+    if [[ $? -eq 0 ]]; then
+       cpy="$cpy $ft"
+    else
+       cpn="$cpn $ft"
+    fi
+done
+#<<emily
+
+#>>emily
+# Files from guess cycle   (abias)
+for ft in $DFILESG2; do
+    fto=${ft}.gdas.${gdate}
+    ftn=${prefixg}.abias_pc
+    ftn=$savdir/$ftn
+
+    $hpsstar get $hpssdirg/$tarfileg $fto
+    chmod 644 $fto
+    cp $fto $ftn
+
+    if [[ $? -eq 0 ]]; then
+        cpy="$cpy $ft"
+    else
+        cpn="$cpn $ft"
+    fi
+done
+#<<emily
+
+#>>emily
+# Files from guess cycle   (radstat)
+for ft in $DFILESG3; do
+    fto=${ft}.gdas.${gdate}
+    ftn=${prefixg}.radstat
+    ftn=$savdir/$ftn
+
+    $hpsstar get $hpssdirg/$tarfileg $fto
+    chmod 644 $fto
+    cp $fto $ftn
+
+    if [[ $? -eq 0 ]]; then
+       cpy="$cpy $ft"
+    else
+       cpn="$cpn $ft"
+    fi
+done
+#<<emily
+
+#>>emily
+if [[ "$getens" = "getens" ]]; then
+cpyens=""
+cpnens=""
+for ft in ${DFILESGens}; do
+    nens=1
+    while [[ $nens -le 80 ]]; do
+       n00=$( printf "%03d" $nens )
+       fto=${prefixens}${ft}_${gdate}_fhr06s_mem${n00}
+       ftn=$savdir/$fto
+       $hpsstar get $hpssdirg/$tarfilegens $fto
+       chmod 644 $fto
+       cp $fto $ftn
+       if [[ $? -eq 0 ]]; then
+          cpyens="${cpyens} $fto"
+       else
+          cpnens="${cpnens} $fto"
+       fi
+       nens=$(($nens + 1))
+    done
+done
+fi
+#<<emily
+
 echo ${adate}:  File types     copied: $cpy
 echo ${adate}:  File types NOT copied: $cpn
 echo ${gdate}:  File types     copied: $cpy
 echo ${gdate}:  File types NOT copied: $cpn
+if [[ "$getens" = "getens" ]]; then
+echo ${gdate}:  File types     copied: $cpyens  #emily
+echo ${gdate}:  File types NOT copied: $cpnens  #emily
+fi
 
 #Remove temporary directory
 cd $tmpdir

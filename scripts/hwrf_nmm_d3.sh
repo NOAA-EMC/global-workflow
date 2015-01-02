@@ -94,7 +94,11 @@ export USE_GFS_STRATOSPHERE=".false."
 export USE_GFS_OZONE=".false."
 export REGIONAL_OZONE=".false."
 
-. $scripts/regression_namelists.sh
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh
+else
+   . $scripts/regression_namelists_db.sh
+fi
 
 cat << EOF > gsiparm.anl
 

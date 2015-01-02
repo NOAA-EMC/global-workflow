@@ -64,6 +64,10 @@ export LEVS=64
 export JCAP_B=$JCAP
 export lrun_subdirs=.true.
 
+#>>emily
+# Set YES to use ensemble, NO=standard 3dvar
+DOHYBVAR=NO
+#<<emily
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
@@ -357,6 +361,22 @@ RAPIDREFRESH_CLDSURF=""
 CHEM=""
 SINGLEOB=""
 
+#>>emily
+HUBRID_ENSEMBLE="l_hyb_ens=.false."
+if [[ "$DOHYBVAR" = "YES" ]]; then
+   # Set ensemble resolution
+     JCAP_ENKF=126
+     LONA_ENKF=256
+     LATA_ENKF=128
+   # Project ensmemble onto linear grid
+     JCAP_ENS=$JCAP_ENKF
+     NLON_ENS=$LONA_ENKF
+     NLAT_ENS=`expr $LATA_ENKF + 2`
+     HYBRIDENSEMBLE="l_hyb_ens=.true.,n_ens=80,beta1_inv=0.25,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.true.,"
+   # Set strong constraint
+     STRONGOPTS="tlnmc_option=2,"
+fi
+#<<emily
 
 cat << EOF > gsiparm.anl
  &SETUP
@@ -369,9 +389,9 @@ cat << EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
-   newpc4pred=.true.,adp_anglebc=.true.,angord=4,
-   passive_bc=.true.,use_edges=.false.,diag_precon=.true.,
-   step_start=1.e-3,emiss_bc=.true.,
+   newpc4pred=.false.,adp_anglebc=.false.,angord=4,
+   passive_bc=.false.,use_edges=.false.,diag_precon=.false.,
+   step_start=1.e-3,emiss_bc=.false.,
    $SETUP
  /
  &GRIDOPTS
