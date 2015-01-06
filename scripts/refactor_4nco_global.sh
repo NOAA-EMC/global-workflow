@@ -21,10 +21,18 @@ if [[ "$options" = "svn" ]]; then
   svnmkdir="svn mkdir"
   svnmkdirp="svn mkdir --parents"
   svncopy="svn copy"
-else
+elif [[ "$options" = "copy" ]]; then
    svnmkdir="mkdir"
    svnmkdirp="mkdir -p"
    svncopy="cp"
+elif [[ "$options" = "link" ]]; then
+   svnmkdir="mkdir"
+   svnmkdirp="mkdir -p"
+   svncopy="ln -fs"
+else
+   echo " "
+   echo "INVALID OPTION $options   Valid options are svn, copy, link"
+   exit
 fi
 
 
