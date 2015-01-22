@@ -153,9 +153,9 @@ export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECENKF/getsigensmean_smooth$XC}
 export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECENKF/getsfcensmean_smooth$XC}
 #  Other variables.
-export FHOUTEFCS=${FHOUTEFCS:-3}
-export FHMINEFCS=${FHMINEFCS:-3}
-export FHMAXEFCS=${FHMAXEFCS:-9}
+export FHOUTEFCS=${FHOUT_ENKF:-3}
+export FHMINEFCS=${FHMIN_ENKF:-3}
+export FHMAXEFCS=${FHMAX_ENKF:-9}
 export NMEM_ENKF=${NMEM_ENKF:-80}
 export MPMD=${MPMD:-NO}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
@@ -177,6 +177,7 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
+export l4densvar=${l4densvar:-".false."}
 
 ################################################################################
 #  Preprocessing
@@ -203,8 +204,8 @@ export XLSMPOPTS="stack=$NTHSTACK"
 $LOGSCRIPT
 
 rm getsigensmean_smooth.x getsfcensmean_smooth.x hybens_smoothinfo
-rm sfg*fhr03* sfg*f06* sfg*f09*
-rm bfg*fhr03* bfg*f06* bfg*f09*
+rm sfg*fhr03* sfg*fhr04* sfg*fhr05* sfg*fhr06* sfg*fhr07* sfg*fhr08* sfg*fhr09*
+rm bfg*fhr03* bfg*fhr04* bfg*fhr05* bfg*fhr06* bfg*fhr07* bfg*fhr08* bfg*fhr09*
 
 
 $NCP $GETSFCENSMEANEXEC $DATA
@@ -300,12 +301,19 @@ if [[ "$MPMD" = "YES" ]]; then
    elif [ $machine = WCOSS ] ; then
       nprocs=$LSB_DJOB_NUMPROC
    fi
-   cmd[0]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr03_ensmean  bfg_${analdate}_fhr03  $NMEM_ENKF"
-   cmd[1]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr06_ensmean  bfg_${analdate}_fhr06  $NMEM_ENKF"
-   cmd[2]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr09_ensmean  bfg_${analdate}_fhr09  $NMEM_ENKF"
-   cmd[3]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr03_ensmean  sfg_${analdate}_fhr03  $NMEM_ENKF"
-   cmd[4]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr06_ensmean  sfg_${analdate}_fhr06  $NMEM_ENKF"
-   cmd[5]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr09_ensmean  sfg_${analdate}_fhr09  $NMEM_ENKF"
+   FHBEG=$FHMINEFCS
+   FHEND=$FHMAXEFCS
+   FHOUT=$FHOUTEFCS
+   FH=$FHMIN
+   cnt=0
+   until [[ $FH -gt $FHEND ]];do
+     [[ $FH -lt 10 ]]&&FH=0$FH
+     cmd[$cnt]="$GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     cmd[$cnt]="$GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     ((cnt+=1))
+     FH=`expr $FH + $FHOUT`
+   done
+
    rm $DATA/cmdfile
    m=-1
    n=0
@@ -329,25 +337,20 @@ if [[ "$MPMD" = "YES" ]]; then
    fi
 else
 # Run serially instead
+
+   FHBEG=$FHMINEFCS
+   FHEND=$FHMAXEFCS
+   FHOUT=$FHOUTEFCS
+   FH=$FHMIN
    rc=0
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr03_ensmean bfg_${analdate}_fhr03 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr06_ensmean bfg_${analdate}_fhr06 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr09_ensmean bfg_${analdate}_fhr09 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr03_ensmean sfg_${analdate}_fhr03 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr06_ensmean sfg_${analdate}_fhr06 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr09_ensmean sfg_${analdate}_fhr09 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
+   until [[ $FH -gt $FHEND ]];do
+     [[ $FH -lt 10 ]]&&FH=0$FH
+     eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     ra=$?
+     ((rc+=ra))
+     FH=`expr $FH + $FHOUT`
+   done
 fi
 export ERR=$rc
 export err=$ERR
@@ -419,28 +422,35 @@ export SIGLEVEL_LORES=$FIXGSM/global_hyblev.l${LEVS_LORES}.txt
 
 
 if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
-   member="ensmean"
-   export SIGINP=${SIGENS_OUT}06_${member}
-   export SIGOUT=${SIGENS_OUT}06_${member}_t${JCAP_LORES}
-   echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      member="mem"`printf %03i $imem`
-      export SIGINP=${SIGENS_OUT}06s_${member}
-      export SIGOUT=${SIGENS_OUT}06s_${member}_t${JCAP_LORES}
-      echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript
-      (( imem = $imem + 1 ))
-   done
-   chmod 755 poescript
-   if [ $machine = WCOSS ] ; then
-      export MP_PGMMODEL=mpmd
-      export MP_CMDFILE=$DATA/poescript
-      mpirun.lsf
-      export err=$?; err_chk
-   else
-      $DATA/poescript
-      export err=$?
+   fhrlist="06"
+   if [ $l4densvar = .true. ]; then
+      fhrlist="03 04 05 06 07 08 09"
    fi
+   for fhr in $fhrlist; do
+      rm -rf $DATA/poescript.$fhr
+      member="ensmean"
+      export SIGINP=${SIGENS_OUT}${fhr}_${member}
+      export SIGOUT=${SIGENS_OUT}${fhr}_${member}_t${JCAP_LORES}
+      echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+      imem=1
+      while [[ $imem -le $NMEM_ENKF ]]; do
+         member="mem"`printf %03i $imem`
+         export SIGINP=${SIGENS_OUT}${fhr}s_${member}
+         export SIGOUT=${SIGENS_OUT}${fhr}s_${member}_t${JCAP_LORES}
+         echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+         (( imem = $imem + 1 ))
+      done
+      chmod 755 poescript.$fhr
+      if [ $machine = WCOSS ] ; then
+         export MP_PGMMODEL=mpmd
+         export MP_CMDFILE=$DATA/poescript.$fhr
+         mpirun.lsf
+         export err=$?; err_chk
+      else
+         $DATA/poescript.$fhr
+         export err=$?
+      fi
+   done
 fi
 
 
@@ -457,6 +467,9 @@ until [[ $FH -gt $FHEND ]];do
   [[ $FH -lt 10 ]]&&FH=0$FH
 
   if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
+    if [ $SENDDBN = YES ]; then
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH}_ensmean
+    fi
      string="DONE bfg fhr $FH"
   else
      string="MISS bfg fhr $FH"

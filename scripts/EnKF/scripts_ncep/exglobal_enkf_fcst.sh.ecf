@@ -184,6 +184,7 @@ export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP.$LON
 export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t$MTNRSL.txt}
 export SLMASK=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
 export MTNVAR=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.f77}
+export DOIAU=${DOIAU_ENKF:-NO}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -339,6 +340,15 @@ while [[ $imem -le $ENSEND ]]; do
         $NCP sigf${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
         $NCP sfcf${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
         FH=$((FH+FHOUT))
+     done
+   fi
+   
+   if [ $SENDDBN = YES ]; then
+     FH=$FHOUT
+     while [[ $FH -le $FHMAX ]]; do
+       if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
+       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+       FH=$((FH+FHOUT))
      done
    fi
 

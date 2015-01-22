@@ -473,6 +473,17 @@ then
    done
 fi
 
+# Optionally alert $SIGANLENS_OUT files
+if [ $SENDDBN = YES ]; then
+  imem=1
+  while [[ $imem -le $NMEM_ENKF ]]; do
+    member="_mem"`printf %03i $imem`
+    if [ $SENDDBN = YES ]; then
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGANLENS_OUT}${member}
+    fi
+    (( imem = $imem + 1 ))
+  done
+fi
 
 ################################################################################
 #  Postprocessing
