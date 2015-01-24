@@ -4,7 +4,7 @@ set -x
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/da/noscrub/$LOGNAME/fastversion/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
 #For Zeus
    echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-meta_data-read_files/scripts/regression_var.sh" > regression_var.out
@@ -32,7 +32,7 @@ fi
 
 /bin/sh nmmb_nems_regression.sh > nmmb_nems.out &
 
-#/bin/sh rtma_regression.sh > rtma.out &
+# /bin/sh rtma_regression.sh > rtma.out &
 
 /bin/sh hwrf_nmm_d2_regression.sh > hwrf_nmm_d2.out &
 
