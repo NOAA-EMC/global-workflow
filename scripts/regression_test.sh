@@ -123,7 +123,12 @@ scale2=$( echo "scale=6;$time2 - $time_scale2" | bc -l )
 
 # Calculate maximum allowable deviation for scalability
 
-scale1thresh=$( echo "scale=6;$scale1 / $scaledif + $scale1" | bc -l )
+scalelogic=$( echo "0 < $scale1" | bc )
+if [[ "$scalelogic" = 1 ]]; then
+   scale1thresh=$( echo "scale=6;$scale1 / $scaledif + $scale1" | bc -l )
+else
+   scale1thresh=$( echo "scale=6;$scale1 / $scaledif - $scale1" | bc -l )
+fi
 
 # Begin applying threshold tests
 # First, wall time (both maximum allowable time and max/min allowable deviation)
@@ -317,12 +322,12 @@ if [[ `expr substr $exp1 1 4` = "rtma" ]]; then
 
 {
 
-if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
+   if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
+   then
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+      echo 'since the corresponding results are identical.'
+      echo
+   fi
 
 } >> $output
 
@@ -330,12 +335,12 @@ elif [[ -f wrf_inout.${exp1} ]]; then
 
 {
 
-if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
+   if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
+   then
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+      echo 'since the corresponding results are identical.'
+      echo
+   fi
 
 } >> $output
 
@@ -343,24 +348,24 @@ elif [[ `expr substr $exp1 1 6` = "global" ]]; then
    if [[ -f siginc.${exp1} ]]; then
 {
 
-if cmp -s siginc.${exp1} siginc.${exp3}
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
+      if cmp -s siginc.${exp1} siginc.${exp3}
+      then
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+         echo 'since the corresponding results are identical.'
+         echo
+      fi
 
 } >> $output
    else
 
 {
 
-if cmp -s siganl.${exp1} siganl.${exp3} 
-then
-   echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-   echo 'since the corresponding results are identical.'
-   echo
-fi
+      if cmp -s siganl.${exp1} siganl.${exp3} 
+      then
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+            echo 'since the corresponding results are identical.'
+         echo
+      fi
 
 } >> $output
    fi

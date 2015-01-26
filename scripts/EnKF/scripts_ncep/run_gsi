@@ -1,0 +1,1039 @@
+#!/bin/sh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         global_analysis.sh
+# Script description:  Makes a global spectral model analysis
+#
+# Author:        Mark Iredell       Org: NP23         Date: 1999-07-15
+#
+# Abstract: This script makes a global spectral model analysis.
+#   Both the surface analysis and the upper-air analysis are performed.
+#
+# Script history log:
+# 1999-05-01  Mark Iredell
+# 2002-04-26  Russ Treadon   add global_angupdate processing
+# 2003-08-05  Russ Treadon   add processing of hourly sigma and surface guess
+# 2004-03-26  Russ Treadon   remove reference to IEEE TOVS-1b files, fix sfcg bug
+# 2005-01-03  Cheng-Hsuan Lu :set FSMCL(2:4) = FSMCL2
+#                             add FNVMNC,FNVMXC,FNSLPC,FNABSC
+# 2005-07-22  Russ Treadon   add processing of NOAA-18 hirs4, amsua, and mhs data
+# 2006-11-29  Russ Treadon   update for global_gsi
+#
+# Usage:  global_analysis.sh SFCGES SIGGES GBIAS GSATANG
+#                            SFCANL SIGANL ABIAS IGEN
+#
+#   Input script positional parameters:
+#     1             Input surface guess
+#                   defaults to $SFCGES; required
+#     2             Input sigma guess
+#                   defaults to $SIGGES; required
+#     3             Input guess time dependent bias correction coefficients
+#                   defaults to $GBIAS; required
+#     4             Input guess angle dependent bias correction
+#                   defaults to $GSATANG; required
+#     5             Output surface analysis
+#                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
+#     6             Output sigma analysis
+#                   defaults to $SIGANL, then to ${COMOUT}/siganl
+#     7             Output bias correction
+#                   defaults to $ABIAS, then to ${COMOUT}/abias
+#     8             Output generating code
+#                   defaults to $IGEN, then to 0
+#
+#   Imported Shell Variables:
+#     SFCGES        Input surface guess
+#                   overridden by $1; required
+#     SIGGES        Input sigma guess
+#                   overridden by $2; required
+#     GBIAS         Input guess bias correction
+#                   overridden by $3; required
+#     GSATANG       Input guess angle dependent bias correction
+#                   overridden by $4; required
+#     SFCANL        Output surface analysis
+#                   overridden by $5; defaults to ${COMOUT}/sfcanl
+#     SIGANL        Output sigma analysis
+#                   overridden by $6; defaults to ${COMOUT}/siganl
+#     ABIAS         Output bias correction
+#                   overridden by $7; defaults to ${COMOUT}/abias
+#     IGEN          Output generating code
+#                   overridden by $8; defaults to 0
+#     SFCG03        Surface guess valid at -03 hour
+#                   defaults to ${COMOUT}/sfcf03; optional input
+#     SFCG04        Surface guess valid at -04 hour
+#                   defaults to ${COMOUT}/sfcf04; optional input
+#     SFCG05        Surface guess valid at -05 hour
+#                   defaults to ${COMOUT}/sfcf05; optional input
+#     SFCG07        Surface guess valid at -07 hour
+#                   defaults to ${COMOUT}/sfcf07; optional input
+#     SFCG08        Surface guess valid at -08 hour
+#                   defaults to ${COMOUT}/sfcf08; optional input
+#     SFCG09        Surface guess valid at -09 hour
+#                   defaults to ${COMOUT}/sfcf09; optional input
+#     SIGG03        Sigma guess valid at -03 hour
+#                   defaults to ${COMOUT}/sigf03; optional input
+#     SIGG04        Sigma guess valid at -04 hour
+#                   defaults to ${COMOUT}/sigf04; optional input
+#     SIGG05        Sigma guess valid at -05 hour
+#                   defaults to ${COMOUT}/sigf05; optional input
+#     SIGG07        Sigma guess valid at -07 hour
+#                   defaults to ${COMOUT}/sigf07; optional input
+#     SIGG08        Sigma guess valid at -08 hour
+#                   defaults to ${COMOUT}/sigf08; optional input
+#     SIGG09        Sigma guess valid at -09 hour
+#                   defaults to ${COMOUT}/sigf09; optional input
+#     GINCIN        Input increment to guess
+#                   defaults to ${COMOUT}/gesfile_in; optional
+#     BIASIN        Input bias correction to guess
+#                   defaults to ${COMOUT}/biascor_in; optional
+#     RADSTAT       Output radiance assimilation statistics
+#                   defaults to ${COMIN}/${PREINP}radstat
+#     GSISTAT       Output gsi (obs-ges), qc, and iteration statistics
+#                   defaults to ${COMIN}/${PREINP}gsistat
+#     PCPSTAT       Output precipitation assimilation statistics
+#                   defaults to ${COMIN}/${PREINP}pcpstat
+#     CNVSTAT       Output conventional observation assimilation statistics
+#                   defaults to ${COMIN}/${PREINP}cnvstat
+#     OZNSTAT       Output ozone observation assimilation statistics
+#                   defaults to ${COMIN}/${PREINP}oznstat
+#     GINCOUT       Output increment to guess
+#                   defaults to ${COMIN}/${PREINP}gesfile_out
+#     BIASOUT       Output bias correction to guess
+#                   defaults to ${COMIN}/${PREINP}biascor_out
+#     FIXGLOBAL     Directory for global fixed files
+#                   defaults to /nwprod/fix
+#     EXECGLOBAL    Directory for global executables
+#                   defaults to /nwprod/exec
+#     USHGLOBAL     Directory for global scripts
+#                   defaults to /nwprod/ush
+#     DATA          working directory
+#                   (if nonexistent will be made, used and deleted)
+#                   defaults to current working directory
+#     COMIN         input directory
+#                   defaults to current working directory
+#     COMOUT        output directory
+#                   (if nonexistent will be made)
+#                   defaults to current working directory
+#     XC            Suffix to add to executables
+#                   defaults to none
+#     PREINP        Prefix to add to input observation files
+#                   defaults to none
+#     SUFINP        Suffix to add to input observation files
+#                   defaults to none
+#     NCP           Copy command
+#                   defaults to cp
+#     SIGHDR        Command to read sigma header
+#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
+#     SFCHDR        Command to read surface header
+#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#     CYCLEXEC      Surface cycle executable
+#                   defaults to ${EXECGLOBAL}/global_cycle$XC
+#     GSIEXEC       Spectral analysis executable
+#                   defaults to ${EXECGLOBAL}/global_gsi$XC
+#     ANGUPDATEXEC  Radiance angle dependent bias correction update executable
+#                   defaults to ${EXECGLOBAL}/global_angupdate$XC
+#     CHGRESSH      Change resolution script
+#                   (needed only if model and analysis grids differ)
+#                   defaults to ${USHGLOBAL}/global_chgres.sh
+#     CYCLESH       Surface cycle script
+#                   defaults to ${USHGLOBAL}/global_cycle.sh
+#     BERROR        Input background error file
+#                   defaults to ${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT}.sig.f77
+#     SATANGL       Input satellite angle bias file
+#                   defaults to ${FIXGLOBAL}/global_satangbias.txt
+#     SATINFO       Input satellite information file
+#                   defaults to ${FIXGLOBAL}/global_satinfo.txt
+#     RTMSPEC       Input satellite spectral coefficients
+#                   defaults to ${FIXGLOBAL}/global_CRTM_SpcCoeff.f77
+#     RTMTRAN       Input satellite transmittance coefficients
+#                   defaults to ${FIXGLOBAL}/global_CRTM_TauCoeff.f77
+#     RTMEMIS       Input satellite emissivity coefficients
+#                   defaults to ${FIXGLOBAL}/global_CRTM_EmisCoeff.f77
+#     RTMAERO       Input radiative transfer model aerosol coefficients
+#                   defaults to ${FIXGLOBAL}/global_CRTM_AerosolCoeff.f77
+#     RTMCLDS       Input radiative transfer model cloud coefficients
+#                   defaults to ${FIXGLOBAL}/global_CRTM_CldCoeff.f77
+#     CONVINFO      Input conventional observation information file
+#                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#     OZINFO        Input ozone information file
+#                   defaults to ${FIXGLOBAL}/global_ozone.txt
+#     PCPINFO       Input precipitation information file
+#                   defaults to ${FIXGLOBAL}/global_pcpinfo.txt
+#     PREPQC        Input QC-ed observation BUFR file
+#                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
+#     GSNDBF        Input GOES sounder radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
+#     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}goesnd1.tm00.bufr_d${SUFINP}
+#     B1HRS2        Input HIRS/2 radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}
+#     B1MSU         Input MSU radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bmsu.tm00.bufr_d${SUFINP}
+#     B1HRS3        Input HIRS/3 radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bhrs3.tm00.bufr_d${SUFINP}
+#     B1HRS4        Input HIRS/4 radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bhrs4.tm00.bufr_d${SUFINP}
+#     B1AMUA        Input AMSU/A radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bamua.tm00.bufr_d${SUFINP}
+#     B1AMUB        Input AMSU/B radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bamub.tm00.bufr_d${SUFINP}
+#     B1MHS         Input MHS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}1bmhs.tm00.bufr_d${SUFINP}
+#     AIRSBF        Input AIRS radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}airs.tm00.bufr_d${SUFINP}
+#     AMSREBF       Input AMSRE radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}
+#     SSMITBF       Input AIRS radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}
+#     SBUVBF        Input NOAA POES SBUV ozone retrieval file
+#                   defaults to ${COMIN}/${PREINP}osbuv.tm00.bufr_d${SUFINP}
+#     SMIPCP        Input SSM/I precipitation rate file
+#                   defaults to ${COMIN}/${PREINP}spssmip.tm00.bufr_d${SUFINP}
+#     TMIPCP        Input TMI precipitation rate file
+#                   defaults to ${COMIN}/${PREINP}sptrmm.tm00.bufr_d${SUFINP}
+#     GPSBF         Input GPS local refractivity or bending angle data
+#                   defaults to ${COMIN}/${PREINP}gps.tm00.bufr_d${SUFINP}
+#     INISCRIPT     Preprocessing script
+#                   defaults to none
+#     LOGSCRIPT     Log posting script
+#                   defaults to none
+#     ERRSCRIPT     Error processing script
+#                   defaults to 'eval [[ $err = 0 ]]'
+#     ENDSCRIPT     Postprocessing script
+#                   defaults to none
+#     JCAP          Spectral truncation
+#                   defaults to the value in the input sigma file header
+#     LEVS          Number of levels
+#     DELTIM        Timestep in seconds
+#                   defaults to 3600/($JCAP/20)
+#     CDATE         Current analysis date in yyyymmddhh format
+#                   defaults to the value in the input surface file header
+#     LATB          Number of latitudes in surface cycling
+#                   defaults to the value in the input surface file header
+#     LONB          Number of longitudes in surface cycling
+#                   defaults to the value in the input surface file header
+#     LSOIL         Number of soil layers
+#                   defaults to 2
+#     FSMCL2        Scale in days to relax to soil moisture climatology
+#                   defaults to 60
+#     DELTSFC       Cycling frequency in hours
+#                   defaults to forecast hour of $SFCGES
+#     LATA          Number of latitudes in spectral analysis
+#                   defaults to $LATB
+#     LONA          Number of longitudes in spectral analysis
+#                   defaults to $LONB
+#     NSIG1         Number of levels per MPI task
+#                   (Important: number of MPI tasks must be 5*$LEVS/$NSIG1+2)
+#                   defaults to 1
+#     CYCLVARS      Other namelist inputs to the cycle executable
+#                   defaults to none set
+#     GSIVARS       Other namelist inputs to the analysis executable
+#                   defaults to none set
+#     SATVARS       Other namelist input to analysis data usage namelist
+#                   defaults to none set
+#     NTHREADS      Number of threads
+#                   defaults to 1
+#     NTHSTACK      Size of stack per thread
+#                   defaults to 64000000
+#     PGMOUT        Executable standard output
+#                   defaults to $pgmout, then to '&1'
+#     PGMERR        Executable standard error
+#                   defaults to $pgmerr, then to '&1'
+#     pgmout        Executable standard output default
+#     pgmerr        Executable standard error default
+#     REDOUT        standard output redirect ('1>' or '1>>')
+#                   defaults to '1>', or to '1>>' to append if $PGMOUT is a file
+#     REDERR        standard error redirect ('2>' or '2>>')
+#                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
+#     VERBOSE       Verbose flag (YES or NO)
+#                   defaults to NO
+#
+#   Exported Shell Variables:
+#     PGM           Current program name
+#     pgm
+#     ERR           Last return code
+#     err
+#
+#   Modules and files referenced:
+#     scripts    : $INISCRIPT
+#                  $LOGSCRIPT
+#                  $ERRSCRIPT
+#                  $ENDSCRIPT
+#                  $CHGRESSH
+#
+#     programs   : $CYCLEXEC
+#                  $GSIEXEC
+#                  $ANGUPDATEXEC
+#
+#     fixed data : $BERROR
+#                  $SATANGL
+#                  $SATINFO
+#                  $RTMSPEC
+#                  $RTMTRAN
+#                  $RTMEMIS
+#                  $RTMAERO
+#                  $RTMCLDS
+#                  $CONVINFO
+#                  $OZINFO
+#                  $PCPINFO
+#
+#     input data : $SFCGES
+#                  $SIGGES
+#                  $GBIAS
+#                  $GSATANG
+#                  $SFCG03
+#                  $SFCG04
+#                  $SFCG05
+#                  $SFCG07
+#                  $SFCG08
+#                  $SFCG09
+#                  $SIGG03
+#                  $SIGG04
+#                  $SIGG05
+#                  $SIGG07
+#                  $SIGG08
+#                  $SIGG09
+#                  $GINCIN
+#                  $BIASIN
+#                  $FNTSFA
+#                  $FNACNA
+#                  $FNSNOA
+#                  $PREPQC
+#                  $GSNDBF
+#                  $GSNDBF1
+#                  $B1HRS2
+#                  $B1MSU
+#                  $B1HRS3
+#                  $B1HRS4
+#                  $B1AMUA
+#                  $B1AMUB
+#                  $B1MHS
+#                  $AIRSBF
+#                  $AMSREBF
+#                  $SSMITBF
+#                  $SBUVBF
+#                  $SMIPCP
+#                  $TMIPCP
+#                  $GPSBF
+#
+#     output data: $SFCANL
+#                  $SIGANL
+#                  $ABIAS
+#                  $RADSTAT
+#                  $GSISTAT
+#                  $PCPSTAT
+#                  $CNVSTAT
+#                  $OZNSTAT
+#                  $GINCOUT
+#                  $BIASOUT
+#                  $PGMOUT
+#                  $PGMERR
+#
+# Remarks:
+#
+#   Condition codes
+#      0 - no problem encountered
+#     >0 - some problem encountered
+#
+#  Control variable resolution priority
+#    1 Command line argument.
+#    2 Environment variable.
+#    3 Inline default.
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: IBM SP
+#
+################################################################################
+#  Set environment.
+export VERBOSE=${VERBOSE:-"NO"}
+if [[ "$VERBOSE" = "YES" ]]
+then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+
+######################
+# For testing -JYZ
+######################
+#export GSIEXEC=$EXECGLOBAL/global_gsi
+#export ANGUPDATEXEC=$EXECGLOBAL/global_angupdate
+#export CHGRESEXEC=$EXECGLOBAL/global_chgres
+#export CHGRESSH=$USHGLOBAL/global_chgres.sh
+
+#  Command line arguments.
+export SFCGES=${1:-${SFCGES:?}}
+export SIGGES=${2:-${SIGGES:?}}
+export GBIAS=${3:-${GBIAS:?}}
+export GSATANG=${4:-${GSATANG:?}}
+export SFCANL=${5:-${SFCANL}}
+export SIGANL=${6:-${SIGANL}}
+export ABIAS=${7:-${ABIAS}}
+export IGEN=${8:-${IGEN:-0}}
+#  Directories.
+export FIXGLOBAL=${FIXGLOBAL:-/nwprod/fix}
+export FIXGSI=${FIXGSI:-/nwprod/fix}
+export EXECGLOBAL=${EXECGLOBAL:-/nwprod/exec}
+export USHGLOBAL=${USHGLOBAL:-/nwprod/ush}
+export DATA=${DATA:-$(pwd)}
+export COMIN=${COMIN:-$(pwd)}
+export COMOUT=${COMOUT:-$(pwd)}
+#  Filenames.
+export XC=${XC}
+export PREINP=${PREINP}
+export SUFINP=${SUFINP}
+export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export JCAP=${JCAP:-$($SIGHDR $SIGGES JCAP||echo 0)}
+export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
+export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+export LATA=${LATA:-$LATB}
+export LONA=${LONA:-$LONB}
+export NLAT=${NLAT:-$(($LATA+2))}
+export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
+export DELTIM=${DELTIM:-$((3600/($JCAP/20)))}
+export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
+export ANGUPDATEXEC=${ANGUPDATEXEC:-${EXECGLOBAL}/global_angupdate$XC}
+##export ANGUPDATEXEC=${ANGUPDATEXEC:-/nwprod/exec/global_angupdate}
+export CHGRESSH=${CHGRESSH:-${USHGLOBAL}/global_chgres.sh}
+export CYCLESH=${CYCLESH:-${EXECGLOBAL}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export RTMSPEC=${RTMSPEC:-${FIXGSI}/global_CRTM_SpcCoeff.f77}
+export RTMTRAN=${RTMTRAN:-${FIXGSI}/global_CRTM_TauCoeff.f77}
+
+#export RTMEMIS=${RTMEMIS:-${FIXGSI}/global_CRTM_EmisCoeff.f77}
+#export RTMAERO=${RTMAERO:-${FIXGSI}/global_CRTM_AerosolCoeff.f77}
+#export RTMCLDS=${RTMCLDS:-${FIXGSI}/global_CRTM_CldCoeff.f77}
+export RTMEMIS=${RTMEMIS:-${FIXGSI}/crtm_gfsgsi/EmisCoeff/Big_Endian/EmisCoeff.bin}
+export RTMAERO=${RTMAERO:-${FIXGSI}/crtm_gfsgsi/AerosolCoeff/Big_Endian/AerosolCoeff.bin}
+export RTMCLDS=${RTMCLDS:-${FIXGSI}/crtm_gfsgsi/CloudCoeff/Big_Endian/CloudCoeff.bin}
+
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export PREPQC=${PREPQC:-/dev/null}
+export GSNDBF=${GSNDBF:-/dev/null}
+export GSNDBF1=${GSNDBF1:-/dev/null}
+export B1HRS2=${B1HRS2:-/dev/null}
+export B1MSU=${B1MSU:-/dev/null}
+export B1HRS3=${B1HRS3:-/dev/null}
+export B1HRS4=${B1HRS4:-/dev/null}
+export B1AMUA=${B1AMUA:-/dev/null}
+export B1AMUB=${B1AMUB:-/dev/null}
+export B1MHS=${B1MHS:-/dev/null}
+export AIRSBF=${AIRSBF:-/dev/null}
+export IASIBF=${IASIBF:-/dev/null}
+export AMSREBF=${AMSREBF:-/dev/null}
+export SSMITBF=${SSMITBF:-/dev/null}
+export SBUVBF=${SBUVBF:-/dev/null}
+export SMIPCP=${SMIPCP:-/dev/null}
+export TMIPCP=${TMIPCP:-/dev/null}
+export GPSBF=${GPSBF:-/dev/null}
+export GINCIN=${GINCIN:-${COMOUT}/gesfile_in}
+export BIASIN=${BIASIN:-${COMOUT}/biascor_in}
+export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
+export SFCG04=${SFCG04:-${COMOUT}/sfcf04}
+export SFCG05=${SFCG05:-${COMOUT}/sfcf05}
+export SFCG07=${SFCG07:-${COMOUT}/sfcf07}
+export SFCG08=${SFCG08:-${COMOUT}/sfcf08}
+export SFCG09=${SFCG09:-${COMOUT}/sfcf09}
+export SFCG03M=${SFCG03M:-${COMOUT}/sfcfm03}
+export SFCG04M=${SFCG04M:-${COMOUT}/sfcfm04}
+export SFCG05M=${SFCG05M:-${COMOUT}/sfcfm05}
+export SFCG07M=${SFCG07M:-${COMOUT}/sfcfm07}
+export SFCG08M=${SFCG08M:-${COMOUT}/sfcfm08}
+export SFCG09M=${SFCG09M:-${COMOUT}/sfcfm09}
+export SIGG03=${SIGG03:-${COMOUT}/sigf03}
+export SIGG04=${SIGG04:-${COMOUT}/sigf04}
+export SIGG05=${SIGG05:-${COMOUT}/sigf05}
+export SIGG07=${SIGG07:-${COMOUT}/sigf07}
+export SIGG08=${SIGG08:-${COMOUT}/sigf08}
+export SIGG09=${SIGG09:-${COMOUT}/sigf09}
+export SFCANL=${SFCANL:-${COMIN}/${PREINP}sfcanl}
+export SIGANL=${SIGANL:-${COMIN}/${PREINP}sanl}
+export ABIAS=${ABIAS:-${COMIN}/${PREINP}abias}
+export GINCOUT=${GINCOUT:-${COMIN}/${PREINP}gesfile_out}
+export BIASOUT=${BIASOUT:-${COMIN}/${PREINP}biascor_out}
+export RADSTAT=${RADSTAT:-${COMIN}/${PREINP}radstat}
+export GSISTAT=${GSISTAT:-${COMIN}/${PREINP}gsistat}
+export PCPSTAT=${PCPSTAT:-${COMIN}/${PREINP}pcpstat}
+export CNVSTAT=${CNVSTAT:-${COMIN}/${PREINP}cnvstat}
+export OZNSTAT=${OZNSTAT:-${COMIN}/${PREINP}oznstat}
+export SATANGO=${SATANGO:-${COMIN}/${PREINP}satang}
+export INISCRIPT=${INISCRIPT}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT}
+export ENDSCRIPT=${ENDSCRIPT}
+#  Other variables.
+export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+export LSOIL=${LSOIL:-2}
+export FSMCL2=${FSMCL2:-60}
+export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGES FHOUR||echo 0)}
+export CYCLVARS=${CYCLVARS}
+export SETUP=${SETUP:-""}
+export GRIDOPTS=${GRIDOPTS:-""}
+export BKGVERR=${BKGVERR:-""}
+export ANBKGERR=${ANBKGERR:-""}
+export JCOPTS=${JCOPTS:-""}
+export STRONGOPTS=${STRONGOPTS:-""}
+export OBSQC=${OBSQC:-""}
+export OBSINPUT=${OBSINPUT:-""}
+export SUPERRAD=${SUPERRAD:-""}
+export SINGLEOB=${SINGLEOB:-""}
+export SETUPANG=${SETUPANG:-""}
+export OBSINPUTANG=${OBSINPUTANG:-""}
+export NTHREADS=${NTHREADS:-1}
+export NTHSTACK=${NTHSTACK:-64000000}
+export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
+export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
+export OBERRFLAG=${OBERRFLAG:-.false.}
+export DIAGCONV=${DIAGCONV:-.false.}
+export HXONLY=${HXONLY:-.false.}
+export PERTURB_OBS=${PERTURB_OBS:-.false.}
+export PERTURB_FACT=${PERTURB_FACT:-0}
+export PERTURB_BERR=${PERTURB_BERR:-.false.}
+export PERTURB_BERR_FACT=${PERTURB_BERR_FACT:-0}
+export ONEOB_TEST=${ONEOB_TEST:-.false.}
+
+
+export NCP=${NCP:-cp}
+typeset -L1 l=$PGMOUT
+[[ $l = '&' ]]&&a=''||a='>'
+export REDOUT=${REDOUT:-'1>'$a}
+typeset -L1 l=$PGMERR
+[[ $l = '&' ]]&&a=''||a='>'
+export REDERR=${REDERR:-'2>'$a}
+
+
+homedir=$PWD
+pwd=$(pwd)
+if [[ -d $DATA ]]
+then
+   mkdata=NO
+else
+   mkdir -p $DATA
+   mkdata=YES
+fi
+cd $DATA||exit 99
+
+################################################################################
+#  Update surface guess file to produce surface analysis
+
+$CYCLESH  $SFCGES $SFCANL
+
+################################################################################
+#  If necessary, change resolution of surface guess files.
+
+## NOTE:  10/01/2003, r.treadon
+##    To prevent misleading error messages, copy/process 4,5,7,8 hour
+##    forecasts only if files exist.
+
+# here we assume LONA==LONB, LATA==LATB
+#if [[ $LATA -ne $LATB && $LONA -ne $LONB ]]; then
+#  echo "ERROR: LONA must be equal to LONB, LATA must be equal to LATB"
+#  exit 1
+#fi
+
+#if [[ $LATA -ne $LATB && $LONA -ne $LONB ]]; then
+#echo "executing global_chgres"
+#fh=${FHMIN}
+#PWD=`pwd`
+#DATAHOLD=$DATA
+#export NTHREADS=8
+#while [[ $fh -le $FHMAX ]]; do
+#  fhour="`printf %02i $fh`"
+#  SFCGIN=${datapath2}/bfg_${analdate}_fhr${fhour}_${charnanal}
+#  SFCGOUT=${datapath2}/bfg2${analdate}_fhr${fhour}_${charnanal}
+#  varname="SFCG$fhour"a
+#  SFCGIN=${varname}
+#  varname="SFCG$fhour"
+#  SFCGOUT=${varname}
+
+################################################################################
+#  Make atmospheric analysis
+export XLSMPOPTS="parthds=1:stack=$NTHSTACK"
+export PGM=$DATA/$(basename $GSIEXEC)
+export pgm=$PGM
+$LOGSCRIPT
+
+rm berror_stats satbias_angle satinfo SpcCoeff.bin TauCoeff.bin EmisCoeff.bin
+rm AerosolCoeff.bin CloudCoeff.bin convinfo ozinfo pcpinfo errtable
+rm prepbufr gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
+rm amsuabufr amsubbufr mhsbufr sbuvbufr ssmibufr tmibufr airsbufr
+rm amsrebufr ssmitbufr gpsrobufr iasibufr
+rm satbias_in satbias_ang.in 
+rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
+rm sfcfm03 sfcfm04 sfcfm05 sfcfm06 sfcfm07 sfcfm08 sfcfm09
+rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09 siganl
+rm gesfile_in gesfiles_out satbias_in satbias_ang.in satbias_out
+rm prepbufr hirs2bufr msubufr hirs3bufr hirs4bufr amsuabufr
+rm amsubbufr mhsbufr airsbufr sbuvbufr ssmibufr tmibufr gpsrobufr
+rm amsrebufr ssmitbufr gsndrbufr gsnd1bufr
+
+${NCP:-cp} $GSIEXEC $DATA
+
+## NOTE:  10/01/2003, r.treadon
+##    Do not add above file existence tests since
+##    we do not link to files in operations
+
+
+# Fixed fields
+ln -fs $BERROR   berror_stats
+ln -fs $SATANGL  satbias_angle
+ln -fs $SATINFO  satinfo
+#ln -fs $RTMSPEC  SpcCoeff.bin
+#ln -fs $RTMTRAN  TauCoeff.bin
+ln -fs $RTMEMIS  EmisCoeff.bin
+ln -fs $RTMAERO  AerosolCoeff.bin
+ln -fs $RTMCLDS  CloudCoeff.bin
+ln -fs $CONVINFO convinfo
+ln -fs $OZINFO   ozinfo
+ln -fs $PCPINFO  pcpinfo
+ln -fs $OBERROR  errtable
+# CRTM Spectral and Transmittance coefficients
+#nsatsen=`cat satinfo | wc -l`
+#isatsen=1
+#while [[ $isatsen -le $nsatsen ]]; do
+#   flag=`head -n $isatsen satinfo | tail -1 | cut -c1-1`
+#   if [[ "$flag" != "!" ]]; then
+#      satsen=`head -n $isatsen satinfo | tail -1 | cut -f 2 -d" "`
+#      spccoeff=${satsen}.SpcCoeff.bin
+#      if  [[ ! -s $spccoeff ]]; then
+#         ln -fs $FIXGLOBAL/crtm_gfsgsi/SpcCoeff/No_AC/Big_Endian/$spccoeff $spccoeff
+#         ln -fs $FIXGLOBAL/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ${satsen}.TauCoeff.bin
+#      fi
+#   fi
+#   isatsen=` expr $isatsen + 1 `
+#done
+#satsens="amsua_n15 amsua_n16 amsua_n17 amsua_n18 amsub_n15 amsub_n16 amsub_n17 amsub_n18"
+# jsw - this is faster.
+if [ -z "$CONVONLY" ]; then
+satsens=`ls -1 $FIXGLOBAL/crtm_gfsgsi/SpcCoeff/Big_Endian/ | cut -f1 -d"." `
+for satsen in $satsens; do
+    #echo $satsen
+    spccoeff=${satsen}.SpcCoeff.bin
+    if  [[ ! -s $spccoeff ]]; then
+       ln -fs $FIXGSI/crtm_gfsgsi/SpcCoeff/Big_Endian/$spccoeff $spccoeff
+       ln -fs $FIXGSI/crtm_gfsgsi/TauCoeff/Big_Endian/${satsen}.TauCoeff.bin ${satsen}.TauCoeff.bin
+    fi
+done
+fi
+# Observational data
+ln -fs $PREPQC   prepbufr
+ln -fs $GSNDBF   gsndrbufr
+ln -fs $GSNDBF1  gsnd1bufr
+ln -fs $B1HRS2   hirs2bufr
+ln -fs $B1MSU    msubufr
+ln -fs $B1HRS3   hirs3bufr
+ln -fs $B1HRS4   hirs4bufr
+ln -fs $B1AMUA   amsuabufr
+ln -fs $B1AMUB   amsubbufr
+ln -fs $B1MHS    mhsbufr
+ln -fs $AIRSBF   airsbufr
+ln -fs $IASIBF   iasibufr
+ln -fs $AMSREBF  amsrebufr
+###ln -fs $SSMITBF  ssmitbufr
+ln -fs $SBUVBF   sbuvbufr
+ln -fs $SMIPCP   ssmibufr
+ln -fs $TMIPCP   tmibufr
+ln -fs $GPSBF    gpsrobufr
+# jsw - add tcvitals file.
+ln -fs $TCVIT    tcvitals
+
+# Guess fields
+ln -fs $GBIAS    satbias_in
+ln -fs $GSATANG  satbias_ang.in
+ln -fs $GINCIN   gesfile_in
+ln -fs $BIASIN   biascor_in
+ln -fs $SIGG03   sigf03
+ln -fs $SIGG04   sigf04
+ln -fs $SIGG05   sigf05
+ln -fs $SIGGES   sigf06
+ln -fs $SIGG07   sigf07
+ln -fs $SIGG08   sigf08
+ln -fs $SIGG09   sigf09
+ln -fs $SFCG03   sfcf03
+ln -fs $SFCG04   sfcf04
+ln -fs $SFCG05   sfcf05
+ln -fs $SFCG06   sfcf06
+ln -fs $SFCG07   sfcf07
+ln -fs $SFCG08   sfcf08
+ln -fs $SFCG09   sfcf09
+ln -fs $SFCG03M  sfcfm03
+ln -fs $SFCG04M  sfcfm04
+ln -fs $SFCG05M  sfcfm05
+ln -fs $SFCG06M  sfcfm06
+ln -fs $SFCG07M  sfcfm07
+ln -fs $SFCG08M  sfcfm08
+ln -fs $SFCG09M  sfcfm09
+# Output files
+ln -fs $SIGANL   siganl
+ln -fs $ABIAS    satbias_out
+ln -fs $GINCOUT  gesfile_out
+ln -fs $BIASOUT  biascor_out
+
+
+if [[ "${charnanal}" != "ensmean" ]]; then
+  ${NCP} ${COMOUT}/obs_input.${CDATE}.tar ${DATA}/
+  cd ${DATA}
+  tar -xvf obs_input.${CDATE}.tar
+fi
+
+
+ls -l 
+# these files on't exist, but the gsi tries to read them.
+#touch pcpbias_in
+touch ssmisbufr
+touch gimgrbufr
+
+wait # wait for global_cycle to finish.
+
+if [ -n "$CONVONLY" ]; then
+   GBIAS=$SFCGES
+   GSATANG=$SIGGES
+fi
+if [ -s $GBIAS ] && [ -s $GSATANG ] && [ -s $SFCGES ] && [ -s $SFCG03 ] && [ -s $SFCG09 ] && [ -s $SIGGES ] && [ -s $SIGG03 ] && [ -s $SIGG09 ] && [ -s $SFCANL ]; then
+
+# Create global_gsi namelist
+cat <<EOF > gsiparm.anl
+ &SETUP
+   miter=0,niter(1)=1,niter(2)=1,
+   niter_no_qc(1)=10000,niter_no_qc(2)=1000000,
+   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
+   qoption=2,
+   gencode=$IGEN,factqmin=0.005,factqmax=0.005,deltim=$DELTIM,
+   ndat=67,npred=5,iguess=-1,
+   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
+   use_pbl=.false.,
+   $SETUP
+ /
+ &GRIDOPTS
+   JCAP_B=$JCAP,JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,hybrid=.true.,
+   regional=.false.,nlayers(63)=3,nlayers(64)=6,
+   $GRIDOPTS
+ /
+ &BKGERR
+   as=0.6,0.6,0.75,0.75,0.75,0.75,1.0,1.0
+   vs=0.7,
+   hzscl=1.7,0.8,0.5,
+   hswgt=0.45,0.3,0.25,
+   bw=0.0,norsp=4,
+   bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+   tsfc_sdv(1)=3.0,tsfc_sdv(2)=3.0,
+
+   $BKGVERR
+ /
+ &ANBKGERR
+   anisotropic=.false.,
+   $ANBKGERR
+ /
+ &JCOPTS
+   ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=2.5e7,
+   $JCOPTS
+ /
+ &STRONGOPTS
+   jcstrong=.false.,nstrong=0,nvmodes_keep=0,period_max=6.,period_width=1.5,
+   jcstrong_option=2,baldiag_full=.false.,baldiag_inc=.false.,
+   $STRONGOPTS
+ /
+ &OBSQC
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
+   use_poq7=.true.,
+   $OBSQC
+ /
+ &OBS_INPUT
+   dmesh(1)=145.0,dmesh(2)=145.0,dmesh(3)=145.0,dmesh(4)=145.0,dmesh(5)=145.0,dmesh(6)=150.0,time_window_max=3.0,
+   dfile(01)='prepbufr',  dtype(01)='ps',        dplat(01)=' ',       dsis(01)='ps',              dval(01)=1.0,  dthin(01)=0,  dsfcalc(01)=0,
+   dfile(02)='prepbufr'   dtype(02)='t',         dplat(02)=' ',       dsis(02)='t',               dval(02)=1.0,  dthin(02)=0,  dsfcalc(02)=0,
+   dfile(03)='prepbufr',  dtype(03)='q',         dplat(03)=' ',       dsis(03)='q',               dval(03)=1.0,  dthin(03)=0,  dsfcalc(03)=0,
+   dfile(04)='prepbufr',  dtype(04)='pw',        dplat(04)=' ',       dsis(04)='pw',              dval(04)=1.0,  dthin(04)=0,  dsfcalc(04)=0,
+   dfile(05)='prepbufr',  dtype(05)='uv',        dplat(05)=' ',       dsis(05)='uv',              dval(05)=1.0,  dthin(05)=0,  dsfcalc(05)=0,
+   dfile(06)='prepbufr',  dtype(06)='spd',       dplat(06)=' ',       dsis(06)='spd',             dval(06)=1.0,  dthin(06)=0,  dsfcalc(06)=0,
+   dfile(07)='prepbufr',  dtype(07)='dw',        dplat(07)=' ',       dsis(07)='dw',              dval(07)=1.0,  dthin(07)=0,  dsfcalc(07)=0,
+   dfile(08)='radarbufr', dtype(08)='rw',        dplat(08)=' ',       dsis(08)='rw',              dval(08)=1.0,  dthin(08)=0,  dsfcalc(08)=0,
+   dfile(09)='prepbufr',  dtype(09)='sst',       dplat(09)=' ',       dsis(09)='sst',             dval(09)=1.0,  dthin(09)=0,  dsfcalc(09)=0,
+   dfile(10)='gpsrobufr', dtype(10)='gps_ref',   dplat(10)=' ',       dsis(10)='gps_ref',         dval(10)=1.0,  dthin(10)=0,  dsfcalc(10)=0,
+   dfile(11)='ssmirrbufr',dtype(11)='pcp_ssmi',  dplat(11)='dmsp',    dsis(11)='pcp_ssmi',        dval(11)=1.0,  dthin(11)=-1, dsfcalc(11)=0,
+   dfile(12)='tmirrbufr', dtype(12)='pcp_tmi',   dplat(12)='trmm',    dsis(12)='pcp_tmi',         dval(12)=1.0,  dthin(12)=-1, dsfcalc(12)=0,
+   dfile(13)='sbuvbufr',  dtype(13)='sbuv2',     dplat(13)='n16',     dsis(13)='sbuv8_n16',       dval(13)=1.0,  dthin(13)=0,  dsfcalc(13)=0,
+   dfile(14)='sbuvbufr',  dtype(14)='sbuv2',     dplat(14)='n17',     dsis(14)='sbuv8_n17',       dval(14)=1.0,  dthin(14)=0,  dsfcalc(14)=0,
+   dfile(15)='sbuvbufr',  dtype(15)='sbuv2',     dplat(15)='n18',     dsis(15)='sbuv8_n18',       dval(15)=1.0,  dthin(15)=0,  dsfcalc(15)=0,
+   dfile(16)='hirs2bufr', dtype(16)='hirs2',     dplat(16)='n14',     dsis(16)='hirs2_n14',       dval(16)=6.0,  dthin(16)=1,  dsfcalc(16)=0,
+   dfile(17)='hirs3bufr', dtype(17)='hirs3',     dplat(17)='n16',     dsis(17)='hirs3_n16',       dval(17)=0.0,  dthin(17)=1,  dsfcalc(17)=0,
+   dfile(18)='hirs3bufr', dtype(18)='hirs3',     dplat(18)='n17',     dsis(18)='hirs3_n17',       dval(18)=6.0,  dthin(18)=1,  dsfcalc(18)=0,
+   dfile(19)='hirs4bufr', dtype(19)='hirs4',     dplat(19)='n18',     dsis(19)='hirs4_n18',       dval(19)=0.0,  dthin(19)=1,  dsfcalc(19)=0,
+   dfile(20)='hirs4bufr', dtype(20)='hirs4',     dplat(20)='metop-a', dsis(20)='hirs4_metop-a',   dval(20)=6.0,  dthin(20)=1,  dsfcalc(20)=0,
+   dfile(21)='gsndrbufr', dtype(21)='sndr',      dplat(21)='g11',     dsis(21)='sndr_g11',        dval(21)=0.0,  dthin(21)=1,  dsfcalc(21)=0,
+   dfile(22)='gsndrbufr', dtype(22)='sndr',      dplat(22)='g12',     dsis(22)='sndr_g12',        dval(22)=0.0,  dthin(22)=1,  dsfcalc(22)=0,
+   dfile(23)='gimgrbufr', dtype(23)='goes_img',  dplat(23)='g11',     dsis(23)='imgr_g11',        dval(23)=0.0,  dthin(23)=1,  dsfcalc(23)=0,
+   dfile(24)='gimgrbufr', dtype(24)='goes_img',  dplat(24)='g12',     dsis(24)='imgr_g12',        dval(24)=0.0,  dthin(24)=1,  dsfcalc(24)=0,
+   dfile(25)='airsbufr',  dtype(25)='airs',      dplat(25)='aqua',    dsis(25)='airs281SUBSET_aqua',dval(25)=20.0,dthin(25)=1, dsfcalc(25)=0,
+   dfile(26)='msubufr',   dtype(26)='msu',       dplat(26)='n14',     dsis(26)='msu_n14',         dval(26)=2.0,  dthin(26)=2,  dsfcalc(26)=0,
+   dfile(27)='amsuabufr', dtype(27)='amsua',     dplat(27)='n15',     dsis(27)='amsua_n15',       dval(27)=10.0, dthin(27)=2,  dsfcalc(27)=0,
+   dfile(28)='amsuabufr', dtype(28)='amsua',     dplat(28)='n16',     dsis(28)='amsua_n16',       dval(28)=0.0,  dthin(28)=2,  dsfcalc(28)=0,
+   dfile(29)='amsuabufr', dtype(29)='amsua',     dplat(29)='n17',     dsis(29)='amsua_n17',       dval(29)=0.0,  dthin(29)=2,  dsfcalc(29)=0,
+   dfile(30)='amsuabufr', dtype(30)='amsua',     dplat(30)='n18',     dsis(30)='amsua_n18',       dval(30)=10.0, dthin(30)=2,  dsfcalc(30)=0,
+   dfile(31)='amsuabufr', dtype(31)='amsua',     dplat(31)='metop-a', dsis(31)='amsua_metop-a',   dval(31)=10.0, dthin(31)=2,  dsfcalc(31)=0,
+   dfile(32)='airsbufr',  dtype(32)='amsua',     dplat(32)='aqua',    dsis(32)='amsua_aqua',      dval(32)=5.0,  dthin(32)=2,  dsfcalc(32)=0,
+   dfile(33)='amsubbufr', dtype(33)='amsub',     dplat(33)='n15',     dsis(33)='amsub_n15',       dval(33)=3.0,  dthin(33)=3,  dsfcalc(33)=0,
+   dfile(34)='amsubbufr', dtype(34)='amsub',     dplat(34)='n16',     dsis(34)='amsub_n16',       dval(34)=3.0,  dthin(34)=3,  dsfcalc(34)=0,
+   dfile(35)='amsubbufr', dtype(35)='amsub',     dplat(35)='n17',     dsis(35)='amsub_n17',       dval(35)=3.0,  dthin(35)=3,  dsfcalc(35)=0,
+   dfile(36)='mhsbufr',   dtype(36)='mhs',       dplat(36)='n18',     dsis(36)='mhs_n18',         dval(36)=3.0,  dthin(36)=3,  dsfcalc(36)=0,
+   dfile(37)='mhsbufr',   dtype(37)='mhs',       dplat(37)='metop-a', dsis(37)='mhs_metop-a',     dval(37)=3.0,  dthin(37)=3,  dsfcalc(37)=0,
+   dfile(38)='ssmitbufr', dtype(38)='ssmi',      dplat(38)='f13',     dsis(38)='ssmi_f13',        dval(38)=0.0,  dthin(38)=4,  dsfcalc(38)=0,
+   dfile(39)='ssmitbufr', dtype(39)='ssmi',      dplat(39)='f14',     dsis(39)='ssmi_f14',        dval(39)=0.0,  dthin(39)=4,  dsfcalc(39)=0,
+   dfile(40)='ssmitbufr', dtype(40)='ssmi',      dplat(40)='f15',     dsis(40)='ssmi_f15',        dval(40)=0.0,  dthin(40)=4,  dsfcalc(40)=0,
+   dfile(41)='amsrebufr', dtype(41)='amsre_low', dplat(41)='aqua',    dsis(41)='amsre_aqua',      dval(41)=0.0,  dthin(41)=4,  dsfcalc(41)=0,
+   dfile(42)='amsrebufr', dtype(42)='amsre_mid', dplat(42)='aqua',    dsis(42)='amsre_aqua',      dval(42)=0.0,  dthin(42)=4,  dsfcalc(42)=0,
+   dfile(43)='amsrebufr', dtype(43)='amsre_hig', dplat(43)='aqua',    dsis(43)='amsre_aqua',      dval(43)=0.0,  dthin(43)=4,  dsfcalc(43)=0,
+   dfile(44)='ssmisbufr', dtype(44)='ssmis_las', dplat(44)='f16',     dsis(44)='ssmis_f16',       dval(44)=0.0,  dthin(44)=4,  dsfcalc(44)=0,
+   dfile(45)='ssmisbufr', dtype(45)='ssmis_uas', dplat(45)='f16',     dsis(45)='ssmis_f16',       dval(45)=0.0,  dthin(45)=4,  dsfcalc(45)=0,
+   dfile(46)='ssmisbufr', dtype(46)='ssmis_img', dplat(46)='f16',     dsis(46)='ssmis_f16',       dval(46)=0.0,  dthin(46)=4,  dsfcalc(46)=0,
+   dfile(47)='ssmisbufr', dtype(47)='ssmis_env', dplat(47)='f16',     dsis(47)='ssmis_f16',       dval(47)=0.0,  dthin(47)=4,  dsfcalc(47)=0,
+   dfile(48)='gsnd1bufr', dtype(48)='sndrd1',    dplat(48)='g12',     dsis(48)='sndrD1_g12',      dval(48)=1.5,  dthin(48)=5,  dsfcalc(48)=0,
+   dfile(49)='gsnd1bufr', dtype(49)='sndrd2',    dplat(49)='g12',     dsis(49)='sndrD2_g12',      dval(49)=1.5,  dthin(49)=5,  dsfcalc(49)=0,
+   dfile(50)='gsnd1bufr', dtype(50)='sndrd3',    dplat(50)='g12',     dsis(50)='sndrD3_g12',      dval(50)=1.5,  dthin(50)=5,  dsfcalc(50)=0,
+   dfile(51)='gsnd1bufr', dtype(51)='sndrd4',    dplat(51)='g12',     dsis(51)='sndrD4_g12',      dval(51)=1.5,  dthin(51)=5,  dsfcalc(51)=0,
+   dfile(52)='gsnd1bufr', dtype(52)='sndrd1',    dplat(52)='g11',     dsis(52)='sndrD1_g11',      dval(52)=1.5,  dthin(52)=5,  dsfcalc(52)=0,
+   dfile(53)='gsnd1bufr', dtype(53)='sndrd2',    dplat(53)='g11',     dsis(53)='sndrD2_g11',      dval(53)=1.5,  dthin(53)=5,  dsfcalc(53)=0,
+   dfile(54)='gsnd1bufr', dtype(54)='sndrd3',    dplat(54)='g11',     dsis(54)='sndrD3_g11',      dval(54)=1.5,  dthin(54)=5,  dsfcalc(54)=0,
+   dfile(55)='gsnd1bufr', dtype(55)='sndrd4',    dplat(55)='g11',     dsis(55)='sndrD4_g11',      dval(55)=1.5,  dthin(55)=5,  dsfcalc(55)=0,
+   dfile(56)='gsnd1bufr', dtype(56)='sndrd1',    dplat(56)='g13',     dsis(56)='sndrD1_g13',      dval(56)=1.5,  dthin(56)=5,  dsfcalc(56)=0,
+   dfile(57)='gsnd1bufr', dtype(57)='sndrd2',    dplat(57)='g13',     dsis(57)='sndrD2_g13',      dval(57)=1.5,  dthin(57)=5,  dsfcalc(57)=0,
+   dfile(58)='gsnd1bufr', dtype(58)='sndrd3',    dplat(58)='g13',     dsis(58)='sndrD3_g13',      dval(58)=1.5,  dthin(58)=5,  dsfcalc(58)=0,
+   dfile(59)='gsnd1bufr', dtype(59)='sndrd4',    dplat(59)='g13',     dsis(59)='sndrD4_g13',      dval(59)=1.5,  dthin(59)=5,  dsfcalc(59)=0,
+   dfile(60)='iasibufr',  dtype(60)='iasi',      dplat(60)='metop-a', dsis(60)='iasi616_metop-a', dval(60)=20.0, dthin(60)=1,  dsfcalc(60)=0,
+   dfile(61)='gomebufr',  dtype(61)='gome',      dplat(61)='metop-a', dsis(61)='gome_metop-a',    dval(61)=1.0,  dthin(61)=6,  dsfcalc(61)=0,
+   dfile(62)='omibufr',   dtype(62)='omi',       dplat(62)='aura',    dsis(62)='omi_aura',        dval(62)=1.0,  dthin(62)=6,  dsfcalc(62)=0,
+   dfile(63)='sbuvbufr',  dtype(63)='sbuv2',     dplat(63)='n19',     dsis(63)='sbuv8_n19',       dval(63)=1.0,  dthin(63)=0,  dsfcalc(63)=0,
+   dfile(64)='hirs4bufr', dtype(64)='hirs4',     dplat(64)='n19',     dsis(64)='hirs4_n19',       dval(64)=6.0,  dthin(64)=1,  dsfcalc(64)=0,
+   dfile(65)='amsuabufr', dtype(65)='amsua',     dplat(65)='n19',     dsis(65)='amsua_n19',       dval(65)=10.0, dthin(65)=2,  dsfcalc(65)=0,
+   dfile(66)='mhsbufr',   dtype(66)='mhs',       dplat(66)='n19',     dsis(66)='mhs_n19',         dval(66)=3.0,  dthin(66)=3,  dsfcalc(66)=0,
+   dfile(67)='tcvitl'     dtype(67)='tcp',       dplat(67)=' ',       dsis(67)='tcp',             dval(67)=1.0,  dthin(67)=0,  dsfcalc(67)=0,
+   $OBSINPUT
+ /
+  &SUPEROB_RADAR
+   $SUPERRAD
+ /
+ &LAG_DATA
+   $LAGDATA
+ /
+ &HYBRID_ENSEMBLE
+   l_hyb_ens=.false.,uv_hyb_ens=.false.,aniso_a_en=.false.,generate_ens=.false.,
+   n_ens=0,beta1_inv=0.5,s_ens_h=750,s_ens_v=20,jcap_ens=${JCAP_EN},
+   jcap_ens_test=190,nlon_ens=576,nlat_ens=288,
+   write_ens_sprd=.false.,
+   $HYBRID_ENSEMBLE
+ /
+ &SINGLEOB_TEST
+   maginnov=0.1,magoberr=0.1,oneob_type='t',
+   oblat=45.,oblon=180.,obpres=1000.,obdattim=${CDATE},
+   obhourset=0.,
+   $SINGLEOB
+ /
+EOF
+
+ls -l $PGM
+echo "executing $PGM at `date`"
+# Run global_gsi
+eval $PGM < gsiparm.anl $REDOUT$PGMOUT $REDERR$PGMERR
+rc=$?
+echo "done executing $PGM at `date`"
+
+else
+echo "some input files missing, exiting ..."
+ls -l $GBIAS
+ls -l $GSATANG
+ls -l $SFCGES 
+ls -l $SFCG03
+ls -l $SFCG09
+ls -l $SIGGES
+ls -l $SIGG03
+ls -l $SIGG09
+ls -l $SFCANL
+exit 1
+fi
+
+export ERR=$?
+export err=$ERR
+#$ERRSCRIPT||exit 2
+
+# Cat runtime output files.
+cat fort.2* > $GSISTAT
+cat fort.2*
+
+
+# Loop over first and last outer loops to generate innovation
+# diagnostic files for indicated observation types (groups)
+#
+# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+#        loop 03 will contain innovations with respect to 
+#        the analysis.  Creation of o-a innovation files
+#        is triggered by write_diag(3)=.true.  The setting
+#        write_diag(1)=.true. turns on creation of o-g
+#        innovation files.
+#
+
+if [[ "${charnanal}" = "ensmean" ]]; then
+  cd ${DATA}
+  tar -cvf obs_input.${CDATE}.tar obs_input*
+  ${NCP} obs_input.${CDATE}.tar ${COMOUT}/
+fi
+
+#loops="01 03"
+loops="01" # only save fit to first-guess
+pwd
+#ls -l ${DATA}
+for loop in $loops; do
+
+#  Collect diagnostic files for obs types (groups) below
+   list="hirs2_n14 msu_n14 sndr_g08 sndr_g10 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g10_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g10 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 amsua_n18 mhs_n18 amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a amsua_metop-a mhs_metop-a hirs4_metop-a"
+   for type in $list; do
+      #count=`ls ${DATA}/*${type}_${loop}* | wc -l`
+      count=`ls ${DATA}/dir.*/${type}_${loop}* | wc -l`
+      if [[ count -gt 0 ]]; then
+         #cat ${DATA}/${type}_${loop}.* > ${DATA}/diag_${type}_${loop}.${CDATE}
+         #cat ${DATA}/${type}_${loop}.* > ${COMOUT}/diag_${type}_ges.${CDATE}_${charnanal}
+         #cat ${DATA}/*${type}_${loop}* > diag_${type}.${CDATE}
+         cat ${DATA}/dir.*/${type}_${loop}* > ${DATA}/diag_${type}.${CDATE}
+         if [ $SAVEHX == ".true." ]; then
+            /bin/cp -f diag_${type}.${CDATE} ${COMOUT}/diag_${type}_ges.${CDATE}_${charnanal}
+         fi
+         #if [[ "$loop" = "01" ]]; then
+         #   #mv ${DATA}/diag_${type}_${loop}.${CDATE} ${DATA}/diag_${type}_ges.${CDATE}
+         #   mv ${DATA}/diag_${type}_${loop}.${CDATE} ${COMOUT}/diag_${type}_ges.${CDATE}_${charnanal}
+         #elif [[ "$loop" = "03" ]]; then
+         #   mv ${DATA}/diag_${type}_${loop}.${CDATE} ${DATA}/diag_${type}_anl.${CDATE}
+         #else
+         #   mv ${DATA}/diag_${type}_${loop}.${CDATE} ${DATA}/diag_${type}_${loop}.${CDATE}
+         #fi
+      fi
+   done
+done
+if [ $ONEOB_TEST == ".true." ]; then
+    echo "copy prepqc ..."
+    ls -l prepqc
+    /bin/mv -f prepqc ${COMOUT}/prepqc_oneob
+    ls -l ${COMOUT}/prepqc_oneob
+    exit 0
+fi
+# stop here?
+#if [ $SKIP_ANGUPDATE == ".true." ]; then
+#   #/bin/rm -rf $HOSTFILE
+#   exit 0
+#fi
+
+if [ -n "$CONVONLY" ]; then
+   exit 0
+fi
+
+
+################################################################################
+#  Update angle dependent bias 
+export XLSMPOPTS="parthds=$NTHREADS:stack=$NTHSTACK"
+export PGM=$ANGUPDATEXEC
+export pgm=$PGM
+$LOGSCRIPT
+
+iy=$(echo $CDATE|cut -c1-4)
+im=$(echo $CDATE|cut -c5-6)
+id=$(echo $CDATE|cut -c7-8)
+ih=$(echo $CDATE|cut -c9-10)
+
+# local input files assumed to already exist are
+#   ./satbias_ang.in
+#   radiance diagnostic files
+
+if [[ -s satbias_ang.in ]]; then
+   cp ./satbias_angle ./satbias_ang.in
+fi
+
+cat  > global_angupdate.nml <<EOF
+ &SETUP
+  jpch=1498,nstep=90,nsize=20,wgtang=0.008333333,wgtlap=0.0,
+  iuseqc=1,dtmax=1.0,
+  iyy1=${iy},imm1=${im},idd1=${id},ihh1=${ih},
+  iyy2=${iy},imm2=${im},idd2=${id},ihh2=${ih},
+  dth=06,ndat=48,
+  $SETUPANG
+ /
+ &OBS_INPUT
+  dtype(01)='hirs2',     dplat(01)='n14',       dsis(01)='hirs2_n14',
+  dtype(02)='hirs3',     dplat(02)='n16',       dsis(02)='hirs3_n16',
+  dtype(03)='hirs3',     dplat(03)='n17',       dsis(03)='hirs3_n17',
+  dtype(04)='hirs4',     dplat(04)='n18',       dsis(04)='hirs4_n18',
+  dtype(05)='hirs4',     dplat(05)='metop-a',   dsis(05)='hirs4_metop-a',
+  dtype(06)='sndr',      dplat(06)='g11',       dsis(06)='sndr_g11',
+  dtype(07)='sndr',      dplat(07)='g12',       dsis(07)='sndr_g12',
+  dtype(08)='goes_img',  dplat(08)='g11',       dsis(08)='imgr_g11',
+  dtype(09)='goes_img',  dplat(09)='g12',       dsis(09)='imgr_g12',
+  dtype(10)='airs',      dplat(10)='aqua',      dsis(10)='airs281SUBSET_aqua',
+  dtype(11)='msu',       dplat(11)='n14',       dsis(11)='msu_n14',
+  dtype(12)='amsua',     dplat(12)='n15',       dsis(12)='amsua_n15',
+  dtype(13)='amsua',     dplat(13)='n16',       dsis(13)='amsua_n16',
+  dtype(14)='amsua',     dplat(14)='n17',       dsis(14)='amsua_n17',
+  dtype(15)='amsua',     dplat(15)='n18',       dsis(15)='amsua_n18',
+  dtype(16)='amsua',     dplat(16)='metop-a',   dsis(16)='amsua_metop-a',
+  dtype(17)='amsua',     dplat(17)='aqua',      dsis(17)='amsua_aqua',
+  dtype(18)='amsub',     dplat(18)='n15',       dsis(18)='amsub_n15',
+  dtype(19)='amsub',     dplat(19)='n16',       dsis(19)='amsub_n16',
+  dtype(20)='amsub',     dplat(20)='n17',       dsis(20)='amsub_n17',
+  dtype(21)='mhs',       dplat(21)='n18',       dsis(21)='mhs_n18',
+  dtype(22)='mhs',       dplat(22)='metop-a',   dsis(22)='mhs_metop-a',
+  dtype(23)='ssmi',      dplat(23)='f13',       dsis(23)='ssmi_f13',
+  dtype(24)='ssmi',      dplat(24)='f14',       dsis(24)='ssmi_f14',
+  dtype(25)='ssmi',      dplat(25)='f15',       dsis(25)='ssmi_f15',
+  dtype(26)='amsre_low', dplat(26)='aqua',      dsis(26)='amsre_aqua',
+  dtype(27)='amsre_mid', dplat(27)='aqua',      dsis(27)='amsre_aqua',
+  dtype(28)='amsre_hig', dplat(28)='aqua',      dsis(28)='amsre_aqua',
+  dtype(29)='ssmis_las', dplat(29)='f16',       dsis(29)='ssmis_f16',
+  dtype(30)='ssmis_uas', dplat(30)='f16',       dsis(30)='ssmis_f16',
+  dtype(31)='ssmis_img', dplat(31)='f16',       dsis(31)='ssmis_f16',
+  dtype(32)='ssmis_env', dplat(32)='f16',       dsis(32)='ssmis_f16',
+  dtype(33)='sndrd1',    dplat(33)='g12',       dsis(33)='sndrD1_g12',
+  dtype(34)='sndrd2',    dplat(34)='g12',       dsis(34)='sndrD2_g12',
+  dtype(35)='sndrd3',    dplat(35)='g12',       dsis(35)='sndrD3_g12',
+  dtype(36)='sndrd4',    dplat(36)='g12',       dsis(36)='sndrD4_g12',
+  dtype(37)='sndrd1',    dplat(37)='g11',       dsis(37)='sndrD1_g11',
+  dtype(38)='sndrd2',    dplat(38)='g11',       dsis(38)='sndrD2_g11',
+  dtype(39)='sndrd3',    dplat(39)='g11',       dsis(39)='sndrD3_g11',
+  dtype(40)='sndrd4',    dplat(40)='g11',       dsis(40)='sndrD4_g11',
+  dtype(41)='sndrd1',    dplat(41)='g13',       dsis(41)='sndrD1_g13',
+  dtype(42)='sndrd2',    dplat(42)='g13',       dsis(42)='sndrD2_g13',
+  dtype(43)='sndrd3',    dplat(43)='g13',       dsis(43)='sndrD3_g13',
+  dtype(44)='sndrd4',    dplat(44)='g13',       dsis(44)='sndrD4_g13',
+  dtype(45)='iasi',      dplat(45)='metop-a',   dsis(45)='iasi616_metop-a',
+  dtype(46)='hirs4',     dplat(46)='n19',       dsis(46)='hirs4_n19',
+  dtype(47)='amsua',     dplat(47)='n19',       dsis(47)='amsua_n19',
+  dtype(48)='mhs',       dplat(48)='n19',       dsis(48)='mhs_n19',
+  $OBSINPUTANG
+ /
+EOF
+
+if [[ "${charnanal}" = "ensmean" ]]; then 
+  cat global_angupdate.nml
+  ls -l $ANGUPDATEXEC
+  echo "starting $ANGUPDATEXEC at `date`"
+  eval $ANGUPDATEXEC
+  echo "done executing $ANGUPDATEXEC at `date`"
+  /bin/rm -rf $HOSTFILE
+
+  export ERR=$?
+  export err=$ERR
+#$ERRSCRIPT||exit 2
+# Output file
+  ${NCP:-cp} satbias_ang.out  $SATANGO
+  ls -l $SATANGO
+  ${NCP:-cp} $ABIAS abias
+  ls -l $ABIAS
+  ls -l abias
+fi
+
+################################################################################
+#  Postprocessing
+cd $homedir/../
+##/bin/rm -rf $DATA &
