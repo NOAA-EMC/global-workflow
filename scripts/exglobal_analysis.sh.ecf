@@ -746,22 +746,23 @@ $FCPLN $HYBENSINFO hybens_locinfo
 $FCPLN $OBERROR  errtable
 
 # CRTM Spectral and Transmittance coefficients
+mkdir -p crtm_coeffs
 for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-   $FCPLN $RTMFIX/${file}.SpcCoeff.bin ./
-   $FCPLN $RTMFIX/${file}.TauCoeff.bin ./
+   $FCPLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/
+   $FCPLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/
 done
 
-$FCPLN $RTMFIX/Nalli.IRwater.EmisCoeff.bin Nalli.IRwater.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.IRice.EmisCoeff.bin NPOESS.IRice.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.IRland.EmisCoeff.bin NPOESS.IRland.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin NPOESS.IRsnow.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.VISice.EmisCoeff.bin NPOESS.VISice.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.VISland.EmisCoeff.bin NPOESS.VISland.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin NPOESS.VISsnow.EmisCoeff.bin
-$FCPLN $RTMFIX/NPOESS.VISwater.EmisCoeff.bin NPOESS.VISwater.EmisCoeff.bin
-$FCPLN $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin FASTEM5.MWwater.EmisCoeff.bin
-$FCPLN $RTMFIX/AerosolCoeff.bin AerosolCoeff.bin
-$FCPLN $RTMFIX/CloudCoeff.bin CloudCoeff.bin
+$FCPLN $RTMFIX/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
+$FCPLN $RTMFIX/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
+$FCPLN $RTMFIX/FASTEM5.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM5.MWwater.EmisCoeff.bin
+$FCPLN $RTMFIX/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
+$FCPLN $RTMFIX/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
 
 # Observational data
 $FCPLN $PREPQC   prepbufr
@@ -950,6 +951,7 @@ cat <<EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
+   crtm_coeffs_path='./crtm_coeffs/'
    $SETUP
  /
  &GRIDOPTS
