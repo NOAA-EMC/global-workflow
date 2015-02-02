@@ -1305,7 +1305,7 @@ then
    fi
    cp $SIGANL   $GESdir/${RUN}.${cycle}.sanl
    cp $ABIAS    $GESdir/${RUN}.${cycle}.abias
-   cp $ABIASPC  $GESdir/${RUN}.${cydle}.abias_pc
+   cp $ABIASPC  $GESdir/${RUN}.${cycle}.abias_pc
    cp $ABIASAIR $GESdir/${RUN}.${cycle}.abias_air
 fi
 if test "$SENDCOM" = "YES"

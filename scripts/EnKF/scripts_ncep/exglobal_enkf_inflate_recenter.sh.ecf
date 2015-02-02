@@ -179,7 +179,7 @@ export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
-export SCALEFACT=${SCALEFACT:-32}
+export SCALEFACT=${SCALEFACT:-05}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -187,7 +187,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
-export GDATE=${GDATE:-$($NDATE -06 $CDATE)}
+export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}
 export NHOURS=$((NDAYS*24))
 export PBDATE=${PBDATE:-2010050100}

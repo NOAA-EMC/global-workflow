@@ -212,9 +212,9 @@ export XLSMPOPTS="stack=$NTHSTACK"
 $LOGSCRIPT
 
 rm getsigensmean_smooth.x getsfcensmean_smooth.x hybens_smoothinfo
-rm sfg*fhr03* sfg*fhr04* sfg*fhr05* sfg*f06* sfg*fhr07* sfg*fhr08* sfg*f09*
-rm bfg*fhr03* bfg*fhr04* bfg*fhr05* bfg*f06* bfg*fhr07* bfg*fhr08* bfg*f09*
-rm nfg*fhr03* nfg*fhr04* nfg*fhr05* nfg*f06* nfg*fhr07* nfg*fhr08* nfg*f09*
+rm sfg*fhr03* sfg*fhr04* sfg*fhr05* sfg*fhr06* sfg*fhr07* sfg*fhr08* sfg*fhr09*
+rm bfg*fhr03* bfg*fhr04* bfg*fhr05* bfg*fhr06* bfg*fhr07* bfg*fhr08* bfg*fhr09*
+rm nfg*fhr03* nfg*fhr04* nfg*fhr05* nfg*fhr06* nfg*fhr07* nfg*fhr08* nfg*fhr09*
 
 
 $NCP $GETSFCENSMEANEXEC $DATA
@@ -458,7 +458,7 @@ export SIGLEVEL_LORES=$FIXGSM/global_hyblev.l${LEVS_LORES}.txt
 if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
    fhrlist="06"
    if [ $l4densvar = .true. ]; then
-      fhrlist="03 04 05 06 07 08 09"
+      fhrlist="03 06 09"
    fi
    for fhr in $fhrlist; do
       rm -rf $DATA/poescript.$fhr
