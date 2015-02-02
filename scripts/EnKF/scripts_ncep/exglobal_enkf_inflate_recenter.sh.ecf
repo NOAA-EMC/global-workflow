@@ -152,6 +152,14 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+
+export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec} 
+
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush} 
+
+
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -164,10 +172,11 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth$XC}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGLOBAL}/recentersigp$XC}
-export CHGRESSH=${CHGRESSH:-${USHGLOBAL}/global_chgres.sh}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp$XC}
+export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
+export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
 export SCALEFACT=${SCALEFACT:-32}
@@ -339,6 +348,8 @@ if [[ $SCALEFACT -gt 0 ]]; then
     $NCP dates_ran.dat $PERTDATES
  fi
 
+fi
+
 ################################################################################
 # Compute mean for perturbed and recentered ensemble analysis members
  export DATAPATH2=./
@@ -355,7 +366,6 @@ if [[ $SCALEFACT -gt 0 ]]; then
 
  cat stdout.sanlpr_ensmean
 
-fi
 
 ################################################################################
 # Chgres high resolution analysis to ensemble resolution
@@ -450,6 +460,19 @@ if [[ $FILESTYLE = 'C' ]]; then
       (( imem = $imem + 1 ))
    done
 fi
+
+# Optionally alert $SIGANLENS_OUT files 
+if [ $SENDDBN = YES ]; then 
+  imem=1 
+  while [[ $imem -le $NMEM_ENKF ]]; do 
+    member="_mem"`printf %03i $imem` 
+    if [ $SENDDBN = YES ]; then 
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGANLENS_OUT}${member} 
+    fi 
+    (( imem = $imem + 1 )) 
+  done 
+fi
+
 ################################################################################
 #     Update ensemble member surface and nst analyses 
 ################################################################################
