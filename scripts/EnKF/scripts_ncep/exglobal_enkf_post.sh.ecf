@@ -155,11 +155,9 @@ export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
 export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECENKF/getsigensmean_smooth$XC}
 export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECENKF/getsfcensmean_smooth$XC}
-if [ $NST_GSI -gt 0 ]; then
-   export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
-   export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
-   export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECENKF/getnstensmean_smooth$XC}
-fi
+export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
+export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECENKF/getnstensmean_smooth$XC}
 #  Other variables.
 export FHOUTEFCS=${FHOUT_ENKF:-3}
 export FHMINEFCS=${FHMIN_ENKF:-3}
@@ -174,6 +172,8 @@ export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-cp}
 export APRUN=${APRUN:-""}
+export NST_GSI=${NST_GSI:-0}
+
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
@@ -322,15 +322,12 @@ if [[ "$MPMD" = "YES" ]]; then
    elif [ $machine = WCOSS ] ; then
       nprocs=$LSB_DJOB_NUMPROC
    fi
-   ncmd=5
-   if [ $NST_GSI -gt 0 ]; then 
-      ncmd=8 
-   fi 
    FHBEG=$FHMINEFCS 
    FHEND=$FHMAXEFCS 
    FHOUT=$FHOUTEFCS 
    FH=$FHMIN 
-   cnt=0 
+   cnt=0
+   ncnt=-1
    until [[ $FH -gt $FHEND ]];do 
      [[ $FH -lt 10 ]]&&FH=0$FH 
      cmd[$cnt]="$GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF" 
@@ -339,6 +336,7 @@ if [[ "$MPMD" = "YES" ]]; then
         cmd[$cnt]="$GETNSTENSMEANEXEC ${datapath}/ nfg_${analdate}_fhr${FH}_ensmean nfg_${analdate}_fhr${FH} $NMEM_ENKF"
      fi
      ((cnt+=1)) 
+     ((ncnt+=1))
      FH=`expr $FH + $FHOUT` 
    done
 
@@ -346,7 +344,7 @@ if [[ "$MPMD" = "YES" ]]; then
    m=-1
    n=0
    while [ $((n+=1)) -le $nprocs ] ;do
-      while [ $((m+=1)) -le $ncmd ] ;do
+      while [ $((m+=1)) -le $ncnt ] ;do
          echo "${cmd[m]}" >> $DATA/cmdfile
          ((n+=1))
       done

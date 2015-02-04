@@ -212,6 +212,7 @@ export OBERRFLAG=${OBERRFLAG:-.false.}
 export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
+export NST_GSI=${NST_GSI:-0}
 
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
@@ -352,19 +353,19 @@ fi
 
 ################################################################################
 # Compute mean for perturbed and recentered ensemble analysis members
- export DATAPATH2=./
- export FILENAMEOUT=sanlpr_${CDATE}_ensmean
- export FILEPREFIX=sanlpr_${CDATE}
- export NANALS=$NMEM_ENKF
- rm stdout.sanlpr_ensmean
- eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
- rc=$?
+export DATAPATH2=./
+export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+export FILEPREFIX=sanlpr_${CDATE}
+export NANALS=$NMEM_ENKF
+rm stdout.sanlpr_ensmean
+eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+rc=$?
 
- export ERR=$rc
- export err=$ERR
- $ERRSCRIPT||exit 2
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
 
- cat stdout.sanlpr_ensmean
+cat stdout.sanlpr_ensmean
 
 
 ################################################################################

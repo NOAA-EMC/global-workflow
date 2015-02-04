@@ -226,7 +226,7 @@ elif [ $machine = WCOSS ] ; then
   export NTHREADS_EFCS=${NTHREADS_EFCS:-1}
 fi
 
-NST_GSI=${NST_GSI:-0}
+export NST_GSI=${NST_GSI:-0}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-/bin/cp}
