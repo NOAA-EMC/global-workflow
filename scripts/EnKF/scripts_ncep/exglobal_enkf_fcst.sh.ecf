@@ -12,6 +12,7 @@
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script efcs.sh
 #                            other upgrades related to model changes
+# 2014-05-16  Xu Li          Add NSST
 #
 #   Input script positional parameters:
 #
@@ -148,15 +149,20 @@ export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
 export FIX_RAD=${FIX_RAD:-$FIXGLOBAL}
-export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush} 
+export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts} 
+
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
 #------------
-export FORECASTSH=${FORECASTSH:-$SCRGLOBAL/exglobal_fcst.sh.sms}
+export FORECASTSH=${FORECASTSH:-$SCRGSM/exglobal_fcst.sh.sms}
 [[ -n ${AMEXECTMP:-""} ]]&&eval export AM_EXEC=$AMEXECTMP
 export FCSTEXEC=${FCSTEXEC:-$AM_EXEC}
 export JCAP=${JCAP_ENKF:-254}
@@ -172,13 +178,14 @@ export DELTIM=${DELTIM_ENKF:-900}
 export DTPHYS=${DTPHYS_ENKF:-300}
 export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 export FSMCL2=99999
-export FNOROG=${FNOROG_ENKF:-$FIXGLOBAL/global_orography.t$JCAP.grb}
-export FNMASK=${FNMASK_ENKF:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
-export OROGRAPHY=${OROGRAPHY_ENKF:-$FIXGLOBAL/global_orography.t$JCAP.grb}
-export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGLOBAL/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
-export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGLOBAL}/global_lonsperlat.t$MTNRSL.txt}
-export SLMASK=${SLMASK_ENKF:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
-export MTNVAR=${MTNVAR_ENKF:-$FIXGLOBAL/global_mtnvar.t$JCAP.f77}
+export FNOROG=${FNOROG_ENKF:-$FIXGSM/global_orography.t$JCAP.grb}
+export FNMASK=${FNMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
+export OROGRAPHY=${OROGRAPHY_ENKF:-$FIXGSM/global_orography.t$JCAP.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t$MTNRSL.txt}
+export SLMASK=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
+export MTNVAR=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.f77}
+export DOIAU=${DOIAU_ENKF:-NO}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -219,6 +226,7 @@ elif [ $machine = WCOSS ] ; then
   export NTHREADS_EFCS=${NTHREADS_EFCS:-1}
 fi
 
+export NST_GSI=${NST_GSI:-0}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-/bin/cp}
@@ -273,6 +281,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export SIGI=$COMIN/siganl_${CDATE}_${member}
    export SFCI=$COMIN/sfcanl_${CDATE}_${member}
+   export NSTI=$COMIN/nstanl_${CDATE}_${member}
    export FHROT=${FHROT_ENKF:-0}
    export FHOUT=${FHOUT_ENKF:-3}
    export FHMAX=${FHMAX_ENKF:-9}
@@ -314,6 +323,9 @@ while [[ $imem -le $ENSEND ]]; do
        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
        ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr${FH}_${member} sigf${FH}_${member}
        ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr${FH}_${member} sfcf${FH}_${member}
+       if [ $NST_GSI -gt 0 ]; then
+          ln -fs $COMOUTSAVE/nfg_${CDATE}_fhr${FH}_${member} nstf${FH}_${member}
+       fi
        FH=`expr $FH + $FHOUT`
      done
    fi
@@ -333,7 +345,19 @@ while [[ $imem -le $ENSEND ]]; do
         if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
         $NCP sigf${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
         $NCP sfcf${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+        if [ $NST_GSI -gt 0 ]; then
+           $NCP nstf${FH}_${member} $COMOUT/nfg_${CDATE}_fhr${FH}_${member}
+        fi
         FH=$((FH+FHOUT))
+     done
+   fi
+
+   if [ $SENDDBN = YES ]; then
+     FH=$FHOUT
+     while [[ $FH -le $FHMAX ]]; do
+       if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
+       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+       FH=$((FH+FHOUT))
      done
    fi
 

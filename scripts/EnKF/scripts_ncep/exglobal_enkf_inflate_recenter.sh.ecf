@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script ecen.sh
+# 2014-05-16  Xu Li  Add NSST
 #
 # Usage:  exglobal_enkfcen.sh.sms
 #
@@ -151,6 +152,14 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+
+export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec} 
+
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush} 
+
+
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -163,13 +172,14 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth$XC}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGLOBAL}/recentersigp$XC}
-export CHGRESSH=${CHGRESSH:-${USHGLOBAL}/global_chgres.sh}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp$XC}
+export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
+export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
-export SCALEFACT=${SCALEFACT:-32}
+export SCALEFACT=${SCALEFACT:-05}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -177,7 +187,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
-export GDATE=${GDATE:-$($NDATE -06 $CDATE)}
+export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}
 export NHOURS=$((NDAYS*24))
 export PBDATE=${PBDATE:-2010050100}
@@ -202,6 +212,7 @@ export OBERRFLAG=${OBERRFLAG:-.false.}
 export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
+export NST_GSI=${NST_GSI:-0}
 
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
@@ -338,23 +349,24 @@ if [[ $SCALEFACT -gt 0 ]]; then
     $NCP dates_ran.dat $PERTDATES
  fi
 
+fi
+
 ################################################################################
 # Compute mean for perturbed and recentered ensemble analysis members
- export DATAPATH2=./
- export FILENAMEOUT=sanlpr_${CDATE}_ensmean
- export FILEPREFIX=sanlpr_${CDATE}
- export NANALS=$NMEM_ENKF
- rm stdout.sanlpr_ensmean
- eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
- rc=$?
+export DATAPATH2=./
+export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+export FILEPREFIX=sanlpr_${CDATE}
+export NANALS=$NMEM_ENKF
+rm stdout.sanlpr_ensmean
+eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+rc=$?
 
- export ERR=$rc
- export err=$ERR
- $ERRSCRIPT||exit 2
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT||exit 2
 
- cat stdout.sanlpr_ensmean
+cat stdout.sanlpr_ensmean
 
-fi
 
 ################################################################################
 # Chgres high resolution analysis to ensemble resolution
@@ -450,7 +462,82 @@ if [[ $FILESTYLE = 'C' ]]; then
    done
 fi
 
+# Optionally alert $SIGANLENS_OUT files 
+if [ $SENDDBN = YES ]; then 
+  imem=1 
+  while [[ $imem -le $NMEM_ENKF ]]; do 
+    member="_mem"`printf %03i $imem` 
+    if [ $SENDDBN = YES ]; then 
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGANLENS_OUT}${member} 
+    fi 
+    (( imem = $imem + 1 )) 
+  done 
+fi
 
+################################################################################
+#     Update ensemble member surface and nst analyses 
+################################################################################
+if [ $NST_GSI -gt 0 ]; then
+
+   export DTSINC_ENS=${DTSINC_ENS:-${COMIN}/dtsinc_ens_${CDATE}}
+   export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
+   export SFCGES_ENS=${SFCGES_ENS:-${COMIN}/bfg_${GDATE}_fhr06}
+   export SFCGCY_ENS=${SFCGCY_ENS:-${COMIN}/sfcgcy_${CDATE}}
+   export NSTANL_ENS=${NSTANL_ENS:-${COMOUT}/nstanl_${CDATE}}
+   export SFCANL_ENS=${SFCANL_ENS:-${COMOUT}/sfcanl_${CDATE}}
+
+
+   $FCPLN $DTSINC_ENS dtsinc_ens
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+     member="_mem"`printf %03i $imem`
+     $FCPLN ${NSTGES_ENS}${member} nstf06${member}
+     $FCPLN ${SFCGES_ENS}${member} sfcf06${member}
+     if [ $NST_GSI -eq 3 ]; then
+        $FCPLN ${SFCGCY_ENS}${member} sfcgcy${member}
+     else
+        $FCPLN ${SFCANL_ENS}${member} sfcgcy${member}
+     fi
+     (( imem = $imem + 1 ))
+   done
+
+   if [[ $FILESTYLE = 'L' ]]; then
+      imem=1
+      while [[ $imem -le $NMEM_ENKF ]]; do
+         member="_mem"`printf %03i $imem`
+         ln -fs ${NSTANL_ENS}${member} nstanl${member}
+         if [ $NST_GSI -eq 3 ]; then
+            ln -fs ${SFCANL_ENS}${member} sfcanl${member}
+         fi
+         (( imem = $imem + 1 ))
+      done
+   fi
+
+   rm stdout_recenter_sfcnstupd
+   if [[ "$POE" = "YES" ]]; then
+      poe $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd
+      rc=$?
+   else
+      eval "$APRUN $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd"
+      rc=$?
+   fi
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT||exit 2
+
+   if [[ $FILESTYLE = 'C' ]]; then
+      imem=1
+      while [[ $imem -le $NMEM_ENKF ]]; do
+         member="_mem"`printf %03i $imem`
+         $NCP nstanl${member} ${NSTANL_ENS}${member} 
+         $NCP sfcanl${member} ${SFCANL_ENS}${member} 
+         (( imem = $imem + 1 ))
+      done
+   fi
+
+   cat stdout_recenter_sfcnstupd
+fi
 ################################################################################
 #  Postprocessing
 cd $pwd
