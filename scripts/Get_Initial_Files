@@ -93,6 +93,9 @@ if [[ "$expid" = "globalprod" ]]; then
    DFILESG="$DFILESG abias satang radstat"       # orig
    DFILESG="$DFILESG bf03 bf06 bf09"             # orig
    DFILESGens="${DFILESGens} sfg"                # emily
+   DFILESG1="$DFILESG1 biascr"                 # radiance bias correction from previous cycle
+   DFILESG2="$DFILESG2 biascr_pc"              # radiance bias correction from previous cycle
+   DFILESG3="$DFILESG3 radstat"                # radiance diag files from previous cycle
 else
    #>>emily
    DFILESA="$DFILESA gm3 ges gp3"              # guess files for current analysis cycle
