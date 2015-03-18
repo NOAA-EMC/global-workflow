@@ -163,6 +163,7 @@ export FHOUTEFCS=${FHOUT_ENKF:-3}
 export FHMINEFCS=${FHMIN_ENKF:-3}
 export FHMAXEFCS=${FHMAX_ENKF:-9}
 export NMEM_ENKF=${NMEM_ENKF:-80}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export MPMD=${MPMD:-NO}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
 export NTHREADS_EPOS=${NTHREADS_EPOS:-1}
@@ -314,7 +315,9 @@ FHBEG=$FHMIN
 FHEND=$FHMAX
 FH=$FHBEG
 
-cp $HYBENSMOOTH ./hybens_smoothinfo
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+   cp $HYBENSMOOTH ./hybens_smoothinfo
+fi
 
 if [[ "$MPMD" = "YES" ]]; then
    if [ $machine = IBMP6 ] ; then

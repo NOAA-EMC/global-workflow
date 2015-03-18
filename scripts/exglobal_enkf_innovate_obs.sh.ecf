@@ -421,6 +421,7 @@ export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
 export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
 export OBSQC_ENKF=${OBSQC_ENKF:-""}
 export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
 export NTHREADS_GSI=${NTHREADS_GSI:-1}
@@ -513,14 +514,18 @@ while [[ $imem -le $ENSEND ]]; do
    export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
    export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
 
-   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03s_${member}
-   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04s_${member}
-   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05s_${member}
-   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06s_${member}
-   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07s_${member}
-   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08s_${member}
-   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09s_${member}
-   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06s_${member}
+   ENKF_SUFFIX=""
+   if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+      ENKF_SUFFIX="s"
+   fi
+   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03${ENKF_SUFFIX}_${member}
+   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04${ENKF_SUFFIX}_${member}
+   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05${ENKF_SUFFIX}_${member}
+   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
+   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07${ENKF_SUFFIX}_${member}
+   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08${ENKF_SUFFIX}_${member}
+   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09${ENKF_SUFFIX}_${member}
+   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
 
    export SIGANL=$DATA/sanl
    export ABIAS=$DATA/abias
