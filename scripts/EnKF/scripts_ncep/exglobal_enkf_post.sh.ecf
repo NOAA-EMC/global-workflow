@@ -286,19 +286,21 @@ else
       fi
       FH=`expr $FH + $FHOUT`
    done
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      member="_mem"`printf %03i $imem`
-      FHBEG=$FHMIN
-      FHEND=$FHMAX
-      FH=$FHBEG
-      until [[ $FH -gt $FHEND ]];do
-         [[ $FH -lt 10 ]]&&FH=0$FH
-         ln -fs ${SIGENS_OUT}${FH}s${member} sfg_${CDATE}_fhr${FH}s$member
-         FH=`expr $FH + $FHOUT`
-      done
-      (( imem = $imem + 1 ))
-   done
+   if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+     imem=1
+     while [[ $imem -le $NMEM_ENKF ]]; do
+        member="_mem"`printf %03i $imem`
+        FHBEG=$FHMIN
+        FHEND=$FHMAX
+        FH=$FHBEG
+        until [[ $FH -gt $FHEND ]];do
+           [[ $FH -lt 10 ]]&&FH=0$FH
+           ln -fs ${SIGENS_OUT}${FH}s${member} sfg_${CDATE}_fhr${FH}s$member
+           FH=`expr $FH + $FHOUT`
+        done
+        (( imem = $imem + 1 ))
+     done
+   fi
 fi
 
 ################################################################################
@@ -391,19 +393,23 @@ $ERRSCRIPT||exit 2
 ################################################################################
 # If no smoothing, copy smoothed ensemble atmospheric files
 if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
-  imem=1
-  while [[ $imem -le $NMEM_ENKF ]]; do
-     member="_mem"`printf %03i $imem`
-     FHBEG=$FHMIN
-     FHEND=$FHMAX
-     FH=$FHBEG
-     until [[ $FH -gt $FHEND ]];do
-        [[ $FH -lt 10 ]]&&FH=0$FH
-        cp sfg_${CDATE}_fhr${FH}$member sfg_${CDATE}_fhr${FH}s$member
-        FH=`expr $FH + $FHOUT`
-     done
-     (( imem = $imem + 1 ))
-  done
+   FILEPREFIX=sfg_${CDATE}_fhr
+   if [[ $FILESTYLE = 'L' ]] then
+      FILEPREFIX=${SIGENS_OUT}
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      FHBEG=$FHMIN
+      FHEND=$FHMAX
+      FH=$FHBEG
+      until [[ $FH -gt $FHEND ]];do
+         [[ $FH -lt 10 ]]&&FH=0$FH
+         cp sfg_${CDATE}_fhr${FH}$member ${FILEPREFIX}${FH}s$member
+         FH=`expr $FH + $FHOUT`
+      done
+      (( imem = $imem + 1 ))
+   done
 fi
 
 ################################################################################
