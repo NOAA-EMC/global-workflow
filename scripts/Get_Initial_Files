@@ -12,8 +12,9 @@
 #if [ $# -eq 2 ]; then    # emily
  if [ $# -eq 3 ]; then    # emily
   adate=$1
-  expid=$2                # emily
-  getens=$3               # emily
+  expid=$2                # emily: set expid=globalprod to get files from OPS
+  getens=$3               # emily: set getens=getens to get ensemble files 
+                          #        set getens to anything other than getens will NOT get ensemble files
 else
   echo Incorrect number of arguments.  Usage:
 # echo "  Get_Initial_Files <analysis date>"                     # orig
@@ -149,8 +150,8 @@ else
        hpssdirg=/NCEPDEV/hpssuser/g01/wx23el/ZEUS/$expid                                      # emily
        hpssdira=/5year/NCEPDEV/emc-da/Yanqiu.Zhu/ZEUS/$expid                                  # emily   
        hpssdirg=/5year/NCEPDEV/emc-da/Yanqiu.Zhu/ZEUS/$expid                                  # emily
-       hpssdira=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                  # emily   
-       hpssdirg=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                  # emily
+       hpssdira=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                   # emily   
+       hpssdirg=/5year/NCEPDEV/emc-da/Emily.Liu/ZEUS/$expid                                   # emily
     fi   
 fi
 
