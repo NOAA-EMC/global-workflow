@@ -188,6 +188,12 @@ else
 fi
 export l4densvar=${l4densvar:-".false."}
 
+ENKF_SUFFIX=""
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+   ENKF_SUFFIX="s"
+fi
+
+
 ################################################################################
 #  Preprocessing
 $INISCRIPT
@@ -295,7 +301,7 @@ else
         FH=$FHBEG
         until [[ $FH -gt $FHEND ]];do
            [[ $FH -lt 10 ]]&&FH=0$FH
-           ln -fs ${SIGENS_OUT}${FH}s${member} sfg_${CDATE}_fhr${FH}s$member
+           ln -fs ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} sfg_${CDATE}_fhr${FH}${ENKF_SUFFIX}$member
            FH=`expr $FH + $FHOUT`
         done
         (( imem = $imem + 1 ))
@@ -391,8 +397,9 @@ export err=$ERR
 $ERRSCRIPT||exit 2
 
 ################################################################################
-# If no smoothing, copy smoothed ensemble atmospheric files
-if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
+# If smoothing on but no smoothing output, copy smoothed enkf atmospheric files
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+ if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
    FILEPREFIX=sfg_${CDATE}_fhr
    if [[ $FILESTYLE = 'L' ]] then
       FILEPREFIX=${SIGENS_OUT}
@@ -405,11 +412,12 @@ if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
       FH=$FHBEG
       until [[ $FH -gt $FHEND ]];do
          [[ $FH -lt 10 ]]&&FH=0$FH
-         cp sfg_${CDATE}_fhr${FH}$member ${FILEPREFIX}${FH}s$member
+         cp sfg_${CDATE}_fhr${FH}$member ${FILEPREFIX}${FH}${ENKF_SUFFIX}$member
          FH=`expr $FH + $FHOUT`
       done
       (( imem = $imem + 1 ))
    done
+ fi
 fi
 
 ################################################################################
@@ -437,7 +445,7 @@ then
       FH=$FHBEG
       until [[ $FH -gt $FHEND ]];do
          [[ $FH -lt 10 ]]&&FH=0$FH
-         cp sfg_${CDATE}_fhr${FH}s$member ${SIGENS_OUT}${FH}s${member}
+         cp sfg_${CDATE}_fhr${FH}${ENKF_SUFFIX}$member ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member}
          FH=`expr $FH + $FHOUT`
       done
       (( imem = $imem + 1 ))
@@ -476,8 +484,8 @@ if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
       imem=1
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="mem"`printf %03i $imem`
-         export SIGINP=${SIGENS_OUT}${fhr}s_${member}
-         export SIGOUT=${SIGENS_OUT}${fhr}s_${member}_t${JCAP_LORES}
+         export SIGINP=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}
+         export SIGOUT=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}_t${JCAP_LORES}
          echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
          (( imem = $imem + 1 ))
       done
@@ -548,7 +556,7 @@ while [[ $imem -le $NMEM_ENKF ]]; do
    FH=6 
    until [[ $FH -gt $FHEND ]];do 
       [[ $FH -lt 10 ]]&&FH=0$FH 
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}s${member} 
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
       FH=`expr $FH + $FHOUT` 
    done 
    (( imem = $imem + 1 )) 
