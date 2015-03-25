@@ -402,20 +402,6 @@ export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
 export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
 export CYCLVARS=${CYCLVARS}
-export SETUP=${SETUP:-""}
-export GRIDOPTS=${GRIDOPTS:-""}
-export BKGVERR=${BKGVERR:-""}
-export ANBKGERR=${ANBKGERR:-""}
-export JCOPTS=${JCOPTS:-""}
-export STRONGOPTS=${STRONGOPTS:-""}
-export OBSQC=${OBSQC:-""}
-export OBSINPUT=${OBSINPUT:-""}
-export SUPERRAD=${SUPERRAD:-""}
-export SINGLEOB=${SINGLEOB:-""}
-export LAGDATA=${LAGDATA:-""}
-export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
-export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
-export CHEM=${CHEM:-""}
 export SETUP_ENKF=${SETUP_ENKF:-""}
 export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
 export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
@@ -543,7 +529,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export DIAG_SUFFIX="_${member}"
    export DIAG_COMPRESS=NO
-   export DAIG_TARBALL=YES
+   export DIAG_TARBALL=YES
    export DOHYBVAR=NO
    export HYBRID_ENSEMBLE=" "
 
