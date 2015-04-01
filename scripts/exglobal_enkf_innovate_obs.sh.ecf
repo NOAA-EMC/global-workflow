@@ -533,7 +533,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export DIAG_SUFFIX="_${member}"
    export DIAG_COMPRESS=NO
-   export DAIG_TARBALL=YES
+   export DIAG_TARBALL=YES
    export DOHYBVAR=NO
    export HYBRID_ENSEMBLE=" "
 
