@@ -301,7 +301,7 @@ $ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubb
 $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}.orig   ./satbias_in
    $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
 else
@@ -336,7 +336,7 @@ for file in $list; do
 done
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    cd $tmpdir/
    echo "run gsi now"
 
@@ -349,10 +349,10 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_GROUP_MAX=256
    export OMP_NUM_THREADS=2
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 

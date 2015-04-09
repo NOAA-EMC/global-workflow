@@ -297,7 +297,7 @@ $ncp $global_nemsio_T62_obs/${prefix_obs}.esamub.${suffix}        ./amsubbufrear
 $ncp $global_nemsio_T62_obs/${prefix_obs}.syndata.tcvitals.tm00   ./tcvitl
 
 # Copy bias correction, atmospheric and surface files
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    $ncp $global_nemsio_T62_obs/${prefix_tbc}.abias                   ./satbias_in
    $ncp $global_nemsio_T62_obs/${prefix_tbc}.satang                  ./satbias_angle
 else
@@ -338,7 +338,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -348,11 +348,11 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_GROUP_MAX=256
    #export OMP_NUM_THREADS=1
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
 
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
