@@ -257,7 +257,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
    export fixgsi=$basedir/trunk/fix
    export scripts=$basedir/trunk/scripts
-   export fixcrtm=/nwprod/fix/crtm_v2.1.3
+   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.0b/crtm_v2.2.0-beta/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
 
