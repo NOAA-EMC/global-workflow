@@ -547,9 +547,9 @@ NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
 ZSEA1=${ZSEA1:-0}
 ZSEA2=${ZSEA2:-0}
-NST_TZR=${NST_TZR:-0}
 FAC_DTL=${FAC_DTL:-0}
 FAC_TSL=${FAC_TSL:-0}
+NST_TZR=${NST_TZR:-0}
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
@@ -1071,7 +1071,7 @@ cat <<EOF > gsiparm.anl
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
    iguess=-1,
-   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,zsea1=$ZSEA1,zsea2=$ZSEA2,nst_tzr=$NST_TZR,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
+   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,zsea1=$ZSEA1,zsea2=$ZSEA2,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,nst_tzr=$NST_TZR,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
