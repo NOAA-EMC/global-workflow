@@ -2,12 +2,18 @@
 
 set -x
 
+machine=$REMOTEHOST
+
 if [ -d /da ]; then
 #For WCOSS
    echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
-#For Zeus
-   echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-meta_data-read_files/scripts/regression_var.sh" > regression_var.out
+#For Zeus/Theia
+   if [ `expr substr $machine 1 4` = "zeus" ]; then
+      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
+   elif [ `expr substr $machine 1 5` = "theia" ]; then
+      echo "/scratch4/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
+   fi
 fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
