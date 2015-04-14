@@ -725,6 +725,7 @@ fi
 export wc=${wc:-/usr/bin/wc}
 export lrun_subdirs=${lrun_subdirs:-".true."}
 export l4densvar=${l4densvar:-".false."}
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
 
 # Set 4D-EnVar specific variables
 if [ $l4densvar = .true. ]; then
@@ -1080,7 +1081,7 @@ cat <<EOF > gsiparm.anl
    nst_gsi=$NST_GSI,nst_tzr=$NST_TZR,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
+   use_gfs_nemsio=${use_gfs_nemsio},lrun_subdirs=${lrun_subdirs},
    crtm_coeffs_path='./crtm_coeffs/',
    $SETUP
  /

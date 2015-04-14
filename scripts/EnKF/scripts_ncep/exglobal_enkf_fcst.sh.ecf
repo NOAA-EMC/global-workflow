@@ -280,6 +280,7 @@ while [[ $imem -le $ENSEND ]]; do
    export COMOUT=$DATATOP
 
    export SIGI=$COMIN/siganl_${CDATE}_${member}
+   export GRDI=$SIGI
    export SFCI=$COMIN/sfcanl_${CDATE}_${member}
    export NSTI=$COMIN/nstanl_${CDATE}_${member}
    export FHROT=${FHROT_ENKF:-0}

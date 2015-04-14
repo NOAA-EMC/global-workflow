@@ -255,6 +255,7 @@ export NVARS=${NVARS:-5}
 export NAM_ENKF=${NAM_ENKF:-""}
 export SATOBS_ENKF=${SATOBS_ENKF:-""}
 export OZOBS_ENKF=${OZOBS_ENKF:-""}
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
 export NTHREADS_ENKF=${NTHREADS_ENKF:-1}
@@ -418,6 +419,7 @@ cat <<EOF > enkf.nml
   nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS,
   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
   reducedgrid=.true.,readin_localization=.true.,
+  use_gfs_nemsio=${use_gfs_nemsio},
   $NAM_ENKF
  /
  &END
