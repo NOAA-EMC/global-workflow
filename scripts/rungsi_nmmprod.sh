@@ -244,7 +244,7 @@ emiscoef_VISice=$CRTMnam/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$CRTMnam/NPOESS.VISland.EmisCoeff.bin
 emiscoef_VISsnow=$CRTMnam/NPOESS.VISsnow.EmisCoeff.bin
 emiscoef_VISwater=$CRTMnam/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=$CRTMnam/FASTEM5.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$CRTMnam/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$CRTMnam/AerosolCoeff.bin
 cldcoef=$CRTMnam/CloudCoeff.bin
 satinfo=$FIXnam/nam_regional_satinfo.txt
@@ -269,7 +269,7 @@ cp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
 cp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
 cp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
 cp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
-cp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
+cp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satangl  ./satbias_angle
