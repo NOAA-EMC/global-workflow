@@ -146,7 +146,7 @@ done
 
 
 # Copy bias correction, atmospheric and surface files
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    $ncp $global_enkf_T62_datges/biascr.gdas.$gdate.orig     ./satbias_in
    $ncp $global_enkf_T62_datges/satang.gdas.$gdate.orig     ./satbias_ang.in
 else
@@ -159,7 +159,7 @@ $ncp $global_enkf_T62_datges/bfg_${gdate}_fhr06_ensmean ./bfg_${global_enkf_T62_
 
 
 # Run enkf under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    cd $tmpdir/
    echo "run enkf now"
 
@@ -172,10 +172,10 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_GROUP_MAX=256
    export OMP_NUM_THREADS=1
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/enkf.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/enkf.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
