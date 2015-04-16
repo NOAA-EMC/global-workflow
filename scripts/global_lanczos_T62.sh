@@ -203,7 +203,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo_reg_test.txt
@@ -242,7 +242,7 @@ $ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
 $ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
 $ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
 $ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
-$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
+$ncp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -317,7 +317,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
    cd $tmpdir/
    echo "run gsi now"
@@ -327,11 +327,11 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_GROUP_MAX=256
    #export OMP_NUM_THREADS=1
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
 
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
