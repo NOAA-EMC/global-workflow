@@ -3,7 +3,7 @@
 # First, generate new variable to hole the first 6 characters of the experiment.
 
 #if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-if [ "$machine" = "Zeus" ]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    export SETUP_update=""
    export SETUP_enkf=""
 else

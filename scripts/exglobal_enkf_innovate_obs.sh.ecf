@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script eomg.sh
+# 2014-02-16  Xu Li  add NSST related variables
 #
 # Usage:  exglobal_enkfomg.sh.sms SFCGESMEAN SIGGESMEAN
 #
@@ -29,6 +30,8 @@
 #                   defaults to ${COMIN}/${PREINP}obsinput
 #     SFCANL        Output surface analysis
 #                   defaults to ${COMOUT}/sfcanl
+#     SFCGCY        Output intermideate surface analysis 
+#                   defaults to ${COMOUT}/sfcgcy
 #     SFCG03        Surface guess valid at -03 hour
 #                   defaults to ${COMOUT}/sfcf03
 #     SFCG04        Surface guess valid at -04 hour
@@ -40,6 +43,18 @@
 #     SFCG08        Surface guess valid at -08 hour
 #                   defaults to ${COMOUT}/sfcf08
 #     SFCG09        Surface guess valid at -09 hour
+#                   defaults to ${COMOUT}/sfcf09
+#     NSTG03        NSST guess valid at -03 hour
+#                   defaults to ${COMOUT}/sfcf03
+#     NSTG04        NSST guess valid at -04 hour
+#                   defaults to ${COMOUT}/sfcf04
+#     NSTG05        NSST guess valid at -05 hour
+#                   defaults to ${COMOUT}/sfcf05
+#     NSTG07        NSST guess valid at -07 hour
+#                   defaults to ${COMOUT}/sfcf07
+#     NSTG08        NSST guess valid at -08 hour
+#                   defaults to ${COMOUT}/sfcf08
+#     NSTG09        NSST guess valid at -09 hour
 #                   defaults to ${COMOUT}/sfcf09
 #     SIGG03        Sigma guess valid at -03 hour
 #                   defaults to ${COMOUT}/sigf03
@@ -105,6 +120,8 @@
 #                   defaults to ${EXECGLOBAL}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
 #                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#     NSTHDR        Command to read NSST header
+#                   defaults to ${EXECGLOBAL}/global_nsthdr$XC
 #     CYCLEXEC      Surface cycle executable
 #                   defaults to ${EXECGLOBAL}/global_cycle$XC
 #     GSIEXEC       Spectral analysis executable
@@ -123,6 +140,8 @@
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
 #                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#     INSITUINFO    Input In Situ sea water temperature observation information file
+#                   defaults to ${FIXGLOBAL}/global_insituinfo.txt
 #     OZINFO        Input ozone information file
 #                   defaults to ${FIXGLOBAL}/global_ozone.txt
 #     PCPINFO       Input precipitation information file
@@ -213,6 +232,7 @@
 #                  $RTMFIX
 #                  $ANAVINFO
 #                  $CONVINFO
+#                  $INSITUINFO
 #                  $OZINFO
 #                  $PCPINFO
 #                  $AEROINFO
@@ -228,6 +248,12 @@
 #                  $SFCG07
 #                  $SFCG08
 #                  $SFCG09
+#                  $NSTG03
+#                  $NSTG04
+#                  $NSTG05
+#                  $NSTG07
+#                  $NSTG08
+#                  $NSTG09
 #                  $SIGG03
 #                  $SIGG04
 #                  $SIGG05
@@ -239,6 +265,7 @@
 #                  $FNSNOA
 #
 #     output data: $SFCANL
+#                  $SFCGCY
 #                  $RADSTAT
 #                  $GSISTAT
 #                  $PCPSTAT
@@ -276,6 +303,7 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 export SFCGESMEAN=${1:-${SFCGESMEAN:?}}
 export SIGGESMEAN=${2:-${SIGGESMEAN:?}}
+export NSTGESMEAN=${3:-${NSTGESMEAN:?}}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -284,20 +312,27 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
 export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
+export SCRGSI=${SCRGSI:-$NWPROD/gsi.${gsi_ver}/scripts}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
 
 # Scripts.
-export ANALYSISSH=${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.sms}
+export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.sms}
 
 #  Variables.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
 export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
 export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
 export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
@@ -312,21 +347,22 @@ export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 
 # Files.
-export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHGLOBAL}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
-export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGLOBAL}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGLOBAL}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export INSITUINFO=${INSITUINFO:-${FIXGSI}/global_insituinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
 export SFCG04=${SFCG04:-${COMOUT}/sfcf04}
@@ -334,13 +370,18 @@ export SFCG05=${SFCG05:-${COMOUT}/sfcf05}
 export SFCG07=${SFCG07:-${COMOUT}/sfcf07}
 export SFCG08=${SFCG08:-${COMOUT}/sfcf08}
 export SFCG09=${SFCG09:-${COMOUT}/sfcf09}
+export NSTG03=${NSTG03:-${COMOUT}/nstf03}
+export NSTG04=${NSTG04:-${COMOUT}/nstf04}
+export NSTG05=${NSTG05:-${COMOUT}/nstf05}
+export NSTG07=${NSTG07:-${COMOUT}/nstf07}
+export NSTG08=${NSTG08:-${COMOUT}/nstf08}
+export NSTG09=${NSTG09:-${COMOUT}/nstf09}
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
 export SIGG07=${SIGG07:-${COMOUT}/sigf07}
 export SIGG08=${SIGG08:-${COMOUT}/sigf08}
 export SIGG09=${SIGG09:-${COMOUT}/sigf09}
-export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
 export RADSTAT=${RADSTAT:-${COMOUT}/${PREINP}radstat}
 export GSISTAT=${GSISTAT:-${COMOUT}/${PREINP}gsistat}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${PREINP}pcpstat}
@@ -433,7 +474,6 @@ fi
 EOMGGRP=$COMOUT/omgstat_${CDATE}_grp${ENSGRP}
 rm -f $EOMGGRP
 
-
 ################################################################################
 # Generate ensemble innovations
 imem=$ENSBEG
@@ -459,6 +499,15 @@ while [[ $imem -le $ENSEND ]]; do
    export SFCG09=$COMINGES/bfg_${GDATE}_fhr09_${member}
    export SFCGES=$COMINGES/bfg_${GDATE}_fhr06_${member}
 
+   export NSTG03=$COMINGES/nfg_${GDATE}_fhr03_${member}
+   export NSTG04=$COMINGES/nfg_${GDATE}_fhr04_${member}
+   export NSTG05=$COMINGES/nfg_${GDATE}_fhr05_${member}
+   export NSTG06=$COMINGES/nfg_${GDATE}_fhr06_${member}
+   export NSTG07=$COMINGES/nfg_${GDATE}_fhr07_${member}
+   export NSTG08=$COMINGES/nfg_${GDATE}_fhr08_${member}
+   export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
+   export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
+
    export SIGG03=$COMINGES/sfg_${GDATE}_fhr03s_${member}
    export SIGG04=$COMINGES/sfg_${GDATE}_fhr04s_${member}
    export SIGG05=$COMINGES/sfg_${GDATE}_fhr05s_${member}
@@ -471,8 +520,11 @@ while [[ $imem -le $ENSEND ]]; do
    export SIGANL=$DATA/sanl
    export ABIAS=$DATA/abias
    export ABIASPC=$DATA/abias_pc
+   export ABIASAIR=$DATA/abias_air
 
+   export SFCGCY=$COMOUT/sfcgcy_${CDATE}_${member}
    export SFCANL=$COMOUT/sfcanl_${CDATE}_${member}
+   export NSTANL=$COMOUT/nstanl_${CDATE}_${member}
    export GSISTAT=$COMOUT/gsistat_${CDATE}_${member}
    export RADSTAT=$COMOUT/radstat_${CDATE}_${member}
    export OZNSTAT=$COMOUT/oznstat_${CDATE}_${member}
