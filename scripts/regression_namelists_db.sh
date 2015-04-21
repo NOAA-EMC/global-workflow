@@ -357,7 +357,7 @@ export global_hybrid_T126_namelist="
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=145.0,dmesh(2)=150.0,time_window_max=3.0,
+   dmesh(1)=1450.0,dmesh(2)=1500.0,time_window_max=0.5,
    $OBSINPUT
  /
 OBS_INPUT::
