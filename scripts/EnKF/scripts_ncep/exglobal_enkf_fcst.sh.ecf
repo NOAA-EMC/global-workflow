@@ -230,6 +230,11 @@ export NST_GSI=${NST_GSI:-0}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-/bin/cp}
+export SIGOSUF=${SIGOSUF:-'sig'}
+export SFCOSUF=${SFCOSUF:-'sfc'}
+export FLXOSUF=${FLXOSUF:-'flx'}
+export NSTOSUF=${NSTOSUF:-'nst'}
+
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
@@ -322,10 +327,10 @@ while [[ $imem -le $ENSEND ]]; do
      FH=$FHOUT
      while [[ $FH -le $FHMAX ]]; do
        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-       ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr${FH}_${member} sigf${FH}_${member}
-       ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr${FH}_${member} sfcf${FH}_${member}
+       ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr${FH}_${member} ${SIGOSUF}f${FH}_${member}
+       ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr${FH}_${member} ${SFCOSUF}f${FH}_${member}
        if [ $NST_GSI -gt 0 ]; then
-          ln -fs $COMOUTSAVE/nfg_${CDATE}_fhr${FH}_${member} nstf${FH}_${member}
+          ln -fs $COMOUTSAVE/nfg_${CDATE}_fhr${FH}_${member} ${NSTOSUF}f${FH}_${member}
        fi
        FH=`expr $FH + $FHOUT`
      done
@@ -344,10 +349,10 @@ while [[ $imem -le $ENSEND ]]; do
      FH=$FHOUT
      while [[ $FH -le $FHMAX ]]; do
         if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-        $NCP sigf${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
-        $NCP sfcf${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+        $NCP ${SIGOSUF}f${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
+        $NCP ${SFCOSUF}f${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
         if [ $NST_GSI -gt 0 ]; then
-           $NCP nstf${FH}_${member} $COMOUT/nfg_${CDATE}_fhr${FH}_${member}
+           $NCP ${NSTOSUF}f${FH}_${member} $COMOUT/nfg_${CDATE}_fhr${FH}_${member}
         fi
         FH=$((FH+FHOUT))
      done

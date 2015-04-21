@@ -213,6 +213,9 @@ export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
 export NST_GSI=${NST_GSI:-0}
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
+export SIGISUF=${SIGISUF:-'siganl'}
+export SFCISUF=${SFCISUF:-'sfcanl'}
 
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
@@ -243,8 +246,8 @@ cd $DATA||exit 99
 ################################################################################
 # Copy input files
 
-export SIGANL_HI=${SIGANL_HI:-siganl.$CDUMP.$CDATE}
-export SFCANL_HI=${SFCANL_HI:-sfcanl.$CDUMP.$CDATE}
+export SIGANL_HI=${SIGANL_HI:-$SIGISUF.$CDUMP.$CDATE}
+export SFCANL_HI=${SFCANL_HI:-$SFCISUF.$CDUMP.$CDATE}
 export SIGGES=${SIGGES:-sfg_${GDATE}_fhr06_ensmean}
 
 if [[ $FILESTYLE = 'C' ]]; then
@@ -374,6 +377,9 @@ export SIGI=sanl_${CDATE}_highres
 export SFCI=sfcanl_${CDATE}_highres
 export SIGO=sanl_${CDATE}_hybrid_lores
 export SFCO=sfcanl_${CDATE}_hybrid_lores
+if [ $use_gfs_nemsio = .true. ]; then
+   export GFSOUT=$SIGO
+fi
 rm -f $SIGO
 rm -f $SFCO
 
@@ -381,7 +387,7 @@ export JCAP_ens=$JCAP_ENKF
 export LEVS_ens=$LEVS_ENKF
 export LONB_ens=$LONB_ENKF
 export LATB_ens=$LATB_ENKF
-export OUTTYP=2
+export OUTTYP=${OUTTYP:-2}
 export PGMOUT=stdout.chgres
 export PGMERR=stderr.chgres
 
