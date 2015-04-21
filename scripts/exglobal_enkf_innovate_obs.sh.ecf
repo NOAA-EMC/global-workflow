@@ -403,10 +403,19 @@ export FSMCL2=${FSMCL2:-60}
 export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
 export CYCLVARS=${CYCLVARS}
 export SETUP_ENKF=${SETUP_ENKF:-""}
+export GRIDOPTS_ENKF=${GRIDOPTS_ENKF:-""}
 export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
+export ANBKGERR_ENKF=${ANBKGERR_ENKF:-""}
+export JCOPTS_ENKF=${JCOPTS_ENKF:-""}
 export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
 export OBSQC_ENKF=${OBSQC_ENKF:-""}
 export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
+export SUPERRAD_ENKF=${SUPERRAD_ENKF:-""}
+export SINGLEOB_ENKF=${SINGLEOB_ENKF:-""}
+export LAGDATA_ENKF=${LAGDATA_ENKF:-""}
+export HYBRID_ENSEMBLE_ENKF=${HYBRID_ENSEMBLE_ENKF:-""}
+export RAPIDREFRESH_CLDSURF_ENKF=${RAPIDREFRESH_CLDSURF_ENKF:-""}
+export CHEM_ENKF=${CHEM_ENKF:-""}
 export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
@@ -474,10 +483,20 @@ while [[ $imem -le $ENSEND ]]; do
    export USE_SELECT=YES
    export SELECT_OBS=${SELECT_OBS:-$DATATOP/obsinput_${CDATE}_ensmean}
    export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,$SETUP_ENKF"
+   export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
    export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
+   export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"
+   export JCOPTS="$JCOPTS $JCOPTS_ENKF"
    export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_ENKF"
    export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_ENKF"
    export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_ENKF"
+   export SUPERRAD="$SUPERRAD $SUPERRAD_ENKF"
+   export SINGLEOB="$SINGLEOB $SINGLEOB_ENKF"
+   export LAGDATA="$LAGDATA $LAGDATA_ENKF"
+   export HYBRID_ENSEMBLE="$HYBRID_ENSEMBLE $HYBRID_ENSEMBLE_ENKF"
+   export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
+   export CHEM="$CHEM $CHEM_ENKF"
+
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
