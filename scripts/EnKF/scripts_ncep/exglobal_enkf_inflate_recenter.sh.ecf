@@ -349,23 +349,22 @@ if [[ $SCALEFACT -gt 0 ]]; then
     $NCP dates_ran.dat $PERTDATES
  fi
 
-fi
-
-################################################################################
 # Compute mean for perturbed and recentered ensemble analysis members
-export DATAPATH2=./
-export FILENAMEOUT=sanlpr_${CDATE}_ensmean
-export FILEPREFIX=sanlpr_${CDATE}
-export NANALS=$NMEM_ENKF
-rm stdout.sanlpr_ensmean
-eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
-rc=$?
+ export DATAPATH2=./
+ export FILENAMEOUT=sanlpr_${CDATE}_ensmean
+ export FILEPREFIX=sanlpr_${CDATE}
+ export NANALS=$NMEM_ENKF
+ rm stdout.sanlpr_ensmean
+ eval "$APRUN $GETATMENSMEANEXEC $DATAPATH2 $FILENAMEOUT $FILEPREFIX $NANALS > stdout.sanlpr_ensmean"
+ rc=$?
 
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT||exit 2
+ export ERR=$rc
+ export err=$ERR
+ $ERRSCRIPT||exit 2
 
-cat stdout.sanlpr_ensmean
+ cat stdout.sanlpr_ensmean
+
+fi
 
 
 ################################################################################
