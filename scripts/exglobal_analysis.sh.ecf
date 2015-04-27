@@ -873,7 +873,9 @@ $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
 $FCPLN $GPSROBF  gpsrobufr
 $FCPLN $TCVITL   tcvitl
-$FCPLN $NSSTBF   nsstbufr
+if [[ $NST_GSI -gt 0 ]]; then
+   $FCPLN $NSSTBF   nsstbufr
+fi
 $FCPLN $B1AVHAM  avhambufr
 $FCPLN $B1AVHPM  avhpmbufr
 
