@@ -345,6 +345,7 @@ export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
+export DOIAU=${DOIAU:-"NO"}
 
 # Files.
 export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
@@ -497,7 +498,6 @@ while [[ $imem -le $ENSEND ]]; do
    export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
    export CHEM="$CHEM $CHEM_ENKF"
 
-
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
 
@@ -545,6 +545,9 @@ while [[ $imem -le $ENSEND ]]; do
    export OZNSTAT=$COMOUT/oznstat_${CDATE}_${member}
    export PCPSTAT=$COMOUT/pcpstat_${CDATE}_${member}
    export CNVSTAT=$COMOUT/cnvstat_${CDATE}_${member}
+   if [ $DOIAU = YES ]; then
+     export SFCA03=$COMOUT/sfca03_${CDATE}_${member}
+   fi
 
    export DIAG_SUFFIX="_${member}"
    export DIAG_COMPRESS=NO
@@ -554,6 +557,9 @@ while [[ $imem -le $ENSEND ]]; do
 
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
+   fi
+   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+      rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then
       rm -f $GSISTAT

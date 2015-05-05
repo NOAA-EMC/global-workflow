@@ -726,6 +726,7 @@ export wc=${wc:-/usr/bin/wc}
 export lrun_subdirs=${lrun_subdirs:-".true."}
 export l4densvar=${l4densvar:-".false."}
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
+export DOIAU=${DOIAU:-"NO"}
 
 # Set 4D-EnVar specific variables
 if [ $l4densvar = .true. ]; then
@@ -772,6 +773,12 @@ if [ $NST_GSI -eq 3 ] ; then
    fi
 else
    $CYCLESH  $SFCGES $SFCANL
+   if [ $DOIAU = YES ]; then
+      export CDATE_SAVE=$CDATE
+      export CDATE=$($NDATE -3 $CDATE_SAVE)
+      $CYCLESH  $SFCG03 $SFCA03
+      export CDATE=$CDATE_SAVE
+   fi
 fi
 
 rc=$?
