@@ -21,7 +21,6 @@ make lib
 cd $dir_src/enkf
 configure clean 
 configure $target
-make -j 8
 make clean
 make -j 8
 make lib
