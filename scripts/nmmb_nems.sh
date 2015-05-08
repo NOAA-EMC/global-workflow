@@ -180,8 +180,20 @@ $ncp $nmmb_nems_obs/gdas1.t00z.mls.tm00.bufr_d ./mlsbufr
 $ncp $nmmb_nems_ges/ndas.t06z.satang.tm09 ./satbias_angle
 $ncp $nmmb_nems_ges/ndas.t06z.satbias.tm09 ./satbias_in
 
-$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout
-$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout.ctl
+if [[ "$exp" = $nmmb_nems_updat_exp1 ]]; then
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout03
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout03.ctl
+elif [[ "$exp" = $nmmb_nems_updat_exp2 ]]; then
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout03
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout03.ctl
+elif [[ "$exp" = $nmmb_nems_contrl_exp1 ]]; then
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout.ctl
+elif [[ "$exp" = $nmmb_nems_contrl_exp2 ]]; then
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout
+   $ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout.ctl
+fi
+
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $nmmb_nems_ges/gdas1.t00z.sgesprep     ./gfs_sigf03
 elif [[ "$endianness" = "Little_Endian" ]]; then
@@ -215,6 +227,12 @@ elif [[ "$machine" = "WCOSS" ]]; then
 fi
 
 rc=$?
+
+if [[ "$exp" = $nmmb_nems_updat_exp1 ]]; then
+   mv wrf_inout03 wrf_inout
+elif [[ "$exp" = $nmmb_nems_updat_exp2 ]]; then
+   mv wrf_inout03 wrf_inout
+fi
 
 exit
 

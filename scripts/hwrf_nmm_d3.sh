@@ -240,14 +240,21 @@ $ncp $hwrf_nmm_ges/gdas1.t${hhg}z.sf09  ./gfs_sigf09
 
 # Copy ensemble forecast files for hybrid analysis
 export ENSEMBLE_SIZE_REGIONAL=80
->filelist
+>filelist06
 n=1
 while [[ $n -le ${ENSEMBLE_SIZE_REGIONAL} ]]; do
   $lnsf $hwrf_nmm_ges/$( printf sfg_${gdate}_fhr06s_mem%03d $n )  \
         ./$( printf sfg_${gdate}_fhr06s_mem%03d $n )
-  ls ./$( printf sfg_${gdate}_fhr06s_mem%03d $n ) >> filelist
+  ls ./$( printf sfg_${gdate}_fhr06s_mem%03d $n ) >> filelist06
   n=$((n + 1))
 done
+
+if [[ $exp = $hwrf_nmm_d3_contrl_exp1 ]]; then
+   mv filelist06 filelist  
+elif [[ $exp = $hwrf_nmm_d3_contrl_exp2 ]]; then
+   mv filelist06 filelist
+fi
+
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then

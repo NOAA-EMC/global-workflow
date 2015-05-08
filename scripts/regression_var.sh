@@ -118,7 +118,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
+      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    elif [[ "$machine" = "Theia" ]]; then
       export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
       export gsisrc=$basedir/EXP-testCRTM_R2.2/src
@@ -128,7 +128,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.0/fix
+      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.1/fix
    fi
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
@@ -249,17 +249,17 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
-   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
-   export tmpdir=/ptmpp1/$LOGNAME
-   export savdir=/ptmpp1/$LOGNAME
+   export basedir=/meso/save/Wanshu.Wu/Code/reg_4denvar
+   export gsisrc=$basedir/src
+   export gsiexec_updat=$basedir/src/global_gsi
+   export gsiexec_contrl=$basedir/srcc/global_gsi
+   export enkfexec_updat=$basedir/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/srcc/enkf/global_enkf
+   export fixgsi=$basedir/fix
+   export scripts=$basedir/scripts
+   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
+   export tmpdir=/ptmpd2/Wanshu.Wu
+   export savdir=/ptmpd2/Wanshu.Wu
 
 #  Next, paths for canned case data.
 
@@ -293,7 +293,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$USER
+   export noscrub=/meso/noscrub/Wanshu.Wu
    export endianness=Big_Endian
 
 fi
@@ -305,7 +305,7 @@ export gps_dtype="gps_bnd"
 
 # Define ptmp location
 
-export ptmp_loc="/ptmpp1/$USER"
+export ptmp_loc="/ptmpd2/Wanshu.Wu"
 
 # Regression output filename
 
