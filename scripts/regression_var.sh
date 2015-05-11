@@ -249,17 +249,17 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/meso/save/Wanshu.Wu/Code/reg_4denvar
-   export gsisrc=$basedir/src
-   export gsiexec_updat=$basedir/src/global_gsi
-   export gsiexec_contrl=$basedir/srcc/global_gsi
-   export enkfexec_updat=$basedir/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/srcc/enkf/global_enkf
-   export fixgsi=$basedir/fix
-   export scripts=$basedir/scripts
+   export basedir=/da/save/$LOGNAME
+   export gsisrc=$basedir/trunk/src
+   export gsiexec_updat=$basedir/trunk/src/global_gsi
+   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+   export fixgsi=$basedir/trunk/fix
+   export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
-   export tmpdir=/ptmpd2/Wanshu.Wu
-   export savdir=/ptmpd2/Wanshu.Wu
+   export tmpdir=/ptmpp1/$LOGNAME
+   export savdir=/ptmpp1/$LOGNAME
 
 #  Next, paths for canned case data.
 
@@ -293,7 +293,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/meso/noscrub/Wanshu.Wu
+   export noscrub=/da/noscrub/$USER
    export endianness=Big_Endian
 
 fi
@@ -305,7 +305,7 @@ export gps_dtype="gps_bnd"
 
 # Define ptmp location
 
-export ptmp_loc="/ptmpd2/Wanshu.Wu"
+export ptmp_loc="/ptmpp1/$USER"
 
 # Regression output filename
 

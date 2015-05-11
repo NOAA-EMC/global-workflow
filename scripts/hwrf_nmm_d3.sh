@@ -249,11 +249,13 @@ while [[ $n -le ${ENSEMBLE_SIZE_REGIONAL} ]]; do
   n=$((n + 1))
 done
 
+########## to be removed before merge back to trunk ############
 if [[ $exp = $hwrf_nmm_d3_contrl_exp1 ]]; then
    mv filelist06 filelist  
 elif [[ $exp = $hwrf_nmm_d3_contrl_exp2 ]]; then
    mv filelist06 filelist
 fi
+########## to be removed before merge back to trunk ############
 
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
