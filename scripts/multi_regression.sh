@@ -6,11 +6,11 @@ machine=$REMOTEHOST
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/meso/save/Wanshu.Wu/Code/reg_4denvar/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
 #For Zeus/Theia
    if [ `expr substr $machine 1 4` = "zeus" ]; then
-      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
+      echo "/scratch2/portfolios/NCEPDEV/meso/save/Wanshu.Wu/Code/reg_4denvar/scripts/regression_var.sh" > regression_var.out
    elif [ `expr substr $machine 1 5` = "theia" ]; then
       echo "/scratch4/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
    fi
