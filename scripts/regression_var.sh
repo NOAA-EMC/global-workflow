@@ -118,7 +118,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
+      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    elif [[ "$machine" = "Theia" ]]; then
       export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
       export gsisrc=$basedir/EXP-testCRTM_R2.2/src
@@ -128,7 +128,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.0/fix
+      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.1/fix
    fi
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
@@ -257,7 +257,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
    export fixgsi=$basedir/trunk/fix
    export scripts=$basedir/trunk/scripts
-   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
+   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
 
