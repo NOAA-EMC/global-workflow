@@ -118,7 +118,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
+      export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    elif [[ "$machine" = "Theia" ]]; then
       export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
       export gsisrc=$basedir/EXP-testCRTM_R2.2/src
@@ -128,7 +128,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
       export scripts=$basedir/EXP-testCRTM_R2.2/scripts
-      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.0/fix
+      export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.1/fix
    fi
    export tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
    export savdir=/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME
@@ -249,15 +249,16 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
+/da/noscrub/John.Derber/fastupdate/scripts
    export basedir=/da/noscrub/$LOGNAME
-   export gsisrc=$basedir/fastversion/src
-   export gsiexec_updat=$basedir/fastversion/src/global_gsi
-   export gsiexec_contrl=$basedir/fastversion/src/global_gsi_save
-   export enkfexec_updat=$basedir/fastversion/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/fastversion/src/enkf/global_enkf
-   export fixgsi=$basedir/fastversion/fix
-   export scripts=$basedir/fastversion/scripts
-   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.0/crtm_v2.2.0/fix
+   export gsisrc=$basedir/fastupdate/src
+   export gsiexec_updat=$basedir/fastupdate/src/global_gsi
+   export gsiexec_contrl=$basedir/trunk/src/global_gsi
+   export enkfexec_updat=$basedir/fastupdate/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
+   export fixgsi=$basedir/fastupdate/fix
+   export scripts=$basedir/fastupdate/scripts
+   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
 
