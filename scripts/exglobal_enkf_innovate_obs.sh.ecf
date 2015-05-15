@@ -483,7 +483,7 @@ while [[ $imem -le $ENSEND ]]; do
    export RUN_SELECT=NO
    export USE_SELECT=YES
    export SELECT_OBS=${SELECT_OBS:-$DATATOP/obsinput_${CDATE}_ensmean}
-   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,$SETUP_ENKF"
+   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
    export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
    export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
    export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"

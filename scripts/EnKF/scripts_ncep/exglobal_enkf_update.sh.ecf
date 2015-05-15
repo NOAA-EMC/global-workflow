@@ -420,6 +420,7 @@ cat <<EOF > enkf.nml
   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
   reducedgrid=.true.,readin_localization=.true.,
   use_gfs_nemsio=${use_gfs_nemsio},
+  univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
   $NAM_ENKF
  /
  &END
