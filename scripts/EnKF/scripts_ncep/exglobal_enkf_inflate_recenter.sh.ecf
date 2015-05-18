@@ -164,6 +164,8 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run script with NEMSIO input/output
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
@@ -172,6 +174,7 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
 export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmean_smooth$XC}
 export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec$XC}
 export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp$XC}
@@ -185,7 +188,11 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}

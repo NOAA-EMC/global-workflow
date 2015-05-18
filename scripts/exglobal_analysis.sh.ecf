@@ -542,27 +542,39 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
-# Control parameters for NSST
-NST_GSI=${NST_GSI:-0}
-NST_TZR=${NST_TZR:-0}
-NSTINFO=${NSTINFO:-0}
-FAC_DTL=${FAC_DTL:-0}
-FAC_TSL=${FAC_TSL:-0}
+#  Set script / GSI control parameters
+NST_GSI=${NST_GSI:-0}                                # NSST:  indicator to control the Tr Analysis mode
+NST_TZR=${NST_TZR:-0}                                # NSST:  indicator to control the Tzr_QC mode
+NSTINFO=${NSTINFO:-0}                                # NSST:  number of nst variables
+FAC_DTL=${FAC_DTL:-0}                                # NSST:  index to apply diurnal thermocline layer  or not
+FAC_TSL=${FAC_TSL:-0}                                # NSST:  index to apply thermal skin layer or not
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
+export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode
+export DOIAU=${DOIAU:-"NO"}                          # run global_cycle for IAU
+export lrun_subdirs=${lrun_subdirs:-".true."}        # run GSI with scratch files in sub-directories
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
-export JCAP=${JCAP:-$($SIGHDR $SIGGES JCAP||echo 0)}
-export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES JCAP||echo 0)}
-export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
-export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export JCAP=${JCAP:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+else
+  export JCAP=${JCAP:-$($SIGHDR $SIGGES JCAP||echo 0)}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES JCAP||echo 0)}
+  export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
+  export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
+fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
-export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
 export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
 export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
@@ -674,10 +686,15 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
-export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGES FHOUR||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGES nfhour |awk -F" " '{print $2}'`}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+  export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGES FHOUR||echo 0)}
+fi
 export CYCLVARS=${CYCLVARS}
 export SETUP=${SETUP:-""}
 export GRIDOPTS=${GRIDOPTS:-""}
@@ -723,10 +740,6 @@ else
   UNCOMPRESS=${UNCOMPRESS:-gunzip}
 fi
 export wc=${wc:-/usr/bin/wc}
-export lrun_subdirs=${lrun_subdirs:-".true."}
-export l4densvar=${l4densvar:-".false."}
-export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
-export DOIAU=${DOIAU:-"NO"}
 
 # Set 4D-EnVar specific variables
 if [ $l4densvar = .true. ]; then

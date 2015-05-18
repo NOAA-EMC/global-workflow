@@ -128,6 +128,9 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 # none
 #  Directories.
+export HOMEDIR=${HOMEDIR:-/nwprod}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix} 
 export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec} 
 export USHENKF=${USHENKF:-$NWPROD/enkf.${enkf_ver}/ush} 
@@ -136,6 +139,8 @@ export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script / EnKF update control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run script with NEMSIO input/output
 #  Filenames.
 export XC=${XC:-".x"}
 export LEVS=${LEVS:-64}
@@ -144,8 +149,13 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGSI/global_hybens_smoothinfo.l${LEVS}.txt}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
 #  I/O filenames.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export SIGENS_IN=${SIGENS_IN:-$COMIN/sfg_${CDATE}_fhr}
 export SFCENS=${SFCENS:-$COMIN/bfg_${CDATE}_fhr}
 export ENSSTAT=${ENSSTAT:-$COMOUT/ensstat_${CDATE}_all}

@@ -213,18 +213,28 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script / EnKF update control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run EnKF update with NEMSIO input/output
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
-export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
-export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
+  export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NPTS=`expr \( $LONA \) \* \( $LATA \)`
-export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
 export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECENKF}/global_enkf$XC}
 export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
@@ -245,7 +255,6 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NANALS=${NANALS:-80}
@@ -255,7 +264,6 @@ export NVARS=${NVARS:-5}
 export NAM_ENKF=${NAM_ENKF:-""}
 export SATOBS_ENKF=${SATOBS_ENKF:-""}
 export OZOBS_ENKF=${OZOBS_ENKF:-""}
-export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
 export NTHREADS_ENKF=${NTHREADS_ENKF:-1}
