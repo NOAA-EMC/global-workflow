@@ -146,13 +146,8 @@ done
 
 
 # Copy bias correction, atmospheric and surface files
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-   $ncp $global_enkf_T62_datges/biascr.gdas.$gdate.orig     ./satbias_in
-   $ncp $global_enkf_T62_datges/satang.gdas.$gdate.orig     ./satbias_ang.in
-else
-   $ncp $global_enkf_T62_datges/biascr_int_${gdate}_ensmean ./satbias_in
-   $ncp $global_enkf_T62_datges/satang.gdas.$gdate          ./satbias_ang.in
-fi
+$ncp $global_enkf_T62_datges/biascr_int_${gdate}_ensmean ./satbias_in
+$ncp $global_enkf_T62_datges/satang.gdas.$gdate          ./satbias_ang.in
 
 $ncp $global_enkf_T62_datges/sfg_${gdate}_fhr06_ensmean ./sfg_${global_enkf_T62_adate}_fhr06_ensmean
 $ncp $global_enkf_T62_datges/bfg_${gdate}_fhr06_ensmean ./bfg_${global_enkf_T62_adate}_fhr06_ensmean
