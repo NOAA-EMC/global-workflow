@@ -11,7 +11,7 @@ if [[ "$machine" = "Zeus" ]]; then
 
    # Submit jobs using sub wrapper.
    if [ "$debug" = ".false." ]; then
-      /bin/sh sub_zeus -j $rtma_updat_exp1 -t 0:15:00 -p 2/5/0 $scripts/rtma.sh
+      /bin/sh sub_zeus -j $rtma_updat_exp1 -t 0:15:00 -p 8/6/0 $scripts/rtma.sh
 
       while [[ $(grep -c '+ rc=0' ${rtma_updat_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${rtma_updat_exp1}.out > return_code_rtma.out
@@ -30,7 +30,7 @@ if [[ "$machine" = "Zeus" ]]; then
 
       rm -f return_code_rtma.out
 
-      /bin/sh sub_zeus -j $rtma_updat_exp2 -t 0:12:00 -p 4/5/0 $scripts/rtma.sh
+      /bin/sh sub_zeus -j $rtma_updat_exp2 -t 0:12:00 -p 8/8/0 $scripts/rtma.sh
 
       while [[ $(grep -c '+ rc=0' ${rtma_updat_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${rtma_updat_exp2}.out > return_code_rtma.out
@@ -49,7 +49,7 @@ if [[ "$machine" = "Zeus" ]]; then
 
       rm -f return_code_rtma.out
 
-      /bin/sh sub_zeus -j $rtma_contrl_exp1 -t 0:12:00 -p 2/5/0 $scripts/rtma.sh
+      /bin/sh sub_zeus -j $rtma_contrl_exp1 -t 0:12:00 -p 8/6/0 $scripts/rtma.sh
 
       while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${rtma_contrl_exp1}.out > return_code_rtma.out
@@ -68,7 +68,7 @@ if [[ "$machine" = "Zeus" ]]; then
 
       rm -f return_code_rtma.out
 
-      /bin/sh sub_zeus -j $rtma_contrl_exp2 -t 0:12:00 -p 4/5/0 $scripts/rtma.sh
+      /bin/sh sub_zeus -j $rtma_contrl_exp2 -t 0:12:00 -p 8/8/0 $scripts/rtma.sh
 
       while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${rtma_contrl_exp2}.out > return_code_rtma.out
