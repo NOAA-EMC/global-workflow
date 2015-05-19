@@ -301,24 +301,19 @@ $ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubb
 $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}.orig   ./satbias_in
-   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
-else
-   $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-   $ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
-   $ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
+$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
+$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
+$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
 
-   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
-   for type in $listdiag; do
-      diag_file=`echo $type | cut -d',' -f1`
-      fname=`echo $diag_file | cut -d'.' -f1`
-      date=`echo $diag_file | cut -d'.' -f2`
-      $UNCOMPRESS $diag_file
-      fnameanl=$(echo $fname|sed 's/_ges//g')
-      mv $fname.$date $fnameanl
-   done
-fi
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   fname=`echo $diag_file | cut -d'.' -f1`
+   date=`echo $diag_file | cut -d'.' -f2`
+   $UNCOMPRESS $diag_file
+   fnameanl=$(echo $fname|sed 's/_ges//g')
+   mv $fname.$date $fnameanl
+done
 
 $ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate  ./sfcf03
 $ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate  ./sfcf06
@@ -347,7 +342,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256
-   export OMP_NUM_THREADS=2
+   #export OMP_NUM_THREADS=2
 
 #  module load intel
 #  module load mpt

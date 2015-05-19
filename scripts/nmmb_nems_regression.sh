@@ -11,7 +11,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
    # Submit jobs using sub wrapper.
    if [ "$debug" = ".false." ]; then
-      /bin/sh sub_zeus -j $nmmb_nems_updat_exp1 -t 0:15:00 -p 6/6/0 $scripts/nmmb_nems.sh
+      /bin/sh sub_zeus -j $nmmb_nems_updat_exp1 -t 0:15:00 -p 6/6/0 -r /1 $scripts/nmmb_nems.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_updat_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_updat_exp1}.out > return_code_nmmb_nems.out
@@ -30,7 +30,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_nmmb_nems.out
 
-      /bin/sh sub_zeus -j $nmmb_nems_updat_exp2 -t 0:12:00 -p 8/8/0 $scripts/nmmb_nems.sh
+      /bin/sh sub_zeus -j $nmmb_nems_updat_exp2 -t 0:12:00 -p 8/8/0 -r /1 $scripts/nmmb_nems.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_updat_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_updat_exp2}.out > return_code_nmmb_nems.out
@@ -49,7 +49,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_nmmb_nems.out
 
-      /bin/sh sub_zeus -j $nmmb_nems_contrl_exp1 -t 0:12:00 -p 6/6/0 $scripts/nmmb_nems.sh
+      /bin/sh sub_zeus -j $nmmb_nems_contrl_exp1 -t 0:12:00 -p 6/6/0 -r /1 $scripts/nmmb_nems.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_contrl_exp1}.out > return_code_nmmb_nems.out
@@ -68,7 +68,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_nmmb_nems.out
 
-      /bin/sh sub_zeus -j $nmmb_nems_contrl_exp2 -t 0:12:00 -p 8/8/0 $scripts/nmmb_nems.sh
+      /bin/sh sub_zeus -j $nmmb_nems_contrl_exp2 -t 0:12:00 -p 8/8/0 -r /1 $scripts/nmmb_nems.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_contrl_exp2}.out > return_code_nmmb_nems.out

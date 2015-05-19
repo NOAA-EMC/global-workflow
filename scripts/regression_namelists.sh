@@ -525,14 +525,15 @@ OBS_INPUT::
 export RTMA_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,
+   miter=2,niter(1)=10,niter(2)=10,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
+   factqmin=1.0,factqmax=1.0,factv=0.1,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
+   nhr_assimilation=6,min_offset=180,use_compress=.false.,lrun_subdirs=.true.,
+   use_prepb_satwnd=.false.
    $SETUP
  /
  &GRIDOPTS
@@ -559,7 +560,7 @@ export RTMA_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
-   hilbert_curve=.true.,
+   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.
  /
  &OBS_INPUT
    dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=3.0,
@@ -574,7 +575,13 @@ OBS_INPUT::
    prepbufr       spd       null      spd      1.0     0      0
    prepbufr       gust      null      gust     1.0     0      0
    prepbufr       vis       null      vis      1.0     0      0
-   oscatbufr      uv        null      uv       1.0     0      0
+   prepbufr       wspd10m   null      wspd10m  1.0     0      0
+   prepbufr       td2m      null      td2m     1.0     0      0
+   prepbufr       mxtm      null      mxtm     1.0     0      0
+   prepbufr       mitm      null      mitm     1.0     0      0
+   prepbufr       pmsl      null      pmsl     1.0     0      0
+   prepbufr       howv      null      howv     1.0     0      0
+   prepbufr       tcamt     null      tcamt    1.0     0      0
 ::
  &SUPEROB_RADAR
  /
