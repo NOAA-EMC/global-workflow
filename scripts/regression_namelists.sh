@@ -1420,7 +1420,7 @@ export hwrf_nmm_d2_namelist="
    noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',
  /
  &OBS_INPUT
-   dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,dmesh(7)=9.0,time_window_max=3.0,l_foreaft_thin=.false.,
+   dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
  /
 OBS_INPUT::
 !  dfile          dtype       dplat     dsis                dval    dthin  dsfcalc
@@ -1435,7 +1435,7 @@ OBS_INPUT::
    radarbufr      rw          null      rw                  0.0      0     0
    prepbufr       sst         null      sst                 0.0      0     0
    tcvitl         tcp         null      tcp                 0.0      0     0
-   tldplrbufr     rw          null      rw                  0.0      7     0
+   tldplrbufr     rw          null      rw                  0.0      0     0
    hdobbufr       uv          null      uv                  0.0      0     0
    hdobbufr       t           null      t                   0.0      0     0
    hdobbufr       q           null      q                   0.0      0     0
@@ -1574,7 +1574,7 @@ export hwrf_nmm_d3_namelist="
    noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',
  /
  &OBS_INPUT
-   dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,dmesh(7)=9.0,time_window_max=3.0,l_foreaft_thin=.false.,
+   dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
  /
 OBS_INPUT::
 !  dfile          dtype       dplat     dsis                dval    dthin  dsfcalc
@@ -1589,7 +1589,7 @@ OBS_INPUT::
    radarbufr      rw          null      rw                  0.0      0     0
    prepbufr       sst         null      sst                 0.0      0     0
    tcvitl         tcp         null      tcp                 0.0      0     0
-   tldplrbufr     rw          null      rw                  0.0      7     0
+   tldplrbufr     rw          null      rw                  0.0      0     0
    hdobbufr       uv          null      uv                  0.0      0     0
    hdobbufr       t           null      t                   0.0      0     0
    hdobbufr       q           null      q                   0.0      0     0
