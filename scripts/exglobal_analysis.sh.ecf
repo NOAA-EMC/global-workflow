@@ -241,6 +241,8 @@
 #                   defaults to ${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}
 #     OSCATBF       Input OSCAT wind file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}
+#     RAPIDSCATBF   Input RAPIDSCAT wind file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}rapidscatw.tm00.bufr_d${SUFINP}
 #     GSNDBF        Input GOES sounder radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
 #     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
@@ -593,6 +595,7 @@ export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
 export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
+export RAPIDSCATBF=${RAPIDSCATBF:-${COMIN}/${PREINP}rapidscatw.tm00.bufr_d${SUFINP}}
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d${SUFINP}}
 export B1HRS2=${B1HRS2:-${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}}
@@ -863,6 +866,7 @@ $FCPLN $PREPQC   prepbufr
 $FCPLN $PREPQCPF prepbufr_profl
 $FCPLN $SATWND   satwndbufr
 $FCPLN $OSCATBF  oscatbufr
+$FCPLN $RAPIDSCATBF  rapidscatbufr
 $FCPLN $GSNDBF   gsndrbufr
 $FCPLN $GSNDBF1  gsnd1bufr
 $FCPLN $B1HRS2   hirs2bufr
@@ -1097,7 +1101,7 @@ cat <<EOF > gsiparm.anl
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
-   crtm_coeffs_path='./crtm_coeffs/'
+   crtm_coeffs_path='./crtm_coeffs/',
    $SETUP
  /
  &GRIDOPTS
@@ -1224,6 +1228,7 @@ OBS_INPUT::
    gmibufr        gmi         gpm         gmi_gpm             0.0     3     0
    saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
    ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
+   rapidscatbufr  uv          null        uv                  0.0     0     0
 ::
  &SUPEROB_RADAR
    $SUPERRAD
