@@ -206,8 +206,8 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
 
-export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
-export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec}
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec}
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
@@ -235,7 +235,7 @@ fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NPTS=`expr \( $LONA \) \* \( $LATA \)`
-export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECENKF}/global_enkf$XC}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGDAS}/global_enkf$XC}
 export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
 export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}

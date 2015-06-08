@@ -131,9 +131,9 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix} 
-export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec} 
-export USHENKF=${USHENKF:-$NWPROD/enkf.${enkf_ver}/ush} 
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix} 
+export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
+export USHGDAS=${USHGDAS:-$NWPROD/gdas.${gdas_ver}/ush} 
 export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
 export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
@@ -163,11 +163,11 @@ export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/sfg_${CDATE}_fhr}
 export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/bfg_${CDATE}_fhr}
 export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECENKF/getsigensmean_smooth$XC}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECENKF/getsfcensmean_smooth$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECGDAS/getsigensmean_smooth$XC}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECGDAS/getsfcensmean_smooth$XC}
 export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
 export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
-export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECENKF/getnstensmean_smooth$XC}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECGDAS/getnstensmean_smooth$XC}
 #  Other variables.
 export FHOUTEFCS=${FHOUT_ENKF:-3}
 export FHMINEFCS=${FHMIN_ENKF:-3}
@@ -490,13 +490,13 @@ if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
       member="ensmean"
       export SIGINP=${SIGENS_OUT}${fhr}_${member}
       export SIGOUT=${SIGENS_OUT}${fhr}_${member}_t${JCAP_LORES}
-      echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+      echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
       imem=1
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="mem"`printf %03i $imem`
          export SIGINP=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}
          export SIGOUT=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}_t${JCAP_LORES}
-         echo "$USHENKF/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+         echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
          (( imem = $imem + 1 ))
       done
       chmod 755 poescript.$fhr

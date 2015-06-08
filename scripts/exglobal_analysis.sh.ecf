@@ -372,6 +372,8 @@
 #                   defaults to .true.
 #     l4densvar     logical to toggle 4D-EnsVar option
 #                   defaults to .false.
+#     lwrite4danl   logical to toggle write 4D analysis files
+#                   defaults to .false.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -550,6 +552,7 @@ FAC_DTL=${FAC_DTL:-0}                                # NSST:  index to apply diu
 FAC_TSL=${FAC_TSL:-0}                                # NSST:  index to apply thermal skin layer or not
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode
+export lwrite4danl=${lwrite4danl:-".false."}         # .false. = write single analysis at center time
 export DOIAU=${DOIAU:-"NO"}                          # run global_cycle for IAU
 export lrun_subdirs=${lrun_subdirs:-".true."}        # run GSI with scratch files in sub-directories
 #  Filenames.
@@ -757,6 +760,12 @@ if [ $l4densvar = .true. ]; then
    export SIGF07ENS=${SIGF07ENS:-${COMROT}/sigf07_ens}
    export SIGF08ENS=${SIGF08ENS:-${COMROT}/sigf08_ens}
    export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
+fi
+
+# Set local name of center time window analysis file
+SIGANL_LOCAL=siganl
+if [ $lwrite4danl = .true. ] ; then
+   SIGANL_LOCAL=siga06
 fi
 
 ################################################################################
@@ -1037,7 +1046,7 @@ if [ $FILESTYLE != 'C' ]; then
       ln -fs $SIGA03   siga03
       ln -fs $SIGA04   siga04
       ln -fs $SIGA05   siga05
-      ln -fs $SIGANL   siga06
+      ln -fs $SIGANL   $SIGANL_LOCAL
       ln -fs $SIGA07   siga07
       ln -fs $SIGA08   siga08
       ln -fs $SIGA09   siga09
@@ -1267,15 +1276,15 @@ $ERRSCRIPT||exit 2
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
    if [ $l4densvar = .true. ]; then
-      $NCP siga03          $SIGA03
-      $NCP siga04          $SIGA04
-      $NCP siga05          $SIGA05
-      $NCP siga06          $SIGANL
-      $NCP siga07          $SIGA07
-      $NCP siga08          $SIGA08
-      $NCP siga09          $SIGA09
+      $NCP siga03         $SIGA03
+      $NCP siga04         $SIGA04
+      $NCP siga05         $SIGA05
+      $NCP $SIGANL_LOCAL  $SIGANL
+      $NCP siga07         $SIGA07
+      $NCP siga08         $SIGA08
+      $NCP siga09         $SIGA09
    else
-     $NCP siganl          $SIGANL
+     $NCP siganl         $SIGANL
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
