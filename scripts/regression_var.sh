@@ -112,7 +112,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    if [[ "$machine" = "Zeus" ]]; then
       export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
       export gsisrc=$basedir/EXP-testCRTM_R2.2/src
-      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/global_gsi
+      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/elobal_gsi
       export gsiexec_contrl=$basedir/svn1/src/global_gsi
       export enkfexec_updat=$basedir/EXP-testCRTM_R2.2/src/enkf/global_enkf
       export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
