@@ -4,7 +4,7 @@
 #@ job_type=parallel
 #@ class=dev
 #@ group=dev
-#@ account_no = RDAS-MTN
+#@ account_no = RDAS-T2O
 
 #
 #  test nems nmmb regional option for gsi

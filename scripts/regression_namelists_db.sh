@@ -471,11 +471,12 @@ export RTMA_namelist="
    miter=2,niter(1)=1,niter(2)=2,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,deltim=$DELTIM,
+   factqmin=1.0,factqmax=1.0,factv=0.1,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
-   nhr_assimilation=6,use_compress=.false.,lrun_subdirs=.true.,
+   nhr_assimilation=6,min_offset=180,use_compress=.false.,lrun_subdirs=.true.,
+   use_prepb_satwnd=.false.
    $SETUP
  /
  &GRIDOPTS
@@ -502,21 +503,28 @@ export RTMA_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
-   hilbert_curve=.true.,
+   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.
  /
  &OBS_INPUT
    dmesh(1)=600.0,dmesh(2)=600.0,dmesh(3)=600.0,dmesh(4)=600.0,time_window_max=0.5,
  /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis          dval   dthin dsfcalc
-   prepbufr       ps          null        ps            1.0    0       0
-   prepbufr       t           null        t             1.0    0       0
-   prepbufr       q           null        q             1.0    0       0
-   prepbufr       uv          null        uv            1.0    0       0
-   satwndbufr     uv          null        uv            1.0    0       0
-   prepbufr       spd         null        spd           1.0    0       0
-   prepbufr       gust        null        gust          1.0    0       0
-   prepbufr       vis         null        vis           1.0    0       0
+   prepbufr       ps          null        ps           1.0     0      0
+   prepbufr       t           null        t            1.0     0      0
+   prepbufr       q           null        q            1.0     0      0
+   prepbufr       uv          null        uv           1.0     0      0
+   satwndbufr     uv          null        uv           1.0     0      0
+   prepbufr       spd         null        spd          1.0     0      0
+   prepbufr       gust        null        gust         1.0     0      0
+   prepbufr       vis         null        vis          1.0     0      0
+   prepbufr       wspd10m     null        wspd10m      1.0     0      0
+   prepbufr       td2m        null        td2m         1.0     0      0
+   prepbufr       mxtm        null        mxtm         1.0     0      0
+   prepbufr       mitm        null        mitm         1.0     0      0
+   prepbufr       pmsl        null        pmsl         1.0     0      0
+   prepbufr       howv        null        howv         1.0     0      0
+   prepbufr       tcamt       null        tcamt        1.0     0      0
 ::
  &SUPEROB_RADAR
  /
