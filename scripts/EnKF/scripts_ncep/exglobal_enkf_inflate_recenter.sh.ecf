@@ -153,7 +153,7 @@ export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
 
-export EXECENKF=${EXECENKF:-$NWPROD/enkf.${enkf_ver}/exec} 
+export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
 
 export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
 export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
@@ -164,6 +164,8 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run script with NEMSIO input/output
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
@@ -172,20 +174,25 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmean_smooth$XC}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec$XC}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp$XC}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGDAS}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGDAS}/recentersigp$XC}
 export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
-export SCALEFACT=${SCALEFACT:-05}
+export SCALEFACT=${SCALEFACT:-00}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NDAYS=${NDAYS:-60}
@@ -213,6 +220,9 @@ export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
 export NST_GSI=${NST_GSI:-0}
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
+export SIGISUF=${SIGISUF:-'siganl'}
+export SFCISUF=${SFCISUF:-'sfcanl'}
 
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
@@ -243,8 +253,8 @@ cd $DATA||exit 99
 ################################################################################
 # Copy input files
 
-export SIGANL_HI=${SIGANL_HI:-siganl.$CDUMP.$CDATE}
-export SFCANL_HI=${SFCANL_HI:-sfcanl.$CDUMP.$CDATE}
+export SIGANL_HI=${SIGANL_HI:-$SIGISUF.$CDUMP.$CDATE}
+export SFCANL_HI=${SFCANL_HI:-$SFCISUF.$CDUMP.$CDATE}
 export SIGGES=${SIGGES:-sfg_${GDATE}_fhr06_ensmean}
 
 if [[ $FILESTYLE = 'C' ]]; then
@@ -375,6 +385,9 @@ export SIGI=sanl_${CDATE}_highres
 export SFCI=sfcanl_${CDATE}_highres
 export SIGO=sanl_${CDATE}_hybrid_lores
 export SFCO=sfcanl_${CDATE}_hybrid_lores
+if [ $use_gfs_nemsio = .true. ]; then
+   export GFSOUT=$SIGO
+fi
 rm -f $SIGO
 rm -f $SFCO
 
@@ -382,7 +395,7 @@ export JCAP_ens=$JCAP_ENKF
 export LEVS_ens=$LEVS_ENKF
 export LONB_ens=$LONB_ENKF
 export LATB_ens=$LATB_ENKF
-export OUTTYP=2
+export OUTTYP=${OUTTYP:-2}
 export PGMOUT=stdout.chgres
 export PGMERR=stderr.chgres
 
