@@ -40,7 +40,7 @@ export RUN=enkf
 ####################################
 # Specify version numbers
 ####################################
-export enkf_ver=${enkf_ver:-v2.0.1}
+export gdas_ver=${gdas_ver:-v1.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -124,13 +124,8 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
 
-export HOMEENKF=${HOMEENKF:-/nw${envir}/enkf.$enkf_ver}
-export EXECENKF=${EXECENKF:-$HOMEENKF/exec}
-export FIXENKF=${FIXENKF:-$HOMEENKF/fix}
-export USHENKF=${USHENKF:-$HOMEENKF/ush}
-export SCRENKF=${SCRENKF:-$HOMEENKF/scripts}
-export UTILENKF=${UTILENKF:-$HOMEENKF/util}
-export PARMENKF=${PARMENKF:-$HOMEENKF/parm}
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/enkf.$gdas_ver}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -246,7 +241,7 @@ export DELTIM=${DELTIM_ENKF:-900}
 # Input parameters to the Model
 ############################################################
 export FHROT_ENKF=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
-export FHOUT_ENKF=${FHOUT_ENKF:-3}  # Forecast Hour Output Frequency
+export FHOUT_ENKF=${FHOUT_ENKF:-1}  # Forecast Hour Output Frequency
 export FHMAX_ENKF=${FHMAX_ENKF:-9}  # Forecast Length (Hours)
 export FHRES_ENKF=${FHRES_ENKF:-24} # Forecast Hour Restart Frequency
 export FHZER_ENKF=${FHZER_ENKF:-6}  # Interval to Zero out precip field,etc. Should not be less that FHOUT
@@ -260,7 +255,7 @@ export IAER_ENKF=${IAER_ENKF:-111}  # 111--with stratospheric aerosol, troposphe
 export ICO2_ENKF=${ICO2_ENKF:-2}    # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
 
 # Variables for High Frequency Output
-export FHOUTHF_ENKF=${FHOUTHF_ENKF:-3}  # High Frequency Forecast Output Interval
+export FHOUTHF_ENKF=${FHOUTHF_ENKF:-1}  # High Frequency Forecast Output Interval
 export FHMAXHF_ENKF=${FHMAXHF_ENKF:-9}  # High Frequency Forecast Length (Hours)
 
 # Variables for GOCART Output
@@ -274,7 +269,10 @@ export FCSTVARS_SEMILAG="SEMILAG=$SEMILAG,DTPHYS=$DTPHYS,nsout=0,liope=.true.,LD
 
 # Set stochastic physics options
 export SET_STP_SEED=${SET_STP_SEED:-YES}
-export FCSTVARS_STOCHPHYS=${FCSTVARS_STOCHPHYS:-"dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=4000.,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=10,VC=0,VCAMP=1.0,VC_TAU=21600,VC_LSCALE=1000000,sppt_sfclimit=.true."}
+export FCSTVARS_STOCHPHYS=${FCSTVARS_STOCHPHYS:-"dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=0.7,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=20,VC=0,VCAMP=0.0,VC_TAU=21600,VC_LSCALE=1000000,sppt_sfclimit=.true."}
+
+# Set IAU option
+export DOIAU_ENKF=${DOIAU_ENKF:-NO}
 
 # Set EnKF forecast namelist variables
 export FCSTVARS_ENKF="$FCSTVARS_SEMILAG,$FCSTVARS_STOCHPHYS"
@@ -287,7 +285,7 @@ fi
 export FCSTEXEC=${FCSTEXEC:-${EXECGSM}/global_fcst}
 
 # EnKF scripts
-export ENKFFCSSH=${ENKFFCSSH:-$SCRENKF/exglobal_enkf_fcst.sh.ecf}
+export ENKFFCSSH=${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
 export FORECASTSH=${FORECASTSH:-$SCRGSM/exglobal_fcst.sh.ecf}
 
 # Input variables
@@ -351,7 +349,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFFCSSH:-$SCRENKF/exglobal_enkf_fcst.sh.ecf}
+${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
 #############################################################
 
 ##########
