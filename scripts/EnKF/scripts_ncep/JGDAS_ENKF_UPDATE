@@ -40,8 +40,8 @@ export RUN=enkf
 ####################################
 # Specify version numbers
 ####################################
-export enkf_ver=${enkf_ver:-v2.0.1}
-export gsi_ver=${gsi_ver:-v5.0.0}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v5.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -121,21 +121,15 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/gsi.$gsi_ver}
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
 export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
 export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export USHGSI=${USHGSI:-$HOMEGSI/ush}
 export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
-export UTILGSI=${UTILGSI:-$HOMEGSI/util}
-export PARMGSI=${PARMGSI:-$HOMEGSI/parm}
 
-export HOMEENKF=${HOMEENKF:-/nw${envir}/enkf.$enkf_ver}
-export EXECENKF=${EXECENKF:-$HOMEENKF/exec}
-export FIXENKF=${FIXENKF:-$HOMEENKF/fix}
-export USHENKF=${USHENKF:-$HOMEENKF/ush}
-export SCRENKF=${SCRENKF:-$HOMEENKF/scripts}
-export UTILENKF=${UTILENKF:-$HOMEENKF/util}
-export PARMENKF=${PARMENKF:-$HOMEENKF/parm}
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -227,10 +221,10 @@ export LEVS_ges=${LEVS_ges:-64}
 
 
 # EnKF executable
-export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECENKF}/global_enkf}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGDAS}/global_enkf}
 
 # EnKF script
-export ENKFUPDSH=${ENKFUPDSH:-$SCRENKF/exglobal_enkf_update.sh.ecf}
+export ENKFUPDSH=${ENKFUPDSH:-$SCRGDAS/exglobal_enkf_update.sh.ecf}
 
 # Enkf fix files
 export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
@@ -249,6 +243,10 @@ export SIGGESENS=${SIGGESENS:-${COMINGES}/sfg_${GDATE}_fhr06s}
 
 export SIGGES=${SIGGES:-${COMINGES}/sfg_${GDATE}_fhr06_ensmean}
 export SFCGES=${SFCGES:-${COMINGES}/bfg_${GDATE}_fhr06_ensmean}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
 
 ############################################################################ 
 #
@@ -292,7 +290,6 @@ fi
 
 # Set namelist variables for enhanced radiance bias correction scheme
 export USE_NEWRADBC=${USE_NEWRADBC:-YES}
-export NAM_ENKF="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
 
 
 ############################
@@ -316,7 +313,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFUPDSH:-$SCRENKF/exglobal_enkf_update.sh.ecf}
+${ENKFUPDSH:-$SCRGDAS/exglobal_enkf_update.sh.ecf}
 #############################################################
 
 

@@ -40,8 +40,9 @@ export RUN=enkf
 ####################################
 # Specify version numbers
 ####################################
-export crtm_ver=${crtm_ver:-v2.1.3}
-export gsi_ver=${gsi_ver:-v5.0.0}
+export crtm_ver=${crtm_ver:-v2.2.1}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v1.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -125,13 +126,15 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/gsi.$gsi_ver}
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
 export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
 export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export USHGSI=${USHGSI:-$HOMEGSI/ush}
 export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
-export UTILGSI=${UTILGSI:-$HOMEGSI/util}
-export PARMGSI=${PARMGSI:-$HOMEGSI/parm}
+
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -193,7 +196,7 @@ mkdir -m 775 -p $GESdir
 #
 # Set executable and script
 export GSIEXEC=${GSIEXEC:-$EXECGSI/global_gsi}
-export ENKFOMGSH=${ENKFOMGSH:-$SCRGSI/exglobal_enkf_innovate_obs.sh.ecf}
+export ENKFOMGSH=${ENKFOMGSH:-$SCRGDAS/exglobal_enkf_innovate_obs.sh.ecf}
 export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.ecf}
 
 
@@ -298,9 +301,13 @@ export RTMFIX=${RTMFIX:-/nw${envir}/fix/crtm_${crtm_ver}}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SIGGESMEAN=${SIGGESMEAN:-${COMINGES}/sfg_${GDATE}_fhr06s_ensmean}
 export SFCGESMEAN=${SFCGESMEAN:-${COMINGES}/bfg_${GDATE}_fhr06_ensmean}
+export NSTGESMEAN=${NSTGESMEAN:-${COMINGES}/nfg_${GDATE}_fhr06_ensmean}
 
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
+# Specify dump files for global_cycle
 export PREINPGDAS=${PREINPGDAS:-gdas1.${cycle}.}
-
 export FNTSFA=${FNTSFA:-${COMINGDAS}/${PREINPGDAS}rtgssthr.grb}
 export FNACNA=${FNACNA:-${COMINGDAS}/${PREINPGDAS}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COMINGDAS}/${PREINPGDAS}snogrb_t${JCAP}.${LONB}.${LATB}}
@@ -376,12 +383,14 @@ if [ $RUN_GETGES = YES ]; then
   $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
 err1=$?
   $GETGESSH -t biascr_pc -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias_pc
+  $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
   $GETGESSH -t radstat -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gradstat
 fi
 
 export GBIAS=${GBIAS:-$DATA/gbias}
 export GRADSTAT=${GRADSTAT:-$DATA/gradstat}
 export GBIASPC=${GBIASPC:-$DATA/gbias_pc}
+export GBIASAIR=${GBIASAIR:-$DATA/gbias_air}
 
 if [ $err1 -eq 0 ] ; then
    msg="Analysis Starting/Guess Fields Found"
@@ -396,17 +405,12 @@ fi
 
 
 # Set namelist jobs for ensemble data selection
-if [[ "$DOHYBVAR" = "YES" ]]; then
-   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=80,beta1_inv=0.25,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,ANISO_A_EN=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.true.,"
-fi
-
 export USE_NEWRADBC=${USE_NEWRADBC:-YES}
-export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,"
+export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,"
 export BKGVERR="bkgv_flowdep=.false.,"
 export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,"
 export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,qc_noirjaco3_pole=.true.,"
 export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,"
-export HYBRID_ENSEMBLE=" "
 
 
 ############################
@@ -424,14 +428,18 @@ export MP_LABELIO=yes
 export MP_USE_BULK_XFER=yes
 export MP_SHARED_MEMORY=yes
 export MPICH_ALLTOALL_THROTTLE=0
-export MP_COLLECTIVE_OFFLOAD=no
+export MP_USE_TOKEN_FLOW_CONTROL=yes
 export KMP_STACKSIZE=1024m
 
 export NTHREADS_GSI=${NTHREADS_GSI:-1}
 export NTHSTACK=1024000000                # stacks for fcst step; default 128000000
 export NTHSTACK_GSI=1024000000            # stack size for anal, default=128000000
 
-export OMP_NUM_THREADS_CY=32
+export OMP_NUM_THREADS_CY=24
+
+. /usrx/local/Modules/3.2.10/init/ksh
+module unload ibmpe/1.3.0.8
+module load ibmpe/1.3.0.8p
 
 export machine=WCOSS
 ##export APRUNCY=
