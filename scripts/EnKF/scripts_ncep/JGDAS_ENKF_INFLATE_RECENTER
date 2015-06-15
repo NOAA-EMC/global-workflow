@@ -40,8 +40,8 @@ export RUN=enkf
 ####################################
 # Specify version numbers
 ####################################
-export enkf_ver=${enkf_ver:-v2.0.1}
-export gsi_ver=${gsi_ver:-v5.0.0}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v5.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -121,23 +121,17 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/gsi.$gsi_ver}
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
 export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
 export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export USHGSI=${USHGSI:-$HOMEGSI/ush}
 export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
-export UTILGSI=${UTILGSI:-$HOMEGSI/util}
-export PARMGSI=${PARMGSI:-$HOMEGSI/parm}
 
-export HOMEENKF=${HOMEENKF:-/nw${envir}/enkf.$enkf_ver}
-export EXECENKF=${EXECENKF:-$HOMEENKF/exec}
-export FIXENKF=${FIXENKF:-$HOMEENKF/fix}
-export USHENKF=${USHENKF:-$HOMEENKF/ush}
-export SCRENKF=${SCRENKF:-$HOMEENKF/scripts}
-export UTILENKF=${UTILENKF:-$HOMEENKF/util}
-export PARMENKF=${PARMENKF:-$HOMEENKF/parm}
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
 
-export PERTURBDIR=/nwprod/fix/enkf_gfs
+export PERTURBDIR=${PERTURBDIR:-/nwprod/fix/enkf_gfs}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -209,13 +203,13 @@ export NMEM_ENKF=${NMEM_ENKF:-80}
 
 
 # EnKF executable
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmeanp_smooth.x}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECENKF}/adderrspec_nmcmeth_spec.x}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECENKF}/recentersigp.x}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmeanp_smooth.x}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGDAS}/adderrspec_nmcmeth_spec.x}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGDAS}/recentersigp.x}
 
 
 # EnKF scripts
-export ENKFCENSH=${ENKFCENSH:-$SCRENKF/exglobal_enkf_inflate_recenter.sh.ecf}
+export ENKFCENSH=${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
 
 # EnKF fix files
 export PERTURBDIR=${PERTURBDIR:-${FIXGLOBAL}/enkf_gfs}
@@ -229,7 +223,7 @@ export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$
 
 use_ufo=.true.
 LATCH=8; IDSL=1 ;  idvt=21
-export CHGRESTHREAD=${CHGRESTHREAD:-32}
+export CHGRESTHREAD=${CHGRESTHREAD:-48}
 IDVM=0
 export CHGRESVARS_ENKF="use_ufo=$use_ufo,IALB=$ialb,ntrac=3,idvc=$idvc_a,idvt=$idvt,idsl=$IDSL,IDVM=$IDVM,"
 
@@ -278,7 +272,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFCENSH:-$SCRENKF/exglobal_enkf_inflate_recenter.sh.ecf}
+${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
 #############################################################
 
 
