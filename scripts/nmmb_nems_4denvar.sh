@@ -7,9 +7,9 @@ set -x
 # Set experiment name
 exp=$jobname
 
-TM=00
-TM2=03
-tmmark=tm${TM}
+#TM=00
+#TM2=03
+#tmmark=tm${TM}
 
 
 # Set path/file for gsi executable
@@ -25,6 +25,7 @@ savdir=$savdir/outreg_nems_nmmb_4denvar/${exp}
 #   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
+UNCOMPRESS=gunzip
 CLEAN=NO
 #ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
@@ -142,8 +143,8 @@ cp $wbinuselist ./wbinuselist
 ###### crtm coeff's #######################
 set +x
 for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
-   cp $FIXCRTM/${file}.SpcCoeff.bin ./
-   cp $FIXCRTM/${file}.TauCoeff.bin ./
+   cp $fixcrtm/${file}.SpcCoeff.bin ./
+   cp $fixcrtm/${file}.TauCoeff.bin ./
 done
 set -x
 
@@ -152,58 +153,68 @@ CYC=`echo $adate | cut -c9-10`
 
 #datdir=/meso/noscrub/Wanshu.Wu/CASE/$adate
 
-cp $nmmb_nems_4denvar_obs/nam.t${CYC}z.radwnd.tm${TM}.bufr_d ./radarbufr
-cp $nmmb_nems_4denvar_obs/nam.t${CYC}z.nexrad.tm${TM}.bufr_d  ./l2rwbufr
-cp $nmmb_nems_4denvar_obs/gdas1.t00z.prepbufr ./prepbufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.mtiasi.tm${TM}.bufr_d  ./iasibufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.gpsro.tm${TM}.bufr_d  ./gpsrobufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.1bamua.tm${TM}.bufr_d  ./amsuabufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.esamua.tm${TM}.bufr_d  ./amsuabufrears
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.1bmhs.tm${TM}.bufr_d   ./mhsbufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.1bhrs4.tm${TM}.bufr_d  ./hirs4bufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.goesfv.tm${TM}.bufr_d  ./gsnd1bufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.airsev.tm${TM}.bufr_d  ./airsbufr
-cp $nmmb_nems_4denvar_obs/gdas1.t${CYC}z.satwnd.tm${TM}.bufr_d  ./satwndbufr
+cp $nmmb_nems_4denvar_obs/nam.t00z.radwnd.tm00.bufr_d    ./radarbufr
+cp $nmmb_nems_4denvar_obs/nam.t00z.nexrad.tm00.bufr_d    ./l2rwbufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.prepbufr            ./prepbufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.mtiasi.tm00.bufr_d  ./iasibufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.gpsro.tm00.bufr_d   ./gpsrobufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.1bamua.tm00.bufr_d  ./amsuabufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.esamua.tm00.bufr_d  ./amsuabufrears
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.1bmhs.tm00.bufr_d   ./mhsbufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.1bhrs4.tm00.bufr_d  ./hirs4bufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.goesfv.tm00.bufr_d  ./gsnd1bufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.airsev.tm00.bufr_d  ./airsbufr
+cp $nmmb_nems_4denvar_obs/gdas1.t00z.satwnd.tm00.bufr_d  ./satwndbufr
 
    cp $nmmb_nems_4denvar_ges/wrf_inout03 .
    cp $nmmb_nems_4denvar_ges/wrf_inout06 .
    cp $nmmb_nems_4denvar_ges/wrf_inout09 .
 
-cp $nmmb_nems_4denvar_ges/ndas.t${CYC}z.satbiaspc.tm${TM2} ./satbias_pc
-cp $nmmb_nems_4denvar_ges/ndas.t${CYC}z.satbiasc.tm${TM2} ./satbias_in
-cp $nmmb_nems_4denvar_ges/ndas.t${CYC}z.radstat.tm${TM2}   ./radstat.gdas
+cp $nmmb_nems_4denvar_ges/ndas.t00z.satbiaspc.tm03  ./satbias_pc
+cp $nmmb_nems_4denvar_ges/ndas.t00z.satbiasc.tm03   ./satbias_in
+cp $nmmb_nems_4denvar_ges/ndas.t00z.radstat.tm03    ./radstat.gdas
 
-cp $nmmb_nems_4denvar_ges/rtma2p5.t${CYC}z.w_rejectlist ./w_rejectlist
-cp $nmmb_nems_4denvar_ges/rtma2p5.t${CYC}z.t_rejectlist ./t_rejectlist
-cp $nmmb_nems_4denvar_ges/rtma2p5.t${CYC}z.p_rejectlist ./p_rejectlist
-cp $nmmb_nems_4denvar_ges/rtma2p5.t${CYC}z.q_rejectlist ./q_rejectlist
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   fname=`echo $diag_file | cut -d'.' -f1`
+   date=`echo $diag_file | cut -d'.' -f2`
+   $UNCOMPRESS $diag_file
+   fnameanl=$(echo $fname|sed 's/_ges//g')
+   mv $fname.$date $fnameanl
+done
+
+cp $nmmb_nems_4denvar_ges/rtma2p5.t00z.w_rejectlist ./w_rejectlist
+cp $nmmb_nems_4denvar_ges/rtma2p5.t00z.t_rejectlist ./t_rejectlist
+cp $nmmb_nems_4denvar_ges/rtma2p5.t00z.p_rejectlist ./p_rejectlist
+cp $nmmb_nems_4denvar_ges/rtma2p5.t00z.q_rejectlist ./q_rejectlist
 
 #####  connect with gefs ensemble #################
-gdate=`/nwprod/util/exec/ndate -6 $adate`
-cycg=`echo $gdate | cut -c9-10`
-ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr06_ensmean > filelist06
+#gdate=`/nwprod/util/exec/ndate -6 $adate`
+#cycg=`echo $gdate | cut -c9-10`
+ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr06_ensmean > filelist06
 typeset -Z2 nsum
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr06s_mem0$nsum >> filelist06
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr06s_mem0$nsum >> filelist06
          nsum=`expr $nsum + 1`
    done
-ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr03_ensmean > filelist03
+ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr03_ensmean > filelist03
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr03s_mem0$nsum >> filelist03
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr03s_mem0$nsum >> filelist03
      nsum=`expr $nsum + 1`
    done
-ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr09_ensmean > filelist09
+ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmm_nems_4denvar_ges/sfg_${gdate}_fhr09s_mem0$nsum >> filelist09
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09s_mem0$nsum >> filelist09
      nsum=`expr $nsum + 1`
    done
 
 
 #####  connect with gdas for ozges ################
-       cp $nmmb_nems_4denvar_ges/gdas1.t${cycg}z.sf06  ./gfs_sigf06
+       cp $nmmb_nems_4denvar_ges/gdas1.t18z.sf06  ./gfs_sigf06
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 if [[ "$machine" = "WCOSS" ]]; then

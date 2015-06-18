@@ -107,7 +107,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
    if [ "$debug" = ".false." ]; then
-      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp1 -q $queue -p 7/10/ -r /1 -t 0:20:00 $scripts/nmmb_nems_4denvar.sh
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp1 -q $queue -p 7/10/ -r /1 -t 0:25:00 $scripts/nmmb_nems_4denvar.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_4denvar_updat_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_4denvar_updat_exp1}.out > return_code_nmmb_nems_4denvar.out
@@ -130,7 +130,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_nmmb_nems_4denvar.out
-      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp2 -q $queue -p 9/10/ -r /2 -t 0:15:00 $scripts/nmmb_nems_4denvar.sh
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp2 -q $queue -p 9/10/ -r /2 -t 0:20:00 $scripts/nmmb_nems_4denvar.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_4denvar_updat_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_4denvar_updat_exp2}.out > return_code_nmmb_nems_4denvar.out
@@ -153,7 +153,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_nmmb_nems_4denvar.out
-      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_contrl_exp1 -q $queue -p 7/10/ -r /1 -t 0:20:00 $scripts/nmmb_nems_4denvar.sh
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_contrl_exp1 -q $queue -p 7/10/ -r /1 -t 0:25:00 $scripts/nmmb_nems_4denvar.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_4denvar_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_4denvar_contrl_exp1}.out > return_code_nmmb_nems_4denvar.out
@@ -176,7 +176,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_nmmb_nems_4denvar.out
-      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_contrl_exp2 -q $queue -p 9/10/ -r /2 -t 0:15:00 $scripts/nmmb_nems_4denvar.sh
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_contrl_exp2 -q $queue -p 9/10/ -r /2 -t 0:20:00 $scripts/nmmb_nems_4denvar.sh
 
       while [[ $(grep -c '+ rc=0' ${nmmb_nems_4denvar_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${nmmb_nems_4denvar_contrl_exp2}.out > return_code_nmmb_nems_4denvar.out
