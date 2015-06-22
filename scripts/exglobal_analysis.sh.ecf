@@ -762,12 +762,6 @@ if [ $l4densvar = .true. ]; then
    export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
 fi
 
-# Set local name of center time window analysis file
-SIGANL_LOCAL=siganl
-if [ $lwrite4danl = .true. ] ; then
-   SIGANL_LOCAL=siga06
-fi
-
 ################################################################################
 #  Preprocessing
 $INISCRIPT
@@ -829,7 +823,7 @@ rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out s
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09
-rm siga03 siga04 siga05 siga06 siga07 siga08 siga09 siganl
+rm siga03 siga04 siga05 siganl siga07 siga08 siga09
 rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
 rm gesfile_in gesfiles_out
 rm -rf dir*
@@ -1042,16 +1036,16 @@ fi
 if [ $FILESTYLE != 'C' ]; then
 
    # Output files
+   ln -fs $SIGANL siganl
    if [ $l4densvar = .true. ]; then
-      ln -fs $SIGA03   siga03
-      ln -fs $SIGA04   siga04
-      ln -fs $SIGA05   siga05
-      ln -fs $SIGANL   $SIGANL_LOCAL
-      ln -fs $SIGA07   siga07
-      ln -fs $SIGA08   siga08
-      ln -fs $SIGA09   siga09
-   else
-      ln -fs $SIGANL   siganl
+      if [ $lwrite4danl = .true. ]; then
+         ln -fs $SIGA03 siga03
+         ln -fs $SIGA04 siga04
+         ln -fs $SIGA05 siga05
+         ln -fs $SIGA07 siga07
+         ln -fs $SIGA08 siga08
+         ln -fs $SIGA09 siga09
+      fi
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1275,16 +1269,16 @@ $ERRSCRIPT||exit 2
 
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
+   $NCP siganl $SIGANL
    if [ $l4densvar = .true. ]; then
-      $NCP siga03         $SIGA03
-      $NCP siga04         $SIGA04
-      $NCP siga05         $SIGA05
-      $NCP $SIGANL_LOCAL  $SIGANL
-      $NCP siga07         $SIGA07
-      $NCP siga08         $SIGA08
-      $NCP siga09         $SIGA09
-   else
-     $NCP siganl         $SIGANL
+      if [ $lwrite4danl = .true. ]; then
+         $NCP siga03 $SIGA03
+         $NCP siga04 $SIGA04
+         $NCP siga05 $SIGA05
+         $NCP siga07 $SIGA07
+         $NCP siga08 $SIGA08
+         $NCP siga09 $SIGA09
+      fi
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
