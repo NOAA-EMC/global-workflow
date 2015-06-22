@@ -11,7 +11,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
    # Submit jobs using sub_zeus wrapper.
    if [ "$debug" = ".false." ]; then
-      /bin/sh sub_zeus -j $hwrf_nmm_d3_updat_exp1 -t 0:20:00 -p 6/6/0 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_zeus -j $hwrf_nmm_d3_updat_exp1 -t 0:20:00 -p 6/6/0 -r /1 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_updat_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -30,7 +30,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_hwrf_nmm_d3.out
 
-      /bin/sh sub_zeus -j $hwrf_nmm_d3_updat_exp2 -t 0:15:00 -p 8/8/0 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_zeus -j $hwrf_nmm_d3_updat_exp2 -t 0:15:00 -p 8/8/0 -r /1 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_updat_exp2}.out > return_code_hwrf_nmm_d3.out
@@ -49,7 +49,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_hwrf_nmm_d3.out
 
-      /bin/sh sub_zeus -j $hwrf_nmm_d3_contrl_exp1 -t 0:20:00 -p 6/6/0 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_zeus -j $hwrf_nmm_d3_contrl_exp1 -t 0:20:00 -p 6/6/0 -r /1 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_contrl_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -68,7 +68,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
       rm -f return_code_hwrf_nmm_d3.out
 
-      /bin/sh sub_zeus -j $hwrf_nmm_d3_contrl_exp2 -t 0:15:00 -p 8/8/0 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_zeus -j $hwrf_nmm_d3_contrl_exp2 -t 0:15:00 -p 8/8/0 -r /1 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_contrl_exp2}.out > return_code_hwrf_nmm_d3.out
@@ -107,7 +107,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    # Submit jobs using sub wrapper.
    if [ "$debug" = ".false." ]; then
-      /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_wcoss -a HWRF-T2O -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_updat_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -130,7 +130,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_hwrf_nmm_d3.out
-      /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_wcoss -a HWRF-T2O -j $hwrf_nmm_d3_updat_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_updat_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_updat_exp2}.out > return_code_hwrf_nmm_d3.out
@@ -153,7 +153,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_hwrf_nmm_d3.out
-      /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_contrl_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_wcoss -a HWRF-T2O -j $hwrf_nmm_d3_contrl_exp1 -q $queue -p 6/6/ -r /1 -t 0:20:00 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_contrl_exp1}.out > return_code_hwrf_nmm_d3.out
@@ -176,7 +176,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_hwrf_nmm_d3.out
-      /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_contrl_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_wcoss -a HWRF-T2O -j $hwrf_nmm_d3_contrl_exp2 -q $queue -p 8/8/ -r /1 -t 0:15:00 $scripts/hwrf_nmm_d3.sh
 
       while [[ $(grep -c '+ rc=0' ${hwrf_nmm_d3_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${hwrf_nmm_d3_contrl_exp2}.out > return_code_hwrf_nmm_d3.out
@@ -206,7 +206,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       exit
 
    elif [ "$debug" = .true. ]; then
-      /bin/sh sub_wcoss -a RDAS-MTN -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 16/3/ -t 0:35:00 $scripts/hwrf_nmm_d3.sh
+      /bin/sh sub_wcoss -a HWRF-T2O -j $hwrf_nmm_d3_updat_exp1 -q $queue -p 16/3/ -t 0:35:00 $scripts/hwrf_nmm_d3.sh
 
       rm -f hwrf_nmm_d3.out
 

@@ -40,8 +40,7 @@ export RUN=enkf
 ####################################
 # Specify version numbers
 ####################################
-export enkf_ver=${enkf_ver:-v2.0.1}
-export gsi_ver=${gsi_ver:-v5.0.0}
+export gdas_ver=${gdas_ver:-v1.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -121,21 +120,11 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/gsi.$gsi_ver}
-export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
-export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export USHGSI=${USHGSI:-$HOMEGSI/ush}
-export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
-export UTILGSI=${UTILGSI:-$HOMEGSI/util}
-export PARMGSI=${PARMGSI:-$HOMEGSI/parm}
-
-export HOMEENKF=${HOMEENKF:-/nw${envir}/enkf.$enkf_ver}
-export EXECENKF=${EXECENKF:-$HOMEENKF/exec}
-export FIXENKF=${FIXENKF:-$HOMEENKF/fix}
-export USHENKF=${USHENKF:-$HOMEENKF/ush}
-export SCRENKF=${SCRENKF:-$HOMEENKF/scripts}
-export UTILENKF=${UTILENKF:-$HOMEENKF/util}
-export PARMENKF=${PARMENKF:-$HOMEENKF/parm}
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export USHGDAS=${USHGDAS:-$HOMEGDAS/ush}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -195,20 +184,25 @@ export LEVS_ENKF=${LEVS_ENKF:-64}
 export NMEM_ENKF=${NMEM_ENKF:-80}
 
 # Forecast model output frequency
-export FHOUTEFCS=${FHOUTEFCS:-3}
-export FHMINEFCS=${FHMINEFCS:-3}
-export FHMAXEFCS=${FHMAXEFCS:-9}
+export FHROT_ENKF=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
+export FHOUT_ENKF=${FHOUT_ENKF:-1}  # Forecast Hour Output Frequency
+export FHMAX_ENKF=${FHMAX_ENKF:-9}  # Forecast Length (Hours)
 
 # EnKF utility executables
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECENKF}/getsigensmeanp_smooth.x}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECENKF}/getsfcensmeanp.x}
-
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmeanp_smooth.x}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECGDAS}/getsfcensmeanp.x}
 
 # EnKF scripts
-export ENKFPOSSH=${ENKFPOSSH:-$SCRENKF/exglobal_enkf_post.sh.ecf}
+export ENKFPOSSH=${ENKFPOSSH:-$SCRGDAS/exglobal_enkf_post.sh.ecf}
+
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 # EnKF fix files
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGSI/global_hybens_smoothinfo.l64.txt}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGDAS/global_hybens_smoothinfo.l64.txt}
 
 # Input files
 export SIGENS_IN=${SIGENS_IN:-$COMIN/sfg_${CDATE}_fhr}
@@ -244,7 +238,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFPOSSH:-$SCRENKF/exglobal_enkf_post.sh.ecf}
+${ENKFPOSSH:-$SCRGDAS/exglobal_enkf_post.sh.ecf}
 #############################################################
 
 
