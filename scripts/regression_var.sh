@@ -322,7 +322,7 @@ export nmm_binary_regression="nmm_binary_regression_results.$gps_dtype.txt"
 export nmm_netcdf_regression="nmm_netcdf_regression_results.$gps_dtype.txt"
 export arw_binary_regression="arw_binary_regression_results.$gps_dtype.txt"
 export arw_netcdf_regression="arw_netcdf_regression_results.$gps_dtype.txt"
-export nems_nmmb_4denvar_regression="nems_nmmb_regression_results.$gps_dtype.txt"
+export nems_nmmb_4denvar_regression="nems_nmmb_4denvar_regression_results.$gps_dtype.txt"
 export hwrf_nmm_d2_regression="hwrf_nmm_d2_regression_results.$gps_dtype.txt"
 export hwrf_nmm_d3_regression="hwrf_nmm_d3_regression_results.$gps_dtype.txt"
 
@@ -360,7 +360,7 @@ export control_hwrf_nmm_d3="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp1_hwrf_nmm_d3_cnt
 export control_hwrf_nmm_d32="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp2_hwrf_nmm_d3_cntrl"
 
 # Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
-export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
+export debug=".true."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
