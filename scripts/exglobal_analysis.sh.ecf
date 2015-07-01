@@ -241,6 +241,8 @@
 #                   defaults to ${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}
 #     OSCATBF       Input OSCAT wind file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}
+#     RAPIDSCATBF   Input RAPIDSCAT wind file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}rapidscatw.tm00.bufr_d${SUFINP}
 #     GSNDBF        Input GOES sounder radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
 #     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
@@ -273,10 +275,18 @@
 #                   defaults to ${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}
 #     SEVIRIBF      Input SEVIRI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}
+#     AHIBF         Input AHI radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}
 #     CRISBF        Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}
 #     ATMSBF        Input ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}
+#     SAPHIRBF      Input SAPHIR radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}
+#     AMSR2BF       Input AMSR2 L1B brightness temperature files
+#                   defaults to ${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}
+#     GMIBF         Input GMI L1CR brightness temperature files
+#                   defaults to ${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}
 #     SSMITBF       Input SSMI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}
 #     SSMISBF       Input SSMIS radiace file (bufr format)
@@ -600,6 +610,7 @@ export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
 export OSCATBF=${OSCATBF:-${COMIN}/${PREINP}oscatw.tm00.bufr_d${SUFINP}}
+export RAPIDSCATBF=${RAPIDSCATBF:-${COMIN}/${PREINP}rapidscatw.tm00.bufr_d${SUFINP}}
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d${SUFINP}}
 export B1HRS2=${B1HRS2:-${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}}
@@ -615,7 +626,11 @@ export ESAMUB=${ESAMUB:-${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}}
 export AIRSBF=${AIRSBF:-${COMIN}/${PREINP}airsev.tm00.bufr_d${SUFINP}}
 export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d${SUFINP}}
 export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}}
+export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}}
+export GMIBF=${GMIBF:-${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}}
+export SAPHIRBF=${SAPHIRBF:-${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}}
+export AHIBF=${AHIBF:-${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}}
 export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}}
@@ -822,8 +837,8 @@ $LOGSCRIPT
 rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
-rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr
-rm airsbufr iasibufr amsrebufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
+rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr ahibufr
+rm airsbufr iasibufr amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
 rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm aircftbias_in aircftbias_out
@@ -881,6 +896,7 @@ $FCPLN $PREPQC   prepbufr
 $FCPLN $PREPQCPF prepbufr_profl
 $FCPLN $SATWND   satwndbufr
 $FCPLN $OSCATBF  oscatbufr
+$FCPLN $RAPIDSCATBF  rapidscatbufr
 $FCPLN $GSNDBF   gsndrbufr
 $FCPLN $GSNDBF1  gsnd1bufr
 $FCPLN $B1HRS2   hirs2bufr
@@ -902,6 +918,9 @@ $FCPLN $TMIPCP   tmirrbufr
 $FCPLN $AIRSBF   airsbufr
 $FCPLN $IASIBF   iasibufr
 $FCPLN $AMSREBF  amsrebufr
+$FCPLN $AMSR2BF  amsr2bufr
+$FCPLN $GMIBF    gmibufr
+$FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
 $FCPLN $ATMSBF   atmsbufr
@@ -912,6 +931,7 @@ $FCPLN $TCVITL   tcvitl
 $FCPLN $NSSTBF   nsstbufr
 $FCPLN $B1AVHAM  avhambufr
 $FCPLN $B1AVHPM  avhpmbufr
+$FCPLN $AHIBF    ahibufr
 
 # Required guess fields
 $FCPLN $GBIAS    satbias_in
@@ -1150,7 +1170,7 @@ cat <<EOF > gsiparm.anl
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=145.0,dmesh(2)=150.0,time_window_max=3.0,
+   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,time_window_max=3.0,
    $OBSINPUT
  /
 OBS_INPUT::
@@ -1238,6 +1258,11 @@ OBS_INPUT::
    mlsbufr        mls30       aura        mls30_aura          0.0     0     0
    avhambufr      avhrr       metop-a     avhrr3_metop-a      0.0     1     0
    avhpmbufr      avhrr       n18         avhrr3_n18          0.0     1     0
+   amsr2bufr      amsr2       gcom-w1     amsr2_gcom-w1       0.0     3     0
+   gmibufr        gmi         gpm         gmi_gpm             0.0     3     0
+   saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
+   ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
+   rapidscatbufr  uv          null        uv                  0.0     0     0
 ::
  &SUPEROB_RADAR
    $SUPERRAD
@@ -1384,7 +1409,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
