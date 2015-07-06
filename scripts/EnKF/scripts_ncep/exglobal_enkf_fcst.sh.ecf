@@ -185,7 +185,7 @@ export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP.$LON
 export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t$MTNRSL.txt}
 export SLMASK=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
 export MTNVAR=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.f77}
-export DOIAU=${DOIAU_ENKF:-NO}
+export DOIAU=${DOIAU_ENKF:-"NO"}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -230,6 +230,11 @@ export NST_GSI=${NST_GSI:-0}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-/bin/cp}
+export SIGOSUF=${SIGOSUF:-'sig'}
+export SFCOSUF=${SFCOSUF:-'sfc'}
+export FLXOSUF=${FLXOSUF:-'flx'}
+export NSTOSUF=${NSTOSUF:-'nst'}
+
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
@@ -276,12 +281,11 @@ while [[ $imem -le $ENSEND ]]; do
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
 
+   export SUFOUT="_${member}"
+
    export COMOUTSAVE=$COMOUT
    export COMOUT=$DATATOP
 
-   export SIGI=$COMIN/siganl_${CDATE}_${member}
-   export SFCI=$COMIN/sfcanl_${CDATE}_${member}
-   export NSTI=$COMIN/nstanl_${CDATE}_${member}
    export FHROT=${FHROT_ENKF:-0}
    export FHOUT=${FHOUT_ENKF:-3}
    export FHMAX=${FHMAX_ENKF:-9}
@@ -313,19 +317,56 @@ while [[ $imem -le $ENSEND ]]; do
       ISEED_SHUM=$((CDATE*1000 + imem*10 + 4))
       export FCSTVARS_TMP="ISEED_SPPT=$ISEED_SPPT,ISEED_SKEB=$ISEED_SKEB,ISEED_VC=$ISEED_VC,ISEED_SHUM=$ISEED_SHUM,$FCSTVARS_TMP"
    fi
+
+   if [ $DOIAU = YES ]; then
+     export FHROT=3
+     export FHDFI=0
+     export FHBAK=3
+     export FHINI=3
+     export FHMAX=$((FHMAX + 6))
+     export FHMAX_HF=$((FHMAX_HF + 6))
+     export GDATE=$($NDATE -$FHBAK $CDATE)
+     export GDATE=$($NDATE -$FHBAK $GDATE)
+     [[ $FHBAK -lt 10 ]]&&FHBAK=0$FHBAK
+     export SIGI=$COMIN/sfg_${GDATE}_fhr$FHBAK$SUFOUT
+     export GRDI=$SIGI
+     export SFCI=$COMIN/sfca${FHBAK}_$CDATE$SUFOUT
+     export NSTI=$COMIN/nsta${FHBAK}_$CDATE$SUFOUT
+     iaufiles_fg=\'$COMIN/sfg_${GDATE}_fhr06$SUFOUT\'
+     iaufiles_anl=\'$COMIN/siganl_$CDATE$SUFOUT\'
+     export FCSTVARS_TMP="iau=.true.,iau_delthrs=6,iaufhrs=6,iaufiles_fg=$iaufiles_fg,iaufiles_anl=$iaufiles_anl,$FCSTVARS_TMP"
+     FHSTART=`expr 6 + $FHOUT`
+   else
+     export SIGI=$COMIN/siganl_$CDATE$SUFOUT
+     export GRDI=$SIGI
+     export SFCI=$COMIN/sfcanl_$CDATE$SUFOUT
+     export NSTI=$COMIN/nstanl_$CDATE$SUFOUT
+     export FHINI=0
+     FHSTART=$FHOUT
+   fi
+   [[ $FHINI -lt 10 ]]&&FHINI=0$FHINI
+
    export FCSTVARS=${FCSTVARS_TMP:-" "}
 
-   export SUFOUT="_${member}"
-
    if [[ $FILESTYLE = 'L' ]]; then
-     FH=$FHOUT
+     FH=$FHSTART
      while [[ $FH -le $FHMAX ]]; do
-       if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-       ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr${FH}_${member} sigf${FH}_${member}
-       ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr${FH}_${member} sfcf${FH}_${member}
-       if [ $NST_GSI -gt 0 ]; then
-          ln -fs $COMOUTSAVE/nfg_${CDATE}_fhr${FH}_${member} nstf${FH}_${member}
+       if [ $DOIAU = YES ]; then
+         if [ $FH -ge 9 ]; then
+           FHIAU=$((FH - 6))
+           [[ $FHIAU -lt 10 ]]&&FHIAU=0$FHIAU
+         fi
+       else
+         FHIAU=$FH
+         [[ $FHIAU -lt 10 ]]&&FHIAU=0$FHIAU
        fi
+       [[ $FH -lt 10 ]]&&FH=0$FH
+       ln -fs $COMOUTSAVE/sfg_${CDATE}_fhr$FHIAU$SUFOUT ${SIGOSUF}f$FH$SUFOUT
+       ln -fs $COMOUTSAVE/bfg_${CDATE}_fhr$FHIAU$SUFOUT ${SFCOSUF}f$FH$SUFOUT
+       if [ $NST_GSI -gt 0 ]; then
+          ln -fs $COMOUTSAVE/nfg_${CDATE}_fhr$FHIAU$SUFOUT ${NSTOSUF}f$FH$SUFOUT
+       fi
+       FH=$((10#$FH))
        FH=`expr $FH + $FHOUT`
      done
    fi
@@ -340,15 +381,25 @@ while [[ $imem -le $ENSEND ]]; do
    export COMOUT=$COMOUTSAVE
 
    if [[ $FILESTYLE = 'C' ]]; then
-     FH=$FHOUT
+     FH=$FHSTART
      while [[ $FH -le $FHMAX ]]; do
-        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-        $NCP sigf${FH}_${member} $COMOUT/sfg_${CDATE}_fhr${FH}_${member}
-        $NCP sfcf${FH}_${member} $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+       if [ $DOIAU = YES ]; then
+         if [ $FH -ge 9 ]; then
+           FHIAU=$((FH - 6))
+           [[ $FHIAU -lt 10 ]]&&FHIAU=0$FHIAU
+         fi
+       else
+         FHIAU=$FH
+         [[ $FHIAU -lt 10 ]]&&FHIAU=0$FHIAU
+       fi
+       [[ $FH -lt 10 ]]&&FH=0$FH
+       $NCP ${SIGOSUF}f$FH$SUFOUT $COMOUT/sfg_${CDATE}_fhr$FHIAU$SUFOUT
+       $NCP ${SFCOSUF}f$FH$SUFOUT $COMOUT/bfg_${CDATE}_fhr$FHIAU$SUFOUT
         if [ $NST_GSI -gt 0 ]; then
-           $NCP nstf${FH}_${member} $COMOUT/nfg_${CDATE}_fhr${FH}_${member}
+           $NCP ${NSTOSUF}f$FH$SUFOUT $COMOUT/nfg_${CDATE}_fhr$FHIAU$SUFOUT
         fi
-        FH=$((FH+FHOUT))
+       FH=$((10#$FH))
+       FH=`expr $FH + $FHOUT`
      done
    fi
 
@@ -356,7 +407,7 @@ while [[ $imem -le $ENSEND ]]; do
      FH=$FHOUT
      while [[ $FH -le $FHMAX ]]; do
        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr${FH}_${member}
+       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
        FH=$((FH+FHOUT))
      done
    fi

@@ -88,11 +88,17 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 # parameters for radiance data assimilation
-export SETUP="upd_pred=0,"
+export SETUP="newpc4pred=.true., adp_anglebc=.true., angord=4, \
+              passive_bc=.false., use_edges=.false., emiss_bc=.true., \
+              diag_precon=.true., step_start=1.e-3, upd_pred(1)=0, \
+              upd_pred(2)=0,upd_pred(3)=0,upd_pred(4)=0, \
+              upd_pred(5)=0,upd_pred(6)=0,upd_pred(7)=0, \
+              upd_pred(8)=0,upd_pred(9)=0,upd_pred(10)=0, \
+              upd_pred(11)=0,upd_pred(12)=0," 
 
 export USE_GFS_STRATOSPHERE=".true."
 export USE_GFS_OZONE=".true."
-export REGIONAL_OZONE=".true."
+export REGIONAL_OZONE=".false."
 
 if [ "$debug" = ".false." ]; then
    . $scripts/regression_namelists.sh
@@ -114,7 +120,6 @@ EOF
 #   aerocoef = CRTM coefficients for aerosol effects
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
-#   satangl  = angle dependent bias correction file (fixed in time)
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
 #   ozinfo   = text file with information about assimilation of ozone data
 #   errtable = text file with obs error for conventional data (optional)
@@ -122,7 +127,7 @@ EOF
 #   bufrtable= text file ONLY needed for single obs test (oneobstest=.true.)
 #   bftab_sst= bufr table for sst ONLY needed for sst retrieval (retrieval=.true.)
 
-anavinfo=$fixgsi/anavinfo_hwrf_d2
+anavinfo=$fixgsi/anavinfo_hwrf_L75
 berror=$fixgsi/$endianness/nam_glb_berror.f77.gcv
 emiscoef_IRwater=$fixcrtm/Nalli.IRwater.EmisCoeff.bin
 emiscoef_IRice=$fixcrtm/NPOESS.IRice.EmisCoeff.bin
@@ -138,7 +143,6 @@ cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/hwrf_satinfo.txt
 atmsbeaminfo=$fixgsi/atms_beamwidth.txt
 scaninfo=$fixgsi/global_scaninfo.txt
-satangl=$fixgsi/nam_global_satangbias.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 errtable=$fixgsi/hwrf_nam_errtable.r3dv
@@ -174,7 +178,6 @@ $ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
 $ncp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
-$ncp $satangl  ./satbias_angle
 $ncp $satinfo  ./satinfo
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
@@ -228,7 +231,7 @@ $lnsf $hwrf_nmm_obs/${prefixo}.tldplr.${suffix}  ./tldplrbufr
 
 # Copy bias correction, atmospheric and surface files
 $lnsf $hwrf_nmm_obs/gdas1.t${hhg}z.abias             ./satbias_in
-$lnsf $hwrf_nmm_obs/gdas1.t${hhg}z.satang            ./satbias_angle
+$lnsf $hwrf_nmm_obs/gdas1.t${hhg}z.abias_pc          ./satbias_pc
 
 $ncp $hwrf_nmm_ges/wrfghost_d02_03      ./wrf_inou3
 $ncp $hwrf_nmm_ges/wrfghost_d02_06      ./wrf_inout
@@ -240,14 +243,16 @@ $ncp $hwrf_nmm_ges/gdas1.t${hhg}z.sf09  ./gfs_sigf09
 
 # Copy ensemble forecast files for hybrid analysis
 export ENSEMBLE_SIZE_REGIONAL=80
->filelist
+>filelist06
 n=1
 while [[ $n -le ${ENSEMBLE_SIZE_REGIONAL} ]]; do
   $lnsf $hwrf_nmm_ges/$( printf sfg_${gdate}_fhr06s_mem%03d $n )  \
         ./$( printf sfg_${gdate}_fhr06s_mem%03d $n )
-  ls ./$( printf sfg_${gdate}_fhr06s_mem%03d $n ) >> filelist
+  ls ./$( printf sfg_${gdate}_fhr06s_mem%03d $n ) >> filelist06
   n=$((n + 1))
 done
+
+
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then

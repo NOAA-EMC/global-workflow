@@ -201,11 +201,11 @@ $ncp $datobs/gdas1.t00z.mls.tm00.bufr_d ./mlsbufr
 $ncp $datges/ndas.t06z.satang.tm09 ./satbias_angle
 $ncp $datges/ndas.t06z.satbias.tm09 ./satbias_in
 
-$ncp $datges/nmm_b_history_nemsio.012 wrf_inout
-$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout.ctl
+$ncp $datges/nmm_b_history_nemsio.012 wrf_inout03
+$ncp $datges/nmm_b_history_nemsio.012.ctl wrf_inout03.ctl
 $ncp $datges/gdas1.t00z.sgesprep  ./gfs_sigf03
-$ncp wrf_inout wrf_ges
-$ncp wrf_inout.ctl wrf_ges.ctl
+$ncp wrf_inout03 wrf_ges
+$ncp wrf_inout03.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
 poe $tmpdir/gsi.x < gsiparm.anl > stdout
@@ -226,7 +226,7 @@ chgrp rstprod $savdir
 chmod 750 $savdir
 
 cat stdout fort.2* > $savdir/stdout.anl.${adate}
-$ncp wrf_inout       $savdir/wrfanl.${adate}
+$ncp wrf_inout03       $savdir/wrfanl.${adate}
 $ncp satbias_out     $savdir/biascr.${adate}
 
 # If desired, copy guess file to unique filename in $savdir

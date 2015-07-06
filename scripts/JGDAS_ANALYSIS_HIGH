@@ -41,8 +41,9 @@ export RUNENS=enkf
 ####################################
 # Specify version numbers
 ####################################
-export crtm_ver=${crtm_ver:-v2.1.3}
-export gsi_ver=${gsi_ver:-v5.0.0}
+export crtm_ver=${crtm_ver:-v2.2.1}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v1.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 export util_ver=${util_ver:-v1.0.0}
 
@@ -121,13 +122,10 @@ export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
 export UTILGSM=${UTILGSM:-$HOMEGSM/util}
 export PARMGSM=${PARMGSM:-$HOMEGSM/parm}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/gsi.$gsi_ver}
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
 export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
 export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export USHGSI=${USHGSI:-$HOMEGSI/ush}
 export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
-export UTILGSI=${UTILGSI:-$HOMEGSI/util}
-export PARMGSI=${PARMGSI:-$HOMEGSI/parm}
 
 export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
 export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
@@ -282,7 +280,7 @@ export FNACNA=${FNACNA:-${COMIN}/${PREINP}seaice.5min.blend.grb}
 export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb_t${JCAP}.${LONB}.${LATB}}
 
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr}
-
+export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles}
 
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d}
@@ -320,6 +318,15 @@ export SIGG08=${SIGG08:-${COMIN}/${PREINP}sgp2prep}
 export SIGG09=${SIGG09:-${COMIN}/${PREINP}sgp3prep}
 
 export SIGGESENS=${SIGGESENS:-${COMINENS}/sfg_${GDATE}_fhr06s}
+export SIGF03ENS=${SIGF03ENS:-${COMINENS}/sfg_${GDATE}_fhr03s}
+export SIGF04ENS=${SIGF04ENS:-${COMINENS}/sfg_${GDATE}_fhr04s}
+export SIGF05ENS=${SIGF05ENS:-${COMINENS}/sfg_${GDATE}_fhr05s}
+export SIGF06ENS=${SIGF06ENS:-${COMINENS}/sfg_${GDATE}_fhr06s}
+export SIGF07ENS=${SIGF07ENS:-${COMINENS}/sfg_${GDATE}_fhr07s}
+export SIGF08ENS=${SIGF08ENS:-${COMINENS}/sfg_${GDATE}_fhr08s}
+export SIGF09ENS=${SIGF09ENS:-${COMINENS}/sfg_${GDATE}_fhr09s}
+
+export NSTGES=${NSTGES:-/dev/null}
 
 # Set non-assimilated obs fles as /dev/null to prevent reading
 export GSNDBF=${GSNDBF:-/dev/null}
@@ -369,8 +376,10 @@ fi
 #
 export SFCANL=${SFCANL:-$DATA/${RUN}.${cycle}.sfcanl}
 export SIGANL=${SIGANL:-$DATA/${RUN}.${cycle}.sanl}
+export NSTANL=${NSTANL:-$DATA/${RUN}.${cycle}.nstanl}
 export ABIAS=${ABIAS:-$DATA/${RUN}.${cycle}.abias}
 export ABIASPC=${ABIASPC:-$DATA/${RUN}.${cycle}.abias_pc}
+export ABIASAIR=${ABIASAIR:-$DATA/${RUN}.${cycle}.abias_air}
 export GINCOUT=${GINCOUT:-$DATA/${RUN}.${cycle}.gesfile}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${RUN}.${cycle}.pcpstat}
 export RADSTAT=${RADSTAT:-${COMOUT}/${RUN}.${cycle}.radstat}
@@ -396,17 +405,27 @@ if [ $RUN_GETGES = YES ]; then
   $GETGESSH -t sfcges -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas bges
 err1=$?
   $GETGESSH -t sfcgm3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm3
+  $GETGESSH -t sfcgm2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm2
+  $GETGESSH -t sfcgm1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm1
+  $GETGESSH -t sfcgp1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp1
+  $GETGESSH -t sfcgp2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp2
   $GETGESSH -t sfcgp3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp3
   $GETGESSH -t biascr -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias
   $GETGESSH -t biascr_pc -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_pc
+  $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
   $GETGESSH -t radstat -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gradstat
 fi
 
 export SFCGES=${SFCGES:-$DATA/bges}
 export SFCG03=${SFCG03:-$DATA/sfcgm3}
+export SFCG04=${SFCG04:-$DATA/sfcgm2}
+export SFCG05=${SFCG05:-$DATA/sfcgm1}
+export SFCG07=${SFCG07:-$DATA/sfcgp1}
+export SFCG08=${SFCG08:-$DATA/sfcgp2}
 export SFCG09=${SFCG09:-$DATA/sfcgp3}
 export GBIAS=${GBIAS:-$DATA/gbias}
 export GBIASPC=${GBIASPC:-$DATA/gbias_pc}
+export GBIASAIR=${GBIASAIR:-$DATA/gbias_air}
 export GRADSTAT=${GRADSTAT:-$DATA/gradstat}
 export GESFIL=${GESFIL:-$DATA/gesfile}
 
@@ -429,20 +448,32 @@ if [[ -s $GESFIL ]]; then
 fi
 
 # Set namelist jobs for hybrid 3dvar-ensemble analysis
+export HYBRID_ENSEMBLE=""
 if [[ "$DOHYBVAR" = "YES" ]]; then
-   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=$NMEM_ENS,beta1_inv=0.25,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.true.,"
+   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=$NMEM_ENS,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.false.,"
    export STRONGOPTS="tlnmc_option=2,"
 fi
 
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+export lwrite4danl=${lwrite4danl:-".false."}
+SETUP_4DVAR=""
+if [ $l4densvar = .true. ] ; then
+   SETUP_4DVAR="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,l4densvar=.true.,ens4d_nstarthr=3,nhr_obsbin=1,nhr_assimilation=6,lwrite4danl=${lwrite4danl},"
+   export JCOPTS="ljc4tlevs=.true.,"
+   export STRONGOPTS="tlnmc_option=3,"
+fi
+
+
 ################################################################################
 # Do not produce RAD, PCP, OZN, CNV diagnostic (STAT) files for GFS early analysis.
-SETUPGFS=""
 export USE_NEWRADBC=${USE_NEWRADBC:-YES}
-export SETUP_NEWRADBC=${SETUP_NEWRADBC-'newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,'}
+
+SETUPGFS=""
 if [[ "${RUN}" = 'gfs' ]]; then
   export SETUPGFS='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
 fi 
-export SETUP="$SETUPGFS $SETUP_NEWRADBC"
+export SETUP="$SETUP_4DVAR $SETUPGFS"
 
 ############################
 # WCOSS environment settings
@@ -459,14 +490,18 @@ export MP_USE_BULK_XFER=yes
 export MP_SHARED_MEMORY=yes
 
 export MPICH_ALLTOALL_THROTTLE=0
-export MP_COLLECTIVE_OFFLOAD=no
+export MP_USE_TOKEN_FLOW_CONTROL=yes
 export KMP_STACKSIZE=2048m
 
 export NTHREADS_GSI=${NTHREADS_GSI:-4}
 export NTHSTACK=1024000000                # stacks for fcst step; default 128000000
 export NTHSTACK_GSI=1024000000            # stack size for anal, default=128000000
 
-export OMP_NUM_THREADS_CY=32
+export OMP_NUM_THREADS_CY=24
+
+. /usrx/local/Modules/3.2.10/init/ksh
+module unload ibmpe/1.3.0.8
+module load ibmpe/1.3.0.8p
 
 export machine=WCOSS
 ##export APRUNCY=
@@ -496,6 +531,8 @@ ${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.ecf}
 if test $SENDDBN = 'YES'
 then
    $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias $job $COMOUT/${RUN}.${cycle}.abias
+   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_pc $job $COMOUT/${RUN}.${cycle}.abias_pc
+   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_air $job $COMOUT/${RUN}.${cycle}.abias_air
 fi
 
 cat $pgmout

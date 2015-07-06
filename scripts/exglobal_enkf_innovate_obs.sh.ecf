@@ -316,13 +316,16 @@ export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts}
 export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
 export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
-export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
-export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
-export SCRGSI=${SCRGSI:-$NWPROD/gsi.${gsi_ver}/scripts}
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export SCRGSI=${SCRGSI:-$NWPROD/global_shared.${global_shared_ver}/scripts}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+
+#  Set script / GSI control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 
 # Scripts.
 export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.sms}
@@ -333,18 +336,27 @@ export PREINP=${PREINP}
 export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
-export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
-export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
-export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
-export LONB=${LONB:-$($SFCHDR $SFCGESMEAN LONB||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+else
+  export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN LONB||echo 0)}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN LEVS||echo 0)}
+fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
-export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
+export DOIAU=${DOIAU:-"NO"}
 
 # Files.
 export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
@@ -397,25 +409,31 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
-export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN idate | grep -i "idate" |awk -F= '{print $2}')}
+  export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGESMEAN nfhour |awk -F" " '{print $2}'`}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
+  export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
+fi
 export CYCLVARS=${CYCLVARS}
-export SETUP=${SETUP:-""}
-export GRIDOPTS=${GRIDOPTS:-""}
-export BKGVERR=${BKGVERR:-""}
-export ANBKGERR=${ANBKGERR:-""}
-export JCOPTS=${JCOPTS:-""}
-export STRONGOPTS=${STRONGOPTS:-""}
+export SETUP_ENKF=${SETUP_ENKF:-""}
+export GRIDOPTS_ENKF=${GRIDOPTS_ENKF:-""}
+export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
+export ANBKGERR_ENKF=${ANBKGERR_ENKF:-""}
+export JCOPTS_ENKF=${JCOPTS_ENKF:-""}
+export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
 export OBSQC_ENKF=${OBSQC_ENKF:-""}
-export OBSINPUT=${OBSINPUT:-""}
-export SUPERRAD=${SUPERRAD:-""}
-export SINGLEOB=${SINGLEOB:-""}
-export LAGDATA=${LAGDATA:-""}
-export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
-export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
-export CHEM=${CHEM:-""}
+export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
+export SUPERRAD_ENKF=${SUPERRAD_ENKF:-""}
+export SINGLEOB_ENKF=${SINGLEOB_ENKF:-""}
+export LAGDATA_ENKF=${LAGDATA_ENKF:-""}
+export HYBRID_ENSEMBLE_ENKF=${HYBRID_ENSEMBLE_ENKF:-""}
+export RAPIDREFRESH_CLDSURF_ENKF=${RAPIDREFRESH_CLDSURF_ENKF:-""}
+export CHEM_ENKF=${CHEM_ENKF:-""}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
 export NTHREADS_GSI=${NTHREADS_GSI:-1}
@@ -481,11 +499,20 @@ while [[ $imem -le $ENSEND ]]; do
    export RUN_SELECT=NO
    export USE_SELECT=YES
    export SELECT_OBS=${SELECT_OBS:-$DATATOP/obsinput_${CDATE}_ensmean}
-   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,"
-   export BKGVERR="bkgv_flowdep=.false.,"
-   export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,"
+   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
+   export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
+   export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
+   export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"
+   export JCOPTS="$JCOPTS $JCOPTS_ENKF"
+   export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_ENKF"
    export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_ENKF"
-   export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,"
+   export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_ENKF"
+   export SUPERRAD="$SUPERRAD $SUPERRAD_ENKF"
+   export SINGLEOB="$SINGLEOB $SINGLEOB_ENKF"
+   export LAGDATA="$LAGDATA $LAGDATA_ENKF"
+   export HYBRID_ENSEMBLE="$HYBRID_ENSEMBLE $HYBRID_ENSEMBLE_ENKF"
+   export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
+   export CHEM="$CHEM $CHEM_ENKF"
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
@@ -508,14 +535,18 @@ while [[ $imem -le $ENSEND ]]; do
    export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
    export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
 
-   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03s_${member}
-   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04s_${member}
-   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05s_${member}
-   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06s_${member}
-   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07s_${member}
-   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08s_${member}
-   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09s_${member}
-   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06s_${member}
+   ENKF_SUFFIX=""
+   if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+      ENKF_SUFFIX="s"
+   fi
+   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03${ENKF_SUFFIX}_${member}
+   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04${ENKF_SUFFIX}_${member}
+   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05${ENKF_SUFFIX}_${member}
+   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
+   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07${ENKF_SUFFIX}_${member}
+   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08${ENKF_SUFFIX}_${member}
+   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09${ENKF_SUFFIX}_${member}
+   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
 
    export SIGANL=$DATA/sanl
    export ABIAS=$DATA/abias
@@ -530,6 +561,9 @@ while [[ $imem -le $ENSEND ]]; do
    export OZNSTAT=$COMOUT/oznstat_${CDATE}_${member}
    export PCPSTAT=$COMOUT/pcpstat_${CDATE}_${member}
    export CNVSTAT=$COMOUT/cnvstat_${CDATE}_${member}
+   if [ $DOIAU = YES ]; then
+     export SFCA03=$COMOUT/sfca03_${CDATE}_${member}
+   fi
 
    export DIAG_SUFFIX="_${member}"
    export DIAG_COMPRESS=NO
@@ -539,6 +573,9 @@ while [[ $imem -le $ENSEND ]]; do
 
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
+   fi
+   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+      rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then
       rm -f $GSISTAT
