@@ -21,7 +21,7 @@
 #PBS -l walltime=00:30:00 
 #PBS -l nodes=2:ppn=12
 #PBS -j eo                
-#PBS -A ada
+#PBS -A aircraft
 #PBS -V
 #=======================================================
 
@@ -46,7 +46,7 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2013090100
+adate=2015060100
 expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.wcoss
@@ -360,11 +360,11 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=100,niter(2)=150,
+   miter=2,niter(1)=100,niter(2)=100,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
-   gencode=$IGEN,factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
+   gencode=$IGEN,factqmin=5.0,factqmax=0.005.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
@@ -385,6 +385,8 @@ cat << EOF > gsiparm.anl
    hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+   bkgv_write=.false.,
+   cwcoveqqcov=.false.,
    $BKGVERR
  /
  &ANBKGERR
@@ -396,13 +398,13 @@ cat << EOF > gsiparm.anl
    $JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
    baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,
+   use_poq7=.true.,qc_noirjaco3_pole=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -526,7 +528,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin                   
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin                   
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin                 
-emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
@@ -622,11 +624,19 @@ $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
-# Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-#ln -s -f $datges/${prefix_tbc}.abias_pc           ./satbias_pc
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
-$ncp $datges/${prefix_tbc}.radstat            ./radstat.gdas
+#  # For data before Feb 2015 
+#  # Copy bias correction, atmospheric and surface files
+#  $ncp $datges/${prefix_tbc}.abias              ./satbias_in
+#  $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+#  #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
+#  #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
+
+ # For data after Feb 2015 
+ # Copy bias correction, atmospheric and surface files
+ $ncp $datges/${prefix_tbc}.abias               ./satbias_in
+ #$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+ $ncp $datges/${prefix_tbc}.abias_pc            ./satbias_pc
+ $ncp $datges/${prefix_tbc}.radstat             ./radstat.gdas
 
 /da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 
