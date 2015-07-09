@@ -249,15 +249,14 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-/da/noscrub/John.Derber/fastupdate/scripts
-   export basedir=/da/noscrub/$LOGNAME
-   export gsisrc=$basedir/fastlate/src
-   export gsiexec_updat=$basedir/fastlate/src/global_gsi
-   export gsiexec_contrl=$basedir/fastlate/src/global_gsi_save
-   export enkfexec_updat=$basedir/fastlate/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
-   export fixgsi=$basedir/fastupdate/fix
-   export scripts=$basedir/fastlate/scripts
+   export basedir=/da/save/$LOGNAME
+   export gsisrc=$basedir/trunk/src
+   export gsiexec_updat=$basedir/trunk/src/global_gsi
+   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+   export fixgsi=$basedir/trunk/fix
+   export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
