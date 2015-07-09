@@ -360,7 +360,7 @@ export control_hwrf_nmm_d3="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp1_hwrf_nmm_d3_cnt
 export control_hwrf_nmm_d32="$noscrub/tmpreg_${hwrf_nmm_d3}/$exp2_hwrf_nmm_d3_cntrl"
 
 # Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
-export debug=".true."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
+export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".

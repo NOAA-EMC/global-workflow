@@ -18,7 +18,7 @@ fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 
-#/bin/sh global_T62_ozonly_regression.sh > global_T62_ozonly.out &
+/bin/sh global_T62_ozonly_regression.sh > global_T62_ozonly.out &
 
 /bin/sh global_4dvar_T62_regression.sh > global_4dvar_T62.out &
 
@@ -38,12 +38,12 @@ fi
 
 /bin/sh nmmb_nems_4denvar_regression.sh > nmmb_nems_4denvar.out &
 
-#/bin/sh rtma_regression.sh > rtma.out &
+/bin/sh rtma_regression.sh > rtma.out &
 
 /bin/sh hwrf_nmm_d2_regression.sh > hwrf_nmm_d2.out &
 
 /bin/sh hwrf_nmm_d3_regression.sh > hwrf_nmm_d3.out &
 
-#/bin/sh global_enkf_T62_regression.sh > global_enkf_T62.out &
+/bin/sh global_enkf_T62_regression.sh > global_enkf_T62.out &
 
 exit

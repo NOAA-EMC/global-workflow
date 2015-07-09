@@ -206,7 +206,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       exit
 
    elif [ "$debug" = .true. ]; then
-      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp1 -q $queue -p 7/10/ -t 0:35:00 $scripts/nmmb_nems_4denvar.sh
+      /bin/sh sub_wcoss -a RDAS-T2O -j $nmmb_nems_4denvar_updat_exp1 -q $queue -p 7/10/ -t 1:00:00 $scripts/nmmb_nems_4denvar.sh
 
       rm -f nmmb_nems_4denvar.out
 
