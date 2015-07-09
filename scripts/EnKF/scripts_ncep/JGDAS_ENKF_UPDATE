@@ -8,7 +8,7 @@ export RUN_ENVIR=${RUN_ENVIR:-prod}
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
+# DATA_IN: Location of working directory, default to /tmpnwprd2
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
 # COM_IN:  Directory for input files, default to /com/$NET/${envir}
@@ -26,7 +26,7 @@ fi
 # This block can be modified for different test environment
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
-  export SENDDBN=${SENDDBN:-NO}
+  export DBNROOT=/nwprod/spa_util/fakedbn
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
 fi
 
@@ -36,6 +36,14 @@ fi
 ####################################
 export NET=gfs
 export RUN=enkf
+
+####################################
+# Specify version numbers
+####################################
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v5.0.0}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
 
 ####################################
 # set up job name and  environment
@@ -57,7 +65,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd2}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -85,7 +93,7 @@ export cycle=t${cyc}z
 export SAVEGES=${SAVEGES:-NO}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-NO}
+export SENDDBN=${SENDDBN:-YES}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
@@ -97,19 +105,44 @@ export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
+export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
 export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 
+export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
+export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
+export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
+export USHGSM=${USHGSM:-$HOMEGSM/ush}
+export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
+export UTILGSM=${UTILGSM:-$HOMEGSM/util}
+export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
+export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
+export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
+export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
+
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
+
+export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
+export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
+export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
+export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
+export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
+export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$UTILGLOBAL/ush}
-export utilexec=${utilexec:-$UTILGLOBAL/exec}
+export utilscript=${utilscript:-$USHUTIL}
+export utilexec=${utilexec:-$EXECUTIL}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
@@ -120,12 +153,11 @@ err_chk=${err_chk:-$utilscript/err_chk.sh}
 startmsg=${startmsg:-$utilscript/startmsg.sh}
 ERRSCRIPT=${ERRSCRIPT:-$err_chk}
 LOGSCRIPT=${LOGSCRIPT:-$startmsg}
-export FILESTYLE=${FILESTYLE:-'C'}
+export FILESTYLE=${FILESTYLE:-'L'}
 
 ##############################
 # Run setpdy and initialize PDY variables
 ##############################
-##export PDY=2012011006
 $utilscript/setpdy.sh
 . ./PDY
 
@@ -163,22 +195,22 @@ mkdir -m 775 -p $GESdir
 #
 #Set hybrid and ensemble resolution parameters
 export NTHREADS_ENKF=${NTHREADS_ENKF:-2}
-export JCAP_ENKF=${JCAP_ENKF:-254}
+export JCAP_ENKF=${JCAP_ENKF:-574}
 export LEVS_ENKF=${LEVS_ENKF:-64}
-export LONB_ENKF=${LONB_ENKF:-768}
-export LATB_ENKF=${LATB_ENKF:-384}
-export LONA_ENKF=${LONA_ENKF:-512}
-export LATA_ENKF=${LATA_ENKF:-256}
+export LONB_ENKF=${LONB_ENKF:-1152}
+export LATB_ENKF=${LATB_ENKF:-576}
+export LONA_ENKF=${LONA_ENKF:-1152}
+export LATA_ENKF=${LATA_ENKF:-576}
 export NMEM_ENKF=${NMEM_ENKF:-80}
 export NVARS=${NVARS:-5}
 
 #
 # These defaults are for the T254L64
 #
-export LONA=${LONA_ENKF:-512}
-export LATA=${LATA_ENKF:-256}
-export LONB=${LONB_ENKF:-768}
-export LATB=${LATB_ENKF:-384}
+export LONA=${LONA_ENKF:-1152}
+export LATA=${LATA_ENKF:-576}
+export LONB=${LONB_ENKF:-1152}
+export LATB=${LATB_ENKF:-576}
 export LEVS=${LEVS_ENKF:-64}
 
 # Forecast Vertical Resolution
@@ -189,19 +221,21 @@ export LEVS_ges=${LEVS_ges:-64}
 
 
 # EnKF executable
-export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGLOBAL}/global_enkf}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGDAS}/global_enkf}
 
 # EnKF script
-export ENKFUPDSH=${ENKFUPDSH:-$SCRGLOBAL/exglobal_enkf_update.sh.ecf}
+export ENKFUPDSH=${ENKFUPDSH:-$SCRGDAS/exglobal_enkf_update.sh.ecf}
 
 # Enkf fix files
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
 
 # EnKF ensemble files
+export GBIASE=${GBIASE:-$COMIN/biascr_int_${CDATE}_ensmean}
 export CNVSTAT=${CNVSTAT:-$COMIN/cnvstat_$CDATE}
 export OZNSTAT=${OZNSTAT:-$COMIN/oznstat_$CDATE}
 export RADSTAT=${RADSTAT:-$COMIN/radstat_$CDATE}
@@ -209,6 +243,10 @@ export SIGGESENS=${SIGGESENS:-${COMINGES}/sfg_${GDATE}_fhr06s}
 
 export SIGGES=${SIGGES:-${COMINGES}/sfg_${GDATE}_fhr06_ensmean}
 export SFCGES=${SFCGES:-${COMINGES}/bfg_${GDATE}_fhr06_ensmean}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
 
 ############################################################################ 
 #
@@ -227,16 +265,15 @@ msg="HAS BEGUN on `hostname`"
 # Define Previous Guess File Names (dev users must provide from outside)
 ####################################
 RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+err1=0
 if [ $RUN_GETGES = YES ]; then
   GETGESSH=${GETGESSH:-$utilscript/getges.sh}
   export gesenvir=${gesenvir:-$envir}
   $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
 err1=$?
-  $GETGESSH -t satang -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gsatang
 fi
 
 export GBIAS=${GBIAS:-$DATA/gbias}
-export GSATANG=${GSATANG:-$DATA/gsatang}
 
 
 if [ $err1 -eq 0 ] ; then
@@ -250,35 +287,24 @@ else
    ./err_chk
 fi
 
-############################
-# Make use of updated angle dependent bias file, if it exists.
-if [[ -s $GSATANG ]]; then
-   export SATANGL=$GSATANG
-fi
 
+# Set namelist variables for enhanced radiance bias correction scheme
+export USE_NEWRADBC=${USE_NEWRADBC:-YES}
 
 
 ############################
 # WCOSS environment settings
-##export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usrx/local/netcdf-3.6.3/lib
-
+export MP_DEBUG_NOTIMEOUT=no
 export MP_EAGER_LIMIT=165536
 export MP_COREFILE_FORMAT=lite
-export MP_EUIDEVELOP=min
-export MP_EUIDEVICE=sn_all
-export MP_EUILIB=us
 export MP_MPILIB=mpich2
 
 export MP_LABELIO=yes
-export MP_SINGLE_THREAD=no
-export MP_USE_BULK_XFER=no
+export MP_USE_BULK_XFER=yes
 export MP_SHARED_MEMORY=yes
 export MPICH_ALLTOALL_THROTTLE=0
 export MP_COLLECTIVE_OFFLOAD=no
-export KMP_STACKSIZE=1024m
-
-export NTHREADS_ENKF=${NTHREADS_ENKF:-2}
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:$NTHREADS_ENKF}
+export KMP_STACKSIZE=2048m
 
 export machine=WCOSS
 export APRUN='mpirun.lsf'
@@ -287,7 +313,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFUPDSH:-$SCRGLOBAL/exglobal_enkf_update.sh.ecf}
+${ENKFUPDSH:-$SCRGDAS/exglobal_enkf_update.sh.ecf}
 #############################################################
 
 

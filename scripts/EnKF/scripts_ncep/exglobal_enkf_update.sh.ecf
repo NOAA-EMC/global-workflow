@@ -12,7 +12,7 @@
 # Script history log:
 # 2011-03-24  Russ Treadon   copy from enkf/trunk/scripts_ncep
 #
-# Usage:  exglobal_enkfupdat.sh.sms SFCGES SIGGES GBIAS GSATANG
+# Usage:  exglobal_enkfupdat.sh.sms SFCGES SIGGES GBIAS GBIASE
 #
 #   Input script positional parameters:
 #     1             Input surface guess
@@ -22,7 +22,7 @@
 #     3             Input guess time dependent bias correction coefficients
 #                   defaults to $GBIAS; required
 #     4             Input guess angle dependent bias correction
-#                   defaults to $GSATANG; required
+#                   defaults to $GBIASE; required
 #
 #   Imported Shell Variables:
 #     SFCGES        Input ensemble mean surface guess
@@ -31,7 +31,7 @@
 #                   overridden by $2; required
 #     GBIAS         Input guess bias correction
 #                   overridden by $3; required
-#     GSATANG       Input guess angle dependent bias correction
+#     GBIASE        Input guess angle dependent bias correction
 #                   overridden by $4; required
 #     ENKFSTAT      Output enkf update statistics
 #                   defaults to ${COMIN}/${PREINP}enkfstat
@@ -153,7 +153,7 @@
 #                  $SIGGES
 #                  $SIGGESENS
 #                  $GBIAS
-#                  $GSATANG
+#                  $GBIASE
 #                  $CNVSTAT
 #                  $OZNSTAT
 #                  $RADSTAT
@@ -198,36 +198,50 @@ fi
 export SFCGES=${1:-${SFCGES:?}}
 export SIGGES=${2:-${SIGGES:?}}
 export GBIAS=${3:-${GBIAS:?}}
-export GSATANG=${4:-${GSATANG:?}}
-export GBIASe=${5:-${GBIASe:-satbias_int}}
+export GBIASE=${4:-${GBIASE:?}}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec}
+
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script / EnKF update control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run EnKF update with NEMSIO input/output
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
-export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
-export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
+  export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NPTS=`expr \( $LONA \) \* \( $LATA \)`
-export LEVS=${LEVS:-$($SIGHDR $SIGGES LEVS||echo 0)}
-export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGLOBAL}/global_enkf$XC}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGDAS}/global_enkf$XC}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
 export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
 export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
@@ -241,7 +255,6 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NANALS=${NANALS:-80}
@@ -298,7 +311,7 @@ export PGM='$APRUN $DATA/$(basename $ENKFUPDEXEC)'
 export pgm=$PGM
 $LOGSCRIPT
 
-rm convinfo satinfo ozinfo satang satbias_in satbias_angle enkf.nml
+rm convinfo satinfo ozinfo satbias_angle satbias_in enkf.nml
 rm hybens_locinfo
 rm sanl*
 
@@ -340,10 +353,9 @@ then
 
    # Guess fields
    $NCP $GBIAS    satbias_in
-   $NCP $GSATANG  satbias_ang.in
    if [[ "$USE_NEWRADBC" = "YES" ]]; then
       rm satbias_in
-      $NCP $GBIASe   satbias_in
+      $NCP $GBIASE   satbias_in
    fi
 
    $NCP $SIGGES   sfg_${CDATE}_fhr06_ensmean
@@ -381,10 +393,9 @@ else
 
    # Guess fields
    ln -fs $GBIAS    satbias_in
-   ln -fs $GSATANG  satbias_ang.in
    if [[ "$USE_NEWRADBC" = "YES" ]]; then
       rm satbias_in
-      ln -fs $GBIASe   satbias_in
+      ln -fs $GBIASE   satbias_in
    fi
 
    ln -fs $SIGGES   sfg_${CDATE}_fhr06_ensmean
@@ -416,6 +427,8 @@ cat <<EOF > enkf.nml
   nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS,
   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
   reducedgrid=.true.,readin_localization=.true.,
+  use_gfs_nemsio=${use_gfs_nemsio},
+  univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
   $NAM_ENKF
  /
  &END
@@ -515,7 +528,7 @@ then
 fi
 
 # Cat runtime output files.
-cat $PGMOUT fort.2* > $ENKFSTAT
+cat $PGMOUT $PGMERR fort.2* > $ENKFSTAT
 
 ################################################################################
 #  Postprocessing

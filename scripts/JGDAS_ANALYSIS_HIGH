@@ -1,7 +1,5 @@
 #!/bin/ksh 
 set -xa
-##export MP_IOAGENT_CNT=all
-##export MP_IO_BUFFER_SIZE=8M
 #
 # Specify whether the run is production or development
 #
@@ -10,7 +8,7 @@ export RUN_ENVIR=${RUN_ENVIR:-prod}
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
+# DATA_IN: Location of working directory, default to /tmpnwprd2
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to YES
 # COM_IN:  Directory for input files, default to /com/$NET/${envir}
@@ -28,7 +26,7 @@ fi
 # This block can be modified for different test environment
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]] ; then
-  export SENDDBN=${SENDDBN:-NO}
+  export DBNROOT=/nwprod/spa_util/fakedbn
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
 fi
 
@@ -38,6 +36,17 @@ fi
 export NET=gfs
 export RUN=gdas1
 export RUNENS=enkf
+
+
+####################################
+# Specify version numbers
+####################################
+export crtm_ver=${crtm_ver:-v2.2.1}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v1.0.0}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
+
 
 ####################################
 # set up job name and  environment
@@ -58,10 +67,10 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=$$
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd2}
 
 export DATA=$DATA_IN/${job}.${pid}
-mkdir $DATA
+mkdir -p $DATA
 cd $DATA
 
 ####################################
@@ -79,7 +88,6 @@ export cycle=t${cyc}z
 # SENDECF  - Flag Events on ECF
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
-# RERUN    - Rerun fcst from beginning (default no)
 # VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
 ####################################
 export SAVEGES=${SAVEGES:-YES}
@@ -92,30 +100,45 @@ export VERBOSE=${VERBOSE:-YES}
 #################################
 # Define the Log File directory
 #################################
-if [ $envir = "prod" ]
-then
-   export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
-else
-   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
-fi
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.${gsm_ver}}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
+export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
 export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 
+export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
+export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
+export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
+export USHGSM=${USHGSM:-$HOMEGSM/ush}
+export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
+export UTILGSM=${UTILGSM:-$HOMEGSM/util}
+export PARMGSM=${PARMGSM:-$HOMEGSM/parm}
+
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
+export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
+export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
+export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
+
+export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
+export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
+export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
+export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
+export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
+export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$UTILGLOBAL/ush}
-export utilexec=${utilexec:-$UTILGLOBAL/exec}
+export utilscript=${utilscript:-$USHUTIL}
+export utilexec=${utilexec:-$EXECUTIL}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
@@ -143,14 +166,12 @@ export cycges=`echo $GDATE | cut -c9-10`
 ##############################################
 # Define COM directories
 ##############################################
-#SE export COM_IN=${COM_IN:-/com/${NET}/${envir}}
 export COM_IN=${COM_IN:-/com/${NET}/${envir}}
 export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
 
 export COMIN=$COM_IN/gdas.${PDY}
 export COMOUT=$COM_OUT/gdas.${PDY}
 export COMINENS=${COMINENS:-$COM_IN/enkf.${PDYges}/$cycges}
-
 
 mkdir -m 775 -p $COMOUT
 
@@ -166,16 +187,16 @@ mkdir -m 775 -p $GESdir
 # Specify Special Fcst Vars
 ####################################
 #
-# Set executable and script
-export GSIEXEC=${GSIEXEC:-$EXECGLOBAL/global_gsi}
-export ANALYSISSH=${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.ecf}
+# Set executable, script, and fix
+export GSIEXEC=${GSIEXEC:-$EXECGSI/global_gsi}
+export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.ecf}
 
 #
 # Forecast Horizontal Resolution
 #
-export JCAP=${JCAP:-574}
+export JCAP=${JCAP:-1534}
 export JCAP_A=${JCAP_A:-574}
-export JCAP_ges=${JCAP_ges:-574}
+export JCAP_ges=${JCAP_ges:-1534}
 
 #
 # Forecast Vertical Resolution
@@ -187,8 +208,8 @@ export LEVS_ges=${LEVS_ges:-64}
 #
 export LONA=${LONA:-1152}
 export LATA=${LATA:-576}
-export LONB=${LONB:-1760}
-export LATB=${LATB:-880}
+export LONB=${LONB:-3072}
+export LATB=${LATB:-1536}
 export LSOIL=${LSOIL:-4}
 export NLAT=$((${LATA}+2))
 
@@ -196,49 +217,56 @@ export NLAT=$((${LATA}+2))
 export DOHYBVAR=${DOHYBVAR:-YES}
 
 export NMEM_ENS=${NMEM_ENS:-80}
-export JCAP_ENS=${JCAP_ENS:-254}
-export NLAT_ENS=${NLAT_ENS:-258}
-export NLON_ENS=${NLON_ENS:-512}
+export JCAP_ENS=${JCAP_ENS:-574}
+export NLAT_ENS=${NLAT_ENS:-578}
+export NLON_ENS=${NLON_ENS:-1152}
 
 #
 # Time Step
 #
-export DELTIM=${DELTIM:-120}
+export DELTIM=${DELTIM:-450}
+
+#
+# Surface cycle
+#
+export use_ufo=${use_ufo:-.true.}
+export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 
 #
 # Analysis Fix Fields
 #
-export FNGLAC=${FNGLAC:-${FIXGLOBAL}/global_glacier.2x2.grb}
-export FNMXIC=${FNMXIC:-${FIXGLOBAL}/global_maxice.2x2.grb}
-export FNTSFC=${FNTSFC:-${FIXGLOBAL}/cfs_oi2sst1x1monclim19822001.grb}
-export FNSNOC=${FNSNOC:-${FIXGLOBAL}/global_snoclim.1.875.grb}
-export FNZORC=${FNZORC:-${FIXGLOBAL}/global_zorclim.1x1.grb}
-export FNALBC=${FNALBC:-${FIXGLOBAL}/global_albedo4.1x1.grb}
-export FNAISC=${FNAISC:-${FIXGLOBAL}/cfs_ice1x1monclim19822001.grb}
-export FNTG3C=${FNTG3C:-${FIXGLOBAL}/global_tg3clim.2.6x1.5.grb}
-export FNVEGC=${FNVEGC:-${FIXGLOBAL}/global_vegfrac.0.144.decpercent.grb}
-export FNVETC=${FNVETC:-${FIXGLOBAL}/global_vegtype.1x1.grb}
-export FNSOTC=${FNSOTC:-${FIXGLOBAL}/global_soiltype.1x1.grb}
-export FNSMCC=${FNSMCC:-${FIXGLOBAL}/global_soilmcpc.1x1.grb}
-export FNOROG=${FNOROG:-${FIXGLOBAL}/global_orography.t${JCAP}.grb}
-export FNMASK=${FNMASK:-${FIXGLOBAL}/global_slmask.t${JCAP}.grb}
-export OROGRAPHY=${OROGRAPHY:-${FIXGLOBAL}/global_orography.t${JCAP}.grb}
-export SLMASK=${SLMASK:-${FIXGLOBAL}/global_slmask.t${JCAP}.grb}
+export FNGLAC=${FNGLAC:-${FIXGSM}/global_glacier.2x2.grb}
+export FNMXIC=${FNMXIC:-${FIXGSM}/global_maxice.2x2.grb}
+export FNTSFC=${FNTSFC:-$FIXGSM/RTGSST.1982.2012.monthly.clim.grb}
+export FNSNOC=${FNSNOC:-${FIXGSM}/global_snoclim.1.875.grb}
+export FNZORC=${FNZORC:-'sib'}
+export FNALBC=${FNALBC:-${FIXGSM}/global_albedo4.1x1.grb}
+export FNAISC=${FNAISC:-${FIXGSM}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+export FNTG3C=${FNTG3C:-${FIXGSM}/global_tg3clim.2.6x1.5.grb}
+export FNVEGC=${FNVEGC:-${FIXGSM}/global_vegfrac.0.144.decpercent.grb}
+export FNVETC=${FNVETC:-${FIXGSM}/global_vegtype.1x1.grb}
+export FNSOTC=${FNSOTC:-${FIXGSM}/global_soiltype.1x1.grb}
+export FNSMCC=${FNSMCC:-${FIXGSM}/global_soilmgldas.t${JCAP}.$LONB.$LATB.grb}
+export FNOROG=${FNOROG:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export FNMASK=${FNMASK:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY=${OROGRAPHY:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF:-${FIXGSM}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
+export SLMASK=${SLMASK:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
 
-export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT}.f77}
-export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export ATMSFILTER=${ATMSFILTER:-${FIXGLOBAL}/atms_beamwidth.txt}
-export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGLOBAL}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGLOBAL}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export BERROR=${BERROR:-${FIXGSI}/Big_Endian/global_berror.l${LEVS}y${NLAT}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export ATMSFILTER=${ATMSFILTER:-${FIXGSI}/atms_beamwidth.txt}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.0.5}
+export RTMFIX=${RTMFIX:-/nw${envir}/fix/crtm_${crtm_ver}}
 
 
 #
@@ -247,12 +275,12 @@ export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_2.0.5}
 export PREINP=${PREINP:-${RUN}.${cycle}.}
 export PREINPENS=${PREINPENS:-${RUNENS}.${cycle}.}
 
-export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb}
-export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb}
-export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb_t574}
+export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}rtgssthr.grb}
+export FNACNA=${FNACNA:-${COMIN}/${PREINP}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb_t${JCAP}.${LONB}.${LATB}}
 
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr}
-
+export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles}
 
 export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d}
 export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d}
@@ -290,10 +318,18 @@ export SIGG08=${SIGG08:-${COMIN}/${PREINP}sgp2prep}
 export SIGG09=${SIGG09:-${COMIN}/${PREINP}sgp3prep}
 
 export SIGGESENS=${SIGGESENS:-${COMINENS}/sfg_${GDATE}_fhr06s}
+export SIGF03ENS=${SIGF03ENS:-${COMINENS}/sfg_${GDATE}_fhr03s}
+export SIGF04ENS=${SIGF04ENS:-${COMINENS}/sfg_${GDATE}_fhr04s}
+export SIGF05ENS=${SIGF05ENS:-${COMINENS}/sfg_${GDATE}_fhr05s}
+export SIGF06ENS=${SIGF06ENS:-${COMINENS}/sfg_${GDATE}_fhr06s}
+export SIGF07ENS=${SIGF07ENS:-${COMINENS}/sfg_${GDATE}_fhr07s}
+export SIGF08ENS=${SIGF08ENS:-${COMINENS}/sfg_${GDATE}_fhr08s}
+export SIGF09ENS=${SIGF09ENS:-${COMINENS}/sfg_${GDATE}_fhr09s}
+
+export NSTGES=${NSTGES:-/dev/null}
 
 # Set non-assimilated obs fles as /dev/null to prevent reading
-# added 11/2008 by wx11sc to decrease run time, since SSMI and AMSRE are
-# not assimilated
+export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
 
@@ -318,7 +354,7 @@ wgrib=$utilexec/wgrib
 RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
 if [ $RUN_GETGES = YES ]; then
  GETGESSH=${GETGESSH:-$utilscript/getges.sh}
- export gesenvir=${envir}
+ export gesenvir=${gesenvir:-$envir}
  snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n gdas -v $prev_cdate)
 else
  snoprv=${snoprv:-$FNSNOG}
@@ -329,6 +365,9 @@ if [ `$wgrib -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
                         awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
         export FNSNOA=" "
         export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+else
+     export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+     export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
 fi
 
 ############################################################################ 
@@ -337,8 +376,10 @@ fi
 #
 export SFCANL=${SFCANL:-$DATA/${RUN}.${cycle}.sfcanl}
 export SIGANL=${SIGANL:-$DATA/${RUN}.${cycle}.sanl}
+export NSTANL=${NSTANL:-$DATA/${RUN}.${cycle}.nstanl}
 export ABIAS=${ABIAS:-$DATA/${RUN}.${cycle}.abias}
 export ABIASPC=${ABIASPC:-$DATA/${RUN}.${cycle}.abias_pc}
+export ABIASAIR=${ABIASAIR:-$DATA/${RUN}.${cycle}.abias_air}
 export GINCOUT=${GINCOUT:-$DATA/${RUN}.${cycle}.gesfile}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${RUN}.${cycle}.pcpstat}
 export RADSTAT=${RADSTAT:-${COMOUT}/${RUN}.${cycle}.radstat}
@@ -360,21 +401,32 @@ msg="HAS BEGUN on `hostname`"
 # Define Previous Guess File Names
 ####################################
 if [ $RUN_GETGES = YES ]; then
-  gesenvir=${envir}
+  export gesenvir=${gesenvir:-$envir}
   $GETGESSH -t sfcges -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas bges
 err1=$?
   $GETGESSH -t sfcgm3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm3
+  $GETGESSH -t sfcgm2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm2
+  $GETGESSH -t sfcgm1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm1
+  $GETGESSH -t sfcgp1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp1
+  $GETGESSH -t sfcgp2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp2
   $GETGESSH -t sfcgp3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp3
   $GETGESSH -t biascr -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias
-  $GETGESSH -t satang -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gsatang
+  $GETGESSH -t biascr_pc -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_pc
+  $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
+  $GETGESSH -t radstat -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gradstat
 fi
 
 export SFCGES=${SFCGES:-$DATA/bges}
 export SFCG03=${SFCG03:-$DATA/sfcgm3}
+export SFCG04=${SFCG04:-$DATA/sfcgm2}
+export SFCG05=${SFCG05:-$DATA/sfcgm1}
+export SFCG07=${SFCG07:-$DATA/sfcgp1}
+export SFCG08=${SFCG08:-$DATA/sfcgp2}
 export SFCG09=${SFCG09:-$DATA/sfcgp3}
 export GBIAS=${GBIAS:-$DATA/gbias}
 export GBIASPC=${GBIASPC:-$DATA/gbias_pc}
-export GSATANG=${GSATANG:-$DATA/gsatang}
+export GBIASAIR=${GBIASAIR:-$DATA/gbias_air}
+export GRADSTAT=${GRADSTAT:-$DATA/gradstat}
 export GESFIL=${GESFIL:-$DATA/gesfile}
 
 if test "$err1" -eq '0'
@@ -391,31 +443,40 @@ else
 fi
 
 ############################
-# Make use of updated angle dependent bias file, if it exists.
-if [[ -s $GSATANG ]]; then
-   export SATANGL=$GSATANG
-fi
-
-# Make use of increment from GFS early cycle, if it exists
 if [[ -s $GESFIL ]]; then
    export GINCIN=$GESFIL
 fi
 
 # Set namelist jobs for hybrid 3dvar-ensemble analysis
+export HYBRID_ENSEMBLE=""
 if [[ "$DOHYBVAR" = "YES" ]]; then
-   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=$NMEM_ENS,beta1_inv=0.25,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.true.,"
+   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=$NMEM_ENS,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.false.,"
    export STRONGOPTS="tlnmc_option=2,"
 fi
 
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+export lwrite4danl=${lwrite4danl:-".false."}
+SETUP_4DVAR=""
+if [ $l4densvar = .true. ] ; then
+   SETUP_4DVAR="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,l4densvar=.true.,ens4d_nstarthr=3,nhr_obsbin=1,nhr_assimilation=6,lwrite4danl=${lwrite4danl},"
+   export JCOPTS="ljc4tlevs=.true.,"
+   export STRONGOPTS="tlnmc_option=3,"
+fi
+
+
 ################################################################################
 # Do not produce RAD, PCP, OZN, CNV diagnostic (STAT) files for GFS early analysis.
+export USE_NEWRADBC=${USE_NEWRADBC:-YES}
+
+SETUPGFS=""
 if [[ "${RUN}" = 'gfs' ]]; then
-  export SETUP="diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,"
+  export SETUPGFS='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
 fi 
+export SETUP="$SETUP_4DVAR $SETUPGFS"
 
 ############################
 # WCOSS environment settings
-##export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usrx/local/netcdf-3.6.3/lib
 
 export MP_EAGER_LIMIT=65536
 export MP_COREFILE_FORMAT=lite
@@ -429,22 +490,28 @@ export MP_USE_BULK_XFER=yes
 export MP_SHARED_MEMORY=yes
 
 export MPICH_ALLTOALL_THROTTLE=0
-export MP_COLLECTIVE_OFFLOAD=yes
+export MP_USE_TOKEN_FLOW_CONTROL=yes
 export KMP_STACKSIZE=2048m
 
-export NTHREADS_GSI=${NTHREADS_GSI:-2}
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:$NTHREADS_GSI}
+export NTHREADS_GSI=${NTHREADS_GSI:-4}
+export NTHSTACK=1024000000                # stacks for fcst step; default 128000000
+export NTHSTACK_GSI=1024000000            # stack size for anal, default=128000000
+
+export OMP_NUM_THREADS_CY=24
+
+. /usrx/local/Modules/3.2.10/init/ksh
+module unload ibmpe/1.3.0.8
+module load ibmpe/1.3.0.8p
 
 export machine=WCOSS
 ##export APRUNCY=
 export APRUN='mpirun.lsf'
 
-
 env
 
 #############################################################
 # Execute the script
-${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.ecf}
+${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.ecf}
 #############################################################
 
 #export MP_PMDLOG=no
@@ -464,6 +531,8 @@ ${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.ecf}
 if test $SENDDBN = 'YES'
 then
    $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias $job $COMOUT/${RUN}.${cycle}.abias
+   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_pc $job $COMOUT/${RUN}.${cycle}.abias_pc
+   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_air $job $COMOUT/${RUN}.${cycle}.abias_air
 fi
 
 cat $pgmout

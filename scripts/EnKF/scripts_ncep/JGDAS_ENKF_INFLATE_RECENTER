@@ -8,7 +8,7 @@ export RUN_ENVIR=${RUN_ENVIR:-prod}
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
+# DATA_IN: Location of working directory, default to /tmpnwprd2
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
 # COM_IN:  Directory for input files, default to /com/$NET/${envir}
@@ -26,7 +26,7 @@ fi
 # This block can be modified for different test environment
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
-  export SENDDBN=${SENDDBN:-NO}
+  export DBNROOT=/nwprod/spa_util/fakedbn
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
 fi
 
@@ -36,6 +36,14 @@ fi
 ####################################
 export NET=gfs
 export RUN=enkf
+
+####################################
+# Specify version numbers
+####################################
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v5.0.0}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
 
 ####################################
 # set up job name and  environment
@@ -57,7 +65,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd2}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -85,7 +93,7 @@ export cycle=t${cyc}z
 export SAVEGES=${SAVEGES:-NO}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-NO}
+export SENDDBN=${SENDDBN:-YES}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
@@ -97,19 +105,46 @@ export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
+export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
 export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 
+export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
+export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
+export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
+export USHGSM=${USHGSM:-$HOMEGSM/ush}
+export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
+export UTILGSM=${UTILGSM:-$HOMEGSM/util}
+export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+
+export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
+export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
+export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
+export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
+
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
+
+export PERTURBDIR=${PERTURBDIR:-/nwprod/fix/enkf_gfs}
+
+export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
+export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
+export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
+export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
+export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
+export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$UTILGLOBAL/ush}
-export utilexec=${utilexec:-$UTILGLOBAL/exec}
+export utilscript=${utilscript:-$USHUTIL}
+export utilexec=${utilexec:-$EXECUTIL}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
@@ -120,12 +155,11 @@ err_chk=${err_chk:-$utilscript/err_chk.sh}
 startmsg=${startmsg:-$utilscript/startmsg.sh}
 ERRSCRIPT=${ERRSCRIPT:-$err_chk}
 LOGSCRIPT=${LOGSCRIPT:-$startmsg}
-export FILESTYLE=${FILESTYLE:-'C'}
+export FILESTYLE=${FILESTYLE:-'L'}
 
 ##############################
 # Run setpdy and initialize PDY variables
 ##############################
-##export PDY=2012011006
 $utilscript/setpdy.sh
 . ./PDY
 
@@ -161,24 +195,37 @@ mkdir -m 775 -p $GESdir
 ####################################
 
 #Set hybrid and ensemble resolution parameters
-export JCAP_ENKF=${JCAP_ENKF:-254}
+export JCAP_ENKF=${JCAP_ENKF:-574}
 export LEVS_ENKF=${LEVS_ENKF:-64}
-export LONB_ENKF=${LONB_ENKF:-768}
-export LATB_ENKF=${LATB_ENKF:-384}
+export LONB_ENKF=${LONB_ENKF:-1152}
+export LATB_ENKF=${LATB_ENKF:-576}
 export NMEM_ENKF=${NMEM_ENKF:-80}
 
 
 # EnKF executable
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth.x}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGLOBAL}/adderrspec_nmcmeth_spec.x}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGLOBAL}/recentersigp.x}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmeanp_smooth.x}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGDAS}/adderrspec_nmcmeth_spec.x}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGDAS}/recentersigp.x}
 
 
 # EnKF scripts
-export ENKFCENSH=${ENKFCENSH:-$SCRGLOBAL/exglobal_enkf_inflate_recenter.sh.ecf}
+export ENKFCENSH=${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
 
 # EnKF fix files
 export PERTURBDIR=${PERTURBDIR:-${FIXGLOBAL}/enkf_gfs}
+
+# Chgres fix files
+export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-$FIXGSM/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-$FIXGSM/global_lonsperlat.t${JCAP_ENKF}.$LONB_ENKF.$LATB_ENKF.txt}
+export SLMASK_ENKF=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.f77}
+
+use_ufo=.true.
+LATCH=8; IDSL=1 ;  idvt=21
+export CHGRESTHREAD=${CHGRESTHREAD:-48}
+IDVM=0
+export CHGRESVARS_ENKF="use_ufo=$use_ufo,IALB=$ialb,ntrac=3,idvc=$idvc_a,idvt=$idvt,idsl=$IDSL,IDVM=$IDVM,"
 
 # Input files
 export SIGANL_HI=${SIGANL_HI:-$COMINGDAS/${PREFIXGDAS}sanl}
@@ -217,9 +264,6 @@ export MPICH_ALLTOALL_THROTTLE=0
 export MP_COLLECTIVE_OFFLOAD=no
 export KMP_STACKSIZE=1024m
 
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:1}
-export CHGRESTHREAD=16
-
 export machine=WCOSS
 export APRUN='mpirun.lsf'
 
@@ -228,7 +272,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFCENSH:-$SCRGLOBAL/exglobal_enkf_inflate_recenter.sh.ecf}
+${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
 #############################################################
 
 

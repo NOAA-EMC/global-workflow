@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script epos.sh
+# 2014-05-16  Xu Li   Add NSST
 #
 # Usage:  exglobal_enkfpos.sh.sms
 #
@@ -40,6 +41,8 @@
 #                   defaults to ${EXECGLOBAL}/getsigensmean_smooth$XC
 #     GETSFCENSMEANEXEC   Compute ensemble mean surface file
 #                   defaults to ${EXECGLOBAL}/getsfcensmean_smooth$XC
+#     GETNSTENSMEANEXEC   Compute ensemble mean NSST file
+#                   defaults to ${EXECGLOBAL}/getnstensmean_smooth$XC
 #     HYBENSMOOTH   Input level dependent smoothing paramters for sigma file
 #                   defaults to ${FIXGLOBAL}/global_hybens_smoothinfo.l${LEVS}.txt
 #     INISCRIPT     Preprocessing script
@@ -125,13 +128,19 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 # none
 #  Directories.
-export FIXGLOBAL=${FIXGLOBAL:-/nwprod/fix}
-export EXECGLOBAL=${EXECGLOBAL:-/nwprod/exec}
-export USHGLOBAL=${USHGLOBAL:-/nwprod/ush}
+export HOMEDIR=${HOMEDIR:-/nwprod}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix} 
+export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
+export USHGDAS=${USHGDAS:-$NWPROD/gdas.${gdas_ver}/ush} 
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
 export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+#  Set script / EnKF update control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run script with NEMSIO input/output
 #  Filenames.
 export XC=${XC:-".x"}
 export LEVS=${LEVS:-64}
@@ -139,9 +148,14 @@ export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGLOBAL/global_hybens_smoothinfo.l${LEVS}.txt}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGSI/global_hybens_smoothinfo.l${LEVS}.txt}
+export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
 #  I/O filenames.
-export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
+fi
 export SIGENS_IN=${SIGENS_IN:-$COMIN/sfg_${CDATE}_fhr}
 export SFCENS=${SFCENS:-$COMIN/bfg_${CDATE}_fhr}
 export ENSSTAT=${ENSSTAT:-$COMOUT/ensstat_${CDATE}_all}
@@ -149,13 +163,17 @@ export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/sfg_${CDATE}_fhr}
 export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/bfg_${CDATE}_fhr}
 export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECGLOBAL/getsigensmean_smooth$XC}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECGLOBAL/getsfcensmean_smooth$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECGDAS/getsigensmean_smooth$XC}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECGDAS/getsfcensmean_smooth$XC}
+export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
+export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECGDAS/getnstensmean_smooth$XC}
 #  Other variables.
-export FHOUTEFCS=${FHOUTEFCS:-3}
-export FHMINEFCS=${FHMINEFCS:-3}
-export FHMAXEFCS=${FHMAXEFCS:-9}
+export FHOUTEFCS=${FHOUT_ENKF:-3}
+export FHMINEFCS=${FHMIN_ENKF:-3}
+export FHMAXEFCS=${FHMAX_ENKF:-9}
 export NMEM_ENKF=${NMEM_ENKF:-80}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export MPMD=${MPMD:-NO}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
 export NTHREADS_EPOS=${NTHREADS_EPOS:-1}
@@ -165,6 +183,8 @@ export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export NCP=${NCP:-cp}
 export APRUN=${APRUN:-""}
+export NST_GSI=${NST_GSI:-0}
+
 if [ $machine = IBMP6 ] ; then
   typeset -L1 l=$PGMOUT
   [[ $l = '&' ]]&&a=''||a='>'
@@ -176,6 +196,13 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
+export l4densvar=${l4densvar:-".false."}
+
+ENKF_SUFFIX=""
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+   ENKF_SUFFIX="s"
+fi
+
 
 ################################################################################
 #  Preprocessing
@@ -202,12 +229,16 @@ export XLSMPOPTS="stack=$NTHSTACK"
 $LOGSCRIPT
 
 rm getsigensmean_smooth.x getsfcensmean_smooth.x hybens_smoothinfo
-rm sfg*fhr03* sfg*f06* sfg*f09*
-rm bfg*fhr03* bfg*f06* bfg*f09*
+rm sfg*fhr03* sfg*fhr04* sfg*fhr05* sfg*fhr06* sfg*fhr07* sfg*fhr08* sfg*fhr09*
+rm bfg*fhr03* bfg*fhr04* bfg*fhr05* bfg*fhr06* bfg*fhr07* bfg*fhr08* bfg*fhr09*
+rm nfg*fhr03* nfg*fhr04* nfg*fhr05* nfg*fhr06* nfg*fhr07* nfg*fhr08* nfg*fhr09*
 
 
 $NCP $GETSFCENSMEANEXEC $DATA
 $NCP $GETATMENSMEANEXEC $DATA
+if [ $NST_GSI -gt 0 ]; then
+   $NCP $GETNSTENSMEANEXEC $DATA
+fi
 
 if [[ $FILESTYLE = 'C' ]]
 then
@@ -226,6 +257,9 @@ then
          [[ $FH -lt 10 ]]&&FH=0$FH
          $NCP ${SFCENS}${FH}${member} bfg_${CDATE}_fhr${FH}$member
          $NCP ${SIGENS_IN}${FH}${member} sfg_${CDATE}_fhr${FH}$member
+         if [ $NST_GSI -gt 0 ]; then
+            $NCP ${NSTENS}${FH}${member} nfg_${CDATE}_fhr${FH}$member
+         fi
          FH=`expr $FH + $FHOUT`
       done
       (( imem = $imem + 1 ))
@@ -247,6 +281,9 @@ else
          [[ $FH -lt 10 ]]&&FH=0$FH
          ln -fs ${SFCENS}${FH}${member} bfg_${CDATE}_fhr${FH}$member
          ln -fs ${SIGENS_IN}${FH}${member} sfg_${CDATE}_fhr${FH}$member
+         if [ $NST_GSI -gt 0 ]; then
+            ln -fs ${NSTENS}${FH}${member} nfg_${CDATE}_fhr${FH}$member
+         fi
          FH=`expr $FH + $FHOUT`
       done
       (( imem = $imem + 1 ))
@@ -260,21 +297,26 @@ else
       [[ $FH -lt 10 ]]&&FH=0$FH
       ln -fs ${SIGENSMEAN}${FH}_ensmean sfg_${CDATE}_fhr${FH}_ensmean
       ln -fs ${SFCENSMEAN}${FH}_ensmean bfg_${CDATE}_fhr${FH}_ensmean
+      if [ $NST_GSI -gt 0 ]; then
+         ln -fs ${NSTENSMEAN}${FH}_ensmean nfg_${CDATE}_fhr${FH}_ensmean
+      fi
       FH=`expr $FH + $FHOUT`
    done
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      member="_mem"`printf %03i $imem`
-      FHBEG=$FHMIN
-      FHEND=$FHMAX
-      FH=$FHBEG
-      until [[ $FH -gt $FHEND ]];do
-         [[ $FH -lt 10 ]]&&FH=0$FH
-         ln -fs ${SIGENS_OUT}${FH}s${member} sfg_${CDATE}_fhr${FH}s$member
-         FH=`expr $FH + $FHOUT`
-      done
-      (( imem = $imem + 1 ))
-   done
+   if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+     imem=1
+     while [[ $imem -le $NMEM_ENKF ]]; do
+        member="_mem"`printf %03i $imem`
+        FHBEG=$FHMIN
+        FHEND=$FHMAX
+        FH=$FHBEG
+        until [[ $FH -gt $FHEND ]];do
+           [[ $FH -lt 10 ]]&&FH=0$FH
+           ln -fs ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} sfg_${CDATE}_fhr${FH}${ENKF_SUFFIX}$member
+           FH=`expr $FH + $FHOUT`
+        done
+        (( imem = $imem + 1 ))
+     done
+   fi
 fi
 
 ################################################################################
@@ -291,7 +333,9 @@ FHBEG=$FHMIN
 FHEND=$FHMAX
 FH=$FHBEG
 
-cp $HYBENSMOOTH ./hybens_smoothinfo
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+   cp $HYBENSMOOTH ./hybens_smoothinfo
+fi
 
 if [[ "$MPMD" = "YES" ]]; then
    if [ $machine = IBMP6 ] ; then
@@ -299,17 +343,29 @@ if [[ "$MPMD" = "YES" ]]; then
    elif [ $machine = WCOSS ] ; then
       nprocs=$LSB_DJOB_NUMPROC
    fi
-   cmd[0]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr03_ensmean  bfg_${analdate}_fhr03  $NMEM_ENKF"
-   cmd[1]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr06_ensmean  bfg_${analdate}_fhr06  $NMEM_ENKF"
-   cmd[2]="$GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr09_ensmean  bfg_${analdate}_fhr09  $NMEM_ENKF"
-   cmd[3]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr03_ensmean  sfg_${analdate}_fhr03  $NMEM_ENKF"
-   cmd[4]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr06_ensmean  sfg_${analdate}_fhr06  $NMEM_ENKF"
-   cmd[5]="$GETATMENSMEANEXEC ${datapath}/  sfg_${analdate}_fhr09_ensmean  sfg_${analdate}_fhr09  $NMEM_ENKF"
+   FHBEG=$FHMINEFCS 
+   FHEND=$FHMAXEFCS 
+   FHOUT=$FHOUTEFCS 
+   FH=$FHMIN 
+   cnt=0
+   ncnt=-1
+   until [[ $FH -gt $FHEND ]];do 
+     [[ $FH -lt 10 ]]&&FH=0$FH 
+     cmd[$cnt]="$GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     cmd[$cnt]="$GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     if [ $NST_GSI -gt 0 ]; then
+        cmd[$cnt]="$GETNSTENSMEANEXEC ${datapath}/ nfg_${analdate}_fhr${FH}_ensmean nfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     fi
+     ((cnt+=1)) 
+     ((ncnt+=1))
+     FH=`expr $FH + $FHOUT` 
+   done
+
    rm $DATA/cmdfile
    m=-1
    n=0
    while [ $((n+=1)) -le $nprocs ] ;do
-      while [ $((m+=1)) -le 5 ] ;do
+      while [ $((m+=1)) -le $ncnt ] ;do
          echo "${cmd[m]}" >> $DATA/cmdfile
          ((n+=1))
       done
@@ -328,46 +384,50 @@ if [[ "$MPMD" = "YES" ]]; then
    fi
 else
 # Run serially instead
+
+   FHBEG=$FHMINEFCS 
+   FHEND=$FHMAXEFCS 
+   FHOUT=$FHOUTEFCS 
+   FH=$FHMIN 
    rc=0
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr03_ensmean bfg_${analdate}_fhr03 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr06_ensmean bfg_${analdate}_fhr06 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/  bfg_${analdate}_fhr09_ensmean bfg_${analdate}_fhr09 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr03_ensmean sfg_${analdate}_fhr03 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr06_ensmean sfg_${analdate}_fhr06 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
-   eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr09_ensmean sfg_${analdate}_fhr09 $NMEM_ENKF"
-   ra=$?
-   ((rc+=ra))
+   until [[ $FH -gt $FHEND ]];do 
+     [[ $FH -lt 10 ]]&&FH=0$FH 
+     eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     if [ $NST_GSI -gt 0 ]; then  	  	 
+        eval "$APRUN $GETNSTENSMEANEXEC ${datapath}/ nfg_${analdate}_fhr${FH}_ensmean nfg_${analdate}_fhr${FH} $NMEM_ENKF"
+     fi
+     ra=$? 
+     ((rc+=ra)) 
+     FH=`expr $FH + $FHOUT` 
+   done
 fi
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 2
 
 ################################################################################
-# If no smoothing, copy smoothed ensemble atmospheric files
-if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
-  imem=1
-  while [[ $imem -le $NMEM_ENKF ]]; do
-     member="_mem"`printf %03i $imem`
-     FHBEG=$FHMIN
-     FHEND=$FHMAX
-     FH=$FHBEG
-     until [[ $FH -gt $FHEND ]];do
-        [[ $FH -lt 10 ]]&&FH=0$FH
-        cp sfg_${CDATE}_fhr${FH}$member sfg_${CDATE}_fhr${FH}s$member
-        FH=`expr $FH + $FHOUT`
-     done
-     (( imem = $imem + 1 ))
-  done
+# If smoothing on but no smoothing output, copy smoothed enkf atmospheric files
+if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+ if [[ ! -s sfg_${CDATE}_fhr06s_mem001 ]]; then
+   FILEPREFIX=sfg_${CDATE}_fhr
+   if [[ $FILESTYLE = 'L' ]] then
+      FILEPREFIX=${SIGENS_OUT}
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      FHBEG=$FHMIN
+      FHEND=$FHMAX
+      FH=$FHBEG
+      until [[ $FH -gt $FHEND ]];do
+         [[ $FH -lt 10 ]]&&FH=0$FH
+         cp sfg_${CDATE}_fhr${FH}$member ${FILEPREFIX}${FH}${ENKF_SUFFIX}$member
+         FH=`expr $FH + $FHOUT`
+      done
+      (( imem = $imem + 1 ))
+   done
+ fi
 fi
 
 ################################################################################
@@ -381,6 +441,9 @@ then
       [[ $FH -lt 10 ]]&&FH=0$FH
       cp sfg_${CDATE}_fhr${FH}_ensmean ${SIGENSMEAN}${FH}_ensmean
       cp bfg_${CDATE}_fhr${FH}_ensmean ${SFCENSMEAN}${FH}_ensmean
+      if [ $NST_GSI -gt 0 ]; then
+         cp nfg_${CDATE}_fhr${FH}_ensmean ${NSTENSMEAN}${FH}_ensmean
+      fi
       FH=`expr $FH + $FHOUT`
    done
 
@@ -392,12 +455,63 @@ then
       FH=$FHBEG
       until [[ $FH -gt $FHEND ]];do
          [[ $FH -lt 10 ]]&&FH=0$FH
-         cp sfg_${CDATE}_fhr${FH}s$member ${SIGENS_OUT}${FH}s${member}
+         cp sfg_${CDATE}_fhr${FH}${ENKF_SUFFIX}$member ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member}
          FH=`expr $FH + $FHOUT`
       done
       (( imem = $imem + 1 ))
    done
 fi
+
+################################################################################
+# If requested, generate low resolution fhr06 ensemble mean and ensemble member
+# files
+
+export JCAP_ENKF=${JCAP_ENKF:-574}
+export JCAP_LORES=${JCAP_LORES:-254}
+export LATB_LORES=${LATB_LORES:-384}
+export LONB_LORES=${LONB_LORES:-768}
+export LEVS_LORES=${LEVS_LORES:-64}
+
+export OROGRAPHY_LORES=$FIXGSM/global_orography.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export OROGRAPHY_UF_LORES=$FIXGSM/global_orography_uf.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export LONSPERLAT_LORES=$FIXGSM/global_lonsperlat.t${JCAP_LORES}.$LONB_LORES.$LATB_LORES.txt
+export SLMASK_LORES=$FIXGSM/global_slmask.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export MTNVAR_LORES=$FIXGSM/global_mtnvar.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.f77
+export SIGLEVEL_LORES=$FIXGSM/global_hyblev.l${LEVS_LORES}.txt
+
+
+if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
+   fhrlist="06"
+   if [ $l4densvar = .true. ]; then
+      fhrlist="03 06 09"
+   fi
+   for fhr in $fhrlist; do
+      rm -rf $DATA/poescript.$fhr
+      member="ensmean"
+      export SIGINP=${SIGENS_OUT}${fhr}_${member}
+      export SIGOUT=${SIGENS_OUT}${fhr}_${member}_t${JCAP_LORES}
+      echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+      imem=1
+      while [[ $imem -le $NMEM_ENKF ]]; do
+         member="mem"`printf %03i $imem`
+         export SIGINP=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}
+         export SIGOUT=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}_t${JCAP_LORES}
+         echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+         (( imem = $imem + 1 ))
+      done
+      chmod 755 poescript.$fhr
+      if [ $machine = WCOSS ] ; then
+         export MP_PGMMODEL=mpmd
+         export MP_CMDFILE=$DATA/poescript.$fhr
+         mpirun.lsf
+         export err=$?; err_chk
+      else
+         $DATA/poescript.$fhr
+         export err=$?
+      fi
+   done
+fi
+
 
 
 ################################################################################
@@ -412,6 +526,9 @@ until [[ $FH -gt $FHEND ]];do
   [[ $FH -lt 10 ]]&&FH=0$FH
 
   if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
+    if [ $SENDDBN = YES ]; then 
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH}_ensmean 
+    fi 
      string="DONE bfg fhr $FH"
   else
      string="MISS bfg fhr $FH"
@@ -440,6 +557,21 @@ rm log_all
 cat log_allsfc log_allatm > log_all
 cp log_all $ENSSTAT
 
+if [ $SENDDBN = YES ] ; then 
+imem=1 
+while [[ $imem -le $NMEM_ENKF ]]; do 
+   member="_mem"`printf %03i $imem` 
+   #FHBEG=$FHMIN 
+   FHEND=$FHMAX 
+   FH=6 
+   until [[ $FH -gt $FHEND ]];do 
+      [[ $FH -lt 10 ]]&&FH=0$FH 
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+      FH=`expr $FH + $FHOUT` 
+   done 
+   (( imem = $imem + 1 )) 
+done 
+fi 
 
 ################################################################################
 #  Postprocessing

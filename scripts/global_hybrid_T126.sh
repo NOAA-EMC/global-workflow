@@ -218,7 +218,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
@@ -257,7 +257,7 @@ $ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
 $ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
 $ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
 $ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
-$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
+$ncp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -301,24 +301,19 @@ $ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubb
 $ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-if [[ "$machine" = "Zeus" ]]; then
-   $ncp $global_hybrid_T126_datges/biascr.gdas.${gdate}.orig   ./satbias_in
-   $ncp $global_hybrid_T126_datges/satang.gdas.$gdate.orig     ./satbias_angle
-else
-   $ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-   $ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
-   $ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
+$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
+$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
+$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
 
-   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
-   for type in $listdiag; do
-      diag_file=`echo $type | cut -d',' -f1`
-      fname=`echo $diag_file | cut -d'.' -f1`
-      date=`echo $diag_file | cut -d'.' -f2`
-      $UNCOMPRESS $diag_file
-      fnameanl=$(echo $fname|sed 's/_ges//g')
-      mv $fname.$date $fnameanl
-   done
-fi
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   fname=`echo $diag_file | cut -d'.' -f1`
+   date=`echo $diag_file | cut -d'.' -f2`
+   $UNCOMPRESS $diag_file
+   fnameanl=$(echo $fname|sed 's/_ges//g')
+   mv $fname.$date $fnameanl
+done
 
 $ncp $global_hybrid_T126_datges/sfcf03.gdas.$gdate  ./sfcf03
 $ncp $global_hybrid_T126_datges/sfcf06.gdas.$gdate  ./sfcf06
@@ -336,7 +331,7 @@ for file in $list; do
 done
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    cd $tmpdir/
    echo "run gsi now"
 
@@ -347,12 +342,12 @@ if [[ "$machine" = "Zeus" ]]; then
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256
-   export OMP_NUM_THREADS=2
+   #export OMP_NUM_THREADS=2
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
