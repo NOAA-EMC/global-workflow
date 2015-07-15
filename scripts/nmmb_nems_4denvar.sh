@@ -193,22 +193,22 @@ cp $nmmb_nems_4denvar_ges/rtma2p5.t00z.q_rejectlist ./q_rejectlist
 #gdate=`/nwprod/util/exec/ndate -6 $adate`
 #cycg=`echo $gdate | cut -c9-10`
 ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr06_ensmean > filelist06
-typeset -Z2 nsum
+#typeset -Z2 nsum
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr06s_mem0$nsum >> filelist06
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr06s_mem00$nsum >> filelist06
          nsum=`expr $nsum + 1`
    done
 ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr03_ensmean > filelist03
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr03s_mem0$nsum >> filelist03
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr03s_mem00$nsum >> filelist03
      nsum=`expr $nsum + 1`
    done
 ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
    nsum=1
    while [[ $nsum -lt 10 ]]; do
-     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09s_mem0$nsum >> filelist09
+     ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09s_mem00$nsum >> filelist09
      nsum=`expr $nsum + 1`
    done
 
@@ -216,8 +216,25 @@ ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
 #####  connect with gdas for ozges ################
        cp $nmmb_nems_4denvar_ges/gdas1.t18z.sf06  ./gfs_sigf06
 
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+   cd $tmpdir/
+   echo "run gsi now"
+
+   export MPI_BUFS_PER_PROC=256
+   export MPI_BUFS_PER_HOST=256
+   export MPI_GROUP_MAX=256
+   #export OMP_NUM_THREADS=1
+
+   #export module="/usr/bin/modulecmd sh"
+
+#  module load intel
+#  module load mpt
+
+   echo "JOB ID : $PBS_JOBID"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "WCOSS" ]]; then
+elif [[ "$machine" = "WCOSS" ]]; then
 
 mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
 
