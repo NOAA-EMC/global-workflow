@@ -8,7 +8,7 @@ export RUN_ENVIR=${RUN_ENVIR:-prod}
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
+# DATA_IN: Location of working directory, default to /tmpnwprd2
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
 # COM_IN:  Directory for input files, default to /com/$NET/${envir}
@@ -26,7 +26,7 @@ fi
 # This block can be modified for different test environment
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
-  export SENDDBN=${SENDDBN:-NO}
+  export DBNROOT=/nwprod/spa_util/fakedbn
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
 fi
 
@@ -36,6 +36,13 @@ fi
 ####################################
 export NET=gfs
 export RUN=enkf
+
+####################################
+# Specify version numbers
+####################################
+export gdas_ver=${gdas_ver:-v1.0.0}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
 
 ####################################
 # set up job name and  environment
@@ -57,7 +64,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd2}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -85,7 +92,7 @@ export cycle=t${cyc}z
 export SAVEGES=${SAVEGES:-NO}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-NO}
+export SENDDBN=${SENDDBN:-YES}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
@@ -97,19 +104,40 @@ export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
+export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
 export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 
+export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
+export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
+export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
+export USHGSM=${USHGSM:-$HOMEGSM/ush}
+export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
+export UTILGSM=${UTILGSM:-$HOMEGSM/util}
+export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
+export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
+export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
+export USHGDAS=${USHGDAS:-$HOMEGDAS/ush}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
+
+export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
+export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
+export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
+export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
+export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
+export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$UTILGLOBAL/ush}
-export utilexec=${utilexec:-$UTILGLOBAL/exec}
+export utilscript=${utilscript:-$USHUTIL}
+export utilexec=${utilexec:-$EXECUTIL}
 
 # Run setup to initialize working directory and utility scripts
 ##############################
@@ -124,7 +152,6 @@ export FILESTYLE=${FILESTYLE:-'L'}
 ##############################
 # Run setpdy and initialize PDY variables
 ##############################
-##export PDY=2012011006
 $utilscript/setpdy.sh
 . ./PDY
 
@@ -157,20 +184,25 @@ export LEVS_ENKF=${LEVS_ENKF:-64}
 export NMEM_ENKF=${NMEM_ENKF:-80}
 
 # Forecast model output frequency
-export FHOUTEFCS=${FHOUTEFCS:-3}
-export FHMINEFCS=${FHMINEFCS:-3}
-export FHMAXEFCS=${FHMAXEFCS:-9}
+export FHROT_ENKF=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
+export FHOUT_ENKF=${FHOUT_ENKF:-1}  # Forecast Hour Output Frequency
+export FHMAX_ENKF=${FHMAX_ENKF:-9}  # Forecast Length (Hours)
 
 # EnKF utility executables
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGLOBAL}/getsigensmean_smooth.x}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECGLOBAL}/getsfcensmean.x}
-
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmeanp_smooth.x}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECGDAS}/getsfcensmeanp.x}
 
 # EnKF scripts
-export ENKFPOSSH=${ENKFPOSSH:-$SCRGLOBAL/exglobal_enkf_post.sh.ecf}
+export ENKFPOSSH=${ENKFPOSSH:-$SCRGDAS/exglobal_enkf_post.sh.ecf}
+
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 # EnKF fix files
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGLOBAL/global_hybens_smoothinfo.l64.txt}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGDAS/global_hybens_smoothinfo.l64.txt}
 
 # Input files
 export SIGENS_IN=${SIGENS_IN:-$COMIN/sfg_${CDATE}_fhr}
@@ -189,7 +221,7 @@ msg="HAS BEGUN on `hostname`"
 
 ############################
 # WCOSS environment variables
-export MP_INFOLEVEL=${INFOLEVELUPD:-2}
+##export MP_INFOLEVEL=${INFOLEVELUPD:-2}
 export MP_LABELIO=${MP_LABELIO:-yes}
 export MP_STDOUTMODE=ordered
 
@@ -197,7 +229,6 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 export MP_EUIDEVICE=sn_all
 export MP_EUILIB=us
 export MP_PGMMODEL=${MP_PGMMODEL:-mpmd}
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-core}
 
 export machine=WCOSS
 export POE=${POE:-YES}
@@ -207,7 +238,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFPOSSH:-$SCRGLOBAL/exglobal_enkf_post.sh.ecf}
+${ENKFPOSSH:-$SCRGDAS/exglobal_enkf_post.sh.ecf}
 #############################################################
 
 

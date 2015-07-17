@@ -8,7 +8,7 @@ export RUN_ENVIR=${RUN_ENVIR:-prod}
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
+# DATA_IN: Location of working directory, default to /tmpnwprd2
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
 # COM_IN:  Directory for input files, default to /com/$NET/${envir}
@@ -26,7 +26,7 @@ fi
 # This block can be modified for different test environment
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
-  export SENDDBN=${SENDDBN:-NO}
+  export DBNROOT=/nwprod/spa_util/fakedbn
   export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
 fi
 
@@ -36,6 +36,13 @@ fi
 ####################################
 export NET=gfs
 export RUN=enkf
+
+####################################
+# Specify version numbers
+####################################
+export gdas_ver=${gdas_ver:-v1.0.0}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
 
 ####################################
 # set up job name and  environment
@@ -57,7 +64,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd}
+export DATA_IN=${DATA_IN:-/tmpnwprd2}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -74,7 +81,6 @@ export cyc=${cyc:-00}
 export outid="LL$job"
 [ $envir != prod ]  && export outid="LL${job}_${envir}"
 export jobid="${outid}.o${pid}"
-##export pgmout="OUTPUT.${pid}"
 export pgmout="$DATA/OUTPUT.${pid}"
 export pgmerr=errfile
 export cycle=t${cyc}z
@@ -89,7 +95,7 @@ export cycle=t${cyc}z
 export SAVEGES=${SAVEGES:-NO}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-NO}
-export SENDDBN=${SENDDBN:-NO}
+export SENDDBN=${SENDDBN:-YES}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
@@ -102,19 +108,37 @@ export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}}
+export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
 export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
+export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
 export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
 export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
 export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
 export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
 
+export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
+export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
+export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
+export USHGSM=${USHGSM:-$HOMEGSM/ush}
+export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
+export UTILGSM=${UTILGSM:-$HOMEGSM/util}
+export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+
+export HOMEGDAS=${HOMEGDAS:-/nw${envir}/enkf.$gdas_ver}
+export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
+
+export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
+export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
+export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
+export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
+export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
+export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$UTILGLOBAL/ush}
-export utilexec=${utilexec:-$UTILGLOBAL/exec}
+export utilscript=${utilscript:-$USHUTIL}
+export utilexec=${utilexec:-$EXECUTIL}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
@@ -130,7 +154,6 @@ export FILESTYLE=${FILESTYLE:-'L'}
 ##############################
 # Run setpdy and initialize PDY variables
 ##############################
-##export PDY=2012011006
 $utilscript/setpdy.sh
 . ./PDY
 
@@ -159,28 +182,29 @@ mkdir -m 775 -p $GESdir
 #Set hybrid and ensemble resolution parameters
 export DOHYBVAR=${DOHYBVAR:-YES}
 
-export JCAP_ENKF=${JCAP_ENKF:-254}
+export JCAP_ENKF=${JCAP_ENKF:-574}
 export LEVS_ENKF=${LEVS_ENKF:-64}
-export LONB_ENKF=${LONB_ENKF:-768}
-export LATB_ENKF=${LATB_ENKF:-384}
-export LONA_ENKF=${LONA_ENKF:-512}
-export LATA_ENKF=${LATA_ENKF:-256}
-export DELTIM_ENKF=${DELTIM_ENKF:-300}
+export LONB_ENKF=${LONB_ENKF:-1152}
+export LATB_ENKF=${LATB_ENKF:-576}
+export LONA_ENKF=${LONA_ENKF:-1152}
+export LATA_ENKF=${LATA_ENKF:-576}
+export DELTIM_ENKF=${DELTIM_ENKF:-900}
+export DTPHYS_ENKF=${DTPHYS_ENKF:-450}
 
-export CO2DIR=$FIXGLOBAL/fix_co2_proj
-export CO2_seasonal_cycle=$FIXGLOBAL/global_co2monthlycyc1976_2006.txt
+export CO2DIR=${CO2DIR:-$FIXGSM/fix_co2_proj}
+export CO2_seasonal_cycle=${CO2_seasonal_cycle:-$FIXGSM/global_co2monthlycyc1976_2006.txt}
 
 #
 # Forecast Model Horizontal Resolution
 #
-export JCAP=${JCAP_ENKF:-254}
-export JCAP_A=${JCAP_ENKF:-254}
-export JCAP_ges=${JCAP_ENKF:-254}
+export JCAP=${JCAP_ENKF:-574}
+export JCAP_A=${JCAP_ENKF:-574}
+export JCAP_ges=${JCAP_ENKF:-574}
 
-export JCAP_HIRES=${JCAP_HIRES:-574}
+export JCAP_HIRES=${JCAP_HIRES:-1534}
 
 #
-# Forecast MOdel Vertical Resolution
+# Forecast Model Vertical Resolution
 #
 export LEVS=${LEVS_ENKF:-64}
 export LEVS_ges=${LEVS:-64}
@@ -195,10 +219,10 @@ export COMINGES=$COM_IN/enkf.${PDYges}/$CYCges
 #
 # These defaults are for the T254L64
 #
-export LONA=${LONA_ENKF:-512}
-export LATA=${LATA_ENKF:-256}
-export LONB=${LONB_ENKF:-768}
-export LATB=${LATB_ENKF:-384}
+export LONA=${LONA_ENKF:-1152}
+export LATA=${LATA_ENKF:-576}
+export LONB=${LONB_ENKF:-1152}
+export LATB=${LATB_ENKF:-576}
 
 export NLAT=$(($LATA+2))
 export NLON=$LONA
@@ -210,67 +234,73 @@ export LSOIL=${LSOIL:-4}
 #
 # Time Step
 #
-export DELTIM=${DELTIM_ENKF:-300}
+export DELTIM=${DELTIM_ENKF:-900}
+
 
 ############################################################
 # Input parameters to the Model
 ############################################################
-export FHROT_ENFK=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
-export FHOUT_ENKF=${FHOUT_ENKF:-3}  # Forecast Hour Output Frequency
+export FHROT_ENKF=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
+export FHOUT_ENKF=${FHOUT_ENKF:-1}  # Forecast Hour Output Frequency
 export FHMAX_ENKF=${FHMAX_ENKF:-9}  # Forecast Length (Hours)
 export FHRES_ENKF=${FHRES_ENKF:-24} # Forecast Hour Restart Frequency
 export FHZER_ENKF=${FHZER_ENKF:-6}  # Interval to Zero out precip field,etc. Should not be less that FHOUT
 export FHDFI_ENKF=${FHDFI_ENKF:-3}  # Half number of hours of digital filter initialization
 export FHCYC_ENKF=${FHCYC_ENKF:-24} # Surface cycling boundary condition update frequency in hours
-export FHLWR_ENKF=${FHLWR_ENKF:-1}  # LW radiation calling interval (hrs)
-export FHSWR_ENKF=${FHSWR_ENKF:-1}  # SW radiation calling interval (hrs)
-export IEMS_ENKF=${IEMS_ENKF:-0}    # 0-blackbody ground emission; 1-climatology on one-deg map
-export ISOL_ENKF=${ISOL_ENKF:-0}    # 0--fixed solar constant; 1--changing solar constant
+export FHLWR_ENKF=${FHLWR_ENKF:-3600}  # LW radiation calling interval (seconds)
+export FHSWR_ENKF=${FHSWR_ENKF:-3600}  # SW radiation calling interval (seconds)
+export IEMS_ENKF=${IEMS_ENKF:-1}    # 0-blackbody ground emission; 1-climatology on one-deg map
+export ISOL_ENKF=${ISOL_ENKF:-2}    # 0--fixed solar constant; 1--changing solar constant
 export IAER_ENKF=${IAER_ENKF:-111}  # 111--with stratospheric aerosol, tropospheric aerosol LW, troposphere aerosol SW.
-export ICO2_ENKF=${ICO2_ENKF:-1}    # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
-export ICTM_ENKF=${ICTM_ENKF:-1}    # ictm=0 => use data at initial cond time, if not available, use latest, no extrapolation.
-                                    # ictm=1 => use data at the forecast time, if not available, use latest and extrapolation.
-                                    # ictm=yyyy0 => use yyyy data for the forecast time, no further data extrapolation.
-                                    # ictm=yyyy1 = > use yyyy data for the fcst. if needed, do extrapolation to match the fcst time.
-                                    # ictm=-1 => use user provided external data for the fcst time, no extrapolation.
-                                    # ictm=-2 => same as ictm=0, but add seasonal cycle from climatology. no extrapolation.
-
+export ICO2_ENKF=${ICO2_ENKF:-2}    # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
 
 # Variables for High Frequency Output
-export FHOUTHF_ENKF=${FHOUTHF_ENKF:-3}  # High Frequency Forecast Output Interval
+export FHOUTHF_ENKF=${FHOUTHF_ENKF:-1}  # High Frequency Forecast Output Interval
 export FHMAXHF_ENKF=${FHMAXHF_ENKF:-9}  # High Frequency Forecast Length (Hours)
 
 # Variables for GOCART Output
 export FHGOC3D_ENKF=${FHGOC3D_ENKF:-0}      # Forecast Output Length for G3D files for GOCART
 export LGOC3D_ENKF=${LGOC3D_ENKF:-.false.}  # Control Variable to output the G3D files for GOCART
 
-# Variables for input to the Namelist
-export IALB_ENKF=${IALB_ENKF:-0}        # 0: climatology sw albedo based on surface veg types;
-                                        # 1: MODIS based land surface albedo
-export IOVR_SW_ENKF=${IOVR_SW_ENKF:-1}  # 0--random cloud overlap for SW; 1--maximum-random cloud overlap for SW
-
 #  Other parameters input to the model
-export FCSTVARS_ENKF=${FCSTVARS_ENKF:-"ras=.false.,nsout=0,lsm=1,tfiltc=0.85,liope=.true.,zhao_mic=.true.,ncw=50,150,crtrh=0.85,0.85,0.85,flgmin=0.220 ,IALB=$IALB_ENKF,ccnorm=.false.,OUT_VIRTTEMP=.true.,LDIAG3D=.false.,mstrat=.false.,ctei_rm=0.50,MOM4ICE=.false.,cnvgwd=.false.,RUN_ENTHALPY=.false.,IOVR_SW=$IOVR_SW_ENKF,zflxtvd=.true.,sashal=.true.,old_monin=.false.,newsas=.true.,ICTM=$ICTM_ENKF"}
+export SEMILAG=.true.               # semi-lagrangian dynamical core
+export cdmbgwd='0.25,2.0'
+export FCSTVARS_SEMILAG="SEMILAG=$SEMILAG,DTPHYS=$DTPHYS,nsout=0,liope=.true.,LDIAG3D=.false.,cdmbgwd=$cdmbgwd"
+
+# Set stochastic physics options
+export SET_STP_SEED=${SET_STP_SEED:-YES}
+export FCSTVARS_STOCHPHYS=${FCSTVARS_STOCHPHYS:-"dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=0.7,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=20,VC=0,VCAMP=0.0,VC_TAU=21600,VC_LSCALE=1000000,sppt_sfclimit=.true."}
+
+# Set IAU option
+export DOIAU_ENKF=${DOIAU_ENKF:-NO}
+
+# Set EnKF forecast namelist variables
+export FCSTVARS_ENKF="$FCSTVARS_SEMILAG,$FCSTVARS_STOCHPHYS"
 
 if [ $LGOC3D_ENKF = .true. ] ; then
   export FCSTVARS_ENKF="LGOC3D=$LGOC3D_ENKF,FHGOC3D=$FHGOC3D_ENKF,$FCSTVARS_ENKF"
 fi
 
 # Forecast executable
-export FCSTEXEC=${FCSTEXEC:-${EXECGLOBAL}/global_fcst}
+export FCSTEXEC=${FCSTEXEC:-${EXECGSM}/global_fcst}
 
 # EnKF scripts
-export ENKFFCSSH=${ENKFFCSSH:-$SCRGLOBAL/exglobal_enkf_fcst.sh.ecf}
-export FORECASTSH=${FORECASTSH:-$SCRGLOBAL/exglobal_fcst.sh.ecf}
+export ENKFFCSSH=${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
+export FORECASTSH=${FORECASTSH:-$SCRGSM/exglobal_fcst.sh.ecf}
 
 # Input variables
 
 #
 # Input fix files
-export FNOROG=${FNOROG:-$FIXGLOBAL/global_orography.t$JCAP.grb}
-export FNMASK=${FNMASK:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
-export OROGRAPHY=${OROGRAPHY:-$FIXGLOBAL/global_orography.t$JCAP.grb}
-export SLMASK=${SLMASK:-$FIXGLOBAL/global_slmask.t$JCAP.grb}
+export FNOROG_ENKF=${FNOROG_ENKF:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export FNMASK_ENKF=${FNMASK_ENKF:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-${FIXGSM}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
+export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
+export SLMASK_ENKF=${SLMASK_ENKF:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
+export FNTSFC=${FNTSFC:-$FIXGSM/RTGSST.1982.2012.monthly.clim.grb}
+export FNAISC=${FNAISC:-$FIXGSM/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 
 #
 # Input Fields
@@ -294,7 +324,6 @@ msg="HAS BEGUN on `hostname`"
 
 ############################
 # WCOSS environment variables
-##export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usrx/local/netcdf-3.6.3/lib
 
 export MP_EAGER_LIMIT=165536
 export MP_COREFILE_FORMAT=lite
@@ -305,12 +334,11 @@ export MP_MPILIB=mpich2
 
 export MP_LABELIO=yes
 export MP_SINGLE_THREAD=yes
-export MP_USE_BULK_XFER=yes
+export MP_USE_BULK_XFER=no
 export MP_SHARED_MEMORY=yes
 export MP_COLLECTIVE_OFFLOAD=no
-export KMP_STACKSIZE=1024m
+export KMP_STACKSIZE=2048m
 
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:1}
 export NTHREADS_EFCS=${NTHREADS_EFCS:-1}
 
 export machine=WCOSS
@@ -321,7 +349,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFFCSSH:-$SCRGLOBAL/exglobal_enkf_fcst.sh.ecf}
+${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
 #############################################################
 
 ##########

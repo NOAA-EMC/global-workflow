@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2011-12-16  Russ Treadon   based on GCWMB parallel script eomg.sh
+# 2014-02-16  Xu Li  add NSST related variables
 #
 # Usage:  exglobal_enkfomg.sh.sms SFCGESMEAN SIGGESMEAN
 #
@@ -29,6 +30,8 @@
 #                   defaults to ${COMIN}/${PREINP}obsinput
 #     SFCANL        Output surface analysis
 #                   defaults to ${COMOUT}/sfcanl
+#     SFCGCY        Output intermideate surface analysis 
+#                   defaults to ${COMOUT}/sfcgcy
 #     SFCG03        Surface guess valid at -03 hour
 #                   defaults to ${COMOUT}/sfcf03
 #     SFCG04        Surface guess valid at -04 hour
@@ -40,6 +43,18 @@
 #     SFCG08        Surface guess valid at -08 hour
 #                   defaults to ${COMOUT}/sfcf08
 #     SFCG09        Surface guess valid at -09 hour
+#                   defaults to ${COMOUT}/sfcf09
+#     NSTG03        NSST guess valid at -03 hour
+#                   defaults to ${COMOUT}/sfcf03
+#     NSTG04        NSST guess valid at -04 hour
+#                   defaults to ${COMOUT}/sfcf04
+#     NSTG05        NSST guess valid at -05 hour
+#                   defaults to ${COMOUT}/sfcf05
+#     NSTG07        NSST guess valid at -07 hour
+#                   defaults to ${COMOUT}/sfcf07
+#     NSTG08        NSST guess valid at -08 hour
+#                   defaults to ${COMOUT}/sfcf08
+#     NSTG09        NSST guess valid at -09 hour
 #                   defaults to ${COMOUT}/sfcf09
 #     SIGG03        Sigma guess valid at -03 hour
 #                   defaults to ${COMOUT}/sigf03
@@ -105,6 +120,8 @@
 #                   defaults to ${EXECGLOBAL}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
 #                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#     NSTHDR        Command to read NSST header
+#                   defaults to ${EXECGLOBAL}/global_nsthdr$XC
 #     CYCLEXEC      Surface cycle executable
 #                   defaults to ${EXECGLOBAL}/global_cycle$XC
 #     GSIEXEC       Spectral analysis executable
@@ -123,6 +140,8 @@
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
 #                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#     INSITUINFO    Input In Situ sea water temperature observation information file
+#                   defaults to ${FIXGLOBAL}/global_insituinfo.txt
 #     OZINFO        Input ozone information file
 #                   defaults to ${FIXGLOBAL}/global_ozone.txt
 #     PCPINFO       Input precipitation information file
@@ -213,6 +232,7 @@
 #                  $RTMFIX
 #                  $ANAVINFO
 #                  $CONVINFO
+#                  $INSITUINFO
 #                  $OZINFO
 #                  $PCPINFO
 #                  $AEROINFO
@@ -228,6 +248,12 @@
 #                  $SFCG07
 #                  $SFCG08
 #                  $SFCG09
+#                  $NSTG03
+#                  $NSTG04
+#                  $NSTG05
+#                  $NSTG07
+#                  $NSTG08
+#                  $NSTG09
 #                  $SIGG03
 #                  $SIGG04
 #                  $SIGG05
@@ -239,6 +265,7 @@
 #                  $FNSNOA
 #
 #     output data: $SFCANL
+#                  $SFCGCY
 #                  $RADSTAT
 #                  $GSISTAT
 #                  $PCPSTAT
@@ -276,6 +303,7 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 export SFCGESMEAN=${1:-${SFCGESMEAN:?}}
 export SIGGESMEAN=${2:-${SIGGESMEAN:?}}
+export NSTGESMEAN=${3:-${NSTGESMEAN:?}}
 #  Directories.
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
@@ -284,49 +312,69 @@ export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
 export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
 export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
 export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export SCRGSI=${SCRGSI:-$NWPROD/global_shared.${global_shared_ver}/scripts}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
 
+#  Set script / GSI control parameters
+export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
+
 # Scripts.
-export ANALYSISSH=${ANALYSISSH:-$SCRGLOBAL/exglobal_analysis.sh.sms}
+export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.sms}
 
 #  Variables.
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
-export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
-export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
-export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
-export LONB=${LONB:-$($SFCHDR $SFCGESMEAN LONB||echo 0)}
+export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
+if [ $use_gfs_nemsio = .true. ]; then
+  export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+else
+  export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
+  export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN LATB||echo 0)}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN LONB||echo 0)}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN LEVS||echo 0)}
+fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
-export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN LEVS||echo 0)}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
+export DOIAU=${DOIAU:-"NO"}
 
 # Files.
-export CYCLEXEC=${CYCLEXEC:-${EXECGLOBAL}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECGLOBAL}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHGLOBAL}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXGLOBAL}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGLOBAL}/global_satinfo.txt}
-export RTMFIX=${RTMFIX:-${FIXGLOBAL}/crtm_v2.1.3}
-export ANAVINFO=${ANAVINFO:-${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGLOBAL}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGLOBAL}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGLOBAL}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGLOBAL}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGLOBAL}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGLOBAL}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export INSITUINFO=${INSITUINFO:-${FIXGSI}/global_insituinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
 export SFCG04=${SFCG04:-${COMOUT}/sfcf04}
@@ -334,13 +382,18 @@ export SFCG05=${SFCG05:-${COMOUT}/sfcf05}
 export SFCG07=${SFCG07:-${COMOUT}/sfcf07}
 export SFCG08=${SFCG08:-${COMOUT}/sfcf08}
 export SFCG09=${SFCG09:-${COMOUT}/sfcf09}
+export NSTG03=${NSTG03:-${COMOUT}/nstf03}
+export NSTG04=${NSTG04:-${COMOUT}/nstf04}
+export NSTG05=${NSTG05:-${COMOUT}/nstf05}
+export NSTG07=${NSTG07:-${COMOUT}/nstf07}
+export NSTG08=${NSTG08:-${COMOUT}/nstf08}
+export NSTG09=${NSTG09:-${COMOUT}/nstf09}
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
 export SIGG07=${SIGG07:-${COMOUT}/sigf07}
 export SIGG08=${SIGG08:-${COMOUT}/sigf08}
 export SIGG09=${SIGG09:-${COMOUT}/sigf09}
-export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
 export RADSTAT=${RADSTAT:-${COMOUT}/${PREINP}radstat}
 export GSISTAT=${GSISTAT:-${COMOUT}/${PREINP}gsistat}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${PREINP}pcpstat}
@@ -356,25 +409,31 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
-export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
+if [ $use_gfs_nemsio = .true. ]; then
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN idate | grep -i "idate" |awk -F= '{print $2}')}
+  export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGESMEAN nfhour |awk -F" " '{print $2}'`}
+else
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
+  export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGESMEAN FHOUR||echo 0)}
+fi
 export CYCLVARS=${CYCLVARS}
-export SETUP=${SETUP:-""}
-export GRIDOPTS=${GRIDOPTS:-""}
-export BKGVERR=${BKGVERR:-""}
-export ANBKGERR=${ANBKGERR:-""}
-export JCOPTS=${JCOPTS:-""}
-export STRONGOPTS=${STRONGOPTS:-""}
-export OBSQC=${OBSQC:-""}
-export OBSINPUT=${OBSINPUT:-""}
-export SUPERRAD=${SUPERRAD:-""}
-export SINGLEOB=${SINGLEOB:-""}
-export LAGDATA=${LAGDATA:-""}
-export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
-export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
-export CHEM=${CHEM:-""}
+export SETUP_ENKF=${SETUP_ENKF:-""}
+export GRIDOPTS_ENKF=${GRIDOPTS_ENKF:-""}
+export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
+export ANBKGERR_ENKF=${ANBKGERR_ENKF:-""}
+export JCOPTS_ENKF=${JCOPTS_ENKF:-""}
+export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
+export OBSQC_ENKF=${OBSQC_ENKF:-""}
+export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
+export SUPERRAD_ENKF=${SUPERRAD_ENKF:-""}
+export SINGLEOB_ENKF=${SINGLEOB_ENKF:-""}
+export LAGDATA_ENKF=${LAGDATA_ENKF:-""}
+export HYBRID_ENSEMBLE_ENKF=${HYBRID_ENSEMBLE_ENKF:-""}
+export RAPIDREFRESH_CLDSURF_ENKF=${RAPIDREFRESH_CLDSURF_ENKF:-""}
+export CHEM_ENKF=${CHEM_ENKF:-""}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export NTHREADS=${NTHREADS:-1}
 export NTHSTACK=${NTHSTACK:-1024000000}
 export NTHREADS_GSI=${NTHREADS_GSI:-1}
@@ -433,7 +492,6 @@ fi
 EOMGGRP=$COMOUT/omgstat_${CDATE}_grp${ENSGRP}
 rm -f $EOMGGRP
 
-
 ################################################################################
 # Generate ensemble innovations
 imem=$ENSBEG
@@ -441,11 +499,20 @@ while [[ $imem -le $ENSEND ]]; do
    export RUN_SELECT=NO
    export USE_SELECT=YES
    export SELECT_OBS=${SELECT_OBS:-$DATATOP/obsinput_${CDATE}_ensmean}
-   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,passive_bc=.false.,newpc4pred=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,"
-   export BKGVERR="bkgv_flowdep=.false.,"
-   export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,"
-   export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,"
-   export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,"
+   export SETUP="miter=0,niter=1,lread_obs_save=.false.,lread_obs_skip=.true.,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
+   export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
+   export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
+   export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"
+   export JCOPTS="$JCOPTS $JCOPTS_ENKF"
+   export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_ENKF"
+   export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_ENKF"
+   export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_ENKF"
+   export SUPERRAD="$SUPERRAD $SUPERRAD_ENKF"
+   export SINGLEOB="$SINGLEOB $SINGLEOB_ENKF"
+   export LAGDATA="$LAGDATA $LAGDATA_ENKF"
+   export HYBRID_ENSEMBLE="$HYBRID_ENSEMBLE $HYBRID_ENSEMBLE_ENKF"
+   export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
+   export CHEM="$CHEM $CHEM_ENKF"
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
@@ -459,34 +526,56 @@ while [[ $imem -le $ENSEND ]]; do
    export SFCG09=$COMINGES/bfg_${GDATE}_fhr09_${member}
    export SFCGES=$COMINGES/bfg_${GDATE}_fhr06_${member}
 
-   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03s_${member}
-   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04s_${member}
-   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05s_${member}
-   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06s_${member}
-   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07s_${member}
-   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08s_${member}
-   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09s_${member}
-   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06s_${member}
+   export NSTG03=$COMINGES/nfg_${GDATE}_fhr03_${member}
+   export NSTG04=$COMINGES/nfg_${GDATE}_fhr04_${member}
+   export NSTG05=$COMINGES/nfg_${GDATE}_fhr05_${member}
+   export NSTG06=$COMINGES/nfg_${GDATE}_fhr06_${member}
+   export NSTG07=$COMINGES/nfg_${GDATE}_fhr07_${member}
+   export NSTG08=$COMINGES/nfg_${GDATE}_fhr08_${member}
+   export NSTG09=$COMINGES/nfg_${GDATE}_fhr09_${member}
+   export NSTGES=$COMINGES/nfg_${GDATE}_fhr06_${member}
+
+   ENKF_SUFFIX=""
+   if [[ "$SMOOTH_ENKF" = "YES" ]]; then
+      ENKF_SUFFIX="s"
+   fi
+   export SIGG03=$COMINGES/sfg_${GDATE}_fhr03${ENKF_SUFFIX}_${member}
+   export SIGG04=$COMINGES/sfg_${GDATE}_fhr04${ENKF_SUFFIX}_${member}
+   export SIGG05=$COMINGES/sfg_${GDATE}_fhr05${ENKF_SUFFIX}_${member}
+   export SIGG06=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
+   export SIGG07=$COMINGES/sfg_${GDATE}_fhr07${ENKF_SUFFIX}_${member}
+   export SIGG08=$COMINGES/sfg_${GDATE}_fhr08${ENKF_SUFFIX}_${member}
+   export SIGG09=$COMINGES/sfg_${GDATE}_fhr09${ENKF_SUFFIX}_${member}
+   export SIGGES=$COMINGES/sfg_${GDATE}_fhr06${ENKF_SUFFIX}_${member}
 
    export SIGANL=$DATA/sanl
    export ABIAS=$DATA/abias
    export ABIASPC=$DATA/abias_pc
+   export ABIASAIR=$DATA/abias_air
 
+   export SFCGCY=$COMOUT/sfcgcy_${CDATE}_${member}
    export SFCANL=$COMOUT/sfcanl_${CDATE}_${member}
+   export NSTANL=$COMOUT/nstanl_${CDATE}_${member}
    export GSISTAT=$COMOUT/gsistat_${CDATE}_${member}
    export RADSTAT=$COMOUT/radstat_${CDATE}_${member}
    export OZNSTAT=$COMOUT/oznstat_${CDATE}_${member}
    export PCPSTAT=$COMOUT/pcpstat_${CDATE}_${member}
    export CNVSTAT=$COMOUT/cnvstat_${CDATE}_${member}
+   if [ $DOIAU = YES ]; then
+     export SFCA03=$COMOUT/sfca03_${CDATE}_${member}
+   fi
 
    export DIAG_SUFFIX="_${member}"
    export DIAG_COMPRESS=NO
-   export DAIG_TARBALL=YES
+   export DIAG_TARBALL=YES
    export DOHYBVAR=NO
    export HYBRID_ENSEMBLE=" "
 
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
+   fi
+   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+      rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then
       rm -f $GSISTAT

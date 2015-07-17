@@ -103,7 +103,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin
-emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/nam_regional_satinfo.txt
@@ -138,7 +138,7 @@ $ncp $emiscoef_VISice ./NPOESS.VISice.EmisCoeff.bin
 $ncp $emiscoef_VISland ./NPOESS.VISland.EmisCoeff.bin
 $ncp $emiscoef_VISsnow ./NPOESS.VISsnow.EmisCoeff.bin
 $ncp $emiscoef_VISwater ./NPOESS.VISwater.EmisCoeff.bin
-$ncp $emiscoef_MWwater ./FASTEM5.MWwater.EmisCoeff.bin
+$ncp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 $ncp $aercoef  ./AerosolCoeff.bin
 $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
@@ -180,8 +180,9 @@ $ncp $nmmb_nems_obs/gdas1.t00z.mls.tm00.bufr_d ./mlsbufr
 $ncp $nmmb_nems_ges/ndas.t06z.satang.tm09 ./satbias_angle
 $ncp $nmmb_nems_ges/ndas.t06z.satbias.tm09 ./satbias_in
 
-$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout
-$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout.ctl
+$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012 ./wrf_inout03
+$ncp $nmmb_nems_ges/nmm_b_history_nemsio.012.ctl ./wrf_inout03.ctl
+
 if [[ "$endianness" = "Big_Endian" ]]; then
    $ncp $nmmb_nems_ges/gdas1.t00z.sgesprep     ./gfs_sigf03
 elif [[ "$endianness" = "Little_Endian" ]]; then
@@ -191,7 +192,7 @@ $ncp wrf_inout wrf_ges
 $ncp wrf_inout.ctl wrf_ges.ctl
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Zeus" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    cd $tmpdir/
    echo "run gsi now"
 
@@ -202,11 +203,11 @@ if [[ "$machine" = "Zeus" ]]; then
 
    #export module="/usr/bin/modulecmd sh"
 
-   module load intel
-   module load mpt
+#  module load intel
+#  module load mpt
 
    echo "JOB ID : $PBS_JOBID"
-   eval "mpiexec_mpt -v -np $PBS_NP $tmpdir/gsi.x > stdout"
+   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
@@ -215,6 +216,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
 fi
 
 rc=$?
+
+mv wrf_inout03 wrf_inout
 
 exit
 
