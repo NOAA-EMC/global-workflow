@@ -6,18 +6,18 @@
 # Specify machine that is being used (Zeus or WCOSS)
 
 platform=$REMOTEHOST
-if [ -d /da ]; then
+#if [ -d /da ]; then
 #For WCOSS
    export machine="WCOSS"
-elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
-   if [ `expr substr $platform 1 4` = "zeus" ]; then
+#elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
+#   if [ `expr substr $platform 1 4` = "zeus" ]; then
 #For Zeus
-      export machine="Zeus"
-   elif [ `expr substr $platform 1 5` = "theia" ]; then
+#      export machine="Zeus"
+#   elif [ `expr substr $platform 1 5` = "theia" ]; then
 #For Theia
-      export machine="Theia"
-   fi
-fi
+#      export machine="Theia"
+#   fi
+#fi
 
 # Variables with the same values are defined below.
 
@@ -249,12 +249,19 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+
+#   export basedir=/da/save/$LOGNAME
+#   export gsisrc=$basedir/trunk/src
+#   export gsiexec_updat=$basedir/trunk/src/global_gsi
+#   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+
+   export basedir=/meso/save/Runhua.Yang/
+   export gsisrc=$basedir/rtma_nlqc2/src
+   export gsiexec_updat=$basedir/rtma_nlqc2/src/global_gsi
+   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
+
+   export enkfexec_updat=/meso/save/Runhua.Yang/rtma_nlqc2/src/enkf/global_enkf
+   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
    export fixgsi=$basedir/trunk/fix
    export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix

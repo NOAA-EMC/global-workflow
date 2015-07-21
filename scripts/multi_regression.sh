@@ -4,16 +4,17 @@ set -x
 
 machine=$REMOTEHOST
 
-if [ -d /da ]; then
+##if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
-elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
-#For Zeus/Theia
-   if [ `expr substr $machine 1 4` = "zeus" ]; then
-      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
-   elif [ `expr substr $machine 1 5` = "theia" ]; then
-      echo "/scratch4/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
-   fi
+##   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/meso/save/Runhua.Yang/rtma_nlqc2/scripts/regression_var.sh" > regression_var.out
+##elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
+##For Zeus/Theia
+##   if [ `expr substr $machine 1 4` = "zeus" ]; then
+##      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
+##   elif [ `expr substr $machine 1 5` = "theia" ]; then
+###      echo "/scratch4/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
+#   fi
 fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
