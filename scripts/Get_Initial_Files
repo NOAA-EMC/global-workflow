@@ -58,9 +58,10 @@ DFILESA="$DFILESA goesfv.tm00.bufr_d gpsro.tm00.bufr_d osbuv8.tm00.bufr_d  sptrm
 DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
 DFILESA="$DFILESA gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
 DFILESA="$DFILESA atms.tm00.bufr_d"
+DFILESA="$DFILESA satwnd.tm00.bufr_d"
 
 # These come from the previous cycle
-DFILESG="$DFILESG abias satang radstat"
+DFILESG="$DFILESG abias_pc abias satang radstat"
 DFILESG="$DFILESG bf03 bf06 bf09"
 
 
