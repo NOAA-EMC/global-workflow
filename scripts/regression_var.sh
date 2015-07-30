@@ -107,17 +107,22 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
 
-   export group=global
+#   export group=global
+   export group=shout
    export queue=batch
    if [[ "$machine" = "Zeus" ]]; then
       export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-      export gsisrc=$basedir/EXP-testCRTM_R2.2/src
-      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/global_gsi
-      export gsiexec_contrl=$basedir/svn1/src/global_gsi
-      export enkfexec_updat=$basedir/EXP-testCRTM_R2.2/src/enkf/global_enkf
-      export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-      export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
-      export scripts=$basedir/EXP-testCRTM_R2.2/scripts
+      export gsisrc=$basedir/ro_regional/src
+#      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/global_gsi
+#      export gsiexec_contrl=$basedir/svn1/src/global_gsi
+     export gsiexec_updat=$basedir/ro_regional/src/global_gsi
+     export gsiexec_contrl=$basedir/trunk_r59430/src/global_gsi
+#      export enkfexec_updat=$basedir/EXP-testCRTM_R2.2/src/enkf/global_enkf
+#      export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+      export enkfexec_updat=$basedir/ro_regional/src/enkf/global_enkf
+      export enkfexec_contrl=$basedir/trunk_r59430/src/enkf/global_enkf
+      export fixgsi=$basedir/ro_regional/fix
+      export scripts=$basedir/ro_regional/scripts
       export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    elif [[ "$machine" = "Theia" ]]; then
       export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
@@ -305,7 +310,8 @@ export gps_dtype="gps_bnd"
 
 # Define ptmp location
 
-export ptmp_loc="/ptmpp1/$USER"
+#export ptmp_loc="/ptmpp1/$USER"
+export ptmp_loc="/scratch2/portfolios/NCEPDEV/ptmp/$LOGNAME"
 
 # Regression output filename
 
