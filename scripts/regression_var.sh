@@ -108,7 +108,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 #  fix, ptmp, and CRTM coefficient files.
 
 #   export group=global
-   export group=shout
+   export group=da
    export queue=batch
    if [[ "$machine" = "Zeus" ]]; then
       export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
@@ -116,11 +116,11 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 #      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/global_gsi
 #      export gsiexec_contrl=$basedir/svn1/src/global_gsi
      export gsiexec_updat=$basedir/ro_regional/src/global_gsi
-     export gsiexec_contrl=$basedir/trunk_r59430/src/global_gsi
+     export gsiexec_contrl=$basedir/trunk_r59495/src/global_gsi
 #      export enkfexec_updat=$basedir/EXP-testCRTM_R2.2/src/enkf/global_enkf
 #      export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
       export enkfexec_updat=$basedir/ro_regional/src/enkf/global_enkf
-      export enkfexec_contrl=$basedir/trunk_r59430/src/enkf/global_enkf
+      export enkfexec_contrl=$basedir/trunk_r59495/src/enkf/global_enkf
       export fixgsi=$basedir/ro_regional/fix
       export scripts=$basedir/ro_regional/scripts
       export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
@@ -177,7 +177,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    fi
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=hybrid
+   export accnt=shout
    if [[ "$machine" = "Zeus" ]]; then
       export launcher=mpiexec_mpt
    elif [[ "$machine" = "Theia" ]]; then
