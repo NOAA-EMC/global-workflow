@@ -30,3 +30,8 @@ export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+   export fixgsi_update="/scratch1/portfolios/NCEPDEV/da/save/Lidia.Cucurull/ro_regional/fix"
+else
+   export fixgsi_update="/scratch1/portfolios/NCEPDEV/da/save/Lidia.Cucurull/trunk_r59495/fix"
+fi
