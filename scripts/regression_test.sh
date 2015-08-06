@@ -51,6 +51,7 @@ for exp in $list; do
    $ncp $savdir/$exp/siganl ./siganl.$exp
    $ncp $savdir/$exp/siginc ./siginc.$exp
    $ncp $savdir/$exp/wrf_inout ./wrf_inout.$exp
+   $ncp $savdir/$exp/wrf_inout06 ./wrf_inout06.$exp
 done
 
 # Grep out penalty/gradient information, run time, and maximum resident memory from stdout file
@@ -267,6 +268,20 @@ then
 fi
 
 } >> $output
+
+elif [[ -f wrf_inout06.${exp1} ]]; then
+
+{
+
+if cmp -s wrf_inout06.${exp1} wrf_inout06.${exp2}
+then
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
+   echo 'since the corresponding results are identical.'
+   echo
+fi
+
+} >> $output
+
 elif [[ `expr substr $exp1 1 6` = "global" ]]; then
    if [[ -f siginc.${exp1} ]]; then
 {
@@ -336,6 +351,19 @@ elif [[ -f wrf_inout.${exp1} ]]; then
 {
 
    if cmp -s wrf_inout.${exp1} wrf_inout.${exp3}
+   then
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
+      echo 'since the corresponding results are identical.'
+      echo
+   fi
+
+} >> $output
+
+elif [[ -f wrf_inout06.${exp1} ]]; then
+
+{
+
+   if cmp -s wrf_inout06.${exp1} wrf_inout06.${exp3}
    then
       echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
       echo 'since the corresponding results are identical.'
