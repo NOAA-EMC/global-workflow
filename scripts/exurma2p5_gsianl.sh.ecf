@@ -328,8 +328,13 @@ cp $FIXurma/urma2p5_prepobs_prep.bufrtable prepobs_prep.bufrtable
 #cp $FIXurma/urma2p5_nam_errtable.r3dv errtable
 
 # FOR NEW NLQC: 
-# set NLQC2 > 0, use JP's varqc to conventional ps,t,q,u,v
-#  the tables include sigma and b
+# set NLQC2 < 0, use ECMWF varqc (ref: 1999).  The specified convinfo table is globaxxx
+# set NLQC2 = 0, use Gaussian distribution only--it is default situation in current RTMA system.
+#                The specific convinfo table is xxx
+#                 
+# set NLQC2 > 0, use JP's varqc to conventional ps,t,q,u,v.  The specific convinfo is xxx
+#  Additionally, 9 tables are used.
+
 # set NLQC2 = 0, not use JP's varqc to conventional ps,t,q,u,v
 #  the tables include sigma only.  Note: different sigma values between
 #  the varqc and normal distribution
@@ -338,6 +343,7 @@ cp $FIXurma/urma2p5_prepobs_prep.bufrtable prepobs_prep.bufrtable
 
 cp $FIXurma/prepobs_errtable_pw.global  errtable_pw
 
+**** NEED TO MODIFY 
 NLQC2=${NLQC2:-1}
 if [ $NLQC2 -gt 0 ] ; then
 # parameter from optm TEST five
@@ -360,6 +366,7 @@ else
   cp $FIXurma/nlqc_b_uv.rtma.CTL btable_uv
 fi
 
+**** NEED TO MODIFY 
 # Copy bias correction, sigma, and surface files
 #
 #  *** NOTE:  The regional gsi analysis is written to (over)

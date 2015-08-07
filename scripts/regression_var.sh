@@ -254,16 +254,23 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #   export gsisrc=$basedir/trunk/src
 #   export gsiexec_updat=$basedir/trunk/src/global_gsi
 #   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+# ML's trunk--now I checked out the trunk in my dir
+#   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
+#   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
 
    export basedir=/meso/save/Runhua.Yang/
    export gsisrc=$basedir/rtma_nlqc2/src
    export gsiexec_updat=$basedir/rtma_nlqc2/src/global_gsi
-   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
+
+   export gsiexec_contrl=$basedir/trunk/src/global_gsi
+
 
    export enkfexec_updat=/meso/save/Runhua.Yang/rtma_nlqc2/src/enkf/global_enkf
-   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
+   export enkfexec_contrl=/meso/save/Runhua.Yang/trunk/src/enkf/global_enkf
+
+   export fixgsi=$basedir/rtma_nlqc2/fix
+   export scripts=/meso/save/Runhua.Yang/rtma_nlqc2/scripts
+
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
@@ -300,7 +307,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$USER
+   export noscrub=/meso/noscrub/$USER
    export endianness=Big_Endian
 
 fi
@@ -371,7 +378,7 @@ export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwis
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
-export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
+export nhr_obsbin="1"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
 
 # Define parameters for hybrid ensemble option test.
 #   (default is set to false, so no hybrid ensemble option test.)

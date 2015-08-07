@@ -11,7 +11,7 @@ exp=$jobname
 #gsiexec=$updat
 
 # Set resoltion and other dependent parameters
-#export JCAP=62
+export JCAP=62
 export LEVS=60
 export JCAP_B=$JCAP
 export DELTIM=1200
@@ -105,10 +105,7 @@ EOF
 #   slmask   =
 #   flt*     =
 
-anavinfo=$fixgsi/anavinfo_rtma
 berror=$fixgsi/$endianness/rtma_regional_nmm_berror.f77.gcv
-errtable=$fixgsi/rtma_errtable.r3dv
-convinfo=$fixgsi/rtma_convinfo.txt
 mesonetuselist=$fixgsi/rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fixgsi/rtma_ruc2_wind-uselist-noMETAR.dat
 wbinuselist=$fixgsi/rtma_wbinuselist
@@ -161,18 +158,98 @@ prmcard=$fixgsi/rtma_parmcard_input
 # Copy executable and fixed files to $tmpdir
 if [[ $exp = $rtma_updat_exp1 ]]; then
    $ncp $gsiexec_updat ./gsi.x
+   NLQC2=0
 elif [[ $exp = $rtma_updat_exp2 ]]; then
    $ncp $gsiexec_updat ./gsi.x
+   NLQC2=0
 elif [[ $exp = $rtma_contrl_exp1 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
+   NLQC2=0
 elif [[ $exp = $rtma_contrl_exp2 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
+   NLQC2=0
+fi
+
+#--------------------------------------------
+# FOR JP NLQC:
+# set NLQC2 < 0, use Gaussian distribution only--it is default situation in current RTMA system.
+#                The specific convinfo table is xxx
+# set NLQC2 = 0, use ECMWF varqc (ref: 1999)-the current varqc.  The specified convinfo table is globaxxx
+#                and the sigma tables have the values of current one, but the b values of b tables are all zero.
+# set NLQC2 > 0, use JP's varqc to conventional ps,t,q,u,v.  The specific convinfo is xxx
+#  Additionally, 9 tables are used.
+
+# NLQC2=${NLQC2:--1}  not use it for this regression test
+# NLQC2=${NLQC2:-1}  
+
+  NLQC2=${NLQC2:-0}
+
+# need to add convinfo tables and error tables for current ec-varqc and jp's varqc
+
+if [ $NLQC2 -gt 0 ] ; then
+
+# cp rtma anavinfo and rtma convinfo and errtable_pw
+
+anavinfo=$fixgsi/anavinfo_rtma
+convinfo=$fixgsi/urma2p5_convinfo.txt
+errtable=$fixgsi/rtma_errtable.r3dv
+# all new tables
+
+errtable_pw=$fixgsi/prepobs_errtable_pw.global
+errtable_ps=$fixgsi/prepobs_errtable_ps.optm
+errtable_t=$fixgsi/prepobs_errtable_t.optm
+errtable_q=$fixgsi/prepobs_errtable_q.optm
+errtable_uv=$fixgsi/prepobs_errtable_uv.optm
+
+btable_ps=$fixgsi/nlqc_b_ps.rtma.optm 
+btable_t=$fixgsi/nlqc_b_t.rtma.optm 
+btable_q=$fixgsi/nlqc_b_q.rtma.optm 
+btable_uv=$fixgsi/nlqc_b_uv.rtma.optm 
+
+#elif [$NLQC2 -eq 0]; then 
+
+else 
+
+# cp tables of anavinfo,convinfo and error tables for current ec-varqc and jp's varqc
+# also other error tables and b tables 
+anavinfo=$fixgsi/global_anavinfo.l64.txt_trunk
+convinfo=$fixgsi/global_convinfo.txt_trunk
+errtable=$fixgsi/prepobs_errtable.global_trunk
+
+# still need to have sigma and b tables.  Sigma tables are created using the values of the trunk error tables.
+# b tables are created as zero values of b, but with the same obs. types as in the trunk error tables.
+
+# the error
+
+errtable_pw=$fixgsi/prepobs_errtable_pw.global
+
+errtable_ps=$fixgsi/prepobs_errtable_ps.trunk
+errtable_t=$fixgsi/prepobs_errtable_t.trunk
+errtable_q=$fixgsi/prepobs_errtable_q.trunk
+errtable_uv=$fixgsi/prepobs_errtable_uv.trunk
+#  all zero values in btables
+btable_ps=$fixgsi/nlqc_b_ps.rtma.trunk
+btable_t=$fixgsi/nlqc_b_t.rtma.trunk
+btable_q=$fixgsi/nlqc_b_q.rtma.trunk
+btable_uv=$fixgsi/nlqc_b_uv.rtma.trunk
 fi
 
 $ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
+
+#add 9 tables for new varqc
+$ncp $errtable_pw           ./errtable_pw
+$ncp $errtable_ps           ./errtable_ps
+$ncp $errtable_t           ./errtable_t
+$ncp $errtable_q           ./errtable_q
+$ncp $errtable_uv           ./errtable_uv
+$ncp $btable_ps           ./btable_ps
+$ncp $btable_t           ./btable_t
+$ncp $btable_q           ./btable_q
+$ncp $btable_uv           ./btable_uv
+
 $ncp $mesonetuselist     ./mesonetuselist
 $ncp $mesonet_stnuselist ./mesonet_stnuselist
 $ncp $wbinuselist        ./wbinuselist
