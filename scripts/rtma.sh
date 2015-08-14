@@ -171,11 +171,16 @@ elif [[ $exp = $rtma_contrl_exp2 ]]; then
 fi
 
 #--------------------------------------------
-# FOR JP NLQC:
+# FOR JP NLQC:  August 2015
+# ??? global test or rtma test???
 # set NLQC2 < 0, use Gaussian distribution only--it is default situation in current RTMA system.
 #                The specific convinfo table is xxx
-# set NLQC2 = 0, use ECMWF varqc (ref: 1999)-the current varqc.  The specified convinfo table is globaxxx
-#                and the sigma tables have the values of current one, but the b values of b tables are all zero.
+#                will not test this case
+# set NLQC2 = 0, use ECMWF varqc (ref: 1999)-the current varqc.  The specified convinfo table is 
+#                global_convinfo.txt in trunk 58744. 
+#                The observation error values for ps,t,q,uv and pw have the same values as that in 
+#                prepobs_errtable.global. The b values of b tables are as a constant which is recognized 
+#                in the code as not using NLQC2
 # set NLQC2 > 0, use JP's varqc to conventional ps,t,q,u,v.  The specific convinfo is xxx
 #  Additionally, 9 tables are used.
 
@@ -206,12 +211,20 @@ btable_t=$fixgsi/nlqc_b_t.rtma.optm
 btable_q=$fixgsi/nlqc_b_q.rtma.optm 
 btable_uv=$fixgsi/nlqc_b_uv.rtma.optm 
 
-#elif [$NLQC2 -eq 0]; then 
 
 else 
 
-# cp tables of anavinfo,convinfo and error tables for current ec-varqc and jp's varqc
-# also other error tables and b tables 
+# RY: USER ALERT:  if you change error value for a type, you need to make change
+# in the preobs_errtable_X.TK58744.  
+# A suggested way:  use a Fortran code splitglberr.f90 to split the given
+# prepobs_errtable.global table into the 9 tables listed below
+# I will try to put splitglberr.f90 into an utility or something like
+# Get_Initial_Files.  User provides the prepobs_errtable.global
+# and the tables used for the control run will be generated.
+# Note these tables MUST BE IN THE FIX DIRECTORY
+#
+
+# RY: finished the check
 anavinfo=$fixgsi/global_anavinfo.l64.txt_trunk
 convinfo=$fixgsi/global_convinfo.txt_trunk
 errtable=$fixgsi/prepobs_errtable.global_trunk
@@ -219,19 +232,19 @@ errtable=$fixgsi/prepobs_errtable.global_trunk
 # still need to have sigma and b tables.  Sigma tables are created using the values of the trunk error tables.
 # b tables are created as zero values of b, but with the same obs. types as in the trunk error tables.
 
-# the error
+# 
 
-errtable_pw=$fixgsi/prepobs_errtable_pw.global
+errtable_pw=$fixgsi/prepobs_errtable_pw.TK58744
+errtable_ps=$fixgsi/prepobs_errtable_ps.TK58744
+errtable_t=$fixgsi/prepobs_errtable_t.TK58744
+errtable_q=$fixgsi/prepobs_errtable_q.TK58744
+errtable_uv=$fixgsi/prepobs_errtable_uv.TK58744
 
-errtable_ps=$fixgsi/prepobs_errtable_ps.trunk
-errtable_t=$fixgsi/prepobs_errtable_t.trunk
-errtable_q=$fixgsi/prepobs_errtable_q.trunk
-errtable_uv=$fixgsi/prepobs_errtable_uv.trunk
 #  all zero values in btables
-btable_ps=$fixgsi/nlqc_b_ps.rtma.trunk
-btable_t=$fixgsi/nlqc_b_t.rtma.trunk
-btable_q=$fixgsi/nlqc_b_q.rtma.trunk
-btable_uv=$fixgsi/nlqc_b_uv.rtma.trunk
+btable_ps=$fixgsi/nlqc_b_ps.TK58744
+btable_t=$fixgsi/nlqc_b_t.TK58744
+btable_q=$fixgsi/nlqc_b_q.TK58744
+btable_uv=$fixgsi/nlqc_b_uv.TK58744
 fi
 
 $ncp $anavinfo           ./anavinfo

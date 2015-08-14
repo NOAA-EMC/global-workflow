@@ -254,7 +254,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #   export gsisrc=$basedir/trunk/src
 #   export gsiexec_updat=$basedir/trunk/src/global_gsi
 #   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-# ML's trunk--now I checked out the trunk in my dir
+# Following two lines are ML's trunk directory.  
+#                      
 #   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
 #   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
 
@@ -262,9 +263,10 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export gsisrc=$basedir/rtma_nlqc2/src
    export gsiexec_updat=$basedir/rtma_nlqc2/src/global_gsi
 
+#-------------
+# I need to checked out the trunk into my dir, so, I can put the tables for
+
    export gsiexec_contrl=$basedir/trunk/src/global_gsi
-
-
    export enkfexec_updat=/meso/save/Runhua.Yang/rtma_nlqc2/src/enkf/global_enkf
    export enkfexec_contrl=/meso/save/Runhua.Yang/trunk/src/enkf/global_enkf
 

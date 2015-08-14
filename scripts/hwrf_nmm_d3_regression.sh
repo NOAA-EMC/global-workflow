@@ -113,7 +113,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
          grep '+ rc=' ${hwrf_nmm_d3_updat_exp1}.out > return_code_hwrf_nmm_d3.out
          if [ -s return_code_hwrf_nmm_d3.out ]; then
             if [[ $(stat -c %s return_code_hwrf_nmm_d3.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_hwrf_nmm_d3.out) -ne 'rc=0' ]]; then
+#               if [[ $(awk '{ print $2 }' return_code_hwrf_nmm_d3.out) -ne 'rc=0' ]]; then
+               if [[ $(awk '{ print $2 }' return_code_hwrf_nmm_d3.out) -ne '0' ]]; then
                   echo $hwrf_nmm_d3_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_hwrf_nmm_d3.out)"."
                   rm -f return_code_hwrf_nmm_d3.out
                   exit

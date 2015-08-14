@@ -126,7 +126,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
       grep '+ rc=' ${global_enkf_T62_updat_exp2}.out > return_code_global_enkf.out
       if [ -s return_code_global_enkf.out ]; then
          if [[ $(stat -c %s return_code_global_enkf.out) -ne '0' ]]; then
-            if [[ $(awk '{ print $2 }' return_code_global_enkf.out) -ne 'rc=0' ]]; then
+#            if [[ $(awk '{ print $2 }' return_code_global_enkf.out) -ne 'rc=0' ]]; then
+            if [[ $(awk '{ print $2 }' return_code_global_enkf.out) -ne '0' ]]; then
                echo $global_enkf_T62_updat_exp2" job has failed with return code of "$(awk '{ print $2 }' return_code_global_enkf.out)"."
                rm -f return_code_global_enkf.out
                exit
