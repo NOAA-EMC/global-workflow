@@ -27,7 +27,7 @@ savdir=$savdir/out${JCAP}_ozonly/${exp}
 #fixgsi=$fixgsi
 #fixgsi=$basedir/EXP-port/fix
 #fixcrtm=$fixcrtm
-#fixcrtm=$basedir/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
+#fixcrtm=$basedir/nwprod/lib/sorc/CRTM_REL-2.2.3/Big_Endian
 
 #datobs=$datobs
 #datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Michael.Lueken/CASES/sigmap/$adate
