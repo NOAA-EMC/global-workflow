@@ -25,7 +25,7 @@ savdir=$savdir/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$gsipath/trunk/fix
-#fixcrtm=$gsipath/EXP-port410/lib/CRTM_REL-2.1.3/fix
+#fixcrtm=$gsipath/EXP-port410/lib/CRTM_REL-2.2.3/fix
 
 #datobs=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/obs
 #datges=/scratch1/portfolios/NCEPDEV/da/noscrub/Daryl.Kleist/CASES/$adate/ges
