@@ -39,7 +39,7 @@ chmod 750 $tmpdir
 cd $tmpdir
 
 #FIXnam=/da/save/Michael.Lueken/trunk/fix
-#FIXCRTM=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
+#FIXCRTM=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
 
 berror=$fixgsi/nam_nmm_berror.f77.gcv
 anavinfo=$fixgsi/anavinfo_nems_nmmb
