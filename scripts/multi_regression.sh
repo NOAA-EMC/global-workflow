@@ -39,7 +39,7 @@ machine=$REMOTEHOST
 
 /bin/sh nmm_netcdf_regression.sh > nmm_netcdf.out &
 
-/bin/sh nmmb_nems_regression.sh > nmmb_nems.out &
+/bin/sh nmmb_nems_4denvar_regression.sh > nmmb_nems_4denvar.out &
 
 /bin/sh rtma_regression.sh > rtma.out &
 

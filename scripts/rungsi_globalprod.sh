@@ -49,10 +49,9 @@ fi
 
 # Set experiment name and analysis date
 adate=2014080400
-#adate=2015063000
-expnm=vqcT
-exp=nqc
-expid=${expnm}.$adate
+expnm=vqc_test
+exp=globalprod.$adate
+expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
 gsiexec=/meso/save/Runhua.Yang/rtma_nlqc2/src/global_gsi
@@ -73,13 +72,11 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-#  datdir=/ptmpp1/$USER/data_sigmap/${exp}
 
    datdir=/da/noscrub/Michael.Lueken/CASES/global/sigmap/2014080400
    tmpdir=/ptmpp1/$USER/TEST/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmpp1/$USER/TEST/out${JCAP}/sigmap/${expid}  
-#   fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
-    fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
    UNCOMPRESS=gunzip
@@ -91,7 +88,7 @@ elif [ $MACHINE = ZEUS ]; then
     datdir=/scratch2/portfolios/NCEPDEV/rstprod/com/gfs/prod
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
-   fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/sorc/CRTM_REL-2.1.3/Big_Endian
+   fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
    COMPRESS=gzip
@@ -371,11 +368,11 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=100,niter(2)=150,
+   miter=2,niter(1)=100,niter(2)=100,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
-   gencode=$IGEN,factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
+   gencode=$IGEN,factqmin=5.0,factqmax=0.005.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
@@ -396,6 +393,8 @@ cat << EOF > gsiparm.anl
    hswgt=0.45,0.3,0.25,
    bw=0.0,norsp=4,
    bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+   bkgv_write=.false.,
+   cwcoveqqcov=.false.,
    $BKGVERR
  /
  &ANBKGERR
@@ -407,18 +406,16 @@ cat << EOF > gsiparm.anl
    $JCOPTS
  /
  &STRONGOPTS
-   tlnmc_option=1,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
    baldiag_full=.true.,baldiag_inc=.true.,
    $STRONGOPTS
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
-   $OBSQC
+   use_poq7=.true.,njqc=.false.,vqc=.true.,qc_noirjaco3_pole=.true.,
  /
  &OBS_INPUT
    dmesh(1)=145.0,dmesh(2)=150.0,time_window_max=3.0,
-   $OBSINPUT
  /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                 dval    dthin  dsfcalc
@@ -656,16 +653,24 @@ $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
-# Copy bias correction, atmospheric and surface files
-$ncp $datges/${prefix_tbc}.abias              ./satbias_in
-#ln -s -f $datges/${prefix_tbc}.abias_pc           ./satbias_pc
-$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
-$ncp $datges/${prefix_tbc}.radstat            ./radstat.gdas
+#  # For data before Feb 2015 
+#  # Copy bias correction, atmospheric and surface files
+#Need to check
+#  $ncp $datges/${prefix_tbc}.abias              ./satbias_in
+#  $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+#  #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
+#  #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
 #$ncp /home/Xiujuan.Su/nbns/rad/radstat.${gdate} ./radstat.gdas
 
-#/scratch1/portfolios/NCEPDEV/da/save/Xiujuan.Su/gsi/xsu_nqc/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
-# /meso/save/Runhua.Yang/rtma_nlqc2/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
+ # For data after Feb 2015 
+ # Copy bias correction, atmospheric and surface files
+ $ncp $datges/${prefix_tbc}.abias               ./satbias_in
+ $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+ $ncp $datges/${prefix_tbc}.abias_pc            ./satbias_pc
+ $ncp $datges/${prefix_tbc}.radstat             ./radstat.gdas
 
+# ML's suggestion 
+# /meso/save/Runhua.Yang/rtma_nlqc2/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 #cp satbias_in satbias_in.orig
 #cp satbias_in.new satbias_in
 
