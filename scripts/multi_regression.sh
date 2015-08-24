@@ -6,7 +6,7 @@ machine=$REMOTEHOST
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/da/noscrub/$LOGNAME/minversion/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
 #For Zeus/Theia
    if [ `expr substr $machine 1 4` = "zeus" ]; then
