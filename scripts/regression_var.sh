@@ -6,9 +6,9 @@
 # Specify machine that is being used (Zeus or WCOSS)
 
 platform=$REMOTEHOST
+ export machine="WCOSS"
 #if [ -d /da ]; then
 #For WCOSS
-   export machine="WCOSS"
 #elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
 #   if [ `expr substr $platform 1 4` = "zeus" ]; then
 #For Zeus
