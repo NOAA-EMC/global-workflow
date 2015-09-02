@@ -232,7 +232,7 @@ satangl=$fixgsi/global_satangbias.txt
 atmsbeamdat=$fixgsi/atms_beamwidth.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
-convinfo=$fixgsi/global_convinfo_reg_test.txt
+convinfo=$fixgsi_update/global_convinfo_reg_test.txt
 errtable=$fixgsi/prepobs_errtable.global
 
 # Only need this file for single obs test

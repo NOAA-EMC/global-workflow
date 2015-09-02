@@ -30,3 +30,8 @@ export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+   export fixgsi_update="/da/save/Michael.Lueken/AMV_Genkova_GoesBufr/fix"
+else
+   export fixgsi_update="/da/save/Michael.Lueken/svn1/fix"
+fi

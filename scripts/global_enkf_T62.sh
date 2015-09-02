@@ -101,7 +101,7 @@ EOF
 satangl=$fixgsi/global_satangbias.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
-convinfo=$fixgsi/global_convinfo_reg_test.txt
+convinfo=$fixgsi_update/global_convinfo_reg_test.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
 

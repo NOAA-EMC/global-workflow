@@ -10,7 +10,7 @@ if [ -d /da ]; then
 elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
 #For Zeus/Theia
    if [ `expr substr $machine 1 4` = "zeus" ]; then
-      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/gsi/AMV_Genkova_GoesBufr/scripts/regression_var.sh" > regression_var.out
+      echo "/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
    elif [ `expr substr $machine 1 5` = "theia" ]; then
       echo "/scratch4/NCEPDEV/da/save/$LOGNAME/EXP-testCRTM_R2.2/scripts/regression_var.sh" > regression_var.out
    fi

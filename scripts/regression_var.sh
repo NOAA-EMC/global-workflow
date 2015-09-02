@@ -111,13 +111,13 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    export queue=batch
    if [[ "$machine" = "Zeus" ]]; then
       export basedir=/scratch1/portfolios/NCEPDEV/da/save/$LOGNAME
-      export gsiscr=$basedir/gsi/AMV_Genkova_GoesBufr/src
-      export gsiexec_updat=$basedir/gsi/AMV_Genkova_GoesBufr/src/global_gsi
-      export gsiexec_contrl=$basedir/gsi/AMV_Genkova_OE/src/global_gsi
-      export enkfexec_updat=$basedir/gsi/AMV_Genkova_GoesBufr/src/enkf/global_enkf
-      export enkfexec_contrl=$basedir/gsi/AMV_Genkova_OE/src/enkf/global_enkf
-      export fixgsi=$basedir/gsi/AMV_Genkova_GoesBufr/fix
-      export scripts=$basedir/gsi/AMV_Genkova_GoesBufr/scripts
+      export gsisrc=$basedir/EXP-testCRTM_R2.2/src
+      export gsiexec_updat=$basedir/EXP-testCRTM_R2.2/src/global_gsi
+      export gsiexec_contrl=$basedir/svn1/src/global_gsi
+      export enkfexec_updat=$basedir/EXP-testCRTM_R2.2/src/enkf/global_enkf
+      export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+      export fixgsi=$basedir/EXP-testCRTM_R2.2/fix
+      export scripts=$basedir/EXP-testCRTM_R2.2/scripts
       export fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    elif [[ "$machine" = "Theia" ]]; then
       export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
@@ -172,7 +172,7 @@ if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
    fi
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
-   export accnt=cloud
+   export accnt=hybrid
    if [[ "$machine" = "Zeus" ]]; then
       export launcher=mpiexec_mpt
    elif [[ "$machine" = "Theia" ]]; then
@@ -293,7 +293,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/scratch1/portfolios/NCEPDEV/da/noscrub/Iliana.Genkova
+   export noscrub=/da/noscrub/$USER
    export endianness=Big_Endian
 
 fi
