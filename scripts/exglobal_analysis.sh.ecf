@@ -232,7 +232,7 @@
 #     SCANINFO      Input satellite scan information file
 #                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXGLOBAL}/global_hybens_info.l${LEVS}.txt
 #     PREPQC        Input QC-ed observation BUFR file
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
 #     PREPQCPF      Input QC-ed observation profile BUFR file
@@ -604,7 +604,7 @@ export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
 export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
 export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_info.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
@@ -838,7 +838,7 @@ rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr ahibufr
-rm airsbufr iasibufr amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
+rm airsbufr iasibufr amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_info atms_beamwidth.txt
 rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm aircftbias_in aircftbias_out
@@ -869,7 +869,7 @@ $FCPLN $OZINFO   ozinfo
 $FCPLN $PCPINFO  pcpinfo
 $FCPLN $AEROINFO aeroinfo
 $FCPLN $SCANINFO scaninfo
-$FCPLN $HYBENSINFO hybens_locinfo
+$FCPLN $HYBENSINFO hybens_info
 $FCPLN $OBERROR  errtable
 
 # CRTM Spectral and Transmittance coefficients
