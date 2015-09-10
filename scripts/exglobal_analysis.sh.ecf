@@ -764,7 +764,6 @@ if [ $l4densvar = .true. ]; then
    export SIGA03=${SIGA03:-${COMOUT}/siga03}
    export SIGA04=${SIGA04:-${COMOUT}/siga04}
    export SIGA05=${SIGA05:-${COMOUT}/siga05}
-   export SIGA06=${SIGA06:-${COMOUT}/siga06}
    export SIGA07=${SIGA07:-${COMOUT}/siga07}
    export SIGA08=${SIGA08:-${COMOUT}/siga08}
    export SIGA09=${SIGA09:-${COMOUT}/siga09}
@@ -839,7 +838,8 @@ rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09
 rm siga03 siga04 siga05 siganl siga07 siga08 siga09
-rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
+rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09
+rm                      nstanl
 rm gesfile_in gesfiles_out
 rm -rf dir*
 
@@ -1057,15 +1057,13 @@ if [ $FILESTYLE != 'C' ]; then
 
    # Output files
    ln -fs $SIGANL siganl
-   if [ $l4densvar = .true. ]; then
-      if [ $lwrite4danl = .true. ]; then
-         ln -fs $SIGA03 siga03
-         ln -fs $SIGA04 siga04
-         ln -fs $SIGA05 siga05
-         ln -fs $SIGA07 siga07
-         ln -fs $SIGA08 siga08
-         ln -fs $SIGA09 siga09
-      fi
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      ln -fs $SIGA03 siga03
+      ln -fs $SIGA04 siga04
+      ln -fs $SIGA05 siga05
+      ln -fs $SIGA07 siga07
+      ln -fs $SIGA08 siga08
+      ln -fs $SIGA09 siga09
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1295,15 +1293,13 @@ $ERRSCRIPT||exit 2
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
    $NCP siganl $SIGANL
-   if [ $l4densvar = .true. ]; then
-      if [ $lwrite4danl = .true. ]; then
-         $NCP siga03 $SIGA03
-         $NCP siga04 $SIGA04
-         $NCP siga05 $SIGA05
-         $NCP siga07 $SIGA07
-         $NCP siga08 $SIGA08
-         $NCP siga09 $SIGA09
-      fi
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      $NCP siga03 $SIGA03
+      $NCP siga04 $SIGA04
+      $NCP siga05 $SIGA05
+      $NCP siga07 $SIGA07
+      $NCP siga08 $SIGA08
+      $NCP siga09 $SIGA09
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
