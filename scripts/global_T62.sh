@@ -241,7 +241,7 @@ convinfo=$fixgsi/global_convinfo_reg_test.txt
 anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
-hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
+hybens_info=$fixgsi/global_hybens_info.l64.txt
 errtable=$fixgsi/prepobs_errtable.global
 atmsbeaminfo=$fixgsi/atms_beamwidth.txt
 
@@ -282,7 +282,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $anavinfo ./anavinfo
-$ncp $hybens_locinfo ./hybens_locinfo
+$ncp $hybens_info ./hybens_info
 $ncp $atmsbeaminfo ./atms_beamwidth.txt
 
 $ncp $bufrtable ./prepobs_prep.bufrtable

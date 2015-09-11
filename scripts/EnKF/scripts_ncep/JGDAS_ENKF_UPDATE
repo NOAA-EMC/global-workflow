@@ -232,7 +232,7 @@ export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
 export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_info.l${LEVS}.txt}
 
 # EnKF ensemble files
 export GBIASE=${GBIASE:-$COMIN/biascr_int_${CDATE}_ensmean}

@@ -72,7 +72,7 @@
 #     SCANINFO      Input satellite scan information file
 #                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXGLOBAL}/global_hybens_info.l${LEVS}.txt
 #     TCVITL        Input tcvitals file
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
 #     INISCRIPT     Preprocessing script
@@ -241,7 +241,7 @@ export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
 export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_info.l${LEVS}.txt}
 export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
 export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
@@ -312,7 +312,7 @@ export pgm=$PGM
 $LOGSCRIPT
 
 rm convinfo satinfo ozinfo satbias_angle satbias_in enkf.nml
-rm hybens_locinfo
+rm hybens_info
 rm sanl*
 
 
@@ -325,7 +325,7 @@ then
    $NCP $SCANINFO scaninfo
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
-   $NCP $HYBENSINFO hybens_locinfo
+   $NCP $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
    date
@@ -368,7 +368,7 @@ else
    ln -fs $SCANINFO scaninfo
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
-   ln -fs $HYBENSINFO hybens_locinfo
+   ln -fs $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
    date

@@ -96,14 +96,14 @@ EOF
 #   scaninfo = text file with scan angle information
 #   ozinfo   = text file with information about assimilation of ozone data
 #   convinfo = text file with information about assimilation of conventional data
-#   hybens_locinfo = text file with localization informztion
+#   hybens_info = text file with localization informztion
 
 satangl=$fixgsi/global_satangbias.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 ozinfo=$fixgsi/global_ozinfo.txt
-hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
+hybens_info=$fixgsi/global_hybens_info.l64.txt
 
 
 # Copy executable and fixed files to $tmpdir
@@ -122,7 +122,7 @@ $ncp $scaninfo ./scaninfo
 $ncp $satinfo  ./satinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
-$ncp $hybens_locinfo ./hybens_locinfo
+$ncp $hybens_info ./hybens_info
 
 
 # Copy ensemble data to $tmpdir

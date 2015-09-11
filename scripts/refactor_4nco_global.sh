@@ -125,7 +125,7 @@ $svnmkdirp $target_shared
 
 # Create and populate global_shared fix
 $svnmkdir $target_shared/fix
-flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_locinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txt prepobs_errtable.global"
+flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_info.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txt prepobs_errtable.global"
 for file in $flist; do
    $svncopy $source_path/fix/$file $target_shared/fix/
 done

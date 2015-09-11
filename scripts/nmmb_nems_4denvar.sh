@@ -137,7 +137,7 @@ cp $qnightlist ./q_night_rejectlist
 cp $tdaylist ./t_day_rejectlist
 cp $tnightlist ./t_night_rejectlist
 cp $wbinuselist ./wbinuselist
-#cp $locinfo ./hybens_locinfo
+#cp $locinfo ./hybens_info
 
 
 ###### crtm coeff's #######################

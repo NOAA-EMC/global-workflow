@@ -229,7 +229,7 @@ anavinfo=$fixgsi/global_anavinfo.l64.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 errtable=$fixgsi/prepobs_errtable.global
-hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
+hybens_info=$fixgsi/global_hybens_info.l64.txt
 
 # Only need this file for single obs test
 bufrtable=$fixgsi/prepobs_prep.bufrtable
@@ -268,7 +268,7 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $errtable ./errtable
 $ncp $anavinfo ./anavinfo
-$ncp $hybens_locinfo ./hybens_locinfo
+$ncp $hybens_info ./hybens_info
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr

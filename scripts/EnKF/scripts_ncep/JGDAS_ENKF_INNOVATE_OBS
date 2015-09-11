@@ -289,7 +289,7 @@ export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
 export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
 export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_info.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 
 export RTMFIX=${RTMFIX:-/nw${envir}/fix/crtm_${crtm_ver}}

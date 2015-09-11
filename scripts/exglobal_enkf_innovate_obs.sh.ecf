@@ -151,7 +151,7 @@
 #     SCANINFO      Input satellite scan information file
 #                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXGLOBAL}/global_hybens_info.l${LEVS}.txt
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
@@ -373,7 +373,7 @@ export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
 export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
 export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_info.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}

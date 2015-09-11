@@ -249,17 +249,17 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+   export basedir=/da/save/$LOGNAME/gsi
+   export gsisrc=$basedir/EXP-betaprofile/src
+   export gsiexec_updat=$basedir/EXP-betaprofile/src/global_gsi
+   export gsiexec_contrl=$basedir/trunk/src/global_gsi
+   export enkfexec_updat=$basedir/EXP-betaprofile/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
    export fixgsi=$basedir/trunk/fix
    export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME
-   export savdir=/ptmpp1/$LOGNAME
+   export tmpdir=/ptmpp1/$LOGNAME/regression/gsi
+   export savdir=/ptmpp1/$LOGNAME/regression/gsi
 
 #  Next, paths for canned case data.
 
@@ -293,7 +293,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$USER
+   export noscrub=$basedir/EXP-betaprofile
    export endianness=Big_Endian
 
 fi
