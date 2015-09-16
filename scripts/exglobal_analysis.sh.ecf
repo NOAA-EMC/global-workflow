@@ -217,7 +217,7 @@
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
 #     RTMFIX        Input directory containing CRTM coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_v2.1.3
+#                   defaults to ${FIXGLOBAL}/crtm_${crtm_ver}
 #     ANAVINFO      Input analysis variable file
 #                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file

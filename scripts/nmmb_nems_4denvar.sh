@@ -39,7 +39,7 @@ chmod 750 $tmpdir
 cd $tmpdir
 
 #FIXnam=/da/save/Michael.Lueken/trunk/fix
-#FIXCRTM=/da/save/Michael.Lueken/CRTM_REL-2.2.1/crtm_v2.2.1/fix
+#FIXCRTM=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
 
 berror=$fixgsi/nam_nmm_berror.f77.gcv
 anavinfo=$fixgsi/anavinfo_nems_nmmb
@@ -216,7 +216,7 @@ ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
 #####  connect with gdas for ozges ################
        cp $nmmb_nems_4denvar_ges/gdas1.t18z.sf06  ./gfs_sigf06
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
    cd $tmpdir/
    echo "run gsi now"
 
