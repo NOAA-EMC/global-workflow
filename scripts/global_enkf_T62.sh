@@ -154,7 +154,7 @@ $ncp $global_enkf_T62_datges/bfg_${gdate}_fhr06_ensmean ./bfg_${global_enkf_T62_
 
 
 # Run enkf under Parallel Operating Environment (poe) on NCEP IBM
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
    cd $tmpdir/
    echo "run enkf now"
 
