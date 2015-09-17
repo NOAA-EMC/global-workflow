@@ -333,7 +333,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
