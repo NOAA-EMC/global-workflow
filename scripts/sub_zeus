@@ -88,7 +88,7 @@ output=${output:-$jobname.out}
 myuser=$LOGNAME
 myhost=$(hostname)
 
-DATA=/scratch2/portfolios/NCEPDEV/stmp/$LOGNAME/tmp
+DATA=/scratch4/NCEPDEV/stmp4/$LOGNAME/tmp
 mkdir -p $DATA
 
 #partition=${partition:-c1ms}

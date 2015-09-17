@@ -234,7 +234,7 @@ $ncp $rtma_obs/rtma.t${cya}z.goessky.tm00.bufr_d ./goessky
 $ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 cp wrf_inout wrf_ges
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
