@@ -92,13 +92,11 @@
 #                   defaults to YES
 #     DIAG_TARBALL flag to collect (YES) diagnostic files in tarballs
 #                   defaults to YES
-#     FIXGLOBAL     Directory for global fixed files
+#     FIXgsm        Directory for global fixed files
 #                   defaults to /nwprod/fix
-#     SCRGLOBAL     Directory for global scripts
-#                   defaults to /nwprod/scripts
-#     EXECGLOBAL    Directory for global executables
+#     EXECgsm       Directory for global executables
 #                   defaults to /nwprod/exec
-#     USHGLOBAL     Directory for global scripts
+#     USHgsm        Directory for global ush scripts
 #                   defaults to /nwprod/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
@@ -127,31 +125,31 @@
 #     GSIEXEC       Spectral analysis executable
 #                   defaults to ${EXECGLOBAL}/global_gsi$XC
 #     CYCLESH       Surface cycle script
-#                   defaults to ${USHGLOBAL}/global_cycle.sh
+#                   defaults to ${USHgsm}/global_cycle.sh
 #     BERROR        Input background error file
-#                   defaults to ${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.sig.f77
+#                   defaults to ${FIXgsm}/global_berror.l${LEVS}y${NLAT_A}.sig.f77
 #     SATANGL       Input satellite angle bias file
-#                   defaults to ${FIXGLOBAL}/global_satangbias.txt
+#                   defaults to ${FIXgsm}/global_satangbias.txt
 #     SATINFO       Input satellite information file
-#                   defaults to ${FIXGLOBAL}/global_satinfo.txt
+#                   defaults to ${FIXgsm}/global_satinfo.txt
 #     RTMFIX        Input directory containing CRTM coefficients
-#                   defaults to ${FIXGLOBAL}/crtm_${crtm_ver}
+#                   defaults to ${FIXgsm}/crtm_v2.2.3
 #     ANAVINFO      Input analysis variable file
-#                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
+#                   defaults to ${FIXgsm}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
-#                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#                   defaults to ${FIXgsm}/global_convinfo.txt
 #     INSITUINFO    Input In Situ sea water temperature observation information file
-#                   defaults to ${FIXGLOBAL}/global_insituinfo.txt
+#                   defaults to ${FIXgsm}/global_insituinfo.txt
 #     OZINFO        Input ozone information file
-#                   defaults to ${FIXGLOBAL}/global_ozone.txt
+#                   defaults to ${FIXgsm}/global_ozone.txt
 #     PCPINFO       Input precipitation information file
-#                   defaults to ${FIXGLOBAL}/global_pcpinfo.txt
+#                   defaults to ${FIXgsm}/global_pcpinfo.txt
 #     AEROINFO      Input aerosol information file
-#                   defaults to ${FIXGLOBAL}/global_aeroinfo.txt
+#                   defaults to ${FIXgsm}/global_aeroinfo.txt
 #     SCANINFO      Input satellite scan information file
-#                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
+#                   defaults to ${FIXgsm}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXgsm}/global_hybens_locinfo.l${LEVS}.txt
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
@@ -305,20 +303,17 @@ export SFCGESMEAN=${1:-${SFCGESMEAN:?}}
 export SIGGESMEAN=${2:-${SIGGESMEAN:?}}
 export NSTGESMEAN=${3:-${NSTGESMEAN:?}}
 #  Directories.
-export HOMEDIR=${HOMEDIR:-/nwprod}
+export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
-export SCRGLOBAL=${SCRGLOBAL:-$NWPROD/scripts}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
-export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts}
-export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
-export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
-export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
-export EXECGSI=${EXECGSI:-$NWPROD/global_shared.${global_shared_ver}/exec}
-export SCRGSI=${SCRGSI:-$NWPROD/global_shared.${global_shared_ver}/scripts}
+export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXGLOBAL=$FIXgsm    # $CYCLESH still references GLOBAL variables
+export EXECGLOBAL=$EXECgsm  # $CYCLESH still references GLOBAL variables
+export USHGLOBAL=$USHgsm    # $CYCLESH still references GLOBAL variables
+export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -334,8 +329,8 @@ export ANALYSISSH=${ANALYSISSH:-$SCRGSI/exglobal_analysis.sh.sms}
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECgsm}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
@@ -359,22 +354,22 @@ export DOHYBVAR=${DOHYBVAR:-"NO"}
 export DOIAU=${DOIAU:-"NO"}
 
 # Files.
-export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
-export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
-export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
-export INSITUINFO=${INSITUINFO:-${FIXGSI}/global_insituinfo.txt}
-export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECgsm}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECgsi}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHgsm}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXgsi}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
+export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+export INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
+export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
 export SELECT_OBS=${SELECT_OBS:-${COMIN}/obsinput_${CDATE}_ensmean}
 export SFCG03=${SFCG03:-${COMOUT}/sfcf03}
 export SFCG04=${SFCG04:-${COMOUT}/sfcf04}
