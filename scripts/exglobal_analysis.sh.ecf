@@ -952,6 +952,7 @@ if [[ $NST_GSI -gt 0 ]]; then
 fi
 
 if [[ "$DOHYBVAR" = "YES" ]]; then
+   mkdir -p ensemble_data
    imem=1
    while [[ $imem -le $NMEM_ENS ]]; do
       member="_mem"`printf %03i $imem`
@@ -963,16 +964,16 @@ if [[ "$DOHYBVAR" = "YES" ]]; then
          sigens7=${SIGF07ENS}${member}
          sigens8=${SIGF08ENS}${member}
          sigens9=${SIGF09ENS}${member}
-         $FCPLN $sigens3 sigf03_ens${member}
-         $FCPLN $sigens4 sigf04_ens${member}
-         $FCPLN $sigens5 sigf05_ens${member}
-         $FCPLN $sigens6 sigf06_ens${member}
-         $FCPLN $sigens7 sigf07_ens${member}
-         $FCPLN $sigens8 sigf08_ens${member}
-         $FCPLN $sigens9 sigf09_ens${member}
+         $FCPLN $sigens3 ./ensemble_data/sigf03_ens${member}
+         $FCPLN $sigens4 ./ensemble_data/sigf04_ens${member}
+         $FCPLN $sigens5 ./ensemble_data/sigf05_ens${member}
+         $FCPLN $sigens6 ./ensemble_data/sigf06_ens${member}
+         $FCPLN $sigens7 ./ensemble_data/sigf07_ens${member}
+         $FCPLN $sigens8 ./ensemble_data/sigf08_ens${member}
+         $FCPLN $sigens9 ./ensemble_data/sigf09_ens${member}
       else
          sigens=${SIGGESENS}${member}
-         $FCPLN $sigens sigf06_ens${member}
+         $FCPLN $sigens ./ensemble_data/sigf06_ens${member}
       fi
       (( imem = $imem + 1 ))
    done
@@ -1263,6 +1264,7 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
+   ensemble_path='./ensemble_data/',
    $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
