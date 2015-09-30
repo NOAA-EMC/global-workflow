@@ -5,9 +5,9 @@ set -x
 options=${1:-""}
 source_path=${2:-$LOGNAME/source_path}
 target_path=${3:-$LOGNAME/target_path}
-gfs_ver=${4:-v1.0.1}
-gdas_ver=${5:-v1.0.0}
-global_shared_ver=${6:-v1.0.0}
+gfs_ver=${4:-v6.1.0}
+gdas_ver=${5:-v6.1.0}
+global_shared_ver=${6:-v6.1.0}
 
 
 # Set target directory pathnames
@@ -125,7 +125,7 @@ $svnmkdirp $target_shared
 
 # Create and populate global_shared fix
 $svnmkdir $target_shared/fix
-flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_hybens_locinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_scaninfo.txt prepobs_errtable.global"
+flist="atms_beamwidth.txt global_aeroinfo.txt global_anavinfo.l64.txt global_convinfo.txt global_convinfo.txt.2014041318 global_convinfo.txt.3hr_satwnd global_hybens_locinfo.l64.txt global_insituinfo.txt global_ozinfo.txt global_pcpinfo.txt global_satangbias.txt global_satinfo.txt global_satinfo.txt.2013041500 global_satinfo.txt.2013070318 global_satinfo.txt.2013082012 global_satinfo.txt.2014092612 global_satinfo.txt.2014101512 global_satinfo.txt.2015011412 global_satinfo.txt.2015070218 global_scaninfo.txt prepobs_errtable.global prepobs_errtable.global.3hr_satwnd"
 for file in $flist; do
    $svncopy $source_path/fix/$file $target_shared/fix/
 done
