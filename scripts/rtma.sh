@@ -11,7 +11,7 @@ exp=$jobname
 #gsiexec=$updat
 
 # Set resoltion and other dependent parameters
-export JCAP=62
+#export JCAP=62
 export LEVS=60
 export JCAP_B=$JCAP
 export DELTIM=1200
@@ -40,6 +40,9 @@ ncp=/bin/cp
 gdate=`$ndate -12 $rtma_adate`
 cya=`echo $rtma_adate | cut -c9-10`
 cyg=`echo $gdate | cut -c9-10`
+cymd=`echo $gdate | cut -c1-8`
+echo " cymd $cymd "
+echo " cyg $cyg"
 prefixa=nam.t${cya}z
 prefixg=na12snmm.t${cyg}z
 suffix=tm00.bufr_d
@@ -105,13 +108,32 @@ EOF
 #   slmask   =
 #   flt*     =
 
+anavinfo=$fixgsi/anavinfo_rtma
 berror=$fixgsi/$endianness/rtma_regional_nmm_berror.f77.gcv
+errtable=$fixgsi/rtma_errtable.r3dv
+convinfo=$fixgsi/rtma_convinfo.txt
 mesonetuselist=$fixgsi/rtma_mesonet_uselist.txt
 mesonet_stnuselist=$fixgsi/rtma_ruc2_wind-uselist-noMETAR.dat
 wbinuselist=$fixgsi/rtma_wbinuselist
 slmask=$fixgsi/$endianness/rtma_conus_slmask.dat
 terrain=$fixgsi/$endianness/rtma_conus_terrain.dat
 bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
+
+
+### add 9 tables
+errtable_pw=$fixgsi/prepobs_errtable_pw.global
+
+errtable_ps=$fixgsi/prepobs_errtable_ps.optm
+errtable_t=$fixgsi/prepobs_errtable_t.optm
+errtable_q=$fixgsi/prepobs_errtable_q.optm
+errtable_uv=$fixgsi/prepobs_errtable_uv.optm
+
+btable_ps=$fixgsi/nlqc_b_ps.rtma.optm
+btable_t=$fixgsi/nlqc_b_t.rtma.optm
+btable_q=$fixgsi/nlqc_b_q.rtma.optm
+btable_uv=$fixgsi/nlqc_b_uv.rtma.optm
+
+###
 
 t_rejectlist=$fixgsi/rtma_t_rejectlist
 p_rejectlist=$fixgsi/rtma_p_rejectlist
@@ -158,100 +180,25 @@ prmcard=$fixgsi/rtma_parmcard_input
 # Copy executable and fixed files to $tmpdir
 if [[ $exp = $rtma_updat_exp1 ]]; then
    $ncp $gsiexec_updat ./gsi.x
-   NLQC2=0
 elif [[ $exp = $rtma_updat_exp2 ]]; then
    $ncp $gsiexec_updat ./gsi.x
-   NLQC2=0
 elif [[ $exp = $rtma_contrl_exp1 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
-   NLQC2=0
 elif [[ $exp = $rtma_contrl_exp2 ]]; then
    $ncp $gsiexec_contrl ./gsi.x
-   NLQC2=0
-fi
-
-#--------------------------------------------
-# FOR JP NLQC:  August 2015
-# ??? global test or rtma test???
-# set NLQC2 < 0, use Gaussian distribution only--it is default situation in current RTMA system.
-#                The specific convinfo table is xxx
-#                will not test this case
-# set NLQC2 = 0, use ECMWF varqc (ref: 1999)-the current varqc.  The specified convinfo table is 
-#                global_convinfo.txt in trunk 58744. 
-#                The observation error values for ps,t,q,uv and pw have the same values as that in 
-#                prepobs_errtable.global. The b values of b tables are as a constant which is recognized 
-#                in the code as not using NLQC2
-# set NLQC2 > 0, use JP's varqc to conventional ps,t,q,u,v.  The specific convinfo is xxx
-#  Additionally, 9 tables are used.
-
-# NLQC2=${NLQC2:--1}  not use it for this regression test
-# NLQC2=${NLQC2:-1}  
-
-  NLQC2=${NLQC2:-0}
-
-# need to add convinfo tables and error tables for current ec-varqc and jp's varqc
-
-if [ $NLQC2 -gt 0 ] ; then
-
-# cp rtma anavinfo and rtma convinfo and errtable_pw
-
-anavinfo=$fixgsi/anavinfo_rtma
-convinfo=$fixgsi/urma2p5_convinfo.txt
-errtable=$fixgsi/rtma_errtable.r3dv
-# all new tables
-
-errtable_pw=$fixgsi/prepobs_errtable_pw.global
-errtable_ps=$fixgsi/prepobs_errtable_ps.optm
-errtable_t=$fixgsi/prepobs_errtable_t.optm
-errtable_q=$fixgsi/prepobs_errtable_q.optm
-errtable_uv=$fixgsi/prepobs_errtable_uv.optm
-
-btable_ps=$fixgsi/nlqc_b_ps.rtma.optm 
-btable_t=$fixgsi/nlqc_b_t.rtma.optm 
-btable_q=$fixgsi/nlqc_b_q.rtma.optm 
-btable_uv=$fixgsi/nlqc_b_uv.rtma.optm 
-
-
-else 
-
-# RY: USER ALERT:  if you change error value for a type, you need to make change
-# in the preobs_errtable_X.TK58744.  
-# A suggested way:  use a Fortran code splitglberr.f90 to split the given
-# prepobs_errtable.global table into the 9 tables listed below
-# I will try to put splitglberr.f90 into an utility or something like
-# Get_Initial_Files.  User provides the prepobs_errtable.global
-# and the tables used for the control run will be generated.
-# Note these tables MUST BE IN THE FIX DIRECTORY
-#
-
-# RY: finished the check
-anavinfo=$fixgsi/global_anavinfo.l64.txt_trunk
-convinfo=$fixgsi/global_convinfo.txt_trunk
-errtable=$fixgsi/prepobs_errtable.global_trunk
-
-# still need to have sigma and b tables.  Sigma tables are created using the values of the trunk error tables.
-# b tables are created as zero values of b, but with the same obs. types as in the trunk error tables.
-
-# 
-
-errtable_pw=$fixgsi/prepobs_errtable_pw.TK58744
-errtable_ps=$fixgsi/prepobs_errtable_ps.TK58744
-errtable_t=$fixgsi/prepobs_errtable_t.TK58744
-errtable_q=$fixgsi/prepobs_errtable_q.TK58744
-errtable_uv=$fixgsi/prepobs_errtable_uv.TK58744
-
-#  all zero values in btables
-btable_ps=$fixgsi/nlqc_b_ps.TK58744
-btable_t=$fixgsi/nlqc_b_t.TK58744
-btable_q=$fixgsi/nlqc_b_q.TK58744
-btable_uv=$fixgsi/nlqc_b_uv.TK58744
 fi
 
 $ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats
 $ncp $convinfo           ./convinfo
 $ncp $errtable           ./errtable
-
+$ncp $mesonetuselist     ./mesonetuselist
+$ncp $mesonet_stnuselist ./mesonet_stnuselist
+$ncp $wbinuselist        ./wbinuselist
+$ncp $slmask             ./rtma_slmask.dat
+$ncp $terrain            ./rtma_terrain.dat
+$ncp $bufrtable          ./prepobs_prep.bufrtable
+####
 #add 9 tables for new varqc
 $ncp $errtable_pw           ./errtable_pw
 $ncp $errtable_ps           ./errtable_ps
@@ -262,13 +209,8 @@ $ncp $btable_ps           ./btable_ps
 $ncp $btable_t           ./btable_t
 $ncp $btable_q           ./btable_q
 $ncp $btable_uv           ./btable_uv
+###
 
-$ncp $mesonetuselist     ./mesonetuselist
-$ncp $mesonet_stnuselist ./mesonet_stnuselist
-$ncp $wbinuselist        ./wbinuselist
-$ncp $slmask             ./rtma_slmask.dat
-$ncp $terrain            ./rtma_terrain.dat
-$ncp $bufrtable          ./prepobs_prep.bufrtable
 
 $ncp $t_rejectlist       ./t_rejectlist
 $ncp $p_rejectlist       ./p_rejectlist
@@ -319,12 +261,19 @@ $ncp $rtma_obs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
 $ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
 $ncp $rtma_obs/rtma.t${cya}z.goessky.tm00.bufr_d ./goessky
 
+echo "NEW MAX/MIN DATA $rtma_obs/rtma.${cymd}.mintobs.dat "
+ls -lt  $rtma_obs/rtma.${cymd}.mintobs.dat
+echo "$rtma_obs/rtma.${cymd}.maxtobs.dat "
+
+$ncp $rtma_obs/rtma.${cymd}.mintobs.dat ./mitmdat
+$ncp $rtma_obs/rtma.${cymd}.maxtobs.dat ./mxtmdat
+
 
 # Copy first guess
 $ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 cp wrf_inout wrf_ges
 
-if [[ "$machine" = "Theia" ]]; then
+if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
 
    cd $tmpdir/
    echo "run gsi now"

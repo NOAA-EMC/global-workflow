@@ -6,28 +6,13 @@
 # Specify machine that is being used (Zeus or WCOSS)
 
 platform=$REMOTEHOST
- export machine="WCOSS"
-#if [ -d /da ]; then
+if [ -d /da ]; then
 #For WCOSS
-<<<<<<< .working
-#elif [ -d /scratch1/portfolios/NCEPDEV/da ]; then
-#   if [ `expr substr $platform 1 4` = "zeus" ]; then
-#For Zeus
-#      export machine="Zeus"
-#   elif [ `expr substr $platform 1 5` = "theia" ]; then
-=======
    export machine="WCOSS"
 elif [ -d /scratch4/NCEPDEV/da ]; then
->>>>>>> .merge-right.r62148
 #For Theia
-<<<<<<< .working
-#      export machine="Theia"
-#   fi
-#fi
-=======
    export machine="Theia"
 fi
->>>>>>> .merge-right.r62148
 
 # Variables with the same values are defined below.
 
@@ -138,17 +123,17 @@ if [[ "$machine" = "Theia" ]]; then
 
 #  Next, paths for canned case data.
 
-   export global_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}_update
-   export global_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}_update
-   export global_4dvar_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}_update
-   export global_4dvar_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}_update
-   export global_hybrid_T126_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}_update/obs
-   export global_hybrid_T126_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}_update/ges
-   export global_enkf_T62_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}_update/obs
-   export global_enkf_T62_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}_update/ges
-   export global_lanczos_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}_update
-   export global_lanczos_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}_update
-   export global_nemsio_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_nemsio_T62_adate}_update
+   export global_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
+   export global_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
+   export global_4dvar_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
+   export global_4dvar_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
+   export global_hybrid_T126_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/obs
+   export global_hybrid_T126_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/ges
+   export global_enkf_T62_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/obs
+   export global_enkf_T62_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/ges
+   export global_lanczos_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
+   export global_lanczos_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
+   export global_nemsio_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_nemsio_T62_adate}
    export global_nemsio_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
    export nmmb_nems_4denvar_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export nmmb_nems_4denvar_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
@@ -245,32 +230,21 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export group=dev
    export queue=dev
 
-#   export basedir=/da/save/$LOGNAME
-#   export gsisrc=$basedir/trunk/src
-#   export gsiexec_updat=$basedir/trunk/src/global_gsi
-#   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-# Following two lines are ML's trunk directory.  
-#                      
-#   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
-#   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
+   export basedir=/meso/save/$LOGNAME
+   export gsisrc=$basedir/trunk/src
 
-   export basedir=/meso/save/Runhua.Yang/
-   export gsisrc=$basedir/rtma_nlqc2/src
-   export gsiexec_updat=$basedir/rtma_nlqc2/src/global_gsi
-
-#-------------
-# I need to checked out the trunk into my dir, so, I can put the tables for
-
+##RY CHANGE:  USE THE BRANCH 62284 IN noscrub directory
+   export gsiexec_updat=/meso/noscrub/Runhua.Yang/rtma_v62284/rtma_nlqc2/src/global_gsi
    export gsiexec_contrl=$basedir/trunk/src/global_gsi
-   export enkfexec_updat=/meso/save/Runhua.Yang/rtma_nlqc2/src/enkf/global_enkf
-   export enkfexec_contrl=/meso/save/Runhua.Yang/trunk/src/enkf/global_enkf
 
-   export fixgsi=$basedir/rtma_nlqc2/fix
-   export scripts=/meso/save/Runhua.Yang/rtma_nlqc2/scripts
+   export enkfexec_updat=/meso/noscrub/Runhua.Yang/rtma_v62284/rtma_nlqc2/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
 
+   export fixgsi=$basedir/trunk/fix
+   export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME
-   export savdir=/ptmpp1/$LOGNAME
+   export tmpdir=/ptmpp1/$LOGNAME/RegT_v62284
+   export savdir=/ptmpp1/$LOGNAME/RegT_v62284
 
 #  Next, paths for canned case data.
 
@@ -296,8 +270,14 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export nmm_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
    export nmm_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_netcdf_adate
    export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-   export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-   export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+
+# (1)case: not use input mitm_mxtm files
+#    export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+#    export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+# (2)case: use input mitm_mxtm files
+     export rtma_obs=/da/noscrub/Runhua.Yang/CASES/regional/rtma_binary/$rtma_adate
+     export rtma_ges=/da/noscrub/Runhua.Yang/CASES/regional/rtma_binary/$rtma_adate
+#
    export hwrf_nmm_obs=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
    export hwrf_nmm_ges=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
@@ -375,7 +355,7 @@ export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwis
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
-export nhr_obsbin="1"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
+export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
 
 # Define parameters for hybrid ensemble option test.
 #   (default is set to false, so no hybrid ensemble option test.)

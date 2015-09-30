@@ -1,11 +1,10 @@
 #!/bin/ksh
 #=======================================================
 ## Below are LSF (WCOSS queueing system) commands
-## Below are LSF (WCOSS queueing system) commands
 #BSUB -a poe
-#BSUB -e MGDgsi_glb.o%J
-#BSUB -o MGDgsi_glb.o%J
-#BSUB -J MGDgsiglb
+#BSUB -e gsi_global.o%J
+#BSUB -o gsi_global.o%J
+#BSUB -J gsi_global
 #BSUB -network type=sn_all:mode=US
 #BSUB -q dev
 #BSUB -n 32
@@ -13,18 +12,17 @@
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
 #BSUB -W 01:00
-#BSUB -P RTMA-T2O
+#BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
-##PBS -o gsi_global.e${jobid} 
-##PBS -N gsi_global
-##PBS -q debug 
-##PBS -q batch 
-##PBS -l walltime=00:40:00 
-##PBS -l nodes=2:ppn=12
-##PBS -j eo                
-##PBS -A aircraft 
-##PBS -V
+#PBS -o gsi_global.e${jobid} 
+#PBS -N gsi_global
+#PBS -q batch
+#PBS -l walltime=00:30:00 
+#PBS -l nodes=2:ppn=12
+#PBS -j eo                
+#PBS -A ada
+#PBS -V
 #=======================================================
 
 set -x
@@ -48,19 +46,16 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2014080400
-expnm=vqc_test
+adate=2015060100
+expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
-gsiexec=/meso/save/Runhua.Yang/rtma_nlqc2/src/global_gsi
-
-
+gsiexec=/da/save/$USER/trunk/src/global_gsi
 
 # Specify GSI fixed field
-fixgsi=/meso/save/Runhua.Yang/rtma_nlqc2/fix
-
+fixgsi=/da/save/$USER/trunk/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -72,10 +67,9 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-
-   datdir=/da/noscrub/Michael.Lueken/CASES/global/sigmap/2014080400
-   tmpdir=/ptmpp1/$USER/TEST/tmp${JCAP}_sigmap/${expid}  
-   savdir=/ptmpp1/$USER/TEST/out${JCAP}/sigmap/${expid}  
+   datdir=/ptmp/$USER/data_sigmap/${exp}
+   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
@@ -84,8 +78,7 @@ if [ $MACHINE = WCOSS ]; then
    DIAG_SUFFIX="" 
    DIAG_TARBALL=YES 
 elif [ $MACHINE = ZEUS ]; then
-#   datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
-    datdir=/scratch2/portfolios/NCEPDEV/rstprod/com/gfs/prod
+   datdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch2/portfolios/NCEPDEV/ptmp/$USER/out${JCAP}/sigmap/${expid} 
    fixcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
@@ -223,8 +216,7 @@ if [ $MACHINE = WCOSS ]; then
   if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
     datobs=${datdir}
     datges=${datdir}
-    datprep=${datdir}
-#   datprep=${datobs}
+    datprep=${datobs}
   elif [ -s /com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then
     datges=/com/gfs/prod/gdas.$gdate0
     datobs=/com/gfs/prod/gdas.$adate0
@@ -235,9 +227,9 @@ if [ $MACHINE = WCOSS ]; then
     exit 1
   fi
 elif  [ $MACHINE = ZEUS ]; then    
-  if [ -s ${datdir}/gdas.${adate0}/gdas1.t${hha}z.sgm3prep ]; then 
-    datobs=${datdir}/gdas.${adate0}
-    datges=${datdir}/gdas.${gdate0}
+  if [ -s ${datdir}/gdas1.t${hha}z.sgm3prep ]; then 
+    datobs=${datdir}
+    datges=${datdir}
     datprep=${datobs}
   elif [ -s /NCEPPROD/com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
     datges=/NCEPPROD/com/gfs/prod/gdas.$gdate0
@@ -412,10 +404,12 @@ cat << EOF > gsiparm.anl
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,qc_noirjaco3_pole=.true.,
+   use_poq7=.true.,qc_noirjaco3_pole=.true.,
+   $OBSQC
  /
  &OBS_INPUT
    dmesh(1)=145.0,dmesh(2)=150.0,time_window_max=3.0,
+   $OBSINPUT
  /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                 dval    dthin  dsfcalc
@@ -534,7 +528,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin                   
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin                   
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin                 
-emiscoef_MWwater=$fixcrtm/FASTEM5.MWwater.EmisCoeff.bin
+emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
@@ -542,23 +536,10 @@ scaninfo=$fixgsi/global_scaninfo.txt
 #satangl=$fixgsi/global_satangbias.txt
 pcpinfo=$fixgsi/global_pcpinfo.txt
 ozinfo=$fixgsi/global_ozinfo.txt
-#NOTE: FOR ECMWF, need this table
-# RY use the convinfo file used in the trunk@58744 version, I copy /meso/save/Runhua.Yang/trunk/fix/global_convinfo.txt
-## as global_ECVarqc_convinfo.txt,but take out dw 999
-convinfo=$fixgsi/global_ECVarqc_convinfo.txt
+convinfo=$fixgsi/global_convinfo.txt
 atmsbeamdat=$fixgsi/atms_beamwidth.txt
 
 errtable=$fixgsi/prepobs_errtable.global
-errtable_ps=$fixgsi/prepobs_errtable_ps.global_nqcf
-errtable_pw=$fixgsi/prepobs_errtable_pw.global
-errtable_q=$fixgsi/prepobs_errtable_q.global_nqcf
-errtable_t=$fixgsi/prepobs_errtable_t.global_nqcf
-errtable_uv=$fixgsi/prepobs_errtable_uv.global_nqcf
-btable_uv=$fixgsi/nqc_b_uv.global_nqcf
-btable_ps=$fixgsi/nqc_b_ps.global_nqcf
-btable_q=$fixgsi/nqc_b_q.global_nqcf
-btable_t=$fixgsi/nqc_b_t.global_nqcf
-
 
 
 # Only need this file for single obs test
@@ -592,16 +573,6 @@ $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $atmsbeamdat ./atms_beamwidth.txt
 $ncp $errtable ./errtable
-$ncp $errtable_ps ./errtable_ps
-$ncp $errtable_pw ./errtable_pw
-$ncp $errtable_q ./errtable_q
-$ncp $errtable_t ./errtable_t
-$ncp $errtable_uv ./errtable_uv
-$ncp $btable_ps ./btable_ps
-$ncp $btable_q ./btable_q
-$ncp $btable_t ./btable_t
-$ncp $btable_uv ./btable_uv
-
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
@@ -655,24 +626,22 @@ $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 #  # For data before Feb 2015 
 #  # Copy bias correction, atmospheric and surface files
-#Need to check
 #  $ncp $datges/${prefix_tbc}.abias              ./satbias_in
 #  $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
 #  #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
 #  #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
-#$ncp /home/Xiujuan.Su/nbns/rad/radstat.${gdate} ./radstat.gdas
 
  # For data after Feb 2015 
  # Copy bias correction, atmospheric and surface files
  $ncp $datges/${prefix_tbc}.abias               ./satbias_in
- $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+ #$ncp $datges/${prefix_tbc}.satang             ./satbias_angle
  $ncp $datges/${prefix_tbc}.abias_pc            ./satbias_pc
  $ncp $datges/${prefix_tbc}.radstat             ./radstat.gdas
 
-# ML's suggestion 
-# /meso/save/Runhua.Yang/rtma_nlqc2/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
-#cp satbias_in satbias_in.orig
-#cp satbias_in.new satbias_in
+/da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
+
+cp satbias_in satbias_in.orig
+cp satbias_in.new satbias_in
 
 listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
 for type in $listdiag; do

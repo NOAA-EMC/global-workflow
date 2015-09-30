@@ -26,7 +26,22 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
       export STRONGOPTS_update=""
    fi
 fi
-export OBSQC_update="njqc=.false.,vqc=.true."
+
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+#-------------------------
+#for default rtma_nlqc2: 
+#-------------------------
+#   export OBSQC_update="njqc=.false.,vqc=.true.,"
+#-------------------------
+#for using njqc: 
+
+   export OBSQC_update="oberrflg=.true.,njqc=.true.,vqc=.false.,"
+#-------------------------
+
+else
+   export OBSQC_update=""
+fi
+
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""

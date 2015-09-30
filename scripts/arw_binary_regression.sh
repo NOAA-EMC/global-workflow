@@ -113,7 +113,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
          grep '+ rc=' ${arw_binary_updat_exp1}.out > return_code_arw_binary.out
          if [ -s return_code_arw_binary.out ]; then
             if [[ $(stat -c %s return_code_arw_binary.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_arw_binary.out) -ne '0' ]]; then
+               if [[ $(awk '{ print $2 }' return_code_arw_binary.out) -ne 'rc=0' ]]; then
                   echo $arw_binary_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_arw_binary.out)"."
                   rm -f return_code_arw_binary.out
                   exit

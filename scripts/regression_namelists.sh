@@ -560,7 +560,8 @@ export RTMA_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
-   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.
+   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.,
+   $OBSQC
  /
  &OBS_INPUT
    dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=3.0,
@@ -578,7 +579,9 @@ OBS_INPUT::
    prepbufr       wspd10m   null      wspd10m  1.0     0      0
    prepbufr       td2m      null      td2m     1.0     0      0
    prepbufr       mxtm      null      mxtm     1.0     0      0
+   mxtmdat        mxtm      null      mxtm     1.0     0      0
    prepbufr       mitm      null      mitm     1.0     0      0
+   mitmdat        mitm      null      mitm     1.0     0      0
    prepbufr       pmsl      null      pmsl     1.0     0      0
    prepbufr       howv      null      howv     1.0     0      0
    prepbufr       tcamt     null      tcamt    1.0     0      0
