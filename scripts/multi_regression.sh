@@ -6,13 +6,15 @@ machine=$REMOTEHOST
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/meso/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/meso/save/$LOGNAME/rtma_nlqc2/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch4/NCEPDEV/da ]; then
 #For Theia
    echo "/scratch4/NCEPDEV/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
 fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &
+
+/bin/sh rtma_regression.sh > rtma.out &
 
 #/bin/sh global_T62_ozonly_regression.sh > global_T62_ozonly.out &
 
@@ -34,7 +36,6 @@ fi
 
 #/bin/sh nmmb_nems_4denvar_regression.sh > nmmb_nems_4denvar.out &
 
-#/bin/sh rtma_regression.sh > rtma.out &
 
 #/bin/sh hwrf_nmm_d2_regression.sh > hwrf_nmm_d2.out &
 

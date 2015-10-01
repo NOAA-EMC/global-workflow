@@ -31,11 +31,11 @@ if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
 #-------------------------
 #for default rtma_nlqc2: 
 #-------------------------
-#   export OBSQC_update="njqc=.false.,vqc=.true.,"
+    export OBSQC_update="njqc=.false.,vqc=.true.,"
 #-------------------------
 #for using njqc: 
 
-   export OBSQC_update="oberrflg=.true.,njqc=.true.,vqc=.false.,"
+#   export OBSQC_update="oberrflg=.true.,njqc=.true.,vqc=.false.,"
 #-------------------------
 
 else

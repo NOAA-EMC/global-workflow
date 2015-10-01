@@ -579,9 +579,7 @@ OBS_INPUT::
    prepbufr       wspd10m   null      wspd10m  1.0     0      0
    prepbufr       td2m      null      td2m     1.0     0      0
    prepbufr       mxtm      null      mxtm     1.0     0      0
-   mxtmdat        mxtm      null      mxtm     1.0     0      0
    prepbufr       mitm      null      mitm     1.0     0      0
-   mitmdat        mitm      null      mitm     1.0     0      0
    prepbufr       pmsl      null      pmsl     1.0     0      0
    prepbufr       howv      null      howv     1.0     0      0
    prepbufr       tcamt     null      tcamt    1.0     0      0

@@ -419,11 +419,11 @@ mkdir -p $vfydir
 
 $ncp $output                        $vfydir/
 
-cd $scripts
-rm -f ${exp1}.out
-rm -f ${exp2}.out
-rm -f ${exp3}.out
-rm -f ${exp2_scale}.out
+#$cd $scripts
+#$rm -f ${exp1}.out
+#$rm -f ${exp2}.out
+#$rm -f ${exp3}.out
+#$rm -f ${exp2_scale}.out
 
 if [[ "$clean" = ".true." ]]; then
    rm -rf $savdir
