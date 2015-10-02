@@ -226,7 +226,7 @@ emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin
 emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
-satinfo=$fixgsi/global_satinfo_clrsky.txt
+satinfo=$fixgsi/global_satinfo.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satangl=$fixgsi/global_satangbias.txt
 atmsbeamdat=$fixgsi/atms_beamwidth.txt
@@ -365,7 +365,7 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
 fi
 
 # Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"

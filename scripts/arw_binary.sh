@@ -238,7 +238,7 @@ fi
 
 cp wrf_inout wrf_ges
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
 
    cd $tmpdir/
    echo "run gsi now"
