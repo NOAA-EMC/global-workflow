@@ -17,9 +17,9 @@
 #   Input script positional parameters:
 #
 #   Imported Shell Variables:
-#     FIXGLOBAL     Directory for global fixed files
+#     FIXgsm        Directory for global fixed files
 #                   defaults to /nwprod/fix
-#     EXECGLOBAL    Directory for global executables
+#     EXECgsm       Directory for global executables
 #                   defaults to /nwprod/exec
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
@@ -38,15 +38,15 @@
 #     LEVS          Number of levels
 #                   defaults to 64
 #     FCSTEXEC      Forecast executable
-#                   defaults to ${EXECGLOBAL}/global_fcst$XC
+#                   defaults to ${EXECgsm}/global_fcst$XC
 #     OROGRAPHY     Input orography GRIB file (horiz resolution dependent)
-#                   defaults to ${FIXGLOBAL}/global_orography.t$JCAP.grb
+#                   defaults to ${FIXgsm}/global_orography.t$JCAP.grb
 #     OROGRAPHY_UF  Input unfiltered orography GRIB file (resolution dependent)
-#                   defaults to ${FIXGLOBAL}/global_orography_uf.t$JCAP.grb
+#                   defaults to ${FIXgsm}/global_orography_uf.t$JCAP.grb
 #     LONSPERLAT    Input txt file containing reduced grid information
-#                   defaults to ${FIXGLOBAL}/global_lonsperlat.t$MTNRSL.txt}
+#                   defaults to ${FIXgsm}/global_lonsperlat.t$MTNRSL.txt}
 #     FNMSKH        Input high resolution land mask GRIB file
-#                   defaults to ${FIXGLOBAL}/seaice_newland.grb
+#                   defaults to ${FIXgsm}/seaice_newland.grb
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
 #     LOGSCRIPT     Log posting script
@@ -144,17 +144,13 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 
 #  Directories.
 #--------------
-export HOMEDIR=${HOMEDIR:-/nwprod}
+export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
-export FIX_RAD=${FIX_RAD:-$FIXGLOBAL}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-
-export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
-export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
-export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush} 
-export SCRGSM=${SCRGSM:-$NWPROD/gsm.${gsm_ver}/scripts} 
+export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec} 
+export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush} 
+export SCRgsm=${SCRgsm:-$NWPROD/gsm.${gsm_ver}/scripts} 
 
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -162,7 +158,7 @@ export COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
 #------------
-export FORECASTSH=${FORECASTSH:-$SCRGSM/exglobal_fcst.sh.sms}
+export FORECASTSH=${FORECASTSH:-$SCRgsm/exglobal_fcst.sh.sms}
 [[ -n ${AMEXECTMP:-""} ]]&&eval export AM_EXEC=$AMEXECTMP
 export FCSTEXEC=${FCSTEXEC:-$AM_EXEC}
 export JCAP=${JCAP_ENKF:-254}
@@ -178,13 +174,13 @@ export DELTIM=${DELTIM_ENKF:-900}
 export DTPHYS=${DTPHYS_ENKF:-300}
 export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 export FSMCL2=99999
-export FNOROG=${FNOROG_ENKF:-$FIXGSM/global_orography.t$JCAP.grb}
-export FNMASK=${FNMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
-export OROGRAPHY=${OROGRAPHY_ENKF:-$FIXGSM/global_orography.t$JCAP.grb}
-export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
-export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t$MTNRSL.txt}
-export SLMASK=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP.grb}
-export MTNVAR=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.f77}
+export FNOROG=${FNOROG_ENKF:-$FIXgsm/global_orography.t$JCAP.grb}
+export FNMASK=${FNMASK_ENKF:-$FIXgsm/global_slmask.t$JCAP.grb}
+export OROGRAPHY=${OROGRAPHY_ENKF:-$FIXgsm/global_orography.t$JCAP.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF_ENKF:-$FIXgsm/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export LONSPERLAT=${LONSPERLAT_ENKF:-${FIXgsm}/global_lonsperlat.t$MTNRSL.txt}
+export SLMASK=${SLMASK_ENKF:-$FIXgsm/global_slmask.t$JCAP.grb}
+export MTNVAR=${MTNVAR_ENKF:-$FIXgsm/global_mtnvar.t$JCAP.f77}
 export DOIAU=${DOIAU_ENKF:-"NO"}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
