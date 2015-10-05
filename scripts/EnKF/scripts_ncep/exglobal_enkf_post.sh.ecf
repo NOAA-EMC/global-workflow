@@ -19,11 +19,11 @@
 #                   defaults to $IGEN, then to 0
 #
 #   Imported Shell Variables:
-#     FIXGLOBAL     Directory for global fixed files
+#     FIXgsm        Directory for global fixed files
 #                   defaults to /nwprod/fix
-#     EXECGLOBAL    Directory for global executables
+#     EXECgsm       Directory for global executables
 #                   defaults to /nwprod/exec
-#     USHGLOBAL     Directory for global scripts
+#     USHgsm        Directory for global scripts
 #                   defaults to /nwprod/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
@@ -38,13 +38,13 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     GETATMENSMEANEXEC   Compute ensemble mean sigma (optonally smoothed)
-#                   defaults to ${EXECGLOBAL}/getsigensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getsigensmean_smooth$XC
 #     GETSFCENSMEANEXEC   Compute ensemble mean surface file
-#                   defaults to ${EXECGLOBAL}/getsfcensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getsfcensmean_smooth$XC
 #     GETNSTENSMEANEXEC   Compute ensemble mean NSST file
-#                   defaults to ${EXECGLOBAL}/getnstensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getnstensmean_smooth$XC
 #     HYBENSMOOTH   Input level dependent smoothing paramters for sigma file
-#                   defaults to ${FIXGLOBAL}/global_hybens_smoothinfo.l${LEVS}.txt
+#                   defaults to ${FIXgsm}/global_hybens_smoothinfo.l${LEVS}.txt
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
 #     LOGSCRIPT     Log posting script
@@ -128,13 +128,19 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 # none
 #  Directories.
-export HOMEDIR=${HOMEDIR:-/nwprod}
+export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix} 
-export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
-export USHGDAS=${USHGDAS:-$NWPROD/gdas.${gdas_ver}/ush} 
-export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
+export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+
+export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
+export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
+export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
+
+export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix} 
+export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec} 
+export USHgdas=${USHgdas:-$NWPROD/gdas.${gdas_ver}/ush} 
 export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -148,8 +154,8 @@ export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIXGSI/global_hybens_smoothinfo.l${LEVS}.txt}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
+export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 #  I/O filenames.
 if [ $use_gfs_nemsio = .true. ]; then
   export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
@@ -163,11 +169,11 @@ export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/sfg_${CDATE}_fhr}
 export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/bfg_${CDATE}_fhr}
 export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECGDAS/getsigensmean_smooth$XC}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECGDAS/getsfcensmean_smooth$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECgdas/getsigensmean_smooth$XC}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECgdas/getsfcensmean_smooth$XC}
 export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
 export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
-export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECGDAS/getnstensmean_smooth$XC}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECgdas/getnstensmean_smooth$XC}
 #  Other variables.
 export FHOUTEFCS=${FHOUT_ENKF:-3}
 export FHMINEFCS=${FHMIN_ENKF:-3}
@@ -472,12 +478,12 @@ export LATB_LORES=${LATB_LORES:-384}
 export LONB_LORES=${LONB_LORES:-768}
 export LEVS_LORES=${LEVS_LORES:-64}
 
-export OROGRAPHY_LORES=$FIXGSM/global_orography.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
-export OROGRAPHY_UF_LORES=$FIXGSM/global_orography_uf.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
-export LONSPERLAT_LORES=$FIXGSM/global_lonsperlat.t${JCAP_LORES}.$LONB_LORES.$LATB_LORES.txt
-export SLMASK_LORES=$FIXGSM/global_slmask.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
-export MTNVAR_LORES=$FIXGSM/global_mtnvar.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.f77
-export SIGLEVEL_LORES=$FIXGSM/global_hyblev.l${LEVS_LORES}.txt
+export OROGRAPHY_LORES=$FIXgsm/global_orography.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export OROGRAPHY_UF_LORES=$FIXgsm/global_orography_uf.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export LONSPERLAT_LORES=$FIXgsm/global_lonsperlat.t${JCAP_LORES}.$LONB_LORES.$LATB_LORES.txt
+export SLMASK_LORES=$FIXgsm/global_slmask.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.grb
+export MTNVAR_LORES=$FIXgsm/global_mtnvar.t$JCAP_LORES.$LONB_LORES.$LATB_LORES.f77
+export SIGLEVEL_LORES=$FIXgsm/global_hyblev.l${LEVS_LORES}.txt
 
 
 if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
@@ -490,13 +496,13 @@ if [[ "$JCAP_LORES" -lt "$JCAP_ENKF" ]]; then
       member="ensmean"
       export SIGINP=${SIGENS_OUT}${fhr}_${member}
       export SIGOUT=${SIGENS_OUT}${fhr}_${member}_t${JCAP_LORES}
-      echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+      echo "$USHgdas/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
       imem=1
       while [[ $imem -le $NMEM_ENKF ]]; do
          member="mem"`printf %03i $imem`
          export SIGINP=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}
          export SIGOUT=${SIGENS_OUT}${fhr}${ENKF_SUFFIX}_${member}_t${JCAP_LORES}
-         echo "$USHGDAS/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
+         echo "$USHgdas/gfs_truncate_enkf.sh $member $SIGINP $SIGOUT $JCAP_LORES $LATB_LORES $LONB_LORES" >> $DATA/poescript.$fhr
          (( imem = $imem + 1 ))
       done
       chmod 755 poescript.$fhr

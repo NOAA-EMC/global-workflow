@@ -4,7 +4,7 @@ set -x
 
 . $(awk '{ print $1 }' regression_var.out)
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
+if [[ "$machine" = "Theia" ]]; then
 
    # Submit jobs using sub_zeus wrapper.
    if [ "$debug" = ".false." ]; then
