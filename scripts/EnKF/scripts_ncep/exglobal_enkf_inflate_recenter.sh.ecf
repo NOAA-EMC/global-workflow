@@ -18,13 +18,13 @@
 #   Input script positional parameters:
 #
 #   Imported Shell Variables:
-#     FIXGLOBAL     Directory for global fixed files
+#     FIXgsm        Directory for global fixed files
 #                   defaults to /nwprod/fix
 #     PERTURBDIR    Directory for global enkf perturbation database
 #                   defaults to /nwprod/fix/enkf_gfs
-#     EXECGLOBAL    Directory for global executables
+#     EXECgsm       Directory for global executables
 #                   defaults to /nwprod/exec
-#     USHGLOBAL     Directory for global scripts
+#     USHgsm        Directory for global scripts
 #                   defaults to /nwprod/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
@@ -43,11 +43,11 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     GETATMENSMEANEXEC   Compute ensemble mean sigma (optonally smoothed)
-#                         defaults to ${EXECGLOBAL}/getsigensmean_smooth$XC
+#                         defaults to ${EXECgsm}/getsigensmean_smooth$XC
 #     ADDERRSPECEXEC Perturb sigma files
-#                    defaults to ${EXECGLOBAL}/adderrspec_nmcmeth_spec$XC
+#                    defaults to ${EXECgsm}/adderrspec_nmcmeth_spec$XC
 #     RECENATMPEXEC  Recenter sigma files
-#                    defaults to ${EXECGLOBAL}/recentersigp$XC
+#                    defaults to ${EXECgsm}/recentersigp$XC
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
 #     LOGSCRIPT     Log posting script
@@ -146,19 +146,18 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Command line arguments.
 
 #  Directories.
-export HOMEDIR=${HOMEDIR:-/nwprod}
+export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export PERTURBDIR=${PERTURBDIR:-$FIXGLOBAL/enkf_gfs}
-export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export PERTURBDIR=${PERTURBDIR:-$FIXgsm/enkf_gfs}
+
+export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
+export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
+export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
 
 export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
-
-export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
-export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec} 
-export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush} 
-
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
@@ -174,12 +173,12 @@ export JCAP_ENKF=${JCAP_ENKF:-254}
 export LEVS_ENKF=${LEVS_ENKF:-64}
 export LONB_ENKF=${LONB_ENKF:-768}
 export LATB_ENKF=${LATB_ENKF:-384}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmean_smooth$XC}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGDAS}/adderrspec_nmcmeth_spec$XC}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGDAS}/recentersigp$XC}
-export CHGRESSH=${CHGRESSH:-${USHGSM}/global_chgres.sh}
-export CHGRESEXEC=${CHGRESEXEC-${EXECGSM}/global_chgres}
+export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgdas}/getsigensmean_smooth$XC}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECgdas}/adderrspec_nmcmeth_spec$XC}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECgdas}/recentersigp$XC}
+export CHGRESSH=${CHGRESSH:-${USHgsm}/global_chgres.sh}
+export CHGRESEXEC=${CHGRESEXEC-${EXECgsm}/global_chgres}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 export NMEM_ENKF=${NMEM_ENKF:-0}
 export SCALEFACT=${SCALEFACT:-00}
