@@ -12,7 +12,7 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
       export SETUP_enkf=""
    else
       export SETUP_update="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.0e-3,emiss_bc=.true.,cwoption=3,print_diag_pcg=.true.,"
-      export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,cwoption=3,"
+      export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
    fi
 fi
 export GRIDOPTS_update=""
