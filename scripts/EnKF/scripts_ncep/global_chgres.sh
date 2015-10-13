@@ -253,7 +253,8 @@ export LONB=${7:-${LONB:?}}
 export LATB=${8:-${LATB:?}}
 export IDRT=${11:-${IDRT:-4}}
 #  Directories.
-export FIXGLOBAL=${FIXGLOBAL:-/nwprod/fix}
+#export FIXGLOBAL=${FIXGLOBAL:-/nwprod/fix}
+export FIXGLOBAL=${FIXGLOBAL:-/scratch4/NCEPDEV/global/save/glopara/svn/gfs/tags/gsm.v12.0.1/fix/fix_am}
 export EXECGLOBAL=${EXECGLOBAL:-/nwprod/exec}
 export DATA=${DATA:-$(pwd)}
 #  Filenames.

@@ -425,8 +425,4 @@ rm -f ${exp2}.out
 rm -f ${exp3}.out
 rm -f ${exp2_scale}.out
 
-if [[ "$clean" = ".true." ]]; then
-   rm -rf $savdir
-fi
-
 exit
