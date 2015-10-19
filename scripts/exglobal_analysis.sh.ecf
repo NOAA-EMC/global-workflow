@@ -764,7 +764,6 @@ if [ $l4densvar = .true. ]; then
    export SIGA03=${SIGA03:-${COMOUT}/siga03}
    export SIGA04=${SIGA04:-${COMOUT}/siga04}
    export SIGA05=${SIGA05:-${COMOUT}/siga05}
-   export SIGA06=${SIGA06:-${COMOUT}/siga06}
    export SIGA07=${SIGA07:-${COMOUT}/siga07}
    export SIGA08=${SIGA08:-${COMOUT}/siga08}
    export SIGA09=${SIGA09:-${COMOUT}/siga09}
@@ -775,12 +774,6 @@ if [ $l4densvar = .true. ]; then
    export SIGF07ENS=${SIGF07ENS:-${COMROT}/sigf07_ens}
    export SIGF08ENS=${SIGF08ENS:-${COMROT}/sigf08_ens}
    export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
-fi
-
-# Set local name of center time window analysis file
-SIGANL_LOCAL=siganl
-if [ $lwrite4danl = .true. ] ; then
-   SIGANL_LOCAL=siga06
 fi
 
 ################################################################################
@@ -844,8 +837,9 @@ rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out s
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09
-rm siga03 siga04 siga05 siga06 siga07 siga08 siga09 siganl
-rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
+rm siga03 siga04 siga05 siganl siga07 siga08 siga09
+rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09
+rm                      nstanl
 rm gesfile_in gesfiles_out
 rm -rf dir*
 
@@ -958,6 +952,7 @@ if [[ $NST_GSI -gt 0 ]]; then
 fi
 
 if [[ "$DOHYBVAR" = "YES" ]]; then
+   mkdir -p ensemble_data
    imem=1
    while [[ $imem -le $NMEM_ENS ]]; do
       member="_mem"`printf %03i $imem`
@@ -969,16 +964,16 @@ if [[ "$DOHYBVAR" = "YES" ]]; then
          sigens7=${SIGF07ENS}${member}
          sigens8=${SIGF08ENS}${member}
          sigens9=${SIGF09ENS}${member}
-         $FCPLN $sigens3 sigf03_ens${member}
-         $FCPLN $sigens4 sigf04_ens${member}
-         $FCPLN $sigens5 sigf05_ens${member}
-         $FCPLN $sigens6 sigf06_ens${member}
-         $FCPLN $sigens7 sigf07_ens${member}
-         $FCPLN $sigens8 sigf08_ens${member}
-         $FCPLN $sigens9 sigf09_ens${member}
+         $FCPLN $sigens3 ./ensemble_data/sigf03_ens${member}
+         $FCPLN $sigens4 ./ensemble_data/sigf04_ens${member}
+         $FCPLN $sigens5 ./ensemble_data/sigf05_ens${member}
+         $FCPLN $sigens6 ./ensemble_data/sigf06_ens${member}
+         $FCPLN $sigens7 ./ensemble_data/sigf07_ens${member}
+         $FCPLN $sigens8 ./ensemble_data/sigf08_ens${member}
+         $FCPLN $sigens9 ./ensemble_data/sigf09_ens${member}
       else
          sigens=${SIGGESENS}${member}
-         $FCPLN $sigens sigf06_ens${member}
+         $FCPLN $sigens ./ensemble_data/sigf06_ens${member}
       fi
       (( imem = $imem + 1 ))
    done
@@ -1062,16 +1057,14 @@ fi
 if [ $FILESTYLE != 'C' ]; then
 
    # Output files
-   if [ $l4densvar = .true. ]; then
-      ln -fs $SIGA03   siga03
-      ln -fs $SIGA04   siga04
-      ln -fs $SIGA05   siga05
-      ln -fs $SIGANL   $SIGANL_LOCAL
-      ln -fs $SIGA07   siga07
-      ln -fs $SIGA08   siga08
-      ln -fs $SIGA09   siga09
-   else
-      ln -fs $SIGANL   siganl
+   ln -fs $SIGANL siganl
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      ln -fs $SIGA03 siga03
+      ln -fs $SIGA04 siga04
+      ln -fs $SIGA05 siga05
+      ln -fs $SIGA07 siga07
+      ln -fs $SIGA08 siga08
+      ln -fs $SIGA09 siga09
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1271,6 +1264,7 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
+   ensemble_path='./ensemble_data/',
    $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
@@ -1300,16 +1294,14 @@ $ERRSCRIPT||exit 2
 
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
-   if [ $l4densvar = .true. ]; then
-      $NCP siga03         $SIGA03
-      $NCP siga04         $SIGA04
-      $NCP siga05         $SIGA05
-      $NCP $SIGANL_LOCAL  $SIGANL
-      $NCP siga07         $SIGA07
-      $NCP siga08         $SIGA08
-      $NCP siga09         $SIGA09
-   else
-     $NCP siganl         $SIGANL
+   $NCP siganl $SIGANL
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      $NCP siga03 $SIGA03
+      $NCP siga04 $SIGA04
+      $NCP siga05 $SIGA05
+      $NCP siga07 $SIGA07
+      $NCP siga08 $SIGA08
+      $NCP siga09 $SIGA09
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC

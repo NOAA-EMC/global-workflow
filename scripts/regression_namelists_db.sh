@@ -1253,32 +1253,39 @@ export nems_nmmb_4denvar_namelist="
    passive_bc=.false., use_edges=.false., emiss_bc=.true.,
    diag_precon=.true., step_start=1.e-3,
    l4densvar=.true.,nhr_obsbin=3,
-
+   $SETUP
  /
  &GRIDOPTS
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=3.0,
    filled_grid=.false.,half_grid=.false.,netcdf=.false.,nvege_type=20,
+   $GRIDOPTS
  /
  &BKGERR
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
+   $BKGERR
  /
  &ANBKGERR
    anisotropic=.false.,
+   $ANBKGERR
  /
  &JCOPTS
+   $JCOPTS
  /
  &STRONGOPTS
    nstrong=0,nvmodes_keep=20,period_max=3.,
     baldiag_full=.true.,baldiag_inc=.true.,
+   $STRONGOPTS
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
    vadfile='prepbufr',
+   $OBSQC
  /
  &OBS_INPUT
    dmesh(1)=120.0,time_window_max=3.0,ext_sonde=.true.,
+   $OBS_INPUT
  /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                  dval    dthin  dsfcalc
@@ -1355,8 +1362,10 @@ OBS_INPUT::
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
+   $SUPEROB_RADAR
  /
  &LAG_DATA
+   $LAG_DATA
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=.true.,
@@ -1373,15 +1382,19 @@ OBS_INPUT::
    jcap_ens=0,
    jcap_ens_test=0,coef_bw=0.5,
    full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
+   $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
+   $RAPIDREFRESH_CLDSURF
  /
  &CHEM
+   $CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=2015031300,
    obhourset=0.,
+   $SINGLEOB_TEST
  /"
 
 # Define namelist for cmaq binary run
