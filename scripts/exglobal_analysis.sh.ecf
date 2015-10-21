@@ -808,6 +808,8 @@ if [ $NST_GSI -eq 3 ] ; then
    fi
 else
    $CYCLESH $SFCGES $SFCANL
+   ra=$?
+   ((rc+=ra))
    if [ $DOIAU = YES ]; then
       export CDATE_SAVE=$CDATE
       export CDATE=$($NDATE -3 $CDATE_SAVE)
