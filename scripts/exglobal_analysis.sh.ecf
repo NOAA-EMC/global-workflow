@@ -791,27 +791,35 @@ cd $DATA||exit 99
 
 ################################################################################
 #  Update surface guess file to produce surface analysis
+rc=0
 if [ $NST_GSI -eq 3 ] ; then
-   $CYCLESH  $SFCGES $SFCGCY
+   $CYCLESH $SFCGES $SFCGCY
+   ra=$?
+   ((rc+=ra))
    if [[ "$DOHYBVAR" = "YES" ]]; then
       if [ ! -s ${SFCGCYENS_MEAN} ]; then
-      export FNOROG=$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      export FNMASK=$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      $CYCLESH  $SFCGESENS_MEAN $SFCGCYENS_MEAN
+         export FNOROG=$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         export FNMASK=$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         $CYCLESH $SFCGESENS_MEAN $SFCGCYENS_MEAN
+         ra=$?
+         ((rc+=ra))
       fi
    fi
 else
-   $CYCLESH  $SFCGES $SFCANL
+   $CYCLESH $SFCGES $SFCANL
+   ra=$?
+   ((rc+=ra))
    if [ $DOIAU = YES ]; then
       export CDATE_SAVE=$CDATE
       export CDATE=$($NDATE -3 $CDATE_SAVE)
-      $CYCLESH  $SFCG03 $SFCA03
+      $CYCLESH $SFCG03 $SFCA03
+      ra=$?
+      ((rc+=ra))
       export CDATE=$CDATE_SAVE
    fi
 fi
 
-rc=$?
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 11
