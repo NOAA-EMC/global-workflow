@@ -364,7 +364,7 @@ cat << EOF > gsiparm.anl
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
-   gencode=$IGEN,factqmin=5.0,factqmax=0.005.0,deltim=$DELTIM,
+   gencode=82,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
