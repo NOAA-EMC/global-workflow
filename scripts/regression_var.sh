@@ -229,21 +229,17 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-
-   export basedir=/meso/save/$LOGNAME
-   export gsisrc=$basedir/rtma_nlqc2/src
-
-   export gsiexec_updat=$basedir/rtma_nlqc2/src/global_gsi
-   export gsiexec_contrl=/da/save/Michael.Lueken/svn1/src/global_gsi
-
-   export enkfexec_updat=$basedir/tma_nlqc2/src/enkf/global_enkf
-   export enkfexec_contrl=/da/save/Michael.Lueken/svn1/src/enkf/global_enkf
-
-   export fixgsi=$basedir/rtma_nlqc2/fix
-   export scripts=$basedir/rtma_nlqc2/scripts
+   export basedir=/da/save/$LOGNAME
+   export gsisrc=$basedir/trunk/src
+   export gsiexec_updat=$basedir/trunk/src/global_gsi
+   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+   export fixgsi=$basedir/trunk/fix
+   export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME/RegT_v62359
-   export savdir=/ptmpp1/$LOGNAME/RegT_v62359
+   export tmpdir=/ptmpp1/$LOGNAME
+   export savdir=/ptmpp1/$LOGNAME
 
 #  Next, paths for canned case data.
 
@@ -269,21 +265,15 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export nmm_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
    export nmm_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_netcdf_adate
    export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-
-# (1)case: not use input mitm_mxtm files
-#     export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-#     export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-# (2)case: use input mitm_mxtm files
-      export rtma_obs=/da/noscrub/Runhua.Yang/CASES/regional/rtma_binary/$rtma_adate
-      export rtma_ges=/da/noscrub/Runhua.Yang/CASES/regional/rtma_binary/$rtma_adate
-#
+   export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
+   export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
    export hwrf_nmm_obs=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
    export hwrf_nmm_ges=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
 
 #  Location of ndate utility and noscrub directory.
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/meso/noscrub/$USER
+   export noscrub=/da/noscrub/$USER
    export endianness=Big_Endian
 
 fi
