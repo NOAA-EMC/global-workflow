@@ -5,14 +5,21 @@ set -xa
 #
 export RUN_ENVIR=${RUN_ENVIR:-prod}
 
+####################################
+# set up job name and  environment
+####################################
+export job=${job:-$RUN}
+export envir=${envir:-prod}
+export host=${host:-`hostname | cut -c1`}
+
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd2
+# DATA_IN: Location of working directory, default to $DATAROOT
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
-# COM_IN:  Directory for input files, default to /com/$NET/${envir}
-# COM_OUT: Directory for output file, default to /com/$NET/${envir}
+# COM_IN:  Directory for input files, default to $COMROOT/$NET/${envir}
+# COM_OUT: Directory for output file, default to $COMROOT/$NET/${envir}
 # gespath: Directory for the guess or restart files, default to /nwges/${envir}
 #####################################################################################
 if [ "$RUN_ENVIR" != prod ]      ### For Developers, "group_name" is passed from the ECF script
@@ -27,34 +34,27 @@ fi
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
   export DBNROOT=/nwprod/spa_util/fakedbn
-  export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
 fi
 
 #
 ####################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=gfs
-export RUN=enkf
+export NET=${NET:-gfs}
+export RUN=${RUN:-enkf}
+
 
 ####################################
 # Specify version numbers
 ####################################
-export gdas_ver=${gdas_ver:-v1.0.0}
-export global_shared_ver=${global_shared_ver:-v5.0.0}
+export gdas_ver=${gdas_ver:-v6.0.0}
+export global_shared_ver=${global_shared_ver:-v6.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
-export util_ver=${util_ver:-v1.0.0}
 
-####################################
-# set up job name and  environment
-####################################
-export job=${job:-$RUN}
-export envir=${envir:-prod}
-export host=${host:-`hostname | cut -c1`}
 
 ###############################################
 
-date
 export PS4='$SECONDS + '
 
 # ##############################################
@@ -65,7 +65,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd2}
+export DATA_IN=${DATA_IN:-$DATAROOT}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -90,69 +90,55 @@ export cycle=t${cyc}z
 # RERUN    - Rerun fcst from beginning (default no)
 # VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
 ####################################
-export SAVEGES=${SAVEGES:-NO}
-export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SAVEGES=${SAVEGES:-NO}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
 #################################
 # Define the Log File directory
 #################################
-export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
-export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
-export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
-export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
-export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
-export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
+export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.$gsm_ver}
+export EXECgsm=${EXECgsm:-$HOMEgsm/exec}
+export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
+export USHgsm=${USHgsm:-$HOMEgsm/ush}
+export SCRgsm=${SCRgsm:-$HOMEgsm/scripts}
+export UTILgsm=${UTILgsm:-$HOMEgsm/util}
+export PARMgsm=${PARMgsm:-$HOMEgsm/parm/parm_am}
 
-export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
-export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
-export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
-export USHGSM=${USHGSM:-$HOMEGSM/ush}
-export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
-export UTILGSM=${UTILGSM:-$HOMEGSM/util}
-export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+export HOMEgsi=${HOMEgsi:-$NWROOT/global_shared.$global_shared_ver}
+export EXECgsi=${EXECgsi:-$HOMEgsi/exec}
+export FIXgsi=${FIXgsi:-$HOMEgsi/fix}
+export SCRgsi=${SCRgsi:-$HOMEgsi/scripts}
 
-export HOMEGSI=${HOMEGSI:-/nw${envir}/global_shared.$global_shared_ver}
-export EXECGSI=${EXECGSI:-$HOMEGSI/exec}
-export FIXGSI=${FIXGSI:-$HOMEGSI/fix}
-export SCRGSI=${SCRGSI:-$HOMEGSI/scripts}
+export HOMEgdas=${HOMEgdas:-$NWROOT/gdas.$gdas_ver}
+export EXECgdas=${EXECgdas:-$HOMEgdas/exec}
+export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
+export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
 
-export HOMEGDAS=${HOMEGDAS:-/nw${envir}/gdas.$gdas_ver}
-export EXECGDAS=${EXECGDAS:-$HOMEGDAS/exec}
-export FIXGDAS=${FIXGDAS:-$HOMEGDAS/fix}
-export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
+export HOMEutil=${HOMEutil:-$UTILROOT}
+export EXECutil=${EXECutil:-$HOMEutil/exec}
+export USHutil=${USHutil:-$HOMEutil/ush}
 
-export PERTURBDIR=${PERTURBDIR:-/nwprod/fix/enkf_gfs}
-
-export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
-export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
-export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
-export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
-export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
-export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
 
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$USHUTIL}
-export utilexec=${utilexec:-$EXECUTIL}
+export utilscript=${utilscript:-$USHutil}
+export utilexec=${utilexec:-$EXECutil}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
 ##############################
 $utilscript/setup.sh
 
-err_chk=${err_chk:-$utilscript/err_chk.sh}
-startmsg=${startmsg:-$utilscript/startmsg.sh}
 ERRSCRIPT=${ERRSCRIPT:-$err_chk}
 LOGSCRIPT=${LOGSCRIPT:-$startmsg}
 export FILESTYLE=${FILESTYLE:-'L'}
@@ -172,8 +158,8 @@ export CYCges=`echo $GDATE | cut -c9-10`
 ##############################################
 # Define COM directories
 ##############################################
-export COM_IN=${COM_IN:-/com/${NET}/${envir}}
-export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
+export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
+export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
 
 export COMIN=$COM_IN/enkf.${PDY}/$cyc
 export COMOUT=$COM_OUT/enkf.${PDY}/$cyc
@@ -190,6 +176,8 @@ mkdir -m 775 -p $COMOUT
 export gespath=${gespath:-/nwges/${envir}}
 export GESdir=$gespath/gdas.$PDY
 mkdir -m 775 -p $GESdir
+
+
 ####################################
 # Specify Special Fcst Vars
 ####################################
@@ -203,23 +191,23 @@ export NMEM_ENKF=${NMEM_ENKF:-80}
 
 
 # EnKF executable
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECGDAS}/getsigensmeanp_smooth.x}
-export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECGDAS}/adderrspec_nmcmeth_spec.x}
-export RECENATMPEXEC=${RECENATMPEXEC:-${EXECGDAS}/recentersigp.x}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgdas}/getsigensmeanp_smooth.x}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECgdas}/adderrspec_nmcmeth_spec.x}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECgdas}/recentersigp.x}
 
 
 # EnKF scripts
-export ENKFCENSH=${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
+export ENKFCENSH=${ENKFCENSH:-$SCRgdas/exglobal_enkf_inflate_recenter.sh.ecf}
 
 # EnKF fix files
-export PERTURBDIR=${PERTURBDIR:-${FIXGLOBAL}/enkf_gfs}
+export PERTURBDIR=${PERTURBDIR:-/nwprod/fix/enkf_gfs}
 
 # Chgres fix files
-export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-$FIXGSM/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
-export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-$FIXGSM/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
-export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-$FIXGSM/global_lonsperlat.t${JCAP_ENKF}.$LONB_ENKF.$LATB_ENKF.txt}
-export SLMASK_ENKF=${SLMASK_ENKF:-$FIXGSM/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
-export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.f77}
+export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-$FIXgsm/global_lonsperlat.t${JCAP_ENKF}.$LONB_ENKF.$LATB_ENKF.txt}
+export SLMASK_ENKF=${SLMASK_ENKF:-$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb}
+export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXgsm/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.f77}
 
 use_ufo=.true.
 LATCH=8; IDSL=1 ;  idvt=21
@@ -250,7 +238,7 @@ msg="HAS BEGUN on `hostname`"
 ##export MP_INFOLEVEL=${INFOLEVELUPD:-2}
 export MP_LABELIO=${MP_LABELIO:-yes}
 
-export MP_EAGER_LIMIT=165536
+export MP_EAGER_LIMIT=65536
 export MP_COREFILE_FORMAT=lite
 export MP_EUIDEVELOP=min
 export MP_EUIDEVICE=sn_all
@@ -258,10 +246,8 @@ export MP_EUILIB=us
 export MP_MPILIB=mpich2
 
 export MP_LABELIO=yes
-export MP_SINGLE_THREAD=yes
 export MP_USE_BULK_XFER=no
 export MPICH_ALLTOALL_THROTTLE=0
-export MP_COLLECTIVE_OFFLOAD=no
 export KMP_STACKSIZE=1024m
 
 export machine=WCOSS
@@ -272,7 +258,7 @@ env
 
 #############################################################
 # Execute the script
-${ENKFCENSH:-$SCRGDAS/exglobal_enkf_inflate_recenter.sh.ecf}
+${ENKFCENSH:-$SCRgdas/exglobal_enkf_inflate_recenter.sh.ecf}
 #############################################################
 
 
@@ -291,6 +277,6 @@ msg="ENDED NORMALLY."
 # Remove the Temporary working directory
 ##############################
 cd $DATA_IN
-if [ ${RM_TMPDIR:-YES} = YES ] ; then rm -rf $DATA ; fi
+if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
 
 date
