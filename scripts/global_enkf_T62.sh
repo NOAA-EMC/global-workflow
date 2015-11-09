@@ -104,6 +104,17 @@ satinfo=$fixgsi/global_satinfo.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 ozinfo=$fixgsi/global_ozinfo.txt
 hybens_locinfo=$fixgsi/global_hybens_locinfo.l64.txt
+### add 9 tables
+errtable_pw=$fixgsi/prepobs_errtable_pw.global
+errtable_ps=$fixgsi/prepobs_errtable_ps.global_nqcf
+errtable_t=$fixgsi/prepobs_errtable_t.global_nqcf
+errtable_q=$fixgsi/prepobs_errtable_q.global_nqcf
+errtable_uv=$fixgsi/prepobs_errtable_uv.global_nqcf
+btable_ps=$fixgsi/nqc_b_ps.global_nqcf
+btable_t=$fixgsi/nqc_b_t.global_nqcf
+btable_q=$fixgsi/nqc_b_q.global_nqcf
+btable_uv=$fixgsi/nqc_b_uv.global_nqcf
+
 
 
 # Copy executable and fixed files to $tmpdir
@@ -123,6 +134,17 @@ $ncp $satinfo  ./satinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
 $ncp $hybens_locinfo ./hybens_locinfo
+#add 9 tables for new varqc
+$ncp $errtable_pw           ./errtable_pw
+$ncp $errtable_ps           ./errtable_ps
+$ncp $errtable_t           ./errtable_t
+$ncp $errtable_q           ./errtable_q
+$ncp $errtable_uv           ./errtable_uv
+$ncp $btable_ps           ./btable_ps
+$ncp $btable_t           ./btable_t
+$ncp $btable_q           ./btable_q
+$ncp $btable_uv           ./btable_uv
+
 
 
 # Copy ensemble data to $tmpdir
