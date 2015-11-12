@@ -50,8 +50,8 @@ export RUNENS=${RUNENS:-enkf}
 # Specify version numbers
 ####################################
 export crtm_ver=${crtm_ver:-v2.2.3}
-export gdas_ver=${gdas_ver:-v6.0.0}
-export global_shared_ver=${global_shared_ver:-v6.0.0}
+export gdas_ver=${gdas_ver:-v1.0.0}
+export global_shared_ver=${global_shared_ver:-v1.0.0}
 export gsm_ver=${gsm_ver:-v12.0.0}
 
 

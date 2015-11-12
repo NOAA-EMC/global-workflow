@@ -38,7 +38,6 @@
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 # 2014-03-13  X. Li          Add NSST
-# 2015-09-04  J. Jung        Added mods for CrIS full spectral resoluion (FSR)
 #
 # Usage:  global_analysis.sh SFCGES SIGGES NSTGES GBIAS GBIASPC GRADSTAT GBIASAIR
 #                            SFCANL SIGANL NSTANL ABIAS ABIASPC ABIASAIR IGEN
@@ -176,11 +175,11 @@
 #                   defaults to YES
 #     DIAG_TARBALL flag to collect (YES) diagnostic files in tarballs
 #                   defaults to YES
-#     FIXgsm        Directory for global fixed files
+#     FIXGLOBAL     Directory for global fixed files
 #                   defaults to /nwprod/fix
-#     EXECgsm       Directory for global executables
+#     EXECGLOBAL    Directory for global executables
 #                   defaults to /nwprod/exec
-#     USHgsm        Directory for global ush scripts
+#     USHGLOBAL     Directory for global scripts
 #                   defaults to /nwprod/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
@@ -199,41 +198,41 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     SIGHDR        Command to read sigma header
-#                   defaults to ${EXECgsm}/global_sighdr$XC
+#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
-#                   defaults to ${EXECgsm}/global_sfchdr$XC
+#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
 #     CYCLEXEC      Surface cycle executable
-#                   defaults to ${EXECgsm}/global_cycle$XC
+#                   defaults to ${EXECGLOBAL}/global_cycle$XC
 #     GSIEXEC       Spectral analysis executable
-#                   defaults to ${EXECgsm}/global_gsi$XC
+#                   defaults to ${EXECGLOBAL}/global_gsi$XC
 #     CYCLESH       Surface cycle script
-#                   defaults to ${USHgsm}/global_cycle.sh
+#                   defaults to ${USHGLOBAL}/global_cycle.sh
 #     BERROR        Input background error file
-#                   defaults to ${FIXgsm}/global_berror.l${LEVS}y${NLAT_A}.sig.f77
+#                   defaults to ${FIXGLOBAL}/global_berror.l${LEVS}y${NLAT_A}.sig.f77
 #     SATANGL       Input satellite angle bias file
-#                   defaults to ${FIXgsm}/global_satangbias.txt
+#                   defaults to ${FIXGLOBAL}/global_satangbias.txt
 #     SATINFO       Input satellite information file
-#                   defaults to ${FIXgsm}/global_satinfo.txt
+#                   defaults to ${FIXGLOBAL}/global_satinfo.txt
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
-#                   defaults to ${FIXgsm}/atms_beamwidth.txt
+#                   defaults to ${FIXGLOBAL}/atms_beamwidth.txt
 #     RTMFIX        Input directory containing CRTM coefficients
-#                   defaults to ${FIXgsm}/crtm_v2.2.3
+#                   defaults to ${FIXGLOBAL}/crtm_${crtm_ver}
 #     ANAVINFO      Input analysis variable file
-#                   defaults to ${FIXgsm}/global_anavinfo.l${LEVS}.txt
+#                   defaults to ${FIXGLOBAL}/global_anavinfo.l${LEVS}.txt
 #     CONVINFO      Input conventional observation information file
-#                   defaults to ${FIXgsm}/global_convinfo.txt
+#                   defaults to ${FIXGLOBAL}/global_convinfo.txt
 #     INSITUINFO    Input nsst insitu information file
-#                   defaults to ${FIXgsm}/global_insituinfo.txt
+#                   defaults to ${FIXGLOBAL}/global_insituinfo.txt
 #     OZINFO        Input ozone information file
-#                   defaults to ${FIXgsm}/global_ozone.txt
+#                   defaults to ${FIXGLOBAL}/global_ozone.txt
 #     PCPINFO       Input precipitation information file
-#                   defaults to ${FIXgsm}/global_pcpinfo.txt
+#                   defaults to ${FIXGLOBAL}/global_pcpinfo.txt
 #     AEROINFO      Input aerosol information file
-#                   defaults to ${FIXgsm}/global_aeroinfo.txt
+#                   defaults to ${FIXGLOBAL}/global_aeroinfo.txt
 #     SCANINFO      Input satellite scan information file
-#                   defaults to ${FIXgsm}/global_scaninfo.txt
+#                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXgsm}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
 #     PREPQC        Input QC-ed observation BUFR file
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
 #     PREPQCPF      Input QC-ed observation profile BUFR file
@@ -540,17 +539,17 @@ export ABIASAIR=${13:-${ABIASAIR}}
 export IGEN=${14:-${IGEN:-0}}
 export ABIASe=${15:-${ABIASe:-satbias_int.out}}
 #  Directories.
-export HOMEDIR=${HOMEDIR:-$NWROOT}
+export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export FIXGLOBAL=$FIXgsm    # $CYCLESH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CYCLESH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CYCLESH still references GLOBAL variables
-export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
-export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
+export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
+export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
+export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
+export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -570,8 +569,8 @@ export lrun_subdirs=${lrun_subdirs:-".true."}        # run GSI with scratch file
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECgsm}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECGSM}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECGSM}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export JCAP=${JCAP:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
@@ -590,23 +589,23 @@ export LONA=${LONA:-$LONB}
 export NLAT_A=${NLAT_A:-$(($LATA+2))}
 export NLON_A=${NLON_A:-$LONA}
 export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
-export CYCLEXEC=${CYCLEXEC:-${EXECgsm}/global_cycle$XC}
-export GSIEXEC=${GSIEXEC:-${EXECgsi}/global_gsi$XC}
-export CYCLESH=${CYCLESH:-${USHgsm}/global_cycle.sh}
-export BERROR=${BERROR:-${FIXgsi}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
-export ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
-export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
-export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
-export INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
-export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
+export CYCLEXEC=${CYCLEXEC:-${EXECGSM}/global_cycle$XC}
+export GSIEXEC=${GSIEXEC:-${EXECGSI}/global_gsi$XC}
+export CYCLESH=${CYCLESH:-${USHGSM}/global_cycle.sh}
+export BERROR=${BERROR:-${FIXGSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
+export ATMSFILTER=${ATMSFILTER:-${FIXGSI}/atms_beamwidth.txt}
+export RTMFIX=${RTMFIX:-$NWPROD/crtm_${crtm_ver}}
+export ANAVINFO=${ANAVINFO:-${FIXGSI}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
+export INSITUINFO=${INSITUINFO:-${FIXGSI}/global_insituinfo.txt}
+export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXGSI}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXGSI}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXGSI}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
 export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d${SUFINP}}
@@ -765,6 +764,7 @@ if [ $l4densvar = .true. ]; then
    export SIGA03=${SIGA03:-${COMOUT}/siga03}
    export SIGA04=${SIGA04:-${COMOUT}/siga04}
    export SIGA05=${SIGA05:-${COMOUT}/siga05}
+   export SIGA06=${SIGA06:-${COMOUT}/siga06}
    export SIGA07=${SIGA07:-${COMOUT}/siga07}
    export SIGA08=${SIGA08:-${COMOUT}/siga08}
    export SIGA09=${SIGA09:-${COMOUT}/siga09}
@@ -775,6 +775,12 @@ if [ $l4densvar = .true. ]; then
    export SIGF07ENS=${SIGF07ENS:-${COMROT}/sigf07_ens}
    export SIGF08ENS=${SIGF08ENS:-${COMROT}/sigf08_ens}
    export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
+fi
+
+# Set local name of center time window analysis file
+SIGANL_LOCAL=siganl
+if [ $lwrite4danl = .true. ] ; then
+   SIGANL_LOCAL=siga06
 fi
 
 ################################################################################
@@ -792,35 +798,27 @@ cd $DATA||exit 99
 
 ################################################################################
 #  Update surface guess file to produce surface analysis
-rc=0
 if [ $NST_GSI -eq 3 ] ; then
-   $CYCLESH $SFCGES $SFCGCY
-   ra=$?
-   ((rc+=ra))
+   $CYCLESH  $SFCGES $SFCGCY
    if [[ "$DOHYBVAR" = "YES" ]]; then
       if [ ! -s ${SFCGCYENS_MEAN} ]; then
-         export FNOROG=$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-         export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-         export FNMASK=$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-         $CYCLESH $SFCGESENS_MEAN $SFCGCYENS_MEAN
-         ra=$?
-         ((rc+=ra))
+      export FNOROG=$FIXGLOBAL/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      export FNOROG_UF=$FIXGLOBAL/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      export FNMASK=$FIXGLOBAL/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+      $CYCLESH  $SFCGESENS_MEAN $SFCGCYENS_MEAN
       fi
    fi
 else
-   $CYCLESH $SFCGES $SFCANL
-   ra=$?
-   ((rc+=ra))
+   $CYCLESH  $SFCGES $SFCANL
    if [ $DOIAU = YES ]; then
       export CDATE_SAVE=$CDATE
       export CDATE=$($NDATE -3 $CDATE_SAVE)
-      $CYCLESH $SFCG03 $SFCA03
-      ra=$?
-      ((rc+=ra))
+      $CYCLESH  $SFCG03 $SFCA03
       export CDATE=$CDATE_SAVE
    fi
 fi
 
+rc=$?
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 11
@@ -846,9 +844,8 @@ rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out s
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09
-rm siga03 siga04 siga05 siganl siga07 siga08 siga09
-rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09
-rm                      nstanl
+rm siga03 siga04 siga05 siga06 siga07 siga08 siga09 siganl
+rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
 rm gesfile_in gesfiles_out
 rm -rf dir*
 
@@ -961,7 +958,6 @@ if [[ $NST_GSI -gt 0 ]]; then
 fi
 
 if [[ "$DOHYBVAR" = "YES" ]]; then
-   mkdir -p ensemble_data
    imem=1
    while [[ $imem -le $NMEM_ENS ]]; do
       member="_mem"`printf %03i $imem`
@@ -973,16 +969,16 @@ if [[ "$DOHYBVAR" = "YES" ]]; then
          sigens7=${SIGF07ENS}${member}
          sigens8=${SIGF08ENS}${member}
          sigens9=${SIGF09ENS}${member}
-         $FCPLN $sigens3 ./ensemble_data/sigf03_ens${member}
-         $FCPLN $sigens4 ./ensemble_data/sigf04_ens${member}
-         $FCPLN $sigens5 ./ensemble_data/sigf05_ens${member}
-         $FCPLN $sigens6 ./ensemble_data/sigf06_ens${member}
-         $FCPLN $sigens7 ./ensemble_data/sigf07_ens${member}
-         $FCPLN $sigens8 ./ensemble_data/sigf08_ens${member}
-         $FCPLN $sigens9 ./ensemble_data/sigf09_ens${member}
+         $FCPLN $sigens3 sigf03_ens${member}
+         $FCPLN $sigens4 sigf04_ens${member}
+         $FCPLN $sigens5 sigf05_ens${member}
+         $FCPLN $sigens6 sigf06_ens${member}
+         $FCPLN $sigens7 sigf07_ens${member}
+         $FCPLN $sigens8 sigf08_ens${member}
+         $FCPLN $sigens9 sigf09_ens${member}
       else
          sigens=${SIGGESENS}${member}
-         $FCPLN $sigens ./ensemble_data/sigf06_ens${member}
+         $FCPLN $sigens sigf06_ens${member}
       fi
       (( imem = $imem + 1 ))
    done
@@ -1066,14 +1062,16 @@ fi
 if [ $FILESTYLE != 'C' ]; then
 
    # Output files
-   ln -fs $SIGANL siganl
-   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
-      ln -fs $SIGA03 siga03
-      ln -fs $SIGA04 siga04
-      ln -fs $SIGA05 siga05
-      ln -fs $SIGA07 siga07
-      ln -fs $SIGA08 siga08
-      ln -fs $SIGA09 siga09
+   if [ $l4densvar = .true. ]; then
+      ln -fs $SIGA03   siga03
+      ln -fs $SIGA04   siga04
+      ln -fs $SIGA05   siga05
+      ln -fs $SIGANL   $SIGANL_LOCAL
+      ln -fs $SIGA07   siga07
+      ln -fs $SIGA08   siga08
+      ln -fs $SIGA09   siga09
+   else
+      ln -fs $SIGANL   siganl
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1201,7 +1199,7 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-a     hirs4_metop-a       0.0     1     1
    gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
    gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
-   airsbufr       airs        aqua        airs281SUBSET_aqua  0.0     1     1
+   airsbufr       airs        aqua        airs2378_aqua       0.0     1     1
    amsuabufr      amsua       n15         amsua_n15           0.0     1     1
    amsuabufr      amsua       n18         amsua_n18           0.0     1     1
    amsuabufr      amsua       metop-a     amsua_metop-a       0.0     1     1
@@ -1274,7 +1272,6 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   ensemble_path='./ensemble_data/',
    $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
@@ -1304,14 +1301,16 @@ $ERRSCRIPT||exit 2
 
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
-   $NCP siganl $SIGANL
-   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
-      $NCP siga03 $SIGA03
-      $NCP siga04 $SIGA04
-      $NCP siga05 $SIGA05
-      $NCP siga07 $SIGA07
-      $NCP siga08 $SIGA08
-      $NCP siga09 $SIGA09
+   if [ $l4densvar = .true. ]; then
+      $NCP siga03         $SIGA03
+      $NCP siga04         $SIGA04
+      $NCP siga05         $SIGA05
+      $NCP $SIGANL_LOCAL  $SIGANL
+      $NCP siga07         $SIGA07
+      $NCP siga08         $SIGA08
+      $NCP siga09         $SIGA09
+   else
+     $NCP siganl         $SIGANL
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
@@ -1342,24 +1341,24 @@ fi
 
 if test "$SAVEGES" = "YES"
 then
-   cp $SFCANL   $GESdir/${PREINP}sfcanl
+   cp $SFCANL   $GESdir/${RUN}.${cycle}.sfcanl
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${PREINP}nstanl
+      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
    fi
-   cp $SIGANL   $GESdir/${PREINP}sanl
-   cp $ABIAS    $GESdir/${PREINP}abias
-   cp $ABIASPC  $GESdir/${PREINP}abias_pc
-   cp $ABIASAIR $GESdir/${PREINP}abias_air
+   cp $SIGANL   $GESdir/${RUN}.${cycle}.sanl
+   cp $ABIAS    $GESdir/${RUN}.${cycle}.abias
+   cp $ABIASPC  $GESdir/${RUN}.${cycle}.abias_pc
+   cp $ABIASAIR $GESdir/${RUN}.${cycle}.abias_air
 fi
 if test "$SENDCOM" = "YES"
 then
-   cp $SFCANL   $COMOUT/${PREINP}sfcanl
-   cp $SIGANL   $COMOUT/${PREINP}sanl
-   cp $ABIAS    $COMOUT/${PREINP}abias
-   cp $ABIASPC  $COMOUT/${PREINP}abias_pc
-   cp $ABIASAIR $COMOUT/${PREINP}abias_air
+   cp $SFCANL   $COMOUT/${RUN}.${cycle}.sfcanl
+   cp $SIGANL   $COMOUT/${RUN}.${cycle}.sanl
+   cp $ABIAS    $COMOUT/${RUN}.${cycle}.abias
+   cp $ABIASPC  $COMOUT/${RUN}.${cycle}.abias_pc
+   cp $ABIASAIR $COMOUT/${RUN}.${cycle}.abias_air
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${PREINP}nstanl
+      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
    fi
 fi
 
@@ -1411,7 +1410,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
@@ -1505,7 +1504,7 @@ if test "$RUN" = 'gfs'
 then
     if test "$SENDDBN" = 'YES'
     then
-       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${PREINP}abias
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${RUN}.${cycle}.abias
     fi
 fi
 
