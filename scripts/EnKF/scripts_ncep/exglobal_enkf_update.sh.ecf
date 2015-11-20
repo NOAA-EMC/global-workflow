@@ -417,7 +417,7 @@ cat <<EOF > enkf.nml
   lnsigcutoffpsnh=2.0,lnsigcutoffpssh=2.0,lnsigcutoffpstr=2.0,
   lnsigcutoffsatnh=2.0,lnsigcutoffsatsh=2.0,lnsigcutoffsattr=2.0,
   obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
-  saterrfact=1.0,numiter=3,
+  saterrfact=1.0,numiter=1,
   sprd_tol=1.e30,paoverpb_thresh=0.98,
   nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS,
   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
