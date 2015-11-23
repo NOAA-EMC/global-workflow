@@ -123,17 +123,17 @@ if [[ "$machine" = "Theia" ]]; then
 
 #  Next, paths for canned case data.
 
-   export global_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}_update
-   export global_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}_update
-   export global_4dvar_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}_update
-   export global_4dvar_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}_update
-   export global_hybrid_T126_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}_update/obs
-   export global_hybrid_T126_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}_update/ges
-   export global_enkf_T62_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}_update/obs
-   export global_enkf_T62_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}_update/ges
-   export global_lanczos_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}_update
-   export global_lanczos_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}_update
-   export global_nemsio_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_nemsio_T62_adate}_update
+   export global_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
+   export global_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
+   export global_4dvar_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
+   export global_4dvar_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
+   export global_hybrid_T126_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/obs
+   export global_hybrid_T126_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/ges
+   export global_enkf_T62_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/obs
+   export global_enkf_T62_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/ges
+   export global_lanczos_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
+   export global_lanczos_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
+   export global_nemsio_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_nemsio_T62_adate}
    export global_nemsio_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
    export nmmb_nems_4denvar_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
    export nmmb_nems_4denvar_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
