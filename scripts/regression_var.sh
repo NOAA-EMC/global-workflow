@@ -27,7 +27,7 @@ export arw_binary_adate=2010072412
 export arw_netcdf_adate=2008051112
 export nmm_binary_adate=2010021600
 export nmm_netcdf_adate=2007122000
-export rtma_adate=2011083112
+export rtma_adate=2015030712
 export hwrf_nmm_adate=2012102812
 export JCAP=62
 
