@@ -12,6 +12,7 @@ export global_T62_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=.true.,
+   print_diag_pcg=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -379,6 +380,7 @@ export global_hybrid_T126_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_prepb_satwnd=.false.,
    nhr_assimilation=6,lrun_subdirs=.true.,
+   print_diag_pcg=.true.,
    $SETUP
  /
  &GRIDOPTS
