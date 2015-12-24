@@ -21,8 +21,8 @@
 #PBS -q debug 
 ##PBS -l walltime=01:00:00 
 #PBS -l walltime=00:30:00 
-##PBS -l nodes=12:ppn=8
-#PBS -l nodes=2:ppn=12
+#PBS -l nodes=12:ppn=8
+##PBS -l nodes=2:ppn=12
 #PBS -j eo                
 #PBS -A cloud 
 #PBS -V
@@ -52,7 +52,7 @@ fi
 adate=2015060900
 expnm=globalprod   
 exp=globalprod.$adate
-expid=${expnm}.$adate.wcoss
+expid=${expnm}.$adate
 
 # Set path/file for gsi executable
 #gsiexec=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/src/global_gsi
@@ -640,8 +640,8 @@ $ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr
 $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
-cp $datdir/land_* $tmpdir
-cp $datdir/sea_* $tmpdir
+cp $datdir/*Rcov* $tmpdir
+cp $datdir/*Rcov* $tmpdir
 
 # # For data before Feb 2015
 # # Copy bias correction, atmospheric and surface files
