@@ -6,7 +6,7 @@ machine=$REMOTEHOST
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/gsi/xsu_vqc/scripts/regression_var.sh" > regression_var.out
+   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch4/NCEPDEV/da ]; then
 #For Theia
    echo "/scratch4/NCEPDEV/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
