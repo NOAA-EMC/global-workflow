@@ -554,12 +554,15 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+# Control parameters for NSST
 #  Set script / GSI control parameters
-NST_GSI=${NST_GSI:-0}                                # NSST:  indicator to control the Tr Analysis mode
-NST_TZR=${NST_TZR:-0}                                # NSST:  indicator to control the Tzr_QC mode
-NSTINFO=${NSTINFO:-0}                                # NSST:  number of nst variables
-FAC_DTL=${FAC_DTL:-0}                                # NSST:  index to apply diurnal thermocline layer  or not
-FAC_TSL=${FAC_TSL:-0}                                # NSST:  index to apply thermal skin layer or not
+NST_GSI=${NST_GSI:-0}
+NSTINFO=${NSTINFO:-0}
+ZSEA1=${ZSEA1:-0}
+ZSEA2=${ZSEA2:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
+NST_TZR=${NST_TZR:-0}
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode
 export lwrite4danl=${lwrite4danl:-".false."}         # .false. = write single analysis at center time
@@ -678,7 +681,7 @@ export SFCANLENS_MEAN=${SFCANLENS_MEAN:-${COMOUT}/sfcanl_ensmean}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
 export NMEM_ENS=${NMEM_ENS:-0}
 export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
-export DTSINC_ENS=${DTSINC_ENS:-${COMOUT}/${PREINP}dtsinc_ens}
+export DTFANL=${DTFANL:-${COMOUT}/${PREINP}dtfanl}
 export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCTSK=${SFCTSK:-${COMOUT}/${PREINP}sfctsk}
 export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
@@ -764,7 +767,6 @@ if [ $l4densvar = .true. ]; then
    export SIGA03=${SIGA03:-${COMOUT}/siga03}
    export SIGA04=${SIGA04:-${COMOUT}/siga04}
    export SIGA05=${SIGA05:-${COMOUT}/siga05}
-   export SIGA06=${SIGA06:-${COMOUT}/siga06}
    export SIGA07=${SIGA07:-${COMOUT}/siga07}
    export SIGA08=${SIGA08:-${COMOUT}/siga08}
    export SIGA09=${SIGA09:-${COMOUT}/siga09}
@@ -775,12 +777,6 @@ if [ $l4densvar = .true. ]; then
    export SIGF07ENS=${SIGF07ENS:-${COMROT}/sigf07_ens}
    export SIGF08ENS=${SIGF08ENS:-${COMROT}/sigf08_ens}
    export SIGF09ENS=${SIGF09ENS:-${COMROT}/sigf09_ens}
-fi
-
-# Set local name of center time window analysis file
-SIGANL_LOCAL=siganl
-if [ $lwrite4danl = .true. ] ; then
-   SIGANL_LOCAL=siga06
 fi
 
 ################################################################################
@@ -798,27 +794,25 @@ cd $DATA||exit 99
 
 ################################################################################
 #  Update surface guess file to produce surface analysis
+rc=0
 if [ $NST_GSI -eq 3 ] ; then
-   $CYCLESH  $SFCGES $SFCGCY
-   if [[ "$DOHYBVAR" = "YES" ]]; then
-      if [ ! -s ${SFCGCYENS_MEAN} ]; then
-      export FNOROG=$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      export FNMASK=$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
-      $CYCLESH  $SFCGESENS_MEAN $SFCGCYENS_MEAN
-      fi
-   fi
+   $CYCLESH $SFCGES $SFCGCY
+   ra=$?
+   ((rc+=ra))
 else
-   $CYCLESH  $SFCGES $SFCANL
+   $CYCLESH $SFCGES $SFCANL
+   ra=$?
+   ((rc+=ra))
    if [ $DOIAU = YES ]; then
       export CDATE_SAVE=$CDATE
       export CDATE=$($NDATE -3 $CDATE_SAVE)
-      $CYCLESH  $SFCG03 $SFCA03
+      $CYCLESH $SFCG03 $SFCA03
+      ra=$?
+      ((rc+=ra))
       export CDATE=$CDATE_SAVE
    fi
 fi
 
-rc=$?
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT||exit 11
@@ -844,8 +838,9 @@ rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out s
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
 rm sigf03 sigf04 sigf05 sigf06 sigf07 sigf08 sigf09
-rm siga03 siga04 siga05 siga06 siga07 siga08 siga09 siganl
-rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09 nstanl
+rm siga03 siga04 siga05 siganl siga07 siga08 siga09
+rm nstf03 nstf04 nstf05 nstf06 nstf07 nstf08 nstf09
+rm                      nstanl
 rm gesfile_in gesfiles_out
 rm -rf dir*
 
@@ -928,7 +923,9 @@ $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
 $FCPLN $GPSROBF  gpsrobufr
 $FCPLN $TCVITL   tcvitl
-$FCPLN $NSSTBF   nsstbufr
+if [[ $NST_GSI -gt 0 ]]; then
+   $FCPLN $NSSTBF   nsstbufr
+fi
 $FCPLN $B1AVHAM  avhambufr
 $FCPLN $B1AVHPM  avhpmbufr
 $FCPLN $AHIBF    ahibufr
@@ -958,6 +955,7 @@ if [[ $NST_GSI -gt 0 ]]; then
 fi
 
 if [[ "$DOHYBVAR" = "YES" ]]; then
+   mkdir -p ensemble_data
    imem=1
    while [[ $imem -le $NMEM_ENS ]]; do
       member="_mem"`printf %03i $imem`
@@ -969,16 +967,16 @@ if [[ "$DOHYBVAR" = "YES" ]]; then
          sigens7=${SIGF07ENS}${member}
          sigens8=${SIGF08ENS}${member}
          sigens9=${SIGF09ENS}${member}
-         $FCPLN $sigens3 sigf03_ens${member}
-         $FCPLN $sigens4 sigf04_ens${member}
-         $FCPLN $sigens5 sigf05_ens${member}
-         $FCPLN $sigens6 sigf06_ens${member}
-         $FCPLN $sigens7 sigf07_ens${member}
-         $FCPLN $sigens8 sigf08_ens${member}
-         $FCPLN $sigens9 sigf09_ens${member}
+         $FCPLN $sigens3 ./ensemble_data/sigf03_ens${member}
+         $FCPLN $sigens4 ./ensemble_data/sigf04_ens${member}
+         $FCPLN $sigens5 ./ensemble_data/sigf05_ens${member}
+         $FCPLN $sigens6 ./ensemble_data/sigf06_ens${member}
+         $FCPLN $sigens7 ./ensemble_data/sigf07_ens${member}
+         $FCPLN $sigens8 ./ensemble_data/sigf08_ens${member}
+         $FCPLN $sigens9 ./ensemble_data/sigf09_ens${member}
       else
          sigens=${SIGGESENS}${member}
-         $FCPLN $sigens sigf06_ens${member}
+         $FCPLN $sigens ./ensemble_data/sigf06_ens${member}
       fi
       (( imem = $imem + 1 ))
    done
@@ -1009,44 +1007,44 @@ fi
 ##        test for file existence before cp
 
 
-if [[ -s $SIGG04 ]]; then 
-   $FCPLN $SIGG04   sigf04
-fi
-if [[ -s $SIGG05 ]]; then
-   $FCPLN $SIGG05   sigf05
-fi
-if [[ -s $SIGG07 ]]; then
-   $FCPLN $SIGG07   sigf07
-fi
-if [[ -s $SIGG08 ]]; then
-   $FCPLN $SIGG08   sigf08
-fi
-
-if [[ -s $SFCG04 ]]; then
-   $FCPLN $SFCG04   sfcf04
-fi
-if [[ -s $SFCG05 ]]; then
-   $FCPLN $SFCG05   sfcf05
-fi
-if [[ -s $SFCG07 ]]; then
-   $FCPLN $SFCG07   sfcf07
-fi
-if [[ -s $SFCG08 ]]; then
-   $FCPLN $SFCG08   sfcf08
-fi
-
-if [[ -s $NSTG04 ]]; then
-   $FCPLN $NSTG04   nstf04
-fi
-if [[ -s $NSTG05 ]]; then
-   $FCPLN $NSTG05   nstf05
-fi
-if [[ -s $NSTG07 ]]; then
-   $FCPLN $NSTG07   nstf07
-fi
-if [[ -s $NSTG08 ]]; then
-   $FCPLN $NSTG08   nstf08
-fi
+ if [[ -s $SIGG04 ]]; then 
+    $FCPLN $SIGG04   sigf04
+ fi
+ if [[ -s $SIGG05 ]]; then
+    $FCPLN $SIGG05   sigf05
+ fi
+ if [[ -s $SIGG07 ]]; then
+    $FCPLN $SIGG07   sigf07
+ fi
+ if [[ -s $SIGG08 ]]; then
+    $FCPLN $SIGG08   sigf08
+ fi
+ 
+ if [[ -s $SFCG04 ]]; then
+    $FCPLN $SFCG04   sfcf04
+ fi
+ if [[ -s $SFCG05 ]]; then
+    $FCPLN $SFCG05   sfcf05
+ fi
+ if [[ -s $SFCG07 ]]; then
+    $FCPLN $SFCG07   sfcf07
+ fi
+ if [[ -s $SFCG08 ]]; then
+    $FCPLN $SFCG08   sfcf08
+ fi
+ 
+ if [[ -s $NSTG04 ]]; then
+    $FCPLN $NSTG04   nstf04
+ fi
+ if [[ -s $NSTG05 ]]; then
+    $FCPLN $NSTG05   nstf05
+ fi
+ if [[ -s $NSTG07 ]]; then
+    $FCPLN $NSTG07   nstf07
+ fi
+ if [[ -s $NSTG08 ]]; then
+    $FCPLN $NSTG08   nstf08
+ fi
 
 if [[ -s $GINCIN ]]; then
    $FCPLN $GINCIN   gesfile_in
@@ -1062,16 +1060,14 @@ fi
 if [ $FILESTYLE != 'C' ]; then
 
    # Output files
-   if [ $l4densvar = .true. ]; then
-      ln -fs $SIGA03   siga03
-      ln -fs $SIGA04   siga04
-      ln -fs $SIGA05   siga05
-      ln -fs $SIGANL   $SIGANL_LOCAL
-      ln -fs $SIGA07   siga07
-      ln -fs $SIGA08   siga08
-      ln -fs $SIGA09   siga09
-   else
-      ln -fs $SIGANL   siganl
+   ln -fs $SIGANL siganl
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      ln -fs $SIGA03 siga03
+      ln -fs $SIGA04 siga04
+      ln -fs $SIGA05 siga05
+      ln -fs $SIGA07 siga07
+      ln -fs $SIGA08 siga08
+      ln -fs $SIGA09 siga09
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1083,7 +1079,7 @@ if [ $FILESTYLE != 'C' ]; then
       ln -fs $NSTANL nstanl
       ln -fs $SFCTSK sfctsk
       if [[ "$DOHYBVAR" = "YES" ]]; then
-         ln -fs $DTSINC_ENS dtsinc_ens
+         ln -fs $DTFANL dtfanl
       fi
       if [ $NST_GSI -eq 3 ] ; then
          ln -fs $SFCANL sfcanl
@@ -1127,7 +1123,7 @@ cat <<EOF > gsiparm.anl
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
    iguess=-1,
-   nst_gsi=$NST_GSI,nst_tzr=$NST_TZR,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
+   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,zsea1=$ZSEA1,zsea2=$ZSEA2,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,nst_tzr=$NST_TZR,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=${use_gfs_nemsio},lrun_subdirs=${lrun_subdirs},
@@ -1187,7 +1183,6 @@ OBS_INPUT::
    prepbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
    radarbufr      rw          null        rw                  0.0     0     0
-   prepbufr       sst         null        sst                 0.0     0     0
    nsstbufr       sst         nsst        sst                 0.0     0     0
    gpsrobufr      gps_bnd     null        gps                 0.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
@@ -1271,6 +1266,7 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
+   ensemble_path='./ensemble_data/',
    $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
@@ -1300,16 +1296,14 @@ $ERRSCRIPT||exit 2
 
 if [[ $FILESTYLE = 'C' ]]; then
    # Output files
-   if [ $l4densvar = .true. ]; then
-      $NCP siga03         $SIGA03
-      $NCP siga04         $SIGA04
-      $NCP siga05         $SIGA05
-      $NCP $SIGANL_LOCAL  $SIGANL
-      $NCP siga07         $SIGA07
-      $NCP siga08         $SIGA08
-      $NCP siga09         $SIGA09
-   else
-     $NCP siganl         $SIGANL
+   $NCP siganl $SIGANL
+   if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
+      $NCP siga03 $SIGA03
+      $NCP siga04 $SIGA04
+      $NCP siga05 $SIGA05
+      $NCP siga07 $SIGA07
+      $NCP siga08 $SIGA08
+      $NCP siga09 $SIGA09
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
@@ -1323,7 +1317,7 @@ if [[ $FILESTYLE = 'C' ]]; then
    if [ $NST_GSI -gt 0 ] ; then
       $NCP  nstanl $NSTANL
       if [[ "$DOHYBVAR" = "YES" ]]; then
-         $NCP dtsinc_ens $DTSINC_ENS
+         $NCP dtfanl $DTFANL
       fi
       if [ $NST_GSI -eq 3 ] ; then
          $NCP sfcanl $SFCANL

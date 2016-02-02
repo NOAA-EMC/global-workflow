@@ -40,6 +40,9 @@ ncp=/bin/cp
 gdate=`$ndate -12 $rtma_adate`
 cya=`echo $rtma_adate | cut -c9-10`
 cyg=`echo $gdate | cut -c9-10`
+cymd=`echo $gdate | cut -c1-8`
+echo " cymd $cymd "
+echo " cyg $cyg"
 prefixa=nam.t${cya}z
 prefixg=na12snmm.t${cyg}z
 suffix=tm00.bufr_d
@@ -116,6 +119,22 @@ slmask=$fixgsi/$endianness/rtma_conus_slmask.dat
 terrain=$fixgsi/$endianness/rtma_conus_terrain.dat
 bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
 
+
+### add 9 tables
+errtable_pw=$fixgsi/prepobs_errtable_pw.global
+
+errtable_ps=$fixgsi/prepobs_errtable_ps.optm
+errtable_t=$fixgsi/prepobs_errtable_t.optm
+errtable_q=$fixgsi/prepobs_errtable_q.optm
+errtable_uv=$fixgsi/prepobs_errtable_uv.optm
+
+btable_ps=$fixgsi/nlqc_b_ps.rtma.optm
+btable_t=$fixgsi/nlqc_b_t.rtma.optm
+btable_q=$fixgsi/nlqc_b_q.rtma.optm
+btable_uv=$fixgsi/nlqc_b_uv.rtma.optm
+
+###
+
 t_rejectlist=$fixgsi/rtma_t_rejectlist
 p_rejectlist=$fixgsi/rtma_p_rejectlist
 q_rejectlist=$fixgsi/rtma_q_rejectlist
@@ -179,6 +198,19 @@ $ncp $wbinuselist        ./wbinuselist
 $ncp $slmask             ./rtma_slmask.dat
 $ncp $terrain            ./rtma_terrain.dat
 $ncp $bufrtable          ./prepobs_prep.bufrtable
+####
+#add 9 tables for new varqc
+$ncp $errtable_pw           ./errtable_pw
+$ncp $errtable_ps           ./errtable_ps
+$ncp $errtable_t           ./errtable_t
+$ncp $errtable_q           ./errtable_q
+$ncp $errtable_uv           ./errtable_uv
+$ncp $btable_ps           ./btable_ps
+$ncp $btable_t           ./btable_t
+$ncp $btable_q           ./btable_q
+$ncp $btable_uv           ./btable_uv
+###
+
 
 $ncp $t_rejectlist       ./t_rejectlist
 $ncp $p_rejectlist       ./p_rejectlist
@@ -228,6 +260,13 @@ done
 $ncp $rtma_obs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
 $ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
 $ncp $rtma_obs/rtma.t${cya}z.goessky.tm00.bufr_d ./goessky
+
+echo "NEW MAX/MIN DATA $rtma_obs/rtma.${cymd}.mintobs.dat "
+ls -lt  $rtma_obs/rtma.${cymd}.mintobs.dat
+echo "$rtma_obs/rtma.${cymd}.maxtobs.dat "
+
+$ncp $rtma_obs/rtma.${cymd}.mintobs.dat ./mitmdat
+$ncp $rtma_obs/rtma.${cymd}.maxtobs.dat ./mxtmdat
 
 
 # Copy first guess

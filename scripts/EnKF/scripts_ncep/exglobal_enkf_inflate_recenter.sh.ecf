@@ -490,7 +490,7 @@ fi
 ################################################################################
 if [ $NST_GSI -gt 0 ]; then
 
-   export DTSINC_ENS=${DTSINC_ENS:-${COMIN}/dtsinc_ens_${CDATE}}
+   export DTFANL=${DTFANL:-${COMIN}/dtfanl_${CDUMP}_${CDATE}}
    export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
    export SFCGES_ENS=${SFCGES_ENS:-${COMIN}/bfg_${GDATE}_fhr06}
    export SFCGCY_ENS=${SFCGCY_ENS:-${COMIN}/sfcgcy_${CDATE}}
@@ -498,7 +498,7 @@ if [ $NST_GSI -gt 0 ]; then
    export SFCANL_ENS=${SFCANL_ENS:-${COMOUT}/sfcanl_${CDATE}}
 
 
-   $FCPLN $DTSINC_ENS dtsinc_ens
+   $FCPLN $DTFANL dtfanl
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
      member="_mem"`printf %03i $imem`
@@ -524,12 +524,14 @@ if [ $NST_GSI -gt 0 ]; then
       done
    fi
 
+   echo 'ZSEA1, ZSEA1 : ' $ZSEA1, $ZSEA2
+
    rm stdout_recenter_sfcnstupd
    if [[ "$POE" = "YES" ]]; then
-      poe $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd
+      poe $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI $ZSEA1 $ZSEA2 > stdout_recenter_sfcnstupd
       rc=$?
    else
-      eval "$APRUN $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI > stdout_recenter_sfcnstupd"
+      eval "$APRUN $GETSFCNSTENSUPDEXEC $NANALS $NST_GSI $ZSEA1 $ZSEA2 > stdout_recenter_sfcnstupd"
       rc=$?
    fi
 
