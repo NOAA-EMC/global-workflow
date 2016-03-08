@@ -1542,7 +1542,7 @@ OBS_INPUT::
 export hwrf_nmm_d2_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1696,7 +1696,7 @@ OBS_INPUT::
 export hwrf_nmm_d3_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
