@@ -5,7 +5,6 @@
 
 # Specify machine that is being used (Zeus or WCOSS)
 
-platform=$REMOTEHOST
 if [ -d /da ]; then
 #For WCOSS
    export machine="WCOSS"
@@ -16,6 +15,7 @@ fi
 
 # Variables with the same values are defined below.
 
+# Case Study analysis dates
 export global_T62_adate=2014080400
 export global_4dvar_T62_adate=2014080400
 export global_hybrid_T126_adate=2014092912
@@ -34,249 +34,148 @@ export JCAP=62
 # Set predefined paths and variables here.
 # Note that experiment name is same as that entered in -j option below.
 
-if [[ "$machine" = "Theia" ]]; then
-
-#  First, experiment names.
-
-   export global_T62_updat_exp1=global_T${JCAP}_loproc_updat
-   export global_T62_updat_exp2=global_T${JCAP}_hiproc_updat
-   export global_T62_contrl_exp1=global_T${JCAP}_loproc_contrl
-   export global_T62_contrl_exp2=global_T${JCAP}_hiproc_contrl
-   export global_T62_ozonly_updat_exp1=global_T${JCAP}_loproc_ozonly_updat
-   export global_T62_ozonly_updat_exp2=global_T${JCAP}_hiproc_ozonly_updat
-   export global_T62_ozonly_contrl_exp1=global_T${JCAP}_loproc_ozonly_contrl
-   export global_T62_ozonly_contrl_exp2=global_T${JCAP}_hiproc_ozonly_contrl
-   export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_loproc_updat
-   export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_hiproc_updat
-   export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_loproc_contrl
-   export global_4dvar_T62_contrl_exp2=global_4dvar_T${JCAP}_hiproc_contrl
-   export global_hybrid_T126_updat_exp1=global_hybrid_loproc_updat
-   export global_hybrid_T126_updat_exp2=global_hybrid_hiproc_updat
-   export global_hybrid_T126_contrl_exp1=global_hybrid_loproc_contrl
-   export global_hybrid_T126_contrl_exp2=global_hybrid_hiproc_contrl
-   export global_enkf_T62_updat_exp1=global_enkf_loproc_updat
-   export global_enkf_T62_updat_exp2=global_enkf_hiproc_updat
-   export global_enkf_T62_contrl_exp1=global_enkf_loproc_contrl
-   export global_enkf_T62_contrl_exp2=global_enkf_hiproc_contrl
-   export global_lanczos_T62_updat_exp1=global_lanczos_T${JCAP}_loproc_updat
-   export global_lanczos_T62_updat_exp2=global_lanczos_T${JCAP}_hiproc_updat
-   export global_lanczos_T62_contrl_exp1=global_lanczos_T${JCAP}_loproc_contrl
-   export global_lanczos_T62_contrl_exp2=global_lanczos_T${JCAP}_hiproc_contrl
-   export global_nemsio_T62_updat_exp1=global_nemsio_T${JCAP}_loproc_updat
-   export global_nemsio_T62_updat_exp2=global_nemsio_T${JCAP}_hiproc_updat
-   export global_nemsio_T62_contrl_exp1=global_nemsio_T${JCAP}_loproc_contrl
-   export global_nemsio_T62_contrl_exp2=global_nemsio_T${JCAP}_hiproc_contrl
-   export nmmb_nems_4denvar_updat_exp1=nmmb_nems_4denvar_loproc_updat
-   export nmmb_nems_4denvar_updat_exp2=nmmb_nems_4denvar_hiproc_updat
-   export nmmb_nems_4denvar_contrl_exp1=nmmb_nems_4denvar_loproc_contrl
-   export nmmb_nems_4denvar_contrl_exp2=nmmb_nems_4denvar_hiproc_contrl
-   export arw_binary_updat_exp1=arw_binary_loproc_updat
-   export arw_binary_updat_exp2=arw_binary_hiproc_updat
-   export arw_binary_contrl_exp1=arw_binary_loproc_contrl
-   export arw_binary_contrl_exp2=arw_binary_hiproc_contrl
-   export arw_netcdf_updat_exp1=arw_netcdf_loproc_updat
-   export arw_netcdf_updat_exp2=arw_netcdf_hiproc_updat
-   export arw_netcdf_contrl_exp1=arw_netcdf_loproc_contrl
-   export arw_netcdf_contrl_exp2=arw_netcdf_hiproc_contrl
-   export nmm_binary_updat_exp1=nmm_binary_loproc_updat
-   export nmm_binary_updat_exp2=nmm_binary_hiproc_updat
-   export nmm_binary_contrl_exp1=nmm_binary_loproc_contrl
-   export nmm_binary_contrl_exp2=nmm_binary_hiproc_contrl
-   export nmm_netcdf_updat_exp1=nmm_netcdf_loproc_updat
-   export nmm_netcdf_updat_exp2=nmm_netcdf_hiproc_updat
-   export nmm_netcdf_contrl_exp1=nmm_netcdf_loproc_contrl
-   export nmm_netcdf_contrl_exp2=nmm_netcdf_hiproc_contrl
-   export rtma_updat_exp1=rtma_loproc_updat
-   export rtma_updat_exp2=rtma_hiproc_updat
-   export rtma_contrl_exp1=rtma_loproc_contrl
-   export rtma_contrl_exp2=rtma_hiproc_contrl
-   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_loproc_updat
-   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_hiproc_updat
-   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_loproc_contrl
-   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_hiproc_contrl
-   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_loproc_updat
-   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_hiproc_updat
-   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_loproc_contrl
-   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_hiproc_contrl
+# First, experiment names.
+export global_T62_updat_exp1=global_T${JCAP}_loproc_updat
+export global_T62_updat_exp2=global_T${JCAP}_hiproc_updat
+export global_T62_contrl_exp1=global_T${JCAP}_loproc_contrl
+export global_T62_contrl_exp2=global_T${JCAP}_hiproc_contrl
+export global_T62_ozonly_updat_exp1=global_T${JCAP}_loproc_ozonly_updat
+export global_T62_ozonly_updat_exp2=global_T${JCAP}_hiproc_ozonly_updat
+export global_T62_ozonly_contrl_exp1=global_T${JCAP}_loproc_ozonly_contrl
+export global_T62_ozonly_contrl_exp2=global_T${JCAP}_hiproc_ozonly_contrl
+export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_loproc_updat
+export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_hiproc_updat
+export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_loproc_contrl
+export global_4dvar_T62_contrl_exp2=global_4dvar_T${JCAP}_hiproc_contrl
+export global_hybrid_T126_updat_exp1=global_hybrid_loproc_updat
+export global_hybrid_T126_updat_exp2=global_hybrid_hiproc_updat
+export global_hybrid_T126_contrl_exp1=global_hybrid_loproc_contrl
+export global_hybrid_T126_contrl_exp2=global_hybrid_hiproc_contrl
+export global_enkf_T62_updat_exp1=global_enkf_loproc_updat
+export global_enkf_T62_updat_exp2=global_enkf_hiproc_updat
+export global_enkf_T62_contrl_exp1=global_enkf_loproc_contrl
+export global_enkf_T62_contrl_exp2=global_enkf_hiproc_contrl
+export global_lanczos_T62_updat_exp1=global_lanczos_T${JCAP}_loproc_updat
+export global_lanczos_T62_updat_exp2=global_lanczos_T${JCAP}_hiproc_updat
+export global_lanczos_T62_contrl_exp1=global_lanczos_T${JCAP}_loproc_contrl
+export global_lanczos_T62_contrl_exp2=global_lanczos_T${JCAP}_hiproc_contrl
+export global_nemsio_T62_updat_exp1=global_nemsio_T${JCAP}_loproc_updat
+export global_nemsio_T62_updat_exp2=global_nemsio_T${JCAP}_hiproc_updat
+export global_nemsio_T62_contrl_exp1=global_nemsio_T${JCAP}_loproc_contrl
+export global_nemsio_T62_contrl_exp2=global_nemsio_T${JCAP}_hiproc_contrl
+export nmmb_nems_4denvar_updat_exp1=nmmb_nems_4denvar_loproc_updat
+export nmmb_nems_4denvar_updat_exp2=nmmb_nems_4denvar_hiproc_updat
+export nmmb_nems_4denvar_contrl_exp1=nmmb_nems_4denvar_loproc_contrl
+export nmmb_nems_4denvar_contrl_exp2=nmmb_nems_4denvar_hiproc_contrl
+export arw_binary_updat_exp1=arw_binary_loproc_updat
+export arw_binary_updat_exp2=arw_binary_hiproc_updat
+export arw_binary_contrl_exp1=arw_binary_loproc_contrl
+export arw_binary_contrl_exp2=arw_binary_hiproc_contrl
+export arw_netcdf_updat_exp1=arw_netcdf_loproc_updat
+export arw_netcdf_updat_exp2=arw_netcdf_hiproc_updat
+export arw_netcdf_contrl_exp1=arw_netcdf_loproc_contrl
+export arw_netcdf_contrl_exp2=arw_netcdf_hiproc_contrl
+export nmm_binary_updat_exp1=nmm_binary_loproc_updat
+export nmm_binary_updat_exp2=nmm_binary_hiproc_updat
+export nmm_binary_contrl_exp1=nmm_binary_loproc_contrl
+export nmm_binary_contrl_exp2=nmm_binary_hiproc_contrl
+export nmm_netcdf_updat_exp1=nmm_netcdf_loproc_updat
+export nmm_netcdf_updat_exp2=nmm_netcdf_hiproc_updat
+export nmm_netcdf_contrl_exp1=nmm_netcdf_loproc_contrl
+export nmm_netcdf_contrl_exp2=nmm_netcdf_hiproc_contrl
+export rtma_updat_exp1=rtma_loproc_updat
+export rtma_updat_exp2=rtma_hiproc_updat
+export rtma_contrl_exp1=rtma_loproc_contrl
+export rtma_contrl_exp2=rtma_hiproc_contrl
+export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_loproc_updat
+export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_hiproc_updat
+export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_loproc_contrl
+export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_hiproc_contrl
+export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_loproc_updat
+export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_hiproc_updat
+export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_loproc_contrl
+export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_hiproc_contrl
 
 #  Next, paths for experiment and control executables,
 #  fix, ptmp, and CRTM coefficient files.
-
-   export group=global
-   export queue=batch
-   export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
-   export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
-   export tmpdir=/scratch4/NCEPDEV/stmp3/$LOGNAME
-   export savdir=/scratch4/NCEPDEV/stmp3/$LOGNAME
-
-#  On Theia, there are no scrubbers to remove old contents from stmp* directories.
-#  After completion of regression tests, will remove the regression test subdirecories
-
-   export clean=.true.
-
-#  Next, paths for canned case data.
-
-   export global_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
-   export global_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_T62_adate}
-   export global_4dvar_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
-   export global_4dvar_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_4dvar_T62_adate}
-   export global_hybrid_T126_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/obs
-   export global_hybrid_T126_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_hybrid_T126_adate}/ges
-   export global_enkf_T62_datobs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/obs
-   export global_enkf_T62_datges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_enkf_T62_adate}/ges
-   export global_lanczos_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
-   export global_lanczos_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_lanczos_T62_adate}
-   export global_nemsio_T62_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap/${global_nemsio_T62_adate}
-   export global_nemsio_T62_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
-   export nmmb_nems_4denvar_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export nmmb_nems_4denvar_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export arw_binary_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_binary_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_netcdf_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export arw_netcdf_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export nmm_binary_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_binary/$nmm_binary_adate
-   export nmm_binary_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_binary/$nmm_binary_adate
-   export nmm_netcdf_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-   export nmm_netcdf_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-   export rtma_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
-   export rtma_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/rtma/$rtma_adate
-   export hwrf_nmm_obs=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
-   export hwrf_nmm_ges=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
-
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
+if [[ "$machine" = "Theia" ]]; then
+
+   export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME/gsi
+   
+   export group=da
+   export queue=batch
+   export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
+   export tmpdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/regression/gsi
+   export savdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/regression/gsi
+   export cases_rootdir=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES
 
    export ndate=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
-   export noscrub=/scratch4/NCEPDEV/da/noscrub/$LOGNAME
+   export noscrub=/scratch4/NCEPDEV/global/noscrub/$LOGNAME/
    export endianness=Big_Endian
-#  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
+
    export accnt=hybrid
    export launcher=mpirun
 
+   #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
+   #  After completion of regression tests, will remove the regression test subdirecories
+   export clean=.true.
+
 elif [[ "$machine" = "WCOSS" ]]; then
 
-#  First, experiment names.
-
-   export global_T62_updat_exp1=global_T${JCAP}_loproc_updat
-   export global_T62_updat_exp2=global_T${JCAP}_hiproc_updat
-   export global_T62_contrl_exp1=global_T${JCAP}_loproc_contrl
-   export global_T62_contrl_exp2=global_T${JCAP}_hiproc_contrl
-   export global_T62_ozonly_updat_exp1=global_T${JCAP}_loproc_ozonly_updat
-   export global_T62_ozonly_updat_exp2=global_T${JCAP}_hiproc_ozonly_updat
-   export global_T62_ozonly_contrl_exp1=global_T${JCAP}_loproc_ozonly_contrl
-   export global_T62_ozonly_contrl_exp2=global_T${JCAP}_hiproc_ozonly_contrl
-   export global_4dvar_T62_updat_exp1=global_4dvar_T${JCAP}_loproc_updat
-   export global_4dvar_T62_updat_exp2=global_4dvar_T${JCAP}_hiproc_updat
-   export global_4dvar_T62_contrl_exp1=global_4dvar_T${JCAP}_loproc_contrl
-   export global_4dvar_T62_contrl_exp2=global_4dvar_T${JCAP}_hiproc_contrl
-   export global_hybrid_T126_updat_exp1=global_hybrid_loproc_updat
-   export global_hybrid_T126_updat_exp2=global_hybrid_hiproc_updat
-   export global_hybrid_T126_contrl_exp1=global_hybrid_loproc_contrl
-   export global_hybrid_T126_contrl_exp2=global_hybrid_hiproc_contrl
-   export global_enkf_T62_updat_exp1=global_enkf_loproc_updat
-   export global_enkf_T62_updat_exp2=global_enkf_hiproc_updat
-   export global_enkf_T62_contrl_exp1=global_enkf_loproc_contrl
-   export global_enkf_T62_contrl_exp2=global_enkf_hiproc_contrl
-   export global_lanczos_T62_updat_exp1=global_lanczos_T${JCAP}_loproc_updat
-   export global_lanczos_T62_updat_exp2=global_lanczos_T${JCAP}_hiproc_updat
-   export global_lanczos_T62_contrl_exp1=global_lanczos_T${JCAP}_loproc_contrl
-   export global_lanczos_T62_contrl_exp2=global_lanczos_T${JCAP}_hiproc_contrl
-   export global_nemsio_T62_updat_exp1=global_nemsio_T${JCAP}_loproc_updat
-   export global_nemsio_T62_updat_exp2=global_nemsio_T${JCAP}_hiproc_updat
-   export global_nemsio_T62_contrl_exp1=global_nemsio_T${JCAP}_loproc_contrl
-   export global_nemsio_T62_contrl_exp2=global_nemsio_T${JCAP}_hiproc_contrl
-   export nmmb_nems_4denvar_updat_exp1=nmmb_nems_4denvar_loproc_updat
-   export nmmb_nems_4denvar_updat_exp2=nmmb_nems_4denvar_hiproc_updat
-   export nmmb_nems_4denvar_contrl_exp1=nmmb_nems_4denvar_loproc_contrl
-   export nmmb_nems_4denvar_contrl_exp2=nmmb_nems_4denvar_hiproc_contrl
-   export arw_binary_updat_exp1=arw_binary_loproc_updat
-   export arw_binary_updat_exp2=arw_binary_hiproc_updat
-   export arw_binary_contrl_exp1=arw_binary_loproc_contrl
-   export arw_binary_contrl_exp2=arw_binary_hiproc_contrl
-   export arw_netcdf_updat_exp1=arw_netcdf_loproc_updat
-   export arw_netcdf_updat_exp2=arw_netcdf_hiproc_updat
-   export arw_netcdf_contrl_exp1=arw_netcdf_loproc_contrl
-   export arw_netcdf_contrl_exp2=arw_netcdf_hiproc_contrl
-   export nmm_binary_updat_exp1=nmm_binary_loproc_updat
-   export nmm_binary_updat_exp2=nmm_binary_hiproc_updat
-   export nmm_binary_contrl_exp1=nmm_binary_loproc_contrl
-   export nmm_binary_contrl_exp2=nmm_binary_hiproc_contrl
-   export nmm_netcdf_updat_exp1=nmm_netcdf_loproc_updat
-   export nmm_netcdf_updat_exp2=nmm_netcdf_hiproc_updat
-   export nmm_netcdf_contrl_exp1=nmm_netcdf_loproc_contrl
-   export nmm_netcdf_contrl_exp2=nmm_netcdf_hiproc_contrl
-   export rtma_updat_exp1=rtma_loproc_updat
-   export rtma_updat_exp2=rtma_hiproc_updat
-   export rtma_contrl_exp1=rtma_loproc_contrl
-   export rtma_contrl_exp2=rtma_hiproc_contrl
-   export hwrf_nmm_d2_updat_exp1=hwrf_nmm_d2_loproc_updat
-   export hwrf_nmm_d2_updat_exp2=hwrf_nmm_d2_hiproc_updat
-   export hwrf_nmm_d2_contrl_exp1=hwrf_nmm_d2_loproc_contrl
-   export hwrf_nmm_d2_contrl_exp2=hwrf_nmm_d2_hiproc_contrl
-   export hwrf_nmm_d3_updat_exp1=hwrf_nmm_d3_loproc_updat
-   export hwrf_nmm_d3_updat_exp2=hwrf_nmm_d3_hiproc_updat
-   export hwrf_nmm_d3_contrl_exp1=hwrf_nmm_d3_loproc_contrl
-   export hwrf_nmm_d3_contrl_exp2=hwrf_nmm_d3_hiproc_contrl
-
-#  Next, paths for experiment and control executables,
-#  fix, ptmp, and CRTM coefficient files.
-
+   export basedir=/da/save/$LOGNAME/gsi
+   
    export group=dev
    export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME
-   export savdir=/ptmpp1/$LOGNAME
-
-#  Next, paths for canned case data.
-
-   export global_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
-   export global_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_T62_adate
-   export global_4dvar_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
-   export global_4dvar_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_4dvar_T62_adate
-   export global_hybrid_T126_datobs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/obs
-   export global_hybrid_T126_datges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_hybrid_T126_adate/ges
-   export global_enkf_T62_datobs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_enkf_T62_adate/obs
-   export global_enkf_T62_datges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_enkf_T62_adate/ges
-   export global_lanczos_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
-   export global_lanczos_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_lanczos_T62_adate
-   export global_nemsio_T62_obs=/da/noscrub/Michael.Lueken/CASES/global/sigmap/$global_nemsio_T62_adate
-   export global_nemsio_T62_ges=/da/noscrub/Michael.Lueken/CASES/global/sigmap_nemsio/$global_nemsio_T62_adate
-   export nmmb_nems_4denvar_obs=/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export nmmb_nems_4denvar_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmmb_nems/$nmmb_nems_adate
-   export arw_binary_obs=/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/arw_binary/$arw_binary_adate
-   export arw_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export arw_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/arw_netcdf/$arw_netcdf_adate
-   export nmm_binary_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
-   export nmm_binary_ges=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_binary_adate
-   export nmm_netcdf_obs=/da/noscrub/Michael.Lueken/CASES/regional/ndas_binary/$nmm_netcdf_adate
-   export nmm_netcdf_ges=/da/noscrub/Michael.Lueken/CASES/regional/nmm_netcdf/$nmm_netcdf_adate
-   export rtma_obs=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-   export rtma_ges=/da/noscrub/Michael.Lueken/CASES/regional/rtma_binary/$rtma_adate
-   export hwrf_nmm_obs=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
-   export hwrf_nmm_ges=/da/noscrub/Michael.Lueken/CASES/regional/hwrf_nmm/$hwrf_nmm_adate
-
-#  Location of ndate utility and noscrub directory.
+   export tmpdir=/ptmpp1/$LOGNAME/regression/gsi
+   export savdir=/ptmpp1/$LOGNAME/regression/gsi
+   export cases_rootdir=/da/noscrub/Michael.Lueken/CASES
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$USER
+   export noscrub=/da/noscrub/$LOGNAME/
    export endianness=Big_Endian
 
 fi
+
+# GSI paths based on basedir
+
+export gsisrc=$basedir/branches/EXP-update/src
+export gsiexec_updat=$basedir/branches/EXP-update/src/global_gsi
+export gsiexec_contrl=$basedir/trunk/src/global_gsi
+export enkfexec_updat=$basedir/branches/EXP-update/src/enkf/global_enkf
+export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
+export fixgsi=$basedir/trunk/fix
+export scripts=$basedir/trunk/scripts
+
+#  Next, paths for canned case data.
+
+export global_T62_obs=$cases_rootdir/global/sigmap/${global_T62_adate}
+export global_T62_ges=$cases_rootdir/global/sigmap/${global_T62_adate}
+export global_4dvar_T62_obs=$cases_rootdir/global/sigmap/${global_4dvar_T62_adate}
+export global_4dvar_T62_ges=$cases_rootdir/global/sigmap/${global_4dvar_T62_adate}
+export global_hybrid_T126_datobs=$cases_rootdir/global/sigmap/${global_hybrid_T126_adate}/obs
+export global_hybrid_T126_datges=$cases_rootdir/global/sigmap/${global_hybrid_T126_adate}/ges
+export global_enkf_T62_datobs=$cases_rootdir/global/sigmap/${global_enkf_T62_adate}/obs
+export global_enkf_T62_datges=$cases_rootdir/global/sigmap/${global_enkf_T62_adate}/ges
+export global_lanczos_T62_obs=$cases_rootdir/global/sigmap/${global_lanczos_T62_adate}
+export global_lanczos_T62_ges=$cases_rootdir/global/sigmap/${global_lanczos_T62_adate}
+export global_nemsio_T62_obs=$cases_rootdir/global/sigmap/${global_nemsio_T62_adate}
+export global_nemsio_T62_ges=$cases_rootdir/global/sigmap_nemsio/$global_nemsio_T62_adate
+export nmmb_nems_4denvar_obs=$cases_rootdir/regional/nmmb_nems/$nmmb_nems_adate
+export nmmb_nems_4denvar_ges=$cases_rootdir/regional/nmmb_nems/$nmmb_nems_adate
+export arw_binary_obs=$cases_rootdir/regional/arw_binary/$arw_binary_adate
+export arw_binary_ges=$cases_rootdir/regional/arw_binary/$arw_binary_adate
+export arw_netcdf_obs=$cases_rootdir/regional/arw_netcdf/$arw_netcdf_adate
+export arw_netcdf_ges=$cases_rootdir/regional/arw_netcdf/$arw_netcdf_adate
+export nmm_binary_obs=$cases_rootdir/regional/nmm_binary/$nmm_binary_adate
+export nmm_binary_ges=$cases_rootdir/regional/nmm_binary/$nmm_binary_adate
+export nmm_netcdf_obs=$cases_rootdir/regional/nmm_netcdf/$nmm_netcdf_adate
+export nmm_netcdf_ges=$cases_rootdir/regional/nmm_netcdf/$nmm_netcdf_adate
+export rtma_obs=$cases_rootdir/regional/rtma/$rtma_adate
+export rtma_ges=$cases_rootdir/regional/rtma/$rtma_adate
+export hwrf_nmm_obs=$cases_rootdir/regional/hwrf_nmm/$hwrf_nmm_adate
+export hwrf_nmm_ges=$cases_rootdir/regional/hwrf_nmm/$hwrf_nmm_adate
 
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
 #default will be refractivity for now

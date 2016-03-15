@@ -2,13 +2,11 @@
 
 set -x
 
-machine=$REMOTEHOST
-
-if [ -d /da ]; then
-#For WCOSS
+if [ -d /da ]; then # WCOSS
+   machine=WCOSS
    echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
-elif [ -d /scratch4/NCEPDEV/da ]; then
-#For Theia
+elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
+   machine=Theia
    echo "/scratch4/NCEPDEV/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
 fi
 

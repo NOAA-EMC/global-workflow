@@ -4,215 +4,54 @@ set -x
 
 . $(awk '{ print $1 }' regression_var.out)
 
-#. /scratch1/portfolios/NCEPDEV/da/save/$LOGNAME/EXP-regtests/scripts/regression_var.sh
-#. regression_var.sh
+job[1]=$rtma_updat_exp1
+job[2]=$rtma_updat_exp2
+job[3]=$rtma_contrl_exp1
+job[4]=$rtma_contrl_exp2
 
 if [[ "$machine" = "Theia" ]]; then
 
-   # Submit jobs using sub wrapper.
-   if [ "$debug" = ".false." ]; then
-      /bin/sh sub_zeus -j $rtma_updat_exp1 -t 0:15:00 -p 8/6/0 $scripts/rtma.sh
+   topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
+   topts[2]="0:15:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
 
-      while [[ $(grep -c '+ rc=0' ${rtma_updat_exp1}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_updat_exp1}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_updat_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-
-      /bin/sh sub_zeus -j $rtma_updat_exp2 -t 0:12:00 -p 8/8/0 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_updat_exp2}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_updat_exp2}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_updat_exp2" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_updat_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-
-      /bin/sh sub_zeus -j $rtma_contrl_exp1 -t 0:12:00 -p 8/6/0 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_contrl_exp1}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_contrl_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_contrl_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-
-      /bin/sh sub_zeus -j $rtma_contrl_exp2 -t 0:12:00 -p 8/8/0 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_contrl_exp2}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_contrl_exp2" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_contrl_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-
-      /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression 10 10 2
-
-      rm -f rtma.out
-
-      exit
-
-   elif [ "$debug" = .true. ]; then
-      /bin/sh sub_zeus -j $rtma_updat_exp1 -p 6/6/ -t 0:35:00 $scripts/rtma.sh
-
-      rm -f rtma.out
-
-      exit
-   fi
-
-   exit
+   sub_cmd="sub_zeus"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
-   # Submit jobs using sub wrapper.
-   if [ "$debug" = ".false." ]; then
-      /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_updat_exp1 -q $queue -p 8/6  -r /1 -t 0:10:00 $scripts/rtma.sh
+   topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
+   topts[2]="0:15:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
 
-      while [[ $(grep -c '+ rc=0' ${rtma_updat_exp1}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_updat_exp1}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_updat_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_updat_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      while [[ $(grep -c 'Resource usage summary:' ${rtma_updat_exp1}.out) -ne 1 ]]; do
-         echo "Job "$rtma_updat_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-      /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_updat_exp2 -q $queue -p 8/8/N -r /1 -t 0:10:00 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_updat_exp2}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_updat_exp2}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_updat_exp2" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_updat_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      while [[ $(grep -c 'Resource usage summary:' ${rtma_updat_exp2}.out) -ne 1 ]]; do
-         echo "Job "$rtma_updat_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-      /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_contrl_exp1 -q $queue -p 8/6/ -r /1 -t 0:10:00 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_contrl_exp1}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_contrl_exp1" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_contrl_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      while [[ $(grep -c 'Resource usage summary:' ${rtma_contrl_exp1}.out) -ne 1 ]]; do
-         echo "Job "$rtma_contrl_exp1" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-      /bin/sh sub_wcoss -a RTMA-T2O -j $rtma_contrl_exp2 -q $queue -p 8/8/ -r /1 -t 0:10:00 $scripts/rtma.sh
-
-      while [[ $(grep -c '+ rc=0' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
-         grep '+ rc=' ${rtma_contrl_exp2}.out > return_code_rtma.out
-         if [ -s return_code_rtma.out ]; then
-            if [[ $(stat -c %s return_code_rtma.out) -ne '0' ]]; then
-               if [[ $(awk '{ print $2 }' return_code_rtma.out) -ne 'rc=0' ]]; then
-                  echo $rtma_contrl_exp2" job has failed with return code of "$(awk '{ print $2 }' return_code_rtma.out)"."
-                  rm -f return_code_rtma.out
-                  exit
-               fi
-            fi
-         fi
-         echo "Job "$rtma_contrl_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      while [[ $(grep -c 'Resource usage summary:' ${rtma_contrl_exp2}.out) -ne 1 ]]; do
-         echo "Job "$rtma_contrl_exp2" is not complete yet.  Will recheck in a minute."
-         sleep 60
-      done
-
-      rm -f return_code_rtma.out
-      /bin/sh $scripts/regression_test.sh $rtma_updat_exp1 $rtma_updat_exp2 $rtma_contrl_exp1 $rtma_contrl_exp2 tmpreg_rtma $rtma_regression 10 10 2
-
-      rm -f rtma.out
-
-      exit
-
-   elif [ "$debug" = .true. ]; then
-      /bin/sh sub_wcoss -a RDAS-T2O -j $rtma_updat_exp1 -q $queue -p 8/6/ -t 0:35:00 $scripts/rtma.sh
-
-      rm -f rtma.out
-
-      exit
-   fi
-
-   exit
+   sub_cmd="sub_wcoss -a RTMA-T2O -q $queue"
 
 fi
+
+topts[3]=${topts[1]} ; popts[3]=${popts[1]} ; ropts[3]=${ropts[1]}
+topts[4]=${topts[2]} ; popts[4]=${popts[2]} ; ropts[4]=${ropts[2]}
+
+if [ "$debug" = ".false." ]; then
+
+   for jn in `seq 1 4`; do
+
+      rm -f ${job[$jn]}.out
+
+      /bin/sh $sub_cmd -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/rtma.sh
+
+      $scripts/regression_wait.sh ${job[$jn]} return_code_rtma.out check_resource
+
+   done
+
+   /bin/sh $scripts/regression_test.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} tmpreg_rtma $rtma_regression 10 10 2
+
+else
+  
+   if [ "$machine" = "Theia" ]; then
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:30:00 $scripts/rtma.sh
+   elif [ "$machine" = "WCOSS" ]; then
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:30:00 $scripts/rtma.sh
+   fi
+
+fi
+
+rm -f rtma.out
+
+exit
