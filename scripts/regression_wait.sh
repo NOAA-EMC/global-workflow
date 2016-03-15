@@ -4,6 +4,7 @@ set -x
 
 job_name=$1
 rc_file=$2
+check_resource=$3
 
 while [[ $(grep -c '+ rc=0' ${job_name}.out) -ne 1 ]]; do
    grep '+ rc=' ${job_name}.out > ${rc_file}
@@ -20,7 +21,7 @@ while [[ $(grep -c '+ rc=0' ${job_name}.out) -ne 1 ]]; do
    sleep 60
 done
 
-if [ "$#" -eq 3 ]; then
+if [ "$check_resource" = yes ]; then
    while [[ $(grep -c 'Resource usage summary:' ${job_name}.out) -ne 1 ]]; do
       echo "Job "${job_name}" is not complete yet.  Will recheck in a minute."
       sleep 60

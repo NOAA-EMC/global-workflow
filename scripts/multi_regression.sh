@@ -4,10 +4,10 @@ set -x
 
 if [ -d /da ]; then # WCOSS
    machine=WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/da/save/$LOGNAME/gsi/branches/EXP-update/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    machine=Theia
-   echo "/scratch4/NCEPDEV/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/scratch4/NCEPDEV/da/save/$LOGNAME/gsi/branches/EXP-update/scripts/regression_var.sh" > regression_var.out
 fi
 
 /bin/sh global_T62_regression.sh > global_T62.out &

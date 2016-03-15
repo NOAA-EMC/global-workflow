@@ -15,7 +15,7 @@ if [[ "$machine" = "Theia" ]]; then
    topts[1]="0:20:00" ; popts[1]="12/1/" ; ropts[1]="/1"
    topts[2]="0:20:00" ; popts[2]="12/3/" ; ropts[2]="/2"
 
-   sub_cmd="sub_zeus"
+   sub_cmd="sub_zeus -q $queue"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
@@ -37,7 +37,7 @@ if [ "$debug" = ".false." ]; then
 
       /bin/sh $sub_cmd -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/global_T62_ozonly.sh
 
-      $scripts/regression_wait.sh ${job[$jn]} return_code_global_ozonly_3dvar.out
+      $scripts/regression_wait.sh ${job[$jn]} return_code_global_ozonly_3dvar.out $check_resource
 
    done
 

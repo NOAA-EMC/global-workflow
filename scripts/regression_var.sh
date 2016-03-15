@@ -13,6 +13,9 @@ elif [ -d /scratch4/NCEPDEV/da ]; then
    export machine="Theia"
 fi
 
+# Name of the branch being tested
+updat=EXP-update
+
 # Variables with the same values are defined below.
 
 # Case Study analysis dates
@@ -103,16 +106,18 @@ if [[ "$machine" = "Theia" ]]; then
 
    export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME/gsi
    
-   export group=da
+   export group=global
    export queue=batch
    export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
-   export tmpdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/regression/gsi
-   export savdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/regression/gsi
-   export cases_rootdir=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES
+   export tmpdir=/scratch4/NCEPDEV/stmp4/$LOGNAME/REGDIRS/gsi/$updat
+   export savdir=/scratch4/NCEPDEV/stmp4/$LOGNAME/REGDIRS/gsi/$updat
+   export casesdir=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES
 
    export ndate=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
-   export noscrub=/scratch4/NCEPDEV/global/noscrub/$LOGNAME/
+   export noscrub=/scratch4/NCEPDEV/da/noscrub/$LOGNAME
    export endianness=Big_Endian
+
+   export check_resource=no
 
    export accnt=hybrid
    export launcher=mpirun
@@ -128,54 +133,56 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export group=dev
    export queue=dev
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME/regression/gsi
-   export savdir=/ptmpp1/$LOGNAME/regression/gsi
-   export cases_rootdir=/da/noscrub/Michael.Lueken/CASES
+   export tmpdir=/ptmpp1/$LOGNAME/REGDIRS/gsi/$updat
+   export savdir=/ptmpp1/$LOGNAME/REGDIRS/gsi/$updat
+   export casesdir=/da/noscrub/Michael.Lueken/CASES
 
    export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$LOGNAME/
+   export noscrub=/da/noscrub/$LOGNAME
    export endianness=Big_Endian
+
+   export check_resource=yes
 
 fi
 
 # GSI paths based on basedir
 
-export gsisrc=$basedir/branches/EXP-update/src
-export gsiexec_updat=$basedir/branches/EXP-update/src/global_gsi
+export gsisrc=$basedir/branches/$updat/src
+export gsiexec_updat=$basedir/branches/$updat/src/global_gsi
 export gsiexec_contrl=$basedir/trunk/src/global_gsi
-export enkfexec_updat=$basedir/branches/EXP-update/src/enkf/global_enkf
+export enkfexec_updat=$basedir/branches/$updat/src/enkf/global_enkf
 export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
-export fixgsi=$basedir/trunk/fix
-export scripts=$basedir/trunk/scripts
+export fixgsi=$basedir/branches/$updat/fix
+export scripts=$basedir/branches/$updat/scripts
 
 #  Next, paths for canned case data.
 
-export global_T62_obs=$cases_rootdir/global/sigmap/${global_T62_adate}
-export global_T62_ges=$cases_rootdir/global/sigmap/${global_T62_adate}
-export global_4dvar_T62_obs=$cases_rootdir/global/sigmap/${global_4dvar_T62_adate}
-export global_4dvar_T62_ges=$cases_rootdir/global/sigmap/${global_4dvar_T62_adate}
-export global_hybrid_T126_datobs=$cases_rootdir/global/sigmap/${global_hybrid_T126_adate}/obs
-export global_hybrid_T126_datges=$cases_rootdir/global/sigmap/${global_hybrid_T126_adate}/ges
-export global_enkf_T62_datobs=$cases_rootdir/global/sigmap/${global_enkf_T62_adate}/obs
-export global_enkf_T62_datges=$cases_rootdir/global/sigmap/${global_enkf_T62_adate}/ges
-export global_lanczos_T62_obs=$cases_rootdir/global/sigmap/${global_lanczos_T62_adate}
-export global_lanczos_T62_ges=$cases_rootdir/global/sigmap/${global_lanczos_T62_adate}
-export global_nemsio_T62_obs=$cases_rootdir/global/sigmap/${global_nemsio_T62_adate}
-export global_nemsio_T62_ges=$cases_rootdir/global/sigmap_nemsio/$global_nemsio_T62_adate
-export nmmb_nems_4denvar_obs=$cases_rootdir/regional/nmmb_nems/$nmmb_nems_adate
-export nmmb_nems_4denvar_ges=$cases_rootdir/regional/nmmb_nems/$nmmb_nems_adate
-export arw_binary_obs=$cases_rootdir/regional/arw_binary/$arw_binary_adate
-export arw_binary_ges=$cases_rootdir/regional/arw_binary/$arw_binary_adate
-export arw_netcdf_obs=$cases_rootdir/regional/arw_netcdf/$arw_netcdf_adate
-export arw_netcdf_ges=$cases_rootdir/regional/arw_netcdf/$arw_netcdf_adate
-export nmm_binary_obs=$cases_rootdir/regional/nmm_binary/$nmm_binary_adate
-export nmm_binary_ges=$cases_rootdir/regional/nmm_binary/$nmm_binary_adate
-export nmm_netcdf_obs=$cases_rootdir/regional/nmm_netcdf/$nmm_netcdf_adate
-export nmm_netcdf_ges=$cases_rootdir/regional/nmm_netcdf/$nmm_netcdf_adate
-export rtma_obs=$cases_rootdir/regional/rtma/$rtma_adate
-export rtma_ges=$cases_rootdir/regional/rtma/$rtma_adate
-export hwrf_nmm_obs=$cases_rootdir/regional/hwrf_nmm/$hwrf_nmm_adate
-export hwrf_nmm_ges=$cases_rootdir/regional/hwrf_nmm/$hwrf_nmm_adate
+export global_T62_obs=$casesdir/global/sigmap/${global_T62_adate}
+export global_T62_ges=$casesdir/global/sigmap/${global_T62_adate}
+export global_4dvar_T62_obs=$casesdir/global/sigmap/${global_4dvar_T62_adate}
+export global_4dvar_T62_ges=$casesdir/global/sigmap/${global_4dvar_T62_adate}
+export global_hybrid_T126_datobs=$casesdir/global/sigmap/${global_hybrid_T126_adate}/obs
+export global_hybrid_T126_datges=$casesdir/global/sigmap/${global_hybrid_T126_adate}/ges
+export global_enkf_T62_datobs=$casesdir/global/sigmap/${global_enkf_T62_adate}/obs
+export global_enkf_T62_datges=$casesdir/global/sigmap/${global_enkf_T62_adate}/ges
+export global_lanczos_T62_obs=$casesdir/global/sigmap/${global_lanczos_T62_adate}
+export global_lanczos_T62_ges=$casesdir/global/sigmap/${global_lanczos_T62_adate}
+export global_nemsio_T62_obs=$casesdir/global/sigmap/${global_nemsio_T62_adate}
+export global_nemsio_T62_ges=$casesdir/global/sigmap_nemsio/$global_nemsio_T62_adate
+export nmmb_nems_4denvar_obs=$casesdir/regional/nmmb_nems/$nmmb_nems_adate
+export nmmb_nems_4denvar_ges=$casesdir/regional/nmmb_nems/$nmmb_nems_adate
+export arw_binary_obs=$casesdir/regional/arw_binary/$arw_binary_adate
+export arw_binary_ges=$casesdir/regional/arw_binary/$arw_binary_adate
+export arw_netcdf_obs=$casesdir/regional/arw_netcdf/$arw_netcdf_adate
+export arw_netcdf_ges=$casesdir/regional/arw_netcdf/$arw_netcdf_adate
+export nmm_binary_obs=$casesdir/regional/nmm_binary/$nmm_binary_adate
+export nmm_binary_ges=$casesdir/regional/nmm_binary/$nmm_binary_adate
+export nmm_netcdf_obs=$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate
+export nmm_netcdf_ges=$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate
+export rtma_obs=$casesdir/regional/rtma/$rtma_adate
+export rtma_ges=$casesdir/regional/rtma/$rtma_adate
+export hwrf_nmm_obs=$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate
+export hwrf_nmm_ges=$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate
 
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
 #default will be refractivity for now
@@ -207,7 +214,7 @@ export hwrf_nmm_d3_regression="hwrf_nmm_d3_regression_results.$gps_dtype.txt"
 
 # Regression vfydir
 
-export regression_vfydir="$noscrub/regression"
+export regression_vfydir="$noscrub/regression/$updat"
 
 # Define location for copying control run data to
 

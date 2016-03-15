@@ -14,7 +14,7 @@ if [[ "$machine" = "Theia" ]]; then
    topts[1]="0:25:00" ; popts[1]="12/3/" ; ropts[1]="/1"
    topts[2]="0:25:00" ; popts[2]="12/5/" ; ropts[2]="/2"
 
-   sub_cmd="sub_zeus"
+   sub_cmd="sub_zeus -q $queue"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
@@ -36,7 +36,7 @@ if [ "$debug" = ".false." ]; then
 
       /bin/sh $sub_cmd -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/global_lanczos_T62.sh
 
-      $scripts/regression_wait.sh ${job[$jn]} return_code_global_lanczos_3dvar.out check_resource
+      $scripts/regression_wait.sh ${job[$jn]} return_code_global_lanczos_3dvar.out $check_resource
 
    done
 

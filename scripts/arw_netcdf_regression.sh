@@ -14,7 +14,7 @@ if [[ "$machine" = "Theia" ]]; then
    topts[1]="0:15:00" ; popts[1]="4/4/"  ; ropts[1]="/1"
    topts[2]="0:15:00" ; popts[2]="6/6/"  ; ropts[2]="/1"
 
-   sub_cmd="sub_zeus"
+   sub_cmd="sub_zeus -q $queue"
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
@@ -36,7 +36,7 @@ if [ "$debug" = ".false." ]; then
 
       /bin/sh $sub_cmd -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/arw_netcdf.sh
 
-      $scripts/regression_wait.sh ${job[$jn]} return_code_arw_netcdf.out check_resource
+      $scripts/regression_wait.sh ${job[$jn]} return_code_arw_netcdf.out $check_resource
 
    done
 
