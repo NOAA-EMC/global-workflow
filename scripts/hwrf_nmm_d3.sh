@@ -101,14 +101,14 @@ export USE_GFS_OZONE=".false."
 export REGIONAL_OZONE=".false."
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh hwrf_nmm_d3
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh hwrf_nmm_d3
 fi
 
 cat << EOF > gsiparm.anl
 
-$hwrf_nmm_d3_namelist
+$gsi_namelist
 
 EOF
 

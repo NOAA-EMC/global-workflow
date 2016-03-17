@@ -179,19 +179,22 @@ export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 #SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 SETUP="$SETUPmin $SETUPobs $SETUP_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+
+if [ "$minimization" = "lanczos" ]; then
+   namelist_name=global_lanczos_T62
 else
-   . $scripts/regression_namelists_db.sh
+   namelist_name=global_T62
+fi
+
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh $namelist_name
+else
+   . $scripts/regression_namelists_db.sh $namelist_name
 fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 
-if [ "$minimization" = "lanczos" ]; then
-   $global_lanczos_T62_namelist
-else
-   $global_T62_namelist
-fi
+$gsi_namelist
 
 EOF
 
@@ -418,18 +421,22 @@ rm -rf dir.0*
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 #SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 SETUP="$SETUPmin $SETUP4dv $SETUP_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+
+if [ "$minimization" = "lanczos" ]; then
+   namelist_name=global_lanczos_T62
 else
-   . $scripts/regression_namelists_db.sh
+   namelist_name=global_T62
+fi
+
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh $namelist_name
+else
+   . $scripts/regression_namelists_db.sh $namelist_name
 fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
-if [ "$minimization" = "lanczos" ]; then
-   $global_lanczos_T62_namelist
-else
-   $global_T62_namelist
-fi
+
+$gsi_namelist
 
 EOF
 

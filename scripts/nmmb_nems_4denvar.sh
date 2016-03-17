@@ -62,16 +62,16 @@ HYBRID_ENSEMBLE='ensemble_path="",'
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh nems_nmmb_4denvar
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh nems_nmmb_4denvar
 fi
 
 #   dmesh(1)=120.0,time_window_max=1.5,ext_sonde=.true.,
 
 cat << EOF > gsiparm.anl
 
-$nems_nmmb_4denvar_namelist
+$gsi_namelist
 
 EOF
 

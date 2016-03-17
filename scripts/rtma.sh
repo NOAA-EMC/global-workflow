@@ -88,13 +88,13 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh RTMA
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh RTMA
 fi
 cat << EOF > gsiparm.anl
 
-$RTMA_namelist
+$gsi_namelist
 
 EOF
 

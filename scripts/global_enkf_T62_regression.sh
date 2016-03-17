@@ -40,7 +40,7 @@ if [ "$debug" = ".false." ]; then
 
    done
 
-   /bin/sh $scripts/regression_test.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} tmp62_enkf $global_enkf_regression 10 8 2
+   /bin/sh $scripts/regression_test_enkf.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} tmp62_enkf $global_enkf_regression 10 8 2
 
 else
   

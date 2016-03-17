@@ -189,7 +189,7 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh global_T62_ozonly
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
 ##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
@@ -197,7 +197,7 @@ SINGLEOB="$SINGLEOB_update"
 
 cat << EOF > gsiparm.anl
 
-$global_T62_ozonly_namelist
+$gsi_namelist
 
 EOF
 

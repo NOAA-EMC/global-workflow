@@ -181,14 +181,14 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh global_hybrid_T126
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh global_hybrid_T126
 fi
 
 cat << EOF > gsiparm.anl
 
-$global_hybrid_T126_namelist
+$gsi_namelist
 
 EOF
 

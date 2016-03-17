@@ -1,6 +1,12 @@
+job_name=$1
+
+case $job_name in
+
+global_T62)
+
 # Define namelist for global run (pcgsoi minimization)
 
-export global_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
@@ -151,10 +157,13 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /"
+;;
+
+global_lanczos_T62)
 
 # Define namelist for global run (lanczos minimization)
 
-export global_lanczos_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=10,niter(2)=5,
@@ -309,8 +318,13 @@ OBS_INPUT::
    $SINGLEOB
 
  /"
+;;
 
-export global_hybrid_T126_namelist="
+global_hybrid_T126)
+
+# Define namelist for global hybrid run
+
+export gsi_namelist="
 
  &SETUP
    miter=1,niter(1)=5,niter(2)=150,
@@ -462,10 +476,13 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /"
+;;
+
+RTMA)
 
 # Define namelist for RTMA runs
 
-export RTMA_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -542,10 +559,13 @@ OBS_INPUT::
    oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+arw_binary)
 
 # Define namelist for arw binary run
 
-export arw_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
@@ -679,10 +699,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+arw_netcdf)
 
 # Define namelist for arw netcdf run
 
-export arw_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
@@ -816,10 +839,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+nmm_binary)
 
 # Define namelist for nmm binary run
 
-export nmm_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -953,10 +979,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+nmm_netcdf)
 
 # Define namelist for nmm netcdf run
 
-export nmm_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -1090,10 +1119,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+nems_nmmb)
 
 # Define namelist for nems nmmb run
 
-export nems_nmmb_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,niter_no_qc(1)=1,
@@ -1234,10 +1266,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+nems_nmmb_4denvar)
 
 # Define namelist for 4DEnVar nems nmmb run
 
-export nems_nmmb_4denvar_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,niter_no_qc(1)=1,
@@ -1396,10 +1431,13 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB_TEST
  /"
+;;
+
+cmaq_binary)
 
 # Define namelist for cmaq binary run
 
- export cmaq_binary_namelist="
+ export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -1473,8 +1511,11 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
 
-export hwrf_nmm_d2_namelist="
+hwrf_nmm_d2)
+
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,niter_no_qc(1)=20,
@@ -1627,8 +1668,11 @@ OBS_INPUT::
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
 
-export hwrf_nmm_d3_namelist="
+hwrf_nmm_d3)
+
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,niter_no_qc(1)=20,
@@ -1723,3 +1767,13 @@ OBS_INPUT::
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+*)
+
+# EXIT out for unresolved job_name
+
+    echo "unknown $job_name"
+    exit 1
+
+esac

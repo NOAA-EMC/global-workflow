@@ -163,9 +163,9 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh global_T62
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh global_T62
 fi
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
@@ -174,7 +174,7 @@ fi
 
 cat << EOF > gsiparm.anl
 
-$global_T62_namelist
+$gsi_namelist
 
 EOF
 

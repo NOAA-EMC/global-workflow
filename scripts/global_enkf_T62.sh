@@ -82,11 +82,11 @@ rm -rf core*
 export NAM_ENKF="$SETUP_enkf"
 
 
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh global_enkf_T62
 
 cat << EOF > enkf.nml
 
-$global_enkf_T62_namelist
+$gsi_namelist
 
 EOF
 
