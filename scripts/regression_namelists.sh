@@ -9,7 +9,7 @@ case $job_name in
 export gsi_namelist=" 
 
  &SETUP
-   miter=2,niter(1)=10,niter(2)=15,
+   miter=2,niter(1)=100,niter(2)=150,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=82,qoption=2,
