@@ -208,10 +208,10 @@ done
 
 # Special case renaming of airs281_aqua and cris399_npp 
 # SpcCoeff and TauCoeff datafiles.
-${LINK} airs281_aqua.SpcCoeff.bin airs281SUBSET_aqua.SpcCoeff.bin
-${LINK} airs281_aqua.TauCoeff.bin airs281SUBSET_aqua.TauCoeff.bin
-${LINK} cris399_npp.SpcCoeff.bin cris_npp.SpcCoeff.bin
-${LINK} cris399_npp.TauCoeff.bin cris_npp.TauCoeff.bin
+#${LINK} airs281_aqua.SpcCoeff.bin airs281SUBSET_aqua.SpcCoeff.bin
+#${LINK} airs281_aqua.TauCoeff.bin airs281SUBSET_aqua.TauCoeff.bin
+#${LINK} cris399_npp.SpcCoeff.bin cris_npp.SpcCoeff.bin
+#${LINK} cris399_npp.TauCoeff.bin cris_npp.TauCoeff.bin
 
 
 

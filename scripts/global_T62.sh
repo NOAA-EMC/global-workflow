@@ -347,6 +347,7 @@ ln -s -f $global_T62_obs/${prefix_obs}amsre.${suffix}    ./amsrebufr
 ln -s -f $global_T62_obs/${prefix_obs}ssmis.${suffix}    ./ssmisbufr
 ln -s -f $global_T62_obs/${prefix_obs}atms.${suffix}     ./atmsbufr
 ln -s -f $global_T62_obs/${prefix_obs}cris.${suffix}     ./crisbufr
+ln -s -f $global_T62_obs/${prefix_obs}crisfs.${suffix}   ./crisfsbufr
 ln -s -f $global_T62_obs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 

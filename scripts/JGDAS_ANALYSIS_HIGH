@@ -286,6 +286,7 @@ export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d}
+export CRISFSBF=${CRISFSBF:-${COMIN}/${PREINP}crisfs.tm00.bufr_d}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d}
 export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d}
 export OMIBF=${OMIBF:-${COMIN}/${PREINP}omi.tm00.bufr_d}
