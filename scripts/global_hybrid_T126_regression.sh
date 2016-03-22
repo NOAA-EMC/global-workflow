@@ -45,9 +45,9 @@ if [ "$debug" = ".false." ]; then
 else
   
    if [ "$machine" = "Theia" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 0:45:00 $scripts/global_hybrid_T126.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:45:00 $scripts/global_hybrid_T126.sh
    elif [ "$machine" = "WCOSS" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 0:45:00 $scripts/global_hybrid_T126.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:45:00 $scripts/global_hybrid_T126.sh
    fi
 
 fi

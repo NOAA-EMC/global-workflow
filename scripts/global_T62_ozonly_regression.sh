@@ -46,9 +46,9 @@ if [ "$debug" = ".false." ]; then
 else
   
    if [ "$machine" = "Theia" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 0:45:00 $scripts/global_T62_ozonly.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:45:00 $scripts/global_T62_ozonly.sh
    elif [ "$machine" = "WCOSS" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 0:45:00 $scripts/global_T62_ozonly.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 0:45:00 $scripts/global_T62_ozonly.sh
    fi
 
 fi

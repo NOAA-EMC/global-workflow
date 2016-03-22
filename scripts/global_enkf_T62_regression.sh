@@ -45,9 +45,9 @@ if [ "$debug" = ".false." ]; then
 else
   
    if [ "$machine" = "Theia" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 1:00:00 $scripts/global_enkf_T62.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 1:00:00 $scripts/global_enkf_T62.sh
    elif [ "$machine" = "WCOSS" ]; then
-      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[$1]} -t 1:00:00 $scripts/global_enkf_T62.sh
+      /bin/sh $sub_cmd -j ${job[1]} -p ${popts[1]} -t 1:00:00 $scripts/global_enkf_T62.sh
    fi
 
 fi
