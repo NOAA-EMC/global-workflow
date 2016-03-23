@@ -404,7 +404,7 @@ cat << EOF > gsiparm.anl
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,qc_noirjaco3_pole=.true.,
+   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.
    $OBSQC
  /
  &OBS_INPUT
