@@ -12,7 +12,6 @@ export global_T62_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=.false.,lrun_subdirs=.true.,
-   print_diag_pcg=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -43,7 +42,7 @@ export global_T62_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -191,7 +190,7 @@ export global_T62_ozonly_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,blacklst=.true.,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -268,8 +267,8 @@ export global_lanczos_T62_namelist="
    $STRONGOPTS
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
+   use_poq7=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -380,7 +379,6 @@ export global_hybrid_T126_namelist="
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_prepb_satwnd=.false.,
    nhr_assimilation=6,lrun_subdirs=.true.,
-   print_diag_pcg=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -412,7 +410,7 @@ export global_hybrid_T126_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -561,9 +559,8 @@ export RTMA_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
-   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.,oberrflg=.true.,njqc=.true.,vqc=.false.,
-   $OBSQC
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
+   hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.
  /
  &OBS_INPUT
    dmesh(1)=60.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,time_window_max=3.0,
@@ -640,7 +637,7 @@ export arw_binary_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -778,7 +775,7 @@ export arw_netcdf_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -916,7 +913,7 @@ export nmm_binary_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1054,7 +1051,7 @@ export nmm_netcdf_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1192,8 +1189,8 @@ export nems_nmmb_namelist="
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
-   vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
+   vadfile='prepbufr',
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,ext_sonde=.true.,
@@ -1318,39 +1315,32 @@ export nems_nmmb_4denvar_namelist="
    passive_bc=.false., use_edges=.false., emiss_bc=.true.,
    diag_precon=.true., step_start=1.e-3,
    l4densvar=.true.,nhr_obsbin=3,
-   $SETUP
+   
  /
  &GRIDOPTS
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=3.0,
    filled_grid=.false.,half_grid=.false.,netcdf=.false.,nvege_type=20,
-   $GRIDOPTS
  /
  &BKGERR
    hzscl=0.373,0.746,1.50,
    vs=1.0,bw=0.,fstat=.true.,
-   $BKGERR
  /
  &ANBKGERR
    anisotropic=.false.,
-   $ANBKGERR
  /
  &JCOPTS
-   $JCOPTS
  /
  &STRONGOPTS
    nstrong=0,nvmodes_keep=20,period_max=3.,
     baldiag_full=.true.,baldiag_inc=.true.,  
-   $STRONGOPTS
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
-   vadfile='prepbufr',njqc=.false.,vqc=.true.,
-   $OBSQC
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
+   vadfile='prepbufr',
  /
  &OBS_INPUT
    dmesh(1)=120.0,time_window_max=3.0,ext_sonde=.true.,
-   $OBS_INPUT
  /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                  dval    dthin  dsfcalc
@@ -1427,10 +1417,8 @@ OBS_INPUT::
  &SUPEROB_RADAR
    del_azimuth=5.,del_elev=.25,del_range=5000.,del_time=.5,elev_angle_max=5.,minnum=50,range_max=100000.,
    l2superob_only=.false.,
-   $SUPEROB_RADAR
  /
  &LAG_DATA
-   $LAG_DATA
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=.true.,
@@ -1447,19 +1435,15 @@ OBS_INPUT::
    jcap_ens=0,
    jcap_ens_test=0,coef_bw=0.5,
    full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
-   $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
-   $RAPIDREFRESH_CLDSURF
  /
  &CHEM
-   $CHEM
  /
  &SINGLEOB_TEST
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=2015031300,
    obhourset=0.,
-   $SINGLEOB_TEST
  /"
 
 # Define namelist for cmaq binary run
@@ -1500,7 +1484,7 @@ OBS_INPUT::
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,
@@ -1544,7 +1528,7 @@ OBS_INPUT::
 export hwrf_nmm_d2_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1582,7 +1566,7 @@ export hwrf_nmm_d2_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
@@ -1698,7 +1682,7 @@ OBS_INPUT::
 export hwrf_nmm_d3_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1736,7 +1720,7 @@ export hwrf_nmm_d3_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
