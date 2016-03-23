@@ -178,15 +178,7 @@ flt_tcamt=$fixgsi/$endianness/rtma_fltnorm.dat_tcamt
 prmcard=$fixgsi/rtma_parmcard_input
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $rtma_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $rtma_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $rtma_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $rtma_contrl_exp2 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-fi
+[[ $exp == *'updat'* ]] && $ncp $gsiexec_updat ./gsi.x || $ncp $gsiexec_contrl ./gsi.x
 
 $ncp $anavinfo           ./anavinfo
 $ncp $berror             ./berror_stats

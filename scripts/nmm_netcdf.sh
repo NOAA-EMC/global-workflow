@@ -185,15 +185,7 @@ bftab_sst=$fixgsi/bufrtab.012
 
 
 # Copy executable and fixed files to $tmpdir
-if [[ "$exp" = $nmm_netcdf_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmm_netcdf_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmm_netcdf_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ "$exp" = $nmm_netcdf_contrl_exp2 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-fi
+[[ $exp == *'updat'* ]] && $ncp $gsiexec_updat ./gsi.x || $ncp $gsiexec_contrl ./gsi.x
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
