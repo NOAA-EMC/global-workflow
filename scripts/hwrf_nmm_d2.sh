@@ -42,12 +42,9 @@ savdir=$savdir/outreg_hwrf_nmm_d2/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
 ncp=/bin/cp
 lnsf='ln -sf'
 

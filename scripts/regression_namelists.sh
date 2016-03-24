@@ -1,6 +1,6 @@
-job_name=$1
+regtest=$1
 
-case $job_name in
+case $regtest in
 
     global_T62)
 
@@ -1996,9 +1996,9 @@ export gsi_namelist="
 
     *)
 
-# EXIT out for unresolved job_name
+# EXIT out for unresolved regression test
 
-    echo "unknown $job_name"
+    echo "unknown $regtest"
     exit 1
 
 esac

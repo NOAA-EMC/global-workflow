@@ -11,7 +11,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$tmpdir/lanczos_tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/lanczos_out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -19,11 +19,9 @@ savdir=$savdir/lanczos_out${JCAP}/sigmap/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the requested resolution, set dependent resolution parameters

@@ -14,7 +14,7 @@ export NMEM_ENKF=20
 export NVARS=6
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}_enkf/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}_enkf/${exp}
 
 # Specify EnKf fixed field and data directories.
@@ -22,8 +22,6 @@ export DATA=$tmpdir
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip

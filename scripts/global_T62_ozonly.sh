@@ -18,10 +18,8 @@ export LEVS=64
 export JCAP_B=$JCAP
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}_ozonly/${exp}
-#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}_ozonly/${exp}
-#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$fixgsi
@@ -36,13 +34,10 @@ savdir=$savdir/out${JCAP}_ozonly/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 

@@ -18,10 +18,8 @@ export JCAP_B=126
 export JCAP_EN=62
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}/${exp}
-#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}/${exp}
-#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$gsipath/trunk/fix
@@ -33,13 +31,10 @@ savdir=$savdir/out${JCAP}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 

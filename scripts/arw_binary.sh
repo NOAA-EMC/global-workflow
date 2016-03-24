@@ -47,11 +47,9 @@ savdir=$savdir/outreg/arw_binary/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the analysis date, compute the date from which the

@@ -22,12 +22,10 @@ savdir=$savdir/outreg_nems_nmmb_4denvar/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 
