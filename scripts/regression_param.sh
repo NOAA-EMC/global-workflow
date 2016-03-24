@@ -18,7 +18,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="tmp62"
         scaling[1]=10; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -39,7 +38,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="tmp62_ozonly"
         scaling[1]=10; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -60,7 +58,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="4dvar_tmp62"
         scaling[1]=5; scaling[2]=8; scaling[3]=2
 
     ;;
@@ -81,7 +78,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="tmp126"
         scaling[1]=10; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -102,7 +98,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="lanczos_tmp62"
         scaling[1]=10; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -123,7 +118,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="nemsio_tmp62"
         scaling[1]=10; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -144,7 +138,6 @@ case $regtest in
            topts[1]="0:30:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=4; scaling[2]=8; scaling[3]=4
 
     ;;
@@ -165,7 +158,6 @@ case $regtest in
            topts[1]="1:00:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=8; scaling[2]=10; scaling[3]=8
 
     ;;
@@ -186,7 +178,6 @@ case $regtest in
            topts[1]="0:30:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=5; scaling[2]=10; scaling[3]=2
 
 ;;
@@ -207,7 +198,6 @@ case $regtest in
            topts[1]="0:10:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=8; scaling[2]=10; scaling[3]=8
 
 ;;
@@ -228,7 +218,6 @@ case $regtest in
            topts[1]="0:30:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=10; scaling[2]=10; scaling[3]=2
 
     ;;
@@ -249,7 +238,6 @@ case $regtest in
            topts[1]="0:45:00"
         fi
 
-#tmpregdir="tmpreg_${regtest}"
         scaling[1]=5; scaling[2]=10; scaling[3]=2
 
     ;;
@@ -270,7 +258,6 @@ case $regtest in
            topts[1]="1:00:00"
         fi
 
-#tmpregdir="tmp62_enkf"
         scaling[1]=10; scaling[2]=8; scaling[3]=2
 
     ;;
