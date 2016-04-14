@@ -339,31 +339,9 @@ for file in $list; do
    ln -s $global_hybrid_T126_datges/sfg_${gdate}_fhr06s_mem${file} ./sigf06_ens_mem${file}
 done
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_DISPLAY_SETTINGS=YES
-   export MPI_STATS=YES
-   export MPI_STATS_FILE=mpi_tmp.out
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=2
-
-#  module load intel
-#  module load mpt
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc

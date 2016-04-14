@@ -6,14 +6,14 @@ job_name=$1
 rc_file=$2
 check_resource=$3
 
-while [[ $(grep -c '+ rc=0' ${job_name}.out) -ne 1 ]]; do
+while [[ $(grep -c '+ rc=' ${job_name}.out) -ne 1 ]]; do
    grep '+ rc=' ${job_name}.out > ${rc_file}
    if [ -s ${rc_file} ]; then
       if [[ $(stat -c %s ${rc_file}) -ne '0' ]]; then
          if [[ $(awk '{ print $2 }' ${rc_file}) -ne 'rc=0' ]]; then
             echo ${job_name}" job has failed with return code of "$(awk '{ print $2 }' ${rc_file})"."
             rm -f ${rc_file}
-            exit
+            exit $(awk '{ print $2 }' ${rc_file} | cut -d= -f2)
          fi
       fi
    fi
@@ -30,4 +30,4 @@ fi
 
 rm -f ${rc_file}
 
-exit
+exit 0

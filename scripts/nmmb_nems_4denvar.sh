@@ -229,30 +229,9 @@ ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
 #####  connect with gdas for ozges ################
        cp $nmmb_nems_4denvar_ges/gdas1.t18z.sf06  ./gfs_sigf06
 
-if [[ "$machine" = "Theia" ]]; then
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-   #export module="/usr/bin/modulecmd sh"
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-elif [[ "$machine" = "WCOSS" ]]; then
-
-mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc

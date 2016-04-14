@@ -263,37 +263,16 @@ while [[ $n -le ${ENSEMBLE_SIZE_REGIONAL} ]]; do
   n=$((n + 1))
 done
 
+# WCOSS specific
+#export MP_USE_BULK_XFER=yes
+#export MP_BULK_MIN_MSG_SIZE=64k
 
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   export MP_USE_BULK_XFER=yes
-   export MP_BULK_MIN_MSG_SIZE=64k
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
 
 
 

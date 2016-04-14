@@ -3,141 +3,141 @@
 #  To run with hybrid ensemble option on, change HYBENS_GLOBAL and/or HYBENS_REGIONAL from "false" to "true".
 #  These are located at the end of this script.
 
-# Specify machine that is being used (Zeus or WCOSS)
-
-if [ -d /da ]; then
-#For WCOSS
+# First determine what machine are we on:
+if [ -d /da ]; then # WCOSS
    export machine="WCOSS"
-elif [ -d /scratch4/NCEPDEV/da ]; then
-#For Theia
+elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    export machine="Theia"
 fi
 
 # Name of the branch being tested
-updat=EXP-update
+updat="EXP-regopt"
 
-#  Paths for experiment and control executables,
-#  fix, ptmp, and CRTM coefficient files.
+#  Handle machine specific paths for:
+#  experiment and control executables, fix, ptmp, and CRTM coefficient files.
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 if [[ "$machine" = "Theia" ]]; then
 
-   export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME/gsi
-   
-   export group=global
-   export queue=batch
-   export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
-   export tmpdir=/scratch4/NCEPDEV/stmp4/$LOGNAME/REGDIRS/gsi/$updat
-   export savdir=/scratch4/NCEPDEV/stmp4/$LOGNAME/REGDIRS/gsi/$updat
-   export casesdir=/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES
+   export basedir="/scratch4/NCEPDEV/global/save/$LOGNAME/gsi"
 
-   export ndate=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
-   export noscrub=/scratch4/NCEPDEV/da/noscrub/$LOGNAME
-   export endianness=Big_Endian
+   export group="global"
+   export queue="batch"
 
-   export check_resource=no
+   export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
+   export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
 
-   export accnt=hybrid
-   export launcher=mpirun
+   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix"
+   export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
+   export ndate="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate"
+
+   export check_resource="no"
+
+   export accnt="hybrid"
 
    #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
    #  After completion of regression tests, will remove the regression test subdirecories
-   export clean=.false.
+   export clean=".false."
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
-   export basedir=/da/save/$LOGNAME/gsi
-   
-   export group=dev
-   export queue=dev
-   export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
-   export tmpdir=/ptmpp1/$LOGNAME/REGDIRS/gsi/$updat
-   export savdir=/ptmpp1/$LOGNAME/REGDIRS/gsi/$updat
-   export casesdir=/da/noscrub/Michael.Lueken/CASES
+   export basedir="/da/save/$LOGNAME/gsi"
 
-   export ndate=/nwprod/util/exec/ndate
-   export noscrub=/da/noscrub/$LOGNAME
-   export endianness=Big_Endian
+   export group="dev"
+   export queue="dev"
 
-   export check_resource=yes
+   export ptmp="/ptmpp1/$LOGNAME"
+   export noscrub="/da/noscrub/$LOGNAME"
+
+   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix"
+   export casesdir="/da/noscrub/Michael.Lueken/CASES"
+   export ndate="/nwprod/util/exec/ndate"
+
+   export check_resource="yes"
+
+   export accnt=""
 
 fi
 
 # GSI paths based on basedir
 
-export gsisrc=$basedir/branches/$updat/src
-export gsiexec_updat=$basedir/branches/$updat/src/global_gsi
-export gsiexec_contrl=$basedir/trunk/src/global_gsi
-export enkfexec_updat=$basedir/branches/$updat/src/enkf/global_enkf
-export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
-export fixgsi=$basedir/branches/$updat/fix
-export scripts=$basedir/branches/$updat/scripts
+export gsisrc="$basedir/branches/$updat/src"
+export gsiexec_updat="$basedir/branches/$updat/src/global_gsi"
+export gsiexec_contrl="$basedir/trunk/src/global_gsi"
+export enkfexec_updat="$basedir/branches/$updat/src/enkf/global_enkf"
+export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
+export fixgsi="$basedir/branches/$updat/fix"
+export scripts="$basedir/branches/$updat/scripts"
+
+# Paths to tmpdir and savedir base on ptmp
+export tmpdir="$ptmp/REGDIRS/gsi/$updat"
+export savdir="$ptmp/REGDIRS/gsi/$updat"
+
+# We are dealing with *which* endian files
+export endianness="Big_Endian"
 
 # Variables with the same values are defined below.
 
-export JCAP=62
-
-# Set predefined paths and variables here.
-# Note that experiment name is same as that entered in -j option below.
+# Default resolution
+export JCAP="62"
 
 # Case Study analysis dates
-export global_T62_adate=2014080400
-export global_4dvar_T62_adate=2014080400
-export global_hybrid_T126_adate=2014092912
-export global_enkf_T62_adate=2014092912
-export global_lanczos_T62_adate=2014080400
-export global_nemsio_T62_adate=2013011400
-export nmmb_nems_adate=2015061000
-export arw_binary_adate=2010072412
-export arw_netcdf_adate=2008051112
-export nmm_binary_adate=2010021600
-export nmm_netcdf_adate=2007122000
-export rtma_adate=2015030712
-export hwrf_nmm_adate=2012102812
+export global_T62_adate="2014080400"
+export global_4dvar_T62_adate="2014080400"
+export global_hybrid_T126_adate="2014092912"
+export global_enkf_T62_adate="2014092912"
+export global_lanczos_T62_adate="2014080400"
+export global_nemsio_T62_adate="2013011400"
+export nmmb_nems_adate="2015061000"
+export arw_binary_adate="2010072412"
+export arw_netcdf_adate="2008051112"
+export nmm_binary_adate="2010021600"
+export nmm_netcdf_adate="2007122000"
+export rtma_adate="2015030712"
+export hwrf_nmm_adate="2012102812"
 
-#  Paths for canned case data.
-export global_T62_obs=$casesdir/global/sigmap/${global_T62_adate}
-export global_T62_ges=$casesdir/global/sigmap/${global_T62_adate}
-export global_4dvar_T62_obs=$casesdir/global/sigmap/${global_4dvar_T62_adate}
-export global_4dvar_T62_ges=$casesdir/global/sigmap/${global_4dvar_T62_adate}
-export global_hybrid_T126_datobs=$casesdir/global/sigmap/${global_hybrid_T126_adate}/obs
-export global_hybrid_T126_datges=$casesdir/global/sigmap/${global_hybrid_T126_adate}/ges
-export global_enkf_T62_datobs=$casesdir/global/sigmap/${global_enkf_T62_adate}/obs
-export global_enkf_T62_datges=$casesdir/global/sigmap/${global_enkf_T62_adate}/ges
-export global_lanczos_T62_obs=$casesdir/global/sigmap/${global_lanczos_T62_adate}
-export global_lanczos_T62_ges=$casesdir/global/sigmap/${global_lanczos_T62_adate}
-export global_nemsio_T62_obs=$casesdir/global/sigmap/${global_nemsio_T62_adate}
-export global_nemsio_T62_ges=$casesdir/global/sigmap_nemsio/$global_nemsio_T62_adate
-export nmmb_nems_4denvar_obs=$casesdir/regional/nmmb_nems/$nmmb_nems_adate
-export nmmb_nems_4denvar_ges=$casesdir/regional/nmmb_nems/$nmmb_nems_adate
-export arw_binary_obs=$casesdir/regional/arw_binary/$arw_binary_adate
-export arw_binary_ges=$casesdir/regional/arw_binary/$arw_binary_adate
-export arw_netcdf_obs=$casesdir/regional/arw_netcdf/$arw_netcdf_adate
-export arw_netcdf_ges=$casesdir/regional/arw_netcdf/$arw_netcdf_adate
-export nmm_binary_obs=$casesdir/regional/nmm_binary/$nmm_binary_adate
-export nmm_binary_ges=$casesdir/regional/nmm_binary/$nmm_binary_adate
-export nmm_netcdf_obs=$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate
-export nmm_netcdf_ges=$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate
-export rtma_obs=$casesdir/regional/rtma/$rtma_adate
-export rtma_ges=$casesdir/regional/rtma/$rtma_adate
-export hwrf_nmm_obs=$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate
-export hwrf_nmm_ges=$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate
+# Paths for canned case data.
+export global_T62_obs="$casesdir/global/sigmap/${global_T62_adate}"
+export global_T62_ges="$casesdir/global/sigmap/${global_T62_adate}"
+export global_4dvar_T62_obs="$casesdir/global/sigmap/${global_4dvar_T62_adate}"
+export global_4dvar_T62_ges="$casesdir/global/sigmap/${global_4dvar_T62_adate}"
+export global_hybrid_T126_datobs="$casesdir/global/sigmap/${global_hybrid_T126_adate}/obs"
+export global_hybrid_T126_datges="$casesdir/global/sigmap/${global_hybrid_T126_adate}/ges"
+export global_enkf_T62_datobs="$casesdir/global/sigmap/${global_enkf_T62_adate}/obs"
+export global_enkf_T62_datges="$casesdir/global/sigmap/${global_enkf_T62_adate}/ges"
+export global_lanczos_T62_obs="$casesdir/global/sigmap/${global_lanczos_T62_adate}"
+export global_lanczos_T62_ges="$casesdir/global/sigmap/${global_lanczos_T62_adate}"
+export global_nemsio_T62_obs="$casesdir/global/sigmap/${global_nemsio_T62_adate}"
+export global_nemsio_T62_ges="$casesdir/global/sigmap_nemsio/$global_nemsio_T62_adate"
+export nmmb_nems_4denvar_obs="$casesdir/regional/nmmb_nems/$nmmb_nems_adate"
+export nmmb_nems_4denvar_ges="$casesdir/regional/nmmb_nems/$nmmb_nems_adate"
+export arw_binary_obs="$casesdir/regional/arw_binary/$arw_binary_adate"
+export arw_binary_ges="$casesdir/regional/arw_binary/$arw_binary_adate"
+export arw_netcdf_obs="$casesdir/regional/arw_netcdf/$arw_netcdf_adate"
+export arw_netcdf_ges="$casesdir/regional/arw_netcdf/$arw_netcdf_adate"
+export nmm_binary_obs="$casesdir/regional/nmm_binary/$nmm_binary_adate"
+export nmm_binary_ges="$casesdir/regional/nmm_binary/$nmm_binary_adate"
+export nmm_netcdf_obs="$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate"
+export nmm_netcdf_ges="$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate"
+export rtma_obs="$casesdir/regional/rtma/$rtma_adate"
+export rtma_ges="$casesdir/regional/rtma/$rtma_adate"
+export hwrf_nmm_obs="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
+export hwrf_nmm_ges="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
 
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
-#default will be refractivity for now
 export gps_dtype="gps_bnd"
 
 # Regression vfydir
 export regression_vfydir="$noscrub/regression/gsi/$updat"
 
 # Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
-export debug=".false."   # Set debug to .true. to run the debug tests.  Otherwise, keep this set to .false.
+export debug=".false."
 
 # Define parameters for global_T62_3d4dvar and global_T62_4dvar
 export minimization="lanczos"  # If "lanczos", use sqrtb lanczos minimization algorithm.  Otherwise use "pcgsoi".
 export nhr_obsbin="6"          # Time window for observation binning.  Use "6" for 3d4dvar test.  Otherwise use "1"
 
 # Define parameters for hybrid ensemble option test.
-#   (default is set to false, so no hybrid ensemble option test.)
+# (default is set to false, so no hybrid ensemble option test.)
 
 export HYBENS_GLOBAL=".false."
 export ENSEMBLE_SIZE_GLOBAL="10"
@@ -161,9 +161,8 @@ export NLAT_ENS_REGIONAL="0"
 export JCAP_ENS_REGIONAL="0"
 export JCAP_ENS_TEST_REGIONAL="0"
 
-# Toggle EnKF update code bias correction flag
-#  lupd_satbiasc = TRUE  = compute and update radiance bias correction
-#  lupd_satbiasc = FALSE = do NOT compute or update radiance bias correction
-#  default is FALSE (as done in NCEP operations)
-
+# Toggle EnKF update code bias correction flag: lupd_satbiasc
+# TRUE  =        compute and update radiance bias correction
+# FALSE = do NOT compute or  update radiance bias correction
+# default is FALSE (as done in NCEP operations)
 export lupd_satbiasc=".false."

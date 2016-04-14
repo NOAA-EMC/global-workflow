@@ -380,28 +380,10 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
    ##$ncp $global_4dvar_T62_obs/${prefix_atm}.sgp3prep.le        ./sigf09
 fi
 
-# Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-   module load intel
-   module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout.obsvr"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout.obsvr
-
-fi
+# Run gsi observer
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN gsi.x > stdout.obsvr 2>&1"
 
 # Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
 rm -f siganl sfcanl.gsi satbias_out fort.2*
@@ -425,33 +407,11 @@ else
 fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
-
 $gsi_namelist
-
 EOF
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
