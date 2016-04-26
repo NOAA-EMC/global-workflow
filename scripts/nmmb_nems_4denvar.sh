@@ -111,7 +111,11 @@ btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
 
 # Copy executable and fixed files to $tmpdir
-[[ $exp == *'updat'* ]] && $ncp $gsiexec_updat ./gsi.x || $ncp $gsiexec_contrl ./gsi.x
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+fi
 
 cp $anavinfo ./anavinfo
 cp $berror   ./berror_stats

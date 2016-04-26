@@ -116,13 +116,9 @@ btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_enkf_T62_updat_exp1 ]]; then
-   $ncp $enkfexec_updat ./enkf.x
-elif [[ $exp = $global_enkf_T62_updat_exp2 ]]; then
-   $ncp $enkfexec_updat ./enkf.x
-elif [[ $exp = $global_enkf_T62_contrl_exp1 ]]; then
-   $ncp $enkfexec_contrl ./enkf.x
-elif [[ $exp = $global_enkf_T62_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $enkfexec_updat  ./enkf.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $enkfexec_contrl ./enkf.x
 fi
 

@@ -231,7 +231,11 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-[[ $exp == *'updat'* ]] && $ncp $gsiexec_updat ./gsi.x || $ncp $gsiexec_contrl ./gsi.x
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
+   $ncp $gsiexec_contrl ./gsi.x
+fi
 
 $ncp $anavinfo ./anavinfo
 $ncp $berror   ./berror_stats
