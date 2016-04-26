@@ -153,7 +153,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_global_3dvar.out
-      /bin/sh sub_wcoss -a GDAS-T2O -j $global_T62_contrl_exp1 -q $queue -p 16/2/ -r /1 -t 0:25:00 $scripts/global_T62.sh
+#      /bin/sh sub_wcoss -a GDAS-T2O -j $global_T62_contrl_exp1 -q $queue -p 16/2/ -r /1 -t 0:25:00 $scripts/global_T62.sh
 
       while [[ $(grep -c '+ rc=0' ${global_T62_contrl_exp1}.out) -ne 1 ]]; do
          grep '+ rc=' ${global_T62_contrl_exp1}.out > return_code_global_3dvar.out
@@ -176,7 +176,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
       done
 
       rm -f return_code_global_3dvar.out
-      /bin/sh sub_wcoss -a GDAS-T2O -j $global_T62_contrl_exp2 -q $queue -p 9/8/ -r /2 -t 0:15:00 $scripts/global_T62.sh
+#      /bin/sh sub_wcoss -a GDAS-T2O -j $global_T62_contrl_exp2 -q $queue -p 9/8/ -r /2 -t 0:15:00 $scripts/global_T62.sh
 
       while [[ $(grep -c '+ rc=0' ${global_T62_contrl_exp2}.out) -ne 1 ]]; do
          grep '+ rc=' ${global_T62_contrl_exp2}.out > return_code_global_3dvar.out

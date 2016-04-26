@@ -228,15 +228,15 @@ elif [[ "$machine" = "WCOSS" ]]; then
 #  fix, ptmp, and CRTM coefficient files.
 
    export group=dev
-   export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
+   export queue=debug
+   export basedir=/global/save/$LOGNAME/gsi
+   export gsisrc=$basedir/branches/EXP-ncepbkgintfce/src
+   export gsiexec_updat=$basedir/branches/EXP-ncepbkgintfce/src/global_gsi
+   export gsiexec_contrl=$basedir/trunk/src/global_gsi
+   export enkfexec_updat=$basedir/branches/EXP-ncepbkgintfce/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
+   export fixgsi=$basedir/branches/EXP-ncepbkgintfce/fix
+   export scripts=$basedir/branches/EXP-ncepbkgintfce/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
@@ -308,7 +308,7 @@ export hwrf_nmm_d3_regression="hwrf_nmm_d3_regression_results.$gps_dtype.txt"
 
 # Regression vfydir
 
-export regression_vfydir="$noscrub/regression"
+export regression_vfydir="$noscrub/regression/gsi/EXP-ncepbkgintfce"
 
 # Define location for copying control run data to
 
