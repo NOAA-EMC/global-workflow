@@ -279,7 +279,7 @@ export gsi_namelist="
    $STRONGOPTS
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
    use_poq7=.true.,njqc=.false.,vqc=.true.,
    $OBSQC
  /
@@ -579,7 +579,7 @@ export gsi_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
    hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.,oberrflg=.true.,njqc=.true.,vqc=.false.,
    $OBSQC
  /
@@ -661,7 +661,7 @@ export gsi_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -802,7 +802,7 @@ export gsi_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1084,7 +1084,7 @@ export gsi_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1225,7 +1225,7 @@ export gsi_namelist="
     baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
    vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
@@ -1380,7 +1380,7 @@ export gsi_namelist="
    $STRONGOPTS
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
    vadfile='prepbufr',njqc=.false.,vqc=.true.,
    $OBSQC
  /
@@ -1539,7 +1539,7 @@ export gsi_namelist="
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,
@@ -1586,7 +1586,7 @@ OBS_INPUT::
 export gsi_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1624,7 +1624,7 @@ export gsi_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
@@ -1745,7 +1745,7 @@ OBS_INPUT::
 export gsi_namelist="
 
  &SETUP
-   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
+   miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    gencode=78,qoption=2,
    factqmin=0.0,factqmax=0.0,deltim=$DELTIM,
@@ -1783,7 +1783,7 @@ export gsi_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.false.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
