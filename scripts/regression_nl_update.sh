@@ -10,7 +10,7 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
    elif [[ `expr substr $exp 8 7` = "lanczos" ]]; then
       export SETUP_update=""
       export SETUP_enkf=""
-   elif [[ `expr substr $exp 12 6` = "ozonly" ]]; then
+   elif [[ `expr substr $exp 19 6` = "ozonly" ]]; then
       export SETUP_update="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.0e-3,emiss_bc=.true.,"
       export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
    else
