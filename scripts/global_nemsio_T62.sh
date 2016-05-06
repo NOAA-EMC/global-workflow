@@ -350,7 +350,7 @@ fi
 # Run GSI
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
 exit $rc
 

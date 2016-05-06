@@ -20,8 +20,10 @@ if [ "$debug" = ".false." ]; then
 
       $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
       rc=$?
-      if [ $rc -ne 0 ]; then exit; fi
-
+      if [ $rc -ne 0 ]; then
+         rm -f ${rcname}
+         exit
+      fi
    done
 
    # When all done, test the results of the regression test

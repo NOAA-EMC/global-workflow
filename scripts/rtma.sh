@@ -267,13 +267,10 @@ $ncp $rtma_obs/rtma.${cymd}.maxtobs.dat ./mxtmdat
 $ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 cp wrf_inout wrf_ges
 
-# WCOSS specific
-#export MP_USE_BULK_XFER=yes
-
 # Run GSI
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
 exit $rc
 

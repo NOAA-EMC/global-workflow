@@ -267,15 +267,10 @@ while [[ $n -le ${ENSEMBLE_SIZE_REGIONAL} ]]; do
   n=$((n + 1))
 done
 
-if [ $machine = "WCOSS" ]; then
-   export MP_USE_BULK_XFER=yes
-   export MP_BULK_MIN_MSG_SIZE=64k
-fi
-
 # Run GSI
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
 exit $rc
 

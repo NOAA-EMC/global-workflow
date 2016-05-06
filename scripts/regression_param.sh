@@ -49,8 +49,8 @@ case $regtest in
             topts[2]="0:15:00" ; popts[2]="12/5/" ; ropts[2]="/2"
             sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
-            topts[1]="0:15:00" ; popts[1]="16/2/" ; ropts[1]="/1"
-            topts[2]="0:15:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+            topts[1]="0:35:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+            topts[2]="0:25:00" ; popts[2]="16/4/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a GDAS-T2O"
         fi
 
@@ -195,7 +195,7 @@ case $regtest in
         fi
 
         if [ "$debug" = ".true." ] ; then
-           topts[1]="0:10:00"
+           topts[1]="1:00:00"
         fi
 
         scaling[1]=8; scaling[2]=10; scaling[3]=8
@@ -297,5 +297,7 @@ if [[ "$machine" = "Theia" ]]; then
    export MPI_GROUP_MAX=256
    export APRUN="mpirun -v -np \$PBS_NP"
 elif [[ "$machine" = "WCOSS" ]]; then
+   export MP_USE_BULK_XFER=yes
+   export MP_BULK_MIN_MSG_SIZE=64k
    export APRUN="mpirun.lsf"
 fi

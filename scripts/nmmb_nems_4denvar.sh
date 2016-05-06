@@ -17,8 +17,8 @@ exp=$jobname
 #gsiexec=/da/save/Michael.Lueken/trunk/src/global_gsi
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmpreg_nems_nmmb_4denvar/${exp}
-savdir=$savdir/outreg_nems_nmmb_4denvar/${exp}
+tmpdir=$tmpdir/tmpreg_nmmb_nems_4denvar/${exp}
+savdir=$savdir/outreg_nmmb_nems_4denvar/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
@@ -236,6 +236,6 @@ ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
 # Run GSI
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
 exit $rc

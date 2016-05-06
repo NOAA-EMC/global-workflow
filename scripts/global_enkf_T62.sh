@@ -170,6 +170,6 @@ $ncp $global_enkf_T62_datges/bfg_${gdate}_fhr06_ensmean ./bfg_${global_enkf_T62_
 
 cd $tmpdir
 echo "run enkf now"
-eval "$APRUN enkf.x > stdout 2>&1"
+eval "$APRUN $tmpdir/enkf.x > stdout 2>&1"
 rc=$?
 exit $rc

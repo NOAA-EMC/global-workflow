@@ -387,7 +387,7 @@ fi
 # Run gsi observer
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout.obsvr 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout.obsvr 2>&1"
 
 # Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
 rm -f siganl sfcanl.gsi satbias_out fort.2*
@@ -416,6 +416,6 @@ EOF
 
 cd $tmpdir
 echo "run gsi now"
-eval "$APRUN gsi.x > stdout 2>&1"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
 exit $rc
