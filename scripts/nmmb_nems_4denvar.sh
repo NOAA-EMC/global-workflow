@@ -111,6 +111,9 @@ btable_t=$fixgsi/nqc_b_t.global_nqcf
 btable_q=$fixgsi/nqc_b_q.global_nqcf
 btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
+# add vertical profile of localization and beta_s,beta_e weights for hybrid ensemble runs
+hybens_info=$fixgsi/nam_hybens_d01_info
+
 
 # Copy executable and fixed files to $tmpdir
 if [[ "$exp" = $nmmb_nems_4denvar_updat_exp1 ]]; then
@@ -161,6 +164,7 @@ $ncp $btable_t           ./btable_t
 $ncp $btable_q           ./btable_q
 $ncp $btable_uv           ./btable_uv
 
+$ncp $hybens_info ./hybens_info
 
 
 ###### crtm coeff's #######################
