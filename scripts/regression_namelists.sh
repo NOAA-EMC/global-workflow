@@ -427,7 +427,7 @@ export gsi_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,njqc=.false.,vqc=.true.,aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -438,9 +438,12 @@ OBS_INPUT::
 !  dfile          dtype       dplat     dsis                dval    dthin  dsfcalc
    prepbufr       ps          null      ps                  0.0      0     0
    prepbufr       t           null      t                   0.0      0     0
+   prepbufr_profl t           null      t                   0.0      0     0
    prepbufr       q           null      q                   0.0      0     0
+   prepbufr_profl q           null      q                   0.0      0     0
    prepbufr       pw          null      pw                  0.0      0     0
    prepbufr       uv          null      uv                  0.0      0     0
+   prepbufr_profl uv          null      uv                  0.0      0     0
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0

@@ -294,29 +294,31 @@ done
 
 
 # Copy observational data to $tmpdir
-$ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate   ./prepbufr
-$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwndbufr
-$ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate    ./gpsrobufr
-$ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate   ./tmirrbufr
-$ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate   ./sbuvbufr
-$ncp $global_hybrid_T126_datobs/gome.gdas.$global_hybrid_T126_adate     ./gomebufr
-$ncp $global_hybrid_T126_datobs/omi.gdas.$global_hybrid_T126_adate      ./omibufr
-$ncp $global_hybrid_T126_datobs/tcvitl.gdas.$global_hybrid_T126_adate   ./tcvitl
-$ncp $global_hybrid_T126_datobs/goesfv.gdas.$global_hybrid_T126_adate   ./gsnd1bufr
-$ncp $global_hybrid_T126_datobs/1bamua.gdas.$global_hybrid_T126_adate   ./amsuabufr
-$ncp $global_hybrid_T126_datobs/1bamub.gdas.$global_hybrid_T126_adate   ./amsubbufr
-$ncp $global_hybrid_T126_datobs/1bhrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufr
-$ncp $global_hybrid_T126_datobs/1bhrs4.gdas.$global_hybrid_T126_adate   ./hirs4bufr
-$ncp $global_hybrid_T126_datobs/airsev.gdas.$global_hybrid_T126_adate   ./airsbufr
-$ncp $global_hybrid_T126_datobs/mtiasi.gdas.$global_hybrid_T126_adate   ./iasibufr
-$ncp $global_hybrid_T126_datobs/esamua.gdas.$global_hybrid_T126_adate   ./amsuabufrears
-$ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubbufrears
-$ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
+$ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate                 ./prepbufr
+$ncp $global_hybrid_T126_datobs/prepbufr.acft_profiles.gdas.$global_hybrid_T126_adate ./prepbufr_profl
+$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate                 ./satwndbufr
+$ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate                  ./gpsrobufr
+$ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate                 ./tmirrbufr
+$ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate                 ./sbuvbufr
+$ncp $global_hybrid_T126_datobs/gome.gdas.$global_hybrid_T126_adate                   ./gomebufr
+$ncp $global_hybrid_T126_datobs/omi.gdas.$global_hybrid_T126_adate                    ./omibufr
+$ncp $global_hybrid_T126_datobs/tcvitl.gdas.$global_hybrid_T126_adate                 ./tcvitl
+$ncp $global_hybrid_T126_datobs/goesfv.gdas.$global_hybrid_T126_adate                 ./gsnd1bufr
+$ncp $global_hybrid_T126_datobs/1bamua.gdas.$global_hybrid_T126_adate                 ./amsuabufr
+$ncp $global_hybrid_T126_datobs/1bamub.gdas.$global_hybrid_T126_adate                 ./amsubbufr
+$ncp $global_hybrid_T126_datobs/1bhrs3.gdas.$global_hybrid_T126_adate                 ./hirs3bufr
+$ncp $global_hybrid_T126_datobs/1bhrs4.gdas.$global_hybrid_T126_adate                 ./hirs4bufr
+$ncp $global_hybrid_T126_datobs/airsev.gdas.$global_hybrid_T126_adate                 ./airsbufr
+$ncp $global_hybrid_T126_datobs/mtiasi.gdas.$global_hybrid_T126_adate                 ./iasibufr
+$ncp $global_hybrid_T126_datobs/esamua.gdas.$global_hybrid_T126_adate                 ./amsuabufrears
+$ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate                 ./amsubbufrears
+$ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate                 ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
-$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
+$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate                             ./satbias_in
+$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}                        ./satbias_pc
+$ncp $global_hybrid_T126_datges/aircraft_t_bias.gdas.$global_hybrid_T126_adate ./aircftbias_in
+$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate                            ./radstat.gdas
 
 listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
 for type in $listdiag; do
