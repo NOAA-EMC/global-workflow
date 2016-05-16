@@ -130,7 +130,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_GLOBAL},
    n_ens=${ENSEMBLE_SIZE_GLOBAL},
    uv_hyb_ens=${HYBENS_UV_GLOBAL},
-   beta1_inv=${BETA1_INV_GLOBAL},
+   beta_s0=${BETA_S0_GLOBAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_GLOBAL},
    s_ens_v=${HYBENS_VER_SCALE_GLOBAL},
@@ -288,7 +288,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_GLOBAL},
    n_ens=${ENSEMBLE_SIZE_GLOBAL},
    uv_hyb_ens=${HYBENS_UV_GLOBAL},
-   beta1_inv=${BETA1_INV_GLOBAL},
+   beta_s0=${BETA_S0_GLOBAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_GLOBAL},
    s_ens_v=${HYBENS_VER_SCALE_GLOBAL},
@@ -447,7 +447,7 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   l_hyb_ens=.true.,n_ens=20,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
    nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
@@ -661,7 +661,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
@@ -799,7 +799,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
@@ -937,7 +937,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
@@ -1075,7 +1075,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
@@ -1219,7 +1219,7 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
    readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
@@ -1378,7 +1378,7 @@ OBS_INPUT::
    l_hyb_ens=.true.,
    n_ens=10,
    uv_hyb_ens=.true.,
-   beta1_inv=0.25,
+   beta_s0=0.25,
    readin_beta=.false.,
    readin_beta=.true.,
    s_ens_h=800,
@@ -1619,7 +1619,7 @@ OBS_INPUT::
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta1_inv=0.2,
+   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta_s0=0.2,
    readin_beta=.true.,
    s_ens_h=300,s_ens_v=-0.5,readin_localization=.false.,
    generate_ens=.false.,regional_ensemble_option=1,grid_ratio_ens=1,
@@ -1716,7 +1716,7 @@ OBS_INPUT::
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta1_inv=0.2,
+   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta_s0=0.2,
    readin_beta=.true.,
    s_ens_h=150,s_ens_v=-0.5,readin_localization=.false.,
    generate_ens=.false.,regional_ensemble_option=1,grid_ratio_ens=1,
