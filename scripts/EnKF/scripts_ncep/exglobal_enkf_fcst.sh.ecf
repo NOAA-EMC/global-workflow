@@ -276,6 +276,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
+   export pgmoutm=$DATA/${pgmout:-pgmout.$member}
 
    export SUFOUT="_${member}"
 
@@ -370,6 +371,8 @@ while [[ $imem -le $ENSEND ]]; do
    $FORECASTSH
    rc=$?
 
+   cat $pgmoutm
+
    export ERR=$rc
    export err=$ERR
    $ERRSCRIPT||exit 2
@@ -403,7 +406,11 @@ while [[ $imem -le $ENSEND ]]; do
      FH=$FHOUT
      while [[ $FH -le $FHMAX ]]; do
        if [[ $FH -lt 10 ]] ; then FH=0$FH ; fi
-       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
+       # JY $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
+       if [[ `expr $FH % 3` -eq 0 ]]
+       then
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
+       fi
        FH=$((FH+FHOUT))
      done
    fi
