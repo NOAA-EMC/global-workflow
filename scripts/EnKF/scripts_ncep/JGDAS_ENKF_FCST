@@ -5,14 +5,21 @@ set -xa
 #
 export RUN_ENVIR=${RUN_ENVIR:-prod}
 
+####################################
+# set up job name and  environment
+####################################
+export job=${job:-$RUN}
+export envir=${envir:-prod}
+export host=${host:-`hostname | cut -c1`}
+
 #####################################################################################
 # Run config file to get input parameters
 # This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd2
+# DATA_IN: Location of working directory, default to $DATAROOT
 # DEV_ECF: If the job is to be running using ECF, default to YES
 # SENDDBN: Set to NO for developers, default to NO
-# COM_IN:  Directory for input files, default to /com/$NET/${envir}
-# COM_OUT: Directory for output file, default to /com/$NET/${envir}
+# COM_IN:  Directory for input files, default to $COMROOT/$NET/${envir}
+# COM_OUT: Directory for output file, default to $COMROOT/$NET/${envir}
 # gespath: Directory for the guess or restart files, default to /nwges/${envir}
 #####################################################################################
 if [ "$RUN_ENVIR" != prod ]      ### For Developers, "group_name" is passed from the ECF script
@@ -27,33 +34,26 @@ fi
 ###############################################################
 if [[ $RUN_ENVIR = prod && $envir != prod ]]; then
   export DBNROOT=/nwprod/spa_util/fakedbn
-  export jlogfile=${jlogfile:-/com/logs/${envir}/jlogfile}
+  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
 fi
 
 #
 ####################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=gfs
-export RUN=enkf
+export NET=${NET:-gfs}
+export RUN=${RUN:-enkf}
+
 
 ####################################
 # Specify version numbers
 ####################################
-export gdas_ver=${gdas_ver:-v1.0.0}
-export gsm_ver=${gsm_ver:-v12.0.0}
-export util_ver=${util_ver:-v1.0.0}
+export gdas_ver=${gdas_ver:-v6.0.0}
+export gsm_ver=${gsm_ver:-v12.1.0}
 
-####################################
-# set up job name and  environment
-####################################
-export job=${job:-$RUN}
-export envir=${envir:-prod}
-export host=${host:-`hostname | cut -c1`}
 
 ###############################################
 
-date
 export PS4='$SECONDS + '
 
 # ##############################################
@@ -64,7 +64,7 @@ export PS4='$SECONDS + '
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=${pid:-$$}
-export DATA_IN=${DATA_IN:-/tmpnwprd2}
+export DATA_IN=${DATA_IN:-$DATAROOT}
 
 export DATA=$DATA_IN/${job}.${pid}
 mkdir -p $DATA
@@ -92,61 +92,48 @@ export cycle=t${cyc}z
 # RERUN    - Rerun fcst from beginning (default no)
 # VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
 ####################################
-export SAVEGES=${SAVEGES:-NO}
-export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-NO}
 export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+export SAVEGES=${SAVEGES:-NO}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
 #################################
 # Define the Log File directory
 #################################
-export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEGLOBAL=${HOMEGLOBAL:-/nw${envir}/gsm.$gsm_ver}
-export EXECGLOBAL=${EXECGLOBAL:-$HOMEGLOBAL/exec}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix/fix_am}
-export USHGLOBAL=${USHGLOBAL:-$HOMEGLOBAL/ush}
-export SCRGLOBAL=${SCRGLOBAL:-$HOMEGLOBAL/scripts}
-export UTILGLOBAL=${UTILGLOBAL:-$HOMEGLOBAL/util}
-export PARMGLOBAL=${PARMGLOBAL:-$HOMEGLOBAL/parm}
+export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.$gsm_ver}
+export EXECgsm=${EXECgsm:-$HOMEgsm/exec}
+export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
+export USHgsm=${USHgsm:-$HOMEgsm/ush}
+export SCRgsm=${SCRgsm:-$HOMEgsm/scripts}
+export UTILgsm=${UTILgsm:-$HOMEgsm/util}
+export PARMgsm=${PARMgsm:-$HOMEgsm/parm/parm_am}
 
-export HOMEGSM=${HOMEGSM:-/nw${envir}/gsm.$gsm_ver}
-export EXECGSM=${EXECGSM:-$HOMEGSM/exec}
-export FIXGSM=${FIXGSM:-$HOMEGSM/fix/fix_am}
-export USHGSM=${USHGSM:-$HOMEGSM/ush}
-export SCRGSM=${SCRGSM:-$HOMEGSM/scripts}
-export UTILGSM=${UTILGSM:-$HOMEGSM/util}
-export PARMGSM=${PARMGSM:-$HOMEGSM/parm/parm_am}
+export HOMEgdas=${HOMEgdas:-$NWROOT/gdas.$gdas_ver}
+export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
 
-export HOMEGDAS=${HOMEGDAS:-/nw${envir}/enkf.$gdas_ver}
-export SCRGDAS=${SCRGDAS:-$HOMEGDAS/scripts}
-
-export HOMEUTIL=${HOMEUTIL:-/nw${envir}/util.${util_ver}}
-export EXECUTIL=${EXECUTIL:-$HOMEUTIL/exec}
-export FIXUTIL=${FIXUTIL:-$HOMEUTIL/fix}
-export PARMUTIL=${PARMUTIL:-$HOMEUTIL/parm}
-export SCRUTIL=${SCRUTIL:-$HOMEUTIL/scripts}
-export USHUTIL=${USHUTIL:-$HOMEUTIL/ush}
+export HOMEutil=${HOMEutil:-$UTILROOT}
+export EXECutil=${EXECutil:-$HOMEutil/exec}
+export USHutil=${USHutil:-$HOMEutil/ush}
 
 ##############################
 # Set up the UTILITIES
 ##############################
-export utilscript=${utilscript:-$USHUTIL}
-export utilexec=${utilexec:-$EXECUTIL}
+export utilscript=${utilscript:-$USHutil}
+export utilexec=${utilexec:-$EXECutil}
 export NDATE=${NDATE:-$utilexec/ndate}
 
 # Run setup to initialize working directory and utility scripts
 ##############################
 $utilscript/setup.sh
 
-err_chk=${err_chk:-$utilscript/err_chk.sh}
-startmsg=${startmsg:-$utilscript/startmsg.sh}
 ERRSCRIPT=${ERRSCRIPT:-$err_chk}
 LOGSCRIPT=${LOGSCRIPT:-$startmsg}
 export FILESTYLE=${FILESTYLE:-'L'}
@@ -160,8 +147,8 @@ $utilscript/setpdy.sh
 ##############################################
 # Define COM directories
 ##############################################
-export COM_IN=${COM_IN:-/com/${NET}/${envir}}
-export COM_OUT=${COM_OUT:-/com/${NET}/${envir}}
+export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
+export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
 
 export COMIN=$COM_IN/enkf.${PDY}/$cyc
 export COMOUT=$COM_OUT/enkf.${PDY}/$cyc
@@ -172,7 +159,7 @@ mkdir -m 775 -p $COMOUT
 ##############################################
 # Define GES directories
 ##############################################
-export gespath=${gespath:-/nwges/${envir}}
+export gespath=${gespath:-$GESROOT/${envir}}
 export GESdir=$gespath/gdas.$PDY
 mkdir -m 775 -p $GESdir
 ####################################
@@ -191,8 +178,8 @@ export LATA_ENKF=${LATA_ENKF:-576}
 export DELTIM_ENKF=${DELTIM_ENKF:-900}
 export DTPHYS_ENKF=${DTPHYS_ENKF:-450}
 
-export CO2DIR=${CO2DIR:-$FIXGSM/fix_co2_proj}
-export CO2_seasonal_cycle=${CO2_seasonal_cycle:-$FIXGSM/global_co2monthlycyc1976_2006.txt}
+export CO2DIR=${CO2DIR:-$FIXgsm/fix_co2_proj}
+export CO2_seasonal_cycle=${CO2_seasonal_cycle:-$FIXgsm/global_co2monthlycyc1976_2006.txt}
 
 #
 # Forecast Model Horizontal Resolution
@@ -269,7 +256,7 @@ export FCSTVARS_SEMILAG="SEMILAG=$SEMILAG,DTPHYS=$DTPHYS,nsout=0,liope=.true.,LD
 
 # Set stochastic physics options
 export SET_STP_SEED=${SET_STP_SEED:-YES}
-export FCSTVARS_STOCHPHYS=${FCSTVARS_STOCHPHYS:-"dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=0.7,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=20,VC=0,VCAMP=0.0,VC_TAU=21600,VC_LSCALE=1000000,sppt_sfclimit=.true."}
+export FCSTVARS_STOCHPHYS=${FCSTVARS_STOCHPHYS:-"dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=0.7,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=20,VC=0,VCAMP=0.0,VC_TAU=21600,VC_LSCALE=1000000,sppt_sfclimit=.true.,DSPHEAT=.false."}
 
 # Set IAU option
 export DOIAU_ENKF=${DOIAU_ENKF:-NO}
@@ -282,25 +269,25 @@ if [ $LGOC3D_ENKF = .true. ] ; then
 fi
 
 # Forecast executable
-export FCSTEXEC=${FCSTEXEC:-${EXECGSM}/global_fcst}
+export FCSTEXEC=${FCSTEXEC:-${EXECgsm}/global_fcst}
 
 # EnKF scripts
-export ENKFFCSSH=${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
-export FORECASTSH=${FORECASTSH:-$SCRGSM/exglobal_fcst.sh.ecf}
+export ENKFFCSSH=${ENKFFCSSH:-$SCRgdas/exglobal_enkf_fcst.sh.ecf}
+export FORECASTSH=${FORECASTSH:-$SCRgsm/exglobal_fcst.sh.ecf}
 
 # Input variables
 
 #
 # Input fix files
-export FNOROG_ENKF=${FNOROG_ENKF:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
-export FNMASK_ENKF=${FNMASK_ENKF:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
-export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-${FIXGSM}/global_orography.t${JCAP}.$LONB.$LATB.grb}
-export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-${FIXGSM}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
-export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-${FIXGSM}/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
-export SLMASK_ENKF=${SLMASK_ENKF:-${FIXGSM}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
-export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXGSM/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
-export FNTSFC=${FNTSFC:-$FIXGSM/RTGSST.1982.2012.monthly.clim.grb}
-export FNAISC=${FNAISC:-$FIXGSM/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+export FNOROG_ENKF=${FNOROG_ENKF:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export FNMASK_ENKF=${FNMASK_ENKF:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-${FIXgsm}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
+export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-${FIXgsm}/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
+export SLMASK_ENKF=${SLMASK_ENKF:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXgsm/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
+export FNTSFC=${FNTSFC:-$FIXgsm/RTGSST.1982.2012.monthly.clim.grb}
+export FNAISC=${FNAISC:-$FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 
 #
 # Input Fields
@@ -310,7 +297,7 @@ export FNAISC=${FNAISC:-$FIXGSM/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 ############################################################################ 
 #
 # Output File Names
-#  SIGANL, ABIAS, ABIASPC not needed by EnKF.  Therefore keep in $DATA
+#  
 
 
 #
@@ -325,7 +312,7 @@ msg="HAS BEGUN on `hostname`"
 ############################
 # WCOSS environment variables
 
-export MP_EAGER_LIMIT=165536
+export MP_EAGER_LIMIT=65536
 export MP_COREFILE_FORMAT=lite
 export MP_EUIDEVELOP=min
 export MP_EUIDEVICE=sn_all
@@ -333,13 +320,11 @@ export MP_EUILIB=us
 export MP_MPILIB=mpich2
 
 export MP_LABELIO=yes
-export MP_SINGLE_THREAD=yes
 export MP_USE_BULK_XFER=no
 export MP_SHARED_MEMORY=yes
-export MP_COLLECTIVE_OFFLOAD=no
 export KMP_STACKSIZE=2048m
 
-export NTHREADS_EFCS=${NTHREADS_EFCS:-1}
+export NTHREADS_EFCS=${NTHREADS_EFCS:-4}
 
 export machine=WCOSS
 export APRUN='mpirun.lsf'
@@ -349,13 +334,9 @@ env
 
 #############################################################
 # Execute the script
-${ENKFFCSSH:-$SCRGDAS/exglobal_enkf_fcst.sh.ecf}
+${ENKFFCSSH:-$SCRgdas/exglobal_enkf_fcst.sh.ecf}
 #############################################################
 
-##########
-# NOTES: 1) script exglobal_analysis.sh.ecf compresses the contents of
-#           RADSTAT, PCPSTAT, OZNSTAT, and CNVSTAT.  These stat files
-#           files are tarballs of compressed files.
 ##########
 
 if [ $SENDDBN = YES ] ; then
@@ -371,6 +352,6 @@ msg="ENDED NORMALLY."
 # Remove the Temporary working directory
 ##############################
 cd $DATA_IN
-if [ ${RM_TMPDIR:-YES} = YES ] ; then rm -rf $DATA ; fi
+if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
 
 date
