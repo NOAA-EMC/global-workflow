@@ -877,10 +877,12 @@ rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr ahibufr
-rm airsbufr iasibufr iasibufrears iasibufr_DB amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr
+rm airsbufr iasibufr iasibufrrars iasibufr_DB amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr
 rm ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
-rm hirs3bufrears amsuabufrears amsubbufrears mhsbufrears hirs3bufr_DB amsuabufr_DB amsubbufr_DB mhsbufr_DB seviribufr
-rm crisbufr crisbufrears crisbufr_DB crisfsbufr crisfsbufrears crisfsbufr_DB atmsbufr atmsbufrears atmsbufr_DB
+rm hirs3bufrrars hirs3bufr_DB hirs3bufrears amsuabufrrars amsuabufr_DB amsuabufrears
+rm amsubbufrrars  amsubbufr_DB amsubbufrears mhsbufrrars mhsbufr_DB mhsbufrears seviribufr
+rm crisbufr crisbufrrars crisbufr_DB crisbufrears crisfsbufr crisfsbufrears crisfsbufr_DB 
+rm atmsbufr atmsbufrrars atmsbufr_DB atmsbufrears
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
@@ -950,20 +952,24 @@ $FCPLN $B1MHS    mhsbufr
 $FCPLN $ESHRS3   hirs3bufrears
 $FCPLN $ESAMUA   amsuabufrears
 $FCPLN $ESAMUB   amsubbufrears
-$FCPLN $SBUVBF   sbuvbufr
-$FCPLN $GOMEBF   gomebufr
-$FCPLN $OMIBF    omibufr
 $FCPLN $ESMHS    mhsbufrears
+$FCPLN $RHRS3    hirs3bufrrars
+$FCPLN $RAMUA    amsuabufrrars
+$FCPLN $RAMUB    amsubbufrrars
+$FCPLN $RMHS     mhsbufrrars
 $FCPLN $HRS3DB   hirs3bufr_DB
 $FCPLN $AMUADB   amsuabufr_DB
 $FCPLN $AMUBDB   amsubbufr_DB
 $FCPLN $MHSDB    mhsbufr_DB
+$FCPLN $SBUVBF   sbuvbufr
+$FCPLN $GOMEBF   gomebufr
+$FCPLN $OMIBF    omibufr
 $FCPLN $MLSBF    mlsbufr
 $FCPLN $SMIPCP   ssmirrbufr
 $FCPLN $TMIPCP   tmirrbufr
 $FCPLN $AIRSBF   airsbufr
 $FCPLN $IASIBF   iasibufr
-$FCPLN $RIASI    iasibufrears
+$FCPLN $RIASI    iasibufrrars
 $FCPLN $IASIDB   iasibufr_DB
 $FCPLN $AMSREBF  amsrebufr
 $FCPLN $AMSR2BF  amsr2bufr
@@ -971,13 +977,13 @@ $FCPLN $GMIBF    gmibufr
 $FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
-$FCPLN $RCRIS    crisbufrears
+$FCPLN $RCRIS    crisbufrrars
 $FCPLN $CRISDB   crisbufr_DB
 $FCPLN $CRISFSBF crisfsbufr
-$FCPLN $RCRISFS  crisfsbufrears
+$FCPLN $RCRISFS  crisfsbufrrars
 $FCPLN $CRISFSDB crisfsbufr_DB
 $FCPLN $ATMSBF   atmsbufr
-$FCPLN $RATMS    atmsbufrears
+$FCPLN $RATMS    atmsbufrrars
 $FCPLN $ATMSDB   atmsbufr_DB
 $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
