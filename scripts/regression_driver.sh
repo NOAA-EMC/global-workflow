@@ -35,7 +35,15 @@ if [ "$debug" = ".false." ]; then
 
 else
 
-   /bin/sh $sub_cmd -q $queue -j ${job[1]} -p ${popts[1]} -t ${topts[1]} $scripts/${regtest}.sh
+   if [ $regtest = 'global_4dvar_T62' ]; then
+
+      /bin/sh $sub_cmd -q $queue -j ${job[1]} -p ${popts[2]} -t ${topts[1]} $scripts/${regtest}.sh
+
+   else
+
+      /bin/sh $sub_cmd -q $queue -j ${job[1]} -p ${popts[1]} -t ${topts[1]} $scripts/${regtest}.sh
+
+   fi
 
 fi
 
