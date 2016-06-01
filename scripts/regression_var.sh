@@ -104,17 +104,17 @@ if [[ "$machine" = "Theia" ]]; then
 
    export group=global
    export queue=batch
-   export basedir=/scratch4/NCEPDEV/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
+   export basedir=/scratch4/NCEPDEV/global/save/$LOGNAME/gsi
+   export gsisrc=$basedir/branches/EXP-enssprd/src
+   export gsiexec_updat=$basedir/branches/EXP-enssprd/src/global_gsi
+   export gsiexec_contrl=$basedir/trunk/src/global_gsi
+   export enkfexec_updat=$basedir/branches/EXP-enssprd/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk/src/enkf/global_enkf
+   export fixgsi=$basedir/branches/EXP-enssprd/fix
+   export scripts=$basedir/branches/EXP-enssprd/scripts
    export fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
-   export tmpdir=/scratch4/NCEPDEV/stmp3/$LOGNAME
-   export savdir=/scratch4/NCEPDEV/stmp3/$LOGNAME
+   export tmpdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/REGDIRS/gsi/EXP-enssprd
+   export savdir=/scratch4/NCEPDEV/stmp3/$LOGNAME/REGDIRS/gsi/EXP-enssprd
 
 #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
 #  After completion of regression tests, will remove the regression test subdirecories
@@ -153,7 +153,7 @@ if [[ "$machine" = "Theia" ]]; then
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 
    export ndate=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
-   export noscrub=/scratch4/NCEPDEV/da/noscrub/$LOGNAME
+   export noscrub=/scratch4/NCEPDEV/da/noscrub/$LOGNAME/regression/gsi/EXP-enssprd
    export endianness=Big_Endian
 #  export endianness=Little_Endian - to be used once convert big_endian is removed from Makefile.conf
    export accnt=hybrid
