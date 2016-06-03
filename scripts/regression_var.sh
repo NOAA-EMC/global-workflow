@@ -14,6 +14,8 @@ elif [ -d /scratch4/NCEPDEV/da ]; then
    export machine="Theia"
 fi
 
+echo machine = $machine
+
 # Variables with the same values are defined below.
 
 export global_T62_adate=2014080400
@@ -229,15 +231,21 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export group=dev
    export queue=dev
-   export basedir=/da/save/$LOGNAME
-   export gsisrc=$basedir/trunk/src
-   export gsiexec_updat=$basedir/trunk/src/global_gsi
-   export gsiexec_contrl=$basedir/svn1/src/global_gsi
-   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
-   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
-   export fixgsi=$basedir/trunk/fix
-   export scripts=$basedir/trunk/scripts
+#   export basedir=/da/save/$LOGNAME
+   export basedir=/da/save/$LOGNAME/GSI
+   export gsisrc=$basedir/trunk_r73524/src
+#   export gsiexec_updat=$basedir/trunk/src/global_gsi
+#   export gsiexec_contrl=$basedir/svn1/src/global_gsi
+#   export enkfexec_updat=$basedir/trunk/src/enkf/global_enkf
+#   export enkfexec_contrl=$basedir/svn1/src/enkf/global_enkf
+   export gsiexec_updat=$basedir/jung_cris_hsr_r73524/src/global_gsi
+   export gsiexec_contrl=$basedir/trunk_r73524/src/global_gsi
+   export enkfexec_updat=$basedir/jung_cris_hsr_r73524/src/enkf/global_enkf
+   export enkfexec_contrl=$basedir/trunk_r73524/src/enkf/global_enkf
+   export fixgsi=$basedir/trunk_r73524/fix
+   export scripts=$basedir/jung_cris_hsr_r73524/scripts
    export fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
+#   export fixcrtm=/da/noscrub/Andrew.Collard/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    export tmpdir=/ptmpp1/$LOGNAME
    export savdir=/ptmpp1/$LOGNAME
 
