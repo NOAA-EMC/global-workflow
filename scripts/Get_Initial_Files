@@ -18,8 +18,8 @@ fi
 
 set -ax
 
-machine="Zeus"
-#machine="WCOSS"
+#machine="Zeus"
+machine="WCOSS"
 
 
 if [[ "$machine" = "Zeus" ]]; then

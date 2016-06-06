@@ -4,7 +4,7 @@
 #BSUB -a poe
 #BSUB -e gsi_global.o%J
 #BSUB -o gsi_global.o%J
-#BSUB -J gsi_global
+#BSUB -J gsi_globalnew
 #BSUB -network type=sn_all:mode=US
 #BSUB -q dev
 #BSUB -n 32
@@ -56,11 +56,11 @@ expid=${expnm}.$adate
 
 # Set path/file for gsi executable
 #gsiexec=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/src/global_gsi
-gsiexec=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/src/global_gsi
+gsiexec=/da/save/$USER/GSI/Desroziers/src/global_gsi
 
 # Specify GSI fixed field
 #fixgsi=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/fix
-fixgsi=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/fix
+fixgsi=/da/save/$USER/GSI/Desroziers/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -73,10 +73,11 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-   datdir=/ptmp/$USER/data_sigmap/${exp}
-   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
-   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
-   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   datdir=/ptmpp1/$USER/data_sigmap/${exp}
+   tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}new  
+   savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}new  
+#   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
    UNCOMPRESS=gunzip
@@ -640,7 +641,6 @@ $ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr
 $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
-cp $datdir/*Rcov* $tmpdir
 cp $datdir/*Rcov* $tmpdir
 
 # # For data before Feb 2015
