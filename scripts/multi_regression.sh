@@ -6,11 +6,12 @@ machine=$REMOTEHOST
 
 if [ -d /da ]; then
 #For WCOSS
-   echo "/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
+   echo "/da/save/$LOGNAME/GSI/jung_cris_hsr/scripts/regression_var.sh" > regression_var.out
 elif [ -d /scratch4/NCEPDEV/da ]; then
 #For Theia
    echo "/scratch4/NCEPDEV/da/save/$LOGNAME/trunk/scripts/regression_var.sh" > regression_var.out
 fi
+/bin/sh nmm_binary_regression.sh > nmm_binary.out &
 
 /bin/sh global_T62_regression.sh > global_T62.out &
 
@@ -28,7 +29,7 @@ fi
 
 /bin/sh arw_binary_regression.sh > arw_binary.out &
 
-/bin/sh nmm_binary_regression.sh > nmm_binary.out &
+#/bin/sh nmm_binary_regression.sh > nmm_binary.out &
 
 /bin/sh nmm_netcdf_regression.sh > nmm_netcdf.out &
 

@@ -1,6 +1,6 @@
 # Standalone script used to pass namelist updates to the regression tests.
 
-# First, generate new variable to hole the first 6 characters of the experiment.
+# First, generate new variable to hold the first 6 characters of the experiment.
 
 #if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
 if [[ `expr substr $exp 1 6` = "global" ]]; then
@@ -30,3 +30,15 @@ export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
+
+if echo $exp | grep updat > /dev/null ; then
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/airs2378_aqua.SpcCoeff.bin ./airs_aqua.SpcCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/airs2378_aqua.TauCoeff.bin ./airs_aqua.TauCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/iasi8461_metop-a.TauCoeff.bin ./iasi_metop-a.TauCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/iasi8461_metop-a.SpcCoeff.bin ./iasi_metop-a.SpcCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/iasi8461_metop-b.TauCoeff.bin ./iasi_metop-b.TauCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/iasi8461_metop-b.SpcCoeff.bin ./iasi_metop-b.SpcCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/cris1305_npp.SpcCoeff.bin ./cris_npp.SpcCoeff.bin
+  /bin/cp /da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix/cris1305_npp.TauCoeff.bin ./cris_npp.TauCoeff.bin
+fi
+

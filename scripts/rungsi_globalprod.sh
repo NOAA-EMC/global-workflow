@@ -6,7 +6,7 @@
 #BSUB -o gsi_global.o%J
 #BSUB -J gsi_global
 #BSUB -network type=sn_all:mode=US
-#BSUB -q dev
+#BSUB -q dev2
 #BSUB -n 32
 #BSUB -R span[ptile=8]
 #BSUB -R affinity[core(2):distribute=balance]
