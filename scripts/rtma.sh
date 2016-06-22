@@ -27,11 +27,9 @@ savdir=$savdir/outreg/rtma/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the analysis date, compute the date from which the
@@ -88,13 +86,13 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh RTMA
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh RTMA
 fi
 cat << EOF > gsiparm.anl
 
-$RTMA_namelist
+$gsi_namelist
 
 EOF
 
@@ -178,13 +176,9 @@ flt_tcamt=$fixgsi/$endianness/rtma_fltnorm.dat_tcamt
 prmcard=$fixgsi/rtma_parmcard_input
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $rtma_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $rtma_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $rtma_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $rtma_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -273,34 +267,12 @@ $ncp $rtma_obs/rtma.${cymd}.maxtobs.dat ./mxtmdat
 $ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
 cp wrf_inout wrf_ges
 
-if [[ "$machine" = "Theia" ]]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   export MP_USE_BULK_XFER=yes
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
 
 # Save output
 mkdir -p $savdir
