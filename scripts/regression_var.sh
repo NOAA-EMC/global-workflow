@@ -11,7 +11,7 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="trunk"
+updat="jung_cris_hsr"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -40,7 +40,7 @@ if [[ "$machine" = "Theia" ]]; then
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
-   export basedir="/da/save/$LOGNAME"
+   export basedir="/da/save/$LOGNAME/GSI"
 
    export group="dev"
    export queue="dev"
@@ -62,10 +62,11 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+export gsiexec_contrl="$basedir/trunk/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
-export fixgsi="$basedir/$updat/fix"
+export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
+#export fixgsi="$basedir/$updat/fix"
+export fixgsi="$basedir/trunk/fix"
 export scripts="$basedir/$updat/scripts"
 
 # Paths to tmpdir and savedir base on ptmp
