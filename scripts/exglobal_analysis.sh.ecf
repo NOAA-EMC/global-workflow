@@ -269,11 +269,11 @@
 #     ESAMUB        Input EARS AMSU/B radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}
 #     HRS3DB        Input EARS HIRS/3 radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}hrs3_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}hrs3db.tm00.bufr_d${SUFINP}
 #     AMUADB        Input EARS AMSU/A radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}amua_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}amuadb.tm00.bufr_d${SUFINP}
 #     AMUBDB        Input EARS AMSU/B radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}amub_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}amubdb.tm00.bufr_d${SUFINP}
 #     AIRSBF        Input AIRS radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}airs.tm00.bufr_d${SUFINP}
 #     IASIBF        Input IASI radiace file (bufr format)
@@ -281,7 +281,7 @@
 #     ESIASI        Input IASI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}
 #     IASIDB        Input IASI radiace file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}iasi_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}
 #     AMSREBF       Input AMSRE radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}
 #     SEVIRIBF      Input SEVIRI radiace file (bufr format)
@@ -293,19 +293,19 @@
 #     ESCRIS        Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}
 #     CRISDB        Input direct broadcast CRIS radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}cris_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}crisdb.tm00.bufr_d${SUFINP}
 #     CRISFSBF      Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}crisfs.tm00.bufr_d${SUFINP}
 #     ESCRISFS      Input CRIS-FSR radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}
 #     CRISFSDB      Input CRIS-FSR radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}crisfs_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}crisfsdb.tm00.bufr_d${SUFINP}
 #     ATMSBF        Input ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}
 #     ESATMS        Input ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}
 #     ATMSDB        Input direct broadcast ATMS radiance file (bufr format)
-#                   defaults to ${COMIN}/${PREINP}atms_DB.tm00.bufr_d${SUFINP}
+#                   defaults to ${COMIN}/${PREINP}atmsdb.tm00.bufr_d${SUFINP}
 #     SAPHIRBF      Input SAPHIR radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}
 #     AMSR2BF       Input AMSR2 L1B brightness temperature files
@@ -649,14 +649,14 @@ export ESHRS3=${ESHRS3:-${COMIN}/${PREINP}eshrs3.tm00.bufr_d${SUFINP}}
 export ESAMUA=${ESAMUA:-${COMIN}/${PREINP}esamua.tm00.bufr_d${SUFINP}}
 export ESAMUB=${ESAMUB:-${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}}
 export ESMHS=${ESMHS:-${COMIN}/${PREINP}esmhs.tm00.bufr_d${SUFINP}}
-export HRS3DB=${HRS3DB:-${COMIN}/${PREINP}hrs3_DB.tm00.bufr_d${SUFINP}}
-export AMUADB=${AMUADB:-${COMIN}/${PREINP}amua_DB.tm00.bufr_d${SUFINP}}
-export AMUBDB=${AMUBDB:-${COMIN}/${PREINP}amub_DB.tm00.bufr_d${SUFINP}}
-export MHSDB=${MHSDB:-${COMIN}/${PREINP}mhs_DB.tm00.bufr_d${SUFINP}}
+export HRS3DB=${HRS3DB:-${COMIN}/${PREINP}hrs3db.tm00.bufr_d${SUFINP}}
+export AMUADB=${AMUADB:-${COMIN}/${PREINP}amuadb.tm00.bufr_d${SUFINP}}
+export AMUBDB=${AMUBDB:-${COMIN}/${PREINP}amubdb.tm00.bufr_d${SUFINP}}
+export MHSDB=${MHSDB:-${COMIN}/${PREINP}mhsdb.tm00.bufr_d${SUFINP}}
 export AIRSBF=${AIRSBF:-${COMIN}/${PREINP}airsev.tm00.bufr_d${SUFINP}}
 export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d${SUFINP}}
-export ESIASI=${RIASI:-${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}}
-export IASIDB=${IASIDB:-${COMIN}/${PREINP}iasi_DB.tm00.bufr_d${SUFINP}}
+export ESIASI=${ESIASI:-${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}}
+export IASIDB=${IASIDB:-${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}}
 export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}}
 export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}}
 export GMIBF=${GMIBF:-${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}}
@@ -664,14 +664,14 @@ export SAPHIRBF=${SAPHIRBF:-${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}}
 export AHIBF=${AHIBF:-${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}}
-export ESCRIS=${RCRIS:-${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}}
-export CRISDB=${CRISDB:-${COMIN}/${PREINP}cris_DB.tm00.bufr_d${SUFINP}}
+export ESCRIS=${ESCRIS:-${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}}
+export CRISDB=${CRISDB:-${COMIN}/${PREINP}crisdb.tm00.bufr_d${SUFINP}}
 export CRISFSBF=${CRISFSBF:-${COMIN}/${PREINP}crisfs.tm00.bufr_d${SUFINP}}
-export ESCRISFS=${RCRISFS:-${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}}
-export CRISFSDB=${CRISFSDB:-${COMIN}/${PREINP}crisfs_DB.tm00.bufr_d${SUFINP}}
+export ESCRISFS=${ESCRISFS:-${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}}
+export CRISFSDB=${CRISFSDB:-${COMIN}/${PREINP}crisfsdb.tm00.bufr_d${SUFINP}}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}}
-export ESATMS=${RATMS:-${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}}
-export ATMSDB=${ATMSDB:-${COMIN}/${PREINP}atms_DB.tm00.bufr_d${SUFINP}}
+export ESATMS=${ESATMS:-${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}}
+export ATMSDB=${ATMSDB:-${COMIN}/${PREINP}atmsdb.tm00.bufr_d${SUFINP}}
 export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}}
 export SSMISBF=${SSMISBF:-${COMIN}/${PREINP}ssmisu.tm00.bufr_d${SUFINP}}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d${SUFINP}}
@@ -877,12 +877,12 @@ rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr ahibufr
-rm airsbufr iasibufr iasibufrears iasibufr_DB amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr
+rm airsbufr iasibufr iasibufrears iasibufr_db amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr
 rm ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
-rm hirs3bufr_DB hirs3bufrears amsuabufr_DB amsuabufrears
-rm amsubbufr_DB amsubbufrears mhsbufr_DB mhsbufrears seviribufr
-rm crisbufr crisbufr_DB crisbufrears crisfsbufr crisfsbufrears crisfsbufr_DB 
-rm atmsbufr atmsbufr_DB atmsbufrears
+rm hirs3bufr_db hirs3bufrears amsuabufr_db amsuabufrears
+rm amsubbufr_db amsubbufrears mhsbufr_db mhsbufrears seviribufr
+rm crisbufr crisbufr_db crisbufrears crisfsbufr crisfsbufrears crisfsbufr_db 
+rm atmsbufr atmsbufr_db atmsbufrears
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
@@ -953,10 +953,10 @@ $FCPLN $ESHRS3   hirs3bufrears
 $FCPLN $ESAMUA   amsuabufrears
 $FCPLN $ESAMUB   amsubbufrears
 $FCPLN $ESMHS    mhsbufrears
-$FCPLN $HRS3DB   hirs3bufr_DB
-$FCPLN $AMUADB   amsuabufr_DB
-$FCPLN $AMUBDB   amsubbufr_DB
-$FCPLN $MHSDB    mhsbufr_DB
+$FCPLN $HRS3DB   hirs3bufr_db
+$FCPLN $AMUADB   amsuabufr_db
+$FCPLN $AMUBDB   amsubbufr_db
+$FCPLN $MHSDB    mhsbufr_db
 $FCPLN $SBUVBF   sbuvbufr
 $FCPLN $GOMEBF   gomebufr
 $FCPLN $OMIBF    omibufr
@@ -966,7 +966,7 @@ $FCPLN $TMIPCP   tmirrbufr
 $FCPLN $AIRSBF   airsbufr
 $FCPLN $IASIBF   iasibufr
 $FCPLN $ESIASI   iasibufrears
-$FCPLN $IASIDB   iasibufr_DB
+$FCPLN $IASIDB   iasibufr_db
 $FCPLN $AMSREBF  amsrebufr
 $FCPLN $AMSR2BF  amsr2bufr
 $FCPLN $GMIBF    gmibufr
@@ -974,13 +974,13 @@ $FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
 $FCPLN $ESCRIS   crisbufrears
-$FCPLN $CRISDB   crisbufr_DB
+$FCPLN $CRISDB   crisbufr_db
 $FCPLN $CRISFSBF crisfsbufr
 $FCPLN $ESCRISFS crisfsbufrears
-$FCPLN $CRISFSDB crisfsbufr_DB
+$FCPLN $CRISFSDB crisfsbufr_db
 $FCPLN $ATMSBF   atmsbufr
 $FCPLN $ESATMS   atmsbufrears
-$FCPLN $ATMSDB   atmsbufr_DB
+$FCPLN $ATMSDB   atmsbufr_db
 $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
 $FCPLN $GPSROBF  gpsrobufr
