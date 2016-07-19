@@ -15,7 +15,7 @@ export LEVS=64
 export JCAP_B=62
 
 # Set runtime and save directories
-tmpdir=$tmpdir/4dvar_tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/4dvar_out${JCAP}/sigmap/${exp}
 
 # Specify GSI fixed field and data directories.
@@ -23,12 +23,10 @@ savdir=$savdir/4dvar_out${JCAP}/sigmap/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the requested resolution, set dependent resolution parameters
@@ -179,19 +177,22 @@ export nhr_obsbin=${nhr_obsbin:-1}
 SETUPobs="l4dvar=.true.,jiterstart=1,lobserver=.true.,iwrtinc=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,"
 #SETUP="$SETUPmin $SETUPlan $SETUPobs $SETUP_update"
 SETUP="$SETUPmin $SETUPobs $SETUP_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+
+if [ "$minimization" = "lanczos" ]; then
+   namelist_name=global_lanczos_T62
 else
-   . $scripts/regression_namelists_db.sh
+   namelist_name=global_T62
+fi
+
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh $namelist_name
+else
+   . $scripts/regression_namelists_db.sh $namelist_name
 fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
 
-if [ "$minimization" = "lanczos" ]; then
-   $global_lanczos_T62_namelist
-else
-   $global_T62_namelist
-fi
+$gsi_namelist
 
 EOF
 
@@ -253,13 +254,9 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_4dvar_T62_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_4dvar_T62_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_4dvar_T62_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $global_4dvar_T62_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -387,28 +384,10 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
    ##$ncp $global_4dvar_T62_obs/${prefix_atm}.sgp3prep.le        ./sigf09
 fi
 
-# Run gsi observer under Parallel Operating Environment (poe) on NCEP IBM
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-   module load intel
-   module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout.obsvr"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout.obsvr
-
-fi
+# Run gsi observer
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout.obsvr 2>&1"
 
 # Run gsi identity model 4dvar under Parallel Operating Environment (poe) on NCEP IBM
 rm -f siganl sfcanl.gsi satbias_out fort.2*
@@ -418,43 +397,25 @@ rm -rf dir.0*
 SETUP4dv="l4dvar=.true.,jiterstart=1,nhr_assimilation=6,nhr_obsbin=$nhr_obsbin,idmodel=.true.,iwrtinc=1,lanczosave=.true.,"
 #SETUP="$SETUPmin $SETUPlan $SETUP4dv $SETUP_update"
 SETUP="$SETUPmin $SETUP4dv $SETUP_update"
-if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+
+if [ "$minimization" = "lanczos" ]; then
+   namelist_name=global_lanczos_T62
 else
-   . $scripts/regression_namelists_db.sh
+   namelist_name=global_T62
+fi
+
+if [ "$debug" = ".false." ]; then
+   . $scripts/regression_namelists.sh $namelist_name
+else
+   . $scripts/regression_namelists_db.sh $namelist_name
 fi
 rm gsiparm.anl
 cat << EOF > gsiparm.anl
-if [ "$minimization" = "lanczos" ]; then
-   $global_lanczos_T62_namelist
-else
-   $global_T62_namelist
-fi
-
+$gsi_namelist
 EOF
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc

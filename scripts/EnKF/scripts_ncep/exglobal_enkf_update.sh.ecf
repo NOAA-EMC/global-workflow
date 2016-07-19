@@ -35,12 +35,10 @@
 #                   overridden by $4; required
 #     ENKFSTAT      Output enkf update statistics
 #                   defaults to ${COMIN}/${PREINP}enkfstat
-#     FIXGLOBAL     Directory for global fixed files
+#     FIXGSM        Directory for global fixed files
 #                   defaults to /nwprod/fix
-#     EXECGLOBAL    Directory for global executables
+#     EXECgsm       Directory for global executables
 #                   defaults to /nwprod/exec
-#     USHGLOBAL     Directory for global scripts
-#                   defaults to /nwprod/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
 #                   defaults to current working directory
@@ -58,21 +56,21 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     SIGHDR        Command to read sigma header
-#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
+#                   defaults to ${EXECgsm}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
-#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#                   defaults to ${EXECgsm}/global_sfchdr$XC
 #     ENKFUPDEXEC   Spectral analysis executable
-#                   defaults to ${EXECGLOBAL}/global_enkf$XC
+#                   defaults to ${EXECgsm}/global_enkf$XC
 #     SATINFO       Input satellite information file
-#                   defaults to ${FIXGLOBAL}/global_satinfo.txt
+#                   defaults to ${FIXgsi}/global_satinfo.txt
 #     CONVINFO      Input conventional observation information file
-#                   defaults to ${FIXGLOBAL}/global_convinfo.txt
+#                   defaults to ${FIXgsi}/global_convinfo.txt
 #     OZINFO        Input ozone information file
-#                   defaults to ${FIXGLOBAL}/global_ozone.txt
+#                   defaults to ${FIXgsi}/global_ozone.txt
 #     SCANINFO      Input satellite scan information file
-#                   defaults to ${FIXGLOBAL}/global_scaninfo.txt
+#                   defaults to ${FIXgsi}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
-#                   defaults to ${FIXGLOBAL}/global_hybens_locinfo.l${LEVS}.txt
+#                   defaults to ${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt
 #     TCVITL        Input tcvitals file
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
 #     INISCRIPT     Preprocessing script
@@ -200,14 +198,11 @@ export SIGGES=${2:-${SIGGES:?}}
 export GBIAS=${3:-${GBIAS:?}}
 export GBIASE=${4:-${GBIASE:?}}
 #  Directories.
-export HOMEDIR=${HOMEDIR:-/nwprod}
+export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/fix}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
-
-export FIXGSI=${FIXGSI:-$NWPROD/global_shared.${global_shared_ver}/fix}
-export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec}
+export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec}
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
@@ -219,8 +214,8 @@ export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run EnKF update with NEMS
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export SIGHDR=${SIGHDR:-${EXECGLOBAL}/global_sighdr$XC}
-export SFCHDR=${SFCHDR:-${EXECGLOBAL}/global_sfchdr$XC}
+export SIGHDR=${SIGHDR:-${EXECgsm}/global_sighdr$XC}
+export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
@@ -235,13 +230,13 @@ fi
 export LATA=${LATA:-$LATB}
 export LONA=${LONA:-$LONB}
 export NPTS=`expr \( $LONA \) \* \( $LATA \)`
-export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECGDAS}/global_enkf$XC}
-export SATANGL=${SATANGL:-${FIXGSI}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIXGSI}/global_satinfo.txt}
-export CONVINFO=${CONVINFO:-${FIXGSI}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIXGSI}/global_ozinfo.txt}
-export SCANINFO=${SCANINFO:-${FIXGSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIXGSI}/global_hybens_locinfo.l${LEVS}.txt}
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECgdas}/global_enkf$XC}
+export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
 export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
 export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}

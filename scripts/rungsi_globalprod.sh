@@ -17,10 +17,10 @@
 ## Below are PBS (Linux queueing system) commands
 #PBS -o gsi_global.e${jobid} 
 #PBS -N gsi_global
-##PBS -q batch 
-#PBS -q debug 
+#PBS -q batch 
+##PBS -q debug 
 ##PBS -l walltime=01:00:00 
-#PBS -l walltime=00:30:00 
+#PBS -l walltime=02:30:00 
 #PBS -l nodes=12:ppn=8
 ##PBS -l nodes=2:ppn=12
 #PBS -j eo                
@@ -50,17 +50,17 @@ fi
 
 # Set experiment name and analysis date
 adate=2015060900
-expnm=globalprod   
+expnm=globalprod    
 exp=globalprod.$adate
 expid=${expnm}.$adate
 
 # Set path/file for gsi executable
 #gsiexec=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/src/global_gsi
-gsiexec=/da/save/$USER/GSI/Desroziers/src/global_gsi
+gsiexec=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/src/global_gsi
 
 # Specify GSI fixed field
 #fixgsi=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/fix
-fixgsi=/da/save/$USER/GSI/Desroziers/fix
+fixgsi=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -73,10 +73,9 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-   datdir=/ptmpp1/$USER/data_sigmap/${exp}
-   tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}new  
-   savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}new  
-#   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   datdir=/ptmp/$USER/data_sigmap/${exp}
+   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
@@ -650,6 +649,13 @@ cp $datdir/*Rcov* $tmpdir
 # #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
 # #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
 
+#  # For data before Feb 2015 
+#  # Copy bias correction, atmospheric and surface files
+#  $ncp $datges/${prefix_tbc}.abias              ./satbias_in
+#  $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
+#  #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
+#  #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
+
  # For data after Feb 2015 
  # Copy bias correction, atmospheric and surface files
  $ncp $datges/${prefix_tbc}.abias               ./satbias_in
@@ -657,7 +663,7 @@ cp $datdir/*Rcov* $tmpdir
  $ncp $datges/${prefix_tbc}.abias_pc            ./satbias_pc
  $ncp $datges/${prefix_tbc}.radstat             ./radstat.gdas
 
-#/da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
+/da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 
 #cp satbias_in satbias_in.orig
 #cp satbias_in.new satbias_in

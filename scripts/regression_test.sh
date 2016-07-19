@@ -252,6 +252,10 @@ then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are not reproducible'
+   echo 'Thus, the case has failed the regression tests.'
+   echo
 fi
 
 } >> $output
@@ -264,6 +268,10 @@ if cmp -s wrf_inout.${exp1} wrf_inout.${exp2}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
+   echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are not reproducible'
+   echo 'Thus, the case has failed the regression tests.'
    echo
 fi
 
@@ -278,6 +286,10 @@ then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are not reproducible'
+   echo 'Thus, the case has failed the regression tests.'
+   echo
 fi
 
 } >> $output
@@ -291,6 +303,10 @@ then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
    echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are not reproducible'
+   echo 'Thus, the case has failed the regression tests.'
+   echo
 fi
 
 } >> $output
@@ -301,6 +317,10 @@ if cmp -s siganl.${exp1} siganl.${exp2}
 then
    echo 'The results between the two runs ('${exp1}' and '${exp2}') are reproducible'
    echo 'since the corresponding results are identical.'
+   echo
+else
+   echo 'The results between the two runs ('${exp1}' and '${exp2}') are not reproducible'
+   echo 'Thus, the case has failed the regression tests.'
    echo
 fi
 
@@ -342,6 +362,10 @@ if [[ `expr substr $exp1 1 4` = "rtma" ]]; then
       echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
       echo 'since the corresponding results are identical.'
       echo
+   else
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+      echo 'Thus, the case has failed the regression tests.'
+      echo
    fi
 
 } >> $output
@@ -354,6 +378,10 @@ elif [[ -f wrf_inout.${exp1} ]]; then
    then
       echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
       echo 'since the corresponding results are identical.'
+      echo
+   else
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+      echo 'Thus, the case has failed the regression tests.'
       echo
    fi
 
@@ -368,6 +396,10 @@ elif [[ -f wrf_inout06.${exp1} ]]; then
       echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
       echo 'since the corresponding results are identical.'
       echo
+   else
+      echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+      echo 'Thus, the case has failed the regression tests.'
+      echo
    fi
 
 } >> $output
@@ -381,6 +413,10 @@ elif [[ `expr substr $exp1 1 6` = "global" ]]; then
          echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
          echo 'since the corresponding results are identical.'
          echo
+      else
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+         echo 'Thus, the case has failed the regression tests.'
+         echo
       fi
 
 } >> $output
@@ -391,7 +427,11 @@ elif [[ `expr substr $exp1 1 6` = "global" ]]; then
       if cmp -s siganl.${exp1} siganl.${exp3} 
       then
          echo 'The results between the two runs ('${exp1}' and '${exp3}') are reproducible'
-            echo 'since the corresponding results are identical.'
+         echo 'since the corresponding results are identical.'
+         echo
+      else
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+         echo 'Thus, the case has failed the regression tests.'
          echo
       fi
 
@@ -424,5 +464,9 @@ rm -f ${exp1}.out
 rm -f ${exp2}.out
 rm -f ${exp3}.out
 rm -f ${exp2_scale}.out
+
+if [[ "$clean" = ".true." ]]; then
+   rm -rf $savdir
+fi
 
 exit

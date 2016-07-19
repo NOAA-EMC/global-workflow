@@ -46,11 +46,9 @@ savdir=$savdir/outreg/nmm_binary/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 # Given the analysis date, compute the date from which the
@@ -108,13 +106,13 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh nmm_binary
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh nmm_binary
 fi
 cat << EOF > gsiparm.anl
 
-$nmm_binary_namelist
+$gsi_namelist
 
 EOF
 
@@ -186,13 +184,9 @@ bftab_sst=$fixgsi/bufrtab.012
 
 
 # Copy executable and fixed files to $tmpdir
-if [[ "$exp" = $nmm_binary_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmm_binary_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmm_binary_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ "$exp" = $nmm_binary_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -268,32 +262,12 @@ elif [[ "$io_format" = "netcdf" ]]; then
 fi
 cp wrf_inout wrf_ges
 
-if [ "$machine" = "Zeus" -o "$machine" = "Theia" ]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
 
 # Save output
 mkdir -p $savdir
