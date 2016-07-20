@@ -138,7 +138,7 @@ case $regtest in
            topts[1]="0:30:00"
         fi
 
-        scaling[1]=4; scaling[2]=8; scaling[3]=4
+        scaling[1]=4; scaling[2]=10; scaling[3]=4
 
     ;;
 
