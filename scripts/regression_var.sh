@@ -11,7 +11,7 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="trunk"
+updat="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -92,7 +92,7 @@ export arw_binary_adate="2010072412"
 export arw_netcdf_adate="2008051112"
 export nmm_binary_adate="2010021600"
 export nmm_netcdf_adate="2007122000"
-export rtma_adate="2015030712"
+export rtma_adate="2016021003"
 export hwrf_nmm_adate="2012102812"
 
 # Paths for canned case data.

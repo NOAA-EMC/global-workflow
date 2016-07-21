@@ -11,7 +11,7 @@
 #BSUB -R span[ptile=8]
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
-#BSUB -W 01:00
+#BSUB -W 02:00
 #BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
@@ -56,11 +56,11 @@ expid=${expnm}.$adate
 
 # Set path/file for gsi executable
 #gsiexec=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/src/global_gsi
-gsiexec=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/src/global_gsi
+gsiexec=/da/save/$USER/GSI/Desroziers/src/global_gsi
 
 # Specify GSI fixed field
 #fixgsi=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/fix
-fixgsi=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/fix
+fixgsi=/da/save/$USER/GSI/Desroziers/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
@@ -73,9 +73,9 @@ export lrun_subdirs=.true.
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-   datdir=/ptmp/$USER/data_sigmap/${exp}
-   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
-   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
+   datdir=/ptmpp1/$USER/data_sigmap/${exp}
+   tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
