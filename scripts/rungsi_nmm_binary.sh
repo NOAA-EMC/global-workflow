@@ -148,10 +148,10 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh nmm_binary
 cat << EOF > gsiparm.anl
 
-$nmm_binary_namelist
+$gsi_namelist
 
 EOF
 

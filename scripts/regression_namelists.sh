@@ -1,12 +1,18 @@
+regtest=$1
+
+case $regtest in
+
+    global_T62)
+
 # Define namelist for global run (pcgsoi minimization)
 
-export global_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=100,niter(2)=150,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
-   gencode=82,qoption=2,
+   gencode=82,qoption=2,cwoption=3,
    factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
@@ -152,10 +158,13 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /"
+;;
+
+    global_T62_ozonly)
 
 # Define namelist for global run (ozone analysis)
 
-export global_T62_ozonly_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=100,niter(2)=150,
@@ -223,10 +232,13 @@ OBS_INPUT::
  &SINGLEOB_TEST
    $SINGLEOB
  /"
+;;
+
+    global_lanczos_T62)
 
 # Define namelist for global run (lanczos minimization)
 
-export global_lanczos_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -367,14 +379,19 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /"
+;;
 
-export global_hybrid_T126_namelist="
+    global_hybrid_T126)
+
+# Define namelist for global hybrid run
+
+export gsi_namelist="
 
  &SETUP
    miter=1,niter(1)=5,niter(2)=150,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
-   qoption=2,
+   qoption=2,cwoption=3,
    gencode=82,factqmin=0.1,factqmax=0.1,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
@@ -411,7 +428,7 @@ export global_hybrid_T126_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,njqc=.false.,vqc=.true.,aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -422,9 +439,12 @@ OBS_INPUT::
 !  dfile          dtype       dplat     dsis                dval    dthin  dsfcalc
    prepbufr       ps          null      ps                  0.0      0     0
    prepbufr       t           null      t                   0.0      0     0
+   prepbufr_profl t           null      t                   0.0      0     0
    prepbufr       q           null      q                   0.0      0     0
+   prepbufr_profl q           null      q                   0.0      0     0
    prepbufr       pw          null      pw                  0.0      0     0
    prepbufr       uv          null      uv                  0.0      0     0
+   prepbufr_profl uv          null      uv                  0.0      0     0
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0
@@ -520,16 +540,19 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /"
+;;
+
+    RTMA)
 
 # Define namelist for RTMA runs
 
-export RTMA_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=10,niter(2)=10,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,factv=0.1,deltim=$DELTIM,
+   factqmin=1.0,factqmax=1.0,factv=0.1,factcldch=0.1,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
@@ -551,7 +574,7 @@ export RTMA_namelist="
    anisotropic=.true.,an_vs=0.5,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
    ifilt_ord=2,npass=3,normal=-200,grid_ratio=1.,nord_f2a=4,
-   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.
+   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.,
  /
  &JCOPTS
  /
@@ -560,7 +583,7 @@ export RTMA_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,vadfile='prepbufr',
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',
    hilbert_curve=.true.,buddycheck_t=.false.,buddydiag_save=.true.,oberrflg=.true.,njqc=.true.,vqc=.false.,
    $OBSQC
  /
@@ -575,15 +598,20 @@ OBS_INPUT::
    prepbufr       uv        null      uv       1.0     0      0
    satwndbufr     uv        null      uv       1.0     0      0
    prepbufr       spd       null      spd      1.0     0      0
+   prepbufr       wspd10m   null      wspd10m  1.0     0      0
+   satwnd         wspd10m   null      wspd10m  1.0     0      0
    prepbufr       gust      null      gust     1.0     0      0
    prepbufr       vis       null      vis      1.0     0      0
-   prepbufr       wspd10m   null      wspd10m  1.0     0      0
    prepbufr       td2m      null      td2m     1.0     0      0
+   mxtmdat        mxtm      null      mxtm     1.0     0      0
+   mitmdat        mitm      null      mitm     1.0     0      0
    prepbufr       mxtm      null      mxtm     1.0     0      0
-   prepbufr       mitm      null      mitm     1.0     0      0
+   prepbufr       mitm      null      mitm      1.0     0      0
    prepbufr       pmsl      null      pmsl     1.0     0      0
    prepbufr       howv      null      howv     1.0     0      0
    prepbufr       tcamt     null      tcamt    1.0     0      0
+   goessky        tcamt     null      tcamt    1.0     0      0
+   prepbufr       cldch     null      cldch    1.0     0      0
 ::
  &SUPEROB_RADAR
  /
@@ -601,10 +629,13 @@ OBS_INPUT::
    oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    arw_binary)
 
 # Define namelist for arw binary run
 
-export arw_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -639,7 +670,7 @@ export arw_binary_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -740,10 +771,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    arw_netcdf)
 
 # Define namelist for arw netcdf run
 
-export arw_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -778,7 +812,7 @@ export arw_netcdf_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -879,10 +913,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    nmm_binary)
 
 # Define namelist for nmm binary run
 
-export nmm_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -917,7 +954,7 @@ export nmm_binary_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1018,10 +1055,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    nmm_netcdf)
 
 # Define namelist for nmm netcdf run
 
-export nmm_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -1056,7 +1096,7 @@ export nmm_netcdf_namelist="
    baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,
@@ -1157,10 +1197,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    nems_nmmb)
 
 # Define namelist for nems nmmb run
 
-export nems_nmmb_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
@@ -1196,7 +1239,7 @@ export nems_nmmb_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
-   vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,dmesh(5)=120,time_window_max=1.5,ext_sonde=.true.,
@@ -1303,10 +1346,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    nems_nmmb_4denvar)
 
 # Define namelist for 4DEnVar nems nmmb run
 
-export nems_nmmb_4denvar_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,
@@ -1349,7 +1395,7 @@ export nems_nmmb_4denvar_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,
-   vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -1466,10 +1512,13 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB_TEST
  /"
+;;
 
+    cmaq_binary)
+ 
 # Define namelist for cmaq binary run
 
- export cmaq_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,
@@ -1505,7 +1554,7 @@ OBS_INPUT::
    period_max=3.,baldiag_full=.true.,baldiag_inc=.true.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=120.0,dmesh(2)=60.0,dmesh(3)=60.0,dmesh(4)=60.0,
@@ -1543,10 +1592,13 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
+
+    hwrf_nmm_d2)
 
 # Define namelist for hwrf nmm d2 run
 
-export hwrf_nmm_d2_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
@@ -1587,7 +1639,7 @@ export hwrf_nmm_d2_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
@@ -1700,8 +1752,13 @@ OBS_INPUT::
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
 
-export hwrf_nmm_d3_namelist="
+    hwrf_nmm_d3)
+
+# Define namelist for hwrf nmm d3 run
+
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=50,niter(2)=50,niter_no_qc(1)=20,niter_no_qc(2)=0,
@@ -1742,7 +1799,7 @@ export hwrf_nmm_d3_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
-   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',njqc=.false.,vqc=.true.,
+   noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
    dmesh(1)=90.0,dmesh(2)=45.0,dmesh(3)=45.0,dmesh(4)=45.0,dmesh(5)=90,time_window_max=3.0,l_foreaft_thin=.false.,
@@ -1855,8 +1912,14 @@ OBS_INPUT::
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
  /"
+;;
 
-export global_enkf_T62_namelist="
+    global_enkf_T62)
+
+# Define namelist for global enkf run
+
+export gsi_namelist="
+
  &nam_enkf
   datestring=${adate},datapath='${DATA}/',
   analpertwtnh=0.85,analpertwtsh=0.85,analpertwttr=0.85,
@@ -1946,3 +2009,13 @@ export global_enkf_T62_namelist="
   sattypes_oz(8) = 'mls30_aura',
   $OZOBS_ENKF
  /"
+;;
+
+    *)
+
+# EXIT out for unresolved regression test
+
+    echo "unknown $regtest"
+    exit 1
+
+esac

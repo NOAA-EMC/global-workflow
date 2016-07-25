@@ -18,10 +18,8 @@ export JCAP_B=126
 export JCAP_EN=62
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}/${exp}
-#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}/${exp}
-#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Daryl.Kleist/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$gsipath/trunk/fix
@@ -33,13 +31,10 @@ savdir=$savdir/out${JCAP}/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Daryl.Kleist/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 
@@ -181,14 +176,14 @@ SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh global_hybrid_T126
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh global_hybrid_T126
 fi
 
 cat << EOF > gsiparm.anl
 
-$global_hybrid_T126_namelist
+$gsi_namelist
 
 EOF
 
@@ -249,13 +244,9 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_hybrid_T126_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_hybrid_T126_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_hybrid_T126_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $global_hybrid_T126_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -303,29 +294,31 @@ done
 
 
 # Copy observational data to $tmpdir
-$ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate   ./prepbufr
-$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate   ./satwndbufr
-$ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate    ./gpsrobufr
-$ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate   ./tmirrbufr
-$ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate   ./sbuvbufr
-$ncp $global_hybrid_T126_datobs/gome.gdas.$global_hybrid_T126_adate     ./gomebufr
-$ncp $global_hybrid_T126_datobs/omi.gdas.$global_hybrid_T126_adate      ./omibufr
-$ncp $global_hybrid_T126_datobs/tcvitl.gdas.$global_hybrid_T126_adate   ./tcvitl
-$ncp $global_hybrid_T126_datobs/goesfv.gdas.$global_hybrid_T126_adate   ./gsnd1bufr
-$ncp $global_hybrid_T126_datobs/1bamua.gdas.$global_hybrid_T126_adate   ./amsuabufr
-$ncp $global_hybrid_T126_datobs/1bamub.gdas.$global_hybrid_T126_adate   ./amsubbufr
-$ncp $global_hybrid_T126_datobs/1bhrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufr
-$ncp $global_hybrid_T126_datobs/1bhrs4.gdas.$global_hybrid_T126_adate   ./hirs4bufr
-$ncp $global_hybrid_T126_datobs/airsev.gdas.$global_hybrid_T126_adate   ./airsbufr
-$ncp $global_hybrid_T126_datobs/mtiasi.gdas.$global_hybrid_T126_adate   ./iasibufr
-$ncp $global_hybrid_T126_datobs/esamua.gdas.$global_hybrid_T126_adate   ./amsuabufrears
-$ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate   ./amsubbufrears
-$ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate   ./hirs3bufrears
+$ncp $global_hybrid_T126_datobs/prepqc.gdas.$global_hybrid_T126_adate                 ./prepbufr
+$ncp $global_hybrid_T126_datobs/prepbufr.acft_profiles.gdas.$global_hybrid_T126_adate ./prepbufr_profl
+$ncp $global_hybrid_T126_datobs/satwnd.gdas.$global_hybrid_T126_adate                 ./satwndbufr
+$ncp $global_hybrid_T126_datobs/gpsro.gdas.$global_hybrid_T126_adate                  ./gpsrobufr
+$ncp $global_hybrid_T126_datobs/sptrmm.gdas.$global_hybrid_T126_adate                 ./tmirrbufr
+$ncp $global_hybrid_T126_datobs/osbuv8.gdas.$global_hybrid_T126_adate                 ./sbuvbufr
+$ncp $global_hybrid_T126_datobs/gome.gdas.$global_hybrid_T126_adate                   ./gomebufr
+$ncp $global_hybrid_T126_datobs/omi.gdas.$global_hybrid_T126_adate                    ./omibufr
+$ncp $global_hybrid_T126_datobs/tcvitl.gdas.$global_hybrid_T126_adate                 ./tcvitl
+$ncp $global_hybrid_T126_datobs/goesfv.gdas.$global_hybrid_T126_adate                 ./gsnd1bufr
+$ncp $global_hybrid_T126_datobs/1bamua.gdas.$global_hybrid_T126_adate                 ./amsuabufr
+$ncp $global_hybrid_T126_datobs/1bamub.gdas.$global_hybrid_T126_adate                 ./amsubbufr
+$ncp $global_hybrid_T126_datobs/1bhrs3.gdas.$global_hybrid_T126_adate                 ./hirs3bufr
+$ncp $global_hybrid_T126_datobs/1bhrs4.gdas.$global_hybrid_T126_adate                 ./hirs4bufr
+$ncp $global_hybrid_T126_datobs/airsev.gdas.$global_hybrid_T126_adate                 ./airsbufr
+$ncp $global_hybrid_T126_datobs/mtiasi.gdas.$global_hybrid_T126_adate                 ./iasibufr
+$ncp $global_hybrid_T126_datobs/esamua.gdas.$global_hybrid_T126_adate                 ./amsuabufrears
+$ncp $global_hybrid_T126_datobs/esamub.gdas.$global_hybrid_T126_adate                 ./amsubbufrears
+$ncp $global_hybrid_T126_datobs/eshrs3.gdas.$global_hybrid_T126_adate                 ./hirs3bufrears
 
 # Copy bias correction, atmospheric and surface files
-$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate          ./satbias_in
-$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}     ./satbias_pc
-$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate         ./radstat.gdas
+$ncp $global_hybrid_T126_datges/biascr.gdas.$gdate                             ./satbias_in
+$ncp $global_hybrid_T126_datges/biascr_pc.gdas.${gdate}                        ./satbias_pc
+$ncp $global_hybrid_T126_datges/aircraft_t_bias.gdas.$global_hybrid_T126_adate ./aircftbias_in
+$ncp $global_hybrid_T126_datges/radstat.gdas.$gdate                            ./radstat.gdas
 
 listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
 for type in $listdiag; do
@@ -352,31 +345,9 @@ for file in $list; do
    ln -s $global_hybrid_T126_datges/sfg_${gdate}_fhr06s_mem${file} ./sigf06_ens_mem${file}
 done
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_DISPLAY_SETTINGS=YES
-   export MPI_STATS=YES
-   export MPI_STATS_FILE=mpi_tmp.out
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=2
-
-#  module load intel
-#  module load mpt
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc

@@ -14,7 +14,7 @@ export NMEM_ENKF=20
 export NVARS=6
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}_enkf/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}_enkf/${exp}
 
 # Specify EnKf fixed field and data directories.
@@ -22,8 +22,6 @@ export DATA=$tmpdir
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
@@ -82,11 +80,11 @@ rm -rf core*
 export NAM_ENKF="$SETUP_enkf"
 
 
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh global_enkf_T62
 
 cat << EOF > enkf.nml
 
-$global_enkf_T62_namelist
+$gsi_namelist
 
 EOF
 
@@ -118,13 +116,9 @@ btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_enkf_T62_updat_exp1 ]]; then
-   $ncp $enkfexec_updat ./enkf.x
-elif [[ $exp = $global_enkf_T62_updat_exp2 ]]; then
-   $ncp $enkfexec_updat ./enkf.x
-elif [[ $exp = $global_enkf_T62_contrl_exp1 ]]; then
-   $ncp $enkfexec_contrl ./enkf.x
-elif [[ $exp = $global_enkf_T62_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $enkfexec_updat  ./enkf.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $enkfexec_contrl ./enkf.x
 fi
 
@@ -174,32 +168,8 @@ $ncp $global_enkf_T62_datges/satang.gdas.$gdate          ./satbias_ang.in
 $ncp $global_enkf_T62_datges/sfg_${gdate}_fhr06_ensmean ./sfg_${global_enkf_T62_adate}_fhr06_ensmean
 $ncp $global_enkf_T62_datges/bfg_${gdate}_fhr06_ensmean ./bfg_${global_enkf_T62_adate}_fhr06_ensmean
 
-
-# Run enkf under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-   cd $tmpdir/
-   echo "run enkf now"
-
-   export MPI_DISPLAY_SETTINGS=YES
-   export MPI_STATS=YES
-   export MPI_STATS_FILE=mpi_tmp.out
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/enkf.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/enkf.x < enkf.nml > stdout
-
-fi
-
+cd $tmpdir
+echo "run enkf now"
+eval "$APRUN $tmpdir/enkf.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
