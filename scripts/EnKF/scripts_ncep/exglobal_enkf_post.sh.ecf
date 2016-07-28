@@ -133,15 +133,9 @@ export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
 export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-
-export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
-
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix} 
 export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec} 
 export USHgdas=${USHgdas:-$NWPROD/gdas.${gdas_ver}/ush} 
-export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
@@ -580,7 +574,10 @@ while [[ $imem -le $NMEM_ENKF ]]; do
    FH=6 
    until [[ $FH -gt $FHEND ]];do 
       [[ $FH -lt 10 ]]&&FH=0$FH 
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+      if [[ `expr $FH % 3` -eq 0 ]]
+      then
+        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+      fi
       FH=`expr $FH + $FHOUT` 
    done 
    (( imem = $imem + 1 )) 
