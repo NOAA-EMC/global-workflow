@@ -1,0 +1,233 @@
+RELEASE NOTES:  gdas_da.v6.2.3 --> gdas_da.v13.0.0
+ v6.0.0 - released Jun 16, 2015
+ v6.1.0 - released Oct 02, 2015
+ v6.2.0 - released Oct 27, 2015
+ v6.2.1 - released Nov 10, 2015
+ v6.2.2 - released Dec 15, 2015
+ v6.2.3 - released Jan 19, 2016
+v13.0.0 - released Feb 02, 2016
+
+SVN HISTORY  (see EMC GSI Trac ticket #478, EMC GFS Trac ticket #236)
+ * r57752 - create GLOBAL_RB.v6.0.0 as copy of r57678 trunk
+ * r57803 - revise build to use modulefile
+ * r57804 - update gdas, gfs, and global_shared directory version numbers 
+ * r57808 - commit release notes
+ * r59582 - merge r59495 GSI trunk into GLOBAL_RB.v6.0.0
+ * r59583 - update SVN HISTORY in release notes
+ * r59587 - restore r57803 Makefile.conf.wcoss
+ * r59595 - first attempt at refactoring JGFS_ANALYSIS to be consistent with NCO WCOSS implementation standards
+ * r60327 - merge r59731 and r60129 trunk into GLOBAL_RB.v6.0.0
+ * r60342 - update SVN HISTORY in release notes
+ * r60354 - update version numbers to crtm.v2.2.3 and bufr.v11.0.0.  crtm.v2.2.3 added to GSI trunk at r60393
+ * r60360 - refactor JGDAS_ANALYSIS_HIGH in accord with NCO WCOSS implementation standards
+ * r60540 - refactor jobs and scripts in accord with NCO WCOSS implementation standards
+ * r60678 - update SVN HISTORY in release notes; update jobs and scripts to use nwtest2 CRTM v2.2.3
+ * r60681 - turn off dissipative heating in EnKF forecast
+ * r60682 - update SVN HISTORY (add r60678 and r60681)
+ * r60807 - update SVN HISTORY; correct typo in Release_Notes.gdas_da.v6.0.0.txt
+ * r60831 - update SVN HISTORY; additional NCO WCOSS Implementation Standards changes made to JGDAS_ENKF_FCST
+ * r61501 - add satinfo files for retrospective parallels
+ * r61689 - add convinfo and errtable files for retrospective parallels
+ * r62346 - create GLOBAL_RB.v6.1.0 as copy of r62337 GSI trunk
+ * r62482 - update Release_Notes, convinfo, and satinfo files; copy files from GLOBAL_RB.v6.0.0
+ * r63885 - create GLOBAL_RB.v6.2.0 as copy of r63842 branches/fixe2c
+ * r63890 - add or copy/modify various componets from GLOBAL_RB.v6.0.0
+ * r63952 - copy updates from r63951 fixe2c into GLOBAL_RB.v6.2.0
+ * r63964 - copy r63960 fixe2c to GLOBAL_RB.v6.2.0
+ * r64593 - create GLOBAL_RB.v6.2.1 as copy of r63964 GLOBAL_RB.v6.2.0
+ * r64596 - increment version number from 6.2.0 to 6.2.1
+ * r64614 - place channels 101 & 102 on CrIS, 221 on AIRS and 269 on Metop-A/B IASI in monitor mode 
+ * r64617 - update SVN HISTORY in release notes
+ * r64654 - update SVN HISTORY in release notes; add global_satinfo.txt.2015111012
+ * r66548 - copy r64654 GLOBAL_RB.v6.2.1 to GLOBAL_RB.v6.2.2
+ * r66550 - update GSI source code: limit ensemble RH perturbation; correct ATMS spatial averaging array index bug
+ * r66583 - increment version number of directories in GLOBAL_RB.v6.2.2 from v6.2.1 to v6.2.2
+ * r66588 - increment version number in build, module, and release notes
+ * r66591 - correct typo in ATMS code; update SVN HISTORY in release notes
+ * r67496 - refactor jobs as requested by NCO; update release notes; clean build directories
+ * r67528 - update release notes; specify precision on numeric constant
+ * r67541 - update release notes, add driver scripts and config files for jobs
+ * r67781 - create GLOBAL_RB.v6.2.3 as copy of r67541 GLOBAL_RB.v6.2.2
+ * r67787 - increment version number from v6.2.2 to v6.2.3 in release notes, build, and driver scripts
+ * r67788 - update berror.f90
+ * r67789 - update SVN HISTORY in release notes
+ * r67791 - increment version number from v6.2.2 to v6.2.3 in module filename
+ * r67793 - update SVN HISTORY in release notes
+ * r68372 - move gsi/branches/GLOBAL_RB.v2.6.2/gdas.v6.2.3 into gfs/tags/gdas.v13.0.0
+
+
+CODE CHANGES
+ * refactor gsi.v5.0.3 and enkf.v2.0.2 into gdas, gfs, and global_shared vertical structure
+ * gdas.v13.0.0/sorc
+   * adderrspec_nmcmeth_spec.fd - add nemsio capability
+   * enkf_update.fd - add nemsio capability
+   * getsfcensmeanp.fd - add nemsio capability
+   * getsigensmeanp_smooth_ncep.fd - add nemsio capability
+   * recentersigp.fd - add nemsio capability
+
+
+JOB CHANGES
+ * All jobs
+   * refactor jobs in accord with NCO implementation standards
+   * move application specific variables to parameter file
+ * JGDAS_ANALYSIS_HIGH
+   * update version number variables and defaults; add variables for aircraft data processing and bias correction; add variables for hourly atmospheric backgrounds;  add l4densvar variable; add getges lines for aircraft bias correction and hourly backgrounds; update GSI namelists; update MP environment variables
+ * JGDAS_ENKF_FCST
+   * replace enkf_ver with gdas_ver; update file paths; change forecast output frequency to hourly; update stochastic physics namelist variables; add DOIAU_ENKF flag
+ * JGDAS_ENKF_INFLATE_RECENTER
+   * replace enkf_ver and gsi_ver with gdas_ver and global_shared_ver; update file paths; increase CHGRESTHREAD to 48
+ * JGDAS_ENKF_INNOVATE_OBS
+   * update version number variables and defaults; update file paths; add SMOOTH_ENKF variable; add getges line for aircraft bias correction; update GSI namelists; update MP environment variables
+ * JGDAS_ENKF_POST
+   * replace enkf_ver and gsi_ver with gdas_ver; update file paths; change forecast output to hourly; add l4densvar and SMOOTH_ENKF variables
+ * JGDAS_ENKF_SELECT_OBS
+   * update version number variables and defaults; add variables for aircraft data processing and bias correction; add l4densvar variable; add getges lines for aircraft bias correction; update GSI namelists; update MP environment variables
+ * JGDAS_ENKF_UPDATE
+   * update version number variables and defaults; update file paths; update EnKF update code namelist; add SMOOTH_ENKF variable
+
+
+SCRIPT CHANGES
+ * All scripts:  refactor scripts in accord with NCO implementation standards
+ * exglobal_enkf_fcst.sh.ecf
+   * add IAU logic
+ * exglobal_enkf_inflate_recenter.sh.ecf 
+   * add nemsio logic; change SCALEFACT default; add NSST processing
+ * exglobal_enkf_innovate_obs.sh.ecf
+   * add variables for NSST; add nemsio logic; add DOIAU variable; add _ENKF variables to toggle GSI namelist variables; add variables for hourly backgrounds and aircraft bias correction; update GSI namelist
+ * exglobal_enkf_post.sh.ecf
+   * add nemsio logic; add SMOOTH_ENKF variable; modify logic to process hourly files
+ * exglobal_enkf_update.sh.ecf
+   * add nemsio logic; update global_enkf namelist
+
+
+RESOURCE INFORMATION
+ * Current operational GFS runs on WCOSS phase1 nodes.   Q1FY16 GFS package should be implemented on WCOSS phase2 nodes.
+ * JGDAS_ANALYSIS_HIGH
+   * job configuration
+     * current operations:  90 nodes, 360 tasks, ptile=4, 4 threads
+     * proposed package:  240 nodes, 480 tasks, ptile=2, 12 threads
+       NOTE:  see ../driver/test_gdas_analysis_high.sh for jobs specific module load and environment variable settings
+   * run time
+     * current operations:  32.7 - 35.9  minutes
+     * proposed package:  30 - 32 minutes
+ * JGDAS_ENKF_SELECT_OBS
+   * job configuration
+     * current operations:  7 nodes, 112 tasks, ptile=16, 1 thread
+     * proposed package:  12 nodes, 144 tasks, ptile=12, 2 threads
+       NOTE:  see ../driver/test_gdas_enkf_select_obs.sh for job specific module load and environment variable settings
+   * run time
+     * current operations:  3.1 - 4.0 minutes
+     * proposed package:  3.0 - 4.0 minutes
+ * JGDAS_ENKF_INNOVATE_OBS
+   * job configuration
+     * current operations:  7 nodes, 112 tasks, ptile=16, 1 thread
+     * proposed package:  12 nodes, 144 tasks, ptile=12, 2 thread
+       NOTE:  see ../driver/test_gdas_enkf_innovate_obs.sh for job specific module load and environment variable settings
+`   * run time
+     * current operations:  17.9 - 22.22 minutes
+     * proposed package  13.8 - 15.5 minutes
+ * JGDAS_ENKF_UPDATE
+   * job configuration
+     * current operations:  55 modes, 330 tasks, ptile=6, 2 threads
+     * proposed package:  40 nodes, 240 tasks, ptile=6, 4 threads
+       NOTE:  see ../driver/test_gdas_enkf_update.sh for job specific module load and environment variable settings
+   * run time
+     * current operations:  11.0 - 12.4 minutes
+     * proposed package: 10.0 - 12.0 minutes
+ * JGDAS_ENKF_INFLATE_RECENTER
+   * job configuration
+     * current operations:  20 nodes, 80 tasks, ptile=4, 1 thread
+     * proposed package:  4 nodes, 80 tasks, ptile=24, 1 thread
+       NOTE:  see ../driver/test_gdas_enkf_inflate_recenter.sh for job specific module load and environment variable settings
+   * run time
+     * current operations:  5.3 - 5.8 minutes
+     * proposed package:  2.7 - 4.0 minutes
+ * JGDAS_ENKF_FCST
+   * job configuration
+     * current operations:  20 nodes, 160 tasks, ptile=8, 2 threads
+     * proposed package:  16 nodes, 96 tasks, ptile=6, 4 threads
+       NOTE:  see ../driver/test_gdas_enkf_fcst.sh for job specific module load and environment variable settings
+   * run time
+     * current operations:  20.4 - 21.1 minutes
+     * proposed package:  18.4 - 19.0 minutes
+ * JGDAS_ENKF_POST
+   * job configuration
+     * current operations:  7 nodes, 81 tasks, ptile=12, 1 thread
+     * proposed package:  4 nodes, 81 tasks, ptile=24, 1 thread
+       NOTE:  see ../driver/test_gdas_enkf_post.sh for job specific module load and environment variable settings
+   * run time
+     * current operations:  8.2 - 9.3 minutes
+     * proposed package:  10.8 - 12.0 minutes
+ * Disk space required per day
+   * /com/gfs/prod/gdas.$PDY
+     * current operations:  320.1 Gb
+     * proposed package:  428.6 Gb (additional 108.5 Gb)
+   * /com/gfs/prod/enkf.$PDY/$cyc
+     * current operations:  1564.7 Gb
+     * proposed package:  2943.8 Gb (additional 1379.1 Gb)
+     *pending approval from downstream users remove 91.4 Gb of *_t254 files.   If approved, this reduces the total disk usage to 2852.4 Gb.
+ * Frequency of run
+   * 6 hourly cycle (00, 06, 12, 18Z)
+ * Specify all versions of libs, compilers, shared code recentersigp.x
+   * libraries
+     * BACIO_VER = v2.0.1
+     * BUFR_VER = v11.0.0
+     * CRTM_VER = v2.2.3
+     * NEMSIO_VER = v2.2.1
+     * NETCDF_VER = 3.6.3
+     * SFCIO_VER = v1.0.0
+     * SIGIO_VER = v2.0.1
+     * SP_VER = v2.0.2
+     * W3EMC_VER = v2.2.0
+     * W3NCO_VER = v2.0.6
+   * compiler (modules loaded during GSI build / run)
+     * ics/15.0.3
+     * ibmpe/1.3.0.10
+     * lsf/9.1
+ * Data retention for files in /com and /nwges under prod/para/test environments
+   * same as current operations
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+ * Which production jobs should be tested as part of this implementation?
+   * gdas_da.v13.0.0 should be tested as part of the Q1FY16 GFS package
+ * Does this change require a 30-day evaluation?
+   * YES
+ * Suggested evaluators
+   * same as rest of Q1FY16 GFS package
+
+
+DISSEMINATION INFORMATION
+ * Where should this output be sent?
+   * same as current operational GFS/GDAS GSI
+ * Who are the users?
+   * same as current operational GFS/GDAS GSI
+ * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS GSI
+
+
+HPSS ARCHIVE
+ * Retention length?
+   * same as current operational GFS/GDAS GSI
+ * List which output files should be archived
+   * same as current operational GFS/GDAS GSI
+
+           
+IMPLEMENTATION INSTRUCTIONS
+ * To implement gdas_da.v13.0.0, please do the following:
+   * cd $NWROOT
+   * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gdas.v13.0.0
+   * cd $NWROOD/gdas.v13.0.0/sorc
+   * execute "/bin/sh build_enkf.sh" - This builds executables and places the following executables in $NWROOT/gdas.v13.0.0/exec/
+     * adderrspec_nmcmeth_spec.x
+     * getsfcensmeanp.x
+     * getsigensmeanp_smooth.x
+     * global_enkf
+     * recentersigp.x
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+ * no change from gsi.v5.0.3 and enkf.v2.0.2
+
+
+
