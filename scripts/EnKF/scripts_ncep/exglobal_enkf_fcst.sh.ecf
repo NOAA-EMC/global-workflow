@@ -277,6 +277,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
+   export pgmoutm=$DATA/${pgmout:-pgmout.$member}
 
    export SUFOUT="_${member}"
 
@@ -373,12 +374,14 @@ while [[ $imem -le $ENSEND ]]; do
    ((rc+=ra))
 
    ##############################################################
-   # Add this statement to notify a member forecast failed to 
+   # Add this statement to notify a member forecast failed to
    # complete. Continue ahead with other members, but freeze epos
    ##############################################################
    if [ "$SENDECF" = YES -a $ra -ne 0 ]; then
       ecflow_client --abort="forecast of member $imem FAILED"
    fi
+
+   cat $pgmoutm
 
    export COMOUT=$COMOUTSAVE
 
@@ -409,7 +412,10 @@ while [[ $imem -le $ENSEND ]]; do
      FH=$FHOUT
      while [[ $FH -le $FHMAX ]]; do
        [[ $FH -lt 10 ]]&&FH=0$FH
-       $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
+       if [[ `expr $FH % 3` -eq 0 ]]
+       then
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/bfg_${CDATE}_fhr$FH$SUFOUT
+       fi
        FH=$((FH+FHOUT))
      done
    fi
