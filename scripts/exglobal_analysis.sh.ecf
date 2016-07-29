@@ -567,15 +567,11 @@ export ABIASe=${15:-${ABIASe:-satbias_int.out}}
 export HOMEDIR=${HOMEDIR:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXGLOBAL=${FIXGLOBAL:-$NWPROD/$FIXSUBDA}
-export EXECGLOBAL=${EXECGLOBAL:-$NWPROD/exec}
-export USHGLOBAL=${USHGLOBAL:-$NWPROD/ush}
-export FIXGSM=${FIXGSM:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECGSM=${EXECGSM:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHGSM=${USHGSM:-$NWPROD/gsm.${gsm_ver}/ush}
-export FIXGSI=${FIXGSI:-$NWPROD/gsi.${gsi_ver}/fix}
-export EXECGSI=${EXECGSI:-$NWPROD/gsi.${gsi_ver}/exec}
-export utilscript=${utilscript:-$NWPROD/util/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
+export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
@@ -845,6 +841,16 @@ if [ $NST_GSI -eq 3 ] ; then
       export FNOROG_UF=$FIXGLOBAL/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
       export FNMASK=$FIXGLOBAL/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
       $CYCLESH  $SFCGESENS_MEAN $SFCGCYENS_MEAN
+      fi
+   fi
+   if [[ "$DOHYBVAR" = "YES" ]]; then
+      if [ ! -s ${SFCGCYENS_MEAN} ]; then
+         export FNOROG=$FIXgsm/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         export FNMASK=$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+         $CYCLESH $SFCGESENS_MEAN $SFCGCYENS_MEAN
+         ra=$?
+         ((rc+=ra))
       fi
    fi
 else
@@ -1398,14 +1404,14 @@ fi
 
 if test "$SAVEGES" = "YES"
 then
-   cp $SFCANL   $GESdir/${RUN}.${cycle}.sfcanl
+   cp $SFCANL   $GESOUT/${PREINP}sfcanl
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
+      cp $NSTANL  $GESOUT/${PREINP}nstanl
    fi
-   cp $SIGANL   $GESdir/${RUN}.${cycle}.sanl
-   cp $ABIAS    $GESdir/${RUN}.${cycle}.abias
-   cp $ABIASPC  $GESdir/${RUN}.${cycle}.abias_pc
-   cp $ABIASAIR $GESdir/${RUN}.${cycle}.abias_air
+   cp $SIGANL   $GESOUT/${PREINP}sanl
+   cp $ABIAS    $GESOUT/${PREINP}abias
+   cp $ABIASPC  $GESOUT/${PREINP}abias_pc
+   cp $ABIASAIR $GESOUT/${PREINP}abias_air
 fi
 if test "$SENDCOM" = "YES"
 then
@@ -1415,7 +1421,7 @@ then
    cp $ABIASPC  $COMOUT/${RUN}.${cycle}.abias_pc
    cp $ABIASAIR $COMOUT/${RUN}.${cycle}.abias_air
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${RUN}.${cycle}.nstanl
+      cp $NSTANL  $GESOUT/${PREINP}nstanl
    fi
 fi
 
@@ -1549,7 +1555,7 @@ fi
 
 ################################################################################
 
-if test "$RUN" = 'gdas1'
+if test "$RUN" = 'gdas'
 then
     if test "$SENDDBN" = 'YES'
     then

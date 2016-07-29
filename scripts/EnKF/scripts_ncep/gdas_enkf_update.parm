@@ -1,0 +1,98 @@
+####################################
+# Specify Special Fcst Vars
+####################################
+#
+#Set hybrid and ensemble resolution parameters
+export NTHREADS_ENKF=${NTHREADS_ENKF:-4}
+export JCAP_ENKF=${JCAP_ENKF:-574}
+export LEVS_ENKF=${LEVS_ENKF:-64}
+export LONB_ENKF=${LONB_ENKF:-1152}
+export LATB_ENKF=${LATB_ENKF:-576}
+export LONA_ENKF=${LONA_ENKF:-1152}
+export LATA_ENKF=${LATA_ENKF:-576}
+export NMEM_ENKF=${NMEM_ENKF:-80}
+export NVARS=${NVARS:-5}
+
+#
+# These defaults are for the T254L64
+#
+export LONA=${LONA_ENKF:-1152}
+export LATA=${LATA_ENKF:-576}
+export LONB=${LONB_ENKF:-1152}
+export LATB=${LATB_ENKF:-576}
+export LEVS=${LEVS_ENKF:-64}
+
+# Forecast Vertical Resolution
+#
+export JCAP_ges=${JCAP_ges:-574}
+export LEVS_ges=${LEVS_ges:-64}
+#
+
+
+# EnKF executable
+export ENKFUPDEXEC=${ENKFUPDEXEC:-${EXECgdas}/global_enkf}
+
+# EnKF script
+export ENKFUPDSH=${ENKFUPDSH:-$SCRgdas/exglobal_enkf_update.sh.ecf}
+
+# Enkf fix files
+export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
+export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
+
+# EnKF ensemble files
+export GBIASE=${GBIASE:-$COMIN/biascr_int_${CDATE}_ensmean}
+export CNVSTAT=${CNVSTAT:-$COMIN/cnvstat_$CDATE}
+export OZNSTAT=${OZNSTAT:-$COMIN/oznstat_$CDATE}
+export RADSTAT=${RADSTAT:-$COMIN/radstat_$CDATE}
+export SIGGESENS=${SIGGESENS:-${COMINGES}/sfg_${GDATE}_fhr06s}
+
+export SIGGES=${SIGGES:-${COMINGES}/sfg_${GDATE}_fhr06_ensmean}
+export SFCGES=${SFCGES:-${COMINGES}/bfg_${GDATE}_fhr06_ensmean}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
+
+############################################################################ 
+#
+# Output File Names
+
+export ENKFSTAT=${ENKFSTAT:-$COMOUT/enkfstat_$CDATE}
+export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl_${CDATE}}
+
+
+####################################
+# Check if this is a restart
+#
+# Define Previous Guess File Names (dev users must provide from outside)
+####################################
+RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+err1=0
+if [ $RUN_GETGES = YES ]; then
+  GETGESSH=${GETGESSH:-getges.sh}
+  export gesenvir=${gesenvir:-$envir}
+  $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
+err1=$?
+fi
+
+export GBIAS=${GBIAS:-$DATA/gbias}
+
+
+if [ $err1 -eq 0 ] ; then
+   msg="Analysis Starting/Guess Fields Found"
+   postmsg "$jlogfile" "$msg"
+else
+   msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
+   postmsg "$jlogfile" "$msg"
+   export pgm=$job
+   export err=911
+   err_chk
+fi
+
+
+# Set namelist variables for enhanced radiance bias correction scheme
+export USE_NEWRADBC=${USE_NEWRADBC:-YES}

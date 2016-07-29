@@ -1,0 +1,133 @@
+RELEASE NOTES:  global_shared_da.v6.2.3 --> global_shared.v13.0.0
+ v6.0.0 - released Jun 16, 2015
+ v6.1.0 - released Oct 02, 2015
+ v6.2.0 - released Oct 27, 2015
+ v6.2.1 - released Nov 10, 2015
+ v6.2.2 - released Dec 15, 2015
+ v6.2.3 - released Jan 19, 2016
+v13.0.0 - released Feb 02, 2016
+
+SVN HISTORY  (see EMC GSI Trac ticket #478, EMC GFS Trac ticket #236)
+ * r57752 - create GLOBAL_RB.v6.0.0 as copy of r57678 trunk
+ * r57803 - revise build to use modulefile
+ * r57804 - update gdas, gfs, and global_shared directory version numbers 
+ * r57808 - commit release notes
+ * r59582 - merge r59495 GSI trunk into GLOBAL_RB.v6.0.0
+ * r59583 - update SVN HISTORY in release notes
+ * r59587 - restore r57803 Makefile.conf.wcoss
+ * r59595 - first attempt at refactoring JGFS_ANALYSIS to be consistent with NCO WCOSS implementation standards
+ * r60327 - merge r59731 and r60129 trunk into GLOBAL_RB.v6.0.0
+ * r60342 - update SVN HISTORY in release notes
+ * r60354 - update version numbers to crtm.v2.2.3 and bufr.v11.0.0.  crtm.v2.2.3 added to GSI trunk at r60393
+ * r60360 - refactor JGDAS_ANALYSIS_HIGH in according with NCO WCOSS implementation standards
+ * r60540 - refactor jobs and scripts in accord with NCO WCOSS implementation standards
+ * r60678 - update SVN HISTORY in release notes; update jobs and scripts to use nwtest2 CRTM v2.2.3
+ * r60681 - turn off dissipative heating in EnKF forecast
+ * r60682 - update SVN HISTORY (add r60678 and r60681)
+ * r60807 - update SVN HISTORY; correct typo in Release_Notes.gdas_da.v6.0.0.txt
+ * r60831 - update SVN HISTORY; additional NCO WCOSS Implementation Standards changes made to JGDAS_ENKF_FCST 
+ * r61501 - add satinfo files for retrospective parallels
+ * r61689 - add convinfo and errtable files for retrospective parallels
+ * r62346 - create GLOBAL_RB.v6.1.0 as copy of r62337 GSI trunk
+ * r62482 - update Release_Notes, convinfo, and satinfo files; copy files from GLOBAL_RB.v6.0.0
+ * r63885 - create GLOBAL_RB.v6.2.0 as copy of r63842 branches/fixe2c
+ * r63890 - add or copy/modify various componets from GLOBAL_RB.v6.0.0
+ * r63952 - copy updates from r63951 fixe2c into GLOBAL_RB.v6.2.0
+ * r63964 - copy r63960 fixe2c to GLOBAL_RB.v6.2.0
+ * r64593 - create GLOBAL_RB.v6.2.1 as copy of r63964 GLOBAL_RB.v6.2.0
+ * r64596 - increment version number from 6.2.0 to 6.2.1
+ * r64614 - place channels 101 & 102 on CrIS, 221 on AIRS and 269 on Metop-A/B IASI in monitor mode
+ * r64617 - update SVN HISTORY in release notes
+ * r64654 - update SVN HISTORY in release notes; add global_satinfo.txt.2015111012
+ * r66548 - copy r64654 GLOBAL_RB.v6.2.1 to GLOBAL_RB.v6.2.2
+ * r66550 - update GSI source code: limit ensemble RH perturbation; correct ATMS spatial averaging array index bug
+ * r66583 - increment version number of directories in GLOBAL_RB.v6.2.2 from v6.2.1 to v6.2.2
+ * r66588 - increment version number in build, module, and release notes
+ * r66591 - correct typo in ATMS code; update SVN HISTORY in release notes
+ * r67496 - refactor jobs as requested by NCO; update release notes; clean build directories
+ * r67528 - update release notes; specify precision on numeric constant
+ * r67541 - update release notes, add driver scripts and config files for jobs
+ * r67781 - create GLOBAL_RB.v6.2.3 as copy of r67541 GLOBAL_RB.v6.2.2
+ * r67787 - increment version number from v6.2.2 to v6.2.3 in release notes, build, and driver scripts
+ * r67788 - update berror.f90
+ * r67789 - update SVN HISTORY in release notes
+ * r67791 - increment version number from v6.2.2 to v6.2.3 in module filename
+ * r67793 - update SVN HISTORY in release notes
+ * r68372 - move gsi/branches/GLOBAL_RB.v2.6.2/global_shared.v6.2.3 into gfs/tags/global_shared.v13.0.0
+
+
+CODE CHANGES
+ * Refactor gsi.v5.0.3 and enkf.v2.0.2 into gdas and global_shared vertical structure
+   * global_shared.v13.0.0/sorc/
+     * gsi.fd - add hybrid 4d ensemble-variational component; utilize ozone cross covariances; reduce tropospheric localization length scales; increase ensemble weight; aircraft bias correction; assimilate aircraft moisture data; all-sky AMSU-A radiance assimilation; modify radiance thinning in time; monitor AVHRR radiances; process additional AVHRR atmospheric motion vectors (AMVs); monitor VIIRS AMVs; code optimization; initial nemsio capability
+
+
+JOB CHANGES
+ * No job change
+
+
+SCRIPT CHANGES
+ * Refactor script in accord with NCO implementation standards
+ * scripts/
+   * exglobal_analysis.sh.ecf - add variables for aircraft processing and bias correction; add variables for NSST; add nemsio logic; add variables for AVHRR radiances; add variables for hourly backgrounds; update GSI namelist; update radiance diagnostic file satellte_sensor list
+
+
+RESOURCE INFORMATION
+ * Current operational GFS runs on WCOSS phase1 nodes.   Q1FY16 GFS package should be implemented on WCOSS phase2 nodes.  See gdas_da.v13.0.0 and gfs_da.v13.0.0 release notes for resource information.   global_shared.v13.0.0 only contains GSI fix files, scripts, source code, and executable.
+ * Frequency of run
+   * 6 hourly cycle (00, 06, 12, 18Z)
+ * Specify all versions of libs, compilers, shared code being used
+   * libraries
+     * BACIO_VER = v2.0.1
+     * BUFR_VER = v11.0.0
+     * CRTM_VER = v2.2.3
+     * NEMSIO_VER = v2.2.1
+     * NETCDF_VER = 3.6.3
+     * SFCIO_VER = v1.0.0
+     * SIGIO_VER = v2.0.1
+     * SP_VER = v2.0.2
+     * W3EMC_VER = v2.2.0
+     * W3NCO_VER = v2.0.6
+   * compiler (modules loaded during GSI build / run)
+     * ics/15.0.3
+     * ibmpe/1.3.0.10
+     * lsf/9.1
+ * Data retention for files in /com and /nwges under prod/para/test environments
+   * same as current operations
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+ * Which production jobs should be tested as part of this implementation?
+   * global_shared_da.v13.0.0 should be tested as part of the Q1FY16 GFS package
+ * Does this change require a 30-day evaluation?
+   * YES
+ * Suggested evaluators
+   * same as rest of Q1FY16 GFS package
+
+
+DISSEMINATION INFORMATION
+ * Where should this output be sent?
+   * same as current operational GFS/GDAS GSI
+ * Who are the users?
+   * same as current operational GFS/GDAS GSI
+ * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS GSI
+
+
+HPSS ARCHIVE
+ * Retention length?
+   * same as current operational GFS/GDAS GSI
+ * List which output files should be archived
+   * same as current operational GFS/GDAS GSI
+
+           
+IMPLEMENTATION INSTRUCTIONS
+* To implement global_shared_da.v13.0.0, please do the following:
+  * cd  $NWROOT
+  * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/global_shared.v13.0.0
+  * cd $NWROOT/global_shared.v13.0.0/sorc
+  * execute ./build.sh - This builds the global_gsi executable and places it $NWROOT/global_shared.v13.0.0/exec
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+ * No change from gsi.v5.0.3 and enkf.v2.0.2

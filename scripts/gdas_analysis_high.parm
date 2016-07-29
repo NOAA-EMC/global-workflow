@@ -1,121 +1,3 @@
-#!/bin/ksh
-set -xa
-export PS4='$SECONDS + '
-date
-
-##############################################
-# Run config file to get input parameters
-##############################################
-if [ "$RUN_ENVIR" != nco ]
-then
-  . ${PARA_CONFIG:-/global/save/${LOGNAME}/para_gfs/pr4devb/para_config}
-  export userid=$LOGNAME
-fi
-
-##############################################
-# Specify NET and RUN Name and model
-##############################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export RUNENS=${RUNENS:-enkf}
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-export DATA=$DATAROOT/${jobid}
-mkdir -p $DATA
-cd $DATA
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-export cycle=t${cyc}z
-
-##############################################
-# SENDECF  - Flag Events on ECF
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
-# SENDDBN  - Issue DBNet Client Calls
-# VERBOSE  - Specify Verbose Output in exglobal
-##############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
-export SAVEGES=${SAVEGES:-YES}
-export RERUN=${RERUN:-NO}
-export VERBOSE=${VERBOSE:-YES}
-
-##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
-
-##############################################
-# Specify Execution Areas
-##############################################
-export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.$global_shared_ver}
-export EXECgsm=${EXECgsm:-$HOMEgsm/exec}
-export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
-export USHgsm=${USHgsm:-$HOMEgsm/ush}
-export PARMgsm=${PARMgsm:-$HOMEgsm/parm}
-
-export HOMEgsi=${HOMEgsi:-$NWROOT/global_shared.$global_shared_ver}
-export EXECgsi=${EXECgsi:-$HOMEgsi/exec}
-export FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-export SCRgsi=${SCRgsi:-$HOMEgsi/scripts}
-
-export HOMEgdas=${HOMEgdas:-$NWROOT/gdas.$gdas_ver}
-export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
-
-##############################################
-# Run setup to initialize working directory and utility scripts
-##############################################
-ERRSCRIPT=${ERRSCRIPT:-err_chk}
-LOGSCRIPT=${LOGSCRIPT:-startmsg}
-export FILESTYLE=${FILESTYLE:-'L'}
-
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-setpdy.sh
-. ./PDY
-
-export CDATE=${CDATE:-${PDY}${cyc}}
-export GDATE=`$NDATE -06 $CDATE`
-export PDYges=`echo $GDATE | cut -c1-8`
-export CYCges=`echo $GDATE | cut -c9-10`
-
-##############################################
-# Define COM directories
-##############################################
-export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
-export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
-export COMIN=$COM_IN/${RUN}.${PDY}
-export COMOUT=$COM_OUT/${RUN}.${PDY}
-export COMINenkf=${COMINenkf:-$COM_IN/enkf.${PDYges}/$CYCges}
-mkdir -m 775 -p $COMOUT
-
-##############################################
-# Define GES directories
-##############################################
-export gespath=${gespath:-$GESROOT/${envir}}
-export GESOUT=$gespath/${RUN}.$PDY
-mkdir -m 775 -p $GESOUT
-
-##############################################
-# Execute parm file
-##############################################
-. ${PARMGDAS_ANAL:-$PARMgdas/gdas_analysis_high.parm}
-##############################################
-
-<<<<<<< .working
 ####################################
 # Specify Special Fcst Vars
 ####################################
@@ -199,7 +81,7 @@ export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
 
-export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
+export RTMFIX=${RTMFIX:-$CRTM_FIX}
 
 
 #
@@ -232,7 +114,6 @@ export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d}
-export CRISFSBF=${CRISFSBF:-${COMIN}/${PREINP}crisfs.tm00.bufr_d}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d}
 export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d}
 export OMIBF=${OMIBF:-${COMIN}/${PREINP}omi.tm00.bufr_d}
@@ -284,18 +165,17 @@ export SSMITBF=${SSMITBF:-/dev/null}
 #
 ####################################
 prev_cdate=$($NDATE -6 $PDY$cyc)
-wgrib=$utilexec/wgrib
 RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
 if [ $RUN_GETGES = YES ]; then
- GETGESSH=${GETGESSH:-$utilscript/getges.sh}
+ GETGESSH=${GETGESSH:-getges.sh}
  export gesenvir=${gesenvir:-$envir}
  snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n gdas -v $prev_cdate)
 else
  snoprv=${snoprv:-$FNSNOG}
 fi
-if [ `$wgrib -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
+if [ `$WGRIB -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
           awk -F: '{print $3}'|awk -F= '{print $2}'` -le \
-     `$wgrib -4yr $snoprv 2>/dev/null |grep -i snowc  |\
+     `$WGRIB -4yr $snoprv 2>/dev/null |grep -i snowc  |\
                         awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
         export FNSNOA=" "
         export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
@@ -325,9 +205,6 @@ export OZNSTAT=${OZNSTAT:-${COMOUT}/${PREINP}oznstat}
 # PDS Grid Designator
 #
 export IGEN=${IGEN:-82}
-
-msg="HAS BEGUN on `hostname`"
-./postmsg "$jlogfile" "$msg"
 
 ####################################
 # Check if this is a restart
@@ -366,14 +243,14 @@ export GESFIL=${GESFIL:-$DATA/gesfile}
 if test "$err1" -eq '0'
 then
    msg="Analysis Starting/Guess Fields Found"
-   ./postmsg "$jlogfile" "$msg"
+   postmsg "$jlogfile" "$msg"
 
 else
-   msg="Analysis Cannot Start/Guess Fields Not Available"
-   ./postmsg "$jlogfile" "$msg"
+   msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
+   postmsg "$jlogfile" "$msg"
    export pgm=$job
    export err=911
-   ./err_chk
+   err_chk
 fi
 
 ############################
@@ -408,43 +285,3 @@ if [[ "${RUN}" = 'gfs' ]]; then
   export SETUPGFS='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
 fi 
 export SETUP="$SETUP_4DVAR $SETUPGFS"
-
-############################
-=======
-##############################################
->>>>>>> .merge-right.r79912
-# WCOSS environment settings
-##############################################
-export machine=WCOSS
-export APRUN='mpirun.lsf'
-
-env
-
-##############################################
-# Execute the script
-${ANALYSISSH:-$SCRgsi/exglobal_analysis.sh.ecf}
-##############################################
-
-##############################################
-# Final processing
-##############################################
-if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias $job $COMOUT/${PREINP}abias
-   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_pc $job $COMOUT/${PREINP}abias_pc
-   $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_air $job $COMOUT/${PREINP}abias_air
-fi
-
-cat $pgmout
-
-echo "`hostname`  --  `date`" > $COMOUT/where_ibm_${RUN}_anal_ran.${cycle}
-
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
-##############################################
-# Remove the Temporary working directory
-##############################################
-cd $DATAROOT
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
-
-date
