@@ -1,0 +1,65 @@
+# Set variables
+export NWROOT=/nwprod
+export COM_IN=/global/noscrub/$LOGNAME/com/gfs/para
+export SENDDBN=NO
+export SAVEGES=NO
+export SENDCOM=NO
+export GETGES_NWG=/global/noscrub/$LOGNAME
+export gesenvir=para
+export GETGES_COM=/global/noscrub/$LOGNAME/com
+export GESROOT=/ptmpd3/$LOGNAME/nwges
+export KEEPDATA=YES
+
+
+# Set paths
+export HOMEgsi=$NWTEST/global_shared.${global_shared_ver}
+export HOMEgsm=$NWTEST/global_shared.${global_shared_ver}
+export HOMEgdas=$NWTEST/gdas.${gdas_ver}
+
+
+# Set fix files
+
+
+# Set script and executable
+
+
+# Dev para jobs
+export PEND=/global/save/emc.glopara/svn/gfs/trunk/para/bin/pend
+export ERRSCRIPT='eval [[ $err = 0 ]]'
+
+
+# Set beginning and ending ensemble member on EnKF group.
+if [[ $ENSGRP -eq 1 ]]; then
+   export ENSBEG=1
+   export ENSEND=8
+elif [[ $ENSGRP -eq 2 ]]; then
+   export ENSBEG=9
+   export ENSEND=16
+elif [[ $ENSGRP -eq 3 ]]; then
+   export ENSBEG=17
+   export ENSEND=24
+elif [[ $ENSGRP -eq 4 ]]; then
+   export ENSBEG=25
+   export ENSEND=32
+elif [[ $ENSGRP -eq 5 ]]; then
+   export ENSBEG=33
+   export ENSEND=40
+elif [[ $ENSGRP -eq 6 ]]; then
+   export ENSBEG=41
+   export ENSEND=48
+elif [[ $ENSGRP -eq 7 ]]; then
+   export ENSBEG=49
+   export ENSEND=56
+elif [[ $ENSGRP -eq 8 ]]; then
+   export ENSBEG=57
+   export ENSEND=64
+elif [[ $ENSGRP -eq 9 ]]; then
+   export ENSBEG=65
+   export ENSEND=72
+elif [[ $ENSGRP -eq 10 ]]; then
+   export ENSBEG=73
+   export ENSEND=80
+else
+   echo "***ERROR*** INVALID ENSGRP=$ENSGRP"
+   exit
+fi

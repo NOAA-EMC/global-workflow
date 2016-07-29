@@ -1,0 +1,284 @@
+
+####################################
+# Specify Special Fcst Vars
+####################################
+#
+# Set executable, script, and fix
+export GSIEXEC=${GSIEXEC:-$EXECgsi/global_gsi}
+export ANALYSISSH=${ANALYSISSH:-$SCRgsi/exglobal_analysis.sh.ecf}
+
+#
+# Forecast Horizontal Resolution
+#
+export JCAP=${JCAP:-1534}
+export JCAP_A=${JCAP_A:-574}
+export JCAP_ges=${JCAP_ges:-1534}
+
+#
+# Forecast Vertical Resolution
+#
+export LEVS=${LEVS:-64}
+export LEVS_ges=${LEVS_ges:-64}
+#
+# These are for the T574L64
+#
+export LONA=${LONA:-1152}
+export LATA=${LATA:-576}
+export LONB=${LONB:-3072}
+export LATB=${LATB:-1536}
+export LSOIL=${LSOIL:-4}
+export NLAT=$((${LATA}+2))
+
+# Set hybrid and ensemble resolution parameters
+export DOHYBVAR=${DOHYBVAR:-YES}
+
+export NMEM_ENS=${NMEM_ENS:-80}
+export JCAP_ENS=${JCAP_ENS:-574}
+export NLAT_ENS=${NLAT_ENS:-578}
+export NLON_ENS=${NLON_ENS:-1152}
+
+#
+# Time Step
+#
+export DELTIM=${DELTIM:-450}
+
+#
+# Surface cycle
+#
+export use_ufo=${use_ufo:-.true.}
+export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
+
+#
+# Analysis Fix Fields
+#
+export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
+export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
+export FNTSFC=${FNTSFC:-$FIXgsm/RTGSST.1982.2012.monthly.clim.grb}
+export FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
+export FNZORC=${FNZORC:-'sib'}
+export FNALBC=${FNALBC:-${FIXgsm}/global_albedo4.1x1.grb}
+export FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
+export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
+export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
+export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
+export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.$LONB.$LATB.grb}
+export FNOROG=${FNOROG:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export FNMASK=${FNMASK:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY=${OROGRAPHY:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF:-${FIXgsm}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
+export SLMASK=${SLMASK:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
+
+export BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT}.f77}
+export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
+export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
+export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
+export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
+export PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
+export AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
+export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
+export OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
+
+export RTMFIX=${RTMFIX:-$CRTM_FIX}
+
+
+#
+# Analysis Input Fields
+#
+export PREINP=${PREINP:-${RUN}.${cycle}.}
+export PREINPENS=${PREINPENS:-${RUNENS}.${cycle}.}
+
+export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}rtgssthr.grb}
+export FNACNA=${FNACNA:-${COMIN}/${PREINP}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb_t${JCAP}.${LONB}.${LATB}}
+
+export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr}
+export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles}
+
+export GSNDBF=${GSNDBF:-${COMIN}/${PREINP}goesnd.tm00.bufr_d}
+export GSNDBF1=${GSNDBF1:-${COMIN}/${PREINP}goesfv.tm00.bufr_d}
+export B1HRS2=${B1HRS2:-${COMIN}/${PREINP}1bhrs2.tm00.bufr_d}
+export B1MSU=${B1MSU:-${COMIN}/${PREINP}1bmsu.tm00.bufr_d}
+export B1HRS3=${B1HRS3:-${COMIN}/${PREINP}1bhrs3.tm00.bufr_d}
+export B1AMUA=${B1AMUA:-${COMIN}/${PREINP}1bamua.tm00.bufr_d}
+export B1AMUB=${B1AMUB:-${COMIN}/${PREINP}1bamub.tm00.bufr_d}
+export B1HRS4=${B1HRS4:-${COMIN}/${PREINP}1bhrs4.tm00.bufr_d}
+export B1MHS=${B1MHS:-${COMIN}/${PREINP}1bmhs.tm00.bufr_d}
+export ESHRS3=${ESHRS3:-${COMIN}/${PREINP}eshrs3.tm00.bufr_d}
+export ESAMUA=${ESAMUA:-${COMIN}/${PREINP}esamua.tm00.bufr_d}
+export ESAMUB=${ESAMUB:-${COMIN}/${PREINP}esamub.tm00.bufr_d}
+export AIRSBF=${AIRSBF:-${COMIN}/${PREINP}airsev.tm00.bufr_d}
+export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d}
+export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d}
+export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d}
+export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d}
+export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d}
+export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d}
+export OMIBF=${OMIBF:-${COMIN}/${PREINP}omi.tm00.bufr_d}
+export MLSBF=${MLSBF:-${COMIN}/${PREINP}mls.tm00.bufr_d}
+export SMIPCP=${SMIPCP:-${COMIN}/${PREINP}spssmi.tm00.bufr_d}
+export TMIPCP=${TMIPCP:-${COMIN}/${PREINP}sptrmm.tm00.bufr_d}
+export GPSROBF=${GPSROBF:-${COMIN}/${PREINP}gpsro.tm00.bufr_d}
+export TCVITL=${TCVITL:-${COMIN}/${PREINP}syndata.tcvitals.tm00}
+export SATWND=${SATWND:-${COMIN}/${PREINP}satwnd.tm00.bufr_d}
+
+export SIGGES=${SIGGES:-${COMIN}/${PREINP}sgesprep}
+export SIGG03=${SIGG03:-${COMIN}/${PREINP}sgm3prep}
+export SIGG04=${SIGG04:-${COMIN}/${PREINP}sgm2prep}
+export SIGG05=${SIGG05:-${COMIN}/${PREINP}sgm1prep}
+export SIGG07=${SIGG07:-${COMIN}/${PREINP}sgp1prep}
+export SIGG08=${SIGG08:-${COMIN}/${PREINP}sgp2prep}
+export SIGG09=${SIGG09:-${COMIN}/${PREINP}sgp3prep}
+
+export SIGGESENS=${SIGGESENS:-${COMINenkf}/sfg_${GDATE}_fhr06s}
+export SIGF03ENS=${SIGF03ENS:-${COMINenkf}/sfg_${GDATE}_fhr03s}
+export SIGF04ENS=${SIGF04ENS:-${COMINenkf}/sfg_${GDATE}_fhr04s}
+export SIGF05ENS=${SIGF05ENS:-${COMINenkf}/sfg_${GDATE}_fhr05s}
+export SIGF06ENS=${SIGF06ENS:-${COMINenkf}/sfg_${GDATE}_fhr06s}
+export SIGF07ENS=${SIGF07ENS:-${COMINenkf}/sfg_${GDATE}_fhr07s}
+export SIGF08ENS=${SIGF08ENS:-${COMINenkf}/sfg_${GDATE}_fhr08s}
+export SIGF09ENS=${SIGF09ENS:-${COMINenkf}/sfg_${GDATE}_fhr09s}
+
+export NSTGES=${NSTGES:-/dev/null}
+
+# Set non-assimilated obs fles as /dev/null to prevent reading
+export GSNDBF=${GSNDBF:-/dev/null}
+export AMSREBF=${AMSREBF:-/dev/null}
+export SSMITBF=${SSMITBF:-/dev/null}
+
+
+############################################################################ 
+#
+# Check grib date of current snogrb vs that of prev cycle 
+#
+# if cdate_of_snogrb -le cdate_of_snoprv, i.e. file has not been updated 
+#   then set namelist input to CYCLEXEC to use the snow from the guess
+#   FNSNOA=" ";CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+#   FNSNOA is the name of the snow depth  analysis file 
+#     when not supplied, signals to CYCLEXEC to blend guess and climatology
+#     (Note: file must be " ", not "" or the shell syntax for default
+#      values X=${X:-default} will reset to default if X="")
+#     FSNOL=99999.,FSNOS=99999., sets the blending of guess and climo to
+#		use 100% guess
+#
+####################################
+prev_cdate=$($NDATE -6 $PDY$cyc)
+RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+if [ $RUN_GETGES = YES ]; then
+ GETGESSH=${GETGESSH:-getges.sh}
+ export gesenvir=${gesenvir:-$envir}
+ snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n gdas -v $prev_cdate)
+else
+ snoprv=${snoprv:-$FNSNOG}
+fi
+if [ `$WGRIB -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
+          awk -F: '{print $3}'|awk -F= '{print $2}'` -le \
+     `$WGRIB -4yr $snoprv 2>/dev/null |grep -i snowc  |\
+                        awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
+        export FNSNOA=" "
+        export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+else
+     export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+     export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+fi
+
+############################################################################ 
+#
+# Output File Names
+#
+export SFCANL=${SFCANL:-${DATA}/${PREINP}sfcanl}
+export SIGANL=${SIGANL:-${DATA}/${PREINP}sanl}
+export NSTANL=${NSTANL:-${DATA}/${PREINP}nstanl}
+export ABIAS=${ABIAS:-${DATA}/${PREINP}abias}
+export ABIASPC=${ABIASPC:-${DATA}/${PREINP}abias_pc}
+export ABIASAIR=${ABIASAIR:-${DATA}/${PREINP}abias_air}
+export GINCOUT=${GINCOUT:-${DATA}/${PREINP}gesfile}
+export PCPSTAT=${PCPSTAT:-${COMOUT}/${PREINP}pcpstat}
+export RADSTAT=${RADSTAT:-${COMOUT}/${PREINP}radstat}
+export GSISTAT=${GSISTAT:-${COMOUT}/${PREINP}gsistat}
+export CNVSTAT=${CNVSTAT:-${COMOUT}/${PREINP}cnvstat}
+export OZNSTAT=${OZNSTAT:-${COMOUT}/${PREINP}oznstat}
+
+#
+# PDS Grid Designator
+#
+export IGEN=${IGEN:-81}
+
+####################################
+# Check if this is a restart
+#
+# Define Previous Guess File Names
+####################################
+if [ $RUN_GETGES = YES ]; then
+  export gesenvir=${gesenvir:-$envir}
+  $GETGESSH -t sfcges -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas bges
+err1=$?
+  $GETGESSH -t sfcgm3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm3
+  $GETGESSH -t sfcgm2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm2
+  $GETGESSH -t sfcgm1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm1
+  $GETGESSH -t sfcgp1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp1
+  $GETGESSH -t sfcgp2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp2
+  $GETGESSH -t sfcgp3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp3
+  $GETGESSH -t biascr -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias
+  $GETGESSH -t biascr_pc -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_pc
+  $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
+  $GETGESSH -t radstat -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gradstat
+fi
+
+export SFCGES=${SFCGES:-$DATA/bges}
+export SFCG03=${SFCG03:-$DATA/sfcgm3}
+export SFCG04=${SFCG04:-$DATA/sfcgm2}
+export SFCG05=${SFCG05:-$DATA/sfcgm1}
+export SFCG07=${SFCG07:-$DATA/sfcgp1}
+export SFCG08=${SFCG08:-$DATA/sfcgp2}
+export SFCG09=${SFCG09:-$DATA/sfcgp3}
+export GBIAS=${GBIAS:-$DATA/gbias}
+export GBIASPC=${GBIASPC:-$DATA/gbias_pc}
+export GBIASAIR=${GBIASAIR:-$DATA/gbias_air}
+export GRADSTAT=${GRADSTAT:-$DATA/gradstat}
+
+if test "$err1" -eq '0'
+then
+   msg="Analysis Starting/Guess Fields Found"
+   postmsg "$jlogfile" "$msg"
+
+else
+   msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
+   postmsg "$jlogfile" "$msg"
+   export pgm=$job
+   export err=911
+   err_chk
+fi
+
+############################
+# Set namelist jobs for hybrid 3dvar-ensemble analysis
+export HYBRID_ENSEMBLE=""
+if [[ "$DOHYBVAR" = "YES" ]]; then
+   export HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=$NMEM_ENS,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.false.,"
+   export STRONGOPTS="tlnmc_option=2,"
+fi
+
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+export lwrite4danl=${lwrite4danl:-".false."}
+SETUP_4DVAR=""
+if [ $l4densvar = .true. ] ; then
+   SETUP_4DVAR="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,l4densvar=.true.,ens4d_nstarthr=3,nhr_obsbin=1,nhr_assimilation=6,lwrite4danl=${lwrite4danl},"
+   export JCOPTS="ljc4tlevs=.true.,"
+   export STRONGOPTS="tlnmc_option=3,"
+fi
+
+
+################################################################################
+# Do not produce RAD, PCP, OZN, CNV diagnostic (STAT) files for GFS early analysis.
+export USE_NEWRADBC=${USE_NEWRADBC:-YES}
+
+SETUPGFS=""
+if [[ "${RUN}" = 'gfs' ]]; then
+  export SETUPGFS='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
+  export DIAG_TARBALL=NO
+fi 
+export SETUP="$SETUP_4DVAR $SETUPGFS"

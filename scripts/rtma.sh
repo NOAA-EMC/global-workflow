@@ -1,4 +1,5 @@
 
+
 set -x
 
 # Set experiment name and analysis date
@@ -41,6 +42,8 @@ cyg=`echo $gdate | cut -c9-10`
 cymd=`echo $gdate | cut -c1-8`
 echo " cymd $cymd "
 echo " cyg $cyg"
+cyc_mxtm=08
+cyc_mitm=20
 prefixa=nam.t${cya}z
 prefixg=na12snmm.t${cyg}z
 suffix=tm00.bufr_d
@@ -116,22 +119,16 @@ wbinuselist=$fixgsi/rtma_wbinuselist
 slmask=$fixgsi/$endianness/rtma_conus_slmask.dat
 terrain=$fixgsi/$endianness/rtma_conus_terrain.dat
 bufrtable=$fixgsi/rtma_prepobs_prep.bufrtable
-
-
 ### add 9 tables
-errtable_pw=$fixgsi/prepobs_errtable_pw.global
-
-errtable_ps=$fixgsi/prepobs_errtable_ps.optm
-errtable_t=$fixgsi/prepobs_errtable_t.optm
-errtable_q=$fixgsi/prepobs_errtable_q.optm
-errtable_uv=$fixgsi/prepobs_errtable_uv.optm
-
-btable_ps=$fixgsi/nlqc_b_ps.rtma.optm
-btable_t=$fixgsi/nlqc_b_t.rtma.optm
-btable_q=$fixgsi/nlqc_b_q.rtma.optm
-btable_uv=$fixgsi/nlqc_b_uv.rtma.optm
-
-###
+errtable_pw=$fixgsi/urma2p5.prepobs_errtable_pw.njqc
+errtable_ps=$fixgsi/urma2p5.prepobs_errtable_ps.njqc 
+errtable_t=$fixgsi/urma2p5.prepobs_errtable_t.njqc 
+errtable_q=$fixgsi/urma2p5.prepobs_errtable_q.njqc 
+errtable_uv=$fixgsi/urma2p5.prepobs_errtable_uv.njqc
+btable_ps=$fixgsi/urma2p5.nlqc_b_ps.njqc 
+btable_t=$fixgsi/urma2p5.nlqc_b_t.njqc
+btable_q=$fixgsi/urma2p5.nlqc_b_q.njqc 
+btable_uv=$fixgsi/urma2p5.nlqc_b_uv.njqc 
 
 t_rejectlist=$fixgsi/rtma_t_rejectlist
 p_rejectlist=$fixgsi/rtma_p_rejectlist
@@ -172,6 +169,7 @@ flt_mxtmwter=$fixgsi/$endianness/rtma_fltnorm.dat_mxtmwter
 flt_pmsl=$fixgsi/$endianness/rtma_fltnorm.dat_pmsl
 flt_howv=$fixgsi/$endianness/rtma_fltnorm.dat_howv
 flt_tcamt=$fixgsi/$endianness/rtma_fltnorm.dat_tcamt
+flt_cldch=$fixgsi/$endianness/rtma_fltnorm.dat_cldch
 
 prmcard=$fixgsi/rtma_parmcard_input
 
@@ -231,6 +229,7 @@ $ncp $flt_qwter          ./fltnorm.dat_qwter
 $ncp $flt_twter          ./fltnorm.dat_twter
 $ncp $flt_gustwter       ./fltnorm.dat_gustwter
 $ncp $flt_wspd10m        ./fltnorm.dat_wspd10m
+$ncp $flt_cldch          ./fltnorm.dat_cldch
 $ncp $flt_wspd10mwter    ./fltnorm.dat_wspd10mwter
 $ncp $flt_td2m           ./fltnorm.dat_td2m
 $ncp $flt_td2mwter       ./fltnorm.dat_td2mwter
@@ -245,26 +244,30 @@ $ncp $flt_tcamt          ./fltnorm.dat_tcamt
 $ncp $prmcard            ./parmcard_input
 
 # Copy CRTM coefficient files based on entries in satinfo file
-for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
-    $ncp $fixcrtm/${file}.SpcCoeff.bin ./
-    $ncp $fixcrtm/${file}.TauCoeff.bin ./
-done
+#RY:  we do not need satinfo
+#for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
+#    $ncp $fixcrtm/${file}.SpcCoeff.bin ./
+#    $ncp $fixcrtm/${file}.TauCoeff.bin ./
+#done
 
 # Copy observational data to $tmpdir
-$ncp $rtma_obs/rtma.t${cya}z.prepbufr.tm00 ./prepbufr
-$ncp $rtma_obs/rtma.t${cya}z.satwnd.tm00.bufr_d ./satwndbufr
-$ncp $rtma_obs/rtma.t${cya}z.goessky.tm00.bufr_d ./goessky
+##
+###
+$ncp ${rtma_obs}/urma.t${cya}z.prepbufr.tm00  ./prepbufr
+$ncp ${rtma_obs}/urma.t${cya}z.satwnd.tm00.bufr_d  ./satwndbufr
+$ncp ${rtma_obs}/urma.t${cya}z.goessky.bufr_d  ./goessky
 
-echo "NEW MAX/MIN DATA $rtma_obs/rtma.${cymd}.mintobs.dat "
-ls -lt  $rtma_obs/rtma.${cymd}.mintobs.dat
-echo "$rtma_obs/rtma.${cymd}.maxtobs.dat "
+echo "NEW MAX/MIN DATA $rtma_obs/rtma.maxt/mintobs.dat "
+ls -lt  $rtma_obs/*tobs.dat
 
-$ncp $rtma_obs/rtma.${cymd}.mintobs.dat ./mitmdat
-$ncp $rtma_obs/rtma.${cymd}.maxtobs.dat ./mxtmdat
+echo "$rtma_obs/urma*tobs.dat"
+
+$ncp ${rtma_obs}/urma.20160210.mintobs.dat ./mitmdat
+$ncp ${rtma_obs}/urma.20160209.maxtobs.dat ./mxtmdat 
 
 
 # Copy first guess
-$ncp $rtma_ges/rtma.t${cya}z.2dvar_input   ./wrf_inout
+$ncp $rtma_ges/urma2p5.t${cya}z.2dvar_input   ./wrf_inout
 cp wrf_inout wrf_ges
 
 # Run GSI
@@ -295,6 +298,7 @@ $ncp bckgvar.dat_gust        $savdir/bckgvar.dat_gust.${rtma_adate}.dat
 $ncp bckgvar.dat_vis         $savdir/bckgvar.dat_vis.${rtma_adate}.dat
 $ncp bckgvar.dat_td2m        $savdir/bckgvar.dat_td2m.${rtma_adate}.dat
 $ncp bckgvar.dat_wspd10m     $savdir/bckgvar.dat_wspd10m.${rtma_adate}.dat
+
 $ncp bckgvar.dat_mitm        $savdir/bckgvar.dat_mitm.${rtma_adate}.dat
 $ncp bckgvar.dat_mxtm        $savdir/bckgvar.dat_mxtm.${rtma_adate}.dat
 $ncp bckgvar.dat_pmsl        $savdir/bckgvar.dat_pmsl.${rtma_adate}.dat
@@ -309,6 +313,9 @@ $ncp bckgvar.dat_pswter      $savdir/bckgvar.dat_pswter.${rtma_adate}.dat
 $ncp bckgvar.dat_mitmwter    $savdir/bckgvar.dat_mitmwter.${rtma_adate}.dat
 $ncp bckgvar.dat_mxtmwter    $savdir/bckgvar.dat_mxtmwter.${rtma_adate}.dat
 $ncp bckgvar.dat_wspd10mwter $savdir/bckgvar.dat_wspd10mwter.${rtma_adate}.dat
+$ncp bckgvar.dat_wspd10m     $savdir/bckgvar.dat_wspd10m.${rtma_adate}.dat
+#new one
+$ncp bckgvar.dat_cldch     $savdir/bckgvar.dat_cldch.${rtma_adate}.dat
 $ncp bckgvar.dat_td2mwter    $savdir/bckgvar.dat_td2mwter.${rtma_adate}.dat
 $ncp tobs_allcv_groups       $savdir/tobs_allcv_groups
 $ncp qobs_allcv_groups       $savdir/qobs_allcv_groups
