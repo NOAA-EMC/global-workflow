@@ -1298,7 +1298,7 @@ export gsi_namelist="
  &GRIDOPTS
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=3.0,
-   filled_grid=.false.,half_grid=.false.,netcdf=.false.,nvege_type=20,
+   filled_grid=.false.,half_grid=.false.,netcdf=.false.,
    $GRIDOPTS
  /
  &BKGERR

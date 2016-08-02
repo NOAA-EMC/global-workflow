@@ -115,7 +115,6 @@ mkdir -m 775 -p $GESOUT
 . ${PARMGDAS_ANAL:-$PARMgdas/gdas_analysis_high.parm}
 ##############################################
 
-<<<<<<< .working
 ####################################
 # Specify Special Fcst Vars
 ####################################
@@ -409,10 +408,7 @@ if [[ "${RUN}" = 'gfs' ]]; then
 fi 
 export SETUP="$SETUP_4DVAR $SETUPGFS"
 
-############################
-=======
 ##############################################
->>>>>>> .merge-right.r79912
 # WCOSS environment settings
 ##############################################
 export machine=WCOSS
