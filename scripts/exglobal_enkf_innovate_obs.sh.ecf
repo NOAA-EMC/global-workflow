@@ -115,15 +115,15 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     SIGHDR        Command to read sigma header
-#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
+#                   defaults to ${EXECgsm}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
-#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#                   defaults to ${EXECgsm}/global_sfchdr$XC
 #     NSTHDR        Command to read NSST header
-#                   defaults to ${EXECGLOBAL}/global_nsthdr$XC
+#                   defaults to ${EXECgsm}/global_nsthdr$XC
 #     CYCLEXEC      Surface cycle executable
-#                   defaults to ${EXECGLOBAL}/global_cycle$XC
+#                   defaults to ${EXECgsm}/global_cycle$XC
 #     GSIEXEC       Spectral analysis executable
-#                   defaults to ${EXECGLOBAL}/global_gsi$XC
+#                   defaults to ${EXECgsm}/global_gsi$XC
 #     CYCLESH       Surface cycle script
 #                   defaults to ${USHgsm}/global_cycle.sh
 #     BERROR        Input background error file
@@ -309,9 +309,6 @@ export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
 export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export FIXGLOBAL=$FIXgsm    # $CYCLESH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CYCLESH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CYCLESH still references GLOBAL variables
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
 export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export utilscript=${utilscript:-$NWPROD/util/ush}
@@ -511,6 +508,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
+   export pgmoutm=$DATA/${pgmout:-pgmout.$member}
 
    export SFCG03=$COMINGES/bfg_${GDATE}_fhr03_${member}
    export SFCG04=$COMINGES/bfg_${GDATE}_fhr04_${member}
@@ -592,6 +590,8 @@ while [[ $imem -le $ENSEND ]]; do
    $ANALYSISSH
    rc=$?
 
+   cat $pgmoutm
+
    export ERR=$rc
    export err=$ERR
    $ERRSCRIPT||exit 2
@@ -601,6 +601,10 @@ while [[ $imem -le $ENSEND ]]; do
    echo "Process member $imem" > log
    cat log_old log > log_new
    cp log_new $DATATOP/log_all
+
+   if [ $SENDDBN = YES ]; then
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+   fi
 
    (( imem = $imem + 1 ))
 

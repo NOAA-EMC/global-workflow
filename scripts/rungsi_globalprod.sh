@@ -11,7 +11,7 @@
 #BSUB -R span[ptile=8]
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
-#BSUB -W 02:00
+#BSUB -W 03:00
 #BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
@@ -50,7 +50,7 @@ fi
 
 # Set experiment name and analysis date
 adate=2015060900
-expnm=globalprod    
+expnm=globalproddesfull 
 exp=globalprod.$adate
 expid=${expnm}.$adate
 
@@ -76,6 +76,7 @@ if [ $MACHINE = WCOSS ]; then
    datdir=/ptmpp1/$USER/data_sigmap/${exp}
    tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}  
+#   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
    fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
    endianness=Big_Endian
    COMPRESS=gzip 
