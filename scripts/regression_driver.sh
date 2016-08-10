@@ -7,12 +7,21 @@ export regtest=$1
 
 # source the necessary files to setup
 . $(awk '{ print $1 }' regression_var.out)
+export scripts=${scripts:-$scripts_updat}
 . $scripts/regression_param.sh $regtest
 
 if [ "$debug" = ".false." ]; then
 
    # Launch the individual control and update runs, one-after-another
    for jn in `seq 1 4`; do
+
+      if [ $jn -le 2 ]; then
+         export scripts=${scripts:-$scripts_updat}
+         export fixgsi=${fixgsi:-$fixgsi_updat}
+      else
+         export scripts=${scripts:-$scripts_cntrl}
+         export fixgsi=${fixgsi:-$fixgsi_cntrl}
+      fi
 
       rm -f ${job[$jn]}.out
 
