@@ -7,7 +7,7 @@ export regtest=$1
 
 # source the necessary files to setup
 . $(awk '{ print $1 }' regression_var.out)
-export scripts=${scripts:-$scripts_updat}
+export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
 
 if [ "$debug" = ".false." ]; then
@@ -16,11 +16,11 @@ if [ "$debug" = ".false." ]; then
    for jn in `seq 1 4`; do
 
       if [ $jn -le 2 ]; then
-         export scripts=${scripts:-$scripts_updat}
-         export fixgsi=${fixgsi:-$fixgsi_updat}
+         export scripts=${scripts_updat:-$scripts}
+         export fixgsi=${fixgsi_updat:-$fixgsi}
       else
-         export scripts=${scripts:-$scripts_cntrl}
-         export fixgsi=${fixgsi:-$fixgsi_cntrl}
+         export scripts=${scripts_cntrl:-$scripts}
+         export fixgsi=${fixgsi_cntrl:-$fixgsi}
       fi
 
       rm -f ${job[$jn]}.out
