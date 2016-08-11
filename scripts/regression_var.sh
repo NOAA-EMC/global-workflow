@@ -26,7 +26,7 @@ if [[ "$machine" = "Theia" ]]; then
    export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
    export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix"
+   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
    export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
    export ndate="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate"
 
@@ -48,7 +48,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export ptmp="/ptmpp1/$LOGNAME"
    export noscrub="/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix"
+   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
    export ndate="/nwprod/util/exec/ndate"
 
