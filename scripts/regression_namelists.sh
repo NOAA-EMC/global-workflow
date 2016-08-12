@@ -1361,7 +1361,7 @@ export gsi_namelist="
    newpc4pred=.true., adp_anglebc=.true., angord=4,
    passive_bc=.false., use_edges=.false., emiss_bc=.true.,
    diag_precon=.true., step_start=1.e-3,
-   l4densvar=.true.,nhr_obsbin=3,
+   l4densvar=.true.,nhr_obsbin=3,ens_nstarthr=3,
    $SETUP
  /
  &GRIDOPTS
