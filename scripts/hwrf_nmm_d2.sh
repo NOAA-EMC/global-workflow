@@ -240,6 +240,7 @@ $lnsf $hwrf_nmm_obs/${prefixa}.eshrs3.${suffix}   ./hirs3bufrears
 #$lnsf $hwrf_nmm_obs/${prefixa}.ssmis.${suffix}    ./ssmisbufr
 $lnsf $hwrf_nmm_obs/${prefixa}.atms.${suffix}     ./atmsbufr
 $lnsf $hwrf_nmm_obs/${prefixa}.cris.${suffix}     ./crisbufr
+$lnsf $hwrf_nmm_obs/${prefixa}.crisfs.${suffix}   ./crisfsbufr
 #$lnsf $hwrf_nmm_obs/${prefixa}.syndata.tcvitals.tm00 ./tcvitl
 $lnsf $hwrf_nmm_obs/${prefixo}.tldplr.${suffix}  ./tldplrbufr
 
