@@ -11,28 +11,28 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="XXXXXXXX"
+updat="Desroziers"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 if [[ "$machine" = "Theia" ]]; then
 
-   export basedir="/scratch4/NCEPDEV/da/save/$LOGNAME"
+   export basedir="/scratch4/NCEPDEV/da/save/$LOGNAME/GSI"
 
-   export group="global"
+   export group="da"
    export queue="batch"
 
    export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
    export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix"
+   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
    export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
    export ndate="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate"
 
    export check_resource="no"
 
-   export accnt="hybrid"
+   export accnt="cloud"
 
    #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
    #  After completion of regression tests, will remove the regression test subdirecories
@@ -48,7 +48,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export ptmp="/ptmpp1/$LOGNAME"
    export noscrub="/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix"
+   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
    export ndate="/nwprod/util/exec/ndate"
 
@@ -62,9 +62,9 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+export gsiexec_contrl="$basedir/$updat/svn1/trunk/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
+export enkfexec_contrl="$basedir/$updat/svn1/trunk/src/enkf/global_enkf"
 export fixgsi="$basedir/$updat/fix"
 export scripts="$basedir/$updat/scripts"
 

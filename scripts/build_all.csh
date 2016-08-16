@@ -1,7 +1,7 @@
 #!/bin/csh -x
 
 #if ( -d /da ) then
-    set target = wcoss
+    set target = theia
 #else if ( -d /scratch1 ) then
 #    set host = `hostname`
 #    if ( `expr substr $host 1 1` == 'f' ) then
