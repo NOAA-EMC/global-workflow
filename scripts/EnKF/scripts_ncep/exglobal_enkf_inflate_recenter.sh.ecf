@@ -151,12 +151,7 @@ export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
 export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export PERTURBDIR=${PERTURBDIR:-$FIXgsm/enkf_gfs}
-
-export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
-
+export PERTURBDIR=${PERTURBDIR:-$NWPROD/fix/enkf_gfs}
 export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
@@ -523,8 +518,6 @@ if [ $NST_GSI -gt 0 ]; then
          (( imem = $imem + 1 ))
       done
    fi
-
-   echo 'ZSEA1, ZSEA1 : ' $ZSEA1, $ZSEA2
 
    rm stdout_recenter_sfcnstupd
    if [[ "$POE" = "YES" ]]; then
