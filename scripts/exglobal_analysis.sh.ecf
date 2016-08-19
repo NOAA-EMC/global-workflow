@@ -997,7 +997,7 @@ $FCPLN $NSTG03   nstf03
 $FCPLN $NSTGES   nstf06
 $FCPLN $NSTG09   nstf09
 
-$FCPLN $SFCGESENS sfcf06_ensmean
+$FCPLN $SFCGESENS_MEAN sfcf06_ensmean
 
 if [[ $NST_GSI -gt 0 ]]; then
    if [[ $NST_GSI -eq 3 ]]; then
