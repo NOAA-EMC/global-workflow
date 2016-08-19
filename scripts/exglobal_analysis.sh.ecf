@@ -997,6 +997,8 @@ $FCPLN $NSTG03   nstf03
 $FCPLN $NSTGES   nstf06
 $FCPLN $NSTG09   nstf09
 
+$FCPLN $SFCGESENS sfcf06_ensmean
+
 if [[ $NST_GSI -gt 0 ]]; then
    if [[ $NST_GSI -eq 3 ]]; then
       $FCPLN $SFCGCY sfcgcy
@@ -1031,15 +1033,6 @@ if [[ "$DOHYBVAR" = "YES" ]]; then
       fi
       (( imem = $imem + 1 ))
    done
-   if [[ $NST_GSI -gt 0 ]]; then
-      $FCPLN $NSTGESENS_MEAN nstf06_ensmean
-      $FCPLN $SFCGESENS_MEAN sfcf06_ensmean
-      if [[ $NST_GSI -eq 3 ]]; then
-         $FCPLN $SFCGCYENS_MEAN sfcgcy_ensmean
-      else
-         $FCPLN $SFCANLENS_MEAN sfcgcy_ensmean
-      fi
-   fi
 fi
 
 
