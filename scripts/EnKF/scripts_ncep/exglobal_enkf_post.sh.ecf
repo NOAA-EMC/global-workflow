@@ -133,15 +133,9 @@ export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
 export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-
-export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
-
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix} 
 export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec} 
 export USHgdas=${USHgdas:-$NWPROD/gdas.${gdas_ver}/ush} 
-export utilscript=${utilscript:-/nwprod/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
@@ -171,6 +165,7 @@ export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
 export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECgdas/getsigensmean_smooth$XC}
 export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECgdas/getsfcensmean_smooth$XC}
+export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$EXECgdas/getsigensstat_smooth$XC}
 export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
 export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
 export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECgdas/getnstensmean_smooth$XC}
@@ -242,6 +237,7 @@ rm nfg*fhr03* nfg*fhr04* nfg*fhr05* nfg*fhr06* nfg*fhr07* nfg*fhr08* nfg*fhr09*
 
 $NCP $GETSFCENSMEANEXEC $DATA
 $NCP $GETATMENSMEANEXEC $DATA
+$NCP $GETATMENSSTATEXEC $DATA
 if [ $NST_GSI -gt 0 ]; then
    $NCP $GETNSTENSMEANEXEC $DATA
 fi
@@ -303,6 +299,8 @@ else
       [[ $FH -lt 10 ]]&&FH=0$FH
       ln -fs ${SIGENSMEAN}${FH}_ensmean sfg_${CDATE}_fhr${FH}_ensmean
       ln -fs ${SFCENSMEAN}${FH}_ensmean bfg_${CDATE}_fhr${FH}_ensmean
+      ln -fs ${SIGENSMEAN}${FH}_ensmean.nc4   sfg_${CDATE}_fhr${FH}_ensmean.nc4
+      ln -fs ${SIGENSMEAN}${FH}_ensspread.nc4 sfg_${CDATE}_fhr${FH}_ensspread.nc4
       if [ $NST_GSI -gt 0 ]; then
          ln -fs ${NSTENSMEAN}${FH}_ensmean nfg_${CDATE}_fhr${FH}_ensmean
       fi
@@ -359,6 +357,7 @@ if [[ "$MPMD" = "YES" ]]; then
      [[ $FH -lt 10 ]]&&FH=0$FH 
      cmd[$cnt]="$GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF" 
      cmd[$cnt]="$GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     cmd[$cnt]="$GETATMENSSTATEXEC ${datapath}/ sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
      if [ $NST_GSI -gt 0 ]; then
         cmd[$cnt]="$GETNSTENSMEANEXEC ${datapath}/ nfg_${analdate}_fhr${FH}_ensmean nfg_${analdate}_fhr${FH} $NMEM_ENKF"
      fi
@@ -400,6 +399,7 @@ else
      [[ $FH -lt 10 ]]&&FH=0$FH 
      eval "$APRUN $GETSFCENSMEANEXEC ${datapath}/ bfg_${analdate}_fhr${FH}_ensmean bfg_${analdate}_fhr${FH} $NMEM_ENKF" 
      eval "$APRUN $GETATMENSMEANEXEC ${datapath}/ sfg_${analdate}_fhr${FH}_ensmean sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
+     eval "$APRUN $GETATMENSSTATEXEC ${datapath}/ sfg_${analdate}_fhr${FH} $NMEM_ENKF" 
      if [ $NST_GSI -gt 0 ]; then  	  	 
         eval "$APRUN $GETNSTENSMEANEXEC ${datapath}/ nfg_${analdate}_fhr${FH}_ensmean nfg_${analdate}_fhr${FH} $NMEM_ENKF"
      fi
@@ -447,6 +447,8 @@ then
       [[ $FH -lt 10 ]]&&FH=0$FH
       cp sfg_${CDATE}_fhr${FH}_ensmean ${SIGENSMEAN}${FH}_ensmean
       cp bfg_${CDATE}_fhr${FH}_ensmean ${SFCENSMEAN}${FH}_ensmean
+      cp sfg_${CDATE}_fhr${FH}_ensmean.nc4   ${SIGENSMEAN}${FH}_ensmean.nc4
+      cp sfg_${CDATE}_fhr${FH}_ensspread.nc4 ${SIGENSMEAN}${FH}_ensspread.nc4
       if [ $NST_GSI -gt 0 ]; then
          cp nfg_${CDATE}_fhr${FH}_ensmean ${NSTENSMEAN}${FH}_ensmean
       fi
@@ -572,7 +574,10 @@ while [[ $imem -le $NMEM_ENKF ]]; do
    FH=6 
    until [[ $FH -gt $FHEND ]];do 
       [[ $FH -lt 10 ]]&&FH=0$FH 
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+      if [[ `expr $FH % 3` -eq 0 ]]
+      then
+        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+      fi
       FH=`expr $FH + $FHOUT` 
    done 
    (( imem = $imem + 1 )) 

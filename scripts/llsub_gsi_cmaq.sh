@@ -131,11 +131,11 @@ cd $tmpdir
 
 # Make gsi namelist
 
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh cmaq_binary
 
 cat << EOF > gsiparm.anl
 
-$cmaq_binary_namelist
+$gsi_namelist
 
 EOF
 

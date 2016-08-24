@@ -38,6 +38,7 @@
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 # 2014-03-13  X. Li          Add NSST
+# 2016-05-10  J. Jung        Added RARS and direct broadcast data
 #
 # Usage:  global_analysis.sh SFCGES SIGGES NSTGES GBIAS GBIASPC GRADSTAT GBIASAIR
 #                            SFCANL SIGANL NSTANL ABIAS ABIASPC ABIASAIR IGEN
@@ -267,10 +268,20 @@
 #                   defaults to ${COMIN}/${PREINP}esamua.tm00.bufr_d${SUFINP}
 #     ESAMUB        Input EARS AMSU/B radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}
+#     HRS3DB        Input EARS HIRS/3 radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}hrs3db.tm00.bufr_d${SUFINP}
+#     AMUADB        Input EARS AMSU/A radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}amuadb.tm00.bufr_d${SUFINP}
+#     AMUBDB        Input EARS AMSU/B radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}amubdb.tm00.bufr_d${SUFINP}
 #     AIRSBF        Input AIRS radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}airs.tm00.bufr_d${SUFINP}
 #     IASIBF        Input IASI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}mtiasi.tm00.bufr_d${SUFINP}
+#     ESIASI        Input IASI radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}
+#     IASIDB        Input IASI radiace file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}
 #     AMSREBF       Input AMSRE radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}
 #     SEVIRIBF      Input SEVIRI radiace file (bufr format)
@@ -279,8 +290,22 @@
 #                   defaults to ${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}
 #     CRISBF        Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}
+#     ESCRIS        Input CRIS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}
+#     CRISDB        Input direct broadcast CRIS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}crisdb.tm00.bufr_d${SUFINP}
+#     CRISFSBF      Input CRIS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}crisfs.tm00.bufr_d${SUFINP}
+#     ESCRISFS      Input CRIS-FSR radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}
+#     CRISFSDB      Input CRIS-FSR radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}crisfsdb.tm00.bufr_d${SUFINP}
 #     ATMSBF        Input ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}
+#     ESATMS        Input ATMS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}
+#     ATMSDB        Input direct broadcast ATMS radiance file (bufr format)
+#                   defaults to ${COMIN}/${PREINP}atmsdb.tm00.bufr_d${SUFINP}
 #     SAPHIRBF      Input SAPHIR radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}
 #     AMSR2BF       Input AMSR2 L1B brightness temperature files
@@ -545,16 +570,11 @@ export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
 export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
 export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export FIXGLOBAL=$FIXgsm    # $CYCLESH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CYCLESH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CYCLESH still references GLOBAL variables
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
 export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
-export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
-# Control parameters for NSST
 #  Set script / GSI control parameters
 NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
@@ -563,6 +583,7 @@ ZSEA2=${ZSEA2:-0}
 FAC_DTL=${FAC_DTL:-0}
 FAC_TSL=${FAC_TSL:-0}
 NST_TZR=${NST_TZR:-0}
+
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode
 export lwrite4danl=${lwrite4danl:-".false."}         # .false. = write single analysis at center time
@@ -626,8 +647,15 @@ export B1MHS=${B1MHS:-${COMIN}/${PREINP}1bmhs.tm00.bufr_d${SUFINP}}
 export ESHRS3=${ESHRS3:-${COMIN}/${PREINP}eshrs3.tm00.bufr_d${SUFINP}}
 export ESAMUA=${ESAMUA:-${COMIN}/${PREINP}esamua.tm00.bufr_d${SUFINP}}
 export ESAMUB=${ESAMUB:-${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}}
+export ESMHS=${ESMHS:-${COMIN}/${PREINP}esmhs.tm00.bufr_d${SUFINP}}
+export HRS3DB=${HRS3DB:-${COMIN}/${PREINP}hrs3db.tm00.bufr_d${SUFINP}}
+export AMUADB=${AMUADB:-${COMIN}/${PREINP}amuadb.tm00.bufr_d${SUFINP}}
+export AMUBDB=${AMUBDB:-${COMIN}/${PREINP}amubdb.tm00.bufr_d${SUFINP}}
+export MHSDB=${MHSDB:-${COMIN}/${PREINP}mhsdb.tm00.bufr_d${SUFINP}}
 export AIRSBF=${AIRSBF:-${COMIN}/${PREINP}airsev.tm00.bufr_d${SUFINP}}
 export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d${SUFINP}}
+export ESIASI=${ESIASI:-${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}}
+export IASIDB=${IASIDB:-${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}}
 export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}}
 export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}}
 export GMIBF=${GMIBF:-${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}}
@@ -635,7 +663,14 @@ export SAPHIRBF=${SAPHIRBF:-${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}}
 export AHIBF=${AHIBF:-${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}}
+export ESCRIS=${ESCRIS:-${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}}
+export CRISDB=${CRISDB:-${COMIN}/${PREINP}crisdb.tm00.bufr_d${SUFINP}}
+export CRISFSBF=${CRISFSBF:-${COMIN}/${PREINP}crisfs.tm00.bufr_d${SUFINP}}
+export ESCRISFS=${ESCRISFS:-${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}}
+export CRISFSDB=${CRISFSDB:-${COMIN}/${PREINP}crisfsdb.tm00.bufr_d${SUFINP}}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}}
+export ESATMS=${ESATMS:-${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}}
+export ATMSDB=${ATMSDB:-${COMIN}/${PREINP}atmsdb.tm00.bufr_d${SUFINP}}
 export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}}
 export SSMISBF=${SSMISBF:-${COMIN}/${PREINP}ssmisu.tm00.bufr_d${SUFINP}}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d${SUFINP}}
@@ -800,13 +835,13 @@ if [ $NST_GSI -eq 3 ] ; then
    ra=$?
    ((rc+=ra))
 else
-   $CYCLESH $SFCGES $SFCANL
+   $CYCLESH  $SFCGES $SFCANL
    ra=$?
    ((rc+=ra))
    if [ $DOIAU = YES ]; then
       export CDATE_SAVE=$CDATE
       export CDATE=$($NDATE -3 $CDATE_SAVE)
-      $CYCLESH $SFCG03 $SFCA03
+      $CYCLESH  $SFCG03 $SFCA03
       ra=$?
       ((rc+=ra))
       export CDATE=$CDATE_SAVE
@@ -832,8 +867,12 @@ rm berror_stats satbias_angle satinfo *SpcCoeff.bin *TauCoeff.bin EmisCoeff.bin
 rm AerosolCoeff.bin CloudCoeff.bin anavinfo convinfo ozinfo pcpinfo aeroinfo scaninfo
 rm errtable prepbufr prepbufr_profl gsndrbufr gsnd1bufr hirs2bufr msubufr hirs3bufr hirs4bufr
 rm amsuabufr amsubbufr mhsbufr sbuvbufr gomebufr omibufr mlsbufr ssmirrbufr tmirrbufr ahibufr
-rm airsbufr iasibufr amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
-rm hirs3bufrears amsuabufrears amsubbufrears seviribufr crisbufr atmsbufr
+rm airsbufr iasibufr iasibufrears iasibufr_db amsrebufr amsr2bufr gmibufr saphirbufr ssmitbufr
+rm ssmisbufr gpsrobufr tcvitl hybens_locinfo atms_beamwidth.txt
+rm hirs3bufr_db hirs3bufrears amsuabufr_db amsuabufrears
+rm amsubbufr_db amsubbufrears mhsbufr_db mhsbufrears seviribufr
+rm crisbufr crisbufr_db crisbufrears crisfsbufr crisfsbufrears crisfsbufr_db 
+rm atmsbufr atmsbufr_db atmsbufrears
 rm satbias_in satbias_ang.in satbias_out gsiparm.anl satbias_pc satbias_pc.out satbias_out.int
 rm aircftbias_in aircftbias_out
 rm sfcf03 sfcf04 sfcf05 sfcf06 sfcf07 sfcf08 sfcf09
@@ -904,6 +943,11 @@ $FCPLN $B1MHS    mhsbufr
 $FCPLN $ESHRS3   hirs3bufrears
 $FCPLN $ESAMUA   amsuabufrears
 $FCPLN $ESAMUB   amsubbufrears
+$FCPLN $ESMHS    mhsbufrears
+$FCPLN $HRS3DB   hirs3bufr_db
+$FCPLN $AMUADB   amsuabufr_db
+$FCPLN $AMUBDB   amsubbufr_db
+$FCPLN $MHSDB    mhsbufr_db
 $FCPLN $SBUVBF   sbuvbufr
 $FCPLN $GOMEBF   gomebufr
 $FCPLN $OMIBF    omibufr
@@ -912,20 +956,27 @@ $FCPLN $SMIPCP   ssmirrbufr
 $FCPLN $TMIPCP   tmirrbufr
 $FCPLN $AIRSBF   airsbufr
 $FCPLN $IASIBF   iasibufr
+$FCPLN $ESIASI   iasibufrears
+$FCPLN $IASIDB   iasibufr_db
 $FCPLN $AMSREBF  amsrebufr
 $FCPLN $AMSR2BF  amsr2bufr
 $FCPLN $GMIBF    gmibufr
 $FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
+$FCPLN $ESCRIS   crisbufrears
+$FCPLN $CRISDB   crisbufr_db
+$FCPLN $CRISFSBF crisfsbufr
+$FCPLN $ESCRISFS crisfsbufrears
+$FCPLN $CRISFSDB crisfsbufr_db
 $FCPLN $ATMSBF   atmsbufr
+$FCPLN $ESATMS   atmsbufrears
+$FCPLN $ATMSDB   atmsbufr_db
 $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
 $FCPLN $GPSROBF  gpsrobufr
 $FCPLN $TCVITL   tcvitl
-if [[ $NST_GSI -gt 0 ]]; then
-   $FCPLN $NSSTBF   nsstbufr
-fi
+$FCPLN $NSSTBF   nsstbufr
 $FCPLN $B1AVHAM  avhambufr
 $FCPLN $B1AVHPM  avhpmbufr
 $FCPLN $AHIBF    ahibufr
@@ -1007,44 +1058,44 @@ fi
 ##        test for file existence before cp
 
 
- if [[ -s $SIGG04 ]]; then 
-    $FCPLN $SIGG04   sigf04
- fi
- if [[ -s $SIGG05 ]]; then
-    $FCPLN $SIGG05   sigf05
- fi
- if [[ -s $SIGG07 ]]; then
-    $FCPLN $SIGG07   sigf07
- fi
- if [[ -s $SIGG08 ]]; then
-    $FCPLN $SIGG08   sigf08
- fi
- 
- if [[ -s $SFCG04 ]]; then
-    $FCPLN $SFCG04   sfcf04
- fi
- if [[ -s $SFCG05 ]]; then
-    $FCPLN $SFCG05   sfcf05
- fi
- if [[ -s $SFCG07 ]]; then
-    $FCPLN $SFCG07   sfcf07
- fi
- if [[ -s $SFCG08 ]]; then
-    $FCPLN $SFCG08   sfcf08
- fi
- 
- if [[ -s $NSTG04 ]]; then
-    $FCPLN $NSTG04   nstf04
- fi
- if [[ -s $NSTG05 ]]; then
-    $FCPLN $NSTG05   nstf05
- fi
- if [[ -s $NSTG07 ]]; then
-    $FCPLN $NSTG07   nstf07
- fi
- if [[ -s $NSTG08 ]]; then
-    $FCPLN $NSTG08   nstf08
- fi
+if [[ -s $SIGG04 ]]; then 
+   $FCPLN $SIGG04   sigf04
+fi
+if [[ -s $SIGG05 ]]; then
+   $FCPLN $SIGG05   sigf05
+fi
+if [[ -s $SIGG07 ]]; then
+   $FCPLN $SIGG07   sigf07
+fi
+if [[ -s $SIGG08 ]]; then
+   $FCPLN $SIGG08   sigf08
+fi
+
+if [[ -s $SFCG04 ]]; then
+   $FCPLN $SFCG04   sfcf04
+fi
+if [[ -s $SFCG05 ]]; then
+   $FCPLN $SFCG05   sfcf05
+fi
+if [[ -s $SFCG07 ]]; then
+   $FCPLN $SFCG07   sfcf07
+fi
+if [[ -s $SFCG08 ]]; then
+   $FCPLN $SFCG08   sfcf08
+fi
+
+if [[ -s $NSTG04 ]]; then
+   $FCPLN $NSTG04   nstf04
+fi
+if [[ -s $NSTG05 ]]; then
+   $FCPLN $NSTG05   nstf05
+fi
+if [[ -s $NSTG07 ]]; then
+   $FCPLN $NSTG07   nstf07
+fi
+if [[ -s $NSTG08 ]]; then
+   $FCPLN $NSTG08   nstf08
+fi
 
 if [[ -s $GINCIN ]]; then
    $FCPLN $GINCIN   gesfile_in
@@ -1062,12 +1113,12 @@ if [ $FILESTYLE != 'C' ]; then
    # Output files
    ln -fs $SIGANL siganl
    if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
-      ln -fs $SIGA03 siga03
-      ln -fs $SIGA04 siga04
-      ln -fs $SIGA05 siga05
-      ln -fs $SIGA07 siga07
-      ln -fs $SIGA08 siga08
-      ln -fs $SIGA09 siga09
+      ln -fs $SIGA03   siga03
+      ln -fs $SIGA04   siga04
+      ln -fs $SIGA05   siga05
+      ln -fs $SIGA07   siga07
+      ln -fs $SIGA08   siga08
+      ln -fs $SIGA09   siga09
    fi
    ln -fs $ABIAS    satbias_out
    ln -fs $ABIASPC  satbias_pc.out
@@ -1161,7 +1212,7 @@ cat <<EOF > gsiparm.anl
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,qc_noirjaco3_pole=.true.,
+   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.,
    aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC
  /
@@ -1183,6 +1234,7 @@ OBS_INPUT::
    prepbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
    radarbufr      rw          null        rw                  0.0     0     0
+   prepbufr       sst         null        sst                 0.0     0     0
    nsstbufr       sst         nsst        sst                 0.0     0     0
    gpsrobufr      gps_bnd     null        gps                 0.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
@@ -1194,7 +1246,7 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-a     hirs4_metop-a       0.0     1     1
    gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
    gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
-   airsbufr       airs        aqua        airs281SUBSET_aqua  0.0     1     1
+   airsbufr       airs        aqua        airs_aqua           0.0     1     1
    amsuabufr      amsua       n15         amsua_n15           0.0     1     1
    amsuabufr      amsua       n18         amsua_n18           0.0     1     1
    amsuabufr      amsua       metop-a     amsua_metop-a       0.0     1     1
@@ -1223,7 +1275,7 @@ OBS_INPUT::
    gsnd1bufr      sndrd2      g13         sndrD2_g13          0.0     1     0
    gsnd1bufr      sndrd3      g13         sndrD3_g13          0.0     1     0
    gsnd1bufr      sndrd4      g13         sndrD4_g13          0.0     1     0
-   iasibufr       iasi        metop-a     iasi616_metop-a     0.0     1     1
+   iasibufr       iasi        metop-a     iasi_metop-a        0.0     1     1
    gomebufr       gome        metop-a     gome_metop-a        0.0     2     0
    omibufr        omi         aura        omi_aura            0.0     2     0
    sbuvbufr       sbuv2       n19         sbuv8_n19           0.0     0     0
@@ -1237,10 +1289,11 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
    amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
    mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
-   iasibufr       iasi        metop-b     iasi616_metop-b     0.0     1     1
+   iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
    gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
    atmsbufr       atms        npp         atms_npp            0.0     1     0
    crisbufr       cris        npp         cris_npp            0.0     1     0
+   crisfsbufr     cris-fsr    npp         cris-fsr_npp        0.0     1     0
    gsnd1bufr      sndrd1      g14         sndrD1_g14          0.0     1     0
    gsnd1bufr      sndrd2      g14         sndrD2_g14          0.0     1     0
    gsnd1bufr      sndrd3      g14         sndrD3_g14          0.0     1     0
@@ -1298,12 +1351,12 @@ if [[ $FILESTYLE = 'C' ]]; then
    # Output files
    $NCP siganl $SIGANL
    if [ $l4densvar = .true. -a $lwrite4danl = .true. ]; then
-      $NCP siga03 $SIGA03
-      $NCP siga04 $SIGA04
-      $NCP siga05 $SIGA05
-      $NCP siga07 $SIGA07
-      $NCP siga08 $SIGA08
-      $NCP siga09 $SIGA09
+      $NCP siga03         $SIGA03
+      $NCP siga04         $SIGA04
+      $NCP siga05         $SIGA05
+      $NCP siga07         $SIGA07
+      $NCP siga08         $SIGA08
+      $NCP siga09         $SIGA09
    fi
    $NCP satbias_out     $ABIAS
    $NCP satbias_pc.out  $ABIASPC
@@ -1334,14 +1387,14 @@ fi
 
 if test "$SAVEGES" = "YES"
 then
-   cp $SFCANL   $GESdir/${PREINP}sfcanl
+   cp $SFCANL   $GESOUT/${PREINP}sfcanl
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${PREINP}nstanl
+      cp $NSTANL  $GESOUT/${PREINP}nstanl
    fi
-   cp $SIGANL   $GESdir/${PREINP}sanl
-   cp $ABIAS    $GESdir/${PREINP}abias
-   cp $ABIASPC  $GESdir/${PREINP}abias_pc
-   cp $ABIASAIR $GESdir/${PREINP}abias_air
+   cp $SIGANL   $GESOUT/${PREINP}sanl
+   cp $ABIAS    $GESOUT/${PREINP}abias
+   cp $ABIASPC  $GESOUT/${PREINP}abias_pc
+   cp $ABIASAIR $GESOUT/${PREINP}abias_air
 fi
 if test "$SENDCOM" = "YES"
 then
@@ -1351,7 +1404,7 @@ then
    cp $ABIASPC  $COMOUT/${PREINP}abias_pc
    cp $ABIASAIR $COMOUT/${PREINP}abias_air
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $GESdir/${PREINP}nstanl
+      cp $NSTANL  $COMOUT/${PREINP}nstanl
    fi
 fi
 
@@ -1403,7 +1456,7 @@ ntype=3
 diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
@@ -1485,7 +1538,7 @@ fi
 
 ################################################################################
 
-if test "$RUN" = 'gdas1'
+if test "$RUN" = 'gdas'
 then
     if test "$SENDDBN" = 'YES'
     then
