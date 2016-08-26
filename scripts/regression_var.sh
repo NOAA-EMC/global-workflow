@@ -11,7 +11,7 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="XXXXXXXX"
+updat="tic591_dtfinc_mask"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -62,9 +62,11 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+#export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+export gsiexec_contrl="/da/save/Michael.Lueken/svn1/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
+#export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
+export enkfexec_contrl="/da/save/Michael.Lueken/svn1/src/enkf/global_enkf"
 export fixgsi="$basedir/$updat/fix"
 export scripts="$basedir/$updat/scripts"
 

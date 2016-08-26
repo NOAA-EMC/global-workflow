@@ -721,7 +721,6 @@ export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCTSK=${SFCTSK:-${COMOUT}/${PREINP}sfctsk}
 export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
 export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
-export SFCGES_ANL=${SFCGES_ANL:-${COMOUT}/sfcf06_anl}
 export ABIAS=${ABIAS:-${COMOUT}/${PREINP}abias}
 export ABIASPC=${ABIASPC:-${COMOUT}/${PREINP}abias_pc}
 export ABIASAIR=${ABIASAIR:-${COMOUT}/${PREINP}abias_air}
@@ -998,7 +997,7 @@ $FCPLN $NSTG03   nstf03
 $FCPLN $NSTGES   nstf06
 $FCPLN $NSTG09   nstf09
 
-$FCPLN $SFCGES_ANL sfcf06_ensmean
+$FCPLN $SFCGESENS_MEAN sfcf06_anl
 
 if [[ $NST_GSI -gt 0 ]]; then
    if [[ $NST_GSI -eq 3 ]]; then
