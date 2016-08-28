@@ -999,6 +999,14 @@ $FCPLN $NSTG09   nstf09
 
 $FCPLN $SFCGESENS_MEAN sfcf06_anl
 
+if [[ "$DOHYBVAR" = "YES" && $JCAP != JCAP_A && $JCAP_A = $JCAP_ENKF ]]; then
+   use_readin_anl_sfcmask=.true.
+   if [[ -e $SFCGESENS_MEAN ]]; then
+      $FCPLN $SFCGESENS_MEAN sfcf06_anlgrid
+   fi
+fi
+
+
 if [[ $NST_GSI -gt 0 ]]; then
    if [[ $NST_GSI -eq 3 ]]; then
       $FCPLN $SFCGCY sfcgcy
@@ -1170,7 +1178,7 @@ cat <<EOF > gsiparm.anl
    nst_gsi=$NST_GSI,nstinfo=$NSTINFO,zsea1=$ZSEA1,zsea2=$ZSEA2,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,nst_tzr=$NST_TZR,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=${use_gfs_nemsio},lrun_subdirs=${lrun_subdirs},
+   use_gfs_nemsio=${use_gfs_nemsio},use_readin_anl_sfcmask=${use_readin_anl_sfcmask},lrun_subdirs=${lrun_subdirs},
    crtm_coeffs_path='./crtm_coeffs/',
    newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
    diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,thin4d=.true.,cwoption=3,
