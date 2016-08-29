@@ -714,6 +714,7 @@ export SFCGESENS_MEAN=${SFCGESENS_MEAN:-${COMOUT}/sfcf06_ensmean}
 export SFCGCYENS_MEAN=${SFCGCYENS_MEAN:-${COMOUT}/sfcgcy_ensmean}
 export SFCANLENS_MEAN=${SFCANLENS_MEAN:-${COMOUT}/sfcanl_ensmean}
 export DOHYBVAR=${DOHYBVAR:-"NO"}
+export use_readin_anl_sfcmask=${use_readin_anl_sfcmask:-.false.}
 export NMEM_ENS=${NMEM_ENS:-0}
 export SFCANL=${SFCANL:-${COMOUT}/${PREINP}sfcanl}
 export DTFANL=${DTFANL:-${COMOUT}/${PREINP}dtfanl}
