@@ -1233,7 +1233,6 @@ OBS_INPUT::
    prepbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
    radarbufr      rw          null        rw                  0.0     0     0
-   prepbufr       sst         null        sst                 0.0     0     0
    nsstbufr       sst         nsst        sst                 0.0     0     0
    gpsrobufr      gps_bnd     null        gps                 0.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
