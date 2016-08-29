@@ -1003,6 +1003,8 @@ if [[ "$DOHYBVAR" = "YES" && $JCAP != JCAP_A && $JCAP_A = $JCAP_ENKF ]]; then
    if [[ -e $SFCGESENS_MEAN ]]; then
       USE_READIN_ANL_SFCMASK=.true.
       $FCPLN $SFCGESENS_MEAN sfcf06_anlgrid
+   else
+      echo "Warning: Inconsistent sfc mask between analysis and ensemble grids used in hybrid EnKF"
    fi
 fi
 
