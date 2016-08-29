@@ -39,6 +39,7 @@
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 # 2014-03-13  X. Li          Add NSST
 # 2016-05-10  J. Jung        Added RARS and direct broadcast data
+# 2016-08-28  X. Li          Introduce USE_READIN_ANL_SFCMASK for surface mask consistency between analysis and ensemble grids
 #
 # Usage:  global_analysis.sh SFCGES SIGGES NSTGES GBIAS GBIASPC GRADSTAT GBIASAIR
 #                            SFCANL SIGANL NSTANL ABIAS ABIASPC ABIASAIR IGEN
@@ -999,8 +1000,8 @@ $FCPLN $NSTGES   nstf06
 $FCPLN $NSTG09   nstf09
 
 if [[ "$DOHYBVAR" = "YES" && $JCAP != JCAP_A && $JCAP_A = $JCAP_ENKF ]]; then
-   USE_READIN_ANL_SFCMASK=.true.
    if [[ -e $SFCGESENS_MEAN ]]; then
+      USE_READIN_ANL_SFCMASK=.true.
       $FCPLN $SFCGESENS_MEAN sfcf06_anlgrid
    fi
 fi
