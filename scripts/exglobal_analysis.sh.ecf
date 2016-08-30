@@ -269,19 +269,19 @@
 #                   defaults to ${COMIN}/${PREINP}esamua.tm00.bufr_d${SUFINP}
 #     ESAMUB        Input EARS AMSU/B radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esamub.tm00.bufr_d${SUFINP}
-#     HRS3DB        Input EARS HIRS/3 radiance file (bufr format)
+#     HRS3DB        Input direct broadcast HIRS/3 radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}hrs3db.tm00.bufr_d${SUFINP}
-#     AMUADB        Input EARS AMSU/A radiance file (bufr format)
+#     AMUADB        Input direct broadcast AMSU/A radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}amuadb.tm00.bufr_d${SUFINP}
-#     AMUBDB        Input EARS AMSU/B radiance file (bufr format)
+#     AMUBDB        Input direct broadcast AMSU/B radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}amubdb.tm00.bufr_d${SUFINP}
 #     AIRSBF        Input AIRS radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}airs.tm00.bufr_d${SUFINP}
 #     IASIBF        Input IASI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}mtiasi.tm00.bufr_d${SUFINP}
-#     ESIASI        Input IASI radiace file (bufr format)
+#     ESIASI        Input EARS/RARS IASI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}
-#     IASIDB        Input IASI radiace file (bufr format)
+#     IASIDB        Input direct broadcast IASI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}
 #     AMSREBF       Input AMSRE radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}
@@ -291,19 +291,19 @@
 #                   defaults to ${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}
 #     CRISBF        Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}cris.tm00.bufr_d${SUFINP}
-#     ESCRIS        Input CRIS radiance file (bufr format)
+#     ESCRIS        Input EARS/RARS CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}escris.tm00.bufr_d${SUFINP}
 #     CRISDB        Input direct broadcast CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}crisdb.tm00.bufr_d${SUFINP}
 #     CRISFSBF      Input CRIS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}crisfs.tm00.bufr_d${SUFINP}
-#     ESCRISFS      Input CRIS-FSR radiance file (bufr format)
+#     ESCRISFS      Input EARS/RARS CRIS-FSR radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}escrisfs.tm00.bufr_d${SUFINP}
-#     CRISFSDB      Input CRIS-FSR radiance file (bufr format)
+#     CRISFSDB      Input direct broadcast CRIS-FSR radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}crisfsdb.tm00.bufr_d${SUFINP}
 #     ATMSBF        Input ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}atms.tm00.bufr_d${SUFINP}
-#     ESATMS        Input ATMS radiance file (bufr format)
+#     ESATMS        Input EARS/RARS ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}esatms.tm00.bufr_d${SUFINP}
 #     ATMSDB        Input direct broadcast ATMS radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}atmsdb.tm00.bufr_d${SUFINP}
@@ -945,11 +945,11 @@ $FCPLN $B1MHS    mhsbufr
 $FCPLN $ESHRS3   hirs3bufrears
 $FCPLN $ESAMUA   amsuabufrears
 $FCPLN $ESAMUB   amsubbufrears
-$FCPLN $ESMHS    mhsbufrears
+#$FCPLN $ESMHS    mhsbufrears
 $FCPLN $HRS3DB   hirs3bufr_db
 $FCPLN $AMUADB   amsuabufr_db
 $FCPLN $AMUBDB   amsubbufr_db
-$FCPLN $MHSDB    mhsbufr_db
+#$FCPLN $MHSDB    mhsbufr_db
 $FCPLN $SBUVBF   sbuvbufr
 $FCPLN $GOMEBF   gomebufr
 $FCPLN $OMIBF    omibufr
@@ -966,13 +966,13 @@ $FCPLN $GMIBF    gmibufr
 $FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
-$FCPLN $ESCRIS   crisbufrears
+#$FCPLN $ESCRIS   crisbufrears
 $FCPLN $CRISDB   crisbufr_db
 $FCPLN $CRISFSBF crisfsbufr
 $FCPLN $ESCRISFS crisfsbufrears
 $FCPLN $CRISFSDB crisfsbufr_db
 $FCPLN $ATMSBF   atmsbufr
-$FCPLN $ESATMS   atmsbufrears
+#$FCPLN $ESATMS   atmsbufrears
 $FCPLN $ATMSDB   atmsbufr_db
 $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
