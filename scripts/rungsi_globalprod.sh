@@ -20,7 +20,7 @@
 #PBS -q batch 
 ##PBS -q debug 
 ##PBS -l walltime=01:00:00 
-#PBS -l walltime=02:30:00 
+#PBS -l walltime=02:45:00 
 #PBS -l nodes=12:ppn=8
 ##PBS -l nodes=2:ppn=12
 #PBS -j eo                
@@ -429,7 +429,7 @@ OBS_INPUT::
    prepbufr       dw          null        dw                   0.0     0      0
    radarbufr      rw          null        rw                   0.0     0      0
    prepbufr       sst         null        sst                  0.0     0      0
-   gpsrobufr      $gps_dtype  null        gps                  0.0     0      0
+   gpsrobufr      gps_bnd     null        gps                  0.0     0      0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi             0.0    -1      0
    tmirrbufr      pcp_tmi     trmm        pcp_tmi              0.0    -1      0
    sbuvbufr       sbuv2       n16         sbuv8_n16            0.0     0      0
