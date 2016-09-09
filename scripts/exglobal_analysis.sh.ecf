@@ -599,9 +599,9 @@ export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export JCAP=${JCAP:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGES latr |grep -i "latr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonr |grep -i "lonr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
 else
   export JCAP=${JCAP:-$($SIGHDR $SIGGES JCAP||echo 0)}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGES JCAP||echo 0)}
@@ -747,7 +747,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
 if [ $use_gfs_nemsio = .true. ]; then
-  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
   export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGES nfhour |awk -F" " '{print $2}'`}
 else
   export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
@@ -1170,8 +1170,8 @@ fi
 # Create global_gsi namelist
 cat <<EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=100,niter(2)=100,
-   niter_no_qc(1)=50,niter_no_qc(2)=0,
+   miter=2,niter(1)=50,niter(2)=150,
+   niter_no_qc(1)=25,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
@@ -1213,7 +1213,7 @@ cat <<EOF > gsiparm.anl
    $STRONGOPTS
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.04,
    use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.,
    aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC

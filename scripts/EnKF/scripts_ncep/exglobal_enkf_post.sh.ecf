@@ -152,7 +152,7 @@ export HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
 export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 #  I/O filenames.
 if [ $use_gfs_nemsio = .true. ]; then
-  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
 else
   export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 fi

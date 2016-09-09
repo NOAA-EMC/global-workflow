@@ -217,10 +217,10 @@ export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECgsm}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
-  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGES latr |grep -i "latr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonr |grep -i "lonr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
 else
   export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
   export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
