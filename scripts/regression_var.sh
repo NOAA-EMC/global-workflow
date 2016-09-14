@@ -62,15 +62,15 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+export gsiexec_contrl="$basedir/trunk/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
+export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
 export fixgsi="$basedir/$updat/fix"
 export scripts="$basedir/$updat/scripts"
 
 # Paths to tmpdir and savedir base on ptmp
-export tmpdir="$ptmp"
-export savdir="$ptmp"
+export tmpdir="$ptmp/regression/$updat"
+export savdir="$ptmp/regression/$updat"
 
 # We are dealing with *which* endian files
 export endianness="Big_Endian"
@@ -127,7 +127,7 @@ export hwrf_nmm_ges="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
 export gps_dtype="gps_bnd"
 
 # Regression vfydir
-export regression_vfydir="$noscrub/regression"
+export regression_vfydir="$noscrub/regression/$updat"
 
 # Define debug variable - If you want to run the debug tests, set this variable to .true.  Default is .false.
 export debug=".false."
