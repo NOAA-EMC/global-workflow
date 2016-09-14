@@ -548,7 +548,6 @@ export machine=${machine:-IBMP6}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 
 #  Command line arguments.
-export APRUN=${APRUN:-""}
 export SFCGES=${1:-${SFCGES:?}}
 export SIGGES=${2:-${SIGGES:?}}
 export NSTGES=${3:-${NSTGES:?}}
@@ -798,6 +797,9 @@ else
   UNCOMPRESS=${UNCOMPRESS:-gunzip}
 fi
 export wc=${wc:-/usr/bin/wc}
+export APRUN=${APRUN:-""}
+export APRUNCFP=${APRUNCFP:-""}
+export USE_CFP=${USE_CFP:-"NO"}
 
 # Set 4D-EnVar specific variables
 if [ $l4densvar = .true. ]; then
@@ -1155,15 +1157,48 @@ fi
 
 # If requested, copy and de-tar guess radstat file
 if [[ "$USE_NEWRADBC" = "YES" ]]; then
+
+   if [[ $USE_CFP = YES ]]; then
+      rm $DATA/unzip.sh
+      rm $DATA/mp_unzip.sh
+      set +x
+cat <<\EOFunzip > unzip.sh
+#!/bin/ksh
+{ echo
+ set -aux
+ diag_file=$1
+ fname=`echo $diag_file | cut -d'.' -f1`
+ date=`echo $diag_file | cut -d'.' -f2`
+ $UNCOMPRESS $diag_file
+ fnameges=$(echo $fname|sed 's/_ges//g')
+ mv $fname.$date $fnameges
+}
+EOFunzip
+      set -x
+      chmod 755 $DATA/unzip.sh
+   fi
+
    listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
    for type in $listdiag; do
       diag_file=`echo $type | cut -d',' -f1`
-      fname=`echo $diag_file | cut -d'.' -f1`
-      date=`echo $diag_file | cut -d'.' -f2`
-      $UNCOMPRESS $diag_file
-      fnameges=$(echo $fname|sed 's/_ges//g')
-      mv $fname.$date $fnameges
+      if [[ $USE_CFP = YES ]] ; then
+         echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
+      else
+         fname=`echo $diag_file | cut -d'.' -f1`
+         date=`echo $diag_file | cut -d'.' -f2`
+         $UNCOMPRESS $diag_file
+         fnameges=$(echo $fname|sed 's/_ges//g')
+         mv $fname.$date $fnameges
+      fi
    done
+fi
+if [[ $USE_CFP = YES ]] ; then
+   chmod 755 $DATA/mp_unzip.sh
+   ncmd=`cat $DATA/mp_unzip.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      export APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
+      $APRUNCFP_UNZIP $DATA/mp_unzip.sh
+   fi
 fi
 
 
@@ -1481,6 +1516,37 @@ else
    prefix="pe*"
 fi
 
+if [[ $USE_CFP = YES ]]; then
+   rm $DATA/diag.sh
+   rm $DATA/mp_diag.sh
+   set +x
+cat <<\EOFdiag > $DATA/diag.sh
+#!/bin/ksh
+{ echo
+ set -aux
+ lrun_subdirs=$1
+ type=$2
+ loop=$3
+ string=$4
+ CDATE=$5
+ DIAG_COMPRESS=$6
+ DIAG_SUFFIX=$7
+ if [ $lrun_subdirs = ".true." ]; then
+   prefix=" dir.*/"
+ else
+   prefix="pe*"
+ fi
+ file=diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+ cat ${prefix}${type}_${loop}* > $file
+ if [[ $DIAG_COMPRESS = YES ]]; then
+  $COMPRESS $file
+ fi
+}
+EOFdiag
+   set -x
+   chmod 755 $DATA/diag.sh
+fi
+
 # Collect diagnostic files as a function of loop and type.
 loops="01 03"
 for loop in $loops; do
@@ -1495,7 +1561,11 @@ for loop in $loops; do
       for type in `echo ${diagtype[n]}`; do
          count=`ls ${prefix}${type}_${loop}* | $wc -l`
          if [ $count -gt 0 ]; then
-            cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+            if [[ $USE_CFP = YES ]]; then
+               echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+            else
+               cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+            fi
             echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
             numfile[n]=`expr ${numfile[n]} + 1`
          fi
@@ -1507,12 +1577,21 @@ done
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
 # If requested, compress diagnostic files
-if [[ $DIAG_COMPRESS = YES ]]; then
+if [ $DIAG_COMPRESS = YES -a $USE_CFP = NO ]; then
    echo $(date) START $COMPRESS diagnostic files >&2
    for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
       $COMPRESS $file
    done
    echo $(date) END $COMPRESS diagnostic files >&2
+fi
+
+if [[ $USE_CFP = YES ]] ; then
+   chmod 755 $DATA/mp_diag.sh
+   ncmd=`cat $DATA/mp_diag.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      export APRUNCFP_DIAG=$(eval echo $APRUNCFP)
+      $APRUNCFP_DIAG $DATA/mp_diag.sh
+   fi
 fi
 
 # If requested, create diagnostic file tarballs

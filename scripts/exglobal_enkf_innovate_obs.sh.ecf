@@ -567,7 +567,7 @@ while [[ $imem -le $ENSEND ]]; do
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
    fi
-   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+   if [ $DOIAU = YES && -s $SFCA03 ] ; then
       rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then

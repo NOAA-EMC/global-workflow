@@ -279,6 +279,10 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
+export APRUN=${APRUN:-""}
+export APRUNCFP=${APRUNCFP:-""}
+export USE_CFP=${USE_CFP:-"NO"}
+
 
 ################################################################################
 #  Preprocessing
@@ -310,6 +314,25 @@ rm convinfo satinfo ozinfo satbias_angle satbias_in enkf.nml
 rm hybens_locinfo
 rm sanl*
 
+if [[ $USE_CFP = YES ]]; then
+   rm $DATA/untar.sh $DATA/mp_untar.sh
+   set +x
+cat <<\EOFuntar > $DATA/untar.sh
+#!/bin/ksh
+{ echo
+ member=$1
+ list="$CNVSTAT $OZNSTAT $RADSTAT"
+ for type in $list; do
+    if [[ $FILESTYLE = 'C' ]]; then
+       $NCP ${type}${member} ./
+    fi
+    tar -xvf ${type}${member}
+ done
+}
+EOFuntar
+   set -x
+   chmod 755 $DATA/untar.sh
+fi
 
 $NCP $ENKFUPDEXEC $DATA
 if [[ $FILESTYLE = 'C' ]]
@@ -323,28 +346,31 @@ then
    $NCP $HYBENSINFO hybens_locinfo
 
    # Ensemble observational and guess data
-   date
-   list="$CNVSTAT $OZNSTAT $RADSTAT"
-   for type in $list; do
-      $NCP ${type}_ensmean ./
-      tar -xvf ${type}_ensmean
-   done
-   date
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      date
-      member="_mem"`printf %03i $imem`
+   if [[ $USE_CFP = YES ]]; then
+      echo "$DATA/untar.sh _ensmean" | tee -a $DATA/mp_untar.sh
+   else
       list="$CNVSTAT $OZNSTAT $RADSTAT"
       for type in $list; do
-         $NCP ${type}${member} ./
-         tar -xvf ${type}${member}
+         $NCP ${type}_ensmean ./
+         tar -xvf ${type}_ensmean
       done
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      if [[ $USE_CFP = YES ]]; then
+         echo "$DATA/untar.sh $member" | tee -a $DATA/mp_untar.sh
+      else
+         list="$CNVSTAT $OZNSTAT $RADSTAT"
+         for type in $list; do
+            $NCP ${type}${member} ./
+            tar -xvf ${type}${member}
+         done
+      fi
       sigens=${SIGGESENS}${member}
       $NCP $sigens sfg_${CDATE}_fhr06${member}
       (( imem = $imem + 1 ))
-      date
    done
-   date
 
    # Guess fields
    $NCP $GBIAS    satbias_in
@@ -366,25 +392,29 @@ else
    ln -fs $HYBENSINFO hybens_locinfo
 
    # Ensemble observational and guess data
-   date
-   list="$CNVSTAT $OZNSTAT $RADSTAT"
-   for type in $list; do
-      tar -xvf ${type}_ensmean
-   done
-   date
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      date
-      member="_mem"`printf %03i $imem`
+   if [[ $USE_CFP = YES ]]; then
+      echo "$DATA/untar.sh _ensmean" | tee -a $DATA/mp_untar.sh
+   else
       list="$CNVSTAT $OZNSTAT $RADSTAT"
       for type in $list; do
-         tar -xvf ${type}${member}
+         tar -xvf ${type}_ensmean
       done
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      if [[ $USE_CFP = YES ]]; then
+         echo "$DATA/untar.sh $member" | tee -a $DATA/mp_untar.sh
+      else
+         list="$CNVSTAT $OZNSTAT $RADSTAT"
+         for type in $list; do
+            tar -xvf ${type}${member}
+         done
+      fi
       sigens=${SIGGESENS}${member}
       ln -fs $sigens sfg_${CDATE}_fhr06${member}
       (( imem = $imem + 1 ))
    done
-   date
 
    # Guess fields
    ln -fs $GBIAS    satbias_in
@@ -404,6 +434,15 @@ else
       (( imem = $imem + 1 ))
    done
 
+fi
+
+if [[ $USE_CFP = YES ]]; then
+   chmod 755 $DATA/mp_untar.sh
+   ncmd=`cat $DATA/mp_untar.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      export APRUNCFP=$(eval echo $APRUNCFP)
+      $APRUNCFP $DATA/mp_untar.sh
+   fi
 fi
 
 # Create global_enkf namelist
