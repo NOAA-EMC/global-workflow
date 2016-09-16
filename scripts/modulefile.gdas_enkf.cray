@@ -1,0 +1,58 @@
+#%Module######################################################################
+##                                                       Russ.Treadon@noaa.gov
+##                                                           NOAA/NWS/NCEP/EMC
+## GDAS_ENKF v6.2.3
+##_____________________________________________________
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for GDAS_ENKF"
+puts stderr "This module initializes the environment "
+puts stderr "for the Intel Compiler Suite $version\n"
+}
+module-whatis " GDAS_ENKF whatis description"
+
+set ver v6.2.3
+
+setenv COMP ftn
+setenv COMP_MP ftn
+setenv COMP_MPI ftn
+
+setenv C_COMP cc
+setenv C_COMP_MP cc
+
+set COMPILER intel
+
+setenv FFLAGS_COM "-fp-model strict"
+setenv LDFLAGS_COM " "
+
+set WRF_SHARED_VER v1.1.0
+set WRF_SHARED_ROOT /gpfs/hps/nco/ops/nwprod/wrf_shared
+setenv WRF_SHARED_PATH ${WRF_SHARED_ROOT}.${WRF_SHARED_VER}-${COMPILER}
+
+# Known conflicts
+
+# Loading ncep environment
+module load ncep/1.0
+
+# Loading Intel Compiler Suite
+module load PrgEnv-intel/5.2.56
+
+# Loading pe environment
+module load cray-mpich/7.2.0
+module load craype-haswell
+
+# Loading nceplibs modules
+module use /usrx/local/prod/modulefiles
+module load NetCDF-intel-haswell/3.6.3
+
+module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module load bufr-intel/11.0.1
+module load nemsio-intel/2.2.2
+module load sfcio-intel/1.0.0
+module load sigio-intel/2.0.1
+module load sp-intel/2.0.2
+module load w3nco-intel/2.0.6
+module load w3emc-intel/2.2.0
+module load crtm-intel/2.2.3
+
+module use /usrx/local/nceplibs/modulefiles
+module load bacio-intel/2.0.2
