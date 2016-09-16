@@ -30,7 +30,7 @@ else
 fi
 module list
 
-dlist="adderrspec_nmcmeth_spec.fd enkf_update.fd getsfcensmeanp.fd getnstensmeanp.fd getsfcnstensupdp.fd getsigensmeanp_smooth_ncep.fd recentersigp.fd"
+dlist="adderrspec_nmcmeth_spec.fd enkf_update.fd getsfcensmeanp.fd getsigensstatp.fd getnstensmeanp.fd getsfcnstensupdp.fd getsigensmeanp_smooth_ncep.fd recentersigp.fd"
 for dir in $dlist; do
  if [ $dir = enkf_update.fd ]; then
    cd $dir

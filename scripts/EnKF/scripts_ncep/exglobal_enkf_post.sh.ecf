@@ -38,11 +38,11 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     GETATMENSMEANEXEC   Compute ensemble mean sigma (optonally smoothed)
-#                   defaults to ${EXECgsm}/getsigensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getsigensmeanp_smooth$XC
 #     GETSFCENSMEANEXEC   Compute ensemble mean surface file
-#                   defaults to ${EXECgsm}/getsfcensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getsfcensmeanp$XC
 #     GETNSTENSMEANEXEC   Compute ensemble mean NSST file
-#                   defaults to ${EXECgsm}/getnstensmean_smooth$XC
+#                   defaults to ${EXECgsm}/getnstensmeanp$XC
 #     HYBENSMOOTH   Input level dependent smoothing paramters for sigma file
 #                   defaults to ${FIXgsm}/global_hybens_smoothinfo.l${LEVS}.txt
 #     INISCRIPT     Preprocessing script
@@ -163,12 +163,12 @@ export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/sfg_${CDATE}_fhr}
 export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/bfg_${CDATE}_fhr}
 export SIGENS_OUT=${SIGENS_OUT:-${COMOUT}/sfg_${CDATE}_fhr}
 #  Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECgdas/getsigensmean_smooth$XC}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECgdas/getsfcensmean_smooth$XC}
-export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$EXECgdas/getsigensstat_smooth$XC}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$EXECgdas/getsigensmean_smoothp$XC}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$EXECgdas/getsfcensmeanp$XC}
+export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$EXECgdas/getsigensstatp$XC}
 export NSTENS=${NSTENS:-$COMIN/nfg_${CDATE}_fhr}
 export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/nfg_${CDATE}_fhr}
-export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECgdas/getnstensmean_smooth$XC}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$EXECgdas/getnstensmeanp$XC}
 #  Other variables.
 export FHOUTEFCS=${FHOUT_ENKF:-3}
 export FHMINEFCS=${FHMIN_ENKF:-3}
