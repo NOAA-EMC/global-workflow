@@ -1631,7 +1631,7 @@ export gsi_namelist="
    period_width=1.5,baldiag_full=.false.,baldiag_inc=.false.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
+   dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,
    noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
@@ -1790,7 +1790,7 @@ export gsi_namelist="
    period_width=1.5,baldiag_full=.false.,baldiag_inc=.false.,
  /
  &OBSQC
-   dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,tdrgross_fact=0.4,
+   dfact=0.75,dfact1=3.0,erradar_inflate=1.0,tdrerr_inflate=.true.,
    noiqc=.true.,c_varqc=0.02,vadfile='prepbufr',oberrflg=.false.,njqc=.false.,vqc=.true.,
  /
  &OBS_INPUT
