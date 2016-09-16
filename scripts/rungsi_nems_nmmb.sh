@@ -131,10 +131,10 @@ if [ $ICO2 -gt 0 ] ; then
                 exit 1
    fi
 fi
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh nems_nmmb
 cat << EOF > gsiparm.anl
 
-$nems_nmmb_namelist
+$gsi_namelist
 
 EOF
 

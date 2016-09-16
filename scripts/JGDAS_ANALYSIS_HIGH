@@ -1,95 +1,47 @@
-#!/bin/ksh 
+#!/bin/ksh
 set -xa
-#
-# Specify whether the run is production or development
-#
-export RUN_ENVIR=${RUN_ENVIR:-prod}
+export PS4='$SECONDS + '
+date
 
-
-####################################
-# set up job name and  environment
-####################################
-export job=${job:-$RUN}
-export envir=${envir:-prod}
-export host=${host:-`hostname | cut -c1`}
-
-#####################################################################################
+##############################################
 # Run config file to get input parameters
-# This config file should define the following variables
-# DATA_IN: Location of working directory, default to $DATAROOT
-# DEV_ECF: If the job is to be running using ECF, default to YES
-# SENDDBN: Set to NO for developers, default to YES
-# COM_IN:  Directory for input files, default to $COMROOT/$NET/${envir}
-# COM_OUT: Directory for output file, default to $COMROOT/$NET/${envir}
-# gespath: Directory for the guess or restart files, default to /nwges/${envir}
-#####################################################################################
-if [ "$RUN_ENVIR" != prod ]      ### For Developers, "group_name" is passed from the ECF script
+##############################################
+if [ "$RUN_ENVIR" != nco ]
 then
-  . ${PARA_CONFIG:-/global/save/${LOGNAME}/2jif/q3fy12_hybrid/tests/para_config}
+  . ${PARA_CONFIG:-/global/save/${LOGNAME}/para_gfs/pr4devb/para_config}
   export userid=$LOGNAME
-  export DATA_IN=${DATA_IN:-/ptmp/$userid}
 fi
 
-###############################################################
-# This block can be modified for different test environment
-###############################################################
-if [[ $RUN_ENVIR = prod && $envir != prod ]] ; then
-  export DBNROOT=/nwprod/spa_util/fakedbn
-  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
-fi
-
-####################################
+##############################################
 # Specify NET and RUN Name and model
-####################################
+##############################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export RUNENS=${RUNENS:-enkf}
 
-
-####################################
-# Specify version numbers
-####################################
-export crtm_ver=${crtm_ver:-v2.2.3}
-export gdas_ver=${gdas_ver:-v6.0.0}
-export global_shared_ver=${global_shared_ver:-v6.0.0}
-export gsm_ver=${gsm_ver:-v12.0.0}
-
-
-###############################################
-
-export PS4='$SECONDS + '
-
-# #### 05/05/99 ###############################
-# SETUP GDAS ANALYSIS PROCESSING VARIABLES
-# #############################################
-
-####################################
-# obtain unique process id (pid) and make temp directory
-####################################
-export pid=$$
-export DATA_IN=${DATA_IN:-$DATAROOT}
-
-export DATA=$DATA_IN/${job}.${pid}
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+export DATA=$DATAROOT/${jobid}
 mkdir -p $DATA
 cd $DATA
 
-####################################
+##############################################
 # Determine Job Output Name on System
-####################################
-export cyc=${cyc:-00}
-export outid="LL$job"
-[ $envir != prod ]  && export outid="LL${job}_${envir}"
-export jobid="${outid}.o${pid}"
+##############################################
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 export cycle=t${cyc}z
 
-####################################
+##############################################
 # SENDECF  - Flag Events on ECF
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
-# VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
-####################################
+# VERBOSE  - Specify Verbose Output in exglobal
+##############################################
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export SENDECF=${SENDECF:-YES}
@@ -97,21 +49,18 @@ export SAVEGES=${SAVEGES:-YES}
 export RERUN=${RERUN:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
-#################################
+##############################################
 # Define the Log File directory
-#################################
+##############################################
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
-
-####################################
+##############################################
 # Specify Execution Areas
-####################################
-export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.$gsm_ver}
+##############################################
+export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.$global_shared_ver}
 export EXECgsm=${EXECgsm:-$HOMEgsm/exec}
 export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
 export USHgsm=${USHgsm:-$HOMEgsm/ush}
-export SCRgsm=${SCRgsm:-$HOMEgsm/scripts}
-export UTILgsm=${UTILgsm:-$HOMEgsm/util}
 export PARMgsm=${PARMgsm:-$HOMEgsm/parm}
 
 export HOMEgsi=${HOMEgsi:-$NWROOT/global_shared.$global_shared_ver}
@@ -119,56 +68,52 @@ export EXECgsi=${EXECgsi:-$HOMEgsi/exec}
 export FIXgsi=${FIXgsi:-$HOMEgsi/fix}
 export SCRgsi=${SCRgsi:-$HOMEgsi/scripts}
 
-export HOMEutil=${HOMEutil:-$UTILROOT}
-export EXECutil=${EXECutil:-$HOMEutil/exec}
-export USHutil=${USHutil:-$HOMEutil/ush}
+export HOMEgdas=${HOMEgdas:-$NWROOT/gdas.$gdas_ver}
+export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
 
-##############################
-# Set up the UTILITIES
-##############################
-export utilscript=${utilscript:-$USHutil}
-export utilexec=${utilexec:-$EXECutil}
-export NDATE=${NDATE:-$utilexec/ndate}
-
+##############################################
 # Run setup to initialize working directory and utility scripts
-##############################
-$utilscript/setup.sh
-
-ERRSCRIPT=${ERRSCRIPT:-$err_chk}
-LOGSCRIPT=${LOGSCRIPT:-$startmsg}
+##############################################
+ERRSCRIPT=${ERRSCRIPT:-err_chk}
+LOGSCRIPT=${LOGSCRIPT:-startmsg}
 export FILESTYLE=${FILESTYLE:-'L'}
 
-##############################
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+
+##############################################
 # Run setpdy and initialize PDY variables
-##############################
-$utilscript/setpdy.sh
+##############################################
+setpdy.sh
 . ./PDY
 
-# Set CDATE and GDATE
 export CDATE=${CDATE:-${PDY}${cyc}}
 export GDATE=`$NDATE -06 $CDATE`
 export PDYges=`echo $GDATE | cut -c1-8`
-export cycges=`echo $GDATE | cut -c9-10`
+export CYCges=`echo $GDATE | cut -c9-10`
 
 ##############################################
 # Define COM directories
 ##############################################
 export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
 export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
-
 export COMIN=$COM_IN/${RUN}.${PDY}
 export COMOUT=$COM_OUT/${RUN}.${PDY}
-export COMINenkf=${COMINenkf:-$COM_IN/enkf.${PDYges}/$cycges}
-
+export COMINenkf=${COMINenkf:-$COM_IN/enkf.${PDYges}/$CYCges}
 mkdir -m 775 -p $COMOUT
 
 ##############################################
 # Define GES directories
 ##############################################
-export gespath=${gespath:-/nwges/${envir}}
-export GESdir=$gespath/${RUN}.$PDY
-mkdir -m 775 -p $GESdir
+export gespath=${gespath:-$GESROOT/${envir}}
+export GESOUT=$gespath/${RUN}.$PDY
+mkdir -m 775 -p $GESOUT
 
+##############################################
+# Execute parm file
+##############################################
+. ${PARMGDAS_ANAL:-$PARMgdas/gdas_analysis_high.parm}
+##############################################
 
 ####################################
 # Specify Special Fcst Vars
@@ -286,6 +231,7 @@ export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d}
 export CRISBF=${CRISBF:-${COMIN}/${PREINP}cris.tm00.bufr_d}
+export CRISFSBF=${CRISFSBF:-${COMIN}/${PREINP}crisfs.tm00.bufr_d}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d}
 export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d}
 export OMIBF=${OMIBF:-${COMIN}/${PREINP}omi.tm00.bufr_d}
@@ -462,57 +408,23 @@ if [[ "${RUN}" = 'gfs' ]]; then
 fi 
 export SETUP="$SETUP_4DVAR $SETUPGFS"
 
-############################
+##############################################
 # WCOSS environment settings
-
-export MP_EAGER_LIMIT=65536
-export MP_COREFILE_FORMAT=lite
-export MP_EUIDEVELOP=min
-export MP_EUIDEVICE=sn_all
-export MP_EUILIB=us
-export MP_MPILIB=mpich2
-
-export MP_LABELIO=yes
-export MP_USE_BULK_XFER=yes
-export MP_SHARED_MEMORY=yes
-
-export MPICH_ALLTOALL_THROTTLE=0
-export MP_USE_TOKEN_FLOW_CONTROL=yes
-export KMP_STACKSIZE=2048m
-
-export NTHREADS_GSI=${NTHREADS_GSI:-4}
-export NTHSTACK=1024000000                # stacks for fcst step; default 128000000
-export NTHSTACK_GSI=1024000000            # stack size for anal, default=128000000
-
-export OMP_NUM_THREADS_CY=24
-
+##############################################
 export machine=WCOSS
-##export APRUNCY=
 export APRUN='mpirun.lsf'
 
 env
 
-#############################################################
+##############################################
 # Execute the script
 ${ANALYSISSH:-$SCRgsi/exglobal_analysis.sh.ecf}
-#############################################################
+##############################################
 
-#export MP_PMDLOG=no
-#poe rm -rf /tmp/mplog*
-
-##########
-# NOTES: 1) script exglobal_analysis.sh.ecf compresses the contents of
-#           RADSTAT, PCPSTAT, OZNSTAT, and CNVSTAT.  These stat files
-#           files are tarballs of compressed files.
-#        2) SFCANL, SIGANL are input to the GFS forecast following the analysis
-#        3) ABIAS is used in the following analysis cycle
-#        4) GINCOUT from the GFS early cycle (GFS) is used as input in the
-#           GFS late (GDAS) cycle
-#        5) GSISTAT, RADSTAT, PCPSTAT, OZNSTAT, CNVSTAT are diagnostic output
-##########
-
-if test $SENDDBN = 'YES'
-then
+##############################################
+# Final processing
+##############################################
+if [ $SENDDBN = YES ] ; then
    $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias $job $COMOUT/${PREINP}abias
    $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_pc $job $COMOUT/${PREINP}abias_pc
    $DBNROOT/bin/dbn_alert MODEL GDAS1_MSC_abias_air $job $COMOUT/${PREINP}abias_air
@@ -520,17 +432,15 @@ fi
 
 cat $pgmout
 
-grep memory $DATA/mpi*
-
 echo "`hostname`  --  `date`" > $COMOUT/where_ibm_${RUN}_anal_ran.${cycle}
 
 msg="ENDED NORMALLY."
-./postmsg "$jlogfile" "$msg"
+postmsg "$jlogfile" "$msg"
 
-##############################
+##############################################
 # Remove the Temporary working directory
-##############################
-cd $DATA_IN
+##############################################
+cd $DATAROOT
 if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
 
 date
