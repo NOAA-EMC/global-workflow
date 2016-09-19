@@ -331,9 +331,9 @@ export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latr |grep -i "latr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonr |grep -i "lonr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
 else
   export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
@@ -404,7 +404,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
 if [ $use_gfs_nemsio = .true. ]; then
-  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN idate | grep -i "idate" |awk -F= '{print $2}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
   export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGESMEAN nfhour |awk -F" " '{print $2}'`}
 else
   export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
@@ -567,7 +567,7 @@ while [[ $imem -le $ENSEND ]]; do
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
    fi
-   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+   if [ $DOIAU = YES && -s $SFCA03 ] ; then
       rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then
