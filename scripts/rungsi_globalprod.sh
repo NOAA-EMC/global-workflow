@@ -50,7 +50,7 @@ fi
 
 # Set experiment name and analysis date
 adate=2015060900
-expnm=globalprodjim
+expnm=globalprodjimnoR
 exp=globalprod.$adate
 expid=${expnm}.$adate
 
@@ -69,7 +69,7 @@ export JCAP=62
 export LEVS=64
 export JCAP_B=$JCAP
 export lrun_subdirs=.true.
-
+export MKL_CBWR=AVX
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
