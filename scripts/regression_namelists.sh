@@ -85,7 +85,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17            0.0     1     1
    mhsbufr        mhs         n18       mhs_n18              0.0     1     1
    mhsbufr        mhs         metop-a   mhs_metop-a          0.0     1     1
-   ssmitbufr      ssmi        f14       ssmi_f14             0.0     1     0
    ssmitbufr      ssmi        f15       ssmi_f15             0.0     1     0
    amsrebufr      amsre_low   aqua      amsre_aqua           0.0     1     0
    amsrebufr      amsre_mid   aqua      amsre_aqua           0.0     1     0
@@ -328,7 +327,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18       mhs_n18               3.0     3     1
    mhsbufr        mhs         metop-a   mhs_metop-a           3.0     3     1
    ssmitbufr      ssmi        f13       ssmi_f13              0.0     4     0
-   ssmitbufr      ssmi        f14       ssmi_f14              0.0     4     0
    ssmitbufr      ssmi        f15       ssmi_f15              0.0     4     0
    amsrebufr      amsre_low   aqua      amsre_aqua            0.0     4     1
    amsrebufr      amsre_mid   aqua      amsre_aqua            0.0     4     1
@@ -467,7 +465,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17           0.0      1     1
    mhsbufr        mhs         n18       mhs_n18             0.0      1     1
    mhsbufr        mhs         metop-a   mhs_metop-a         0.0      1     1
-   ssmitbufr      ssmi        f14       ssmi_f14            0.0      1     0
    ssmitbufr      ssmi        f15       ssmi_f15            0.0      1     0
    amsrebufr      amsre_low   aqua      amsre_aqua          0.0      1     0
    amsrebufr      amsre_mid   aqua      amsre_aqua          0.0      1     0
@@ -716,7 +713,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               3.0      3       1
    mhsbufr        mhs         metop-a     mhs_metop-a           3.0      3       1
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      4       0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      4       0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      4       0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      4       1
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      4       1
@@ -857,7 +853,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               3.0     3       1
    mhsbufr        mhs         metop-a     mhs_metop-a           3.0     3       1
    ssmitbufr      ssmi        f13         ssmi_f13              0.0     4       0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0     4       0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0     4       0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0     4       1
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0     4       1
@@ -998,7 +993,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               3.0      3       1
    mhsbufr        mhs         metop-a     mhs_metop-a           3.0      3       1
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      4       0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      4       0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      4       0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      4       1
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      4       1
@@ -1139,7 +1133,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               3.0      3       1
    mhsbufr        mhs         metop-a     mhs_metop-a           3.0      3       1
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      4       0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      4       0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      4       0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      4       1
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      4       1
@@ -1280,7 +1273,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               3.0      3      1
    mhsbufr        mhs         metop-a     mhs_metop-a           3.0      3      1
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      4      0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      4      0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      4      0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      4      1
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      4      1
@@ -1436,7 +1428,6 @@ OBS_INPUT::
    mhsbufr        mhs         n18         mhs_n18               0.0      1      0
    mhsbufr        mhs         metop-a     mhs_metop-a           0.0      1      0
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      1      0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      1      0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      1      0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      1      0
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      1      0
@@ -1673,7 +1664,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17           0.0      3     1
    mhsbufr        mhs         n18       mhs_n18             0.0      3     1
    mhsbufr        mhs         metop-a   mhs_metop-a         0.0      3     1
-   ssmitbufr      ssmi        f14       ssmi_f14            0.0      1     0
    ssmitbufr      ssmi        f15       ssmi_f15            0.0      1     0
    amsrebufr      amsre_low   aqua      amsre_aqua          0.0      4     0
    amsrebufr      amsre_mid   aqua      amsre_aqua          0.0      4     0
@@ -1832,7 +1822,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17           0.0      3     1
    mhsbufr        mhs         n18       mhs_n18             0.0      3     1
    mhsbufr        mhs         metop-a   mhs_metop-a         0.0      3     1
-   ssmitbufr      ssmi        f14       ssmi_f14            0.0      1     0
    ssmitbufr      ssmi        f15       ssmi_f15            0.0      1     0
    amsrebufr      amsre_low   aqua      amsre_aqua          0.0      4     0
    amsrebufr      amsre_mid   aqua      amsre_aqua          0.0      4     0
