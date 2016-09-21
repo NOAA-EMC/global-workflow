@@ -19,6 +19,13 @@ setenv COMP_MPI mpiifort
 setenv C_COMP icc
 setenv C_COMP_MP mpcc
 
+setenv FFLAGS_COM "-fp-model source"
+setenv LDFLAGS_COM "-mkl"
+
+set WRF_SHARED_VER v1.1.0
+set WRF_SHARED_ROOT /nwprod/sorc/wrf_shared.fd
+setenv WRF_SHARED_PATH ${WRF_SHARED_ROOT}
+
 # Known conflicts
 
 # Loading Intel Compiler Suite
