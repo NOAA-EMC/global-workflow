@@ -970,9 +970,9 @@ $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
 #$FCPLN $ESCRIS   crisbufrears
 $FCPLN $CRISDB   crisbufr_db
-$FCPLN $CRISFSBF crisfsbufr
-$FCPLN $ESCRISFS crisfsbufrears
-$FCPLN $CRISFSDB crisfsbufr_db
+#$FCPLN $CRISFSBF crisfsbufr
+#$FCPLN $ESCRISFS crisfsbufrears
+#$FCPLN $CRISFSDB crisfsbufr_db
 $FCPLN $ATMSBF   atmsbufr
 #$FCPLN $ESATMS   atmsbufrears
 $FCPLN $ATMSDB   atmsbufr_db
