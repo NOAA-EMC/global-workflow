@@ -527,6 +527,8 @@ cat <<EOF > enkf.nml
   sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
   sattypes_rad(59)= 'cris_npp',      dsis(59)= 'cris_npp',
   sattypes_rad(60)= 'cris-fsr_npp',  dsis(60)= 'cris-fsr_npp',
+  sattypes_rad(61)= 'gmi_gpm',       dsis(61)= 'gmi_gpm',
+  sattypes_rad(62)= 'saphir_meghat', dsis(62)= 'saphir_meghat',
   $SATOBS_ENKF
  /
  &END
