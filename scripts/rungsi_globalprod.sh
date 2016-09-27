@@ -4,27 +4,24 @@
 #BSUB -a poe
 #BSUB -e gsi_global.o%J
 #BSUB -o gsi_global.o%J
-#BSUB -J gsi_globalnew
+#BSUB -J gsi_global
 #BSUB -network type=sn_all:mode=US
 #BSUB -q dev2
 #BSUB -n 32
 #BSUB -R span[ptile=8]
 #BSUB -R affinity[core(2):distribute=balance]
 #BSUB -x
-#BSUB -W 03:00
+#BSUB -W 01:00
 #BSUB -P GFS-T2O
 #=======================================================
 ## Below are PBS (Linux queueing system) commands
 #PBS -o gsi_global.e${jobid} 
 #PBS -N gsi_global
-#PBS -q batch 
-##PBS -q debug 
-##PBS -l walltime=01:00:00 
-#PBS -l walltime=02:45:00 
-#PBS -l nodes=12:ppn=8
-##PBS -l nodes=2:ppn=12
+#PBS -q batch
+#PBS -l walltime=00:30:00 
+#PBS -l nodes=2:ppn=12
 #PBS -j eo                
-#PBS -A cloud 
+#PBS -A ada
 #PBS -V
 #=======================================================
 
@@ -49,34 +46,30 @@ fi
 #=================================================================================================
 
 # Set experiment name and analysis date
-adate=2015060900
-expnm=globalprodtrunk
+adate=2015060100
+expnm=globalprod    
 exp=globalprod.$adate
-expid=${expnm}.$adate
+expid=${expnm}.$adate.wcoss
 
 # Set path/file for gsi executable
-#gsiexec=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/src/global_gsi
-gsiexec=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/src/global_gsi
+gsiexec=/da/save/$USER/trunk/src/global_gsi
 
 # Specify GSI fixed field
-#fixgsi=/scratch1/portfolios/NCEPDEV/da/save/$USER/EXP-GSI/trunk/fix
-fixgsi=/scratch4/NCEPDEV/da/save/$USER/GSI/Desroziers/fix
+fixgsi=/da/save/$USER/trunk/fix
 
 # Set the JCAP resolution which you want.
 # All resolutions use LEVS=64
-#export JCAP=254
 export JCAP=62
 export LEVS=64
 export JCAP_B=$JCAP
 export lrun_subdirs=.true.
-#export MKL_CBWR=AVX
+
 
 # Set data, runtime and save directories
 if [ $MACHINE = WCOSS ]; then
-   datdir=/ptmpp1/$USER/data_sigmap/${exp}
-   tmpdir=/ptmpp1/$USER/tmp${JCAP}_sigmap/${expid}  
-   savdir=/ptmpp1/$USER/out${JCAP}/sigmap/${expid}  
-#   fixcrtm=/usrx/local/nceplibs/fix/crtm_v2.1.3
+   datdir=/ptmp/$USER/data_sigmap/${exp}
+   tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
    fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update
    endianness=Big_Endian
    COMPRESS=gzip 
@@ -86,8 +79,8 @@ if [ $MACHINE = WCOSS ]; then
    DIAG_TARBALL=YES 
 elif [ $MACHINE = THEIA ]; then
    datdir=/scratch4/NCEPDEV/stmp3/$USER/data_sigmap/${exp}
-   tmpdir=/scratch4/NCEPDEV/stmp3/$USER/tmp${JCAP}_sigmap/${expid}
-   savdir=/scratch4/NCEPDEV/stmp3/$USER/out${JCAP}/sigmap/${expid}
+   tmpdir=/scratch4/NCEPDEV/stmp3/$USER/tmp${JCAP}_sigmap/${expid}  
+   savdir=/scratch4/NCEPDEV/stmp3/$USER/out${JCAP}/sigmap/${expid} 
    fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
@@ -367,7 +360,7 @@ SINGLEOB=""
 
 cat << EOF > gsiparm.anl
  &SETUP
-   miter=2,niter(1)=200,niter(2)=200,
+   miter=2,niter(1)=100,niter(2)=100,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
    qoption=2,
@@ -375,8 +368,10 @@ cat << EOF > gsiparm.anl
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-   use_gfs_nemsio=.false.,lrun_subdirs=.true.,
-   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,
+   use_gfs_nemsio=.false.,lrun_subdirs=${lrun_subdirs},
+   newpc4pred=.true.,adp_anglebc=.true.,angord=4,
+   passive_bc=.true.,use_edges=.false.,diag_precon=.true.,
+   step_start=1.e-3,emiss_bc=.true.,
    $SETUP
  /
  &GRIDOPTS
@@ -405,7 +400,6 @@ cat << EOF > gsiparm.anl
  &STRONGOPTS
    tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
    baldiag_full=.true.,baldiag_inc=.true.,
-   tlnmc_option=2,
    $STRONGOPTS
  /
  &OBSQC
@@ -416,7 +410,7 @@ cat << EOF > gsiparm.anl
  &OBS_INPUT
    dmesh(1)=145.0,dmesh(2)=150.0,time_window_max=3.0,
    $OBSINPUT
- / 
+ /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                 dval    dthin  dsfcalc
    prepbufr       ps          null        ps                   0.0     0      0
@@ -429,7 +423,7 @@ OBS_INPUT::
    prepbufr       dw          null        dw                   0.0     0      0
    radarbufr      rw          null        rw                   0.0     0      0
    prepbufr       sst         null        sst                  0.0     0      0
-   gpsrobufr      gps_bnd     null        gps                  0.0     0      0
+   gpsrobufr      $gps_dtype  null        gps                  0.0     0      0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi             0.0    -1      0
    tmirrbufr      pcp_tmi     trmm        pcp_tmi              0.0    -1      0
    sbuvbufr       sbuv2       n16         sbuv8_n16            0.0     0      0
@@ -535,7 +529,7 @@ emiscoef_VISice=$fixcrtm/NPOESS.VISice.EmisCoeff.bin
 emiscoef_VISland=$fixcrtm/NPOESS.VISland.EmisCoeff.bin                   
 emiscoef_VISsnow=$fixcrtm/NPOESS.VISsnow.EmisCoeff.bin                   
 emiscoef_VISwater=$fixcrtm/NPOESS.VISwater.EmisCoeff.bin                 
-emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin 
+emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/global_satinfo.txt
@@ -632,13 +626,6 @@ $ncp $datobs/${prefix_obs}crisfs.${suffix}   ./crisfsbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 cp $datdir/*Rcov* $tmpdir
 
-# # For data before Feb 2015
-# # Copy bias correction, atmospheric and surface files
-# $ncp $datges/${prefix_tbc}.abias              ./satbias_in
-# $ncp $datges/${prefix_tbc}.satang             ./satbias_angle
-# #$ncp $datges/${prefix_tbc}.abias_pc          ./satbias_pc
-# #$ncp $datges/${prefix_tbc}.radstat           ./radstat.gdas
-
 #  # For data before Feb 2015 
 #  # Copy bias correction, atmospheric and surface files
 #  $ncp $datges/${prefix_tbc}.abias              ./satbias_in
@@ -655,8 +642,8 @@ cp $datdir/*Rcov* $tmpdir
 
 /da/save/$USER/trunk/util/Radiance_bias_correction_Utilities/write_biascr_option.x -newpc4pred -adp_anglebc 4
 
-#cp satbias_in satbias_in.orig
-#cp satbias_in.new satbias_in
+cp satbias_in satbias_in.orig
+cp satbias_in.new satbias_in
 
 listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
 for type in $listdiag; do
