@@ -311,8 +311,8 @@
 #                   defaults to ${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}
 #     AMSR2BF       Input AMSR2 L1B brightness temperature files
 #                   defaults to ${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}
-#     GMIBF         Input GMI L1CR brightness temperature files
-#                   defaults to ${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}
+#     GMI1CRBF      Input GMI L1CR brightness temperature files
+#                   defaults to ${COMIN}/${PREINP}gmi1cr.tm00.bufr_d${SUFINP}
 #     SSMITBF       Input SSMI radiace file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}ssmit.tm00.bufr_d${SUFINP}
 #     SSMISBF       Input SSMIS radiace file (bufr format)
@@ -658,7 +658,7 @@ export ESIASI=${ESIASI:-${COMIN}/${PREINP}esiasi.tm00.bufr_d${SUFINP}}
 export IASIDB=${IASIDB:-${COMIN}/${PREINP}iasidb.tm00.bufr_d${SUFINP}}
 export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d${SUFINP}}
 export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d${SUFINP}}
-export GMIBF=${GMIBF:-${COMIN}/${PREINP}gmi.tm00.bufr_d${SUFINP}}
+export GMI1CRBF=${GMI1CRBF:-${COMIN}/${PREINP}gmi1cr.tm00.bufr_d${SUFINP}}
 export SAPHIRBF=${SAPHIRBF:-${COMIN}/${PREINP}saphir.tm00.bufr_d${SUFINP}}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d${SUFINP}}
 export AHIBF=${AHIBF:-${COMIN}/${PREINP}ahi.tm00.bufr_d${SUFINP}}
@@ -964,15 +964,15 @@ $FCPLN $ESIASI   iasibufrears
 $FCPLN $IASIDB   iasibufr_db
 $FCPLN $AMSREBF  amsrebufr
 $FCPLN $AMSR2BF  amsr2bufr
-$FCPLN $GMIBF    gmibufr
+$FCPLN $GMI1CRBF gmibufr
 $FCPLN $SAPHIRBF saphirbufr
 $FCPLN $SEVIRIBF seviribufr
 $FCPLN $CRISBF   crisbufr
 #$FCPLN $ESCRIS   crisbufrears
 $FCPLN $CRISDB   crisbufr_db
-$FCPLN $CRISFSBF crisfsbufr
-$FCPLN $ESCRISFS crisfsbufrears
-$FCPLN $CRISFSDB crisfsbufr_db
+#$FCPLN $CRISFSBF crisfsbufr
+#$FCPLN $ESCRISFS crisfsbufrears
+#$FCPLN $CRISFSDB crisfsbufr_db
 $FCPLN $ATMSBF   atmsbufr
 #$FCPLN $ESATMS   atmsbufrears
 $FCPLN $ATMSDB   atmsbufr_db
