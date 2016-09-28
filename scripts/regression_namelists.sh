@@ -560,7 +560,7 @@ export gsi_namelist="
    miter=2,niter(1)=10,niter(2)=10,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,factv=0.1,factcldch=0.1,deltim=$DELTIM,
+   factqmin=1.0,factqmax=1.0,factv=0.1,factcldch=0.1,factw10m=1.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
