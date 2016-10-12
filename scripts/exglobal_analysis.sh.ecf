@@ -582,7 +582,7 @@ ZSEA1=${ZSEA1:-0}
 ZSEA2=${ZSEA2:-0}
 FAC_DTL=${FAC_DTL:-0}
 FAC_TSL=${FAC_TSL:-0}
-NST_TZR=${NST_TZR:-0}
+TZR_QC=${TZR_QC:-0}
 
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode
@@ -1211,7 +1211,7 @@ cat <<EOF > gsiparm.anl
    qoption=2,
    gencode=$IGEN,factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
    iguess=-1,
-   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,zsea1=$ZSEA1,zsea2=$ZSEA2,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,nst_tzr=$NST_TZR,
+   tzr_qc=$TZR_QC,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
    use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
    use_gfs_nemsio=${use_gfs_nemsio},use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},lrun_subdirs=${lrun_subdirs},
@@ -1370,6 +1370,9 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /
+ &NST
+   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL
+/
 EOF
 
 
