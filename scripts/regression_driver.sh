@@ -6,14 +6,15 @@ set -x
 export regtest=$1
 
 # source the necessary files to setup
-. $(awk '{ print $1 }' regression_var.out)
+. $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
 
 if [ "$debug" = ".false." ]; then
 
    # Launch the individual control and update runs, one-after-another
-   for jn in `seq 1 4`; do
+   for jn in `seq 1 2`; do
+#  for jn in `seq 3 3`; do
 
       if [ $jn -le 2 ]; then
          export scripts=${scripts_updat:-$scripts}
@@ -26,22 +27,23 @@ if [ "$debug" = ".false." ]; then
       rm -f ${job[$jn]}.out
 
       /bin/sh $sub_cmd -q $queue -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/${regtest}.sh
-
       $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
       rc=$?
       if [ $rc -ne 0 ]; then
          rm -f ${rcname}
-         exit
+         exit 1
       fi
    done
-
    # When all done, test the results of the regression test
    if [ $regtest = 'global_enkf_T62' ]; then
       /bin/sh $scripts/regression_test_enkf.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} ${tmpregdir} ${result} ${scaling[1]} ${scaling[2]} ${scaling[3]}
    else
       /bin/sh $scripts/regression_test.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} ${tmpregdir} ${result} ${scaling[1]} ${scaling[2]} ${scaling[3]}
    fi
-
+   rc=$?
+   if [ $rc -ne 0 ]; then
+      exit 1
+   fi
 else
 
       /bin/sh $sub_cmd -q $queue -j ${job[1]} -p ${popts[2]} -t ${topts[1]} $scripts/${regtest}.sh

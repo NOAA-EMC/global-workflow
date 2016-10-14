@@ -170,7 +170,6 @@ echo "#BSUB -a $mpiver"                                           >> $cfile
 echo "#BSUB -P $account"                                          >> $cfile
 echo "#BSUB -e $output"                                           >> $cfile
 echo "#BSUB -o $output"                                           >> $cfile
-echo "#BSUB -cwd $dirin"                                          >> $cfile
 ##echo "#BSUB -o $output.%J"                                      >> $cfile
 echo "#BSUB -J $jobname"                                          >> $cfile
 echo "#BSUB -network type=sn_all:mode=US"                         >> $cfile
@@ -305,7 +304,7 @@ for var in $(eval echo $envars | tr , ' ') ; do
 done
 echo "export OMP_NUM_THREADS=$threads"                          >> $cfile
 echo "" >>$cfile
-echo ". "$(awk '{ print $1 }' regression_var.out)  >>$cfile
+echo ". "$(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out) >> $cfile 
 echo "" >>$cfile
 
 echo "$exec"                                                    >> $cfile

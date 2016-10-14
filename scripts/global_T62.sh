@@ -428,14 +428,14 @@ echo "Time after diagnostic loop is `date` "
 
 
 # If requested, clean up $tmpdir
-if [[ "$CLEAN" = "YES" ]];then
-   if [[ $rc -eq 0 ]];then
-      rm -rf $tmpdir
-      cd $tmpdir
-      cd ../
-      rmdir $tmpdir
-   fi
-fi
+#if [[ "$CLEAN" = "YES" ]];then
+#   if [[ $rc -eq 0 ]];then
+#      rm -rf $tmpdir
+#      cd $tmpdir
+#      cd ../
+#      rmdir $tmpdir
+#   fi
+#fi
 
 
 # End of script
