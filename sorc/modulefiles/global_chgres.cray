@@ -1,0 +1,48 @@
+#%Module#####################################################
+#############################################################
+## Fanglin.Yang@noaa.gov
+## NOAA/NWS/NCEP/EMC
+## gsm v14.1.0  
+#############################################################
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for gsm"
+puts stderr "This module initializes the users environment"
+puts stderr "to build the gsm for WCOSS production.\n"
+}
+module-whatis "gsm"
+
+set ver v14.1.0
+
+# Load ncep environment
+module load ncep/1.0
+
+# Load Intel environment
+module load PrgEnv-intel/5.2.56
+module rm intel
+module load intel/16.3.210
+
+module load cray-mpich/7.2.0
+module load craype-haswell
+module load cray-netcdf
+#module add craype-hugepages2M
+#module add craype-hugepages512M
+
+# Load NCEPLIBS modules
+module load sigio-intel/2.0.1
+module load w3nco-intel/2.0.6
+module load w3emc-intel/2.2.0
+module load sp-intel/2.0.2
+module load nemsio-intel/2.2.2
+
+module load ip-intel/2.0.0
+
+#module load sfcio-intel/1.0.0
+setenv SFCIO_INC4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/incmod 
+setenv SFCIO_LIB4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/libsfcio_v1.0.0_4.a 
+
+module load gfsio-intel/1.1.0
+module load landsfcutil-intel/2.0.0
+module load bacio-intel/2.0.1
+
+setenv FCMP ftn
+setenv CCMP cc

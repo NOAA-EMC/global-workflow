@@ -1,0 +1,16 @@
+--Run the global_chgres program to convert ICs from spectral form
+  to cube-sphere tiles that can be used to initialize FVGFS
+driver_fv3gfs_chgres.sh*  
+run_chgres.sh*
+
+--create orography files
+driver_fv3gfs_grid.sh*  
+make_grid.sh      - Create the cube-sphere grid tiles
+make_orog.sh      - Convert the orography data into cube-shpere tiles
+filter_topo.sh    - Filter the orography files (for uniform and stretched grids)
+
+
+--Post-Processing: Remapping FV3 native grids to generic lat-lon grids
+create_weights.sh  - create interpolation weight files       
+run_remap.sh       - remaps native grid to generic lat-lon based on interpolation weight
+
