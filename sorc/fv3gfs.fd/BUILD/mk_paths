@@ -1,0 +1,24 @@
+#!/bin/tcsh
+
+cd ${FV3_GFS_SRC}
+
+rm pathnames_gfs pathnames_fv3 *.html
+
+../site/list_paths -o pathnames_gfs \
+    gfs_physics/physics/ \
+    gfs_physics/share/ \
+    avec_timer/ \
+    gfs_physics/fv3_share/ 
+
+../site/list_paths -o pathnames_fv3 \
+    shared/ \
+    atmos_cubed_sphere/driver/coupled/ \
+    atmos_cubed_sphere/tools/ \
+    atmos_cubed_sphere/model/ \
+    atmos_cubed_sphere/model_nh/ \
+    atmos_cubed_sphere/lin_cloud_microphys/ \
+    gfs_physics/driver \
+    gfs_physics/sfc_cycling/ \
+    gfs_physics/ozinterp/ \
+    atmos_drivers/coupled/ \
+    simple_coupler/coupler_main.F90
