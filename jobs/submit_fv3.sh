@@ -4,7 +4,7 @@ set -x
 export machine=WCOSS_C
 curdir=`pwd`
 
-export CASE=C192             # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export CASE=C768             # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
 export CDATE=2016100300
 
 
@@ -26,12 +26,15 @@ elif [ $machine = WCOSS ]; then
  export CUE2RUN=dev2
 fi
 
+export layout_x=12
+export layout_y=24
 #export layout_x=8
 #export layout_y=16
-export layout_x=4
-export layout_y=8
+#export layout_x=4
+#export layout_y=8
 
-export MODE=32bit      # choices:  32bit, 64bit
+export MODE=64bit      # choices:  32bit, 64bit
+export TYPE=nh         # choices:  nh, hydro
 export HYPT=off        # choices:  on, off  (controls hyperthreading)
 
 export npes=$(( ${layout_x} * ${layout_y} * 6 ))
@@ -87,6 +90,7 @@ export max_core=$max_core
 export APRUN="$APRUN"
 export MODE=$MODE
 export HYPT=$HYPT 
+export TYPE=$TYPE 
 if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh
  module load craype-hugepages4M

@@ -23,7 +23,7 @@ export NO_SEND="no_send"          # choices:  send, no_send
 # directory structure
 export WORKDIR=${WORKDIR:-$PTMP/$LOGNAME/fv3/${NAME}.${CASE}.${TYPE}.${MODE}.${MONO}${MEMO}}
 export FCSTEXEC=fv3_gfs_${TYPE}.${COMP}.${MODE}.x
-export EXECDIR=${EXECDIR:-$BASEDIR/sorc/fv3gfs/BUILD/bin}
+export EXECDIR=${EXECDIR:-$BASEDIR/sorc/fv3gfs.fd/BUILD/bin}
 
 #if [ -s $WORKDIR ]; then rm -rf $WORKDIR ; fi
 mkdir -p $WORKDIR $WORKDIR/RESTART
@@ -62,11 +62,11 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
     export ncols=$(( (${npx}- 1)*(${npy}-1)*3/2 ))
 
     # blocking factor used for threading and general physics performance
-    export nxblocks=3
-    export nyblocks=48
-    if [ $CASE != C768 ] ; then
-       export nyblocks=`expr $npy \/ $layout_y `
-    fi
+#   export nxblocks=3
+#   export nyblocks=48
+    export nyblocks=`expr $npy \/ $layout_y `
+    export nxblocks=`expr $nyblocks \/ 16 `
+    if [ $nxblocks -le 0 ]; then export nxblocks=1 ; fi
 
     # run length
     export months=${months:-0}
