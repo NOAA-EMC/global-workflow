@@ -1,8 +1,8 @@
 #!/bin/sh 
 #BSUB -L /bin/sh
 #BSUB -P GFS-T2O
-#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/log.remap
-#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/log.remap
+#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/fv3/log.remap
+#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/fv3/log.remap
 #BSUB -J remap_fv3
 #BSUB -q dev
 #BSUB -M 3072
@@ -13,43 +13,50 @@
 #BSUB -extsched 'CRAYLINUX[]'
 set -ax
 
-#--------------------------------------
-#-- remap FV3 6 tiles to global array
-#-- Fanglin Yang, October 2016
-#--------------------------------------
-. $MODULESHOME/init/sh
+ . $MODULESHOME/init/sh
 module load PrgEnv-intel
+export PTMP=/gpfs/hps/ptmp
+export arcdir=$PTMP/$LOGNAME/fv3/archive
+mkdir -p $arcdir
 
-export CDATE=${CDATE:-2016100300}
-export CASE=${CASE:-C768}         ;#C48 C96 C192 C384 C768 C1152 C3072
-export GG=${GG:-0p25deg}          ;#1deg 0p5deg 0p25deg 0p125deg     
+export CDATE=2016100300
+export CASE=C192      ;#C48 C96 C192 C384 C768 C1152 C3072
 
-export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export arcdir=${arcdir:-$PTMP/$LOGNAME/fv3/archive}
-export COMROT=${COMROT:-$PTMP/$LOGNAME/fv3/${CASE}_${CDATE}}
 
-export home_dir=${home_dir:-/gpfs/hps/emc/global/noscrub/$LOGNAME/NGGPS}
-export script_dir=$home_dir/ush
-export fix_fv3_dir=$home_dir/fix
-export fregrid=$home_dir/exec/fregrid_parallel
-export grid_loc=$fix_fv3_dir/$CASE/${CASE}_mosaic.nc
-export weight_file=$fix_fv3_dir/$CASE/remap_weights_${CASE}_${GG}.nc
-#--------------------------------------------------
-if [ ! -s $arcdir ]; then mkdir -p $arcdir ;fi
-
-export NODES=5
-export max_core=${max_core:-24}
-export thread=${thread:-2}
+export max_core=24
+export NODES=10
+export thread=2
+if [ $CASE = C3072 ]; then export thread=4; fi
 export npe_node=$((max_core/thread))
 export npes=$((NODES*npe_node))
+
+#export APRUN="aprun -n 1 -N 1 -j 1 -d 24 -cc depth"
 export APRUN="aprun -n $npes -N $npe_node -j 1 -d $thread -cc depth"
 
+
+#----------------------------------------------------------
+for GG in 1deg 0p5deg 0p25deg 0p125deg; do
+#----------------------------------------------------------
 if [ $GG = 1deg    ];  then  export nlon=360 ;  export nlat=180 ;fi
 if [ $GG = 0p5deg  ];  then  export nlon=720 ;  export nlat=360 ;fi
 if [ $GG = 0p25deg ];  then  export nlon=1440 ; export nlat=720 ;fi
 if [ $GG = 0p125deg ]; then  export nlon=2880 ; export nlat=1440 ;fi
+
+
 #--------------------------------------------------
-cd $COMROT ||exit 8
+export expdir=$PTMP/$LOGNAME/fv3/${CASE}_${CDATE}
+export home_dir=/gpfs/hps/emc/global/noscrub/$LOGNAME/NGGPS
+export script_dir=$home_dir/ush
+export exec_dir=$home_dir/exec
+export fix_fv3_dir=$home_dir/fix
+export fregrid=$home_dir/exec/fregrid_parallel
+export TMPDIR=/gpfs/hps/ptmp/$LOGNAME/fv3_weight
+
+export grid_loc=$fix_fv3_dir/$CASE/${CASE}_mosaic.nc
+export weight_file=$fix_fv3_dir/$CASE/remap_weights_${CASE}_${GG}.nc
+
+#--------------------------------------------------
+cd $expdir ||exit 8
 
 export atmos_4xdaily_s="slp, vort850, vort200, tm, \
              t1000, t850, t700, t500, t200, t100, t50, t10,\
@@ -74,6 +81,7 @@ export nggps2d_s="ALBDOsfc, CPRATsfc, PRATEsfc, DLWRFsfc, ULWRFsfc, DSWRFsfc,\
 export nggps3d_4xdaily_s="ucomp, vcomp, temp, delp, sphum, o3mr, clwmr, nhpres, w, delz"
 #--------------------------------------------------
 
+
 for type in atmos_4xdaily nggps2d nggps3d_4xdaily ; do
 
 export in_file="${CDATE}0000.${type}"
@@ -82,7 +90,7 @@ if [ -s $arcdir/$out_file ]; then rm -f $arcdir/$out_file ; fi
 export fld=$(eval echo \${${type}_s})
 
 
- $APRUN $fregrid --input_dir $COMROT \
+ $APRUN $fregrid --input_dir $expdir \
                 --input_file $in_file \
                 --output_dir $arcdir \
                 --output_file $out_file \
@@ -93,6 +101,10 @@ export fld=$(eval echo \${${type}_s})
                 --nlon $nlon --nlat $nlat
 done
 
-echo "complete remapping for $CASE $CDATE"
+#----------------
+done  #lat-lon grid
+#----------------
+
 exit
 
+##--interp_method :conserve_order1, conserve_order2, bilinear

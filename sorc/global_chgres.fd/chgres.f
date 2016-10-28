@@ -162,6 +162,7 @@ C                 VAPOR,OZONE,CLOUD
 !   200       5   IDEA tracer set with O and O2 in addition q, O3, clw
 C
 CC$$$
+      use netcdf_io
       USE SIGIO_MODULE
       USE NSTIO_MODULE
       USE GFSIO_MODULE
@@ -253,15 +254,14 @@ CC$$$
       REAL(KIND=4), allocatable :: GRID_P(:,:,:),GRID_DP(:,:,:)
       REAL(KIND=4), allocatable :: GRID_T(:,:,:),GRID_U(:,:,:)
       REAL(KIND=4), allocatable :: GRID_V(:,:,:),GRID_W(:,:,:)
-      REAL(KIND=4), allocatable :: GRID_Q(:,:,:,:), GRID_ZH(:,:,:)
+      REAL(KIND=4), allocatable :: GRID_Q(:,:,:), GRID_ZH(:,:,:)
       REAL(KIND=4), allocatable :: GRID_RH(:,:,:)
       REAL(KIND=4), allocatable :: GRID_U_E(:,:,:),GRID_V_E(:,:,:)
       REAL(KIND=4), allocatable :: GRID_U_N(:,:,:),GRID_V_N(:,:,:)
       real(kind=4), allocatable :: zh_in_r4(:,:,:)
-      real(kind=4), allocatable :: rh_in_r4(:,:,:)
       REAL,         allocatable :: tmp_in(:,:), tmp_out(:,:)
       real,         allocatable :: zh_in(:,:,:), ZS_in(:,:), ps_in(:,:)
-      real,         allocatable :: rh_in(:,:,:), P_in(:,:,:)
+      real,         allocatable :: P_in(:,:,:)
       real,         allocatable :: SPHUM_in(:,:,:), T_in(:,:,:)
       character(len=256) :: tilefile, out_file
       integer :: l
@@ -1159,8 +1159,6 @@ c idea add init condition for temp tracer4-5 ( o o2)
 
             allocate(ZH_in(IMO,JMO,LEVSO+1))
             allocate(ZH_in_r4(IMO,JMO,LEVSO+1))
-            allocate(RH_in(IMO,JMO,LEVSO))
-            allocate(RH_in_r4(IMO,JMO,LEVSO))
             allocate(P_in(IMO,JMO,LEVSO))
             allocate(ZS_in(IMO,JMO), PS_in(IMO,JMO) )
             allocate(SPHUM_in(IMO,JMO,LEVSO))
@@ -1170,6 +1168,11 @@ c idea add init condition for temp tracer4-5 ( o o2)
             SPHUM_in = GFSDATAO%Q(:,:,LEVSO:1:-1,1)
             T_in = GFSDATAO%T(:,:,LEVSO:1:-1)
             P_in = GFSDATAO%P(:,:,LEVSO:1:-1)
+!---- deallocate un-needed GFSDATA0 data for FV3 ICs
+            DEALLOCATE(GFSDATAO%ZS)
+            DEALLOCATE(GFSDATAO%P)
+            DEALLOCATE(GFSDATAO%DP)
+            DEALLOCATE(GFSDATAO%T)
             if(allocated(ak)) deallocate(ak)
             if(allocated(bk)) deallocate(bk)
             allocate(ak(LEVSO+1))
@@ -1178,21 +1181,25 @@ c idea add init condition for temp tracer4-5 ( o o2)
             bk = GFSHEADVO%VCOORD(LEVSO+1:1:-1,2)
             ak(1) = max(1.e-9, ak(1))
             ! compute zh, rh on Gaussian grid.
-            call compute_zh_rh(IMO, JMO, LEVSO, ak, bk,
+            call compute_zh(IMO, JMO, LEVSO, ak, bk,
      &                      ps_in, zs_in, t_in, p_in, sphum_in, 
-     &                      zh_in, rh_in )        
-            deallocate(ps_in, zs_in, sphum_in, t_in, p_in)
+     &                      zh_in)        
             zh_in_r4(:,:,:) = zh_in(:,:,LEVSO+1:1:-1)
-            rh_in_r4(:,:,:) = rh_in(:,:,LEVSO:1:-1)
+!---- deallocate *_in data no longer needed
+            DEALLOCATE(P_in)
+            DEALLOCATE(ZS_in, PS_in)
+            DEALLOCATE(SPHUM_in)
+            DEALLOCATE(T_in)
             out_file = "gfs_data.nc"
             call write_gfs_data(IMO, JMO, LEVSO, NTRACM
-     &,        GFSDATAO%ZS, GFSDATAO%PS, GFSDATAO%P, GFSDATAO%DP
-     &,        GFSDATAO%T, GFSDATAO%U, GFSDATAO%V, GFSDATAO%W,zh_in_r4
-     &,        rh_in_r4, GFSDATAO%Q, .false., geolon
+     &,        GFSDATAO%PS, GFSDATAO%W,zh_in_r4
+     &,        GFSDATAO%Q, .false., geolon
      &,        geolat,"gfs_data.nc")
 
-!!      deallocate(geolon, geolat)
-        deallocate(geolon, geolat,zh_in_r4,rh_in_r4)
+!---- deallocate *_in data no longer needed
+          DEALLOCATE(ZH_in_r4)
+
+        deallocate(geolon, geolat)
 !---- if ntiles == 6, remap onto the cubic sphere grid.
         if(OUTGRID .NE. '') then
           !--- loop through each tile to read grid and remapping.
@@ -1261,6 +1268,10 @@ c idea add init condition for temp tracer4-5 ( o o2)
             
             deallocate(tmpvar)
 
+            write(out_file, '(a, i1, a)'), 'gfs_data.tile', n, '.nc'
+            CALL write_gfs_data2(LONG, LATG, LEVSO, NTRACM, out_file, 
+     &         header=.true., write_grid=.true., lon=geolon, lat=geolat)
+
             allocate(GRID_LPL(LATG/2))
             GRID_LPL(:) = LONG
             allocate(tmpvar(LONG, LATG))
@@ -1273,77 +1284,61 @@ c idea add init condition for temp tracer4-5 ( o o2)
             CALL INTERPRED(1,KMSK,tmpvar,GRIDLATS,
      &               LONG,LATG,LONG*LATG,GRID_LPL)
             deallocate(tmpvar, GRID_LPL)
+            deallocate(geolon,geolat)
 
-            allocate(GRID_ZS(LONG,LATG), GRID_PS(LONG,LATG))
-            allocate(GRID_P(LONG,LATG,LEVSO), GRID_DP(LONG,LATG,LEVSO))
-            allocate(GRID_T(LONG,LATG,LEVSO), GRID_U(LONG,LATG,LEVSO))
-            allocate(GRID_V(LONG,LATG,LEVSO), GRID_W(LONG,LATG,LEVSO))
-            allocate(GRID_Q(LONG,LATG,LEVSO,NTRACM))
-            allocate(GRID_ZH(LONG,LATG,LEVSO+1))
-            allocate(GRID_RH(LONG,LATG,LEVSO))
+
             allocate(tmp_in(IMO,JMO), tmp_out(LONG,LATG))
-            allocate(GRID_U_E(LONG+1,LATG,LEVSO))
-            allocate(GRID_V_E(LONG+1,LATG,LEVSO))
-            allocate(GRID_U_N(LONG,LATG+1,LEVSO))
-            allocate(GRID_V_N(LONG,LATG+1,LEVSO))
             
-              tmp_in = GFSDATAO%ZS
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,LONG,LATG,
-     &             4, GRIDLONS, GRIDLATS)
-              GRID_ZS = tmp_out
-!            endif
+            allocate(GRID_PS(LONG,LATG))
             tmp_in = GFSDATAO%PS
             call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,LONG,LATG,
      &           4, GRIDLONS, GRIDLATS)
             GRID_PS = tmp_out
+            CALL write_gfs_data2(LONG, LATG, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='ps', ps=GRID_PS)
+            deallocate(GRID_PS)
 
+            allocate(GRID_W(LONG,LATG,LEVSO))
             do k = 1, LEVSO
-              tmp_in(:,:) = GFSDATAO%P(:,:,k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_P(:,:,k) = tmp_out(:,:)
-              tmp_in(:,:) = GFSDATAO%DP(:,:,k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_DP(:,:,k) = tmp_out(:,:)
-              tmp_in(:,:) = GFSDATAO%T(:,:,k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_T(:,:,k) = tmp_out(:,:)
-              tmp_in(:,:) = GFSDATAO%U(:,:,k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_U(:,:,k) = tmp_out(:,:)
-              tmp_in(:,:) = GFSDATAO%V(:,:,k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_V(:,:,k) = tmp_out(:,:)
               tmp_in(:,:) = GFSDATAO%W(:,:,k)
               call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
      &         LONG,LATG,4, GRIDLONS, GRIDLATS)
               GRID_W(:,:,k) = tmp_out(:,:)
-              tmp_in(:,:) = rh_in(:,:,LEVSO+1-k)
-              call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
-     &         LONG,LATG,4, GRIDLONS, GRIDLATS)
-              GRID_RH(:,:,k) = tmp_out(:,:)
             enddo
+            CALL write_gfs_data2(LONG, LATG, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='w', var3d=GRID_W)
+            deallocate(GRID_W)
+
+            allocate(GRID_ZH(LONG,LATG,LEVSO+1))
             do k = 1, LEVSO+1
               tmp_in(:,:) = zh_in(:,:,LEVSO+2-k)
               call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
      &         LONG,LATG,4, GRIDLONS, GRIDLATS)
               GRID_ZH(:,:,k) = tmp_out(:,:)
             enddo   
+            CALL write_gfs_data2(LONG, LATG, LEVSO+1, NTRACM, out_file, 
+     &         write_data=.true., var_name='zh', var3d=GRID_ZH)
+            deallocate(GRID_ZH)
+
+            allocate(GRID_Q(LONG,LATG,LEVSO))
             do l=1,NTRACM 
               do k=1,LEVSO
                 tmp_in(:,:) = GFSDATAO%Q(:,:,k,l)
                 call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
      &            LONG,LATG,4, GRIDLONS, GRIDLATS)
-                GRID_Q(:,:,k,l) = tmp_out(:,:)
-
-!                call GL2ANY(0,1,GFSDATAO%Q(:,:,k,l),IMO,JMO, 
-!     &            GRID_Q(:,:,k,l),LONG,LATG,4, GRIDLONS, GRIDLATS)
+                GRID_Q(:,:,k) = tmp_out(:,:)
               enddo 
+              if (l == 1) CALL write_gfs_data2(LONG, LATG, LEVSO, 
+     &            NTRACM, out_file, write_data=.true., var_name='sphum', 
+     &            var3d=GRID_Q)
+              if (l == 2) CALL write_gfs_data2(LONG, LATG, LEVSO, 
+     &            NTRACM, out_file, write_data=.true., var_name='o3mr', 
+     &            var3d=GRID_Q)
+              if (l == 3) CALL write_gfs_data2(LONG, LATG, LEVSO, 
+     &           NTRACM, out_file, write_data=.true., var_name='clwmr', 
+     &           var3d=GRID_Q)
             enddo
+            deallocate(GRID_Q)
 
             !--- remap wind onto face
             deallocate(GRIDLONS,GRIDLATS,tmp_out)
@@ -1356,7 +1351,10 @@ c idea add init condition for temp tracer4-5 ( o o2)
                GRIDLONS(k) = geolon_e(i3,j3)
                GRIDLATS(k) = geolat_e(i3,j3)
             enddo ; enddo
+            deallocate(geolon_e,geolat_e)
         
+            allocate(GRID_U_E(LONG+1,LATG,LEVSO))
+            allocate(GRID_V_E(LONG+1,LATG,LEVSO))
             do k = 1, LEVSO
               tmp_in(:,:) = GFSDATAO%U(:,:,k)
               call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
@@ -1368,6 +1366,12 @@ c idea add init condition for temp tracer4-5 ( o o2)
               GRID_V_E(:,:,k) = tmp_out(:,:)            
             enddo
             deallocate(GRIDLONS,GRIDLATS,tmp_out)
+            CALL write_gfs_data2(LONG+1, LATG, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='u_e', var3d=GRID_U_E)
+            CALL write_gfs_data2(LONG+1, LATG, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='v_e', var3d=GRID_V_E)
+            deallocate(GRID_U_E,GRID_V_E)
+
             allocate(GRIDLONS(LONG*(LATG+1)))
             allocate(GRIDLATS(LONG*(LATG+1)))
             allocate(tmp_out(LONG,LATG+1))
@@ -1377,7 +1381,10 @@ c idea add init condition for temp tracer4-5 ( o o2)
                GRIDLONS(k) = geolon_n(i3,j3)
                GRIDLATS(k) = geolat_n(i3,j3)
             enddo ; enddo
+            deallocate(geolon_n,geolat_n)
 
+            allocate(GRID_U_N(LONG,LATG+1,LEVSO))
+            allocate(GRID_V_N(LONG,LATG+1,LEVSO))
             do k = 1, LEVSO
               tmp_in(:,:) = GFSDATAO%U(:,:,k)
               call GL2ANY(0,1,tmp_in,IMO,JMO,tmp_out,
@@ -1388,151 +1395,23 @@ c idea add init condition for temp tracer4-5 ( o o2)
      &         LONG,LATG+1,4, GRIDLONS, GRIDLATS)
               GRID_V_N(:,:,k) = tmp_out(:,:)            
             enddo
+            CALL write_gfs_data2(LONG, LATG+1, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='u_n', var3d=GRID_U_N)
+            CALL write_gfs_data2(LONG, LATG+1, LEVSO, NTRACM, out_file, 
+     &         write_data=.true., var_name='v_n', var3d=GRID_V_N)
+            deallocate(GRID_U_N,GRID_V_N)
             
-            write(out_file, '(a, i1, a)'), 'gfs_data.tile', n, '.nc'
-            CALL write_gfs_data2(LONG, LATG, LEVSO, NTRACM
-     &,        GRID_ZS, GRID_PS, GRID_P, GRID_DP
-     &,        GRID_T, GRID_U, GRID_V, GRID_W, GRID_ZH, GRID_RH
-     &,        GRID_Q, .true., geolon,geolat,out_file,
-     &         GRID_U_E,GRID_V_E,GRID_U_N,GRID_V_N      )
+            CALL write_gfs_data2(LONG, LATG, LEVSO, NTRACM, out_file, 
+     &         close=.true.)
 
-            deallocate(GRID_ZS,GRID_PS,GRID_P,GRID_DP,GRID_T)
-            deallocate(GRID_U,GRID_V,GRID_W,GRID_Q,GRID_ZH,GRID_RH)
             deallocate(GRIDLONS,GRIDLATS,tmp_in,tmp_out)
-            deallocate(geolon,geolat,geolon_e,geolat_e)
-            deallocate(geolon_n,geolat_n)
-            deallocate(GRID_U_E,GRID_V_E,GRID_U_N,GRID_V_N)
           enddo
-          
-          
 
         else if(ntiles .NE. 1) then
           print*, "ERROR: ntiles should be 1 or 6"
              
         endif   
 
-        if(.false.) then 
-        
-          JREC=1
-
-          idim_gfsio=size(GFSDATAO%ZS,1)
-          jdim_gfsio=size(GFSDATAO%ZS,2)
-!
-          allocate(tmp(idim_gfsio*jdim_gfsio))
-!
-          do j=1,jdim_gfsio
-            ii = (j-1)*idim_gfsio
-            do i=1,idim_gfsio
-              tmp(i+ii) = GFSDATAO%ZS(i,j)
-            enddo
-          enddo
-          CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                        tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-          IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC ZS '
-!
-          JREC=JREC+1
-          do j=1,jdim_gfsio
-            ii = (j-1)*idim_gfsio
-            do i=1,idim_gfsio
-              tmp(i+ii) = GFSDATAO%PS(i,j)
-            enddo
-          enddo
-          CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                        tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-          IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC PS '
-          DO K=1,LEVSO
-            JREC=JREC+1
-
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%P(i,j,k)
-              enddo
-            enddo
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC P '
-          ENDDO
-          DO K=1,LEVSO
-          JREC=JREC+1
-!     if (k == 1) print*,' DP=', GFSDATAO%DP(1,:,1)
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%DP(i,j,k)
-              enddo
-            enddo
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC DP '
-          ENDDO
-          DO K=1,LEVSO
-            JREC=JREC+1
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%T(i,j,k)
-              enddo
-            enddo
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC T '
-          ENDDO
-          DO K=1,LEVSO
-            JREC=JREC+1
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%U(i,j,k)
-              enddo
-            enddo
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC U '
-          ENDDO
-          DO K=1,LEVSO
-            JREC=JREC+1
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%V(i,j,k)
-              enddo
-            enddo
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC V '
-          ENDDO
-!!        DO N=1,GFSHEADO%NTRAC
-          DO N=1,NTRACM
-            DO K=1,LEVSO
-              JREC=JREC+1
-              do j=1,jdim_gfsio
-                ii = (j-1)*idim_gfsio
-                do i=1,idim_gfsio
-                  tmp(i+ii) = GFSDATAO%Q(i,j,k,n)
-                enddo
-              enddo
-              CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                            tmp,IRET=IRET,IDRT=GFSHEADO%IDRT)
-              IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC Q '
-            ENDDO
-          ENDDO
-          DO K=1,LEVSO
-            JREC=JREC+1
-            do j=1,jdim_gfsio
-              ii = (j-1)*idim_gfsio
-              do i=1,idim_gfsio
-                tmp(i+ii) = GFSDATAO%W(i,j,k)
-              enddo
-            enddo
-            VVEL_PRECISION=6
-            CALL GFSIO_WRITEREC(GFILEO,JREC,
-     &                          tmp,IRET=IRET,IDRT=GFSHEADO%IDRT,
-     &                          PRECISION=VVEL_PRECISION)
-            IF(IRET.NE.0) PRINT*, ' ERROR GFSIO_WRITEREC W '
-          ENDDO
-          print*,' JREC=', JREC, ' NREC=', NREC
-         endif
           DEALLOCATE(GFSHEADVO%VCOORD)
           DEALLOCATE(GFSHEADVO%RECNAME)
           DEALLOCATE(GFSHEADVO%RECLEVTYP)
@@ -1542,15 +1421,13 @@ c idea add init condition for temp tracer4-5 ( o o2)
           DEALLOCATE(GFSHEADVO%CPI)
           DEALLOCATE(GFSHEADVO%RI)
 
-          DEALLOCATE(GFSDATAO%ZS)
           DEALLOCATE(GFSDATAO%PS)
-          DEALLOCATE(GFSDATAO%P)
-          DEALLOCATE(GFSDATAO%DP)
-          DEALLOCATE(GFSDATAO%T)
+          DEALLOCATE(GFSDATAO%W)
+          DEALLOCATE(zh_in)
+          DEALLOCATE(GFSDATAO%Q)
           DEALLOCATE(GFSDATAO%U)
           DEALLOCATE(GFSDATAO%V)
-          DEALLOCATE(GFSDATAO%Q)
-          DEALLOCATE(GFSDATAO%W)
+
         ENDIF
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -5726,8 +5603,8 @@ C  LAPSE RATE AND LET THE RELATIVE HUMIDITY REMAIN CONSTANT.
        end subroutine 
 
 
-       subroutine compute_zh_rh(im, jm, levp, ak, bk,
-     & ps, zs, t, p, sphum, zh, rh )
+       subroutine compute_zh(im, jm, levp, ak, bk,
+     & ps, zs, t, p, sphum, zh)
        implicit none
        integer, intent(in):: levp, im,jm
        real,    intent(in), dimension(levp+1):: ak, bk
@@ -5735,7 +5612,6 @@ C  LAPSE RATE AND LET THE RELATIVE HUMIDITY REMAIN CONSTANT.
        real,    intent(in), dimension(im,jm,levp):: t, p
        real,    intent(in), dimension(im,jm,levp):: sphum
        real,    intent(out), dimension(im,jm,levp+1):: zh
-       real,    intent(out), dimension(im,jm,levp):: rh
        ! Local:
        real, dimension(im,levp+1):: pe0, pn0
        integer i,j,k
@@ -5768,14 +5644,12 @@ C  LAPSE RATE AND LET THE RELATIVE HUMIDITY REMAIN CONSTANT.
            do i = 1, im
              zh(i,j,k) = zh(i,j,k+1)+t(i,j,k)*(1.+zvir*sphum(i,j,k))*
      &        (pn0(i,k+1)-pn0(i,k))/grd
-             rh(i,j,k) = 100.0*sphum(i,j,k)/(e0*rdgas/(rvgas*p(i,j,k))*
-     &        exp(hlv/rvgas*(t(i,j,k)-tfreeze)/(t(i,j,k)*tfreeze)))
            enddo
          enddo
 
        enddo
 
-       end subroutine compute_zh_rh
+       end subroutine compute_zh
 
        
 

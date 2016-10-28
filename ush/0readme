@@ -1,5 +1,6 @@
 --Run the global_chgres program to convert ICs from spectral form
-  to cube-sphere tiles that can be used to initialize FVGFS
+  to cube-sphere tiles that can be used to initialize FVGFS. 
+  The latest version works for C3072 (3km) conversion.
 driver_fv3gfs_chgres.sh*  
 run_chgres.sh*
 
@@ -12,5 +13,7 @@ filter_topo.sh    - Filter the orography files (for uniform and stretched grids)
 
 --Post-Processing: Remapping FV3 native grids to generic lat-lon grids
 create_weights.sh  - create interpolation weight files       
-run_remap.sh       - remaps native grid to generic lat-lon based on interpolation weight
+run_remap.sh       - remaps native grid to generic lat-lon grid based on interpolation weight
 
+--convert netCDF to nemsio on regular lat-lon grid
+fv3nc2nemsio.sh

@@ -29,7 +29,7 @@ export HUGETLB_MORECORE=yes
 export APRUNC="aprun -n 1 -N 1 -j 1 -d 24 -cc depth"
 
 export USER=$LOGNAME              # your username 
-export res=768     	          # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
+export res=3072    	          # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
 export gtype=uniform	          # grid type = uniform, stretch, or nested
 
 export home_dir=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS
@@ -64,7 +64,7 @@ else
 fi
 
 #---------------------------------------------------------------
-export dates=2016100300           # format yyyymmddhh yyyymmddhh ... 
+export dates=2016101900           # format yyyymmddhh yyyymmddhh ... 
 
 for date in $dates ; do
   echo "processing " $date

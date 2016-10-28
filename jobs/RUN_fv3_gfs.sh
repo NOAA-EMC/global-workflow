@@ -64,8 +64,8 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
     # blocking factor used for threading and general physics performance
 #   export nxblocks=3
 #   export nyblocks=48
-    export nyblocks=`expr $npy \/ $layout_y `
-    export nxblocks=`expr $nyblocks \/ 16 `
+    export nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
+    export nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
     if [ $nxblocks -le 0 ]; then export nxblocks=1 ; fi
 
     # run length

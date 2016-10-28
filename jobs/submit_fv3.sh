@@ -12,7 +12,7 @@ if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh
  export PTMP=/gpfs/hps/ptmp
  export BASEDIR=/gpfs/hps/emc/global/noscrub/$LOGNAME/NGGPS
- export SUB=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17/gfs_workflow.v14.1.0/para/bin/sub_wcoss_c
+ export SUB=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/bin/sub_wcoss_c
  export ACCOUNT=GFS-T2O
  export CUE2RUN=dev
 
@@ -26,12 +26,10 @@ elif [ $machine = WCOSS ]; then
  export CUE2RUN=dev2
 fi
 
-export layout_x=12
-export layout_y=24
-#export layout_x=8
-#export layout_y=16
-#export layout_x=4
-#export layout_y=8
+ export layout_x=8 ; export layout_y=24
+#export layout_x=12; export layout_y=24
+#export layout_x=8 ; export layout_y=16
+#export layout_x=4 ; export layout_y=8
 
 export MODE=64bit      # choices:  32bit, 64bit
 export TYPE=nh         # choices:  nh, hydro
