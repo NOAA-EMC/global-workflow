@@ -1,4 +1,9 @@
+module netcdf_io
 
+public :: write_gfs_head, write_gfs_data, write_gfs_data2, write_sfc_head 
+private :: netcdf_err
+
+contains
 ! write the GFSHEADO into a single control file 'sfc_ctrl.nc'
 subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
         jcap,itrun,iorder,irealf,igen,latf,lonf,latr,lonr,ntrac,icen2,iens, &
@@ -237,15 +242,12 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
 
   end subroutine write_gfs_head
 
-  subroutine write_gfs_data(ni,nj,nk,nq,zs,ps,p,dp,t,u,v,w,zh,rh,q,write_grid,lon,lat,outfile)    
+  subroutine write_gfs_data(ni,nj,nk,nq,ps,w,zh,q,write_grid,lon,lat,outfile)    
     implicit none
     integer,         intent(in) :: ni, nj, nk, nq
-    real(kind=4),    intent(in) :: zs(ni,nj), ps(ni,nj)
-    real(kind=4),    intent(in) :: p(ni,nj,nk),dp(ni,nj,nk)
-    real(kind=4),    intent(in) :: t(ni,nj,nk),u(ni,nj,nk)
-    real(kind=4),    intent(in) :: v(ni,nj,nk),w(ni,nj,nk)
+    real(kind=4),    intent(in) :: ps(ni,nj)
+    real(kind=4),    intent(in) :: w(ni,nj,nk)
     real(kind=4),    intent(in) :: zh(ni,nj,nk+1)
-    real(kind=4),    intent(in) :: rh(ni,nj,nk)
     real(kind=4),    intent(in) :: q(ni,nj,nk,nq)
     logical,         intent(in) :: write_grid
     real(kind=4),    intent(in) :: lon(ni,nj), lat(ni,nj)
@@ -289,26 +291,12 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
       call netcdf_err(error, 'put att cartesian_axis for lat for file='//trim(outfile) )
     endif
  
-!    error = nf_def_var(ncid, 'zs', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_zs)
-!    call netcdf_err(error, 'define var zs for file='//trim(outfile) )
     error = nf_def_var(ncid, 'ps', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ps)
     call netcdf_err(error, 'define var ps for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'p', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_p)
-!    call netcdf_err(error, 'define var p for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'dp', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_dp)
-!    call netcdf_err(error, 'define var dp for file='//trim(outfile) )
-    error = nf_def_var(ncid, 't', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_t)
-    call netcdf_err(error, 'define var t for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'u', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_u)
-!    call netcdf_err(error, 'define var u for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'v', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_v)
-!    call netcdf_err(error, 'define var v for file='//trim(outfile) )
     error = nf_def_var(ncid, 'w', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_w)
     call netcdf_err(error, 'define var w for file='//trim(outfile) )
     error = nf_def_var(ncid, 'zh', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_levp/),id_zh)
     call netcdf_err(error, 'define var zh for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'rh', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/),id_rh)
-!    call netcdf_err(error, 'define var rh for file='//trim(outfile) )
 
     error = nf_def_var(ncid, 'sphum', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_sphum)
     call netcdf_err(error, 'define var w for file='//trim(outfile) )
@@ -316,8 +304,6 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
     call netcdf_err(error, 'define var w for file='//trim(outfile) )
     error = nf_def_var(ncid, 'liq_wat', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_clwmr)
     call netcdf_err(error, 'define var w for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'q', NF_FLOAT, 4, (/dim_lon,dim_lat,dim_lev,dim_ntracer/), id_q)
-!    call netcdf_err(error, 'define var q for file='//trim(outfile) )
 
     error = nf__enddef(ncid, header_buffer_val,4,0,4)
     call netcdf_err(error, 'end meta define for file='//trim(outfile) )
@@ -329,34 +315,14 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
       error = nf_put_var_real( ncid, id_lat, lat(1,:))
       call netcdf_err(error, 'write var lat for file='//trim(outfile) )
     endif
-!    error = nf_put_var_real( ncid, id_zs, zs)
-!    call netcdf_err(error, 'write var zs for file='//trim(outfile) )
     error = nf_put_var_real( ncid, id_ps, ps)
     call netcdf_err(error, 'write var ps for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = p(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_p, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var p for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = dp(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_dp, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var dp for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = t(:,:,nk:1:-1)
-    error = nf_put_var_real( ncid, id_t, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var t for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = u(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_u, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var u for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = v(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_v, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var v for file='//trim(outfile) )
     tmp(:,:,1:nk,1) = w(:,:,nk:1:-1)
     error = nf_put_var_real( ncid, id_w, tmp(:,:,:,1))
     call netcdf_err(error, 'write var w for file='//trim(outfile) )
     tmp2(:,:,1:nk+1,1) = zh(:,:,nk+1:1:-1)
     error = nf_put_var_real( ncid, id_zh, tmp2(:,:,:,1))
     call netcdf_err(error, 'write var zh for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = rh(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_rh, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var rh for file='//trim(outfile) )
     tmp(:,:,1:nk,1) = q(:,:,nk:1:-1,1)
     error = nf_put_var_real( ncid, id_sphum, tmp(:,:,:,1))
     call netcdf_err(error, 'write var sphum for file='//trim(outfile) )
@@ -371,59 +337,57 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
     call netcdf_err(error, 'close file='//trim(outfile) )
   end subroutine write_gfs_data
 
-  subroutine write_gfs_data2(ni,nj,nk,nq,zs,ps,p,dp,t,u,v,w,zh,rh,q,write_grid,lon,lat,outfile, &
-                            u_w, v_w, u_s, v_s)    
+!  subroutine write_gfs_data2(ni,nj,nk,nq,zs,ps,p,dp,t,u,v,w,zh,rh,q,write_grid,lon,lat,outfile, &
+  subroutine write_gfs_data2(ni,nj,nk,nq,outfile,ps,var3d,var_name,write_data,write_grid,header,&
+                             close,lon,lat)
     implicit none
     integer,         intent(in) :: ni, nj, nk, nq
-    real(kind=4),    intent(in) :: zs(ni,nj), ps(ni,nj)
-    real(kind=4),    intent(in) :: p(ni,nj,nk),dp(ni,nj,nk)
-    real(kind=4),    intent(in) :: t(ni,nj,nk),u(ni,nj,nk)
-    real(kind=4),    intent(in) :: v(ni,nj,nk),w(ni,nj,nk)
-    real(kind=4),    intent(in) :: zh(ni,nj,nk+1)
-    real(kind=4),    intent(in) :: rh(ni,nj,nk)
-    real(kind=4),    intent(in) :: q(ni,nj,nk,nq)
-    logical,         intent(in) :: write_grid
-    real(kind=4),    intent(in) :: lon(ni,nj), lat(ni,nj)
     character(len=*),intent(in) :: outfile
-    real(kind=4), intent(in) :: u_w(ni+1,nj,nk),v_w(ni+1,nj,nk)
-    real(kind=4), intent(in) :: u_s(ni,nj+1,nk),v_s(ni,nj+1,nk)
+    real(kind=4),    intent(in), optional :: ps(ni,nj)
+    real(kind=4),    intent(in), optional :: var3d(ni,nj,nk)
+    character(len=*),intent(in), optional :: var_name
+    logical,         intent(in), optional :: write_data
+    logical,         intent(in), optional :: write_grid
+    logical,         intent(in), optional :: header
+    logical,         intent(in), optional :: close
+    real(kind=4),    intent(in), optional :: lon(ni,nj), lat(ni,nj)
 
-    real(kind=4) :: tmp(ni,nj,nk,1)
-    real(kind=4) :: tmp2(ni,nj,nk+1,1)
-    real(kind=4) :: tmp_e(ni+1,nj,nk,1)
-    real(kind=4) :: tmp_n(ni,nj+1,nk,1)
-    integer  :: error, ncid, dim_lon, dim_lat, dim_lev, dim_ntracer
-    integer  :: id_ps, id_t, id_w
-    integer  :: id_sphum, id_o3mr, id_clwmr, id_zh, dim_levp
-    integer  :: dim_lonp,dim_latp,id_u_w,id_v_w,id_u_s,id_v_s
-    integer  :: id_lon, id_lat, l
+    real(kind=4) :: tmp(ni,nj,nk)
+    integer, save :: error, ncid, dim_lon, dim_lat, dim_lev
+    integer, save :: id_ps, id_t, id_w
+    integer, save :: id_sphum, id_o3mr, id_clwmr, id_zh, dim_levp
+    integer, save :: dim_lonp,dim_latp,id_u_w,id_v_w,id_u_s,id_v_s
+    integer, save :: id_lon, id_lat, l
+    integer  :: dim_ntracer
     integer  :: header_buffer_val = 16384
     integer  :: fsize=65536, inital = 0
     integer  :: strlen=255
     include "netcdf.inc"
 
-    !--- open the file
-    error = NF__CREATE(outfile, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
-    call netcdf_err(error, 'Creating file '//trim(outfile) )
-    !--- define dimesion
-    error = nf_def_dim(ncid, 'lon', ni, dim_lon)
-    call netcdf_err(error, 'define dimension lon for file='//trim(outfile) )
-    error = nf_def_dim(ncid, 'lat', nj, dim_lat)
-    call netcdf_err(error, 'define dimension lat for file='//trim(outfile) )
+    if (present(header)) then
+    if (header) then
+      !--- open the file
+      error = NF__CREATE(outfile, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
+      call netcdf_err(error, 'Creating file '//trim(outfile) )
+      !--- define dimesion
+      error = nf_def_dim(ncid, 'lon', ni, dim_lon)
+      call netcdf_err(error, 'define dimension lon for file='//trim(outfile) )
+      error = nf_def_dim(ncid, 'lat', nj, dim_lat)
+      call netcdf_err(error, 'define dimension lat for file='//trim(outfile) )
       error = nf_def_dim(ncid, 'lonp', ni+1, dim_lonp)
       call netcdf_err(error, 'define dimension lon for file='//trim(outfile) )
       error = nf_def_dim(ncid, 'latp', nj+1, dim_latp)
       call netcdf_err(error, 'define dimension lat for file='//trim(outfile) )
 
-    error = nf_def_dim(ncid, 'lev', nk, dim_lev)
-    call netcdf_err(error, 'define dimension lev for file='//trim(outfile) )
-    error = nf_def_dim(ncid, 'levp', nk+1, dim_levp)
-        call netcdf_err(error, 'define dimension levp for file='//trim(outfile) )
-    error = nf_def_dim(ncid, 'ntracer', nq, dim_ntracer)
-    call netcdf_err(error, 'define dimension ntracer for file='//trim(outfile) )
+      error = nf_def_dim(ncid, 'lev', nk, dim_lev)
+      call netcdf_err(error, 'define dimension lev for file='//trim(outfile) )
+      error = nf_def_dim(ncid, 'levp', nk+1, dim_levp)
+      call netcdf_err(error, 'define dimension levp for file='//trim(outfile) )
 
-    !--- define field
-    if(write_grid) then 
+      error = nf_def_dim(ncid, 'ntracer', nq, dim_ntracer)
+      call netcdf_err(error, 'define dimension ntracer for file='//trim(outfile) )
+
+      !--- define grid
       error = nf_def_var(ncid, 'lon', NF_FLOAT, 1, (/dim_lon/), id_lon)
       call netcdf_err(error, 'define var lon for file='//trim(outfile) )
       error = nf_put_att_text(ncid, id_lon, "cartesian_axis", 1, "X")
@@ -432,111 +396,126 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
       call netcdf_err(error, 'define var lat for file='//trim(outfile) )
       error = nf_put_att_text(ncid, id_lat, "cartesian_axis", 1, "Y")
       call netcdf_err(error, 'put att cartesian_axis for lat for file='//trim(outfile) )
-    endif
  
-!    error = nf_def_var(ncid, 'zs', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_zs)
-!    call netcdf_err(error, 'define var zs for file='//trim(outfile) )
-    error = nf_def_var(ncid, 'ps', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ps)
-    call netcdf_err(error, 'define var ps for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'p', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_p)
-!    call netcdf_err(error, 'define var p for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'dp', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_dp)
-!    call netcdf_err(error, 'define var dp for file='//trim(outfile) )
-    error = nf_def_var(ncid, 't', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_t)
-    call netcdf_err(error, 'define var t for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'u', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_u)
-!    call netcdf_err(error, 'define var u for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'v', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_v)
-!    call netcdf_err(error, 'define var v for file='//trim(outfile) )
-    error = nf_def_var(ncid, 'w', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_w)
-    call netcdf_err(error, 'define var w for file='//trim(outfile) )
-    error = nf_def_var(ncid, 'zh', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_levp/),id_zh)
-    call netcdf_err(error, 'define var zh for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'rh', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/),id_rh)
-!    call netcdf_err(error, 'define var rh for file='//trim(outfile) )
+      !--- define ps
+      error = nf_def_var(ncid, 'ps', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ps)
+      call netcdf_err(error, 'define var ps for file='//trim(outfile) )
+      !--- define w
+      error = nf_def_var(ncid, 'w', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_w)
+      call netcdf_err(error, 'define var w for file='//trim(outfile) )
+      !--- define zh
+      error = nf_def_var(ncid, 'zh', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_levp/),id_zh)
+      call netcdf_err(error, 'define var zh for file='//trim(outfile) )
 
-    error = nf_def_var(ncid, 'sphum', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_sphum)
-    call netcdf_err(error, 'define var w for file='//trim(outfile) )
-    error = nf_def_var(ncid, 'o3mr', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_o3mr)
-    call netcdf_err(error, 'define var w for file='//trim(outfile) )
-    error = nf_def_var(ncid, 'liq_wat', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_clwmr)
-    call netcdf_err(error, 'define var w for file='//trim(outfile) )
-!    error = nf_def_var(ncid, 'q', NF_FLOAT, 4, (/dim_lon,dim_lat,dim_lev,dim_ntracer/), id_q)
-!    call netcdf_err(error, 'define var q for file='//trim(outfile) )
+      !--- define tracers
+      error = nf_def_var(ncid, 'sphum', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_sphum)
+      call netcdf_err(error, 'define var w for file='//trim(outfile) )
+      error = nf_def_var(ncid, 'o3mr', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_o3mr)
+      call netcdf_err(error, 'define var w for file='//trim(outfile) )
+      error = nf_def_var(ncid, 'liq_wat', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lev/), id_clwmr)
+      call netcdf_err(error, 'define var w for file='//trim(outfile) )
 
+      !--- define west winds
       error = nf_def_var(ncid, 'u_w', NF_FLOAT, 3, (/dim_lonp,dim_lat,dim_lev/), id_u_w)
       call netcdf_err(error, 'define var u_w for file='//trim(outfile) )
       error = nf_def_var(ncid, 'v_w', NF_FLOAT, 3, (/dim_lonp,dim_lat,dim_lev/), id_v_w)
       call netcdf_err(error, 'define var v_w for file='//trim(outfile) )
 
+      !--- define north winds
       error = nf_def_var(ncid, 'u_s', NF_FLOAT, 3, (/dim_lon,dim_latp,dim_lev/), id_u_s)
       call netcdf_err(error, 'define var u_s for file='//trim(outfile) )
       error = nf_def_var(ncid, 'v_s', NF_FLOAT, 3, (/dim_lon,dim_latp,dim_lev/), id_v_s)
       call netcdf_err(error, 'define var v_s for file='//trim(outfile) )
 
-    error = nf__enddef(ncid, header_buffer_val,4,0,4)
-    call netcdf_err(error, 'end meta define for file='//trim(outfile) )
+      !--- add buffer space to metadata header
+      error = nf__enddef(ncid, header_buffer_val,4,0,4)
+      call netcdf_err(error, 'end meta define for file='//trim(outfile) )
+    endif
+    endif
 
-    !--- write data
-    if(write_grid) then
+    !--- write grid data
+    if (present(write_grid)) then
+    if (write_grid) then
       error = nf_put_var_real( ncid, id_lon, lon(:,1))
       call netcdf_err(error, 'write var lon for file='//trim(outfile) )
       error = nf_put_var_real( ncid, id_lat, lat(1,:))
       call netcdf_err(error, 'write var lat for file='//trim(outfile) )
     endif
-!    error = nf_put_var_real( ncid, id_zs, zs)
-!    call netcdf_err(error, 'write var zs for file='//trim(outfile) )
-    error = nf_put_var_real( ncid, id_ps, ps)
-    call netcdf_err(error, 'write var ps for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = p(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_p, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var p for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = dp(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_dp, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var dp for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = t(:,:,nk:1:-1)
-    error = nf_put_var_real( ncid, id_t, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var t for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = u(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_u, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var u for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = v(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_v, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var v for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = w(:,:,nk:1:-1)
-    error = nf_put_var_real( ncid, id_w, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var w for file='//trim(outfile) )
-    tmp2(:,:,1:nk+1,1) = zh(:,:,nk+1:1:-1)
-    error = nf_put_var_real( ncid, id_zh, tmp2(:,:,:,1))
-    call netcdf_err(error, 'write var zh for file='//trim(outfile) )
-!    tmp(:,:,1:nk,1) = rh(:,:,nk:1:-1)
-!    error = nf_put_var_real( ncid, id_rh, tmp(:,:,:,1))
-!    call netcdf_err(error, 'write var rh for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = q(:,:,nk:1:-1,1)
-    error = nf_put_var_real( ncid, id_sphum, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var sphum for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = q(:,:,nk:1:-1,2)
-    error = nf_put_var_real( ncid, id_o3mr, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var o3mr for file='//trim(outfile) )
-    tmp(:,:,1:nk,1) = q(:,:,nk:1:-1,3)
-    error = nf_put_var_real( ncid, id_clwmr, tmp(:,:,:,1))
-    call netcdf_err(error, 'write var clwmr for file='//trim(outfile) )
-      tmp_e(:,:,1:nk,1) = u_w(:,:,nk:1:-1)
-      error = nf_put_var_real( ncid, id_u_w, tmp_e(:,:,:,1))
-      call netcdf_err(error, 'write var u_w for file='//trim(outfile) )
-      tmp_e(:,:,1:nk,1) = v_w(:,:,nk:1:-1)
-      error = nf_put_var_real( ncid, id_v_w, tmp_e(:,:,:,1))
-      call netcdf_err(error, 'write var v_w for file='//trim(outfile) )
+    endif
 
-      tmp_n(:,:,1:nk,1) = u_s(:,:,nk:1:-1)
-      error = nf_put_var_real( ncid, id_u_s, tmp_n(:,:,:,1))
-      call netcdf_err(error, 'write var u_s for file='//trim(outfile) )
-      tmp_n(:,:,1:nk,1) = v_s(:,:,nk:1:-1)
-      error = nf_put_var_real( ncid, id_v_s, tmp_n(:,:,:,1))
-      call netcdf_err(error, 'write var v_s for file='//trim(outfile) )
+    if (present(write_data)) then
+    if (write_data) then
+      !--- write ps
+      if (trim(var_name) == 'ps') then
+        error = nf_put_var_real( ncid, id_ps, ps)
+        call netcdf_err(error, 'write var ps for file='//trim(outfile) )
+      endif
 
-    error = nf_close(ncid)
-    call netcdf_err(error, 'close file='//trim(outfile) )
+      !--- write w
+      if (trim(var_name) == 'w') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_w, tmp(:,:,:))
+        call netcdf_err(error, 'write var w for file='//trim(outfile) )
+      endif
+
+      !--- write zh
+      if (trim(var_name) == 'zh') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_zh, tmp(:,:,:))
+        call netcdf_err(error, 'write var zh for file='//trim(outfile) )
+      endif
+
+      !--- write tracers
+      if (trim(var_name) == 'sphum') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_sphum, tmp(:,:,:))
+        call netcdf_err(error, 'write var sphum for file='//trim(outfile) )
+      endif
+      if (trim(var_name) == 'o3mr') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_o3mr, tmp(:,:,:))
+        call netcdf_err(error, 'write var o3mr for file='//trim(outfile) )
+      endif
+      if (trim(var_name) == 'clwmr') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_clwmr, tmp(:,:,:))
+        call netcdf_err(error, 'write var clwmr for file='//trim(outfile) )
+      endif
+
+      !--- write east winds
+      if (trim(var_name) == 'u_e') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_u_w, tmp(:,:,:))
+        call netcdf_err(error, 'write var u_w for file='//trim(outfile) )
+      endif
+      if (trim(var_name) == 'v_e') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_v_w, tmp(:,:,:))
+        call netcdf_err(error, 'write var v_w for file='//trim(outfile) )
+      endif
+
+      !--- write north winds
+      if (trim(var_name) == 'u_n') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_u_s, tmp(:,:,:))
+        call netcdf_err(error, 'write var u_s for file='//trim(outfile) )
+      endif
+      if (trim(var_name) == 'v_n') then
+        tmp(:,:,1:nk) = var3d(:,:,nk:1:-1)
+        error = nf_put_var_real( ncid, id_v_s, tmp(:,:,:))
+        call netcdf_err(error, 'write var v_s for file='//trim(outfile) )
+      endif
+    endif
+    endif
+
+    if (present(close)) then
+    if (close) then
+      !--- close the file
+      error = nf_close(ncid)
+      call netcdf_err(error, 'close file='//trim(outfile) )
+    endif
+    endif
+
   end subroutine write_gfs_data2
 
 
@@ -643,6 +622,6 @@ subroutine write_gfs_head(outfile,version, fhour,idate,nrec,latb,lonb,levs, &
       call ABORT()
 
       return
-    end subroutine netcdf_err
+  end subroutine netcdf_err
 
-
+end module netcdf_io

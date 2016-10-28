@@ -35,9 +35,9 @@ else
 fi
 
 if [ $type == GFS ]; then
-  if [ $gtype = stretch ]; then
-    export LONB=3600
-    export LATB=1800 
+  if [ $res -gt 768 -o $gtype = stretch ]; then
+    export LONB=3072
+    export LATB=1536 
   else
     lon=$((res*4))
     lat=$((res*2))
