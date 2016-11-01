@@ -19,7 +19,7 @@ if [ "$#" = 8 ] ; then
   export clean="false"
 else
 # Name of the branch being tested
-  updat="CMake-src"
+  updat="Cmake-unit-tests"
   export cmaketest="false"
   export clean="false"
 fi
@@ -112,9 +112,9 @@ fi
 if [[ "$cmaketest" = "false" ]]; then
   export builddir=$noscrub/build
   export gsisrc="$basedir/$updat/src"
-  export gsiexec_updat="$builddir/bin/gsi.x"
+  export gsiexec_updat="$gsisrc/global_gsi"
   export gsiexec_contrl="$basedir/trunk/src/global_gsi"
-  export enkfexec_updat="$builddir/bin/enkf.x"
+  export enkfexec_updat="$gsisrc/enkf/enkf.x"
   export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
   export fixgsi="$basedir/$updat/fix"
   export scripts="$basedir/$updat/scripts"
