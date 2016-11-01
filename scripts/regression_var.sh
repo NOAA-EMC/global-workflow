@@ -17,11 +17,14 @@ if [ "$#" = 8 ] ; then
   export scripts="$gsisrc/scripts"
   export cmaketest="true"
   export clean="false"
+  export ptmpName=`echo $builddir | sed -e "s/\//_/g"`
+  echo $ptmpName
 else
 # Name of the branch being tested
   updat="Cmake-unit-tests"
   export cmaketest="false"
   export clean="false"
+  export ptmpName=""
 fi
 
 # First determine what machine are we on:
@@ -56,7 +59,7 @@ if [[ "$machine" = "Theia" ]]; then
      export basedir="/scratch4/home/$LOGNAME/gsi"
    fi 
 
-   export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
+   export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME/$ptmpName"
 
    export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
    export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
@@ -78,7 +81,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export group="dev"
    export queue="dev"
 
-   export ptmp="/ptmpp1/$LOGNAME"
+   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
 
    export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
@@ -95,7 +98,7 @@ elif [[ "$machine" = "s4" ]]; then
    export group="dev"
    export queue="dev"
    export NWPROD="/usr/local/jcsda/nwprod_gdas_2014"
-   export ptmp="/scratch/short/$LOGNAME"
+   export ptmp="/scratch/short/$LOGNAME/$ptmpName"
 
    export fixcrtm="/home/mpotts/gsi/trunk/lib/CRTM_REL-2.2.3/fix_update"
 #  export fixcrtm="/usr/local/jcsda/nwprod_gdas_2014/lib/sorc/crtm_v2.1.3/fix/"
