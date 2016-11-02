@@ -767,6 +767,7 @@ export LAGDATA=${LAGDATA:-""}
 export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
 export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
 export CHEM=${CHEM:-""}
+export NST=${NST:-""}
 export FILESTYLE=${FILESTYLE:-'X'}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
@@ -1371,7 +1372,9 @@ OBS_INPUT::
    $SINGLEOB
  /
  &NST
-   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL
+   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
+   zsea1=$ZSEA1,zsea2=$ZSEA2,
+   $NST
 /
 EOF
 
