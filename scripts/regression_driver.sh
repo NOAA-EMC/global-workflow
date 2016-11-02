@@ -13,7 +13,7 @@ export scripts=${scripts_updat:-$scripts}
 if [ "$debug" = ".false." ]; then
 
    # Launch the individual control and update runs, one-after-another
-   for jn in `seq 1 1`; do
+   for jn in `seq 1 4`; do
 
       if [ $jn -le 2 ]; then
          export scripts=${scripts_updat:-$scripts}
