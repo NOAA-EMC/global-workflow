@@ -47,6 +47,7 @@ elif [ -d /data/users ]; then # S4
    export noscrub="/data/users/$LOGNAME"
 fi
 
+contrl="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.

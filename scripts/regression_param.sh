@@ -205,8 +205,8 @@ case $regtest in
     rtma)
 
         if [[ "$machine" = "Theia" ]]; then
-            topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
-            topts[2]="0:15:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
+            topts[1]="0:35:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
+            topts[2]="0:35:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
             sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
             topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"

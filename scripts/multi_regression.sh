@@ -2,7 +2,7 @@
 
 echo "`pwd`/regression_var.sh" > regression_var.out
 
-regtests="global_enkf_T62"
+regtests="rtma"
 #         global_T62_ozonly
 #         global_4dvar_T62
 #         global_hybrid_T126

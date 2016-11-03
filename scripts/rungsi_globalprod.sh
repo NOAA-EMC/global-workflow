@@ -233,9 +233,9 @@ elif  [ $MACHINE = THEIA ]; then
     datprep=${datobs}
   elif [ -s /NCEPPROD/com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
     datges=/NCEPPROD/com/gfs/prod/gdas.$gdate0
-    if [ -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${gdate}/gdas -a \
-         -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas ]; then
-      datobs=/scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas
+    if [ -s /scratch4/NCEPDEV/global/noscrub/dump/${gdate}/gdas -a \
+         -s /scratch4/NCEPDEV/global/noscrub/dump/${adate}/gdas ]; then
+      datobs=/scratch4/NCEPDEV/global/noscrub/dump/${adate}/gdas
       datprep=/NCEPPROD/com/gfs/prod/gdas.${adate0}
       prefix_obs=
       suffix=gdas.$adate 
