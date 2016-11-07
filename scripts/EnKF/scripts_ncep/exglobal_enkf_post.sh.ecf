@@ -130,9 +130,9 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Directories.
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix} 
 export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec} 
 export USHgdas=${USHgdas:-$NWPROD/gdas.${gdas_ver}/ush} 
@@ -532,14 +532,16 @@ FHEND=$FHMAX
 FH=$FHBEG
 until [[ $FH -gt $FHEND ]];do
   [[ $FH -lt 10 ]]&&FH=0$FH
+  if [[ `expr $FH % 3` -eq 0 ]]; then
 
-  if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
-    if [ $SENDDBN = YES ]; then 
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH}_ensmean 
-    fi 
-     string="DONE bfg fhr $FH"
-  else
-     string="MISS bfg fhr $FH"
+    if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
+      if [ $SENDDBN = YES ]; then 
+        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH}_ensmean 
+      fi 
+       string="DONE bfg fhr $FH"
+    else
+       string="MISS bfg fhr $FH"
+    fi
   fi
   rm log log_old log_new
   cp log_allsfc ./log_old
