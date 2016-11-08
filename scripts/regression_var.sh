@@ -11,8 +11,8 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="XXXXXXXX"
-contrl="XXXXXXXX"
+updat="exp-hwrf"
+contrl="GSI-trunk"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -41,13 +41,13 @@ if [[ "$machine" = "Theia" ]]; then
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
-   export basedir="/da/save/$LOGNAME"
+   export basedir="/hwrf/save/$LOGNAME"
 
    export group="dev"
    export queue="dev"
 
    export ptmp="/ptmpp1/$LOGNAME"
-   export noscrub="/da/noscrub/$LOGNAME"
+   export noscrub="/hwrf/noscrub/$LOGNAME"
 
    export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
