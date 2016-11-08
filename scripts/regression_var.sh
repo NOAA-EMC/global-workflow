@@ -12,6 +12,7 @@ fi
 
 # Name of the branch being tested
 updat="XXXXXXXX"
+contrl="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -62,9 +63,9 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/svn1/src/global_gsi"
+export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/svn1/src/enkf/global_enkf"
+export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
 export fixgsi="$basedir/$updat/fix"
 export scripts="$basedir/$updat/scripts"
 
