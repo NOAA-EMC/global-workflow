@@ -1353,7 +1353,7 @@ then
    cp $ABIASPC  $COMOUT/${PREINP}abias_pc
    cp $ABIASAIR $COMOUT/${PREINP}abias_air
    if [ $NST_GSI -gt 0 ] ; then
-      cp $NSTANL  $COMOUT/${PREINP}nstanl
+      cp $NSTANL  $GESOUT/${PREINP}nstanl
    fi
 fi
 
