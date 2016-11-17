@@ -6,7 +6,7 @@
 #BSUB -o gsi_global.o%J
 #BSUB -J gsi_global
 #BSUB -network type=sn_all:mode=US
-#BSUB -q dev
+#BSUB -q dev2
 #BSUB -n 32
 #BSUB -R span[ptile=8]
 #BSUB -R affinity[core(2):distribute=balance]
@@ -70,7 +70,7 @@ if [ $MACHINE = WCOSS ]; then
    datdir=/ptmp/$USER/data_sigmap/${exp}
    tmpdir=/ptmp/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/ptmp/$USER/out${JCAP}/sigmap/${expid}  
-   fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix
+   fixcrtm=/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update
    endianness=Big_Endian
    COMPRESS=gzip 
    UNCOMPRESS=gunzip
@@ -81,7 +81,7 @@ elif [ $MACHINE = THEIA ]; then
    datdir=/scratch4/NCEPDEV/stmp3/$USER/data_sigmap/${exp}
    tmpdir=/scratch4/NCEPDEV/stmp3/$USER/tmp${JCAP}_sigmap/${expid}  
    savdir=/scratch4/NCEPDEV/stmp3/$USER/out${JCAP}/sigmap/${expid} 
-   fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix
+   fixcrtm=/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update
    endianness=Big_Endian
 #  endianness=Little_Endian - once all background fields are available in little endian format, uncomment this option and remove Big_Endian
    COMPRESS=gzip
@@ -233,9 +233,9 @@ elif  [ $MACHINE = THEIA ]; then
     datprep=${datobs}
   elif [ -s /NCEPPROD/com/gfs/prod/gdas.${gdate0}/gdas1.t${hha}z.sgm3prep ]; then   # Not all data files are stored on /com
     datges=/NCEPPROD/com/gfs/prod/gdas.$gdate0
-    if [ -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${gdate}/gdas -a \
-         -s /scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas ]; then
-      datobs=/scratch2/portfolios/NCEPDEV/global/noscrub/dump/${adate}/gdas
+    if [ -s /scratch4/NCEPDEV/global/noscrub/dump/${gdate}/gdas -a \
+         -s /scratch4/NCEPDEV/global/noscrub/dump/${adate}/gdas ]; then
+      datobs=/scratch4/NCEPDEV/global/noscrub/dump/${adate}/gdas
       datprep=/NCEPPROD/com/gfs/prod/gdas.${adate0}
       prefix_obs=
       suffix=gdas.$adate 
@@ -404,7 +404,7 @@ cat << EOF > gsiparm.anl
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,qc_noirjaco3_pole=.true.,
+   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.
    $OBSQC
  /
  &OBS_INPUT
@@ -433,7 +433,7 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-a     hirs4_metop-a        0.0     1      1
    gimgrbufr      goes_img    g11         imgr_g11             0.0     1      0
    gimgrbufr      goes_img    g12         imgr_g12             0.0     1      0
-   airsbufr       airs        aqua        airs281SUBSET_aqua   0.0     1      1
+   airsbufr       airs        aqua        airs_aqua            0.0     1      1
    amsuabufr      amsua       n15         amsua_n15            0.0     1      1
    amsuabufr      amsua       n18         amsua_n18            0.0     1      1
    amsuabufr      amsua       metop-a     amsua_metop-a        0.0     1      1
@@ -459,7 +459,7 @@ OBS_INPUT::
    gsnd1bufr      sndrd2      g13         sndrD2_g13           0.0     1      0
    gsnd1bufr      sndrd3      g13         sndrD3_g13           0.0     1      0
    gsnd1bufr      sndrd4      g13         sndrD4_g13           0.0     1      0
-   iasibufr       iasi        metop-a     iasi616_metop-a      0.0     1      1
+   iasibufr       iasi        metop-a     iasi_metop-a         0.0     1      1
    gomebufr       gome        metop-a     gome_metop-a         0.0     2      0
    omibufr        omi         aura        omi_aura             0.0     2      0
    sbuvbufr       sbuv2       n19         sbuv8_n19            0.0     0      0
@@ -473,10 +473,11 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-b     hirs4_metop-b        0.0     1      0
    amsuabufr      amsua       metop-b     amsua_metop-b        0.0     1      0
    mhsbufr        mhs         metop-b     mhs_metop-b          0.0     1      0
-   iasibufr       iasi        metop-b     iasi616_metop-b      0.0     1      0
+   iasibufr       iasi        metop-b     iasi_metop-b         0.0     1      0
    gomebufr       gome        metop-b     gome_metop-b         0.0     2      0
    atmsbufr       atms        npp         atms_npp             0.0     1      0
    crisbufr       cris        npp         cris_npp             0.0     1      0
+   crisfsbufr     cris-fsr    npp         cris-fsr_npp         0.0     1      0
 ::
  &SUPEROB_RADAR
    $SUPERRAD
@@ -621,6 +622,7 @@ $ncp $datobs/${prefix_obs}amsre.${suffix}    ./amsrebufr
 $ncp $datobs/${prefix_obs}ssmisu.${suffix}   ./ssmisbufr   
 $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
+$ncp $datobs/${prefix_obs}crisfs.${suffix}   ./crisfsbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
 
 
@@ -811,7 +813,7 @@ ntype=3
 diagtype[0]="conv" 
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm" 
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a omi_aura mls_aura" 
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b gome_metop-b" 
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 ssmis_las_f17 ssmis_uas_f17 ssmis_img_f17 ssmis_env_f17 ssmis_las_f18 ssmis_uas_f18 ssmis_img_f18 ssmis_env_f18 ssmis_las_f19 ssmis_uas_f19 ssmis_img_f19 ssmis_env_f19 ssmis_las_f20 ssmis_uas_f20 ssmis_img_f20 ssmis_env_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b gome_metop-b" 
 
 diaglist[0]=listcnv 
 diaglist[1]=listpcp 

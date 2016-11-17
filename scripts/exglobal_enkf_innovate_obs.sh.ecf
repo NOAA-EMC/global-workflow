@@ -115,15 +115,15 @@
 #     NCP           Copy command
 #                   defaults to cp
 #     SIGHDR        Command to read sigma header
-#                   defaults to ${EXECGLOBAL}/global_sighdr$XC
+#                   defaults to ${EXECgsm}/global_sighdr$XC
 #     SFCHDR        Command to read surface header
-#                   defaults to ${EXECGLOBAL}/global_sfchdr$XC
+#                   defaults to ${EXECgsm}/global_sfchdr$XC
 #     NSTHDR        Command to read NSST header
-#                   defaults to ${EXECGLOBAL}/global_nsthdr$XC
+#                   defaults to ${EXECgsm}/global_nsthdr$XC
 #     CYCLEXEC      Surface cycle executable
-#                   defaults to ${EXECGLOBAL}/global_cycle$XC
+#                   defaults to ${EXECgsm}/global_cycle$XC
 #     GSIEXEC       Spectral analysis executable
-#                   defaults to ${EXECGLOBAL}/global_gsi$XC
+#                   defaults to ${EXECgsm}/global_gsi$XC
 #     CYCLESH       Surface cycle script
 #                   defaults to ${USHgsm}/global_cycle.sh
 #     BERROR        Input background error file
@@ -306,12 +306,9 @@ export NSTGESMEAN=${3:-${NSTGESMEAN:?}}
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export FIXGLOBAL=$FIXgsm    # $CYCLESH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CYCLESH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CYCLESH still references GLOBAL variables
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
 export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export utilscript=${utilscript:-$NWPROD/util/ush}
@@ -334,9 +331,9 @@ export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
   export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGESMEAN latr |grep -i "latr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGESMEAN lonr |grep -i "lonr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGESMEAN levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
 else
   export JCAP=${JCAP:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
   export JCAP_A=${JCAP_A:-$($SIGHDR $SIGGESMEAN JCAP||echo 0)}
@@ -407,7 +404,7 @@ export ENDSCRIPT=${ENDSCRIPT}
 export LSOIL=${LSOIL:-2}
 export FSMCL2=${FSMCL2:-60}
 if [ $use_gfs_nemsio = .true. ]; then
-  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN idate | grep -i "idate" |awk -F= '{print $2}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
   export DELTSFC=${DELTSFC:-`$SFCHDR $SFCGESMEAN nfhour |awk -F" " '{print $2}'`}
 else
   export CDATE=${CDATE:-$($SFCHDR $SFCGESMEAN VDATE||echo 0)}
@@ -511,6 +508,7 @@ while [[ $imem -le $ENSEND ]]; do
 
    export member="mem"`printf %03i $imem`
    export DATA=$DATATOP/$member
+   export pgmoutm=$DATA/${pgmout:-pgmout.$member}
 
    export SFCG03=$COMINGES/bfg_${GDATE}_fhr03_${member}
    export SFCG04=$COMINGES/bfg_${GDATE}_fhr04_${member}
@@ -569,7 +567,7 @@ while [[ $imem -le $ENSEND ]]; do
    if [ -s $SFCANL ] ; then
       rm -f $SFCANL
    fi
-   if [ $DOIAU = YES & -s $SFCA03 ] ; then
+   if [ $DOIAU = YES && -s $SFCA03 ] ; then
       rm -f $SFCA03
    fi
    if [ -s $GSISTAT ] ; then
@@ -592,6 +590,8 @@ while [[ $imem -le $ENSEND ]]; do
    $ANALYSISSH
    rc=$?
 
+   cat $pgmoutm
+
    export ERR=$rc
    export err=$ERR
    $ERRSCRIPT||exit 2
@@ -601,6 +601,10 @@ while [[ $imem -le $ENSEND ]]; do
    echo "Process member $imem" > log
    cat log_old log > log_new
    cp log_new $DATATOP/log_all
+
+   if [ $SENDDBN = YES ]; then
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+   fi
 
    (( imem = $imem + 1 ))
 

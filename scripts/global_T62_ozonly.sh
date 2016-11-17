@@ -18,10 +18,8 @@ export LEVS=64
 export JCAP_B=$JCAP
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmp${JCAP}_ozonly/${exp}
-#tmpdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/tmp${JCAP}/${exp}
+tmpdir=$tmpdir/$tmpregdir/${exp}
 savdir=$savdir/out${JCAP}_ozonly/${exp}
-#savdir=/scratch2/portfolios/NCEPDEV/ptmp/Michael.Lueken/out${JCAP}/${exp}
 
 # Specify GSI fixed field and data directories.
 #fixgsi=$fixgsi
@@ -36,13 +34,10 @@ savdir=$savdir/out${JCAP}_ozonly/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 
@@ -189,7 +184,7 @@ OBSINPUT="$OBSINPUT_update"
 SUPERRAD="$SUPERRAD_update"
 SINGLEOB="$SINGLEOB_update"
 
-. $scripts/regression_namelists.sh
+. $scripts/regression_namelists.sh global_T62_ozonly
 
 ##!   l4dvar=.false.,nhr_assimilation=6,nhr_obsbin=6,
 ##!   lsqrtb=.true.,lcongrad=.false.,ltlint=.true.,
@@ -197,7 +192,7 @@ SINGLEOB="$SINGLEOB_update"
 
 cat << EOF > gsiparm.anl
 
-$global_T62_ozonly_namelist
+$gsi_namelist
 
 EOF
 
@@ -259,13 +254,9 @@ bufrtable=$fixgsi/prepobs_prep.bufrtable
 bftab_sst=$fixgsi/bufrtab.012
 
 # Copy executable and fixed files to $tmpdir
-if [[ $exp = $global_T62_ozonly_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_T62_ozonly_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ $exp = $global_T62_ozonly_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ $exp = $global_T62_ozonly_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -379,32 +370,12 @@ elif [[ "$endianness" = "Little_Endian" ]]; then
    ln -s -f $global_T62_obs/${prefix_atm}.sgp3prep.le     ./sigf09
 fi
 
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-if [[ "$machine" = "Theia" ]]; then
-
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-elif [[ "$machine" = "WCOSS" ]]; then
-
-   mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc
 
 
 
@@ -433,7 +404,7 @@ case $loop in
 esac
 
 #  Collect diagnostic files for obs types (groups) below
-   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f14 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
+   listall="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 pcp_ssmi_dmsp pcp_tmi_trmm conv sbuv2_n16 sbuv2_n17 sbuv2_n18 gome_metop-a omi_aura ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_las_f16 ssmis_uas_f16 ssmis_img_f16 ssmis_env_f16 iasi_metop-a"
    for type in $listall; do
       count=`ls dir.*/${type}_${loop}* | wc -l`
       if [[ $count -gt 0 ]]; then
