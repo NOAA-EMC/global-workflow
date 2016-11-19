@@ -66,9 +66,9 @@ export MEMORY_AFFINITY=MCM
 export JOBNAME=${CASE}_$CDATE        
 export JOB_TEMPLATE=$BASEDIR/jobs/RUN_fv3_gfs.sh
 
-export WORKDIR=$PTMP/$LOGNAME/fv3/${CASE}_${CDATE}.$$
+export WORKDIR=$PTMP/$LOGNAME/fv3/${CASE}_${CDATE}$$
 export logfile=$WORKDIR/$JOBNAME.out
-mkdir -p $WORKDIR
+if [ ! -s $WORKDIR ]; then mkdir -p $WORKDIR; fi
 cd $WORKDIR ||exit 8
 rm -rf *
 
