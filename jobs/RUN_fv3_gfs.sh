@@ -1,6 +1,7 @@
 #--------------------------------------------------------------------------
 export BASEDIR=${BASEDIR:-/gpfs/hps/emc/global/noscrub/$LOGNAME/NGGPS}
 export FIX_DIR=${FIX_DIR:-$BASEDIR/fix}
+export FIX=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17/global_shared.v14.1.0/fix/fix_am
 export PARM_DIR=${PARM_DIR:-$BASEDIR/fix/parm}
 export IC_DIR=${IC_DIR:-$BASEDIR/ICs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
@@ -72,7 +73,19 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
     export months=${months:-0}
     export days=${days:-10}
     export hours=${hours:-0}
-    export dt_atmos=225
+
+    case $CASE in
+     C49)   export dtatmos=3600  ;;
+     C96)   export dtatmos=1800  ;;
+     C192)  export dtatmos=900   ;;
+     C384)  export dtatmos=450   ;;
+     C768)  export dtatmos=225   ;;
+     C1152) export dtatmos=150   ;;
+     C3072) export dtatmos=90    ;;
+     *)     echo "grid $CASE not supported, exit"
+            exit ;;
+    esac
+    export dt_atmos=${dt_atmos:-$dtatmos}
 
     # export the pre-conditioning of the solution
     # =0 implies no pre-conditioning
@@ -103,6 +116,11 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
     export dycore_only=".false."
     export print_freq=6
 
+    # time step parameters in FV3
+     export k_split=2
+     export n_split=6
+     if [ $res -ge 3072 ]; then n_split=10 ; fi
+
     if [ ${TYPE} = "nh" ]; then
       # non-hydrostatic options
       export make_nh=".T."
@@ -110,9 +128,6 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
       export phys_hydrostatic=".F."     # can be tested
       export use_hydro_pressure=".F."   # can be tested
       export consv_te="1."
-        # time step parameters in FV3
-      export k_split=2
-      export n_split=6
     else
       # hydrostatic options
       export make_nh=".F."
@@ -120,9 +135,6 @@ cp $IC_DIR/${CASE}_$CDATE/* INPUT/.
       export phys_hydrostatic=".F."     # will be ignored in hydro mode
       export use_hydro_pressure=".T."   # have to be .T. in hydro mode
       export consv_te="0."
-        # time step parameters in FV3
-      export k_split=2
-      export n_split=6
     fi
 
     if [ ${MONO} = "mono" -o  ${MONO} = "monotonic" ];  then
