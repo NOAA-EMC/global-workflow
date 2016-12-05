@@ -201,7 +201,7 @@ export GBIASE=${4:-${GBIASE:?}}
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec}
 
 export utilscript=${utilscript:-$NWPROD/util/ush}

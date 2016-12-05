@@ -148,9 +148,9 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Directories.
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
 export PERTURBDIR=${PERTURBDIR:-$NWPROD/fix/enkf_gfs}
 export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
 
@@ -484,7 +484,7 @@ fi
 ################################################################################
 if [ $NST_GSI -gt 0 ]; then
 
-   export DTFANL=${DTFANL:-${COMIN}/dtfanl_${CDUMP}_${CDATE}}
+   export DTFANL=${DTFANL:-${COMIN}/${PREINP}dtfanl}
    export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
    export SFCGES_ENS=${SFCGES_ENS:-${COMIN}/bfg_${GDATE}_fhr06}
    export SFCGCY_ENS=${SFCGCY_ENS:-${COMIN}/sfcgcy_${CDATE}}
