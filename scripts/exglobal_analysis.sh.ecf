@@ -1617,6 +1617,11 @@ if [[ $DIAG_TARBALL = YES ]]; then
 #  Restrict CNVSTAT 
    chmod 750 $CNVSTAT
    ${CHGRP_CMD} $CNVSTAT
+
+#  Restrict RADSTAT
+   chmod 750 $RADSTAT
+   ${CHGRP_CMD} $RADSTAT
+
    echo $(date) END tar diagnostic files >&2
 fi
 
