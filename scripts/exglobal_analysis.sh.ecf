@@ -567,9 +567,9 @@ export ABIASe=${15:-${ABIASe:-satbias_int.out}}
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
 export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export DATA=${DATA:-$(pwd)}
@@ -767,6 +767,7 @@ export LAGDATA=${LAGDATA:-""}
 export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
 export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
 export CHEM=${CHEM:-""}
+export NST=${NST:-""}
 export FILESTYLE=${FILESTYLE:-'X'}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
@@ -1370,6 +1371,11 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /
+ &NST
+   nst_gsi=$NST_GSI,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
+   zsea1=$ZSEA1,zsea2=$ZSEA2,
+   $NST
+/
 EOF
 
 
@@ -1611,6 +1617,11 @@ if [[ $DIAG_TARBALL = YES ]]; then
 #  Restrict CNVSTAT 
    chmod 750 $CNVSTAT
    ${CHGRP_CMD} $CNVSTAT
+
+#  Restrict RADSTAT
+   chmod 750 $RADSTAT
+   ${CHGRP_CMD} $RADSTAT
+
    echo $(date) END tar diagnostic files >&2
 fi
 

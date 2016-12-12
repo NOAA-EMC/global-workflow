@@ -119,8 +119,8 @@ mkdir -m 775 -p $GESOUT
 ##############################################
 # WCOSS environment settings
 ##############################################
-export machine=WCOSS
-export APRUN='mpirun.lsf'
+export machine=${machine:-WCOSS}
+export APRUN=${APRUN:-'mpirun.lsf'}
 
 env
 

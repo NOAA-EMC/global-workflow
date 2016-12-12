@@ -148,9 +148,9 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Directories.
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
 export PERTURBDIR=${PERTURBDIR:-$NWPROD/fix/enkf_gfs}
 export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
 

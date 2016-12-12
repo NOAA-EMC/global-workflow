@@ -102,9 +102,9 @@ mkdir -m 775 -p $COMOUT
 ##############################################
 # WCOSS environment settings
 ##############################################
-export machine=WCOSS
+export machine=${machine:-WCOSS}
 export POE=${POE:-YES}
-export APRUN='mpirun.lsf'
+export APRUN=${APRUN:-'mpirun.lsf'}
 
 env
 

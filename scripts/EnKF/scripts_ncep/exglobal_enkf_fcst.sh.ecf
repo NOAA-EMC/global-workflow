@@ -147,10 +147,10 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am} 
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec} 
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush} 
-export SCRgsm=${SCRgsm:-$NWPROD/gsm.${gsm_ver}/scripts} 
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am} 
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec} 
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush} 
+export SCRgsm=${SCRgsm:-$NWPROD/global_shared.${global_shared_ver}/scripts} 
 
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
