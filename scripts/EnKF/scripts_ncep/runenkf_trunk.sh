@@ -123,7 +123,7 @@ cat << EOF > enkf.nml
   sattypes_rad(5) = 'amsub_n17',     dsis(5) = 'amsub_n17',
   sattypes_rad(6) = 'amsua_aqua',    dsis(6) = 'amsua_aqua',
   sattypes_rad(7) = 'amsua_metop-a', dsis(7) = 'amsua_metop-a',
-  sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs281SUBSET_aqua',
+  sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs_aqua',
   sattypes_rad(9) = 'hirs3_n17',     dsis(9) = 'hirs3_n17',
   sattypes_rad(10)= 'hirs4_n19',     dsis(10)= 'hirs4_n19',
   sattypes_rad(11)= 'hirs4_metop-a', dsis(11)= 'hirs4_metop-a',
@@ -164,7 +164,10 @@ cat << EOF > enkf.nml
   sattypes_rad(46)= 'sndrd2_g15',    dsis(46)= 'sndrD2_g15',
   sattypes_rad(47)= 'sndrd3_g15',    dsis(47)= 'sndrD3_g15',
   sattypes_rad(48)= 'sndrd4_g15',    dsis(48)= 'sndrD4_g15',
-  sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi616_metop-a',
+  sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi_metop-a',
+  sattypes_rad(50)= 'atms_npp',      dsis(50)= 'atms_npp',
+  sattypes_rad(51)= 'cris_npp',      dsis(51)= 'cris_npp',
+  sattypes_rad(52)= 'cris-fsr_npp',  dsis(52)= 'cris-fsr_npp',
  /
  &END
  &ozobs_enkf

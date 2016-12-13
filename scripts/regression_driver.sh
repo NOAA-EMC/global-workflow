@@ -19,8 +19,8 @@ if [ "$debug" = ".false." ]; then
          export scripts=${scripts_updat:-$scripts}
          export fixgsi=${fixgsi_updat:-$fixgsi}
       else
-         export scripts=${scripts_cntrl:-$scripts}
-         export fixgsi=${fixgsi_cntrl:-$fixgsi}
+         export scripts=${scripts_contrl:-$scripts}
+         export fixgsi=${fixgsi_contrl:-$fixgsi}
       fi
 
       rm -f ${job[$jn]}.out

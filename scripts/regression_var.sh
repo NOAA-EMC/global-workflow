@@ -11,14 +11,15 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="XXXXXXXX"
+updat="EXP-betaprofile"
+contrl="trunk"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 if [[ "$machine" = "Theia" ]]; then
 
-   export basedir="/scratch4/NCEPDEV/da/save/$LOGNAME"
+   export basedir="/scratch4/NCEPDEV/global/save/$LOGNAME/gsi/branches"
 
    export group="global"
    export queue="batch"
@@ -26,7 +27,7 @@ if [[ "$machine" = "Theia" ]]; then
    export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
    export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix"
+   export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
    export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
    export ndate="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate"
 
@@ -36,7 +37,7 @@ if [[ "$machine" = "Theia" ]]; then
 
    #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
    #  After completion of regression tests, will remove the regression test subdirecories
-   export clean=".true."
+   export clean=".false."
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
@@ -48,7 +49,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export ptmp="/ptmpp1/$LOGNAME"
    export noscrub="/da/noscrub/$LOGNAME"
 
-   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix"
+   export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
    export ndate="/nwprod/util/exec/ndate"
 
@@ -62,11 +63,13 @@ fi
 
 export gsisrc="$basedir/$updat/src"
 export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/trunk/src/global_gsi"
+export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
 export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
-export fixgsi="$basedir/$updat/fix"
-export scripts="$basedir/$updat/scripts"
+export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
+export fixgsi_updat="$basedir/$updat/fix"
+export scripts_updat="$basedir/$updat/scripts"
+export fixgsi_contrl="$basedir/$contrl/fix"
+export scripts_contrl="$basedir/$contrl/scripts"
 
 # Paths to tmpdir and savedir base on ptmp
 export tmpdir="$ptmp/regression/$updat"

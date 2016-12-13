@@ -1,6 +1,6 @@
 # Standalone script used to pass namelist updates to the regression tests.
 
-# First, generate new variable to hole the first 6 characters of the experiment.
+# First, generate new variable to hold the first 6 characters of the experiment.
 
 #if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
 if [[ `expr substr $exp 1 6` = "global" ]]; then

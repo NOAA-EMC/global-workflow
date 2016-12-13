@@ -255,7 +255,7 @@ OBS_INPUT::
    gsndrbufr      sndr        g12         sndr_g12              0.0      1      0
    gimgrbufr      goes_img    g11         imgr_g11              0.0      1      0
    gimgrbufr      goes_img    g12         imgr_g12              0.0      1      0
-   airsbufr       airs        aqua        airs281SUBSET_aqua   20.0      1      1
+   airsbufr       airs        aqua        airs_aqua            20.0      1      1
    msubufr        msu         n14         msu_n14               2.0      2      1
    amsuabufr      amsua       n15         amsua_n15            10.0      2      1
    amsuabufr      amsua       n16         amsua_n16             0.0      2      1
@@ -287,7 +287,7 @@ OBS_INPUT::
    gsnd1bufr      sndrd2      g13         sndrD2_g13            1.5      5      0
    gsnd1bufr      sndrd3      g13         sndrD3_g13            1.5      5      0
    gsnd1bufr      sndrd4      g13         sndrD4_g13            1.5      5      0
-   iasibufr       iasi        metop-a     iasi616_metop-a      20.0      1      1
+   iasibufr       iasi        metop-a     iasi_metop-a         20.0      1      1
    gomebufr       gome        metop-a     gome_metop-a          1.0      6      0
 ::
  &SUPEROB_RADAR

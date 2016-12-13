@@ -59,7 +59,9 @@
 #                   defaults to 0
 #     FHCYC_ENKF    Surface cycling frequency in hours
 #                   defaults to 0 for no cycling
-#     FCSTVARS      Other namelist inputs to the forecast executable
+#     DYNVARS_ENKF  Other namelist inputs to the dynamics executable
+#                   defaults to none set
+#     PHYVARS_ENKF  Other namelist inputs to the physics executable
 #                   defaults to none set
 #     FSMCL2        Scale in days to relax to soil moisture climatology
 #                   defaults to 99999 for no relaxation
@@ -306,14 +308,15 @@ while [[ $imem -le $ENSEND ]]; do
 
    export IALB=${IALB_ENKF:-0}
    export IOVR_SW=${IOVR_SW_ENKF:-1}
-   export FCSTVARS_TMP=${FCSTVARS_ENKF:-" "}
+   export DYNVARS_TMP=${DYNVARS_ENKF:-" "}
+   export PHYVARS_TMP=${PHYVARS_ENKF:-" "}
 
    if [[ "$SET_STP_SEED" = "YES" ]] ; then
       ISEED_SPPT=$((CDATE*1000 + imem*10 + 1))
       ISEED_SKEB=$((CDATE*1000 + imem*10 + 2))
       ISEED_VC=$((CDATE*1000   + imem*10 + 3))
       ISEED_SHUM=$((CDATE*1000 + imem*10 + 4))
-      export FCSTVARS_TMP="ISEED_SPPT=$ISEED_SPPT,ISEED_SKEB=$ISEED_SKEB,ISEED_VC=$ISEED_VC,ISEED_SHUM=$ISEED_SHUM,$FCSTVARS_TMP"
+      export DYNVARS_TMP="ISEED_SPPT=$ISEED_SPPT,ISEED_SKEB=$ISEED_SKEB,ISEED_VC=$ISEED_VC,ISEED_SHUM=$ISEED_SHUM,$DYNVARS_TMP"
    fi
 
    if [ $DOIAU = YES ]; then
@@ -332,7 +335,7 @@ while [[ $imem -le $ENSEND ]]; do
      export NSTI=$COMIN/nsta${FHBAK}_$CDATE$SUFOUT
      iaufiles_fg=\'$COMIN/sfg_${GDATE}_fhr06$SUFOUT\'
      iaufiles_anl=\'$COMIN/siganl_$CDATE$SUFOUT\'
-     export FCSTVARS_TMP="iau=.true.,iau_delthrs=6,iaufhrs=6,iaufiles_fg=$iaufiles_fg,iaufiles_anl=$iaufiles_anl,$FCSTVARS_TMP"
+     export PHYVARS_TMP="iau=.true.,iau_delthrs=6,iaufhrs=6,iaufiles_fg=$iaufiles_fg,iaufiles_anl=$iaufiles_anl,$PHYVARS_TMP"
      FHSTART=`expr 6 + $FHOUT`
    else
      export SIGI=$COMIN/siganl_$CDATE$SUFOUT
@@ -344,7 +347,8 @@ while [[ $imem -le $ENSEND ]]; do
    fi
    [[ $FHINI -lt 10 ]]&&FHINI=0$FHINI
 
-   export FCSTVARS=${FCSTVARS_TMP:-" "}
+   export DYNVARS=${DYNVARS_TMP:-" "}
+   export PHYVARS=${PHYVARS_TMP:-" "}
 
    if [[ $FILESTYLE = 'L' ]]; then
      FH=$FHSTART
