@@ -118,6 +118,7 @@ echo "#SBATCH --cpus-per-task=$nodes"     >> $cfile
 echo "#SBATCH --mem-per-cpu=6000"     >> $cfile
 echo "#SBATCH --partition=s4"                          >> $cfile
 echo "#SBATCH --exclusive"                          >> $cfile
+echo "#SBATCH --export=ALL" 
 echo "#SBATCH --account=star"                          >> $cfile
 echo "#SBATCH --distribution=block:block"                          >> $cfile
 #echo "#SBATCH -d"                             >> $cfile
@@ -136,7 +137,7 @@ echo "export MP_STDOUTMODE=ORDERED" >> $cfile
 echo "" >>$cfile
 echo "export OMP_NUM_THREADS=$threads"      >> $cfile
 echo "" >>$cfile
-echo ". "$(awk '{ print $1 }' regression_var.out)  >>$cfile
+echo ". "$(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)  >>$cfile
 echo "" >>$cfile
 
 cat $exec >> $cfile
