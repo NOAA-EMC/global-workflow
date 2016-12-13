@@ -107,7 +107,7 @@ elif [[ "$machine" = "s4" ]]; then
 #  export casesdir="/scratch/mpotts/CASES"
    export ndate="$NWPROD/util/exec/ndate"
 
-   export check_resource="yes"
+   export check_resource="no"
 
    export accnt="star"
 
