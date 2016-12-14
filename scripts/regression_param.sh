@@ -301,8 +301,8 @@ case $regtest in
             topts[2]="0:15:00" ; popts[2]="16/4/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a GDAS-T2O"
         elif [[ "$machine" = "s4" ]]; then
-            topts[1]="0:25:00" ; popts[1]="16/2/" ; ropts[1]="/1"
-            topts[2]="0:25:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+            topts[1]="0:25:00" ; popts[1]="32/2/" ; ropts[1]="/1"
+            topts[2]="0:25:00" ; popts[2]="32/4/" ; ropts[2]="/2"
             sub_cmd="sub_s4"
         fi
 
