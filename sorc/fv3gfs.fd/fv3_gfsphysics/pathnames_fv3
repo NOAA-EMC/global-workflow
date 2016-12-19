@@ -220,4 +220,5 @@ gfs_physics/driver/gfs_physics_driver.F90
 gfs_physics/sfc_cycling/gcycle.f90
 gfs_physics/ozinterp/ozinterp.f90
 atmos_drivers/coupled/atmos_model.F90
-simple_coupler/coupler_main.F90
+atmos_drivers/coupled/fv3_cap.F90
+atmos_drivers/coupled/time_utils.F90
