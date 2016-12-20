@@ -1,0 +1,93 @@
+####################################
+# Specify Special Fcst Vars
+####################################
+#
+# Set executable and script
+export SIGHDR=${SIGHDR:-${EXECgsm}/nemsio_get}
+export SFCHDR=${SFCHDR:-${EXECgsm}/nemsio_get}
+
+
+#Set hybrid and ensemble resolution parameters
+export JCAP_ENKF=${JCAP_ENKF:-574}
+export LEVS_ENKF=${LEVS_ENKF:-64}
+export LONB_ENKF=${LONB_ENKF:-1152}
+export LATB_ENKF=${LATB_ENKF:-576}
+export NMEM_ENKF=${NMEM_ENKF:-80}
+
+
+# EnKF executable
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgdas}/getsigensmeanp_smooth.x}
+export GETSFCNSTENSUPDEXEC=${GETSFCNSTENSUPDEXEC:-${EXECgdas}/getsfcnstensupdp.x}
+export ADDERRSPECEXEC=${ADDERRSPECEXEC:-${EXECgdas}/adderrspec_nmcmeth_spec.x}
+export RECENATMPEXEC=${RECENATMPEXEC:-${EXECgdas}/recentersigp.x}
+
+
+# EnKF scripts
+export ENKFCENSH=${ENKFCENSH:-$SCRgdas/exglobal_enkf_inflate_recenter.sh.ecf}
+
+# EnKF fix files
+export PERTURBDIR=${PERTURBDIR:-/nwprod/fix/enkf_gfs}
+
+# Chgres fix files
+export SUFORG="rg."
+export OROGRAPHY_ENKF=${OROGRAPHY_ENKF:-${FIXgsm}/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.${SUFORG}grb}
+export OROGRAPHY_UF_ENKF=${OROGRAPHY_UF_ENKF:-${FIXgsm}/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.${SUFORG}grb}
+export LONSPERLAT_ENKF=${LONSPERLAT_ENKF:-$FIXgsm/global_lonsperlat.t${JCAP_ENKF}.$LONB_ENKF.$LATB_ENKF.txt}
+export SLMASK_ENKF=${SLMASK_ENKF:-$FIXgsm/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.${SUFORG}grb}
+export MTNVAR_ENKF=${MTNVAR_ENKF:-$FIXgsm/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.f77}
+
+# Chgres settings
+export use_gfs_nemsio=.true.
+export idvc=2
+export use_ufo=.true.
+export rdgrid=.true.
+export LATCH=8
+export IDSL=1
+export idvt=21
+export CHGRESTHREAD=${CHGRESTHREAD:-24}
+export nopdpvv=.true.
+export IDVM=0
+export ialb=1
+export SOILTYPE_INP="statsgo"
+export SOILTYPE_OUT="statsgo"
+export VEGTYPE_INP="igbp"
+export VEGTYPE_OUT="igbp"
+export OUTTYP=1
+export NST_ANL=.true.
+export CHGRESVARS_ENKF="use_ufo=$use_ufo,nst_anl=$NST_ANL,rdgrid=$rdgrid,idvc=$idvc,idvt=$idvt,idsl=$IDSL,IDVM=$IDVM,OUTTYP=$OUTTYP,nopdpvv=$nopdpvv"
+
+
+# GETSFCNSTENSUPDEXEC settings
+export NST_GSI=3         # default 0: No NST info at all;
+                         #         1: Input NST info but not used in GSI;
+                         #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                         #         3: Input NST info, used in both CRTM simulation and Tr analysis
+export ZSEA1=0           #  the upper depth (in mm) to do vertical mean of T-Profile (0 = default)
+export ZSEA2=5           #  the lower depth (in mm) to do vertical mean of T-Profile (0 = default)
+
+
+# Input files
+export PREINPgdas=${PREINPgdas:-gdas.${cycle}.}
+export PREINPgdasg=${PREINPgdasg:-gdas.${cycleg}.}
+export PREINP=${PREINP:-gdas.${cycle}.}
+export PREINPg=${PREINPg:-gdas.${cycleg}.}
+
+export MEMBER_PREFIX=${MEMBER_PREFIX:-"."}
+export SIGANL_HI=${SIGANL_HI:-$COMINgdas/${PREINPgdas}atmanl.nemsio}
+export SFCANL_HI=${SFCANL_HI:-$COMINgdas/${PREINPgdas}sfcanl.nemsio}
+
+export SIGGES=${SIGGES:-${COMINg}/${PREINP}atmf006.ensmean.nemsio}
+export SIGANLENS_IN_TMP=${SIGANLENS_IN_TMP:-${COMIN}/${PREINP}atmanl}
+
+export DTFANL=${DTFANL:-${COMINgdas}/${PREINPgdas}dtfanl.bin4}
+export SFCGCY_ENS_TMP=${SFCGCY_ENS_TMP:-${COMINenkf}/${PREINPgdas}gcyanl}
+export NSTGES_ENS_TMP=${NSTGES_ENS_TMP:-${COMINenkfg}/${PREINPgdasg}nstf006}
+export SFCGES_ENS_TMP=${SFCGES_ENS_TMP:-${COMINenkfg}/${PREINPgdasg}sfcf006}
+
+
+# Output files
+export PERTDATES=${PERTDATES:-$COMOUT/${PREINP}pertdates}
+export SANLENSMEAN=${SANLENSMEAN:-$COMOUT/${PREINP}atmanl.ensmean.nemsio}
+export SIGANLENS_OUT_TMP=${SIGANLENS_OUT_TMP:-${COMOUT}/${PREINP}ratmanl}
+export NSTANL_ENS_TMP=${NSTANL_ENS_TMP:-${COMOUT}/${PREINP}nstanl}
+export SFCANL_ENS_TMP=${SFCANL_ENS_TMP:-${COMOUT}/${PREINP}sfcanl}

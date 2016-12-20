@@ -1,0 +1,125 @@
+#!/bin/sh
+
+########################################
+# GFS AWIPS PRODUCT GENERATION
+########################################
+
+set -xa
+# ###################################
+# SET SHELL PROCESSING VARIABLES
+# ###################################
+export PS4='$SECONDS + ' 
+date
+# 
+# obtain unique process id (pid) and make temp directories
+#
+export pid=$$
+export DATA=$DATAROOT/${job}.${pid}
+if [ ! -d ${DATA} ]; then
+  mkdir -p $DATA
+fi
+cd $DATA 
+
+export cycle=t${cyc}z
+export tmmark=tm00
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export envir=${envir:-prod}
+# JY export envir_getges=${envir_getges:-prod}
+export envir_getges=${envir_getges:-${envir}}
+export COMROOT=${COMROOT:-/com2}
+export NWROOT=${NWROOT:-/nwprod2}
+export COMROOTp1=${COMROOTp1:-/com}
+export NWROOTp1=${NWROOTp1:-/nwprod}
+export DCOMROOT=${DCOMROOT:-/dcom}
+export DBNROOT=${DBNROOT:-$NWROOTp1/spa_util/fakedbn}
+
+if [ $envir != prod ]; then
+  export jlogfile=${jlogfile:-$COMROOT/logs/${envir}/jlogfile}
+  export pcom=$COMROOT/${envir}/gdas
+fi
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+#################################
+# Set up the NET and RUN
+#################################
+export NET=gfs
+export RUN=gdas
+export model=gdas
+
+####################################
+##  Load the Utilities module
+#####################################
+. /usrx/local/Modules/default/init/ksh
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+############################################
+
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgdas=${HOMEgdas:-$NWROOT/gdas.${gdas_ver}}
+export EXECgdas=${EXECgdas:-$HOMEgdas/exec}
+export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
+export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
+export USHgdas=${USHgdas:-$HOMEgdas/ush}
+
+export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOTp1/obsproc_dump.${obsproc_dump_ver}}
+export DUMP=${DUMP:-${HOMEobsproc_dump}/ush/dumpjb}
+###################################
+# Set up the UTILITIES
+###################################
+
+#########################################################
+# The PATH has been modified to pick up the NCAR graphics.
+# The variable NCARG_ROOT is also needed for NCAR graphics.
+export NCARG_ROOT=/usrx/local/NCL_NCARG-6.1.0_gcc446/OpenNDAPenabled
+export PATH="$PATH":/usrx/local/NCL_NCARG-6.1.0_gcc446/OpenNDAPenabled/bin
+
+# Run setpdy and initialize PDY variables
+setpdy.sh
+. PDY
+
+########################################
+# Set up the input/output directory
+########################################
+export com=${com:-$COMROOT/${NET}/${envir}}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COMINm1=${COMINm1:-$COMROOT/${NET}/${envir}/${RUN}.${PDYm1}}
+export COMINhrly=${COMINhrly:-$COMROOTp1/hourly/prod/hourly.$PDY}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export pcom=${pcom:-${PCOMROOT}/gdas}
+
+mkdir -p $COMOUT $pcom
+ 
+env
+
+########################################################
+# Execute the script.
+$HOMEgdas/scripts/exgdas_tropc.sh.ecf
+########################################################
+
+cd $DATAROOT
+if [ "${CLEAN:-YES}" = YES ]; then
+  rm -rf $DATA
+fi
+
+date

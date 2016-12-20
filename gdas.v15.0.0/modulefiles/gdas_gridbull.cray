@@ -1,0 +1,26 @@
+#%Module##############################################################
+##                                             Boi.Vuong@noaa.gov
+##                                             NOAA/NWS/NCEP/EMC
+##  GFS v15.0.0
+##  Change Log
+##  02/22/2016:  Boi Vuong, initial setting
+##  07/10/2016:  Fanglin Yang, cray version 
+##
+#####################################################################
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for bufrsnd"
+puts stderr "This module initializes the users environment"
+puts stderr "to build the post for WCOSS_Cray production.\n"
+}
+module-whatis "gridbull"
+
+set ver v15.0.0
+
+# Loading Intel Compiler Suite
+module load PrgEnv-intel/5.2.56
+
+# Loding nceplibs modules
+module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module load w3nco-intel/2.0.6
+module use /usrx/local/nceplibs/modulefiles
+module load bacio-intel/2.0.2

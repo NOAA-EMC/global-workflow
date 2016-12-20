@@ -1,0 +1,84 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ----------------------------------
+# Redefine variables for NOAA HPCS
+# ----------------------------------
+BACIO_VER = 2.0.1
+NEMSIO_VER = 2.2.1
+SFCIO_VER = 1.0.0
+W3NCO_VER = 2.0.6
+
+CORELIB  = /scratch3/NCEPDEV/nwprod/lib
+
+INCsfcio = $(CORELIB)/sfcio/v$(SFCIO_VER)/incmod/sfcio_v$(SFCIO_VER)_4
+INCnemsio= $(CORELIB)/nemsio/v$(NEMSIO_VER)/incmod/nemsio_v$(NEMSIO_VER)
+
+BACIO_LIB4=$(CORELIB)/bacio/v$(BACIO_VER)/libbacio_v$(BACIO_VER)_4.a
+NEMSIO_LIB=$(CORELIB)/nemsio/v$(NEMSIO_VER)/libnemsio_v$(NEMSIO_VER).a
+SFCIO_LIB4=$(CORELIB)/sfcio/v$(SFCIO_VER)/libsfcio_v$(SFCIO_VER)_4.a
+W3NCO_LIB4=$(CORELIB)/w3nco/v$(W3NCO_VER)/libw3nco_v$(W3NCO_VER)_4.a
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -v
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = mpif90 -f90=ifort
+  FC            = $(CF)
+
+#--- Normal mode options
+  PROF= #-pg
+  OMP = #-qsmp=noauto
+
+  FFLAGS_F90    = -assume byterecl -warn all -implicitnone -g -traceback -fp-model strict
+  FFLAGS_COM_N  = -I $(INCsfcio) -I $(INCnemsio)
+  FFLAGS_N      = -O3 $(FFLAGS_F90) $(FFLAGS_COM_N)
+
+#--- Debug mode options
+  FFLAGS_COM_D  =  -I ./ -O0 -xHOST -traceback -assume byterecl -debug full -g
+  FFLAGS_D  = $(FFLAGS_F90) $(FFLAGS_COM_D) $(FFLAGS_COM_N)
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = gcc
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3 $(PROF)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF) -lmpi
+
+#--- Normal mode options
+  LIBS_N        = $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIB4) $(SFCIO_LIB4)
+
+  LDFLAGS_N     = -Wl,-Map,loadmap.txt
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     =
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 

@@ -1,0 +1,73 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ----------------------------------
+# Redefine variables for NOAA HPCS
+# ----------------------------------
+COREINC  = /scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/incmod
+CORELIB  = /scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/lib
+INCsfcio = $(COREINC)/sfcio_4
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -v
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = ifort
+  FC            = $(CF)
+
+#--- Normal mode options
+  PROF= #-pg
+  OMP = #-qsmp=noauto
+
+  FFLAGS_F90    = -convert big_endian -assume byterecl -warn all -implicitnone -g -traceback -fp-model strict
+  FFLAGS_COM_N  = -I $(INCsfcio)
+  FFLAGS_N      = -O3 $(FFLAGS_F90) $(FFLAGS_COM_N)
+
+#--- Debug mode options
+  FFLAGS_COM_D  =  -I ./ -O0 -xHOST -traceback -assume byterecl -debug full -g
+  FFLAGS_D  = $(FFLAGS_F90) $(FFLAGS_COM_D)
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = gcc
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3 $(PROF)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF) 
+
+#--- Normal mode options
+  LIBS_N        = -L$(CORELIB) -lw3lib-2.0_4 -lsfcio_4 -lmpi
+
+  LDFLAGS_N     =
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     =
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 

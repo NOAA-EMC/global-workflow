@@ -1,0 +1,98 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ------------------------------------
+# Set library versions
+# ------------------------------------
+
+BACIO_VER = v2.0.1
+NEMSIO_VER = v2.2.2
+SIGIO_VER = v2.0.1
+SP_VER = v2.0.2
+W3NCO_VER = v2.0.6
+
+CORELIB  = /gpfs/hps/nco/ops/nwprod/lib
+COMPILER = intel
+
+NEMSIO_INC=$(CORELIB)/nemsio/$(NEMSIO_VER)/$(COMPILER)/include/nemsio_$(NEMSIO_VER)
+SIGIO_INC4=$(CORELIB)/sigio/$(SIGIO_VER)/$(COMPILER)/include/sigio_$(SIGIO_VER)_4
+
+BACIO_LIB4=$(CORELIB)/bacio/$(BACIO_VER)/$(COMPILER)/libbacio_$(BACIO_VER)_4.a
+NEMSIO_LIB=$(CORELIB)/nemsio/$(NEMSIO_VER)/$(COMPILER)/libnemsio_$(NEMSIO_VER).a
+SIGIO_LIB4=$(CORELIB)/sigio/$(SIGIO_VER)/$(COMPILER)/libsigio_$(SIGIO_VER)_4.a
+SP_LIB4=$(CORELIB)/sp/$(SP_VER)/$(COMPILER)/libsp_$(SP_VER)_4.a
+W3NCO_LIB4=$(CORELIB)/w3nco/$(W3NCO_VER)/$(COMPILER)/libw3nco_$(W3NCO_VER)_4.a
+
+NETCDF_INC=$(NETCDF)/include
+NETCDF_LIB=-L$(NETCDF)/lib -lnetcdf
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -rv
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = ftn
+  FC            = $(CF)
+  
+  OMP = -openmp
+
+  FFLAGS_INC    = -I $(SIGIO_INC4) -I $(NEMSIO_INC) -I $(NETCDF_INC)
+
+  FFLAGS_F90    = -convert big_endian -assume byterecl \
+				  -implicitnone -traceback
+
+#--- Normal mode options
+  FFLAGS_COM_N  = -O3 -fp-model source
+
+  FFLAGS_N  = $(FFLAGS_INC) $(FFLAGS_COM_N) $(FFLAGS_F90) $(OMP)
+
+#--- Debug mode options
+  FFLAGS_COM_D  = -O0 -fp-model strict -g -debug \
+				  -ftrapuv -check all -fp-stack-check -fstack-protector -warn all
+
+  FFLAGS_D  = $(FFLAGS_INC) $(FFLAGS_COM_D) $(FFLAGS_F90) $(OMP)
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = cc
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3 $(OMP)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF)
+
+#--- Normal mode options
+
+  LIBS_N        = $(SP_LIB4) $(NEMSIO_LIB) $(BACIO_LIB4) $(SIGIO_LIB4) $(W3NCO_LIB4) $(NETCDF_LIB)
+
+  LDFLAGS_N     = -Wl,-Map,loadmap.txt $(OMP)
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     = $(LDFLAGS_N)
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 

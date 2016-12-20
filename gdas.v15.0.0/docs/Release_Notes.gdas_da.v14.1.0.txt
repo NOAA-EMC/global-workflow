@@ -1,0 +1,180 @@
+RELEASE NOTES:  gdas_da.v14.1.0
+ v14.1.0 - released Nov 22, 2016
+
+SVN HISTORY  (see EMC GSI Trac ticket #603, EMC GFS Trac ticket #239)
+ * r84764 - initial Q3FY17 NEMS GFS DA release
+
+CODE CHANGES
+ * gdas.v14.1.0/sorc
+   * adderrspec_nmcmeth_spec.fd - add nemsio capability
+   * enkf_update.fd - add nemsio capability
+   * getnstensmeanp.fd - compute NSST ensemble mean (NEW code)
+   * getsfcensmeanp.fd - add nemsio capability
+   * getsfcnstensupdp.fd - update SFC and NSST ensemble (NEW code)
+   * getsigensmeanp_smooth_ncep.fd - add nemsio capability
+   * recentersigp.fd - add nemsio capability
+
+
+JOB CHANGES
+ * JGDAS_ANALYSIS_HIGH
+   * update environment variables to run on WCOSS Cray, add NSST, define variables for new observation datasets, update for new GFS filename convention, update to process nemsio files
+ * JGDAS_ENKF_FCST
+   * update environment variables to run on WCOSS Cray, define variables for NEMS GSM, add NSST, update for new GFS filename convention, update to process nemsio files
+ * JGDAS_ENKF_INFLATE_RECENTER
+   * update environment variables to run on WCOSS Cray, add NSST, update for new GFS filename convention, update to process nemsio files
+ * JGDAS_ENKF_INNOVATE_OBS
+   * update environment variables to run on WCOSS Cray, add NSST, update for new GFS filename convention, update to process nemsio files
+ * JGDAS_ENKF_POST
+   * update environment variables to run on WCOSS Cray, add NSST, update for new GFS filename convention, update to proces nemsio files
+ * JGDAS_ENKF_SELECT_OBS
+   * update environment variables to run on WCOSS Cray, add NSST, define variables for new observation datasets, update for new GFS filename convention, update to process nemsio files
+ * JGDAS_ENKF_UPDATE
+   * update environment variables to run on WCOSS Cray, update for new GFS filename convention, update to process nemsio files
+
+
+SCRIPT CHANGES
+ * exglobal_enkf_fcst_nems.sh.ecf
+   * run NEMS GSM for EnKF ensemble (NEW SCRIPT)
+ * exglobal_enkf_inflate_recenter.sh.ecf 
+   * update to run on WCOSS Cray, add NSST, update for new GFS filename convention
+ * exglobal_enkf_innovate_obs.sh.ecf
+   * update to process nemsio files, add NSST, update for new GFS filename convention
+ * exglobal_enkf_post.sh.ecf
+   * update to process nemsio files, add NSST, update for new GFS filename convention
+ * exglobal_enkf_update.sh.ecf
+   * update to process nemsio files, add new observation datasets, update for new GFS filename convention
+
+
+RESOURCE INFORMATION
+ * Current operational GFS runs on WCOSS phase1 nodes.   Q1FY16 GFS package should be implemented on WCOSS phase2 nodes.
+ * JGDAS_ANALYSIS_HIGH
+   * job configuration
+     * current operations:  240 nodes, 480 tasks, ptile=2, 12 threads
+     * propose operations:  240 nodes, 480 tasks, ptile=2, 12 threads
+       see ../driver/test_gdas_analysis_high.sh for job submission
+   * run time
+     * current operations:  28.0 - 30.6 minutes
+     * propose operations:  35 - 37 minutes
+ * JGDAS_ENKF_SELECT_OBS
+   * job configuration
+     * current operations:  12 nodes, 144 tasks, ptile=12, 2 threads
+     * propose operations:  24 nodes, 144 tasks, ptile=6,  4 threads
+       see ../driver/test_gdas_enkf_select_obs.sh for job submission
+   * run time
+     * current operations:  2.5 - 3.0 minutes
+     * propose operations:  6.0 - 7.0 minutes
+ * JGDAS_ENKF_INNOVATE_OBS
+   * job configuration
+     * current operations:  12 nodes, 144 tasks, ptile=12, 2 threads
+     * propose operations:  24 nodes, 144 tasks, ptile=6,  4 threads
+       see ../driver/test_gdas_enkf_innovate_obs.sh for job submission
+`   * run time
+     * current operations:  13.3 - 15.6 minutes
+     * propose operations:  35.7 - 37.5 minutes
+ * JGDAS_ENKF_UPDATE
+   * job configuration
+     * current operations:  40 nodes, 240 tasks, ptile=6, 4 threads
+     * propose operations:  40 nodes, 240 tasks, ptile=6, 4 threads
+       see ../driver/test_gdas_enkf_update.sh for job submission
+   * run time
+     * current operations:  7.8 - 9.8 minutes
+     * propose operations:  5.3 - 7.3 minutes
+ * JGDAS_ENKF_INFLATE_RECENTER
+   * job configuration
+     * current operations:  4 nodes, 80 tasks, ptile=24, 1 thread
+     * propose operations: 14 nodes, 80 tassk, ptile=6,  1 thread
+       see ../driver/test_gdas_enkf_inflate_recenter.sh for job submission
+   * run time
+     * current operations:  2.4 - 2.8 minutes
+     * propose operations:  2.8 - 3.4 minutes
+ * JGDAS_ENKF_FCST
+   * job configuration
+     * current operations:  16 nodes,  96 tasks, ptile=6,  4 threads
+     * propose operations:  12 nodes, 144 tasks, ptile=12, 2 threads
+       See ../driver/test_gdas_enkf_fcst.sh for job submission
+   * run time
+     * current operations:  17.3 - 19.4 minutes
+     * propose operations:  21.5 - 22.5 minutes
+ * JGDAS_ENKF_POST
+   * job configuration
+     * current operations:  4 nodes, 81 tasks, ptile=24, 1 thread
+     * propose opeations:: 14 nodes, 81 tasks, ptile=6,  1 thread
+       see ../driver/test_gdas_enkf_post.sh for job submission
+   * run time
+     * current operations:   9.6 - 10.6 minutes
+     * propose operations:  27.0 - 28.3 minutes
+
+ * Disk space required per day
+   * /com/gfs/prod/gdas.$PDY (only JGDAS_ANALYSIS_HIGH output)
+     * current operations: 26.8 Gb
+     * propose operations: 48.8 Gb (additional 22.0 Gb)
+   * /com/gfs/prod/enkf.$PDY/$cyc (all JGDAS_ENKF* output)
+     * current operations:  3314.0 Gb
+     * propose operations:  7092.9 Gb (additional 3778.9 Gb)
+ * Frequency of run
+   * 6 hourly cycle (00, 06, 12, 18Z)
+ * Specify all versions of libs, compilers, shared code being used
+   * compiler
+     * PrgEnv-intel/5.2.56
+     * cray-mpich/7.2.0
+   * library modules
+     * NetCDF-intel-haswell/3.6.3
+     * bufr-intel/11.0.1
+     * nemsio-intel/2.2.2
+     * sfcio-intel/1.0.0
+     * sigio-intel/2.0.1
+     * sp-intel/2.0.2
+     * w3nco-intel/2.0.6
+     * w3emc-intel/2.2.0
+     * crtm-intel/2.2.4
+     * bacio-intel/2.0.2
+     * WRF_SHARED_VER v1.1.0
+ * Data retention for files in $COMROOThps and $GESROOThps
+   * same as current operations
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+ * Which production jobs should be tested as part of this implementation?
+   * gdas.v14.1.0 should be tested as part of the Q3FY17 NEMS GFS package
+ * Does this change require a 30-day evaluation?
+   * YES
+ * Suggested evaluators
+   * same as rest of Q3FY17 NEMS GFS package
+
+
+DISSEMINATION INFORMATION
+ * Where should this output be sent?
+   * same as current operational GFS/GDAS GSI
+ * Who are the users?
+   * same as current operational GFS/GDAS GSI
+ * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS GSI
+
+
+HPSS ARCHIVE
+ * Retention length?
+   * same as current operational GFS/GDAS GSI
+ * List which output files should be archived
+   * same as current operational GFS/GDAS GSI
+
+           
+IMPLEMENTATION INSTRUCTIONS
+ * To implement gdas_da.v13.0.0, please do the following:
+   * cd $NWROOThps
+   * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gdas.v14.1.0
+   * cd $NWROODhps/gdas.v114.1.0/sorc
+   * execute "/bin/sh build_enkf.sh cray" - This builds the following executables and places them in $NWROOThps/gdas.v14.1.0/exec
+     * adderrspec_nmcmeth_spec.x
+     * getnstensmeanp.x
+     * getsfcensmeanp.x
+     * getsigensmeanp_smooth.x
+     * getsigensstatp.x
+     * global_enkf
+     * recentersigp.x
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+ * no change from gdas.v13.0.1
+
+
+

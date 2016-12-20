@@ -1,0 +1,119 @@
+# This config file contains the compile options for compilation
+# of the EnKF code on the NCEP IBM SP.  All production builds
+# on NCEP IBM SP are 64-bit
+
+# ----------------------------------
+# Redefine variables for NCEP IBM SP
+# ----------------------------------
+COREINC  = /nwprod/lib/incmod
+INCsfcio = $(COREINC)/sfcio_4
+INCsigio = $(COREINC)/sigio_4
+INCnetcdf = /nwprod/lib/sorc/netcdf/netcdf-3.5.0/include
+
+# Empty out definition of libs use by GMAO EnKF building structure
+LIBtransf = #-L$(CORELIB) -ltransf
+LIBhermes = #-L$(CORELIB) -lhermes
+LIBgfio   = #-L$(CORELIB) -lgfio
+INChdf    = #-I$(BASEDIR)/$(ARCH)/include/hdf
+LIBhdf    = #-L$(BASEDIR)/$(ARCH)/lib  -lmfhdf -ldf -lhdfjpeg -lhdfz -lsz
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -X64 -v -q
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = mpxlf95_r
+  FC            = $(CF)
+
+#--- Normal mode options
+  PROF= #-pg
+  OMP = -qsmp=noauto
+
+  FFLAGS_F90    = -qfree=f90 -qsuffix=f=f90:cpp=F90 -WF,-DGFS -D_REAL4_
+  EXE_FILE = global_enkf
+
+  FFLAGS_COM_N  = -I ./ \
+                  -I $(INCsfcio) -I $(INCsigio) -I $(INCnetcdf) -qarch=auto -O3 \
+                  -qarch=pwr6 -qmaxmem=-1 -qfullpath -qstrict -q64 $(OMP)
+
+  FFLAGS_COM_N_NOSWAP = -I ./ \
+                        -I $(INCsfcio) -I $(INCsigio) -I $(INCnetcdf) -qarch=auto -O3 \
+                        -qarch=pwr6 -qmaxmem=-1 -qfullpath -qstrict -q64 $(OMP)
+
+  FFLAGS_N  = $(FFLAGS_F90) $(FFLAGS_COM_N) $(PROF)
+  FFLAGS_NOSWAP_N  = $(FFLAGS_F90) $(FFLAGS_COM_N_NOSWAP) $(PROF)
+  FFLAGS_f  = -qfixed       $(FFLAGS_COM_N) $(PROF)
+  FFLAGS    = $(FFLAGS_N) $(PROF)
+
+
+
+#--- Debug mode options
+#  -qflttrap=overflow:zero:enable \ is ok
+#  -qflttrap=overflow:zero:underflow:enable \ fails
+#  -qsave=all \ fails, so removing from option list
+  FFLAGS_COM_D  =  -I ./ \
+                   -I $(INCsfcio) -I $(INCsigio) -I $(INCnetcdf) \
+          -qarch=auto -qmaxmem=-1 -qfullpath -qdbg -qstrict -q64 \
+          -O0 \
+          -qsigtrap=xl__trcedump \
+          -qflttrap=overflow:zero:enable \
+          -qinitauto=7FF7FFFF \
+          -qcheck \
+          -qwarn64 \
+          -qflag=i:u \
+          -qlistopt \
+          -qsource
+
+  FFLAGS_COM_NOSWAP_D = $(FFLAGS_COM_D)
+
+  FFLAGS_D  = $(FFLAGS_F90) $(FFLAGS_COM_D)
+  FFLAGS_NOSWAP_D = $(FFLAGS_F90) $(FFLAGS_COM_NOSWAP_D)
+
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = /usr/vac/bin/cc_r
+
+#--- Normal mode options
+
+  CFLAGS_N      = -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -DIBM4 -O3 $(PROF)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -DIBM4 -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF)
+
+#--- Normal mode options
+
+  LIBS_N        =   -L/nwprod/lib -lsp_d -lw3_4 -lsigio_4 -lsfcio_4 -lbacio_4 \
+		    -lmpitrace -lnetcdf_64
+
+  LDFLAGS_N     = -lessl_r -lmass -bloadmap:loadmap.txt \
+                  -bdatapsize:64K -bstackpsize:64K $(OMP) $(PROF)
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N) -lhmd
+
+  LDFLAGS_D     = -lessl_r -lmass -bloadmap:loadmap.txt \
+                  -bdatapsize:64K -bstackpsize:64K $(OMP)
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 
