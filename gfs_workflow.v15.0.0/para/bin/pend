@@ -1,0 +1,536 @@
+#!/bin/ksh
+################################################################################
+# This script runs when parallel jobs end.
+# Usage: pend
+# Imported variables:
+#   CONFIG
+#   CDATE
+#   CDUMP
+#   CSTEP
+#   LOADL_JOB_NAME
+# Configuration variables:
+#   PSLOT
+#   PCONFIGS
+#   MANALhhddd (hh=00,06,12,18;ddd=fnl,gfs)
+#   MFCSThhddd (hh=00,06,12,18;ddd=fnl,gfs)
+#   CYINC
+#   DATATMP
+#   NDATE
+#   RUNLOG
+#   PLOG
+#   PSUB
+################################################################################
+set -ux
+
+PLOG=${PLOG:-$SHDIR/plog}
+PSUB=${PSUB:-$SHDIR/psub}
+NDATE=${NDATE:-/nwprod/util/exec/ndate}
+DCONFIGS=${DCONFIGS:-""}
+PCONFIGS=${PCONFIGS:-""}
+FCONFIGS=${FCONFIGS:-""}
+CCPOST=${CCPOST:-NO}
+CYINC=${CYINC:-6}
+MANAL=${MANAL:-1}
+DODUMP=${DODUMP:-NO}
+DO2ANL=${DO2ANL:-NO}
+DOENKF=${DOENKF:-NO}
+DOHYBVAR=${DOHYBVAR:-NO}
+USE_NEWRADBC=${USE_NEWRADBC:-NO}
+GDATE=$($NDATE -$CYINC $CDATE)
+CDFNL=${CDFNL:-gdas}
+DSGDAS=${DSGDAS:-NO}
+CHKNXTJOB=${CHKNXTJOB:-NO}
+
+ACCOUNT=${ACCOUNT:-gm}
+machine=${machine:-WCOSS}
+if [ $machine = WCOSS -o $machine = WCOSS_C ] ; then
+ export LLQU=${LLQU:-bjobs}
+elif [ $machine = THEIA ] ; then
+ export LLQU=${LLQU:-$SHDIR/llqu}
+else
+ export LLQU=${LLQU:-""}
+fi
+
+################################################################################
+# Log event
+
+jn=${LOADL_JOB_NAME:-$PSLOT$CDATE$CDUMP$CSTEP}
+$PLOG "$RUNLOG" OK "$jn ended"
+
+export CKSH=$(echo $CSTEP|cut -c-4)
+export CKND=$(echo $CSTEP|cut -c5-)
+#
+export PENDDIR=${PENDDIR:-$PTMP}
+mkdir -p $PENDDIR/$LOGNAME/pend
+cd $PENDDIR/$LOGNAME/pend    # Just to protect jobs from going to "HELD" status
+if [ -s junk ] ; then rm junk ; fi
+echo 'This is a junk file to keep pend directory from getting deleted' >junk
+#
+################################################################################
+# Submit jobs based on script name
+
+nextjobs=""
+case $CKSH in
+
+copy)
+  nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,$CKND"
+;;
+
+dump)
+  if [[ $DSGDAS != YES ]] ; then
+    if [[ $DODUMP = YES && $CDUMP = $CDFNL ]];then
+      nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+    fi
+  else
+    nextjobs="$CONFIG,$GDATE,$CDUMP,dcop"
+  fi
+  for config in $DCONFIGS;do
+    nextjobs="$nextjobs $config,$CDATE,$CDUMP,dump"
+  done
+  for config in $PCONFIGS;do
+    nextjobs="$nextjobs $config,$CDATE,$CDUMP,prep"
+  done
+  if [[ $CDUMP = $CDFNL && $CDATE = ????????00 ]];then
+    for config in $FCONFIGS;do
+      nextjobs="$nextjobs $config,$CDATE,gfs,copyfcst1"
+    done
+  fi
+;;
+
+dcop)
+  if [[ $DODUMP = YES && $CDUMP = $CDFNL ]];then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+  fi
+  for config in $FCONFIGS;do
+    nextjobs="$nextjobs $config,$CDATE,$CDUMP,copyfcst1"
+  done
+;;
+
+prep)
+##nextjobs="$CONFIG,$CDATE,$CDUMP,anal"
+  if [[ $CDUMP = $CDFNL ]] ; then
+   cycle=$(echo $CDATE|cut -c9-10)
+   cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+   eval moanl=\${MOANL$cycle$cdump:-0}
+   if [[ $moanl = 1 ]];then
+    if [[ $CCPOST = YES ]];then
+      nsleep=0
+      tsleep=10
+      msleep=360
+      OCNI=$COMROT/RESTART/omrestart.$CDUMP.$GDATE.$CDATE.tar
+      until [[ -s $OCNI || $((nsleep+=1)) -gt $msleep ]];do sleep $tsleep;done
+      if [[ $nsleep -gt $msleep ]]; then 
+        echo 'Ocean restart file does not exist'
+        exit 77
+      fi
+      nextjobs="$CONFIG,$CDATE,$CDUMP,oanl"
+    else
+     nextjobs="$CONFIG,$CDATE,$CDUMP,oanl"
+    fi
+   fi
+  fi
+  if [[ $DOENKF = NO ]]; then
+    if [[ $DOHYBVAR = NO ]]; then
+      nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,anal"
+    elif [[ $DOHYBVAR = YES ]]; then
+      nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,eget"
+    fi
+  else
+    export ECHKTYPE=ensstat
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,echk"
+  fi
+;;
+
+anal)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ $CDUMP = gdas ]]; then
+    if [[ $USE_NEWRADBC = NO ]]; then
+      nextjobs="$CONFIG,$CDATE,$CDUMP,angu"
+    fi
+    eval mfcst=\${MFCST$cycle$cdump:-1}
+    if [[ $mfcst -ge 1 ]];then
+      nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,fcst1"
+    fi
+  fi
+  eval mfcst=\${MFCST$cycle$cdump:-1}
+  if [[ $CDUMP = gfs ]]; then
+    if [[ $mfcst -ge 1 ]];then
+      nextjobs="$CONFIG,$CDATE,$CDUMP,fcst1"
+    elif [[ ${ARCHIVE:-NO} = YES ]];then
+      nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+    fi
+  fi
+  if [[ $DO2ANL = YES && $CDUMP = gfs ]]; then
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDFNL,anal"
+  fi
+;;
+
+#angu)
+# cycle=$(echo $CDATE|cut -c9-10)
+# cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+# eval mfcst=\${MFCST$cycle$cdump:-1}
+# if [[ $mfcst -ge 1 ]];then
+#   nextjobs="$CONFIG,$CDATE,$CDUMP,fcst1"
+# fi
+#;;
+
+fcst)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  eval mfcst=\${MFCST$cycle$cdump:-1}
+  nknd=${CKND:-1}
+  # Get interleave post switch from para_config; default to hourly
+  ILPOST=${ILPOST:-0}
+  nextjobspost="$CONFIG,$CDATE,$CDUMP,post$nknd"
+  if [[ $CCPOST != YES ]];then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,post$CKND"
+    #if [[ $COUP_FCST = YES ]] ; then
+    #  nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,ocnp$CKND"
+    #fi
+  fi
+
+# set nextjobs for post5 to 9 for the case with CCPOST set to NO and hourly to 120
+# If interleave post is set to generate hourly output
+  if [[ $CCPOST = NO && $cdump = GFS && $CKND -eq 1 && $ILPOST -eq 1 ]] ; then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,post5"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post6"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post7"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post8"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post9"
+  fi
+# If interleave post is set to generate output every 3 hours
+  if [[ $CCPOST = NO && $cdump = GFS && $CKND -eq 1 && $ILPOST -eq 3 ]] ; then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,post5"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post6"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post7"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post8"
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,post9"
+  fi
+
+  if [[ $nknd -lt $mfcst ]];then
+    nknd1=$((nknd+1))
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,fcst$nknd1"
+  fi
+
+  xdate=$($NDATE +$CYINC $CDATE)
+  xcycle=$(echo $xdate|cut -c9-10)
+  if [ $nknd -eq 1 ] ; then
+    for xdump in $CDFNL gfs;do
+      eval mlanl=\${MLANL$xcycle$(echo $xdump|tr '[a-z]' '[A-Z]'):-0}
+      if [[ $mlanl = 1 ]];then
+        nextjobs="$nextjobs $CONFIG,$xdate,$CDUMP,lanl"
+      fi
+    done
+  fi
+;;
+
+post)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  eval mfcst=\${MFCST$cycle$cdump:-1}
+  nknd=${CKND:-1}
+  VRFY_ALL_SEG=${VRFY_ALL_SEG:-NO}
+  fmaxn=$(eval echo \${fmax$mfcst})
+
+# Get FHMAX_HF
+  pgb_fh_seg5=${pgb_fh_seg5:-240}
+  pgb_fh_seg6=${pgb_fh_seg6:-120}
+  pgb_fh_seg7=${pgb_fh_seg7:-90}
+  pgb_fh_seg8=${pgb_fh_seg8:-60}
+  pgb_fh_seg9=${pgb_fh_seg9:-30}
+
+  if [[ $VRFY_ALL_SEG = YES ]] ; then
+     nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy$nknd"
+  elif [[ $nknd -eq $mfcst ]];then
+      if [[ $CDUMP = gdas ]]; then
+        nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
+      elif [[ $CDUMP = gfs ]]; then 
+        if [[ ${ILPOST:-0} -gt 0 ]] ; then
+          if [[ -s $COMROT/pgbf$pgb_fh_seg7.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg8.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg9.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg5.$CDUMP.$CDATE ]] ; then
+            nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
+          else
+            export REDO_POST=NO
+            nextjobs=""
+          fi
+        elif [[ -s $COMROT/pgbf$(eval echo \$fmax1).$CDUMP.$CDATE && -s $COMROT/pgbf$(eval echo \$fmaxn).$CDUMP.$CDATE ]] ; then
+          nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
+        else
+          export REDO_POST=NO
+          nextjobs=""
+        fi
+      fi
+  elif [[ $nknd -lt $mfcst && $CDUMP = gfs && -s $COMROT/pgbf$(eval echo \$fmax$mfcst).$CDUMP.$CDATE ]] ; then
+      nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
+  fi
+  if [[ $nknd -eq 1 && $MANAL = 1 && $CDUMP = $CDFNL ]];then
+    xdate=$($NDATE +$CYINC $CDATE)
+    xcycle=$(echo $xdate|cut -c9-10)
+    for xdump in $CDFNL gfs;do
+      eval manal=\${MANAL$xcycle$(echo $xdump|tr '[a-z]' '[A-Z]'):-1}
+      if [[ $manal = 1 ]];then
+        nextjobs="$nextjobs $CONFIG,$xdate,$xdump,prep"
+      fi
+    done
+  elif [[ $nknd -eq $mfcst && $MANAL = 0 ]];then
+    xdate=$($NDATE +$CYINC $CDATE)
+    nknd_fcst=${nknd_fcst:-1}
+    nextjobs="$nextjobs $CONFIG,$xdate,$CDUMP,fcst${nknd_fcst}"
+  fi
+;;
+
+vrfy)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  eval mavrg=\${MAVRG$cycle$cdump:-0}
+  eval mfcst=\${MFCST$cycle$cdump:-1}
+  VRFY_ALL_SEG=${VRFY_ALL_SEG:-NO}
+  nknd=${CKND:-1}
+  if [ $mavrg -eq 1 ] ; then
+#  if [[ $CDUMP = $CDFNL && $CDATE = ??????0100 ]];then
+   if [[ $mfcst > 0 && $CDATE = ??????0100 && $nknd = 1 ]] ; then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,avrg"
+   elif [[ ${ARCHIVE:-NO} = YES ]];then
+    if [ $nknd -eq $mfcst -a $CDATE != ????010100 ] ; then
+     nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+    fi
+   fi
+  elif [[ ${ARCHIVE:-NO} = YES ]];then
+    if [ $nknd -eq $mfcst -o $VRFY_ALL_SEG = NO ];then
+     nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+    fi
+  fi
+;;
+
+avrg)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  eval mfcst=\${MFCST$cycle$cdump:-1}
+  nknd=${CKND:-1}
+  if [[ $nknd -lt $mfcst ]];then
+    nknd1=$((nknd+1))
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,avrg$nknd1"
+  elif [[ ${ARCHIVE:-NO} = YES ]];then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,arch"
+  fi
+;;
+
+arch)
+  if [[ ${ARCHCATCHUP:-NO} = YES ]];then
+    xdate=$($NDATE +$CYINC $CDATE)
+    nextjobs="$CONFIG,$xdate,$CDUMP,arch"
+  fi
+;;
+
+eobs)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ $DOENKF = YES && $CDUMP = gdas ]]; then
+    export SUBMIT_OMN=YES
+    nextjobs="$CONFIG,$CDATE,$CDUMP,eomn"
+  fi
+;;
+
+eomn)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  nknd=${CKND:-0}
+  if [[ $DOENKF = YES && $CDUMP = gdas && $nknd -eq 0 ]]; then
+    nextjobs="$CONFIG,$CDATE,$CDUMP,eupd"
+  fi
+;;
+
+eupd)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ $DOENKF = YES && $CDUMP = gdas ]]; then
+    GSISTAT_HIRES=$COMROT/gsistat.$CDFNL.$CDATE
+    if [[ ! -s $GSISTAT_HIRES ]]; then
+      export ECHKTYPE=gsistat
+      nextjobs="$CONFIG,$CDATE,$CDUMP,echk"
+    else
+      nextjobs="$nextjobs $CONFIG,$CDATE,$CDFNL,ecen"
+    fi
+  fi
+;;
+
+ecen)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ $DOENKF = YES && $CDUMP = gdas ]]; then
+    export SUBMIT_FMN=YES
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDFNL,efmn"
+  fi
+;;
+
+efmn)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  nknd=${CKND:-0}
+  if [[ $DOENKF = YES && $CDUMP = gdas && nknd -eq 0 ]]; then
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDFNL,epos"
+  fi
+;;
+
+epos)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ $DOENKF = YES && $CDUMP = gdas && ${ARCHIVE:-NO} = YES  ]]; then
+    nextjobs="$nextjobs $CONFIG,$CDATE,$CDFNL,earc"
+  fi
+;;
+
+earc)
+  cycle=$(echo $CDATE|cut -c9-10)
+  cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+  if [[ ${ARCHCATCHUP:-NO} = YES ]];then
+    xdate=$($NDATE +$CYINC $CDATE)
+    nextjobs="$CONFIG,$xdate,$CDUMP,earc"
+  fi
+;;
+
+echk)
+  ENSSTAT=$COMROT/ensstat_${GDATE}_all
+  ENSSTATEX=${ENSSTATEX:-"NO"}
+  GSISTAT_HIRES=$COMROT/gsistat.$CDFNL.$CDATE
+  GSISTATEX=${GSISTATEX:-"NO"}
+  if [[ $ECHKTYPE = ensstat ]]; then
+    if [[ $ENSSTATEX = YES ]]; then
+      if [[ $DOHYBVAR = YES ]]; then
+        nextjobs="$CONFIG,$CDATE,$CDUMP,anal"
+      fi
+      if [[ $DOENKF = YES && $CDUMP = gdas ]] ; then
+        nextjobs="$nextjobs $CONFIG,$CDATE,$CDUMP,eobs"
+      fi
+    fi
+  elif [[ $ECHKTYPE = gsistat ]]; then
+    if [[ $GSISTATEX = YES ]]; then
+       nextjobs="$CONFIG,$CDATE,$CDUMP,ecen"
+    fi
+  fi
+;;
+
+eget)
+  nextjobs="$CONFIG,$CDATE,$CDUMP,anal"
+;;
+
+
+esac
+
+for nextjob in $nextjobs;do
+  $PSUB $(echo $nextjob|tr , ' ')
+done
+
+# Optionally submit monitor job to check nextjob status
+if [[ $CHKNXTJOB = YES ]] ; then
+ 
+#--------------------------------------------------------------------------------------------
+##--resubmit next job after 5 minutes if the job is not in the queue and no dayfile exists
+##--recheck every 5 minutes thereafter until dayfile appears or until CPU runs out (max 6 hrs)  
+#--------------------------------------------------------------------------------------------
+if [[ $CCPOST = YES && $CKSH = fcst ]]; then nextjobs="$nextjobs $nextjobspost" ;fi
+for nextjob in $nextjobs;do
+#---------------------------
+
+export  next="$(echo $nextjob|tr , ' ')"
+export  ncdate=`echo $nextjob |cut -d',' -f2-2|sed "s?,??g"  `
+export  ncdump=`echo $nextjob |cut -d',' -f3-3|sed "s?,??g"  `
+export  ncstep=`echo $nextjob |cut -d',' -f4-4|sed "s?,??g"  `
+export  jn=${PSLOT}${ncdate}${ncdump}${ncstep}
+export  jnx=${PSLOT}${ncdump}${ncstep}${ncdate}
+
+export  df=$COMROT/${jn}*.dayfile*
+if [ $machine = WCOSS -o $machine = WCOSS_C ] ; then
+ export chkpgm="$LLQU -u $USER -w "                 
+elif [ $machine = THEIA ] ; then
+ export chkpgm="$LLQU"                                 
+fi
+
+# Check to see if end of experiment reached
+if [[ $ncdate -gt $EDATE || $ncdate$ncdump$ncstep = $EDATE$EDUMP$ESTEP ]];then
+  echo $0: end of experiment reached >&2
+  exit 1
+fi
+
+if [ $ncstep != echk -a $ncstep != efmn -a $ncstep != eomn ]; then
+
+#.................................
+
+# Create script check next job
+cat <<EOF >${COMROT}/nxjb_${jnx}.sh
+#!/bin/ksh
+set -x
+
+nsleep=0
+tsleep=300     #seconds to sleep before checking file again
+msleep=71      #maximum number of times to sleep
+sleep 300
+
+while test ! -s $df -a \$nsleep -lt \$msleep ;do
+  jobstatus=\$( $chkpgm | grep $jn | grep -v " C " |grep -v nxjb )
+  if [ \$? -ne 0 ]; then  $PSUB $next ;fi
+  ##if [ \$? -eq 0 ]; then
+  ##  $PLOG "$RUNLOG" NOTE "$jn is already queued or running"
+  ##else
+  ##  $PSUB $next
+  ##fi
+  sleep \$tsleep
+  nsleep=\`expr \$nsleep + 1 \`
+done
+EOF
+chmod 755 ${COMROT}/nxjb_${jnx}.sh
+
+# Set up to submit next job script
+job=$COMROT/nxjb_${jnx}.sh
+ac=$ACCOUNT
+gr=$GROUP
+us=$USER
+qn=$CUE2RUN1
+jobn=nxjb_${jnx}
+dayf=$COMROT/$jobn.dayfile
+
+np="1/1/S"
+re="1000/1"
+tl="6:00:00"
+wr="+0000"
+
+config_local=$COMROT/config_${jobn}
+> $config_local
+echo "export CONFIG=$CONFIG"                   >> $config_local
+echo "export CDATE=$CDATE"                     >> $config_local
+echo "export CDUMP=$CDUMP"                     >> $config_local
+echo "export CSTEP=$CSTEP"                     >> $config_local
+echo "export CKSH=$CKSH"                       >> $config_local
+echo "export CKND=$CKND"                       >> $config_local
+cat $CONFIG                                    >> $config_local
+chmod 755 $config_local
+
+en=CONFIG="$config_local"
+
+# Submit check next job script
+errchk=0
+if [ $machine = WCOSS -o $machine = WCOSS_C ] ; then
+   jobstatus=$( $LLQU -u $USER -w | grep $jobn )
+   errchk=$?
+elif [ $machine = THEIA ] ; then
+   jobstatus=$( $LLQU | grep $jobn | grep -v " C " |grep -v nxjb )
+   errchk=$?
+fi
+if [ $errchk -ne 0 ] ; then
+   $SUB -a $ac -e $en -j $jobn -o $dayf -p $np -q $qn -t $tl $job
+   rc=$?
+fi
+
+##if [ $errchk -eq 0 ] ; then
+##   $PLOG "$RUNLOG" NOTE "$jobn already queued or running"
+##else
+##   $SUB -a $ac -e $en -j $jobn -o $dayf -p $np -q $qn -t $tl $job
+##   rc=$?
+##fi
+#.................................
+fi
+done
+
+# End CHKNXTJOB
+fi
+#---------------------------

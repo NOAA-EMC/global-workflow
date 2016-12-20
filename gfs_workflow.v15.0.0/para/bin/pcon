@@ -1,0 +1,38 @@
+#!/usr/bin/perl -w
+################################################################################
+# This script searches standard input (typically rlist) for patterns matching 
+#   input argument to the left of equal sign and returns assigned value 
+#   (string to right of equal sign).
+#   Generally, called from within other utilities.
+# Usage: pcon cstring
+#
+# The standard input directed configuration has lines in the format
+#   PATTERN = VALUE
+# For each line if the pattern matches the input string,
+# the standard output configuration has the format
+#   VALUE
+# Empty lines or lines that start with # are ignored.
+# The first equals sign is always the delimiter.
+# Any white space in the right-hand value is compressed to a single blank.
+################################################################################
+
+#print STDERR $ARGV[0], "\n";
+
+if ($#ARGV == -1) {     
+   die " usage: $0 <string> \n";
+}
+
+while (<STDIN>) {
+  chomp;
+#  print STDERR "<\$_>=<$_>\n"; 
+  if ( /^$|^#/) { next }   # skip blank lines or lines starting with '#'
+  if ( /\s*=\s*/ ) {
+    $r=$`; $v=$';     # $r has string before match.  $v has string after match
+    $r=~s/^\s+//;     # remove any white space from front of PATTERN
+    $r=~s/\*/.*/g;    # change shell pattern match char '*' to reg expr '.*'
+    if ( $ARGV[0] =~ $r )  {
+     $v=~s/\s+/ /g;   # compress white space 
+     print $v,"\n";
+    }
+  }
+}

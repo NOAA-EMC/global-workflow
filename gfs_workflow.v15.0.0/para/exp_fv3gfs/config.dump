@@ -1,0 +1,14 @@
+DODUMP=NO
+if [[ $CSTEP = dump ]]; then
+   COMDMPTMP=$DMPDIR/$CDATE/$CDUMP
+fi
+DUMPSH=$JOBSDIR/dump.sh
+PCONFIGS=""
+PCONFIGS="$PCONFIGS $DISK_GLOB/$LOGNAME/para_gfs/pr$PSLOT/para_config"
+TIMELIMDUMP=06:00:00
+
+DO_DUMPNAMES=YES
+DUMPNAMES_DIR=$PTMP/$LOGNAME
+OBSPROCSH=/gpfs/hps/emc/global/noscrub/emc.glopara/dump_archive/create_dump_links.sh
+SETUPDUMPNAMESH=/gpfs/hps/emc/global/noscrub/emc.glopara/dump_archive/setup_dumpnames.sh
+HRKDMP=240

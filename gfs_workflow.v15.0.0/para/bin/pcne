@@ -1,0 +1,26 @@
+#!/bin/ksh
+################################################################################
+# This script counts non-existent files
+# Usage: pcne cstep dirin
+################################################################################
+set -xu
+
+PCON=${PCON:-${SHDIR:-$BASEDIR/bin}/pcon}
+rc=0
+for p in $($PCON "$1");do
+  eval q="$p"
+  ra=1
+  for d in $(echo $2|tr , ' ');do
+    if [[ -r $d/$q ]];then
+      ra=0
+      break
+    fi
+  done
+  if [[ $ra = 0 ]];then
+    echo pcne: $q found in $d >&2
+  else
+    echo pcne: $q not found in $2 >&2
+  fi
+  ((rc+=ra))
+done
+exit $rc

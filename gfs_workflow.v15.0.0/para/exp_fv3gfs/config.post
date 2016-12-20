@@ -1,0 +1,41 @@
+POSTSH=$BASEDIR/jobs/post.sh                     #post workflow
+NODES=4                                          #number of nodes for all post jobs 
+if [ $CKND -eq 2 ]; then NODES=3 ; fi
+POST_MEMORY=3072
+
+REMAPSH=$BASE_GSM/ush/fv3gfs_remap.sh            #remap 6-tile output to global array in netcdf
+REMAPEXE=$BASE_GSM/exec/fregrid_parallel 
+master_grid=0p25deg                              #1deg 0p5deg 0p25deg 0p125deg etc
+thread_remap=2
+npe_node_remap=$((pe_node/thread_remap))
+npe_remap=$((NODES*npe_node_remap))
+APRUN_REMAP="aprun -n $npe_remap -N $npe_node_remap -j 1 -d $thread_remap -cc depth"
+
+NC2NEMSIOSH=$BASE_GSM/ush/fv3gfs_nc2nemsio.sh    #convert netcdf to nemsio                       
+NC2NEMSIOEXE=$BASE_GSM/exec/fv3nc2nemsio.x  
+
+POSTJJOB=$BASEDIR/jobs/JGFS_POST.sh              #JJOBS calls global_nceppost.sh and down-stream jobs
+POSTGPSH=$BASE_POST/ush/global_nceppost.sh       #UPP converts nemsio to grib2
+POSTGPEXEC=$BASE_POST/exec/ncep_post   
+npe_node_po=6                                    #number of tasks per node for UPP 
+npe_po=$((NODES*npe_node_po))                    #total number of tasks for UPP
+NTHRPOST=1
+APRUN_NP="aprun -n $npe_po -N $npe_node_po -j 1 -d $NTHRPOST -cc depth"
+
+
+GFS_DOWNSTREAM=YES                               #run downstream jobs 
+GFSDOWNSH=$USHDIR/gfs_downstream_nems.sh
+GFSDWNSH=$USHDIR/gfs_dwn_nems.sh
+downset=1
+npe_node_dwn=8                                   #number of tasks per node 
+npe_dwn=$((NODES*npe_node_dwn))
+nthread_dwn=$((pe_node/npe_node_dwn))
+APRUN_DWN="aprun -n $npe_dwn -N $npe_node_dwn -j 1 -d $nthread_dwn cfp"
+
+
+TIMELIMPOSTGFS1=10:00:00
+TIMELIMPOSTGFS2=03:00:00
+TIMELIMPOSTGDAS=04:00:00            # CPU limit for GDAS post
+post_delay_1=0000                   # AM Post delay time
+post_delay_2=0000                   # AM Post delay time
+REDO_POST=NO                        # Defaults to NO

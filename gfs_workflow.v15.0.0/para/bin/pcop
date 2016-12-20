@@ -1,0 +1,32 @@
+#!/bin/ksh
+################################################################################
+# This script copies files from one directory to another
+# Usage: pcop cstep dirin dirout
+################################################################################
+set -xu
+
+PCON=${PCON:-${SHDIR:-$BASEDIR/bin}/pcon}
+NCP=${NCP:-cp}
+rc=0
+for p in $($PCON "$1");do
+  eval q="$p"
+  ra=1
+  for d in $(echo $2|tr , ' ');do
+    if $NCP $d/$q $3;then
+      ra=0
+      break
+    fi
+  done
+  if [[ $ra = 0 ]];then
+    echo pcop: $q copied from $d >&2
+  else
+    echo pcop: $q not found in $2 >&2
+  fi
+  ((rc+=ra))
+done
+if [[ $rc = 0 ]];then
+  exit 0
+else
+  echo pcop: error exit due to $rc files not found >&2
+  exit 1
+fi

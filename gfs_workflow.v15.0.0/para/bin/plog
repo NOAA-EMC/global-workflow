@@ -1,0 +1,11 @@
+#!/bin/ksh
+################################################################################
+# This job logs parallel jobs.
+# Usage: plog runlog msgtype message
+################################################################################
+set -ux
+
+runlog=${1:-'/dev/null'}
+typeset -R8 msgtype=${2:-'OK'}
+message=${3:-''}
+echo "$(date -u '+%Y/%m/%d %a %H:%M:%S GMT') $msgtype:  $message" >>$runlog
