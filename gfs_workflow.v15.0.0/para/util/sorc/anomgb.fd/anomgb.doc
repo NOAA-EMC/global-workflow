@@ -1,0 +1,114 @@
+
+ NAME
+      anomgb - computes GRIB anomalies
+
+
+ SYNOPSIS
+      anomgb -C climgrib [-c climindex]
+             [-g "grid [kgds]"] [-i "ip [ipopts]"]
+             [-k "kpds"] [-X]
+      then either:
+             grib1 index1 grib2
+           or:
+             -x grib1 grib2
+
+
+ DESCRIPTION
+      The command anomgb reads all or part of one GRIB file, computes
+      climate anomalies, and writes the anomalies to another GRIB file,
+      interpolating if necessary.  (Only geopotential height anomalies
+      are computed in the current implementation.)  Unless otherwise directed
+      (-x option), the GRIB index file is also used to speed the reading.
+      The fields are interpolated to an output grid if specified (-g option).
+      The interpolation type defaults to bilinear but may be specified directly
+      (-i option).  The copying may be limited to specific fields (-k option).
+      The command may be directed to output verbose diagnostics (-X option).
+      If grib2 is '-', the output GRIB file is written to standard output.
+
+    Options
+           -c climindex   
+                          Optional index file for the climatology GRIB file.
+
+           -C climgrib    
+                          Required climatology GRIB file.  At present
+                          the climatology must be expressed in monthly averages.
+
+           -g "grid [kgds]"
+                          Output grid identification.  If grid=-1 (the default),
+                          then the output grid is the same as the input grid.
+                          If grid=-4, then the grid is that of the map field.
+                          If 0<grid<255, then grid designates an NCEP grid.
+                          If grid=255, then the grid must be specified by the
+                          full set of kgds parameters determining a GRIB GDS
+                          (grid description section) in the W3FI63 format.
+
+           -i "ip [ipopts...]"
+                          Interpolation options.  The default is bilinear
+                          interpolation (ip=0).  Other interpolation options
+                          are bicubic (ip=1), neighbor (ip=2), budget (ip=3),
+                          and spectral (ip=4).  Spectral interpolation is forced
+                          even if the input and output grids are the same.
+                          See the documentation for iplib for further details.
+ 
+           -k "kpds"
+                          Full set of kpds parameters determing a GRIB PDS
+                          (product definition section) in the W3FI63 format
+                          determining the field(s) to be copied.  Note that
+                          kpds(5) is the parameter indicator (PDS octet 9).
+                          A wildcard is specified by -1 (the defaults).
+                          If the -k option is not specified, then anomgb will
+                          attempt to copy every field in GRIB file 1.
+
+           -x             Turns off the use of an index file.  The index records
+                          are then extracted from the GRIB file, which
+                          will increase the time taken by anomgb.
+
+           -X
+                          Turns on verbose printout.  This option is
+                          incompatible with GRIB output to standard output.
+
+
+           
+ EXAMPLES
+
+
+      (1) Compute height anomalies from the MRF and interpolate to grid 2.
+
+          day=960716
+          gc=/wd2/wd20/wd20mi/datpro/zclmgrb
+          xc=/wd2/wd20/wd20mi/datpro/zclmgrb.index
+          g1=/com/mrf/prod/mrf.$day/drfmr.T00Z.PGrbF120
+          x1=/com/mrf/prod/mrf.$day/drfmr.T00Z.PGrbiF120
+
+          anomgb -g2 -C $gc -c $xc $g1 $x1 gribout1
+
+
+      (2) Verbosely compute 500 mb height anomalies from ECMWF file.
+
+          day=960716
+          gc=/wd2/wd20/wd20mi/datpro/zclmgrb
+          xc=/wd2/wd20/wd20mi/datpro/zclmgrb.index
+          g1=/scom/mrf/prod/ecmwf.$day/ecmgrb25.T12Z
+          x1=/scom/mrf/prod/ecmwf.$day/ecmgrbi25.T12Z
+
+          anomgb -X -k'4*-1,7,100,500' -C $gc -c $xc $g1 $x1 gribout2
+
+
+      (3) Compute height anomalies from UKMET without index files
+          and spectrally truncate to T10.
+
+          day=960716
+          gc=/wd2/wd20/wd20mi/datpro/zclmgrb
+          g1=/scom/fnl/prod/fnl.$day/ukmet.T00Z.ukm25f72
+
+          anomgb -x -i'4,0,10' -C $gc $g1 gribout3
+
+
+ AUTHOR
+      Mark Iredell
+      Global Modeling Branch
+      Environmental Modeling Center
+      National Centers for Environmental Prediction
+      National Weather Service
+      National Oceanographic and Atmospheric Administration
+      Department of Commerce

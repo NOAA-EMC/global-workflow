@@ -1,0 +1,177 @@
+#!/bin/ksh
+#############################################################################
+# This script excfs_cdas_vrfyfits.sh.sms processes fits to obs
+# and generates the model verification statistis for CDAS/CFS
+# Author:   Suranjana Saha -- Original Script
+#           Shrinivas Moorthi -- Second version
+#############################################################################
+set -uax
+
+##################################################
+# Define input variables
+##################################################
+export CDUMPPREP=${CDUMPPREP:-gdas}
+export CDUMPFCST=${CDUMPFCST:-gfs}
+export CDUMPANAL=${CDUMPANAL:-$CDUMPPREP}
+export cfsp=${cfsp:-cfs_}
+export cfsd=${cfsd:-cfs_cdas_}
+export NWPROD=${NWPROD:-/nwprod}
+export SIGEVENTSH=${SIGEVENTSH:-$USHcfs/${cfsp}prevmpi.sh}
+export BUFRPOSTSH=${BUFRPOSTSH:-$USHcfs/${cfsp}bufr_post.sh}
+export FITSSH=${FITSSH:-$USHcfs/${cfsd}fits.sh}
+export HORZSH=${HORZSH:-$USHcfs/${cfsd}horizn.sh}
+export CNVDIAGEXEC=${CNVDIAGEXEC:-$EXECcfs/${cfsp}post_convdiag}
+export COMLOC=${COMLOC:-$COMROT}
+export COMLOX=${COMLOX:-$COMLOC}
+
+export PRVT=${PRVT:-$NWPROD/fix/prepobs_errtable.global}
+export PREX=${PREX:-$EXECcfs/cfs_prevmpi}
+
+export CHGRP_RSTPROD=${CHGRP_RSTPROD:-YES}
+
+#################################################################
+
+cd $DATA
+msg="JOB $job HAS BEGUN"
+postmsg "$jlogfile" "$msg"
+
+# make bufr convdiag postevents for analysis only...
+fh1=06
+fh2=00
+hh=$(echo $CDATE | cut -c9-10)
+yyyymmdd=$(echo $CDATE | cut -c1-8)
+
+if [ $RUN_ENVIR = prod -o $RUN_ENVIR = devpara ] ; then
+  COMLIC=$COM_IN/gdas.$yyyymmdd
+  export PRPI=$COMLIC/gdas1.t${hh}z.prepbufr
+  export PRPO=$COMLOC/gdas1.t${hh}z.prepqa
+  export PRPF=$COMLOC/gdas1.t${hh}z.prepqf
+  export sig1=$COMLIC/gdas1.t${hh}z.sanl
+  export sfc1=$COMLIC/gdas1.t${hh}z.sfcanl
+  export CSTAT=${CSTAT:-$COMLIC/gdas1.t${hh}z.cnvstat}
+  export PREC=$DATA/prec; echo  "&PREVDATA doanls=t,fits=t /" >$PREC
+else
+  export PRPI=$COMLOC/prepqc.$CDUMPPREP.$CDATE
+  export PRPO=$COMLOX/prepqa.$CDUMPPREP.$CDATE
+  export PRPF=$COMLOX/prepqf.$CDUMPPREP.$CDATE
+  export sig1=$COMLOC/siganl.$CDUMPANAL.$CDATE
+  export sfc1=$COMLOC/sfcanl.$CDUMPANAL.$CDATE
+  export CSTAT=${CSTAT:-$COMLOC/cnvstat.$CDUMPPREP.$CDATE}
+  export PREC=$DATA/PREC; echo  "&PREVDATA doanls=t,fits=t /" >$PREC
+fi
+
+$BUFRPOSTSH $sig1 $CSTAT $PRPI $PRPO $CDATE
+
+$FITSSH     $CDATE $PRPO $COMLOX $DATA 06 00           
+$HORZSH     $CDATE $PRPO $COMLOX $DATA anl 2> horizout
+
+if [ "$CHGRP_RSTPROD" = 'YES' ]; then
+  $CHGRP_CMD $PRPO
+  errch=$?
+  if [ $errch -eq 0 ]; then
+      chmod 640 $PRPO
+  fi
+fi
+
+#################################################################
+# make prepqf file containing forecasts
+
+export NDATE=${NDATE:-/nwprod/util/exec/ndate}
+
+cp $PRPO $PRPF || exit 2
+
+if [ $hh = "00" -o $hh = "12" ] ; then
+  fp1="fh1=12;fh2=36"
+  fp2="fh1=24;fh2=48"
+  fp3="fh1=72;fh2=96"
+  fp4="fh1=120;fh2=144"
+else
+  exit
+fi
+
+# interpolate background from fh
+
+tspan=6
+
+for fp in $fp1 $fp2 $fp3 $fp4 
+do
+eval $fp
+for fh in $fh1 $fh2                 
+do
+
+FDATE=$($NDATE -$fh $CDATE)
+if [ $RUN_ENVIR = prod -o $RUN_ENVIR = devpara ] ; then
+  fhm3=$((fh-$tspan)); [ $fhm3 -lt 10 ] && fhm3=0$fhm3; fhp3=$((fh+$tspan)); fh00=$fh
+  yyyymmdd=$(echo $FDATE|cut -c1-8); tzz=t$(echo $FDATE|cut -c9-10)z
+  COMLICF=$COM_IN/gfs.$yyyymmdd
+  export sig1=$COMLICF/gfs.$tzz.sf$fhm3
+  export sig2=$COMLICF/gfs.$tzz.sf$fh00
+  export sig3=$COMLICF/gfs.$tzz.sf$fhp3
+  export sfc1=$COMLICF/gfs.$tzz.bf$fhm3
+  export sfc2=$COMLICF/gfs.$tzz.bf$fh00
+  export sfc3=$COMLICF/gfs.$tzz.bf$fhp3
+else
+  fhm3=$((fh-$tspan)); [ $fhm3 -lt 10 ] && fhm3=0$fhm3
+  fhp3=$((fh+$tspan)); fh00=$fh          
+  export sig1=$COMLOC/sigf$fhm3.$CDUMPFCST.$FDATE 
+  export sig2=$COMLOC/sigf$fh00.$CDUMPFCST.$FDATE 
+  export sig3=$COMLOC/sigf$fhp3.$CDUMPFCST.$FDATE 
+  export sfc1=$COMLOC/sfcf$fhm3.$CDUMPFCST.$FDATE 
+  export sfc2=$COMLOC/sfcf$fh00.$CDUMPFCST.$FDATE 
+  export sfc3=$COMLOC/sfcf$fhp3.$CDUMPFCST.$FDATE 
+fi
+
+break=fit; [ -s $sig1 -a -s $sig2 -a -s $sig3 ] || break; break=no
+
+[ -s $sfc1 -a -s $sfc2 -a -s $sfc3 ] && rsfc=t || rsfc=f
+
+[ $fh -eq $fh1 ] && echo  "&PREVDATA dofcst=t,nbax=3,span=$tspan,fits=t,rsfc=$rsfc /" >$PREC
+[ $fh -eq $fh2 ] && echo  "&PREVDATA doanls=t,nbax=3,span=$tspan,fits=t,rsfc=$rsfc /" >$PREC
+
+break=no
+cp $PRPF prepqm           || break=yes
+$SIGEVENTSH prepqm $CDATE || break=yes
+cp prepqm $PRPF           || break=yes
+
+[ $break = yes ] && break
+
+done # endi of inner loop over two forecast times
+
+[ $break = fit ] && continue
+[ $break = yes ] && break
+
+[ "$CHGRP_RSTPROD" = 'YES' ] && $CHGRP_CMD $PRPF && chmod 640 $PRPO
+
+$FITSSH $CDATE $PRPF $COMLOX $DATA $fh1 $fh2 
+
+[ $hh = 00 -a $fh1 = 24 ] &&  $HORZSH $CDATE $PRPF $COMLOX $DATA fcs 2> horizout
+[ $hh = 12 -a $fh1 = 12 ] &&  $HORZSH $CDATE $PRPF $COMLOX $DATA fcs 2> horizout
+
+done # end of outer loop over multiple forecast times
+
+########################################################
+# copy the fit files to the FIT_DIR
+########################################################
+
+set +e
+
+mkdir -p $FIT_DIR
+cp $COMLOX/f*.raob.$CDATE $FIT_DIR 
+cp $COMLOX/f*.acft.$CDATE $FIT_DIR 
+cp $COMLOX/f*.acar.$CDATE $FIT_DIR 
+cp $COMLOX/f*.sfc.$CDATE  $FIT_DIR 
+
+for typ in anl fcs
+do
+mkdir -p $HORZ_DIR/$typ   
+cp $COMLOX/adpupa.mand.$typ.$CDATE  $HORZ_DIR/$typ/adpupa.mand.$CDATE 
+cp $COMLOX/adpsfc.$typ.$CDATE       $HORZ_DIR/$typ/adpsfc.$CDATE      
+cp $COMLOX/sfcshp.$typ.$CDATE       $HORZ_DIR/$typ/sfcshp.$CDATE      
+cp $COMLOX/aircar.$typ.$CDATE       $HORZ_DIR/$typ/aircar.$CDATE      
+done
+
+################## END OF SCRIPT #######################
+msg='ENDED NORMALLY.'
+postmsg "$jlogfile" "$msg"
+################## END OF SCRIPT #######################
+

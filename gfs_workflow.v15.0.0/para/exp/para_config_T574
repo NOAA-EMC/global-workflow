@@ -1,0 +1,1784 @@
+#!/bin/ksh
+set -x
+
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+## Configuration file for running operations-like GFS on WCOSS & Zeus
+## Version: trunk
+##---------------------------------------------------------------------
+## Model documentation can be found online in the following locations:
+##  - GFS How-To: http://www.emc.ncep.noaa.gov/GFS/exp.php
+##  - GFS svn Trac page: https://svnemc.ncep.noaa.gov/trac/gfs/wiki
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+mac=`hostname |cut -c1`
+
+machine=ZEUS
+PSLOT=test                  # Experiment ID
+EDATE=2015011206            # Analysis/forecast cycle ending date 
+EDUMP=gdas                  # cycle ending dump
+ESTEP=prep                  # cycle ending step
+
+if [ $machine = WCOSS ]; then
+ EXPDIR=/global/save/$LOGNAME/para_gfs/pr$PSLOT
+elif [ $machine = ZEUS ]; then
+ EXPDIR=/scratch2/portfolios/NCEPDEV/global/save/$LOGNAME/para_gfs/pr$PSLOT
+fi
+# ROTDIR setting is lower down
+
+# ----------------------------------
+# options for model components
+# ----------------------------------
+COUP_FCST=NO               # default NO: AM model only;  YES: coupled A-O forecast
+NOFCST=NO                  # default NO: run analysis and forecast; YES: no forecast   
+NOANAL=NO                  # default NO: run analysis and forecast; YES: no analysis
+ldas_cyc=0                 # default  0: no ldas cycles
+DO2ANL=NO
+l4densvar=.false.          # default: 3DEnsVar
+
+
+# ----------------------------------
+# user account 
+# ----------------------------------
+usrdir=$LOGNAME
+if [ $machine = WCOSS ]; then
+ CUE2RUN=dev
+ CUE2RUN1=dev
+ CUE2RUNA=transfer
+ RUN_ENVIR=para
+ ACCOUNT=GFS-T2O
+ group_name=rstprod
+ GROUP=dev
+elif [ $machine = ZEUS ]; then
+ CUE2RUN=batch
+ CUE2RUN1=batch
+ CUE2RUNA=service
+ RUN_ENVIR=dev
+ ACCOUNT=glbss
+ group_name=global
+ GROUP=global
+fi
+
+permission=755
+
+# -----------------------------------------------
+# directories: source scripts, running space etc
+# -----------------------------------------------
+CHKNXTJOB=YES
+if [ $machine = WCOSS ]; then
+ TOPDIR=/global
+ NOSCRUB=/global/noscrub
+ STMP=/stmpp1
+ PTMP=/ptmpp1
+ DMPDIR=/globaldump
+ NWPROD=/nwprod
+ NWPARA=/global/save/emc.glopara/nwpara
+ PERTURBDIR=$NWPROD/fix/enkf_gfs
+ BASE_SVN=/global/save/emc.glopara/svn
+ BASE_TEST=/global/save/emc.glopara/nwtest
+ pe_node=16
+elif [ $machine = ZEUS ]; then
+ TOPDIR=/scratch2/portfolios/NCEPDEV/global
+ NOSCRUB=/scratch2/portfolios/NCEPDEV/global/noscrub
+ BASE_SVN=/scratch2/portfolios/NCEPDEV/global/save/glopara/svn
+ BASE_TEST=/scratch2/portfolios/NCEPDEV/global/save/glopara/nwtest
+ STMP=/scratch2/portfolios/NCEPDEV/stmp
+ PTMP=/scratch2/portfolios/NCEPDEV/ptmp
+ PREPTMP=/scratch2/portfolios/NCEPDEV
+ DMPDIR=/scratch2/portfolios/NCEPDEV/global/noscrub/dump
+ NWPROD=/scratch2/portfolios/NCEPDEV/global/save/glopara/nwpara
+ NWPARA=$NWPROD
+ PERTURBDIR=$TOPDIR/noscrub/glopara/enkf/data254_specps
+ archsyndir=/scratch2/portfolios/NCEPDEV/rstprod/com/arch/prod/syndat
+ utilscript=/scratch2/portfolios/NCEPDEV/rstprod/nwprod/util/ush
+ pe_node=12
+else
+ echo '$machine is not supported, exit'
+ exit
+fi
+
+ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
+
+# -------------------
+# COMPONENT SETTINGS 
+# -------------------
+# Version
+export bufr_ver=v1.0.1
+export crtm_ver=2.2.1
+export emcsfc_ver=v1.0.0
+export gfs_ver=v13.0.5
+export gsm_ver=v12.0.1
+export gsi_ver=r56017
+export obsproc_prep_ver=v3.5.0
+export obsproc_prep_post_ver=v2.0.1
+export obsproc_global_ver=v2.1.1
+export post_ver=v6.1.0
+if [ $l4densvar = .true. ]; then
+ export tropcy_qc_reloc_ver=v5.0.1_hrly
+else
+ export tropcy_qc_reloc_ver=v5.0.0
+fi
+export util_ver=v1.0.0
+export verif_ver=v18.1
+export radmon_ver=2.0.0
+# Location
+BASEDIR=$BASE_SVN/gfs/tags/gfs.$gfs_ver/para
+BASE_BUFRSND=$BASE_SVN/bufr_snd/tags/bufrsnd_$bufr_ver
+BASE_EMCSFC=$BASE_SVN/land_utilities/tags/emcsfc.$emcsfc_ver
+BASE_GSM=$BASE_SVN/gfs/tags/gsm.$gsm_ver
+BASE_GSI=$BASE_SVN/gsi/tags/gsi.$gsi_ver
+BASE_GSIMON=$BASE_SVN/gsi/tags/REL-5.0.0
+BASE_PREP=$BASE_SVN/obsproc/releases/obsproc_prep.$obsproc_prep_ver
+BASE_PREP_POST=$BASE_SVN/obsproc/tags/obsproc_prep_post.$obsproc_prep_post_ver
+BASE_PREP_GLOBAL=$BASE_SVN/obsproc/releases/obsproc_global.$obsproc_global_ver
+BASE_POST=$BASE_SVN/post/tags/ncep_post.$post_ver
+BASE_TROPCY=$BASE_SVN/storm_relocation/tags/tropcy_qc_reloc.$tropcy_qc_reloc_ver
+BASE_VERIF=$BASE_SVN/verif
+BASE_RADMON=$BASE_SVN/verif/global/tags/Radiance_Monitor-$radmon_ver
+
+export PENDDIR=$PTMP
+
+SHDIR=$BASEDIR/bin
+JOBSDIR=$BASEDIR/jobs
+USHDIR=$BASEDIR/ush
+SCRDIR=$BASEDIR/scripts
+SCRDIR_GSI=$BASE_GSI/scripts
+EXECDIR=$BASEDIR/exec
+
+export NDATE=$NWPROD/util/exec/ndate 
+export NHOUR=$NWPROD/util/exec/nhour 
+export WGRIB=$NWPROD/util/exec/wgrib 
+export WGRIB2=$NWPROD/util/exec/wgrib2 
+export COPYGB=$NWPROD/util/exec/copygb
+export COPYGB2=$NWPROD/util/exec/copygb2
+export BFCOMB=$EXECDIR/bufr_combfr
+export SIGHDR=$BASE_GSM/exec/global_sighdr
+export SFCHDR=$BASE_GSM/exec/global_sfchdr
+
+RFCDIR=${BASEDIR:-/global/save/glopara/RFC/GSI_Q2FY2012}
+TOPDRG=$TOPDIR          
+TOPDRC=$TOPDIR         
+TOPDRA=$TOPDIR        
+COMDIR=$TOPDIR                        
+DISK_GLOB=$TOPDRG/save              
+COMROT=$ROTDIR
+DAYDIR=$COMROT
+COMDAY=$COMROT
+MEANDIR=$COMROT/MEANDIR             # Directory for monthly means
+TIMEDIR=$COMROT/TIMEDIR             # Directory for time series of selected variables
+OCNMEANDIR=$COMROT/MEANDIR          # Directory for ocn monthly means
+
+export yyyymm=`echo $CDATE | cut -c1-6`
+ARCDIR=$NOSCRUB/$LOGNAME/archive/pr$PSLOT
+mkdir -p $ARCDIR
+FIT_DIR=$ARCDIR/fits                                    # Directory for SAVEFITS output
+HORZ_DIR=$ARCDIR/horiz                                  # Directory for SAVEFITS output
+LOGNAME_HPSS=$LOGNAME
+ATARDIR=/1year/NCEPDEV/emc-global/$LOGNAME_HPSS/$machine/pr${PSLOT}     #hpss tape archive
+if [ $machine = WCOSS ]; then
+ HPSSTAR=/nwprod/util/ush/hpsstar
+ HTAR=/usrx/local/hpss/htar
+ HSI=/usrx/local/hpss/hsi
+elif [ $machine = ZEUS ]; then
+ HPSSTAR=$USHDIR/hpsstar
+ HTAR=/apps/hpss/htar
+ HSI=/apps/hpss/hsi
+fi
+ATARFILE=$ATARDIR/\$ADAY.tar
+
+DATATMP='$STMP/$LOGNAME/$PSLOT$CDATE$CDUMP$CSTEP'
+eval TMPDIR=$DATATMP
+
+# use 1-deg OI SSTS
+COMDMP='$DMPDIR/$CDATE/${CDUMP}'
+COMCOP='$DMPDIR/$CDATE/${CDUMP}'
+if [ $CDATE -gt 2010091406 -a $CDATE -lt 2010110912 ] ; then
+   COMDMP='$DMPDIR/$CDATE/${CDUMP}x,$DMPDIR/$CDATE/${CDUMP}'
+fi
+## {CDUMP}c contains 0.25-deg Reynolds SSTS
+#COMDMP='$DMPDIR/$CDATE/${CDUMP}c,$DMPDIR/$CDATE/${CDUMP},$DMPDIR/$CDATE/${CDUMP}x'
+#COMCOP='$DMPDIR/$CDATE/${CDUMP}c,$DMPDIR/$CDATE/${CDUMP},$DMPDIR/$CDATE/${CDUMP}x'
+
+
+HRKTMP=24                          # Hours to keep tmpdir 
+HRKRES=48                          # Hours to keep restart files 
+HRKROT=168                         # Hours to keep rotating archive
+HRKFLX=264                         # Hours to keep flx files in $COMROT
+HRKSIG=168                         # Hours to keep sigma files in $COMROT
+HRKSIGG=48                         # Hours to keep sigma files from analysis
+HRKPGBM=168                        # Hours to keep hires pgb files
+HRKOCN_NC=96                       # Hours to keep ocean netcdf file
+HRKOCN_ANL=96                      # Hours to keep ocean analysis file
+HRKOCN_GRB=96                      # Hours to keep ocean grib output file
+HRKENKF=48                         # Hours to keep enkf files
+HRKETMP=06                         # Hours to keep enkf tmpdir
+HRKTMPGDAS=06                      # Hours to keep GDAS tmpdir
+HRKTMPGFS=24                       # Hours to keep GFS tmpdir 
+
+
+# ---------------------------
+# utilities and misc options
+# ----------------------------
+cycn=`echo $CDATE | cut -c9-10`
+PMKR=$SHDIR/pmkr
+INHERIT_ENV=NO
+if [ $machine = WCOSS ]; then
+ SUB=$BASEDIR/bin/sub_wcoss
+ PSUB=$BASEDIR/bin/psub
+ PEND=$SHDIR/pend
+ NCP="/bin/cp -p"
+elif [ $machine = ZEUS ]; then
+ SUB=$BASEDIR/bin/sub_zeus
+ PSUB=$BASEDIR/bin/psub
+ PEND=$SHDIR/pend_zeus
+ NCP="/bin/cp --preserve=mode,xattr,timestamps"
+fi
+
+#variables for radiance monitoring package
+LLQFILE=yes
+LLQFILENAME=jobname
+
+FCSTSH=$JOBSDIR/fcst.sh
+G3DPSH=$JOBSDIR/g3dp.sh
+
+RECONCILE=$BASEDIR/ush/reconcile.sh
+RM_G3DOUT=NO
+RM_ORIG_G3D=YES
+FHGOC3D='60'
+lg3d_1=.false.
+lg3d_2=.false.
+#if [ $CDUMP = gfs -a $cycn -eq 00 ]; then lg3d_1=.true.;  fi
+
+RESUBMIT=NO                        # resubmit a failed job - Defaults to NO
+##MP_PULSE=0
+
+VERBOSE=YES                       
+pfac=2
+MFCST00GFS=1
+RLIST=$EXPDIR/pr${PSLOT}${MFCST00GFS}.gsi.rlist
+RUNLOG=$EXPDIR/pr${PSLOT}.runlog
+NEW_DAYFILE=YES                      # To create new dayfile for every rerun
+USE_RESTART=NO                      # use restart file under COMROT/RESTART if run is interruptted
+NGPTC=30                            # for operational GFS, not reproducible with different NGPTC
+if [ $machine = ZEUS ]; then NGPTC=8 ; fi
+ncw='50,150'                        # for Ferrer microphysics
+
+
+# -------------------------------------------------------------
+# AM forecast and analysis model specifics, computing nodes
+# -------------------------------------------------------------
+gfs_cyc=4                          # GFS cycles (00, 06, 12 and 18Z), defaults to 1 (00Z) cycle
+
+if [ $gfs_cyc -eq 4 ]; then
+  MFCST06GFS=2
+  MFCST12GFS=2
+  MFCST18GFS=2
+fi
+
+fseg=2                             # number of AM forecast segments (maximum=3) default=1
+gdas_cyc=4                         # number of GDAS cycles
+gdas_fh=999                        # defaults to 999 i.e. no long fcst in GDAS step
+ 
+LEVS=64                            # number of AM levels
+idvc_a=2                           # AM vertical coordinate for analysis, 3: henry-juang; 2: joe-sela
+idvc_f=2                           # AM vertical coordinate for forecast,     
+Apercent=100                       # for idvc=3, 100:sigma-p; 0:pure-theta
+fdfi_a=3                           # run digital filter for gdas fcst
+fdfi_1=3                           # run digital filter for 1st segment
+fdfi_2=3                           # default=0, run digital filter for 2nd segment
+
+JCAP=574                          # 1st segment wave number (0-192 hr)
+JCAP2=254                          # 2nd segment wave number (192-384 hr)
+JCAP3=126                          # 3rd segment wave number (384-540 hr)
+
+LONB=1152; LATB=576; DELTIM=900
+LONB2=512; LATB2=256; DELTIM2=900    #for running week-2 at T190
+
+TASKGM=YES  #Set to yes for task geometry defined in reconcile.sh
+step2=`echo $CSTEP | cut -c5-5`
+if [ "$step2" -eq "2" ]; then
+  TASKGM=NO
+  TASK_GEOMETRY=NONE
+fi
+
+if [ $machine = WCOSS ]; then
+ tasks=289                                   # number of PEs for 1st segment
+ if [ $CDUMP = gdas ] ; then tasks=289; fi   # number of PEs for gdas forecast
+ tasks2=96                          # number of PEs for 2nd segment
+ tasks3=64                          # number of PEs for 3rd segment
+ tasksp_1=32                        # number of PEs for 1st segment of post
+ tasksp_2=16                        # number of PEs for 2st segment of post
+ npe_node_f=$pe_node                 # number of pes per node for AM forecast
+ pe_node_f=4
+ if [ "$step2" -eq "2" ]; then pe_node_f=8; fi
+ NTHRPOST=2
+ npe_node_po=16                     # number of pes per node for post step (default 16)
+ npe_node_ang=32                    # number of pes per node for global_angupdate
+ nth_f1=4                           # number of threads for AM forecast 1st segment
+ nth_f2=2                           # number of threads for AM forecast 2nd segment
+ nth_f3=1                           # number of threads for AM forecast 3rd segment
+ npe_node_a=16                      # number of pes per node for AM analysis
+ NUMPROCANAL=200
+ NUMPROCANALGDAS=200                # number of tasks for GDAS anal (448)
+ NUMPROCANALGFS=200                 # number of tasks for GFS anal
+ NTHREADS_GSI=4                     # number of threads for anal
+
+elif [ $machine = ZEUS ]; then
+ tasks=121                                   # number of PEs for 1st segment
+ if [ $CDUMP = gdas ] ; then tasks=121; fi   # number of PEs for gdas forecast
+ tasks2=96                          # number of PEs for 2nd segment
+ tasks3=64                          # number of PEs for 3rd segment
+ tasksp_1=30                        # number of PEs for 1st segment of post
+ tasksp_2=24                        # number of PEs for 2st segment of post
+ npe_node_f=$pe_node                 # number of pes per node for AM forecast
+ pe_node_f=6
+ if [ "$step2" -eq "2" ]; then pe_node_f=12; fi      # for 254
+ NTHRPOST=1
+ npe_node_po=6                      # number of pes per node for post step (default 16)
+ npe_node_ang=12                    # number of pes per node for global_angupdate
+ nth_f1=2                           # number of threads for AM forecast 1st segment
+ nth_f2=1                           # number of threads for AM forecast 2nd segment
+ nth_f3=1                           # number of threads for AM forecast 3rd segment
+ npe_node_a=12                       # number of pes per node for AM analysis
+ NUMPROCANAL=120
+ NUMPROCANALGDAS=120                # number of tasks for GDAS anal (448)
+ NUMPROCANALGFS=120                 # number of tasks for GFS anal
+ NTHREADS_GSI=1                     # number of threads for anal
+
+  export MPI_BUFS_PER_HOST=1024
+  export MPI_BUFS_PER_PROC=1024
+ if [ $CSTEP = fcst1 -o $CSTEP = fcst2 -o $CSTEP = anal ]; then
+  export MPICH_MAX_SHORT_MSG_SIZE=2048
+  export MPICH_PTL_OTHER_EVENTS=100000
+  export MPICH_PTL_UNEX_EVENTS=400000
+  export MPI_BUFS_PER_HOST=2048
+  export MPI_BUFS_PER_PROC=2048
+  export KMP_STACKSIZE=2048m
+  export LAPI_DEBUG_SLOT_ATT_THRESH=5000000
+  export MP_STDOUTMODE=ordered
+ fi
+fi
+
+NTHSTACK=1024000000                # stacks for fcst step; default 128000000
+NTHSTACK_GSI=1024000000            # stack size for anal, default=128000000
+TIMELIMANAL=01:00:00               # Wall clock time for AM analysis (hh:mm)
+
+npe_node_o=$pe_node                 # number of pes per node for ocean analysis
+if [ $l4densvar = .true. ]; then
+   NUMPROCPREP=7                    # number of pes for prep step
+   NPROCS_PREP=7
+else
+   NUMPROCPREP=3                    # number of pes for prep step
+   NPROCS_PREP=3
+fi
+NSPLIT=3
+NTHRPREP=$pe_node
+RELOX_threads=$pe_node
+npe_node_pr=$pe_node                 # number of pes per node for prep step (must be 24 for CCS, generalized script)
+
+##NTHRPREP=1
+##RELOX_threads=1
+##npe_node_pr=1
+
+fmax1=240                          # maximum forecast hour for 1st segment - default 192hrs
+fmax2=384                          # maximum forecast hour for 2nd segment - default 384hrs
+fmax3=540                          # maximum forecast hour for 2nd segment - default 540hrs 
+fbak2=240                          # starting fcst hour for 2nd segment
+fbak3=384                          # starting fcst hour for third segment
+# if [ $cycn -ne 00 ]; then fseg=1; fi         # for hurricane track, only 126-hr fcst is required 
+# if [ $cycn -ne 00 ]; then fmax1=144; fi      # increase off cycle output to F144 for MMAB
+
+FHMAX_HF=12                        #high-frequency output maximum hours
+FHOUT_HF=1                         #high-frequency output interval in hours
+
+fres1=264                           # Interval to write restart for 1st segment,  default=24hr
+fres2=480                           #                               2nd segment,  default=24hr
+fres3=24                           #                               3rd segment,  default=fres2
+
+fout_a=1                           # GDAS forecast output frequency (defaults to 3) if gdas_fh=999 
+fout1=03                           # GFS sig,sfc,flx output frequency for 1st segment,  default=3hr
+fout2=12                           #                                      2nd segment,  default=6hr
+fout3=12                           #                                      3rd segment,  default=6hr
+#foutpgb1=06                        # NCEPPOST pgb frequency for 1st segment,  default=fout1
+#foutpgb2=12                        #                            2nd segment,  default=fout2
+#foutpgb3=12                        #                            3rd segment,  default=fout3
+
+fzer1=06                           # GFS output zeroing interval for 1st segment, default=6hr
+fzer2=12                           #                                 2nd segment, default=6hr
+fzer3=12                           #                                 3rd segment, default=6hr
+
+
+export VERBOSE=YES
+
+NUMPROCANGU=72
+
+FHRESFCST00GFS=264
+FHRESFCST00GDAS=24
+FHRESFCST06GDAS=24
+FHRESFCST12GDAS=24
+FHRESFCST18GDAS=24
+
+NUMPROCAVRGGDAS=48                 # Number of pes for GDAS average
+NUMPROCAVRGGFS=48                  # Number of pes for GFS average
+ 
+cha=01 ; cma=00 ; csa=00            # Analysis FCST and Post time
+ch1=03 ; cm1=00 ; cs1=00            # Forecast time - 1st segment
+ch2=01 ; cm2=00 ; cs2=00            # Forecast time - 2nd segment
+
+#FHSTRT=6                           # To restart a forecast from a selected hour, default=9999999
+#nsout=1                            # 1: write out every time step, default=0
+#liope=.false.                      # defaults to .true.
+newoz_nrl=YES                       # YES: use NRL ozone production and loss coefficients
+FHLWR=3600                          # LW radiation calling interval (seconds)
+FHSWR=3600                          # SW radiation calling interval (seconds)
+ivssig=200509                       # sigma file version
+
+## settings for Joe's Semi-Lag model
+HYBRID=YES
+CFSV2=NO
+nsout=0
+
+if [ $HYBRID = YES ] ; then
+  semilag=.true.          # uncomment for Joe's semi-Lagrangian
+  idvc_a=2
+  idvc_f=2
+  idvt=21
+  IDSL=1
+  IDVM=1
+  RUN_ENTHALPY=.false.
+  ENTHALPY=NO
+  ndsl=.false.
+else
+  semilag=.false.          # uncomment for Joe's semi-Lagrangian
+  idvc_a=3                  # for hybrid model forecast (GDAS Henry)
+  idvc_f=3                  # for hybrid model forecast (GFS Henry)
+  idvt=21
+  IDSL=2
+  #IDVM=12
+  RUN_ENTHALPY=.false.
+  ENTHALPY=NO
+  THERMODYN_ID=1
+  SFCPRESS_ID=2
+  GEN_COORD_HYBRID=.true.
+  #jcapg=764
+  ndsl=.true.
+  lingg_a=.false.          # uncomment for linear grid in dynamics
+  lingg_b=.false.          # uncomment for linear grid in physics
+fi
+
+# ----------------------------------
+# options for NST in GFS & GSI
+# ----------------------------------
+ export NST_FCST=0           # default 0: No NSSTM,                                   W/O  Tr analysis
+                             #         1: With NSSTM but run passively (uncoupled),   W/O  Tr analysis
+                             #         2: With NSSTM and run actively    (coupled),   W/O  Tr analysis
+                             #         3: With NSSTM but run passively (uncoupled),   With Tr analysis
+                             #         4: With NSSTM and run actively    (coupled),   With Tr analysis
+ export NST_GSI=0            # default 0: No NST info at all;
+                             #         1: Input NST info but not used in GSI;
+                             #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                             #         3: Input NST info, used in both CRTM simulation and Tr analysis
+
+ export NST_SPINUP=.false.   # true for the first cold start cycle only. false for others 
+ export FAC_DTL=0            # NSST diurnal warming model control: 0 = off; 1 = on 
+ export FAC_TSL=0            # NSST sub-layer model control: 0 = off; 1 = on 
+ export NST_TZR=0            # Tzr_qc control: 0 = off ; 1 = on 
+ export NSTINFO=0            # number of elements added in obs. data array 
+ if [ $NST_GSI -gt 2 ]; then 
+   export NSTINFO=4 
+ fi
+
+# ------------------------------
+# land model/surface  specifics
+# ------------------------------
+LSOIL=4                             # Number of soil layers
+fcyc=24                             # Surface cycle calling interval
+GLDASCYCHR=24                       # GLDAS cycling frequency
+CDATE_SKIP=2008031500               # ldas modified sfc files not used before
+                                    # this date.  Must be > 24 hours from the start
+MODIS_ALB=NO                        # use modis based albedo product
+ialb=0                              # 0: climatology sw albedo based on surface veg types; 1: MODIS based land surface albedo
+OPANAL_06=YES                       # For old ICs without LANDICE, only applicable for starting from existing analysis
+#CHG_LDAS=YES                       # To bring in new vegtyp table to LDAS
+snoid=snod                          # Snow id - default to snod
+ivssfc=200509                       # surface file version
+SET_FIX_FLDS=YES                    # creates orographic modis albedo fix fields if they do not exist by copy.sh
+
+ 
+# -----------------------------------------------------
+# ocean model and hindcast specifics if COUP_FCST=YES
+# -----------------------------------------------------
+ASYM_GODAS=YES                      # For asymmetric godas (default is NO}
+GODAS_WNDO=10                       # Data window for asymmetric godas
+inch_1=168                          # defaults to 360 ; interval of coupled run
+#nknd_fcst=1(or 2)                  # For hindcasts from segment 2 only
+TIMEAVGEXEC=$RFCDIR/exec/mpi_timavg_3d_nu
+TIMEMEANEXEC=$RFCDIR/exec/mpi_timavg_3d_nu
+
+#   long fcst/hindcast from second segment of GDAS
+##  for 0Z cycle, make a 5-day lo-res forecast,
+##  otherwise make a 0-hr forecast to get lo-res initial conditions every cycle
+if [ $gdas_fh -gt 0 -a $gdas_fh -lt 999 ] ; then
+ hh=`echo $CDATE | cut -c9-10`
+ if [[ $hh = "00" ]] ; then
+  fmax2=120  
+ else
+  fmax2=0
+ fi
+ fbak2=0
+fi
+ 
+km_mom4=40                          # Nummber of MOM4 levels
+omres_1=05   ;  nproco_1=60         # ocean 1st segment model resolution (0.5x0.25) and number of processors
+omres_2=05   ;  nproco_2=60         # ocean 2nd segment model resolution (0.5x0.25) and number of processors
+omres_3=05   ;  nproco_3=60         # ocean 3rd segment model resolution (0.5x0.25) and number of processors
+dt_rstrt=10800                      # OM restart writing interval (small)
+dt_rstrt_long=86400
+inch_2=360
+##fres2=${inch_2:-$fmax2}
+
+FIX_OCN=$BASE_GSM/fix/fix_om
+FIX_OM=$BASE_GSM/fix/fix_om
+FIX_LIS=$BASE_GSM/fix/fix_lm/FIX_T${JCAP}
+PARM_OM=$BASE_GSM/parm/parm_om
+PARM_GODAS=$PARM_OM/tbl_nml
+diagtable_1dy=$PARM_OM/diag_table
+diagtable_3hr=$PARM_OM/diag_table.3hr
+diagtable_6hr=$PARM_OM/diag_table.6hr
+diagtable_1hr=$PARM_OM/diag_table.hr
+diagtable=$diagtable_1hr
+diagtable_long=$PARM_OM/diag_table.hrs
+
+
+#  ---------------------
+#  global_cycle
+#  ---------------------
+CYCLESH=$BASE_GSM/ush/global_cycle.sh
+CYCLEXEC=$BASE_GSM/exec/global_cycle
+
+SNOW_NUDGE_COEFF=-2.
+
+#  ---------------------
+#  global_chgres changes
+#  ---------------------
+CHGRESSH=$BASE_GSM/ush/global_chgres.sh
+CHGRESEXEC=$BASE_GSM/exec/global_chgres
+
+use_ufo=.true.
+
+LATCH=8; IDSL=1 ;  idvt=21  ; CHGRESTHREAD=8;  IDVM=0
+CHGRESVARS="use_ufo=$use_ufo,IALB=$ialb,ntrac=3,idvc=$idvc_a,idvt=$idvt,idsl=$IDSL,IDVM=$IDVM,"
+CHGRESVARS_ENKF=$CHGRESVARS
+
+#  ---------------------
+#  dump step
+#  ---------------------
+DODUMP=NO
+if [[ $CSTEP = dump ]]; then
+   COMDMPTMP=$DMPDIR/$CDATE/$CDUMP
+fi
+DUMPSH=$JOBSDIR/dump.sh
+PCONFIGS=""
+#PCONFIGS="$PCONFIGS /global/save/$LOGNAME/para_gfs/pr$PSLOT/para_config"
+
+
+#  ---------------------
+#  prep step   
+#  ---------------------
+if [ $machine = ZEUS -a $CSTEP = prep -a $JCAP -ge 1534 ]; then CUE2RUN=bigmem; fi
+
+if [ $CSTEP = prep -a $machine = ZEUS ]; then
+  export OMP_NUM_THREADS=1
+  export APRNPREP="mpiexec_mpt -n 12"
+fi
+
+XLF_LINKSSH=$BASEDIR/util/ush/xlf_links.sh
+TIMELIMPREP=02:00:00
+CDUMPPREP=gdas                      # prep dump to be used in prepqfit
+SENDDBN=NO
+
+if [ $machine = IBMP6 ]; then
+ POE=YES                            ;#for runing relocation on CCS
+ MPMD=YES
+elif [ $machine = WCOSS ]; then
+ POE=NO
+ MPMD=YES
+ RELOC_MPI=YES
+else
+ POE=NO
+ RELOC_MPI=YES                      ;#for runing relocation on ZEUS etc
+fi
+
+FIXSYND=$BASE_PREP/fix
+HOMEALL=$NWPROD
+USHGETGES=$USHDIR
+USHSYND=$BASE_PREP/ush
+USHPREV=$BASE_PREP/ush
+USHCQC=$BASE_PREP/ush
+USHPQC=$BASE_PREP/ush
+USHVQC=$BASE_PREP/ush
+USHAQC=$BASE_PREP/ush
+USHOIQC=$BASE_PREP/ush
+RELOCATESH=$BASE_TROPCY/ush/tropcy_relocate.sh
+PREPSH=$JOBSDIR/prep.sh
+
+MAKEPREPBUFRSH=$BASE_PREP/ush/prepobs_makeprepbufr.sh
+DO_MAKEPREPBUFR=YES                 ;#if NO, makes sure to set PREPBUFRFILE
+#
+## Use PREPBUFRFILE when DO_MAKEPREPBUFR=NO. Set path and format of pre-made files.
+##PREPBUFRFILE=/scratch2/portfolios/NCEPDEV/global/noscrub/$LOGNAME/premadefiles/prepqc.$CDUMP.$CDATE
+#
+
+pgb_typ4prep=h
+
+PROCESS_TROPCY=NO
+DO_RELOCATE=YES
+SYNDATA=YES
+RESTORE_GES=NO
+##DO_BOGUS=NO
+##GETGUESS=NO
+OIQCBUFR=NO
+PROCESS_ACPF=NO
+
+# Fix files parm files
+# --------------------
+
+CQCS=$BASE_PREP/fix/prepobs_cqc_statbge  
+LANDC=$BASE_PREP/fix/prepobs_landc  
+OIQCT=$BASE_PREP_GLOBAL/fix/prepobs_oiqc.oberrs  
+PRPT=$BASE_PREP/fix/prepobs_prep.bufrtable  
+#PRVT=$BASE_PREP/fix/prepobs_errtable.global  
+PRVT=$BASE_GSI/fix/prepobs_errtable.global  
+AQCC=$BASE_PREP_GLOBAL/parm/prepobs_prepacqc.$CDUMP.parm  
+CQCC=$BASE_PREP_GLOBAL/parm/prepobs_cqcbufr.gdas.parm 
+PRPC=$BASE_PREP_GLOBAL/parm/prepobs_prepdata.$CDUMP.parm  
+PQCC=$BASE_PREP_GLOBAL/parm/prepobs_profcqc.gdas.parm  
+SYNDC=$BASE_PREP_GLOBAL/parm/syndat_syndata.gdas.parm
+
+# Executables
+# -----------
+
+RELOX=$BASE_TROPCY/exec/relocate_mv_nvortex
+HOMERELO=$BASE_TROPCY
+homesyndir=$BASE_TROPCY
+FIXRELO=$BASE_TROPCY/fix
+
+PRPX=$BASE_PREP/exec/prepobs_prepdata   
+PREX=$BASE_PREP/exec/prepobs_prevents   
+AQCX=$BASE_PREP/exec/prepobs_prepacqc   
+PQCX=$BASE_PREP/exec/prepobs_profcqc   
+CQCX=$BASE_PREP/exec/prepobs_cqcbufr   
+SYNDX=$BASE_PREP/exec/syndat_syndata   
+MPCOPYX=$BASE_PREP/exec/prepobs_mpcopybufr   
+LISTHDX=$BASE_PREP/exec/prepobs_listheaders   
+MONOBFRX=$BASE_PREP/exec/prepobs_monoprepbufr   
+VQCX=$BASE_PREP/exec/prepobs_cqcvad   
+OIQCX=$BASE_PREP/exec/prepobs_oiqcbufr   
+PSTX=$BASE_PREP_POST/exec/global_postevents
+
+#  ---------------------
+#  bufr data types 
+#  ---------------------
+BUFRLIST="adpupa proflr aircar aircft satwnd adpsfc sfcshp vadwnd wdsatr ascatw rassda gpsipw"
+
+
+#  ---------------------
+#  analysis step
+#  ---------------------
+
+ANALYSISSH=$SCRDIR_GSI/exglobal_analysis.sh.ecf
+ANGUPDATESH=$SCRDIR_GSI/util/global_angupdate/exglobal_angupdate.sh.ecf
+FILESTYLEANAL=L
+FILESTYLEANGU=L
+ANALSH=$JOBSDIR/anal.sh
+OBERROR=$BASE_GSI/fix/prepobs_errtable.global
+
+#COMPRESS=/usrx/local/bin/pigz
+#UNCOMPRESS=/usrx/local/bin/unpigz
+COMPRESS=/bin/gzip                 
+UNCOMPRESS='/bin/gunzip -f'
+
+if [ $CDATE -lt 2015011412 ] ; then
+   FNSNOAJCAP_TMP='$DMPDIR/$CDATE/${CDUMP}x/snogrb_t$JCAP.$CDUMP.$CDATE'
+   FNSNOGJCAP_TMP='$DMPDIR/$GDATE/${GDUMP}x/snogrb_t$JCAP.$GDUMP.$GDATE'
+else
+   FNSNOAJCAP_TMP='$DMPDIR/$CDATE/${CDUMP}/snogrb_t$JCAP.$LONB.$LATB.$CDUMP.$CDATE'
+   FNSNOGJCAP_TMP='$DMPDIR/$GDATE/${GDUMP}/snogrb_t$JCAP.$LONB.$LATB.$GDUMP.$GDATE'
+fi
+
+if [ $CDATE -ge 2014040812 ] ; then
+   FNTSFATMP='$DMPDIR/$CDATE/$CDUMP/rtgssthr.grb.$CDUMP.$CDATE'
+else
+   FNTSFATMP='$DMPDIR/$CDATE/${CDUMP}x/rtgssthr_grb_0.083.$CDUMP.$CDATE'
+fi
+
+HOMEemcsfc=$BASE_EMCSFC
+BLENDICEEXEC=$BASE_EMCSFC/exec/emcsfc_ice_blend
+PREPROCESSSH=$BASE_EMCSFC/ush/emcsfc_ice_blend.sh
+eval BLENDED_ICE_FILE='$COMROT/seaice.5min.blend.grb.$CDUMP.$CDATE'
+FNACNATMP=$BLENDED_ICE_FILE
+
+# Set IMS grib1/2 and path based on CDATE
+PDY=`echo $CDATE | cut -c1-8`
+if [ $PDY -le 20140304 ] ; then
+   export IMS_FILE=$DMPDIR/${PDY}00/gdasx/imssnow96.grb.gdas.$PDY
+elif [ $CDATE -lt 2014040812 ] ; then
+   export IMS_FILE=$DMPDIR/${PDY}00/gdasx/imssnow96.grib2.gdas.$PDY
+else 
+   export IMS_FILE=$DMPDIR/$CDATE/$CDUMP/imssnow96.grib2.$CDUMP.$CDATE
+fi
+
+# the 5-min mmab data is saved every six hours.
+if [ $CDATE -lt 2014040812 ] ; then
+   export FIVE_MIN_ICE_FILE=$DMPDIR/$CDATE/${CDUMP}x/seaice.t00z.5min.grb.$CDUMP.$CDATE
+else
+   export FIVE_MIN_ICE_FILE=$DMPDIR/$CDATE/$CDUMP/seaice.5min.grb.$CDUMP.$CDATE
+fi
+
+##USE_JCAP_SNO=NO
+export USE_JCAP_SNO=NO       # YES = Use snow analysis with specified resolution;
+                             # NO  = Use snow analysis with half degree resolution
+                             # when the specified resolution snow analysis unavailable in dump directory
+                             # only 574 and 382 are available
+
+# Zero IR ozone jacobians poleward of 60 degrees latitude
+##OBSQC="qc_noirjaco3_pole=.true.,"
+OBSQC="aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true."
+OBSQC_ENKF="$OBSQC"
+
+NMEM_ENKF=80
+JCAP_ENKF=254
+LEVS_ENKF=64
+
+LONB_ENKF=512
+LATB_ENKF=256
+LONA_ENKF=512
+LATA_ENKF=256
+##LONR_ENKF=$LONB_ENKF
+##LATR_ENKF=$LATB_ENKF
+##LONF_ENKF=$LONB_ENKF
+##LATG_ENKF=$LATB_ENKF
+
+# Change to generate low resolution fhr06 ensemble mean and ensemble member files
+JCAP_LORES=$JCAP_ENKF
+
+# Project T254 ensmemble onto linear grid (512x256)
+NMEM_ENS=$NMEM_ENKF
+JCAP_ENS=$JCAP_ENKF
+NLON_ENS=$LONA_ENKF
+NLAT_ENS=`expr $LATA_ENKF + 2`
+
+HYBRID_ENSEMBLE="l_hyb_ens=.true.,n_ens=80,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,aniso_a_en=.false.,jcap_ens_test=$JCAP_ENS,readin_localization=.true.,oz_univ_static=.false.,"
+
+# Use new radiance bias correction scheme
+USE_NEWRADBC=YES     # switch over 2013101806 gdas
+if [ $USE_NEWRADBC = YES ] ; then
+   SETUP_NEWRADBC="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,cwoption=3"
+else
+   SETUP_NEWRADBC=""
+fi
+BKGVERR="cwcoveqqcov=.false."
+
+# GSI 4DEnsVar setup
+if [ $l4densvar = .true. ] ; then
+   SETUP="$SETUP_NEWRADBC,niter(1)=50,niter(2)=150,l4densvar=.true.,ens4d_nstarthr=3,nhr_obsbin=1,nhr_assimilation=6,lwrite4danl=.true."
+   JCOPTS="ljc4tlevs=.true."
+   STRONGOPTS="tlnmc_option=3"
+else
+   SETUP="$SETUP_NEWRADBC"
+   JCOPTS=""
+   STRONGOPTS="tlnmc_option=2"
+fi
+
+if [ $l4densvar = .false. ] ; then
+   SFCG04=/dev/null
+   SFCG05=/dev/null
+   SFCG07=/dev/null
+   SFCG08=/dev/null
+   SIGG04=/dev/null
+   SIGG05=/dev/null
+   SIGG07=/dev/null
+   SIGG08=/dev/null
+fi
+
+# Set GDAS / GFS generation code
+if [ $CDUMP = gdas ] ; then
+   export IGEN=82
+elif [ $CDUMP = gfs ] ; then
+   export IGEN=81
+fi
+
+# Set parameters for analysis grid
+JCAP_A=$JCAP_ENS
+NLAT_A=$NLAT_ENS
+NLON_A=$NLON_ENS
+
+
+# Fix files and parm files
+if [ $machine = WCOSS ]; then
+   RTMFIX=/da/save/Michael.Lueken/CRTM_REL-$crtm_ver/crtm_v$crtm_ver/fix
+elif [ $machine = ZEUS ]; then
+   RTMFIX=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-$crtm_ver/crtm_v$crtm_ver/fix
+fi
+
+ATMSFILTER=$BASE_GSI/fix/atms_beamwidth.txt
+SATANGL=$BASE_GSI/fix/global_satangbias.txt
+
+SATINFO=$BASE_GSI/fix/global_satinfo.txt
+if [ $CDATE -lt 2013042500 ] ; then
+  SATINFO=$BASE_GSI/fix/global_satinfo.txt.use_ssmis_f16.mon_cris_npp
+fi
+
+SCANINFO=$BASE_GSI/fix/global_scaninfo.txt
+CONVINFO=$BASE_GSI/fix/global_convinfo.txt
+INSITUINFO=$BASE_GSI/fix/global_insituinfo.txt
+OZINFO=$BASE_GSI/fix/global_ozinfo.txt
+PCPINFO=$BASE_GSI/fix/global_pcpinfo.txt
+ANAVINFO=$BASE_GSI/fix/global_anavinfo.l64.txt
+AEROINFO=$BASE_GSI/fix/global_aeroinfo.txt
+HYBENSINFO=$BASE_GSI/fix/global_hybens_locinfo.l64.txt
+
+
+# new berror first used in 2010102200 (31 may 2011)
+if [ $JCAP_A = "1534" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y1154.f77
+elif [ $JCAP_A = "1148" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y1154.f77
+elif [ $JCAP_A = "878" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y882.f77
+elif [ $JCAP_A = "670" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y674.f77
+elif [ $JCAP_A = "574" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y578.f77
+elif [ $JCAP_A = "382" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y386.f77
+elif [ $JCAP_A = "254" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y258.f77
+elif [ $JCAP_A = "170" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y192.f77
+elif [ $JCAP_A = "126" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y130.f77
+elif [ $JCAP_A = "62" ] ; then
+  BERROR=$BASE_GSI/fix/Big_Endian/global_berror.l64y96.f77
+else
+ echo 'Invalid JCAP_A'
+ exit
+fi
+
+# Pick up special datasets
+eval OSCATBF='$DMPDIR/$CDATE/${CDUMP}x/oscatw.$CDUMP.$CDATE'
+
+# satwnd files in Kate's dump directory prior to 2013062118 were NOT dumped
+# using a +/-3 hour window.   ${CDUMP}y files prior to 2013062118 were dumped
+# using a +/- 1.5 hour window.  We do NOT want to use the +/- 1.5 hour window
+# dump files in T1534 retrospective parallels
+if [ $CDATE -ge 2015011412 ] ; then
+  eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+else
+  eval SATWND='$DMPDIR/$CDATE/${CDUMP}y/satwnd.$CDUMP.$CDATE'
+fi
+
+if [ $CDATE -lt 2012021418 ]; then
+   eval SEVIRIBF='$DMPDIR/$CDATE/${CDUMP}x/sevcsr.$CDUMP.$CDATE'
+   eval ATMSBF='$DMPDIR/$CDATE/${CDUMP}x/atms.$CDUMP.$CDATE'
+fi
+
+if [ $CDATE -le 2012101018 ]; then
+   eval CRISBF='$DMPDIR/$CDATE/${CDUMP}x/cris.$CDUMP.$CDATE'
+fi
+
+# NOAA-19 SBUV/2 dumped in operations as of 2009082515
+if [ $CDATE -gt 2009082515 ] ; then
+   eval SBUVBF='$DMPDIR/$CDATE/$CDUMP/osbuv8.$CDUMP.$CDATE'
+fi
+
+# MLS ozone version 2.0 before 2013010306.   Version 3.0 starting 2013010306.
+# Overwrite MLS entry in OBSINPUT for dates before 2013010306.
+if [ $CDATE -lt 2013010306 ] ; then
+  export OBSINPUT="dfile(77)='mlsbufr',   dtype(77)='mls20',     dplat(77)='aura',    dsis(77)='mls20_aura',      dval(77)=0.0,  dthin(77)=0,  dsfcalc(77)=0,"
+fi
+
+# NOAA-19 AMSU-A, HIRS/4, and MHS dumped in operations as of 2009092915
+# Revert back to operational dump file
+if [ $CDATE -gt 2009092915 ] ; then
+   eval B1AMUA='$DMPDIR/$CDATE/$CDUMP/1bamua.$CDUMP.$CDATE'
+   eval B1HRS4='$DMPDIR/$CDATE/$CDUMP/1bhrs4.$CDUMP.$CDATE'
+   eval B1MHS='$DMPDIR/$CDATE/$CDUMP/1bmhs.$CDUMP.$CDATE'
+fi
+
+# Skip data sets which operations skips
+if [ $CDATE -gt 2009053115 ] ; then
+ export AMSREBF=/dev/null
+# export SSMITBF=/dev/null
+fi
+
+#  GOES hourly wind dump not always available.  When not available,
+#  process operational satwnd dump
+
+if [ $CDATE -lt 2012070100 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2012111600 -a $CDATE -le 2012112118 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2012112900 -a $CDATE -le 2012121312 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2012112900 -a $CDATE -le 2012121312 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2012112900 -a $CDATE -le 2012121312 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2013031006 -a $CDATE -le 2013031012 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2013051718 -a $CDATE -le 2013052006 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -ge 2013081218 -a $CDATE -le 2013081306 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+if [ $CDATE -eq 2013082018 ]; then
+   eval SATWND='$DMPDIR/$CDATE/${CDUMP}/satwnd.$CDUMP.$CDATE'
+   PRVT=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   OBERROR=$BASE_GSI/fix/prepobs_errtable.global.3hr_satwnd
+   CONVINFO=$BASE_GSI/fix/global_convinfo.txt.3hr_satwnd
+fi
+
+# Set SATWNDTMP for prep step
+SATWNDTMP=$SATWND
+
+#
+# Executables
+GSIEXEC=$BASE_GSI/exec/global_gsi
+ 
+SET_BIASAT=YES
+
+#  ---------------------
+#  enkf steps
+#  ---------------------
+DOENKF=YES
+DOHYBVAR=YES
+
+MHYBA00GDAS=1
+MHYBA06GDAS=1
+MHYBA12GDAS=1
+MHYBA18GDAS=1
+MHYBA00GFS=1
+MHYBA06GFS=1
+MHYBA12GFS=1
+MHYBA18GFS=1
+mefcs=1
+
+JCAP_HIGH=$JCAP
+
+
+# 300s deltim on 768x384, 450s on 512x256
+# since T254 forecast run on 768x384, use 300s for forecast and gsi
+DELTIM_ENKF=900            # 254 = 900; 126 = 1800 seconds
+DTPHYS_ENKF=450            # 254 = 450
+
+BERROR_ENKF=$BASE_GSI/fix/Big_Endian/global_berror.l64y${NLAT_ENS}.f77
+
+NMEM_ENKF_GRP=8
+
+# enkf check status step
+ECHKSH=$JOBSDIR/echk.sh
+TIMELIMECHK=00:15:00
+RUNLIMECHK=250
+
+# enkf ensemble mean data selection
+EOBSSH=$JOBSDIR/eobs.sh
+INFOLEVELOBS=1
+FILESTYLEEOBS=L
+npe_node_eobs=$pe_node
+if [ $machine = WCOSS ]; then
+ NUMPROCEOBS=112
+ NTHREADS_EOBS=1
+elif [ $machine = ZEUS ]; then
+ NUMPROCEOBS=72
+ NTHREADS_EOBS=1
+fi
+NTHSTACK_EOBS=1024000000
+TIMELIMEOBS=00:30:00
+eobs_delay=0000
+
+if [ $CDATE -ge 2015011412 ] ; then
+   FNSNOAJCAP_ENKF_TMP='$DMPDIR/$CDATE/${CDUMP}/snogrb_t$JCAP_ENKF.$LONA_ENKF.$LATA_ENKF.$CDUMP.$CDATE'
+   FNSNOGJCAP_ENKF_TMP='$DMPDIR/$GDATE/${GDUMP}/snogrb_t$JCAP_ENKF.$LONA_ENKF.$LATA_ENKF.$GDUMP.$GDATE'
+elif [ $CDATE -ge 2014040812 ] ; then
+   FNSNOAJCAP_ENKF_TMP='$DMPDIR/$CDATE/${CDUMP}x/snogrb_t$JCAP_ENKF.$LONA_ENKF.$LATA_ENKF.$CDUMP.$CDATE'
+   FNSNOGJCAP_ENKF_TMP='$DMPDIR/$GDATE/${GDUMP}x/snogrb_t$JCAP_ENKF.$LONA_ENKF.$LATA_ENKF.$GDUMP.$GDATE'
+else
+   FNSNOAJCAP_ENKF_TMP='$DMPDIR/$CDATE/$CDUMP/snogrb_t$JCAP_ENKF.$CDUMP.$CDATE'
+   FNSNOGJCAP_ENKF_TMP='$DMPDIR/$GDATE/$GDUMP/snogrb_t$JCAP_ENKF.$GDUMP.$GDATE'
+fi
+
+# enkf ensemble member innovations
+EOMNSH=$JOBSDIR/eomn.sh
+EOMGSH=$JOBSDIR/eomg.sh
+ENKFINVOBSSH=$SCRDIR_GSI/exglobal_enkf_innovate_obs.sh.ecf
+INFOLEVELOMG=1
+FILESTYLEEOMN=L
+NUMPROCEOMN=1
+npe_node_eomn=1
+NTHREADS_EOMN=1
+TIMELIMEOMN=03:00:00
+RUNLIMEOMN=250
+
+FILESTYLEEOMG=L
+npe_node_eomg=$pe_node
+if [ $machine = WCOSS ]; then
+ NUMPROCEOMG=112
+elif [ $machine = ZEUS ]; then
+ NUMPROCEOMG=72
+fi
+NTHREADS_EOMG=1
+NTHSTACK_EOMG=1024000000
+TIMELIMEOMG=01:00:00
+
+
+# enkf update (analysis)
+meupd=1
+npe_node_eupd=$pe_node
+if [ $machine = WCOSS ]; then
+ pe_node_eupd=6
+ NUMPROCEUPD=240
+ NTHREADS_EUPD=2
+elif [ $machine = ZEUS ]; then
+ pe_node_eupd=12
+ NUMPROCEUPD=120
+ NTHREADS_EUPD=1
+fi
+NTHREADS_ENKF=$NTHREADS_EUPD
+NTHSTACK_ENKF=1024000000
+
+TIMELIMEUPD=01:00:00
+INFOLEVELUPD=1
+FILESTYLEEUPD=L
+ENKFUPDSH=$SCRDIR_GSI/EnKF/scripts_ncep/exglobal_enkf_update.sh.ecf
+ENKFUPDEXEC=$BASE_GSI/exec/global_enkf
+
+# enkf option for new bias correction
+if [ $USE_NEWRADBC = YES ] ; then
+   NAM_ENKF="univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
+fi
+
+# enkf center
+NTHRECEN=1
+npe_node_ecen=6
+NUMPROCECEN=80
+TIMELIMECEN=01:00:00
+ecen_delay=0000
+RECENATMPEXEC=$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x
+ADDERRSPECEXEC=$BASE_GSI/util/EnKF/gfs/exec/adderrspec_nmcmeth_spec.x
+ECENSH=$JOBSDIR/ecen.sh
+FILESTYLEECEN=L
+ENKFINFCENSH=$SCRDIR_GSI/EnKF/scripts_ncep/exglobal_enkf_inflate_recenter.sh.ecf
+SCALEFACT=00
+
+
+# enkf forecast
+TIMELIMEFMN=03:00:00
+RUNLIMEFMN=250
+EFMNSH=$JOBSDIR/efmn.sh
+EFCSSH=$JOBSDIR/efcs.sh
+ENKFFCSTSH=$SCRDIR_GSI/EnKF/scripts_ncep/exglobal_enkf_fcst.sh.ecf
+
+SET_STP_SEED=YES     # set stochastic physics seeds 2013120512 gdas
+##SET_STP_SEED=NO   # turn off 2013120506 gdas
+if [ $machine = WCOSS ]; then
+ npe_node_efcs=8
+ NTHREADS_EFCS=2
+ NUMPROCEFCS=96
+elif [ $machine = ZEUS ]; then
+ npe_node_efcs=12
+ NTHREADS_EFCS=1
+ NUMPROCEFCS=60
+fi
+TIMELIMEFCS=02:00:00
+
+if [ $l4densvar = .true. ]; then
+   FHOUT_ENKF=1
+else
+   FHOUT_ENKF=3
+fi
+FHMAX_ENKF=9
+FHOUTHF_ENKF=$FHOUT_ENKF
+FHMAXHF_ENKF=$FHMAX_ENKF
+FHROT_ENKF=0
+FHRES_ENKF=24
+FHZER_ENKF=6
+FHDFI_ENKF=3
+FHCYC_ENKF=24
+
+# enkf post processing
+MPMD_ECEN=NO
+npe_node_epos=$pe_node
+NTHREADS_EPOS=1
+NUMPROCEPOS=80
+TIMELIMEPOS=00:30:00    # increase TIMELIMEPOS if JCAP_LORES < JCAP_ENKF on non-WCOSS machines
+GETSFCENSMEANEXEC=$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x
+GETATMENSMEANEXEC=$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x
+HYBENSMOOTH=$BASE_GSI/fix/global_hybens_smoothinfo.l64.txt
+SMOOTH_ENKF=YES
+EPOSSH=$JOBSDIR/epos.sh
+ENKFPOSTSH=$SCRDIR_GSI/EnKF/scripts_ncep/exglobal_enkf_post.sh.ecf
+
+NUMPROCEPOS00GDAS=4
+NUMPROCEPOS06GDAS=4
+NUMPROCEPOS12GDAS=4
+NUMPROCEPOS18GDAS=4
+
+EPOS_SHARED=YES
+EPOS_MEMORY=32
+TIMELIMEPOS00GDAS=00:15:00
+TIMELIMEPOS06GDAS=00:15:00
+TIMELIMEPOS12GDAS=00:15:00
+TIMELIMEPOS18GDAS=00:15:00
+CCEPOS=NO
+
+# enkf archive step
+TIMELIMEARC=03:00:00
+ARCHIVE_ENSEMBLE=NO
+eval EARCA${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.obs.tar'
+eval EARCB${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.anl.tar'
+if [ $ARCHIVE_ENSEMBLE = YES ]; then
+   eval EARCC${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs06.tar'
+   if [ $l4densvar = .true. ]; then
+      eval EARC03${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs03.tar'
+      eval EARC04${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs04.tar'
+      eval EARC05${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs05.tar'
+      eval EARC07${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs07.tar'
+      eval EARC08${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs08.tar'
+      eval EARC09${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.enkf.fcs09.tar'
+   fi
+fi
+
+#  ---------------------
+#  forecast step 
+#  ---------------------
+#Hui-ya's precip calculation
+cal_pre=.true.
+
+export dt_cpld=${dt_cpld:-3600}
+export dt_ocean=${dt_ocean:-3600}
+export dt_aocpl=${dt_aocpl:-3600}
+
+FIXGLOBAL=$BASE_GSM/fix/fix_am
+FIXGSM=$FIXGLOBAL
+FIX_RAD=$FIXGLOBAL
+AERODIR=$FIX_RAD
+EMISDIR=$FIX_RAD
+MTNDIR=$FIXGLOBAL
+RESDIR=$COMROT/RESTART
+mkdir -p $RESDIR
+
+##FNTSFC=$FIXGLOBAL/cfs_oi2sst1x1monclim19822001.grb
+##FNAISC=$FIXGLOBAL/cfs_ice1x1monclim19822001.grb
+
+### use 1/4 degree reynold's sst climatology from CFSR
+##climdir=/global/save/Suranjana.Saha/para_exps/clim
+##FNTSFC=$climdir/CFSR.OISST.1999.2012.monthly.clim.grb
+
+# use 1/12th degree RTG sst climatology from Grumbine
+##climdir=/global/save/Suranjana.Saha/para_exps/clim
+FNTSFC=$FIXGLOBAL/RTGSST.1982.2012.monthly.clim.grb
+
+# use 1/2 degree seaice climatology from CFSR
+FNAISC=$FIXGLOBAL/CFSR.SEAICE.1982.2012.monthly.clim.grb
+
+FNVEGC=$FIXGLOBAL/global_vegfrac.0.144.decpercent.grb
+O3CLIM=$FIXGLOBAL/global_o3clim.txt
+O3FORC=$FIXGLOBAL/global_o3prdlos.f77
+#
+
+JCAP_TMP=$JCAP
+LONB_TMP=$LONB
+LATB_TMP=$LATB
+step2=`echo $CSTEP | cut -c5-5`
+if [ "$step2" -eq "2" ]; then 
+   JCAP_TMP=$JCAP2
+   LONB_TMP=$LONB2
+   LATB_TMP=$LATB2
+fi
+if [ "$step2" -eq "3" ]; then 
+   JCAP_TMP=$JCAP3
+   LONB_TMP=$LONB3
+   LATB_TMP=$LATB3
+fi
+step=`echo $CSTEP | cut -c1-4`
+if [ $step = efmn -o $step = eobs -o $step = eomn ] ; then
+   JCAP_TMP=$JCAP_ENKF
+   LONB_TMP=$LONB_ENKF
+   LATB_TMP=$LATB_ENKF
+fi
+
+OROGRAPHY_UF=$FIXGLOBAL/global_orography_uf.t$JCAP_TMP.$LONB_TMP.$LATB_TMP.grb
+OROGRAPHY=$FIXGLOBAL/global_orography.t$JCAP_TMP.$LONB_TMP.$LATB_TMP.grb
+LONSPERLAT=$FIXGLOBAL/global_lonsperlat.t${JCAP_TMP}.$LONB_TMP.$LATB_TMP.txt
+
+step1=`echo $CSTEP | cut -c1-4`
+step2=`echo $CSTEP | cut -c5-5`
+if [ $step1 = fcst -a "$step2" -eq "2" ]; then
+   LONSPERLAT=$FIXGLOBAL/global_lonsperlat.t${JCAP_TMP}.$LONB_TMP.$LATB_TMP.txt
+fi
+SLMASK=$FIXGLOBAL/global_slmask.t$JCAP_TMP.$LONB_TMP.$LATB_TMP.grb
+MTNVAR=$FIXGLOBAL/global_mtnvar.t$JCAP_TMP.$LONB_TMP.$LATB_TMP.f77
+FNMASK=$SLMASK
+FNOROG=$OROGRAPHY
+
+if [ $JCAP_TMP = "62" ] ; then
+   LONSPERLAT=$FIXGLOBAL/global_lonsperlat.t${JCAP_TMP}.txt
+fi
+
+#land  point to new resolution dependent soil moisture climo file
+FNSMCC=$FIXGLOBAL/global_soilmgldas.t$JCAP_TMP.$LONB_TMP.$LATB_TMP.grb
+#land  use z0 from lookup table, not external file
+FNZORC='sib'
+
+OROGRAPHY_UF_ENKF=$FIXGLOBAL/global_orography_uf.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+OROGRAPHY_ENKF=$FIXGLOBAL/global_orography.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+LONSPERLAT_ENKF=$FIXGLOBAL/global_lonsperlat.t${JCAP_ENKF}.$LONB_ENKF.$LATB_ENKF.txt # change 2013112706 GDAS
+SLMASK_ENKF=$FIXGLOBAL/global_slmask.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.grb
+MTNVAR_ENKF=$FIXGLOBAL/global_mtnvar.t$JCAP_ENKF.$LONB_ENKF.$LATB_ENKF.f77
+FNMASK_ENKF=$SLMASK
+FNOROG_ENKF=$OROGRAPHY
+
+if [ $JCAP_ENKF = "62" ] ; then
+   LONSPERLAT_ENKF=$FIXGLOBAL/global_lonsperlat.t${JCAP_ENKF}.txt
+fi
+
+ras=.false.         # To turn on RAS convection
+DTPHYS=225
+DTPHYS2=450
+zflxtvd=.false.
+#
+ref_temp=350.0
+sl_epsln=0.05
+
+if [ $ras = .true. ]; then
+  old_monin=.true.; sashal=.false.; newsas=.false.; mstrat=.true.;
+  ctei_rm='0.60,0.23'; crtrh='0.90,0.90,0.90'; ccwf='0.0,1.0'; dlqf='0.5,0.5';
+  psautco='6.0e-4,3.0e-4'; prautco='6.0e-4,3.0e-4';
+  evpco=2.0e-5; wminco='5.0e-5,2.5e-5';
+  bkgd_vdif_m=0.25; bkgd_vdif_h=0.25; bkgd_vdif_s=1.0; random_clds=.true.;
+else                           # new case
+  old_monin=.false.; sashal=.true.; newsas=.true.; mstrat=.false.;
+  ctei_rm='10.0,10.0'; 
+##crtrh='0.85,0.85,0.85'; 
+  crtrh='0.90,0.90,0.90';  # effective 2013121812 gdas
+  ccwf='1.0,1.0'; dlqf='0.0,0.0';
+  bkgd_vdif_m=3.0; bkgd_vdif_h=1.0; bkgd_vdif_s=0.2; random_clds=.false.;
+##psautco='4.0e-4,4.0e-4'; prautco='5.0e-5,5.0e-5';
+  psautco='6.0e-4,3.0e-4'; prautco='1.0e-4,1.0e-4';  # effective 2013121812 gdas
+  evpco=2.0e-5; wminco='1.0e-5,1.0e-5';
+  cdmbgwd='1.0,1.0';
+fi
+
+if [ $semilag = .true. ]; then
+  lingg_a=.true.; #Use linear grid lonsperlat
+  lingg_b=.true.; #Use linear grid lonsperlat
+  herm_x=.true.; herm_y=.true. ; herm_z=.true.; #Hermite interpolation xyz
+  lin_xyz=.false.; #Linear interpolation for 'nonlinear' terms in u, v, and Tv eqs
+  wgt_cub_lin_xyz=.false.; #Weighted cubic-linear interpolation for uvand Tv
+  wgt_cub_lin_xyz_trc=.false.;  #Weighted cubic-linear interpolation for tracers    (effective 2013121000 GFS)
+  levwgt='24,30';        #transition layers for Weighted cubic-linear interpolation (effective 2013121000 GFS)
+  step=`echo $CSTEP | cut -c1-4`
+  step2=`echo $CSTEP | cut -c5-5`
+  if [ $step = fcst -a "$step2" = "2" ] ; then
+     levwgt='24,30'                 # effective 2013121112 GDAS
+     cdmbgwd='0.125,3.0'             # effective 2014010906 GDAS
+  fi
+  if [ $step = efmn ] ; then
+     levwgt='24,30'                 # effective 2013121112 GDAS
+     cdmbgwd='0.125,3.0'             # effective 2014010906 GDAS
+  fi
+  quamon=.false.; #Quasi-monotone Lagrange interpolation
+  settls_dep3ds=.true.; settls_dep3dg=.true.; #SETTLS departure-point scheme
+  ctei_rm='10.0,10.0'; 
+# crtrh='0.85,0.85,0.85';
+  crtrh='0.90,0.90,0.90';  # effective 2013121812 gdas
+  ccwf='1.0,1.0'; dlqf='0.0,0.0';
+  bkgd_vdif_m=1.0; bkgd_vdif_h=1.0; bkgd_vdif_s=1.0;
+##psautco='4.0e-4,4.0e-4'; prautco='5.0e-5,5.0e-5';
+  psautco='6.0e-4,3.0e-4'; prautco='1.0e-4,1.0e-4';  # effective 2013121812 gdas
+  evpco=2.0e-5; wminco='1.0e-5,1.0e-5';nmtvr=14;
+fi
+
+ zhao_mic=${zhao_mic:-.true.}
+ if [ $zhao_mic = .false. ] ; then
+##crtrh='0.98,0.98,0.98'      ; # For Ferrie-Moorthi microphysics
+  crtrh='0.90,0.90,0.90'      ; # effective 2013121812 gdas
+ fi
+
+flgmin='0.180,0.220'
+ncw='20,120'
+
+# land - change from 2 to 3.  since z0 is set in sfcsub.f from veg type, must use the veg type from sfcsub.f (=3).
+#                             do not use veg type from input grid (=2)
+CLIMO_FIELDS_OPT=3
+#CLIMO_FIELDS_OPT=2   # Interpolate veg type, soil type and slope type from input grid, all others from sfcsub.f
+#                     # =3 to coldstart higher resolution run.
+
+ictm=1               #ICTM=1 in GFS T574 Operations
+IEMS=1               # 0-blackbody ground emission; 1-climatology on one-deg map  
+ISOL=2               # 0--fixed solar constant; 1--changing solar constant
+IAER=111             # 111--with stratospheric aerosol, tropospheric aerosol LW, troposphere aerosol SW.
+IAER_MDL=0           # choosing different aerosol models, such as OPAC-monthly-climatology,
+ICO2=2               # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
+IOVR_SW=1            # 0--random cloud overlap for SW; 1--maximum-random cloud overlap for SW
+IOVR_LW=1            # 0 (1) --random (maximum/random)  cloud overlap for LW
+ISUBC_LW=2           # 0--OPS/standard LW clouds.. no MCICA; 1--prescribed MCICA seeds; 2--random MCICA seeds
+ISUBC_SW=2           # 0--OPS/standard SW clouds.. no MCICA; 1--prescribed MCICA seeds; 2--random MCICA seeds
+
+#Turn on Ruiyu's PDF Cloud Scheme and Reduced Drag Coefficient
+redrag=.true. ; #control the reduced drag coefficient over the ocean at high wind speed situations
+##pdfcld=.true. ; #control PDF cloud + deep convective cloud for radiation calulation
+##shcnvcw=.true. ; #control shallow conective cloud for radiation calculation. shcnvcw can be used (true) only when pdfcld is .true.
+pdfcld=.false.    # effective 2013121812 gdas
+shcnvcw=.false.   # effective 2013121812 gdas
+
+# Turn on convective gravity wave drag (2013112112 gdas)
+##cnvgwd=.false.
+cnvgwd=.true.
+cgwf=0.5,0.05
+
+# Turn on EDMF PBL scheme and TKE dissipative heating
+hybedmf=.true.
+dspheat=.true. 
+##hybedmf=.false.
+##dspheat=.false.
+
+if [[ $COUP_FCST = "YES" ]] ; then
+ FORECASTSH=$SCRDIR/excfs_fcst.sh.sms_nsst_gens_hf
+else
+ FORECASTSH=$SCRDIR/exglobal_fcst.sh.ecf
+fi
+
+FCSTEXECDIR=$BASEDIR/sorc/global_fcst.fd
+FCSTEXECTMP=$FCSTEXECDIR/global_fcst     # update 2013120312 GDAS
+
+AM_FCS=$FCSTEXECTMP
+ 
+DOIAU=NO
+DOIAU_ENKF=NO
+iau_freq=3
+
+ENTHALPY=NO                 ;#control the chgres and nceppost (default NO)
+RUN_ENTHALPY=.false.        ;#control the fcst model (default NO)
+Apercent=100
+FCSTVARS="ras=$ras,zhao_mic=$zhao_mic,newsas=$newsas,lingg_a=$lingg_a,lingg_b=$lingg_b,settls_dep3ds=$settls_dep3ds,settls_dep3dg=$settls_dep3dg,semilag=$semilag,sl_epsln=$sl_epsln,herm_x=$herm_x,herm_y=$herm_y,herm_z=$herm_z,lin_xyz=$lin_xyz,wgt_cub_lin_xyz=$wgt_cub_lin_xyz,wgt_cub_lin_xyz_trc=$wgt_cub_lin_xyz_trc,levwgt=$levwgt,quamon=$quamon,ialb=$ialb,random_clds=$random_clds,sashal=$sashal,old_monin=$old_monin,iovr_lw=$IOVR_LW,iovr_sw=$IOVR_SW,zflxtvd=$zflxtvd,ISOL=$ISOL,ICO2=$ICO2,IAER=$IAER,IAER_MDL=$IAER_MDL,ISUBC_LW=$ISUBC_LW,ISUBC_SW=$ISUBC_SW,FHLWR=$FHLWR,FHSWR=$FHSWR,nsout=$nsout,use_ufo=$use_ufo,RUN_ENTHALPY=$RUN_ENTHALPY,ncw=$ncw,crtrh=$crtrh,flgmin=$flgmin,ctei_rm=$ctei_rm,mstrat=$mstrat,ictm=$ictm,cal_pre=$cal_pre,bkgd_vdif_m=$bkgd_vdif_m,bkgd_vdif_h=$bkgd_vdif_h,bkgd_vdif_s=$bkgd_vdif_s,psautco=$psautco,prautco=$prautco,evpco=$evpco,wminco=$wminco,CCWF=$ccwf,dlqf=$dlqf,cdmbgwd=$cdmbgwd,ref_temp=$ref_temp,ndsl=$ndsl,redrag=$redrag,pdfcld=$pdfcld,shcnvcw=$shcnvcw,cnvgwd=$cnvgwd,cgwf=$cgwf,HYBEDMF=$hybedmf,DSPHEAT=$dspheat,nmtvr=$nmtvr,fixtrc=.false.,.true.,.false.,nst_fcst=$NST_FCST,nst_spinup=$NST_SPINUP"
+
+# yhalo=14 2013101100 gdas efmn
+# yhalo=14 2013100900 - 2013101300 gfs fcst1
+# yhalo=14 2013102400 gfs fcst1
+
+# Set fcstvars for EnKF ensemble forecasts
+FCSTVARS_ENKF="$FCSTVARS,dtphys=$DTPHYS_ENKF,SPPT=0.8,SPPT_TAU=21600,SPPT_LSCALE=500000,SPPT_LOGIT=.TRUE.,SHUM=0.0015,SHUM_TAU=21600,SHUM_LSCALE=500000,SKEB=0.7,SKEB_TAU=21600,SKEB_LSCALE=250000,SKEB_VARSPECT_OPT=0,SKEB_VFILT=10,VC=0,VCAMP=0.0,VC_TAU=21600,VC_LSCALE=1000000,SPPT_SFCLIMIT=.true."
+
+FHLWR_ENKF=${FHLWR:-3600}  # LW radiation calling interval (seconds)
+FHSWR_ENKF=${FHSWR:-3600}  # SW radiation calling interval (seconds)
+IEMS_ENKF=$IEMS
+ISOL_ENKF=$ISOL
+IAER_ENKF=$IAER
+ICO2_ENKF=$ICO2
+ICTM_ENKF=$ictm
+IALB_ENKF=$ialb
+IOVR_SW_ENKF=$IOVR_SW
+
+CO2DIR=$BASE_GSM/fix/fix_am/fix_co2_proj
+CO2_seasonal_cycle=$BASE_GSM/fix/fix_am/global_co2monthlycyc1976_2006.txt
+
+# Atmospheric model directory and executable
+ EXEC_AMD=$FCSTEXECDIR
+ AM_EXEC=${FCSTEXECTMP:-$EXEC_AMD/global_fcst}
+
+#-------------
+# Ocean model directory and executable
+ EXEC_OMD=$RFCDIR/exec
+ OM_EXEC=$EXEC_OMD/fms_mom4ice2.x
+ oisst_clim=$FIX_OM/oisst_clim.nc
+ r2ts_clim=$FIX_OM/r2ts_clim.nc
+ sst_ice_clim=$FIX_OM/sst_ice_clim.nc
+
+# Coupler directory and executable
+ EXEC_CD=$RFCDIR/exec
+ C_EXEC=$EXEC_CD/mlc_cfs4_coupler
+
+# GODAS and related executables
+ GODASEXEC=$RFCDIR/exec/fms_gdsSOLO.x
+ cmbDysPrf4=$RFCDIR/exec/cmbDysPrf4
+ cmbDysPrfs4=$RFCDIR/exec/cmbDysPrfs4
+ mkEvNc4r=$RFCDIR/exec/mkEvNc4r
+ GODASSH=$BASEDIR/ush/godasM4.sh
+ SNOWNC=$FIX_OCN/SNOW.nc
+ SSTICECLIM=$sst_ice_clim
+#SALTSFCRESTORE=$salt_sfc_restore
+
+# GLDAS (aka LIS) executable
+ LISSH=$USHDIR/LIS.sh
+ LISEXEC=$RFCDIR/exec/LIS
+#-------------
+ 
+# -------------------------- 
+# post, vrfy and arch steps
+# --------------------------
+
+TRACKERSH=$BASE_TROPCY/ush/global_tracker.sh
+PARATRKR=$BASE_TROPCY/ush/global_extrkr.sh
+GETTRKEXEC=$BASE_TROPCY/exec/gettrk
+GETTX=$GETTRKEXEC
+SUPVX=$BASE_TROPCY/exec/supvit
+RELOTRKRSH=$BASE_TROPCY/ush/tropcy_relocate_extrkr.sh
+
+#Codes below used for GFS Bufr soundings
+GFLUX=$BASE_BUFRSND/exec/gfs_flux
+GBUFR=$BASE_BUFRSND/exec/gfs_bufr
+TOCSBUFR=$BASE_BUFRSND/exec/tocsbufr
+STNLIST=$BASE_BUFRSND/parm/bufr_stalist.meteo.gfs3
+
+if [ $gfs_cyc -gt 0 ] ; then
+ fdump=gfs                         # verifying forecasts from GFS analysis
+else
+ fdump=gdas                        # verifying forecasts from GDAS analysis
+fi
+VDUMP=gfs                          # verifying dump
+CDUMPFCST=gdas                     # fits-to-obs against gdas or gfs prep
+CDFNL=gdas                         # SCORES verification against pgbanl.gdas or pgbanl.gfs
+
+# 0.5 degree analysis
+##io_a=720                           # analysis pgb output lon resolution
+##jo_a=361                           # analysis pgb output lat resolution
+
+# 0.25 degree analysis
+#io_a=1440                          # analysis pgb output lon resolution
+#jo_a=721                           # analysis pgb output lat resolution
+
+# 0.5 degree 1st segment
+io_1=720                           # forecast pgb output lon resolution, 1st segment
+jo_1=361                           # forecast pgb output lat resolution, 1st segment
+
+# 0.25 degree 1st segment
+#io_1=1440                          # forecast pgb output lon resolution, 1st segment
+#jo_1=721                           # forecast pgb output lat resolution, 1st segment
+
+
+# 0.125 degree 1st segment
+##io_1=2880                          # forecast pgb output lon resolution, 1st segment
+##jo_1=1441                          # forecast pgb output lat resolution, 1st segment
+
+# 0.5 degree 2nd segment
+io_2=720                            # forecast pgb output lon resolution, 2nd segment
+jo_2=361                             # forecast pgb output lat resolution, 2nd segment
+
+io_3=720                           # forecast pgb output lon resolution, 3rd segment
+jo_3=361                           # forecast pgb output lat resolution, 3rd segment
+
+ko_a=47                            # analysis pgb output lev resolution
+ko_1=47                            # forecast pgb output lev resolution, 1st segment
+ko_2=47                            # forecast pgb output lev resolution, 2nd segment
+ko_3=26                            # forecast pgb output lev resolution, 3rd segment
+
+kto_1=0                            # 0: no isentropic potential vorticity (IPV) output
+kto_2=0       
+kto_3=0       
+
+ld3d_1=.false.                     # write out 3-D diagnosis
+ld3d_2=.false.
+ld3d_3=.false.
+GRID_IDD=3                        #  3-D output options
+LONB_D3D=360   
+LATB_D3D=181 
+
+#grid62_1=98                       # define this to interpolate flx file to T62 grid
+#grid25_1=2                         # interpolate pgb file to 2.5x2.5 for arch step
+
+NCEPPOST=YES                       # default=NO
+CAT_FLX_TO_PGB=NO                  # cat flx file to pgb files (only works for ncep post,and IDRT=0)
+VRFY_ALL_SEG=NO                    # NO: submit vrfy only once at the end of all segments; YES: submit vrfy for each segment
+REDO_POST=NO                       # Defaults to NO
+POST_SHARED=NO                     # default YES, share nodes
+POSTSPL=NO                         # special analysis file created for CFSRR for CPC diagnostics
+#FH_STRT_POST=0                    # Defaults to 99999, implying to use FHINI or from file $COMROT/FHREST.$CDUMP.$CDATE.$nknd
+#FH_END_POST=240                   # Defaults to 99999, implying use FHMAX
+
+## use "m" in future.  prd11q1f uses "h"
+##pgbres_flag=m
+##pgbres_flag=h
+
+#-------------------
+# reanalysis/reforecast related options
+AVRG_ALL=NO                        # submit Suru's averaging and archiving scripts for reanalysis
+CFSRR_ARCH=NO
+MON_AVG=NO
+RUN_PLOT_SCRIPT=NO
+JUST_POST=NO                      # terminate jobs after finishing post
+JUST_AVG=NO                       # Defalults to NO
+JUST_TSER=NO                      # extract just time-series by running post
+AVG_FCST=NO                       # time average forecast output files
+TSER_FCST=NO                      # extract time-series of selected output variables
+#-------------------
+
+post_delay_1=0001                  # AM Post delay time
+post_delay_2=0001                  # AM Post delay time
+
+##post_delay_1=0000
+##post_delay_2=0000
+
+ocnp_delay_1=0000                  # OM Post delay time
+ocnp_delay_2=0020                  # OM Post delay time
+
+vrfy_delay_1=0001                  # AM Verification delay time in hhmm
+vrfy_delay_2=0001                  # AM Verification delay time
+if [ $CDUMP = gfs ]; then
+   vrfy_delay_1=0001
+   vrfy_delay_2=0001
+fi
+
+##vrfy_delay_1=0000
+##vrfy_delay_2=0000
+
+#PRECIP_DATA_DELAY=48              # delay for precip data in hours
+#GODAS_DATA_DELAY=2                # delay for ocean data in days
+
+TIMELIMAVRG=03:00:00                  # CPU limit (hhmmss) for averaging
+TIMELIMPOST00GDAS=04:00:00            # CPU limit for GDAS post
+
+ARCHIVE=YES                        # make online archive
+ARCH_TO_HPSS=NO                    # make hpss archive
+USE_HPSS=YES
+TIMELIMARCH=03:00:00                  # CPU limit (hhmmss) for hpss archive
+
+io_save=360
+jo_save=181
+
+##turn off tape archive during HPSS outage
+##ARCH_TO_HPSS=NO
+
+ARCHCOPY=YES                       #
+ARCHSCP=NO                         # 
+ARCHDAY=0                          # days to delay arch step 
+VBACKUP_PRCP=24                    # hours to delay precip verification
+ARCHSH=$JOBSDIR/arch.sh
+
+DO_PRODNAMES=NO                    # YES = a directory (com) is generated at noscrub (for operational only); NO = EXP
+PRODNAMES_DIR=$NOSCRUB/$LOGNAME
+SETUPPRODNAMESH=$BASEDIR/ush/setup_prodnames.sh
+
+export VRFYSCOR=NO                 # Anomaly correlations etc
+export VRFYPRCP=YES                # Precip threat scores
+
+export VRFYFITS=YES
+export SAVEFITS=YES                # Fit to obs scores
+
+export VRFYTRAK=YES                # Hurricane tracks
+export VRFYRAD=YES                 # Radiance data extract
+export VRFYOZN=YES                 # Ozone data extract
+
+NUMPROCVRFYGFS=1
+NUMPROCVRFYGDAS=3
+npe_node_vrfy=1
+
+# Test new fit2obs
+if [ $machine = WCOSS ]; then
+ VRFY_MEMORY=27000
+ export fitdir=$BASE_VERIF/global/parafits/batrun
+ PREPQFITSH=$fitdir/subfits_wcoss
+elif [ $machine = ZEUS ]; then
+ VRFY_MEMORY=19000
+ export fitdir=$BASE_VERIF/global/parafits/batrun
+ PREPQFITSH=$fitdir/subfits_zeus
+fi
+
+CCPOST=YES                         # To run concurrent post
+GDAS_GP=NO                         # YES: use old post (global_postgp.sh), NO:nceppost
+OUTTYP_NP=3                        # 1-gfsio, 2-sigio; 0-both
+
+TIMELIMPOST00GFS=06:00:00
+TIMELIMPOST06GFS=06:00:00
+TIMELIMPOST12GFS=06:00:00
+TIMELIMPOST18GFS=06:00:00
+
+if [ $machine = WCOSS ]; then
+  GRIBVERSION=grib2
+  CNVGRIB=/nco/sib/gribdev/util/exec/cnvgrib21_gfs
+elif [ $machine = ZEUS ]; then
+  GRIBVERSION=grib1
+  CNVGRIB=$NWPARA/util/exec/cnvgrib
+fi
+
+POSTGPEXEC_NP=$BASE_POST/exec/ncep_post
+POSTSH=$JOBSDIR/post.sh
+
+PARMPOST=$BASE_POST/parm
+if [ $machine = WCOSS ]; then
+  PARMGLOBAL=$PARMPOST
+  PARM_SIB=$PARMPOST
+elif [ $machine = ZEUS ]; then
+  PARMGLOBAL=$PARMPOST/parm_am
+  PARM_SIB=$PARMPOST/parm_sib
+fi
+
+GFS_DOWNSTREAM=YES
+GFSDOWNSH=$USHDIR/gfs_downstream.sh
+GFSDWNSH=$USHDIR/gfs_dwn.sh
+GFSDWNSHB=$USHDIR/gfs_dwnb.sh
+
+# Set variables according requested GDAS post
+if [ $CDUMP = gdas ] ; then
+  if [ $GDAS_GP = YES ]; then
+     OUTTYP_GP=-1                                   # 1-gfsio, 2-sigio; 0-both
+     POSTGPSH_GP=$NWPROD/ush/global_postgp.sh
+     POSTGPEXEC_GP=$NWPROD/exec/global_postgp     
+  else
+    CTL_FCS=$BASE_POST/parm/gdas_cntrl.parm  # effective 2013110700 gdas
+    CTL_ANL=$BASE_POST/parm/gdas_cntrl.parm_anl # effect 2013110700 gdas
+    POSTGPSH_NP=$BASE_POST/ush/global_nceppost.sh
+    IDRT_NP=0                                        #master pgb from global_nceppost.sh, 4-gaussian, 0-linear
+    CAT_FLX_TO_PGB=NO
+    ko_a=47
+    pgbf_gdas=193                                    #gdas pgbf file resolution, 193-0.25x0.25, 4-0.5x0.5, 3-1x1
+    grid11_1=3
+
+#   Use 0.25 degree grib file for tracker in vrfy step
+    step1=`echo $CSTEP | cut -c1-4`
+    if [ $step1 = vrfy ]; then
+      pgbf_gdas=193   # use 0.25 degree pgb
+    fi
+
+    POSTGPVARSNP_gdas="KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"
+  fi
+fi
+
+#------------------
+# these options must be bundled to produce pgb files
+# which contains velocity potential and stream functions
+if [ $CDUMP = gfs ] ; then
+  CTL_FCS=$BASE_POST/parm/gfs_cntrl.parm # effective 2013110700 gfs
+  CTL_ANL=$BASE_POST/parm/gfs_cntrl.parm_anl # efftv 2013110700 gfs
+  POSTGPSH_NP=$BASE_POST/ush/global_nceppost.sh
+  IDRT_NP=0                                        #master pgb from global_nceppost.sh, 4-gaussian, 0-linear
+  CAT_FLX_TO_PGB=NO
+  pgbf_gfs1=193
+  pgbf_gfs2=193
+  pgbf_gfs3=3
+  pgbf_gfs=$pgbf_gfs1                              #gfs pgbf file resolution, 5=master, 193-0.25x0.25, 4-0.5x0.5, 3-1x1
+  step2=`echo $CSTEP | cut -c5`
+  if [ $step2 -eq "1" ]; then
+    pgbf_gfs=$pgbf_gfs1
+  elif [ $step2 -eq "2" -o $step2 -eq "3" ]; then
+    pgbf_gfs=$pgbf_gfs2
+  fi
+
+  step1=`echo $CSTEP | cut -c1-4`
+  if [ $step1 = arch ]; then
+    pgbf_gfs=$pgbf_gfs2
+  fi
+
+# Use 0.25 degree grib file for tracker in vrfy step
+  if [ $step1 = vrfy ]; then
+    pgbf_gfs=193
+  fi
+
+  grid11_1=3
+  grid11_2=3
+
+  POSTGPVARSNP_gfs="KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"
+fi
+
+POSTSH=$JOBSDIR/post.sh
+OCNPSH=$JOBSDIR/ocnp.sh
+GENPSICHI=NO  
+##GENPSICHIEXE=$RFCDIR/exec/genpsiandchi
+##OVERPARMEXEC=$RFCDIR/exec/overparm_grib
+GENPSICHIEXE=$NWPROD/exec/genpsiandchi
+OVERPARMEXEC=$NWPROD/exec/overparm_grib
+GFS_SMARTMAKEPRECIPEXEC=$NWPROD/exec/gfs_smartmakeprecip
+
+## Radiance monitoring parameters
+#  ------------------------------
+export MY_RADMON=$BASE_RADMON
+export VRFYRAD_DIR=$MY_RADMON/data_extract/ush
+RADMON_SUFFIX=${PSLOT}
+export RUN_ENVIR=para
+export MY_MACHINE=$(echo $machine|tr '[A-Z]' '[a-z]')
+export MY_TANKDIR=$NOSCRUB/$LOGNAME/radmon
+export VRFYRADSH="$VRFYRAD_DIR/VrfyRad_glbl.sh ${RADMON_SUFFIX} ${RUN_ENVIR} ${CDATE}"
+
+## Ozone monitoring parameters
+#  ------------------------------
+export OZNDIR=$NOSCRUB/$LOGNAME/ozone/stats/$PSLOT
+export VRFYOZNSH=$BASEDIR/ush/VrfyOzn_glbl.sh
+export BASEDIR_OZNMON=$BASE_GSIMON/util/Ozone_Monitor
+
+##  VSDB verification parameters
+#   ----------------------------
+vsdbhome=$BASE_VERIF/global/tags/vsdb_$verif_ver
+VSDBSH=$vsdbhome/vsdbjob.sh
+vsdbsave=$NOSCRUB/$LOGNAME/archive/vsdb_data  # place to save vsdb database
+rundir=$STMP/$LOGNAME/vsdb_exp.pr$PSLOT
+ARCDIR1=$NOSCRUB/$LOGNAME/archive           # online archive home directory
+hpsslist=$ATARDIR
+VSDB_STEP1=YES                                    # compute stats in vsdb format, default=NO
+VSDB_STEP2=NO                                   # make vsdb-based maps, default=NO
+ ddd=`echo $CDATE | cut -c8-8`
+# if [ $ddd -eq 5 -a $cycn -eq 00 ]; then VSDB_STEP2=YES; fi
+webhost=rzdm.ncep.noaa.gov                        # webhost(rzdm) computer
+webhostid=rzdmid                                  # webhost(rzdm) user name
+vlength=384                                       # verification length in hours, default=384 
+SEND2WEB=YES                                      # whether or not to send maps to webhost
+WEBDIR=/home/people/emc/www/htdocs/gmb/${webhostid}/vsdb/t2mbias/pr$PSLOT
+export mdlist="gfs  pr$PSLOT "      # exps (up to 10) to compare in maps
+VSDB_START_DATE=20120601                          # starting date for vsdb maps
+anltype=gfs                                       # default=gfs, analysis type (gfs or gdas) for verification
+
+eval ARCA${cycn}GDAS='$ATARDIR/$CDATE$CDUMP.tar'
+eval ARCA${cycn}GFS='$ATARDIR/$CDATE$CDUMP.tar'
+eval ARCB${cycn}GFS='$ATARDIR/$CDATE$CDUMP.sigfa.tar'
+eval ARCC${cycn}GFS=null
+eval ARCD${cycn}GFS='$ATARDIR/$CDATE$CDUMP.pgbma.tar'
+eval ARCE${cycn}GFS=null
+eval ARCF${cycn}GFS='$ATARDIR/$CDATE$CDUMP.pgbh.tar'
+if [ $fmax1 -gt 144 ]; then
+   eval ARCC${cycn}GFS='$ATARDIR/$CDATE$CDUMP.sigfb.tar'
+   eval ARCE${cycn}GFS='$ATARDIR/$CDATE$CDUMP.pgbmb.tar'
+fi
+
+#  To link forecast files to verification date
+# LINKFILESH=$BASEDIR/ush/link_to_vdate.sh
+# FILES_TO_LINK='sig sfc flx d3d'
+
+#-----------------------------------
+export RECONCILE=${RECONCILE:-$USHDIR/reconcile.sh}
+if [[ ! -r $RECONCILE ]];then
+  echo $0: inaccessible reconcile file $RECONCILE >&2
+  exit 5
+fi
+#
+. $RECONCILE

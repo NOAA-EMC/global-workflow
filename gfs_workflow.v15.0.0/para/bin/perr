@@ -1,0 +1,59 @@
+#!/bin/ksh
+################################################################################
+# This script runs when parallel jobs fail.
+# Usage: perr
+# Imported variables:
+#   CONFIG
+#   CDATE
+#   CDUMP
+#   CSTEP
+#   LOADL_JOB_NAME
+#   LOADL_STEP_OUT
+# Configuration variables:
+#   PSLOT
+#   DATATMP
+#   COMROT
+#   NCP
+#   RUNLOG
+#   PLOG
+################################################################################
+set -ux
+
+CUE2RUN=${CUE2RUN:-dev2}
+GROUP=${GROUP:-"devonprod"}
+NCP=${NCP:-cp}
+SUB=${SUB:-/u/wx20mi/bin/sub}
+PLOG=${PLOG:-$SHDIR/plog}
+PSUB=${PSUB:-$SHDIR/psub}
+[[ -n ${COMROTTMP:-""} ]]&&eval COMROT=$COMROTTMP
+export COMDAY=${COMDAY:-$COMROT}
+export RESUBMIT=${RESUBMIT:-NO}
+
+c4step=`echo $CSTEP |cut -c 1-4`
+if [ $c4step = efmn -o $c4step = eomn -o $c4step = echk ]; then exit ; fi
+################################################################################
+# Log event and resubmit job for first 5 failures
+
+jn=${LOADL_JOB_NAME:-$PSLOT$CDATE$CDUMP$CSTEP}
+  $PLOG "$RUNLOG" ERROR "$jn failed"
+  numfail=`eval grep $jn $RUNLOG |grep failed |wc -l `
+  if [ $RESUBMIT = YES -a $numfail -le 5 ] ; then
+    dfr=$COMDAY/psub$CDATE$CDUMP$CSTEP.out
+    gr=$GROUP
+    wt=+0002
+    mkdir -p $PTMP/$LOGNAME/perr
+    cwd=$(pwd)
+    cd $PTMP/$LOGNAME/perr
+    sleep 30
+    $SUB -a $ACCOUNT -q $CUE2RUN -g $gr -p 1/1/N -t 00:15:00 -r 1000/1 -o $dfr -w $wt $PSUB $CONFIG $CDATE $CDUMP $CSTEP
+    cd $cwd
+    eval tdo=$DATATMP
+    tda=$tdo.abend
+    rm -rf $tda
+    cp -pr $tdo $tda
+    dfo=$COMDAY/$jn.dayfile
+    dfa=$COMDAY/$jn.dayfile.abend$numfail
+    if [ -s $dfo ]; then $NCP -p $dfo $dfa ; fi
+  fi
+
+exit

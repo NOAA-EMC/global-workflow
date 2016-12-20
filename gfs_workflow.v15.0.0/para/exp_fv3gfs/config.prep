@@ -1,0 +1,104 @@
+NUMPROCPREP=7                      # number of pes for prep step
+NPROCS_PREP=1
+NSPLIT=3
+NTHRPREP=$pe_node
+RELOX_threads=$pe_node
+npe_node_pr=$pe_node         
+if [ $machine = WCOSS_C ] ; then
+   export APRNRELOC="aprun -q -j1 -n$NUMPROCPREP -N1 -d24 -cc depth"
+   export APRNGETTX="aprun -q -j1 -n1 -N1 -d1 -cc depth"
+   export APRNSYNDX="aprun -q -j1 -n1 -N1 -d1 -cc depth"
+fi
+
+#  ---------------------
+#  prep step   
+#  ---------------------
+if [ $CSTEP = prep -a $machine = THEIA ]; then
+  export OMP_NUM_THREADS=1
+  export APRNPREP="mpirun -np 12"
+  if [ $JCAP -ge 1534 ]; then CUE2RUN=bigmem; fi
+fi
+
+XLF_LINKSSH=$BASEDIR/util/ush/xlf_links.sh
+TIMELIMPREP=03:00:00
+CDUMPPREP=gdas                      # prep dump to be used in prepqfit
+SENDDBN=NO
+
+POE=NO
+RELOC_MPI=YES
+MPMD=NO
+if [ $machine = WCOSS ]; then MPMD=YES; fi
+
+#USHGETGES=$USHDIR 
+USHGETGES=$BASE_TROPCY/ush
+USHSYND=$BASE_PREP/ush 
+USHPREV=$BASE_PREP/ush 
+USHCQC=$BASE_PREP/ush 
+USHPQC=$BASE_PREP/ush 
+USHVQC=$BASE_PREP/ush 
+USHAQC=$BASE_PREP/ush 
+USHOIQC=$BASE_PREP/ush 
+RELOCATESH=$BASE_TROPCY/ush/tropcy_relocate.sh
+PREPSH=$JOBSDIR/prep.sh 
+ 
+MAKEPREPBUFRSH=$BASE_PREP/ush/prepobs_makeprepbufr.sh 
+DO_MAKEPREPBUFR=YES                 ;#if NO, makes sure to set PREPBUFRFILE 
+if [ $machine = WCOSS_C ]; then APRNPREP="aprun -q -j1 -n$NSPLIT -N1 -d1 cfp" ; fi
+#
+## Use PREPBUFRFILE when DO_MAKEPREPBUFR=NO. Set path and format of pre-made files.
+##PREPBUFRFILE=/scratch2/portfolios/NCEPDEV/global/noscrub/$LOGNAME/premadefiles/prepqc.$CDUMP.$CDATE
+#
+
+PROCESS_TROPCY=NO
+DO_RELOCATE=YES
+BKGFREQ=1         # specify 1 for hourly relocation, 3 for 3-hourly
+
+SYNDATA=YES
+RESTORE_GES=NO
+##DO_BOGUS=NO
+##GETGUESS=NO
+OIQCBUFR=NO
+PROCESS_ACPF=NO
+
+# Fix files parm files
+# -------------------- 
+ 
+CQCS=$BASE_PREP/fix/prepobs_cqc_statbge   
+LANDC=$BASE_PREP/fix/prepobs_landc   
+OIQCT=$BASE_PREP_GLOBAL/fix/prepobs_oiqc.oberrs   
+PRPT=$BASE_PREP/fix/prepobs_prep.bufrtable   
+
+#PRVT=$BASE_PREP/fix/prepobs_errtable.global   
+PRVT=$BASE_GSI/fix/prepobs_errtable.global
+
+AQCC=$BASE_PREP_GLOBAL/parm/prepobs_prepacqc.$CDUMP.parm   
+CQCC=$BASE_PREP_GLOBAL/parm/prepobs_cqcbufr.gdas.parm  
+PRPC=$BASE_PREP_GLOBAL/parm/prepobs_prepdata.$CDUMP.parm   
+PQCC=$BASE_PREP_GLOBAL/parm/prepobs_profcqc.gdas.parm   
+SYNDC=$BASE_PREP_GLOBAL/parm/syndat_syndata.gdas.parm 
+
+# Executables 
+# -----------
+
+RELOX=$BASE_TROPCY/exec/relocate_mv_nvortex
+HOMERELO=$BASE_TROPCY
+homesyndir=$BASE_TROPCY
+FIXRELO=$BASE_TROPCY/fix
+
+PRPX=$BASE_PREP/exec/prepobs_prepdata   
+PREX=$BASE_PREP/exec/prepobs_prevents   
+AQCX=$BASE_PREP/exec/prepobs_prepacqc   
+PQCX=$BASE_PREP/exec/prepobs_profcqc   
+CQCX=$BASE_PREP/exec/prepobs_cqcbufr   
+SYNDX=$BASE_PREP/exec/syndat_syndata   
+MPCOPYX=$BASE_PREP/exec/prepobs_mpcopybufr   
+LISTHDX=$BASE_PREP/exec/prepobs_listheaders   
+MONOBFRX=$BASE_PREP/exec/prepobs_monoprepbufr   
+VQCX=$BASE_PREP/exec/prepobs_cqcvad   
+OIQCX=$BASE_PREP/exec/prepobs_oiqcbufr   
+PSTX=$BASE_PREP_POST/exec/global_postevents
+
+#  ---------------------
+#  bufr data types 
+#  ---------------------
+BUFRLIST="adpupa proflr aircar aircft satwnd adpsfc sfcshp vadwnd wdsatr ascatw rassda gpsipw"

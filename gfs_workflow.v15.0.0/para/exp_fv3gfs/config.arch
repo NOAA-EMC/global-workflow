@@ -1,0 +1,145 @@
+LOGNAME_HPSS=$LOGNAME
+ATARDIR=/5year/NCEPDEV/emc-global/$LOGNAME_HPSS/$machine/pr${PSLOT}
+ATARFILE=$ATARDIR/\$ADAY.tar
+
+#---------------------------------------
+# file retention hours in ROTDIR  
+#---------------------------------------
+HRKTMP=12                          # Hours to keep tmpdir 
+HRKRES=48                          # Hours to keep restart files 
+HRKROT=168                         # Hours to keep rotating archive
+HRKFLX=48                          # Hours to keep flx files in $COMROT
+HRKSIG=168                         # Hours to keep sigma/gfnf files in $COMROT
+HRKSIGG=48                         # Hours to keep sigma/gfnf files from analysis
+HRKPGBM=264                        # Hours to keep hires pgb files
+HRKOCN_NC=96                       # Hours to keep ocean netcdf file
+HRKOCN_ANL=96                      # Hours to keep ocean analysis file
+HRKOCN_GRB=96                      # Hours to keep ocean grib output file
+HRKENKF=24                         # Hours to keep enkf files
+HRKETMP=06                         # Hours to keep enkf tmpdir
+HRKTMPGDAS=06                      # Hours to keep GDAS tmpdir
+HRKTMPGFS=12                       # Hours to keep GFS tmpdir 
+HRKGEMPAK=24                       # Hours to keep GFS GEMPAK
+HRKBUFRSND=24                      # Hours to keep GFS bufr soundings
+HRKCOM=$HRKENKF                    # Hours to keep production look-alike
+
+
+#Codes below used for GFS Bufr soundings
+GFLUX=$BASE_BUFRSND/exec/gfs_flux
+GBUFR=$BASE_BUFRSND/exec/gfs_bufr
+TOCSBUFR=$BASE_BUFRSND/exec/tocsbufr
+STNLIST=$BASE_BUFRSND/parm/bufr_stalist.meteo.gfs3
+HOMEbufr=$BASE_BUFRSND
+PARMbufr=$BASE_BUFRSND/parm
+GENBUFRSND=NO 
+POSTSNDSH=$BASEDIR/ush/postsnd.sh
+
+
+ARCH_TO_HPSS=YES                   # make hpss archive
+ARCH_HWRF=NO                       # make hpss archive of select files for hwrf group
+ATARDIR_HWRF=/NCEPDEV/emc-hwrf/2year/Q3FY17_NEMS_GFS
+USE_HPSS=YES
+##RSTPRODSH=/nwprod/runhistory.v2.1.23/ush/rhist_restrict.sh
+TIMELIMARCH=06:00:00                  # CPU limit (hhmmss) for hpss archive
+
+io_save=360
+jo_save=181
+
+ARCHCOPY=YES                       #
+ARCHSCP=NO                         # 
+ARCHDAY=0                          # days to delay arch step 
+ARCHSH=$JOBSDIR/arch.sh
+
+DO_PRODNAMES=NO 
+PRODNAMES_DIR=$PTMP/$LOGNAME
+SETUPPRODNAMESH=$BASEDIR/ush/setup_prodnames.sh
+
+PARA_CHECK_STATUS=NO  
+PARA_CHECK_CDUMP="gfs gdas"
+PARA_CHECK_CYCLE="00 06 12 18"
+PARA_CHECK_MAIL="fanglin.yang@noaa.gov"
+#
+
+ARCH_LIST='ARCA ARCB ARCC ARCD EARCA EARCB EARCC'
+
+ARCA00GDAS='$CDATE$CDUMP.tar'
+ARCA06GDAS='$CDATE$CDUMP.tar'
+ARCA12GDAS='$CDATE$CDUMP.tar'
+ARCA18GDAS='$CDATE$CDUMP.tar'
+ARCA00GFS='$CDATE$CDUMP.tar'
+ARCA06GFS='$CDATE$CDUMP.tar'
+ARCA12GFS='$CDATE$CDUMP.tar'
+ARCA18GFS='$CDATE$CDUMP.tar'
+#
+ARCB00GFS='$CDATE${CDUMP}2.tar'
+ARCB06GFS='$CDATE${CDUMP}2.tar'
+ARCB12GFS='$CDATE${CDUMP}2.tar'
+ARCB18GFS='$CDATE${CDUMP}2.tar'
+ARCB00GDAS='$CDATE${CDUMP}2.tar'
+ARCB06GDAS='$CDATE${CDUMP}2.tar'
+ARCB12GDAS='$CDATE${CDUMP}2.tar'
+ARCB18GDAS='$CDATE${CDUMP}2.tar'
+#
+ARCC00GDAS='$CDATE${CDUMP}3.tar'
+ARCC06GDAS='$CDATE${CDUMP}3.tar'
+ARCC12GDAS='$CDATE${CDUMP}3.tar'
+ARCC18GDAS='$CDATE${CDUMP}3.tar'
+#ARCC00GFS='$CDATE${CDUMP}3.tar'
+#ARCC06GFS='$CDATE${CDUMP}3.tar'
+#ARCC12GFS='$CDATE${CDUMP}3.tar'
+#ARCC18GFS='$CDATE${CDUMP}3.tar'
+#
+ARCD00GDAS='$CDATE${CDUMP}4.tar'
+ARCD06GDAS='$CDATE${CDUMP}4.tar'
+ARCD12GDAS='$CDATE${CDUMP}4.tar'
+ARCD18GDAS='$CDATE${CDUMP}4.tar'
+#ARCD00GFS='$CDATE${CDUMP}4.tar'
+#ARCD06GFS='$CDATE${CDUMP}4.tar'
+#ARCD12GFS='$CDATE${CDUMP}4.tar'
+#ARCD18GFS='$CDATE${CDUMP}4.tar'
+#
+
+
+# enkf archive step
+TIMELIMEARC=06:00:00
+EARCA00GDAS='$CDATE$CDUMP.enkf.obs.tar'
+EARCA06GDAS='$CDATE$CDUMP.enkf.obs.tar'
+EARCA12GDAS='$CDATE$CDUMP.enkf.obs.tar'
+EARCA18GDAS='$CDATE$CDUMP.enkf.obs.tar'
+
+EARCB00GDAS='$CDATE$CDUMP.enkf.anl.tar'
+EARCB06GDAS='$CDATE$CDUMP.enkf.anl.tar'
+EARCB12GDAS='$CDATE$CDUMP.enkf.anl.tar'
+EARCB18GDAS='$CDATE$CDUMP.enkf.anl.tar'
+
+EARCC00GDAS='$CDATE$CDUMP.enkf.sfcanl.tar'
+EARCC06GDAS='$CDATE$CDUMP.enkf.sfcanl.tar'
+EARCC12GDAS='$CDATE$CDUMP.enkf.sfcanl.tar'
+EARCC18GDAS='$CDATE$CDUMP.enkf.sfcanl.tar'
+
+if [ $ARCH_HWRF = YES ] ; then
+   ARCH_HWRF_LIST='ARCF EARC06'
+
+   ARCF00GFS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_gfs.tar'
+   ARCF06GFS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_gfs.tar'
+   ARCF12GFS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_gfs.tar'
+   ARCF18GFS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_gfs.tar'
+
+##   EARC0300GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens03.tar'
+##   EARC0306GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens03.tar'
+##   EARC0312GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens03.tar'
+##   EARC0318GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens03.tar'
+
+   EARC0600GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens06.tar'
+   EARC0606GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens06.tar'
+   EARC0612GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens06.tar'
+   EARC0618GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens06.tar'
+
+##   EARC0900GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens09.tar'
+##   EARC0906GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens09.tar'
+##   EARC0912GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens09.tar'
+##   EARC0918GDAS='pr${PSLOT}_${CDATE}${CDUMP}_hwrf_ens09.tar'
+fi
+
+ 
+

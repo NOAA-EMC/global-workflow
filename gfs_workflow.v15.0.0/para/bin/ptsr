@@ -1,0 +1,143 @@
+#!/bin/ksh
+################################################################################
+# This script runs when parallel jobs begin.
+# Usage: pavg
+# Imported variables:
+#   CDATE
+#   CDUMP
+#   CSTEP
+#   LOADL_JOB_NAME
+#   LOGNAME
+# Configuration variables:
+#   PSLOT
+#   NDATE
+#   RUNLOG
+#   PLOG
+#   PSUB
+################################################################################
+set -ux
+
+export PSLOT=${1:-$PSLOT}
+export CDATE=${2:-$CDATE}
+export sdate=${3:-$sdate}
+export edate=${4:-$edate}
+export FHOUT=${5:-$FHOUT}
+export INDIR=${6:-${INDIR:-$COMROT}}
+export TIMEDIR=${7:-${TIMEDIR:-$COMROT}}
+export FHBAK=${8:-${FHBAK:-0}}
+export RUNDIR=${9:-${$RUNDIR:-$PTMP/$LOGNAME/${PSLOT}_${sdate}_${edate}_tser}}
+export ENS_NUM=${10:-${ENS_NUM:-1}}
+#
+export TSER_PGB=${TSER_PGB:-YES}
+export TSER_FLX=${TSER_IPV:-YES}
+export TSER_IPV=${TSER_IPV:-YES}
+#export TSER_D3D=${TSER_D3D:-YES}
+export COUP_FCST=${COUP_FCST:-YES}
+export POSTD3D=${POSTD3D:-NO}
+#
+export CSTEP=${11:-${CSTEP:?}}
+export CKSH=$(echo $CSTEP|cut -c-4)
+export CKND=$(echo $CSTEP|cut -c5-)
+export nknd=${CKND:-1}
+export SUFOUT_TIME=${SUFOUT_TIME:-""}
+#
+export BASEDIR=${BASEDIR:-/global/save/emc.glopara/svn/gfs/trunk/para}
+export SHDIR=${SHDIR:-$BASEDIR/bin}
+export USHDIR=${USHDIR:-$BASEDIR/ush}
+export PLOG=${PLOG:-$SHDIR/plog}
+export NDATE=${NDATE:-/nwprod/util/exec/ndate}
+#
+export SUB=${SUB:-/u/wx23sm/bin/sub}
+export LLQU=${LLQU:-/u/wx20mi/bin/llqu}
+export USER=${USER:-$LOGNAME}
+export GROUP=${GROUP:-"devonprod"}
+export CUE2RUN=${CUE2RUN:-"dev"}
+
+################################################################################
+# Log event
+
+jn=${PSLOT}${CDATE}${CDUMP}${CSTEP}_av$sdate
+$PLOG "$RUNLOG" OK "$jn begun"
+
+#export CKSH=$(echo $CSTEP|cut -c-4)
+#export CKND=$(echo $CSTEP|cut -c5-)
+
+cycle=$(echo $CDATE|cut -c9-10)
+cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
+eval mtser=\${MTSER$cycle$cdump:-1}
+
+
+################################################################################
+# Submit jobs based on script name
+
+prereqs="[[ $mtser -gt 0 ]]"
+cue2run=$CUE2RUN
+npe_node=${npe_node_tser:-32}
+numproc=${NUMPROCTSER:-32}
+if [ $numproc -gt 1 ] ; then
+ nodes=$((numproc/npe_node))
+ np="$numproc/$nodes/N"
+ re="$((26000/npe_node))"
+else
+ np="1"
+ re="1000"
+fi
+timelim=${TIMELIMTSER:-3:00:00}
+whenrun=+0000
+
+#
+echo "sdate is $sdate, $edate, $nknd"
+en=PSLOT,CDATE,CDUMP,CKSH,nknd,sdate,edate,FHBAK,FHOUT,INDIR,TIMEDIR,BASEDIR,COMROT,TSER_PGB,TSER_FLX,TSER_IPV,TSER_D3D,ENS_NUM,COUP_FCST,POSTD3D,RUNDIR,RUNLOG,SUFOUT_TIME
+jn=${PSLOT}${CDATE}${CDUMP}${CSTEP}_tser$sdate
+df=$COMDAY/$jn.dayfile
+if [ $NEW_DAYFILE = YES ] ; then
+  ls -l $COMDAY/${jn}*.dayfile > $COMDAY/tem
+  nn=`cat $COMDAY/tem | wc -l`
+  ((nn+=0))
+  while [ -s $COMDAY/${jn}_$nn.dayfile ] ; do nn=$((nn+1)) ; done
+  echo $nn
+  rm $COMDAY/tem
+  df=$COMDAY/${jn}_$nn.dayfile
+fi
+
+qn=$cue2run
+gr=$GROUP
+tl=$timelim
+us=$USER
+wr=$whenrun
+ac=$ACCOUNT
+job=${FCST_TIMESERSH:-$USHDIR/fcst_timeser.sh}
+if $LLQU $us|grep $jn;then
+  $PLOG "$RUNLOG" NOTE "$jn already queued"
+else
+  $SUB -a $ac -e $en -g $gr -j $jn -o $df -p $np -q $qn -r $re -t $tl -u $us -w $wr $job
+  if [[ $? -ne 0 ]];then
+    $PLOG "$RUNLOG"  NOTE "$jn submit failure"
+    sleep 60
+    if $LLQU $us|grep $jn;then
+      $PLOG "$RUNLOG" NOTE "$jn already queued"
+    else
+      $SUB -a $ac -e $en -g $gr -j $jn -o $df -p $np -q $qn -r $re -t $tl -u $us -w $wr $job
+      if [[ $? -ne 0 ]];then
+        $PLOG "$RUNLOG" ERROR "$jn submit failure"
+        exit 8
+      fi
+      $PLOG "$RUNLOG" OK "$jn submitted"
+    fi
+  else
+    $PLOG "$RUNLOG" OK "$jn submitted"
+  fi
+fi
+################################################################################
+# Print environment and other information
+
+#printenv
+
+################################################################################
+# Set group stuff
+
+#if [[ $SETGROUP != none ]];then
+# umask 002
+# chgrp $SETGROUP .
+# chmod 2775 .
+#fi

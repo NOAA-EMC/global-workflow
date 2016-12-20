@@ -1,0 +1,37 @@
+# ----------------------------------
+# options for NST in GFS & GSI
+# ----------------------------------
+ export NST_FCST=2           # default 0: No NSSTM,                                   W/O  Tr analysis
+                             #         1: With NSSTM but run passively (uncoupled),   W/O  Tr analysis
+                             #         2: With NSSTM and run actively    (coupled),   W/O  Tr analysis
+ export NST_GSI=3            # default 0: No NST info at all;
+
+                             #         1: Input NST info but not used in GSI;
+                             #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                             #         3: Input NST info, used in both CRTM simulation and Tr analysis
+
+ export NST_SPINUP=0      #  0 = NSSTM spinup off (default); 1 = NSSTM spinup on
+ if [ $CDATE -eq 2016091406 ] ; then export NST_SPINUP=1; fi
+ export NST_RESERVED=0    #  Reserved
+ if [ $NST_GSI -eq 3 ]; then export NST_RESERVED=1; fi
+
+ export ZSEA1=0           #  the upper depth (in mm) to do vertical mean of T-Profile (0 = default)
+ export ZSEA2=5           #  the lower depth (in mm) to do vertical mean of T-Profile (0 = default)
+ export nstf_name="$NST_FCST,$NST_SPINUP,$NST_RESERVED,$ZSEA1,$ZSEA2"
+                          #
+                          #  nstf_name is an integer array to hold the NSST model control parameters
+                          #  nstf_name(1) : 0 (default) = No NSSTM; 1 = uncoupled; 2 = coupled (nstf_name(1) = NST_FCST)
+                          #  nstf_name(2) : 0 (default) = NSST Spinup off; 1 = NSST Spinup on
+                          #  nstf_name(3) : Reserved
+                          #  nstf_name(4) : 0 (default) = the upper depth (in mm) to do vertical mean of T-Profile
+                          #  nstf_name(5) : 0 (default) = the lower depth (in mm) to do vertical mean of T-Profile
+
+ export NST_ANL=.false.   #  .fasle. : NSST analysis off (default); true = NSST analysis on
+ if [ $NST_GSI -eq 3 ]; then export NST_ANL=.true.;  fi
+ export NSTINFO=0         # number of elements added in obs. data array (default = 0)
+ if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
+
+ export TZR_QC=1          # 0 = Tzr_qc off (default); 1 = Tzr_qc on
+ export FAC_DTL=1         # 0 = Diurnal Thermocline Model(DTM) off (default); 1 = DTM on
+ export FAC_TSL=1         # 0 = Thermal Skin Model(TSM) off (default); 1 = TSM on
+ export NST_STZR=0        # 0 = physical Tz retrieval save off; 1 =  Tz retrieval save on

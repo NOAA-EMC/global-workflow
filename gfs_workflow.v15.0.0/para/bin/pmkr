@@ -1,0 +1,289 @@
+#!/bin/ksh
+################################################################################
+# This script makes the rlist, the list of data flow for the experiment.
+# Usage: pmkr [CONFIG]
+# Imported variables:
+#   CONFIG
+# Configuration variables:
+################################################################################
+#set -ux
+set -u
+CONFIG=${1:-${CONFIG:?}}
+set -a;. $CONFIG;set +a
+
+CDFNL=${CDFNL:-gdas}
+GDUMP=${GDUMP:-$CDFNL}
+MANAL=${MANAL:-1}
+CCPOST=${CCPOST:-NO}
+GGPOST=${GGPOST:-NO}
+DO2ANL=${DO2ANL:-YES}
+COUP_FCST=${COUP_FCST:-NO}
+NEMS=${NEMS:-NO}
+NST_FCST=${NST_FCST:-0}
+
+gdas_cyc=${gdas_cyc:-4}
+JCAP=${JCAP:-1534}
+
+NEMSIO_IN=${NEMSIO_IN:-.false.}
+NEMSIO_OUT=${NEMSIO_OUT:-.false.}
+SIGIO_IN=${SIGIO_IN:-.true.}
+SFCIO_IN=${SFCIO_IN:-.true.}
+SIGIO_OUT=${SIGIO_OUT:-.true.}
+
+SIGIOSUF=${SIGIOSUF:-'sig'}
+SFCIOSUF=${SFCIOSUF:-'sfc'}
+FLXOSUF=${FLXOSUF:-'flx'}
+NSTOSUF=${NSTOSUF:-'nst'}
+pgb_typ4prep=${pgb_typ4prep:-q}
+if [ $GRIBVERSION = grib2 ]; then
+  GRIB_SUFFIX='.grib2'
+else
+  GRIB_SUFFIX=''
+fi
+
+if [ $gdas_cyc -eq 2 ] ; then
+ hrlist='00 12'
+elif [ $gdas_cyc -eq 4 ] ; then
+ hrlist='00 06 12 18'
+elif [ $gdas_cyc -eq 6 ] ; then
+ hrlist='00 04 08 12 16 20'
+elif [ $gdas_cyc -eq 8 ] ; then
+ hrlist='00 03 06 09 12 15 18 21'
+elif [ $gdas_cyc -eq 12 ] ; then
+ hrlist='00 02 04 06 08 10 12 14 16 18 20 22'
+elif [ $gdas_cyc -eq 24 ] ; then
+ hrlist='00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24'
+else
+ echo 'Invalid gdas_cyc= ' $gdas_cyc
+ exit
+fi
+
+echo '# rlist for '$CONFIG' created by '$0' on '$(date -u "+%Y-%m-%d %H:%M:%S UTC")
+
+if [[ $MANAL = 1 ]];then
+
+#################################################################################
+# Prep step
+  echo ''
+  echo '# prep step'
+  s=prep
+  # Prep step - observation input
+  echo '# observation input'
+  for t in statup adpupa proflr aircar aircft adpsfc sfcshp vadwnd gpsipw rassda ascatw satwnd tcvitl;do
+    a=DMPI
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  a=DMPG
+  echo '*/*/'$s'/'$a'	=	tcvitl.$GDUMP.$GDATE'
+  a=DMPH
+  echo '*/*/'$s'/'$a'	=	tcvitl.$GDUMP.$HDATE'
+  # Prep step - rotational input  
+  echo '# rotational input'
+  a=ROTI
+  for t in 03 06 09;do
+    echo '*/*/'$s'/'$a'	=	'${SIGOSUF}${pgb_typ4prep}${t}'.$GDUMP.$GDATE'
+  done
+  # Prep step - optional input
+  echo '# optional input'
+  a=OPTI
+  for t in 04 05 07 08;do
+    echo '*/*/'$s'/'$a'	=	'${SIGOSUF}${pgb_typ4prep}${t}'.$GDUMP.$GDATE'
+  done
+  echo '*/*/'$s'/'$a'	=	'pgb${pgb_typ4prep}*'.$GDUMP.$GDATE'${GRIB_SUFFIX}''
+  echo '*/*/'$s'/'$a'	=	'pgrb${pgb_typ4prep}*'.$GDUMP.$GDATE'${GRIB_SUFFIX}''
+  # Prep step - rotational output
+  echo '# rotational output'
+  a=ROTO
+  for t in prepqc ${SIGOSUF}ges ${SIGOSUF}gm3 ${SIGOSUF}gp3;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  #Prep step - optional output
+  echo '# optional output'
+  a=OPTO
+  for t in prepbufr.acft_profiles ${SIGOSUF}gm2 ${SIGOSUF}gm1 ${SIGOSUF}gp1 ${SIGOSUF}gp2 tcinform_relocate tcvitals_relocate;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in ${SIGOSUF}ges ${SIGOSUF}gm3 ${SIGOSUF}gp3 ${SIGOSUF}gm2 ${SIGOSUF}gm1 ${SIGOSUF}gp1 ${SIGOSUF}gp2;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE.relocate'
+  done
+
+  if [ $COUP_FCST = YES ] ; then
+    echo ''
+    echo '# oanl step'
+    s=oanl
+    echo '# observation input'
+    a=DMPI
+    for t in sstgrb icegrb snogrb;do
+      echo '*/*/'$s'/'$a' =       '$t'.$CDUMP.$CDATE'
+    done
+  fi
+
+#################################################################################
+# Anal step
+  echo ''
+  echo '# anal step'
+  s=anal
+  # Observation input - analysis
+  echo '# observation input'
+  a=DMPI
+  for t in goesfv 1bhrs4 1bamua 1bmhs esamua esamub eshrs3 osbuv8 gome omi mls sptrmm airsev sevcsr atms cris gpsro satwnd oscatw tcvitl stat01 mtiasi sstgrb icegrb snogrb;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  a=DMPG
+  if [ $USE_JCAP_SNO = YES ]; then
+    echo '*/*/'$s'/'$a'	=	snogrb_'$JCAP'.$GDUMP.$GDATE'
+  fi
+  # Rotational input - analysis
+  echo '# rotational input'
+  a=ROTI
+  for t in biascr biascr_pc ${SFCOSUF}f06 ;do
+    echo '*/*/'$s'/'$a' =     '$t'.$GDUMP.$GDATE'
+  done
+  if [ $NST_FCST -gt 0 ] ; then
+    for t in ${NSTOSUF}f06;do
+      echo '*/*/'$s'/'$a' =	'$t'.$GDUMP.$GDATE'
+    done
+  fi
+  for t in ${SIGOSUF}gm3 ${SIGOSUF}ges ${SIGOSUF}gp3 prepqc;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  # Optional input - analysis
+  echo '# optional input'
+  a=OPTI
+  if [[ $DO2ANL = YES ]];then
+    for c in $hrlist;do
+      eval manal=\${MANAL${c}GFS:-1}
+      if [[ $manal -gt 0 ]];then
+        for t in gesfile;do
+          echo '*'$c'/$CDFNL/'$s'/'$a'	=	'$t'.gfs.$CDATE'
+        done
+      fi
+    done
+  fi
+  for t in ${SFCOSUF}f03 ${SFCOSUF}f04 ${SFCOSUF}f05 ${SFCOSUF}f07 ${SFCOSUF}f08 ${SFCOSUF}f09 radstat sigbias ;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$GDUMP.$GDATE'
+  done
+  if [ $NST_FCST -gt 0 ] ; then
+    for t in ${NSTOSUF}f03 ${NSTOSUF}f04 ${NSTOSUF}f05 ${NSTOSUF}f07 ${NSTOSUF}f08 ${NSTOSUF}f09;do
+      echo '*/*/'$s'/'$a' =	'$t'.$GDUMP.$GDATE'
+    done
+  fi
+  for t in ${SIGOSUF}gm2 ${SIGOSUF}gm1 ${SIGOSUF}gp1 ${SIGOSUF}gp2;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  # Ensemble input - required
+  echo '# required ensemble input'
+  a=ENOI
+  for t in fcsstat;do
+    echo '*/*/'$s'/'$a' =       '$t'_${GDATE}_all'
+  done
+  # Ensemble input - optional
+  echo '# optional ensemble input'
+  a=ENOI
+  #for hr in 03 04 05 06 07 08 09; do
+  for hr in 06; do
+    echo '*/*/'$s'/'$a' =       sfg_${GDATE}_fhr'${hr}'s_mem*'
+  done
+  # Rotational output - analysis
+  echo '# rotational output'
+  a=ROTO
+  #for t in biascr biascr_pc;do
+  for t in biascr;do
+    echo '*/'$GDUMP'/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in ${SFCISUF} ${SIGISUF} ;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  if [ $NST_FCST -gt 0 ] ; then
+    for t in ${NSTISUF} ;do
+      echo '*/*/'$s'/'$a' =	'$t'.$CDUMP.$CDATE'
+    done
+  fi
+  # Optional output - analysis
+  echo '# optional output'
+  a=OPTO
+  if [[ $DO2ANL = YES ]];then
+    for t in gesfile;do
+      echo '*/gfs/'$s'/'$a'	=	'$t'.gfs.$CDATE'
+    done
+  fi
+  for t in satbias ssistat gsistat;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in radstat pcpstat;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE.Z'
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in oznstat cnvstat sigbias;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+
+fi
+
+#################################################################################
+# Fcst steps
+for c in $hrlist;do
+  for d in gfs $CDFNL;do
+    D=$(echo $d|tr '[a-z]' '[A-Z]')
+    eval manal=\${MANAL$c$D:-1}
+    eval mfcst=\${MFCST$c$D:-1}
+    nk=1
+    while [[ $nk -le $mfcst ]];do
+      echo ''
+      if [[ $c = 00 && $d = $GDUMP && $nk = 1 && $MANAL = 1 ]];then
+        echo '# initial copy'
+#               ------------
+       if [ $NST_FCST -gt 0 ] ; then
+          for t in ${SFCISUF} ${SIGISUF} ${NSTISUF} biascr;do
+            echo '*'$c'/'$d'/fcst'$nk'/COPI	=	'$t'.$CDUMP.$CDATE'
+          done
+        else
+          for t in ${SFCISUF} ${SIGISUF} biascr;do
+            echo '*'$c'/'$d'/fcst'$nk'/COPI	=	'$t'.$CDUMP.$CDATE'
+          done
+        fi
+      fi
+      ((nk+=1))
+    done
+  done
+done
+
+#################################################################################
+# Vrfy steps
+echo ''
+echo '# vrfy step'
+echo '# observation input'
+if [[ ${VRFYTRAK:-NO} = YES ]];then
+  echo '*/*/vrfy/DMPI	=	tcvitl.$CDUMP.$CDATE'
+  echo '*/*/vrfy/DMPG	=	tcvitl.$GDUMP.$GDATE'
+fi
+
+#################################################################################
+# Arch step
+echo ''
+echo '# arch step'
+echo '# remove all pgbf, pgbh, pgbm, pgrbf, pgbq, pgrbf*grib2, pgbq*grib2, f??.*'
+if [ $ARCHIVE = YES ]; then
+  s=arch
+  a=ARCA
+  for t in prep anal fcst post vrfy;do
+    echo '*/*/'$s'/'$a'	=	$PSLOT${CDATE}${CDUMP}'$t'*.dayfile'
+  done
+  for t in 252; do
+    echo '*/*/'$s'/'$a' =       atcf'$t'hr.gfs.$CDATE'
+  done
+  for t in atcfunix pcpstat pgbhnl pgbanl pgbmnl;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in pgrbanl pgbqnl pgrbanl pgbqnl;do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE.grib2'
+  done
+  for t in ${FLXOSUF}fm2 ${FLXOSUF}fm1 ${FLXOSUF}f* prepqc prepqa prepqf prepbufr.acft_profiles ${SIGISUF}anl ${SFCOSUF}f240 ${SIGOSUF}f240 ${SIGISUF};do
+    echo '*/*/'$s'/'$a'	=	'$t'.$CDUMP.$CDATE'
+  done
+  for t in 03 04 05 07 08 09; do
+    echo '*/*/'$s'/'$a'	=	${SIGOSUF}a'$t'.$CDUMP.$CDATE'
+  done
+fi
+
+echo ''
