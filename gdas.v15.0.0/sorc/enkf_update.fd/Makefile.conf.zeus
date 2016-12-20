@@ -1,0 +1,129 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ----------------------------------
+# Redefine variables for NOAA HPCS
+# ----------------------------------
+COREINC  = /contrib/nceplibs/nwprod/lib/incmod
+CORELIB  = /contrib/nceplibs/nwprod/lib
+INCsfcio = $(COREINC)/sfcio_v1.1.0
+INCsigio = $(COREINC)/sigio_4
+INCnemsio= $(COREINC)/nemsio
+INCw3    = $(COREINC)/w3emc_d
+#INCcrtm=$(COREINC)/crtm_v2.1.3
+INCcrtm=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/include
+
+WRFPATH = /contrib/nceplibs_ext/WRF/WRFV3
+LIBwrfio_int    = $(WRFPATH)/external/io_int/libwrfio_int.a
+LIBwrfio_netcdf = $(WRFPATH)/external/io_netcdf/libwrfio_nf.a
+OBJwrf_frame_pk = $(WRFPATH)/frame/pack_utils.o
+OBJwrf_sizeof_int = $(WRFPATH)/frame/module_machine.o
+WRFLIB = $(LIBwrfio_int) $(LIBwrfio_netcdf) $(OBJwrf_frame_pk) $(OBJwrf_sizeof_int)
+
+LIBcrtm = /scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/lib/libcrtm.a
+
+INCnetcdf       = ${NETCDF}/include
+LIBnetcdf       = -L$(NETCDF)/lib -lnetcdf
+
+# Empty out definition of libs use by GMAO GSI building structure
+LIBtransf = #-L$(CORELIB) -ltransf
+LIBhermes = #-L$(CORELIB) -lhermes
+LIBgfio   = #-L$(CORELIB) -lgfio
+INChdf    = #-I$(BASEDIR)/$(ARCH)/include/hdf
+LIBhdf    = #-L$(BASEDIR)/$(ARCH)/lib  -lmfhdf -ldf -lhdfjpeg -lhdfz -lsz
+
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -rv
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = ifort
+  FC            = $(CF)
+
+#--- Normal mode options
+  PROF= #-pg
+  OMP = #-qsmp=noauto
+
+  FFLAGS_F90    = -D_REAL8_ -DWRF -openmp
+
+  FFLAGS_COM_N  = -I ./ -I $(INCcrtm) -I $(INCsfcio) -I $(INCsigio) -I $(INCnemsio) \
+                -I $(INCnetcdf) -I $(INCw3) -O3 -traceback -convert big_endian -assume byterecl \
+	        -g -fp-model source
+
+  FFLAGS_COM_N_NOSWAP  = -I ./ -I $(INCcrtm) -I $(INCsfcio) -I $(INCsigio) \
+                  -I $(INCnemsio) -I $(INCnetcdf) -I $(INCw3) \
+		  -O3 -traceback -g -fp-model source \
+		  -convert big_endian -assume byterecl
+
+  FFLAGS_N  = $(FFLAGS_F90) $(FFLAGS_COM_N) $(PROF)
+  FFLAGS_NOSWAP_N  = $(FFLAGS_F90) $(FFLAGS_COM_N_NOSWAP) $(PROF)
+  FFLAGS_f  = $(FFLAGS_COM_N) $(PROF)
+  FFLAGS    = $(FFLAGS_N) $(PROF)
+
+
+#--- Debug mode options
+  FFLAGS_COM_D  =  -I ./ -I $(INCcrtm) -I $(INCsfcio) -I $(INCsigio) -I $(INCnemsio) \
+		-I $(INCnetcdf) -I $(INCw3) \
+		-O0 -fp-model strict -convert big_endian -assume byterecl \
+		-implicitnone -g -traceback -debug \
+		-ftrapuv -check all  -fp-stack-check  -fstack-protector -warn
+  FFLAGS_COM_NOSWAP_D  =  -I ./ -I $(INCcrtm) -I $(INCsfcio) -I $(INCsigio) \
+		-I $(INCnemsio) -I $(INCnetcdf) -I $(INCw3) \
+		-O0 -fp-model strict -convert big_endian -assume byterecl \
+		-implicitnone -g -traceback -debug \
+		-ftrapuv -check all  -fp-stack-check  -fstack-protector -warn
+  
+  FFLAGS_D  = $(FFLAGS_F90) $(FFLAGS_COM_D)
+  FFLAGS_NOSWAP_D = $(FFLAGS_F90) $(FFLAGS_COM_NOSWAP_D)
+
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = gcc
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3 $(PROF)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF) -mkl -lmpi -Wl,-Map,loadmap.txt
+
+#--- Normal mode options
+# LIBS_N        = -L$(CORELIB) -lsp_d -lnemsio -lbacio_4 -lsigio_4 \
+#      -lsfcio_4 -lbufr_d_64 -lw3lib-2.0_d $(LIBcrtm) $(WRFLIB) $(LIBnetcdf)
+  LIBS_N        = -L$(CORELIB) -lsp_d -lnemsio -lbacio_4 -lsigio_4 \
+       -lsfcio -lbufr_d_64 -lw3nco_d -lw3emc_d $(LIBcrtm) $(WRFLIB) $(LIBnetcdf)
+#      -L../lib/GSD/gsdcloud4nmmb -lgsdcloud
+# LIBS_N        = $(LIBnemsio) -L$(CORELIB) -lsp_d -lsigio_4 \
+#      -lsfcio_4 -lbufr_dc -lw3lib-2.0_d $(LIBcrtm) $(WRFLIB) $(LIBbacio) $(LIBnetcdf)
+
+  LDFLAGS_N     = 
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     =
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 

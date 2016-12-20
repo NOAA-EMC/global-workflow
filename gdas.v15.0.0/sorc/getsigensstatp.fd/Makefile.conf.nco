@@ -1,0 +1,81 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ----------------------------------
+# Define derived variables
+# ----------------------------------
+
+NETCDFPATH = $(NETCDF)
+NETCDF_INCLUDE = $(NETCDFPATH)/include
+NETCDF_LDFLAGS_F = -L$(NETCDFPATH)/lib -lnetcdf
+
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -rv
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = $(COMP_MP)
+  FC            = $(CF)
+  
+  OMP = -openmp
+
+  FFLAGS_INC    = -I $(SIGIO_INC4) -I $(NEMSIO_INC) -I $(NETCDF_INCLUDE)
+
+  FFLAGS_F90    = -convert big_endian -assume byterecl \
+				  -implicitnone -traceback
+
+#--- Normal mode options
+  FFLAGS_COM_N  = -O3 -fp-model source
+
+  FFLAGS_N  = $(FFLAGS_INC) $(FFLAGS_COM_N) $(FFLAGS_F90) $(OMP)
+
+#--- Debug mode options
+  FFLAGS_COM_D  = -O0 -fp-model strict -g -warn all -debug all -check all
+
+  FFLAGS_D  = $(FFLAGS_INC) $(FFLAGS_COM_D) $(FFLAGS_F90) $(OMP)
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = $(C_COMP_MP)
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF)
+
+#--- Normal mode options
+
+  LIBS_N        = $(NEMSIO_LIB) $(BACIO_LIB4) $(SIGIO_LIB4) $(W3NCO_LIB4) $(SP_LIB4) $(NETCDF_LDFLAGS_F)
+
+  LDFLAGS_N     = -Wl,-Map,loadmap.txt $(OMP)
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     = $(LDFLAGS_N)
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 

@@ -1,0 +1,67 @@
+####################################
+# Specify Special Fcst Vars
+####################################
+#
+# Set executable and script
+export SIGHDR=${SIGHDR:-${EXECgsm}/nemsio_get}
+export SFCHDR=${SFCHDR:-${EXECgsm}/nemsio_get}
+
+# Set date to process
+export CDATE=${CDATE:-${PDY}${cyc}}
+
+# Set ensemble resolution
+export JCAP_ENKF=${JCAP_ENKF:-574}
+export LEVS_ENKF=${LEVS_ENKF:-64}
+export NMEM_ENKF=${NMEM_ENKF:-80}
+export JCAP_LORES=${JCAP_LORES:-$JCAP_ENKF}   # do not generate low resolution EnKF forecasts
+
+
+# Forecast model output frequency
+export FHROT_ENKF=${FHROT_ENKF:-0}  # Forecast hour to Read One Time level
+export FHOUT_ENKF=${FHOUT_ENKF:-1}  # Forecast Hour Output Frequency
+export FHMAX_ENKF=${FHMAX_ENKF:-9}  # Forecast Length (Hours)
+
+# EnKF utility executables
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-${EXECgdas}/getsigensmeanp_smooth.x}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-${EXECgdas}/getsfcensmeanp.x}
+export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-${EXECgdas}/getsigensstatp.x}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-${EXECgdas}/getnstensmeanp.x}
+
+
+# EnKF scripts
+export ENKFPOSSH=${ENKFPOSSH:-$SCRgdas/exglobal_enkf_post.sh.ecf}
+
+# 4DEnVar setup
+export l4densvar=${l4densvar:-".true."}
+
+# Specify smoothed EnKF forecasts
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
+# Specify nemsio
+export use_gfs_nemsio=.true.
+
+# Specify NSST
+export NST_GSI=3         # default 0: No NST info at all;
+                         #         1: Input NST info but not used in GSI;
+                         #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                         #         3: Input NST info, used in both CRTM simulation and Tr analysis
+
+# EnKF fix files
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIXgdas/global_hybens_smoothinfo.l64.txt}
+
+# Input files
+export PREINP=${PREINP:-gdas.${cycle}.}
+export MEMBER_PREFIX=${MEMBER_PREFIX:-"."}
+export MEMBER_SUFFIX=${MEMBER_SUFFIX:-".nemsio"}
+
+export SIGENS_IN=${SIGENS_IN:-$COMIN/${PREINP}atmf}
+export SFCENS=${SFCENS:-$COMIN/${PREINP}sfcf}
+export NSTENS=${NSTENS:-$COMIN/${PREINP}nstf}
+
+# Output files
+export ENSSTAT=${ENSSTAT:-$COMOUT/${PREINP}ensstat}
+export SIGENSMEAN=${SIGENSMEAN:-$COMOUT/${PREINP}atmf}
+export SFCENSMEAN=${SFCENSMEAN:-$COMOUT/${PREINP}sfcf}
+export NSTENSMEAN=${NSTENSMEAN:-$COMOUT/${PREINP}nstf}
+export SIGENS_OUT=${SIGENS_OUT:-$COMOUT/${PREINP}atmf}
+

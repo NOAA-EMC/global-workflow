@@ -1,0 +1,93 @@
+#!/bin/sh
+####################################################################
+echo "------------------------------------------------"
+echo " This script generates the bulletins for GDAS "
+echo "------------------------------------------------"
+echo " History:  OCT 2004   - Converted to CCS Phase II"
+echo "           SEP 2015   - Converted to WCOSS Phase II"
+#####################################################################
+
+cd $DATA
+
+##########################################
+# START FLOW OF CONTROL
+# 1) GRIDBUL - generates GRID Bulletins (old Cray 835 job)
+# 2) 
+########################################
+
+set -x
+msg="HAS BEGUN!"
+postmsg "$jlogfile" "$msg"
+
+###########################################
+# 1) Generate gridbulls at 12 UTC
+# 2) Extract grib file for ECMWF at 12 UTC
+###########################################
+
+if [ $cyc -eq 12 ] ; then
+  set +x
+  echo " "
+  echo "######################################"
+  echo " Execute GRIDBULL "
+  echo "######################################"
+  echo " "
+  set -x
+
+  cp $PARMshared/bull_grdbgdas1.d$cyc .
+  bullparm=bull_grdbgdas1.d$cyc
+  out=grdbuls.tran.gdas00.${job}
+
+  $HOMEgdas/ush/mkbull_ntc.sh "sstgrb 00" $bullparm $out
+
+###################################################
+# Per request from ECMWF, cut needed fields from
+# the fnl/gdas analysis and send them via dbn.  In
+# the future, contact Zoltan Toth in EMC to see if
+# this file needs to continue to be made available
+# to ECMWF.
+###################################################
+
+  cp $COMIN/gdas1.${cycle}.pgrb2.1p00.anl .
+  $CNVGRIB -g21 gdas1.${cycle}.pgrb2.1p00.anl gdas1.${cycle}.pgrbanl
+ 
+  ifile=gdas1.${cycle}.pgrbanl
+
+  $WGRIB -s ${ifile} | \
+       egrep "(:TMP:|:UGRD:|:VGRD:|:RH:|:PRMSL:MSL)" | \
+       egrep "(:1000 mb|:925 mb|:850 mb|:700 mb|:500 mb|:400 mb|:300 mb|:250 mb|:200 mb|:150 mb|:100 mb|:70 mb|:50 mb|:30 mb|:10 mb)" | \
+       egrep "(mb:|:MSL)" | \
+       $WGRIB -i -grib -append $ifile -o wgrib.out
+
+  $CNVGRIB -g12 -p40 wgrib.out wgrib.out.grib2
+
+  if test "$SENDCOM" = "YES"
+  then
+     cp wgrib.out $COMOUT/gdas1.forecmwf.${PDY}${cyc}
+     cp wgrib.out.grib2 $COMOUT/gdas1.forecmwf.${PDY}${cyc}.grib2
+  fi
+
+  if test "$SENDDBN" = "YES"
+  then
+     $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF $job $COMOUT/gdas1.forecmwf.${PDY}${cyc}
+     # JY if test "$SENDDBN_GB2" = "YES"
+     # then
+        $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF_GB2 $job $COMOUT/gdas1.forecmwf.${PDY}${cyc}.grib2
+     # fi
+  fi
+
+fi
+
+#####################################################################
+# GOOD RUN
+set +x
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+set -x
+#####################################################################
+
+msg="HAS COMPLETED NORMALLY!"
+echo $msg
+postmsg "$jlogfile" "$msg"
+
+############## END OF SCRIPT #######################

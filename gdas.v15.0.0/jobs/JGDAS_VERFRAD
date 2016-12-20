@@ -1,0 +1,141 @@
+#!/bin/sh
+#############################################################
+# Set up environment for GDAS Radiance Monitor job
+#############################################################
+set -xa
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export envir=${envir:-prod}
+
+###############################
+# Specify NET and RUN name
+##############################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+
+########################################################### 
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+
+export DATAROOT=${DATAROOT:-/tmpnwprod2}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
+
+mkdir -p $DATA
+cd $DATA
+
+###############################################################
+# This block can be modified for different test environment
+###############################################################
+if [ $RUN_ENVIR = nco -a $envir != prod ]; then
+  export SENDDBN=${SENDDBN:-NO}
+fi
+
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+export cycle=t${cyc}z
+
+##############################################
+# SENDECF  - Flag Events on ECF
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+# VERBOSE  - Specify Verbose Output in exglobal
+##############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-NO}
+export SENDECF=${SENDECF:-NO}
+export VERBOSE=${VERBOSE:-YES}
+
+###################################
+# Set up the UTILITIES
+###################################
+export utilscript=${utilscript:-${UTILROOT}/ush}
+export utilexec=${utilexec:-${UTILROOT}/exec}
+
+
+##############################################
+# Specify Execution Areas
+##############################################
+export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.$gdas_ver}
+export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
+export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
+export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
+
+export HOMEradmon=${HOMEradmon:-${NWROOT}/global_shared.${global_shared_ver}}
+export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
+export FIXradmon=${FIXradmon:-${HOMEradmon}/fix}
+export USHradmon=${USHradmon:-$HOMEradmon/ush}
+
+
+###################################
+# source the parm file
+###################################
+.  ${PARMgdas}/gdas_radmon.parm
+
+
+#############################################
+# Run setpdy and initialize PDY variables
+#############################################
+setpdy.sh
+. ./PDY
+
+
+#############################################
+# COMOUT - WHERE GSI OUTPUT RESIDES
+# TANKverf - WHERE OUTPUT DATA WILL RESIDE
+#############################################
+export TANKverf=${TANKverf:-${COMROOT}/${NET}/${envir}}
+export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/radmon}
+export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${PDYm1}/radmon}
+export COM_IN=${COM_IN:-${COMROOT}/${NET}/${envir}}
+export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}}
+
+mkdir -p -m 775 $TANKverf_rad
+ 
+env
+
+########################################
+# Set necessary environment variables
+########################################
+export RAD_AREA=${RAD_AREA:-glb}
+
+export biascr=${biascr:-$COMIN/gdas1.t${cyc}z.abias}
+export radstat=${radstat:-$COMIN/gdas1.t${cyc}z.radstat}
+
+msg="JOB HAS STARTED"
+postmsg "$jlogfile" "$msg"
+
+########################################################
+# Execute the script.
+${RADMONSH:-${SCRgdas}/exgdas_vrfyrad.sh.ecf} ${PDY} ${cyc}
+########################################################
+
+msg="JOB COMPLETED NORMALLY"
+postmsg "$jlogfile" "$msg"
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-YES}
+cd $DATAROOT
+if [ ${KEEPDATA} = NO ] ; then 
+  rm -rf $DATA 
+fi
+
+date
+

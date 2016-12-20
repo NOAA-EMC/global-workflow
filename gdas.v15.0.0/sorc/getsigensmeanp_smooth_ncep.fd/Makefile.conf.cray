@@ -1,0 +1,152 @@
+# This config file contains the compile options for compilation
+# of the GSI code on the NOAA HPCS.
+
+# ------------------------------------
+# Redefine variables for Cray on WCOSS
+# ------------------------------------
+
+# Set library versions
+BACIO_VER = v2.0.1
+BUFR_VER = v11.0.1
+CRTM_VER = v2.2.3
+NEMSIO_VER = v2.2.2
+NETCDF_VER = 3.6.3
+SFCIO_VER = v1.0.0
+SIGIO_VER = v2.0.1
+SP_VER = v2.0.2
+W3EMC_VER = v2.2.0
+W3NCO_VER = v2.0.6
+
+CORELIB  = /gpfs/hps/nco/ops/nwprod/lib
+COMPILER = intel
+
+CRTM_INC=$(CORELIB)/crtm/$(CRTM_VER)/$(COMPILER)/include/crtm_$(CRTM_VER)
+NEMSIO_INC=$(CORELIB)/nemsio/$(NEMSIO_VER)/$(COMPILER)/include/nemsio_$(NEMSIO_VER)
+SFCIO_INC4=$(CORELIB)/sfcio/$(SFCIO_VER)/$(COMPILER)/include/sfcio_$(SFCIO_VER)_4
+SIGIO_INC4=$(CORELIB)/sigio/$(SIGIO_VER)/$(COMPILER)/include/sigio_$(SIGIO_VER)_4
+W3EMC_INCd=$(CORELIB)/w3emc/$(W3EMC_VER)/$(COMPILER)/w3emc_$(W3EMC_VER)_d
+
+BACIO_LIB4=$(CORELIB)/bacio/$(BACIO_VER)/$(COMPILER)/libbacio_$(BACIO_VER)_4.a
+BUFR_LIBd=$(CORELIB)/bufr/$(BUFR_VER)/$(COMPILER)/libbufr_$(BUFR_VER)_d_64.a
+CRTM_LIB=$(CORELIB)/crtm/$(CRTM_VER)/$(COMPILER)/libcrtm_$(CRTM_VER).a
+NEMSIO_LIB=$(CORELIB)/nemsio/$(NEMSIO_VER)/$(COMPILER)/libnemsio_$(NEMSIO_VER).a
+SFCIO_LIB4=$(CORELIB)/sfcio/$(SFCIO_VER)/$(COMPILER)/libsfcio_$(SFCIO_VER)_4.a
+SIGIO_LIB4=$(CORELIB)/sigio/$(SIGIO_VER)/$(COMPILER)/libsigio_$(SIGIO_VER)_4.a
+SP_LIBd=$(CORELIB)/sp/$(SP_VER)/$(COMPILER)/libsp_$(SP_VER)_d.a
+W3EMC_LIBd=$(CORELIB)/w3emc/$(W3EMC_VER)/$(COMPILER)/libw3emc_$(W3EMC_VER)_d.a
+W3NCO_LIBd=$(CORELIB)/w3nco/$(W3NCO_VER)/$(COMPILER)/libw3nco_$(W3NCO_VER)_d.a
+
+NETCDFPATH = /usrx/local/prod/NetCDF/$(NETCDF_VER)/$(COMPILER)/haswell
+NETCDF_INCLUDE = $(NETCDFPATH)/include
+NETCDF_LDFLAGS_F = -L$(NETCDFPATH)/lib -lnetcdf
+
+
+# WRF locations
+WRFPATH = /gpfs/hps/nco/ops/nwprod/wrf_shared.v1.1.0-$(COMPILER)
+LIBwrfio_int    = $(WRFPATH)/external/io_int/libwrfio_int.a
+LIBwrfio_netcdf = $(WRFPATH)/external/io_netcdf/libwrfio_nf.a
+OBJwrf_frame_pk = $(WRFPATH)/frame/pack_utils.o
+OBJwrf_sizeof_int = $(WRFPATH)/frame/module_machine.o
+WRFLIB = $(LIBwrfio_int) $(LIBwrfio_netcdf) $(OBJwrf_frame_pk) $(OBJwrf_sizeof_int)
+
+
+# Empty out definition of libs use by GMAO GSI building structure
+LIBtransf = #-L$(CORELIB) -ltransf
+LIBhermes = #-L$(CORELIB) -lhermes
+LIBgfio   = #-L$(CORELIB) -lgfio
+INChdf    = #-I$(BASEDIR)/$(ARCH)/include/hdf
+LIBhdf    = #-L$(BASEDIR)/$(ARCH)/lib  -lmfhdf -ldf -lhdfjpeg -lhdfz -lsz
+
+
+# ---------------------------
+# General targets/definitions
+# ---------------------------
+
+  AR     = ar -rv
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+  CF            = ftn
+  FC            = $(CF)
+
+#--- Normal mode options
+  PROF= #-pg
+  OMP = -openmp
+
+  FFLAGS_F90    = -D_REAL8_ -DWRF
+
+  FFLAGS_COM_N  = -I ./ -I $(CRTM_INC) -I $(SFCIO_INC4) -I $(SIGIO_INC4) \
+  		-I $(NEMSIO_INC) -I $(NETCDF_INCLUDE) -I $(W3EMC_INCd) \
+                -O3 -fp-model source -convert big_endian -assume byterecl \
+                -implicitnone $(OMP)
+
+  FFLAGS_COM_N_NOSWAP  = -I ./ -I $(CRTM_INC) -I $(SFCIO_INC4) -I $(SIGIO_INC4) \
+  		       -I $(NEMSIO_INC) -I $(NETCDF_INCLUDE) -I $(W3EMC_INCd) \
+                       -O3 -fp-model source -convert big_endian -assume byterecl \
+                       -implicitnone $(OMP)
+
+  FFLAGS_N  = $(FFLAGS_F90) $(FFLAGS_COM_N) $(PROF) 
+  FFLAGS_NOSWAP_N  = $(FFLAGS_F90) $(FFLAGS_COM_N_NOSWAP) $(PROF) 
+  FFLAGS_f  = $(FFLAGS_COM_N) $(PROF) 
+  FFLAGS    = $(FFLAGS_N) $(PROF) 
+
+
+#--- Debug mode options
+  FFLAGS_COM_D  =  -I ./ -I $(CRTM_INC) -I $(SFCIO_INC4) -I $(SIGIO_INC4) \
+  		-I $(NEMSIO_INC) -I $(NETCDF_INCLUDE) -I $(W3EMC_INCd) \
+  		-O0 -fp-model source -convert big_endian -assume byterecl \
+		-implicitnone -g -traceback -debug \
+                -ftrapuv -check all  -fp-stack-check  -fstack-protector -warn
+  FFLAGS_COM_NOSWAP_D  =  -I ./ -I $(CRTM_INC) -I $(SFCIO_INC4) -I $(SIGIO_INC4) \
+  		       -I $(NEMSIO_INC) -I $(NETCDF_INCLUDE) -I $(W3EMC_INCd) \
+  		       -O0 -fp-model source -convert big_endian -assume byterecl \
+		       -implicitnone -g -traceback -debug \
+                       -ftrapuv -check all  -fp-stack-check  -fstack-protector -warn
+  FFLAGS_D  = $(FFLAGS_F90) $(FFLAGS_COM_D)
+  FFLAGS_NOSWAP_D = $(FFLAGS_F90) $(FFLAGS_COM_NOSWAP_D)
+
+
+
+# ----------------------
+# C Compiler and options
+# ----------------------
+
+  CC            = cc
+
+#--- Normal mode options
+
+  CFLAGS_N      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -O3 $(OMP)
+
+#--- Debug mode options
+
+  CFLAGS_D      = -DLINUX -Dfunder -I ./ -DFortranByte=char -DFortranInt=int -DFortranLlong='long long' -g
+
+
+# ------------------
+# Linker and options
+# ------------------
+
+  LD            = $(CF)
+
+#--- Normal mode options
+
+  LIBS_N        = $(SP_LIBd) $(NEMSIO_LIB) $(BACIO_LIB4) $(SIGIO_LIB4) \
+  		$(SFCIO_LIB4) $(BUFR_LIBd) $(W3NCO_LIBd) $(W3EMC_LIBd) \
+  		$(CRTM_LIB) $(WRFLIB) $(NETCDF_LDFLAGS_F)
+#               -L../lib/GSD/gsdcloud4nmmb -lgsdcloud
+
+  LDFLAGS_N     = -mkl -Wl,-Map,loadmap.txt $(OMP)
+
+  LDFLAGS       = $(LDFLAGS_N)
+
+#--- Debug mode options
+
+  LIBS_D        = $(LIBS_N)
+
+  LDFLAGS_D     = -mkl -Wl,-Map,loadmap.txt
+
+#--- Empty out mpi library definition: embedded in compiler
+
+  LIBmpi	= 
