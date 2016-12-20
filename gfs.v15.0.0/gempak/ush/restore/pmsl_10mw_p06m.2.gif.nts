@@ -1,0 +1,21 @@
+GVCORD   none                 ! none               ! hght
+GLEVEL   0                    ! 0                  ! 10
+CONTUR   2
+SKIP     0
+SCALE    0
+CLEAR    yes
+CLRBAR   1|.8/2/2/sw
+CINT                           ! 2
+LINE     3                     ! 1//1/2            ! 1
+FINT     .01;.1;.25;.5;.75;1;1.25;1.5;1.75;2;2.5;3;4;5;6;7;8;9
+FLINE    0;21-30;14-20;5
+WIND     BM1
+TITLE    1/2/~ GFS   MSLP 10M WIND (KNOTS) 6-HR PRECIP (INCHES)!0
+TEXT     .8/3/2/c/sw 
+POSN     0
+MARKER   0
+GRDLBL   0
+FILTER   YES
+TYPE     f                     ! c                 ! b
+HILO                           ! 1/H#;L#/1015-1070;900-1012//      
+HLSYM    2;0.8//3/2/sw

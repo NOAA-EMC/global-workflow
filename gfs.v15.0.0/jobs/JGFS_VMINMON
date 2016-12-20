@@ -1,0 +1,141 @@
+#!/bin/sh
+###########################################################
+# GFS Minimization Monitor (MinMon) job
+###########################################################
+set -xa
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export envir=${envir:-prod}
+
+###############################
+# Specify NET and RUN name
+##############################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+
+###########################################################
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+
+export DATAROOT=${DATAROOT:-/tmpnwprod2}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+
+mkdir -p $DATA
+cd $DATA
+
+###############################################################
+# This block can be modified for different test environment
+###############################################################
+#if [ $RUN_ENVIR = prod -a $envir != prod ]; then
+#   export SENDCOM=${SENDCOM:-NO}
+#fi
+
+########################################################### 
+# obtain unique process id (pid) and make temp directories
+###########################################################
+export MINMON_SUFFIX=${MINMON_SUFFIX:-GFS}
+export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
+
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${m_job}.${pid}}
+if [[ -e $jlogfile ]]; then
+  rm -f $jlogfile
+fi
+
+
+##################################################
+# SENDECF  - Flag Events on ECF
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+# VERBOSE  - Specify Verbose Output 
+##################################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-NO}
+export SENDECF=${SENDECF:-NO}
+export VERBOSE=${VERBOSE:-YES}
+
+
+###################################
+# Set up the UTILITIES
+###################################
+export utilscript=${utilscript:-${UTILROOT}/ush}
+export utilexec=${utilexec:-${UTILROOT}/exec}
+
+
+##############################################
+# Specify Package Areas
+##############################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+
+export HOMEminmon=${HOMEminmon:-${NWROOT}/global_shared.${global_shared_ver}}
+export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
+export USHminmon=${USHminmon:-$HOMEminmon/ush}
+export FIXminmon=${FIXminmon:-${HOMEminmon/fix}}
+
+###################################
+# source the parm file
+###################################
+.  ${PARMgfs}/gfs_minmon.parm
+
+
+#############################################
+# Run setpdy and initialize PDY variables
+#############################################
+export cycle=t${cyc}z
+setpdy.sh
+. ./PDY
+
+
+#############################################
+# TANKverf - WHERE OUTPUT DATA WILL RESIDE
+#############################################
+M_TANKverf=${M_TANKverf:-${COMROOT}/${NET}/${envir}}
+M_TANKverfM0=${M_TANKverfM0:-${M_TANKverf}/${RUN}.${PDY}/minmon}
+export M_TANKverfM1=${M_TANKverfM1:-${M_TANKverf}/${RUN}.${PDYm1}/minmon}
+export M_TANKverf=$M_TANKverfM0
+
+export COM_IN=${COM_IN:-${COMROOT}/${NET}/${envir}}
+export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}}
+
+mkdir -p -m 775 $M_TANKverf
+ 
+
+########################################
+# Set necessary environment variables
+########################################
+export gsistat=${gsistat:-${COMIN}/gfs.t${cyc}z.gsistat}
+
+msg="JOB HAS STARTED"
+postmsg "$jlogfile" "$msg"
+
+########################################################
+# Execute the script.
+${GMONSH:-$SCRgfs/exgfs_vrfminmon.sh.ecf} ${PDY} ${cyc}
+########################################################
+
+msg="JOB COMPLETED NORMALLY"
+postmsg "$jlogfile" "$msg"
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-NO}
+cd ${DATAROOT}
+
+if [ ${KEEPDATA} = NO ] ; then
+  rm -rf ${DATA}
+fi
+
+

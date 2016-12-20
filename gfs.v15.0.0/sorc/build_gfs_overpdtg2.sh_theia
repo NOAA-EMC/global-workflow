@@ -1,0 +1,17 @@
+SHELL=/bin/sh
+
+######################################################################
+#
+# Build executable utility: overpdtg2 using module compile standard
+#
+######################################################################
+######################################################################
+
+. /apps/lmod/lmod/init/sh
+module purge
+source ../modulefiles/gfs_overpdtg2.theia
+
+cd overpdtg2.fd
+make
+make clean
+mv overpdtg2   ../../exec/

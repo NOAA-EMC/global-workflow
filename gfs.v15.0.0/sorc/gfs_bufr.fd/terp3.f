@@ -1,0 +1,124 @@
+C-----------------------------------------------------------------------
+      SUBROUTINE TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,
+     &                 KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C
+C SUBPROGRAM:    TERP3       CUBICALLY INTERPOLATE IN ONE DIMENSION
+C   PRGMMR: IREDELL          ORG: W/NMC23     DATE: 98-05-01
+C
+C ABSTRACT: INTERPOLATE FIELD(S) IN ONE DIMENSION ALONG THE COLUMN(S).
+C   THE INTERPOLATION IS CUBIC LAGRANGIAN WITH A MONOTONIC CONSTRAINT
+C   IN THE CENTER OF THE DOMAIN.  IN THE OUTER INTERVALS IT IS LINEAR.
+C   OUTSIDE THE DOMAIN, FIELDS ARE HELD CONSTANT.
+C
+C PROGRAM HISTORY LOG:
+C   98-05-01  MARK IREDELL
+C 1999-01-04  IREDELL  USE ESSL SEARCH
+C
+C USAGE:    CALL TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,
+C    &                 KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2)
+C   INPUT ARGUMENT LIST:
+C     IM           INTEGER NUMBER OF COLUMNS
+C     IXZ1         INTEGER COLUMN SKIP NUMBER FOR Z1
+C     IXQ1         INTEGER COLUMN SKIP NUMBER FOR Q1
+C     IXZ2         INTEGER COLUMN SKIP NUMBER FOR Z2
+C     IXQ2         INTEGER COLUMN SKIP NUMBER FOR Q2
+C     NM           INTEGER NUMBER OF FIELDS PER COLUMN
+C     NXQ1         INTEGER FIELD SKIP NUMBER FOR Q1
+C     NXQ2         INTEGER FIELD SKIP NUMBER FOR Q2
+C     KM1          INTEGER NUMBER OF INPUT POINTS
+C     KXZ1         INTEGER POINT SKIP NUMBER FOR Z1
+C     KXQ1         INTEGER POINT SKIP NUMBER FOR Q1
+C     Z1           REAL (1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
+C                  INPUT COORDINATE VALUES IN WHICH TO INTERPOLATE
+C                  (Z1 MUST BE STRICTLY MONOTONIC IN EITHER DIRECTION)
+C     Q1           REAL (1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
+C                  INPUT FIELDS TO INTERPOLATE
+C     KM2          INTEGER NUMBER OF OUTPUT POINTS
+C     KXZ2         INTEGER POINT SKIP NUMBER FOR Z2
+C     KXQ2         INTEGER POINT SKIP NUMBER FOR Q2
+C     Z2           REAL (1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+C                  OUTPUT COORDINATE VALUES TO WHICH TO INTERPOLATE
+C                  (Z2 NEED NOT BE MONOTONIC)
+C     
+C   OUTPUT ARGUMENT LIST:
+C     Q2           REAL (1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+C                  OUTPUT INTERPOLATED FIELDS
+C
+C SUBPROGRAMS CALLED:
+C   RSEARCH      SEARCH FOR A SURROUNDING REAL INTERVAL
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN
+C
+C$$$
+      REAL Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
+      REAL Q1(1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
+      REAL Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+      REAL Q2(1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+      REAL FFA(IM),FFB(IM),FFC(IM),FFD(IM)
+      INTEGER K1S(IM,KM2)
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
+      CALL RSEARCH(IM,KM1,IXZ1,KXZ1,Z1,KM2,IXZ2,KXZ2,Z2,1,IM,K1S)
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  GENERALLY INTERPOLATE CUBICALLY WITH MONOTONIC CONSTRAINT
+C  FROM TWO NEAREST INPUT POINTS ON EITHER SIDE OF THE OUTPUT POINT,
+C  BUT WITHIN THE TWO EDGE INTERVALS INTERPOLATE LINEARLY.
+C  KEEP THE OUTPUT FIELDS CONSTANT OUTSIDE THE INPUT DOMAIN.
+      DO K2=1,KM2
+        DO I=1,IM
+          K1=K1S(I,K2)
+          IF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
+            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z1A=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
+            Z1B=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
+            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)
+            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)
+          ELSEIF(K1.GT.1.AND.K1.LT.KM1-1) THEN
+            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z1A=Z1(1+(I-1)*IXZ1+(K1-2)*KXZ1)
+            Z1B=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
+            Z1C=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
+            Z1D=Z1(1+(I-1)*IXZ1+(K1+1)*KXZ1)
+            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)*
+     &             (Z2S-Z1C)/(Z1A-Z1C)*
+     &             (Z2S-Z1D)/(Z1A-Z1D)
+            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)*
+     &             (Z2S-Z1C)/(Z1B-Z1C)*
+     &             (Z2S-Z1D)/(Z1B-Z1D)
+            FFC(I)=(Z2S-Z1A)/(Z1C-Z1A)*
+     &             (Z2S-Z1B)/(Z1C-Z1B)*
+     &             (Z2S-Z1D)/(Z1C-Z1D)
+            FFD(I)=(Z2S-Z1A)/(Z1D-Z1A)*
+     &             (Z2S-Z1B)/(Z1D-Z1B)*
+     &             (Z2S-Z1C)/(Z1D-Z1C)
+          ENDIF
+        ENDDO
+C  INTERPOLATE.
+        DO N=1,NM
+          DO I=1,IM
+            K1=K1S(I,K2)
+            IF(K1.EQ.0) THEN
+              Q2S=Q1(1+(I-1)*IXQ1+(N-1)*NXQ1)
+            ELSEIF(K1.EQ.KM1) THEN
+              Q2S=Q1(1+(I-1)*IXQ1+(KM1-1)*KXQ1+(N-1)*NXQ1)
+            ELSEIF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
+              Q1A=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
+              Q1B=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
+              Q2S=FFA(I)*Q1A+FFB(I)*Q1B
+            ELSE
+              Q1A=Q1(1+(I-1)*IXQ1+(K1-2)*KXQ1+(N-1)*NXQ1)
+              Q1B=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
+              Q1C=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
+              Q1D=Q1(1+(I-1)*IXQ1+(K1+1)*KXQ1+(N-1)*NXQ1)
+              Q2S=MIN(MAX(
+     &            FFA(I)*Q1A+FFB(I)*Q1B+FFC(I)*Q1C+FFD(I)*Q1D,
+     &            MIN(Q1B,Q1C)),MAX(Q1B,Q1C))
+            ENDIF
+            Q2(1+(I-1)*IXQ2+(K2-1)*KXQ2+(N-1)*NXQ2)=Q2S
+          ENDDO
+        ENDDO
+      ENDDO
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      END

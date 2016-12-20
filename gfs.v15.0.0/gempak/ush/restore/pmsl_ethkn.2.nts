@@ -1,0 +1,20 @@
+GLEVEL  500 !500 !0
+GVCORD  pres!pres!none
+PANEL   0                                                                       
+SKIP    1   !0                                          
+SCALE   -1  !-1  !0
+GDPFUN  sub(hght,mul(8.0,sub(pmsl@0%none,1000))))//x!x!pmsl
+TYPE    c                                                                       
+CONTUR  7
+CINT    6/0/540 !6/546/999    !4                                          
+LINE    6/3/2   !2/3/2        !20//3                                      
+FINT                                                                            
+FLINE                                                                           
+HILO    !! 26;2/H#;L#/1020-1070;900-1012//30;30/y                                                 
+HLSYM   2;1.5//3/2/sw                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    Bk0                    
+REFVEC                                                                          
+TITLE   5/-2/~ PMSL, EST 1000-500 MB THICKNESS|~ MSLP, EST 1000-500 THKN!
+TEXT    .8/3/2/c/sw                                                                
+CLEAR   yes                                                                     

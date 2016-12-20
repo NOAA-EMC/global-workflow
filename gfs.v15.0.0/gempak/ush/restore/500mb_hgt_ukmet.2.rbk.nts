@@ -1,0 +1,17 @@
+GAREA   awnh
+PROJ    
+PANEL   0
+CONTUR  2
+MAP     1
+CLEAR   yes
+CLRBAR  0
+LATLON  1
+GLEVEL  500                                                                     
+GVCORD  PRES                                                                    
+SKIP    0            
+SCALE   -1           
+GDPFUN  sm5s(hght)         
+TYPE    c
+CINT    6           
+LINE    1/1/2/1             
+TEXT    .8/21//hw                                                              

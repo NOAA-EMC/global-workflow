@@ -1,0 +1,297 @@
+#!/bin/ksh 
+
+set -xa
+
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+if [ $RUN_ENVIR != nco ] ; then
+  PBEG=${PBEG:-""}
+  $PBEG
+fi
+
+export PS4='$SECONDS + '
+date
+
+# #### 02/02/16 #####################
+# SETUP GFS FCST PROCESSING VARIABLES
+# ###################################
+
+#####################################
+# obtain unique process id (pid) and make temp directory
+#####################################
+export pid=${pid:-$$}
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
+export DATA=${DATA:-$DATAROOT/${job}.${pid}}
+mkdir -p $DATA
+cd $DATA
+
+export cyc=${cyc:-00}
+export cycle=t${cyc}z
+
+####################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+####################################
+# Specify version numbers
+####################################
+export gfs_ver=${gfs_ver:-v13.0.0}
+export global_shared_ver=${global_shared_ver:-v13.0.0}
+export NWROOT=${NWROOT:-/nwprod2}
+export COMROOT=${COMROOT:-/com2}
+export GESROOT=${GESROOT:-/nwges2}
+
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+####################################
+# SAVEGES  - Copy Files From TMPDIR to $GESdir
+# RERUN    - Rerun fcst from beginning (default no)
+# VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
+####################################
+export SAVEGES=${SAVEGES:-YES}
+export RERUN=${RERUN:-NO}
+export VERBOSE=${VERBOSE:-YES}
+
+####################################
+# Specify Execution Areas
+####################################
+export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export HOMEglobal=${HOMEglobal:-$NWROOT/global_shared.${global_shared_ver}}
+export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
+export FIXgsm=${FIXgsm:-$HOMEglobal/fix/fix_am}
+export USHgsm=${USHgsm:-$HOMEglobal/ush}
+export PARMgsm=${PARMgsm:-$HOMEglobal/parm}
+
+export ERRSCRIPT=err_chk
+export LOGSCRIPT=startmsg
+
+##############################
+# Run setpdy and initialize PDY variables
+##############################
+setpdy.sh
+. PDY
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+mkdir -m 775 -p $COMOUT
+
+##############################################
+# Define GES directories
+##############################################
+gespath=${gespath:-$GESROOT/${envir}}
+export GESdir=${GESdir:-$gespath/${RUN}.${PDY}}
+mkdir -m 775 -p $GESdir
+
+####################################
+# Specify Special Fcst Vars
+####################################
+. ${PARM_GFSFCST_HIGH:-$PARMgfs/gfs_forecast_high.parm}
+
+#
+# Output File Names
+#
+export SIGO=${SIGO:-$COMOUT/$RUN.$cycle.sf'${FH}'}
+export SFCO=${SFCO:-$COMOUT/$RUN.$cycle.bf'${FH}'}
+export FLXO=${FLXO:-$COMOUT/$RUN.$cycle.sfluxgrbf'${FH}'}
+export G3DO=${G3DO:-$COMOUT/$RUN.$cycle.g3df'${FH}'}
+export LOGO=${LOGO:-$COMOUT/$RUN.$cycle.logf'${FH}'}
+#
+# Restart File Names
+#
+export SIGR1=${SIGR1:-$GESdir/$RUN.$cycle.sigr1.t${JCAP}l${LEVS}}
+export SIGR2=${SIGR2:-$GESdir/$RUN.$cycle.sigr2.t${JCAP}l${LEVS}}
+export SFCR=${SFCR:-$GESdir/$RUN.$cycle.sfcr.t${JCAP}l${LEVS}}
+
+
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+
+####################################
+# Check if this is a restart
+# Define Initialization File Names
+####################################
+
+export FHROT=0         # Forecast hour to Read One Time level
+export FHOUT=3         # Forecast Hour Output Frequency
+export FHMAX=240       # Forecast Length (Hours)
+export FHOUT_HF=1                  # High Frequency Forecast Output Interval
+# JY export FHMAX_HF=${FHMAX_HF:-12}    # High Frequency Forecast Length (Hours)
+export FHMAX_HF=${FHMAX_HF:-120}    # High Frequency Forecast Length (Hours)
+fhm=48;   if [ ! -f $COMOUT/$RUN.$cycle.sf$fhm ]; then RERUN=YES ; fi
+
+#-------------------------------
+if [ $RERUN = NO ] ; then
+#-------------------------------
+
+ #start from restart files if they exist 
+ SIZESIGR1=0; if [ -f $SIGR1 ]; then SIZESIGR1=$(stat -c %s $SIGR1) ;fi
+ SIZESIGR2=0; if [ -f $SIGR2 ]; then SIZESIGR2=$(stat -c %s $SIGR2) ;fi
+ SIZESFCR=0;  if [ -f $SFCR ];  then SIZESFCR=$(stat -c %s $SFCR) ;fi
+ #...............................
+ if [ $SIZESIGR1 -gt 100 -a $SIZESIGR2 -gt 100 -a $SIZESFCR -gt 100 ]; then
+ #...............................
+  cp $SIGR1 $DATA/sigr1
+  cp $SIGR2 $DATA/sigr2
+  cp $SFCR $DATA/sfcr
+
+  export SIGI=$DATA/sigr1
+  export SIGI2=$DATA/sigr2
+  export SFCI=$DATA/sfcr
+
+  msg="Forecast Starting with Restart files in $GESdir"
+  postmsg "$jlogfile" "$msg"
+
+ #...............................
+ else   ##start from history files                    
+ #...............................
+  #first search for avaliable history files in com dir
+  fhr=$FHMAX;   testfile=$COMOUT/$RUN.$cycle.sf$fhr
+  while test ! -f $testfile -a $fhr -gt $fhm ;do
+   fhr=`expr $fhr - $FHZER `
+   testfile=$COMOUT/$RUN.$cycle.sf$fhr
+  done
+
+  export FHROT=`expr $fhr - $FHZER`
+  SIGR1=$COMOUT/$RUN.$cycle.sf$FHROT
+  SFCR=$COMOUT/$RUN.$cycle.bf$FHROT
+
+  cp $SIGR1 $DATA/sigr1
+  cp $SFCR $DATA/sfcr
+
+  export SIGI=$DATA/sigr1
+  export SIGI2=/dev/null   
+  export SFCI=$DATA/sfcr
+
+  if [ -f $SIGI -a -f $SFCI ] ; then
+     msg="Forecast Starting with history files in $COMOUT"
+     postmsg "$jlogfile" "$msg"
+  else
+     msg="History Files Not Available for $job; restart from analyses"
+     postmsg "$jlogfile" "$msg"
+     unset SIGI SIGI2 SFCI
+     export RERUN=YES
+  fi
+ #...............................
+ fi
+ #...............................
+#-------------------------------
+fi
+#-------------------------------
+
+#-------------------------------
+##start from analysis files 
+if [ $RERUN = YES ] ; then
+#-------------------------------
+  export FHROT=0      # Forecast hour to Read One Time level
+  export SIGI=${SIGI:-$GESdir/$RUN.t${cyc}z.sanl}
+  export SFCI=${SFCI:-$GESdir/$RUN.t${cyc}z.sfcanl}
+
+  if [ -f $SIGI -a -f $SFCI ] ; then
+     msg="Forecast Starting with Initial Guess Fields"
+     postmsg "$jlogfile" "$msg"
+  else
+     msg="FATAL ERROR initial Guess Fields Not Available/Rerun $job"
+     postmsg "$jlogfile" "$msg"
+     export pgm=$job
+     export err=911
+     $ERRSCRIPT
+  fi
+#-------------------------------
+fi
+#-------------------------------
+
+############################################################
+## The following is set in ecflow script
+# ulimit -s unlimited
+#export NTHREADS=${NTHREADS:-${OMP_NUM_THREADS:-4}}
+#export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$NTHREADS}
+#export MP_EUIDEVICE=${MP_EUIDEVICE:-min}
+#export MP_EUILIB=${MP_EUILIB:-us}
+#export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:$OMP_NUM_THREADS}
+#export MP_EUIDEVELOP=${MP_EUIDEVELOP:-min}
+#export KMP_STACKSIZE=${KMP_STACKSIZE:-2048m}
+#export F_UFMTENDIAN=${F_UFMTENDIAN:-big}
+#export MPICH_ALLTOALL_THROTTLE=${MPICH_ALLTOALL_THROTTLE:-0}
+#export MP_SINGLE_THREAD=${MP_SINGLE_THREAD:-yes}
+#export MP_EAGER_LIMIT=${MP_EAGER_LIMIT:-65536}
+#export MP_USE_BULK_XFER=${MP_USE_BULK_XFER:-no}
+#export MP_SHARED_MEMORY=${MP_SHARED_MEMORY:-yes}
+#export MP_MPILIB=${MP_MPILIB:-mpich2}
+#export MP_LABELIO=${MP_LABELIO:-yes}
+#export MP_STDOUTMODE=${MP_STDOUTMODE:-unordered}
+#export MP_COLLECTIVE_OFFLOAD=${MP_COLLECTIVE_OFFLOAD:-no}
+#export APRUN=${APRUN:-mpirun.lsf}
+############################################################
+
+env
+
+######################
+# PDS Grid Designator
+######################
+export IGEN=81
+
+#
+# Execute the Forecast script
+#
+
+$LOGSCRIPT
+
+FORECASTSH=${FORECASTSH:-$HOMEglobal/scripts/exglobal_fcst.sh.ecf}
+export FCSTEXEC=${FCSTEXEC:-${EXECgsm}/global_fcst} 
+$FORECASTSH
+
+# Determine whether or not to run 12-hour spin-up for low job
+SPINUPLOW=${SPINUPLOW:-NO}
+
+# for the chgres in the forecast low job
+if [ $SPINUPLOW = YES ]; then
+ spinstartfh=$((FHMAX-12))
+ cp ${COMOUT}/$RUN.$cycle.sf${spinstartfh} $GESdir
+ cp ${COMOUT}/$RUN.$cycle.bf${spinstartfh} $GESdir
+else
+ cp ${COMOUT}/$RUN.$cycle.sf${FHMAX} $GESdir
+ cp ${COMOUT}/$RUN.$cycle.bf${FHMAX} $GESdir
+fi
+
+cp $SIGR1 $GESdir/$RUN.$cycle.sigr1.f$FHMAX
+cp $SIGR2 $GESdir/$RUN.$cycle.sigr2.f$FHMAX
+cp $SFCR $GESdir/$RUN.$cycle.sfcr.f$FHMAX
+
+#
+cat $pgmout
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+date
+
+##############################
+# Remove the Temporary working directory
+##############################
+cd $DATAROOT
+
+# JY if [ ${RM_TMPDIR:-YES} = YES ] ; then rm -rf $DATA ; fi
+if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+
+if [ $RUN_ENVIR != nco ] ; then
+     PEND=${PEND:-""}
+     export CSTEP=fcst1
+    $PEND
+fi
+date

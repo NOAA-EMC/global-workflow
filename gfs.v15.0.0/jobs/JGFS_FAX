@@ -1,0 +1,102 @@
+#!/bin/sh
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+############################################
+# GFS FAX PRODUCT GENERATION
+############################################
+
+##########################################################
+# obtain unique process id (pid) and make temp directory
+##########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+. PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export model=${model:-gfs}
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMINhourly=${COMINhourly:-${COMROOTp1}/${NET}/${envir}/hourly.${PDY}}
+export COMINm1=${COMINm1:-${COMROOT}/${NET}/${envir}/${RUN}.${PDYm1}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export PCOM=${PCOM:-${PCOMROOT}/${NET}}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -m 775 -p $COMOUT $PCOM
+fi
+
+export pgmout=OUTPUT.$$
+
+env
+
+############################################################
+# The PATH has been modified to pick up the NCAR graphics.
+# The variable NCARG_ROOT is also needed for NCAR graphics.
+############################################################
+export NCARG_ROOT=/usrx/local/NCL_NCARG-6.1.0_gcc446/OpenNDAPenabled
+export PATH="$PATH":/usrx/local/NCL_NCARG-6.1.0_gcc446/OpenNDAPenabled/bin
+
+########################################################
+# Execute the script.
+$HOMEgfs/scripts/exgfs_fax.sh.ecf $fcsthrs
+export err=$?; err_chk
+########################################################
+
+msg="JOB $job HAS COMPLETED NORMALLY!"
+postmsg $jlogfile "$msg"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ] ; then
+  rm -rf $DATA
+fi
+
+date

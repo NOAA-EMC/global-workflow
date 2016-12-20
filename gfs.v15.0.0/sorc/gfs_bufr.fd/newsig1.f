@@ -1,0 +1,65 @@
+C-----------------------------------------------------------------------
+      SUBROUTINE NEWSIG(NSIL,IDVC,LEVS,NVCOORD,VCOORD,IRET)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C
+C SUBPROGRAM: NEWSIG         GET NEW SIGMA STRUCTURE
+C   PRGMMR: IREDELL          ORG: W/NMC23     DATE: 98-04-03
+C
+C ABSTRACT: READ IN INTERFACE SIGMA VALUES (OR USE OLD VALUES)
+C   AND COMPUTE FULL SIGMA VALUES.
+
+C PROGRAM HISTORY LOG:
+C   98-04-03  IREDELL
+C
+C USAGE:    CALL NEWSIG(NSIL,IDVC,LEVS,NVCOORD,VCOORD,IRET)
+C   INPUT ARGUMENTS:
+C     NSIL         INTEGER UNIT NUMBER OF NEW SIGMA INTERFACE VALUES
+C     IDVC         INTEGER VERTICAL COORDINATE ID
+C     LEVS         INTEGER NEW NUMBER OF LEVELS
+C     NVCOORD      INTEGER NEW NUMBER OF VERTICAL COORDINATES
+C   OUTPUT ARGUMENTS:
+C     VCOORD       REAL (LEVS+1,NVCOORD) NEW VERTICAL COORDINATES
+C     IRET         INTEGER RETURN CODE
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN
+C
+C$$$
+      REAL VCOORD(LEVS+1,NVCOORD)
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  READ VERTICAL COORDINATES
+      READ(NSIL,*,IOSTAT=IRET) IDVCI,LEVSI,NVCOORDI
+      IF(IRET.EQ.0) THEN
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        READ(NSIL,*,IOSTAT=IRET) ((VCOORD(K,N),N=1,NVCOORD),K=1,LEVS+1)
+        IF(IRET.NE.0) RETURN
+        IF(IDVCI.NE.IDVC.OR.LEVSI.NE.LEVS) IRET=28
+        IF(NVCOORDI.NE.NVCOORD) IRET=28
+        IF(IRET.NE.0) RETURN
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  READ INTERFACE HYBRID VALUES
+      ELSE
+        REWIND NSIL
+        READ(NSIL,*,IOSTAT=IRET) IDVCI
+        REWIND NSIL
+        IF(IRET.EQ.0.AND.(IDVCI.EQ.2.OR.IDVCI.EQ.3)) THEN
+          READ(NSIL,*,IOSTAT=IRET) IDVCI,LEVSI
+          READ(NSIL,*,IOSTAT=IRET) (VCOORD(K,1),VCOORD(K,2),K=1,LEVS+1)
+          IF(IRET.NE.0) RETURN
+          IF(IDVCI.NE.IDVC.OR.LEVSI.NE.LEVS) IRET=28
+          IF(IRET.NE.0) RETURN
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  READ INTERFACE SIGMA VALUES
+        ELSE
+          VCOORD(1,1)=1.
+          VCOORD(LEVS+1,1)=0.
+          READ(NSIL,*,IOSTAT=IRET) LEVSI
+          READ(NSIL,*,IOSTAT=IRET) (VCOORD(K,1),K=2,LEVS)
+          IF(IRET.NE.0) RETURN
+          IF(LEVSI.NE.LEVS) IRET=28
+          IF(IRET.NE.0) RETURN
+        ENDIF
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      ENDIF
+      IRET=0
+      END

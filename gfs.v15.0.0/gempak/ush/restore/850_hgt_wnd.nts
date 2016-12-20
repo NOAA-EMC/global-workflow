@@ -1,0 +1,12 @@
+GLEVEL  850                                                                     
+GVCORD  PRES                                                                    
+GDPFUN  sm9s(sm9s(sm9s(hght)))   ! kntv(wnd)
+SCALE   -1                       ! 0
+TYPE    c                        ! b
+WIND    bk1///112
+CONTUR  2 
+CINT    3                        ! 5
+LINE    4/31/2/1/1
+HILO    1/H#;L#//8//yes          ! 0
+HLSYM   2.0;1.0/2/3/5/sw         ! 0 
+CLRBAR  0

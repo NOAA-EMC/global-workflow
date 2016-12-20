@@ -1,0 +1,199 @@
+#!/bin/ksh
+
+#####################################################################
+echo "------------------------------------------------"
+echo "Fax Charts generation Script -- exgfs_fax.sh.ecf    "
+echo "------------------------------------------------"
+echo "History: OCT 2004  Julia Zhu--First implementation of script."
+echo "History: OCT 2005  Lilly -- Converted fax graphics to T4 format"
+echo "                            and stopped writing to the stat file."
+echo "History: JAN 2006  Lilly -- Removed the Process 48 hour Hawaiian "
+echo "                            Merc fax."
+echo "                         -- Removed the Process Generates FAX charts"
+echo "                            for the South American Desk."
+echo "                         -- Removed the Process 24 hour Southern "
+echo "                            Hemisphere Fax Products."
+echo "History: APR 2006  Lilly -- Restore the ANAL 200MB HGT/TEMP NH GIF products "
+echo "                         -- for NCDC"
+echo "History: JUN 2006  Lilly -- Removed the Verian/Fax charts for the South  "
+echo "                         -- American Desk "
+echo "History: APR 2008  Lilly -- Removed the postscript chart ANL_070MB_HGT_WIND"
+echo "                         -- as requested by the SDM"
+#
+#####################################################################
+
+cd $DATA
+fhr=$1
+
+##########################################
+#
+# START FLOW OF CONTROL
+#
+#   1) Process the dump and anl post analysis
+#      previously job 551 and job 552
+#   2) FAXMAKR - This replaces PEPFAXV on the HDS.
+#      Generates both the 1:40M and the 1:20M North American Maps.
+#   3) WAFS Charts 
+#   4) TRPSFPRV
+#
+#########################################
+
+########################################
+set -x
+msg="HAS BEGUN!"
+postmsg "$jlogfile" "$msg"
+########################################
+
+set +x
+echo "#####################################################"
+echo " Part 1) GFS ANL Post Processing "
+echo "     previously job 551 & 552    "
+echo "#####################################################"
+set -x
+
+if [ $fhr = "anl" ]
+then
+   # for the testing purpose
+   $USHgfs/gfs_postanl1.sh
+
+   if [ $cyc = "00" -o $cyc = "12" ]
+   then
+      $USHgfs/gfs_postanl2.sh
+   fi
+
+   exit
+fi
+
+###############################################
+# Wait for the availability of the pgrib file
+###############################################
+icnt=1
+while [ $icnt -lt 1000 ]
+do
+  if test $fcsthrs -lt 100
+  then
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f0$fcsthrs
+  else
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f$fcsthrs
+  fi
+  if [ -s $COMIN/$grib2file ]
+  then
+    break
+  fi
+
+  sleep 10
+  icnt=$((icnt + 1))
+  if [ $icnt -ge 180 ]
+  then
+      msg="ABORTING after 30 min of waiting for the pgrib file!"
+   err_exit $msg
+  fi
+done
+
+#################################
+# Get the  Data from com
+#################################
+hr=00
+inc=6
+while [ $hr -le $fhr ]
+do
+  if test $fcsthrs -lt 100
+  then
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f0${hr}
+  else
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f${hr}
+  fi
+  cp $COMIN/$grib2file  .
+  $CNVGRIB -g21 $grib2file pgrbf${hr}
+  $GRBINDEX pgrbf${hr}  pgrbif${hr}
+  hr=`expr $hr + $inc`
+  if [ $hr -lt 10 ]; then hr=0$hr; fi
+done
+echo $cyc
+if [ $cyc -eq 00 -o $cyc -eq 12 ] 
+then
+
+  set +x
+  echo "#####################################################"
+  echo " Part 2) Process FAX/Varian FAXMAKR  PRODUCTS "
+  echo "#####################################################"
+  set -x
+
+  if [ $fhr -eq 00 ]
+  then
+
+     hour="anl 00"
+     faxparm=graph_faxmakr.${model}_${cycle}.${fhr}
+     FAXOUT=varfaxgfs$cyc$fhr.gfs
+     sendkey=fax.pepfax$fhr
+
+     jobn=_$cyc"_"$PDY
+     mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
+
+     KEYW=NHANL_g
+
+     grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+
+     if [ ${cyc} = '00' ]; then submn=$sub00; fi
+     if [ ${cyc} = '12' ]; then submn=$sub12; fi
+
+     echo $FAXOUT $submn $name $Keyword $gif $toc $prt $jobn $lprt
+     export FAXOUT submn name Keyword gif toc prt jobn lprt
+     mk_graphics.sh
+
+  fi
+
+  set +x
+#  echo "####################################################"
+#  echo " Part 4) Create the WAFS charts for 06-36  "
+#  echo "####################################################"
+  set -x
+
+#  if [ $fhr -ge 12 -a $fhr -le 36 ]
+#  then
+#     fhrm1=`expr $fhr - 6`
+#     if [ $fhrm1 -lt 10 ]; then fhrm1=0$fhrm1; fi
+#     hour="$fhrm1 $fhr"
+#     sh $USHutil/expltwafs.sh $hour "a b1 f f1 h i j c d e g m"
+#  fi
+
+  echo "##############################################"
+  echo " Part 11) Execute TRPSFPRV for GFS at hour=48"
+  echo "##############################################"
+
+  if [ $fhr -eq 48 -a $cyc = "12" ]
+  then
+
+     FAXOUT=trpsfprv.faxx.${model}_${cyc}
+     trpsfprv.sh 
+     jobn=${model}_fax_${cyc}
+
+     for KEYW in TRPSFG01 TRPSFG02 TRPSFG03
+     do
+
+    grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+
+     submn=$sub12
+
+     export FAXOUT submn name Keyword gif toc prt jobn lprt
+     mk_graphics.sh
+
+     done
+  fi
+
+fi
+
+#####################################################################
+# GOOD RUN
+set +x
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $job COMPLETED NORMALLY ON THE IBM"
+set -x
+#####################################################################
+
+ 
+msg="HAS COMPLETED NORMALLY!"
+postmsg "$jlogfile" "$msg"
+ 
+############## END OF SCRIPT #######################

@@ -1,0 +1,151 @@
+#####################################################################
+echo "-----------------------------------------------------"
+echo " exglobal_1dgrib_special.sh.ecf" 
+echo " Jan 2008 - Chuang - Produces 1x1 degree special Grib from master."
+echo "-----------------------------------------------------"
+#####################################################################
+
+set -x
+
+cd $DATA
+
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+
+############################################################
+#  Define Variables:
+#  -----------------
+#  SHOUR        is the starting forecast hour. normally 0 except for restarts.
+#  FHOUR        is the ending forecast hour.
+#  FHINC        is the increment hour for each forecast steps.
+#  FH           is the current forecast hour.
+#  SLEEP_TIME   is the number of seconds to sleep before exiting with error.
+#  SLEEP_INT    is the number of seconds to sleep between restrt file checks.
+#  restart_file is the name of the file to key off of to kick off pgrb 
+#               generation.
+############################################################
+
+############################################################
+# NO processing Analysis special Files 
+############################################################
+
+SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+
+export fhr=$SHOUR
+if test $fhr -lt 10 -a $fhr -gt 0
+then
+   export fhr="0$fhr"
+fi
+############################################################
+# Loop Through the Post Forecast Files 
+############################################################
+while test $fhr -le $FHOUR
+do
+
+    ###############################
+    # Start Looping for the 
+    # existence of the restart files
+    ###############################
+    set +x
+    export pgm="postcheck"
+    ic=1
+    while [ $ic -le $SLEEP_LOOP_MAX ]
+    do
+       if test -f $restart_file$fhr
+       then
+          break
+       else
+          ic=`expr $ic + 1`
+          sleep $SLEEP_INT
+       fi
+       ###############################
+       # If we reach this point assume
+       # fcst job never reached restart 
+       # period and error exit
+       ###############################
+       if [ $ic -eq $SLEEP_LOOP_MAX ]
+       then
+          export err=9
+          err_chk
+       fi
+    done
+    set -x
+
+    msg="Starting special grib file generation for fhr=$fhr"
+    postmsg "$jlogfile" "$msg"
+
+    ###############################
+    # Put restart files into /nwges 
+    # for backup to start Model Fcst
+    ###############################
+
+    cp $COMIN/${RUN}.t${cyc}z.special.grb2f$fhr masterfile
+
+    $COPYGB2 -g "0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0" -i1,1 -x masterfile pgb2file
+# creating higher resolution goes files for US centers    
+    $COPYGB2 -g "30 6 0 0 0 0 0 0 349 277 1000000 214500000 8 50000000 253000000 32463000 32463000 0 64 50000000 50000000 0 0" -i1,1 -x masterfile pgb2file2 
+    $WGRIB2 pgb2file -s > pgb2ifile
+    $CNVGRIB21_GFS -g21 pgb2file pgbfile
+    $GRBINDEX pgbfile pgifile
+    $CNVGRIB21_GFS -g21 pgb2file2 pgbfile2
+    $GRBINDEX pgbfile2 pgifile2
+
+
+    export fhr3=$fhr
+    if [ $fhr3 -lt 100 ]; then
+      export fhr3="0$fhr3"
+#    elif [ $fhr3 -gt 10 -a $fhr3 -lt 100 ]; then
+#      export fhr3="0$fhr3"
+    fi
+    if test $SENDCOM = "YES"
+    then
+       cp pgbfile $COMOUT/${RUN}.${cycle}.goessimpgrbf${fhr}
+       cp pgifile $COMOUT/${RUN}.${cycle}.goessimpgrbif${fhr}
+       cp pgb2file $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr3}
+       cp pgb2ifile $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr3}.idx
+       cp pgbfile2 $COMOUT/${RUN}.${cycle}.goessimpgrb221f${fhr}
+       cp pgifile2 $COMOUT/${RUN}.${cycle}.goessimpgrb221if${fhr}
+       cp pgb2file2 $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221
+
+       if test $SENDDBN = "YES"
+       then
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr3}
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr3}.idx
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMGRD221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr3}.grd221
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB $job $COMOUT/${RUN}.${cycle}.goessimpgrbf$fhr
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGBI $job $COMOUT/${RUN}.${cycle}.goessimpgrbif$fhr
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIM221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb221f$fhr
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIM221I_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb221if$fhr
+
+       fi
+
+       if test $fhr -lt 100
+       then
+          pad="0"
+       else
+          pad=""
+       fi
+       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.control.goessimpgrb
+    fi
+    rm pgbfile pgifile pgb2file pgbfile2 pgifile2 pgb2file2
+
+    if test "$SENDECF" = 'YES'
+    then
+       export fhour=`expr ${fhr} % 6 `
+    fi
+
+    export fhr=`expr $fhr + $FHINC`
+    if test $fhr -lt 10
+    then
+       export fhr="0$fhr"
+    fi
+done
+
+#cat $pgmout
+
+########################################################
+
+msg='ENDED NORMALLY.'
+postmsg "$jlogfile" "$msg"
+
+################## END OF SCRIPT #######################

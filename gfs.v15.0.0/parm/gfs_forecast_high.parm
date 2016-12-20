@@ -1,0 +1,52 @@
+####################################
+# Specify GFS Special Forecast Vars
+# For First High Resolution Segment
+####################################
+ 
+export JCAP=${JCAP:-1534}            # Spectral Truncation
+export LONB=${LONB:-3072}            # Number of Longitudes
+export LATB=${LATB:-1536}            # Number of Latitudes
+export LONR=${LONR:-3072}            # Number of Physics Longitudes
+export LATR=${LATR:-1536}            # Number of Physics Latitudes
+export LONF=${LONF:-3072}
+export LATG=${LATG:-1536}
+#
+export LEVS=${LEVS:-64}             # Number of vertical levels
+#
+export DELTIM=${DELTIM:-450}        # Time step
+export DTPHYS=${DTPHYS:-225}        # Time step for physics
+
+export CO2CON=${CO2CON:-$FIXgsm/global_co2con.l${LEVS}.f77}
+export CO2DIR=${CO2DIR:-$FIXgsm/fix_co2_proj}
+export CO2_seasonal_cycle=${CO2_seasonal_cycle:-$FIXgsm/global_co2monthlycyc1976_2006.txt}
+export O3FORC=${O3FORC:-$FIXgsm/global_o3prdlos.f77}
+export O3CLIM=${O3CLIM:-$FIXgsm/global_o3clim.txt}
+export MTNVAR=${MTNVAR:-$FIXgsm/global_mtnvar.t${JCAP}.$LONB.$LATB.f77}
+export OROGRAPHY=${OROGRAPHY:-$FIXgsm/global_orography.t$JCAP.$LONB.$LATB.grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF:-$FIXgsm/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export LONSPERLAT=${LONSPERLAT:-$FIXgsm/global_lonsperlat.t$JCAP.$LONB.$LATB.txt}
+export FNTSFC=${FNTSFC:-${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb}
+export FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+
+############################################################
+# Input parameters to the Model
+############################################################
+export FHRES=264       # Forecast Hour Restart Frequency (264 turned off)
+export FHZER=6         # Interval to Zero out precip field,etc. Should not be less that FHOUT
+export FHDFI=3         # Half number of hours of digital filter initialization
+export FHCYC=24        # Surface cycling boundary condition update frequency in hours
+export FHLWR=3600      # LW radiation calling interval (seconds)
+export FHSWR=3600      # SW radiation calling interval (seconds)
+export IEMS=1          # 0-blackbody ground emission; 1-climatology on one-deg map
+export ISOL=2          # 0--fixed solar constant; 1--changing solar constant
+export IAER=111        # 111--with stratospheric aerosol, tropospheric aerosol LW, troposphere aerosol SW.
+export ICO2=2          # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
+
+######################
+## PDS Grid Designator
+#######################
+export IGEN=81
+
+export SEMILAG=.true.                # semi-lagrangian dynamical core
+export FCSTVARS="SEMILAG=$SEMILAG,DTPHYS=$DTPHYS,nsout=0,liope=.true.,LDIAG3D=.false."
+ 

@@ -1,0 +1,217 @@
+#!/bin/sh
+export PS4='$SECONDS + '
+date
+set -xa
+########################################
+# GFS SMARTINIT JOB   
+########################################
+
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Job name:         gfs_smartinit.job
+# Job description:  Run gfs smartinit jobs
+#
+# Author:        Bradley Mabe       Org: NP11         Date: 2007-08-23
+#
+# Abstract: This script runs the GFS Smart Init jobs
+#
+# Script history log:
+# 2007-08-23  Bradley Mabe  - Created script (copied actually) to call nam_smartinit on & off
+#                          initially of Alaskan precip & snowfall
+# 2013-08-27  Jeff McQueen  - Put in vertical structure     
+# 2014-03-01  DaNa Carlis   - Adapted for GFS to unify NAM and GFS DNG scripts and
+# source code
+
+#Changed to modeld to smartinit to accomodate other models COM)IN dir by using NET
+####################################
+# Specify version numbers
+####################################
+# JY export post_ver=${post_ver:-v7.0.0}
+# JY export smart_ver=${smart_ver:-v4.0.0}
+
+export modeld=${modeld:-smartinit} 
+#export model_ver=gfs
+export RUNTYP=guamnest
+
+######################################################
+# The following two variable could be defined in the
+# loadleveler submission script (the ECF script), if
+# not they will take the default values which is set
+# for the NCO running enviroment
+#######################################################
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export SENDECF=${SENDECF:-YES}
+
+#XXW export DBN_ALERT_TYPE1=SMARTGUAM # used in ush script
+#XXW export DBN_ALERT_TYPE2=GFS_SMARTGUAM_GB2 # used in ush script
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export GUESS=${GUESS:-GFS}  
+export mdl=${mdl:-gfs}  
+
+###############################################################
+# This block can be modified for different Production test
+# environment. This is used for development testings
+###############################################################
+if [ "$RUN_ENVIR" != nco ];then
+ dng_para_config${RUNTYP}   #EMC User set
+fi
+
+####################################
+# obtain unique process id (pid) and make temp directory
+####################################
+export pid=$$
+export DATA=${DATA:-$DATAROOT/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+export cycle=t${cyc}z
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.$$}
+
+####################################
+# SENDECF  - Flag Events on ECF
+# SENDCOM  - Copy files to /com directory
+# RERUN  - If rerun from beginning, default is no
+####################################
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export RERUN=${RERUN:-NO}
+
+####################################
+# Specify Execution Areas
+# dng = downscaled gridding
+####################################
+export HOMEdng=${HOMEdng:-$NWROOT/gfs.$gfs_ver}  
+export EXECdng=${EXECdng:-${HOMEdng}/exec}
+export FIXdng=${FIXdng:-${HOMEdng}/fix}
+export PARMdng=${PARMdng:-${HOMEdng}/parm}
+export USHdng=${USHdng:-${HOMEdng}/ush}
+export SCRdng=${SCRdng:-${HOMEdng}/scripts}
+export UTILdng=${UTILdng:-${HOMEdng}/util}
+
+export HOMEglobal=${HOMEglobal:-$NWROOT/global_shared.${global_shared_ver}}
+export EXECglobal=${EXECglobal:-$HOMEglobal/exec}
+export USHglobal=${USHglobal:-$HOMEglobal/ush}
+export FIXglobal=${FIXglobal:-$HOMEglobal/fix}
+export PARMglobal=${PARMglobal:-$HOMEglobal/parm}
+
+export HOMEPOST=${HOMEPOST:-${NWROOT}/global_shared.${global_shared_ver}}
+export EXECPOST=${EXECPOST:-$HOMEPOST/exec}
+export USHPOST=${USHPOST:-$HOMEPOST/ush}
+export PARMPOST=${PARMPOST:-$HOMEPOST/parm}
+
+###################################
+# Set up the UTILITIES
+###################################
+export gespath=${gespath:-${GESROOT}/${envir}}
+
+############################################
+# Load the UTILITIES module
+############################################
+# module load grib_util/v1.0.1
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+
+setpdy.sh
+. ./PDY
+
+##############################################
+# Define COM directories
+# USER DEFINES in parm/dng_para_config
+##############################################
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export pcom=${pcom:-${PCOMROOT}/$NET}
+
+mkdir -p $COMOUT $pcom
+cp ${PARMdng}/SMINIT.CTL $DATA
+
+##############################################
+# Set up the forecast hours
+##############################################
+export SHOUR=${SHOUR:-00}
+export EHOUR=${EHOUR:-192}
+export EHOUR_HRLY=12
+export FHINC_HRLY=01
+export FHINC=03
+
+###############################################
+# Specify Timeout Behavior of GFS DNG
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a input file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for input files
+###############################################
+export SLEEP_TIME=300
+export SLEEP_INT=10
+
+####################################
+# Check if this is a restart
+####################################
+if test -f $COMOUT/$RUN.t${cyc}z.control.smartguam
+then
+  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.smartguam`
+  recvy_pdy=`echo $modelrecvy | cut -c1-8`
+  recvy_cyc=`echo $modelrecvy | cut -c9-10`
+  recvy_shour=`echo $modelrecvy | cut -c11-`
+  if test $RERUN = "NO"
+  then
+    if [ $recvy_shour -lt $EHOUR_HRLY ]
+      then
+      NEW_SHOUR=`expr $recvy_shour + $FHINC_HRLY`
+    else
+      NEW_SHOUR=`expr $recvy_shour + $FHINC`
+    fi
+    if test $NEW_SHOUR -ge $SHOUR
+    then
+      export SHOUR=$NEW_SHOUR
+      if [ $SHOUR -lt 10 ]; then SHOUR=0$SHOUR; fi
+    fi
+    if test $recvy_shour -ge $EHOUR
+    then
+      msg="GFS DNG GUAM Already Completed to $EHOUR"
+      postmsg "$jlogfile" "$msg"
+    else
+      msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
+      postmsg "$jlogfile" "$msg"
+    fi
+  fi
+fi
+
+msg="$job HAS BEGUN"
+postmsg "$jlogfile" "$msg"
+########################################################
+# Execute the script.
+${GFS_SMINIT_GUAM:-$SCRdng/ex${NET}_${modeld}.sh.ecf}
+########################################################
+cat $pgmout
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+##############################
+# Remove the Temporary working directory
+##############################
+cd $DATAROOT
+rm -rf $DATA
+date

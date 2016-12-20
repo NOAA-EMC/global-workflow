@@ -1,0 +1,20 @@
+GLEVEL  850                                                                     
+GVCORD  pres                                                                    
+PANEL   0                                                                       
+SKIP    0         !0         !0         !0         !0/1;-1                  
+SCALE   0         !0         !0         !-1        !0
+GDPFUN  sm9s(tmpc)!sm9s(tmpc)!sm9s(tmpc)!sm5s(hght)!kntv(wnd)
+TYPE    c/f       !c         !c         !c         !b
+CONTUR  2                                                                       
+CINT    3/-99/0!3/3/18   !3/21/99    !3                                    
+LINE    27/1/2 !2/1/2    !16/1/2     !20/1/1/1      
+FINT    -24;-18;-12;-6;0;18
+FLINE   24;30;28;29;25;0;17                                                  
+HILO                                                                            
+HLSYM                                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    18//1                    
+REFVEC                                                                          
+TITLE   5/-2/~ ^  @  HGHTS, TEMPERATURE AND WIND (KTS)|^ @ HGHT, TMP, WIND!     
+TEXT    .8/2/2/c/sw                                                                
+CLEAR   yes                                                                     

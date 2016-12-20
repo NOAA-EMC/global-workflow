@@ -1,0 +1,60 @@
+-------------------------------------------------------------------
+/gpfs/hps/nco/ops/nwprod/modulefiles/gempak/6.32.0:
+
+module-whatis	 Sets up the enviroment for GEMPACK 
+conflict	 gempak gempak/ncep 
+setenv		 AR ar 
+setenv		 ARFLAGS rv 
+setenv		 BUFRFLAGS -DNO_MSG_IPC -ansi -O 
+setenv		 CC cc 
+setenv		 CFLAGS -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/include -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/include -DLinux -DUNDERSCORE -I/usr/X11R6/include -DG_64BIT 
+setenv		 FC ftn 
+setenv		 FFLAGS -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/include -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/include -fno-range-check -fno-second-underscore -ffixed-line-length-none 
+setenv		 GEMDATA /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/data 
+setenv		 GEMERR /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/error 
+setenv		 GEMEXE /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/bin 
+setenv		 GEMOLB /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/lib 
+setenv		 GEMGTXT /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/txt/gemlib 
+setenv		 GEMHLP /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/help 
+setenv		 GEMINC /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/include 
+setenv		 GEMMAPS /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/maps 
+setenv		 GEMNTS /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/nts 
+setenv		 GEMPAK /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak 
+setenv		 GEMPARM /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/parm 
+setenv		 GEMPDF /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/pdf 
+setenv		 GEMPTXT /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/txt/programs 
+setenv		 GEMTBL /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/tables 
+setenv		 INCLUDES -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/include -I/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/include 
+setenv		 LD ld 
+setenv		 LDFLAGS -L/usr/lib64 -L/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/lib -s 
+setenv		 LPAODTFLAG -P 
+setenv		 LPAODT mpage -lo1 -zlpr -Z-P 
+setenv		 LPFLAG -P 
+setenv		 LP lpr 
+setenv		 MEL_BUFR_TABLES /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/tables/melbufr 
+setenv		 NA_OS linux3.0.101_x86_64 
+setenv		 NAWIPS /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips 
+setenv		 NAWIPS_EXE /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/bin 
+setenv		 NAWIPS_LIB /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/lib 
+setenv		 NAWIPS_INC /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/include 
+setenv		 NAWIPS_TABLE /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/table 
+setenv		 NAWIPS_HELP /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/help 
+setenv		 NADATA1 /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/data 
+setenv		 NADATA2 /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/data 
+setenv		 NLPDEST  
+setenv		 NMAP_RESTORE /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/gempak/nts/nmap/restore 
+setenv		 NPRINTER  
+setenv		 OS_BIN /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/bin 
+setenv		 OS_INC /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/include 
+setenv		 OS_LIB /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/lib 
+setenv		 OS Linux 
+setenv		 OS_ROOT /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64 
+setenv		 OS_VER 3.0.101_x86_64 
+setenv		 RM rm -f 
+setenv		 XLIBS -lXm -lXt -lX11 -lSM -lICE -lXp -lXext -lXmu -lXft -ljpeg -lpng -lz 
+setenv		 XMICONSEARCHPATH /gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/icons/%N/%B 
+setenv		 XUSERFILESEARCHPATH ./%N:/u/Boi.Vuong/%N:/u/Boi.Vuong/Resource/%N:/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/resource/%N 
+prepend-path	 PATH .:$/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/bin 
+append-path	 PATH $/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/bin:$/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/scripts/ez:$/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/scripts/nawips:$/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/scripts/prnt:$/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/scripts/decoder 
+-------------------------------------------------------------------
+

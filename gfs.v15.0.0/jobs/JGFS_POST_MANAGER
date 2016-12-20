@@ -1,0 +1,76 @@
+#!/bin/sh
+
+########################################
+# GFS post manager
+########################################
+
+set -xa
+# #### 07/30/1999 ###################
+# SET SHELL PROCESSING VARIABLES
+# ###################################
+export PS4='$SECONDS + ' 
+date
+# 
+# obtain unique process id (pid) and make temp directories
+#
+export pid=${pid:-$$}
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
+export DATA=${DATA:-$DATAROOT/${job}_${envir}.${pid}}
+mkdir $DATA
+cd $DATA 
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+export cycle=t${cyc}z 
+
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-YES}
+
+export NET=gfs
+export RUN=gfs
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${HOMEgfs:-$HOMEgfs/exec}
+export FIXgfs=${HOMEgfs:-$HOMEgfs/fix}
+export PARMgfs=${HOMEgfs:-$HOMEgfs/parm}
+export USHgfs=${HOMEgfs:-$HOMEgfs/ush}
+
+###########################
+# Set up EXT variable
+###########################
+export EXT_FCST=NO
+
+###################################
+# Set up the UTILITIES
+###################################
+# export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
+# export utilscript=${utilscript:-$HOMEutil/ush}
+# export utilexec=${utilexec:-$HOMEutil/exec}
+
+# Run setpdy and initialize PDY variables
+setpdy.sh
+. PDY
+
+export com=${COMROOT}/${NET}/${envir}
+export COMIN=${COMROOT}/${NET}/${envir}/${RUN}.${PDY}
+export COMOUT=${COMROOT}/${NET}/${envir}/${RUN}.${PDY}
+
+mkdir -p $COMOUT
+
+env
+
+########################################################
+# Execute the script.
+$HOMEgfs/scripts/exgfs_pmgr.sh.ecf
+########################################################
+
+date

@@ -1,0 +1,17 @@
+GLEVEL  500
+GVCORD  PRES
+GDPFUN  hght               ! avor(wnd)
+SCALE   -1                 ! 5
+TYPE    C                  ! C/F
+CONTUR  2                                                                       
+CINT    6                  ! 8/8/30
+FINT                       ! 8;16;24;32
+FLINE                      ! 0;0;18;19;20 
+LINE    4/31/2/1/1         ! 7/13/2/1/1 
+HILO    1/H#;L#//8//yes    ! 0               
+HLSYM   2.5;1.5/2/3/2/sw   ! 0
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    
+REFVEC                                                                          
+TITLE 
+TEXT    .8/2/2/c/sw                                                               

@@ -1,0 +1,63 @@
+Release Notes 
+-------------
+
+Model: /gfs.v13.0.0/emcsfc
+Version: 13.0.0
+Implementation date/time: To be determined.
+Purpose: Prepares snow and sea ice fields for use by EMC models.
+Developed by: George Gayno/NCEP/EMC    george.gayno@noaa.gov
+Runs on: The National Weather Service (NWS) Weather and Climate Operational Supercomputing System (WCOSS)
+Community software: None
+Input:
+  -IMS snow cover
+  -IMS ice cover
+  -EMC/MMAB 5-minute ice concentration
+  -AFWA snow depth
+Output: Every six hours (00, 06, 12, 18z)
+Primary users: GFS
+Where to find output: GFS /com directories
+Changes being made for this release: All scripts/programs brought up to latest
+NCO standards (version 10.0.0 - May 13, 2015)
+
+
+Implementation information
+
+Compute resources (mandatory):
+  - There is one J-job associated with this implementation:  
+    - /gfs.v13.0.0/jobs/JGFS_EMCSFC_SFC_PREP
+  - It runs serially and uses 2 Gb memory.
+  - It runs in 90 seconds.   
+  - Recommended lsf commands for running on WCOSS:
+     #BSUB -R rusage[mem=2000]
+     #BSUB -R affinity[core]
+     #BSUB -W 0:03
+  - 63 Mb disk space per day required for output snow and ice files.
+  - Run every six hours as part of GFS cycles.
+  - Libraries used:  BACIO.v2.0.1; W3NCO.v2.0.6; G2.v2.5.0; IP.v2.0.0; SP.v2.0.2; LANDSFCUTIL.v2.0.0.
+  - Compiler:  Intel Fortran v12.1
+  - Data retention for files in /com under prod/para/test environments:  Same as current GFS OPS. 
+
+Pre-implementation testing requirements:
+  - Should be tested as part of FY16 GFS package.
+  - 30-day evaluation required.
+  - Evaluators: same as those for FY16 GFS package.
+
+Dissemination info:
+  - Output snow and ice files have no external users. 
+  - All snow and ice files reside in /com and should be transferred from PROD WCOSS to DEV WCOSS
+
+HPSS Archive:
+  - Retention length: same as current GFS OPS /com data.
+  - Two output files to be archived: 
+     (1) gfs.t${cc}.snogrib_t1534.3072.1536
+     (2) gfs.t${cc}.seaice.5min.blend.grb
+
+Implementation Instructions:
+  - cd to appropriate /nw${envir}
+  - Checkout j-job from subversion:  svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gfs.v13.0.0/jobs
+
+Job Dependencies:
+  - JGFS_EMCSFC_SFC_PREP may be run after the obsproc_global.v2.1.1/JGFS_DUMP job copies the IMS, AFWA, and 
+    5-minute MMAB data to /com.  It may be run concurrently with obsproc_global.v2.1.1/JGFS_PREP.  
+    JGFS_EMCSFC_SFC_PREP must finish before the following job can start:
+      (1) /gfs.v13.0.0/jobs/JGFS_ANALYSIS

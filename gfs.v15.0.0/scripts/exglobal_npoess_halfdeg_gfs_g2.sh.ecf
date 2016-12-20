@@ -1,0 +1,116 @@
+#####################################################################
+echo "-----------------------------------------------------"
+echo " exglobal_npoess_halfdeg_gfs_g2.sh.ecf" 
+echo " Nov 2005 - Cooke - Produces Half degree GRIB2 files from master."
+echo "                    for NPOESS."
+echo " Sep 2007 - Cooke - Uses copygb to get proper 0.5 data out of"
+echo "                    new master gaussian grid."
+echo " Feb 2014 - Meng - Produce Half degree GRIB2 files from GRIB2 master."
+echo "-----------------------------------------------------"
+#####################################################################
+
+set -x
+
+cd $DATA
+
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+
+############################################################
+#  Define Variables:
+#  -----------------
+#  SHOUR        is the starting forecast hour. normally 0 except for restarts.
+#  FHOUR        is the ending forecast hour.
+#  FHINC        is the increment hour for each forecast steps.
+#  FH           is the current forecast hour.
+#  SLEEP_TIME   is the number of seconds to sleep before exiting with error.
+#  SLEEP_INT    is the number of seconds to sleep between restrt file checks.
+#  restart_file is the name of the file to key off of to kick off pgrb 
+#               generation.
+############################################################
+
+
+SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+
+export fhr=$SHOUR
+
+############################################################
+# Loop Through the Post Forecast Files 
+############################################################
+while test $fhr -le $FHOUR
+do
+
+    ###############################
+    # Start Looping for the 
+    # existence of the restart files
+    ###############################
+    export pgm="postcheck"
+    ic=1
+    while [ $ic -le $SLEEP_LOOP_MAX ]
+    do
+       if test -f $restart_file$fhr
+       then
+          break
+       else
+          ic=`expr $ic + 1`
+          sleep $SLEEP_INT
+       fi
+       ###############################
+       # If we reach this point assume
+       # fcst job never reached restart 
+       # period and error exit
+       ###############################
+       if [ $ic -eq $SLEEP_LOOP_MAX ]
+       then
+          export err=9
+          err_chk
+       fi
+    done
+    set -x
+
+    msg="Starting half degree grib generation for fhr=$fhr"
+    postmsg "$jlogfile" "$msg"
+
+    cp $COMIN/${RUN}.t${cyc}z.master.grb2f$fhr masterfile
+
+    paramlist=${PARMgfs}/global_npoess_paramlist_g2
+
+    $WGRIB2 masterfile | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile masterfile
+    grid="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0"
+    $COPYGB2 -g "$grid" -i0 -x tmpfile pgb2file
+
+
+    if test $SENDCOM = "YES"
+    then
+       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
+
+       if test $SENDDBN = "YES"
+       then
+          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f$fhr.npoess
+       fi
+
+       if test $fhr -lt 100
+       then
+          pad="0"
+       else
+          pad=""
+       fi
+       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
+    fi
+    rm tmpfile pgbfile pgb2file
+
+    export fhr=`expr $fhr + $FHINC`
+    if test $fhr -lt 10
+    then
+       export fhr="0$fhr"
+    fi
+done
+
+cat $pgmout
+
+########################################################
+
+msg='ENDED NORMALLY.'
+postmsg "$jlogfile" "$msg"
+
+################## END OF SCRIPT #######################

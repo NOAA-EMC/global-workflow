@@ -1,0 +1,234 @@
+#!/bin/sh
+######################################################################
+#  UTILITY SCRIPT NAME :  exgfs_wafs_grib2.sh.ecf
+#         DATE WRITTEN :  07/15/2009
+#
+#  Abstract:  This utility script produces the WAFS GRIB2. The output 
+#             GRIB files are posted on NCEP ftp server and the grib2 files
+#             are pushed via dbnet to TOC to WAFS (ICSC).  
+#             This is a joint project of WAFC London and WAFC Washington.
+#
+#             We are processing WFAS grib2 for fcsthrs from 06 - 36 
+#             with 3-hour time increment.
+#
+# History:  08/20/2014
+#              - ingest master file in grib2 (or grib1 if grib2 fails)
+#              - output of icng tcld cat cb are in grib2
+#####################################################################
+echo "-----------------------------------------------------"
+echo "JGFS_WAFS_GRIB2 at 00Z/06Z/12Z/18Z GFS postprocessing"
+echo "-----------------------------------------------------"
+echo "History: AUGUST  2009 - First implementation of this new script."
+echo " "
+#####################################################################
+
+cd $DATA
+
+set -x
+
+for fcsthrs in 06 09 12 15 18 21 24 27 30 33 36
+do
+
+##########################################################
+# Wait for the availability of the gfs master pgrib file
+##########################################################
+  # master file in grib1 or grib2
+  # grib2 has the priority, run grib1 version only if grib2 fails
+  master1=$COMIN/${RUN}.${cycle}.master.grbf${fcsthrs}
+  master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}
+  master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs}
+  icnt=1
+  while [ $icnt -lt 1000 ]
+  do
+    if [ -s $master2i ]
+    then
+      sleep 5
+      break
+    fi
+
+    sleep 10
+    icnt=$((icnt + 1))
+    if [ $icnt -ge 180 ] ;    then
+      # if master in grib2 fails, check master in grib1, no waiting
+      if [ -s $master1 ] ; then
+         master2=""
+      else
+        msg="ABORTING after 30 min of waiting for the gfs master file!"
+        err_exit $msg
+      fi
+    fi
+  done
+
+########################################
+  msg="HAS BEGUN!"
+  postmsg "$jlogfile" "$msg"
+########################################
+
+  echo " ------------------------------------------"
+  echo " BEGIN MAKING GFS WAFS GRIB2 PRODUCTS"
+  echo " ------------------------------------------"
+
+  set +x
+  echo " "
+  echo "#####################################"
+  echo "      Process GRIB WAFS PRODUCTS     "
+  echo " FORECAST HOURS 06 - 36."
+  echo "#####################################"
+  echo " "
+  set -x
+
+  pgm=awc_wafavn
+
+  if [[ -z $master2 ]] ; then 
+     # ===================  process master file grib1  ===================
+     # 1) new WAFS fields
+     cpreq $FIXgfs/awc_wafavn.grb1.cfg waf.cfg
+     cpfs $master1  masterfilef${fcsthrs}
+
+     startmsg
+     $EXECgfs/$pgm -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
+     export err=$?; err_chk
+
+     $COPYGB  -g45 -i2 -x  tmpfile_icaof${fcsthrs} tmpfile_icao_grb45f${fcsthrs}
+
+     # 2) traditional WAFS fields
+     $WGRIB masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep "kpds6=6:" | \
+                     $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.maxwind masterfilef${fcsthrs}
+     # interpolate by '2 neighbor' for max wind fields (max U V wind and its height)
+     $COPYGB  -g45 -i2 -x  tmpfile_gfsf${fcsthrs}.maxwind  tmpfile_gfs_grb45f${fcsthrs}.maxwind
+     $WGRIB masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb1.list | grep -v "kpds6=6:" | \
+                     $WGRIB -i -grib -o tmpfile_gfsf${fcsthrs}.nomaxwind masterfilef${fcsthrs}
+     # interpolate by '0 bilinear' for other fields
+     $COPYGB  -g45 -i0 -x  tmpfile_gfsf${fcsthrs}.nomaxwind  tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
+     # combine back together
+     cat tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind > tmpfile_gfs_grb45f${fcsthrs}
+     rm tmpfile_gfs_grb45f${fcsthrs}.maxwind tmpfile_gfs_grb45f${fcsthrs}.nomaxwind
+
+     # 3) combine new and traditional WAFS fields
+     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+
+     # $CNVGRIB -g12 -p40 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     $EXECgfs/cnvgrib2_wafs -g12 -p40 -mastertable_ver_6 -nv  gfs.t${cyc}z.wafs_grb45f${fcsthrs}  gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  else
+     # ===================  process master file grib2  ===================
+     # 1) new WAFS fields
+     cpreq $FIXgfs/awc_wafavn.grb2.cfg waf.cfg
+     cpfs $master2  masterfilef${fcsthrs}
+
+     startmsg
+     $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
+     export err=$?; err_chk
+
+     $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same \
+                      -new_grid_winds earth -new_grid_interpolation bilinear \
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
+
+     # 2) traditional WAFS fields
+     $WGRIB2 masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
+# U V will have the same grid messange number by using -ncep_uv.
+#     $WGRIB2 tmpfile_gfsf${fcsthrs} \
+#                      -new_grid_winds earth -set_grib_type jpeg \
+#                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
+#                      -new_grid latlon 0:288:1.25 90:145:-1.25 - -inv /dev/null | $WGRIB2 - -ncep_uv tmpfile_gfs_grb45f${fcsthrs}                       
+# U V will have the different grid messange number without -ncep_uv.
+     $WGRIB2 tmpfile_gfsf${fcsthrs} \
+                      -new_grid_winds earth -set_grib_type jpeg \
+                      -new_grid_interpolation bilinear -if ":(UGRD|VGRD):max wind" -new_grid_interpolation neighbor -fi \
+                      -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_gfs_grb45f${fcsthrs}
+
+     # 3) combine new and traditional WAFS fields
+     cat tmpfile_gfs_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs} > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+
+     $CNVGRIB -g21 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+  fi
+  $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
+  
+# Chuang: create a file in working dir without US unblended WAFS product for ftp server 
+
+  $WGRIB2 gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 | grep -v ":CAT" | grep -v ":CTP" | \
+  grep -v ":ICIP" | grep -v ":ICAHT:cumulonimbus" | grep -v ":CBHE" | $WGRIB2 -i gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 \
+  -grib gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+  $WGRIB2 -s gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 > gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx   
+
+# Processing WAFS GRIB2 grid 45 for ISCS and WIFS
+
+  . prep_step
+  startmsg
+
+  export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  export FORT31=" "
+  export FORT51=grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+
+  $TOCGRIB2 <  $PARMgfs/grib2_gfs_wafsf${fcsthrs}.45 >> $pgmout 2> errfile
+
+  err=$?;export err ;err_chk
+  echo " error from tocgrib=",$err
+
+# Processing WAFS GRIB2 grid 45 (Icing, TB, CAT) for WIFS
+
+  . prep_step
+  startmsg
+ 
+  export FORT11=gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+  export FORT31=" "
+  export FORT51=grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+ 
+  $TOCGRIB2 <  $PARMgfs/grib2_gfs_wafs_wifs_f${fcsthrs}.45 >> $pgmout 2> errfile
+
+  err=$?;export err ;err_chk
+  echo " error from tocgrib=",$err
+
+
+  if [ $SENDCOM = "YES" ] ; then
+
+   ##############################
+   # Post Files to COM
+   ##############################
+
+     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}  $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}
+     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2
+     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.grib2.idx
+     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2 $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+     mv gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+
+   ##############################
+   # Post Files to PCOM
+   ##############################
+
+     mv grib2.t${cyc}z.wafs_grbf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+     mv grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45  $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+  fi
+
+  ######################
+  # Distribute Data
+  ######################
+
+  if [ $SENDDBN = "YES" ] ; then
+#  
+#    Distribute Data to WOC
+#
+  
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${fcsthrs}.45
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2
+    $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${fcsthrs}.nouswafs.grib2.idx
+#
+#    Distribute Data to TOC TO WIFS FTP SERVER (AWC)
+#
+    $DBNROOT/bin/dbn_alert NTC_LOW $NET $job   $PCOM/grib2.t${cyc}z.wafs_grbf${fcsthrs}.45
+  fi
+
+done
+
+################################################################################
+# GOOD RUN
+set +x
+echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GRIB2.SH.ECF COMPLETED NORMALLY ON THE IBM"
+set -x
+################################################################################
+
+msg="HAS COMPLETED NORMALLY!"
+postmsg "$jlogfile" "$msg"
+
+############## END OF SCRIPT #######################

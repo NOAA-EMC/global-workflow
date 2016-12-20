@@ -1,0 +1,17 @@
+GLEVEL  0 
+GVCORD  TROP
+GDPFUN  sm9s(sm9s(sm9s(PRES)))  !  sm9s(sm9s(VWSH))
+SCALE   0                  ! 3
+TYPE    C                  ! C/F
+CONTUR  2                                                                       
+CINT    40                 ! 4
+LINE    4/31/2/1/1         ! 20/13/2/1/1 
+FINT                       ! -16;-12;-8;-4;0;4;8;12;16
+FLINE                      ! 11;10;9;8;0;0;17;18;19;20  
+HILO
+HLSYM
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    
+REFVEC                                                                          
+TITLE 
+TEXT   .8/3/2/c/sw                                                                

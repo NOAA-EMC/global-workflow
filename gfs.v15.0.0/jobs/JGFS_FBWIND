@@ -1,0 +1,93 @@
+#!/bin/sh
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+############################################
+# GFS FBWIND PRODUCT GENERATION
+############################################
+
+###########################################################
+# obtain unique process id (pid) and make temp directory
+###########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+. PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export model=${model:-gfs}
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+export PCOM=${PCOM:-${PCOMROOT}/${NET}}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -m 775 -p $COMOUT $PCOM
+fi
+
+export pgmout=OUTPUT.$$
+
+env
+
+########################################################
+# Execute the script.
+$HOMEgfs/scripts/exgfs_fbwind.sh.ecf
+export err=$?;err_chk
+########################################################
+
+msg="JOB $job HAS COMPLETED NORMALLY!"
+postmsg $jlogfile "$msg"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ] ; then
+  rm -rf $DATA
+fi
+
+date
