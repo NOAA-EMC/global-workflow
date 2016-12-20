@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<postxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EMC_POST_CTRL_Schema.xsd">
+<!--  Lin Gan:  20150430 validated -->
+    <paramset>
+    <datset>BGRDAWP</datset>
+    <grid_num>32769</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>meso_nam12km</gen_proc>
+    <packing_method>complex_packing_spatial_diff</packing_method>
+    <order_of_sptdiff>2nd_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+       <param>
+       <shortname>HGT_ON_ISOBARIC_SFC</shortname>
+       <pname>HGT</pname>
+       <level>70000. 85000.</level>
+        <scale>6.0</scale>
+      </param>
+
+       <param>
+       <shortname>UGRD_ON_ISOBARIC_SFC</shortname>
+       <pname>UGRD</pname>
+       <level>50000. 70000. 85000.</level>
+        <scale>4.0</scale>
+      </param>
+
+       <param>
+       <shortname>VGRD_ON_ISOBARIC_SFC</shortname>
+       <pname>VGRD</pname>
+       <level>50000. 70000. 85000.</level>
+        <scale>4.0</scale>
+      </param>
+
+       <param>
+       <shortname>ABSV_ON_ISOBARIC_SFC</shortname>
+       <pname>ABSV</pname>
+       <level>70000. 85000.</level>
+        <scale>4.0</scale>
+      </param>
+
+       <param>
+       <shortname>PRES_ON_MEAN_SEA_LVL</shortname>
+       <pname>PRMSL</pname>
+        <scale>6.0</scale>
+      </param>
+
+       <param>
+       <shortname>UGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+       <pname>UGRD</pname>
+       <level>10.</level>
+        <scale>4.0</scale>
+      </param>
+
+       <param>
+       <shortname>VGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+       <pname>VGRD</pname>
+       <level>10.</level>
+        <scale>4.0</scale>
+      </param>
+
+   </paramset>
+   </postxml>

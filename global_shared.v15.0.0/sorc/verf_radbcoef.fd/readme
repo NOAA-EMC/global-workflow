@@ -1,0 +1,28 @@
+Instructions for building radmon_bcoef executable.
+	
+   1) Load the build module appropriate for your Machine:
+     i.)
+        WCOSS:
+           "module use -a ../../modulefiles/wcoss"     
+        CRAY:
+           "module use -a ../../modulefiles"     
+        THEIA:
+           "module use -a ../../modulefiles/theia"
+     ii.)
+        WCOSS & THEIA:
+           "module load RadMonBuild"
+        CRAY:
+           "module load RadMonBuild.cray"
+
+   2)  Optional:  verify all prerequisites are met by typing:
+	"make check_prereqs"
+
+   3) Build the executable by typing:
+        "make"
+   
+   4) Move the executable to the ../../exec directory by typing:
+   	"make install"
+  
+   5) Unload the build module:
+        "module unload RadMonBuild"
+

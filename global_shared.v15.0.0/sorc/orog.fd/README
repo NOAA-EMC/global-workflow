@@ -1,0 +1,27 @@
+Orography mtnvar14 and land-sea mask generator - WCOSS version tar ball
+
+The code generates the global orographic elevations on a given Gaussian lonb 
+by latb grid with a spectral filter if requested from the USGS 30" input 
+lon/lat array and 30" RAMP radar elevations (GICE) for Antarctic 30" 
+elevations with the UMD lake mask and for the land sea mask and RAMP 
+radar elevations (GICE) for Antarctic 30" elevations.  In addition, the 
+mtnvar14 file gravity wave drag variance and higher moments, and 
+Mountain Blocking files are generated.  An ocean model lsm can override 
+the land mask keeping the lake mask intact (defaults off).  A low resolution 
+190.384x190_128-192 (T190 382x190 Gaussian grid with a Quadritic filter 
+from waves 128 to 192 - the last wave is not set to zero) setup file 
+qbsub_mtnlsm190.384x190_128-192.sh 
+is included with output and results as well as a current t1534 GFS 
+SLG setup file.  This file can be used to submit a batch job orgmlw.sh.   
+This script will compile the fortran code mtnlm7_oclsm.f, and execute the 
+code, setting up the local input files and create a temporary directory for 
+computation and transfer the files back to the starting dir.  Root directories
+and names have been removed where possible.  Reset the fortran compiler and 
+note that the program is running in r8 and the files are big-endian.  
+The scripts use modules to set the link libraries and the module script is 
+included as well as the lib source code and make files to compile these.  
+An example Grads control file for reading the ieee files is included as Grads 
+has trouble with the 14 record mtnvar14 file read as one record as the model
+requries.  The single record orogb and slmgb grib files are read by grads.
+
+Jordan Alpert

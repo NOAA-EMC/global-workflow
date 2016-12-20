@@ -1,0 +1,22 @@
+Instructions for building and installing emcsfc_ice_blend (only tested
+on WCOSS and THEIA):
+
+On WCOSS Phase 1/2:
+
+1) Load the build module:
+      "module load ../../modulefiles/modulefile.global_emcsfc_ice_blend.wcoss"
+2) Build the executable:
+      "make all"
+3) If build is successfull, install the executable in ../../exec:
+      "make install"
+4) Unload the build module:
+      "module unload modulefile.global_emcsfc_ice_blend.wcoss"
+
+Alternately, steps 1-4 may be accomplished by invokng the 'make.sh'
+driver script:
+      "make.sh"
+
+On WCOSS-Cray and THEIA:
+
+1) Invoke the 'make.sh' driver script from the command line:
+   "make.sh"

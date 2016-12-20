@@ -1,0 +1,25 @@
+ For this implementation:
+! --- if mskocn=1 ocean land sea mask given/present, =0 if not present
+! ---  OCLSM is real(*4)  array with fractional values possible
+! ---  0 is ocean and 1 is land for slm
+! ---  Step 1: Only change SLM after GFS SLM is applied
+! ---  upgrade to fractional lsm with ice mask and lake mask separate later
+! ---  SLM is only field that will be altered by OCLSM
+! ---  Ocean land sea mask ocean points made ocean in atm model
+! ---  Land and Lakes and all other atm elv moments remain unchanged.
+ The LSM Gaussian file from the ocean model sometimes arrives with 
+! --- 0=Ocean and 1=Land or it arrives with 1=Ocean and 0=land without 
+! --- metadata to distinguish its disposition.
+ In fortran code one should set these switches:
+      MSKOCN = 1             ! Ocean land sea mask =1, =0 if not present
+      NOTOCN = 1             ! =1 Ocean lsm input reverse: Ocean=1, land=0 
+ as in
+                   if (notocn .eq. 1)then
+      print *,' Ocean LSM Reversed:  NOTOCN=',notocn
+                    endif
+ and the reversal will be undone.
+
+
+If ocean land sea mask file is not present, the system will continue and 
+no incorporate it.
+

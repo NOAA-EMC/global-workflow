@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<postxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EMC_POST_CTRL_Schema.xsd">
+    <paramset>
+    <datset>WRFTWO</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_emc</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>res</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>noaa_fsl_boulder</orig_center>
+    <gen_proc>hrrr</gen_proc>
+    <packing_method>complex_packing_spatial_diff</packing_method>
+    <order_of_sptdiff>2nd_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+       <param>
+          <shortname>MAPS_PRMSL_ON_MEAN_SEA_LVL</shortname>
+          <scale>-0.1</scale>
+       </param>
+
+       <param>
+          <shortname>TMP_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+          <scale>-4.0</scale>
+       </param>
+
+       <param>
+          <shortname>DPT_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+          <scale>-4.0</scale>
+       </param>
+
+       <param>
+          <shortname>RH_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+          <scale>3.0</scale>
+       </param>
+
+       <param>
+          <shortname>GSD_POT_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+          <scale>-4.0</scale>
+       </param>
+
+       <param>
+          <shortname>SPFH_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+          <scale>4.0</scale>
+       </param>
+
+       <param>
+          <shortname>UGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+          <scale>-4.0</scale>
+       </param>
+
+       <param>
+          <shortname>VGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+          <scale>-4.0</scale>
+       </param>
+
+       <param>
+          <shortname>PRES_ON_SURFACE</shortname>
+          <scale>4.0</scale>
+       </param>
+
+       <param>
+          <shortname>WEASD_ON_SURFACE</shortname>
+          <scale>-5.0</scale>
+       </param>
+
+       <param>
+          <shortname>SNOWC_ON_SURFACE</shortname>
+          <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>SNOD_ON_SURFACE</shortname>
+           <scale>5.0</scale>
+       </param>
+
+       <param>
+           <shortname>VGTYP_ON_SURFACE</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>4LFTX_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>18000.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>LFTX_ON_ISOBARIC_SFC_500-1000hpa</shortname>
+           <level>50000.</level>
+           <level2>100000.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>ICEC_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>CAPE_ON_SURFACE</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>BEST_CAPE_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>18000.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>MIXED_LAYER_CAPE_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>9000.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>UNSTABLE_CAPE_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>25500.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>CIN_ON_SURFACE</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>BEST_CIN_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>18000.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>MIXED_LAYER_CIN_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>9000.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>UNSTABLE_CIN_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <level>25500.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>PLPL_ON_SPEC_PRES_ABOVE_GRND</shortname>
+           <table_info>NCEP</table_info>
+           <level>25500.</level>
+           <level2>0.</level2>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>PWAT_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>HLCY_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+           <level>3000. 1000.</level>
+           <scale>4.0</scale>
+       </param>
+
+       <param>
+           <shortname>ACM_APCP_ON_SURFACE</shortname>
+           <scale>5.0</scale>
+       </param>
+
+       <param>
+           <shortname>ACM_WEASD_ON_SURFACE</shortname>
+           <scale>5.0</scale>
+       </param>
+
+       <param>
+           <shortname>BUCKET_WEASD_ON_SURFACE</shortname>
+           <scale>5.0</scale>
+       </param>
+
+       <param>
+           <shortname>BUCKET_APCP_ON_SURFACE</shortname>
+           <scale>5.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_CSNOW_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_CICEP_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_CFRZR_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_INST_CRAIN_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>INST_PRATE_ON_SURFACE</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_HGT_ON_CLOUD_CEILING</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+            <shortname>HGT_ON_CLOUD_BASE</shortname>
+            <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_HGT_ON_CLOUD_TOP</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>HPBL_ON_SURFACE</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>REFC_ON_ENTIRE_ATMOS</shortname>
+           <table_info>NCEP</table_info> 
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAX_REF_ON_SPEC_HGT_LVL_ABOVE_GRND_1km</shortname>
+           <table_info>NCEP</table_info>
+           <fixed_sfc1_type>spec_hgt_lvl_above_grnd</fixed_sfc1_type>
+           <level>1000.</level>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_VIS_ON_SURFACE</shortname>
+           <scale>2.7</scale>
+       </param>
+
+       <param>
+           <shortname>TMP_ON_SURFACE</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAX_WIND_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAX_MAXUVV_ON_SPEC_PRES_LVL_ABOVE_GRND_40-100hpa</shortname>
+           <table_info>NCEP</table_info>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAX_MAXDVV_ON_SPEC_HGT_LVL_ABOVE_GRND_40-100hpa</shortname>
+           <table_info>NCEP</table_info>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAX_UPHL_ON_SPEC_HGT_LVL_ABOVE_GRND_2-5km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_UPHL_ON_SPEC_HGT_LVL_ABOVE_GRND_2-5km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_MAX_UPHL_ON_SPEC_HGT_LVL_ABOVE_GRND_1-6km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_UPHL_ON_SPEC_HGT_LVL_ABOVE_GRND_1-6km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+       </param>
+ 
+       <param>
+           <shortname>AVE_DZDT_ON_SIGMA_LVL_0.5-0.8</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>MAXVIG_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>HGT_ON_LVL_OF_ADIAB_COND_FROM_SFC</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>USTM_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+           <level>0.</level>
+           <level2>6000.</level2>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VSTM_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+           <level>0.</level>
+           <level2>6000.</level2> 
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VUCSH_ON_SPEC_HGT_LVL_ABOVE_GRND_0-1km</shortname>
+           <level>0.</level>
+           <level2>1000.</level2>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VVCSH_ON_SPEC_HGT_LVL_ABOVE_GRND_0-1km</shortname>
+           <level>0.</level>
+           <level2>1000.</level2>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VUCSH_ON_SPEC_HGT_LVL_ABOVE_GRND_0-6km</shortname>
+           <level>0.</level>
+           <level2>6000.</level2>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VVCSH_ON_SPEC_HGT_LVL_ABOVE_GRND_0-6km</shortname>
+           <level>0.</level>
+           <level2>6000.</level2>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GUST_ON_SURFACE</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>INST_TCDC_ON_ENTIRE_ATMOS</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>LCDC_ON_LOW_CLOUD_LYR</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>MCDC_ON_MID_CLOUD_LYR</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>HCDC_ON_HIGH_CLOUD_LYR</shortname>
+           <scale>-3.0</scale>
+       </param>
+
+       <param>
+           <shortname>LAND_ON_SURFACE</shortname>
+           <scale>1.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_ECHOTOP_ON_CLOUD_TOP</shortname>
+           <scale>6.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_VIL_ON_ENTIRE_ATMOS</shortname>
+           <table_info>NCEP</table_info>
+           <scale>6.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_RADARVIL_ON_ENTIRE_ATMOS</shortname>
+           <scale>6.0</scale>
+       </param>
+
+       <param>
+           <shortname>CDCON_ON_CONVECTIVE_CLOUD_LYR</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>HGT_ON_EQUIL_LVL</shortname>
+           <scale>-1.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_MAX_LTG_THREAT1_ON_ENTIRE_ATMOS</shortname>
+           <scale>4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_MAX_LTG_THREAT2_ON_ENTIRE_ATMOS</shortname>
+           <scale>4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_MAX_LTG_THREAT3_ON_ENTIRE_ATMOS</shortname>
+           <scale>4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCI_LTG_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCA_LTG_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCI_WQ_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCA_WQ_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCI_REFL_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_NCA_REFL_ON_ENTIRE_ATMOS</shortname>
+           <scale>3.0</scale>
+       </param>
+       
+       <param>
+           <shortname>GSD_REFL_ON_SPEC_HGT_LVL_ABOVE_GRND_1km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>GSD_REFL_ON_SPEC_HGT_LVL_ABOVE_GRND_4km</shortname>
+           <table_info>NCEP</table_info>
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>PRES_ON_CLOUD_BASE</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>PRES_ON_CLOUD_TOP</shortname>
+           <scale>3.0</scale>
+       </param>
+
+       <param>
+           <shortname>UGRD_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+           <level>80.</level>     
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>VGRD_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+           <level>80.</level>     
+           <scale>-4.0</scale>
+       </param>
+
+       <param>
+           <shortname>CPOFP_ON_SURFACE</shortname>
+           <scale>-4.0</scale>
+       </param>
+
+      <param>
+           <shortname>INST_DSWRF_ON_SURFACE</shortname>
+           <scale>4.0</scale>
+      </param>
+
+      <param>
+           <shortname>INST_SWDDNI_ON_SURFACE</shortname>
+           <scale>4.0</scale>
+      </param>
+
+      <param>
+           <shortname>INST_SWDDIF_ON_SURFACE</shortname>
+           <scale>4.0</scale>
+      </param>
+
+      <param>
+           <shortname>INST_ULWRF_ON_TOP_OF_ATMOS</shortname>
+           <scale>4.0</scale>
+      </param>
+
+      <param>
+           <shortname>GSD_RH_WRT_PRECIP_WATER_ON_ENTIRE_ATMOS</shortname>
+           <table_info>NCEP</table_info>
+           <scale>3.0</scale>
+      </param>
+
+      <param>
+          <shortname>TSOIL_ON_DEPTH_BEL_LAND_SFC</shortname>
+          <level>0. 1. 4. 10. 30. 60. 100. 160. 300.</level>
+          <level2>0. 1. 4. 10. 30. 60. 100. 160. 300.</level2> 
+          <scale>4.0</scale>
+      </param>
+
+      <param>
+          <shortname>SOILW_ON_DEPTH_BEL_LAND_SFC</shortname>
+          <level>0. 1. 4. 10. 30. 60. 100. 160. 300.</level>
+          <level2>0. 1. 4. 10. 30. 60. 100. 160. 300.</level2>
+          <scale>3.0</scale>
+      </param>
+
+      <param>
+          <shortname>MSTAV_ON_DEPTH_BEL_LAND_SFC</shortname>
+          <scale>3.0</scale>
+      </param>
+
+      <param>
+          <shortname>HGT_ON_SURFACE</shortname>
+          <scale>-5.0</scale>
+      </param>
+
+      <param>
+          <shortname>NON_NADIR_SBT123_ON_TOP_OF_ATMOS</shortname>
+          <scale>4.0</scale>
+      </param>
+
+      <param>
+          <shortname>NON_NADIR_SBT124_ON_TOP_OF_ATMOS</shortname>
+          <scale>4.0</scale>
+      </param>
+
+      <param>
+          <shortname>SBT113_ON_TOP_OF_ATMOS</shortname>
+          <scale>4.0</scale>
+      </param>
+
+      <param>
+          <shortname>SBT114_ON_TOP_OF_ATMOS</shortname>
+          <scale>4.0</scale>
+      </param>
+
+    </paramset>
+
+
+</postxml>

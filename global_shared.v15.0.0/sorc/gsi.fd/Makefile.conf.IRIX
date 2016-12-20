@@ -1,0 +1,107 @@
+#!/bin/make
+#-----------------------------------------------------------------------
+#       NASA/GSFC, Data Assimilation Office, Code 910.3, GEOS/DAS      !
+#-----------------------------------------------------------------------
+# !IROUTINE: Makefile.conf.IRIX
+# 
+# !DESCRIPTION: 
+#	An included local make configuration.  See file Makefile for
+#   detailed `make' procedure.  This shell has been built to override
+#   the default environments (including commands) defined in file 
+#   Makefile.
+#
+#	+ `uname -a` = "OSF1 molotov V3.2 17 alpha"
+#
+# !CALLING SEQUENCE:
+#	% ln -s Makefile.OSF1 Makefile.conf
+#	% make ...
+#
+# !SEE ALSO: Makefile
+#
+# !REVISION HISTORY: (`cvs log <>' for more)
+#   22Apr2004 - Kokron/RT  - default to scsl lib; to use -lcomplib.sgimath also
+#                            need -D_OLDSGIFFT_
+#   01Mar2006 - Treadon    - remove reference to irsse, add sigio
+#
+#-----------------------------------------------------------------------
+
+# Environments
+# ============
+
+SHELL		= /bin/sh
+F77		= f90
+F90		= f90
+FC		= $(F90)
+CF		= $(F90)
+
+# Turn all debugging code on for this module.
+_DDEBUG = -DDEBUG_TRACE         \
+          -DDEBUG_CHECKSUMS
+                                                                                                                                                       
+# Turn assertions off.
+_DDEBUG = -NDEBUG
+                                                                                                                                                       
+# No debugging.  Only assertions
+_DDEBUG =
+                                                                                                                                                       
+_D      	= -D_GMAO_FVGSI_ -D_IGNORE_GRIDVERIFY_ $(_DDEBUG) $(_Dsys)
+
+_R              = -r8
+_I 	     	= -I ./ -I/ford1/local/irix6.2/mpi/include
+_I 	     	= -I ./ -I$(COREINC)/mpeu -I$(COREINC)/sfcio -I$(COREINC)/sigio
+
+FFLAGR		= $(_I) $(_D) ./ -extend_source -r8 -i4 -O2 -n32 \
+		-OPT:Olimit=0:roundoff=3:reorg_common=OFF -LNO:prefetch=2 -bytereclen
+
+LIBbacio        = -L$(CORELIB) -lbacio_r4i4
+LIBsp           =
+LIBmpi		= -L/ford1/local/irix6.2/mpi/lib/IRIXN32/ch_p4 -lmpi
+LIBsys          = -lscs
+
+#--- Normal mode options
+
+FFLAGS_F90    = -cpp -extend_source
+FFLAGS_F90    = -cpp -extend_source -D_OLDSGIFFT_
+FFLAGS_COM_N  = $(_I) -n32 -r8 -i4 -OPT:Olimit=0:roundoff=3:reorg_common=OFF -LNO:prefetch=2
+FFLAGS_N      = -O3 $(FFLAGS_F90) $(FFLAGS_COM_N)
+FFLAGS_f      = $(FFLAGS_N)
+
+CFLAGS_N      = $(_I) -O3
+
+LIBS_N        = $(LIBmpeu) $(LIBmpi) $(LIBbfr) $(LIBw3) $(LIBsys)
+
+LDFLAGS_N     = -n32
+
+FFLAGS	      = $(FFLAGS_N)
+
+#--- Debug mode options
+
+FFLAGS_COM_D  = $(FFLAGS_COM_N) \
+	          -O0 -g -check_bounds \
+       	          -DEBUG:subscript_check=ON:div_check=3:trap_uninitialized=ON:verbose_runtime=ON \
+       	          -fullwarn
+FFLAGS_D      = $(FFLAGS_F90) $(FFLAGS_COM_D)
+CFLAGS_D      = -I ./ -g
+
+LIBS_D        = $(LIBS_N)
+
+LDFLAGS_D     = $(LDFLAGS_N)
+
+ZIP		= /usr/bin/compress
+ZCAT		= /usr/bin/zcat
+TAR		= /usr/bin/tar
+
+LD		= $(FC)
+LDFLAGS		= $(FFLAGS) $(LIBdxml_DIR)
+AR		= ar cqs
+RM		= rm -f
+
+CPPFLAGS	= -cpp
+FPPFLAGS	= $(CPPFLAGS)
+
+FDP             = fdp   # Fortran make depency script
+
+#.----------------------------------------------------------------------
+#   Extra source code on IRIX only
+#.----------------------------------------------------------------------
+XSRCSC         = 

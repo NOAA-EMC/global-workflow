@@ -1,0 +1,70 @@
+################################################################################
+# 
+#     Makefile for NCEP Post
+#
+#     Use:
+#     make         -  build the executable
+#     make clean   -  start with a clean slate
+#
+#################################################################################
+#
+# Define the name of the executable
+#
+TARGET = ncep_post
+#
+
+OBJS =  wrf_io_flags.o getVariable.o getIVariable.o getIVariableN.o                \
+        kinds_mod.o machine.o physcons.o                                           \
+        native_endianness.o blockIO.o initialize_byte_swap_wrf_binary_file.o       \
+        count_recs_wrf_binary_file.o inventory_wrf_binary_file.o                   \
+        next_buf.o retrieve_index.o ZENSUN.o CLDFRAC_ZHAO.o                        \
+        GFSPOST.o GETGBANDSCATTER.o                                                \
+        VRBLS2D_mod.o VRBLS3D_mod.o VRBLS4D_mod.o MASKS_mod.o PMICRPH.o SOIL_mod.o \
+        CMASSI.o CTLBLK.o GRIDSPEC.o LOOKUP.o PARAMR.o RHGRD.o RQSTFLD.o xml_perl_data.o           \
+        cuparm.o params.o svptbl.o get_postfilename.o grib2_module.o               \
+        SET_LVLSXML.o FILL_PSETFLD.o                                               \
+        BNDLYR.o BOUND.o CALCAPE.o CALDWP.o CALDRG.o CALHEL.o CALLCL.o             \
+        CALMCVG.o CALPOT.o CALPW.o CALRH.o CALRCH.o CALRH_GSD.o                    \
+        CALSTRM.o CALTAU.o CALTHTE.o CALVIS.o CALVIS_GSD.o CALVOR.o CALWXT.o       \
+        CALWXT_RAMER.o CALWXT_BOURG.o CALWXT_REVISED.o CALRH_PW.o                  \
+        CALWXT_EXPLICIT.o CALWXT_DOMINANT.o                                        \
+        CLDRAD.o CLMAX.o COLLECT.o COLLECT_LOC.o DEWPOINT.o                        \
+        FDLVL.o FGAMMA.o FIXED.o FRZLVL.o FRZLVL2.o                                \
+        GET_BITS.o GRIBIT.o INITPOST.o LFMFLD.o                                    \
+        MAPSSLP.o MISCLN.o MIXLEN.o MDL2P.o MDLFLD.o MPI_FIRST.o MPI_LAST.o        \
+        NGMFLD.o NGMSLP.o OTLFT.o OTLIFT.o SLP_new.o SLP_NMM.o EXCH.o              \
+        PARA_RANGE.o PROCESS.o INITPOST_NMM.o EXCH2.o                              \
+        READCNTRL.o READ_xml.o SET_OUTFLDS.o SCLFLD.o SERVER.o SETUP_SERVERS.o     \
+        SMOOTH.o SURFCE.o                                                          \
+        SPLINE.o TABLE.o TABLEQ.o TRPAUS.o TTBLEX.o WETBULB.o WRFPOST.o            \
+        CALMICT.o MICROINIT.o GPVS.o MDL2SIGMA.o                                   \
+        ETCALC.o CANRES.o CALGUST.o WETFRZLVL.o SNFRAC.o MDL2AGL.o SNFRAC_GFS.o    \
+        AVIATION.o DEALLOCATE.o INITPOST_NMM_BIN_MPIIO.o                           \
+        CALPBL.o MDL2SIGMA2.o INITPOST_GFS.o CALRH_GFS.o LFMFLD_GFS.o              \
+        CALRAD_WCLOUD_newcrtm.o MDL2THANDPV.o CALPBLREGIME.o POLEAVG.o             \
+        INITPOST_NEMS.o GETNEMSNDSCATTER.o ICAOHEIGHT.o INITPOST_GFS_NEMS.o        \
+        INITPOST_BIN_MPIIO.o GEO_ZENITH_ANGLE.o GFIP3.o GRIDAVG.o CALUPDHEL.o      \
+        INITPOST_GFS_SIGIO.o AllGETHERV_GSD.o MSFPS.o SELECT_CHANNELS.o ALLOCATE_ALL.o INITPOST_NEMS_MPIIO.o ASSIGNNEMSIOVAR.o
+
+#
+
+.SUFFIXES:	.F .f .o .f90 .c
+
+.F.f:
+	$(CPP) $(CPPFLAGS) $< > $*.f
+
+$(TARGET):	$(OBJST) $(OBJS)
+	$(FC) -openmp -o $@ $(OBJST) $(OBJS) $(LIBS)
+
+.f.o:	
+	$(FC) $(FFLAGS) -c $<
+
+.f90.o:
+	$(FC) $(FFLAGS) -c $<
+
+.c.o :
+	${CC} ${CFLAGS} -c $<
+
+clean:	
+	/bin/rm -f  $(TARGET) *.lst *.o *.mod
+
