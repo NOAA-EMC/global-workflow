@@ -1,0 +1,16 @@
+# THIS SCRIPT READS A FORECAST FILE (UNIT 11), REPLACESTYPE OF FIXED 
+# SURFACE LEVEL IN PRODUCT TEMPLATE 4.x FROM A ID FILE UNIT 51.
+# STANDARD INPUT IS A ID (2-DIGIT INTEGER), 
+# FOR EXAMPLE: 10 (Entire atmosphere) for field PWAT in
+#                            AWIPS grids products
+
+set -x
+
+# cp /com/gfs/prod/gfs.${PDY}/gfs.t00z.pgrb2.1p00.f012 .
+
+export FORT11=gfs.t00z.pgrb2.1p00.f012
+export FORT51=gfs.t00z.pgrb2.1p00.f012_new
+
+overpdtg2 << EOF
+10
+EOF

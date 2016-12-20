@@ -1,0 +1,70 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exgfs_smartinit.sh.ecf
+# Script description:  Run GFS smartinit downscaling jobs
+#
+# Author:        Bradley Mabe       Org: NP11         Date: 2007-08-23
+#
+# Abstract: This script runs the GFS  Smart Init jobs
+#
+# Script history log:
+# 2007-08-23  Bradley Mabe  - Created script (copied actually) to call nam_smartinit on & off
+#
+# 2010-02-24  Huiya Chuang modify to run GFS DNG for Guam
+# 2012-01-18  DaNa Carlis modify to run POST within GFS DNG for Guam
+# 2014-03-01  DaNa Carlis   - Adapted script to run GFS DNG for ON/OFF
+# cycles into one script
+
+set -xa
+msg="JOB $job HAS BEGUN"
+#NCO postmsg "$jlogfile" "$msg"
+
+cd $DATA
+
+export fhrstr=00
+export SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+
+export ffhr=$SHOUR
+
+ while test $ffhr -le $EHOUR
+ do
+   export ic=1
+   while [ $ic -le $SLEEP_LOOP_MAX ]
+   do
+     if [ -s $COMIN/${RUN}.t${cyc}z.master.grb2f${ffhr} ] ; then
+       break
+     else
+       ic=`expr $ic + 1`
+       sleep $SLEEP_INT
+     fi
+     if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
+       msg="gfs sigma file not found after waiting over $SLEEP_TIME seconds"
+       postmsg "$jlogfile" "$msg"
+       echo "gfs sigma file not found after waiting ",$SLEEP_TIME, "exitting"
+       export err=1; #err_chk
+     fi
+   done
+
+   ${GFS_SMINIT_SH:-$USHdng/gfs_smartinit.sh}
+
+   echo "$PDY$cyc$ffhr" > $COMOUT/${RUN}.t${cyc}z.control.smartguam
+
+   if test $ffhr -lt $EHOUR_HRLY
+   then
+     export ffhr=`expr $ffhr + $FHINC_HRLY`
+   else
+     export ffhr=`expr $ffhr + $FHINC`
+   fi
+
+   if test $ffhr -lt 10
+   then
+     export ffhr=0${ffhr}
+   fi
+
+ done
+
+echo EXITING $0
+exit
+#

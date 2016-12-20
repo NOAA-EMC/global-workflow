@@ -1,0 +1,62 @@
+SHELL   =/bin/sh
+INC     = $(INCMOD)
+LIBS    = $(LIBSMOD)
+
+SRCM    = gfsbufr.f
+OBJS    = physcons.o funcphys.o meteorg.o bfrhdr.o newsig1.o terp3.o\
+          bfrize.o vintg.o buff.o rsearch.o \
+          svp.o calpreciptype.o lcl.o mstadb.o tdew.o\
+          machine.o gslp.o modstuff1.o
+
+FC      = $(FCMP)
+FFLAGS= $(FFLAGSM)
+
+
+CMD     = ../../exec/gfs_bufr
+                                                                                                                              
+$(CMD): $(SRCM) $(OBJS)
+	$(FC) $(INC) $(FFLAGS) $(SRCM) $(OBJS) $(LIBS) -o $(CMD)
+
+machine.o:      machine.f
+	$(FC) $(FFLAGS) -free -c machine.f
+physcons.o:     physcons.f machine.o
+	$(FC) $(FFLAGS) -free -c physcons.f
+funcphys.o:     funcphys.f physcons.o
+	$(FC) $(FFLAGS) -free -c funcphys.f
+gslp.o:         gslp.f
+	$(FC) $(FFLAGS) -free -c gslp.f
+modstuff1.o:     modstuff1.f 
+	$(FC) $(INC) $(FFLAGS) -free -c modstuff1.f
+meteorg.o:     meteorg.f physcons.o funcphys.o
+	$(FC) $(INC) $(FFLAGS) -c meteorg.f
+bfrhdr.o:     bfrhdr.f 
+	$(FC) $(FFLAGS) -c bfrhdr.f
+newsig1.o:     newsig1.f 
+	$(FC) $(FFLAGS) -c newsig1.f
+terp3.o:     terp3.f 
+	$(FC) $(FFLAGS) -c terp3.f
+bfrize.o:     bfrize.f 
+	$(FC) $(FFLAGS) -c bfrize.f
+vintg.o:     vintg.f 
+	$(FC) $(FFLAGS) -c vintg.f
+buff.o:     buff.f 
+	$(FC) $(FFLAGS) -c buff.f
+rsearch.o:     rsearch.f 
+	$(FC) $(FFLAGS) -c rsearch.f
+svp.o:     svp.f 
+	$(FC) $(FFLAGS) -c svp.f
+calpreciptype.o:   calpreciptype.f physcons.o funcphys.o
+	$(FC) $(FFLAGS) -FR -c calpreciptype.f
+lcl.o:     lcl.f 
+	$(FC) $(FFLAGS) -c lcl.f
+mstadb.o:     mstadb.f 
+	$(FC) $(FFLAGS) -c mstadb.f
+tdew.o:     tdew.f 
+	$(FC) $(FFLAGS) -c tdew.f
+clean:
+	-rm -f $(OBJS) *.mod
+clobber:        clean
+	-rm -f $(CMD)
+void:   clobber
+	-rm -f $(SRCS) $(SRCM) makefile
+

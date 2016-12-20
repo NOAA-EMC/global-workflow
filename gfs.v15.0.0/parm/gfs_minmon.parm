@@ -1,0 +1,16 @@
+#####################################
+# specify minmon shared version
+#####################################
+
+
+#####################################
+# specify minmon_shared location
+#####################################
+
+
+#####################################
+# utilities
+#####################################
+export COMPRESS=${COMPRESS:-gzip}
+export UNCOMPRESS=${UNCOMPRESS:-gunzip}
+

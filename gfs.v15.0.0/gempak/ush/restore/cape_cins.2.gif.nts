@@ -1,0 +1,23 @@
+PANEL   0                                                                       
+REFVEC                                                                          
+GVCORD  none
+GLEVEL  0
+CONTUR  2
+SKIP    0
+SCALE   0
+CLRBAR  1/V//.95;.05//|.8/2/2/sw ! 1|.8/2/2/sw
+CINT   
+LINE    3
+FINT    500;1000;1500;2000;2500;3000;3500;4000;4500;5000;5500 ! -100;-50;-25;0
+FLINE   0;23;22;3;21;5;19;17;2;18;14;1 ! 1;4;26;0;0/7
+WIND    BM1
+TITLE   1/2/~ RUC   CAPE/CIN (J/KG)                           !0
+TEXT    .8/2/2/c/sw 
+POSN    0
+MARKER  0
+GRDLBL  0
+FILTER  YES
+TYPE    f     ! f
+TITLE   1/0/~ DOC/NOAA/NWS/NCEP  http://www.ncep.noaa.gov               !0      
+TEXT    .8/3/2/c/sw                                                               
+CLEAR   yes                                                                     

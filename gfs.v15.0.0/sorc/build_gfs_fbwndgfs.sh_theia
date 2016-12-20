@@ -1,0 +1,18 @@
+#!/bin/sh
+set -x -e
+
+######################################################################
+#
+# Build executable utility: fbwndgfs using module compile standard
+#
+######################################################################
+######################################################################
+
+. /apps/lmod/lmod/init/sh
+module purge
+source ../modulefiles/gfs_fbwndgfs.theia
+
+cd fbwndgfs.fd
+make
+make clean
+mv fbwndgfs   ../../exec/

@@ -1,0 +1,40 @@
+#%Module######################################################################
+#############################################################
+## EMC
+## bufrsnd
+#############################################################
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for bufrsnd"
+puts stderr "This module initializes the users environment"
+puts stderr "to build the post for WCOSS production.\n"
+}
+module-whatis "bufrsnd"
+
+set ver v13.0.0
+
+setenv F_COMP ftn
+setenv F_COMP_MP ftn
+setenv F_COMP_MPI ftn
+
+setenv C_COMP cc
+setenv C_COMP_MP cc
+
+
+# Loading ncep environment
+module load ncep/1.0
+
+# Loading Intel Compiler Suite
+module load PrgEnv-intel/5.2.56
+
+# Loading pe environment
+module load cray-mpich/7.2.0
+module load craype-haswell
+
+# Loding nceplibs modules
+module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module load sigio-intel/2.0.1
+module load bacio-intel/2.0.1
+module load sp-intel/2.0.2
+module load w3emc-intel/2.2.0
+module load w3nco-intel/2.0.6
+module load bufr-intel/11.0.1

@@ -1,0 +1,19 @@
+MAP       1
+PANEL     0
+GAREA     12;-132;50;-42
+PROJ      str/55;-100;0/2;4;2;4
+LATLON    28/12/1//5;10
+
+GDPFUN    HGHTENSA                       ! HGHTENMW
+CLEAR     YES
+GLEVEL    500
+GVCORD    PRES
+SCALE     0
+FINT      10;12;15;20;25;30;35;40;50;60
+CINT                                     ! 40
+TYPE      F                              ! C
+FLINE     0;5;3;6;26;25;4;17;2;7;28
+CLRBAR    1|.8/2/2/sw                   
+LINE      1/1/2   
+TEXT      .8/3/2/c/sw 
+CONTUR    

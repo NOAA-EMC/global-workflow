@@ -1,0 +1,124 @@
+#BSUB -J Relocation_TEST_06
+#BSUB -o /ptmpp2/Qingfu.Liu/com2/gfs_tropcy_qc_reloc_06.o%J
+#BSUB -e /ptmpp2/Qingfu.Liu/com2/gfs_tropcy_qc_reloc_06.o%J
+#BSUB -L /bin/sh
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -cwd /ptmpp2/Qingfu.Liu/com2
+#BSUB -P GFS-T2O
+##BSUB -R rusage[mem=5000]
+##BSUB -R affinity[core]
+#BSUB -n 7 
+#BSUB -R span[ptile=1]
+#BSUB -R affinity[cpu(32):distribute=balance]
+#BSUB -a poe
+#BSUB -x
+
+#%include <head.h> 
+#%include <envir-p2.h>
+. /usrx/local/Modules/default/init/ksh
+module use /nwprod2/modulefiles
+module load grib_util/v1.0.1
+module load prod_util/v1.0.1
+module load ibmpe ics lsf
+
+set -x
+
+export OMP_NUM_THREADS=32
+
+ export MP_LABELIO=yes
+ export MP_MPILIB=mpich2
+ export MP_EUILIB=us
+ export MP_TASK_AFFINITY=cpu:32
+ export MP_USE_BULK_XFER=yes
+ export MP_STDOUTMODE=unordered
+ export MPICH_ALLTOALL_THROTTLE=0
+ export MP_COREFILE_FORMAT=core.txt
+ export OMP_STACKSIZE=3G
+ export MP_COMPILER=intel
+
+export envir=dev2
+export cyc=06
+export job=gfs_tropcy_qc_reloc_${cyc}
+export RUN_ENVIR=test
+#export NWROOT=/nwprod2
+export NWROOT=/global/save/Qingfu.Liu
+
+#export DATAROOT=/tmpnwprd_p2
+export DATAROOT=/ptmpp2/Qingfu.Liu
+
+#export COMROOT=/com2
+export COMROOT=/ptmpp2/Qingfu.Liu/com2
+export COMDATEROOT=/com2
+
+#export DCOMROOT=/dcom
+
+export shared_global_home=$NWROOT/shared_nco_20160129
+export gfs_global_home=$NWROOT/gfs_nco_20160129
+export gdas_global_home=$NWROOT/gdas_nco_20160129
+
+export COMROOTp1=/com
+export KEEPDATA=YES
+export CLEAN=NO
+export cycle=t00z
+
+#which setpdy.sh
+setpdy.sh
+. PDY
+
+export COMINgfs=/com/gfs/prod/gfs.${PDY}
+export COMINgdas=/com/gfs/prod/gdas.${PDY}
+
+# versions file for tracker $tracker.ver
+VERSION_FILE=${NWROOT}/versions/tropcy_qc_reloc.ver
+if [ -f $VERSION_FILE ]; then
+  . $VERSION_FILE
+else
+  ecflow_client --abort
+  exit
+fi
+
+# CALL executable job script here
+export HOMERELO=$shared_global_home
+#export HOMERELO=${NWROOT}/tropcy_qc_reloc.${tropcy_qc_reloc_ver}_r62774_phase2
+export HOMESYND=${HOMERELO}
+#export envir_getges=prod
+$gfs_global_home/jobs/JGFS_TROPCY_QC_RELOC
+
+if [ $? -ne 0 ]; then
+#  ecflow_client --abort
+  exit
+fi
+
+#%include <tail.h> 
+#%manual
+######################################################################
+##PURPOSE:  Executes the job JGFS_TROPCY_QC_RELOC
+#######################################################################
+##############################################################
+#  Function been tested:            TCvital quality control and archive, hurricane relocation
+#
+#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh.ecf, 
+#                                   syndat_qctropcy.sh, tropcy_relocate.sh,syndat_getjtbul.sh,
+#                                   tropcy_relocate_extrkr.sh,parse-storm-type.pl
+#
+#  Initial condition:               provide hours (cyc=?)
+#
+#  Usage:                           bsub < test_jgfs_tropcy_qc_reloc.ecf
+#
+#  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
+#                                   COMINgdas=/com/gfs/prod/gdas.${PDY}
+#
+#  Data_Out:                        /ptmpp2/Qingfu.Liu/com2/gfs/dev2/gfs.${PDY}
+#
+#  Result verification:             compare with the operational results
+#                        (results might be slightly different due to 3hourly/hourly tracker) 
+###############################################################
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+#%end

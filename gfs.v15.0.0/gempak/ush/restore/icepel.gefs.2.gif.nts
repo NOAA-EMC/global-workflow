@@ -1,0 +1,14 @@
+MAP       1
+PANEL     0
+LATLON    28/12/1//5;10
+CLEAR     YES
+GLEVEL    0           
+GVCORD    NONE    
+SCALE     0
+FLINE     0;5;12;8;17;18;21;23;25;24;15
+CLRBAR    1|.8/2/2/sw
+LINE      1/1/2
+TEXT      .8/2/c/sw
+CONTUR    
+TYPE      F
+FINT      1;10;20;30;40;50;60;70;80;90

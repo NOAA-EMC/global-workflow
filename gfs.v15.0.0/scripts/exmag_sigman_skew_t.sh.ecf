@@ -1,0 +1,65 @@
+#####################################################################
+echo "------------------------------------------------"
+echo "GFS MAG postprocessing script exmag_sigman_skew_t.sh.sms"
+echo "------------------------------------------------"
+echo "History: Mar 2012 added to processing for enhanced MAG skew_t"
+echo "2012-03-11 Mabe -- reworked script to add significant level " 
+echo "  data to existing mandatory level data in a new file"
+echo "2013-04-24 Mabe -- Reworked to remove unneeded output with "
+echo "  conversion to WCOSS"
+# Add ms to filename to make it different since it has both mandatory
+# and significant level data      $MAGDIR/${RUN}.${cycle}.msupperair
+#                             $MAGDIR/${RUN}.${cycle}.msupperairtble
+#####################################################################
+
+set -x
+
+cd $DATA
+
+export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
+
+# sort -k 2n,2 ${NWROOTp1}/dictionaries/metar.tbl > metar_stnm.tbl
+cp ${PARMgfs}/dictionaries/sonde.land.tbl .
+cp ${PARMgfs}/dictionaries/metar.tbl .
+sort -k 2n,2 metar.tbl > metar_stnm.tbl
+
+# JY - will check
+# JY cp $COMROOT/${NMODEL}/prod/${NMODEL}.${PDY}/${NMODEL}.$cycle.adpupa.tm00.bufr_d fort.40
+# cp $COMROOT/${NMODEL}/${envir}/${NMODEL}.${PDY}/${NMODEL}.$cycle.adpupa.tm00.bufr_d fort.40
+cp $COMIN/${NMODEL}.$cycle.adpupa.tm00.bufr_d fort.40
+
+$RDBFMSUA
+
+export filesize=` ls -l rdbfmsua.out | awk '{print $5}' `
+
+################################################################
+#   only run script if rdbfmsua.out contained upper air data.
+################################################################
+
+if [ $filesize -gt 40 ]
+then
+
+if [ $SENDCOM = "YES" ]; then
+       cp rdbfmsua.out $MAGDIR/${RUN}.${cycle}.msupperair
+       cp sonde.idsms.tbl $MAGDIR/${RUN}.${cycle}.msupperairtble
+       if [ $SENDDBN = "YES" ]; then
+          $DBNROOT/bin/dbn_alert DATA MSUPPER_AIR $job $MAGDIR/${RUN}.${cycle}.msupperair
+          $DBNROOT/bin/dbn_alert DATA MSUPPER_AIRTBL $job $MAGDIR/${RUN}.${cycle}.msupperairtble
+       fi
+fi
+
+fi
+
+############################################################
+# GOOD RUN
+set +x
+echo "**********GFS MAG sigman skewt COMPLETED"
+set -x
+############################################################
+
+cat $pgmout
+
+msg="HAS COMPLETED NORMALLY!"
+echo $msg
+
+############## END OF SCRIPT #######################

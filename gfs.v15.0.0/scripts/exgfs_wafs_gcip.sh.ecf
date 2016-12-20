@@ -1,0 +1,240 @@
+#!/bin/ksh
+######################################################################
+#  UTILITY SCRIPT NAME :  exgfs_wafs_gcip.sh.ecf
+#         DATE WRITTEN :  01/28/2015
+#
+#  Abstract:  This utility script produces the WAFS GCIP. 
+#
+#            GCIP runs f00 f03 for each cycle, 4 times/day,
+#            to make the output valid every 3 hours
+#
+# History:  01/28/2015
+#         - GFS post master file as first guess
+#              /com/prod/gfs.YYYYMMDD
+#         - Nesdis composite global satellite data 
+#              /dcom (ftp?)
+#         - Metar/ships/lightning/pireps
+#              ksh /nwprod/ush/dumpjb YYYYMMDDHH hours output >/dev/null
+#         - Radar data over CONUS
+#              /com/hourly/prod/radar.YYYYMMDD/refd3d.tHHz.grbf00
+#         - output of current icing potential
+#####################################################################
+echo "-----------------------------------------------------"
+echo "JGFS_WAFS_GCIP at 00Z/06Z/12Z/18Z GFS postprocessing"
+echo "-----------------------------------------------------"
+echo "History: 2015 - First implementation of this new script."
+echo " "
+#####################################################################
+
+cd $DATA
+
+set -xa
+SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+
+configFile=gcip.config
+
+ffhr=$SHOUR
+while test $ffhr -le $EHOUR ; do
+
+  # valid time. no worry, it won't be across to another date
+  vhour=$(( $ffhr + $cyc ))
+  vhour=`printf "%02d" $vhour`
+
+########################################################
+# Preparing data
+
+  if [ $RUN = "gfs" ] ; then
+
+    # Change IGRIB accordingly
+    cpreq $FIXgfs/gcip_gfs.cfg $configFile
+    sed -i "s|grib\ =\ .*|grib\ =\ $IGRIB|" $configFile
+
+    # model data
+    masterFile=$COMINgfs/gfs.t${cyc}z.master.grb2f$ffhr
+
+    # check the availability of model file
+    icnt=1
+    while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
+	if [ -s $masterFile ] ; then
+	    sleep 5
+	    break
+	fi
+	sleep $SLEEP_INT
+	icnt=$((icnt + 1))
+	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
+            msg="ABORTING after $SLEEP_TIME seconds of waiting for gfs master file!"
+            err_exit $msg
+	fi
+    done
+
+    modelFile=model.grb$IGRIB
+    if [ $IGRIB = 1 ] ; then
+       # Grib 1 master model file processing
+       cpfs $masterFile $modelFile.tmp
+       $CNVGRIB -g21 $modelFile.tmp $modelFile
+       rm $modelFile.tmp
+    elif [ $IGRIB = 2 ] ; then
+       # Grib 2 master model file processing
+       cpfs $masterFile $modelFile
+    fi
+
+    # metar / ships / lightning / pireps
+    # dumped data files' suffix is ".ibm"
+    obsfiles="metar ships ltngsr pirep"
+    for obsfile in $obsfiles ; do 
+#      ksh $USHobsproc_dump/dumpjb ${PDY}${vhour} 1.5 $obsfile >/dev/null
+      ksh $USHobsproc_dump/dumpjb ${PDY}${vhour} 1.5 $obsfile 
+    done
+    metarFile=metar.ibm
+    shipFile=ships.ibm
+    lightningFile=ltngsr.ibm
+    pirepFile=pirep.ibm
+
+    satFiles=""
+    channels="VIS SIR LIR SSR"
+    # If one channel is missing, satFiles will be empty
+    for channel in $channels ; do
+      satFile=GLOBCOMP$channel.${PDY}${vhour}
+      if [[ $COMINsat == *ftp:* ]] ; then
+	  curl -O $COMINsat/$satFile
+      else
+
+        # check the availability of satellite data file
+	icnt=1
+	while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
+	  if [ -s $COMINsat/$satFile ] ; then
+	    sleep 5
+	    break
+	  fi
+	  sleep $SLEEP_INT
+	  icnt=$((icnt + 1))
+	  if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
+            msg="ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
+            err_exit $msg
+	  fi
+	done
+
+	cpfs $COMINsat/$satFile .
+      fi
+      wait 30
+      if [[ -s $satFile ]] ; then
+	  satFiles="$satFiles $satFile"
+      else
+	  satFiles=""
+	  break
+      fi
+    done
+
+    # radar data
+    if [ $IGRIB = 1 ] ; then
+	sourceRadar=$COMINradar/refd3d.t${vhour}z.grbf00
+    elif [ $IGRIB = 2 ] ; then
+	sourceRadar=$COMINradar/refd3d.t${vhour}z.grb2f00
+    fi
+
+    # check the availability of radar data file
+    icnt=1
+    while [ $icnt -lt $SLEEP_LOOP_MAX ] ; do
+	if [ -s $sourceRadar ] ; then
+	    sleep 5
+	    break
+	fi
+	sleep $SLEEP_INT
+	icnt=$((icnt + 1))
+	if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
+            msg="WARNING: radar data is not available after $SLEEP_TIME seconds of waiting!"
+            postmsg $jlogfile "$msg"
+	    echo $msg
+	fi
+    done
+
+    radarFile=radar.grb$IGRIB
+    if [ -s $sourceRadar ] ; then
+      cp $sourceRadar $radarFile
+    fi
+
+  fi # RUN model name
+
+########################################################
+# Composite gcip command options
+
+  if [ $IGRIB = 1 ] ; then
+      outputfile=gfs.t${vhour}z.gcip.f00.grib
+  elif [ $IGRIB = 2 ] ; then
+      outputfile=gfs.t${vhour}z.gcip.f00.grib2
+  fi
+
+  cmdoptions="-t ${PDY}${vhour} -c $configFile -model $modelFile"
+  if [[ -s $metarFile ]] ; then
+      cmdoptions="$cmdoptions -metar $metarFile"
+  else
+      err_exit "There are no METAR observations."
+  fi
+  if [[ -s $shipFile ]] ; then
+      cmdoptions="$cmdoptions -ship $shipFile"
+  fi
+  # empty if a channel data is missing
+  if [[ -n $satFiles ]] ; then
+      cmdoptions="$cmdoptions -sat $satFiles"
+  else
+      err_exit "Satellite data are not available or completed."
+  fi
+  if [[ -s $lightningFile ]] ; then
+      cmdoptions="$cmdoptions -lightning $lightningFile"
+  fi
+  if [[ -s $pirepFile ]] ; then
+      cmdoptions="$cmdoptions -pirep $pirepFile"
+  fi
+  if [[ -s $radarFile ]] ; then
+      cmdoptions="$cmdoptions -radar $radarFile"
+  fi
+  cmdoptions="$cmdoptions -o $outputfile"
+
+#######################################################
+# Run GCIP
+
+  pgm=gcip
+
+  cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
+
+  startmsg
+  $EXECgfs/$pgm >> $pgmout $cmdoptions 2> errfile
+  export err=$?; err_chk
+
+
+  if [[ -s $outputfile ]] ; then
+    ############################## 
+    # Post Files to COM
+    ##############################
+    if [ $SENDCOM = "YES" ] ; then
+      cpfs $outputfile $COMOUT/$outputfile
+      if [ $SENDDBN = "YES" ] ; then
+	# $DBNROOT/bin/dbn_alert GFS_WAFS GCIP $job $COMOUT/$outputfile
+	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile
+      fi
+    fi
+  else
+    err_exit "Output $outputfile was not generated"
+  fi
+
+
+  ffhr=`expr $ffhr + $FHINC`
+  if test $ffhr -lt 10
+  then
+     ffhr=0${ffhr}
+  fi
+  
+done
+
+################################################################################
+# GOOD RUN
+set +x
+echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB EXGFS_WAFS_GCIP.SH.ECF COMPLETED NORMALLY ON THE IBM"
+set -x
+################################################################################
+
+
+############## END OF SCRIPT #######################
+

@@ -1,0 +1,20 @@
+GLEVEL  0                                                                       
+GVCORD  none                                                                    
+PANEL   0                                                                       
+SKIP    0                                                                       
+SCALE   0                                                                       
+GDPFUN  wvper!wvdir!                                           
+TYPE    f    !d                                                    
+CONTUR  1                                                                       
+CINT         !                          
+LINE         !                                                     
+FINT    2;4;6;8;9;10;11;12;13;14;15;16;17;18;19;20;21         
+FLINE   24;4;25-27;3;22;23;21;5;20;19;17;2;16;15;14;18;8                       
+HILO         !                                                                
+HLSYM                                                                           
+CLRBAR  1|.8/2/2/sw                                                         
+WIND         ! am/.5/1/112/.6                                             
+REFVEC                                                                          
+TITLE   1/0/~ DOC/NOAA/NWS/NCEP  http://www.ncep.noaa.gov               !0      
+TEXT    .8/2/2/c/sw                                                               
+CLEAR   yes                                                                     

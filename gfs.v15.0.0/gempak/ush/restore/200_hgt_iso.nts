@@ -1,0 +1,16 @@
+GLEVEL  200                                                                     
+GVCORD  PRES                                                                    
+GDPFUN  sm9s(knts(sped))    ! sm9s(hght)
+SCALE   0                   ! -1
+TYPE    c/f                 ! c
+CONTUR  2                                                                       
+CINT    10;30;50;70;90;110  ! 12 
+FINT    10;30;50;70;90;110  !
+FLINE   0;0;0;21;22;23      !
+LINE    23/13/2/1/1         ! 4/31/2/1/1
+HILO    0                   ! 1/H#;L#//8//yes
+HLSYM   0                   ! 2.5;1.5/2/3/5/sw
+CLRBAR  0
+WIND    
+REFVEC                                                                          
+TEXT    .8/3/2/c/sw                                                               

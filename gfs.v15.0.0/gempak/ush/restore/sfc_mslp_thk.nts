@@ -1,0 +1,15 @@
+GLEVEL  500:1000           ! 0 
+GVCORD  PRES               ! NONE
+GDPFUN  ldf(hght)          ! pmsl
+SCALE   -1                 ! 0
+TYPE    C                  ! C
+CONTUR  2                                                                       
+CINT    6                  ! 4
+LINE    7/13/2/1/1         ! 4/31/2/1/1 
+HILO                       ! 1/H#;L#//8//yes               
+HLSYM                      ! 2.5;1.5/2/3/5/sw 
+CLRBAR  1|.8/2/2/sw                                                         
+WIND    
+REFVEC                                                                          
+TITLE 
+TEXT    .8/3/2/c/sw                                                               
