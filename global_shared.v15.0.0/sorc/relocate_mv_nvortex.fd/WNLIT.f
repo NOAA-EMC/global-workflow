@@ -1,0 +1,437 @@
+      SUBROUTINE WNLIT(W,MDW,M,N,L,IPIVOT,ITYPE,H,SCALE,RNORM,IDOPE,
+     1   DOPE,DONE)
+C***BEGIN PROLOGUE  WNLIT
+C***REFER TO  WNNLS
+C
+C     This is a companion subprogram to WNNLS( ).
+C     The documentation for WNNLS( ) has more complete
+C     usage instructions.
+C
+C     Note  The M by (N+1) matrix W( , ) contains the rt. hand side
+C           B as the (N+1)st col.
+C
+C     Triangularize L1 by L1 subsystem, where L1=MIN(M,L), with
+C     col interchanges.
+C     Revised March 4, 1982.
+C***ROUTINES CALLED  H12,ISAMAX,SCOPY,SROTM,SROTMG,SSCAL,SSWAP
+C***END PROLOGUE  WNLIT
+C
+C     THE EDITING REQUIRED TO CONVERT THIS SUBROUTINE FROM SINGLE TO
+C     DOUBLE PRECISION INVOLVES THE FOLLOWING CHARACTER STRING CHANGES.
+C     USE AN EDITING COMMAND (CHANGE) /STRING-1/(TO)STRING-2/.
+C     (BEGIN CHANGES AT LINE WITH C++ IN COLS. 1-3.)
+C     /REAL (12 BLANKS)/DOUBLE PRECISION/,/SCOPY/DCOPY/,/SROTM/DROTM/,
+C     /SSCAL/DSCAL/,
+C     /SSWAP/DSWAP/,/AMAX1/DMAX1/,/ISAMAX/IDAMAX/,/.E-/.D-/,/E0/D0/
+C
+C++
+      USE setparms
+c
+      REAL             W(MDW,1), H(1), SCALE(1), DOPE(4), SPARAM(5)
+      REAL             ALSQ, AMAX, EANORM, FAC, FACTOR, HBAR, ONE, RN
+      REAL             RNORM, SN, T, TAU, TENM3, ZERO
+      REAL             AMAX1
+      INTEGER ITYPE(1), IPIVOT(1), IDOPE(8)
+      integer(kind = int_single) ISAMAX,IDAMAX
+      LOGICAL INDEP, DONE, RECALC
+      DATA TENM3 /1.E-3/, ZERO /0.E0/, ONE /1.E0/
+C
+C***FIRST EXECUTABLE STATEMENT  WNLIT
+      ME = IDOPE(1)
+      MEP1 = IDOPE(2)
+      KRANK = IDOPE(3)
+      KRP1 = IDOPE(4)
+      NSOLN = IDOPE(5)
+      NIV = IDOPE(6)
+      NIV1 = IDOPE(7)
+      L1 = IDOPE(8)
+C
+      ALSQ = DOPE(1)
+      EANORM = DOPE(2)
+      FAC = DOPE(3)
+      TAU = DOPE(4)
+      NP1 = N + 1
+      LB = MIN0(M-1,L)
+      RECALC = .TRUE.
+      RNORM = ZERO
+      KRANK = 0
+C     WE SET FACTOR=1.E0 SO THAT THE HEAVY WEIGHT ALAMDA WILL BE
+C     INCLUDED IN THE TEST FOR COL INDEPENDENCE.
+      FACTOR = 1.E0
+      I = 1
+      IP1 = 2
+      LEND = L
+   10 IF (.NOT.(I.LE.LB)) GO TO 150
+C
+C     SET IR TO POINT TO THE I-TH ROW.
+      IR = I
+      MEND = M
+      ASSIGN 20 TO IGO996
+      GO TO 460
+C
+C     UPDATE-COL-SS-AND-FIND-PIVOT-COL
+   20 ASSIGN 30 TO IGO993
+      GO TO 560
+C
+C     PERFORM-COL-INTERCHANGE
+C
+C     SET IC TO POINT TO I-TH COL.
+   30 IC = I
+      ASSIGN 40 TO IGO990
+      GO TO 520
+C
+C     TEST-INDEP-OF-INCOMING-COL
+   40 IF (.NOT.(INDEP)) GO TO 110
+C
+C     ELIMINATE I-TH COL BELOW DIAG. USING MOD. GIVENS TRANSFORMATIONS
+C     APPLIED TO (A B).
+      J = M
+      DO 100 JJ=IP1,M
+        JM1 = J - 1
+        JP = JM1
+C     WHEN OPERATING NEAR THE ME LINE, USE THE LARGEST ELT.
+C     ABOVE IT AS THE PIVOT.
+        IF (.NOT.(J.EQ.MEP1)) GO TO 80
+        IMAX = ME
+        AMAX = SCALE(ME)*W(ME,I)**2
+   50   IF (.NOT.(JP.GE.I)) GO TO 70
+        T = SCALE(JP)*W(JP,I)**2
+        IF (.NOT.(T.GT.AMAX)) GO TO 60
+        IMAX = JP
+        AMAX = T
+   60   JP = JP - 1
+        GO TO 50
+   70   JP = IMAX
+   80   IF (.NOT.(W(J,I).NE.ZERO)) GO TO 90
+        CALL SROTMG(SCALE(JP), SCALE(J), W(JP,I), W(J,I), SPARAM)
+        W(J,I) = ZERO
+        CALL SROTM(NP1-I, W(JP,IP1), MDW, W(J,IP1), MDW, SPARAM)
+   90   J = JM1
+  100 CONTINUE
+      GO TO 140
+  110 CONTINUE
+      IF (.NOT.(LEND.GT.I)) GO TO 130
+C
+C     COL I IS DEPENDENT. SWAP WITH COL LEND.
+      MAX = LEND
+C
+C     PERFORM-COL-INTERCHANGE
+      ASSIGN 120 TO IGO993
+      GO TO 560
+  120 CONTINUE
+      LEND = LEND - 1
+C
+C     FIND COL IN REMAINING SET WITH LARGEST SS.
+      if (kind(H) == real_single) then
+        MAX = ISAMAX(LEND-I+1,H(I),1) + I - 1
+      else if (kind(H) == real_double) then
+        MAX = IDAMAX(LEND-I+1,H(I),1) + I - 1
+      endif
+      HBAR = H(MAX)
+      GO TO 30
+  130 CONTINUE
+      KRANK = I - 1
+      GO TO 160
+  140 I = IP1
+      IP1 = IP1 + 1
+      GO TO 10
+  150 KRANK = L1
+  160 CONTINUE
+      KRP1 = KRANK + 1
+      IF (.NOT.(KRANK.LT.ME)) GO TO 290
+      FACTOR = ALSQ
+      DO 170 I=KRP1,ME
+        IF (L.GT.0) W(I,1) = ZERO
+        if (kind(W) == real_single) then
+          CALL SCOPY(L, W(I,1), 0, W(I,1), MDW)
+        else if (kind(W) == real_double) then
+          CALL DCOPY(L, W(I,1), 0, W(I,1), MDW)
+        endif
+  170 CONTINUE
+C
+C     DETERMINE THE RANK OF THE REMAINING EQUALITY CONSTRAINT
+C     EQUATIONS BY ELIMINATING WITHIN THE BLOCK OF CONSTRAINED
+C     VARIABLES.  REMOVE ANY REDUNDANT CONSTRAINTS.
+      LP1 = L + 1
+      RECALC = .TRUE.
+      LB = MIN0(L+ME-KRANK,N)
+      I = LP1
+      IP1 = I + 1
+  180 IF (.NOT.(I.LE.LB)) GO TO 280
+      IR = KRANK + I - L
+      LEND = N
+      MEND = ME
+      ASSIGN 190 TO IGO996
+      GO TO 460
+C
+C     UPDATE-COL-SS-AND-FIND-PIVOT-COL
+  190 ASSIGN 200 TO IGO993
+      GO TO 560
+C
+C     PERFORM-COL-INTERCHANGE
+C
+C     ELIMINATE ELEMENTS IN THE I-TH COL.
+  200 J = ME
+  210 IF (.NOT.(J.GT.IR)) GO TO 230
+      JM1 = J - 1
+      IF (.NOT.(W(J,I).NE.ZERO)) GO TO 220
+      CALL SROTMG(SCALE(JM1), SCALE(J), W(JM1,I), W(J,I), SPARAM)
+      W(J,I) = ZERO
+      CALL SROTM(NP1-I, W(JM1,IP1), MDW, W(J,IP1), MDW, SPARAM)
+  220 J = JM1
+      GO TO 210
+C
+C     SET IC=I=COL BEING ELIMINATED
+  230 IC = I
+      ASSIGN 240 TO IGO990
+      GO TO 520
+C
+C     TEST-INDEP-OF-INCOMING-COL
+  240 IF (INDEP) GO TO 270
+C
+C     REMOVE ANY REDUNDANT OR DEPENDENT EQUALITY CONSTRAINTS.
+      JJ = IR
+  250 IF (.NOT.(IR.LE.ME)) GO TO 260
+      W(IR,1) = ZERO
+
+      if (kind(W) == real_single) then
+        CALL SCOPY(N, W(IR,1), 0, W(IR,1), MDW)
+      else if (kind(W) == real_double) then
+        CALL DCOPY(N, W(IR,1), 0, W(IR,1), MDW)
+      endif
+
+      RNORM = RNORM + (SCALE(IR)*W(IR,NP1)/ALSQ)*W(IR,NP1)
+      W(IR,NP1) = ZERO
+      SCALE(IR) = ONE
+C     RECLASSIFY THE ZEROED ROW AS A LEAST SQUARES EQUATION.
+      ITYPE(IR) = 1
+      IR = IR + 1
+      GO TO 250
+C
+C     REDUCE ME TO REFLECT ANY DISCOVERED DEPENDENT EQUALITY
+C     CONSTRAINTS.
+  260 CONTINUE
+      ME = JJ - 1
+      MEP1 = ME + 1
+      GO TO 300
+  270 I = IP1
+      IP1 = IP1 + 1
+      GO TO 180
+  280 CONTINUE
+  290 CONTINUE
+  300 CONTINUE
+      IF (.NOT.(KRANK.LT.L1)) GO TO 420
+C
+C     TRY TO DETERMINE THE VARIABLES KRANK+1 THROUGH L1 FROM THE
+C     LEAST SQUARES EQUATIONS.  CONTINUE THE TRIANGULARIZATION WITH
+C     PIVOT ELEMENT W(MEP1,I).
+C
+      RECALC = .TRUE.
+C
+C     SET FACTOR=ALSQ TO REMOVE EFFECT OF HEAVY WEIGHT FROM
+C     TEST FOR COL INDEPENDENCE.
+      FACTOR = ALSQ
+      KK = KRP1
+      I = KK
+      IP1 = I + 1
+  310 IF (.NOT.(I.LE.L1)) GO TO 410
+C
+C     SET IR TO POINT TO THE MEP1-ST ROW.
+      IR = MEP1
+      LEND = L
+      MEND = M
+      ASSIGN 320 TO IGO996
+      GO TO 460
+C
+C     UPDATE-COL-SS-AND-FIND-PIVOT-COL
+  320 ASSIGN 330 TO IGO993
+      GO TO 560
+C
+C     PERFORM-COL-INTERCHANGE
+C
+C     ELIMINATE I-TH COL BELOW THE IR-TH ELEMENT.
+  330 IRP1 = IR + 1
+      J = M
+      DO 350 JJ=IRP1,M
+        JM1 = J - 1
+        IF (.NOT.(W(J,I).NE.ZERO)) GO TO 340
+        CALL SROTMG(SCALE(JM1), SCALE(J), W(JM1,I), W(J,I), SPARAM)
+        W(J,I) = ZERO
+        CALL SROTM(NP1-I, W(JM1,IP1), MDW, W(J,IP1), MDW, SPARAM)
+  340   J = JM1
+  350 CONTINUE
+C
+C     TEST IF NEW PIVOT ELEMENT IS NEAR ZERO. IF SO, THE COL IS
+C     DEPENDENT.
+      T = SCALE(IR)*W(IR,I)**2
+      INDEP = T.GT.TAU**2*EANORM**2
+      IF (.NOT.INDEP) GO TO 380
+C
+C     COL TEST PASSED. NOW MUST PASS ROW NORM TEST TO BE CLASSIFIED
+C     AS INDEPENDENT.
+      RN = ZERO
+      DO 370 I1=IR,M
+        DO 360 J1=IP1,N
+          RN = AMAX1(RN,SCALE(I1)*W(I1,J1)**2)
+  360   CONTINUE
+  370 CONTINUE
+      INDEP = T.GT.TAU**2*RN
+C
+C     IF INDEPENDENT, SWAP THE IR-TH AND KRP1-ST ROWS TO MAINTAIN THE
+C     TRIANGULAR FORM.  UPDATE THE RANK INDICATOR KRANK AND THE
+C     EQUALITY CONSTRAINT POINTER ME.
+  380 IF (.NOT.(INDEP)) GO TO 390
+      if (kind(W) == real_single) then
+        CALL SSWAP(NP1, W(KRP1,1), MDW, W(IR,1), MDW)
+      else if (kind(W) == real_double) then
+        CALL DSWAP(NP1, W(KRP1,1), MDW, W(IR,1), MDW)
+      endif
+      if (kind(SCALE) == real_single) then
+        CALL SSWAP(1, SCALE(KRP1), 1, SCALE(IR), 1)
+      else if (kind(SCALE) == real_double) then
+        CALL DSWAP(1, SCALE(KRP1), 1, SCALE(IR), 1)
+      endif
+C     RECLASSIFY THE LEAST SQ. EQUATION AS AN EQUALITY CONSTRAINT AND
+C     RESCALE IT.
+      ITYPE(IR) = 0
+      T = SQRT(SCALE(KRP1))
+
+      if (kind(W) == real_single) then
+        CALL SSCAL(NP1, T, W(KRP1,1), MDW)
+      else if (kind(W) == real_double) then
+        CALL DSCAL(NP1, T, W(KRP1,1), MDW)
+      endif
+
+      SCALE(KRP1) = ALSQ
+      ME = MEP1
+      MEP1 = ME + 1
+      KRANK = KRP1
+      KRP1 = KRANK + 1
+      GO TO 400
+  390 GO TO 430
+  400 I = IP1
+      IP1 = IP1 + 1
+      GO TO 310
+  410 CONTINUE
+  420 CONTINUE
+  430 CONTINUE
+C
+C     IF PSEUDORANK IS LESS THAN L, APPLY HOUSEHOLDER TRANS.
+C     FROM RIGHT.
+      IF (.NOT.(KRANK.LT.L)) GO TO 450
+      DO 440 I=1,KRANK
+        J = KRP1 - I
+        CALL H12(1, J, KRP1, L, W(J,1), MDW, H(J), W, MDW, 1, J-1)
+  440 CONTINUE
+  450 NIV = KRANK + NSOLN - L
+      NIV1 = NIV + 1
+      IF (L.EQ.N) DONE = .TRUE.
+C
+C  END OF INITIAL TRIANGULARIZATION.
+      IDOPE(1) = ME
+      IDOPE(2) = MEP1
+      IDOPE(3) = KRANK
+      IDOPE(4) = KRP1
+      IDOPE(5) = NSOLN
+      IDOPE(6) = NIV
+      IDOPE(7) = NIV1
+      IDOPE(8) = L1
+      RETURN
+  460 CONTINUE
+C
+C     TO UPDATE-COL-SS-AND-FIND-PIVOT-COL
+C
+C     THE COL SS VECTOR WILL BE UPDATED AT EACH STEP. WHEN
+C     NUMERICALLY NECESSARY, THESE VALUES WILL BE RECOMPUTED.
+C
+      IF (.NOT.(IR.NE.1 .AND. (.NOT.RECALC))) GO TO 480
+C     UPDATE COL SS =SUM OF SQUARES.
+      DO 470 J=I,LEND
+        H(J) = H(J) - SCALE(IR-1)*W(IR-1,J)**2
+  470 CONTINUE
+C
+C     TEST FOR NUMERICAL ACCURACY.
+      if (kind(H) == real_single) then
+        MAX = ISAMAX(LEND-I+1,H(I),1) + I - 1
+      else if (kind(H) == real_double) then
+        MAX = IDAMAX(LEND-I+1,H(I),1) + I - 1
+      endif
+      RECALC = HBAR + TENM3*H(MAX).EQ.HBAR
+C
+C     IF REQUIRED, RECALCULATE COL SS, USING ROWS IR THROUGH MEND.
+  480 IF (.NOT.(RECALC)) GO TO 510
+      DO 500 J=I,LEND
+        H(J) = ZERO
+        DO 490 K=IR,MEND
+          H(J) = H(J) + SCALE(K)*W(K,J)**2
+  490   CONTINUE
+  500 CONTINUE
+C
+C     FIND COL WITH LARGEST SS.
+      if (kind(H) == real_single) then
+        MAX = ISAMAX(LEND-I+1,H(I),1) + I - 1
+      else if (kind(H) == real_double) then
+        MAX = IDAMAX(LEND-I+1,H(I),1) + I - 1
+      endif
+
+      HBAR = H(MAX)
+  510 GO TO 600
+  520 CONTINUE
+C
+C     TO TEST-INDEP-OF-INCOMING-COL
+C
+C     TEST THE COL IC TO DETERMINE IF IT IS LINEARLY INDEPENDENT
+C     OF THE COLS ALREADY IN THE BASIS.  IN THE INIT TRI
+C     STEP, WE USUALLY WANT THE HEAVY WEIGHT ALAMDA TO
+C     BE INCLUDED IN THE TEST FOR INDEPENDENCE.  IN THIS CASE THE
+C     VALUE OF FACTOR WILL HAVE BEEN SET TO 1.E0 BEFORE THIS
+C     PROCEDURE IS INVOKED.  IN THE POTENTIALLY RANK DEFICIENT
+C     PROBLEM, THE VALUE OF FACTOR WILL HAVE BEEN
+C     SET TO ALSQ=ALAMDA**2 TO REMOVE THE EFFECT OF THE HEAVY WEIGHT
+C     FROM THE TEST FOR INDEPENDENCE.
+C
+C     WRITE NEW COL AS PARTITIONED VECTOR
+C             (A1)  NUMBER OF COMPONENTS IN SOLN SO FAR = NIV
+C             (A2)  M-NIV COMPONENTS
+C     AND COMPUTE  SN = INVERSE WEIGHTED LENGTH OF A1
+C                  RN = INVERSE WEIGHTED LENGTH OF A2
+C     CALL THE COL INDEPENDENT WHEN RN .GT. TAU*SN
+      SN = ZERO
+      RN = ZERO
+      DO 550 J=1,MEND
+        T = SCALE(J)
+        IF (J.LE.ME) T = T/FACTOR
+        T = T*W(J,IC)**2
+        IF (.NOT.(J.LT.IR)) GO TO 530
+        SN = SN + T
+        GO TO 540
+  530   RN = RN + T
+  540   CONTINUE
+  550 CONTINUE
+      INDEP = RN.GT.TAU**2*SN
+      GO TO 590
+  560 CONTINUE
+C
+C     TO PERFORM-COL-INTERCHANGE
+C
+      IF (.NOT.(MAX.NE.I)) GO TO 570
+C     EXCHANGE ELEMENTS OF PERMUTED INDEX VECTOR AND PERFORM COL
+C     INTERCHANGES.
+      ITEMP = IPIVOT(I)
+      IPIVOT(I) = IPIVOT(MAX)
+      IPIVOT(MAX) = ITEMP
+
+      if (kind(W) == real_single) then
+        CALL SSWAP(M, W(1,MAX), 1, W(1,I), 1)
+      else if (kind(W) == real_double) then
+        CALL DSWAP(M, W(1,MAX), 1, W(1,I), 1)
+      endif
+
+      T = H(MAX)
+      H(MAX) = H(I)
+      H(I) = T
+  570 GO TO 580
+  580 GO TO IGO993, (30, 200, 330, 120)
+  590 GO TO IGO990, (40, 240)
+  600 GO TO IGO996, (20, 190, 320)
+      END

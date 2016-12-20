@@ -1,0 +1,155 @@
+################################################################################
+# 
+#     Makefile for NCEP Post
+#
+#     Use:
+#     make         -  build the executable
+#     make clean   -  start with a clean slate
+#
+#     The following macros will be of interest:
+#
+#         TARGET   - name of the executable
+#         FC       - name of Fortran compiler
+#         CPP      - name of CPP
+#         ARCH     - architecture
+#         CPPFLAGS - CPP flags
+#         OPTS     - compiler code optimizations
+#         LIST     - source listing
+#         SMP      - threading
+#         TRAPS    - runtime traps for floating point exceptions
+#         PROFILE  - source code profiling ( -pg )
+#         DEBUG    - -g
+#         MEM      - user data area and stack size
+#         MAP      - load map
+#         W3LIB    - w3lib
+#         BACIO    - bacio lib
+#         ESSL     - ESSL library
+#         MASS     - MASS library
+#         HPMLIB   - hpm lib
+#         SEARCH   - library search location
+# 
+#         This version for eta_post with more intelligent memory allocation
+#         Jim Tuccillo   Feb 2001
+# 
+#         This version for eta_post with asynchronous I/O server.   
+#         Jim Tuccillo   June 2001
+
+#         This version for NEMS_POST 
+#         Jun Wang       June 2010
+#
+#################################################################################
+#
+# Define the name of the executable
+#
+ POSTLIBPATH=..
+ TARGET = ${POSTLIBPATH}/libnceppost.a
+ INCMOD= ${POSTLIBPATH}/incmod/post_4
+ AR      = ar
+ ARFLAGS = -rv
+
+#
+# CPP, Compiler, and Linker Options
+#
+
+FC       = mpfort -compiler ifort
+CPP      = /lib/cpp -P
+ARCH     = auto
+CPPFLAGS = -DLINUX
+OPTS     = -O -fp-model strict
+LIST     = 
+FREE     = -FR
+TRAPS    = 
+PROFILE  = 
+DEBUG    = -g
+CFLAGS =  -DLINUX -Dfunder -DFortranByte=char -DFortranInt=int -DFortranLlong='long long'
+W3LIBDIR = /nwprod/lib
+
+CRTM_INC   = -I/nwprod/lib/incmod/crtm_2.0.6
+W3_INC     = -I/nwprod/lib/incmod/w3emc_v2.0.3_4
+SIGIO_INC  = -I/nwprod/lib/incmod/sigio_v1.0.1_4
+GFSIO_INC  = -I/nwprod/lib/incmod/gfsio_v1.1.0_4
+W3_INC     = -I/nwprod/lib/incmod/w3emc_v2.0.3_4
+G2_INC     = -I/nwprod/lib/incmod/g2_4 -I/nwprod/lib/incmod/g2tmpl
+XML_INC    = -I/nwprod/lib/incmod/xmlparse
+
+CRTMFFLAGS = -I/nwprod/lib/incmod/crtm_2.0.2
+SIGIOFLAG = -I/nwprod/lib/incmod/sigio_4
+GFSIOFLAG = -I/nwprod/lib/incmod/gfsio_4
+
+W3FLAGS = -I/nwprod/lib/incmod/w3_v2.2.3_4
+G2TESTLIBDIR=/nco/sib/gribdev/lib
+G2TMPLTESTLIBDIR=/climate/save/wx20wa/lib
+XMLDIR=/climate/save/wx20wa/lib
+
+GRB2FLAGS = -I${G2TESTLIBDIR}/incmod/g2_4 -I${G2TMPLTESTLIBDIR}/incmod/g2tmpl
+XMLFLAGS = -I${XMLDIR}/incmod/xmlparse
+
+
+
+SEARCH   =
+#
+# Assemble Options
+#
+FFLAGS   = $(OPTS) $(FREE) $(TRAPS) $(DEBUG) $(CRTM_INC) $(W3_INC) $(G2_INC) $(XML_INC) $(SIGIO_INC) $(GFSIO_INC)
+FFLAGST  = $(OPTS) $(FREE) $(TRAPS) $(DEBUG) $(CRTM_INC) $(W3_INC) $(SIGIO_INC) $(GFSIO_INC)
+
+#
+# Threaded object files
+#
+OBJST=	kinds_mod.o machine.o physcons.o ZENSUN.o CLDFRAC_ZHAO.o GFSPOST.o 
+#
+# Non-threaded object files
+#
+OBJS=	VRBLS2D_mod.o VRBLS3D_mod.o VRBLS4D_mod.o MASKS_mod.o PMICRPH.o SOIL_mod.o \
+	CMASSI.o CTLBLK.o GRIDSPEC.o LOOKUP.o PARAMR.o RHGRD.o RQSTFLD.o \
+	cuparm.o params.o svptbl.o get_postfilename.o grib2_module.o \
+	SET_LVLSXML.o FILL_PSETFLD.o \
+	BNDLYR.o BOUND.o CALCAPE.o CALDWP.o CALDRG.o CALHEL.o CALLCL.o  \
+	CALMCVG.o CALPOT.o CALPW.o CALRH.o CALRCH.o CALRH_GSD.o \
+	CALSTRM.o CALTAU.o CALTHTE.o CALVIS.o CALVIS_GSD.o CALVOR.o CALWXT.o \
+	CALWXT_RAMER.o CALWXT_BOURG.o CALWXT_REVISED.o CALRH_PW.o \
+	CALWXT_EXPLICIT.o CALWXT_DOMINANT.o \
+	CLDRAD.o  CLMAX.o COLLECT.o  COLLECT_LOC.o DEWPOINT.o \
+	FDLVL.o FGAMMA.o FIXED.o  FRZLVL.o  FRZLVL2.o \
+	GET_BITS.o GRIBIT.o             LFMFLD.o                 \
+	MAPSSLP.o MISCLN.o MIXLEN.o MDL2P.o MDLFLD.o                         \
+	NGMFLD.o NGMSLP.o OTLFT.o OTLIFT.o SLP_new.o SLP_NMM.o EXCH.o \
+	PARA_RANGE.o PROCESS.o                EXCH2.o \
+	READCNTRL.o READ_xml.o SET_OUTFLDS.o SCLFLD.o                          \
+	SMOOTH.o SURFCE.o \
+	SPLINE.o TABLE.o TABLEQ.o TRPAUS.o TTBLEX.o WETBULB.o           \
+	CALMICT.o MICROINIT.o GPVS.o MDL2SIGMA.o \
+	ETCALC.o CANRES.o CALGUST.o WETFRZLVL.o SNFRAC.o MDL2AGL.o SNFRAC_GFS.o \
+	AVIATION.o DEALLOCATE.o                          \
+	CALPBL.o MDL2SIGMA2.o                CALRH_GFS.o LFMFLD_GFS.o \
+	CALRAD_WCLOUD_newcrtm.o MDL2THANDPV.o CALPBLREGIME.o POLEAVG.o \
+	                                   ICAOHEIGHT.o                     \
+                             GEO_ZENITH_ANGLE.o GFIP3.o GRIDAVG.o CALUPDHEL.o \
+	AllGETHERV_GSD.o MSFPS.o SELECT_CHANNELS.o ALLOCATE_ALL.o
+
+
+.SUFFIXES:	.F .f .o .f90 .c
+
+.F.f:
+	$(CPP) $(CPPFLAGS) $< > $*.f
+
+$(TARGET):	$(OBJST) $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJST) $(OBJS) $(LIBS)
+	mv *.mod $(INCMOD)
+
+.f.o:
+	$(FC) $(FFLAGS) -c $<
+
+.f90.o:
+	$(FC) $(FFLAGS) -c $<
+
+.c.o :
+	${CC} ${CFLAGS} -c $<
+
+clean:	
+	/bin/rm -f  $(TARGET) *.lst *.o *.mod
+#
+postcntrl_t.o      :       postcntrl_t.f90
+	$(FC) $(FFLAGS) postcntrl_t.f90
+
+

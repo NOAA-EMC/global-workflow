@@ -1,0 +1,519 @@
+#!/bin/ksh
+################################################################################
+# UNIX Script Documentation Block
+# Script name:         exglobal_fcst_fv3gfs.sh.ecf
+# Script description:  Runs a global FV3GFS model forecast
+#
+# Author:   Fanglin Yang       Org: NCEP/EMC       Date: 2016-11-15
+# Abstract: This script runs a single GFS forecast with FV3 dynamical core.  
+#           This script is created based on a C-shell script that GFDL wrote 
+#           for the NGGPS Phase-II Dycore Comparison Project. 
+#
+# Script history log:
+# 2016-11-15  Fanglin Yang
+#
+# Attributes:
+#   Language: Portable Operating System Interface (POSIX) Shell
+#   Machine: WCOSS-CARY           
+################################################################################
+
+#  Set environment.
+export VERBOSE=${VERBOSE:-"YES"}
+if [[ $VERBOSE = YES ]] ; then
+  echo $(date) EXECUTING $0 $* >&2
+  set -x
+fi
+
+export machine=${machine:-WCOSS_C}
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+if [ $machine = WCOSS_C ] ; then
+ . $MODULESHOME/init/sh 2>/dev/null
+ export PRGENV=${PRGENV:-intel}
+ export HUGEPAGES=${HUGEPAGES:-hugepages4M}
+ module  unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
+ module  load module load prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
+ export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
+ export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
+fi
+
+export PTMP=${PTMP:-/gpfs/hps/ptmp}
+export STMP=${STMP:-/gpfs/hps/stmp}
+export BASEDIR=${BASEDIR:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/gfs_workflow.v15.0.0/para}
+export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
+export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
+export FIX_AM=${FIX_AM:-$BASE_GSM/fix/fix_am}
+export CO2DIR=${CO2DIR:-$BASE_GSM/fix/fix_am/fix_co2_proj}
+export PARM_DIR=${PARM_DIR:-$BASE_GSM/parm}
+export PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
+
+export PSLOT=${PSLOT:-fv3gfs}
+export CASE=${CASE:-C768}
+export CDATE=${CDATE:-2016100300}
+export FHMAX=${FHMAX:-240}
+export FDATE=`$NDATE +$FHMAX $CDATE`
+export FHOUT=${FHOUT:-6.0}
+export FHZER=${FHZER:-6.0}
+export FHCYC=${FHCYC:-0.0}
+export DELTIM=${DELTIM:-225}
+export LEVS=${LEVS:-64}
+export ymd=`echo $CDATE |cut -c 1-8`
+export cyc=`echo $CDATE |cut -c 9-10`
+export NAME="${ymd}.${cyc}Z"
+
+export DATA=${DATA:-$STMP/$LOGNAME/pr${PSLOT}${CASE}_${CDATE}}  #temporary running directory
+export COMROT=${COMROT:-$PTMP/$LOGNAME/pr${PSLOT}}                #rorating archive directory
+export IC_DIR=${IC_DIR:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/ICs}
+
+export NCP=${NCP:-"/bin/cp -p"}
+export SEND=${SEND:-"YES"}   #move final result to rotating directory
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+
+#-------------------------------------------------------
+if [ ! -s $COMROT ]; then mkdir -p $COMROT; fi
+if [ ! -s $DATA ]; then mkdir -p $DATA ;fi
+mkdir -p $DATA/RESTART $DATA/INPUT 
+cd $DATA ||exit 8
+
+#-------------------------------------------------------
+#-------------------------------------------------------
+export layout_x=${layout_x:-8}
+export layout_y=${layout_y:-16}
+export TYPE=${TYPE:-nh}                  # choices:  nh, hydro
+export MODE=${MODE:-64bit}               # choices:  32bit, 64bit
+export COMP=${COMP:-"prod"}              # choices:  debug, repro, prod
+export MONO=${MONO:-non-mono}            # choices:  mono, non-mono
+export MEMO=${MEMO:-""}
+
+export EXECDIR=${EXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}
+export FCSTEXEC=${FCSTEXEC:-fv3_gfs_${TYPE}.${COMP}.${MODE}.x}
+$NCP  $EXECDIR/$FCSTEXEC $DATA/.                                                                  
+
+export HYPT=${HYPT:-off}             # choices:  on, off  (controls hyperthreading)
+if [ ${HYPT} = on ]; then
+   export hyperthread=".true."
+   export j_opt="-j 2"
+else
+   export hyperthread=".false."
+   export j_opt="-j 1"
+fi
+export nthreads=${nth_f:-2}
+export cores_per_node=${npe_node_f:-24}
+export npes=$(( ${layout_x} * ${layout_y} * 6 ))
+export task_per_node=$(( ${cores_per_node} / ${nthreads} ))
+export APRUN_loc="aprun -n $npes -N $task_per_node -d $nthreads $j_opt -cc depth"
+APRUN=${APRUN:-$APRUN_loc}
+
+#--------------------------------------------------------------------------
+#--------------------------------------------------------------------------
+# Grid and orography data
+n=1
+ntiles=${ntiles:-6}
+while [ $n -le $ntiles ]; do
+ $NCP -p $FIX_DIR/${CASE}/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+ $NCP -p $FIX_DIR/${CASE}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+ n=$((n+1))
+done
+$NCP -p $FIX_DIR/${CASE}/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+
+# GFS standard input data
+export IEMS=${IEMS:-1}
+export ISOL=${ISOL:-2}
+export IAER=${IAER:-111}
+export ICO2=${ICO2:-2}
+
+$NCP -p $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/INPUT/solarconstant_noaa_an.txt
+$NCP -p $FIX_AM/global_o3prdlos.f77               $DATA/INPUT/global_o3prdlos.f77
+$NCP -p $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/INPUT/sfc_emissivity_idx.txt
+
+$NCP -p $FIX_AM/global_co2historicaldata_glob.txt $DATA/INPUT/co2historicaldata_glob.txt
+$NCP -p $FIX_AM/co2monthlycyc.txt                 $DATA/INPUT/co2monthlycyc.txt
+if [ $ICO2 -gt 0 ]; then
+ for file in `ls $CO2DIR/global_co2historicaldata* ` ; do
+   $NCP $file $DATA/INPUT/$(echo $(basename $file) |sed -e "s/global_//g")
+ done
+fi
+
+$NCP -p $FIX_AM/global_climaeropac_global.txt     $DATA/INPUT/aerosol.dat
+if [ $IAER -gt 0 ] ; then
+ for file in `ls $FIX_AM/global_volcanic_aerosols* ` ; do
+   ${NCP:-cp} $file $DATA/INPUT/$(echo $(basename $file) |sed -e "s/global_//g")
+ done
+fi
+
+export FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
+export FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
+export FNTSFC=${FNTSFC:-"$FIX_AM/cfs_oi2sst1x1monclim19822001.grb"}
+export FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
+export FNZORC=${FNZORC:-"$FIX_AM/global_zorclim.1x1.grb"}
+export FNALBC=${FNALBC:-"$FIX_AM/global_albedo4.1x1.grb"}
+export FNAISC=${FNAISC:-"$FIX_AM/cfs_ice1x1monclim19822001.grb"}
+export FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
+export FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
+export FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.1x1.grb"}
+export FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.1x1.grb"}
+export FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmcpc.1x1.grb"}
+export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+export FNTSFA=${FNTSFA:-""}
+export FNACNA=${FNACNA:-""}
+export FNSNOA=${FNSNOA:-""}
+export FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
+export FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
+export FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
+export FNABSC=${FNABSC:-"$FIX_AM/global_snoalb.1x1.grb"}
+
+#-intial conditions 
+$NCP $IC_DIR/${CASE}_$CDATE/* $DATA/INPUT/. 
+
+#------------------------------------------------------------------
+#------------------------------------------------------------------
+# changeable parameters
+    # dycore definitions
+    res=`echo $CASE |cut -c 2-5`
+    resp=`expr $res + 1 ` 
+    export npx=${resp:-769}
+    export npy=${resp:-769}
+    export npz=`expr ${LEVS:-64} - 1 `
+
+    export layout_x=${layout_x:-8}  
+    export layout_y=${layout_y:-16}  
+    export io_layout="1,1"
+    export nthreads=${nthreads:-4}
+    export ncols=$(( (${npx}- 1)*(${npy}-1)*3/2 ))
+
+    # blocking factor used for threading and general physics performance
+#   export nxblocks=3; export nyblocks=48
+    export nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
+    export nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
+    if [ $nxblocks -le 0 ]; then export nxblocks=1 ; fi
+
+    # run length
+    export months=${months:-0}
+    export days=${days:-$((FHMAX/24))}
+    export hours=${hours:-$((FHMAX-24*(FHMAX/24)))}
+    export dt_atmos=${DELTIM:-225}
+
+    # export the pre-conditioning of the solution
+    # =0 implies no pre-conditioning
+    # >0 means new adiabatic pre-conditioning
+    # <0 means older adiabatic pre-conditioning
+    export na_init=1
+
+    # variables for controlling initialization of NCEP/NGGPS ICs
+    export filtered_terrain=".true."
+    export ncep_plevels=".false."
+    export ncep_levs=${LEVS:-64}
+    export gfs_dwinds=".true."
+
+    # variables for gfs diagnostic output intervals and time to zero out time-accumulated data
+#    export fdiag="0.0625,6.,12.,18.,24.,30.,36.,42.,48.,54.,60.,66.,72.,78.,84.,90.,96.,102.,108.,114.,120.,126.,132.,138.,144.,150.,156.,162.,168.,174.,180.,186.,192.,198.,204.,210.,216.,222.,228.,234.,240."
+    export fdiag=${fdiag:-${FHOUT:-6.0}}
+    export fhzer=${FHZER:-6.0}
+    export fhcyc=${FHCYC:-0.0}
+
+    # determines whether FV3 or GFS physics calculate geopotential
+    export gfs_phil=".false."
+
+    # determine whether ozone production occurs in GFS physics
+    export ozcalc=".true."
+
+    # export various debug options
+    export no_dycore=${no_dycore:-".false."}
+    export dycore_only=${adiabatic:-".false."}
+    export print_freq=${print_freq:-6}
+
+    if [ ${TYPE} = "nh" ]; then
+      # non-hydrostatic options
+      export make_nh=".T."
+      export hydrostatic=".F."
+      export phys_hydrostatic=".F."     # can be tested
+      export use_hydro_pressure=".F."   # can be tested
+      export consv_te="1."
+        # time step parameters in FV3
+      export k_split=2
+      export n_split=6
+    else
+      # hydrostatic options
+      export make_nh=".F."
+      export hydrostatic=".T."
+      export phys_hydrostatic=".F."     # will be ignored in hydro mode
+      export use_hydro_pressure=".T."   # have to be .T. in hydro mode
+      export consv_te="0."
+        # time step parameters in FV3
+      export k_split=2
+      export n_split=6
+    fi
+
+    if [ ${MONO} = "mono" -o  ${MONO} = "monotonic" ];  then
+      # monotonic options
+      export d_con="0."
+      export do_vort_damp=".false."
+      if [ ${TYPE} = "nh" ]; then
+        # non-hydrostatic
+        export hord_mt=" 10"
+        export hord_xx="-10"
+      else
+        # hydrostatic
+        export hord_mt=" 10"
+        export hord_xx="-10"
+      fi
+    else
+      # non-monotonic options
+      export d_con="1."
+      export do_vort_damp=".true."
+      if [ ${TYPE} == "nh" ]; then
+        # non-hydrostatic
+        export hord_mt=" 6"
+        export hord_xx="-5"
+      else
+        # hydrostatic
+        export hord_mt=" 10"
+        export hord_xx="-10"
+      fi
+    fi
+
+    if [ ${MONO} = "non-mono" -a ${TYPE} == "nh" ]; then
+      export vtdm4="0.06"
+    else
+      export vtdm4="0.05"
+    fi
+
+
+
+# build the date for curr_date and diag_table from NAME
+export y=`echo ${NAME} | cut -c1-4`
+export m=`echo ${NAME} | cut -c5-6`
+export d=`echo ${NAME} | cut -c7-8`
+export h=`echo ${NAME} | cut -c10-11`
+export curr_date="${y},${m},${d},${h},0,0"
+
+# build the diag_table with the experiment name and date stamp
+cat > diag_table << EOF
+${NAME}.${CASE}.${MODE}.${MONO}
+$y $m $d $h 0 0 
+EOF
+cat ${PARM_FV3DIAG}/diag_table >> diag_table
+
+# copy over the other tables and executable
+$NCP ${PARM_FV3DIAG}/data_table data_table
+$NCP ${PARM_FV3DIAG}/field_table field_table
+
+cat > input.nml <<EOF
+ &amip_interp_nml
+     interp_oi_sst = .true.
+     use_ncep_sst = .true.
+     use_ncep_ice = .false.
+     no_anom_sst = .false.
+     data_set = 'reynolds_oi',
+     date_out_of_range = 'climo',
+/
+
+ &atmos_model_nml
+     nxblocks = $nxblocks
+     nyblocks = $nyblocks
+     surface_debug = .false.
+     dycore_only = $dycore_only
+/
+
+ &diag_manager_nml
+     prepend_date = .true.
+     long_date = .true.
+/
+
+ &fms_io_nml
+       checksum_required   = .false.
+       max_files_r = 100,
+       max_files_w = 100,
+/
+
+ &fms_nml
+       clock_grain = 'ROUTINE',
+       domains_stack_size = ${domains_stack_size:-115200},
+       print_memory_usage = ${print_memory_usage:-.false.}
+/
+
+ &fv_grid_nml
+       grid_file = 'INPUT/grid_spec.nc'
+/
+
+ &fv_core_nml
+       layout   = $layout_x,$layout_y
+       io_layout = $io_layout
+       npx      = $npx
+       npy      = $npy
+       ntiles   = $ntiles,
+       npz    = $npz
+       grid_type = -1
+       make_nh = $make_nh
+       fv_debug = ${fv_debug:-".F."}
+       range_warn = .F.
+       reset_eta = .F.
+       n_sponge = ${n_sponge:-8}
+       tau = 5.
+       rf_cutoff = 8.e2
+       d2_bg_k1 = 0.16
+       d2_bg_k2 = 0.02
+       kord_tm = -11
+       kord_mt =  10
+       kord_wz =  10
+       kord_tr =  11
+       hydrostatic = $hydrostatic
+       phys_hydrostatic = $phys_hydrostatic
+       use_hydro_pressure = $use_hydro_pressure
+       beta = 0.
+       a_imp = 1.
+       p_fac = 0.1
+       k_split  = $k_split
+       n_split  = $n_split
+       nwat = 2 
+       na_init = $na_init
+       d_ext = 0.0
+       dnats = 0
+       fv_sg_adj = 600
+       d2_bg = 0.
+       nord =  2
+       dddmp = 0.2
+       d4_bg = 0.15 
+       vtdm4 = $vtdm4
+       ke_bg = 0.
+       do_vort_damp = $do_vort_damp
+       external_ic = .T.
+       gfs_phil = $gfs_phil
+       nggps_ic = .T.
+       mountain = .F.
+       ncep_ic = .F.
+       d_con = $d_con
+       hord_mt = $hord_mt
+       hord_vt = $hord_xx
+       hord_tm = $hord_xx
+       hord_dp = $hord_xx
+       hord_tr = -8
+       adjust_dry_mass = .F.
+       consv_te = $consv_te
+       consv_am = .F.
+       fill = .T.
+       dwind_2d = .F.
+       print_freq = $print_freq
+       warm_start = .F.
+       no_dycore = $no_dycore
+       z_tracer = .T.
+/
+
+ &coupler_nml
+       months = $months
+       days  = $days
+       hours = $hours
+       dt_atmos = $dt_atmos
+       dt_ocean = $dt_atmos
+       current_date =  $curr_date
+       calendar = 'julian'
+       memuse_verbose = .false.
+       atmos_nthreads = $nthreads
+       use_hyper_thread = $hyperthread
+       ncores_per_node = $cores_per_node
+/
+
+ &external_ic_nml 
+       filtered_terrain = $filtered_terrain
+       ncep_plevels = $ncep_plevels
+       levp = $ncep_levs
+       gfs_dwinds = $gfs_dwinds
+       checker_tr = .F.
+       nt_checker = 0
+/
+
+ &gfs_physics_nml
+       debug = ${debug:-.false.}
+       ntoz = ${ntoz:-3}
+       ntcw = ${ntcw:-2}
+       fhswr = ${fhswr:-3600.}
+       fhlwr = ${fhlwr:-3600.}
+       ozcalc = $ozcalc
+       nocnv = ${nocnv:-.false.}
+       fhzero = $fhzer
+       prslrd0 = 0.
+       fhcyc = $fhcyc
+       use_ufo = ${use_ufo:-".F."}
+       nst_anl = ${nst_anl:-".F."}
+       ncols = $ncols
+       iems = $IEMS
+       isol = $ISOL
+       iaer = $IAER
+       ico2 = $ICO2
+       cdmbgwd = ${cdmbgwd:-"3.5,0.25"}
+/
+
+  &nggps_diag_nml
+       fdiag = $fdiag
+/
+
+  &interpolator_nml
+       interp_method = 'conserve_great_circle'
+/
+
+&namsfc
+       FNGLAC ="$FNGLAC"
+       FNMXIC ="$FNMXIC"
+       FNTSFC ="$FNTSFC"
+       FNSNOC ="$FNSNOC"
+       FNZORC ="$FNZORC"
+       FNALBC ="$FNALBC"
+       FNAISC ="$FNAISC"
+       FNTG3C ="$FNTG3C"
+       FNVEGC ="$FNVEGC"
+       FNVETC ="$FNVETC"
+       FNSOTC ="$FNSOTC"
+       FNSMCC ="$FNSMCC"
+       FNMSKH ="$FNMSKH"
+       FNTSFA ="$FNTSFA"
+       FNACNA ="$FNACNA"
+       FNSNOA ="$FNSNOA"
+       FNVMNC ="$FNVMNC"
+       FNVMXC ="$FNVMXC"
+       FNSLPC ="$FNSLPC"
+       FNABSC ="$FNABSC"
+       LDEBUG=.false.,
+       FSMCL(2) = 99999
+       FSMCL(3) = 99999
+       FSMCL(4) = 99999
+       FTSFS = 90
+       FAISS = 99999
+       FSNOL = 99999
+       FSICL = 99999
+       FTSFL=99999,
+       FAISL=99999,
+       FVETL=99999,
+       FSOTL=99999,
+       FvmnL=99999,
+       FvmxL=99999,
+       FSLPL=99999,
+       FABSL=99999,
+       FSNOS=99999,
+       FSICS=99999,
+/
+EOF
+
+# run the executable
+cd $DATA
+$APRUN $FCSTEXEC 1>& 1 2>& 2               
+
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT||exit 2
+
+#------------------------------------------------------------------
+if [ $ERR -eq 0 -a $SEND = "YES" ]; then 
+ for type in atmos_4xdaily atmos_static grid_spec nggps2d nggps3d; do
+   n=1; while [ $n -le $ntiles ]; do
+    $NCP $DATA/${CDATE}0000.$type.tile${n}.nc $COMROT/. 
+    n=$((n+1))
+   done
+ done
+fi
+
+set +x
+if [[ "$VERBOSE" = "YES" ]] ; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err
+
+

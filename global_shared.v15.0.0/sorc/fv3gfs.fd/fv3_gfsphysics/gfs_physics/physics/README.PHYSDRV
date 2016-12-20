@@ -1,0 +1,118 @@
+
+NCEP GFS Physics Driver/Wrapper Prototype Code Walkthrough
+----------------------------------------------------------
+
+Source code is available on the EMC subversion server:
+
+NEMS
+https://svnemc.ncep.noaa.gov/projects/nems/branches/patrick/phys_drv
+
+GSM
+https://svnemc.ncep.noaa.gov/projects/gsm/branches/patrick/phys_drv
+
+src/atmos/gsm is an svn:external repository.
+
+
+
+To checkout the source follow these steps:
+
+svn checkout https://svnemc.ncep.noaa.gov/projects/nems/branches/patrick/phys_drv
+
+cd phys_drv/src/atmos
+
+svn checkout https://svnemc.ncep.noaa.gov/projects/gsm/branches/patrick/phys_drv
+
+A gsm directory will then be created - src/atmo/gsm
+
+A tagged source code snapshot is also available on the EMC website http://www.emc.ncep.noaa.gov/NEMS/ - this is not as current as what is on svn.
+
+
+
+Language features and overview: 
+
+Much of the code utilizes modern Fortran standards up to F2003 and should be compatible with current Fortran compiler implementations. Model data is encapsulated into several Derived Data Types (DDT) with Type Bound Procedures. Most of the model arguments are pointers into the actual arrays that are allocated and managed externally to the driver.  The DDTs serve as containers of the passed arguments and are organized into several DDTs to provide some structure and organization to the data. One goal and constraint of this development was to minimize changes to existing code.
+
+
+Source Contents:
+
+src/atmos/phys
+    nuopc_physics.F90 – physics driver, DDTs, wrapper subroutines
+        ddts and type bound procedures
+
+        model_parameter_initialize() - deprecated - type bound procedure 
+        nuopc_phys_init()  - initialize radiation and physics parameters
+        nuopc_rad_run() - run the radiation component (grrad)
+        nuopc_phys_run() - run the remaining physics components (gbphys)
+        use_nuopc = .true. -  enable to the use of the driver
+
+    grrad.f – radiation subroutine – called by nuopc_rad_run
+    gbphys.f – physics subroutine – called by nuopc_physics_run
+
+src/atmos/gsm/phys
+
+    gfs_physics_initialize_mod.f – calls nuopc_phys_init()
+        This is an esmf registered routine.
+
+    gfs_physics_run_mod.f – calls do_physics_one_step, passes in mdl_param from init
+        This is an esmf registered routine.
+        
+    do_physics_one_step.f – calls gloopr and gloopb, passes mdl_param
+        
+    gloopr.f – fills the DDT containers and calls nuopc_rad_run
+       
+    gloopb.f – fills the DDT containers and calls nuopc_phys_run
+
+    gfs_physics_internal_state_mod.f – added the "model_parameters" DDT to the internal state so that it could remain in scope and persist between the ESMF registered initialize and run phases. Model parameters only needs to be set once in the initialize step. The ddt is then passed to the run phase.
+
+
+
+The currently defined DDTs are as follows:
+
+tbd_data         : arguments that still need to be categorized.
+state_fields_in  : input states for physics
+state_fields_out : output states for physics
+sfc_properties   : surface properties
+diagnostics      : diagnostic fluxes and other fields
+interface_fields : fields used for coupling to land/ocean
+cloud_properties : cloud related fields
+radiation_tendencies : radiation fields
+dynamic_parameters : model parameters that change (used to be part of model_parameters but these change frequently)
+model_parameters : paramters that are set once in the initialize phase
+
+The type bound procedures subroutines follow after the type definitions in nuopc_physics.F90
+
+
+
+To run the gfs go to phys_drv/tests:
+
+copy test.conf from my local directory on Zeus or the dev wcoss machine:
+
+/gpfs/td1/emc/nems/save/Patrick.Tripp/NEMS/phys_drv/tests/test.conf
+
+or edit the rt.conf file and comment out the other tests.
+
+I usually only run the following: 
+
+COMPILE | gsm                                 | standard    | wcoss        | 6.3r_gsm    |
+COMPILE | gsm                                 | standard    | zeus         | 6_gsm       |
+RUN     | gfs_32                              | standard    |              | gfs         |
+# RUN     | gfs_32_adiab                        |             |              | gfs         |
+# RUN     | gfs_32_48                           |             |              |             |
+# RUN     | gfs_decomp_restart                  |             |              |             |
+RUN     | gfs_16_32    
+
+You might need to edit rt.sh. I like to run in the debug queue since they are short runs and dont wait in the queue as long.
+
+# PT  export QUEUE=batch
+ export QUEUE=debug
+
+You might also need to change your ptmp location.
+
+# PT  export PTMP=$dprefix2/ptmp
+  export PTMP=$dprefix1/nems/ptmp
+
+Run the regression test script.
+
+rt.sh -f -l test.conf
+
+

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<!--  Lin Gan:  20150324 validated -->
+<!--  Lin Gan:  This is the stylesheet to validate POST available table XML file -->
+  <xs:element name="postxml">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="post_avblflds" maxOccurs="unbounded" minOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Created by EMC must be used to validate xml file before attempt to use in POST jobs
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="param" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:int" name="post_avblfldidx" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="shortname" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="no_lead_end_mult_space_string" name="longname" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="mass_windpoint" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="pdstmpl" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="pname" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="table_info" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="stats_proc" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="fixed_sfc1_type" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="array_of_int_number" name="scale_fact_fixed_sfc1" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="level_array_of_real_number" name="level" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="fixed_sfc2_type" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="array_of_int_number" name="scale_fact_fixed_sfc2" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="level_array_of_real_number" name="level2" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="aerosol_type" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="typ_intvl_size" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_fact_1st_size" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_val_1st_size" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_fact_2nd_size" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_val_2nd_size" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="typ_intvl_wvlen" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_fact_1st_wvlen" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_val_1st_wvlen" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_fact_2nd_wvlen" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="scale_val_2nd_wvlen" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="scale_array_of_real_number" name="scale" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="stat_miss_val" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="leng_time_range_prev" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="time_inc_betwn_succ_fld" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="type_of_time_inc" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="stat_unit_time_key_succ" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="no_space_string" name="bit_map_flag" maxOccurs="1" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="no_lead_end_mult_space_string">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\S)+([\s]?(\S)+)*" />
+      <xs:pattern value="^([\s]{2})" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="with_two_or_more_space_string">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([\s]{2})*" />
+      <xs:pattern value="([\s]{3})*" />
+    </xs:restriction>
+  </xs:simpleType>  
+
+  <xs:simpleType name="no_lead_end_space_string">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\S+((.)*\S+)*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="no_space_string">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\s]*" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="array_of_int_number">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\+|\-)?\d{1,9}" />
+      <xs:pattern value="((\+|\-)?\d{1,9}(\s?))*" />
+    </xs:restriction>
+  </xs:simpleType>  
+  
+  <xs:simpleType name="level_array_of_real_number">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\+|\-)?\d+(\.{1}(\s+)(\+|\-)?\d+)*\." />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="scale_array_of_real_number">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\+|\-)?\d+(\.{1}(\+|\-)?\d+\s{1}(\+|\-)?\d+)*\.(\+|\-)?\d+" />
+    </xs:restriction>
+  </xs:simpleType>  
+
+</xs:schema>

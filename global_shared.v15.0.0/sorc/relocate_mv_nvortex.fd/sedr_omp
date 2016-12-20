@@ -1,0 +1,8 @@
+set -euax
+
+for file in mv_nvortex.f sig_p_convt1.f 
+do
+sed -e "s/\$OMP/!\$OMP/" $file >tmpout; mv tmpout $file
+done
+
+

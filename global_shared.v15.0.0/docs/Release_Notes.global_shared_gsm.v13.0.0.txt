@@ -1,0 +1,190 @@
+﻿RELEASE NOTESgfs.v13.0.0_gsm
+
+#This note only describes the GSM part of the gfs.v13.0.0 package
+
+(google doc https://docs.google.com/document/d/159ozYzK6oa7nXoq4YJ52w8sBzpl_0q1Y8X8zCSadMYo/edit)
+(svn repository https://svnemc.ncep.noaa.gov/projects/gfs/branches/shared_nco_20160129/)
+
+v13.0.0 - released February 1, 2016
+
+Based on gsm.v12.3.0, included the following changes
+
+1. Added modulefiles/gfs/gsm_v13.0.0 to use modulefiles for compiling code.        
+   Added build_gsm_wcoss.sh to set up modules to call the following makefiles
+   sorc/global_chgres.fd/makefile_wcoss.sh
+   sorc/global_cycle.fd/makefile_wcoss.sh
+   sorc/global_fcst.fd/makefile_wcoss.sh
+   sorc/global_sfchdr.fd/makefile_wcoss.sh
+   sorc/global_sighdr.fd/makefile_wcoss.sh
+
+   Type build_gsm_wcoss.sh to buid above five executables.
+  
+   Attention: after the fast byte-swap BACIO library is implemented, please 
+              use makefile_wcoss.sh_new to replace makefile_wcoss.sh 
+ 
+2. Updated the following files
+   sorc/global_chgres.fd/Makefile
+   sorc/global_chgres.fd/makefile.sh
+   sorc/global_cycle.fd/Makefile
+   sorc/global_cycle.fd/makefile.sh
+   sorc/global_fcst.fd/Makefile
+   sorc/global_sfchdr.fd/Makefile
+   sorc/global_sfchdr.fd/makefile.sh
+   sorc/global_sighdr.fd/Makefile
+   sorc/global_sighdr.fd/makefile.sh
+
+3. modified sorc/global_fcst.fd/GFS_GridComp_ESMFMod.f and GEFS_CplComp_ESMFMod.f
+   to resolve compiler errors when using the intel/15.0.3.187 compiler on Cray. 
+   Provided by Christopher Redder.
+
+4. modified w3movdat in sorc/global_sfchdr.fd/sfchdr.f and sorc/global_sighdr.fd/sighdr.f to 
+   conform to fortran 2008 ANSI standard that each ac-value expression in an array-constructor 
+   must have the same type and type parameters. Provided by Christopher Redder.
+
+5. The following scripts have been updated  to follow NCO implementation standard.
+     jobs/JGDAS_FORECAST_HIGH
+     jobs/JGFS_FORECAST_HIGH
+     jobs/JGFS_FORECAST_LOW
+     scripts/exglobal_fcst.sh.ecf
+     ush/global_chgres.sh
+     ush/global_cycle.sh
+   Standard alone experiments in simulated operational environment have been conducted 
+   to test these scripts.
+
+---------------------------------------------------------------------------------------------
+v12.2.0 - released September 9, 2015
+
+FORECAST CODE CHANGES
+* Semi-implicit reference pressure upgrade to reduce noise in the upper atmosphere
+* Convective gravity-wave drag parameterization upgrade to limit impact of extreme events on wind
+* Tracer adjustment upgrade for better cloud water and ozone mass conservation
+* Remove SST adjustment to climatology at zero forecast hour
+* Update stochastic physics parameters (SKEB and SHUM) to automatically
+  account for changes in model resolution and time step in the stochastic pattern amplitudes.  
+* Include Incremental Analysis Update (IAU) option, which is not exercised in this implementation. 
+* Use updated BACIO library to speed up I/O.
+* Update land soil parameters to reduce 2-m temperature warm bias over the Great Plains.
+
+UTILITY CODE CHANGES
+* updated sfcsub.f in global_chgres.fd and global_cycle.fd to the version used in model code
+
+
+FORECAST JOB CHANGES
+* JGDAS_FORECAST_HIGH  JGFS_FORECAST_HIGH  JGFS_FORECAST_LOW 
+   - updated to follow NCO Implementation Standard v10.0    
+
+JOB SCRIPT CHANGES
+* scripts/exglobal_fcst.sh.ecf:  updated to follow NCO Implementation Standard v10.0; added IAU option
+
+USH SCRIPT CHANGES
+* ush/global_chgres.sh: added output of gfsio surface file
+
+FIX and PARM FIELDS CHANGES
+* updated parm_sib/global_1x1_paramlist_g2.f000 to include total cloud cover
+* CO2 annual updates processed from most recent station measurements. 
+  in ../fix/fix_am added.
+    fix_co2_proj/global_co2historicaldata_2016.txt
+    fix_co2_update/global_co2historicaldata_2015.txt
+    co2dat_4a/global_co2historicaldata_2016.txt_proj
+    co2dat_4a/global_co2historicaldata_2014.txt
+    co2dat_4a/global_co2historicaldata_2015.txt_proj_u
+
+
+
+SOURCE CODE INFORMATION
+* Five applications are included in ./sorc directory: 
+  global_chgres.fd  global_cycle.fd  global_fcst.fd  global_sfchdr.fd  global_sighdr.fd
+  They are used by the above three JJOBS.
+
+
+COMPUTING RESOURCE INFORMATION
+* JGDAS_FORECAST_HIGH
+   current operation: on WCOSS phase-I,  432 tasks, ptile=4, 4cores/task, 108 nodes, ~10.5 minutes
+   proposed         : on WCOSS phase-II, 258 tasks, ptile=6, 4cores/task, 43 nodes,  8.5  minutes 
+
+*JGFS_FORECAST_HIGH  (hourly output up to 12 hours, then 3 hourly output)
+   current operation: on WCOSS phase-I, 432 tasks, ptile=4, 4cores/task, 108 nodes, ~8.3 min/day, total 83 minutes
+   proposed         : on WCOSS phase-II,390 tasks, ptile=6, 4cores/task, 65 nodes,  ~8.22 min/day, total 82.2  minutes  
+
+*JGFS_FORECAST_HIGH  (hourly output up to 120 hours, then 3 hourly output)
+   proposed         : on WCOSS phase-II,540 tasks, ptile=6, 4cores/task, 90 nodes,   ~8.12 min/day, total 81.2  minutes  
+
+
+*JGFS_FORECAST_LOW
+   current operation: on WCOSS phase-I, 216 tasks, ptile=8,  2cores/task, 27 nodes, 
+                      ~2.0 min/day for 6 days, ~3.0 minutes for chgres, total 15 minutes
+   proposed         : on WCOSS phase-II,216 tasks, ptile=12, 2cores/task, 18 nodes,
+                      ~2.05 min/day for 6 days, 2.0 minutes for chgres, total 14.5 minutes
+
+
+VERSIONS OF LIBRARIES, COMPILERS AND SHARED CODE BEING USED
+   * libraries
+      SIGIO_VER=v2.0.1
+      W3NCO_VER=v2.0.6
+      W3EMC_VER=v2.0.5
+      SP_VER=v2.0.2
+      BACIO_VER=/usrx/local/nceplibs/libbacio_v2.0.1p_4.a  --to be implemented
+      NEMSIO_VER=v2.2.1
+      IP_VER=v2.0.0
+      SFCIO_VER=v1.0.0
+      GFSIO_VER=v1.1.0
+      LANDSFCUTIL_VER=v2.0.0
+      util_ver=v1.0.0
+   * compiler (modules loaded during GSI build / run)
+      * ics/14.0.1
+      * lsf/9.1
+      * /usrx/local/Modules/3.2.10/init/ksh
+
+* Data retention for files in /com and /nwges under prod/para/test environments
+   * same as current operations 
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+* which production jobs should be tested as part of this implementation?
+   * gfs v13.0.0 should be tested as part of the T1534 GFS 4D EN-VAR package
+* does this change require a 30-day evaluation?
+   * YES
+* suggested evaluators
+   * same as rest of T1534 GFS 4D EN-VAR package
+
+
+DISSEMINATION INFORMATION 
+* where should this output be sent?
+   * same as current operational GFS/GDAS Forecasts
+* who are the users?
+   * same as current operational GFS/GDAS Forecasts
+* which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS Forecasts
+
+
+HPSS ARCHIVE
+* retention length?
+   * same as current operational GFS/GDAS Forecasts
+* list which output files should be archived
+   * same as current operational GFS/GDAS Forecasts
+        
+IMPLEMENTATION INSTRUCTIONS
+To implement gsm v13.0.0, please do the following:
+   * mkdir gfs.v13.0.0  /nw${envir}
+   * cd /nw${envir}/gfs.v13.0.0
+   run build_gsm_wcoss.sh
+
+JOB DEPENDENCIES 
+* JGDAS_FORECAST_HIGH has the following upstream / downstream dependencies
+   * upstream
+      - triggered upon completion of JGDAS_ANALYSIS_HIGH                    
+   * downstream
+      - triggers JGDAS_NCEPPOST     
+
+* JGFS_FORECAST_HIGH has the following upstream / downstream dependencies
+   * upstream
+      - triggered upon completion of JGFS_ANALYSIS
+   * downstream
+      - triggers JGFS_NCEPPOST and JGFS_FORECAST_LOW
+
+* JGFS_FORECAST_LOW has the following upstream / downstream dependencies
+   * upstream
+      - triggered upon completion of JGFS_FORECAST_HIGH                      
+   * downstream
+      - triggers JGFS_NCEPPOST 
+

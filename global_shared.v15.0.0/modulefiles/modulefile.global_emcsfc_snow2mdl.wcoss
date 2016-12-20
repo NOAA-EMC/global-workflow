@@ -1,0 +1,22 @@
+#%Module#################################################################
+proc ModulesHelp { } {
+  puts stderr "Set environment variables for WCOSS-phase 1/2 global_emcsfc_snow2mdl build"
+}
+
+module-whatis "Set environment variables for WCOSS-phase 1/2 global_emcsfc_snow2mdl build"
+
+set ver 1.1.0
+
+module load ics/12.1
+setenv FCOMP ifort
+setenv FFLAGS "-O0 -r8 -i4 -FR -openmp -convert big_endian -assume byterecl"
+
+module load ip/v2.0.0
+module load sp/v2.0.2
+module load w3nco/v2.0.6
+module load bacio/v2.0.2
+module load jasper/v1.900.1
+module load z/v1.2.6
+module load png/v1.2.44
+module load g2/v2.5.0
+module load landsfcutil/v2.0.0
