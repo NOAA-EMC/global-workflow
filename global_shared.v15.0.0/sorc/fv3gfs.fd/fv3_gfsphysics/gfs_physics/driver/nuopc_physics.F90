@@ -259,6 +259,8 @@
          real (kind=kind_phys), pointer :: phii  (:,:)   => null()  ! interface geopotential height
          real (kind=kind_phys), pointer :: phil  (:,:)   => null()  ! layer geopotential height
          real (kind=kind_phys), pointer :: adjtrc(:)     => null()  ! dynamics adjustments to tracers
+         real (kind=kind_phys), pointer :: shum_wts  (:,:)   => null()  ! stochastic physics SHUM
+         real (kind=kind_phys), pointer :: sppt_wts  (:,:)   => null()  ! stochastic physics SPPT
 
          contains
            procedure setrad  => state_fld_setrad_in
@@ -283,6 +285,7 @@
          real (kind=kind_phys), pointer :: gq0 (:,:,:) => null()  ! updated tracers
          real (kind=kind_phys), pointer :: gu0 (:,:)   => null()  ! updated zonal wind
          real (kind=kind_phys), pointer :: gv0 (:,:)   => null()  ! updated meridional wind
+         real (kind=kind_phys), pointer :: dtdtr (:,:)   => null()  ! clear sky heating      
 
          contains
            procedure setphys => state_fld_setphys_out
@@ -449,6 +452,9 @@
          real (kind=kind_phys), pointer :: smcref2(:) => null()  ! flx_fld%smcref2  soil moisture threshold (volumetric)
          real (kind=kind_phys), pointer :: wet1   (:) => null()  ! flx_fld%wet1     normalized soil wetness
          real (kind=kind_phys), pointer :: sr     (:) => null()  ! flx_fld%sr       snow ratio : ratio of snow to total precipitation
+ ! additional arrays for stochastic physics
+         real (kind=kind_phys), pointer :: totprcp0(:)  => null()  ! flx_fld%geshem   accumulated total precipitation (kg/m2)
+         real (kind=kind_phys), pointer :: cnvprcp0(:)  => null()  ! flx_fld%bengsh   accumulated convective precipitation (kg/m2)
 
          contains
            procedure setrad => diagnostics_setrad
@@ -564,6 +570,8 @@
          real (kind=kind_phys), pointer :: psurfi_cpl (:) => null()  ! aoi_fld%psurfi   sfc pressure at time step AOI cpl        
          real (kind=kind_phys), pointer :: oro_cpl    (:) => null()  ! aoi_fld%oro      orography AOI cpl                        
          real (kind=kind_phys), pointer :: slmsk_cpl  (:) => null()  ! aoi_fld%slimsk   Land/Sea/Ice AOI cpl                     
+!        additional varible for stochastic physics
+         real (kind=kind_phys), pointer :: rain_cpl0 (:) => null()  ! aoi_fld%rain    total precipitation       for A/O/I coupling        
 
        contains
          procedure setrad => interface_fld_setrad
@@ -649,7 +657,7 @@
          ! Used only by gbphys
          real (kind=kind_phys), pointer :: rqtk (:)     => null()  ! mass change due to moisture variation
          real (kind=kind_phys), pointer :: hlwd (:,:,:) => null()  ! idea sky lw heating rates ( k/s )
-         real (kind=kind_phys), pointer :: dtdtr(:,:)   => null()  ! temperature change due to radiative heating per time step (K)
+         !real (kind=kind_phys), pointer :: dtdtr(:,:)   => null()  ! temperature change due to radiative heating per time step (K)
 
          real (kind=kind_phys), pointer :: swhc (:,:)   => null()  ! clear sky sw heating rates ( k/s ) 
          real (kind=kind_phys), pointer :: hlwc (:,:)   => null()  ! clear sky lw heating rates ( k/s ) 
@@ -1016,6 +1024,8 @@
              allocate(this%prsik (IX,Model%levs+1))
              allocate(this%phii  (IX,Model%levs+1))
              allocate(this%phil  (IX,Model%levs))
+             allocate(this%shum_wts(IX,Model%levs))
+             allocate(this%sppt_wts(IX,Model%levs))
 
              this%pgr   = clear_val
              this%ugrs  = clear_val
@@ -1024,6 +1034,8 @@
              this%prsik = clear_val
              this%phii  = clear_val
              this%phil  = clear_val
+             this%shum_wts= clear_val
+             this%sppt_wts = clear_val
 
              ! set adjtrc to 1.0_kind_phys by default
              allocate(this%adjtrc (Model%ntrac))
@@ -1055,11 +1067,13 @@
              allocate(this%gq0 (IX,Model%levs,Model%ntrac))
              allocate(this%gu0 (IX,Model%levs))
              allocate(this%gv0 (IX,Model%levs))
+             allocate(this%dtdtr (IX,Model%levs))
 
              this%gt0 = clear_val
              this%gq0 = clear_val
              this%gu0 = clear_val
              this%gv0 = clear_val
+             this%dtdtr = clear_val
          end select
 
       end subroutine
@@ -1429,6 +1443,13 @@
          this%smcref2 = zero
          this%wet1    = zero
          this%sr      = zero
+! stochast physics additions
+         if (this%first_phys) then
+            allocate(this%totprcp0 (IX))
+            allocate(this%cnvprcp0 (IX))
+         endif
+         this%totprcp0= zero
+         this%cnvprcp0= zero
 
          this%first_phys = .FALSE.
 
@@ -1550,6 +1571,7 @@
          allocate(this%nnirdf_cpl (IX))
          allocate(this%nvisbm_cpl (IX))
          allocate(this%nvisdf_cpl (IX))
+	 allocate(this%rain_cpl0(IX))
 
          this%dusfc_cpl  = clear_val
          this%dvsfc_cpl  = clear_val
@@ -1568,6 +1590,7 @@
          this%nnirdf_cpl = clear_val
          this%nvisbm_cpl = clear_val
          this%nvisdf_cpl = clear_val
+	 this%rain_cpl0   = clear_val
 
          if (Model%nst_fcst > 0 ) then
            allocate(this%xt      (IX))
@@ -1772,11 +1795,11 @@
            ! used only by gbphys
              allocate(this%rqtk  (IX))
              allocate(this%hlwd  (IX,Model%levs,6))
-             allocate(this%dtdtr (IX,Model%levs))
+            ! allocate(this%dtdtr (IX,Model%levs)) moved for stochastic phyhsics
 
              this%rqtk  = clear_val
              this%hlwd  = clear_val
-             this%dtdtr = clear_val
+            ! this%dtdtr = clear_val
 
              allocate(this%swhc (IX,Model%levs))
              allocate(this%hlwc (IX,Model%levs))
@@ -2730,7 +2753,7 @@
 
          if (mdl%me .eq. 1) call dbgprint("entering nuopc_phys_run")
 
-         rad%dtdtr(:,:) = 0.0
+         stateout%dtdtr(:,:) = 0.0
          rad%rqtk(:)    = 0.0
 
          call gbphys ( dyn%im, dyn%ix, mdl%levs, mdl%lsoil, mdl%lsm, mdl%ntrac,  &
@@ -2783,7 +2806,7 @@
                  diag%t1, diag%q1, diag%u1, diag%v1, diag%chh, diag%cmm,  &
                  diag%dlwsfci, diag%ulwsfci, diag%dswsfci, diag%uswsfci, diag%dusfci, diag%dvsfci,  &
                  diag%dtsfci, diag%dqsfci, diag%gfluxi, diag%epi, diag%smcwlt2, diag%smcref2,  &
-                 diag%wet1, diag%sr, rad%rqtk, rad%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
+                 diag%wet1, diag%sr, rad%rqtk, stateout%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
                  intr%dqsfci_cpl, intr%dlwsfci_cpl, intr%dswsfci_cpl, intr%dnirbmi_cpl, intr%dnirdfi_cpl, intr%dvisbmi_cpl,  &
                  intr%dvisdfi_cpl, intr%nlwsfci_cpl, intr%nswsfci_cpl, intr%nnirbmi_cpl, intr%nnirdfi_cpl, intr%nvisbmi_cpl,  &
                  intr%nvisdfi_cpl, intr%t2mi_cpl, intr%q2mi_cpl, intr%u10mi_cpl, intr%v10mi_cpl, intr%tseai_cpl,  &
@@ -3161,7 +3184,7 @@
                  diag%t1, diag%q1, diag%u1, diag%v1, diag%chh, diag%cmm,  &
                  diag%dlwsfci, diag%ulwsfci, diag%dswsfci, diag%uswsfci, diag%dusfci, diag%dvsfci,  &
                  diag%dtsfci, diag%dqsfci, diag%gfluxi, diag%epi, diag%smcwlt2, diag%smcref2,  &
-                 diag%wet1, diag%sr, rad%rqtk, rad%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
+                 diag%wet1, diag%sr, rad%rqtk, stateout%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
                  intr%dqsfci_cpl, intr%dlwsfci_cpl, intr%dswsfci_cpl, intr%dnirbmi_cpl, intr%dnirdfi_cpl, intr%dvisbmi_cpl,  &
                  intr%dvisdfi_cpl, intr%nlwsfci_cpl, intr%nswsfci_cpl, intr%nnirbmi_cpl, intr%nnirdfi_cpl, intr%nvisbmi_cpl,  &
                  intr%nvisdfi_cpl, intr%t2mi_cpl, intr%q2mi_cpl, intr%u10mi_cpl, intr%v10mi_cpl, intr%tseai_cpl,  &
@@ -3212,7 +3235,7 @@
            print *, "diag%wet1 : ", diag%wet1
            print *, "diag%sr : ", diag%sr
            print *, "rad%rqtk : ", rad%rqtk
-           print *, "rad%dtdtr : ", rad%dtdtr
+           print *, "stateout%dtdtr : ", stateout%dtdtr
            print *, "intr%dusfci_cpl : ", intr%dusfci_cpl
            print *, "intr%dvsfci_cpl : ", intr%dvsfci_cpl
            print *, "intr%dtsfci_cpl : ", intr%dtsfci_cpl
@@ -3291,7 +3314,7 @@
                  diag%t1, diag%q1, diag%u1, diag%v1, diag%chh, diag%cmm,  &
                  diag%dlwsfci, diag%ulwsfci, diag%dswsfci, diag%uswsfci, diag%dusfci, diag%dvsfci,  &
                  diag%dtsfci, diag%dqsfci, diag%gfluxi, diag%epi, diag%smcwlt2, diag%smcref2,  &
-                 diag%wet1, diag%sr, rad%rqtk, rad%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
+                 diag%wet1, diag%sr, rad%rqtk, stateout%dtdtr, intr%dusfci_cpl, intr%dvsfci_cpl, intr%dtsfci_cpl,  &
                  intr%dqsfci_cpl, intr%dlwsfci_cpl, intr%dswsfci_cpl, intr%dnirbmi_cpl, intr%dnirdfi_cpl, intr%dvisbmi_cpl,  &
                  intr%dvisdfi_cpl, intr%nlwsfci_cpl, intr%nswsfci_cpl, intr%nnirbmi_cpl, intr%nnirdfi_cpl, intr%nvisbmi_cpl,  &
                  intr%nvisdfi_cpl, intr%t2mi_cpl, intr%q2mi_cpl, intr%u10mi_cpl, intr%v10mi_cpl, intr%tseai_cpl,  &

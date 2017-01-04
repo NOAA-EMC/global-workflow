@@ -48,7 +48,7 @@ module fv_arrays_mod
            id_delp, id_delz, id_zratio, id_ws, id_iw, id_lw,      &
            id_pfhy, id_pfnh,                                      &
            id_qn, id_qn200, id_qn500, id_qn850, id_qp, id_mdt, id_qdt, id_aam, id_amdt, &
-           id_acly, id_acl, id_acl2
+           id_acly, id_acl, id_acl2,id_sw,id_sp
 
 ! Selected p-level fields from 3D variables:
  integer :: id_vort200, id_vort500, id_w500, id_w700
@@ -447,6 +447,7 @@ module fv_arrays_mod
    logical :: external_ic = .false.   ! use ICs from external sources; e.g. lat-lon FV core
                                       ! or NCEP re-analysis; both vertical remapping & horizontal
                                       ! (lat-lon to cubed sphere) interpolation will be done
+   logical :: read_increment = .false.   ! reads in fv3_incrmeent.nc and adds to to the restart file
 ! Default restart files from the "Memphis" latlon FV core:
    character(len=128) :: res_latlon_dynamics = 'INPUT/fv_rst.res.nc'
    character(len=128) :: res_latlon_tracers  = 'INPUT/atmos_tracers.res.nc'
@@ -654,6 +655,9 @@ module fv_arrays_mod
     real, _ALLOCATABLE :: oro(:,:)      _NULL  ! land fraction (1: all land; 0: all water)
     real, _ALLOCATABLE :: ts(:,:)       _NULL  ! skin temperature (sst) from NCEP/GFS (K) -- tile
  
+! For stochastic physics:
+    real, _ALLOCATABLE :: sppt_wts(:,:,:)    _NULL  ! Surface u-wind
+    real, _ALLOCATABLE :: shum_wts(:,:,:)    _NULL  ! Surface u-wind
 !-----------------------------------------------------------------------
 ! Others:
 !-----------------------------------------------------------------------
@@ -885,6 +889,8 @@ contains
     endif
 
     ! Allocate others
+    allocate (   Atm%shum_wts(isd:ied  ,jsd:jed  ,npz) )
+    allocate (   Atm%sppt_wts(isd:ied  ,jsd:jed  ,npz) )
     allocate ( Atm%ts(is:ie,js:je) )
     allocate ( Atm%phis(isd:ied  ,jsd:jed  ) )
     allocate ( Atm%omga(isd:ied  ,jsd:jed  ,npz) ); Atm%omga=0.

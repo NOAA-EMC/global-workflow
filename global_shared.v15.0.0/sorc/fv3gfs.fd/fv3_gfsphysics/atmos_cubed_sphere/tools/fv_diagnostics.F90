@@ -92,7 +92,7 @@ contains
 
     real, allocatable :: grid_xt(:), grid_yt(:), grid_xe(:), grid_ye(:), grid_xn(:), grid_yn(:)
     real, allocatable :: grid_x(:),  grid_y(:)
-    real              :: vrange(2), vsrange(2), wrange(2), trange(2), slprange(2), rhrange(2)
+    real              :: vrange(2), vsrange(2), wrange(2), trange(2), slprange(2), rhrange(2),sqrange(2),sprange(2)
     real, allocatable :: a3(:,:,:)
     real              :: pfull(npz)
     real              :: hyam(npz), hybm(npz)
@@ -146,6 +146,8 @@ contains
 #else
     trange = (/  100.,  350. /)  ! temperature
 #endif
+    sqrange = (/ -0.1,  0.1 /)  ! shum_wts   
+    sprange = (/ -4.0,  4.0 /)  ! sppt_wts   
     slprange = (/800.,  1200./)  ! sea-level-pressure
 
     ginv = 1./GRAV
@@ -524,6 +526,10 @@ contains
           idiag%id_w = register_diag_field ( trim(field), 'w', axes(1:3), Time,        &
                'vertical wind', 'm/sec', missing_value=missing_value, range=wrange )
 
+       idiag%id_sw   = register_diag_field ( trim(field), 'shum_wts', axes(1:3), Time,    &
+            'random', 'none', missing_value=missing_value, range=sqrange )
+       idiag%id_sp   = register_diag_field ( trim(field), 'sppt_wts', axes(1:3), Time,    &
+            'random', 'none', missing_value=missing_value, range=sprange )
        idiag%id_pt   = register_diag_field ( trim(field), 'temp', axes(1:3), Time,       &
             'temperature', 'K', missing_value=missing_value, range=trange )
        idiag%id_ppt  = register_diag_field ( trim(field), 'ppt', axes(1:3), Time,       &
@@ -2370,6 +2376,8 @@ contains
 
        if(idiag%id_pt   > 0) used=send_data(idiag%id_pt  , Atm(n)%pt  (isc:iec,jsc:jec,:), Time)
        if(idiag%id_omga > 0) used=send_data(idiag%id_omga, Atm(n)%omga(isc:iec,jsc:jec,:), Time)
+       if(idiag%id_sw   > 0) used=send_data(idiag%id_sw  , Atm(n)%shum_wts  (isc:iec,jsc:jec,:), Time)
+       if(idiag%id_sp   > 0) used=send_data(idiag%id_sp  , Atm(n)%sppt_wts  (isc:iec,jsc:jec,:), Time)
 
        allocate( a3(isc:iec,jsc:jec,npz) )
        if(idiag%id_theta_e > 0) then

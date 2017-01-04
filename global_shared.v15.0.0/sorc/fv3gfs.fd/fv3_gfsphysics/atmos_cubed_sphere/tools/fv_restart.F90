@@ -57,6 +57,7 @@ module fv_restart_mod
   use mpp_domains_mod,     only: mpp_global_field
   use fms_mod,             only: file_exist
   use external_sst_mod,    only: use_ncep_sst           
+  use fv_treat_da_inc_mod, only: read_da_inc
 
   implicit none
   private
@@ -226,6 +227,13 @@ contains
         else
              if( is_master() ) write(*,*) 'Warm starting, calling fv_io_restart'
              call fv_io_read_restart(Atm(n)%domain,Atm(n:n))
+!            ====== PJP added DA functionality ======
+             if (Atm(n)%flagstruct%read_increment) then
+                if( is_master() ) write(*,*) 'Calling read_da_inc',Atm(n)%pt(4,4,30)
+                call read_da_inc(Atm(n:n), Atm(n)%domain)
+                if( is_master() ) write(*,*) 'Back from read_da_inc',Atm(n)%pt(4,4,30)
+             endif
+!            ====== end PJP added DA functionailty======
         endif
     endif
 

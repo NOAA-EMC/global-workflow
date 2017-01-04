@@ -65,7 +65,9 @@
 #include "mpif.h"
       integer, parameter :: XDir=1
       integer, parameter :: YDir=2
-      integer :: commglobal, ierror, npes
+      !integer :: commglobal, ierror, npes stochastic physics changes
+      integer :: ierror, npes
+      integer,public :: commglobal,masterproc
 
       !need tile as a module variable so that some of the mp_ routines below will work
       integer::tile
@@ -74,7 +76,7 @@
       integer, allocatable, dimension(:)       :: istart1, iend1, jstart1, jend1
       integer, allocatable, dimension(:)       :: istart2, iend2, jstart2, jend2
       integer, allocatable, dimension(:,:)     :: layout2D, global_indices
-      integer :: numthreads, gid, masterproc
+      integer :: numthreads, gid
 
       logical :: master
 
