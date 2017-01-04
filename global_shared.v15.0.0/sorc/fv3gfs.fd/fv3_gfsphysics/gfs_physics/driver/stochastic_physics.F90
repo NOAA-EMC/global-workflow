@@ -10,14 +10,14 @@ use stochy_gg_def,only : colrad_a
 use stochy_namelist_def
 use physcons, only: con_pi
 use spectral_layout,only:me
+use machine, only:kind_phys
 use mpp_mod
-use ESMF
 use MPI
 
 implicit none
 private
 public:: init_stochastic_physics,run_stochastic_physics
-real(kind=ESMF_KIND_R8),allocatable :: vfact_shum(:),vfact_sppt(:)
+real(kind=kind_phys),allocatable :: vfact_shum(:),vfact_sppt(:)
 type(stochy_internal_state) :: gis_stochy
 
 contains
@@ -110,7 +110,7 @@ end subroutine init_stochastic_physics
 subroutine run_stochastic_physics(Atm)
          
 type(fv_atmos_type), target :: Atm
-real(ESMF_KIND_R8) :: tmp_rndm(Atm%bd%is:Atm%bd%ie,Atm%bd%js:Atm%bd%je)
+real(kind=kind_phys) :: tmp_rndm(Atm%bd%is:Atm%bd%ie,Atm%bd%js:Atm%bd%je)
 integer :: k,null_arr(5)
 integer j,ierr,i
 
