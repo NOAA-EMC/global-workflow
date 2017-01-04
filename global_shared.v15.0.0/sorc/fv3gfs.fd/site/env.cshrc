@@ -79,6 +79,7 @@ if (`hostname | cut -c1-2` == "fe" || `hostname | cut -c1` == "x") then
    module load netcdf4/4.2.1.1
    module load mvapich2/2.1
    setenv LIBRARY_PATH ${LIBRARY_PATH}:${NETCDF4}/lib:${HDF5}/lib
+   setenv LAPACK_DIR /mnt/pan2/projects/gfsenkf/whitaker/lib
    setenv NETCDF_DIR ${NETCDF4}
    setenv TEMPLATE ../../site/intel.mk.mv2.Jet
    exit

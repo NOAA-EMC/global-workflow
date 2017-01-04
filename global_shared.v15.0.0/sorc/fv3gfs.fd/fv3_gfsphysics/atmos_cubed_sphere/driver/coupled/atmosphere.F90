@@ -74,6 +74,9 @@ use fv_nwp_nudge_mod,   only: fv_nwp_nudge_init, fv_nwp_nudge_end, do_adiabatic_
 
 use mpp_domains_mod, only:  mpp_get_data_domain, mpp_get_compute_domain
 use boundary_mod, only: update_coarse_grid
+! Stochastic physics
+use stochy_namelist_def,only : do_shum,do_sppt
+use module_stochastic_physics,only :init_stochastic_physics,run_stochastic_physics
 
 implicit none
 private
@@ -144,9 +147,9 @@ contains
 
 !--- local variables ---
    integer :: i, n
-   integer :: itrac
+   integer :: itrac,nlunit,RC,mype
    logical :: do_atmos_nudge
-   character(len=32) :: tracer_name, tracer_units
+   character(len=32) :: tracer_name, tracer_units,stochy_namelist
    real :: ps1, ps2
 
                     call timing_on('ATMOS_INIT')
@@ -251,6 +254,14 @@ contains
 #ifdef GFS_PHYS
    call fv_nggps_diag_init(Atm(mytile:mytile), Atm(mytile)%atmos_axes, Time)
 #endif
+! stochastic
+   nlunit=98
+   stochy_namelist='stochastic_physics.nml'
+   mype=mpp_pe()
+   call compns_stochy (mype,nlunit,stochy_namelist,dt_atmos,RC)
+   if (do_shum.or.do_sppt) then
+      call init_stochastic_physics(Atm(mytile),dt_atmos,RC) ! pass physics time step  
+   endif
 
 !---------- reference profile -----------
     ps1 = 101325.
@@ -750,6 +761,9 @@ contains
 
    call set_domain ( Atm(mytile)%domain )
 
+   if (do_shum .or. do_sppt) then
+      call run_stochastic_physics(Atm(mytile))
+   endif
    call timing_on('GFS_TENDENCIES')
 !--- put u/v tendencies into haloed arrays u_dt and v_dt
 !$OMP parallel do default (none) & 
@@ -1208,6 +1222,8 @@ contains
               Statein(nb)%vgrs(ix,k) = _DBL_(_RL_(Atm(mytile)%va(i,j,k1)))
                Statein(nb)%vvl(ix,k) = _DBL_(_RL_(Atm(mytile)%omga(i,j,k1)))
               Statein(nb)%prsl(ix,k) = _DBL_(_RL_(Atm(mytile)%delp(i,j,k1)))   ! Total mass
+              Statein(nb)%shum_wts(ix,k) = _DBL_(_RL_(Atm(mytile)%shum_wts(i,j,k1)))   ! Total mass
+              Statein(nb)%sppt_wts(ix,k) = _DBL_(_RL_(Atm(mytile)%sppt_wts(i,j,k1))) 
 
               if (.not.Atm(mytile)%flagstruct%hydrostatic .and. (.not.Atm(mytile)%flagstruct%use_hydro_pressure))  &
               Statein(nb)%phii(ix,k+1) = Statein(nb)%phii(ix,k) - _DBL_(_RL_(Atm(mytile)%delz(i,j,k1)*grav))

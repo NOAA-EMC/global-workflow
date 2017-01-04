@@ -30,6 +30,9 @@ MAKEFLAGS += --jobs=8
 NETCDF_ROOT = $(NETCDF_DIR)
 MPI_ROOT    = $(MPICH_DIR)
 INCLUDE = -I$(NETCDF_ROOT)/include
+ESMF_ROOT    = $(ESMF_DIR)
+LIBS += -L$(ESMF_ROOT)/lib -lesmf_3_1_9rp5
+INCLUDE = -I$(NETCDF_ROOT)/include -I(ESMF_ROOT)/include/esmf_3_1_0_rp5
 
 FPPFLAGS := -fpp -Wp,-w $(INCLUDE)
 
@@ -122,7 +125,7 @@ else
   LIBS += -lnetcdf
 endif
 
-LIBS += 
+LIBS += -L$(ESMF_ROOT)/lib -lesmf_3_1_9rp5
 LDFLAGS += $(LIBS)
 
 #---------------------------------------------------------------------------

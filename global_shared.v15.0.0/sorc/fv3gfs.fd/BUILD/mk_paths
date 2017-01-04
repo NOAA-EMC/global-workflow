@@ -14,6 +14,7 @@ rm pathnames_gfs pathnames_fv3 *.html
     shared/ \
     atmos_cubed_sphere/driver/coupled/ \
     atmos_cubed_sphere/tools/ \
+    stochastic_physics/ \
     atmos_cubed_sphere/model/ \
     atmos_cubed_sphere/model_nh/ \
     atmos_cubed_sphere/lin_cloud_microphys/ \
