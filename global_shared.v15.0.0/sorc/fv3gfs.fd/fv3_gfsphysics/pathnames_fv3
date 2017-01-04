@@ -203,7 +203,6 @@ stochastic_physics/stochy_layout_lag.f
 stochastic_physics/dezouv_stochy.f
 stochastic_physics/stochy_gg_def.f
 stochastic_physics/getcon_lag_stochy.f
-stochastic_physics/ESMFConvenienceMacros.h
 stochastic_physics/getcon_spectral.F90
 stochastic_physics/spectral_layout.f
 stochastic_physics/stochy_resol_def.f
