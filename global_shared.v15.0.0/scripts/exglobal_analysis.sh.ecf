@@ -737,9 +737,11 @@ export OZNSTAT=${OZNSTAT:-${COMOUT}/${PREINP}oznstat}
 export RUN_SELECT=${RUN_SELECT:-"NO"}
 export USE_SELECT=${USE_SELECT:-"NO"}
 export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${PREINP}obsinput}
+export GENDIAG=${GENDIAG:-"YES"}
 export DIAG_SUFFIX=${DIAG_SUFFIX:-""}
 export DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 export DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
+export DIAG_LOOPS=${DIAG_LOOPS:-"01 03"}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -1171,28 +1173,27 @@ cat <<\EOFunzip > unzip.sh
 { echo
  set -aux
  diag_file=$1
- fname=`echo $diag_file | cut -d'.' -f1`
- date=`echo $diag_file | cut -d'.' -f2`
+ fnameful=`echo $diag_file | cut -d"." -f1-2`
+ fnameges=`echo $diag_file | cut -d"_" -f1-3`
+ tar xf radstat.gdas $diag_file
  $UNCOMPRESS $diag_file
- fnameges=$(echo $fname|sed 's/_ges//g')
- mv $fname.$date $fnameges
+ mv $fnameful $fnameges
 }
 EOFunzip
       set -x
       chmod 755 $DATA/unzip.sh
    fi
 
-   listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
-   for type in $listdiag; do
-      diag_file=`echo $type | cut -d',' -f1`
+   listdiag=`tar tvf radstat.gdas | grep _ges | awk '{print $6}'`
+   for diag_file in $listdiag; do
       if [[ $USE_CFP = YES ]] ; then
          echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
       else
-         fname=`echo $diag_file | cut -d'.' -f1`
-         date=`echo $diag_file | cut -d'.' -f2`
+         fnameful=`echo $diag_file | cut -d"." -f1-2`
+         fnameges=`echo $diag_file | cut -d"_" -f1-3`
+         tar xf radstat.gdas $diag_file
          $UNCOMPRESS $diag_file
-         fnameges=$(echo $fname|sed 's/_ges//g')
-         mv $fname.$date $fnameges
+         mv $fnameful $fnameges
       fi
    done
 fi
@@ -1200,6 +1201,9 @@ if [[ $USE_CFP = YES ]] ; then
    chmod 755 $DATA/mp_unzip.sh
    ncmd=`cat $DATA/mp_unzip.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
+      if [ $npe_node_cfp -gt $ncmd ]; then
+         npe_node_cfp=$ncmd
+      fi
       export APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
       $APRUNCFP_UNZIP $DATA/mp_unzip.sh
    fi
@@ -1463,7 +1467,7 @@ fi
 
 # Cat runtime output files.
 cat fort.2* > $GSISTAT
-cat fort.2*
+##cat fort.2*
 
 # If requested, create obs_input tarball
 if [[ "$RUN_SELECT" = "YES" ]]; then
@@ -1491,6 +1495,8 @@ fi
 #        write_diag(1)=.true. turns on creation of o-g
 #        innovation files.
 #
+
+if [[ $GENDIAG = YES ]] ; then
 
 cd $DATA    # we should already be in $DATA, but extra cd to be sure.
 
@@ -1554,10 +1560,32 @@ cat <<\EOFdiag > $DATA/diag.sh
 EOFdiag
    set -x
    chmod 755 $DATA/diag.sh
+
+   rm $DATA/tar.sh
+   rm $DATA/mp_tar.sh
+   set +x
+cat <<\EOFtar > $DATA/tar.sh
+#/bin/ksh
+{ echo
+ set -aux
+ diagfile=$1
+ numfile=$2
+ diaglist=$3
+ TAROPTS="-uvf"
+ if [ ! -s $diagfile ]; then
+    TAROPTS="-cvf"
+ fi
+ if [ $numfile -gt 0 ]; then
+    tar $TAROPTS $diagfile `cat $diaglist`
+ fi
+}
+EOFtar
+   set -x
+   chmod 755 $DATA/tar.sh
 fi
 
 # Collect diagnostic files as a function of loop and type.
-loops="01 03"
+loops="$DIAG_LOOPS"
 for loop in $loops; do
    case $loop in
       01) string=ges;;
@@ -1598,6 +1626,9 @@ if [[ $USE_CFP = YES ]] ; then
    chmod 755 $DATA/mp_diag.sh
    ncmd=`cat $DATA/mp_diag.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
+      if [ $npe_node_cfp -gt $ncmd ]; then
+         npe_node_cfp=$ncmd
+      fi
       export APRUNCFP_DIAG=$(eval echo $APRUNCFP)
       $APRUNCFP_DIAG $DATA/mp_diag.sh
    fi
@@ -1608,14 +1639,30 @@ if [[ $DIAG_TARBALL = YES ]]; then
    echo $(date) START tar diagnostic files >&2
    n=-1
    while [ $((n+=1)) -le $ntype ] ;do
-      TAROPTS="-uvf"
-      if [ ! -s ${diagfile[n]} ]; then
-         TAROPTS="-cvf"
-      fi
-      if [ ${numfile[n]} -gt 0 ]; then
-         tar $TAROPTS ${diagfile[n]} `cat ${diaglist[n]}`
+      if [[ $USE_CFP = YES ]]; then
+         echo "$DATA/tar.sh ${diagfile[n]} ${numfile[n]} ${diaglist[n]}" | tee -a $DATA/mp_tar.sh
+      else
+         TAROPTS="-uvf"
+         if [ ! -s ${diagfile[n]} ]; then
+            TAROPTS="-cvf"
+         fi
+         if [ ${numfile[n]} -gt 0 ]; then
+            tar $TAROPTS ${diagfile[n]} `cat ${diaglist[n]}`
+         fi
       fi
    done
+
+   if [[ $USE_CFP = YES ]]; then
+      chmod 755 $DATA/mp_tar.sh      
+      ncmd=`cat $DATA/mp_tar.sh | wc -l`
+      if [ $ncmd -gt 0 ]; then
+         if [ $npe_node_cfp -gt $ncmd ]; then
+            npe_node_cfp=$ncmd
+         fi
+         export APRUNCFP_TAR=$(eval echo $APRUNCFP)
+         $APRUNCFP_TAR $DATA/mp_tar.sh
+      fi
+   fi
 
 #  Restrict CNVSTAT 
    chmod 640 $CNVSTAT
@@ -1628,6 +1675,7 @@ if [[ $DIAG_TARBALL = YES ]]; then
    echo $(date) END tar diagnostic files >&2
 fi
 
+fi  # End diagnost file block
 
 ################################################################################
 

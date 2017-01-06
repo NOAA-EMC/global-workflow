@@ -31,7 +31,7 @@ if [ $machine = WCOSS_C ] ; then
  export PRGENV=${PRGENV:-intel}
  export HUGEPAGES=${HUGEPAGES:-hugepages4M}
  module  unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
- module  load module load prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
+ module  load   prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
  export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
  export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
 fi

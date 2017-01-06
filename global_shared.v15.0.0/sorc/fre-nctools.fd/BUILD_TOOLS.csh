@@ -8,7 +8,7 @@
 # Designed and written by V Balaji, Amy Langenhorst and Aleksey Yakovlev
 #
 set pkgName = fre-nctools
-set home_dir = /gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gfs/fv3gfs/global_shared.v15.0.0
+set home_dir = `pwd`/../..
 
 #set pkgVersion = $1
 #echo $pkgVersion
@@ -33,7 +33,7 @@ echo "//////////////////////////////////////////////////////// Environment Setti
 echo "////////////////////////////////////////////////////////////////////////////////"
 
 source $MODULESHOME/init/tcsh
-#source ${PWD}/../../../IC_scripts/ENV.GAEA   
+#source ${PWD}/../../../IC_scripts/ENV.GAEA
 #setenv FRE_SYSTEM_SITE gaea
 source ${PWD}/../../../modulefiles/fv3gfs/fre-nctools.cray
 setenv FRE_SYSTEM_SITE cray
@@ -96,7 +96,7 @@ echo "//////////////////////////////////////////////////////////////////////////
 
 cd ../tools/filter_topo
 ./make.csh
-cp -p filter_topo $home_dir/exec/.
+mv filter_topo $home_dir/exec/.
 
 echo "\n////////// CLEANING UP TEMPORARY BUILD AREA //////////\n"
 rm -fr $tmpDir
