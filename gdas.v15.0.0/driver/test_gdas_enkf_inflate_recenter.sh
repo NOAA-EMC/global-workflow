@@ -5,7 +5,7 @@
 #BSUB -o gdas_enkf_inflate_recenter.o%J
 #BSUB -e gdas_enkf_inflate_recenter.o%J
 #BSUB -J gdas_enkf_inflate_recenter
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -15,12 +15,17 @@ set -x
 ulimit -s unlimited
 ulimit -a
 
-export NODES=10
+export NODES=14
 export ntasks=80
-export ptile=8
+export ptile=6
 export threads=1
 
-export CDATE=2016112106
+##export NODES=4
+##export ntasks=80
+##export ptile=24
+##export threads=1
+
+export CDATE=2016122206
 
 
 #############################################################
