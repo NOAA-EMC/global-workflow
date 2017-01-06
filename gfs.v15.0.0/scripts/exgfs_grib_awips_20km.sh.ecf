@@ -16,11 +16,12 @@ echo "History: NOV  2014 - First implementation of this new script  "
 echo "                     to process GFS AWIPS 20km grids products "
 echo " "
 #####################################################################
-fcsthrs="$1"
+fstart="$1"
+fend="$2"
 num=$#
 job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
-if test "$num" -ge 1
+if test "$num" -ge 2
 then
    echo ""
    echo " Appropriate number of arguments were passed"
@@ -30,7 +31,7 @@ else
    echo " Number of arguments were not passed "
    echo ""
    echo ""
-   echo "Usage: exgfs_grib_awips_20km.sh.ecf  \$fcsthrs (3 digits) "
+   echo "Usage: $0  \$fcsthrs_start   \$fcsthrs_end  (3 digits) "
    echo ""
    exit 16
 fi
@@ -39,9 +40,16 @@ cd $DATA
 
 set -x
 
+fhcnt=$fstart
+while [ $fhcnt -le $fend ] ; do
+
 ###############################################
 # Wait for the availability of the pgrb file
 ###############################################
+typeset -Z3 fhcnt
+fcsthrs=$fhcnt
+typeset -Z3 fcsthrs
+
 icnt=1
 while [ $icnt -lt 1000 ]
 do
@@ -76,22 +84,27 @@ echo "#######################################"
 echo " "
 set -x
 
+# Set type of Interpolation for WGRIB2
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
 
-cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}  tmpfile2
-cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
-cat tmpfile2    tmpfile2b   >  tmpfile
-$WGRIB2 tmpfile | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
+cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}  tmpfile2${fcsthrs}
+cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b${fcsthrs}
+cat tmpfile2${fcsthrs}    tmpfile2b${fcsthrs}   >  tmpfile${fcsthrs}
+$WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile${fcsthrs}  tmpfile${fcsthrs}
 
 ##################################################################
 #  Process to change PWAT from level 200 to 10 (Entire Atmosphere)
 #  in production defintion template (PDT) 4.0
 ##################################################################
-export FORT11=masterfile
-export FORT51=tmp_masterfile
+export FORT11=masterfile${fcsthrs}
+export FORT51=tmp_masterfile${fcsthrs}
 
+EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 $EXECgfs/overpdtg2 << EOF
 10
 EOF
@@ -102,29 +115,62 @@ do
    case $GRID in
      conus)
         #  Grid 20km_conus - CONUS - 20 km Quadruple Resolution (Lambert Conformal)
-        export grid_20km_conus="30 6 0 0 0 0 0 0 369 257 12190000 226541000 8 25000000 265000000 20318000 20318000 0 64 25000000 25000000 0 0"
-        $COPYGB2 -g "$grid_20km_conus" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export grid_20km_conus="30 6 0 0 0 0 0 0 369 257 12190000 226541000 8 25000000 265000000 20318000 20318000 0 64 25000000 25000000 0 0"
+        # $COPYGB2 -g "$grid_20km_conus" -i0 -x tmp_masterfile${fcsthrs}  awps_file_f${fcsthrs}_${GRID}
+
+        export gridconus="lambert:265.0:25.0:25.0 226.541:369:20318.0 12.19:257:20318.0"
+        $WGRIB2  tmp_masterfile${fcsthrs} $opt1 $opt2  -new_grid $gridconus awps_file_f${fcsthrs}_${GRID}
         ;;
      ak)
         #  Grid 20km_ak - Alaska - Double Resolution (Polar Stereographic)
         #  Redefined grid 217 for Alaska region
-        export grid_20km_ak="20 6 0 0 0 0 0 0 277 225 35000000 170000000 8 60000000 210000000 22500000 22500000 0 64"
+        #  export grid_20km_ak="20 6 0 0 0 0 0 0 277 225 35000000 170000000 8 60000000 210000000 22500000 22500000 0 64"
 
-        #  export grid_20km_ak="20 6 0 0 0 0 0 0 277 213 30000000 187000000 8 60000000 225000000 22500000 22500000 0 64"
-        $COPYGB2 -g "$grid_20km_ak" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export grid_20km_ak="20 6 0 0 0 0 0 0 277 213 30000000 187000000 8 60000000 225000000 22500000 22500000 0 64"
+        # $COPYGB2 -g "$grid_20km_ak" -i0 -x tmp_masterfile${fcsthrs}  awps_file_f${fcsthrs}_${GRID}
+
+        export gridak="nps:210.0:60.0 170.0:277:22500 35.0:225:22500"
+        $WGRIB2  tmp_masterfile${fcsthrs} $opt1 $opt2  -new_grid $gridak awps_file_f${fcsthrs}_${GRID}
         ;;
     prico)
         #  Grid 20km_prico - 0.25 degree Lat/Lon grid for Puerto Rico (20km)
-        export grid_20km_prico="0 6 0 0 0 0 0 0 275 205 0 0 50750000 271750000 48 -250000 340250000 250000 250000 0"
-        $COPYGB2 -g "$grid_20km_prico" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export grid_20km_prico="0 6 0 0 0 0 0 0 275 205 0 0 50750000 271750000 48 -250000 340250000 250000 250000 0"
+        # $COPYGB2 -g "$grid_20km_prico" -i0 -x tmp_masterfile${fcsthrs}  awps_file_f${fcsthrs}_${GRID}
+
+        export gridprico="latlon 271.75:275:0.25 50.75:205:-0.25"
+        $WGRIB2  tmp_masterfile${fcsthrs} $opt1 $opt2  -new_grid $gridprico awps_file_f${fcsthrs}_${GRID}
         ;;
      pac)
         #  Grid 20km_pac - 20 km Mercator grid for Pacific Region
-        export grid_20km_pac="10 6 0 0 0 0 0 0 837 692 -45000000 110000000 48 20000000 65720000 270000000 64 0 20000000 20000000"
-        $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export grid_20km_pac="10 6 0 0 0 0 0 0 837 692 -45000000 110000000 48 20000000 65720000 270000000 64 0 20000000 20000000"
+        # $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile${fcsthrs}  awps_file_f${fcsthrs}_${GRID}
+
+        export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:692:20000:65.72"
+        $WGRIB2  tmp_masterfile${fcsthrs} $opt1 $opt2  -new_grid $gridpac awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
+
+###############################################
+# Wait for the availability of the awps_file_f${fcsthrs}_${GRID} file
+###############################################
+numrec=` $WGRIB2 awps_file_f${fcsthrs}_${GRID} | wc -l `
+
+icount=1
+while [ $icount -lt 6 ]
+do
+  if [ $numrec -gt 247 ]
+  then
+     break
+  fi
+  sleep 10
+  icount=$((icount + 1))
+  if [ $icount -ge 5  ]
+  then
+    msg="ABORTING after 1 minute of waiting for the awps_file_f${fcsthrs}_${GRID} !"
+    err_exit $msg
+  fi
+done
 
 # Processing AWIPS GRIB2 grids with WMO headers
 
@@ -137,8 +183,7 @@ do
    export FORT51=grib2.awpgfs_20km_${GRID}_f${fcsthrs}
 
    $TOCGRIB2 < $PARMgfs/grib2_awpgfs_20km_${GRID}f${fcsthrs} >> $pgmout 2> errfile
-
-   err=$?;export err ;err_chk
+   export err=$? ;err_chk
    echo " error from tocgrib2=",$err
 
    if [ $SENDCOM = "YES" ] ; then
@@ -147,7 +192,8 @@ do
       # Post Files to PCOM
       ##############################
 
-      mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
+        awips20km_name=gfs_awips_f${fcsthrs}_20km_${cyc}
+        mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
 
       ##############################
       # Distribute Data
@@ -156,7 +202,7 @@ do
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
         # JY - turn back on the pac alert - 05/11/2016
         # if [ $GRID = conus -o $GRID = prico -o $GRID = ak ]; then  ##XXW: Turn off pacific region alert for now
-         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
+         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
         # fi
       else
          msg="File $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
@@ -167,8 +213,14 @@ do
    msg="Awip Processing ${fcsthrs} hour  completed normally"
    postmsg "$jlogfile" "$msg"
 
-   rm awps_file_${fcsthrs}_${GRID} awps_file_fi${fcsthrs}_${GRID}
-
+#   rm awps_file_${fcsthrs}_${GRID} awps_file_fi${fcsthrs}_${GRID}
+done
+   if [ $fhcnt -lt 84 ] ; then
+     let fhcnt=fhcnt+3
+   elif [ $fhcnt -ge 84 ] ; then
+     let fhcnt=fhcnt+6
+   fi
+   rm  awps_file_*${fcsthrs}* awps_file_*{fcsthrs}_${GRID}*  tmpfile*${fcsthrs}* *masterfile${fcsthrs}* 
 done
 
 cat $pgmout
