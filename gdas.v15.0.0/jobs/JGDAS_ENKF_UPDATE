@@ -109,9 +109,9 @@ mkdir -m 775 -p $COMOUT
 # WCOSS_C environment settings
 ##############################################
 export machine=WCOSS_C
-export npe_node_a=${npe_node_a:-24}
+export npe_node_cfp=${npe_node_cfp:-24}
 export APRUN=${APRUN:-"aprun -j1 -n $ntasks -N $ptile -d $threads -cc depth"}
-export APRUNCFP=${APRUNCFP:-'aprun -q -j1 -n$ncmd -N$npe_node_a -d1 cfp'}
+export APRUNCFP=${APRUNCFP:-'aprun -q -j1 -n$ncmd -N$npe_node_cfp -d1 cfp'}
 export USE_CFP=YES
 
 
@@ -126,7 +126,7 @@ ${ENKFUPDSH:-$SCRgdas/exglobal_enkf_update.sh.ecf}
 # Final processing
 ##############################################
 if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT/${RUN}.${cycle}.enkfstat}
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT/${PREINP}enkfstat
 fi
 
 cat $pgmout
