@@ -62,7 +62,8 @@
               uz0, vz0, ptop, htop, pbot, hbot, ptopl, pbotl, ttopl, ptopm, pbotm, ttopm,       &
               ptoph, pboth, pblcfr, ttoph, runoff, maxtshltr, mintshltr, maxrhshltr,            &
               minrhshltr, dzice, smcwlt, suntime, fieldcapa, htopd, hbotd, htops, hbots,        &
-              cuppt, dusmass, ducmass, dusmass25, ducmass25, aswintoa
+              cuppt, dusmass, ducmass, dusmass25, ducmass25, aswintoa, &
+              u10h,v10h
       use soil,  only: sldpth, sh2o, smc, stc
       use masks, only: lmv, lmh, htm, vtm, gdlat, gdlon, dx, dy, hbm2, sm, sice
 !     use kinds, only: i_llong
@@ -2178,6 +2179,11 @@
       ,jend_2u,MPI_COMM_COMP,icnt,idsp,spval,VarName,VcoordName &
       ,l,im,jm,nframe,u10)
 !     if(debugprint)print*,'sample l',VarName,' = ',1,u10(isa,jsa)
+      do j=jsta,jend
+        do i=1,im
+          u10h(i,j)=u10(i,j)
+        end do
+      end do
             
 ! 10 m v using gfsio
       VarName='vgrd'
@@ -2186,6 +2192,11 @@
       call getnemsandscatter(me,ffile,im,jm,jsta,jsta_2l        &
       ,jend_2u,MPI_COMM_COMP,icnt,idsp,spval,VarName,VcoordName &
       ,l,im,jm,nframe,v10)
+      do j=jsta,jend
+        do i=1,im
+          v10h(i,j)=v10(i,j)
+        end do
+      end do
 !     if(debugprint)print*,'sample l',VarName,' = ',1,v10(isa,jsa)
       
 ! vegetation type, it's in GFS surface file, hopefully will merge into gfsio soon 

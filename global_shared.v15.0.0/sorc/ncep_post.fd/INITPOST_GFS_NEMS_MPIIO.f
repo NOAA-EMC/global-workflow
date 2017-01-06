@@ -66,7 +66,7 @@
               ptoph, pboth, pblcfr, ttoph, runoff, maxtshltr, mintshltr, maxrhshltr,            &
               minrhshltr, dzice, smcwlt, suntime, fieldcapa, htopd, hbotd, htops, hbots,        &
               cuppt, dusmass, ducmass, dusmass25, ducmass25, aswintoa, &
-              maxqshltr, minqshltr, acond, sr,&
+              maxqshltr, minqshltr, acond, sr, u10h, v10h, &
               avgedir,avgecan,avgetrans,avgesnow, &
               avisbeamswin,avisdiffswin,airbeamswin,airdiffswin, &
               alwoutc,alwtoac,aswoutc,aswtoac,alwinc,aswinc,avgpotevp,snoavg 
@@ -1296,30 +1296,45 @@
       end if
       if (me == 0) print*,'CU_PHYSICS= ',iCU_PHYSICS
 
-      call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
-      if(iret == 0) then
-         tprec   = 1.0*ifhr-zhour
-         tclod   = tprec
-         trdlw   = tprec
-         trdsw   = tprec
-         tsrfc   = tprec
-         tmaxmin = tprec
-         td3d    = tprec
-         print*,'tprec from flux file header= ',tprec
-      else
-         print*,'Error reading accumulation bucket from flux file', &
-             'header - will try to read from env variable FHZER'
-         CALL GETENV('FHZER',ENVAR)
-         read(ENVAR, '(I2)')idum
-         tprec   = idum*1.0
-         tclod   = tprec
-         trdlw   = tprec
-         trdsw   = tprec
-         tsrfc   = tprec
-         tmaxmin = tprec
-         td3d    = tprec
-         print*,'TPREC from FHZER= ',tprec
-      end if
+! Chuang: zhour is when GFS empties bucket last so using this
+! to compute buket will result in changing bucket with forecast time.
+! set default bucket for now
+
+!      call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
+!      if(iret == 0) then
+!         tprec   = 1.0*ifhr-zhour
+!         tclod   = tprec
+!         trdlw   = tprec
+!         trdsw   = tprec
+!         tsrfc   = tprec
+!         tmaxmin = tprec
+!         td3d    = tprec
+!         print*,'tprec from flux file header= ',tprec
+!      else
+!         print*,'Error reading accumulation bucket from flux file', &
+!             'header - will try to read from env variable FHZER'
+!         CALL GETENV('FHZER',ENVAR)
+!         read(ENVAR, '(I2)')idum
+!         tprec   = idum*1.0
+!         tclod   = tprec
+!         trdlw   = tprec
+!         trdsw   = tprec
+!         tsrfc   = tprec
+!         tmaxmin = tprec
+!         td3d    = tprec
+!         print*,'TPREC from FHZER= ',tprec
+!      end if
+
+        tprec   = 6.
+        if(ifhr>240)tprec=12.
+        tclod   = tprec
+        trdlw   = tprec
+        trdsw   = tprec
+        tsrfc   = tprec
+        tmaxmin = tprec
+        td3d    = tprec
+        print*,'tprec = ',tprec
+
 
 ! start reading nemsio flux files using parallel read
       fldsize = (jend-jsta+1)*im
@@ -2319,6 +2334,11 @@
                           ,l,nrec,fldsize,spval,tmp                    &
                           ,recname,reclevtyp,reclev,VarName,VcoordName &
                           ,u10)
+      do j=jsta,jend
+        do i=1,im
+          u10h(i,j)=u10(i,j)
+        end do
+      end do
 !     if(debugprint)print*,'sample l',VarName,' = ',1,u10(isa,jsa)
             
 ! 10 m v using gfsio
@@ -2329,6 +2349,11 @@
                           ,l,nrec,fldsize,spval,tmp                    &
                           ,recname,reclevtyp,reclev,VarName,VcoordName &
                           ,v10)
+      do j=jsta,jend
+        do i=1,im
+          v10h(i,j)=v10(i,j)
+        end do
+      end do
 !     if(debugprint)print*,'sample l',VarName,' = ',1,v10(isa,jsa)
       
 ! vegetation type, it's in GFS surface file, hopefully will merge into gfsio soon 
