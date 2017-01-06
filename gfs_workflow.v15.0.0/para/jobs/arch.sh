@@ -476,11 +476,18 @@ fi
 
 ################################################################################
 # If requested, make gempak.
-if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES ];then
+if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES -a $AWIPS20KM = YES ];then
   export mem=2048
   export jn=${PSLOT}${CDATE}${CDUMP}gempak
   export out=$COMROT/${jn}.dayfile
   $SUB -e 'CDATE=$CDATE CDUMP=$CDUMP CSTEP=$CSTEP CONFIG=$CONFIG' -q $CUE2RUN -a $ACCOUNT -g $GROUP -p 6/6/N -r $mem/1/2 -t 06:00 -j $jn -o $out $NAWIPSSH
+
+  if [ $AWIPS20KM = YES ];then
+    export mem=2048
+    export jn=${PSLOT}${CDATE}${CDUMP}awips20km
+    export out=$COMROT/${jn}.dayfile
+    $SUB -e 'CDATE=$CDATE CDUMP=$CDUMP CSTEP=$CSTEP CONFIG=$CONFIG' -q $CUE2RUN -a $ACCOUNT -g $GROUP -p 25/25/N -r $mem/1/8 -t 06:00 -j $jn -o $out $AWIPS20KMSH
+  fi
 
   if [ $GENGEMPAK_META = YES ];then
     export mem=2048
@@ -492,7 +499,7 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES ];then
   rdate=$($NDATE -$HRKGEMPAK $CDATE)   
   pdyr=`echo $rdate | cut -c1-8`
   cycr=`echo $rdate | cut -c9-10`
-  cd cd $COMROT/nawips                    
+  cd $COMROT/nawips                    
   rm gfs.$pdyr/gfs*_${rdate}* 2>/dev/null
   rm gfs.$pdyr/gfs.t${cycr}z*idx 2>/dev/null
 fi
