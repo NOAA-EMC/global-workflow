@@ -2774,6 +2774,34 @@ use stochy_namelist_def,only : do_shum,do_sppt
       Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%shdmin(1:ngptc)
     enddo
 
+! jsw added
+    idx = idx + 1
+    Diag(idx)%axes = 2
+    Diag(idx)%name = 'uustar'
+    Diag(idx)%desc = 'friction velocity'
+    Diag(idx)%unit = 'm/s'
+    Diag(idx)%mod_name = 'gfs_sfc'
+    do nb = 1,nblks
+      nx = Atm_block%ibe(nb)-Atm_block%ibs(nb)+1
+      ny = Atm_block%jbe(nb)-Atm_block%jbs(nb)+1
+      ngptc = nx*ny
+      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%uustar(1:ngptc)
+    enddo
+
+    idx = idx + 1
+    Diag(idx)%axes = 2
+    Diag(idx)%name = 'slope'
+    Diag(idx)%desc = 'class of surface slope'
+    Diag(idx)%unit = 'XX'
+    Diag(idx)%mod_name = 'gfs_sfc'
+    do nb = 1,nblks
+      nx = Atm_block%ibe(nb)-Atm_block%ibs(nb)+1
+      ny = Atm_block%jbe(nb)-Atm_block%jbs(nb)+1
+      ngptc = nx*ny
+      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%uustar(1:ngptc)
+    enddo
+! end jsw added
+
     idx = idx + 1
     Diag(idx)%axes = 2
     Diag(idx)%name = 'snowd'
