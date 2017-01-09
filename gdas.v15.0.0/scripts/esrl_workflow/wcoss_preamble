@@ -1,0 +1,11 @@
+#BSUB -W 6:00                    # wall clock time 
+#BSUB -o C384_C384_test.stdout
+#BSUB -e C384_C384_test.stderr
+#BSUB -J C384_C384_test
+#BSUB -q "dev"                   # job queue 
+#BSUB -P GFS-T2O                 # project code 
+#BSUB -M 1000                    # Memory req's for serial portion
+#BSUB -extsched 'CRAYLINUX[]'    # Request to run on compute nodes
+export NODES=120
+export corespernode=24
+export machine='wcoss'
