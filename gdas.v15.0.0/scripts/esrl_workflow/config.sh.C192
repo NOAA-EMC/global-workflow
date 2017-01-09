@@ -1,7 +1,7 @@
 echo "running on $machine using $NODES nodes"
 ulimit -s unlimited
 
-export exptname=C384_C384_test
+export exptname=C192_C192_testlinhx_stochphys
 export cores=`expr $NODES \* $corespernode`
 export KMP_AFFINITY=disabled
 
@@ -10,9 +10,9 @@ export ensda="enkf_run.csh"
 export rungsi='run_gsi_4densvar.sh'
 export rungfs='run_fv3_stochphys.sh' # ensemble forecast
 
-export enkf_threads=8 # enkf threads
-export gsi_control_threads=4
-export cores_gsi=`expr 1 \* $cores \/ 2`
+export enkf_threads=2 # enkf threads
+export gsi_control_threads=2
+export cores_gsi=`expr 2 \* $cores \/ 3`
 export cores_enkf=`expr $cores - $cores_gsi`
 export fg_proc=72 # number of cores per enkf fg ens member. 
 export fg_threads=1 # ens fcst threads
@@ -35,8 +35,8 @@ export save_hpss_subset="true" # save a subset of data each analysis time to HPS
 
 # override values from above for debugging.
 #export cleanup_fg='false'
-#export cleanup_ensmean='false'
 #export cleanup_obs='false'
+#export cleanup_ensmean='false'
 #export cleanup_anal='false'
 #export cleanup_controlanl='false'
 #export resubmit='false'
@@ -85,12 +85,12 @@ export readin_localization=.true.
 export massbal_adjust=.false.
 export lobsdiag_forenkf=.true.
 
-export RES=384
+export RES=192
 
 # Assimilation parameters
-export JCAP=878 
-export LONB=1760  
-export LATB=880  
+export JCAP=382 
+export LONB=768   
+export LATB=384  
 export LONA=$LONB
 export LATA=$LATB      
 export ANALINC=6
@@ -114,7 +114,7 @@ export iassim_order=0
 
 export covinflatemax=1.e2
 export covinflatemin=1.0                                            
-export analpertwtnh=0.8 
+export analpertwtnh=0.8
 export analpertwtsh=0.8
 export analpertwttr=0.8
 export pseudo_rh=.true.
@@ -216,7 +216,7 @@ export iaufhrs="6"
 export enkfstatefhrs="3,6,9"
 export SPPT=0.8
 export SPPT_TSCALE=21600.
-export SPPT_LSCALE=250.e3
+export SPPT_LSCALE=500.e3
 export SHUM=0.006
 export SHUM_TSCALE=21600.
 export SHUM_LSCALE=250.e3

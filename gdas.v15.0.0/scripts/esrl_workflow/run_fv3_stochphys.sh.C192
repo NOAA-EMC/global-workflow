@@ -188,8 +188,8 @@ cat > input.nml <<EOF
 &fv_core_nml
   layout = 3, 4,
   io_layout = 1, 1,
-  npx      = 385 
-  npy      = 385,
+  npx      = 193, 
+  npy      = 193,
   ntiles   = 6,
   npz    = 63, 
   grid_type = -1,
@@ -254,8 +254,8 @@ cat > input.nml <<EOF
 &coupler_nml
   calendar = "julian",
   memuse_verbose = F,
-  dt_atmos = 225,
-  dt_ocean = 225,
+  dt_atmos = 450,
+  dt_ocean = 450,
   atmos_nthreads = $OMP_NUM_THREADS,
   ncores_per_node = 24,
   use_hyper_thread = F,
@@ -292,7 +292,7 @@ cat > input.nml <<EOF
   fhcyc = 6,
   use_ufo = F,
   nst_anl = F,
-  cdmbgwd = 0.8, 1.45,
+  cdmbgwd = 0.25, 2.0,
 /
 
 &nggps_diag_nml
