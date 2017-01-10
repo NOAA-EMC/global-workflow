@@ -71,10 +71,7 @@ done
 #ln -fs ${FIXFV3}/C${RES}/C${RES}_mosaic.nc grid_spec.nc
 
 ls -l 
-
 cd ..
-# needed for stochastic physics.
-ln -fs ${FIXGLOBAL}/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt lonsperlat.dat
 
 # create netcdf increment file.
 if [ "$fg_only" == "false" ]; then
@@ -347,16 +344,14 @@ cat > input.nml <<EOF
 &fv_grid_nml
   grid_file = "INPUT/grid_spec.nc",
 /
-EOF
-cat input.nml
-cat > stochastic_physics.nml <<EOF
+
 &nam_stochy
   lon_s=$LONB, lat_s=$LATB, ntrunc=$JCAP
   SHUM=$SHUM, -999., -999., -999, -999,SHUM_TAU=$SHUM_TSCALE, 1.728E5, 6.912E5, 7.776E6, 3.1536E7,SHUM_LSCALE=$SHUM_LSCALE, 1000.E3, 2000.E3, 2000.E3, 2000.E3,
   SPPT=$SPPT, -999., -999., -999, -999,SPPT_TAU=$SPPT_TSCALE,2592500,25925000,7776000,31536000,SPPT_LSCALE=$SPPT_LSCALE,1000000,2000000,2000000,2000000,SPPT_LOGIT=.TRUE.,SPPT_SFCLIMIT=.TRUE.,
-  /
+ /
 EOF
-cat stochastic_physics.nml
+cat input.nml
 ls -l INPUT
 
 # run model
