@@ -1,0 +1,6 @@
+&share
+debug=T
+analysis_filename="/scratch3/BMC/gsienkf/whitaker/C192_C192_4denvar/2016010106//sanl_2016010106_control"
+firstguess_filename="/scratch3/BMC/gsienkf/whitaker/C192_C192_4denvar/2016010106//sfg_2016010106_fhr06_control"
+increment_filename='fv3_increment.nc'
+/
