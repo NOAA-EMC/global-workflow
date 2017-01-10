@@ -14,7 +14,7 @@ alvsf                alvsf                sfc                  1 bilinear       
 alvwf                alvwf                sfc                  1 bilinear             T 2
 alnsf                alnsf                sfc                  1 bilinear             T 2
 alnwf                alnwf                sfc                  1 bilinear             T 2
-slmsk                land                 sfc                  1 nrstnghbr            F 2
+slmsk                land                 sfc                  1 nrstnghbr            T 2
 vfrac                veg                  sfc                  1 bilinear             T 2
 canopy               cnwat                sfc                  1 bilinear             T 2
 f10m                 f10m                 10 m above gnd       1 bilinear             F 2
