@@ -2798,7 +2798,7 @@ use stochy_namelist_def,only : do_shum,do_sppt
       nx = Atm_block%ibe(nb)-Atm_block%ibs(nb)+1
       ny = Atm_block%jbe(nb)-Atm_block%jbs(nb)+1
       ngptc = nx*ny
-      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%uustar(1:ngptc)
+      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%slope(1:ngptc)
     enddo
 ! end jsw added
 
