@@ -106,7 +106,8 @@
 
       inquire (file="lonsperlat.dat", exist=file_exists)
       if ( .not. file_exists ) then
-        call mpp_error(FATAL,'Requested lonsperlat.dat  data file does not exist')
+        !call mpp_error(FATAL,'Requested lonsperlat.dat  data file does not exist')
+         gis_stochy%lonsperlat(:)=lonf
       else
         open (iunit,file='lonsperlat.dat',status='old',form='formatted',      &
                                           action='read',iostat=iret)
