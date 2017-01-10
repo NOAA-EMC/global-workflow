@@ -490,6 +490,10 @@ cat > input.nml <<EOF
        FSNOS=99999,
        FSICS=99999,
 /
+
+&nam_stochy
+/
+
 EOF
 
 # run the executable
