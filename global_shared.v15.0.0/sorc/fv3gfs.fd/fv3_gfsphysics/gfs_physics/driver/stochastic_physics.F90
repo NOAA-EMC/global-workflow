@@ -30,7 +30,9 @@ real*8 :: PRSI(Atm%npz+1),PRSL(Atm%npz),sl(Atm%npz),rad2deg,dx
 real,allocatable :: gg_lats(:),gg_lons(:)
 integer :: k,kflip,latghf,nodes
 character*2::proc
+character*30::namelistfile
 iret=0 
+namelistfile='input.nml'
 
 ! replace
 rad2deg=180.0/con_pi
@@ -39,7 +41,8 @@ nodes=mpp_npes()
 gis_stochy%me=me
 gis_stochy%nodes=nodes
 print*,'calling init_stochdata',dt_atmos,is_master()
-call init_stochdata(gis_stochy, Atm%npz,dt_atmos)
+call init_stochdata(gis_stochy, Atm%npz,dt_atmos,namelistfile)
+if (do_sppt.EQ. .false. .AND. do_shum.EQ. .false.) return
    do k=1,Atm%npz
       sl(k)= 0.5*(Atm%ak(k)/101300.+Atm%bk(k)+Atm%ak(k+1)/101300.0+Atm%bk(k+1)) ! si are now sigmas
       if(is_master())print*,'sl(k)',k,sl(k),Atm%ak(k),Atm%bk(k)
@@ -113,7 +116,7 @@ type(fv_atmos_type), target :: Atm
 real(kind=kind_phys) :: tmp_rndm(Atm%bd%is:Atm%bd%ie,Atm%bd%js:Atm%bd%je)
 integer :: k,null_arr(5)
 integer j,ierr,i
-
+if (do_sppt.EQ. .false. .AND. do_shum.EQ. .false.) return
 null_arr(:)=0
 if (do_sppt) then
    call get_random_pattern_fv3(rpattern_sppt,nsppt,&

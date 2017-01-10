@@ -26,7 +26,7 @@ module stochy_data_mod
  integer :: nlons,nlats
 
  contains
- subroutine init_stochdata(gis_stochy,nlevs,delt)
+ subroutine init_stochdata(gis_stochy,nlevs,delt,stochy_namelist)
 
 ! initialize random patterns.  A spinup period of spinup_efolds times the
 ! temporal time scale is run for each pattern.
@@ -38,12 +38,12 @@ module stochy_data_mod
    real(kind_dbl_prec),allocatable :: noise_e(:,:),noise_o(:,:)
    stochlun=99
    nlunit=98
-   stochy_namelist='stochastic_physics.nml'
    levs=nlevs
 
    iret=0
    if(is_master()) print*,'in init stochdata'
    call compns_stochy (me,nlunit,stochy_namelist,delt,iret)
+   if (do_sppt.EQ. .false. .AND. do_shum.EQ. .false.) return
    print*,'back from stochy_namelist',lat_s
    call initialize_spectral(gis_stochy, iret)
    allocate(noise_e(len_trie_ls,2),noise_o(len_trio_ls,2))
