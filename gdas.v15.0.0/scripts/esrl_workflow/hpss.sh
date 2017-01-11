@@ -1,5 +1,6 @@
 # need envars:  analdate, datapath2, hsidir, save_hpss, save_hpss_subset, POSTPROC, npefiles
 
+exitstat=0
 module load hpss
 env
 hsi ls -l $hsidir
@@ -28,19 +29,23 @@ fi
 
 hsi ls -l ${hsidir}/${analdate}_fgens.tar
 if [  $? -eq 0 ] || [ $save_hpss != "true" ]; then
-   echo "hsi fgens done, deleting data..."
+   echo "hsi fgens done or not requested, deleting data..."
    /bin/rm -rf fgens
 else
-   echo "hsi fgens failed..."
-   exit 1
+   if [ $save_hpss == 'true']; then
+      echo "hsi fgens failed ${analdate}..."
+      exitstat=1
+   fi
 fi
 hsi ls -l ${hsidir}/${analdate}_fgens2.tar
 if [  $? -eq 0 ] || [ $save_hpss != "true" ]; then
-   echo "hsi fgens2 done, deleting data..."
+   echo "hsi fgens2 done or not requested, deleting data..."
    /bin/rm -rf fgens2
 else
-   echo "hsi fgens2 failed..."
-   exit 1
+   if [ $save_hpss == 'true']; then
+      echo "hsi fgens2 failed ${analdate}..."
+      exitstat=1
+   fi
 fi
 
 #if  [ $npefiles == "0" ]; then
@@ -78,5 +83,10 @@ if  [ $save_hpss_subset = "true" ]; then
    cd ..
    htar -cvf ${hsidir}/${analdate}_subset.tar ${analdate} 
 fi
+hsi ls -l ${hsidir}/${analdate}_subset.tar
+if [  $? -eq 0 ]; then
+   echo "hsi subset failed ${analdate}..."
+   exit 1
+fi
 
-exit 0
+exit $exitstat
