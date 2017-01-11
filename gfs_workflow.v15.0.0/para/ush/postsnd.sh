@@ -14,9 +14,11 @@ set -xa
 # obtain unique process id (pid) and make temp directories
 #
 export pid=$$
+export job=gfs_postsnd
 #export DATA=/tmpnwprd/${job}.${pid}
 #export DATA=${COMOUT:-/$STMP/$LOGNAME/bufrsnd.${pid}}
-export DATA=${DATA}/bufrsnd
+export DATAROOT=$STMP/$LOGNAME
+export DATA=$DATAROOT/${job}.${pid}
 mkdir -p $DATA
 cd $DATA 
 
@@ -40,28 +42,25 @@ export cycle=t${cyc}z
 #export SENDCOM=YES
 #export SENDECF=YES
 #export SENDDBN=YES
-export SENDCOM=NO 
-export SENDECF=NO 
-export SENDDBN=NO 
+export SENDCOM=${SENDCOM:-NO}
+export SENDECF=${SENDECF:-NO}
+export SENDDBN=${SENDDBN:-NO}
 
 export NET=gfs
 export RUN=gfs
 export model=gfs
-export pcom=/pcom/gfs
+export pcom=${pcom:-${PCOMROOT}/gfs}
 
 ###################################
 # Set up the UTILITIES
 ###################################
-export utilities=/nwprod/util/ush
-export utilscript=/nwprod/util/ush
-export utilexec=/nwprod/util/exec
-
-#export HOMEutil=/nwprod/util
-export HOMEutil=$BASEDIR/util
-export EXECutil=$HOMEutil/exec
-export FIXutil=$HOMEutil/fix
-#export PARMutil=$HOMEutil/parm
-export USHutil=$HOMEutil/ush
+. $MODULESHOME/init/sh
+module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
+module load prod_envir
+module load prod_util/1.0.5
+module load grib_util/1.0.3
+module load util_shared/1.0.3
+module load gempak/7.3.0
 
 #export HOMEbufr=/nw${envir}
 export HOMEbufr=${HOMEbufr:-$BASEDIR}
@@ -76,15 +75,15 @@ export FIXbufrsnd=$FIXbufr
 export PARMbufrsnd=$PARMbufr
 export USHbufrsnd=$USHbufr
 
-export HOMEGLOBAL=${HOMEGLOBAL:-/nwprod}
-export FIXGLOBAL=${FIXGLOBAL:-$HOMEGLOBAL/fix}
-export FIXgsm=$FIXGLOBAL
+export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
+export EXECbufrsnd=${EXECbufrsnd:-$HOMEbufrsnd/exec}
+export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix}
+export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm}
+export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
+export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
-export obsproc_shared_bufr_cword_ver=${obsproc_shared_bufr_cword_ver:-v1.0.0}
-export NWROOT=${NWROOT:-$HOMEGLOBAL}
-export HOMEobsproc_shared_bufr_cword=${HOMEobsproc_shared_bufr_cword:-$NWROOT/obsproc_shared/bufr_cword.${obsproc_shared_bufr_cword_ver}}
-export EXECobsproc_shared_bufr_cword=${EXECobsproc_shared_bufr_cword:-$HOMEobsproc_shared_bufr_cword/exec}
-export cwordsh=${cwordsh:-${HOMEobsproc_shared_bufr_cword}/ush/bufr_cword.sh}
+export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.${global_shared_ver}}
+export FIXgsm=${HOMEgsm:-$HOMEgsm/fix/fix_am}
 
 
 # Run setup to initialize working directory and utility scripts
@@ -98,16 +97,16 @@ export cwordsh=${cwordsh:-${HOMEobsproc_shared_bufr_cword}/ush/bufr_cword.sh}
 ##############################
 #export COMIN=/com/${NET}/${envir}/${RUN}.${PDY}
 #export COMOUT=/com/${NET}/${envir}/${RUN}.${PDY}
-export COMIN=${COMIN:-/com/${NET}/${envir}/${RUN}.${PDY}}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-$DATA}
-export COMAWP=${COMOUT:-$DATA}
-#mkdir -p $COMOUT
+export COMAWP=${COMAWP:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 
 #env
 
 ########################################################
 # Execute the script.
 #/nw${envir}/scripts/exgfs_postsnd.sh.ecf
+export APRUN="aprun -n $snd_nprocs -N $snd_ptile -j 1 -d $snd_nthreads -cc depth"
 $HOMEbufr/scripts/exgfs_postsnd.sh.ecf
 ########################################################
 
