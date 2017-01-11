@@ -1758,184 +1758,6 @@ c idea add init condition for temp tracer4-5 ( o o2)
 !       print *,'after headvo, vcoord=',GFSHEADVO%VCOORD(1:5,1)
 !     &  ,  GFSHEADVO%VCOORD(1:5,2)
 
-        if(GFSHEADO%nmetavari > 0) then
-          ALLOCATE(GFSHEADVO%variname(GFSHEADO%nmetavari))
-          ALLOCATE(GFSHEADVO%varival(GFSHEADO%nmetavari))
-          GFSHEADVO%variname = GFSHEADVI%VARINAME
-          GFSHEADVO%varival  = GFSHEADVI%VARIVAL
-        else
-          ALLOCATE(GFSHEADVO%variname(1))
-          ALLOCATE(GFSHEADVO%varival(1))
-        endif
-        if(GFSHEADO%nmetavarr > 0) then
-          ALLOCATE(GFSHEADVO%varrname(GFSHEADO%nmetavarr))
-          ALLOCATE(GFSHEADVO%varrval(GFSHEADO%nmetavarr))
-          GFSHEADVO%varrname = GFSHEADVI%VARRNAME
-          GFSHEADVO%varrval  = GFSHEADVI%VARRVAL
-        else
-         ALLOCATE(GFSHEADVO%varrname(1))
-         ALLOCATE(GFSHEADVO%varrval(1))
-        endif
-        if(GFSHEADO%nmetavarl > 0) then
-          ALLOCATE(GFSHEADVO%varlname(GFSHEADO%nmetavarl))
-          ALLOCATE(GFSHEADVO%varlval(GFSHEADO%nmetavarl))
-          GFSHEADVO%varlname = GFSHEADVI%VARLNAME
-          GFSHEADVO%varlval  = GFSHEADVI%VARLVAL
-        else
-          ALLOCATE(GFSHEADVO%varlname(1))
-          ALLOCATE(GFSHEADVO%varlval(1))
-        endif
-        if(GFSHEADO%nmetavarc > 0) then
-          ALLOCATE(GFSHEADVO%varcname(GFSHEADO%nmetavarc))
-          ALLOCATE(GFSHEADVO%varcval(GFSHEADO%nmetavarc))
-          GFSHEADVO%varcname = GFSHEADVI%VARCNAME
-          GFSHEADVO%varcval  = GFSHEADVI%VARCVAL
-        else
-          ALLOCATE(GFSHEADVO%varcname(1))
-          ALLOCATE(GFSHEADVO%varcval(1))
-        endif
-        if(GFSHEADO%nmetavarr8 > 0) then
-          ALLOCATE(GFSHEADVO%varr8name(GFSHEADO%nmetavarr8))
-          ALLOCATE(GFSHEADVO%varr8val(GFSHEADO%nmetavarr8))
-          GFSHEADVO%varr8name = GFSHEADVI%VARR8NAME
-          GFSHEADVO%varr8val  = GFSHEADVI%VARR8VAL
-        else
-          ALLOCATE(GFSHEADVO%varr8name(1))
-          ALLOCATE(GFSHEADVO%varr8val(1))
-        endif
-        if(GFSHEADO%nmetaaryi > 0) then
-          ALLOCATE(GFSHEADVO%aryiname(GFSHEADO%nmetaaryi))
-          ALLOCATE(GFSHEADVO%aryilen(GFSHEADO%nmetaaryi))
-          GFSHEADVO%aryiname = GFSHEADVI%ARYINAME
-          GFSHEADVO%aryilen  = GFSHEADVI%ARYILEN
-        else
-          ALLOCATE(GFSHEADVO%aryiname(1))
-          ALLOCATE(GFSHEADVO%aryilen(1))
-        endif
-        if(GFSHEADO%nmetaaryr > 0) then
-          ALLOCATE(GFSHEADVO%aryrname(GFSHEADO%nmetaaryr))
-          ALLOCATE(GFSHEADVO%aryrlen(GFSHEADO%nmetaaryr))
-          GFSHEADVO%aryrname = GFSHEADVI%ARYRNAME
-          GFSHEADVO%aryrlen  = GFSHEADVI%ARYRLEN
-        else
-          ALLOCATE(GFSHEADVO%aryrname(1))
-          ALLOCATE(GFSHEADVO%aryrlen(1))
-        ENDIF
-        if(GFSHEADO%nmetaaryr8 > 0) then
-          ALLOCATE(GFSHEADVO%aryr8name(GFSHEADO%nmetaaryr8))
-          ALLOCATE(GFSHEADVO%aryr8len(GFSHEADO%nmetaaryr8))
-          GFSHEADVO%aryr8name = GFSHEADVI%ARYR8NAME
-          GFSHEADVO%aryr8len  = GFSHEADVI%ARYR8LEN
-        else
-          ALLOCATE(GFSHEADVO%aryr8name(1))
-          ALLOCATE(GFSHEADVO%aryr8len(1))
-        ENDIF
-!
-!-- adjust integer variables
-!
-        do i=1,GFSHEADO%nmetavari
-          if(trim(GFSHEADVO%variname(i))  == 'LONB'.or.
-     &       trim(GFSHEADVO%variname(i))  == 'lonb')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LONB
-          if(trim(GFSHEADVO%variname(i)) == 'LATB'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'latb')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LATB
-          if(trim(GFSHEADVO%variname(i)) == 'LATF'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'latf')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LATB
-          if(trim(GFSHEADVO%variname(i)) == 'LATG'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'latg')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LATB
-          if(trim(GFSHEADVO%variname(i)) == 'LONF'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'lonf')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LONB
-          if(trim(GFSHEADVO%variname(i)) == 'LATR'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'latr')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LATB
-          if(trim(GFSHEADVO%variname(i)) == 'LONR'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'lonr')
-     &      GFSHEADVO%varival(i) = GFSHEADO%LONB
-          if(trim(GFSHEADVO%variname(i)) == 'IDVC'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'idvc')
-     &      GFSHEADVO%varival(i) = GFSHEADO%IDVC
-          if(trim(GFSHEADVO%variname(i)) == 'IDVM'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'idvm')
-     &      GFSHEADVO%varival(i) = GFSHEADO%IDVM
-          if(trim(GFSHEADVO%variname(i)) == 'IDSL'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'idsl')
-     &      GFSHEADVO%varival(i) = GFSHEADO%IDSL
-          if(trim(GFSHEADVO%variname(i)) == 'NCLDT'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'ncldt')
-     &      GFSHEADVO%varival(i) = GFSHEADO%NCLDT
-          if(trim(GFSHEADVO%variname(i)) == 'NVCOORD'.or.
-     &       trim(GFSHEADVO%variname(i)) == 'nvcoord')
-     &      GFSHEADVO%varival(i) = GFSHEADO%NVCOORD
-        enddo
-!
-        if(GFSHEADO%nmetaaryi > 0) then
-            if(.not.allocated(GFSHEADVO%aryival) )
-     &        ALLOCATE(GFSHEADVO%aryival(maxval(GFSHEADVO%aryilen),
-     &                 GFSHEADO%nmetaaryi))
-            GFSHEADVO%aryival = GFSHEADVI%aryival
-        else
-           if(.not.allocated(GFSHEADVO%aryival))
-     &         ALLOCATE(GFSHEADVO%aryival(1,1))
-        endif
-        if(GFSHEADO%nmetaaryr > 0) then
-            ALLOCATE(GFSHEADVO%aryrval(maxval(GFSHEADVO%aryrlen),
-     &               GFSHEADO%nmetaaryr))
-            GFSHEADVO%aryrval = GFSHEADVI%aryrval
-        else
-            ALLOCATE(GFSHEADVO%aryrval(1,1))
-        endif
-        if(GFSHEADO%nmetaaryr8 > 0) then
-            ALLOCATE(GFSHEADVO%aryr8val(maxval(GFSHEADVO%aryr8len),
-     &               GFSHEADO%nmetaaryr8))
-            GFSHEADVO%aryr8val = GFSHEADVI%aryr8val
-        else
-            ALLOCATE(GFSHEADVO%aryr8val(1,1))
-        endif
-        if(  GFSHEADO%LEVS == GFSHEADI%LEVS )then
-           GFSHEADVO%VCOORD = GFSHEADVI%VCOORD
-        else
-           print *,'output VCOORD from input'
-        endif
-        if ( GFSHEADO%NTRAC == GFSHEADI%NTRAC) then
-           GFSHEADVO%CPI = GFSHEADVI%CPI
-           GFSHEADVO%RI  = GFSHEADVI%RI
-        else
-           print *,'WARNING: You have different Tracers from input,',
-     &    ' make sure to provide CPI & RI, for generalized coordinate'
-        endif
-        cpi(0:ntraco) = GFSHEADVO%CPI(1:ntraco+1)
-        ri(0:ntraco)  = GFSHEADVO%RI(1:ntraco+1)
-
-!
-        GFSHEADVO%VARINAME(1:GFSHEADO%NMETAVARI)=(/'LATB        '
-     &    ,'LONB        ','LEVS        ','ITRUN       ','IORDER      '
-     &    ,'IREALF      ','IGEN        ','LATG        ','LONF        '
-     &    ,'LATR        ','LONR        ','ICEN2       ','IDPP        '
-     &    ,'IDVT        ','IDRUN       ','IDUSR       ','IXGR        '
-     &    ,'NVCOORD     ','SFCPRESS_ID ','THERMODYN_ID','IVS         '/)
-         GFSHEADVO%VARIVAL(1:GFSHEADO%NMETAVARI)=(/JMO,
-     &        IMO,LEVSO,GFSHEADo%ITRUN,GFSHEADo%IORDER,
-     &        GFSHEADo%IREALF,GFSHEADo%IGEN,GFSHEADO%LATF,GFSHEADO%LONF,
-     &        GFSHEADO%LATR,GFSHEADO%LONR,GFSHEADo%ICEN2,GFSHEADo%IDPP,
-     &        GFSHEADo%IDVT,GFSHEADo%IDRUN,GFSHEADo%IDUSR,GFSHEADo%IXGR,
-     &        GFSHEADo%NVCOORD,SFCPRESS_ID_O,
-     &        THERMODYN_ID_O,GFSHEADo%IVSSIG /)
-!        print *,' after GFSHEADVO%VARIVAL LEVSO=',levso
-!
-!       print *,'after headvo, vcoord=',GFSHEADVO%VCOORD(1:5,1,1)
-!     &  ,GFSHEADVO%VCOORD(1:5,2,1),'IMO=',IMO,'JMO=',JMO,'LEVSO=',LEVSO
-!     &,'NTRAC=',GFSHEADO%NTRAC,NTRACO,'NTRACM=',NTRACM,'LEVSI=',LEVSI,
-!     & 'cpi=',GFSHEADVO%CPI(1:ntraco+1),'ri=',GFSHEADVO%RI(1:ntraco+1)
-!     &  ,'in cpi=',GFSHEADVI%CPI(1:ntraco+1),'ri=',
-!     &    GFSHEADVI%RI(1:ntraco+1)
-
-!     print *,' bef alllevs=',levs,' levso=',levso,' GFSHEADO%LEVS='
-!    &,GFSHEADO%LEVS,' GFSHEADO%dimz=',GFSHEADO%dimz
-
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  ALLOCATE GFSIO OUTPUT DATA
         ALLOCATE(GFSDATAO%ZS(IMO,JMO))
@@ -2248,101 +2070,11 @@ c idea add init condition for temp tracer4-5 ( o o2)
         ENDIF
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-! WRITE OUT NEMSIO  FILE
-!
-      OUTSIG = NSIGO > 0 .and. (OUTTYP <= 2 .OR. OUTTYP >= 0) .AND.
-     &       (INPTYP == 2 .and. MQUICK == 0 .or. INPTYP == 1)
-      IF(OUTSIG) THEN
-!
-!*** from nemsio -> sigio output
-!
-        IF(INPTYP == 1 .AND. (OUTTYP == 0 .OR. OUTTYP == 2)) THEN
-!
-           SIGHEADO%JCAP  = GFSHEADO%JCAP
-           SIGHEADO%LATB  = GFSHEADO%LATB
-           SIGHEADO%LONB  = GFSHEADO%LONB
-           SIGHEADO%LATF  = GFSHEADO%LATB
-           SIGHEADO%LONF  = GFSHEADO%LONB
-           SIGHEADO%LATR  = GFSHEADO%LATB
-           SIGHEADO%LONR  = GFSHEADO%LONB
-           SIGHEADO%LEVS  = GFSHEADO%LEVS
-           SIGHEADO%NTRAC = GFSHEADO%NTRAC
-           SIGHEADO%IDVC  = GFSHEADO%IDVC
-           SIGHEADO%IDVM  = GFSHEADO%IDVM
-           SIGHEADO%IDSL  = GFSHEADO%IDSL
-           SIGHEADO%IGEN  = GFSHEADO%IGEN
-           SIGHEADO%IDVT  = GFSHEADO%IDVT
-           SIGHEADO%NCLDT = GFSHEADO%NCLDT
-           SIGHEADO%IVS   = GFSHEADO%IVSSIG
-           SIGHEADO%NVCOORD   = GFSHEADO%NVCOORD
-           SIGHEADO%IDATE(1:4) = GFSHEADO%IDATE(1:4)
-           SIGHEADO%IDATE(1) = GFSHEADO%IDATE(4)
-           SIGHEADO%IDATE(4) = GFSHEADO%IDATE(1)
-           SIGHEADO%fhour = GFSHEADO%fhour
-           SIGHEADO%itrun = GFSHEADO%itrun
-           if(SIGHEADO%itrun==-9999) SIGHEADO%itrun=1
-           SIGHEADO%iorder = GFSHEADO%iorder
-           if(SIGHEADO%iorder==-9999) SIGHEADO%iorder=2
-           SIGHEADO%irealf = GFSHEADO%irealf
-           if(SIGHEADO%irealf==-9999) SIGHEADO%irealf=1
-           SIGHEADO%igen = GFSHEADO%igen
-           if(SIGHEADO%igen==-9999) SIGHEADO%igen=82
-           SIGHEADO%icen2 = GFSHEADO%icen2
-           if(SIGHEADO%icen2==-9999) SIGHEADO%icen2=0
-           SIGHEADO%iens = GFSHEADO%iens
-           SIGHEADO%idpp = GFSHEADO%idpp
-           if(SIGHEADO%idpp==-9999) SIGHEADO%idpp=0
-           SIGHEADO%idrun = GFSHEADO%idrun
-           if(SIGHEADO%idrun==-9999) SIGHEADO%idrun=0
-           SIGHEADO%idusr = GFSHEADO%idusr
-           if(SIGHEADO%idusr==-9999) SIGHEADO%idusr=0
-           SIGHEADO%pdryini = GFSHEADO%PDRYINI
-           SIGHEADO%ixgr = GFSHEADO%ixgr
-           if(SIGHEADO%ixgr==-9999) SIGHEADO%ixgr=0
-           print *,'pdryini=',SIGHEADO%pdryini,'iens=',SIGHEADO%iens,
-     &    'idusr=',SIGHEADO%idusr,GFSHEADO%idusr,'iens=',SIGHEADO%iens,
-     &     'ixgr=',SIGHEADO%ixgr
-!
-           CALL SIGIO_ALHEAD(SIGHEADO,IRET)
-           SIGHEADO%VCOORD(1:SIGHEADO%LEVS+1,1:SIGHEADO%NVCOORD) =
-     &       GFSHEADVO%VCOORD(1:SIGHEADO%LEVS+1,1:SIGHEADO%NVCOORD,1)
-!           print *,'vcoordo=',GFSHEADVO%VCOORD(1:5,1:2,1),'sigheado=',
-!     &      SIGHEADO%VCOORD(1:5,1:2),'nvcoord=',SIGHEADO%NVCOORD,
-!     &      'levs=',SIGHEADO%LEVS
-           CALL SIGIO_ALDBTA(SIGHEADO,SIGDATAO,IRET)
-!  INITIALIZE TEMPORARY OUTPUT DATA
-           SIGDATAO%HS = 0
-           SIGDATAO%PS = 0
-           SIGDATAO%T  = 0
-           SIGDATAO%D  = 0
-           SIGDATAO%Z  = 0
-           SIGDATAO%Q  = 0
-!
-!   REORDER THE FIELDS FOR SPECTRAL TRANSFORM
-           CALL REORD(IMO,JMO,LEVSO,NTRACO,
-     &                GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,
-     &                GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q )
-!
-!   TRANSFORM BACK TO THE NEW SPECTRAL SPACE FOR SIGIO SIGMA OUTPUT
-           IJX = IMO*JMO
-!          print*,' transform back to the new spectral space,t='
-!     &   ,gfsdatao%t(1,1:20,2),'q=',gfsdatao%q(1,1:10,2,1),
-!     &    'IMO=',IMO,'JMO=',JMO
-!     &   ,'IJX=',IJX,'cpi=',cpi,'idvm=',GFSHEADO%IDVM,'ntraco=',
-!     &   ntraco
-           CALL TRBSC(JCAPO,NCO,LEVSO,NTRACO,GFSHEADO%IDVM,
-     &                IDRT,IMO,JMO,IJX,1,(JMO+1)/2,1,cpi,
-     &                GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,
-     &                GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q,
-     &                SIGDATAO%HS,SIGDATAO%PS,SIGDATAO%T,
-     &                SIGDATAO%D,SIGDATAO%Z,SIGDATAO%Q)
-!
-!   WRITE OUT SIGMA FILE
-           CALL SIGIO_SWHEAD(NSIGO,SIGHEADO,IRET)
-           CALL SIGIO_SWDBTA(NSIGO,SIGHEADO,SIGDATAO,IRET)
-           CALL SIGIO_SCLOSE(NSIGO,IRET)
-           CALL SIGIO_AXDBTA(SIGDATAO,IRET)
-!
+!  GENERATE SPECIAL SETS OF TRACERS
+        IF(GFSHEADO%IDVT.GT.0.AND.MOD(GFSHEADO%IDVT,100).EQ.0) THEN
+!!        CALL SPECSETS(GFSHEADO,GFSDATAO,IDRT)
+          print*," SPECSETS not working yet for gfsio, exit"
+          call errexit(24)
         ENDIF
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2797,84 +2529,82 @@ C  GET NEW LONSPERLAT
         deallocate(tmpvar)
       ENDIF
 
-       if(GFSHEADO%nmetavari>0) then
-         do i=1,GFSHEADO%nmetavari
-           if(GFSHEADVO%variname(i)=='LATB'.or.
-     &        GFSHEADVO%variname(i)=='latb')
-     &       GFSHEADVO%varival(i)=GFSHEADO%LATB
-           if(GFSHEADVO%variname(i)=='LONB'.or.
-     &       GFSHEADVO%variname(i)=='lonb')
-     &       GFSHEADVO%varival(i)=GFSHEADO%LONB
-           if(GFSHEADVO%variname(i)=='LATR'.or.
-     &        GFSHEADVO%variname(i)=='latr')
-     &       GFSHEADVO%varival(i)=GFSHEADO%LATR
-           if(GFSHEADVO%variname(i)=='LONR'.or.
-     &       GFSHEADVO%variname(i)=='lonr')
-     &       GFSHEADVO%varival(i)=GFSHEADO%LONR
-           if(GFSHEADVO%variname(i)=='IREALF'.or.
-     &       GFSHEADVO%variname(i)=='irealf')
-     &       GFSHEADVO%varival(i)=GFSHEADO%IREALF
-           if(GFSHEADVO%variname(i)=='LSOIL'.or.
-     &        GFSHEADVO%variname(i)=='lsoil')
-     &       GFSHEADVO%varival(i)=GFSHEADO%NSOIL
-           if(GFSHEADVO%variname(i)=='IVSSFC'.or.
-     &        GFSHEADVO%variname(i)=='ivssfc')
-     &       GFSHEADVO%varival(i)=GFSHEADO%IVS
-           if(GFSHEADVO%variname(i)=='IDRT'.or.
-     &        GFSHEADVO%variname(i)=='idrt')
-     &       GFSHEADVO%varival(i)=GFSHEADO%idrt
-         enddo
-       endif
-
-       IF (GFSHEADO%nmetaaryi>0) THEN
-
-         DO I=1,GFSHEADO%nmetaaryi
-
-           IF( (GFSHEADVO%aryiname(i)=='lpl' .OR. 
-     &          GFSHEADVO%aryiname(i)=='LPL') .AND.
-     &          GFSHEADVO%aryilen(i).NE.
-     &         ((GFSHEADO%LATB+1)/2) ) THEN
-
-             GFSHEADVO%aryilen(i)=(GFSHEADO%LATB+1)/2
-             IF(ALLOCATED(GFSHEADVO%aryival))
-     &          DEALLOCATE(GFSHEADVO%aryival)
-             ALLOCATE(GFSHEADVO%aryival(maxval(GFSHEADVO%aryilen),
-     &          GFSHEADO%nmetaaryi))
-
-           ENDIF
-
-         ENDDO
-
-         DO I=1,GFSHEADO%nmetaaryi
-
-           IF( GFSHEADVO%aryiname(i)=='lpl' .OR.
-     &         GFSHEADVO%aryiname(i)=='LPL' ) THEN
-                
-             GFSHEADVO%aryival(1:(GFSHEADO%LATB+1)/2,I)=
-     &         GFSHEADVO%LPL(1:(GFSHEADO%LATB+1)/2)
-
-           ELSE
-
-             GFSHEADVO%aryival(1:GFSHEADVO%aryilen(i),i)=
-     &        GFSHEADVI%aryival(1:GFSHEADVO%aryilen(i),i)
-
-           ENDIF
-
-         ENDDO
-
-!         print *,'aryiname=',GFSHEADVO%aryiname,GFSHEADVO%aryilen
-!     &  ,'aryival=',GFSHEADVO%aryival
-
-       ENDIF
-
-       if(GFSHEADO%nmetaaryr>0) then
-         DO i=1,GFSHEADO%nmetaaryr
-           if(GFSHEADVO%aryrname(i)=='zsoil') then
-             GFSHEADVO%aryrval(1:GFSHEADO%NSOIL,i)=
-     &    GFSHEADVO%ZSOIL(1:GFSHEADO%NSOIL)
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  GET OLD AND NEW LAND-SEA MASK.  REMOVE SEA ICE WHICH IS HANDLED 
+C  SEPARATELY.
+       ALLOCATE(SLMSKI(IMI,JMI))
+       SLMSKI=SFCDATAI%SLMSK
+       WHERE(NINT(SLMSKI).EQ.2) SLMSKI=0.
+       ALLOCATE(SLMSKO(IMO,JMO))
+       ALLOCATE(SLMSKO2(IMO,JMO))
+       ALLOCATE(orog_raw(IMO,JMO))
+       !-- read land-sea mask from OUTORIG if it exists
+       outorog_exist = .false.
+       IF(trim(OUTOROG) .NE. "") THEN
+         inquire(file=trim(OUTOROG), exist=fexist)
+         if(.not. fexist) then
+            print*, "file "//trim(OUTOROG)//" does not exist"
+            CALL ERREXIT(4)
+         endif
+         outorog_exist = .true.
+         error=NF__OPEN(trim(OUTOROG),NF_NOWRITE,fsize,ncid_orog)
+         call netcdf_err(error, 'Open file '//trim(OUTOROG) )
+         error=nf_inq_dimid(ncid_orog, 'lon', id_dim)
+         call netcdf_err(error, 'inquire dimension lon from file '//
+     &                   trim(OUTOROG) )
+         error=nf_inq_dimlen(ncid_orog,id_dim,nx)
+         call netcdf_err(error, 'inquire dimension lon length '//
+     &       'from file '//trim(OUTOROG) )
+         error=nf_inq_dimid(ncid_orog, 'lat', id_dim)
+         call netcdf_err(error, 'inquire dimension lat from file '//
+     &                   trim(OUTOROG) )
+         error=nf_inq_dimlen(ncid_orog,id_dim,ny)
+         call netcdf_err(error, 'inquire dimension lat length '//
+     &       'from file '//trim(OUTOROG) )
+!        LONB should equal nx and LATB should equal ny
+         if(LONB .ne. nx) then
+            print*, "LONB=",LONB, " /= grid file lon=",nx
+            CALL ERREXIT(4)
+         endif
+         if(LATB .ne. ny) then
+            print*, "LATB=",LATB, " /= grid file lat=",ny
+            CALL ERREXIT(4)
+         endif
+         print*, "Read the land-sea mask from file "//trim(OUTOROG)
+         error=nf_inq_varid(ncid_orog, 'slmsk', id_var)
+         call netcdf_err(error, 'inquire varid of slmsk from file '
+     &                   //trim(OUTOROG) )
+         error=nf_get_var_double(ncid_orog, id_var, SLMSKO)
+         call netcdf_err(error, 'inquire data of slmsk from file '
+     &                   //trim(OUTOROG) )
+                 
+       ELSE
+         IF(NSLM.GT.0) THEN
+           JPDS=-1
+           JPDS(5)=81
+           ALLOCATE(BITMAP(IMO*JMO))
+           CALL GETGB(NSLM,0,IMO*JMO,0,JPDS,JGDS,
+     &               KF,K,KPDS,KGDS,BITMAP,SLMSKO,IOSLM)
+           DEALLOCATE(BITMAP)
+           IF(IOSLM .EQ. 0 .AND. (KGDS(1) .NE. idrt .OR.
+     &      KGDS(2) .NE. IMO .OR. KGDS(3) .NE. JMO)) IOSLM=100
+         ELSE
+           IOSLM=100
+         ENDIF
+         IF(IOSLM.EQ.0) THEN
+           PRINT '("  NEW LAND-SEA MASK READ IN")'
+           if (kgds(4) == -90000 .and. kgds(5) == -180000) then
+             print *,' reversing the lat/lon for land-sea mask'
+             call REVERS(imo, jmo, SLMSKO)
            endif
-         ENDDO
-       endif
+         ELSE
+!          CALL GL2GL(2,1,SLMSKI,IMI,JMI,SLMSKO,IMO,JMO,4,IDRT)
+           CALL GL2ANY(2,1,SLMSKI,IMI,JMI,SLMSKO,IMO,JMO,4,
+     &         SFCOUTPUT%LONS,SFCOUTPUT%LATS)
+           PRINT '("  NEW LAND-SEA MASK INTERPOLATED FROM OLD")'
+         ENDIF
+       ENDIF
+        SLMSKO=NINT(SLMSKO)
 
        call instrument(18,kall,ttot,tmin,tmax)
 
@@ -3173,110 +2903,105 @@ C  INFO DESCRIBING BOTH GRIDS.
       KGDS_INPUT(12) = 255       ! OCT 29 - RESERVED
       KGDS_INPUT(20) = 255       ! OCT 5  - NOT USED, SET TO 255
 
-      integer(nemsio_intkind) :: iret, nrec, dimx, dimy, lev, nframe
-      integer(nemsio_intkind) :: idate(7), nfhour
-
-      integer                 :: i, j
-
-      real(nemsio_realkind),allocatable :: dummy(:)
-
-      type(nemsio_gfile)      :: gfile
-
-      data recname   /"land    ", "xt      ", "xs      ",
-     &           "xu      ", "xv      ", "xz      ",
-     &           "zm      ", "xtts    ", "xzts    ",
-     &           "dtcool  ", "zc      ", "c0      ",
-     &           "cd      ", "w0      ", "wd      ",
-     &           "dconv   ", "ifd     ", "tref    ",
-     &           "qrain   " /
-
-      print*,"- READ INPUT NSST DATA IN NEMSIO FORMAT"
-
-      call nemsio_init(iret=iret)
-      if (iret /= 0) then
-        print*,"- FATAL ERROR: bad nemsio initialization."
-        print*,"- IRET IS ", iret
-        call errexit(16)
-      endif
-
-      call nemsio_open(gfile, "chgres.inp.nst", "read", iret=iret)
-      if (iret /= 0) then
-        print*,"- FATAL ERROR: bad open of chgres.inp.nst."
-        print*,"- IRET IS ", iret
-        call errexit(17)
-      endif
-
-      print*,"- READ FILE HEADER"
-      call nemsio_getfilehead(gfile,iret=iret,nrec=nrec,dimx=dimx,
-     &     dimy=dimy,idate=idate,nfhour=nfhour)
-      if (iret /= 0) then
-        print*,"- FATAL ERROR: bad read of chgres.inp.nst header."
-        print*,"- IRET IS ", iret
-        call errexit(18)
-      endif
-
-      if (dimx /= imi .or. dimy /= jmi) then
-        print*,"- FATAL ERROR: nst and sfc file resolution"
-        print*,"- must be the same."
-        call errexit(19)
-      endif
-
-      if (nrec /= 19) then
-        print*,"- FATAL ERROR: nst file has wrong number of records."
-        call errexit(20)
-      endif
-
-      nsst_year=idate(1)
-      nsst_mon=idate(2)
-      nsst_day=idate(3)
-      nsst_hour=idate(4)
-      nsst_fhour=float(nfhour)
-
-      levtyp='sfc'
-      lev=1
-      nframe=0
-
-      allocate(dummy(imi*jmi))
-
-      print*,"- READ LANDMASK RECORD"
-      call nemsio_readrecv(gfile,recname(1),levtyp,lev,
-     &     dummy,nframe,iret)
-
-      if (iret /= 0) then
-        print*,"- FATAL ERROR: bad read of chgres.inp.nst."
-        print*,"- IRET IS ", iret
-        call errexit(21)
-      endif
-
-      mask_input = reshape (dummy, (/imi,jmi/))
-
-      print*,"- READ REMAINING DATA RECORDS"
-      do j = 2, nrec
-        call nemsio_readrecv(gfile,recname(j),levtyp,lev,
-     &       dummy,nframe,iret)
-        if (iret /= 0) then
-          print*,"- FATAL ERROR: bad read of chgres.inp.nst."
-          print*,"- IRET IS ", iret
-          call errexit(21)
-        endif
-        nsst_input(:,:,j-1) = reshape (dummy, (/imi,jmi/))
-      enddo
-
-      deallocate(dummy)
-
-      call nemsio_close(gfile,iret=iret)
-
-      call nemsio_finalize()
-
-      END SUBROUTINE READ_NSST_FROM_NEMSIO
-!-----------------------------------------------------------------------
-      SUBROUTINE WRITE_NSST_TO_NSTIO(NSST_YEAR,NSST_MON,NSST_DAY,
-     &                        NSST_HOUR,NSST_FHOUR,LPLO,IMO,JMO,IJMO,
-     &                        MASK_OUTPUT,NSST_OUTPUT_THIN,
-     &                        NUM_NSST_FIELDS)
-
-!-----------------------------------------------------------------------
-! Subroutine: write nsst data to an nstio formatted file.
+      KGDS_OUTPUT = -1
+      KGDS_OUTPUT(1) = IDRT       ! OCT 6 - TYPE OF GRID (GAUSSIAN)
+      KGDS_OUTPUT(2) = IMO        ! OCT 7-8 - # PTS ON LATITUDE CIRCLE
+      KGDS_OUTPUT(3) = JMO        ! OCT 9-10 - # PTS ON LONGITUDE CIRCLE
+      KGDS_OUTPUT(4) = 90000      ! OCT 11-13 - LAT OF ORIGIN
+      KGDS_OUTPUT(5) = 0          ! OCT 14-16 - LON OF ORIGIN
+      KGDS_OUTPUT(6) = 128        ! OCT 17 - RESOLUTION FLAG
+      KGDS_OUTPUT(7) = -90000     ! OCT 18-20 - LAT OF EXTREME POINT
+      KGDS_OUTPUT(8) = NINT(-360000./IMO)  ! OCT 21-23 - LON OF EXTREME POINT
+      KGDS_OUTPUT(9)  = NINT((360.0 / FLOAT(IMO))*1000.0)
+                                  ! OCT 24-25 - LONGITUDE DIRECTION INCR.
+      KGDS_OUTPUT(10) = JMO /2    ! OCT 26-27 - NUMBER OF CIRCLES POLE TO EQUATOR
+      KGDS_OUTPUT(12) = 255       ! OCT 29 - RESERVED
+      KGDS_OUTPUT(20) = 255       ! OCT 5  - NOT USED, SET TO 255
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  CALL SURFACE CHGRES DRIVER.
+      FCSTHOUR = SFCHEADI%FHOUR
+      CALL SURFACE_CHGRES_DRIVER(IMO,JMO,IJMO,SFCHEADO%LSOIL,
+     &                           SFCHEADO%LPL,
+     &                           KGDS_OUTPUT,SFCOUTPUT,IMI,JMI,
+     &                           orogo_uf2,use_ufo,
+     &                           SFCHEADI%LSOIL,
+     &                           SFCHEADI%IDATE(1),
+     &                           SFCHEADI%IDATE(2), SFCHEADI%IDATE(3),
+     &                           SFCHEADI%IDATE(4), FCSTHOUR,
+     &                           KGDS_INPUT, SFCINPUT, IALB,
+     &                           MERGE, IRET, geolon_in, geolat_in)
+      IF (IRET .NE. 0) THEN
+        PRINT '("  ERROR IN SURFACE CHGRES DRIVER ")'
+        CALL ERREXIT(34)
+      END IF
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+C  GO FROM REDUCED, 1-D ARRAYS TO 2-D FOR OUTPUT.
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%LSMASK,SLMSKO,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%OROG,SFCDATAO%OROG,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%ALNSF,SFCDATAO%ALNSF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%ALNWF,SFCDATAO%ALNWF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%ALVSF,SFCDATAO%ALVSF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%ALVWF,SFCDATAO%ALVWF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%GREENFRC,SFCDATAO%VFRAC,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      IF (ALLOCATED(SFCOUTPUT%GREENFRC_MAX)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%GREENFRC_MAX,SFCDATAO%SHDMAX,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      IF (ALLOCATED(SFCOUTPUT%GREENFRC_MIN)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%GREENFRC_MIN,SFCDATAO%SHDMIN,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%Z0,SFCDATAO%ZORL,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+!      call hhmaxmin(SFCOUTPUT%SUBSTRATE_TEMP,IMO,jmo,jmo,1,' TG3  ' )
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SUBSTRATE_TEMP,SFCDATAO%TG3,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      IF (ALLOCATED (SFCOUTPUT%MXSNOW_ALB)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%MXSNOW_ALB,SFCDATAO%SNOALB,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%CANOPY_MC,SFCDATAO%CANOPY,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      IF (ALLOCATED(SFCOUTPUT%SEA_ICE_FRACT)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SEA_ICE_FRACT,SFCDATAO%FICE,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      IF (ALLOCATED(SFCOUTPUT%SEA_ICE_DEPTH)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SEA_ICE_DEPTH,SFCDATAO%HICE,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%FACSF,SFCDATAO%FACSF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%FACWF,SFCDATAO%FACWF,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SKIN_TEMP,SFCDATAO%TSEA,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SNOW_LIQ_EQUIV,SFCDATAO%SHELEG,
+     &                 IMO,JMO,IJMO,SFCHEADO%LPL)
+      IF (ALLOCATED (SFCOUTPUT%SNOW_DEPTH)) THEN
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SNOW_DEPTH,SFCDATAO%SNWDPH,
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      END IF
+      DO K=1, SFCHEADO%LSOIL
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SOILM_TOT(:,K),
+     &                   SFCDATAO%SMC(:,:,K),
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+        IF (ALLOCATED(SFCOUTPUT%SOILM_LIQ)) THEN
+          CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SOILM_LIQ(:,K),  
+     &                     SFCDATAO%SLC(:,:,K),
+     &                     IMO,JMO,IJMO,SFCHEADO%LPL)
+        END IF
+        CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SOIL_TEMP(:,K), 
+     &                   SFCDATAO%STC(:,:,K),
+     &                   IMO,JMO,IJMO,SFCHEADO%LPL)
+      ENDDO
 !
       IF (ALLOCATED(SFCOUTPUT%SEA_ICE_TEMP)) THEN
         CALL UNINTERPRED(1,KMSK,SFCOUTPUT%SEA_ICE_TEMP,SFCDATAO%TISFC,
@@ -3454,296 +3179,15 @@ C  OPEN NSST FILES
       
       ENDIF  ! end of make_sfc 
 !
-! Author: George Gayno/EMC
-!
-! Abstract: Converts nsst data from the reduced to the full
-!           gaussian grid.  Then, writes the converted data
-!           to a nemsio file.
-!
-! Input files: none
-!
-! Output files:  
-!     "chgres.out.nsn"  - output nemsio file
-!
-! History:
-!   2016-06-05   Gayno - Initial version
-!
-! Condition codes:  all non-zero codes are fatal
-!     26 - bad nemsio initialization
-!     27 - bad open of nemsio output file
-!     28 - bad write of nemsio output file
-!-----------------------------------------------------------------------
-
-      use nemsio_module
-      use read_write_utils, only : uninterpred
-
-      implicit none
-
-      integer, intent(in)   :: imo, jmo, ijmo, year, mon, day, hour
-      integer, intent(in)   :: num_nsst_fields
-      integer, intent(in)   :: lpl((jmo+1)/2)
-
-      real,    intent(in)   :: fhour, mask_output(ijmo)
-      real,    intent(in)   :: nsst_output_thin(ijmo,num_nsst_fields)
-
-      integer(nemsio_intkind), parameter     :: nrec=19
-      integer(nemsio_intkind), parameter     :: nmetavari=1
-
-      type(nemsio_gfile)        :: gfile
-
-      character(len=7)          :: gdatatype
-      character(len=3)          :: modelname
-      character(len=8)          :: recname(nrec)
-      character(len=3)          :: reclevtyp(nrec)
-      character(len=6)          :: variname(nmetavari)
-
-      integer(nemsio_intkind)   :: dimx, dimy, dimz, iret, j
-      integer(nemsio_intkind)   :: idate(7), idrt, nsoil, ntrac
-      integer(nemsio_intkind)   :: nmeta, nfhour, reclev(nrec)
-      integer(nemsio_intkind)   :: varival(nmetavari)
-      integer                   :: fieldsize
-      integer, allocatable      :: kmsk(:,:)
-
-      logical(nemsio_logickind) :: extrameta
-
-      real(nemsio_realkind), allocatable :: dummy(:)
-      real, allocatable                  :: dummy2(:,:)
-
-      data recname   /"c0      ", "cd      ", "dconv   ",
-     &           "dtcool  ", "ifd     ", "land    ",
-     &           "qrain   ", "tref    ", "w0      ",
-     &           "wd      ", "xs      ", "xt      ",
-     &           "xtts    ", "xu      ", "xv      ",
-     &           "xz      ", "xzts    ", "zc      ",
-     &           "zm      " /
-
-      data reclevtyp /"sfc", "sfc", "sfc", "sfc", "sfc", "sfc",
-     &           "sfc", "sfc", "sfc", "sfc", "sfc", "sfc",
-     &           "sfc", "sfc", "sfc", "sfc", "sfc", "sfc",
-     &           "sfc" /
-
-      data reclev   /1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-     &               1, 1, 1, 1, 1, 1 /
-
-      print*,"- WRITE NSST DATA IN NEMSIO FORMAT"
-
-!------------------------------------------------------------------------
-! First meta data record.
-!------------------------------------------------------------------------
-
-      gdatatype="bin4_be"
-      modelname="GFS"
-      nmeta=5  ! number meta data records.
-
-!------------------------------------------------------------------------
-! Second meta data record.  The 3rd, 4th and 5th meta data records
-! are "recname", "reclevtyp" and "reclev".
-!------------------------------------------------------------------------
-
-      dimx      = imo
-      dimy      = jmo
-      dimz      = 1
-      idrt      = 4
-      idate(1)  = year
-      idate(2)  = mon
-      idate(3)  = day
-      idate(4)  = hour
-      idate(5)  = 0
-      idate(6)  = 0    ! seconds numerator
-      idate(7)  = 100  ! seconds denominator
-      nfhour    = nint(fhour)  ! assumes whole hours
-      nsoil     = 0
-      ntrac     = 0
-      extrameta = .true.
-
-!------------------------------------------------------------------------
-! User-defined meta data.
-!------------------------------------------------------------------------
-
-      variname(1) = "ivsnst"
-      varival(1)  = 200907
-
-!------------------------------------------------------------------------
-! Write out data to nemsio file.
-!------------------------------------------------------------------------
-
-      call nemsio_init(iret=iret)
-      if (iret /= 0) then
-        print*,"- FATAL ERROR: bad nemsio initialization."
-        print*,"- IRET IS ", iret
-        call errexit(26)
-      endif
-
-      call nemsio_open(gfile, "chgres.out.nsn", "write", iret=iret,
-     &  modelname=modelname,
-     &  dimx=dimx, dimy=dimy, dimz=dimz, nsoil=nsoil, ntrac=ntrac,
-     &  nrec=nrec, nmeta=nmeta, recname=recname, reclevtyp=reclevtyp,
-     &  reclev=reclev, nfhour=nfhour,
-     &  nmetavari=nmetavari, extrameta=extrameta, variname=variname,
-     &  varival=varival,
-     &  idrt=idrt, idate=idate, gdatatype=gdatatype)
-
-      if (iret /= 0) then
-        print*,"FATAL ERROR: bad open of file chgres.out.nsn"
-        print*,"- IRET IS ", iret
-        call errexit(27)
-      endif
-
-      allocate(kmsk(imo,jmo))
-      kmsk = 0
-
-      fieldsize = imo*jmo
-      allocate (dummy(fieldsize))   ! full gaussian grid 1-d
-      allocate (dummy2(imo,jmo))  ! full gaussian grid
-
-      j = 1  ! c0
-      call uninterpred(1,kmsk,nsst_output_thin(:,11),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 2  ! cd
-      call uninterpred(1,kmsk,nsst_output_thin(:,12),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 3  ! dconv
-      call uninterpred(1,kmsk,nsst_output_thin(:,15),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 4  ! dtcool
-      call uninterpred(1,kmsk,nsst_output_thin(:,9),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 5  ! ifd
-      call uninterpred(1,kmsk,nsst_output_thin(:,16),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 6  ! land
-      call uninterpred(1,kmsk,mask_output,dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 7  ! qrain
-      call uninterpred(1,kmsk,nsst_output_thin(:,18),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 8  ! tref
-      call uninterpred(1,kmsk,nsst_output_thin(:,17),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 9  ! w0
-      call uninterpred(1,kmsk,nsst_output_thin(:,13),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 10 ! wd
-      call uninterpred(1,kmsk,nsst_output_thin(:,14),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 11 ! xs
-      call uninterpred(1,kmsk,nsst_output_thin(:,2),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 12 ! xt
-      call uninterpred(1,kmsk,nsst_output_thin(:,1),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 13 ! xtts
-      call uninterpred(1,kmsk,nsst_output_thin(:,7),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 14 ! xu
-      call uninterpred(1,kmsk,nsst_output_thin(:,3),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 15 ! xv
-      call uninterpred(1,kmsk,nsst_output_thin(:,4),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 16 ! xz
-      call uninterpred(1,kmsk,nsst_output_thin(:,5),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 17 ! xzts
-      call uninterpred(1,kmsk,nsst_output_thin(:,8),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 18 ! zc
-      call uninterpred(1,kmsk,nsst_output_thin(:,10),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      j = 19 ! zm
-      call uninterpred(1,kmsk,nsst_output_thin(:,6),dummy2,
-     &                 imo,jmo,ijmo,lpl)
-      dummy = reshape(dummy2, (/fieldsize/))
-      call nemsio_writerec(gfile,j,dummy,iret=iret)
-      if (iret /= 0) goto 900
-
-      deallocate (dummy, dummy2, kmsk)
-
-      call nemsio_close(gfile,iret=iret)
-      call nemsio_finalize()
-
-      return
-
- 900  continue
-
-      print*,"- FATAL ERROR: bad write of chgres.out.nsn record ",j
-      print*,"- IRET IS ", iret
-      call errexit(28)
-
-      END SUBROUTINE WRITE_NSST_TO_NEMSIO
-!-----------------------------------------------------------------------
+      call gfsio_finalize()
+C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      CALL W3TAGE('GLOBAL_CHGRES')
+       do k=1,30
+       call instrument(-k,kall,ttot,tmin,tmax)
+       print '(2i6,3f12.3)',k,kall,ttot,tmin,tmax
+       enddo
+      END
+C-----------------------------------------------------------------------
       SUBROUTINE NEWSIG(NSIL,IDVC,LEVS,NVCOORD,VCOORD,IRET)
 C$$$  SUBPROGRAM DOCUMENTATION BLOCK
 C
