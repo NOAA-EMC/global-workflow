@@ -201,7 +201,7 @@ contains
     call interpolation_initialize_gridvar(invar)
     call interpolation_initialize_gridvar(outvar)
     meta_nemsio3d%modelname  = 'GFS'
-    meta_nemsio3d%version    = 198410
+    meta_nemsio3d%version    = 200509
     meta_nemsio3d%nrec       = 2 + nczdim*n3dvar
     meta_nemsio3d%nmeta      = 5
     meta_nemsio3d%nmetavari  = 2
