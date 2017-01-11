@@ -155,6 +155,9 @@ btable_t=$fixgsi/nqc_b_t.global_nqcf
 btable_q=$fixgsi/nqc_b_q.global_nqcf
 btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
+# add vertical profile of localization and beta_s,beta_e weights for hybrid ensemble runs
+hybens_info=$fixgsi/hwrf_hybens_d2_info
+
 
 # Only need this file for single obs test
 bufrtable=$fixgsi/prepobs_prep.bufrtable
@@ -200,6 +203,8 @@ $ncp $btable_ps           ./btable_ps
 $ncp $btable_t           ./btable_t
 $ncp $btable_q           ./btable_q
 $ncp $btable_uv           ./btable_uv
+
+$ncp $hybens_info ./hybens_info
 
 $ncp $bufrtable ./prepobs_prep.bufrtable
 $ncp $bftab_sst ./bftab_sstphr
