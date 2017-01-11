@@ -10,7 +10,7 @@ set -xa
 ############################################
 # Override some ecFlow environment variables
 ############################################
-export NWROOTp1=${NWROOTp1:-/nwprod}
+export NWROOT=${NWROOT:-/gpfs/hps/nco/ops/nwprod}
 
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
 
@@ -53,7 +53,7 @@ setpdy.sh
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
+#export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
 export RERUN=${RERUN:-NO}
 
@@ -67,7 +67,7 @@ export RUN=${RUN:-gfs}
 # Specify HOME Directory
 ############################################
 #export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
-export gfs_ver=${gfs_ver:-v13.0.0}
+export gfs_ver=${gfs_ver:-v14.1.0}
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix

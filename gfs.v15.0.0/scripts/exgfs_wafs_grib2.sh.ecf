@@ -37,10 +37,11 @@ do
   master1=$COMIN/${RUN}.${cycle}.master.grbf${fcsthrs}
   master2=$COMIN/${RUN}.${cycle}.master.grb2f${fcsthrs}
   master2i=$COMIN/${RUN}.${cycle}.master.grb2if${fcsthrs}
+
   icnt=1
   while [ $icnt -lt 1000 ]
   do
-    if [ -s $master2i ]
+    if [ -s $master2 ]
     then
       sleep 5
       break
@@ -83,7 +84,7 @@ do
      # ===================  process master file grib1  ===================
      # 1) new WAFS fields
      cpreq $FIXgfs/awc_wafavn.grb1.cfg waf.cfg
-     cpfs $master1  masterfilef${fcsthrs}
+     cp $master1  masterfilef${fcsthrs}
 
      startmsg
      $EXECgfs/$pgm -g 1 -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
@@ -113,18 +114,37 @@ do
      # ===================  process master file grib2  ===================
      # 1) new WAFS fields
      cpreq $FIXgfs/awc_wafavn.grb2.cfg waf.cfg
-     cpfs $master2  masterfilef${fcsthrs}
+
+     # For high resolution maste file, run time of awc_wafavn is 20 seconds for 1440 x 721, 
+     # 3 minutes for new 3072 x 1536 master file for each forecast.
+     # To reduce the time, will grab the required files from new master file,
+     # then convert to 1440 x 721.
+     npts=`wgrib2  -npts $master2 | head -n1 | cut -d'=' -f2`
+     if [ $npts -gt 1038240 ] ; then
+       # required fields searching criteria, according to type(pdt_t) parameters from sorc/awc_wafavn.fd/waf_grib2.f90 
+       criteria=":PRES:surface:|:PRES:convective|:CPRAT:|:HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
+       $WGRIB2 $master2 | egrep "$criteria"|  wgrib2 -i $master2 -grib masterfilef${fcsthrs}.new
+       $WGRIB2 masterfilef${fcsthrs}.new -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
+       rm masterfilef${fcsthrs}.new
+     else
+       cp $master2  masterfilef${fcsthrs}
+     fi
 
      startmsg
-     $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
+     $APRUN $EXECgfs/$pgm -c waf.cfg -i masterfilef${fcsthrs} -o tmpfile_icaof${fcsthrs} icng tcld cat cb  >> $pgmout  2> errfile
      export err=$?; err_chk
 
-     $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same \
-                      -new_grid_winds earth -new_grid_interpolation bilinear \
+# To avoid interpolation of missing value (-0.1 or -1.0, etc), use neighbor interpolation instead of bilinear interpolation
+     $WGRIB2 tmpfile_icaof${fcsthrs} -set_grib_type same -new_grid_winds earth \
+                      -new_grid_interpolation bilinear -if ":(CBHE|CTP):" -new_grid_interpolation neighbor -fi \
                       -new_grid latlon 0:288:1.25 90:145:-1.25 tmpfile_icao_grb45f${fcsthrs}
+# after grid conversion by wgrib2, even with neighbor interpolation, values may still be mislead by noises, epescially 
+# the ref_value is not zero according to DST template 5.XX. Solution: rewrite and round those special meaning values
+     $APRUN $EXECgfs/setmissing tmpfile_icao_grb45f${fcsthrs} tmpfile_icao_grb45f${fcsthrs}.setmissing
+     mv tmpfile_icao_grb45f${fcsthrs}.setmissing tmpfile_icao_grb45f${fcsthrs}
 
      # 2) traditional WAFS fields
-     $WGRIB2 masterfilef${fcsthrs} | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i masterfilef${fcsthrs} -grib tmpfile_gfsf${fcsthrs}
+     $WGRIB2 $master2 | grep -F -f $PARMgfs/wafs_gfsmaster.grb2.list | $WGRIB2 -i $master2 -grib tmpfile_gfsf${fcsthrs}
 # U V will have the same grid messange number by using -ncep_uv.
 #     $WGRIB2 tmpfile_gfsf${fcsthrs} \
 #                      -new_grid_winds earth -set_grib_type jpeg \

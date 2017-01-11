@@ -1,6 +1,6 @@
 SHELL=/bin/sh
 #
-# This makefile was produced by /usr/bin/fmgen at 02:40:59 PM on 07/20/94
+# This makefile was produced by /usr/bin/fmgen at 11:21:07 AM on 10/28/94
 # If it is invoked by the command line
 #	make -f makefile
 # it will compile the fortran modules indicated by SRCS into the object
@@ -28,9 +28,9 @@ SHELL=/bin/sh
 # parameter.  The new modules are not limited to fortran, but may be C, YACC,
 # LEX, or CAL.  An explicit rule will need to be added for PASCAL modules.
 #
-SRCS=	makewafs.f
+SRCS=	tocsbufr.f
 
-OBJS=	makewafs.o
+OBJS=	tocsbufr.o
 
 # Tunable parameters
 #
@@ -40,20 +40,22 @@ OBJS=	makewafs.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-#FC =           ifort
-LDFLAGS =	
-#LIBS =    -L/nwprod/lib -lw3nco_8 -lw3emc_8 -lbacio_8
-LIBS = ${W3NCO_LIB8}  ${W3EMC_LIB8} ${BACIO_LIB8}
-CMD =		makewafs
+FC =		$(myFC)
+LDFLAGS =	$(myFCFLAGS)
+LIBS     = $(W3EMC_LIB4) \
+           $(W3NCO_LIB4) \
+           $(BUFR_LIB4) \
+           $(BACIO_LIB4) \
+           $(SP_LIB4) \
+           $(SIGIO_LIB4)
+CMD =		../../exec/tocsbufr
 PROFLIB =	-lprof
 
 # To perform the default compilation, use the first line
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
-FFLAGS = ${FFLAGSmkwfs}
-#FFLAGS =        -O3 -g -r8 -i8
-# FFLAGS =        -O3 -g -r8 -i8 -convert big_endian -assume noold_ldout_format
+FFLAGS =	$(FFLAGSM)
 #FFLAGS =	 -F
 #FFLAGS =	 -Wf"-ez"
 
@@ -64,7 +66,6 @@ all:		$(CMD)
 
 $(CMD):		$(OBJS)
 	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
-	rm -f $(OBJS)
 
 # Make the profiled version of the command and call it a.out.prof
 #
@@ -79,6 +80,3 @@ clobber:	clean
 
 void:	clobber
 	-rm -f $(SRCS) makefile
-
-install:
-	mv $(CMD) ../../exec/.

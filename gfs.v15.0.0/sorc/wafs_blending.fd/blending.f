@@ -65,6 +65,8 @@ C
       real, allocatable :: usdata(:,:),ukdata(:,:)
      +      ,avgdata2d(:,:)
       real avgdata(41760,maxfield)
+      parameter(EPSILON=0.000001)
+      real nocloud
       call start()
       unpack=.true.
       expand=.true.
@@ -246,8 +248,10 @@ C  GET ARGUMENTS
 	    end do
 	   end do  
 ! specify UK missing data values for different fields
+! For CTP, -0.002 for nocloud, -.004 for missing value
            if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==21)then  ! CTP
 	    ukmissing=-0.004
+	    nocloud=-0.002
 	   else if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==22)then  ! CAT
 	    ukmissing=-0.5 
 	   else if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==20)then  ! ICING   
@@ -264,18 +268,29 @@ C  GET ARGUMENTS
 	    do i=1,im
 	     jj=jm-j+1
 	     if(gfld%ipdtlen>=16)then ! non Cb fields
-	      if(usdata(i,j)<=ukmissing .and. ukdata(i,jj)>ukmissing)then !missing US data
+	      if(abs(usdata(i,j)-ukmissing)<=EPSILON .and. 
+     &           abs(ukdata(i,jj)-ukmissing)>EPSILON)then !missing US data
 	        avgdata2d(i,j)=ukdata(i,jj)
-	      else if(ukdata(i,jj)<=ukmissing .and. usdata(i,j)>ukmissing)
-     &  	 then !missing UK data
+	      else if(abs(ukdata(i,jj)-ukmissing)<=EPSILON .and.
+     &                abs(usdata(i,j)-ukmissing)>EPSILON) then !missing UK data
 	        avgdata2d(i,j)=usdata(i,j)
-	      else if(usdata(i,j)<=ukmissing.and.ukdata(i,jj)<=ukmissing)
-     &  	 then !missing both data
+                if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==21 .and.
+     &             abs(usdata(i,j)-nocloud)<=EPSILON)then      ! CTP
+                   avgdata2d(i,j)=ukmissing
+                endif
+	      else if(abs(usdata(i,j)-ukmissing)<=EPSILON .and. 
+     &                abs(ukdata(i,jj)-ukmissing)<=EPSILON) then !missing both data
 	        avgdata2d(i,j)=ukmissing
 !		avgdata2d(i,j)=0.
-	      else ! both indicates values	       
+	      else ! both indicates values
 	        if(jpdt(16)==0)then ! perform averaging for mean products
-	         avgdata2d(i,j)=(usdata(i,j)+ukdata(i,jj))*0.5
+                   ! But wait, CTP has nocloud value
+                   if(gfld%ipdtmpl(1)==19 .and. gfld%ipdtmpl(2)==21
+     &                .and. abs(usdata(i,j)-nocloud)<=EPSILON) then
+                      avgdata2d(i,j)=ukdata(i,jj)
+                   else
+                      avgdata2d(i,j)=(usdata(i,j)+ukdata(i,jj))*0.5
+                   endif
                  if(avgdata2d(i,j)<0.)print*,'negative blended data ',i,j,
      +           usdata(i,j),ukdata(i,jj),avgdata2d(i,j)
 	        else if(jpdt(16)==2)then ! take max for max products
@@ -321,7 +336,7 @@ C  GET ARGUMENTS
 	   do j=1,jm
 	    do i=1,im
 	     jj=(j-1)*im+i
-	     if(j==1 .or. j==jm)avgdata2d(i,j)=ukmissing
+!	     if(j==1 .or. j==jm)avgdata2d(i,j)=ukmissing
 	     avgdata(jj,icount)=avgdata2d(i,j)
 	    end do
 	   end do  
