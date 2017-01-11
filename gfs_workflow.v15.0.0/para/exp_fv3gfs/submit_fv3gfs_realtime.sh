@@ -63,7 +63,7 @@ yymmdd=`echo $cdate |cut -c 1-8`
 yymm=`echo $cdate |cut -c 1-6`
 yy=`echo $cdate |cut -c 1-4`
 
-d1=gd1
+d1=td1
 #chost=`echo $(hostname) |cut -c 1-1`
 #if [ $chost = l ]; then d1=td1; fi
 #if [ $chost = s ]; then d1=gd1; fi
@@ -73,9 +73,9 @@ d1=gd1
 #-- also copy over pgbanl for verification
 cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $ROTDIR/.
 #cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbf00.gfs.$cdate $ROTDIR/.
-cp /gpfs/gp2/nco/ops/com/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2
-cp /gpfs/gp2/nco/ops/com/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $tmp_dir/siganl.gfs.$cdate
-cp /gpfs/gp2/nco/ops/com/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $tmp_dir/sfcanl.gfs.$cdate
+#cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2
+cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $tmp_dir/siganl.gfs.$cdate
+cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $tmp_dir/sfcanl.gfs.$cdate
 
 #---------------------
 if [ $? -ne 0 ]; then
@@ -86,8 +86,8 @@ cat >read_hpss.sh <<EOF
  mv gfs.t${cyc}z.sanl siganl.gfs.$cdate
  mv gfs.t${cyc}z.sfcanl sfcanl.gfs.$cdate
 
- $HPSSTAR get /NCEPPROD/hpssprod/runhistory/rh$yy/$yymm/$yymmdd/com2_gfs_prod_gfs.$cdate.pgrb2_0p25.tar ./gfs.t${cyc}z.pgrb2.0p25.f000
- mv gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2    ;#for running hurricane tracker
+ #$HPSSTAR get /NCEPPROD/hpssprod/runhistory/rh$yy/$yymm/$yymmdd/com2_gfs_prod_gfs.$cdate.pgrb2_0p25.tar ./gfs.t${cyc}z.pgrb2.0p25.f000
+ #mv gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2    ;#for running hurricane tracker
 EOF
 chmod u+x read_hpss.sh
 $SUB -a GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh    

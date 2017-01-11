@@ -975,6 +975,7 @@ nmmb_clds1: IF (MODELNAME=='NMM' .AND. GRIDTYPE=='B') THEN
            ID(18)  = IFHR-IFINCR
            IF(IFMIN .GE. 1)ID(18)=IFHR*60+IFMIN-IFINCR
         ENDIF
+        IF (ID(18).LT.0) ID(18) = 0
        if(grib=="grib1" )then
         CALL GRIBIT(IGET(300),LVLS(1,IGET(300)),GRID1,IM,JM)
         elseif(grib=='grib2') then
@@ -1055,6 +1056,7 @@ nmmb_clds1: IF (MODELNAME=='NMM' .AND. GRIDTYPE=='B') THEN
            ID(18)  = IFHR-IFINCR
            IF(IFMIN .GE. 1)ID(18)=IFHR*60+IFMIN-IFINCR
         ENDIF
+        IF (ID(18).LT.0) ID(18) = 0
         if(grib=="grib1" )then
          CALL GRIBIT(IGET(301),LVLS(1,IGET(301)),GRID1,IM,JM)
         elseif(grib=='grib2') then
@@ -1136,6 +1138,7 @@ nmmb_clds1: IF (MODELNAME=='NMM' .AND. GRIDTYPE=='B') THEN
            ID(18)  = IFHR-IFINCR
            IF(IFMIN .GE. 1)ID(18)=IFHR*60+IFMIN-IFINCR
         ENDIF
+        IF (ID(18).LT.0) ID(18) = 0
         if(grib=="grib1" )then
           CALL GRIBIT(IGET(302),LVLS(1,IGET(302)),GRID1,IM,JM)
         elseif(grib=='grib2') then

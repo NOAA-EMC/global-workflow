@@ -33,9 +33,9 @@ export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
 export grid_loc=$BASE_GSM/fix/$CASE/${CASE}_mosaic.nc
 export weight_file=$BASE_GSM/fix/$CASE/remap_weights_${CASE}_${GG}.nc
 
-export NODES=3
-export pe_node=24
-export thread_remap=2
+export NODES=${NODES:-3}
+export pe_node=${pe_node:-24}
+export thread_remap=${thread_remap:-2}
 export npe_node_remap=$((pe_node/thread_remap))
 export npe_remap=$((NODES*npe_node_remap))
 export APRUN_LOC="aprun -n $npe_remap -N $npe_node_remap -j 1 -d $thread_remap -cc depth"

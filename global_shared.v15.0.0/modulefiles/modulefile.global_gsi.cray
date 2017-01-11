@@ -53,6 +53,7 @@ module load sp-intel/2.0.2
 module load w3nco-intel/2.0.6
 module load w3emc-intel/2.2.0
 module load crtm-intel/2.2.4
+module load craype-hugepages4M
 
 module use /usrx/local/nceplibs/modulefiles
 module load bacio-intel/2.0.2

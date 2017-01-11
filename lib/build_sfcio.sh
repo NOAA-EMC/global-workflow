@@ -2,7 +2,7 @@
 set -x
 
 . /opt/modules/default/init/sh
-. $PWD/../sorc/modulefiles/fre-nctools.cray
+. $PWD/../global_shared.v15.0.0/modulefiles/fv3gfs/fre-nctools.cray
 
 set -x
 

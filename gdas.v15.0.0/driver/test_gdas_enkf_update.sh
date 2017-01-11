@@ -5,7 +5,7 @@
 #BSUB -o gdas_enkf_update_obs.o%J
 #BSUB -e gdas_enkf_update_obs.o%J
 #BSUB -J gdas_enkf_update_obs
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -18,7 +18,7 @@ export ntasks=240
 export ptile=6
 export threads=4
 
-export CDATE=2016112106
+export CDATE=2016122206
 
 
 #############################################################

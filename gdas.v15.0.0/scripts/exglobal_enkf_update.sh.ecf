@@ -450,6 +450,9 @@ if [[ $USE_CFP = YES ]]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=`cat $DATA/mp_untar.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
+      if [ $npe_node_cfp -gt $ncmd ]; then
+         npe_node_cfp=$ncmd
+      fi
       export APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
    fi

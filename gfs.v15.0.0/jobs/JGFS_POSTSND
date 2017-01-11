@@ -9,33 +9,44 @@ set -xa
 #
 export envir=${envir:-prod}
 
-#####################################
-## The following is set in ecflow script
-#export MP_EUIDEVELOP=min
-#export KMP_STACKSIZE=2048m
-#export MPICH_ALLTOALL_THROTTLE=0
-#export MP_SINGLE_THREAD=yes
-#export MP_EAGER_LIMIT=65536
-#export MP_USE_BULK_XFER=no
-#export MP_COLLECTIVE_OFFLOAD=no
-#export MP_SHARED_MEMORY=yes
-#export MP_MPILIB=mpich2
-#export MP_LABELIO=yes
-#####################################
+############################
+export MP_EUIDEVELOP=min
+export KMP_STACKSIZE=2048m
+export MPICH_ALLTOALL_THROTTLE=0
+export MP_SINGLE_THREAD=yes
+export MP_EAGER_LIMIT=65536
+export MP_USE_BULK_XFER=no
+export MP_COLLECTIVE_OFFLOAD=no
+export MP_SHARED_MEMORY=yes
+export MP_MPILIB=mpich2
+export MP_LABELIO=yes
+####################################
 # Specify version numbers
 ####################################
-export gfs_bufrsnd_ver=${gfs_bufrsnd_ver:-v1.0.0}
+export bufrsnd_ver=${bufrsnd_ver:-v1.0.0}
 export gfs_ver=${gfs_ver:-v13.0.0}
+export global_shared_ver=${global_shared_ver:-v13.0.0}
 export util_ver=${util_ver:-v1.0.0}
-export obsproc_shared_bufr_cword_ver=${obsproc_shared_bufr_cword_ver:-v1.0.0}
 
 # obtain unique process id (pid) and make temp directories
 #
-export pid=$$
-export DATA_IN=${DATA_IN:-/tmpnwprd1}
-export DATA=$DATA_IN/${job}.${pid}
+#export pid=$$
+#export DATA_IN=${DATA_IN:-/tmpnwprd1}
+#export DATA=$DATA_IN/${job}.${pid}
+export DATA=${DATA:-$DATAROOT/${jobid}}
 mkdir $DATA
 cd $DATA 
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+#if [ $envir != prod ]; then
+#  export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
+#  export DBNROOT=/nwprod/spa_util/para_dbn_ondev
+#  export pcom=${pcom:-/pcom/${envir}/gfs}
+#fi
 
 ####################################
 # Determine Job Output Name on System
@@ -57,53 +68,52 @@ export model=gfs
 ###################################
 # Set up the UTILITIES
 ###################################
-export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
-export EXECutil=${EXECutil:-$HOMEutil/exec}
-export FIXutil=${FIXutil:-$HOMEutil/fix}
-export PARMutil=${PARMutil:-$HOMEutil/parm}
-export USHutil=${USHutil:-$HOMEutil/ush}
+#export HOMEutil=${HOMEutil:-${NWROOT}/util}
+#export EXECutil=${EXECutil:-$HOMEutil/exec}
+#export FIXutil=${FIXutil:-$HOMEutil/fix}
+#export PARMutil=${PARMutil:-$HOMEutil/parm}
+#export USHutil=${USHutil:-$HOMEutil/ush}
 
-export utilities=${utilities:-$HOMEutil/ush}
-export utilscript=${utilscript:-$HOMEutil/ush}
-export utilexec=${utilexec:-$HOMEutil/exec}
+#export utilities=${utilities:-$HOMEutil/ush}
+#export utilscript=${utilscript:-$HOMEutil/ush}
+#export utilexec=${utilexec:-$HOMEutil/exec}
 
-export HOMEbufrsnd=${HOMEbufrsnd:-${NWROOT}/gfs.${gfs_ver}}
+. $MODULESHOME/init/sh
+module load prod_envir
+module load prod_util/1.0.5
+module load grib_util/1.0.3
+module load util_shared/1.0.3
+module load gempak/7.3.0
+
+export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
+#export HOMEbufrsnd=${HOMEbufrsnd:-/nw${envir}/bufrsnd.$bufrsnd_ver}
 export EXECbufrsnd=${EXECbufrsnd:-$HOMEbufrsnd/exec}
 export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix}
 export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm}
 export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
 export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.${global_shared_ver}}
+export FIXgsm=${HOMEgsm:-$HOMEgsm/fix/fix_am}
 
-export HOMEglobal=${HOMEglobal:-$NWROOT/global_shared.${gfs_ver}}
-export FIXglobal=${FIXglobal:-$HOMEglobal/fix}
-export USHglobal=${USHglobal:-$HOMEglobal/ush}
-
-export HOMEobsproc_shared_bufr_cword=${HOMEobsproc_shared_bufr_cword:-$NWROOTp1/obsproc_shared/bufr_cword.${obsproc_shared_bufr_cword_ver}}
-export EXECobsproc_shared_bufr_cword=${EXECobsproc_shared_bufr_cword:-$HOMEobsproc_shared_bufr_cword/exec}
-export cwordsh=${cwordsh:-${HOMEobsproc_shared_bufr_cword}/ush/bufr_cword.sh}
-
+# Run setup to initialize working directory and utility scripts
+#$utilscript/setup.sh
 # Run setpdy and initialize PDY variables
 setpdy.sh
-. PDY
+. ./PDY
 
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMROOT}/${NET}/${envir}/${RUN}.${PDY}
-export COMOUT=${COMROOT}/${NET}/${envir}/${RUN}.${PDY}
-export pcom=${pcom:-${PCOMROOT}/gfs}
-mkdir -p $COMOUT $pcom
-
-#  Set output directory:
-export COMAWP=${COMAWP:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+mkdir -p $COMOUT
 
 env
 
 ########################################################
 # Execute the script.
+export APRUN="aprun -n 1 -N 1 -j 1 -d 1"
 $SCRbufrsnd/exgfs_postsnd.sh.ecf
 ########################################################
 

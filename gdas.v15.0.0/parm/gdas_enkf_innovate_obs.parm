@@ -221,6 +221,7 @@ fi
 export SIGANL=/dev/null
 export ABIAS=/dev/null
 export ABIASPC=/dev/null
+export EOMGGRP=${COMOUT}/${PREINPgdas}omgstat.grp${ENSGRP}
 
 
 #
