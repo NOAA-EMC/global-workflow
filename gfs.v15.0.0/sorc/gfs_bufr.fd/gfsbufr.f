@@ -8,6 +8,9 @@ C ABSTRACT: Creates BUFR meteogram files for the AVN and MRF.
 C
 C PROGRAM HISTORY LOG:
 C   99-07-21  Hualu Pan
+C   16-09-27  HUIYA CHUANG  MODIFY TO READ GFS NEMS OUTPUT ON GRID SPACE
+C   16-10-15  HUIYA CHUANG: CONSOLIDATE TO READ FLUX FIELDS IN THIS
+C             PACKAGE TOO AND THIS SPEEDS UP BFS BUFR BY 3X
 C
 C USAGE:
 C   INPUT FILES:
@@ -34,16 +37,18 @@ C   LANGUAGE: INDICATE EXTENSIONS, COMPILER OPTIONS
 C   MACHINE:  IBM SP
 C
 C$$$
+      use nemsio_module
       use sigio_module
       implicit none
       include 'mpif.h'
       integer,parameter:: nsta=3000
       integer(sigio_intkind),parameter:: lusig=11
       integer(sigio_intkind):: irets
-      type(sigio_head):: sighead
+!      type(sigio_head):: sighead
+      type(nemsio_gfile) :: gfile
       integer ncfsig, nsig
       integer istat(nsta), idate(4), jdate
-      integer :: iromb, maxwv, levs,nstart,nend,nint,nsfc,levsi
+      integer :: iromb, maxwv, levs,nstart,nend,nint,nsfc,levsi,im,jm
       integer :: kwskip,npoint,np,ist,is,iret,lss,nss,nf,nsk,nfile
       integer :: ielev
       real :: alat,alon,rla,rlo
@@ -80,6 +85,7 @@ C
       if(mrank.eq.0) then
         CALL W3TAGB('METEOMRF',1999,0202,0087,'NP23')
       endif
+      open(5,file='gfsparm')
       read(5,nammet)
       write(6,nammet)
       kwskip = (maxwv + 1) * ((iromb+1) * maxwv + 2)
@@ -138,17 +144,17 @@ c     do nf = nss, nend, nint
       ntot = (nend - nss) / nint + 1
       do n0 = 1, ntot, msize
         nf = (n0 + mrank - 1) * nint + nss
-c        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
-c     &  nss,mrank,msize
+        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
+     &  nss,mrank,msize
         if(n0.eq.1.and.mrank.gt.0) then
 c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
           do nsk = 1, min(mrank,ntot-1)
-            read(12) dummy
+!            read(12) dummy
           enddo
         endif
         if(n0.gt.1.and.msize.gt.1.and.nf.le.nend) then
           do nsk = 2, msize
-            read(12) dummy
+!            read(12) dummy
           enddo
         endif
         nfile = 21 + (nf / nint)
@@ -168,27 +174,30 @@ c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
             ncfsig = 7
           endif
            print *, 'Opening file : ',fnsig
-          call sigio_sropen(nsig,fnsig(1:ncfsig),irets)
-          if(irets.ne.0) then
-           call errmsg('sighdr: error opening file '//fnsig(1:ncfsig))
-           call errexit(2)
+
+          call nemsio_init(iret=irets)
+          print *,'nemsio_init, iret=',irets
+          call nemsio_open(gfile,trim(fnsig),'read',iret=irets)
+          if ( irets /= 0 ) then
+            print*,"fail to open nems atmos file";stop
           endif
-          call sigio_srhead(nsig,sighead,irets)
-          if(irets.ne.0) then
-           call errmsg('sighdr: error reading header from file
-     &      '//fnsig(1:ncfsig))
-           call errexit(2)
+
+          call nemsio_getfilehead(gfile,iret=irets            
+     &           ,dimx=im,dimy=jm,dimz=levsi)
+          if( irets /= 0 ) then
+           print*,'error finding model dimensions '; stop
           endif
-          levsi = sighead%levs
-          call sigio_sclose(nsig,irets)
-          if(irets.ne.0) then
-           call errmsg('sighdr: error closing header from file
-     &      '//fnsig(1:ncfsig))
-           call errexit(2)
-          endif
+          print*,'im,jm,lm= ',im,jm,levsi          
+!          call sigio_sclose(nsig,irets)
+!          if(irets.ne.0) then
+!           call errmsg('sighdr: error closing header from file
+!     &      '//fnsig(1:ncfsig))
+!           call errexit(2)
+!          endif
+          call nemsio_close(gfile,iret=irets)
           call meteorg(npoint,rlat,rlon,istat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &             iromb,maxwv,kwskip,levs,levsi,nsfc,mrank)
+     &             iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc)
         endif
       enddo
       call mpi_barrier(mpi_comm_world,ierr)
