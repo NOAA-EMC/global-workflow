@@ -1,0 +1,80 @@
+RELEASE NOTES:  gfs_da.v14.1.0
+ v14.1.0 - released Nov 22, 2016
+
+
+SVN HISTORY  (see EMC GSI Trac ticket #603, EMC GFS Trac ticket #239)
+ * r84764 - initial Q3FY17 NEMS GFS DA release
+
+
+CODE CHANGES
+ * No code change 
+
+
+JOB CHANGES
+ * JGFS_ANALYSIS
+   * update environment variables to run on WCOSS Cray
+   * add NSST option
+   * define variables for new observation datasets
+   * update to use new GFS filename convention
+   * update to read/write nemsio files
+
+
+SCRIPT CHANGES
+ * No script change.   See global_shared.v14.1.0 da release notes for analysis script changes
+
+
+RESOURCE INFORMATION
+ * Current operational GFS runs on WCOSS phase2 nodes.   Q3FY17 NEMS GFS package should be implemented on WCOSS Cray.
+ * JGFS_ANALYSIS
+   * job configuration
+     * current operations:  240 nodes, 480 tasks, ptile=2, 12 threads
+     * propose operations:  240 nodes, 480 tasks, ptile=2, 12 threads
+   * run time
+      * current operations:  20.3 - 20.9 minutes
+      * propose operations:  26 - 28 minutes
+        See ../driver/test_gfs_analysis.sh for jobs submission
+ * Disk space required per day for gfs da files
+   * /com/gfs/prod/gfs.$PDY (only JGFS_ANALYSIS output)
+     * current operations:  16.7 Gb
+     * propose operations:  38.6 Gb (additional 21.9 Gb)
+   * frequency of run
+     * 6 hourly cycle (00, 06, 12, 18Z)
+ * Specify all versions of libs, compilers, shared code being used
+   * gfs.v14.1.0 only contains jobs/JGFS_ANALYSIS and parm/gfs_analysis.parm.  No libraries or compilers are required to install gfs_da.v14.1.0
+ * Data retention for files in $COMROOThps and $GESROOThps
+   * same as current operations
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+ * Which production jobs should be tested as part of this implementation?
+   * gfs.v14.1.0 should be tested as part of the Q3FY17 NEMS GFS package
+ * Does this change require a 30-day evaluation?
+   * YES
+ * Suggested evaluators
+   * same as rest of Q3FY17 NEMS GFS package
+
+
+DISSEMINATION INFORMATION
+ * Where should this output be sent?
+   * same as current operational GFS/GDAS GSI
+ * Who are the users?
+   * same as current operational GFS/GDAS GSI
+ * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS GSI
+
+
+HPSS ARCHIVE
+ * Retention length?
+   * same as current operational GFS/GDAS GSI
+ * List which output files should be archived
+   * same as current operational GFS/GDAS GSI
+
+
+IMPLEMENTATION INSTRUCTIONS
+ * To implement gfs_da.v14.1.0, please do the following:
+   * cd  $NWROOThps
+   * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gfs.v14.1.0
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+ * No change from gfs.v13.0.4
