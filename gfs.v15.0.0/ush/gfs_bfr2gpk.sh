@@ -13,7 +13,7 @@ set -x
 
 # Set GEMPAK paths.
 
-. /nwprod/gempak/.gempak
+#. /nwprod/gempak/.gempak
 
 #  Go to a working directory.
 
@@ -27,6 +27,7 @@ export BPATH
 
 #  Set output directory:
 
+COMAWP=${COMAWP:-$COMROOT/nawips/${envir}/${RUN}.${PDY}}
 OUTDIR=$COMAWP
 mkdir -p $OUTDIR
 
@@ -36,7 +37,7 @@ outfilbase=gfs_${PDY}${cyc}
 
 filelist=`/bin/ls -1 $BPATH | grep bufr`
 for file in $filelist; do
-$cwordsh block $BPATH/$file $BPATH/$file.block
+cwordsh block $BPATH/$file $BPATH/$file.block
 mv $BPATH/$file.block $BPATH/$file
     namsnd << EOF > /dev/null
 SNBUFR   = \$BPATH/$file
