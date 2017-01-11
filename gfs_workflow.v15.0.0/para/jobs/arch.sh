@@ -489,6 +489,13 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES -a ${AWIPS20KM:-NO}
     $SUB -e 'CDATE=$CDATE CDUMP=$CDUMP CSTEP=$CSTEP CONFIG=$CONFIG' -q $CUE2RUN -a $ACCOUNT -g $GROUP -p 25/25/N -r $mem/1/8 -t 06:00 -j $jn -o $out $AWIPS20KMSH
   fi
 
+  if [ $AWIPS20KM = YES ];then
+    export mem=2048
+    export jn=${PSLOT}${CDATE}${CDUMP}awips20km
+    export out=$COMROT/${jn}.dayfile
+    $SUB -e 'CDATE=$CDATE CDUMP=$CDUMP CSTEP=$CSTEP CONFIG=$CONFIG' -q $CUE2RUN -a $ACCOUNT -g $GROUP -p 25/25/N -r $mem/1/8 -t 06:00 -j $jn -o $out $AWIPS20KMSH
+  fi
+
   if [ $GENGEMPAK_META = YES ];then
     export mem=2048
     export jn=${PSLOT}${CDATE}${CDUMP}gempak_meta
@@ -508,9 +515,11 @@ fi
 # If requested, make GFS station profiles in bufr format
 if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
    PDY=`echo $CDATE | cut -c1-8`
-   export COMIN=$PRODNAMES_DIR/com/gfs/para/$CDUMP.$PDY
-   export COMOUT=$COMROT/nawips/$CDUMP.$PDY
-   mkdir -p $COMOUT
+   export COMIN=$PRODNAMES_DIR/com2/gfs/para/$CDUMP.$PDY
+   export COMOUT=$PRODNAMES_DIR/com2/gfs/para/$CDUMP.$PDY
+   export COMAWP=$PRODNAMES_DIR/com2/nawips/para/$CDUMP.$PDY
+   export pcom=$PRODNAMES_DIR/pcom2/para/gfs
+   mkdir -p $COMOUT $COMAWP $pcom
    export pid=$$
    export JCAP=${JCAP:-574}
    export LEVS=${LEVS:-64}
@@ -520,31 +529,35 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
    export ENDHOUR=${ENDHOUR:-180}
    export jn=${PSLOT}${CDATE}${CDUMP}bufrsnd
    export out=$COMROT/${jn}.dayfile
+   export SENDCOM=YES
    mac=`hostname |cut -c1`
    if [ $mac = g -o $mac = t ]; then
       export launcher=mpirun.lsf
-      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,launcher=$launcher,HOMEbufr=$HOMEbufr,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL' -q $CUE2RUN -p 5/5/N  -r 16000/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
+      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,launcher=$launcher,HOMEbufr=$HOMEbufr,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP' -q $CUE2RUN -p 5/5/N  -r 16000/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
    elif [ $mac = f ]; then
       export launcher=mpiexec_mpt
       CUE2RUN=bigmem
       export KMP_STACKSIZE=2048m
-      $SUB -a $ACCOUNT -e machine=$machine,GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,KMP_STACKSIZE=$KMP_STACKSIZE,launcher=$launcher,PARMbufr=$PARMbufr,CDATE=$CDATE,COMROT=$COMROT,COMIN=$COMIN,COMOUT=$COMOUT,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL -q $CUE2RUN -p 3/2/g2  -r 36000/3/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
+      $SUB -a $ACCOUNT -e machine=$machine,GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,KMP_STACKSIZE=$KMP_STACKSIZE,launcher=$launcher,PARMbufr=$PARMbufr,CDATE=$CDATE,COMROT=$COMROT,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP -q $CUE2RUN -p 3/2/g2  -r 36000/3/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
    elif [ $machine = WCOSS_C ] ; then
       export launcher=aprun
-      export snd_nprocs=1
+      export snd_nprocs=5
       export snd_ptile=1
-      export snd_nthreads=1
-      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,launcher=$launcher,snd_nprocs=$snd_nprocs,snd_ptile=$snd_ptile,snd_nthreads=$snd_nthreads,machine=$machine' -m $machine -q $CUE2RUN -p 5/5/N  -r 3072/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
+      export snd_nthreads=24
+      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,HOMEbufr=$HOMEbufr,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP,launcher=$launcher,snd_nprocs=$snd_nprocs,snd_ptile=$snd_ptile,snd_nthreads=$snd_nthreads,machine=$machine' -m $machine -q $CUE2RUN -p 5/5/N  -r 3072/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
    fi
 
    rdate=$($NDATE -$HRKBUFRSND $CDATE)
    pdyr=`echo $rdate | cut -c1-8`
    cycr=`echo $rdate | cut -c9-10`
    cd $COMROT/nawips/gfs.$pdyr
-   rm -rf bufr.t${cycr}z 2>/dev/null
-   rm gfs.t${cycr}z.bufrsnd.tar.gz 2>/dev/null
-   rm nawips/gfs_${pdyr}${cycr}* 2>/dev/null
-   rmdir nawips
+   export err=$?
+   if [ $err -eq 0 ] ; then
+    rm -rf bufr.t${cycr}z 2>/dev/null
+    rm gfs.t${cycr}z.bufrsnd.tar.gz 2>/dev/null
+    #rm nawips/gfs_${pdyr}${cycr}* 2>/dev/null
+    #rmdir nawips
+   fi
 fi
 
 ################################################################################
