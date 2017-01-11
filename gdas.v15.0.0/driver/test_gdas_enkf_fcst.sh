@@ -5,7 +5,7 @@
 #BSUB -o gdas_enkf_fcst.o%J
 #BSUB -e gdas_enkf_fcst.o%J
 #BSUB -J gdas_enkf_fcst
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -13,12 +13,19 @@
 
 set -x
 
-export NODES=19    # 16 compute nodes + 3 i/o nodes
-export ntasks=96
-export ptile=6
-export threads=4
+# 16 compute nodes + 3 i/o nodes - alters forecast results
+##export NODES=19
+##export ntasks=114
+##export ptile=6
+##export threads=4
 
-export CDATE=2016112112
+export NODES=12
+export ntasks=144
+export ptile=12
+export threads=2
+
+export CDATE=2016122206
+
 export ENSGRP=1
 
 export grp=$ENSGRP

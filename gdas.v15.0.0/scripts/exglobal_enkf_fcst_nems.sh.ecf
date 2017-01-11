@@ -267,7 +267,7 @@ export DATATOP=$DATA
 # Set output data
 #----------------
 
-EFCSGRP=$COMOUT/fcsstat_${CDATE}_grp${ENSGRP}
+EFCSGRP=${EFCSGRP:-$COMOUT/fcsstat_${CDATE}_grp${ENSGRP}}
 rm -f $EFCSGRP
 
 

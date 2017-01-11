@@ -491,7 +491,7 @@ fi
 ################################################################################
 # Set output data
 
-EOMGGRP=$COMOUT/omgstat_${CDATE}_grp${ENSGRP}
+EOMGGRP=${EOMGGRP:-$COMOUT/omgstat_${CDATE}_grp${ENSGRP}}
 rm -f $EOMGGRP
 
 ################################################################################

@@ -2663,6 +2663,7 @@
           ID(18) = IFHR-IFINCR
 	  IF(IFMIN .GE. 1)ID(18)=IFHR*60+IFMIN-IFINCR
          ENDIF
+         IF (ID(18).LT.0) ID(18) = 0
 	 grid1=spval
 !$omp parallel do private(i,j)
          DO J=JSTA,JEND
@@ -2721,6 +2722,7 @@
           ID(18) = IFHR-IFINCR
           IF(IFMIN .GE. 1)ID(18)=IFHR*60+IFMIN-IFINCR
          ENDIF
+         IF (ID(18).LT.0) ID(18) = 0
          grid1=spval
 !$omp parallel do private(i,j)
          DO J=JSTA,JEND

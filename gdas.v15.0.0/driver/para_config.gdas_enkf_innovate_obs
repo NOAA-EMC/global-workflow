@@ -33,33 +33,63 @@ export ERRSCRIPT='eval [[ $err = 0 ]]'
 # Set beginning and ending ensemble member on EnKF group.
 if [[ $ENSGRP -eq 1 ]]; then
    export ENSBEG=1
-   export ENSEND=8
+   export ENSEND=4
 elif [[ $ENSGRP -eq 2 ]]; then
-   export ENSBEG=9
-   export ENSEND=16
+   export ENSBEG=5
+   export ENSEND=8
 elif [[ $ENSGRP -eq 3 ]]; then
-   export ENSBEG=17
-   export ENSEND=24
+   export ENSBEG=9
+   export ENSEND=12
 elif [[ $ENSGRP -eq 4 ]]; then
-   export ENSBEG=25
-   export ENSEND=32
+   export ENSBEG=13
+   export ENSEND=16
 elif [[ $ENSGRP -eq 5 ]]; then
-   export ENSBEG=33
-   export ENSEND=40
+   export ENSBEG=17
+   export ENSEND=20
 elif [[ $ENSGRP -eq 6 ]]; then
-   export ENSBEG=41
-   export ENSEND=48
+   export ENSBEG=21
+   export ENSEND=24
 elif [[ $ENSGRP -eq 7 ]]; then
-   export ENSBEG=49
-   export ENSEND=56
+   export ENSBEG=25
+   export ENSEND=28
 elif [[ $ENSGRP -eq 8 ]]; then
-   export ENSBEG=57
-   export ENSEND=64
+   export ENSBEG=29
+   export ENSEND=32
 elif [[ $ENSGRP -eq 9 ]]; then
-   export ENSBEG=65
-   export ENSEND=72
+   export ENSBEG=33
+   export ENSEND=36
 elif [[ $ENSGRP -eq 10 ]]; then
+   export ENSBEG=37
+   export ENSEND=40
+elif [[ $ENSGRP -eq 11 ]]; then
+   export ENSBEG=41
+   export ENSEND=44
+elif [[ $ENSGRP -eq 12 ]]; then
+   export ENSBEG=45
+   export ENSEND=48
+elif [[ $ENSGRP -eq 13 ]]; then
+   export ENSBEG=49
+   export ENSEND=52
+elif [[ $ENSGRP -eq 14 ]]; then
+   export ENSBEG=53
+   export ENSEND=56
+elif [[ $ENSGRP -eq 15 ]]; then
+   export ENSBEG=57
+   export ENSEND=60
+elif [[ $ENSGRP -eq 16 ]]; then
+   export ENSBEG=61
+   export ENSEND=64
+elif [[ $ENSGRP -eq 17 ]]; then
+   export ENSBEG=65
+   export ENSEND=68
+elif [[ $ENSGRP -eq 18 ]]; then
+   export ENSBEG=69
+   export ENSEND=72
+elif [[ $ENSGRP -eq 19 ]]; then
    export ENSBEG=73
+   export ENSEND=76
+elif [[ $ENSGRP -eq 20 ]]; then
+   export ENSBEG=77
    export ENSEND=80
 else
    echo "***ERROR*** INVALID ENSGRP=$ENSGRP"

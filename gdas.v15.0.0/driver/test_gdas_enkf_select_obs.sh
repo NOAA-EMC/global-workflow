@@ -5,7 +5,7 @@
 #BSUB -o gdas_enkf_select_obs.o%J
 #BSUB -e gdas_enkf_select_obs.o%J
 #BSUB -J gdas_enkf_select_obs
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -13,12 +13,12 @@
 
 set -x
 
-export NODES=24
-export ntasks=96
-export ptile=4
-export threads=6
+export NODES=12
+export ntasks=144
+export ptile=12
+export threads=2
 
-export CDATE=2016112106
+export CDATE=2016122206
 
 #############################################################
 # Specify whether the run is production or development

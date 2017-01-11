@@ -37,8 +37,10 @@ module load nemsio-intel/2.2.2
 module load ip-intel/2.0.0
 
 #module load sfcio-intel/1.0.0
-setenv SFCIO_INC4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/incmod 
-setenv SFCIO_LIB4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/libsfcio_v1.0.0_4.a 
+#setenv SFCIO_INC4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/incmod 
+#setenv SFCIO_LIB4 /gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/lib/sfcio_v1.0.0/libsfcio_v1.0.0_4.a 
+setenv SFCIO_INC4 ../../../lib/sfcio_v1.0.0/incmod 
+setenv SFCIO_LIB4 ../../../lib/sfcio_v1.0.0/libsfcio_v1.0.0_4.a 
 
 module load gfsio-intel/1.1.0
 module load landsfcutil-intel/2.0.0

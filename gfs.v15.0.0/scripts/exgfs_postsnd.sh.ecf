@@ -8,6 +8,7 @@
 #                                  resolution upgrade
 #   3) 2014-08-01       D. Carlis Updated to vertical structure 
 #                                 and T1534 Resolution 
+#   4) 2016-11-01       H. Chuang Update to read new model nems output
 ################################################################
 set -xa
 
@@ -42,7 +43,7 @@ while [ $FSTART -lt $ENDHOUR ]
 do
    # Define the end hour for the input
    export FEND=`expr $FSTART + $INCREMENT` 
-   if test $FEND -lt 10; then FEND=0$FEND; fi 
+   if test $FEND -lt 100; then FEND=0$FEND; fi 
    if [ $FSTART -eq 00 ]
    then 
        export F00FLAG=YES
@@ -58,7 +59,7 @@ do
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.atmf$FEND.nemsio ]
       then
           sleep 10
           ic=`expr $ic + 1`

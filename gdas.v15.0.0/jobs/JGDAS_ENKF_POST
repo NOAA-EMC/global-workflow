@@ -117,7 +117,7 @@ ${ENKFPOSSH:-$SCRgdas/exglobal_enkf_post.sh.ecf}
 # Final processing
 ##############################################
 if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_ensstat $job $COMOUT/ensstat_${CDATE}_all
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_ensstat $job $COMOUT/${PREINP}ensstat
 fi
 
 cat $pgmout

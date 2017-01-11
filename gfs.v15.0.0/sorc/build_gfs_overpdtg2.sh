@@ -55,6 +55,6 @@ fi
 module list
 
 cd overpdtg2.fd
-make
-make clean
-mv overpdtg2   ../../exec/
+make -f makefile.$target
+make -f makefile.$target install
+make -f makefile.$target clean

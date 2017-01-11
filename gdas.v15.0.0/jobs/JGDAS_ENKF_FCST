@@ -121,7 +121,7 @@ ${ENKFFCSSH:-$SCRgdas/exglobal_enkf_fcst.sh.ecf}
 # Final processing
 ##############################################
 if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_fcsstat $job $COMOUT/${RUN}.$cycle}.fcsstat.grp${ENSGRP}
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_fcsstat $job $COMOUT/${PREINP}fcsstat.grp${ENSGRP}
 fi
 
 cat $pgmout

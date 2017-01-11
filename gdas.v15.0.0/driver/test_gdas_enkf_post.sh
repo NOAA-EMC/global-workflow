@@ -5,7 +5,7 @@
 #BSUB -o gdas_enkf_post.o%J
 #BSUB -e gdas_enkf_post.o%J
 #BSUB -J gdas_enkf_post
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -18,8 +18,13 @@ export ntasks=80
 export ptile=6
 export threads=4
 
-export CDATE=2016112106
+# Need to recompile getsigensmeanp_smooth.x using r(8) arrays for reproducibility
+##export NODES=80
+##export ntasks=40
+##export ptile=2
+##export threads=12
 
+export CDATE=2016122206
 
 #############################################################
 # Specify whether the run is production or development

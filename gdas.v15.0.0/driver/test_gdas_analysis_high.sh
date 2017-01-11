@@ -5,7 +5,7 @@
 #BSUB -o gdas_analysis_high.o%J
 #BSUB -e gdas_analysis_high.o%J
 #BSUB -J gdas_analysis_high
-#BSUB -q devmax
+#BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
@@ -13,17 +13,17 @@
 
 set -x
 
-export NODES=60
-export ntasks=360
-export ptile=6
-export threads=4
+##export NODES=60
+##export ntasks=360
+##export ptile=6
+##export threads=4
 
-##export NODES=240
-##export ntasks=480
-##export ptile=2
-##export threads=12
+export NODES=240
+export ntasks=480
+export ptile=2
+export threads=12
 
-export CDATE=2016112106
+export CDATE=2016122206
 
 
 #############################################################

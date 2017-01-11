@@ -8,7 +8,11 @@
 #             station forecasts from the GFS suite.
 #
 #     Input:  none
-#
+# Script History Log:
+# 2016-10-30  H Chuang: Tranistion to read nems output.
+#             Change to read flux file fields in gfs_bufr
+#             so remove excution of gfs_flux
+# 
 echo "History: February 2003 - First implementation of this utility script"
 #
 
@@ -33,7 +37,6 @@ EOF
 hh=$FSTART
 while  test $hh -le $FEND
 do  
-   ln -sf $COMIN/${RUN}.${cycle}.sfluxgrbf${hh} flxf${hh} 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10
    then
@@ -46,7 +49,7 @@ ln -sf gfs12.dat fort.17
 ln -sf metflxmrf fort.18
 
 #startmsg
-${GFLUX:-$EXECbufrsnd/gfs_flux} < gfsflxparm >> $pgmout 2>>errfile
+#${GFLUX:-$EXECbufrsnd/gfs_flux} < gfsflxparm >> $pgmout 2>>errfile
 export err=$?
 
 export pgm=gfs_bufr
@@ -72,7 +75,15 @@ EOF
 hh=$FSTART
 while  test $hh -le $FEND
 do  
-   ln -sf $COMIN/${RUN}.${cycle}.sf${hh} sigf${hh} 
+   if test $hh -lt 100
+   then
+      hh2=0$hh
+   else
+      hh2=$hh
+   fi
+
+   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nemsio sigf${hh} 
+   ln -sf $COMIN/${RUN}.${cycle}.flxf${hh2}.nemsio flxf${hh}
 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10
@@ -84,11 +95,12 @@ done
 #  define input BUFR table file.
 ln -sf $PARMbufrsnd/bufr_gfs${FINT}_class1.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs${FINT}} fort.8
-ln -sf metflxmrf fort.12
+#ln -sf metflxmrf fort.12
 ln -sf $SIGLEVEL fort.13
 
 #startmsg
-mpirun.lsf ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm >> $pgmout 2>>errfile
+export APRUN=${APRUN:-'aprun -n 1 -N 1 -j 1'}
+${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 
 rm  metflxmrf gfs12.dat 
