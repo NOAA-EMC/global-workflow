@@ -402,7 +402,8 @@ for fhr in $( seq -6 $BKGFREQ 3 ) ; do
    sges=sg${tpref}prep
    [[ $fhr -lt -3 ]]&&sges=NULL
    echo $sges
-   stype=sigg${tpref}
+#   stype=sigg${tpref}
+   stype=natg${tpref}
    pges=pg${tpref}prep
    ptype=${pgpref}${tpref}
 
