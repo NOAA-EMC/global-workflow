@@ -1,0 +1,94 @@
+RELEASE NOTES:  global_shared_da.v14.1.0
+ v14.1.0 - released Nov 22, 2016
+
+SVN HISTORY  (see EMC GSI Trac ticket #603, EMC GFS Trac ticket #239)
+ * r84764 - initial Q3FY17 NEMS GFS DA release
+
+
+CODE CHANGES
+ * sorc/gsi.fd - add the following to global GSI:
+   * turn on Near Sea-Surface Temperature (NSST) analysis
+   * readiness for CrIS Full Resolution data
+   * add/extend ability to assimilate RARS and DBNet
+   * fix to cloud water increment bugs
+   * changes to land surface type specification for CRTM
+   * assimilate Megatropiques SAPHIR radiance
+   * monitor GPM/GMI radiance
+   * assimilate VIIRS AMVs
+   * use Log-Normal wind QC for AMVs
+   * assimilate GOES clear-air water vapour winds
+   * assimilate additional GNSS-RO observations
+   * read background fields from nemsio files, write nemsio analysis file
+
+
+JOB CHANGES
+ * No DA jobs in global_shared.v14.1.0.  Please see gdas.v14.1.0 and gfs.v14.1.0 da release notes for job changes
+
+
+SCRIPT CHANGES
+ * scripts/exglobal_analysis.sh.ecf
+   * add NSST option
+   * update GSI namelist
+   * add CFP option to process diagnostic files
+   * update to support new GFS filename convention
+
+
+RESOURCE INFORMATION
+ * Q3FY17 NEMS GFS package should be implemented on WCOSS Cray.  See gdas.v14.1.0 and gfs.v14.1.0 da release notes for resource information.   global_shared.v14.1.0 only contains GSI fix files, script, source code, and executable.
+ * Frequency of run
+   * 6 hourly cycle (00, 06, 12, 18Z)
+ * Specify all versions of libs, compilers, shared code being used
+   * compiler
+     * PrgEnv-intel/5.2.56
+     * cray-mpich/7.2.0
+   * library modules
+     * NetCDF-intel-haswell/3.6.3
+     * bufr-intel/11.0.1
+     * nemsio-intel/2.2.2
+     * sfcio-intel/1.0.0
+     * sigio-intel/2.0.1
+     * sp-intel/2.0.2
+     * w3nco-intel/2.0.6
+     * w3emc-intel/2.2.0
+     * crtm-intel/2.2.4
+     * bacio-intel/2.0.2
+     * WRF_SHARED_VER v1.1.0
+ * Data retention for files in $COMROOThps and $GESROOThps
+   * same as current operations
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+ * Which production jobs should be tested as part of this implementation?
+   * global_shared.v14.1.0 should be tested as part of the Q3FY17 NEMS GFS package
+ * Does this change require a 30-day evaluation?
+   * YES
+ * Suggested evaluators
+   * same as rest of Q3FY17 NEMS GFS package
+
+
+DISSEMINATION INFORMATION
+ * Where should this output be sent?
+   * same as current operational GFS/GDAS GSI
+ * Who are the users?
+   * same as current operational GFS/GDAS GSI
+ * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+   * same as current operational GFS/GDAS GSI
+
+
+HPSS ARCHIVE
+ * Retention length?
+   * same as current operational GFS/GDAS GSI
+ * List which output files should be archived
+   * same as current operational GFS/GDAS GSI
+
+           
+IMPLEMENTATION INSTRUCTIONS
+* To implement global_shared_da.v14.1.0, please do the following:
+  * cd  $NWROOThps
+  * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/global_shared.v14.1.0
+  * cd $NWROOThps/global_shared.v14.1.0/sorc
+  * execute "./build_gsi.sh cray" - This builds the global_gsi executable on Cray and places it $NWROOThps/global_shared.v14.1.0/exec
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+ * No change from global_shared.v13.0.5
