@@ -1,6 +1,6 @@
 #!/bin/sh
 #BSUB -L /bin/sh
-#BSUB -P GFS-T2O
+#BSUB -P FV3GFS-T2O
 #BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/fv3gfs_fcst.out
 #BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/fv3gfs_fcst.out
 #BSUB -J fv3gfs   
@@ -18,8 +18,8 @@ set -x
 # December 2016, Fanglin Yang
 #--------------------------------------------------------------------------------
 
-export PSLOT=fv3gfsb       
-paradir=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/para_gfs/pr$PSLOT 
+export PSLOT=test          
+paradir=/gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/pr$PSLOT 
 
 . $MODULESHOME/init/sh  2>>/dev/null
 module load prod_util hpss >>/dev/null
@@ -27,23 +27,23 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=fv3gfs
+export tags=trunk_r86472
 export PTMP=/gpfs/hps/ptmp
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
-export BASEDIR=$BASE_SVN/gfs/$tags/gfs_workflow.$workflow_ver/para     
-export BASE_GSM=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
+export BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para     
+export BASE_GSM=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
 export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
-export CASE=C768
+export CASE=C96
 export res=`echo $CASE|cut -c 2-`
 export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
-START=20170103
-LAST=20170103
+START=20170109
+LAST=20170109
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
@@ -74,11 +74,8 @@ d1=td1
 #if [ $chost = s ]; then d1=gd1; fi
 
 #------------------------------------------------------
-#-- current fv3gfs does not have fh00 output, use operational GFS fh00 output
-#-- also copy over pgbanl for verification
+#-- copy over pgbanl for verification
 cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $ROTDIR/.
-#cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbf00.gfs.$cdate $ROTDIR/.
-#cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $tmp_dir/siganl.gfs.$cdate
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $tmp_dir/sfcanl.gfs.$cdate
 
@@ -90,12 +87,9 @@ cat >read_hpss.sh <<EOF
  $HPSSTAR get /NCEPPROD/hpssprod/runhistory/rh$yy/$yymm/$yymmdd/com2_gfs_prod_gfs.$cdate.anl.tar ./gfs.t${cyc}z.sanl ./gfs.t${cyc}z.sfcanl
  mv gfs.t${cyc}z.sanl siganl.gfs.$cdate
  mv gfs.t${cyc}z.sfcanl sfcanl.gfs.$cdate
-
- #$HPSSTAR get /NCEPPROD/hpssprod/runhistory/rh$yy/$yymm/$yymmdd/com2_gfs_prod_gfs.$cdate.pgrb2_0p25.tar ./gfs.t${cyc}z.pgrb2.0p25.f000
- #mv gfs.t${cyc}z.pgrb2.0p25.f000 $ROTDIR/pgrbq000.gfs.${cdate}.grib2    ;#for running hurricane tracker
 EOF
 chmod u+x read_hpss.sh
-$SUB -a GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh    
+$SUB -a FV3GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh    
 #---------------------
 fi
 #---------------------
@@ -122,7 +116,7 @@ done
 ## wait for 6 hours before submitting next bunch of forecast cases.
 export sdate=$edate
 if [ $sdate -le $LAST ]; then
-$SUB -e sdate -a GFS-T2O -q dev -p 1/1/N -r 3072/1/1 -t 10:00:00 \
+$SUB -e sdate -a FV3GFS-T2O -q dev -p 1/1/N -r 3072/1/1 -t 10:00:00 \
     -w "+0200" -j fv3gfs -o fv3gfs_fcst.out submit_fv3gfs.sh
 fi
 

@@ -97,11 +97,11 @@ export TANKverf_rad=$TANKverf/stats/$PSLOT/radmon.$PDY
 export TANKverf_radM1=$TANKverf/stats/$PSLOT/radmon.$PDYm1
 export DATAROOT=$ROTDIR
 export COMIN=$ROTDIR
-export NWTEST=$BASE_SVN/gfs/$tags
+export NWTEST=$BASE_SVN/fv3gfs/$tags
 if [ $machine = WCOSS_C ]; then
  if [ $CDUMP = gdas ] ; then
-    export JOBGLOBAL=$BASE_SVN/gfs/$tags/gdas.$gdas_ver/jobs/JGDAS_VERFRAD
-    export VRFYRADSH=$BASE_SVN/gfs/$tags/gdas.$gdas_ver/driver/test_jgdas_verfrad_cray.sh
+    export JOBGLOBAL=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver/jobs/JGDAS_VERFRAD
+    export VRFYRADSH=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver/driver/test_jgdas_verfrad_cray.sh
  else
     export VRFYRADSH=""    # GFS does not generate radstat, no vrfyrad
  fi
@@ -133,14 +133,14 @@ export M_TANKverfM0=$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY
 export M_TANKverfM1=$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1
 export DATAROOT=$ROTDIR
 export COMIN=$ROTDIR
-export NWTEST=$BASE_SVN/gfs/$tags
+export NWTEST=$BASE_SVN/fv3gfs/$tags
 if [ $machine = WCOSS_C ]; then
  if [ $CDUMP = gdas ] ; then
-    export JOBGLOBAL=$BASE_SVN/gfs/$tags/gdas.$gdas_ver/jobs/JGDAS_VMINMON
-    export VRFYMINSH=$BASE_SVN/gfs/$tags/gdas.$gdas_ver/driver/test_jgdas_vminmon_cray.sh
+    export JOBGLOBAL=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver/jobs/JGDAS_VMINMON
+    export VRFYMINSH=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver/driver/test_jgdas_vminmon_cray.sh
  else
-    export JOBGLOBAL=$BASE_SVN/gfs/$tags/gfs.$gfs_ver/jobs/JGFS_VMINMON
-    export VRFYMINSH=$BASE_SVN/gfs/$tags/gfs.$gfs_ver/driver/test_jgfs_vminmon_cray.sh
+    export JOBGLOBAL=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver/jobs/JGFS_VMINMON
+    export VRFYMINSH=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver/driver/test_jgfs_vminmon_cray.sh
  fi
 elif [ $machine = WCOSS ]; then
  export VRFYMINSH="$VRFYMIN_DIR/MinMon_DE.sh ${MINMON_SUFFIX} ${RUN_ENVIR} ${CDATE}"
@@ -174,9 +174,9 @@ ftyplist=pgbq                                     #files used for computing QPF 
 GENGEMPAK=YES
 if [ $machine = WCOSS_C -a $GENGEMPAK = YES ]; then 
   APRUN_GEMPAK="aprun -n 34 -N 17 cfp"
-  HOMEgfs=$BASE_SVN/gfs/$tags/gfs.$gfs_ver
+  HOMEgfs=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver
   FIXgfs=$HOMEgfs/fix
-  HOMEgempak=$BASE_SVN/gfs/$tags/gfs.$gfs_ver/gempak
+  HOMEgempak=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver/gempak
   GFSNAWIPSSH=$HOMEgfs/scripts/exgfs_nawips.sh.ecf
 fi
 NAWIPSSH=$BASEDIR/ush/nawips.sh
