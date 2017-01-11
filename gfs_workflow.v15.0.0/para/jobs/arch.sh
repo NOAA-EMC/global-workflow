@@ -476,7 +476,7 @@ fi
 
 ################################################################################
 # If requested, make gempak.
-if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES -a $AWIPS20KM = YES ];then
+if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES -a ${AWIPS20KM:-NO} = YES ];then
   export mem=2048
   export jn=${PSLOT}${CDATE}${CDUMP}gempak
   export out=$COMROT/${jn}.dayfile
