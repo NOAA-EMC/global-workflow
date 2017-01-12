@@ -60,8 +60,8 @@ export model=gdas
 ####################################
 ##  Load the Utilities module
 #####################################
-. /usrx/local/Modules/default/init/ksh
-
+#. /usrx/local/Modules/default/init/ksh
+. /opt/modules/default/init/ksh
 ############################################
 # SENDCOM=YES--Copy output file to /com
 # SENDECF=YES--Allow to talk back to ECF

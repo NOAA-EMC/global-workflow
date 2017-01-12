@@ -11,7 +11,7 @@ mac=`hostname |cut -c1`
 machine=WCOSS_C
 NEMS=YES
 
-PSLOT=fv3gfsb                # Experiment ID
+PSLOT=test                   # Experiment ID
 EDATE=2017071600            # Analysis/forecast cycle ending date 
 EDUMP=gdas                  # cycle ending dump
 ESTEP=prep                  # cycle ending step
@@ -53,7 +53,7 @@ if [ $machine = WCOSS ]; then
  CUE2RUN1=devhigh2
  CUE2RUNA=transfer
  RUN_ENVIR=para
- ACCOUNT=GFS-T2O
+ ACCOUNT=FV3GFS-T2O
  group_name=rstprod
  GROUP=dev
  max_core=24
@@ -68,7 +68,7 @@ elif [ $machine = WCOSS_C ]; then
  CUE2RUN1=dev
  CUE2RUNA=dev_transfer
  RUN_ENVIR=para
- ACCOUNT=GFS-T2O
+ ACCOUNT=FV3GFS-T2O
  group_name=rstprod
  GROUP=dev
  max_core=24
@@ -80,7 +80,7 @@ elif [ $machine = THEIA ]; then
  CUE2RUN1=batch
  CUE2RUNA=service
  RUN_ENVIR=para
- ACCOUNT=glbss
+ ACCOUNT=FV3GFS-T2O
  group_name=global
  GROUP=global
  max_core=24
@@ -123,7 +123,7 @@ if [ $machine = WCOSS ]; then
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/global/save/$LOGNAME/svn
- tags=fv3gfs
+ tags=trunk_r86472
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
 elif [ $machine = WCOSS_C ]; then
@@ -138,7 +138,7 @@ elif [ $machine = WCOSS_C ]; then
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
- tags=fv3gfs
+ tags=trunk_r86472
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
 elif [ $machine = THEIA ]; then
@@ -156,7 +156,7 @@ elif [ $machine = THEIA ]; then
  utilscript=/scratch4/NCEPDEV/rstprod/nwprod/util/ush
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
- tags=tags
+ tags=trunk_r86472
 else
  echo '$machine is not supported, exit'
  exit
@@ -188,34 +188,33 @@ radmon_ver=2.0.2a
 minmon_ver=1.0.0
 
 # Location
-BASEDIR=$BASE_SVN/gfs/$tags/gfs_workflow.$workflow_ver/para
-BASE_BUFRSND=$BASE_SVN/gfs/$tags/gfs.$gfs_ver
-BASE_ENKF=$BASE_SVN/gfs/$tags/gdas.$gdas_ver
-BASE_EMCSFC=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
-BASE_GSM=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
-BASE_GSI=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
-BASE_TROPCY=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
-#BASE_POST=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
-BASE_POST=$BASE_SVN/gfs/$tags/post
-#BASE_POST=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/post/trunk
+BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para
+BASE_BUFRSND=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver
+BASE_ENKF=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver
+BASE_EMCSFC=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+BASE_GSM=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+BASE_GSI=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+BASE_TROPCY=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+#BASE_POST=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+BASE_POST=$BASE_SVN/fv3gfs/post
 
 #BASE_PREP_POST=$BASE_SVN/obsproc/releases/obsproc_prep_post.$obsproc_prep_post_ver
-BASE_PREP_POST=$BASE_SVN/gfs/$tags/obsproc_prep_post.$obsproc_prep_post_ver
+BASE_PREP_POST=$BASE_SVN/fv3gfs/obsproc_prep_post.$obsproc_prep_post_ver
 #BASE_PREP=$BASE_SVN/obsproc/releases/obsproc_prep.$obsproc_prep_ver
-BASE_PREP=$BASE_SVN/gfs/$tags/obsproc_prep_RB-3.5.0 
+BASE_PREP=$BASE_SVN/fv3gfs/obsproc_prep_RB-3.5.0 
 
 #BASE_PREP_GLOBAL=$BASE_SVN/obsproc/releases/obsproc_global.$obsproc_global_ver
-BASE_PREP_GLOBAL=$BASE_SVN/gfs/$tags/obsproc_global.$obsproc_global_ver
+BASE_PREP_GLOBAL=$BASE_SVN/fv3gfs/obsproc_global.$obsproc_global_ver
 BASE_VERIF=$BASE_SVN/verif
 if [ $machine = WCOSS_C ]; then
- BASE_MINMON=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
- BASE_RADMON=$BASE_SVN/gfs/$tags/global_shared.$global_shared_ver
+ BASE_MINMON=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+ BASE_RADMON=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
 else
  BASE_MINMON=$BASE_SVN/verif/global/tags/Minimization_Monitor_${minmon_ver}
  BASE_RADMON=$BASE_SVN/verif/global/tags/Radiance_Monitor-${radmon_ver}
 fi
 BASE_OZNMON=$BASE_SVN/gsi/REL-5.0.0
-BASE_NEMS=$BASE_SVN/gfs/$tags/NEMS/trunk_77848/NEMS
+BASE_NEMS=$BASE_SVN/fv3gfs/NEMS/trunk_77848/NEMS
 
 PENDDIR=$PTMP 
 FIXSYND=$BASE_PREP/fix
@@ -302,8 +301,8 @@ fseg=1                             # number of AM forecast segments for gfs
 FHCYC=24                             # Surface cycle calling interval
  
 LEVS=64                            # number of AM levels
-CASE1=C768                         # 1st segment resolution (0-240 hr)
-CASE2=C192                         # 2nd segment resolution (240-384 hr)
+CASE1=C96                          # 1st segment resolution (0-240 hr)
+CASE2=C48                          # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
 CASE=$(eval echo \${CASE$nknd})
 if [ $CSTEP = efmn -o $CSTEP = epos ]; then CASE=$CASE_ENKF; fi

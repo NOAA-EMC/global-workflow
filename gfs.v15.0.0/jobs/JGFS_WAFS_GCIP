@@ -11,7 +11,11 @@ set -xa
 ############################################
 # Override some ecFlow environment variables
 ############################################
-export NWROOTp1=${NWROOTp1:-/nwprod}
+export NWROOT=${NWROOT:-/gpfs/hps/nco/ops/nwprod}
+# for satellite data
+export DCOMROOT=${DCOMROOT:-/gpfs/gp1/nco/ops/dcom}
+# for radar data
+export COMROOTp1=${COMROOTp1:-/gpfs/gp1/nco/ops/com}
 
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
 
@@ -65,7 +69,7 @@ export RUN=${RUN:-gfs}
 # Specify HOME Directory
 ############################################
 #export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
-export gfs_ver=${gfs_ver:-v13.0.0}
+export gfs_ver=${gfs_ver:-v14.1.0}
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=$HOMEgfs/exec
 export FIXgfs=$HOMEgfs/fix
@@ -73,12 +77,16 @@ export PARMgfs=$HOMEgfs/parm
 export USHgfs=$HOMEgfs/ush
 export SCRIPTSgfs=$HOMEgfs/scripts
 
-# Set up BUFR dump directory
-export TMPDIR=$DATA # TMPDIR must be defined for developers
-export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOTp1/obsproc_dump.${obsproc_dump_ver}}
+# Set up BUFR dump and dumplist home directory
+# TMPDIR must be defined
+export TMPDIR=$DATA
+# obsproc_dump
+export obsproc_dump_ver=${obsproc_dump_ver:-v3.2.1}
+export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOT/hwrf_dump.${obsproc_dump_ver}}
 export USHobsproc_dump=${USHobsproc_dump:-$HOMEobsproc_dump/ush}
-#obsproc_shared_bufr_dumplist_ver must be defined
-export obsproc_shared_bufr_dumplist_ver=${obsproc_shared_bufr_dumplist_ver:-v1.1.0}
+#obsproc_bufr_dumplist
+export obsproc_bufr_dumplist_ver=${obsproc_bufr_dumplist_ver:-v1.2.0}
+export HOMEobsproc_bufr_dumplist=${HOMEobsproc_bufr_dumplist:-$NWROOT/obsproc_bufr_dumplist.${obsproc_bufr_dumplist_ver}}
 
 ############################################
 # Set up the input/output directory
@@ -98,7 +106,7 @@ fi
 #ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
 # Have to change IP address to digital ones, which BSUB can identify
 #export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
-export COMINsat=${COMINsat:-/dcom/us007003/$PDY/mcidas}
+export COMINsat=${COMINsat:-$DCOMROOT/us007003/$PDY/mcidas}
 
 #  radar data
 export COMINradar=${COMINradar:-$COMROOTp1/hourly/prod/radar.$PDY}
@@ -151,7 +159,7 @@ export SLEEP_INT=10
 ############################################
 # Execute the script.
 ############################################
-
+export APRUN="aprun -n 1 -N 1 -j 1 -d 1"
 ${SCRIPTSgfs}/exgfs_wafs_gcip.sh.ecf
 export err=$?; err_chk
 

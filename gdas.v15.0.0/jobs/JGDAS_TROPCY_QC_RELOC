@@ -37,6 +37,7 @@ export global_shared_ver=${global_shared_ver:-${gfs_ver}}
 ##########################
 export NET=gfs
 export RUN=gdas
+export netwk=gdas
 
 #######################################
 # Specify non prod environment variable
@@ -143,7 +144,7 @@ export BKGFREQ=1 # for hourly relocation
 env
 
 export NET=gdas
-export RUN=gdas1
+export RUN=gdas
 #export files_override=F     # for testing
 #############################################################
 # execute the script

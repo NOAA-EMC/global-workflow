@@ -298,8 +298,13 @@ subroutine filter_avg2d(nx, ny, array, dx, dy, delta, msng, mask, &
         if (do_min) amin = msng
         if (do_max) amax = msng
     end if
+    ! dx(1) and dx(ny) is a negative small value (-1.2151593E-03 if ny=721),
+    ! this makes the num_x a negative (and large) value which has no sense.
+    ! solution: use dx(2) as dx(1), and use dx(ny-1) as dx(ny)
     do j = 1, ny
         num_x = int(delta/dx(j)) ! number of x points in the cell is 2*num_x+1
+        if(j ==1) num_x = int(delta/dx(2))
+        if(j ==ny) num_x = int(delta/dx(ny-1))
         jstart = max(1, j-num_y)
         jend = min(ny, j+num_y)
         do i = 1, nx
@@ -412,9 +417,14 @@ subroutine filter_avg3d(nx, ny, np, lvl, array, dx, dy, dp, delta_xy, &
         if (do_min) amin = msng
         if (do_max) amax = msng
     end if
+    ! dx(1) and dx(ny) is a negative small value (-1.2151593E-03 if ny=721),
+    ! this makes the num_x a negative (and large) value which has no sense.
+    ! solution: use dx(2) as dx(1), and use dx(ny-1) as dx(ny)
     do j = 1, ny
         num_x = int(delta_xy/dx(j)) ! number of x points in the cell is 
                                     ! 2*num_x+1
+        if(j ==1) num_x = int(delta_xy/dx(2))
+        if(j ==ny) num_x = int(delta_xy/dx(ny-1))
         jstart = max(1, j-num_y)
         jend = min(ny, j+num_y)
         do i = 1, nx
@@ -431,8 +441,8 @@ subroutine filter_avg3d(nx, ny, np, lvl, array, dx, dy, dp, delta_xy, &
                 do kk = lvl-num_p, lvl+num_p
                     do jj = jstart, jend
                         do ii = istart, iend
-                            if (array(ii,jj,kk) == msng .or. present(mask) &
-                                .and. .not. mask(ii,jj,kk)) cycle
+                            if (array(ii,jj,kk) == msng .or. &
+                                (present(mask) .and. .not. mask(ii,jj,kk))) cycle
                             num_avg = num_avg + 1
                             cur_mean = cur_mean + array(ii,jj,kk)
                             if (cur_max < array(ii,jj,kk)) &
@@ -446,8 +456,8 @@ subroutine filter_avg3d(nx, ny, np, lvl, array, dx, dy, dp, delta_xy, &
                 do kk = lvl-num_p, lvl+num_p
                     do jj = jstart, jend
                         do ii = istart, nx
-                            if (array(ii,jj,kk) == msng .or. present(mask) &
-                                .and. .not. mask(ii,jj,kk)) cycle
+                            if (array(ii,jj,kk) == msng .or. &
+                                (present(mask) .and. .not. mask(ii,jj,kk))) cycle
                             num_avg = num_avg + 1
                             cur_mean = cur_mean + array(ii,jj,kk)
                             if (cur_max < array(ii,jj,kk)) &
@@ -456,8 +466,8 @@ subroutine filter_avg3d(nx, ny, np, lvl, array, dx, dy, dp, delta_xy, &
                                 cur_min = array(ii,jj,kk)
                         end do
                         do ii = 1, iend
-                            if (array(ii,jj,kk) == msng .or. present(mask) &
-                                .and. .not. mask(ii,jj,kk)) cycle
+                            if (array(ii,jj,kk) == msng .or. &
+                                (present(mask) .and. .not. mask(ii,jj,kk))) cycle
                             num_avg = num_avg + 1
                             cur_mean = cur_mean + array(ii,jj,kk)
                             if (cur_max < array(ii,jj,kk)) &
