@@ -201,7 +201,7 @@ export GBIASE=${4:-${GBIASE:?}}
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export FIXgsi=${FIXgsi:-$NWPROD/global_shared.${global_shared_ver}/fix}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export EXECgdas=${EXECgdas:-$NWPROD/gdas.${gdas_ver}/exec}
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
@@ -217,10 +217,10 @@ export SUFINP=${SUFINP}
 export SIGHDR=${SIGHDR:-${EXECgsm}/global_sighdr$XC}
 export SFCHDR=${SFCHDR:-${EXECgsm}/global_sfchdr$XC}
 if [ $use_gfs_nemsio = .true. ]; then
-  export LATB=${LATB:-$($SFCHDR $SFCGES latb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($SFCHDR $SFCGES lonb |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export LATB=${LATB:-$($SFCHDR $SFCGES latr |grep -i "latr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LONB=${LONB:-$($SFCHDR $SFCGES lonr |grep -i "lonr" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export LEVS=${LEVS:-$($SIGHDR $SIGGES levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
 else
   export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
   export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
@@ -279,6 +279,10 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
+export APRUN=${APRUN:-""}
+export APRUNCFP=${APRUNCFP:-""}
+export USE_CFP=${USE_CFP:-"NO"}
+
 
 ################################################################################
 #  Preprocessing
@@ -307,9 +311,28 @@ export pgm=$PGM
 $LOGSCRIPT
 
 rm convinfo satinfo ozinfo satbias_angle satbias_in enkf.nml
-rm hybens_locinfo
+rm hybens_info
 rm sanl*
 
+if [[ $USE_CFP = YES ]]; then
+   rm $DATA/untar.sh $DATA/mp_untar.sh
+   set +x
+cat <<\EOFuntar > $DATA/untar.sh
+#!/bin/ksh
+{ echo
+ member=$1
+ list="$CNVSTAT $OZNSTAT $RADSTAT"
+ for type in $list; do
+    if [[ $FILESTYLE = 'C' ]]; then
+       $NCP ${type}${member} ./
+    fi
+    tar -xvf ${type}${member}
+ done
+}
+EOFuntar
+   set -x
+   chmod 755 $DATA/untar.sh
+fi
 
 $NCP $ENKFUPDEXEC $DATA
 if [[ $FILESTYLE = 'C' ]]
@@ -320,31 +343,34 @@ then
    $NCP $SCANINFO scaninfo
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
-   $NCP $HYBENSINFO hybens_locinfo
+   $NCP $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
-   date
-   list="$CNVSTAT $OZNSTAT $RADSTAT"
-   for type in $list; do
-      $NCP ${type}_ensmean ./
-      tar -xvf ${type}_ensmean
-   done
-   date
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      date
-      member="_mem"`printf %03i $imem`
+   if [[ $USE_CFP = YES ]]; then
+      echo "$DATA/untar.sh _ensmean" | tee -a $DATA/mp_untar.sh
+   else
       list="$CNVSTAT $OZNSTAT $RADSTAT"
       for type in $list; do
-         $NCP ${type}${member} ./
-         tar -xvf ${type}${member}
+         $NCP ${type}_ensmean ./
+         tar -xvf ${type}_ensmean
       done
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      if [[ $USE_CFP = YES ]]; then
+         echo "$DATA/untar.sh $member" | tee -a $DATA/mp_untar.sh
+      else
+         list="$CNVSTAT $OZNSTAT $RADSTAT"
+         for type in $list; do
+            $NCP ${type}${member} ./
+            tar -xvf ${type}${member}
+         done
+      fi
       sigens=${SIGGESENS}${member}
       $NCP $sigens sfg_${CDATE}_fhr06${member}
       (( imem = $imem + 1 ))
-      date
    done
-   date
 
    # Guess fields
    $NCP $GBIAS    satbias_in
@@ -363,28 +389,32 @@ else
    ln -fs $SCANINFO scaninfo
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
-   ln -fs $HYBENSINFO hybens_locinfo
+   ln -fs $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
-   date
-   list="$CNVSTAT $OZNSTAT $RADSTAT"
-   for type in $list; do
-      tar -xvf ${type}_ensmean
-   done
-   date
-   imem=1
-   while [[ $imem -le $NMEM_ENKF ]]; do
-      date
-      member="_mem"`printf %03i $imem`
+   if [[ $USE_CFP = YES ]]; then
+      echo "$DATA/untar.sh _ensmean" | tee -a $DATA/mp_untar.sh
+   else
       list="$CNVSTAT $OZNSTAT $RADSTAT"
       for type in $list; do
-         tar -xvf ${type}${member}
+         tar -xvf ${type}_ensmean
       done
+   fi
+   imem=1
+   while [[ $imem -le $NMEM_ENKF ]]; do
+      member="_mem"`printf %03i $imem`
+      if [[ $USE_CFP = YES ]]; then
+         echo "$DATA/untar.sh $member" | tee -a $DATA/mp_untar.sh
+      else
+         list="$CNVSTAT $OZNSTAT $RADSTAT"
+         for type in $list; do
+            tar -xvf ${type}${member}
+         done
+      fi
       sigens=${SIGGESENS}${member}
       ln -fs $sigens sfg_${CDATE}_fhr06${member}
       (( imem = $imem + 1 ))
    done
-   date
 
    # Guess fields
    ln -fs $GBIAS    satbias_in
@@ -404,6 +434,15 @@ else
       (( imem = $imem + 1 ))
    done
 
+fi
+
+if [[ $USE_CFP = YES ]]; then
+   chmod 755 $DATA/mp_untar.sh
+   ncmd=`cat $DATA/mp_untar.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      export APRUNCFP=$(eval echo $APRUNCFP)
+      $APRUNCFP $DATA/mp_untar.sh
+   fi
 fi
 
 # Create global_enkf namelist
@@ -435,7 +474,7 @@ cat <<EOF > enkf.nml
   sattypes_rad(5) = 'amsub_n17',     dsis(5) = 'amsub_n17',
   sattypes_rad(6) = 'amsua_aqua',    dsis(6) = 'amsua_aqua',
   sattypes_rad(7) = 'amsua_metop-a', dsis(7) = 'amsua_metop-a',
-  sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs281SUBSET_aqua',
+  sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs_aqua',
   sattypes_rad(9) = 'hirs3_n17',     dsis(9) = 'hirs3_n17',
   sattypes_rad(10)= 'hirs4_n19',     dsis(10)= 'hirs4_n19',
   sattypes_rad(11)= 'hirs4_metop-a', dsis(11)= 'hirs4_metop-a',
@@ -447,9 +486,9 @@ cat <<EOF > enkf.nml
   sattypes_rad(17)= 'goes_img_g13',  dsis(17)= 'imgr_g13',
   sattypes_rad(18)= 'goes_img_g14',  dsis(18)= 'imgr_g14',
   sattypes_rad(19)= 'goes_img_g15',  dsis(19)= 'imgr_g15',
-  sattypes_rad(20)= 'avhrr3_n18',    dsis(20)= 'avhrr3_n18',
-  sattypes_rad(21)= 'avhrr3_metop-a',dsis(21)= 'avhrr3_metop-a',
-  sattypes_rad(22)= 'avhrr3_n19',    dsis(22)= 'avhrr3_n19',
+  sattypes_rad(20)= 'avhrr_n18',     dsis(20)= 'avhrr3_n18',
+  sattypes_rad(21)= 'avhrr_metop-a', dsis(21)= 'avhrr3_metop-a',
+  sattypes_rad(22)= 'avhrr_n19',     dsis(22)= 'avhrr3_n19',
   sattypes_rad(23)= 'amsre_aqua',    dsis(23)= 'amsre_aqua',
   sattypes_rad(24)= 'ssmis_f16',     dsis(24)= 'ssmis_f16',
   sattypes_rad(25)= 'ssmis_f17',     dsis(25)= 'ssmis_f17',
@@ -476,17 +515,20 @@ cat <<EOF > enkf.nml
   sattypes_rad(46)= 'sndrd2_g15',    dsis(46)= 'sndrD2_g15',
   sattypes_rad(47)= 'sndrd3_g15',    dsis(47)= 'sndrD3_g15',
   sattypes_rad(48)= 'sndrd4_g15',    dsis(48)= 'sndrD4_g15',
-  sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi616_metop-a',
+  sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi_metop-a',
   sattypes_rad(50)= 'seviri_m08',    dsis(50)= 'seviri_m08',
   sattypes_rad(51)= 'seviri_m09',    dsis(51)= 'seviri_m09',
   sattypes_rad(52)= 'seviri_m10',    dsis(52)= 'seviri_m10',
   sattypes_rad(53)= 'amsua_metop-b', dsis(53)= 'amsua_metop-b',
   sattypes_rad(54)= 'hirs4_metop-b', dsis(54)= 'hirs4_metop-b',
   sattypes_rad(55)= 'mhs_metop-b',   dsis(55)= 'mhs_metop-b',
-  sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi616_metop-b',
-  sattypes_rad(57)= 'avhrr3_metop-b',dsis(57)= 'avhrr3_metop-b',
+  sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi_metop-b',
+  sattypes_rad(57)= 'avhrr_metop-b', dsis(57)= 'avhrr3_metop-b',
   sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
   sattypes_rad(59)= 'cris_npp',      dsis(59)= 'cris_npp',
+  sattypes_rad(60)= 'cris-fsr_npp',  dsis(60)= 'cris-fsr_npp',
+  sattypes_rad(61)= 'gmi_gpm',       dsis(61)= 'gmi_gpm',
+  sattypes_rad(62)= 'saphir_meghat', dsis(62)= 'saphir_meghat',
   $SATOBS_ENKF
  /
  &END

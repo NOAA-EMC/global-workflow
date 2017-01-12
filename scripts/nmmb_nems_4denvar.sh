@@ -17,17 +17,15 @@ exp=$jobname
 #gsiexec=/da/save/Michael.Lueken/trunk/src/global_gsi
 
 # Set runtime and save directories
-tmpdir=$tmpdir/tmpreg_nems_nmmb_4denvar/${exp}
-savdir=$savdir/outreg_nems_nmmb_4denvar/${exp}
+tmpdir=$tmpdir/tmpreg_nmmb_nems_4denvar/${exp}
+savdir=$savdir/outreg_nmmb_nems_4denvar/${exp}
 
 # Set variables used in script
 #   CLEAN up $tmpdir when finished (YES=remove, NO=leave alone)
-#   ndate is a date manipulation utility
 #   ncp is cp replacement, currently keep as /bin/cp
 
 UNCOMPRESS=gunzip
 CLEAN=NO
-#ndate=/nwprod/util/exec/ndate
 ncp=/bin/cp
 
 
@@ -62,16 +60,16 @@ HYBRID_ENSEMBLE='ensemble_path="",'
 SINGLEOB="$SINGLEOB_update"
 
 if [ "$debug" = ".false." ]; then
-   . $scripts/regression_namelists.sh
+   . $scripts/regression_namelists.sh nems_nmmb_4denvar
 else
-   . $scripts/regression_namelists_db.sh
+   . $scripts/regression_namelists_db.sh nems_nmmb_4denvar
 fi
 
 #   dmesh(1)=120.0,time_window_max=1.5,ext_sonde=.true.,
 
 cat << EOF > gsiparm.anl
 
-$nems_nmmb_4denvar_namelist
+$gsi_namelist
 
 EOF
 
@@ -111,15 +109,14 @@ btable_t=$fixgsi/nqc_b_t.global_nqcf
 btable_q=$fixgsi/nqc_b_q.global_nqcf
 btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
+# add vertical profile of localization and beta_s,beta_e weights for hybrid ensemble runs
+hybens_info=$fixgsi/nam_hybens_d01_info
+
 
 # Copy executable and fixed files to $tmpdir
-if [[ "$exp" = $nmmb_nems_4denvar_updat_exp1 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmmb_nems_4denvar_updat_exp2 ]]; then
-   $ncp $gsiexec_updat ./gsi.x
-elif [[ "$exp" = $nmmb_nems_4denvar_contrl_exp1 ]]; then
-   $ncp $gsiexec_contrl ./gsi.x
-elif [[ "$exp" = $nmmb_nems_4denvar_contrl_exp2 ]]; then
+if [[ $exp == *"updat"* ]]; then
+   $ncp $gsiexec_updat  ./gsi.x
+elif [[ $exp == *"contrl"* ]]; then
    $ncp $gsiexec_contrl ./gsi.x
 fi
 
@@ -149,7 +146,7 @@ cp $qnightlist ./q_night_rejectlist
 cp $tdaylist ./t_day_rejectlist
 cp $tnightlist ./t_night_rejectlist
 cp $wbinuselist ./wbinuselist
-#cp $locinfo ./hybens_locinfo
+#cp $locinfo ./hybens_info
 #add 9 tables for new varqc
 $ncp $errtable_pw           ./errtable_pw
 $ncp $errtable_ps           ./errtable_ps
@@ -161,6 +158,7 @@ $ncp $btable_t           ./btable_t
 $ncp $btable_q           ./btable_q
 $ncp $btable_uv           ./btable_uv
 
+$ncp $hybens_info ./hybens_info
 
 
 ###### crtm coeff's #######################
@@ -239,30 +237,9 @@ ls $nmmb_nems_4denvar_ges/sfg_2015060918_fhr09_ensmean > filelist09
 #####  connect with gdas for ozges ################
        cp $nmmb_nems_4denvar_ges/gdas1.t18z.sf06  ./gfs_sigf06
 
-if [[ "$machine" = "Theia" ]]; then
-   cd $tmpdir/
-   echo "run gsi now"
-
-   export MPI_BUFS_PER_PROC=256
-   export MPI_BUFS_PER_HOST=256
-   export MPI_GROUP_MAX=256
-   #export OMP_NUM_THREADS=1
-
-   #export module="/usr/bin/modulecmd sh"
-
-#  module load intel
-#  module load mpt
-
-   echo "JOB ID : $PBS_JOBID"
-   eval "$launcher -v -np $PBS_NP $tmpdir/gsi.x > stdout"
-
-# Run gsi under Parallel Operating Environment (poe) on NCEP IBM
-elif [[ "$machine" = "WCOSS" ]]; then
-
-mpirun.lsf $tmpdir/gsi.x < gsiparm.anl > stdout
-
-fi
-
+# Run GSI
+cd $tmpdir
+echo "run gsi now"
+eval "$APRUN $tmpdir/gsi.x > stdout 2>&1"
 rc=$?
-
-exit
+exit $rc

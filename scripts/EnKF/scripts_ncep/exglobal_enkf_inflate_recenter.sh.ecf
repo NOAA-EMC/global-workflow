@@ -148,15 +148,10 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #  Directories.
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
-export FIXgsm=${FIXgsm:-$NWPROD/gsm.${gsm_ver}/fix/fix_am}
-export EXECgsm=${EXECgsm:-$NWPROD/gsm.${gsm_ver}/exec}
-export USHgsm=${USHgsm:-$NWPROD/gsm.${gsm_ver}/ush}
-export PERTURBDIR=${PERTURBDIR:-$FIXgsm/enkf_gfs}
-
-export FIXGLOBAL=$FIXgsm    # $CHGRESSH still references GLOBAL variables
-export EXECGLOBAL=$EXECgsm  # $CHGRESSH still references GLOBAL variables
-export USHGLOBAL=$USHgsm    # $CHGRESSH still references GLOBAL variables
-
+export FIXgsm=${FIXgsm:-$NWPROD/global_shared.${global_shared_ver}/fix/fix_am}
+export EXECgsm=${EXECgsm:-$NWPROD/global_shared.${global_shared_ver}/exec}
+export USHgsm=${USHgsm:-$NWPROD/global_shared.${global_shared_ver}/ush}
+export PERTURBDIR=${PERTURBDIR:-$NWPROD/fix/enkf_gfs}
 export EXECGDAS=${EXECGDAS:-$NWPROD/gdas.${gdas_ver}/exec} 
 
 export utilscript=${utilscript:-$NWPROD/util/ush}
@@ -188,7 +183,7 @@ export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 if [ $use_gfs_nemsio = .true. ]; then
-  export CDATE=${CDATE:-$($SFCHDR $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')}
+  export CDATE=${CDATE:-$($SFCHDR $SFCGES fcstdate | grep -i "fcstdate_ymdh" |awk -F= '{print $2}')}
 else
   export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
 fi
@@ -219,7 +214,6 @@ export NCP=${NCP:-cp}
 export POE=${POE:-NO}
 export APRUN=${APRUN:-""}
 export NST_GSI=${NST_GSI:-0}
-export use_gfs_nemsio=${use_gfs_nemsio:-".false."}
 export SIGISUF=${SIGISUF:-'siganl'}
 export SFCISUF=${SFCISUF:-'sfcanl'}
 
@@ -490,7 +484,7 @@ fi
 ################################################################################
 if [ $NST_GSI -gt 0 ]; then
 
-   export DTFANL=${DTFANL:-${COMIN}/dtfanl_${CDUMP}_${CDATE}}
+   export DTFANL=${DTFANL:-${COMIN}/${PREINP}dtfanl}
    export NSTGES_ENS=${NSTGES_ENS:-${COMIN}/nfg_${GDATE}_fhr06}
    export SFCGES_ENS=${SFCGES_ENS:-${COMIN}/bfg_${GDATE}_fhr06}
    export SFCGCY_ENS=${SFCGCY_ENS:-${COMIN}/sfcgcy_${CDATE}}
@@ -523,8 +517,6 @@ if [ $NST_GSI -gt 0 ]; then
          (( imem = $imem + 1 ))
       done
    fi
-
-   echo 'ZSEA1, ZSEA1 : ' $ZSEA1, $ZSEA2
 
    rm stdout_recenter_sfcnstupd
    if [[ "$POE" = "YES" ]]; then

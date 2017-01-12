@@ -1,6 +1,6 @@
 # Standalone script used to pass namelist updates to the regression tests.
 
-# First, generate new variable to hole the first 6 characters of the experiment.
+# First, generate new variable to hold the first 6 characters of the experiment.
 
 #if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
 if [[ `expr substr $exp 1 6` = "global" ]]; then
@@ -36,36 +36,7 @@ export SINGLEOB_update=""
 
 if [[ `expr substr $exp 1 6` = "global" ]]; then
    if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      $ncp $fixgsi/global_satinfo.txt.new ./satinfo.new
-      $ncp $fixgsi/cloudy_radiance_info.txt ./cloudy_radiance_info.txt
+      $ncp $fixgsi_updat/cloudy_radiance_info.txt ./cloudy_radiance_info.txt
    fi
 fi
-
-if [[ `expr substr $exp 1 14` = "global_lanczos" ]]; then
-   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      rm -f ./satinfo.new
-      $ncp $fixgsi/global_satinfo_clrsky.txt.new ./satinfo.new
-      $ncp $fixgsi/cloudy_radiance_info.txt ./cloudy_radiance_info.txt
-   fi
-fi
-
-if [[ `expr substr $exp 1 3` = "nmm" ]]; then
-   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      $ncp $fixgsi/nam_regional_satinfo.txt.new ./satinfo.new
-   fi
-fi
-
-if [[ `expr substr $exp 1 3` = "arw" ]]; then
-   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      $ncp $fixgsi/nam_regional_satinfo.txt.new ./satinfo.new
-   fi
-fi
-
-if [[ `expr substr $exp 1 4` = "hwrf" ]]; then
-   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      $ncp $fixgsi/hwrf_satinfo.txt.new ./satinfo.new
-   fi
-fi
-
-
 

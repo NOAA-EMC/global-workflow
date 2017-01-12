@@ -1,12 +1,18 @@
+job_name=$1
+
+case $job_name in
+
+global_T62)
+
 # Define namelist for global run (pcgsoi minimization)
 
-export global_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
    niter_no_qc(1)=1,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
-   gencode=82,qoption=2,
+   gencode=82,qoption=2,cwoption=3,
    factqmin=5.0,factqmax=5.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
@@ -71,7 +77,7 @@ OBS_INPUT::
    hirs4bufr_skip   hirs4       metop-a   hirs4_metop-a       0.0     1     1
    gimgrbufr        goes_img    g11       imgr_g11            0.0     1     0
    gimgrbufr        goes_img    g12       imgr_g12            0.0     1     0
-   airsbufr         airs        aqua      airs281SUBSET_aqua  0.0     1     1
+   airsbufr         airs        aqua      airs_aqua           0.0     1     1
    amsuabufr_skip   amsua       n15       amsua_n15           0.0     1     1
    amsuabufr_skip   amsua       n18       amsua_n18           0.0     1     1
    amsuabufr_skip   amsua       metop-a   amsua_metop-a       0.0     1     1
@@ -79,7 +85,6 @@ OBS_INPUT::
    amsubbufr        amsub       n17       amsub_n17           0.0     1     1
    mhsbufr_skip     mhs         n18       mhs_n18             0.0     1     1
    mhsbufr_skip     mhs         metop-a   mhs_metop-a         0.0     1     1
-   ssmitbufr        ssmi        f14       ssmi_f14            0.0     1     0
    ssmitbufr        ssmi        f15       ssmi_f15            0.0     1     0
    amsrebufr        amsre_low   aqua      amsre_aqua          0.0     1     0
    amsrebufr        amsre_mid   aqua      amsre_aqua          0.0     1     0
@@ -100,7 +105,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13       sndrD2_g13          0.0     1     0
    gsnd1bufr_skip   sndrd3      g13       sndrD3_g13          0.0     1     0
    gsnd1bufr_skip   sndrd4      g13       sndrD4_g13          0.0     1     0
-   iasibufr         iasi        metop-a   iasi616_metop-a     0.0     1     1
+   iasibufr         iasi        metop-a   iasi_metop-a        0.0     1     1
    gomebufr         gome        metop-a   gome_metop-a        0.0     2     0
    omibufr          omi         aura      omi_aura            0.0     2     0
    sbuvbufr         sbuv2       n19       sbuv8_n19           0.0     0     0
@@ -115,10 +120,11 @@ OBS_INPUT::
    hirs4bufr        hirs4       metop-b   hirs4_metop-b       0.0     1     0
    amsuabufr        amsua       metop-b   amsua_metop-b       0.0     1     0
    mhsbufr          mhs         metop-b   mhs_metop-b         0.0     1     0
-   iasibufr         iasi        metop-b   iasi616_metop-b     0.0     1     0
+   iasibufr         iasi        metop-b   iasi_metop-b        0.0     1     0
    gomebufr         gome        metop-b   gome_metop-b        0.0     2     0
    atmsbufr         atms        npp       atms_npp            0.0     1     0
    crisbufr         cris        npp       cris_npp            0.0     1     0
+   crisfsbufr       cris-fsr    npp       cris-fsr_npp        0.0     1     0
 ::
  /
   &SUPEROB_RADAR
@@ -130,7 +136,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_GLOBAL},
    n_ens=${ENSEMBLE_SIZE_GLOBAL},
    uv_hyb_ens=${HYBENS_UV_GLOBAL},
-   beta1_inv=${BETA1_INV_GLOBAL},
+   beta_s0=${BETA_S0_GLOBAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_GLOBAL},
    s_ens_v=${HYBENS_VER_SCALE_GLOBAL},
    generate_ens=${GENERATE_ENS_GLOBAL},
@@ -150,11 +157,17 @@ OBS_INPUT::
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
    $SINGLEOB
- /"
+ /
+ &NST
+ /
+"
+;;
+
+global_lanczos_T62)
 
 # Define namelist for global run (lanczos minimization)
 
-export global_lanczos_T62_namelist=" 
+export gsi_namelist=" 
 
  &SETUP
    miter=2,niter(1)=10,niter(2)=5,
@@ -231,7 +244,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12       sndr_g12            0.0      1      0
    gimgrbufr        goes_img    g11       imgr_g11            0.0      1      0
    gimgrbufr        goes_img    g12       imgr_g12            0.0      1      0
-   airsbufr         airs        aqua      airs281SUBSET_aqua  0.0      3      1
+   airsbufr         airs        aqua      airs_aqua           0.0      3      1
    msubufr          msu         n14       msu_n14             0.0      1      1
    amsuabufr_skip   amsua       n15       amsua_n15           0.0      1      1
    amsuabufr_skip   amsua       n16       amsua_n16           0.0      1      1
@@ -245,7 +258,6 @@ OBS_INPUT::
    mhsbufr_skip     mhs         n18       mhs_n18             0.0      1      1
    mhsbufr_skip     mhs         metop-a   mhs_metop-a         0.0      1      1
    ssmitbufr        ssmi        f13       ssmi_f13            0.0      1      0
-   ssmitbufr        ssmi        f14       ssmi_f14            0.0      1      0
    ssmitbufr        ssmi        f15       ssmi_f15            0.0      1      0
    amsrebufr        amsre_low   aqua      amsre_aqua          0.0      1      1
    amsrebufr        amsre_mid   aqua      amsre_aqua          0.0      1      1
@@ -263,7 +275,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13       sndrD2_g13          0.0      1      0
    gsnd1bufr_skip   sndrd3      g13       sndrD3_g13          0.0      1      0
    gsnd1bufr_skip   sndrd4      g13       sndrD4_g13          0.0      1      0
-   iasibufr         iasi        metop-a   iasi616_metop-a     0.0      4      1
+   iasibufr         iasi        metop-a   iasi_metop-a        0.0      4      1
    gomebufr         gome        metop-a   gome_metop-a        0.0      2      0
    omibufr          omi         aura      omi_aura            0.0      2      0
    sbuvbufr         sbuv2       n19       sbuv8_n19           0.0      0      0
@@ -287,7 +299,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_GLOBAL},
    n_ens=${ENSEMBLE_SIZE_GLOBAL},
    uv_hyb_ens=${HYBENS_UV_GLOBAL},
-   beta1_inv=${BETA1_INV_GLOBAL},
+   beta_s0=${BETA_S0_GLOBAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_GLOBAL},
    s_ens_v=${HYBENS_VER_SCALE_GLOBAL},
    generate_ens=${GENERATE_ENS_GLOBAL},
@@ -308,15 +321,23 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
 
- /"
+ 
+ &NST
+ /
+"
+;;
 
-export global_hybrid_T126_namelist="
+global_hybrid_T126)
+
+# Define namelist for global hybrid run
+
+export gsi_namelist="
 
  &SETUP
    miter=1,niter(1)=5,niter(2)=150,
    niter_no_qc(1)=50,niter_no_qc(2)=0,
    write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
-   qoption=2,
+   qoption=2,cwoption=3,
    gencode=82,factqmin=0.1,factqmax=0.1,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,l_foto=.false.,
@@ -353,7 +374,7 @@ export global_hybrid_T126_namelist="
  /
  &OBSQC
    dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
-   use_poq7=.true.,njqc=.false.,vqc=.true.,
+   use_poq7=.true.,njqc=.false.,vqc=.true.,aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
    $OBSQC
  /
  &OBS_INPUT
@@ -364,9 +385,12 @@ OBS_INPUT::
 !  dfile          dtype       dplat     dsis                dval    dthin  dsfcalc
    prepbufr       ps          null      ps                  0.0      0     0
    prepbufr       t           null      t                   0.0      0     0
+   prepbufr_profl t           null      t                   0.0      0     0
    prepbufr       q           null      q                   0.0      0     0
+   prepbufr_profl q           null      q                   0.0      0     0
    prepbufr       pw          null      pw                  0.0      0     0
    prepbufr       uv          null      uv                  0.0      0     0
+   prepbufr_profl uv          null      uv                  0.0      0     0
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0
@@ -382,7 +406,7 @@ OBS_INPUT::
    hirs4bufr_skip hirs4       metop-a   hirs4_metop-a       0.0      1     1
    gimgrbufr      goes_img    g11       imgr_g11            0.0      1     0
    gimgrbufr      goes_img    g12       imgr_g12            0.0      1     0
-   airsbufr       airs        aqua      airs281SUBSET_aqua  0.0      1     1
+   airsbufr       airs        aqua      airs_aqua           0.0      1     1
    amsuabufr_skip amsua       n15       amsua_n15           0.0      1     1
    amsuabufr_skip amsua       n18       amsua_n18           0.0      1     1
    amsuabufr_skip amsua       metop-a   amsua_metop-a       0.0      1     1
@@ -390,7 +414,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17           0.0      1     1
    mhsbufr_skip   mhs         n18       mhs_n18             0.0      1     1
    mhsbufr_skip   mhs         metop-a   mhs_metop-a         0.0      1     1
-   ssmitbufr      ssmi        f14       ssmi_f14            0.0      1     0
    ssmitbufr      ssmi        f15       ssmi_f15            0.0      1     0
    amsrebufr      amsre_low   aqua      amsre_aqua          0.0      1     0
    amsrebufr      amsre_mid   aqua      amsre_aqua          0.0      1     0
@@ -411,7 +434,7 @@ OBS_INPUT::
    gsnd1bufr_skip sndrd2      g13       sndrD2_g13          0.0      1     0
    gsnd1bufr_skip sndrd3      g13       sndrD3_g13          0.0      1     0
    gsnd1bufr_skip sndrd4      g13       sndrD4_g13          0.0      1     0
-   iasibufr       iasi        metop-a   iasi616_metop-a     0.0      1     1
+   iasibufr       iasi        metop-a   iasi_metop-a        0.0      1     1
    gomebufr       gome        metop-a   gome_metop-a        0.0      2     0
    omibufr        omi         aura      omi_aura            0.0      2     0
    sbuvbufr       sbuv2       n19       sbuv8_n19           0.0      0     0
@@ -425,10 +448,11 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-b   hirs4_metop-b       0.0      1     0
    amsuabufr      amsua       metop-b   amsua_metop-b       0.0      1     0
    mhsbufr        mhs         metop-b   mhs_metop-b         0.0      1     0
-   iasibufr       iasi        metop-b   iasi616_metop-b     0.0      1     0
+   iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      1     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      1     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      1     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      1     0
@@ -445,7 +469,7 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.25,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   l_hyb_ens=.true.,n_ens=20,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
    nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
@@ -461,11 +485,17 @@ OBS_INPUT::
    oblat=45.,oblon=180.,obpres=1000.,obdattim=${global_hybrid_T126_adate},
    obhourset=0.,
    $SINGLEOB
- /"
+ 
+ &NST
+ /
+"
+;;
+
+RTMA)
 
 # Define namelist for RTMA runs
 
-export RTMA_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -541,11 +571,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=36.,oblon=260.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+arw_binary)
 
 # Define namelist for arw binary run
 
-export arw_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
@@ -613,7 +649,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12         sndr_g12              0.0     1     0
    gimgrbufr        goes_img    g11         imgr_g11              0.0     1     0
    gimgrbufr        goes_img    g12         imgr_g12              0.0     1     0
-   airsbufr         airs        aqua        airs281SUBSET_aqua    0.0     2     1
+   airsbufr         airs        aqua        airs_aqua             0.0     2     1
    msubufr          msu         n14         msu_n14               0.0     1     1
    amsuabufr        amsua       n15         amsua_n15             0.0     1     1
    amsuabufr        amsua       n16         amsua_n16             0.0     1     1
@@ -627,7 +663,6 @@ OBS_INPUT::
    mhsbufr          mhs         n18         mhs_n18               0.0     1     1
    mhsbufr          mhs         metop-a     mhs_metop-a           0.0     1     1
    ssmitbufr        ssmi        f13         ssmi_f13              0.0     1     0
-   ssmitbufr        ssmi        f14         ssmi_f14              0.0     1     0
    ssmitbufr        ssmi        f15         ssmi_f15              0.0     1     0
    amsrebufr        amsre_low   aqua        amsre_aqua            0.0     1     1
    amsrebufr        amsre_mid   aqua        amsre_aqua            0.0     1     1
@@ -645,7 +680,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13         sndrD2_g13            0.0     1     0
    gsnd1bufr_skip   sndrd3      g13         sndrD3_g13            0.0     1     0
    gsnd1bufr_skip   sndrd4      g13         sndrD4_g13            0.0     1     0
-   iasibufr         iasi        metop-a     iasi616_metop-a       0.0     3     1
+   iasibufr         iasi        metop-a     iasi_metop-a          0.0     3     1
    gomebufr         gome        metop-a     gome_metop-a          0.0     4     0
    mlsbufr          mls30       aura        mls30_aura            1.0     0     0
 ::
@@ -659,7 +694,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
    generate_ens=${GENERATE_ENS_REGIONAL},
@@ -678,11 +714,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+arw_netcdf)
 
 # Define namelist for arw netcdf run
 
-export arw_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,
@@ -750,7 +792,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12         sndr_g12              0.0     1     0
    gimgrbufr        goes_img    g11         imgr_g11              0.0     1     0
    gimgrbufr        goes_img    g12         imgr_g12              0.0     1     0
-   airsbufr         airs        aqua        airs281SUBSET_aqua    0.0     2     1
+   airsbufr         airs        aqua        airs_aqua             0.0     2     1
    msubufr          msu         n14         msu_n14               0.0     1     1
    amsuabufr_skip   amsua       n15         amsua_n15             0.0     1     1
    amsuabufr        amsua       n16         amsua_n16             0.0     1     1
@@ -764,7 +806,6 @@ OBS_INPUT::
    mhsbufr_skip     mhs         n18         mhs_n18               0.0     1     1
    mhsbufr          mhs         metop-a     mhs_metop-a           0.0     1     1
    ssmitbufr        ssmi        f13         ssmi_f13              0.0     1     0
-   ssmitbufr        ssmi        f14         ssmi_f14              0.0     1     0
    ssmitbufr        ssmi        f15         ssmi_f15              0.0     1     0
    amsrebufr        amsre_low   aqua        amsre_aqua            0.0     1     1
    amsrebufr        amsre_mid   aqua        amsre_aqua            0.0     1     1
@@ -782,7 +823,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13         sndrD2_g13            0.0     1     0
    gsnd1bufr_skip   sndrd3      g13         sndrD3_g13            0.0     1     0
    gsnd1bufr_skip   sndrd4      g13         sndrD4_g13            0.0     1     0
-   iasibufr         iasi        metop-a     iasi616_metop-a       0.0     3     1
+   iasibufr         iasi        metop-a     iasi_metop-a          0.0     3     1
    gomebufr         gome        metop-a     gome_metop-a          0.0     4     0
    mlsbufr          mls30       aura        mls30_aura            1.0     0     0
 ::
@@ -796,7 +837,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
    generate_ens=${GENERATE_ENS_REGIONAL},
@@ -815,11 +857,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+nmm_binary)
 
 # Define namelist for nmm binary run
 
-export nmm_binary_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -887,7 +935,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12         sndr_g12              0.0     1     0
    gimgrbufr        goes_img    g11         imgr_g11              0.0     1     0
    gimgrbufr        goes_img    g12         imgr_g12              0.0     1     0
-   airsbufr         airs        aqua        airs281SUBSET_aqua    0.0     2     1
+   airsbufr         airs        aqua        airs_aqua             0.0     2     1
    msubufr          msu         n14         msu_n14               0.0     1     1
    amsuabufr_skip   amsua       n15         amsua_n15             0.0     1     1
    amsuabufr        amsua       n16         amsua_n16             0.0     1     1
@@ -901,7 +949,6 @@ OBS_INPUT::
    mhsbufr_skip     mhs         n18         mhs_n18               0.0     1     1
    mhsbufr          mhs         metop-a     mhs_metop-a           0.0     1     1
    ssmitbufr        ssmi        f13         ssmi_f13              0.0     1     0
-   ssmitbufr        ssmi        f14         ssmi_f14              0.0     1     0
    ssmitbufr        ssmi        f15         ssmi_f15              0.0     1     0
    amsrebufr        amsre_low   aqua        amsre_aqua            0.0     1     1
    amsrebufr        amsre_mid   aqua        amsre_aqua            0.0     1     1
@@ -919,7 +966,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13         sndrD2_g13            0.0     1     0
    gsnd1bufr_skip   sndrd3      g13         sndrD3_g13            0.0     1     0
    gsnd1bufr_skip   sndrd4      g13         sndrD4_g13            0.0     1     0
-   iasibufr         iasi        metop-a     iasi616_metop-a       0.0     3     1
+   iasibufr         iasi        metop-a     iasi_metop-a          0.0     3     1
    gomebufr         gome        metop-a     gome_metop-a          0.0     4     0
    mlsbufr          mls30       aura        mls30_aura            1.0     0     0
 ::
@@ -933,7 +980,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
    generate_ens=${GENERATE_ENS_REGIONAL},
@@ -952,11 +1000,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+nmm_netcdf)
 
 # Define namelist for nmm netcdf run
 
-export nmm_netcdf_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -1024,7 +1078,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12         sndr_g12              0.0     1     0
    gimgrbufr        goes_img    g11         imgr_g11              0.0     1     0
    gimgrbufr        goes_img    g12         imgr_g12              0.0     1     0
-   airsbufr         airs        aqua        airs281SUBSET_aqua    0.0     2     1
+   airsbufr         airs        aqua        airs_aqua             0.0     2     1
    msubufr          msu         n14         msu_n14               0.0     1     1
    amsuabufr        amsua       n15         amsua_n15             0.0     1     1
    amsuabufr        amsua       n16         amsua_n16             0.0     1     1
@@ -1038,7 +1092,6 @@ OBS_INPUT::
    mhsbufr          mhs         n18         mhs_n18               0.0     1     1
    mhsbufr          mhs         metop-a     mhs_metop-a           0.0     1     1
    ssmitbufr        ssmi        f13         ssmi_f13              0.0     1     0
-   ssmitbufr        ssmi        f14         ssmi_f14              0.0     1     0
    ssmitbufr        ssmi        f15         ssmi_f15              0.0     1     0
    amsrebufr        amsre_low   aqua        amsre_aqua            0.0     1     1
    amsrebufr        amsre_mid   aqua        amsre_aqua            0.0     1     1
@@ -1056,7 +1109,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13         sndrD2_g13            0.0     1     0
    gsnd1bufr_skip   sndrd3      g13         sndrD3_g13            0.0     1     0
    gsnd1bufr_skip   sndrd4      g13         sndrD4_g13            0.0     1     0
-   iasibufr         iasi        metop-a     iasi616_metop-a       0.0     3     1
+   iasibufr         iasi        metop-a     iasi_metop-a          0.0     3     1
    gomebufr         gome        metop-a     gome_metop-a          0.0     4     0
    mlsbufr          mls30       aura        mls30_aura            1.0     0     0
 ::
@@ -1070,7 +1123,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
    generate_ens=${GENERATE_ENS_REGIONAL},
@@ -1089,11 +1143,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+nems_nmmb)
 
 # Define namelist for nems nmmb run
 
-export nems_nmmb_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,niter_no_qc(1)=1,
@@ -1161,7 +1221,7 @@ OBS_INPUT::
    gsndrbufr        sndr        g12       sndr_g12            0.0     1     0
    gimgrbufr        goes_img    g11       imgr_g11            0.0     1     0
    gimgrbufr        goes_img    g12       imgr_g12            0.0     1     0
-   airsbufr         airs        aqua      airs281SUBSET_aqua  0.0     2     1
+   airsbufr         airs        aqua      airs_aqua           0.0     2     1
    msubufr          msu         n14       msu_n14             0.0     1     1
    amsuabufr_skip   amsua       n15       amsua_n15           0.0     1     1
    amsuabufr_skip   amsua       n16       amsua_n16           0.0     1     1
@@ -1175,7 +1235,6 @@ OBS_INPUT::
    mhsbufr_skip     mhs         n18       mhs_n18             0.0     1     1
    mhsbufr          mhs         metop-a   mhs_metop-a         0.0     1     1
    ssmitbufr        ssmi        f13       ssmi_f13            0.0     1     0
-   ssmitbufr        ssmi        f14       ssmi_f14            0.0     1     0
    ssmitbufr        ssmi        f15       ssmi_f15            0.0     1     0
    amsrebufr        amsre_low   aqua      amsre_aqua          0.0     1     1
    amsrebufr        amsre_mid   aqua      amsre_aqua          0.0     1     1
@@ -1193,7 +1252,7 @@ OBS_INPUT::
    gsnd1bufr_skip   sndrd2      g13       sndrD2_g13          0.0     1     0
    gsnd1bufr_skip   sndrd3      g13       sndrD3_g13          0.0     1     0
    gsnd1bufr_skip   sndrd4      g13       sndrD4_g13          0.0     1     0
-   iasibufr         iasi        metop-a   iasi616_metop-a     0.0     3     1
+   iasibufr         iasi        metop-a   iasi_metop-a        0.0     3     1
    gomebufr         gome        metop-a   gome_metop-a        0.0     4     0
    omibufr          omi         aura      omi_aura            0.0     4     0
    sbuvbufr         sbuv2       n19       sbuv8_n19           0.0     0     0
@@ -1213,7 +1272,8 @@ OBS_INPUT::
    l_hyb_ens=${HYBENS_REGIONAL},
    n_ens=${ENSEMBLE_SIZE_REGIONAL},
    uv_hyb_ens=${HYBENS_UV_REGIONAL},
-   beta1_inv=${BETA1_INV_REGIONAL},
+   beta_s0=${BETA_S0_REGIONAL},
+   readin_beta=.false.,
    s_ens_h=${HYBENS_HOR_SCALE_REGIONAL},
    s_ens_v=${HYBENS_VER_SCALE_REGIONAL},
    generate_ens=${GENERATE_ENS_REGIONAL},
@@ -1222,7 +1282,7 @@ OBS_INPUT::
    nlat_ens=${NLAT_ENS_REGIONAL},
    jcap_ens=${JCAP_ENS_REGIONAL},
    jcap_ens_test=${JCAP_ENS_TEST_REGIONAL},
-   full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
+   full_ensemble=.true.,pwgtflg=.true.,
  /
  &RAPIDREFRESH_CLDSURF
    dfi_radar_latent_heat_time_period=30.0,
@@ -1233,11 +1293,17 @@ OBS_INPUT::
    maginnov=0.1,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=850.,obdattim=${adate},
    obhourset=0.,
- /"
+ 
+ &NST
+ /
+"
+;;
+
+nems_nmmb_4denvar)
 
 # Define namelist for 4DEnVar nems nmmb run
 
-export nems_nmmb_4denvar_namelist="
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=2,niter(2)=1,niter_no_qc(1)=1,
@@ -1258,7 +1324,7 @@ export nems_nmmb_4denvar_namelist="
  &GRIDOPTS
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,nems_nmmb_regional=.true.,diagnostic_reg=.false.,
    nmmb_reference_grid='H',grid_ratio_nmmb=3.0,
-   filled_grid=.false.,half_grid=.false.,netcdf=.false.,nvege_type=20,
+   filled_grid=.false.,half_grid=.false.,netcdf=.false.,
    $GRIDOPTS
  /
  &BKGERR
@@ -1313,7 +1379,7 @@ OBS_INPUT::
    gsndrbufr      sndr        g12         sndr_g12              0.0      1      0
    gimgrbufr      goes_img    g11         imgr_g11              0.0      1      0
    gimgrbufr      goes_img    g12         imgr_g12              0.0      1      0
-   airsbufr       airs        aqua        airs281SUBSET_aqua    0.0      1      0
+   airsbufr       airs        aqua        airs_aqua             0.0      1      0
    msubufr        msu         n14         msu_n14               0.0      1      0
    amsuabufr_skip amsua       n15         amsua_n15             0.0      1      0
    amsuabufr_skip amsua       n16         amsua_n16             0.0      1      0
@@ -1327,7 +1393,6 @@ OBS_INPUT::
    mhsbufr_skip   mhs         n18         mhs_n18               0.0      1      0
    mhsbufr        mhs         metop-a     mhs_metop-a           0.0      1      0
    ssmitbufr      ssmi        f13         ssmi_f13              0.0      1      0
-   ssmitbufr      ssmi        f14         ssmi_f14              0.0      1      0
    ssmitbufr      ssmi        f15         ssmi_f15              0.0      1      0
    amsrebufr      amsre_low   aqua        amsre_aqua            0.0      1      0
    amsrebufr      amsre_mid   aqua        amsre_aqua            0.0      1      0
@@ -1345,7 +1410,7 @@ OBS_INPUT::
    gsnd1bufr_skip sndrd2      g13         sndrD2_g13            0.0      1      0
    gsnd1bufr_skip sndrd3      g13         sndrD3_g13            0.0      1      0
    gsnd1bufr_skip sndrd4      g13         sndrD4_g13            0.0      1      0
-   iasibufr       iasi        metop-a     iasi616_metop-a       0.0      1      0
+   iasibufr       iasi        metop-a     iasi_metop-a          0.0      1      0
    gomebufr       gome        metop-a     gome_metop-a          0.0      1      0
    omibufr        omi         aura        omi_aura              0.0      1      0
    sbuvbufr       sbuv2       n19         sbuv8_n19             0.0      1      0
@@ -1371,7 +1436,9 @@ OBS_INPUT::
    l_hyb_ens=.true.,
    n_ens=10,
    uv_hyb_ens=.true.,
-   beta1_inv=0.25,
+   beta_s0=0.25,
+   readin_beta=.false.,
+   readin_beta=.true.,
    s_ens_h=800,
    s_ens_v=5,
    generate_ens=.false.,
@@ -1380,8 +1447,8 @@ OBS_INPUT::
    nlon_ens=0,
    nlat_ens=0,
    jcap_ens=0,
-   jcap_ens_test=0,coef_bw=0.5,
-   full_ensemble=.true.,betaflg=.true.,pwgtflg=.true.,
+   jcap_ens_test=0,
+   full_ensemble=.true.,pwgtflg=.true.,
    $HYBRID_ENSEMBLE
  /
  &RAPIDREFRESH_CLDSURF
@@ -1395,11 +1462,17 @@ OBS_INPUT::
    oblat=45.,oblon=270.,obpres=850.,obdattim=2015031300,
    obhourset=0.,
    $SINGLEOB_TEST
- /"
+ /
+ &NST
+ /
+"
+;;
+
+cmaq_binary)
 
 # Define namelist for cmaq binary run
 
- export cmaq_binary_namelist="
+ export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,
@@ -1472,9 +1545,15 @@ OBS_INPUT::
    maginnov=5,magoberr=0.1,oneob_type='t',
    oblat=45.,oblon=270.,obpres=1000.,obdattim=${adate},
    obhourset=0.,
- /"
+ /
+ &NST
+ /
+"
+;;
 
-export hwrf_nmm_d2_namelist="
+hwrf_nmm_d2)
+
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,niter_no_qc(1)=20,
@@ -1548,7 +1627,7 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-a   hirs4_metop-a       0.0      1     1
    gimgrbufr      goes_img    g11       imgr_g11            0.0      1     0
    gimgrbufr      goes_img    g12       imgr_g12            0.0      1     0
-   airsbufr       airs        aqua      airs281SUBSET_aqua  0.0      1     1
+   airsbufr       airs        aqua      airs_aqua           0.0      1     1
    amsuabufr_skip amsua       n15       amsua_n15           0.0      2     1
    amsuabufr_skip amsua       n18       amsua_n18           0.0      2     1
    amsuabufr      amsua       metop-a   amsua_metop-a       0.0      2     1
@@ -1556,7 +1635,6 @@ OBS_INPUT::
    amsubbufr      amsub       n17       amsub_n17           0.0      3     1
    mhsbufr_skip   mhs         n18       mhs_n18             0.0      3     1
    mhsbufr        mhs         metop-a   mhs_metop-a         0.0      3     1
-   ssmitbufr      ssmi        f14       ssmi_f14            0.0      1     0
    ssmitbufr      ssmi        f15       ssmi_f15            0.0      1     0
    amsrebufr      amsre_low   aqua      amsre_aqua          0.0      4     0
    amsrebufr      amsre_mid   aqua      amsre_aqua          0.0      4     0
@@ -1577,7 +1655,7 @@ OBS_INPUT::
    gsnd1bufr_skip sndrd2      g13       sndrD2_g13          0.0      5     0
    gsnd1bufr_skip sndrd3      g13       sndrD3_g13          0.0      5     0
    gsnd1bufr_skip sndrd4      g13       sndrD4_g13          0.0      5     0
-   iasibufr       iasi        metop-a   iasi616_metop-a     0.0      1     1
+   iasibufr       iasi        metop-a   iasi_metop-a        0.0      1     1
    gomebufr       gome        metop-a   gome_metop-a        0.0      2     0
    omibufr        omi         aura      omi_aura            0.0      2     0
    sbuvbufr       sbuv2       n19       sbuv8_n19           0.0      0     0
@@ -1590,10 +1668,11 @@ OBS_INPUT::
    hirs4bufr      hirs4       metop-b   hirs4_metop-b       0.0      1     0
    amsuabufr      amsua       metop-b   amsua_metop-b       0.0      2     0
    mhsbufr        mhs         metop-b   mhs_metop-b         0.0      3     0
-   iasibufr       iasi        metop-b   iasi616_metop-b     0.0      1     0
+   iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      2     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      5     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      5     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      5     0
@@ -1610,11 +1689,12 @@ OBS_INPUT::
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta1_inv=0.2,
+   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta_s0=0.2,
+   readin_beta=.true.,
    s_ens_h=300,s_ens_v=-0.5,readin_localization=.false.,
    generate_ens=.false.,regional_ensemble_option=1,grid_ratio_ens=1,
    pseudo_hybens=.false.,merge_two_grid_ensperts=.false.,
-   pwgtflg=.false.,betaflg=.false.,aniso_a_en=.false.,
+   pwgtflg=.false.,aniso_a_en=.false.,
    nlon_ens=165,nlat_ens=335,jcap_ens=0,jcap_ens_test=0,
  /
  &RAPIDREFRESH_CLDSURF
@@ -1626,9 +1706,15 @@ OBS_INPUT::
    maginnov=1.0,magoberr=0.8,oneob_type='t',
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
- /"
+ /
+ &NST
+ /
+"
+;;
 
-export hwrf_nmm_d3_namelist="
+hwrf_nmm_d3)
+
+export gsi_namelist="
 
  &SETUP
    miter=2,niter(1)=1,niter(2)=2,niter_no_qc(1)=20,
@@ -1706,11 +1792,12 @@ OBS_INPUT::
  &LAG_DATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta1_inv=0.2,
+   l_hyb_ens=.true.,n_ens=80,uv_hyb_ens=.true.,beta_s0=0.2,
+   readin_beta=.true.,
    s_ens_h=150,s_ens_v=-0.5,readin_localization=.false.,
    generate_ens=.false.,regional_ensemble_option=1,grid_ratio_ens=1,
    pseudo_hybens=.false.,merge_two_grid_ensperts=.false.,
-   pwgtflg=.false.,betaflg=.false.,aniso_a_en=.false.,
+   pwgtflg=.false.,aniso_a_en=.false.,
    nlon_ens=249,nlat_ens=499,jcap_ens=0,jcap_ens_test=0,
  /
  &RAPIDREFRESH_CLDSURF
@@ -1722,4 +1809,17 @@ OBS_INPUT::
    maginnov=1.0,magoberr=0.8,oneob_type='t',
    oblat=38.,oblon=279.,obpres=500.,obdattim=${adate},
    obhourset=0.,
- /"
+ /
+ &NST
+ /
+"
+;;
+
+*)
+
+# EXIT out for unresolved job_name
+
+    echo "unknown $job_name"
+    exit 1
+
+esac
