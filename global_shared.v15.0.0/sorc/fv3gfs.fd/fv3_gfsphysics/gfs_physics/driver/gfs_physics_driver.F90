@@ -77,6 +77,8 @@ module gfs_physics_driver_mod
 !
 !--- variables needed for calculating 'sncovr'
   use namelist_soilveg,   only: salp_data, snupx
+! Stochastic physics
+use stochy_namelist_def,only : do_shum,do_sppt
 !
 !-----------------------------------------------------------------------
   implicit none
@@ -902,6 +904,9 @@ module gfs_physics_driver_mod
     integer :: nb, nx, ny
     real(kind=kind_phys) :: fhour, time_int
     integer :: yr, mo, dy, hr, min, sc
+!---stochastic physics perturbations 
+    integer :: ibs,ibe,jbs,jbe,ix,i,j,k
+    real(kind=kind_phys) :: upert, vpert, tpert,qpert,qnew
 
     fhour = Dyn_parms(1)%fhour
     time_int = fhour - zhour
@@ -911,10 +916,24 @@ module gfs_physics_driver_mod
 !$OMP          schedule (dynamic,1) & 
 !$OMP          shared  (Atm_block, Dyn_parms, Statein, Sfc_props, &
 !$OMP                   Gfs_diags, Intr_flds, Cld_props, Rad_tends, Tbd_data, &
-!$OMP                   Stateout, fdiag, fhzero, levs, time_int, zhour) &
+!$OMP                   Stateout, fdiag, fhzero, levs, time_int, zhour,do_shum,do_sppt) &
 !$OMP          firstprivate (Mdl_parms, fhour, Time_diag)  &
-!$OMP          private (nb, nx, ny)
+!$OMP          private (nb, nx,ny, upert,vpert,tpert,qpert,qnew,i,j,k,ix,ibs,jbs,ibe,jbe)
     do nb = 1, Atm_block%nblks
+       if (do_sppt) then
+          ibs = Atm_block%ibs(nb)
+          ibe = Atm_block%ibe(nb)
+          jbs = Atm_block%jbs(nb)
+          jbe = Atm_block%jbe(nb)
+          do j=jbs,jbe
+             do i=ibs,ibe
+                ix = Atm_block%ix(nb)%ix(i,j)
+                Gfs_diags(nb)%totprcp0(ix)=Gfs_diags(nb)%totprcp(ix)
+                Gfs_diags(nb)%cnvprcp0(ix)=Gfs_diags(nb)%cnvprcp(ix)
+                Intr_flds(nb)%rain_cpl0(ix)=Intr_flds(nb)%rain_cpl(ix)
+            enddo
+         enddo
+       endif
 
       if ((Mdl_parms%me == 0) .and. (nb /= 1)) then
         Mdl_parms%me = -99
@@ -927,6 +946,55 @@ module gfs_physics_driver_mod
                            Rad_tends(nb), Mdl_parms, Tbd_data(nb), &
                            Dyn_parms(nb))
 
+     if (do_sppt) then
+       ibs = Atm_block%ibs(nb)
+       ibe = Atm_block%ibe(nb)
+       jbs = Atm_block%jbs(nb)
+       jbe = Atm_block%jbe(nb)
+       do k = 1, Atm_block%npz
+          do j=jbs,jbe
+            do i=ibs,ibe
+              ix = Atm_block%ix(nb)%ix(i,j)
+              upert=(Stateout(nb)%gu0(ix,k)   - Statein(nb)%ugrs(ix,k))   *Statein(nb)%SPPT_WTS(ix,k)
+              vpert=(Stateout(nb)%gv0(ix,k)   - Statein(nb)%vgrs(ix,k))   *Statein(nb)%SPPT_WTS(ix,k)
+              tpert=(Stateout(nb)%gt0(ix,k)   - Statein(nb)%tgrs(ix,k))   *Statein(nb)%SPPT_WTS(ix,k) - Stateout(nb)%dtdtr(ix,k)
+              qpert=(Stateout(nb)%gq0(ix,k,1) - Statein(nb)%qgrs(ix,k,1)) *Statein(nb)%SPPT_WTS(ix,k)
+    
+              Stateout(nb)%gu0(ix,k)  =Statein(nb)%ugrs(ix,k)+upert
+              Stateout(nb)%gv0(ix,k)  =Statein(nb)%vgrs(ix,k)+vpert
+ 
+              !negative humidity check	    
+              qnew=Statein(nb)%qgrs(ix,k,1)+qpert
+              if (qnew .GE. 1.0e-10) then
+                 Stateout(nb)%gq0(ix,k,1)=qnew
+                 Stateout(nb)%gt0(ix,k)  =Statein(nb)%tgrs(ix,k)+tpert + Stateout(nb)%dtdtr(ix,k)
+              endif  
+           enddo
+         enddo
+       enddo
+       do j=jbs,jbe
+          do i=ibs,ibe
+             ix = Atm_block%ix(nb)%ix(i,j)
+             Gfs_diags(nb)%totprcp(ix)  = Gfs_diags(nb)%totprcp0(ix)+Statein(nb)%SPPT_WTS(ix,15)*(Gfs_diags(nb)%totprcp(ix)- Gfs_diags(nb)%totprcp0(ix))
+             Gfs_diags(nb)%cnvprcp(ix)  = Gfs_diags(nb)%cnvprcp0(ix)+Statein(nb)%SPPT_WTS(ix,15)*(Gfs_diags(nb)%cnvprcp(ix)- Gfs_diags(nb)%cnvprcp0(ix))
+             Intr_flds(nb)%rain_cpl(ix) = Intr_flds(nb)%rain_cpl(ix)+Statein(nb)%SPPT_WTS(ix,15)*(Intr_flds(nb)%rain_cpl(ix)-Intr_flds(nb)%rain_cpl(ix))
+          enddo
+       enddo
+     endif
+     if (do_shum) then
+       ibs = Atm_block%ibs(nb)
+       ibe = Atm_block%ibe(nb)
+       jbs = Atm_block%jbs(nb)
+       jbe = Atm_block%jbe(nb)
+       do k = 1, Atm_block%npz
+         do j=jbs,jbe
+           do i=ibs,ibe
+              ix = Atm_block%ix(nb)%ix(i,j)
+              Stateout(nb)%gq0(ix,k,1) = Stateout(nb)%gq0(ix,k,1)*(1.0+Statein(nb)%SHUM_WTS(ix,k))
+           enddo
+         enddo
+       enddo
+     endif
       if (mpp_pe() == mpp_root_pe()) Mdl_parms%me = mpp_pe()
 !
 !--- check the diagnostics output trigger
@@ -2706,6 +2774,34 @@ module gfs_physics_driver_mod
       Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%shdmin(1:ngptc)
     enddo
 
+! jsw added
+    idx = idx + 1
+    Diag(idx)%axes = 2
+    Diag(idx)%name = 'uustar'
+    Diag(idx)%desc = 'friction velocity'
+    Diag(idx)%unit = 'm/s'
+    Diag(idx)%mod_name = 'gfs_sfc'
+    do nb = 1,nblks
+      nx = Atm_block%ibe(nb)-Atm_block%ibs(nb)+1
+      ny = Atm_block%jbe(nb)-Atm_block%jbs(nb)+1
+      ngptc = nx*ny
+      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%uustar(1:ngptc)
+    enddo
+
+    idx = idx + 1
+    Diag(idx)%axes = 2
+    Diag(idx)%name = 'slope'
+    Diag(idx)%desc = 'class of surface slope'
+    Diag(idx)%unit = 'XX'
+    Diag(idx)%mod_name = 'gfs_sfc'
+    do nb = 1,nblks
+      nx = Atm_block%ibe(nb)-Atm_block%ibs(nb)+1
+      ny = Atm_block%jbe(nb)-Atm_block%jbs(nb)+1
+      ngptc = nx*ny
+      Diag(idx)%data(nb)%var2(1:nx,1:ny) => Sfc_props(nb)%slope(1:ngptc)
+    enddo
+! end jsw added
+
     idx = idx + 1
     Diag(idx)%axes = 2
     Diag(idx)%name = 'snowd'
@@ -3634,7 +3730,7 @@ module gfs_physics_driver_mod
 
          temp3d(i,j,:,19) = Rad_tends(nb)%htrsw(ix,:)
          temp3d(i,j,:,20) = Rad_tends(nb)%htrlw(ix,:)
-         temp3d(i,j,:,21) = Rad_tends(nb)%dtdtr(ix,:)
+!         temp3d(i,j,:,21) = Rad_tends(nb)%dtdtr(ix,:)
          temp3d(i,j,:,22) = Rad_tends(nb)%swhc(ix,:)
          temp3d(i,j,:,23) = Rad_tends(nb)%hlwc(ix,:)
 

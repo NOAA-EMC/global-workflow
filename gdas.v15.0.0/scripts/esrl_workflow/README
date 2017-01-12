@@ -1,0 +1,10 @@
+config.sh is main script, hpss.sh is script to archive on hpss
+${machine}_preamble is job scheduler preamble for config.sh
+${machine}_preamble_hpss is job scheduler preamble for hpss.sh
+submit_job.sh <machine> submits config.sh (which then submits itself and hpss.sh).
+All of these plus checkdates.py must live in expthome, rest in enkfscripts
+model namelist parameters set in run_fv3_stochphys.sh.
+most of GSI namelist parameters set in run_gsi_4denvar.sh (some in config.sh).
+most of EnKF namelist parameters set in config.sh.
+
+Requires pegion fvg3gfs branch and EXP-enkflinhx EnKF branch.

@@ -1,0 +1,94 @@
+met_guess::
+!var     level    crtm_use    desc              orig_name
+  ps        1      -1         surface_pressure     ps
+  z         1      -1         geopotential_height  phis
+  u        63       2         zonal_wind           u
+  v        63       2         meridional_wind      v
+  div      63      -1         zonal_wind           div
+  vor      63      -1         meridional_wind      vor
+  tv       63       2         virtual_temperature  tv
+  q        63       2         specific_humidity    sphu
+  oz       63       2         ozone                ozone
+  cw       63      10         cloud_condensate     cw
+  ql       63      12         cloud_liquid         ql 
+  qi       63      12         cloud_ice            qi 
+::
+
+state_derivatives::
+!var  level  src
+ ps   1      met_guess
+ u    63     met_guess
+ v    63     met_guess
+ tv   63     met_guess
+ q    63     met_guess
+ oz   63     met_guess
+ cw   63     met_guess
+ prse 64     met_guess
+::
+
+state_tendencies::
+!var  levels  source
+ u    63      met_guess
+ v    63      met_guess
+ tv   63      met_guess
+ q    63      met_guess
+ cw   63      met_guess
+ oz   63      met_guess
+ prse 64      met_guess
+::
+
+state_vector::  
+!var     level  itracer source     funcof
+ u        63      0     met_guess    u
+ v        63      0     met_guess    v
+ tv       63      0     met_guess    tv
+ tsen     63      0     met_guess    tv,q
+ q        63      1     met_guess    q
+ oz       63      1     met_guess    oz
+ ql       63      1     met_guess    ql 
+ qi       63      1     met_guess    qi 
+ prse     64      0     met_guess    prse
+ ps        1      0     met_guess    prse
+ sst       1      0     met_guess    sst
+::
+
+control_vector_enkf::
+!var     level  itracer as/tsfc_sdv  an_amp0   source  funcof
+ u        63      0       0.60        -1.0     state    u,v
+ v        63      0       0.60        -1.0     state    u,v
+ ps        1      0       0.75        -1.0     state    prse
+!pst       1      0       0.75        -1.0     state    prse,u,v
+ tv       63      0       0.75        -1.0     state    tv
+ q        63      1       0.75        -1.0     state    q
+ oz       63      1       0.75        -1.0     state    oz
+!sst       1      0       1.00        -1.0     state    sst
+!cw       63      1       1.00        -1.0     state    cw
+!stl       1      0       3.00        -1.0     motley   sst
+!sti       1      0       3.00        -1.0     motley   sst
+::
+
+control_vector::
+!var     level  itracer as/tsfc_sdv  an_amp0   source  funcof
+ sf       63      0       0.60        -1.0     state    u,v
+ vp       63      0       0.60        -1.0     state    u,v
+ ps        1      0       0.75        -1.0     state    prse
+ t        63      0       0.75        -1.0     state    tv
+ q        63      1       0.75        -1.0     state    q
+ oz       63      1       0.75        -1.0     state    oz
+ sst       1      0       1.00        -1.0     state    sst
+ cw       63      1       1.00        -1.0     state    cw
+ stl       1      0       3.00        -1.0     motley   sst
+ sti       1      0       3.00        -1.0     motley   sst
+::
+
+! Following table shows the use of all four prescribed trace gas data.
+! To turn off any one of any combination of trace gas input, add "!"
+! in the first column of that trace gas name.  To use all default
+! trace gas profiles, just delete the following seven lines.
+chem_guess::
+!var     level  itracer crtm_use       type    orig_name
+!ch4      63      1       2             n/a    ch4
+ co2      63      1       0             n/a    co2
+!co       63      1       2             n/a    co
+!n2o      63      1       2             n/a    n2o
+::

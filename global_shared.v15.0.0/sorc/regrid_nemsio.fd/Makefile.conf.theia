@@ -1,0 +1,44 @@
+# This config file contains the compile options for compilation of the
+# REGRID_NEMSIO code on the NOAA HPCS.
+
+# ----------------------------
+# Fortran compiler and options
+# ----------------------------
+
+F90             = mpif90 -f90=ifort
+LD              = $(F90)
+F77             = ifort
+#FCFFLAGS        = -convert native -assume byterecl -heap-arrays -mcmodel=large -shared-intel
+FCFFLAGS        = 
+LDFLAGS         = $(FCFFLAGS)
+
+#--- External dependency paths
+
+netCDF          = $(NETCDF)
+
+BACIO_VER = 2.0.1
+NEMSIO_VER = 2.2.1
+W3NCO_VER = 2.0.6
+SP_VER = 2.0.2
+
+CORELIB  = /scratch3/NCEPDEV/nwprod/lib
+
+INCnemsio= -I$(CORELIB)/nemsio/v$(NEMSIO_VER)/incmod/nemsio_v$(NEMSIO_VER)
+BACIO_LIB4=$(CORELIB)/bacio/v$(BACIO_VER)/libbacio_v$(BACIO_VER)_4.a
+NEMSIO_LIB=$(CORELIB)/nemsio/v$(NEMSIO_VER)/libnemsio_v$(NEMSIO_VER).a
+W3NCO_LIBd=$(CORELIB)/w3nco/v$(W3NCO_VER)/libw3nco_v$(W3NCO_VER)_d.a
+SP_LIB4=$(CORELIB)/libsp_v$(SP_VER)_4.a
+
+#--- Library dependencies
+
+LIBnetcdf       = -L$(netCDF)/lib -lnetcdff -lnetcdf
+INCnetcdf       = -I$(netCDF)/include
+
+#--- Optimization options
+
+OPTIMIZATION    = -O3 -xHOST
+#-axCORE-AVX2,AVX -xSSE4.2 -O3
+
+#--- Debug mode options
+ 
+DEBUG           = -traceback -g #-C #-fp-stack-check #-check all -fp-stack-check
