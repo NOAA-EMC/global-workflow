@@ -162,7 +162,8 @@ export nitermax=2
 if [ "$machine" == 'theia' ]; then
    export FIXGLOBAL=/scratch4/NCEPDEV/global/save/glopara/svn/gfs/tags/global_shared.v13.0.2/fix/fix_am
    #export FIXFV3=/scratch3/BMC/gsienkf/whitaker/fv3gfs/branches/jwhitaker/fix
-   export FIXFV3=/scratch3/BMC/gsienkf/whitaker/fv3gfs/branches/pegion/global_shared.v15.0.0/fix
+   #export FIXFV3=/scratch3/BMC/gsienkf/whitaker/fv3gfs/branches/pegion/global_shared.v15.0.0/fix
+   export FIXFV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3
    #export gsipath=/scratch3/BMC/gsienkf/whitaker/gsi/EXP-enkfanavinfo
    export gsipath=/scratch3/BMC/gsienkf/whitaker/gsi/EXP-enkflinhx
    export gsiexec=${gsipath}/src/global_gsi
@@ -175,7 +176,8 @@ if [ "$machine" == 'theia' ]; then
 elif [ "$machine" == 'wcoss' ]; then
    export FIXGLOBAL=/gpfs/hps/esrl/gefsrr/noscrub/Jeffrey.S.Whitaker/gfs/global_shared.v13.2.0/fix/fix_am
    #export FIXFV3=/gpfs/hps/esrl/gefsrr/noscrub/Jeffrey.S.Whitaker/fv3gfs/branches/jwhitaker/fix
-   export FIXFV3=/gpfs/hps/esrl/gefsrr/noscrub/Jeffrey.S.Whitaker/fv3gfs/branches/pegion/global_shared.v15.0.0/fix
+   #export FIXFV3=/gpfs/hps/esrl/gefsrr/noscrub/Jeffrey.S.Whitaker/fv3gfs/branches/pegion/global_shared.v15.0.0/fix
+   export FIXFV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
    export gsipath=/gpfs/hps/esrl/gefsrr/noscrub/Jeffrey.S.Whitaker/gsi/EXP-enkflinhx
    export gsiexec=${gsipath}/src/global_gsi
    export fixgsi=${gsipath}/fix

@@ -42,33 +42,18 @@ while [ $n -le 6 ]; do
 done
 ln -fs $FIXFV3/C${RES}/C${RES}_mosaic.nc  grid_spec.nc
 # co2, ozone, surface emiss and aerosol data.
-ln -fs $FIXFV3/fix_am/global_solarconstant_noaa_an.txt  solarconstant_noaa_an.txt
-ln -fs $FIXFV3/fix_am/global_o3prdlos.f77               global_o3prdlos.f77
-ln -fs $FIXFV3/fix_am/global_sfc_emissivity_idx.txt     sfc_emissivity_idx.txt
-ln -fs $FIXFV3/fix_am/global_co2historicaldata_glob.txt co2historicaldata_glob.txt
-ln -fs $FIXFV3/fix_am/co2monthlycyc.txt                 co2monthlycyc.txt
-for file in `ls $FIXFV3/fix_am/co2dat_4a/global_co2historicaldata* ` ; do
+ln -fs $FIXGLOBAL/global_solarconstant_noaa_an.txt  solarconstant_noaa_an.txt
+ln -fs $FIXGLOBAL/global_o3prdlos.f77               global_o3prdlos.f77
+ln -fs $FIXGLOBAL/global_sfc_emissivity_idx.txt     sfc_emissivity_idx.txt
+ln -fs $FIXGLOBAL/global_co2historicaldata_glob.txt co2historicaldata_glob.txt
+ln -fs $FIXGLOBAL/co2monthlycyc.txt                 co2monthlycyc.txt
+for file in `ls $FIXGLOBAL/co2dat_4a/global_co2historicaldata* ` ; do
    ln -fs $file $(echo $(basename $file) |sed -e "s/global_//g")
 done
-ln -fs $FIXFV3/fix_am/global_climaeropac_global.txt     aerosol.dat
-for file in `ls $FIXFV3/fix_am/global_volcanic_aerosols* ` ; do
+ln -fs $FIXGLOBAL/global_climaeropac_global.txt     aerosol.dat
+for file in `ls $FIXGLOBAL/global_volcanic_aerosols* ` ; do
    ln -fs $file $(echo $(basename $file) |sed -e "s/global_//g")
 done
-
-#for file in $FIXFV3/fix_am/*; do
-#    file2=`basename $file`
-#    ln -fs $file $file2
-#done
-#for file in $FIXFV3/C${RES}/*grid.tile*; do
-#    file2=`basename $file`
-#    ln -fs $file $file2
-#done
-#for file in $FIXFV3/C${RES}/*oro_data.tile*; do
-#    file2=`basename $file`
-#    file2=`echo $file2 | cut -c 6-22` # FIXME: hardcoded character range
-#    ln -fs $file $file2
-#done
-#ln -fs ${FIXFV3}/C${RES}/C${RES}_mosaic.nc grid_spec.nc
 
 ls -l 
 cd ..
