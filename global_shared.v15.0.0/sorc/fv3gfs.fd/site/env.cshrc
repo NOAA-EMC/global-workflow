@@ -29,6 +29,19 @@ if (`hostname | cut -c1-4` == "slog" || `hostname | cut -c1-4` == "llog" ) then
    exit
 endif
 
+if (`hostname | cut -c1-2` == "tf" ) then
+   echo " theia environment "
+   if (${1} != 'fast') sleep 4
+   source $MODULESHOME/init/csh
+   module load intel/15.1.133
+   module load netcdf/4.3.0
+   module load hdf5/1.8.14
+   setenv LIBRARY_PATH ${LIBRARY_PATH}:${NETCDF}/lib:${HDF5}/lib
+   setenv NETCDF_DIR $NETCDF
+   setenv TEMPLATE ../../site/intel.mk.mv2.theia
+   exit
+endif
+
 if (`hostname | cut -c1-1` == "g" || `hostname | cut -c1-1` == "t" ) then
    echo " WCOSS Tide-Gyre environment "
    if (${1} != 'fast') sleep 4
@@ -94,19 +107,6 @@ if (`hostname | cut -c1-4` == "cori") then
    module load cray-netcdf
    module load craype-hugepages4M
    setenv TEMPLATE ../../site/intel.mk
-   exit
-endif
-
-if (`hostname | cut -c1` == "t" ) then
-   echo " theia environment "
-   if (${1} != 'fast') sleep 4
-   source $MODULESHOME/init/csh
-   module load intel/15.1.133
-   module load netcdf/4.3.0
-   module load hdf5/1.8.14
-   setenv LIBRARY_PATH ${LIBRARY_PATH}:${NETCDF}/lib:${HDF5}/lib
-   setenv NETCDF_DIR $NETCDF
-   setenv TEMPLATE ../../site/intel.mk.mv2
    exit
 endif
 
