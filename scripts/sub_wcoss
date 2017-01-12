@@ -72,7 +72,7 @@ nodes=""
 ppreq=""
 queue=""
 qpreq=""
-rmem="1024"
+rmem="2048"
 rcpu="1"
 pe_node="16"
 timew="900"
@@ -154,7 +154,7 @@ if [ $((task_node*threads)) -gt $max_core ]; then
 fi
 export core=${core:-core}
 
-export KMP_STACKSIZE=${KMP_STACKSIZE:-1024m}
+export KMP_STACKSIZE=${KMP_STACKSIZE:-2048m}
 
 export TZ=GMT
 cfile=$DATA/sub$$
