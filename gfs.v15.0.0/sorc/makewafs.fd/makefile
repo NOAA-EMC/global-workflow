@@ -40,7 +40,7 @@ OBJS=	makewafs.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =           ifort
+#FC =           ifort
 LDFLAGS =	
 #LIBS =    -L/nwprod/lib -lw3nco_8 -lw3emc_8 -lbacio_8
 LIBS = ${W3NCO_LIB8}  ${W3EMC_LIB8} ${BACIO_LIB8}

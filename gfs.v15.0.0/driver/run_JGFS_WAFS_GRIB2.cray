@@ -1,0 +1,166 @@
+#!/bin/sh
+
+#BSUB -J gfs_wafs_grib2
+#BSUB -cwd /gpfs/hps/ptmp/Yali.Mao
+#BSUB -oo /gpfs/hps/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
+#BSUB -eo /gpfs/hps/ptmp/Yali.Mao/gfs_wafs_grib2.o%J
+#BSUB -L /bin/sh
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -P GFS-T2O
+#BSUB -M 500
+#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} + 1*{select[craylinux && vnode]span[ptile=24] cu[type=cabinet]}'
+
+############################################
+# Loading module
+############################################
+. $MODULESHOME/init/ksh
+module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
+#module load cfp-intel-sandybridge/1.1.0
+module use /gpfs/hps/nco/ops/nwprod/modulefiles
+module load prod_envir
+module load prod_util
+module load prod_util/1.0.4
+module load grib_util/1.0.3
+
+
+set -xa
+
+export OMP_NUM_THREADS=1
+export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=1024m
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered 
+
+####export OMP_NUM_THREADS=1
+####export MP_MPILIB=mpich2
+####export MP_EUILIB=us
+####export MP_LABELIO=yes
+####export MP_COMPILER=intel
+
+############################################
+# required exports!
+############################################
+### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
+export envir=para
+
+export cyc=${cyc:-00}
+
+# gfs_wafs_grib2 for generating global WAFS on grid 45
+export job=gfs_wafs_grib2_${cyc}
+
+############################################
+# set NET RUN
+############################################
+### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
+export NET=gfs
+export RUN=gfs
+
+
+############################################
+# Specify versions
+############################################
+export gfs_ver=v4.0.0
+
+
+############################################
+# user defined
+############################################
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
+
+#needs to be the current date to make sure comparison is good at $PCOM
+#export PDY=`$NDATE -24 | cut -c 1-8`
+export PDY=`cut -c 7-14 $COMROOT/date/t00z`
+export PDY=20161101
+
+USER=`whoami`
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=YES
+export SENDDBN=NO
+export SENDDBN_NTC=NO
+export KEEPDATA=YES
+ 
+############################################
+# Define ROOT directories
+############################################
+export COMROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com2
+#export NWROOTp1=/nwprod
+export PCOMROOT=/gpfs/hps/ptmp/${USER}/pcom
+export NWROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/project
+export DATAROOT=/gpfs/hps/ptmp/${USER}
+
+############################################
+# Define DATA PCOM, COMOUT and COMIN
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+export PCOM=${PCOM:-$PCOMROOT/wafs}
+export COMOUT=/gpfs/hps/ptmp/${USER}/gfs_wafs_grib2.$PDY
+export COMIN=$COMROOT/gfs/$envir/gfs.$PDY
+#export COMIN=$COMROOTp2/gfs/prod/gfs.$PDY
+
+export jlogfile=/$DATA/jlogfile.${jobid}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_cray.${gfs_ver}}
+
+
+############################################
+# run the job
+#############################################
+export SHOUR=06
+export EHOUR=36
+export FHINC=03
+
+sh $HOMEgfs/jobs/JGFS_WAFS_GRIB2
+
+exit
+
+#############################################
+# compare the output (optional)
+#############################################
+if [ $USER = 'Yali.Mao' ] ; then
+
+  # the standard data to be compared to
+  stdout=/com2/${NET}/$envir/${RUN}.${PDY}
+  if [ $envir = prod ]; then
+    stdpcom=/pcom/wafs
+  else
+    stdpcom=/pcom/${envir}/wafs
+  fi
+
+  ffhr=$SHOUR
+
+  cd $COMOUT
+
+  while test $ffhr -le $EHOUR ; do
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
+
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr} $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}
+
+    cmp $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2 $stdout/gfs.t${cyc}z.wafs_grb45f${ffhr}.nouswafs.grib2
+
+    # $PCOM data on develop machine may be out of date, so skip the comparison
+    continue
+    #cmp $PCOM/grib2.t${cyc}z.wafs_grbf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grbf${ffhr}.45
+    #cmp $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 $stdpcom/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45
+  
+
+    ffhr=`expr $ffhr + $FHINC`
+    if test $ffhr -lt 10
+    then
+      ffhr=0${ffhr}
+    fi
+
+  done
+
+fi
+exit

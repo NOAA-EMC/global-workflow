@@ -60,7 +60,7 @@ setpdy.sh
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
-export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
+#export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
 export RERUN=${RERUN:-NO}
 

@@ -70,12 +70,12 @@ while test $ffhr -le $EHOUR ; do
     modelFile=model.grb$IGRIB
     if [ $IGRIB = 1 ] ; then
        # Grib 1 master model file processing
-       cpfs $masterFile $modelFile.tmp
+       cp $masterFile $modelFile.tmp
        $CNVGRIB -g21 $modelFile.tmp $modelFile
        rm $modelFile.tmp
     elif [ $IGRIB = 2 ] ; then
        # Grib 2 master model file processing
-       cpfs $masterFile $modelFile
+       cp $masterFile $modelFile
     fi
 
     # metar / ships / lightning / pireps
@@ -114,7 +114,7 @@ while test $ffhr -le $EHOUR ; do
 	  fi
 	done
 
-	cpfs $COMINsat/$satFile .
+	cp $COMINsat/$satFile .
       fi
       wait 30
       if [[ -s $satFile ]] ; then
@@ -198,7 +198,7 @@ while test $ffhr -le $EHOUR ; do
   cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
 
   startmsg
-  $EXECgfs/$pgm >> $pgmout $cmdoptions 2> errfile
+  $APRUN $EXECgfs/$pgm >> $pgmout $cmdoptions 2> errfile
   export err=$?; err_chk
 
 
@@ -207,7 +207,7 @@ while test $ffhr -le $EHOUR ; do
     # Post Files to COM
     ##############################
     if [ $SENDCOM = "YES" ] ; then
-      cpfs $outputfile $COMOUT/$outputfile
+      cp $outputfile $COMOUT/$outputfile
       if [ $SENDDBN = "YES" ] ; then
 	# $DBNROOT/bin/dbn_alert GFS_WAFS GCIP $job $COMOUT/$outputfile
 	$DBNROOT/bin/dbn_alert MODEL GFS_WAFS_GCIP $job $COMOUT/$outputfile

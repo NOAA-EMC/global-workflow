@@ -257,6 +257,9 @@ write(*,*) "getStationMetars=", nstations
     ! functions outside 
     integer :: IW3JDN
 
+    headers = BUFR_MISSING
+    clouds  = BUFR_MISSING
+
     getStationMetars = 0 ! no metar observations 
     nullify(stations%next) 
 
@@ -349,7 +352,11 @@ write(*,*) "getStationMetars=", nstations
            aRecord%longitude > BUFR_MISSING .or. aRecord%elevation  > BUFR_MISSING) cycle
         !
         if(msgtype == 'NC000007') then
-           stationType  = headers(11)
+           if(headers(11) < BUFR_MISSING -100) then
+              stationType = headers(11)
+           else
+              stationType = 10
+           end if
            if(stationType == 1 .or. stationType== 3) then
               aRecord%stationType = Station_Types%AWOS
            else if(stationType == 2 .or. stationType== 4) then
@@ -358,8 +365,12 @@ write(*,*) "getStationMetars=", nstations
               aRecord%stationType = Station_Types%MANUAL
            end if
         else if (msgtype == 'NC001001') then
-           cloudAmountTotal = nint(headers(11))
-           if(headers(11) < BUFR_MISSING) then
+           if(headers(11) < BUFR_MISSING -100) then
+              cloudAmountTotal = nint(headers(11))
+           else
+              cloudAmountTotal = -1
+           end if
+           if(cloudAmountTotal > 0 .and. headers(12)< BUFR_MISSING -100) then
               cloudBaseCode = nint(headers(12))
            else
               cloudBaseCode = -9
@@ -376,9 +387,19 @@ write(*,*) "getStationMetars=", nstations
         ! Meanwhile, assign real variables to integers.
         ! The assignments do not consider the array size, 
         ! which will be considered in the tranlation.
-        cloudAmounts = nint(clouds(1, :))
-        cloudBaseHeights = clouds(2, :)
-        iprwes = prwes ! real => integer
+        do i = 1, cloudLevels
+           if(clouds(1,i)< BUFR_MISSING-100) then
+              cloudAmounts = nint(clouds(1, i))
+           end if
+           cloudBaseHeights = clouds(2, i)
+        end do
+        do i = 1, 10
+           if(prwes(i) < BUFR_MISSING-100) then
+              iprwes(i) = prwes(i) ! real => integer
+           else
+              iprwes(i) = -1
+           end if
+        end do
         call m_translateObservation(whichReport, iprwes, prweNum, rawReport,&
                        temperature, cloudAmountTotal, cloudBaseCode, &
                        cloudAmounts, cloudBaseHeights, cloudLevels, aRecord)

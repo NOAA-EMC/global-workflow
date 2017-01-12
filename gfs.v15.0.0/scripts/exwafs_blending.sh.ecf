@@ -87,7 +87,8 @@ echo "start blending US and UK WAFS products for " $cyc " z cycle"
           echo "and $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx "
           echo "and $PCOM/grib2.t${cyc}z.wafs_grb_wifsf${ffhr}.45 "
 
-          if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
+#          if [ $SENDDBN_GB2 = "YES" -a $SEND_US_WAFS = "YES" ] ; then
+          if [ $SENDDBN = "YES" -a $SEND_US_WAFS = "YES" ] ; then
              $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2 $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2
              $DBNROOT/bin/dbn_alert MODEL GFS_WAFSA_GB2_WIDX $job $COMOUT/gfs.t${cyc}z.wafs_grb45f${ffhr}.grib2.idx
           fi

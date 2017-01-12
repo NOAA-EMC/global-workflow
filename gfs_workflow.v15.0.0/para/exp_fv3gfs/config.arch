@@ -33,6 +33,7 @@ HOMEbufr=$BASE_BUFRSND
 PARMbufr=$BASE_BUFRSND/parm
 GENBUFRSND=NO 
 POSTSNDSH=$BASEDIR/ush/postsnd.sh
+AWIPS20KM=NO
 
 
 ARCH_TO_HPSS=YES                   # make hpss archive

@@ -69,7 +69,7 @@
       real*8 :: data(6*levso+24)
       real :: fhour,pp,ppn,qs,qsn,esn,es,psfc,ppi,dtemp,iwx,nd
       real :: t,q,u,v,td,tlcl,plcl,qw,tw,xlat,xlon,iossil,dlon
-      real :: dx,dy
+      real :: dx,dy,zhour
       real,dimension(npoint,2+levso*3):: grids,gridsi
       real,dimension(npoint) :: rlat,rlon,pmsl,ps,psn,elevstn
       real,dimension(im*jm) :: dum1d,dum1d2
@@ -93,7 +93,7 @@
       integer :: n3dfercld,iseedl,time
       integer :: istat(npoint)
       logical :: trace
-      logical, parameter :: debugprint=.true.
+      logical, parameter :: debugprint=.false.
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
 
@@ -294,6 +294,9 @@
       if ( iret /= 0 ) then
         print*,"fail to open nems flux file";stop
       endif
+! get hour when buket was last emptied
+      call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
+      if(debugprint)print*,'sample zhour= ',zhour
 ! surface T
       call nemsio_readrecvw34(ffile,'tmp','sfc',1,data=dum1d,iret=iret)
       if (iret /= 0) then
@@ -421,7 +424,7 @@
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            dum2d(i,j,9) = dum1d(jj+i)
+            dum2d(i,j,9) = dum1d(jj+i)*3600.*(fhour-zhour)
           end do
         end do
         if(debugprint)
@@ -438,7 +441,7 @@
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            dum2d(i,j,10) = dum1d(jj+i)
+            dum2d(i,j,10) = dum1d(jj+i)*3600.*(fhour-zhour)
           end do
         end do
       end if

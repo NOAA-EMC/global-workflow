@@ -1012,11 +1012,47 @@ elif [[ "$netwk" = "global" ]];then
    $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm6
    $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm6'
    ;;
+  pg2gm5) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghm5
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghm5
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm5
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm5'
+   ;;
+  pg2gm4) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghm4
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghm4
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm4
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm4'
+   ;;
   pg2gm3) geslist='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghm3
    $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghm3
    $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm3
    $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm3'
+   ;;
+  pg2gm2) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghm2
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghm2
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm2
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm2'
+   ;;
+  pg2gm1) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghm1
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghm1
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghm1
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghm1'
+   ;;
+  pg2gp1) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghp1
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghp1
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghp1
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghp1'
+   ;;
+  pg2gp2) geslist='
+   $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghp2
+   $COMINgdas/gdas.t${cyc}z.pgrb2.0p25.f$ghp2
+   $GETGES_NWG/$envir/gfs.$day/gfs.t${cyc}z.pgrb2.0p25.f$ghp2
+   $COMINgfs/gfs.t${cyc}z.pgrb2.0p25.f$ghp2'
    ;;
   pg2gp3) geslist='
    $GETGES_NWG/$envir/gdas.$day/gdas.t${cyc}z.pgrb2.0p25.f$ghp3
@@ -1282,6 +1318,10 @@ if [ -z "$PDY" ];then echo "getges.sh WARNING: \$PDY variable not set" >&2; fi
 while [[ $fh -le $fhend ]];do
  ((fhm6=10#$fh-6))
  [[ $fhm6 -lt 10 && $fhm6 -ge 0 ]]&&fhm6=0$fhm6
+ ((fhm5=10#$fh-5))
+ [[ $fhm5 -lt 10 && $fhm5 -ge 0 ]]&&fhm5=0$fhm5
+ ((fhm4=10#$fh-4))
+ [[ $fhm4 -lt 10 && $fhm4 -ge 0 ]]&&fhm4=0$fhm4
  ((fhm3=10#$fh-3))
  [[ $fhm3 -lt 10 && $fhm3 -ge 0 ]]&&fhm3=0$fhm3
  ((fhm2=10#$fh-2))
@@ -1296,6 +1336,8 @@ while [[ $fh -le $fhend ]];do
  [[ $fhp3 -lt 10 ]]&&fhp3=0$fhp3
  gh=$fh;[[ $gh -lt 100 ]]&&gh=0$gh
  ghm6=$fhm6;[[ $ghm6 -lt 100 ]]&&ghm6=0$ghm6
+ ghm5=$fhm5;[[ $ghm5 -lt 100 ]]&&ghm5=0$ghm5
+ ghm4=$fhm4;[[ $ghm4 -lt 100 ]]&&ghm4=0$ghm4
  ghm3=$fhm3;[[ $ghm3 -lt 100 ]]&&ghm3=0$ghm3
  ghm2=$fhm2;[[ $ghm2 -lt 100 ]]&&ghm2=0$ghm2
  ghm1=$fhm1;[[ $ghm1 -lt 100 ]]&&ghm1=0$ghm1
