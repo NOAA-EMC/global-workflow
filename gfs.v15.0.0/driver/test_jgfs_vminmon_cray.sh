@@ -29,20 +29,21 @@ export envir=para
 #############################################################
 # Specify versions
 #############################################################
-export gfs_ver=${gfs_ver:-v14.1.0}
-export global_shared_ver=${global_shared_ver:-v14.1.0}
-export gfs_minmon_ver=${gfs_minmon_ver:-v1.0.0}
-export minmon_shared_ver=${minmon_shared_ver:-v1.0.0}
+export gfs_ver=v14.1.0
+export global_shared_ver=v14.1.0
+export gfs_minmon_ver=v1.0.0
+export minmon_shared_ver=v1.0.0
 
 
 #############################################################
 # Load modules
 #############################################################
-. $MODULESHOME/init/ksh 2>>/dev/null
+. $MODULESHOME/init/ksh
 
-module load prod_util 2>>/dev/null
-module load pm5 2>>/dev/null
-module list 2>>/dev/null
+module load prod_util
+module load pm5
+
+module list
 
 
 #############################################################
