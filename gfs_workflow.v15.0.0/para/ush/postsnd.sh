@@ -106,12 +106,15 @@ export COMAWP=${COMAWP:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 ########################################################
 # Execute the script.
 #/nw${envir}/scripts/exgfs_postsnd.sh.ecf
+export OMP_NUM_THREADS=$snd_nthreads
 export APRUN="aprun -n $snd_nprocs -N $snd_ptile -j 1 -d $snd_nthreads -cc depth"
 $HOMEbufr/scripts/exgfs_postsnd.sh.ecf
 ########################################################
 
 cat $pgmout
+cat out_gfs_bufr*
 
 #cd /tmpnwprd
 #rm -rf $DATA
+if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
 date
