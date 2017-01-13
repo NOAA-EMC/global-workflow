@@ -20,8 +20,8 @@
 !clu [+1l] add kpd() for vmn, vmx, slp, abs
 !cbosu  max snow albedo uses a grib id number of 159, not 255.
      &          kpdvmn=255, kpdvmx=255,kpdslp=236, kpdabs_0=255,    
-!    &          kpdvet=225, kpdsot=224,kpdabs_1=159,
-     &          kpdvet=225, kpdsot=230,kpdabs_1=159,
+     &          kpdvet=225, kpdsot=224,kpdabs_1=159,
+!    &          kpdvet=225, kpdsot=230,kpdabs_1=159,
 !cggg snow mods start
      &          kpdsnd=66 )
 !cggg snow mods end
