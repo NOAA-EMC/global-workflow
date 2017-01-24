@@ -10,21 +10,21 @@ export regtest=$1
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
 
-if [ "$debug" = ".false." ]; then
+# Launch the individual control and update runs, one-after-another
+for jn in `seq 1 4`; do
 
-   # Launch the individual control and update runs, one-after-another
-   for jn in `seq 1 4`; do
-      if [ $jn -le 2 ]; then
-         export scripts=${scripts_updat:-$scripts}
-         export fixgsi=${fixgsi_updat:-$fixgsi}
-      else
-         export scripts=${scripts_cntrl:-$scripts}
-         export fixgsi=${fixgsi_cntrl:-$fixgsi}
-      fi
+   if [ $jn -le 2 ]; then
+      export scripts=${scripts_updat:-$scripts}
+      export fixgsi=${fixgsi_updat:-$fixgsi}
+   else
+      export scripts=${scripts_contrl:-$scripts}
+      export fixgsi=${fixgsi_contrl:-$fixgsi}
+   fi
+   rm -f ${job[$jn]}.out
 
-      rm -f ${job[$jn]}.out
+   /bin/sh $sub_cmd -q $queue -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/${regtest}.sh
 
-      /bin/sh $sub_cmd -q $queue -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/${regtest}.sh
+   if [ $debug == ".true." ]; then break; fi
       $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
       rc=$?
       if [ $rc -ne 0 ]; then
@@ -32,7 +32,11 @@ if [ "$debug" = ".false." ]; then
          exit 1
       fi
    done
-   # When all done, test the results of the regression test
+# When all done, test the results of the regression test
+if [ "$debug" = ".false." ]; then
+
+   export scripts=${scripts_updat:-$scripts}
+
    if [ $regtest = 'global_enkf_T62' ]; then
       /bin/sh $scripts/regression_test_enkf.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} ${tmpregdir} ${result} ${scaling[1]} ${scaling[2]} ${scaling[3]}
    else
@@ -42,10 +46,6 @@ if [ "$debug" = ".false." ]; then
    if [ $rc -ne 0 ]; then
       exit 1
    fi
-else
-
-      /bin/sh $sub_cmd -q $queue -j ${job[1]} -p ${popts[2]} -t ${topts[1]} $scripts/${regtest}.sh
-
 fi
 
 # Clean-up

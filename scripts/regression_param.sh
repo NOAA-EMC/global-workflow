@@ -68,6 +68,11 @@ case $regtest in
 
         if [ "$debug" = ".true." ] ; then
            topts[1]="0:45:00"
+           if [[ "$machine" = "Theia" ]]; then
+              popts[1]="12/5/"
+           elif [[ "$machine" = "WCOSS" ]]; then
+              popts[1]="16/4/"
+           fi
         fi
 
         scaling[1]=5; scaling[2]=8; scaling[3]=2
@@ -283,7 +288,7 @@ case $regtest in
         fi
 
         if [ "$debug" = ".true." ] ; then
-           topts[1]="0:45:00"
+           topts[1]="1:00:00"
         fi
 
         scaling[1]=5; scaling[2]=10; scaling[3]=2
