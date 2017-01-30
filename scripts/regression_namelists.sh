@@ -550,7 +550,7 @@ OBS_INPUT::
 "
 ;;
 
-    global_4denvar_T670 )
+    global_4denvar_T126 )
 
 # Define namelist for global hybrid run
 
@@ -704,8 +704,8 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=254,
-   nlat_ens=258,nlon_ens=512,ANISO_A_EN=.false.,jcap_ens_test=254,oz_univ_static=.true.,readin_localization=.true.,
+   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
  /

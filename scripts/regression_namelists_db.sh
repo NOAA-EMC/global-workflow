@@ -489,6 +489,184 @@ OBS_INPUT::
 "
 ;;
 
+    global_4denvar_T126 )
+
+# Define namelist for global 4denvar run
+
+export gsi_namelist="
+
+ &SETUP
+   miter=1,niter(1)=5,niter(2)=150,
+   niter_no_qc(1)=50,niter_no_qc(2)=0,
+   use_gfs_nemsio=.true.,
+   l4densvar=.true.,ens_nstarthr=3,nhr_obsbin=1,lwrite4danl=.true.,
+   tzr_qc=1,
+   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
+   qoption=2,cwoption=3,
+   gencode=82,factqmin=0.1,factqmax=0.1,deltim=$DELTIM,
+   iguess=-1,
+   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
+   use_pbl=.false.,use_prepb_satwnd=.false.,
+   nhr_assimilation=6,lrun_subdirs=.true.,
+   $SETUP
+ /
+ &GRIDOPTS
+   JCAP_B=$JCAP_B,JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
+   regional=.false.,nlayers(63)=3,nlayers(64)=6,
+   $GRIDOPTS
+ /
+ &BKGERR
+   hzscl=1.7,0.8,0.5,
+   hswgt=0.45,0.3,0.25,
+
+   bw=0.0,norsp=4,
+   bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+   bkgv_write=.false.,
+   $BKGVERR
+ /
+ &ANBKGERR
+   anisotropic=.false.,
+   $ANBKGERR
+ /
+ &JCOPTS
+   ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=2.5e7,ljc4tlevs=.true.,
+   $JCOPTS
+ /
+ &STRONGOPTS
+   tlnmc_option=3,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+   baldiag_full=.true.,baldiag_inc=.true.,
+   $STRONGOPTS
+ /
+ &OBSQC
+   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
+   use_poq7=.true.,njqc=.false.,vqc=.true.,aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
+   $OBSQC
+ /
+ &OBS_INPUT
+   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,time_window_max=3.0,
+   $OBSINPUT
+ /
+OBS_INPUT::
+!  dfile          dtype       dplat       dsis                dval    dthin dsfcalc
+   prepbufr       ps          null        ps                  0.0     0     0
+   prepbufr       t           null        t                   0.0     0     0
+   prepbufr_profl t           null        t                   0.0     0     0
+   prepbufr       q           null        q                   0.0     0     0
+   prepbufr_profl q           null        q                   0.0     0     0
+   prepbufr       pw          null        pw                  0.0     0     0
+   prepbufr       uv          null        uv                  0.0     0     0
+   prepbufr_profl uv          null        uv                  0.0     0     0
+   satwndbufr     uv          null        uv                  0.0     0     0
+   prepbufr       spd         null        spd                 0.0     0     0
+   prepbufr       dw          null        dw                  0.0     0     0
+   radarbufr      rw          null        rw                  0.0     0     0
+   nsstbufr       sst         nsst        sst                 0.0     0     0
+   gpsrobufr      gps_bnd     null        gps                 0.0     0     0
+   ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
+   tmirrbufr      pcp_tmi     trmm        pcp_tmi             0.0    -1     0
+   sbuvbufr       sbuv2       n16         sbuv8_n16           0.0     0     0
+   sbuvbufr       sbuv2       n17         sbuv8_n17           0.0     0     0
+   sbuvbufr       sbuv2       n18         sbuv8_n18           0.0     0     0
+   hirs3bufr      hirs3       n17         hirs3_n17           0.0     1     0
+   hirs4bufr_skip hirs4       metop-a     hirs4_metop-a       0.0     1     1
+   gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
+   gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
+   airsbufr       airs        aqua        airs_aqua           0.0     1     1
+   amsuabufr_skip amsua       n15         amsua_n15           0.0     1     1
+   amsuabufr_skip amsua       n18         amsua_n18           0.0     1     1
+   amsuabufr_skip amsua       metop-a     amsua_metop-a       0.0     1     1
+   airsbufr_skip amsua       aqua        amsua_aqua          0.0     1     1
+   amsubbufr      amsub       n17         amsub_n17           0.0     1     1
+   mhsbufr_skip   mhs         n18         mhs_n18             0.0     1     1
+   mhsbufr_skip   mhs         metop-a     mhs_metop-a         0.0     1     1
+   ssmitbufr      ssmi        f15         ssmi_f15            0.0     1     0
+   amsrebufr      amsre_low   aqua        amsre_aqua          0.0     1     0
+   amsrebufr      amsre_mid   aqua        amsre_aqua          0.0     1     0
+   amsrebufr      amsre_hig   aqua        amsre_aqua          0.0     1     0
+   ssmisbufr      ssmis       f16         ssmis_f16           0.0     1     0
+   ssmisbufr      ssmis       f17         ssmis_f17           0.0     1     0
+   ssmisbufr      ssmis       f18         ssmis_f18           0.0     1     0
+   ssmisbufr      ssmis       f19         ssmis_f19           0.0     1     0
+   gsnd1bufr_skip sndrd1      g12         sndrD1_g12          0.0     1     0
+   gsnd1bufr_skip sndrd2      g12         sndrD2_g12          0.0     1     0
+   gsnd1bufr_skip sndrd3      g12         sndrD3_g12          0.0     1     0
+   gsnd1bufr_skip sndrd4      g12         sndrD4_g12          0.0     1     0
+   gsnd1bufr_skip sndrd1      g11         sndrD1_g11          0.0     1     0
+   gsnd1bufr_skip sndrd2      g11         sndrD2_g11          0.0     1     0
+   gsnd1bufr      sndrd3      g11         sndrD3_g11          0.0     1     0
+   gsnd1bufr_skip sndrd4      g11         sndrD4_g11          0.0     1     0
+   gsnd1bufr_skip sndrd1      g13         sndrD1_g13          0.0     1     0
+   gsnd1bufr_skip sndrd2      g13         sndrD2_g13          0.0     1     0
+   gsnd1bufr_skip sndrd3      g13         sndrD3_g13          0.0     1     0
+   gsnd1bufr_skip sndrd4      g13         sndrD4_g13          0.0     1     0
+   iasibufr       iasi        metop-a     iasi_metop-a        0.0     1     1
+   gomebufr       gome        metop-a     gome_metop-a        0.0     2     0
+   omibufr        omi         aura        omi_aura            0.0     2     0
+   sbuvbufr       sbuv2       n19         sbuv8_n19           0.0     0     0
+   hirs4bufr      hirs4       n19         hirs4_n19           0.0     1     1
+   amsuabufr      amsua       n19         amsua_n19           0.0     1     1
+   mhsbufr        mhs         n19         mhs_n19             0.0     1     1
+   tcvitl         tcp         null        tcp                 0.0     0     0
+   seviribufr     seviri      m08         seviri_m08          0.0     1     0
+   seviribufr     seviri      m09         seviri_m09          0.0     1     0
+   seviribufr     seviri      m10         seviri_m10          0.0     1     0
+   hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
+   amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
+   mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
+   iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
+   gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
+   atmsbufr       atms        npp         atms_npp            0.0     1     0
+   crisbufr       cris        npp         cris_npp            0.0     1     0
+   crisfsbufr     cris-fsr    npp         cris-fsr_npp        0.0     1     0
+   gsnd1bufr      sndrd1      g14         sndrD1_g14          0.0     1     0
+   gsnd1bufr      sndrd2      g14         sndrD2_g14          0.0     1     0
+   gsnd1bufr      sndrd3      g14         sndrD3_g14          0.0     1     0
+   gsnd1bufr      sndrd4      g14         sndrD4_g14          0.0     1     0
+   gsnd1bufr      sndrd1      g15         sndrD1_g15          0.0     1     0
+   gsnd1bufr      sndrd2      g15         sndrD2_g15          0.0     1     0
+   gsnd1bufr      sndrd3      g15         sndrD3_g15          0.0     1     0
+   gsnd1bufr      sndrd4      g15         sndrD4_g15          0.0     1     0
+   oscatbufr      uv          null        uv                  0.0     0     0
+   mlsbufr        mls30       aura        mls30_aura          0.0     0     0
+   avhambufr      avhrr       metop-a     avhrr3_metop-a      0.0     1     0
+   avhpmbufr      avhrr       n18         avhrr3_n18          0.0     1     0
+   amsr2bufr      amsr2       gcom-w1     amsr2_gcom-w1       0.0     3     0
+   gmibufr        gmi         gpm         gmi_gpm             0.0     3     0
+   saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
+   ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
+   rapidscatbufr  uv          null        uv                  0.0     0     0
+::
+  &SUPEROB_RADAR
+   $SUPERRAD
+ /
+ &LAG_DATA
+   $LAGDATA
+ /
+ &HYBRID_ENSEMBLE
+   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
+   write_ens_sprd=.false.,
+   $HYBRID_ENSEMBLE
+ /
+ &RAPIDREFRESH_CLDSURF
+   dfi_radar_latent_heat_time_period=30.0,
+ /
+ &CHEM
+
+ /
+ &SINGLEOB_TEST
+   maginnov=0.1,magoberr=0.1,oneob_type='t',
+   oblat=45.,oblon=180.,obpres=1000.,obdattim=${global_4denvar_T126_adate},
+   obhourset=0.,
+   $SINGLEOB
+ /
+ &NST
+   nst_gsi=3,nstinfo=4,fac_dtl=1,fac_tsl=1,zsea1=0,zsea2=5,
+   $NST
+ /
+"
+;;
+
 RTMA)
 
 # Define namelist for RTMA runs

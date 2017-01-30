@@ -82,15 +82,15 @@ case $regtest in
 
     ;;
 
-    global_4denvar_T670)
+    global_4denvar_T126)
 
         if [[ "$machine" = "Theia" ]]; then
            topts[1]="0:15:00" ; popts[1]="12/3/" ; ropts[1]="/1"
            topts[2]="0:15:00" ; popts[2]="12/5/" ; ropts[2]="/2"
            sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
-           topts[1]="0:30:00" ; popts[1]="12/12/" ; ropts[1]="/2"
-           topts[2]="0:30:00" ; popts[2]="16/12/" ; ropts[2]="/2"
+           topts[1]="0:35:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+           topts[2]="0:35:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
         fi
 
@@ -289,15 +289,10 @@ case $regtest in
 
 esac
 
-job[1]=${regtest}_hiproc_updat
-job[2]=${regtest}_loproc_updat
+job[1]=${regtest}_loproc_updat
+job[2]=${regtest}_hiproc_updat
 job[3]=${regtest}_loproc_contrl
 job[4]=${regtest}_hiproc_contrl
-
-#job[1]=${regtest}_loproc_updat
-#job[2]=${regtest}_hiproc_updat
-#job[3]=${regtest}_loproc_contrl
-#job[4]=${regtest}_hiproc_contrl
 
 topts[3]=${topts[1]} ; popts[3]=${popts[1]} ; ropts[3]=${ropts[1]}
 topts[4]=${topts[2]} ; popts[4]=${popts[2]} ; ropts[4]=${ropts[2]}
