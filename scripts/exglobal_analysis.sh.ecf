@@ -908,7 +908,7 @@ $FCPLN $OZINFO   ozinfo
 $FCPLN $PCPINFO  pcpinfo
 $FCPLN $AEROINFO aeroinfo
 $FCPLN $SCANINFO scaninfo
-$FCPLN $HYBENSINFO hybens_locinfo
+$FCPLN $HYBENSINFO hybens_info
 $FCPLN $OBERROR  errtable
 
 # CRTM Spectral and Transmittance coefficients
