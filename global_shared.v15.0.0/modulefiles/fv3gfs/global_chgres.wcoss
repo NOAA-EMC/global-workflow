@@ -2,21 +2,20 @@
 #############################################################
 ## Fanglin.Yang@noaa.gov
 ## NOAA/NWS/NCEP/EMC
-## global_chgres component of global_shared_v15.0.0  
+## global_chgres component of global_shared_v15.0.0 - wcoss
 #############################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for global_chgres component"
-puts stderr "This module initializes the users environment"
-puts stderr "to build chgres for WCOSS production.\n"
-}
-module-whatis "global_chgres"
 
-set ver v15.0.0
+proc ModulesHelp { } {
+puts stderr "Set environment veriables to build global_chgres"
+puts stderr "for WCOSS Phase 1/2.\n"
+}
+
+module-whatis "global_chgres v15.0.0"
 
 # Loading Intel Compiler Suite
 module load ics/14.0.1
 
-# Loding nceplibs modules
+# Loading nceplibs modules
 module load sigio/v2.0.1
 module load w3nco/v2.0.6
 module load w3emc/v2.2.0
