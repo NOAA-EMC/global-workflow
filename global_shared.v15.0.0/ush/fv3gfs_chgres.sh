@@ -1,4 +1,5 @@
 #!/bin/ksh 
+
 set -ax
 
 export type=$1   # GFS or SFC
@@ -62,9 +63,9 @@ export IDSL=1
 export LSOIL=0
 export IVSSFC=0
 if [ $type = "GFS" ]; then
-  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1,make_sfc=.false."
+  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1"
 else
-  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1,make_sfc=.true."
+  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1,tile_num=$tile"
 fi
 
 export executable=$exec_dir/global_chgres
@@ -115,11 +116,27 @@ export FNMSKH=${FIXGLOBAL}/seaice_newland.grb
 if [ $type = "GFS" ]; then
   export OUTGRID="${griddir}/C${res}_grid"
   export OUTOROG=""
+  ln -fs NULL chgres.inp.sfc
 else
   export OUTGRID="${griddir}/C${res}_grid.tile$tile.nc"
   export OUTOROG="${griddir}/C${res}_oro_data.tile$tile.nc"
+  ln -fs NULL chgres.inp.sig
 fi
 export ntiles=${ntiles:-6}
+
+ln -fs ${griddir}/C${res}_grid.tile1.nc chgres.fv3.grd.t1
+ln -fs ${griddir}/C${res}_grid.tile2.nc chgres.fv3.grd.t2
+ln -fs ${griddir}/C${res}_grid.tile3.nc chgres.fv3.grd.t3
+ln -fs ${griddir}/C${res}_grid.tile4.nc chgres.fv3.grd.t4
+ln -fs ${griddir}/C${res}_grid.tile5.nc chgres.fv3.grd.t5
+ln -fs ${griddir}/C${res}_grid.tile6.nc chgres.fv3.grd.t6
+
+ln -fs ${griddir}/C${res}_oro_data.tile1.nc chgres.fv3.orog.t1
+ln -fs ${griddir}/C${res}_oro_data.tile2.nc chgres.fv3.orog.t2
+ln -fs ${griddir}/C${res}_oro_data.tile3.nc chgres.fv3.orog.t3
+ln -fs ${griddir}/C${res}_oro_data.tile4.nc chgres.fv3.orog.t4
+ln -fs ${griddir}/C${res}_oro_data.tile5.nc chgres.fv3.orog.t5
+ln -fs ${griddir}/C${res}_oro_data.tile6.nc chgres.fv3.orog.t6
 
 if [ $LANDICE_OPT -eq 3 -o $LANDICE_OPT -eq 4 ]; then
   export LANDICE=.false.
@@ -190,11 +207,12 @@ cat << EOF > fort.81
   LANDICE_OPT=${LANDICE_OPT}
  /
 EOF
+
  $APRUNC global_chgres <<EOF '1>&1' '2>&2'
-  &NAMCHG JCAP=$JCAP, LEVS=$LEVS, LONB=$LONB, LATB=$LATB, 
+  &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB, 
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
-           LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP, IDRT=$IDRT, $CHGRESVARS, 
-           ntiles=$ntiles, OUTGRID="$OUTGRID", OUTOROG="$OUTOROG"
+           LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP, IDRT=$IDRT, 
+           ntiles=$ntiles, $CHGRESVARS
  /
 EOF
 
@@ -212,11 +230,7 @@ else
       mv gfs_ctrl.nc $outdir/gfs_ctrl.nc 
       mv gfs_data.nc  $outdir
    else
-      mv out.sfc.nc $outdir/sfc_data.tile$tile.nc
-      # sfc_ctrl.nc file are the same for all the tiles. so only need to copy 1
-      if [ $tile = 1 ]; then
-       mv sfc_ctrl.nc $outdir/sfc_ctrl.nc
-      fi
+      mv out.sfc.tile$tile.nc $outdir/sfc_data.tile$tile.nc
    fi
    echo "successfully running $executable "
    echo 0
