@@ -35,9 +35,5 @@ fi
 module list
 curdir=`pwd`
 
-
 cd ${curdir}/global_chgres.fd                       
-makefile.sh_new
-
-
-
+makefile.sh
