@@ -51,7 +51,6 @@ else
   export LATB=$res
 fi
 
-export JCAP=$(($LATB-2))
 export LEVS=${LEVS:-64}
 export IDVC=${IDVC:-2}
 export IDRT=${IDRT:-4}
@@ -217,7 +216,6 @@ else
          tile=$((tile+1))
       done
       mv gfs_ctrl.nc $outdir/gfs_ctrl.nc 
-      #mv gfs_data.nc  $outdir
    else
       mv out.sfc.tile$tile.nc $outdir/sfc_data.tile$tile.nc
    fi
