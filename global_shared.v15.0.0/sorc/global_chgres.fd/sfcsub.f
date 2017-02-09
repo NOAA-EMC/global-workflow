@@ -1,54 +1,49 @@
       module sfccyc_module
       implicit none
-      SAVE
+      save
 !
-!  GRIB code for each parameter - Used in subroutines SFCCYCLE and SETRMSK.
+!  grib code for each parameter - used in subroutines sfccycle and setrmsk.
 !
-      INTEGER kpdtsf,kpdwet,kpdsno,kpdzor,kpdais,kpdtg3,kpdplr,kpdgla,
+      integer kpdtsf,kpdwet,kpdsno,kpdzor,kpdais,kpdtg3,kpdplr,kpdgla,
      &        kpdmxi,kpdscv,kpdsmc,kpdoro,kpdmsk,kpdstc,kpdacn,kpdveg,
      &        kpdvet,kpdsot
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
      &,       kpdvmn,kpdvmx,kpdslp,kpdabs
-!cggg snow mods start  add snow depth
      &,       kpdsnd, kpdabs_0, kpdabs_1, kpdalb(4)
-!cggg snow mods end
-      PARAMETER(KPDTSF=11,  KPDWET=86, KPDSNO=65,  KPDZOR=83,
-!    1          KPDALB=84,  KPDAIS=91, KPDTG3=11,  KPDPLR=224,
-     1          KPDAIS=91,  KPDTG3=11, KPDPLR=224,
-     2          KPDGLA=238, KPDMXI=91, KPDSCV=238, KPDSMC=144,
-     3          KPDORO=8,   KPDMSK=81, KPDSTC=11,  KPDACN=91, KPDVEG=87,
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
+      parameter(kpdtsf=11,  kpdwet=86, kpdsno=65,  kpdzor=83,
+!    1          kpdalb=84,  kpdais=91, kpdtg3=11,  kpdplr=224,
+     1          kpdais=91,  kpdtg3=11, kpdplr=224,
+     2          kpdgla=238, kpdmxi=91, kpdscv=238, kpdsmc=144,
+     3          kpdoro=8,   kpdmsk=81, kpdstc=11,  kpdacn=91, kpdveg=87,
 !cbosu  max snow albedo uses a grib id number of 159, not 255.
      &          kpdvmn=255, kpdvmx=255,kpdslp=236, kpdabs_0=255,    
      &          kpdvet=225, kpdsot=224,kpdabs_1=159,
-!cggg snow mods start
      &          kpdsnd=66 )
-!cggg snow mods end
 !
       integer, parameter :: kpdalb_0(4)=(/212,215,213,216/)
       integer, parameter :: kpdalb_1(4)=(/189,190,191,192/)
       integer, parameter :: kpdalf(2)=(/214,217/)
 !
       integer, parameter :: xdata=5000, ydata=2500, mdata=xdata*ydata
+      integer            :: veg_type_landice
+      integer            :: soil_type_landice
 !
       end module sfccyc_module
-      SUBROUTINE SFCCYCLE(LUGB,LEN,LSOIL,SIG1T,DELTSFC
-     &,                   IY,IM,ID,IH,FH
-     &,                   RLA, RLO, SLMASK,OROG,orog_uf,use_ufo
-!Cwu [+1L] add SIHFCS and SICFCS
-     &,                   SIHFCS,SICFCS,SITFCS                 
-!Clu [+2L] add SWD, SLC, VMN, VMX, SLP, ABS
-     &,                   SWDFCS,SLCFCS      
-     &,                   VMNFCS,VMXFCS,SLPFCS,ABSFCS
-     &,                   TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS
-     &,                   CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M
-     &,                   VEGFCS,VETFCS,SOTFCS,ALFFCS
-     &,                   CVFCS,CVBFCS,CVTFCS,me,NLUNIT,IALB)
+      subroutine sfccycle(lugb,len,lsoil,sig1t,deltsfc
+     &,                   iy,im,id,ih,fh
+     &,                   rla, rlo, slmask,orog,orog_uf,use_ufo,nst_anl
+     &,                   sihfcs,sicfcs,sitfcs                 
+     &,                   swdfcs,slcfcs      
+     &,                   vmnfcs,vmxfcs,slpfcs,absfcs
+     &,                   tsffcs,snofcs,zorfcs,albfcs,tg3fcs
+     &,                   cnpfcs,smcfcs,stcfcs,slifcs,aisfcs,f10m
+     &,                   vegfcs,vetfcs,sotfcs,alffcs
+     &,                   cvfcs,cvbfcs,cvtfcs,me,nlunit,ialb
+     &,                   isot,ivegsrc)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
-      USE sfccyc_module
+      use machine , only : kind_io8,kind_io4
+      use sfccyc_module
       implicit none
-      logical use_ufo
+      logical use_ufo, nst_anl
       real (kind=kind_io8) sllnd,slsea,aicice,aicsea,tgice,rlapse,
      &                     orolmx,orolmn,oroomx,oroomn,orosmx,
      &                     orosmn,oroimx,oroimn,orojmx,orojmn,
@@ -97,22 +92,18 @@
      &                     fcplrl,fcplrs,fczors,fvets,fsotl,fsots,
      &                     fvetl,fplrs,fvegl,fvegs,fcsnol,fcsnos,
      &                     fczorl,fcalbs,fctsfl,fctsfs,fcalbl,
-     &                     falfs,falfl,fh,crit,zsca,ZTSFC,tem1,tem2
-!Cwu [+2L] add f()l,f()s,c()l,c()s,eps() for sih, sic
+     &                     falfs,falfl,fh,crit,zsca,ztsfc,tem1,tem2
      &,                    fsihl,fsihs,fsicl,fsics,
      &                     csihl,csihs,csicl,csics,epssih,epssic
-!Clu [+4L] add f()l,f()s,c()l,c()s,eps() for vmn, vmx, slp, abs
      &,                    fvmnl,fvmns,fvmxl,fvmxs,fslpl,fslps,
      &                     fabsl,fabss,cvmnl,cvmns,cvmxl,cvmxs,
      &                     cslpl,cslps,cabsl,cabss,epsvmn,epsvmx,
      &                     epsslp,epsabs
-!Cwu [+4L] add min/max for sih and sic
      &,                    sihlmx,sihlmn,sihomx,sihomn,sihsmx,
      &                     sihsmn,sihimx,sihimn,sihjmx,sihjmn,
      &                     siclmx,siclmn,sicomx,sicomn,sicsmx,
      &                     sicsmn,sicimx,sicimn,sicjmx,sicjmn
      &,                    glacir_hice
-!Clu [+8L] add min/max for vmn, vmx, slp, abs
      &,                    vmnlmx,vmnlmn,vmnomx,vmnomn,vmnsmx,
      &                     vmnsmn,vmnimx,vmnimn,vmnjmx,vmnjmn,
      &                     vmxlmx,vmxlmn,vmxomx,vmxomn,vmxsmx,
@@ -121,674 +112,626 @@
      &                     slpsmn,slpimx,slpimn,slpjmx,slpjmn,
      &                     abslmx,abslmn,absomx,absomn,abssmx,
      &                     abssmn,absimx,absimn,absjmx,absjmn
-!Cwu [+1L] add sihnew
      &,                    sihnew
 
-      INTEGER imsk,jmsk,ifp,irtscv,irtacn,irtais,irtsno,irtzor,
+      integer imsk,jmsk,ifp,irtscv,irtacn,irtais,irtsno,irtzor,
      &        irtalb,irtsot,irtalf,j,irtvet,irtsmc,irtstc,irtveg,
      &        irtwet,k,iprnt,kk,irttsf,iret,i,igrdbg,iy,im,id,
      &        icalbl,icalbs,icalfl,ictsfs,lugb,len,lsoil,ih,
      &        ictsfl,iczors,icplrl,icplrs,iczorl,icalfs,icsnol,
-     &        icsnos,irttg3,me,KQCM, NLUNIT,IALB
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
-     &,       irtvmn, irtvmx, irtslp, irtabs
-      LOGICAL GAUSM, DEADS, QCMSK, ZNLST, MONCLM, MONANL,
-!cggg landice mods start. 
-!     &        MONFCS, MONMER, MONDIF
-     &        MONFCS, MONMER, MONDIF, LANDICE
-!cggg landice mods end
+     &        icsnos,irttg3,me,kqcm, nlunit,ialb
+     &,       irtvmn, irtvmx, irtslp, irtabs, isot, ivegsrc
+      logical gausm, deads, qcmsk, znlst, monclm, monanl,
+     &        monfcs, monmer, mondif, landice
 
-      integer NUM_PARTHDS
+      integer num_parthds
 !
-!  THIS IS A limited point VERSION of SURFACE PROGRAM.
+!  this is a limited point version of surface program.
 !
-!  This program runs in two different modes:
+!  this program runs in two different modes:
 !
-!  1.  Analysis mode (FH=0.)
+!  1.  analysis mode (fh=0.)
 !
-!      This program merges climatology, analysis and forecast guess to create
-!      new surface fields.  If analysis file is given, the program
-!      uses it if date of the analysis matches with IY,IM,ID,IH (see Note
+!      this program merges climatology, analysis and forecast guess to create
+!      new surface fields.  if analysis file is given, the program
+!      uses it if date of the analysis matches with iy,im,id,ih (see note
 !      below).
 !
-!  2.  Forecast mode (FH.GT.0.)
+!  2.  forecast mode (fh.gt.0.)
 !
-!      This program interpolates climatology to the date corresponding to the
-!      forecast hour.  If surface analysis file is given, for the corresponding
+!      this program interpolates climatology to the date corresponding to the
+!      forecast hour.  if surface analysis file is given, for the corresponding
 !      dates, the program will use it.
 !
-!   NOTE:
+!   note:
 !
-!      If the date of the analysis does not match given IY,IM,ID,IH, (and FH),
+!      if the date of the analysis does not match given iy,im,id,ih, (and fh),
 !      the program searches an old analysis by going back 6 hours, then 12 hours,
-!      then one day upto NREPMX days (parameter statement in the SUBROTINE FIXRD.
-!      Now defined as 8).  This allows the user to provide non-daily analysis to
-!      be used.  If matching field is not found, the forecast guess will be used.
+!      then one day upto nrepmx days (parameter statement in the subrotine fixrd.
+!      now defined as 8).  this allows the user to provide non-daily analysis to
+!      be used.  if matching field is not found, the forecast guess will be used.
 !
-!      Use of a combined earlier surface analyses and current analysis is
-!      NOT allowed (as was done in the old version for snow analysis in which
+!      use of a combined earlier surface analyses and current analysis is
+!      not allowed (as was done in the old version for snow analysis in which
 !      old snow analysis is used in combination with initial guess), except
-!      for sea surface temperature.  For sst anolmaly interpolation, you need to
-!      set LANOM=.TRUE. and must provide sst analysis at initial time.
+!      for sea surface temperature.  for sst anolmaly interpolation, you need to
+!      set lanom=.true. and must provide sst analysis at initial time.
 !
-!      If you want to do complex merging of past and present surface field analysis,
-!      YOU NEED TO CREATE a separate file that contains DAILY SURFACE FIELD.
+!      if you want to do complex merging of past and present surface field analysis,
+!      you need to create a separate file that contains daily surface field.
 !
-!      For a dead start, do not supply FNBGSI or set FNBGSI='        '
+!      for a dead start, do not supply fnbgsi or set fnbgsi='        '
 !
-!  LUGB           is the unit number used in this subprogram
-!  LEN ...        Number of points on which sfccyc operates
-!  LSOIL .. 	  Number of soil layers (2 as of April, 1994)
-!  IY,IM,ID,IH .. Year, month, day, and hour of initial state.
-!  FH ..          Forecast hour
-!  RLA, RLO --    Latitude and longitudes of the LEN points
-!  SIG1T .. Sigma level 1 temperature for dead start.  Should be on Gaussian
-!           grid.  If not dead start, no need for dimension but set to zero
+!  lugb           is the unit number used in this subprogram
+!  len ...        number of points on which sfccyc operates
+!  lsoil .. 	  number of soil layers (2 as of april, 1994)
+!  iy,im,id,ih .. year, month, day, and hour of initial state.
+!  fh ..          forecast hour
+!  rla, rlo --    latitude and longitudes of the len points
+!  sig1t .. sigma level 1 temperature for dead start.  should be on gaussian
+!           grid.  if not dead start, no need for dimension but set to zero
 !           as in the example below.
 !
-!  Variable naming conventions:
+!  variable naming conventions:
 !
-!     ORO .. Orography
-!     ALB .. Albedo
-!     WET .. Soil wetness as defined for bucket model
-!     SNO .. Snow DEPTH
-!     ZOR .. Surface roughness length
-!     VET .. Vegetation type
-!     PLR .. Plant evaporation resistance
-!     TSF .. Surface skin temperature.  Sea surface temp. over ocean.
-!     TG3 .. Deep soil temperature (at 500cm)
-!     STC .. Soil temperature (LSOIL layrs)
-!     SMC .. Soil moisture (LSOIL layrs)
-!     SCV .. Snow cover (not snow depth)
-!     AIS .. Sea ice mask (0 or 1)
-!     ACN .. Sea ice concentration (fraction)
-!     GLA .. Glacier (permanent snow) mask (0 or 1)
-!     MXI .. Maximum sea ice extent (0 or 1)
-!     MSK .. Land ocean mask (0=ocean 1=land)
-!     CNP .. Canopy water content
-!     CV  .. Convective cloud cover
-!     CVB .. Convective cloud base
-!     CVT .. Convective cloud top
-!     SLI .. LAND/SEA/SEA-ICE mask. (1/0/2 respectively)
-!     VEG .. Vegetation cover
-!     SOT .. Soil type
-!Cwu [+2L] add SIH & SIC
-!     SIH .. Sea ice thickness
-!     SIC .. Sea ice concentration
-!Clu [+6L] add SWD,SLC,VMN,VMX,SLP,ABS
-!     SWD .. Actual snow depth
-!     SLC .. Liquid soil moisture (LSOIL layers)
-!     VMN .. Vegetation cover minimum
-!     VMX .. Vegetation cover maximum
-!     SLP .. Slope type
-!     ABS .. Maximum snow albedo
+!     oro .. orography
+!     alb .. albedo
+!     wet .. soil wetness as defined for bucket model
+!     sno .. snow depth
+!     zor .. surface roughness length
+!     vet .. vegetation type
+!     plr .. plant evaporation resistance
+!     tsf .. surface skin temperature.  sea surface temp. over ocean.
+!     tg3 .. deep soil temperature (at 500cm)
+!     stc .. soil temperature (lsoil layrs)
+!     smc .. soil moisture (lsoil layrs)
+!     scv .. snow cover (not snow depth)
+!     ais .. sea ice mask (0 or 1)
+!     acn .. sea ice concentration (fraction)
+!     gla .. glacier (permanent snow) mask (0 or 1)
+!     mxi .. maximum sea ice extent (0 or 1)
+!     msk .. land ocean mask (0=ocean 1=land)
+!     cnp .. canopy water content
+!     cv  .. convective cloud cover
+!     cvb .. convective cloud base
+!     cvt .. convective cloud top
+!     sli .. land/sea/sea-ice mask. (1/0/2 respectively)
+!     veg .. vegetation cover
+!     sot .. soil type
+!cwu [+2l] add sih & sic
+!     sih .. sea ice thickness
+!     sic .. sea ice concentration
+!clu [+6l] add swd,slc,vmn,vmx,slp,abs
+!     swd .. actual snow depth
+!     slc .. liquid soil moisture (lsoil layers)
+!     vmn .. vegetation cover minimum
+!     vmx .. vegetation cover maximum
+!     slp .. slope type
+!     abs .. maximum snow albedo
 
 !
-!  Definition of Land/Sea mask. SLLND for land and SLSEA for sea.
-!  Definition of Sea/ice mask. AICICE for ice, AICSEA for sea.
-!  TGICE=max ice temperature
-!  RLAPSE=lapse rate for sst correction due to surface angulation
+!  definition of land/sea mask. sllnd for land and slsea for sea.
+!  definition of sea/ice mask. aicice for ice, aicsea for sea.
+!  tgice=max ice temperature
+!  rlapse=lapse rate for sst correction due to surface angulation
 !
-      PARAMETER(SLLND =1.0,SLSEA =0.0)
-      PARAMETER(AICICE=1.0,AICSEA=0.0)
-      PARAMETER(TGICE=271.2)
-      PARAMETER(RLAPSE=0.65E-2)
+      parameter(sllnd =1.0,slsea =0.0)
+      parameter(aicice=1.0,aicsea=0.0)
+      parameter(tgice=271.2)
+      parameter(rlapse=0.65e-2)
 !
-!  Max/Min of fields for check and replace.
+!  max/min of fields for check and replace.
 !
-!     ???LMX .. Max over bare land
-!     ???LMN .. Min over bare land
-!     ???OMX .. Max over open ocean
-!     ???OMN .. Min over open ocean
-!     ???SMX .. Max over snow surface (land and sea-ice)
-!     ???SMN .. Min over snow surface (land and sea-ice)
-!     ???IMX .. Max over bare sea ice
-!     ???IMN .. Min over bare sea ice
-!     ???JMX .. Max over snow covered sea ice
-!     ???JMN .. Min over snow covered sea ice
+!     ???lmx .. max over bare land
+!     ???lmn .. min over bare land
+!     ???omx .. max over open ocean
+!     ???omn .. min over open ocean
+!     ???smx .. max over snow surface (land and sea-ice)
+!     ???smn .. min over snow surface (land and sea-ice)
+!     ???imx .. max over bare sea ice
+!     ???imn .. min over bare sea ice
+!     ???jmx .. max over snow covered sea ice
+!     ???jmn .. min over snow covered sea ice
 !
-      PARAMETER(OROLMX=8000.,OROLMN=-1000.,OROOMX=3000.,OROOMN=-1000.,
-     &          OROSMX=8000.,OROSMN=-1000.,OROIMX=3000.,OROIMN=-1000.,
-     &          OROJMX=3000.,OROJMN=-1000.)
-!     PARAMETER(ALBLMX=0.80,ALBLMN=0.06,ALBOMX=0.06,ALBOMN=0.06,
-!    &          ALBSMX=0.80,ALBSMN=0.06,ALBIMX=0.80,ALBIMN=0.80,
-!    &          ALBJMX=0.80,ALBJMN=0.80)
-!Cwu [-3L/+9L] change min/max for ALB; add min/max for SIH & SIC
-!     PARAMETER(ALBLMX=0.80,ALBLMN=0.01,ALBOMX=0.01,ALBOMN=0.01,
-!    &          ALBSMX=0.80,ALBSMN=0.01,ALBIMX=0.01,ALBIMN=0.01,
-!    &          ALBJMX=0.01,ALBJMN=0.01)
+      parameter(orolmx=8000.,orolmn=-1000.,oroomx=3000.,oroomn=-1000.,
+     &          orosmx=8000.,orosmn=-1000.,oroimx=3000.,oroimn=-1000.,
+     &          orojmx=3000.,orojmn=-1000.)
+!     parameter(alblmx=0.80,alblmn=0.06,albomx=0.06,albomn=0.06,
+!    &          albsmx=0.80,albsmn=0.06,albimx=0.80,albimn=0.80,
+!    &          albjmx=0.80,albjmn=0.80)
+!cwu [-3l/+9l] change min/max for alb; add min/max for sih & sic
+!     parameter(alblmx=0.80,alblmn=0.01,albomx=0.01,albomn=0.01,
+!    &          albsmx=0.80,albsmn=0.01,albimx=0.01,albimn=0.01,
+!    &          albjmx=0.01,albjmn=0.01)
 !  note: the range values for bare land and snow covered land
-!        (ALBLMX, ALBLMN, ALBSMX, ALBSMN) are set below
+!        (alblmx, alblmn, albsmx, albsmn) are set below
 !        based on whether the old or new radiation is selected
-      PARAMETER(ALBOMX=0.06,ALBOMN=0.06,
-     &          ALBIMX=0.80,ALBIMN=0.06,
-     &          ALBJMX=0.80,ALBJMN=0.06)
-      PARAMETER(SIHLMX=0.0,SIHLMN=0.0,SIHOMX=5.0,SIHOMN=0.0,
-     &          SIHSMX=5.0,SIHSMN=0.0,SIHIMX=5.0,SIHIMN=0.10,
-     &          SIHJMX=5.0,SIHJMN=0.10,glacir_hice=3.0)
-      PARAMETER(SICLMX=0.0,SICLMN=0.0,SICOMX=1.0,SICOMN=0.0,
-     &          SICSMX=1.0,SICSMN=0.0,SICIMX=1.0,SICIMN=0.50,
-     &          SICJMX=1.0,SICJMN=0.50)
+      parameter(albomx=0.06,albomn=0.06,
+     &          albimx=0.80,albimn=0.06,
+     &          albjmx=0.80,albjmn=0.06)
+      parameter(sihlmx=0.0,sihlmn=0.0,sihomx=5.0,sihomn=0.0,
+     &          sihsmx=5.0,sihsmn=0.0,sihimx=5.0,sihimn=0.10,
+     &          sihjmx=5.0,sihjmn=0.10,glacir_hice=3.0)
+!cwu change sicimn & sicjmn Jan 2015
+!     parameter(siclmx=0.0,siclmn=0.0,sicomx=1.0,sicomn=0.0,
+!    &          sicsmx=1.0,sicsmn=0.0,sicimx=1.0,sicimn=0.50,
+!    &          sicjmx=1.0,sicjmn=0.50)
 !
-!     PARAMETER(SIHLMX=0.0,SIHLMN=0.0,SIHOMX=8.0,SIHOMN=0.0,
-!    &          SIHSMX=8.0,SIHSMN=0.0,SIHIMX=8.0,SIHIMN=0.10,
-!    &          SIHJMX=8.0,SIHJMN=0.10,glacir_hice=3.0)
-!     PARAMETER(SICLMX=0.0,SICLMN=0.0,SICOMX=1.0,SICOMN=0.0,
-!    &          SICSMX=1.0,SICSMN=0.0,SICIMX=1.0,SICIMN=0.15,
-!    &          SICJMX=1.0,SICJMN=0.15)
+!     parameter(sihlmx=0.0,sihlmn=0.0,sihomx=8.0,sihomn=0.0,
+!    &          sihsmx=8.0,sihsmn=0.0,sihimx=8.0,sihimn=0.10,
+!    &          sihjmx=8.0,sihjmn=0.10,glacir_hice=3.0)
+      parameter(siclmx=0.0,siclmn=0.0,sicomx=1.0,sicomn=0.0,
+     &          sicsmx=1.0,sicsmn=0.0,sicimx=1.0,sicimn=0.15,
+     &          sicjmx=1.0,sicjmn=0.15)
 
-      PARAMETER(WETLMX=0.15,WETLMN=0.00,WETOMX=0.15,WETOMN=0.15,
-     &          WETSMX=0.15,WETSMN=0.15,WETIMX=0.15,WETIMN=0.15,
-     &          WETJMX=0.15,WETJMN=0.15)
-!Clu [-1L/+1L] revise SNOSMN (for Noah LSM)
-      PARAMETER(SNOLMX=0.0,SNOLMN=0.0,SNOOMX=0.0,SNOOMN=0.0,
-!*   &          SNOSMX=55000.,SNOSMN=0.01,SNOIMX=0.,SNOIMN=0.0,
-!cggg landice mods start, should SNOSMN be set to .001 as in noah
-!cggg     &          SNOSMX=55000.,SNOSMN=0.0001,SNOIMX=0.,SNOIMN=0.0,
-     &          SNOSMX=55000.,SNOSMN=0.001,SNOIMX=0.,SNOIMN=0.0,
-!cggg landice mods end
-     &          SNOJMX=10000.,SNOJMN=0.01)
-      PARAMETER(ZORLMX=300.,ZORLMN=1.0,ZOROMX=1.0,ZOROMN=1.E-05,
-     &          ZORSMX=300.,ZORSMN=1.0,ZORIMX=1.0,ZORIMN=1.0,
-     &          ZORJMX=1.0,ZORJMN=1.0)
-      PARAMETER(PLRLMX=1000.,PLRLMN=0.0,PLROMX=1000.0,PLROMN=0.0,
-     &          PLRSMX=1000.,PLRSMN=0.0,PLRIMX=1000.,PLRIMN=0.0,
-     &          PLRJMX=1000.,PLRJMN=0.0)
-!Clu [-1L/+1L] relax TSFSMX (for Noah LSM)
-      PARAMETER(TSFLMX=353.,TSFLMN=173.0,TSFOMX=313.0,TSFOMN=271.2,
-     &          TSFSMX=305.0,TSFSMN=173.0,TSFIMX=271.2,TSFIMN=173.0,
-     &          TSFJMX=273.16,TSFJMN=173.0)
-!     PARAMETER(TSFLMX=353.,TSFLMN=173.0,TSFOMX=313.0,TSFOMN=271.21,
-!*   &          TSFSMX=273.16,TSFSMN=173.0,TSFIMX=271.21,TSFIMN=173.0,
-!    &          TSFSMX=305.0,TSFSMN=173.0,TSFIMX=271.21,TSFIMN=173.0,
-      PARAMETER(TG3LMX=310.,TG3LMN=200.0,TG3OMX=310.0,TG3OMN=200.0,
-     &          TG3SMX=310.,TG3SMN=200.0,TG3IMX=310.0,TG3IMN=200.0,
-     &          TG3JMX=310.,TG3JMN=200.0)
-      PARAMETER(STCLMX=353.,STCLMN=173.0,STCOMX=313.0,STCOMN=200.0,
-     &          STCSMX=310.,STCSMN=200.0,STCIMX=310.0,STCIMN=200.0,
-     &          STCJMX=310.,STCJMN=200.0)
-!cggg landice mods start.  force a flag value of soil moisture of 1.0
-!                          at non-land points
-!      PARAMETER(SMCLMX=0.55,SMCLMN=0.0,SMCOMX=0.55,SMCOMN=0.0,
-!     &          SMCSMX=0.55,SMCSMN=0.0,SMCIMX=0.55,SMCIMN=0.0,
-!     &          SMCJMX=0.55,SMCJMN=0.0)
-      PARAMETER(SMCLMX=0.55,SMCLMN=0.0,SMCOMX=1.0,SMCOMN=1.0,
-     &          SMCSMX=0.55,SMCSMN=0.0,SMCIMX=1.0,SMCIMN=1.0,
-     &          SMCJMX=1.0,SMCJMN=1.0)
-!cggg landice mods end.
-      PARAMETER(SCVLMX=0.0,SCVLMN=0.0,SCVOMX=0.0,SCVOMN=0.0,
-     &          SCVSMX=1.0,SCVSMN=1.0,SCVIMX=0.0,SCVIMN=0.0,
-     &          SCVJMX=1.0,SCVJMN=1.0)
-      PARAMETER(VEGLMX=1.0,VEGLMN=0.0,VEGOMX=0.0,VEGOMN=0.0,
-     &          VEGSMX=1.0,VEGSMN=0.0,VEGIMX=0.0,VEGIMN=0.0,
-     &          VEGJMX=0.0,VEGJMN=0.0)
-!Clu [+12L] set min/max for VMN, VMX, SLP, ABS
-      PARAMETER(VMNLMX=1.0,VMNLMN=0.0,VMNOMX=0.0,VMNOMN=0.0,
-     &          VMNSMX=1.0,VMNSMN=0.0,VMNIMX=0.0,VMNIMN=0.0,
-     &          VMNJMX=0.0,VMNJMN=0.0)   
-      PARAMETER(VMXLMX=1.0,VMXLMN=0.0,VMXOMX=0.0,VMXOMN=0.0,
-     &          VMXSMX=1.0,VMXSMN=0.0,VMXIMX=0.0,VMXIMN=0.0,
-     &          VMXJMX=0.0,VMXJMN=0.0)  
-      PARAMETER(SLPLMX=9.0,SLPLMN=1.0,SLPOMX=0.0,SLPOMN=0.0,
-!cggg landice mods start
-!cggg     &          SLPSMX=9.0,SLPSMN=1.0,SLPIMX=9.0,SLPIMN=9.0,
-!cggg     &          SLPJMX=9.0,SLPJMN=9.0) 
-     &          SLPSMX=9.0,SLPSMN=1.0,SLPIMX=0.,SLPIMN=0.,
-     &          SLPJMX=0.,SLPJMN=0.) 
-!cggg landice mods end
+      parameter(wetlmx=0.15,wetlmn=0.00,wetomx=0.15,wetomn=0.15,
+     &          wetsmx=0.15,wetsmn=0.15,wetimx=0.15,wetimn=0.15,
+     &          wetjmx=0.15,wetjmn=0.15)
+      parameter(snolmx=0.0,snolmn=0.0,snoomx=0.0,snoomn=0.0,
+     &          snosmx=55000.,snosmn=0.001,snoimx=0.,snoimn=0.0,
+     &          snojmx=10000.,snojmn=0.01)
+      parameter(zorlmx=300.,zorlmn=1.0,zoromx=1.0,zoromn=1.e-05,
+     &          zorsmx=300.,zorsmn=1.0,zorimx=1.0,zorimn=1.0,
+     &          zorjmx=1.0,zorjmn=1.0)
+      parameter(plrlmx=1000.,plrlmn=0.0,plromx=1000.0,plromn=0.0,
+     &          plrsmx=1000.,plrsmn=0.0,plrimx=1000.,plrimn=0.0,
+     &          plrjmx=1000.,plrjmn=0.0)
+!clu [-1l/+1l] relax tsfsmx (for noah lsm)
+      parameter(tsflmx=353.,tsflmn=173.0,tsfomx=313.0,tsfomn=271.2,
+     &          tsfsmx=305.0,tsfsmn=173.0,tsfimx=271.2,tsfimn=173.0,
+     &          tsfjmx=273.16,tsfjmn=173.0)
+!     parameter(tsflmx=353.,tsflmn=173.0,tsfomx=313.0,tsfomn=271.21,
+!*   &          tsfsmx=273.16,tsfsmn=173.0,tsfimx=271.21,tsfimn=173.0,
+!    &          tsfsmx=305.0,tsfsmn=173.0,tsfimx=271.21,tsfimn=173.0,
+      parameter(tg3lmx=310.,tg3lmn=200.0,tg3omx=310.0,tg3omn=200.0,
+     &          tg3smx=310.,tg3smn=200.0,tg3imx=310.0,tg3imn=200.0,
+     &          tg3jmx=310.,tg3jmn=200.0)
+      parameter(stclmx=353.,stclmn=173.0,stcomx=313.0,stcomn=200.0,
+     &          stcsmx=310.,stcsmn=200.0,stcimx=310.0,stcimn=200.0,
+     &          stcjmx=310.,stcjmn=200.0)
+!landice mods   force a flag value of soil moisture of 1.0
+!               at non-land points
+      parameter(smclmx=0.55,smclmn=0.0,smcomx=1.0,smcomn=1.0,
+     &          smcsmx=0.55,smcsmn=0.0,smcimx=1.0,smcimn=1.0,
+     &          smcjmx=1.0,smcjmn=1.0)
+      parameter(scvlmx=0.0,scvlmn=0.0,scvomx=0.0,scvomn=0.0,
+     &          scvsmx=1.0,scvsmn=1.0,scvimx=0.0,scvimn=0.0,
+     &          scvjmx=1.0,scvjmn=1.0)
+      parameter(veglmx=1.0,veglmn=0.0,vegomx=0.0,vegomn=0.0,
+     &          vegsmx=1.0,vegsmn=0.0,vegimx=0.0,vegimn=0.0,
+     &          vegjmx=0.0,vegjmn=0.0)
+      parameter(vmnlmx=1.0,vmnlmn=0.0,vmnomx=0.0,vmnomn=0.0,
+     &          vmnsmx=1.0,vmnsmn=0.0,vmnimx=0.0,vmnimn=0.0,
+     &          vmnjmx=0.0,vmnjmn=0.0)   
+      parameter(vmxlmx=1.0,vmxlmn=0.0,vmxomx=0.0,vmxomn=0.0,
+     &          vmxsmx=1.0,vmxsmn=0.0,vmximx=0.0,vmximn=0.0,
+     &          vmxjmx=0.0,vmxjmn=0.0)  
+      parameter(slplmx=9.0,slplmn=1.0,slpomx=0.0,slpomn=0.0,
+     &          slpsmx=9.0,slpsmn=1.0,slpimx=0.,slpimn=0.,
+     &          slpjmx=0.,slpjmn=0.) 
 !  note: the range values for bare land and snow covered land
-!        (ALBLMX, ALBLMN, ALBSMX, ALBSMN) are set below
+!        (alblmx, alblmn, albsmx, albsmn) are set below
 !        based on whether the old or new radiation is selected
-      PARAMETER(ABSOMX=0.0,ABSOMN=0.0,
-     &          ABSIMX=0.0,ABSIMN=0.0,
-     &          ABSJMX=0.0,ABSJMN=0.0)    
+      parameter(absomx=0.0,absomn=0.0,
+     &          absimx=0.0,absimn=0.0,
+     &          absjmx=0.0,absjmn=0.0)    
 !  vegetation type
-      PARAMETER(VETLMX=13.,VETLMN=1.0,VETOMX=0.0,VETOMN=0.0,
-!cggg landice mods start
-!cggg     &          VETSMX=13.,VETSMN=1.0,VETIMX=13.,VETIMN=13.0,
-!cggg     &          VETJMX=13.,VETJMN=13.0)
-     &          VETSMX=13.,VETSMN=1.0,VETIMX=0.,VETIMN=0.,
-     &          VETJMX=0.,VETJMN=0.)
-!cggg landice mods end
+      parameter(vetlmx=20.,vetlmn=1.0,vetomx=0.0,vetomn=0.0,
+     &          vetsmx=20.,vetsmn=1.0,vetimx=0.,vetimn=0.,
+     &          vetjmx=0.,vetjmn=0.)
 !  soil type
-      PARAMETER(SOTLMX=9.,SOTLMN=1.0,SOTOMX=0.0,SOTOMN=0.0,
-!cggg landice mods start
-!cggg     &          SOTSMX=9.,SOTSMN=1.0,SOTIMX=9.,SOTIMN=9.0,
-!cggg     &          SOTJMX=9.,SOTJMN=0.0)
-     &          SOTSMX=9.,SOTSMN=1.0,SOTIMX=0.,SOTIMN=0.,
-     &          SOTJMX=0.,SOTJMN=0.)
-!cggg landice mods end
+      parameter(sotlmx=16.,sotlmn=1.0,sotomx=0.0,sotomn=0.0,
+     &          sotsmx=16.,sotsmn=1.0,sotimx=0.,sotimn=0.,
+     &          sotjmx=0.,sotjmn=0.)
 !  fraction of vegetation for strongly and weakly zeneith angle dependent
 !  albedo
-      PARAMETER(ALSLMX=1.0,ALSLMN=0.0,ALSOMX=0.0,ALSOMN=0.0,
-     &          ALSSMX=1.0,ALSSMN=0.0,ALSIMX=0.0,ALSIMN=0.0,
-     &          ALSJMX=0.0,ALSJMN=0.0)
+      parameter(alslmx=1.0,alslmn=0.0,alsomx=0.0,alsomn=0.0,
+     &          alssmx=1.0,alssmn=0.0,alsimx=0.0,alsimn=0.0,
+     &          alsjmx=0.0,alsjmn=0.0)
 !
-!  Criteria used for monitoring
+!  criteria used for monitoring
 !
-      PARAMETER(EPSTSF=0.01,EPSALB=0.001,EPSSNO=0.01,
-     &          EPSWET=0.01,EPSZOR=0.0000001,EPSPLR=1.,EPSORO=0.,
-     &          EPSSMC=0.0001,EPSSCV=0.,EPTSFC=0.01,EPSTG3=0.01,
-     &          EPSAIS=0.,EPSACN=0.01,EPSVEG=0.01,
-!Cwu [+1L] add eps() for sih, sic
-     &          EPSSIH=0.001,EPSSIC=0.001,
-!Clu [+1L] add eps() for vmn, vmx, abs, slp
-     &          EPSVMN=0.01,EPSVMX=0.01,EPSABS=0.001,EPSSLP=0.01,
+      parameter(epstsf=0.01,epsalb=0.001,epssno=0.01,
+     &          epswet=0.01,epszor=0.0000001,epsplr=1.,epsoro=0.,
+     &          epssmc=0.0001,epsscv=0.,eptsfc=0.01,epstg3=0.01,
+     &          epsais=0.,epsacn=0.01,epsveg=0.01,
+     &          epssih=0.001,epssic=0.001,
+     &          epsvmn=0.01,epsvmx=0.01,epsabs=0.001,epsslp=0.01,
      &          epsvet=.01,epssot=.01,epsalf=.001)
 !
-!  Quality control of analysis snow and sea ice
+!  quality control of analysis snow and sea ice
 !
-!   QCTSFS .. Surface temperature above which no snow allowed
-!   QCSNOS .. Snow depth above which snow must exist
-!   QCTSFI .. SST above which sea-ice is not allowed
+!   qctsfs .. surface temperature above which no snow allowed
+!   qcsnos .. snow depth above which snow must exist
+!   qctsfi .. sst above which sea-ice is not allowed
 !
-!Clu relax QCTSFS (for Noah LSM)
-!*    PARAMETER(QCTSFS=283.16,QCSNOS=100.,QCTSFI=280.16)
-!*    PARAMETER(QCTSFS=288.16,QCSNOS=100.,QCTSFI=280.16)
-      PARAMETER(QCTSFS=293.16,QCSNOS=100.,QCTSFI=280.16)
+!clu relax qctsfs (for noah lsm)
+!*    parameter(qctsfs=283.16,qcsnos=100.,qctsfi=280.16)
+!*    parameter(qctsfs=288.16,qcsnos=100.,qctsfi=280.16)
+      parameter(qctsfs=293.16,qcsnos=100.,qctsfi=280.16)
 !
-!Cwu [-2L]
-!* Ice concentration for ice limit (55 percent)
+!cwu [-2l]
+!* ice concentration for ice limit (55 percent)
 !
-!*    PARAMETER(AISLIM=0.55)
+!*    parameter(aislim=0.55)
 !
-!  Parameters to obtain snow depth from snow cover and temperature
+!  parameters to obtain snow depth from snow cover and temperature
 !
-!     PARAMETER(SNWMIN=25.,SNWMAX=100.)
-      PARAMETER(SNWMIN=5.0,SNWMAX=100.)
+!     parameter(snwmin=25.,snwmax=100.)
+      parameter(snwmin=5.0,snwmax=100.)
       real (kind=kind_io8), parameter :: ten=10.0, one=1.0
 !
-!  COEEFICIENTS OF BLENDING FORECAST AND INTERPOLATED CLIM
-!  (OR ANALYZED) FIELDS OVER SEA OR LAND(L) (NOT FOR CLOUDS)
-!  1.0 = USE OF FORECAST
-!  0.0 = REPLACE WITH INTERPOLATED ANALYSIS
+!  coeeficients of blending forecast and interpolated clim
+!  (or analyzed) fields over sea or land(l) (not for clouds)
+!  1.0 = use of forecast
+!  0.0 = replace with interpolated analysis
 !
-!    These values are set for analysis mode.
+!    these values are set for analysis mode.
 !
-!   Variables                  Land                 Sea
+!   variables                  land                 sea
 !   ---------------------------------------------------------
-!   Surface temperature        Forecast             Analysis
-!Cwu [+1L]
-!   Surface temperature        Forecast             Forecast (over sea ice)
-!   Albedo                     Analysis             Analysis
-!   Sea-ice                    Analysis             Analysis
-!   Snow                       Analysis             Forecast (over sea ice)
-!   Roughness                  Analysis             Forecast
-!   Plant resistance           Analysis             Analysis
-!   Soil wetness (layer)       Weighted average     Analysis
-!   Soil temperature           Forecast             Analysis
-!   Canopy waver content       Forecast             Forecast
-!   Convective cloud cover     Forecast             Forecast
-!   Convective cloud bottm     Forecast             Forecast
-!   Convective cloud top       Forecast             Forecast
-!   Vegetation cover           Analysis             Analysis
-!   vegetation type            Analysis             Analysis
-!   soil type                  Analysis             Analysis
-!Cwu [+2L]
-!   Sea-ice thickness          Forecast             Forecast
-!   Sea-ice concentration      Analysis             Analysis
-!Clu [+6L]
-!   Vegetation cover min       Analysis             Analysis
-!   Vegetation cover max       Analysis             Analysis
-!   Max snow albedo            Analysis             Analysis
-!   Slope type                 Analysis             Analysis
-!   Liquid Soil wetness        Analysis-weighted    Analysis
-!   Actual snow depth          Analysis-weighted    Analysis
+!   surface temperature        forecast             analysis
+!   surface temperature        forecast             forecast (over sea ice)
+!   albedo                     analysis             analysis
+!   sea-ice                    analysis             analysis
+!   snow                       analysis             forecast (over sea ice)
+!   roughness                  analysis             forecast
+!   plant resistance           analysis             analysis
+!   soil wetness (layer)       weighted average     analysis
+!   soil temperature           forecast             analysis
+!   canopy waver content       forecast             forecast
+!   convective cloud cover     forecast             forecast
+!   convective cloud bottm     forecast             forecast
+!   convective cloud top       forecast             forecast
+!   vegetation cover           analysis             analysis
+!   vegetation type            analysis             analysis
+!   soil type                  analysis             analysis
+!   sea-ice thickness          forecast             forecast
+!   sea-ice concentration      analysis             analysis
+!   vegetation cover min       analysis             analysis
+!   vegetation cover max       analysis             analysis
+!   max snow albedo            analysis             analysis
+!   slope type                 analysis             analysis
+!   liquid soil wetness        analysis-weighted    analysis
+!   actual snow depth          analysis-weighted    analysis
 !
-!  Note: If analysis file is not given, then time interpolated climatology
-!        is used.  If analyiss file is given, it will be used as far as the
-!        date and time matches.  If they do not match, it uses forecast.
+!  note: if analysis file is not given, then time interpolated climatology
+!        is used.  if analyiss file is given, it will be used as far as the
+!        date and time matches.  if they do not match, it uses forecast.
 !
-!  Critical percentage value for aborting bad points when LGCHEK=.TRUE.
+!  critical percentage value for aborting bad points when lgchek=.true.
 !
-      LOGICAL LGCHEK
-      DATA LGCHEK/.TRUE./
-      DATA CRITP1,CRITP2,CRITP3/80.,80.,25./
+      logical lgchek
+      data lgchek/.true./
+      data critp1,critp2,critp3/80.,80.,25./
 !
 !     integer kpdalb(4), kpdalf(2)
 !     data kpdalb/212,215,213,216/, kpdalf/214,217/
 !     save kpdalb, kpdalf
 !
-!  MASK OROGRAPHY AND VARIANCE ON GAUSSIAN GRID
+!  mask orography and variance on gaussian grid
 !
-      REAL (KIND=KIND_IO8) SLMASK(LEN),OROG(LEN), orog_uf(len)
+      real (kind=kind_io8) slmask(len),orog(len), orog_uf(len)
      &,                    orogd(len)
-      REAL (KIND=KIND_IO8) RLA(LEN), RLO(LEN)
+      real (kind=kind_io8) rla(len), rlo(len)
 !
-!  Permanent/extremes
+!  permanent/extremes
 !
-      CHARACTER*500 FNGLAC,FNMXIC
-      real (kind=kind_io8), allocatable :: GLACIR(:),AMXICE(:),TSFCL0(:)
+      character*500 fnglac,fnmxic
+      real (kind=kind_io8), allocatable :: glacir(:),amxice(:),tsfcl0(:)
 !
-!     TSFCL0 is the climatological TSF at FH=0
+!     tsfcl0 is the climatological tsf at fh=0
 !
-!  CLIMATOLOGY SURFACE FIELDS (Last character 'C' or 'CLM' indicate CLIMATOLOGY)
+!  climatology surface fields (last character 'c' or 'clm' indicate climatology)
 !
-      CHARACTER*500 FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &              FNPLRC,FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,
-     &              FNVEGC,fnvetc,fnsotc
-!Clu [+1L] add FN()C for vmn, vmx, slp, abs
-     &,             FNVMNC,FNVMXC,FNSLPC,FNABSC, FNALBC2 
-      REAL (KIND=KIND_IO8) TSFCLM(LEN), WETCLM(LEN),   SNOCLM(LEN),
-     &     ZORCLM(LEN), ALBCLM(LEN,4), AISCLM(LEN),
-     &     TG3CLM(LEN), ACNCLM(LEN),   CNPCLM(LEN),
-     &     CVCLM (LEN), CVBCLM(LEN),   CVTCLM(LEN),
-     &     SCVCLM(LEN), TSFCL2(LEN),   VEGCLM(LEN),
-     &     vetclm(LEN), sotclm(LEN),   ALFCLM(LEN,2), SLICLM(LEN),
-     &     SMCCLM(LEN,LSOIL), STCCLM(LEN,LSOIL)
-!Cwu [+1L] add ()CLM for sih, sic
-     &,    SIHCLM(LEN), SICCLM(LEN)
-!Clu [+1L] add ()CLM for vmn, vmx, slp, abs
-     &,    VMNCLM(LEN), VMXCLM(LEN), SLPCLM(LEN), ABSCLM(LEN)
+      character*500 fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &              fnplrc,fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,
+     &              fnvegc,fnvetc,fnsotc
+     &,             fnvmnc,fnvmxc,fnslpc,fnabsc, fnalbc2 
+      real (kind=kind_io8) tsfclm(len), wetclm(len),   snoclm(len),
+     &     zorclm(len), albclm(len,4), aisclm(len),
+     &     tg3clm(len), acnclm(len),   cnpclm(len),
+     &     cvclm (len), cvbclm(len),   cvtclm(len),
+     &     scvclm(len), tsfcl2(len),   vegclm(len),
+     &     vetclm(len), sotclm(len),   alfclm(len,2), sliclm(len),
+     &     smcclm(len,lsoil), stcclm(len,lsoil)
+     &,    sihclm(len), sicclm(len)
+     &,    vmnclm(len), vmxclm(len), slpclm(len), absclm(len)
 !
-!  ANALYZED SURFACE FIELDS (Last character 'A' or 'ANL' indicate ANALYSIS)
+!  analyzed surface fields (last character 'a' or 'anl' indicate analysis)
 !
-      CHARACTER*500 FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &             FNPLRA,FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,
-     &             FNVEGA,fnveta,fnsota
-!Clu [+1L] add FN()A for vmn, vmx, slp, abs
-     &,            FNVMNA,FNVMXA,FNSLPA,FNABSA       
+      character*500 fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &             fnplra,fntg3a,fnscva,fnsmca,fnstca,fnacna,
+     &             fnvega,fnveta,fnsota
+     &,            fnvmna,fnvmxa,fnslpa,fnabsa       
 !
-      REAL (KIND=KIND_IO8) TSFANL(LEN), WETANL(LEN),   SNOANL(LEN),
-     &     ZORANL(LEN), ALBANL(LEN,4), AISANL(LEN),
-     &     TG3ANL(LEN), ACNANL(LEN),   CNPANL(LEN),
-     &     CVANL (LEN), CVBANL(LEN),   CVTANL(LEN),
-     &     SCVANL(LEN), TSFAN2(LEN),   VEGANL(LEN),
-     &     vetanl(LEN), sotanl(LEN),   ALFANL(LEN,2), SLIANL(LEN),
-     &     SMCANL(LEN,LSOIL), STCANL(LEN,LSOIL)
-!Cwu [+1L] add SIHANL & SICANL
-     &,    SIHANL(LEN), SICANL(LEN)
-!Clu [+1L] add ()ANL for vmn, vmx, slp, abs
-     &,    VMNANL(LEN), VMXANL(LEN), SLPANL(LEN), ABSANL(LEN)
+      real (kind=kind_io8) tsfanl(len), wetanl(len),   snoanl(len),
+     &     zoranl(len), albanl(len,4), aisanl(len),
+     &     tg3anl(len), acnanl(len),   cnpanl(len),
+     &     cvanl (len), cvbanl(len),   cvtanl(len),
+     &     scvanl(len), tsfan2(len),   veganl(len),
+     &     vetanl(len), sotanl(len),   alfanl(len,2), slianl(len),
+     &     smcanl(len,lsoil), stcanl(len,lsoil)
+     &,    sihanl(len), sicanl(len)
+     &,    vmnanl(len), vmxanl(len), slpanl(len), absanl(len)
 !
-      REAL (KIND=KIND_IO8) TSFAN0(LEN) !  Sea surface temperature analysis at FT=0.
+      real (kind=kind_io8) tsfan0(len) !  sea surface temperature analysis at ft=0.
 !
-!  PREDICTED SURFACE FIELDS (Last characters 'FCS' indicates FORECAST)
+!  predicted surface fields (last characters 'fcs' indicates forecast)
 !
-      REAL (KIND=KIND_IO8) TSFFCS(LEN), WETFCS(LEN),   SNOFCS(LEN),
-     &     ZORFCS(LEN), ALBFCS(LEN,4), AISFCS(LEN),
-     &     TG3FCS(LEN), ACNFCS(LEN),   CNPFCS(LEN),
-     &     CVFCS (LEN), CVBFCS(LEN),   CVTFCS(LEN),
-     &     SLIFCS(LEN), VEGFCS(LEN),
-     &     vetfcs(LEN), sotfcs(LEN),   alffcs(LEN,2),
-     &     SMCFCS(LEN,LSOIL), STCFCS(LEN,LSOIL)
-!Cwu [+1L] add SIHFCS & SICFCS
-     &,    SIHFCS(LEN), SICFCS(LEN), SITFCS(LEN)
-!Clu [+2L] add ()FCS for VMN, VMX, SLP, ABS, SWD, SLC
-     &,    VMNFCS(LEN), VMXFCS(LEN), SLPFCS(LEN), ABSFCS(LEN)
-     &,    SWDFCS(LEN), SLCFCS(LEN,LSOIL)
+      real (kind=kind_io8) tsffcs(len), wetfcs(len),   snofcs(len),
+     &     zorfcs(len), albfcs(len,4), aisfcs(len),
+     &     tg3fcs(len), acnfcs(len),   cnpfcs(len),
+     &     cvfcs (len), cvbfcs(len),   cvtfcs(len),
+     &     slifcs(len), vegfcs(len),
+     &     vetfcs(len), sotfcs(len),   alffcs(len,2),
+     &     smcfcs(len,lsoil), stcfcs(len,lsoil)
+     &,    sihfcs(len), sicfcs(len), sitfcs(len)
+     &,    vmnfcs(len), vmxfcs(len), slpfcs(len), absfcs(len)
+     &,    swdfcs(len), slcfcs(len,lsoil)
 !
-! Ratio of sigma level 1 wind and 10m wind (diagnozed by model and not touched
+! ratio of sigma level 1 wind and 10m wind (diagnozed by model and not touched
 ! in this program).
 !
-      REAL (KIND=KIND_IO8) F10M  (LEN)
-      REAL (KIND=KIND_IO8) FSMCL(25),FSMCS(25),FSTCL(25),FSTCS(25)
-      REAL (KIND=KIND_IO8) FCSMCL(25),FCSMCS(25),FCSTCL(25),FCSTCS(25)
+      real (kind=kind_io8) f10m  (len)
+      real (kind=kind_io8) fsmcl(25),fsmcs(25),fstcl(25),fstcs(25)
+      real (kind=kind_io8) fcsmcl(25),fcsmcs(25),fcstcl(25),fcstcs(25)
 
-!Clu [+1L] add SWRATIO (soil moisture liquid-to-total ratio)
-      REAL (KIND=KIND_IO8) SWRATIO(LEN,LSOIL)
-!Clu [+1L] add FIXRATIO (option to adjust slc from smc)
-      LOGICAL FIXRATIO(LSOIL)
+!clu [+1l] add swratio (soil moisture liquid-to-total ratio)
+      real (kind=kind_io8) swratio(len,lsoil)
+!clu [+1l] add fixratio (option to adjust slc from smc)
+      logical fixratio(lsoil)
 !
-      INTEGER ICSMCL(25), ICSMCS(25), ICSTCL(25), ICSTCS(25)
+      integer icsmcl(25), icsmcs(25), icstcl(25), icstcs(25)
 !
-      REAL (KIND=KIND_IO8) CSMCL(25), CSMCS(25)
-      REAL (KIND=KIND_IO8) CSTCL(25), CSTCS(25)
+      real (kind=kind_io8) csmcl(25), csmcs(25)
+      real (kind=kind_io8) cstcl(25), cstcs(25)
 !
-      REAL (KIND=KIND_IO8) SLMSKH(mdata)
-      CHARACTER*500 FNMSKH
-      Integer kpd7, kpd9
+      real (kind=kind_io8) slmskh(mdata)
+      character*500 fnmskh
+      integer kpd7, kpd9
 !
       logical icefl1(len), icefl2(len)
 !
-!  Input and output SURFACE FIELDS (BGES) file names
+!  input and output surface fields (bges) file names
 !
 !
-!  Sigma level 1 temperature for dead start
+!  sigma level 1 temperature for dead start
 !
-      REAL (KIND=KIND_IO8) SIG1T(LEN)
+      real (kind=kind_io8) sig1t(len)
 !
-      CHARACTER*32 LABEL
+      character*32 label
 !
-!  = 1 ==> FORECAST IS USED
-!  = 0 ==> ANALYSIS (OR CLIMATOLOGY) IS USED
+!  = 1 ==> forecast is used
+!  = 0 ==> analysis (or climatology) is used
 !
-!     OUTPUT FILE  ... PRIMARY SURFACE FILE FOR RADIATION AND FORECAST
+!     output file  ... primary surface file for radiation and forecast
 !
-!       REC.  1    LABEL
-!       REC.  2    DATE RECORD
-!       REC.  3    TSF
-!       REC.  4    SOILM(TWO LAYERS)              ----> 4 layers
-!       REC.  5    SNOW
-!       REC.  6    SOILT(TWO LAYERS)              ----> 4 layers
-!       REC.  7    TG3
-!       REC.  8    ZOR
-!       REC.  9    CV
-!       REC. 10    CVB
-!       REC. 11    CVT
-!       REC. 12    ALBEDO (four types)
-!       REC. 13    SLIMSK
-!       REC. 14    vegetation cover
-!       REC. 14    PLANTR                         -----> skip this record
-!       REC. 15    F10M                           -----> CANOPY
-!       REC. 16    CANOPY WATER CONTENT (CNPANL)  -----> F10M
-!       REC. 17    vegetation type
-!       REC. 18    soil type
-!       REC. 19    zeneith angle dependent vegetation fraction (two types)
-!       REC. 20    UUSTAR
-!       REC. 21    FFMM
-!       REC. 22    FFHH
-!Cwu add SIH & SIC
-!       REC. 23    SIH(one category only)
-!       REC. 24    SIC
-!Clu [+8L] add PRCP, FLAG, SWD, SLC, VMN, VMX, SLP, ABS
-!       REC. 25    TPRCP
-!       REC. 26    SRFLAG
-!       REC. 27    SWD
-!       REC. 28    SLC (4 LAYERS)
-!       REC. 29    VMN
-!       REC. 30    VMX
-!       REC. 31    SLP
-!       REC. 32    ABS
+!       rec.  1    label
+!       rec.  2    date record
+!       rec.  3    tsf
+!       rec.  4    soilm(two layers)              ----> 4 layers
+!       rec.  5    snow
+!       rec.  6    soilt(two layers)              ----> 4 layers
+!       rec.  7    tg3
+!       rec.  8    zor
+!       rec.  9    cv
+!       rec. 10    cvb
+!       rec. 11    cvt
+!       rec. 12    albedo (four types)
+!       rec. 13    slimsk
+!       rec. 14    vegetation cover
+!       rec. 14    plantr                         -----> skip this record
+!       rec. 15    f10m                           -----> canopy
+!       rec. 16    canopy water content (cnpanl)  -----> f10m
+!       rec. 17    vegetation type
+!       rec. 18    soil type
+!       rec. 19    zeneith angle dependent vegetation fraction (two types)
+!       rec. 20    uustar
+!       rec. 21    ffmm
+!       rec. 22    ffhh
+!cwu add sih & sic
+!       rec. 23    sih(one category only)
+!       rec. 24    sic
+!clu [+8l] add prcp, flag, swd, slc, vmn, vmx, slp, abs
+!       rec. 25    tprcp
+!       rec. 26    srflag
+!       rec. 27    swd
+!       rec. 28    slc (4 layers)
+!       rec. 29    vmn
+!       rec. 30    vmx
+!       rec. 31    slp
+!       rec. 32    abs
 
 !
-!  Debug only
-!   LDEBUG=.TRUE. creates BGES files for climatology and analysis
-!   LQCBGS=.TRUE. Quality controls input BGES file before merging (should have been
-!              QCed in the forecast program)
+!  debug only
+!   ldebug=.true. creates bges files for climatology and analysis
+!   lqcbgs=.true. quality controls input bges file before merging (should have been
+!              qced in the forecast program)
 !
-      LOGICAL LDEBUG,LQCBGS
+      logical ldebug,lqcbgs
       logical lprnt
 !
-!  Debug only
+!  debug only
 !
-      CHARACTER*500 FNDCLM,FNDANL
+      character*500 fndclm,fndanl
 !
-      LOGICAL LANOM
+      logical lanom
 
 !
-      NAMELIST/NAMSFC/FNGLAC,FNMXIC,
-     &                FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &                FNPLRC,FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,
-     &                FNVEGC,fnvetc,fnsotc,FNALBC2,
-!Clu [+1L]  add fn()c for vmn, vmx, slp, abs
-     &                FNVMNC,FNVMXC,FNSLPC,FNABSC,
-     &                FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &                FNPLRA,FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,
-     &                FNVEGA,fnveta,fnsota,
-!Clu [+1L]  add fn()a for vmn, vmx, slp, abs
-     &                FNVMNA,FNVMXA,FNSLPA,FNABSA,
-     &                FNMSKH,
-     &                LDEBUG,LGCHEK,LQCBGS,CRITP1,CRITP2,CRITP3,
-     &                FNDCLM,FNDANL,
-     &                LANOM,
-     &                FTSFL,FTSFS,FALBL,FALBS,FAISL,FAISS,FSNOL,FSNOS,
-     &                FZORL,FZORS,FPLRL,FPLRS,FSMCL,FSMCS,
-     &                FSTCL,FSTCS,fvegl,fvegs,fvetl,fvets,fsotl,fsots,
-     &                FCTSFL,FCTSFS,FCALBL,FCALBS,FCSNOL,FCSNOS,
-     &                FCZORL,FCZORS,FCPLRL,FCPLRS,FCSMCL,FCSMCS,
-     &                FCSTCL,FCSTCS,fsalfl,fsalfs,fcalfl,flalfs,
-!Cwu [+1L]  add f()l and f()s for sih, sic and aislim, sihnew
-     &                FSIHL,FSICL,FSIHS,FSICS,AISLIM,SIHNEW,
-!Clu [+2L]  add f()l and f()s for vmn, vmx, slp, abs
-     &                FVMNL,FVMNS,FVMXL,FVMXS,FSLPL,FSLPS,
-     &                FABSL,FABSS,
-     &                ICTSFL,ICTSFS,ICALBL,ICALBS,ICSNOL,ICSNOS,
-     &                ICZORL,ICZORS,ICPLRL,ICPLRS,ICSMCL,ICSMCS,
-     &                ICSTCL,ICSTCS,icalfl,icalfs,
+      namelist/namsfc/fnglac,fnmxic,
+     &                fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &                fnplrc,fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,
+     &                fnvegc,fnvetc,fnsotc,fnalbc2,
+     &                fnvmnc,fnvmxc,fnslpc,fnabsc,
+     &                fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &                fnplra,fntg3a,fnscva,fnsmca,fnstca,fnacna,
+     &                fnvega,fnveta,fnsota,
+     &                fnvmna,fnvmxa,fnslpa,fnabsa,
+     &                fnmskh,
+     &                ldebug,lgchek,lqcbgs,critp1,critp2,critp3,
+     &                fndclm,fndanl,
+     &                lanom,
+     &                ftsfl,ftsfs,falbl,falbs,faisl,faiss,fsnol,fsnos,
+     &                fzorl,fzors,fplrl,fplrs,fsmcl,fsmcs,
+     &                fstcl,fstcs,fvegl,fvegs,fvetl,fvets,fsotl,fsots,
+     &                fctsfl,fctsfs,fcalbl,fcalbs,fcsnol,fcsnos,
+     &                fczorl,fczors,fcplrl,fcplrs,fcsmcl,fcsmcs,
+     &                fcstcl,fcstcs,fsalfl,fsalfs,fcalfl,flalfs,
+     &                fsihl,fsicl,fsihs,fsics,aislim,sihnew,
+     &                fvmnl,fvmns,fvmxl,fvmxs,fslpl,fslps,
+     &                fabsl,fabss,
+     &                ictsfl,ictsfs,icalbl,icalbs,icsnol,icsnos,
+     &                iczorl,iczors,icplrl,icplrs,icsmcl,icsmcs,
+     &                icstcl,icstcs,icalfl,icalfs,
+     &                gausm,  deads, qcmsk, znlst,
+     &                monclm, monanl, monfcs, monmer, mondif, igrdbg,
+     &                blnmsk, bltmsk, landice
 !
-     &                GAUSM,  DEADS, QCMSK, ZNLST,
-     &                MONCLM, MONANL, MONFCS, MONMER, MONDIF, IGRDBG,
-!cggg landice mods start
-!     &                BLNMSK, BLTMSK
-     &                BLNMSK, BLTMSK, LANDICE
-!cggg landice mods end
+      data gausm/.true./,  deads/.false./, blnmsk/0.0/, bltmsk/90.0/
+     &,    qcmsk/.false./, znlst/.false./, igrdbg/-1/
+     &,    monclm/.false./, monanl/.false./, monfcs/.false./
+     &,    monmer/.false./,  mondif/.false./,  landice/.true./
 !
-      DATA GAUSM/.TRUE./,  DEADS/.FALSE./, BLNMSK/0.0/, BLTMSK/90.0/
-     &,    QCMSK/.FALSE./, ZNLST/.FALSE./, IGRDBG/-1/
-     &,    MONCLM/.FALSE./, MONANL/.FALSE./, MONFCS/.FALSE./
-!cggg landice mods start
-!     &,    MONMER/.FALSE./,  MONDIF/.FALSE./
-     &,    MONMER/.FALSE./,  MONDIF/.FALSE./,  LANDICE/.TRUE./
-!cggg landice mods end
+!  defaults file names
 !
-!  Defaults file names
+      data fnmskh/'global_slmask.t126.grb'/
+      data fnalbc/'global_albedo4.1x1.grb'/
+      data fnalbc2/'/nwprod/fix/global_albedo4.1x1.grb'/
+      data fntsfc/'global_sstclim.2x2.grb'/
+      data fnsotc/'global_soiltype.1x1.grb'/
+      data fnvegc/'global_vegfrac.1x1.grb'/
+      data fnvetc/'global_vegtype.1x1.grb'/
+      data fnglac/'global_glacier.2x2.grb'/
+      data fnmxic/'global_maxice.2x2.grb'/
+      data fnsnoc/'global_snoclim.1.875.grb'/
+      data fnzorc/'global_zorclim.1x1.grb'/
+      data fnaisc/'global_iceclim.2x2.grb'/
+      data fntg3c/'global_tg3clim.2.6x1.5.grb'/
+      data fnsmcc/'global_soilmcpc.1x1.grb'/
+!clu [+4l] add fn()c for vmn, vmx, abs, slp
+      data fnvmnc/'global_shdmin.0.144x0.144.grb'/
+      data fnvmxc/'global_shdmax.0.144x0.144.grb'/
+      data fnslpc/'global_slope.1x1.grb'/
+      data fnabsc/'global_snoalb.1x1.grb'/
 !
-      DATA FNMSKH/'global_slmask.t126.grb'/
-      DATA FNALBC/'global_albedo4.1x1.grb'/
-      DATA FNALBC2/'global_albedo4.1x1.grb'/
-      DATA FNTSFC/'global_sstclim.2x2.grb'/
-      DATA FNSOTC/'global_soiltype.1x1.grb'/
-      DATA FNVEGC/'global_vegfrac.1x1.grb'/
-      DATA FNVETC/'global_vegtype.1x1.grb'/
-      DATA FNGLAC/'global_glacier.2x2.grb'/
-      DATA FNMXIC/'global_maxice.2x2.grb'/
-      DATA FNSNOC/'global_snoclim.1.875.grb'/
-      DATA FNZORC/'global_zorclim.1x1.grb'/
-      DATA FNAISC/'global_iceclim.2x2.grb'/
-      DATA FNTG3C/'global_tg3clim.2.6x1.5.grb'/
-      DATA FNSMCC/'global_soilmcpc.1x1.grb'/
-!Clu [+4L] add fn()c for vmn, vmx, abs, slp
-      DATA FNVMNC/'global_shdmin.0.144x0.144.grb'/
-      DATA FNVMXC/'global_shdmax.0.144x0.144.grb'/
-      DATA FNSLPC/'global_slope.1x1.grb'/
-      DATA FNABSC/'global_snoalb.1x1.grb'/
+      data fnwetc/'        '/
+      data fnplrc/'        '/
+      data fnstcc/'        '/
+      data fnscvc/'        '/
+      data fnacnc/'        '/
 !
-      DATA FNWETC/'        '/
-      DATA FNPLRC/'        '/
-      DATA FNSTCC/'        '/
-      DATA FNSCVC/'        '/
-      DATA FNACNC/'        '/
+      data fntsfa/'        '/
+      data fnweta/'        '/
+      data fnsnoa/'        '/
+      data fnzora/'        '/
+      data fnalba/'        '/
+      data fnaisa/'        '/
+      data fnplra/'        '/
+      data fntg3a/'        '/
+      data fnsmca/'        '/
+      data fnstca/'        '/
+      data fnscva/'        '/
+      data fnacna/'        '/
+      data fnvega/'        '/
+      data fnveta/'        '/
+      data fnsota/'        '/
+!clu [+4l] add fn()a for vmn, vmx, abs, slp
+      data fnvmna/'        '/
+      data fnvmxa/'        '/
+      data fnslpa/'        '/
+      data fnabsa/'        '/
 !
-      DATA FNTSFA/'        '/
-      DATA FNWETA/'        '/
-      DATA FNSNOA/'        '/
-      DATA FNZORA/'        '/
-      DATA FNALBA/'        '/
-      DATA FNAISA/'        '/
-      DATA FNPLRA/'        '/
-      DATA FNTG3A/'        '/
-      DATA FNSMCA/'        '/
-      DATA FNSTCA/'        '/
-      DATA FNSCVA/'        '/
-      DATA FNACNA/'        '/
-      DATA FNVEGA/'        '/
-      DATA FNVETA/'        '/
-      DATA FNSOTA/'        '/
-!Clu [+4L] add fn()a for vmn, vmx, abs, slp
-      DATA FNVMNA/'        '/
-      DATA FNVMXA/'        '/
-      DATA FNSLPA/'        '/
-      DATA FNABSA/'        '/
+      data ldebug/.false./, lqcbgs/.true./
+      data fndclm/'        '/
+      data fndanl/'        '/
+      data lanom/.false./
 !
-      DATA LDEBUG/.FALSE./, LQCBGS/.TRUE./
-      DATA FNDCLM/'        '/
-      DATA FNDANL/'        '/
-      DATA LANOM/.FALSE./
+!  default relaxation time in hours to analysis or climatology
+      data ftsfl/99999.0/,  ftsfs/0.0/
+      data falbl/0.0/,      falbs/0.0/
+      data falfl/0.0/,      falfs/0.0/
+      data faisl/0.0/,      faiss/0.0/
+      data fsnol/0.0/,      fsnos/99999.0/
+      data fzorl/0.0/,      fzors/99999.0/
+      data fplrl/0.0/,      fplrs/0.0/
+      data fvetl/0.0/,      fvets/99999.0/
+      data fsotl/0.0/,      fsots/99999.0/
+      data fvegl/0.0/,      fvegs/99999.0/
+!cwu [+4l] add f()l and f()s for sih, sic and aislim, sihlim
+      data fsihl/99999.0/,  fsihs/99999.0/
+!     data fsicl/99999.0/,  fsics/99999.0/
+      data fsicl/0.0/,      fsics/0.0/
+!  default ice concentration limit (50%), new ice thickness (20cm)
+!cwu change ice concentration limit (15%) Jan 2015
+!     data aislim/0.50/,    sihnew/0.2/
+      data aislim/0.15/,    sihnew/0.2/
+!clu [+4l] add f()l and f()s for vmn, vmx, abs, slp
+      data fvmnl/0.0/,      fvmns/99999.0/
+      data fvmxl/0.0/,      fvmxs/99999.0/
+      data fslpl/0.0/,      fslps/99999.0/
+      data fabsl/0.0/,      fabss/99999.0/
+!  default relaxation time in hours to climatology if analysis missing
+      data fctsfl/99999.0/, fctsfs/99999.0/
+      data fcalbl/99999.0/, fcalbs/99999.0/
+      data fcsnol/99999.0/, fcsnos/99999.0/
+      data fczorl/99999.0/, fczors/99999.0/
+      data fcplrl/99999.0/, fcplrs/99999.0/
+!  default flag to apply climatological annual cycle
+      data ictsfl/0/, ictsfs/1/
+      data icalbl/1/, icalbs/1/
+      data icalfl/1/, icalfs/1/
+      data icsnol/0/, icsnos/0/
+      data iczorl/1/, iczors/0/
+      data icplrl/1/, icplrs/0/
 !
-!  DEFAULT RELAXATION TIME IN HOURS TO ANALYSIS OR CLIMATOLOGY
-      DATA FTSFL/99999.0/,  FTSFS/0.0/
-      DATA FALBL/0.0/,      FALBS/0.0/
-      DATA FALFL/0.0/,      FALFS/0.0/
-      DATA FAISL/0.0/,      FAISS/0.0/
-      DATA FSNOL/0.0/,      FSNOS/99999.0/
-      DATA FZORL/0.0/,      FZORS/99999.0/
-      DATA FPLRL/0.0/,      FPLRS/0.0/
-      DATA FvetL/0.0/,      FvetS/99999.0/
-      DATA FsotL/0.0/,      FsotS/99999.0/
-      DATA FVegL/0.0/,      FvegS/99999.0/
-!Cwu [+4L] add f()l and f()s for sih, sic and aislim, sihlim
-      DATA FsihL/99999.0/,  FsihS/99999.0/
-!     DATA FsicL/99999.0/,  FsicS/99999.0/
-      DATA FsicL/0.0/,      FsicS/0.0/
-!  DEFAULT ice concentration limit (50%), new ice thickness (20cm)
-      DATA AISLIM/0.50/,    SIHNEW/0.2/
-!Clu [+4L] add f()l and f()s for vmn, vmx, abs, slp
-      DATA FvmnL/0.0/,      FvmnS/99999.0/
-      DATA FvmxL/0.0/,      FvmxS/99999.0/
-      DATA FslpL/0.0/,      FslpS/99999.0/
-      DATA FabsL/0.0/,      FabsS/99999.0/
-!  DEFAULT RELAXATION TIME IN HOURS TO CLIMATOLOGY IF ANALYSIS MISSING
-      DATA FCTSFL/99999.0/, FCTSFS/99999.0/
-      DATA FCALBL/99999.0/, FCALBS/99999.0/
-      DATA FCSNOL/99999.0/, FCSNOS/99999.0/
-      DATA FCZORL/99999.0/, FCZORS/99999.0/
-      DATA FCPLRL/99999.0/, FCPLRS/99999.0/
-!  DEFAULT FLAG TO APPLY CLIMATOLOGICAL ANNUAL CYCLE
-      DATA ICTSFL/0/, ICTSFS/1/
-      DATA ICALBL/1/, ICALBS/1/
-      DATA ICALFL/1/, ICALFS/1/
-      DATA ICSNOL/0/, ICSNOS/0/
-      DATA ICZORL/1/, ICZORS/0/
-      DATA ICPLRL/1/, ICPLRS/0/
+      data ccnp/1.0/
+      data ccv/1.0/,   ccvb/1.0/, ccvt/1.0/
 !
-      DATA CCNP/1.0/
-      DATA CCV/1.0/,   CCVB/1.0/, CCVT/1.0/
+      data ifp/0/
 !
-      DATA IFP/0/
-!
-      SAVE IFP,FNGLAC,FNMXIC,
-     &     FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &     FNPLRC,FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,FNVEGC,
-     &     FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &     FNPLRA,FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,FNVEGA,
+      save ifp,fnglac,fnmxic,
+     &     fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &     fnplrc,fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,fnvegc,
+     &     fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &     fnplra,fntg3a,fnscva,fnsmca,fnstca,fnacna,fnvega,
      &     fnvetc,fnveta,
      &     fnsotc,fnsota,
-!Clu [+2L] add fn()c and fn()a for vmn, vmx, slp, abs
-     &     FNVMNC,FNVMXC,FNABSC,FNSLPC,
-     &     FNVMNA,FNVMXA,FNABSA,FNSLPA,
-     &     LDEBUG,LGCHEK,LQCBGS,CRITP1,CRITP2,CRITP3,
-     &     FNDCLM,FNDANL,
-     &     LANOM,
-     &     FTSFL,FTSFS,FALBL,FALBS,FAISL,FAISS,FSNOL,FSNOS,
-     &     FZORL,FZORS,FPLRL,FPLRS,FSMCL,FSMCS,falfl,falfs,
-     &     FSTCL,FSTCS,fvegl,fvegs,fvetl,fvets,fsotl,fsots,
-     &     FCTSFL,FCTSFS,FCALBL,FCALBS,FCSNOL,FCSNOS,
-     &     FCZORL,FCZORS,FCPLRL,FCPLRS,FCSMCL,FCSMCS,
-     &     FCSTCL,FCSTCS,fcalfl,fcalfs,
-!Cwu [+1L] add f()l and f()s for sih, sic and aislim, sihnew
-     &     FSIHL,FSIHS,FSICL,FSICS,AISLIM,SIHNEW,
-!Clu [+2L] add f()l and f()s for vmn, vmx, slp, abs
-     &     FVMNL,FVMNS,FVMXL,FVMXS,FSLPL,FSLPS,
-     &     FABSL,FABSS,
-     &     ICTSFL,ICTSFS,ICALBL,ICALBS,ICSNOL,ICSNOS,
-     &     ICZORL,ICZORS,ICPLRL,ICPLRS,ICSMCL,ICSMCS,
-     &     ICSTCL,ICSTCS,icalfl,icalfs,
-     &     GAUSM, DEADS, QCMSK,
-     &     MONCLM, MONANL, MONFCS, MONMER, MONDIF, IGRDBG,
-     &     GRBORO, GRBMSK,
+!clu [+2l] add fn()c and fn()a for vmn, vmx, slp, abs
+     &     fnvmnc,fnvmxc,fnabsc,fnslpc,
+     &     fnvmna,fnvmxa,fnabsa,fnslpa,
+     &     ldebug,lgchek,lqcbgs,critp1,critp2,critp3,
+     &     fndclm,fndanl,
+     &     lanom,
+     &     ftsfl,ftsfs,falbl,falbs,faisl,faiss,fsnol,fsnos,
+     &     fzorl,fzors,fplrl,fplrs,fsmcl,fsmcs,falfl,falfs,
+     &     fstcl,fstcs,fvegl,fvegs,fvetl,fvets,fsotl,fsots,
+     &     fctsfl,fctsfs,fcalbl,fcalbs,fcsnol,fcsnos,
+     &     fczorl,fczors,fcplrl,fcplrs,fcsmcl,fcsmcs,
+     &     fcstcl,fcstcs,fcalfl,fcalfs,
+!cwu [+1l] add f()l and f()s for sih, sic and aislim, sihnew
+     &     fsihl,fsihs,fsicl,fsics,aislim,sihnew,
+!clu [+2l] add f()l and f()s for vmn, vmx, slp, abs
+     &     fvmnl,fvmns,fvmxl,fvmxs,fslpl,fslps,
+     &     fabsl,fabss,
+     &     ictsfl,ictsfs,icalbl,icalbs,icsnol,icsnos,
+     &     iczorl,iczors,icplrl,icplrs,icsmcl,icsmcs,
+     &     icstcl,icstcs,icalfl,icalfs,
+     &     gausm, deads, qcmsk,
+     &     monclm, monanl, monfcs, monmer, mondif, igrdbg,
+     &     grboro, grbmsk,
 !
-     &     CTSFL,  CTSFS,  CALBL, CALFL, CALBS, CALFS, CSMCS,
-     &     CSNOL,  CSNOS,  CZORL, CZORS, CPLRL, CPLRS, CSTCL,
-     &     CSTCS,  CvegL,  CvwgS, CvetL, CvetS, CsotL, CsotS,
-     &     CSMCL
-!Cwu [+1L] add c()l and c()s for sih, sic
-     &,    CSIHL,  CSIHS,  CSICL, CSICS
-!Clu [+2L] add c()l and c()s for vmn, vmx, slp, abs
-     &,    CVMNL,  CVMNS,  CVMXL, CVMXS, CSLPL, CSLPS,
-     &     CABSL,  CABSS
-     &,    IMSK, JMSK, SLMSKH, BLNMSK, BLTMSK
-     &,    GLACIR, AMXICE, TSFCL0
+     &     ctsfl,  ctsfs,  calbl, calfl, calbs, calfs, csmcs,
+     &     csnol,  csnos,  czorl, czors, cplrl, cplrs, cstcl,
+     &     cstcs,  cvegl,  cvwgs, cvetl, cvets, csotl, csots,
+     &     csmcl
+!cwu [+1l] add c()l and c()s for sih, sic
+     &,    csihl,  csihs,  csicl, csics
+!clu [+2l] add c()l and c()s for vmn, vmx, slp, abs
+     &,    cvmnl,  cvmns,  cvmxl, cvmxs, cslpl, cslps,
+     &     cabsl,  cabss
+     &,    imsk, jmsk, slmskh, blnmsk, bltmsk
+     &,    glacir, amxice, tsfcl0
      &,    caisl, caiss, cvegs
 !
       lprnt = .false.
@@ -828,745 +771,737 @@
         abslmn = .01
         abssmn = .01
       endif
-      IF(IFP.EQ.0) THEN
-        IFP = 1
-        DO K=1,LSOIL
-          FSMCL(K) = 99999.
-          FSMCS(K) = 0.
-          FSTCL(K) = 99999.
-          FSTCS(K) = 0.
-        ENDDO
-!     print *,' IN SFCSUB NLUNIT=',NLUNIT,' me=',me,' ialb=',ialb
-        rewind(NLUNIT)
-        READ (NLUNIT,NAMSFC)
-!       WRITE(6,NAMSFC)
+      if(ifp.eq.0) then
+        ifp = 1
+        do k=1,lsoil
+          fsmcl(k) = 99999.
+          fsmcs(k) = 0.
+          fstcl(k) = 99999.
+          fstcs(k) = 0.
+        enddo
+!     print *,' in sfcsub nlunit=',nlunit,' me=',me,' ialb=',ialb
+        rewind(nlunit)
+        read (nlunit,namsfc)
+!       write(6,namsfc)
 !
         if (me .eq. 0) then
-          print *,'FTSFL,FALBL,FAISL,FSNOL,FZORL=',
-     &    FTSFL,FALBL,FAISL,FSNOL,FZORL
-          print *,'FSMCL=',FSMCL(1:LSOIL)
-          print *,'FSTCL=',FSTCL(1:LSOIL)
-          print *,'FTSFS,FALBS,FAISS,FSNOS,FZORS=',
-     &    FTSFS,FALBS,FAISS,FSNOS,FZORS
-          print *,'FSMCS=',FSMCS(1:LSOIL)
-          print *,'FSTCS=',FSTCS(1:LSOIL)
-          print *,' AISLIM=',aislim,' SIHNEW=',SIHNEW
+          print *,'ftsfl,falbl,faisl,fsnol,fzorl=',
+     &    ftsfl,falbl,faisl,fsnol,fzorl
+          print *,'fsmcl=',fsmcl(1:lsoil)
+          print *,'fstcl=',fstcl(1:lsoil)
+          print *,'ftsfs,falbs,faiss,fsnos,fzors=',
+     &    ftsfs,falbs,faiss,fsnos,fzors
+          print *,'fsmcs=',fsmcs(1:lsoil)
+          print *,'fstcs=',fstcs(1:lsoil)
+          print *,' aislim=',aislim,' sihnew=',sihnew
+          print *,' isot=', isot,' ivegsrc=',ivegsrc
+        endif
+
+        if (ivegsrc == 2) then   ! sib
+          veg_type_landice=13
+        else
+          veg_type_landice=15
+        endif
+        if (isot == 0) then
+          soil_type_landice=9
+        else
+          soil_type_landice=16
         endif
 !
-        DELTF = DELTSFC / 24.0
+        deltf = deltsfc / 24.0
 !
-        CTSFL=0.                       !...  tsfc over land
-        IF(FTSFL.GE.99999.) CTSFL=1.
-        IF((FTSFL.GT.0.).AND.(FTSFL.LT.99999))  CTSFL=EXP(-DELTF/FTSFL)
+        ctsfl=0.                       !...  tsfc over land
+        if(ftsfl.ge.99999.) ctsfl=1.
+        if((ftsfl.gt.0.).and.(ftsfl.lt.99999))  ctsfl=exp(-deltf/ftsfl)
 !
-        CTSFS=0.                       !...  tsfc over sea
-        IF(FTSFS.GE.99999.) CTSFS=1.
-        IF((FTSFS.GT.0.).AND.(FTSFS.LT.99999))  CTSFS=EXP(-DELTF/FTSFS)
+        ctsfs=0.                       !...  tsfc over sea
+        if(ftsfs.ge.99999.) ctsfs=1.
+        if((ftsfs.gt.0.).and.(ftsfs.lt.99999))  ctsfs=exp(-deltf/ftsfs)
 !
-        DO K=1,LSOIL
-          CSMCL(K)=0.                  !...  soilm over land
-          IF(FSMCL(K).GE.99999.) CSMCL(K)=1.
-          IF((FSMCL(K).GT.0.).AND.(FSMCL(K).LT.99999))
-     &                           CSMCL(K)=EXP(-DELTF/FSMCL(K))
-          CSMCS(K)=0.                  !...  soilm over sea
-          IF(FSMCS(K).GE.99999.) CSMCS(K)=1.
-          IF((FSMCS(K).GT.0.).AND.(FSMCS(K).LT.99999))
-     &                           CSMCS(K)=EXP(-DELTF/FSMCS(K))
-        ENDDO
+        do k=1,lsoil
+          csmcl(k)=0.                  !...  soilm over land
+          if(fsmcl(k).ge.99999.) csmcl(k)=1.
+          if((fsmcl(k).gt.0.).and.(fsmcl(k).lt.99999))
+     &                           csmcl(k)=exp(-deltf/fsmcl(k))
+          csmcs(k)=0.                  !...  soilm over sea
+          if(fsmcs(k).ge.99999.) csmcs(k)=1.
+          if((fsmcs(k).gt.0.).and.(fsmcs(k).lt.99999))
+     &                           csmcs(k)=exp(-deltf/fsmcs(k))
+        enddo
 !
-        CALBL=0.                       !...  albedo over land
-        IF(FALBL.GE.99999.) CALBL=1.
-        IF((FALBL.GT.0.).AND.(FALBL.LT.99999))  CALBL=EXP(-DELTF/FALBL)
+        calbl=0.                       !...  albedo over land
+        if(falbl.ge.99999.) calbl=1.
+        if((falbl.gt.0.).and.(falbl.lt.99999))  calbl=exp(-deltf/falbl)
 !
-        CALFL=0.                       !...  fraction field for albedo over land
-        IF(FALFL.GE.99999.) CALFL=1.
-        IF((FALFL.GT.0.).AND.(FALFL.LT.99999))  CALFL=EXP(-DELTF/FALFL)
+        calfl=0.                       !...  fraction field for albedo over land
+        if(falfl.ge.99999.) calfl=1.
+        if((falfl.gt.0.).and.(falfl.lt.99999))  calfl=exp(-deltf/falfl)
 !
-        CALBS=0.                       !...  albedo over sea
-        IF(FALBS.GE.99999.) CALBS=1.
-        IF((FALBS.GT.0.).AND.(FALBS.LT.99999))  CALBS=EXP(-DELTF/FALBS)
+        calbs=0.                       !...  albedo over sea
+        if(falbs.ge.99999.) calbs=1.
+        if((falbs.gt.0.).and.(falbs.lt.99999))  calbs=exp(-deltf/falbs)
 !
-        CALFS=0.                       !...  fraction field for albedo over sea
-        IF(FALFS.GE.99999.) CALFS=1.
-        IF((FALFS.GT.0.).AND.(FALFS.LT.99999))  CALFS=EXP(-DELTF/FALFS)
+        calfs=0.                       !...  fraction field for albedo over sea
+        if(falfs.ge.99999.) calfs=1.
+        if((falfs.gt.0.).and.(falfs.lt.99999))  calfs=exp(-deltf/falfs)
 !
-        CAISL=0.                       !...  sea ice over land
-        IF(FAISL.GE.99999.) CAISL=1.
-        IF((FAISL.GT.0.).AND.(FAISL.LT.99999))  CAISL=1.
+        caisl=0.                       !...  sea ice over land
+        if(faisl.ge.99999.) caisl=1.
+        if((faisl.gt.0.).and.(faisl.lt.99999))  caisl=1.
 !
-        CAISS=0.                       !...  sea ice over sea
-        IF(FAISS.GE.99999.) CAISS=1.
-        IF((FAISS.GT.0.).AND.(FAISS.LT.99999))  CAISS=1.
+        caiss=0.                       !...  sea ice over sea
+        if(faiss.ge.99999.) caiss=1.
+        if((faiss.gt.0.).and.(faiss.lt.99999))  caiss=1.
 !
-        CSNOL=0.                       !...  snow over land
-        IF(FSNOL.GE.99999.) CSNOL=1.
-        IF((FSNOL.GT.0.).AND.(FSNOL.LT.99999))  CSNOL=EXP(-DELTF/FSNOL)
-!       Using the same way to bending snow as NARR when FSNOL is the negative value
-!       The magnitude of FSNOL is the thread to determine the lower and upper bound
-!       of final SWE
-        IF(FSNOL.LT.0.)CSNOL=FSNOL
+        csnol=0.                       !...  snow over land
+        if(fsnol.ge.99999.) csnol=1.
+        if((fsnol.gt.0.).and.(fsnol.lt.99999))  csnol=exp(-deltf/fsnol)
+!       using the same way to bending snow as narr when fsnol is the negative value
+!       the magnitude of fsnol is the thread to determine the lower and upper bound
+!       of final swe
+        if(fsnol.lt.0.)csnol=fsnol
 !
-        CSNOS=0.                       !...  snow over sea
-        IF(FSNOS.GE.99999.) CSNOS=1.
-        IF((FSNOS.GT.0.).AND.(FSNOS.LT.99999))  CSNOS=EXP(-DELTF/FSNOS)
+        csnos=0.                       !...  snow over sea
+        if(fsnos.ge.99999.) csnos=1.
+        if((fsnos.gt.0.).and.(fsnos.lt.99999))  csnos=exp(-deltf/fsnos)
 !
-        CZORL=0.                       !...  roughness length over land
-        IF(FZORL.GE.99999.) CZORL=1.
-        IF((FZORL.GT.0.).AND.(FZORL.LT.99999))  CZORL=EXP(-DELTF/FZORL)
+        czorl=0.                       !...  roughness length over land
+        if(fzorl.ge.99999.) czorl=1.
+        if((fzorl.gt.0.).and.(fzorl.lt.99999))  czorl=exp(-deltf/fzorl)
 !
-        CZORS=0.                       !...  roughness length over sea
-        IF(FZORS.GE.99999.) CZORS=1.
-        IF((FZORS.GT.0.).AND.(FZORS.LT.99999))  CZORS=EXP(-DELTF/FZORS)
+        czors=0.                       !...  roughness length over sea
+        if(fzors.ge.99999.) czors=1.
+        if((fzors.gt.0.).and.(fzors.lt.99999))  czors=exp(-deltf/fzors)
 !
-!       CPLRL=0.                       !...  plant resistance over land
-!       IF(FPLRL.GE.99999.) CPLRL=1.
-!       IF((FPLRL.GT.0.).AND.(FPLRL.LT.99999))  CPLRL=EXP(-DELTF/FPLRL)
+!       cplrl=0.                       !...  plant resistance over land
+!       if(fplrl.ge.99999.) cplrl=1.
+!       if((fplrl.gt.0.).and.(fplrl.lt.99999))  cplrl=exp(-deltf/fplrl)
 !
-!       CPLRS=0.                       !...  plant resistance over sea
-!       IF(FPLRS.GE.99999.) CPLRS=1.
-!       IF((FPLRS.GT.0.).AND.(FPLRS.LT.99999))  CPLRS=EXP(-DELTF/FPLRS)
+!       cplrs=0.                       !...  plant resistance over sea
+!       if(fplrs.ge.99999.) cplrs=1.
+!       if((fplrs.gt.0.).and.(fplrs.lt.99999))  cplrs=exp(-deltf/fplrs)
 !
-        DO K=1,LSOIL
-           CSTCL(K)=0.                 !...  soilt over land
-           IF(FSTCL(K).GE.99999.) CSTCL(K)=1.
-           IF((FSTCL(K).GT.0.).AND.(FSTCL(K).LT.99999))
-     &                            CSTCL(K)=EXP(-DELTF/FSTCL(K))
-          CSTCS(K)=0.                  !...  soilt over sea
-          IF(FSTCS(K).GE.99999.) CSTCS(K)=1.
-          IF((FSTCS(K).GT.0.).AND.(FSTCS(K).LT.99999))
-     &                           CSTCS(K)=EXP(-DELTF/FSTCS(K))
-        ENDDO
+        do k=1,lsoil
+           cstcl(k)=0.                 !...  soilt over land
+           if(fstcl(k).ge.99999.) cstcl(k)=1.
+           if((fstcl(k).gt.0.).and.(fstcl(k).lt.99999))
+     &                            cstcl(k)=exp(-deltf/fstcl(k))
+          cstcs(k)=0.                  !...  soilt over sea
+          if(fstcs(k).ge.99999.) cstcs(k)=1.
+          if((fstcs(k).gt.0.).and.(fstcs(k).lt.99999))
+     &                           cstcs(k)=exp(-deltf/fstcs(k))
+        enddo
 !
-        CvegL=0.                       !...  Vegetation fraction over land
-        IF(FvegL.GE.99999.) CvegL=1.
-        IF((FvegL.GT.0.).AND.(FvegL.LT.99999))  CvegL=EXP(-DELTF/FvegL)
+        cvegl=0.                       !...  vegetation fraction over land
+        if(fvegl.ge.99999.) cvegl=1.
+        if((fvegl.gt.0.).and.(fvegl.lt.99999))  cvegl=exp(-deltf/fvegl)
 !
-        CvegS=0.                       !...  Vegetation fraction over sea
-        IF(FvegS.GE.99999.) CvegS=1.
-        IF((FvegS.GT.0.).AND.(FvegS.LT.99999))  CvegS=EXP(-DELTF/FvegS)
+        cvegs=0.                       !...  vegetation fraction over sea
+        if(fvegs.ge.99999.) cvegs=1.
+        if((fvegs.gt.0.).and.(fvegs.lt.99999))  cvegs=exp(-deltf/fvegs)
 !
-        CvetL=0.                       !...  Vegetation type over land
-        IF(FvetL.GE.99999.) CvetL=1.
-        IF((FvetL.GT.0.).AND.(FvetL.LT.99999))  CvetL=EXP(-DELTF/FvetL)
+        cvetl=0.                       !...  vegetation type over land
+        if(fvetl.ge.99999.) cvetl=1.
+        if((fvetl.gt.0.).and.(fvetl.lt.99999))  cvetl=exp(-deltf/fvetl)
 !
-        CvetS=0.                       !...  Vegetation type over sea
-        IF(FvetS.GE.99999.) CvetS=1.
-        IF((FvetS.GT.0.).AND.(FvetS.LT.99999))  CvetS=EXP(-DELTF/FvetS)
+        cvets=0.                       !...  vegetation type over sea
+        if(fvets.ge.99999.) cvets=1.
+        if((fvets.gt.0.).and.(fvets.lt.99999))  cvets=exp(-deltf/fvets)
 !
-        CsotL=0.                       !...  Soil type over land
-        IF(FsotL.GE.99999.) CsotL=1.
-        IF((FsotL.GT.0.).AND.(FsotL.LT.99999))  CsotL=EXP(-DELTF/FsotL)
+        csotl=0.                       !...  soil type over land
+        if(fsotl.ge.99999.) csotl=1.
+        if((fsotl.gt.0.).and.(fsotl.lt.99999))  csotl=exp(-deltf/fsotl)
 !
-        CsotS=0.                       !...  Soil type over sea
-        IF(FsotS.GE.99999.) CsotS=1.
-        IF((FsotS.GT.0.).AND.(FsotS.LT.99999))  CsotS=EXP(-DELTF/FsotS)
+        csots=0.                       !...  soil type over sea
+        if(fsots.ge.99999.) csots=1.
+        if((fsots.gt.0.).and.(fsots.lt.99999))  csots=exp(-deltf/fsots)
 
-!Cwu [+16L]---------------------------------------------------------------
+!cwu [+16l]---------------------------------------------------------------
 !
-        CsihL=0.                       !...  Sea ice thickness over land
-        IF(FsihL.GE.99999.) CsihL=1.
-        IF((FsihL.GT.0.).AND.(FsihL.LT.99999))  CsihL=EXP(-DELTF/FsihL)
+        csihl=0.                       !...  sea ice thickness over land
+        if(fsihl.ge.99999.) csihl=1.
+        if((fsihl.gt.0.).and.(fsihl.lt.99999))  csihl=exp(-deltf/fsihl)
 !
-        CsihS=0.                       !...  Sea ice thickness over sea
-        IF(FsihS.GE.99999.) CsihS=1.
-        IF((FsihS.GT.0.).AND.(FsihS.LT.99999))  CsihS=EXP(-DELTF/FsihS)
+        csihs=0.                       !...  sea ice thickness over sea
+        if(fsihs.ge.99999.) csihs=1.
+        if((fsihs.gt.0.).and.(fsihs.lt.99999))  csihs=exp(-deltf/fsihs)
 !
-        CsicL=0.                       !...  Sea ice concentration over land
-        IF(FsicL.GE.99999.) CsicL=1.
-        IF((FsicL.GT.0.).AND.(FsicL.LT.99999))  CsicL=EXP(-DELTF/FsicL)
+        csicl=0.                       !...  sea ice concentration over land
+        if(fsicl.ge.99999.) csicl=1.
+        if((fsicl.gt.0.).and.(fsicl.lt.99999))  csicl=exp(-deltf/fsicl)
 !
-        CsicS=0.                       !...  Sea ice concentration over sea
-        IF(FsicS.GE.99999.) CsicS=1.
-        IF((FsicS.GT.0.).AND.(FsicS.LT.99999))  CsicS=EXP(-DELTF/FsicS)
+        csics=0.                       !...  sea ice concentration over sea
+        if(fsics.ge.99999.) csics=1.
+        if((fsics.gt.0.).and.(fsics.lt.99999))  csics=exp(-deltf/fsics)
 
-!Clu [+32L]---------------------------------------------------------------
+!clu [+32l]---------------------------------------------------------------
 !
-        CvmnL=0.                       !...  Min Veg cover over land
-        IF(FvmnL.GE.99999.) CvmnL=1.
-        IF((FvmnL.GT.0.).AND.(FvmnL.LT.99999))  CvmnL=EXP(-DELTF/FvmnL)
+        cvmnl=0.                       !...  min veg cover over land
+        if(fvmnl.ge.99999.) cvmnl=1.
+        if((fvmnl.gt.0.).and.(fvmnl.lt.99999))  cvmnl=exp(-deltf/fvmnl)
 !
-        CvmnS=0.                       !...  Min Veg cover over sea
-        IF(FvmnS.GE.99999.) CvmnS=1.
-        IF((FvmnS.GT.0.).AND.(FvmnS.LT.99999))  CvmnS=EXP(-DELTF/FvmnS)
+        cvmns=0.                       !...  min veg cover over sea
+        if(fvmns.ge.99999.) cvmns=1.
+        if((fvmns.gt.0.).and.(fvmns.lt.99999))  cvmns=exp(-deltf/fvmns)
 !
-        CvmxL=0.                       !...  Max Veg cover over land
-        IF(FvmxL.GE.99999.) CvmxL=1.
-        IF((FvmxL.GT.0.).AND.(FvmxL.LT.99999))  CvmxL=EXP(-DELTF/FvmxL)
+        cvmxl=0.                       !...  max veg cover over land
+        if(fvmxl.ge.99999.) cvmxl=1.
+        if((fvmxl.gt.0.).and.(fvmxl.lt.99999))  cvmxl=exp(-deltf/fvmxl)
 !
-        CvmxS=0.                       !...  Max Veg cover over sea
-        IF(FvmxS.GE.99999.) CvmxS=1.
-        IF((FvmxS.GT.0.).AND.(FvmxS.LT.99999))  CvmxS=EXP(-DELTF/FvmxS)
+        cvmxs=0.                       !...  max veg cover over sea
+        if(fvmxs.ge.99999.) cvmxs=1.
+        if((fvmxs.gt.0.).and.(fvmxs.lt.99999))  cvmxs=exp(-deltf/fvmxs)
 !
-        CslpL=0.                       !... Slope type over land
-        IF(FslpL.GE.99999.) CslpL=1.
-        IF((FslpL.GT.0.).AND.(FslpL.LT.99999))  CslpL=EXP(-DELTF/FslpL)
+        cslpl=0.                       !... slope type over land
+        if(fslpl.ge.99999.) cslpl=1.
+        if((fslpl.gt.0.).and.(fslpl.lt.99999))  cslpl=exp(-deltf/fslpl)
 !
-        CslpS=0.                       !...  Slope type over sea
-        IF(FslpS.GE.99999.) CslpS=1.
-        IF((FslpS.GT.0.).AND.(FslpS.LT.99999))  CslpS=EXP(-DELTF/FslpS)
+        cslps=0.                       !...  slope type over sea
+        if(fslps.ge.99999.) cslps=1.
+        if((fslps.gt.0.).and.(fslps.lt.99999))  cslps=exp(-deltf/fslps)
 !
-        CabsL=0.                       !... Snow albedo over land
-        IF(FabsL.GE.99999.) CabsL=1.
-        IF((FabsL.GT.0.).AND.(FabsL.LT.99999))  CabsL=EXP(-DELTF/FabsL)
+        cabsl=0.                       !... snow albedo over land
+        if(fabsl.ge.99999.) cabsl=1.
+        if((fabsl.gt.0.).and.(fabsl.lt.99999))  cabsl=exp(-deltf/fabsl)
 !
-        CabsS=0.                       !... Snow albedo over sea
-        IF(FabsS.GE.99999.) CabsS=1.
-        IF((FabsS.GT.0.).AND.(FabsS.LT.99999))  CabsS=EXP(-DELTF/FabsS)
-!Clu ----------------------------------------------------------------------
+        cabss=0.                       !... snow albedo over sea
+        if(fabss.ge.99999.) cabss=1.
+        if((fabss.gt.0.).and.(fabss.lt.99999))  cabss=exp(-deltf/fabss)
+!clu ----------------------------------------------------------------------
 !
-!     Read a high resolution MASK field for use in grib interpolation
+!     read a high resolution mask field for use in grib interpolation
 !
-        CALL HMSKRD(LUGB,IMSK,JMSK,FNMSKH,
-     &              KPDMSK,SLMSKH,GAUSM,BLNMSK,BLTMSK,me)
-!       IF (QCMSK) CALL QCMASK(SLMSKH,SLLND,SLSEA,IMSK,JMSK,RLA,RLO)
+        call hmskrd(lugb,imsk,jmsk,fnmskh,
+     &              kpdmsk,slmskh,gausm,blnmsk,bltmsk,me)
+!       if (qcmsk) call qcmask(slmskh,sllnd,slsea,imsk,jmsk,rla,rlo)
 !
         if (me .eq. 0) then
-          WRITE(6,*) ' '
-          WRITE(6,*) ' LUGB=',LUGB,' LEN=',LEN, ' LSOIL=',LSOIL
-          WRITE(6,*) 'IY=',IY,' IM=',IM,' ID=',ID,' IH=',IH,' FH=',FH
-     &,            ' SIG1T(1)=',SIG1T(1)
+          write(6,*) ' '
+          write(6,*) ' lugb=',lugb,' len=',len, ' lsoil=',lsoil
+          write(6,*) 'iy=',iy,' im=',im,' id=',id,' ih=',ih,' fh=',fh
+     &,            ' sig1t(1)=',sig1t(1)
      &,            ' gausm=',gausm,' blnmsk=',blnmsk,' bltmsk=',bltmsk
-          WRITE(6,*) ' '
+          write(6,*) ' '
         endif
 !
-!  Reading Permanent/extreme features (glacier points and maximum ice extent)
+!  reading permanent/extreme features (glacier points and maximum ice extent)
 !
-        allocate (TSFCL0(LEN))
-        allocate (GLACIR(LEN))
-        allocate (AMXICE(LEN))
+        allocate (tsfcl0(len))
+        allocate (glacir(len))
+        allocate (amxice(len))
 !
-!  Read Glacier
+!  read glacier
 !
         kpd9 = -1
         kpd7 = -1
-        CALL FIXRDC(LUGB,FNGLAC,KPDGLA,kpd7,kpd9,SLMASK,
-     &              GLACIR,LEN,IRET
-     &,             IMSK, JMSK, SLMSKH, GAUSM, BLNMSK, BLTMSK
-     &,             RLA, RLO, me)
-!     ZNNT=1.
-!     CALL NNTPRT(GLACIR,LEN,ZNNT)
+        call fixrdc(lugb,fnglac,kpdgla,kpd7,kpd9,slmask,
+     &              glacir,len,iret
+     &,             imsk, jmsk, slmskh, gausm, blnmsk, bltmsk
+     &,             rla, rlo, me)
+!     znnt=1.
+!     call nntprt(glacir,len,znnt)
 !
-!  Read Maximum ice extent
+!  read maximum ice extent
 !
         kpd7 = -1
-        CALL FIXRDC(LUGB,FNMXIC,KPDMXI,kpd7,kpd9,SLMASK,
-     &              AMXICE,LEN,IRET
-     &,             IMSK, JMSK, SLMSKH, GAUSM, BLNMSK, BLTMSK
-     &,             RLA, RLO, me)
-!     ZNNT=1.
-!     CALL NNTPRT(AMXICE,LEN,ZNNT)
+        call fixrdc(lugb,fnmxic,kpdmxi,kpd7,kpd9,slmask,
+     &              amxice,len,iret
+     &,             imsk, jmsk, slmskh, gausm, blnmsk, bltmsk
+     &,             rla, rlo, me)
+!     znnt=1.
+!     call nntprt(amxice,len,znnt)
 !
-        CRIT=0.5
-        CALL ROF01(GLACIR,LEN,'GE',CRIT)
-        CALL ROF01(AMXICE,LEN,'GE',CRIT)
+        crit=0.5
+        call rof01(glacir,len,'ge',crit)
+        call rof01(amxice,len,'ge',crit)
 !
-!  Quality control max ice limit based on glacier points
+!  quality control max ice limit based on glacier points
 !
-        CALL QCMXICE(GLACIR,AMXICE,LEN,me)
+        call qcmxice(glacir,amxice,len,me)
 !
-      ENDIF                       ! First time loop finished
+      endif                       ! first time loop finished
 !
-      DO I=1,LEN
-        SLICLM(I) = 1.
-        SNOCLM(I) = 0.
+      do i=1,len
+        sliclm(i) = 1.
+        snoclm(i) = 0.
         icefl1(i) = .true.
-      ENDDO
-!     if(lprnt) print *,' tsffcsIN=',tsffcs(iprnt)
+      enddo
+!     if(lprnt) print *,' tsffcsin=',tsffcs(iprnt)
 !
-!  Read climatology fields
+!  read climatology fields
 !
       if (me .eq. 0) then
-        WRITE(6,*) '=============='
-        WRITE(6,*) 'CLIMATOLOGY'
-        WRITE(6,*) '=============='
+        write(6,*) '=============='
+        write(6,*) 'climatology'
+        write(6,*) '=============='
       endif
 !
-      PERCRIT=CRITP1
+      percrit=critp1
 !
-      CALL CLIMA(LUGB,IY,IM,ID,IH,FH,LEN,LSOIL,SLMASK,
-     &           FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &           FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,FNVEGC,
+      call clima(lugb,iy,im,id,ih,fh,len,lsoil,slmask,
+     &           fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &           fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,fnvegc,
      &           fnvetc,fnsotc,
-!Clu [+1L] add fn()c for vmn, vmx, slp, abs
-     &           FNVMNC,FNVMXC,FNSLPC,FNABSC,
-     &           TSFCLM,TSFCL2,WETCLM,SNOCLM,ZORCLM,ALBCLM,AISCLM,
-     &           TG3CLM,CVCLM ,CVBCLM,CVTCLM,
-     &           CNPCLM,SMCCLM,STCCLM,SLICLM,SCVCLM,ACNCLM,VEGCLM,
-     &           vetclm,sotclm,ALFCLM,
-!Clu [+1L] add ()clm for vmn, vmx, slp, abs
-     &           VMNCLM,VMXCLM,SLPCLM,ABSCLM,
-     &           KPDTSF,KPDWET,KPDSNO,KPDZOR,KPDALB,KPDAIS,
-     &           KPDTG3,KPDSCV,KPDACN,KPDSMC,KPDSTC,KPDVEG,
-     &           kpdvet,kpdsot,kpdalf,TSFCL0,
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
-     &           KPDVMN,KPDVMX,KPDSLP,KPDABS,
-     &           DELTSFC, LANOM
-     &,          IMSK, JMSK, SLMSKH, RLA, RLO, GAUSM, BLNMSK, BLTMSK,me
-     &,          lprnt, iprnt, FNALBC2, IALB)
+     &           fnvmnc,fnvmxc,fnslpc,fnabsc,
+     &           tsfclm,tsfcl2,wetclm,snoclm,zorclm,albclm,aisclm,
+     &           tg3clm,cvclm ,cvbclm,cvtclm,
+     &           cnpclm,smcclm,stcclm,sliclm,scvclm,acnclm,vegclm,
+     &           vetclm,sotclm,alfclm,
+     &           vmnclm,vmxclm,slpclm,absclm,
+     &           kpdtsf,kpdwet,kpdsno,kpdzor,kpdalb,kpdais,
+     &           kpdtg3,kpdscv,kpdacn,kpdsmc,kpdstc,kpdveg,
+     &           kpdvet,kpdsot,kpdalf,tsfcl0,
+     &           kpdvmn,kpdvmx,kpdslp,kpdabs,
+     &           deltsfc, lanom
+     &,          imsk, jmsk, slmskh, rla, rlo, gausm, blnmsk, bltmsk,me
+     &,          lprnt, iprnt, fnalbc2, ialb)
 !     if(lprnt) print *,'tsfclm=',tsfclm(iprnt),' tsfcl2=',tsfcl2(iprnt)
 !
-!  Scale surface roughness and albedo to model required units
+!  scale surface roughness and albedo to model required units
 !
-      ZSCA=100.
-      CALL SCALE(ZORCLM,LEN,ZSCA)
-      ZSCA=0.01
-      CALL SCALE(ALBCLM,LEN,ZSCA)
-      CALL SCALE(ALBCLM(1,2),LEN,ZSCA)
-      CALL SCALE(ALBCLM(1,3),LEN,ZSCA)
-      CALL SCALE(ALBCLM(1,4),LEN,ZSCA)
-      CALL SCALE(ALFCLM,LEN,ZSCA)
-      CALL SCALE(ALFCLM(1,2),LEN,ZSCA)
-!Clu [+4L] scale vmn, vmx, abs from percent to fraction
-      ZSCA=0.01
-      CALL SCALE(VMNCLM,LEN,ZSCA)
-      CALL SCALE(VMXCLM,LEN,ZSCA)
-      CALL SCALE(ABSCLM,LEN,ZSCA)
+      zsca=100.
+      call scale(zorclm,len,zsca)
+      zsca=0.01
+      call scale(albclm,len,zsca)
+      call scale(albclm(1,2),len,zsca)
+      call scale(albclm(1,3),len,zsca)
+      call scale(albclm(1,4),len,zsca)
+      call scale(alfclm,len,zsca)
+      call scale(alfclm(1,2),len,zsca)
+!clu [+4l] scale vmn, vmx, abs from percent to fraction
+      zsca=0.01
+      call scale(vmnclm,len,zsca)
+      call scale(vmxclm,len,zsca)
+      call scale(absclm,len,zsca)
 
 !
-!  Set albedo over ocean to ALBOMX
+!  set albedo over ocean to albomx
 !
-      CALL ALBOCN(ALBCLM,SLMASK,ALBOMX,LEN)
+      call albocn(albclm,slmask,albomx,len)
 !
 !  make sure vegetation type and soil type are non zero over land
 !
-!Clu [-1L/+1L]: add slpclm
-!Clu  call landtyp(vetclm,sotclm,slmask,LEN)
-      call landtyp(vetclm,sotclm,slpclm,slmask,LEN)
+      call landtyp(vetclm,sotclm,slpclm,slmask,len)
 !
-!Cwu [-1L/+1L]
-!* Ice concentration or ice mask (only ice mask used in the model now)
-!  Ice concentration and ice mask (both are used in the model now)
+!cwu [-1l/+1l]
+!* ice concentration or ice mask (only ice mask used in the model now)
+!  ice concentration and ice mask (both are used in the model now)
 !
-      IF(FNAISC(1:8).NE.'        ') THEN
-!Cwu [+5L/-1L] Update SIHCLM, SICCLM
-        DO I=1,LEN
-         SIHCLM(I) = 3.0*AISCLM(I)
-         SICCLM(I) = AISCLM(I)
-          IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.1..AND.
-     &      SICCLM(I).NE.1.) THEN
-            SICCLM(I) = SICIMX
-            SIHFCS(I) = glacir_hice
-          ENDIF
-        ENDDO
-        CRIT=AISLIM
-!*      CRIT=0.5
-        CALL ROF01(AISCLM,LEN,'GE',CRIT)
-      ELSEIF(FNACNC(1:8).NE.'        ') THEN
-!Cwu [+4L] Update SIHCLM, SICCLM
-        DO I=1,LEN
-         SIHCLM(I) = 3.0*ACNCLM(I)
-         SICCLM(I) = ACNCLM(I)
-          IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.1..AND.
-     &      SICCLM(I).NE.1.) THEN
-            SICCLM(I) = SICIMX
-            SIHFCS(I) = glacir_hice
-          ENDIF
-        ENDDO
-        CALL ROF01(ACNCLM,LEN,'GE',AISLIM)
-        DO I=1,LEN
-         AISCLM(I) = ACNCLM(I)
-        ENDDO
-      ENDIF
+      if(fnaisc(1:8).ne.'        ') then
+!cwu [+5l/-1l] update sihclm, sicclm
+        do i=1,len
+         sihclm(i) = 3.0*aisclm(i)
+         sicclm(i) = aisclm(i)
+          if(slmask(i).eq.0..and.glacir(i).eq.1..and.
+     &      sicclm(i).ne.1.) then
+            sicclm(i) = sicimx
+            sihfcs(i) = glacir_hice
+          endif
+        enddo
+        crit=aislim
+!*      crit=0.5
+        call rof01(aisclm,len,'ge',crit)
+      elseif(fnacnc(1:8).ne.'        ') then
+!cwu [+4l] update sihclm, sicclm
+        do i=1,len
+         sihclm(i) = 3.0*acnclm(i)
+         sicclm(i) = acnclm(i)
+          if(slmask(i).eq.0..and.glacir(i).eq.1..and.
+     &      sicclm(i).ne.1.) then
+            sicclm(i) = sicimx
+            sihfcs(i) = glacir_hice
+          endif
+        enddo
+        call rof01(acnclm,len,'ge',aislim)
+        do i=1,len
+         aisclm(i) = acnclm(i)
+        enddo
+      endif
 !
-!  Quality control of sea ice mask
+!  quality control of sea ice mask
 !
-      CALL QCSICE(AISCLM,GLACIR,AMXICE,AICICE,AICSEA,SLLND,SLMASK,
-     &            RLA,RLO,LEN,me)
+      call qcsice(aisclm,glacir,amxice,aicice,aicsea,sllnd,slmask,
+     &            rla,rlo,len,me)
 !
-!  Set ocean/land/sea-ice mask
+!  set ocean/land/sea-ice mask
 !
-      CALL SETLSI(SLMASK,AISCLM,LEN,AICICE,SLICLM)
+      call setlsi(slmask,aisclm,len,aicice,sliclm)
 !     if(lprnt) print *,' aisclm=',aisclm(iprnt),' sliclm='
 !    *,sliclm(iprnt),' slmask=',slmask(iprnt)
 !
-!     WRITE(6,*) 'SLICLM'
-!     ZNNT=1.
-!     CALL NNTPRT(SLICLM,LEN,ZNNT)
+!     write(6,*) 'sliclm'
+!     znnt=1.
+!     call nntprt(sliclm,len,znnt)
 !
-!  Quality control of snow
+!  quality control of snow
 !
-!cggg landice mods start
-!       CALL QCSNOW(SNOCLM,SLMASK,AISCLM,GLACIR,LEN,SNOSMX,me)
-       CALL QCSNOW(SNOCLM,SLMASK,AISCLM,GLACIR,LEN,SNOSMX,LANDICE,me)
-!cggg landice mods end
+      call qcsnow(snoclm,slmask,aisclm,glacir,len,snosmx,landice,me)
 !
-      CALL SETZRO(SNOCLM,EPSSNO,LEN)
+      call setzro(snoclm,epssno,len)
 !
-!  Snow cover handling (We assume climatological snow depth is available)
-!  Quality control of snow depth (Note that Snow should be corrected first
-!  because it influences TSF
+!  snow cover handling (we assume climatological snow depth is available)
+!  quality control of snow depth (note that snow should be corrected first
+!  because it influences tsf
 !
-      KQCM=1
-      CALL QCMXMN('Snow    ',SNOCLM,SLICLM,SNOCLM,icefl1,
-     &            SNOLMX,SNOLMN,SNOOMX,SNOOMN,SNOIMX,SNOIMN,
-     &            SNOJMX,SNOJMN,SNOSMX,SNOSMN,EPSSNO,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     WRITE(6,*) 'SNOCLM'
-!     ZNNT=1.
-!     CALL NNTPRT(SNOCLM,LEN,ZNNT)
+      kqcm=1
+      call qcmxmn('snow    ',snoclm,sliclm,snoclm,icefl1,
+     &            snolmx,snolmn,snoomx,snoomn,snoimx,snoimn,
+     &            snojmx,snojmn,snosmx,snosmn,epssno,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     write(6,*) 'snoclm'
+!     znnt=1.
+!     call nntprt(snoclm,len,znnt)
 !
-!  Get snow cover from snow depth array
+!  get snow cover from snow depth array
 !
-      IF(FNSCVC(1:8).EQ.'        ') THEN
-        CALL GETSCV(SNOCLM,SCVCLM,LEN)
-      ENDIF
+      if(fnscvc(1:8).eq.'        ') then
+        call getscv(snoclm,scvclm,len)
+      endif
 !
-!  Set TSFC over snow to TSFSMX if greater
+!  set tsfc over snow to tsfsmx if greater
 !
-      CALL SNOSFC(SNOCLM,TSFCLM,TSFSMX,LEN,me)
-!     CALL SNOSFC(SNOCLM,TSFCL2,TSFSMX,LEN)
+      call snosfc(snoclm,tsfclm,tsfsmx,len,me)
+!     call snosfc(snoclm,tsfcl2,tsfsmx,len)
 
 !
-!  Quality control
+!  quality control
 !
       do i=1,len
         icefl2(i) = sicclm(i) .gt. 0.99999
       enddo
-      KQCM=1
-      CALL QCMXMN('TSFc    ',TSFCLM,SLICLM,SNOCLM,icefl2,
-     &            TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &            TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('TSf2    ',TSFCL2,SLICLM,SNOCLM,icefl2,
-     &            TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &            TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      kqcm=1
+      call qcmxmn('tsfc    ',tsfclm,sliclm,snoclm,icefl2,
+     &            tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &            tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('tsf2    ',tsfcl2,sliclm,snoclm,icefl2,
+     &            tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &            tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       do kk = 1, 4
-      CALL QCMXMN('ALBc    ',ALBCLM(1,kk),SLICLM,SNOCLM,icefl1,
-     &            ALBLMX,ALBLMN,ALBOMX,ALBOMN,ALBIMX,ALBIMN,
-     &            ALBJMX,ALBJMN,ALBSMX,ALBSMN,EPSALB,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      call qcmxmn('albc    ',albclm(1,kk),sliclm,snoclm,icefl1,
+     &            alblmx,alblmn,albomx,albomn,albimx,albimn,
+     &            albjmx,albjmn,albsmx,albsmn,epsalb,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       enddo
-      IF(FNWETC(1:8).NE.'        ') THEN
-        CALL QCMXMN('WETc    ',WETCLM,SLICLM,SNOCLM,icefl1,
-     &              WETLMX,WETLMN,WETOMX,WETOMN,WETIMX,WETIMN,
-     &              WETJMX,WETJMN,WETSMX,WETSMN,EPSWET,
-     &              RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      CALL QCMXMN('ZORc    ',ZORCLM,SLICLM,SNOCLM,icefl1,
-     &            ZORLMX,ZORLMN,ZOROMX,ZOROMN,ZORIMX,ZORIMN,
-     &            ZORJMX,ZORJMN,ZORSMX,ZORSMN,EPSZOR,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     IF(FNPLRC(1:8).NE.'        ') THEN
-!     CALL QCMXMN('PLNTc   ',PLRCLM,SLICLM,SNOCLM,icefl1,
-!    &            PLRLMX,PLRLMN,PLROMX,PLROMN,PLRIMX,PLRIMN,
-!    &            PLRJMX,PLRJMN,PLRSMX,PLRSMN,EPSPLR,
-!    &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     ENDIF
-      CALL QCMXMN('TG3c    ',TG3CLM,SLICLM,SNOCLM,icefl1,
-     &            TG3LMX,TG3LMN,TG3OMX,TG3OMN,TG3IMX,TG3IMN,
-     &            TG3JMX,TG3JMN,TG3SMX,TG3SMN,EPSTG3,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      if(fnwetc(1:8).ne.'        ') then
+        call qcmxmn('wetc    ',wetclm,sliclm,snoclm,icefl1,
+     &              wetlmx,wetlmn,wetomx,wetomn,wetimx,wetimn,
+     &              wetjmx,wetjmn,wetsmx,wetsmn,epswet,
+     &              rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      call qcmxmn('zorc    ',zorclm,sliclm,snoclm,icefl1,
+     &            zorlmx,zorlmn,zoromx,zoromn,zorimx,zorimn,
+     &            zorjmx,zorjmn,zorsmx,zorsmn,epszor,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     if(fnplrc(1:8).ne.'        ') then
+!     call qcmxmn('plntc   ',plrclm,sliclm,snoclm,icefl1,
+!    &            plrlmx,plrlmn,plromx,plromn,plrimx,plrimn,
+!    &            plrjmx,plrjmn,plrsmx,plrsmn,epsplr,
+!    &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     endif
+      call qcmxmn('tg3c    ',tg3clm,sliclm,snoclm,icefl1,
+     &            tg3lmx,tg3lmn,tg3omx,tg3omn,tg3imx,tg3imn,
+     &            tg3jmx,tg3jmn,tg3smx,tg3smn,epstg3,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
 !
-!  Get soil temp and moisture (after all the QCs are completed)
+!  get soil temp and moisture (after all the qcs are completed)
 !
-      IF(FNSMCC(1:8).EQ.'        ') THEN
-        CALL GETSMC(WETCLM,LEN,LSOIL,SMCCLM,me)
-      ENDIF
-      CALL QCMXMN('SMC1c   ',SMCCLM(1,1),SLICLM,SNOCLM,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SMC2c   ',SMCCLM(1,2),SLICLM,SNOCLM,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add smcclm(3:4)
-      IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('SMC3c   ',SMCCLM(1,3),SLICLM,SNOCLM,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SMC4c   ',SMCCLM(1,4),SLICLM,SNOCLM,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      IF(FNSTCC(1:8).EQ.'        ') THEN
-        CALL GETSTC(TSFCLM,TG3CLM,SLICLM,LEN,LSOIL,STCCLM,TSFIMX)
-      ENDIF
-      CALL QCMXMN('STC1c   ',STCCLM(1,1),SLICLM,SNOCLM,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('STC2c   ',STCCLM(1,2),SLICLM,SNOCLM,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add stcclm(3:4)
-      IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('STC3c   ',STCCLM(1,3),SLICLM,SNOCLM,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('STC4c   ',STCCLM(1,4),SLICLM,SNOCLM,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      CALL QCMXMN('VEGc    ',VEGCLM,SLICLM,SNOCLM,icefl1,
-     &            VEGLMX,VEGLMN,VEGOMX,VEGOMN,VEGIMX,VEGIMN,
-     &            VEGJMX,VEGJMN,VEGSMX,VEGSMN,EPSVEG,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VETc    ',VETCLM,SLICLM,SNOCLM,icefl1,
-     &            VETLMX,VETLMN,VETOMX,VETOMN,VETIMX,VETIMN,
-     &            VETJMX,VETJMN,VETSMX,VETSMN,EPSVET,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SOTc    ',SOTCLM,SLICLM,SNOCLM,icefl1,
-     &            SOTLMX,SOTLMN,SOTOMX,SOTOMN,SOTIMX,SOTIMN,
-     &            SOTJMX,SOTJMN,SOTSMX,SOTSMN,EPSSOT,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Cwu [+8L] ---------------------------------------------------------------
-      CALL QCMXMN('SIHc    ',SIHCLM,SLICLM,SNOCLM,icefl1,
-     &            SIHLMX,SIHLMN,SIHOMX,SIHOMN,SIHIMX,SIHIMN,
-     &            SIHJMX,SIHJMN,SIHSMX,SIHSMN,EPSSIH,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SICc    ',SICCLM,SLICLM,SNOCLM,icefl1,
-     &            SICLMX,SICLMN,SICOMX,SICOMN,SICIMX,SICIMN,
-     &            SICJMX,SICJMN,SICSMX,SICSMN,EPSSIC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+16L] ---------------------------------------------------------------
-      CALL QCMXMN('VMNc    ',VMNCLM,SLICLM,SNOCLM,icefl1,
-     &            VMNLMX,VMNLMN,VMNOMX,VMNOMN,VMNIMX,VMNIMN,
-     &            VMNJMX,VMNJMN,VMNSMX,VMNSMN,EPSVMN,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VMXc    ',VMXCLM,SLICLM,SNOCLM,icefl1,
-     &            VMXLMX,VMXLMN,VMXOMX,VMXOMN,VMXIMX,VMXIMN,
-     &            VMXJMX,VMXJMN,VMXSMX,VMXSMN,EPSVMX,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SLPc    ',SLPCLM,SLICLM,SNOCLM,icefl1,
-     &            SLPLMX,SLPLMN,SLPOMX,SLPOMN,SLPIMX,SLPIMN,
-     &            SLPJMX,SLPJMN,SLPSMX,SLPSMN,EPSSLP,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('ABSc    ',ABSCLM,SLICLM,SNOCLM,icefl1,
-     &            ABSLMX,ABSLMN,ABSOMX,ABSOMN,ABSIMX,ABSIMN,
-     &            ABSJMX,ABSJMN,ABSSMX,ABSSMN,EPSABS,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu ----------------------------------------------------------------------
+      if(fnsmcc(1:8).eq.'        ') then
+        call getsmc(wetclm,len,lsoil,smcclm,me)
+      endif
+      call qcmxmn('smc1c   ',smcclm(1,1),sliclm,snoclm,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc2c   ',smcclm(1,2),sliclm,snoclm,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add smcclm(3:4)
+      if(lsoil.gt.2) then
+      call qcmxmn('smc3c   ',smcclm(1,3),sliclm,snoclm,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc4c   ',smcclm(1,4),sliclm,snoclm,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      if(fnstcc(1:8).eq.'        ') then
+        call getstc(tsfclm,tg3clm,sliclm,len,lsoil,stcclm,tsfimx)
+      endif
+      call qcmxmn('stc1c   ',stcclm(1,1),sliclm,snoclm,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc2c   ',stcclm(1,2),sliclm,snoclm,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add stcclm(3:4)
+      if(lsoil.gt.2) then
+      call qcmxmn('stc3c   ',stcclm(1,3),sliclm,snoclm,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc4c   ',stcclm(1,4),sliclm,snoclm,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      call qcmxmn('vegc    ',vegclm,sliclm,snoclm,icefl1,
+     &            veglmx,veglmn,vegomx,vegomn,vegimx,vegimn,
+     &            vegjmx,vegjmn,vegsmx,vegsmn,epsveg,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('vetc    ',vetclm,sliclm,snoclm,icefl1,
+     &            vetlmx,vetlmn,vetomx,vetomn,vetimx,vetimn,
+     &            vetjmx,vetjmn,vetsmx,vetsmn,epsvet,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sotc    ',sotclm,sliclm,snoclm,icefl1,
+     &            sotlmx,sotlmn,sotomx,sotomn,sotimx,sotimn,
+     &            sotjmx,sotjmn,sotsmx,sotsmn,epssot,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!cwu [+8l] ---------------------------------------------------------------
+      call qcmxmn('sihc    ',sihclm,sliclm,snoclm,icefl1,
+     &            sihlmx,sihlmn,sihomx,sihomn,sihimx,sihimn,
+     &            sihjmx,sihjmn,sihsmx,sihsmn,epssih,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sicc    ',sicclm,sliclm,snoclm,icefl1,
+     &            siclmx,siclmn,sicomx,sicomn,sicimx,sicimn,
+     &            sicjmx,sicjmn,sicsmx,sicsmn,epssic,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+16l] ---------------------------------------------------------------
+      call qcmxmn('vmnc    ',vmnclm,sliclm,snoclm,icefl1,
+     &            vmnlmx,vmnlmn,vmnomx,vmnomn,vmnimx,vmnimn,
+     &            vmnjmx,vmnjmn,vmnsmx,vmnsmn,epsvmn,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('vmxc    ',vmxclm,sliclm,snoclm,icefl1,
+     &            vmxlmx,vmxlmn,vmxomx,vmxomn,vmximx,vmximn,
+     &            vmxjmx,vmxjmn,vmxsmx,vmxsmn,epsvmx,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('slpc    ',slpclm,sliclm,snoclm,icefl1,
+     &            slplmx,slplmn,slpomx,slpomn,slpimx,slpimn,
+     &            slpjmx,slpjmn,slpsmx,slpsmn,epsslp,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('absc    ',absclm,sliclm,snoclm,icefl1,
+     &            abslmx,abslmn,absomx,absomn,absimx,absimn,
+     &            absjmx,absjmn,abssmx,abssmn,epsabs,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu ----------------------------------------------------------------------
 !
-!  MONITORING PRINTS
+!  monitoring prints
 !
-      IF (MONCLM) THEN
+      if (monclm) then
        if (me .eq. 0) then
-        PRINT *,' '
-        PRINT *,'MONITOR OF TIME AND SPACE INTERPOLATED CLIMATOLOGY'
-        PRINT *,' '
-!       CALL COUNT(SLICLM,SNOCLM,LEN)
-        PRINT *,' '
-!        CALL MONITR('TSFCLM',TSFCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ALBCLM',ALBCLM(1,1),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ALBCLM',ALBCLM(1,2),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ALBCLM',ALBCLM(1,3),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ALBCLM',ALBCLM(1,4),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('AISCLM',AISCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SNOCLM',SNOCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SCVCLM',SCVCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SMCCLM1',SMCCLM(1,1),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SMCCLM2',SMCCLM(1,2),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('STCCLM1',STCCLM(1,1),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('STCCLM2',STCCLM(1,2),SLICLM,SNOCLM,LEN)
-!Clu [+4L] add smcclm(3:4) and stcclm(3:4)
-        IF(LSOIL.GT.2) THEN
-!        CALL MONITR('SMCCLM3',SMCCLM(1,3),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SMCCLM4',SMCCLM(1,4),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('STCCLM3',STCCLM(1,3),SLICLM,SNOCLM,LEN)
-!        CALL MONITR('STCCLM4',STCCLM(1,4),SLICLM,SNOCLM,LEN)
-        ENDIF
-!        CALL MONITR('TG3CLM',TG3CLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ZORCLM',ZORCLM,SLICLM,SNOCLM,LEN)
-!       IF (GAUS) THEN
-!          CALL MONITR('CVACLM',CVCLM ,SLICLM,SNOCLM,LEN)
-!          CALL MONITR('CVBCLM',CVBCLM,SLICLM,SNOCLM,LEN)
-!          CALL MONITR('CVTCLM',CVTCLM,SLICLM,SNOCLM,LEN)
-!       ENDIF
-!        CALL MONITR('SLICLM',SLICLM,SLICLM,SNOCLM,LEN)
-!       CALL MONITR('PLRCLM',PLRCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('OROG  ',OROG  ,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('VEGCLM',VEGCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('VETCLM',VETCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SOTCLM',SOTCLM,SLICLM,SNOCLM,LEN)
-!Cwu [+2L] add sih, sic
-!        CALL MONITR('SIHCLM',SIHCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SICCLM',SICCLM,SLICLM,SNOCLM,LEN)
-!Clu [+4L] add vmn, vmx, slp, abs
-!        CALL MONITR('VMNCLM',VMNCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('VMXCLM',VMXCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('SLPCLM',SLPCLM,SLICLM,SNOCLM,LEN)
-!        CALL MONITR('ABSCLM',ABSCLM,SLICLM,SNOCLM,LEN)
+        print *,' '
+        print *,'monitor of time and space interpolated climatology'
+        print *,' '
+!       call count(sliclm,snoclm,len)
+        print *,' '
+        call monitr('tsfclm',tsfclm,sliclm,snoclm,len)
+        call monitr('albclm',albclm(1,1),sliclm,snoclm,len)
+        call monitr('albclm',albclm(1,2),sliclm,snoclm,len)
+        call monitr('albclm',albclm(1,3),sliclm,snoclm,len)
+        call monitr('albclm',albclm(1,4),sliclm,snoclm,len)
+        call monitr('aisclm',aisclm,sliclm,snoclm,len)
+        call monitr('snoclm',snoclm,sliclm,snoclm,len)
+        call monitr('scvclm',scvclm,sliclm,snoclm,len)
+        call monitr('smcclm1',smcclm(1,1),sliclm,snoclm,len)
+        call monitr('smcclm2',smcclm(1,2),sliclm,snoclm,len)
+        call monitr('stcclm1',stcclm(1,1),sliclm,snoclm,len)
+        call monitr('stcclm2',stcclm(1,2),sliclm,snoclm,len)
+!clu [+4l] add smcclm(3:4) and stcclm(3:4)
+        if(lsoil.gt.2) then
+        call monitr('smcclm3',smcclm(1,3),sliclm,snoclm,len)
+        call monitr('smcclm4',smcclm(1,4),sliclm,snoclm,len)
+        call monitr('stcclm3',stcclm(1,3),sliclm,snoclm,len)
+        call monitr('stcclm4',stcclm(1,4),sliclm,snoclm,len)
+        endif
+        call monitr('tg3clm',tg3clm,sliclm,snoclm,len)
+        call monitr('zorclm',zorclm,sliclm,snoclm,len)
+!       if (gaus) then
+          call monitr('cvaclm',cvclm ,sliclm,snoclm,len)
+          call monitr('cvbclm',cvbclm,sliclm,snoclm,len)
+          call monitr('cvtclm',cvtclm,sliclm,snoclm,len)
+!       endif
+        call monitr('sliclm',sliclm,sliclm,snoclm,len)
+!       call monitr('plrclm',plrclm,sliclm,snoclm,len)
+        call monitr('orog  ',orog  ,sliclm,snoclm,len)
+        call monitr('vegclm',vegclm,sliclm,snoclm,len)
+        call monitr('vetclm',vetclm,sliclm,snoclm,len)
+        call monitr('sotclm',sotclm,sliclm,snoclm,len)
+!cwu [+2l] add sih, sic
+        call monitr('sihclm',sihclm,sliclm,snoclm,len)
+        call monitr('sicclm',sicclm,sliclm,snoclm,len)
+!clu [+4l] add vmn, vmx, slp, abs
+        call monitr('vmnclm',vmnclm,sliclm,snoclm,len)
+        call monitr('vmxclm',vmxclm,sliclm,snoclm,len)
+        call monitr('slpclm',slpclm,sliclm,snoclm,len)
+        call monitr('absclm',absclm,sliclm,snoclm,len)
        endif
-      ENDIF
+      endif
 !
 !
       if (me .eq. 0) then
-        WRITE(6,*) '=============='
-        WRITE(6,*) '   ANALYSIS'
-        WRITE(6,*) '=============='
+        write(6,*) '=============='
+        write(6,*) '   analysis'
+        write(6,*) '=============='
       endif
 !
-!  Fill in analysis array with climatology before reading analysis.
+!  fill in analysis array with climatology before reading analysis.
 !
-      CALL FILANL(TSFANL,TSFAN2,WETANL,SNOANL,ZORANL,ALBANL,AISANL,
-     &            TG3ANL,CVANL ,CVBANL,CVTANL,
-     &            CNPANL,SMCANL,STCANL,SLIANL,SCVANL,VEGANL,
-     &            vetanl,sotanl,ALFANL,
-!Cwu [+1L] add ()anl for sih, sic
-     &            SIHANL,SICANL,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &            VMNANL,VMXANL,SLPANL,ABSANL, 
-     &            TSFCLM,TSFCL2,WETCLM,SNOCLM,ZORCLM,ALBCLM,AISCLM,
-     &            TG3CLM,CVCLM ,CVBCLM,CVTCLM,
-     &            CNPCLM,SMCCLM,STCCLM,SLICLM,SCVCLM,VEGCLM,
-     &            vetclm,sotclm,ALFCLM,
-!Cwu [+1L] add ()clm for sih, sic
-     &            SIHCLM,SICCLM,
-!Clu [+1L] add ()clm for vmn, vmx, slp, abs
-     &            VMNCLM,VMXCLM,SLPCLM,ABSCLM,      
-     &            LEN,LSOIL)
+      call filanl(tsfanl,tsfan2,wetanl,snoanl,zoranl,albanl,aisanl,
+     &            tg3anl,cvanl ,cvbanl,cvtanl,
+     &            cnpanl,smcanl,stcanl,slianl,scvanl,veganl,
+     &            vetanl,sotanl,alfanl,
+     &            sihanl,sicanl,
+     &            vmnanl,vmxanl,slpanl,absanl, 
+     &            tsfclm,tsfcl2,wetclm,snoclm,zorclm,albclm,aisclm,
+     &            tg3clm,cvclm ,cvbclm,cvtclm,
+     &            cnpclm,smcclm,stcclm,sliclm,scvclm,vegclm,
+     &            vetclm,sotclm,alfclm,
+     &            sihclm,sicclm,
+     &            vmnclm,vmxclm,slpclm,absclm,      
+     &            len,lsoil)
 !
-!  Reverse scaling to match with grib analysis input
+!  reverse scaling to match with grib analysis input
 !
-      ZSCA=0.01
-      CALL SCALE(ZORANL,LEN, ZSCA)
-      ZSCA=100.
-      CALL SCALE(ALBANL,LEN,ZSCA)
-      CALL SCALE(ALBANL(1,2),LEN,ZSCA)
-      CALL SCALE(ALBANL(1,3),LEN,ZSCA)
-      CALL SCALE(ALBANL(1,4),LEN,ZSCA)
-      CALL SCALE(ALFANL,LEN,ZSCA)
-      CALL SCALE(ALFANL(1,2),LEN,ZSCA)
-!Clu [+4L] reverse scale for vmn, vmx, abs
-      ZSCA=100.
-      CALL SCALE(VMNANL,LEN,ZSCA)
-      CALL SCALE(VMXANL,LEN,ZSCA)
-      CALL SCALE(ABSANL,LEN,ZSCA)
+      zsca=0.01
+      call scale(zoranl,len, zsca)
+      zsca=100.
+      call scale(albanl,len,zsca)
+      call scale(albanl(1,2),len,zsca)
+      call scale(albanl(1,3),len,zsca)
+      call scale(albanl(1,4),len,zsca)
+      call scale(alfanl,len,zsca)
+      call scale(alfanl(1,2),len,zsca)
+!clu [+4l] reverse scale for vmn, vmx, abs
+      zsca=100.
+      call scale(vmnanl,len,zsca)
+      call scale(vmxanl,len,zsca)
+      call scale(absanl,len,zsca)
 !
-      PERCRIT=CRITP2
+      percrit=critp2
 !
-!  READ ANALYSIS FIELDS
+!  read analysis fields
 !
-      CALL ANALY(LUGB,IY,IM,ID,IH,FH,LEN,LSOIL,SLMASK,
-     &           FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &           FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,FNVEGA,
+      call analy(lugb,iy,im,id,ih,fh,len,lsoil,slmask,
+     &           fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &           fntg3a,fnscva,fnsmca,fnstca,fnacna,fnvega,
      &           fnveta,fnsota,
-!Clu [+1L] add fn()a for vmn, vmx, slp, abs
-     &           FNVMNA,FNVMXA,FNSLPA,FNABSA,      
-     &           TSFANL,WETANL,SNOANL,ZORANL,ALBANL,AISANL,
-     &           TG3ANL,CVANL ,CVBANL,CVTANL,
-     &           SMCANL,STCANL,SLIANL,SCVANL,ACNANL,VEGANL,
-     &           vetanl,sotanl,ALFANL,TSFAN0,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &           VMNANL,VMXANL,SLPANL,ABSANL,      
-!cggg snow mods start     &   KPDTSF,KPDWET,KPDSNO,KPDZOR,KPDALB,KPDAIS,
-     &           KPDTSF,KPDWET,KPDSNO,KPDSND,KPDZOR,KPDALB,KPDAIS,
-!cggg snow mods end
-     &           KPDTG3,KPDSCV,KPDACN,KPDSMC,KPDSTC,KPDVEG,
+     &           fnvmna,fnvmxa,fnslpa,fnabsa,      
+     &           tsfanl,wetanl,snoanl,zoranl,albanl,aisanl,
+     &           tg3anl,cvanl ,cvbanl,cvtanl,
+     &           smcanl,stcanl,slianl,scvanl,acnanl,veganl,
+     &           vetanl,sotanl,alfanl,tsfan0,
+     &           vmnanl,vmxanl,slpanl,absanl,      
+     &           kpdtsf,kpdwet,kpdsno,kpdsnd,kpdzor,kpdalb,kpdais,
+     &           kpdtg3,kpdscv,kpdacn,kpdsmc,kpdstc,kpdveg,
      &           kpdvet,kpdsot,kpdalf,
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
-     &           KPDVMN,KPDVMX,KPDSLP,KPDABS,      
-     &           IRTTSF,IRTWET,IRTSNO,IRTZOR,IRTALB,IRTAIS,
-     &           IRTTG3,IRTSCV,IRTACN,IRTSMC,IRTSTC,IRTVEG,
+     &           kpdvmn,kpdvmx,kpdslp,kpdabs,      
+     &           irttsf,irtwet,irtsno,irtzor,irtalb,irtais,
+     &           irttg3,irtscv,irtacn,irtsmc,irtstc,irtveg,
      &           irtvet,irtsot,irtalf
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
-     &,          IRTVMN,IRTVMX,IRTSLP,IRTABS, 
-     &           IMSK, JMSK, SLMSKH, RLA, RLO, GAUSM, BLNMSK, BLTMSK,me)
+     &,          irtvmn,irtvmx,irtslp,irtabs, 
+     &           imsk, jmsk, slmskh, rla, rlo, gausm, blnmsk, bltmsk,me)
 !     if(lprnt) print *,' tsfanl=',tsfanl(iprnt)
-
-
 !
-!  Scale ZOR and ALB to match forecast model units
+!  scale zor and alb to match forecast model units
 !
-      ZSCA=100.
-      CALL SCALE(ZORANL,LEN, ZSCA)
-      ZSCA=0.01
-      CALL SCALE(ALBANL,LEN,ZSCA)
-      CALL SCALE(ALBANL(1,2),LEN,ZSCA)
-      CALL SCALE(ALBANL(1,3),LEN,ZSCA)
-      CALL SCALE(ALBANL(1,4),LEN,ZSCA)
-      CALL SCALE(ALFANL,LEN,ZSCA)
-      CALL SCALE(ALFANL(1,2),LEN,ZSCA)
-!Clu [+4] scale vmn, vmx, abs from percent to fraction
-      ZSCA=0.01
-      CALL SCALE(VMNANL,LEN,ZSCA)
-      CALL SCALE(VMXANL,LEN,ZSCA)
-      CALL SCALE(ABSANL,LEN,ZSCA)
+      zsca=100.
+      call scale(zoranl,len, zsca)
+      zsca=0.01
+      call scale(albanl,len,zsca)
+      call scale(albanl(1,2),len,zsca)
+      call scale(albanl(1,3),len,zsca)
+      call scale(albanl(1,4),len,zsca)
+      call scale(alfanl,len,zsca)
+      call scale(alfanl(1,2),len,zsca)
+!clu [+4] scale vmn, vmx, abs from percent to fraction
+      zsca=0.01
+      call scale(vmnanl,len,zsca)
+      call scale(vmxanl,len,zsca)
+      call scale(absanl,len,zsca)
 !
-!  Interpolate climatology but fixing initial anomaly
+!  interpolate climatology but fixing initial anomaly
 !
-      IF(FH.GT.0.0.AND.FNTSFA(1:8).NE.'        '.AND.LANOM) THEN
-        CALL ANOMINT(TSFAN0,TSFCLM,TSFCL0,TSFANL,LEN)
-      ENDIF
+      if(fh.gt.0.0.and.fntsfa(1:8).ne.'        '.and.lanom) then
+        call anomint(tsfan0,tsfclm,tsfcl0,tsfanl,len)
+      endif
 !
-!    If the TSFANL is at sea level, then bring it to the surface using
-!    unfiltered orography (for lakes).  If the analysis is at lake surface
-!    as in the NST model, then this call should be removed - Moorthi 09/23/2011
+!    if the tsfanl is at sea level, then bring it to the surface using
+!    unfiltered orography (for lakes).  if the analysis is at lake surface
+!    as in the nst model, then this call should be removed - moorthi 09/23/2011
 !
-        if (use_ufo) then
-          ZTSFC = 0.0
-          CALL TSFCOR(TSFANL,OROG_uf,SLMASK,ZTSFC,LEN,RLAPSE)
+        if (use_ufo .and. .not. nst_anl) then
+          ztsfc = 0.0
+          call tsfcor(tsfanl,orog_uf,slmask,ztsfc,len,rlapse)
         endif
 !
-!  Ice concentration or ice mask (only ice mask used in the model now)
+!  ice concentration or ice mask (only ice mask used in the model now)
 !
-      IF(FNAISA(1:8).NE.'        ') THEN
-!Cwu [+5L/-1L] Update SIHANL, SICANL
-        DO I=1,LEN
-         SIHANL(I) = 3.0*AISANL(I)
-         SICANL(I) = AISANL(I)
-          IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.1..AND.
-     &      SICANL(I).NE.1.) THEN
-            SICANL(I) = SICIMX
-            SIHFCS(I) = glacir_hice
-          ENDIF
-        ENDDO
-        CRIT=AISLIM
-!*      CRIT=0.5
-        CALL ROF01(AISANL,LEN,'GE',CRIT)
-      ELSEIF(FNACNA(1:8).NE.'        ') THEN
-!Cwu [+17L] update SIHANL, SICANL
-        DO I=1,LEN
-          SIHANL(I) = 3.0*ACNANL(I)
-          SICANL(I) = ACNANL(I)
-          IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.1..AND.
-     &     SICANL(I).NE.1.) THEN
-            SICANL(I) = SICIMX
-            SIHFCS(I) = glacir_hice
-          ENDIF
-        ENDDO
-        CRIT=AISLIM
-        DO I=1,LEN
-          IF((SLIANL(I).EQ.0.).AND.(SICANL(I).GE.CRIT)) THEN
-            SLIANL(I)=2.
-!           PRINT *,'cycle - NEW ICE FORM: FICE=',SICANL(I)
-          ELSE IF((SLIANL(I).GE.2.).AND.(SICANL(I).LT.CRIT)) THEN
-            SLIANL(I)=0.
-!           PRINT *,'cycle - ICE FREE: FICE=',SICANL(I)
-          ELSE IF((SLIANL(I).EQ.1.).AND.(SICANL(I).GE.SICIMN)) THEN
-!           PRINT *,'cycle - LAND COVERED BY SEA-ICE: FICE=',SICANL(I)
-            SICANL(I)=0.
-          ENDIF
-        ENDDO
-!       ZNNT=10.
-!       CALL NNTPRT(ACNANL,LEN,ZNNT)
+      if(fnaisa(1:8).ne.'        ') then
+!cwu [+5l/-1l] update sihanl, sicanl
+        do i=1,len
+         sihanl(i) = 3.0*aisanl(i)
+         sicanl(i) = aisanl(i)
+          if(slmask(i).eq.0..and.glacir(i).eq.1..and.
+     &      sicanl(i).ne.1.) then
+            sicanl(i) = sicimx
+            sihfcs(i) = glacir_hice
+          endif
+        enddo
+        crit=aislim
+!*      crit=0.5
+        call rof01(aisanl,len,'ge',crit)
+      elseif(fnacna(1:8).ne.'        ') then
+!cwu [+17l] update sihanl, sicanl
+        do i=1,len
+          sihanl(i) = 3.0*acnanl(i)
+          sicanl(i) = acnanl(i)
+          if(slmask(i).eq.0..and.glacir(i).eq.1..and.
+     &     sicanl(i).ne.1.) then
+            sicanl(i) = sicimx
+            sihfcs(i) = glacir_hice
+          endif
+        enddo
+        crit=aislim
+        do i=1,len
+          if((slianl(i).eq.0.).and.(sicanl(i).ge.crit)) then
+            slianl(i)=2.
+!           print *,'cycle - new ice form: fice=',sicanl(i)
+          else if((slianl(i).ge.2.).and.(sicanl(i).lt.crit)) then
+            slianl(i)=0.
+!           print *,'cycle - ice free: fice=',sicanl(i)
+          else if((slianl(i).eq.1.).and.(sicanl(i).ge.sicimn)) then
+!           print *,'cycle - land covered by sea-ice: fice=',sicanl(i)
+            sicanl(i)=0.
+          endif
+        enddo
+!       znnt=10.
+!       call nntprt(acnanl,len,znnt)
 !     if(lprnt) print *,' acnanl=',acnanl(iprnt)
-!       DO I=1,LEN
-!         if (ACNANL(I) .GT. 0.3 .AND. AISCLM(I) .EQ. 1.0
-!    &     .AND. AISFCS(I) .GE. 0.75)   ACNANL(I) = AISLIM
-!       ENDDO
+!       do i=1,len
+!         if (acnanl(i) .gt. 0.3 .and. aisclm(i) .eq. 1.0
+!    &     .and. aisfcs(i) .ge. 0.75)   acnanl(i) = aislim
+!       enddo
 !     if(lprnt) print *,' acnanl=',acnanl(iprnt)
-        CALL ROF01(ACNANL,LEN,'GE',AISLIM)
-        DO I=1,LEN
-          AISANL(I)=ACNANL(I)
-        ENDDO
-      ENDIF
+        call rof01(acnanl,len,'ge',aislim)
+        do i=1,len
+          aisanl(i)=acnanl(i)
+        enddo
+      endif
 !     if(lprnt) print *,' aisanl1=',aisanl(iprnt),' glacir='
 !    &,glacir(iprnt),' slmask=',slmask(iprnt)
 !
-      CALL QCSICE(AISANL,GLACIR,AMXICE,AICICE,AICSEA,SLLND,SLMASK,
-     &            RLA,RLO,LEN,me)
+      call qcsice(aisanl,glacir,amxice,aicice,aicsea,sllnd,slmask,
+     &            rla,rlo,len,me)
 !
-!  Set ocean/land/sea-ice mask
+!  set ocean/land/sea-ice mask
 !
-      CALL SETLSI(SLMASK,AISANL,LEN,AICICE,SLIANL)
+      call setlsi(slmask,aisanl,len,aicice,slianl)
 !     if(lprnt) print *,' aisanl=',aisanl(iprnt),' slianl='
 !    *,slianl(iprnt),' slmask=',slmask(iprnt)
 !
@@ -1580,972 +1515,947 @@
         enddo
       enddo
 
-!     WRITE(6,*) 'SLIANL'
-!     ZNNT=1.
-!     CALL NNTPRT(SLIANL,LEN,ZNNT)
-!Cwu [+8L]----------------------------------------------------------------------
-      CALL QCMXMN('SIHa    ',SIHANL,SLIANL,SNOANL,icefl1,
-     &            SIHLMX,SIHLMN,SIHOMX,SIHOMN,SIHIMX,SIHIMN,
-     &            SIHJMX,SIHJMN,SIHSMX,SIHSMN,EPSSIH,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SICa    ',SICANL,SLIANL,SNOANL,icefl1,
-     &            SICLMX,SICLMN,SICOMX,SICOMN,SICIMX,SICIMN,
-     &            SICJMX,SICJMN,SICSMX,SICSMN,EPSSIC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+!     write(6,*) 'slianl'
+!     znnt=1.
+!     call nntprt(slianl,len,znnt)
+!cwu [+8l]----------------------------------------------------------------------
+      call qcmxmn('siha    ',sihanl,slianl,snoanl,icefl1,
+     &            sihlmx,sihlmn,sihomx,sihomn,sihimx,sihimn,
+     &            sihjmx,sihjmn,sihsmx,sihsmn,epssih,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sica    ',sicanl,slianl,snoanl,icefl1,
+     &            siclmx,siclmn,sicomx,sicomn,sicimx,sicimn,
+     &            sicjmx,sicjmn,sicsmx,sicsmn,epssic,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
 !
-!  Set albedo over ocean to ALBOMX
+!  set albedo over ocean to albomx
 !
-      CALL ALBOCN(ALBANL,SLMASK,ALBOMX,LEN)
+      call albocn(albanl,slmask,albomx,len)
 !
-!  Quality control of snow and sea-ice
-!    Process snow depth or snow cover
+!  quality control of snow and sea-ice
+!    process snow depth or snow cover
 !
-      IF(FNSNOA(1:8).NE.'        ') THEN
-        CALL SETZRO(SNOANL,EPSSNO,LEN)
-!cggg landice mods start
-!         CALL QCSNOW(SNOANL,SLMASK,AISANL,GLACIR,LEN,10.,me)
-         CALL QCSNOW(SNOANL,SLMASK,AISANL,GLACIR,LEN,ten,LANDICE,me)
-!cggg landice mods end
-!cggg landice mods start
-!       CALL SNODPTH2(GLACIR,SNOSMX,SNOANL, LEN, me)
-        IF (.NOT.LANDICE) THEN
-          CALL SNODPTH2(GLACIR,SNOSMX,SNOANL, LEN, me)
-        ENDIF
-!cggg landice mods end
-        KQCM=1
-        CALL SNOSFC(SNOANL,TSFANL,TSFSMX,LEN,me)
-        CALL QCMXMN('Snoa    ',SNOANL,SLIANL,SNOANL,icefl1,
-     &              SNOLMX,SNOLMN,SNOOMX,SNOOMN,SNOIMX,SNOIMN,
-     &              SNOJMX,SNOJMN,SNOSMX,SNOSMN,EPSSNO,
-     &              RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-        CALL GETSCV(SNOANL,SCVANL,LEN)
-        CALL QCMXMN('Sncva   ',SCVANL,SLIANL,SNOANL,icefl1,
-     &              SCVLMX,SCVLMN,SCVOMX,SCVOMN,SCVIMX,SCVIMN,
-     &              SCVJMX,SCVJMN,SCVSMX,SCVSMN,EPSSCV,
-     &              RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ELSE
-        CRIT=0.5
-        CALL ROF01(SCVANL,LEN,'GE',CRIT)
-!cggg landice mods start
-!        CALL QCSNOW(SCVANL,SLMASK,AISANL,GLACIR,LEN,1.,me)
-        CALL QCSNOW(SCVANL,SLMASK,AISANL,GLACIR,LEN,one,LANDICE,me)
-!cggg landice mods end
-        CALL QCMXMN('SNcva   ',SCVANL,SLIANL,SCVANL,icefl1,
-     &              SCVLMX,SCVLMN,SCVOMX,SCVOMN,SCVIMX,SCVIMN,
-     &              SCVJMX,SCVJMN,SCVSMX,SCVSMN,EPSSCV,
-     &              RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!cggg landice mods start
-!        CALL SNODPTH(SCVANL,SLIANL,TSFANL,SNOCLM,
-!     &               GLACIR,SNWMAX,SNWMIN,LEN,SNOANL,me)
-        CALL SNODPTH(SCVANL,SLIANL,TSFANL,SNOCLM,
-     &               GLACIR,SNWMAX,SNWMIN,LANDICE,LEN,SNOANL,me)
-!cggg landice mods end
-!cggg landice mods start
-!        CALL QCSNOW(SCVANL,SLMASK,AISANL,GLACIR,LEN,SNOSMX,me)
-        CALL QCSNOW(SCVANL,SLMASK,AISANL,GLACIR,LEN,SNOSMX,LANDICE,me)
-!cggg landice mods end
-        CALL SNOSFC(SNOANL,TSFANL,TSFSMX,LEN,me)
-        CALL QCMXMN('SNowa   ',SNOANL,SLIANL,SNOANL,icefl1,
-     &              SNOLMX,SNOLMN,SNOOMX,SNOOMN,SNOIMX,SNOIMN,
-     &              SNOJMX,SNOJMN,SNOSMX,SNOSMN,EPSSNO,
-     &              RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
+      if(fnsnoa(1:8).ne.'        ') then
+        call setzro(snoanl,epssno,len)
+        call qcsnow(snoanl,slmask,aisanl,glacir,len,ten,landice,me)
+        if (.not.landice) then
+          call snodpth2(glacir,snosmx,snoanl, len, me)
+        endif
+        kqcm=1
+        call snosfc(snoanl,tsfanl,tsfsmx,len,me)
+        call qcmxmn('snoa    ',snoanl,slianl,snoanl,icefl1,
+     &              snolmx,snolmn,snoomx,snoomn,snoimx,snoimn,
+     &              snojmx,snojmn,snosmx,snosmn,epssno,
+     &              rla,rlo,len,kqcm,percrit,lgchek,me)
+        call getscv(snoanl,scvanl,len)
+        call qcmxmn('sncva   ',scvanl,slianl,snoanl,icefl1,
+     &              scvlmx,scvlmn,scvomx,scvomn,scvimx,scvimn,
+     &              scvjmx,scvjmn,scvsmx,scvsmn,epsscv,
+     &              rla,rlo,len,kqcm,percrit,lgchek,me)
+      else
+        crit=0.5
+        call rof01(scvanl,len,'ge',crit)
+        call qcsnow(scvanl,slmask,aisanl,glacir,len,one,landice,me)
+        call qcmxmn('sncva   ',scvanl,slianl,scvanl,icefl1,
+     &              scvlmx,scvlmn,scvomx,scvomn,scvimx,scvimn,
+     &              scvjmx,scvjmn,scvsmx,scvsmn,epsscv,
+     &              rla,rlo,len,kqcm,percrit,lgchek,me)
+        call snodpth(scvanl,slianl,tsfanl,snoclm,
+     &               glacir,snwmax,snwmin,landice,len,snoanl,me)
+        call qcsnow(scvanl,slmask,aisanl,glacir,len,snosmx,landice,me)
+        call snosfc(snoanl,tsfanl,tsfsmx,len,me)
+        call qcmxmn('snowa   ',snoanl,slianl,snoanl,icefl1,
+     &              snolmx,snolmn,snoomx,snoomn,snoimx,snoimn,
+     &              snojmx,snojmn,snosmx,snosmn,epssno,
+     &              rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
 !
       do i=1,len
         icefl2(i) = sicanl(i) .gt. 0.99999
       enddo
-      CALL QCMXMN('TSFa    ',TSFANL,SLIANL,SNOANL,icefl2,
-     &            TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &            TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      call qcmxmn('tsfa    ',tsfanl,slianl,snoanl,icefl2,
+     &            tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &            tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       do kk = 1, 4
-      CALL QCMXMN('ALBa    ',ALBANL(1,kk),SLIANL,SNOANL,icefl1,
-     &            ALBLMX,ALBLMN,ALBOMX,ALBOMN,ALBIMX,ALBIMN,
-     &            ALBJMX,ALBJMN,ALBSMX,ALBSMN,EPSALB,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      call qcmxmn('alba    ',albanl(1,kk),slianl,snoanl,icefl1,
+     &            alblmx,alblmn,albomx,albomn,albimx,albimn,
+     &            albjmx,albjmn,albsmx,albsmn,epsalb,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       enddo
-      IF(FNWETC(1:8).NE.'        ' .OR. FNWETA(1:8).NE.'        ' ) THEN
-      CALL QCMXMN('WETa    ',WETANL,SLIANL,SNOANL,icefl1,
-     &            WETLMX,WETLMN,WETOMX,WETOMN,WETIMX,WETIMN,
-     &            WETJMX,WETJMN,WETSMX,WETSMN,EPSWET,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      CALL QCMXMN('ZORa    ',ZORANL,SLIANL,SNOANL,icefl1,
-     &            ZORLMX,ZORLMN,ZOROMX,ZOROMN,ZORIMX,ZORIMN,
-     &            ZORJMX,ZORJMN,ZORSMX,ZORSMN,EPSZOR,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     IF(FNPLRC(1:8).NE.'        ' .OR. FNPLRA(1:8).NE.'        ' ) THEN
-!     CALL QCMXMN('PLNa    ',PLRANL,SLIANL,SNOANL,icefl1,
-!    &            PLRLMX,PLRLMN,PLROMX,PLROMN,PLRIMX,PLRIMN,
-!    &            PLRJMX,PLRJMN,PLRSMX,PLRSMN,EPSPLR,
-!    &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     ENDIF
-      CALL QCMXMN('TG3a    ',TG3ANL,SLIANL,SNOANL,icefl1,
-     &            TG3LMX,TG3LMN,TG3OMX,TG3OMN,TG3IMX,TG3IMN,
-     &            TG3JMX,TG3JMN,TG3SMX,TG3SMN,EPSTG3,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      if(fnwetc(1:8).ne.'        ' .or. fnweta(1:8).ne.'        ' ) then
+      call qcmxmn('weta    ',wetanl,slianl,snoanl,icefl1,
+     &            wetlmx,wetlmn,wetomx,wetomn,wetimx,wetimn,
+     &            wetjmx,wetjmn,wetsmx,wetsmn,epswet,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      call qcmxmn('zora    ',zoranl,slianl,snoanl,icefl1,
+     &            zorlmx,zorlmn,zoromx,zoromn,zorimx,zorimn,
+     &            zorjmx,zorjmn,zorsmx,zorsmn,epszor,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     if(fnplrc(1:8).ne.'        ' .or. fnplra(1:8).ne.'        ' ) then
+!     call qcmxmn('plna    ',plranl,slianl,snoanl,icefl1,
+!    &            plrlmx,plrlmn,plromx,plromn,plrimx,plrimn,
+!    &            plrjmx,plrjmn,plrsmx,plrsmn,epsplr,
+!    &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     endif
+      call qcmxmn('tg3a    ',tg3anl,slianl,snoanl,icefl1,
+     &            tg3lmx,tg3lmn,tg3omx,tg3omn,tg3imx,tg3imn,
+     &            tg3jmx,tg3jmn,tg3smx,tg3smn,epstg3,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
 !
-!  Get soil temp and moisture
+!  get soil temp and moisture
 !
-      IF(FNSMCA(1:8).EQ.'        ' .AND. FNSMCC(1:8).EQ.'        ') THEN
-        CALL GETSMC(WETANL,LEN,LSOIL,SMCANL,me)
-      ENDIF
-      CALL QCMXMN('SMC1a   ',SMCANL(1,1),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SMC2a   ',SMCANL(1,2),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add smcanl(3:4)
-      IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('SMC3a   ',SMCANL(1,3),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SMC4a   ',SMCANL(1,4),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      IF(FNSTCA(1:8).EQ.'        ') THEN
-        CALL GETSTC(TSFANL,TG3ANL,SLIANL,LEN,LSOIL,STCANL,TSFIMX)
-      ENDIF
-      CALL QCMXMN('STC1a   ',STCANL(1,1),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('STC2a   ',STCANL(1,2),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add stcanl(3:4)
-      IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('STC3a   ',STCANL(1,3),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('STC4a   ',STCANL(1,4),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      CALL QCMXMN('VEGa    ',VEGANL,SLIANL,SNOANL,icefl1,
-     &            VEGLMX,VEGLMN,VEGOMX,VEGOMN,VEGIMX,VEGIMN,
-     &            VEGJMX,VEGJMN,VEGSMX,VEGSMN,EPSVEG,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VETa    ',VETANL,SLIANL,SNOANL,icefl1,
-     &            VETLMX,VETLMN,VETOMX,VETOMN,VETIMX,VETIMN,
-     &            VETJMX,VETJMN,VETSMX,VETSMN,EPSVET,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SOTa    ',SOTANL,SLIANL,SNOANL,icefl1,
-     &            SOTLMX,SOTLMN,SOTOMX,SOTOMN,SOTIMX,SOTIMN,
-     &            SOTJMX,SOTJMN,SOTSMX,SOTSMN,EPSSOT,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+16L]----------------------------------------------------------------------
-      CALL QCMXMN('VMNa    ',VMNANL,SLIANL,SNOANL,icefl1,
-     &            VMNLMX,VMNLMN,VMNOMX,VMNOMN,VMNIMX,VMNIMN,
-     &            VMNJMX,VMNJMN,VMNSMX,VMNSMN,EPSVMN,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VMXa    ',VMXANL,SLIANL,SNOANL,icefl1,
-     &            VMXLMX,VMXLMN,VMXOMX,VMXOMN,VMXIMX,VMXIMN,
-     &            VMXJMX,VMXJMN,VMXSMX,VMXSMN,EPSVMX,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SLPa    ',SLPANL,SLIANL,SNOANL,icefl1,
-     &            SLPLMX,SLPLMN,SLPOMX,SLPOMN,SLPIMX,SLPIMN,
-     &            SLPJMX,SLPJMN,SLPSMX,SLPSMN,EPSSLP,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('ABSa    ',ABSANL,SLIANL,SNOANL,icefl1,
-     &            ABSLMX,ABSLMN,ABSOMX,ABSOMN,ABSIMX,ABSIMN,
-     &            ABSJMX,ABSJMN,ABSSMX,ABSSMN,EPSABS,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu ----------------------------------------------------------------------------
+      if(fnsmca(1:8).eq.'        ' .and. fnsmcc(1:8).eq.'        ') then
+        call getsmc(wetanl,len,lsoil,smcanl,me)
+      endif
+      call qcmxmn('smc1a   ',smcanl(1,1),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc2a   ',smcanl(1,2),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add smcanl(3:4)
+      if(lsoil.gt.2) then
+      call qcmxmn('smc3a   ',smcanl(1,3),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc4a   ',smcanl(1,4),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      if(fnstca(1:8).eq.'        ') then
+        call getstc(tsfanl,tg3anl,slianl,len,lsoil,stcanl,tsfimx)
+      endif
+      call qcmxmn('stc1a   ',stcanl(1,1),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc2a   ',stcanl(1,2),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add stcanl(3:4)
+      if(lsoil.gt.2) then
+      call qcmxmn('stc3a   ',stcanl(1,3),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc4a   ',stcanl(1,4),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      call qcmxmn('vega    ',veganl,slianl,snoanl,icefl1,
+     &            veglmx,veglmn,vegomx,vegomn,vegimx,vegimn,
+     &            vegjmx,vegjmn,vegsmx,vegsmn,epsveg,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('veta    ',vetanl,slianl,snoanl,icefl1,
+     &            vetlmx,vetlmn,vetomx,vetomn,vetimx,vetimn,
+     &            vetjmx,vetjmn,vetsmx,vetsmn,epsvet,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sota    ',sotanl,slianl,snoanl,icefl1,
+     &            sotlmx,sotlmn,sotomx,sotomn,sotimx,sotimn,
+     &            sotjmx,sotjmn,sotsmx,sotsmn,epssot,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+16l]----------------------------------------------------------------------
+      call qcmxmn('vmna    ',vmnanl,slianl,snoanl,icefl1,
+     &            vmnlmx,vmnlmn,vmnomx,vmnomn,vmnimx,vmnimn,
+     &            vmnjmx,vmnjmn,vmnsmx,vmnsmn,epsvmn,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('vmxa    ',vmxanl,slianl,snoanl,icefl1,
+     &            vmxlmx,vmxlmn,vmxomx,vmxomn,vmximx,vmximn,
+     &            vmxjmx,vmxjmn,vmxsmx,vmxsmn,epsvmx,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('slpa    ',slpanl,slianl,snoanl,icefl1,
+     &            slplmx,slplmn,slpomx,slpomn,slpimx,slpimn,
+     &            slpjmx,slpjmn,slpsmx,slpsmn,epsslp,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('absa    ',absanl,slianl,snoanl,icefl1,
+     &            abslmx,abslmn,absomx,absomn,absimx,absimn,
+     &            absjmx,absjmn,abssmx,abssmn,epsabs,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu ----------------------------------------------------------------------------
 !
-!  MONITORING PRINTS
+!  monitoring prints
 !
-      IF (MONANL) THEN
+      if (monanl) then
        if (me .eq. 0) then
-        PRINT *,' '
-        PRINT *,'MONITOR OF TIME AND SPACE INTERPOLATED ANALYSIS'
-        PRINT *,' '
-!       CALL COUNT(SLIANL,SNOANL,LEN)
-        PRINT *,' '
-!        CALL MONITR('TSFANL',TSFANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBANL',ALBANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('AISANL',AISANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SNOANL',SNOANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SCVANL',SCVANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL1',SMCANL(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL2',SMCANL(1,2),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL1',STCANL(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL2',STCANL(1,2),SLIANL,SNOANL,LEN)
-!Clu [+4L] add smcanl(3:4) and stcanl(3:4)
-        IF(LSOIL.GT.2) THEN
-!        CALL MONITR('SMCANL3',SMCANL(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL4',SMCANL(1,4),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL3',STCANL(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL4',STCANL(1,4),SLIANL,SNOANL,LEN)
-        ENDIF
-!        CALL MONITR('TG3ANL',TG3ANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ZORANL',ZORANL,SLIANL,SNOANL,LEN)
-!       IF (GAUS) THEN
-!          CALL MONITR('CVAANL',CVANL ,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVBANL',CVBANL,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVTANL',CVTANL,SLIANL,SNOANL,LEN)
-!       ENDIF
-!        CALL MONITR('SLIANL',SLIANL,SLIANL,SNOANL,LEN)
-!       CALL MONITR('PLRANL',PLRANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('OROG  ',OROG  ,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VEGANL',VEGANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VETANL',VETANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SOTANL',SOTANL,SLIANL,SNOANL,LEN)
-!Cwu [+2L] add sih, sic
-!        CALL MONITR('SIHANL',SIHANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SICANL',SICANL,SLIANL,SNOANL,LEN)
-!Clu [+4L] add vmn, vmx, slp, abs
-!        CALL MONITR('VMNANL',VMNANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VMXANL',VMXANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SLPANL',SLPANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ABSANL',ABSANL,SLIANL,SNOANL,LEN)
+        print *,' '
+        print *,'monitor of time and space interpolated analysis'
+        print *,' '
+!       call count(slianl,snoanl,len)
+        print *,' '
+        call monitr('tsfanl',tsfanl,slianl,snoanl,len)
+        call monitr('albanl',albanl,slianl,snoanl,len)
+        call monitr('aisanl',aisanl,slianl,snoanl,len)
+        call monitr('snoanl',snoanl,slianl,snoanl,len)
+        call monitr('scvanl',scvanl,slianl,snoanl,len)
+        call monitr('smcanl1',smcanl(1,1),slianl,snoanl,len)
+        call monitr('smcanl2',smcanl(1,2),slianl,snoanl,len)
+        call monitr('stcanl1',stcanl(1,1),slianl,snoanl,len)
+        call monitr('stcanl2',stcanl(1,2),slianl,snoanl,len)
+!clu [+4l] add smcanl(3:4) and stcanl(3:4)
+        if(lsoil.gt.2) then
+        call monitr('smcanl3',smcanl(1,3),slianl,snoanl,len)
+        call monitr('smcanl4',smcanl(1,4),slianl,snoanl,len)
+        call monitr('stcanl3',stcanl(1,3),slianl,snoanl,len)
+        call monitr('stcanl4',stcanl(1,4),slianl,snoanl,len)
+        endif
+        call monitr('tg3anl',tg3anl,slianl,snoanl,len)
+        call monitr('zoranl',zoranl,slianl,snoanl,len)
+!       if (gaus) then
+          call monitr('cvaanl',cvanl ,slianl,snoanl,len)
+          call monitr('cvbanl',cvbanl,slianl,snoanl,len)
+          call monitr('cvtanl',cvtanl,slianl,snoanl,len)
+!       endif
+        call monitr('slianl',slianl,slianl,snoanl,len)
+!       call monitr('plranl',plranl,slianl,snoanl,len)
+        call monitr('orog  ',orog  ,slianl,snoanl,len)
+        call monitr('veganl',veganl,slianl,snoanl,len)
+        call monitr('vetanl',vetanl,slianl,snoanl,len)
+        call monitr('sotanl',sotanl,slianl,snoanl,len)
+!cwu [+2l] add sih, sic
+        call monitr('sihanl',sihanl,slianl,snoanl,len)
+        call monitr('sicanl',sicanl,slianl,snoanl,len)
+!clu [+4l] add vmn, vmx, slp, abs
+        call monitr('vmnanl',vmnanl,slianl,snoanl,len)
+        call monitr('vmxanl',vmxanl,slianl,snoanl,len)
+        call monitr('slpanl',slpanl,slianl,snoanl,len)
+        call monitr('absanl',absanl,slianl,snoanl,len)
        endif
 
-      ENDIF
-!
-!  Read in forecast fields if needed
-!
-      if (me .eq. 0) then
-        WRITE(6,*) '=============='
-        WRITE(6,*) '  FCST GUESS'
-        WRITE(6,*) '=============='
       endif
 !
-        PERCRIT=CRITP2
+!  read in forecast fields if needed
 !
-      IF(DEADS) THEN
+      if (me .eq. 0) then
+        write(6,*) '=============='
+        write(6,*) '  fcst guess'
+        write(6,*) '=============='
+      endif
 !
-!  Fill in guess array with Analysis if dead start.
+        percrit=critp2
 !
-        PERCRIT=CRITP3
-        if (me .eq. 0) WRITE(6,*) 'THIS RUN IS DEAD START RUN'
-        CALL FILFCS(TSFFCS,WETFCS,SNOFCS,ZORFCS,ALBFCS,
-     &              TG3FCS,CVFCS ,CVBFCS,CVTFCS,
-     &              CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,
-     &              VEGFCS,vetfcs,sotfcs,alffcs,
-!Cwu [+1L] add ()fcs for sih, sic
-     &              SIHFCS,SICFCS,
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &              VMNFCS,VMXFCS,SLPFCS,ABSFCS,
-     &              TSFANL,WETANL,SNOANL,ZORANL,ALBANL,
-     &              TG3ANL,CVANL ,CVBANL,CVTANL,
-     &              CNPANL,SMCANL,STCANL,SLIANL,AISANL,
-     &              VEGANL,vetanl,sotanl,ALFANL,
-!Cwu [+1L] add ()anl for sih, sic
-     &              SIHANL,SICANL,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &              VMNANL,VMXANL,SLPANL,ABSANL,     
-     &              LEN,LSOIL)
-        IF(SIG1T(1).NE.0.) THEN
-          CALL USESGT(SIG1T,SLIANL,TG3ANL,LEN,LSOIL,TSFFCS,STCFCS,
-     &                TSFIMX)
+      if(deads) then
+!
+!  fill in guess array with analysis if dead start.
+!
+        percrit=critp3
+        if (me .eq. 0) write(6,*) 'this run is dead start run'
+        call filfcs(tsffcs,wetfcs,snofcs,zorfcs,albfcs,
+     &              tg3fcs,cvfcs ,cvbfcs,cvtfcs,
+     &              cnpfcs,smcfcs,stcfcs,slifcs,aisfcs,
+     &              vegfcs,vetfcs,sotfcs,alffcs,
+!cwu [+1l] add ()fcs for sih, sic
+     &              sihfcs,sicfcs,
+!clu [+1l] add ()fcs for vmn, vmx, slp, abs
+     &              vmnfcs,vmxfcs,slpfcs,absfcs,
+     &              tsfanl,wetanl,snoanl,zoranl,albanl,
+     &              tg3anl,cvanl ,cvbanl,cvtanl,
+     &              cnpanl,smcanl,stcanl,slianl,aisanl,
+     &              veganl,vetanl,sotanl,alfanl,
+!cwu [+1l] add ()anl for sih, sic
+     &              sihanl,sicanl,
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &              vmnanl,vmxanl,slpanl,absanl,     
+     &              len,lsoil)
+        if(sig1t(1).ne.0.) then
+          call usesgt(sig1t,slianl,tg3anl,len,lsoil,tsffcs,stcfcs,
+     &                tsfimx)
          do i=1,len
             icefl2(i) = sicfcs(i) .gt. 0.99999
           enddo
-          KQCM=1
-          CALL QCMXMN('TSFf    ',TSFFCS,SLIFCS,SNOFCS,icefl2,
-     &                TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &                TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('STC1f   ',STCFCS(1,1),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('STC2f   ',STCFCS(1,2),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-        ENDIF
-      ELSE
-        PERCRIT=CRITP2
+          kqcm=1
+          call qcmxmn('tsff    ',tsffcs,slifcs,snofcs,icefl2,
+     &                tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &                tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('stc1f   ',stcfcs(1,1),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('stc2f   ',stcfcs(1,2),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+        endif
+      else
+        percrit=critp2
 !
-!  Make reverse angulation correction to TSF
-!  Make reverse orography correction to TG3
+!  make reverse angulation correction to tsf
+!  make reverse orography correction to tg3
 !
         if (use_ufo) then
-          ZTSFC = 1.0
+          ztsfc = 1.0
           orogd = orog - orog_uf
-          CALL TSFCOR(TG3FCS,OROGd,SLMASK,ZTSFC,LEN,-RLAPSE)
-          ZTSFC = 0.
-          CALL TSFCOR(TSFFCS,OROGd,SLMASK,ZTSFC,LEN,-RLAPSE)
+          call tsfcor(tg3fcs,orogd,slmask,ztsfc,len,-rlapse)
+          ztsfc = 0.
+          call tsfcor(tsffcs,orogd,slmask,ztsfc,len,-rlapse)
         else
-          ZTSFC = 0.
-          CALL TSFCOR(TSFFCS,OROG,SLMASK,ZTSFC,LEN,-RLAPSE)
+          ztsfc = 0.
+          call tsfcor(tsffcs,orog,slmask,ztsfc,len,-rlapse)
         endif
 
-!Clu [+12L]  --------------------------------------------------------------
+!clu [+12l]  --------------------------------------------------------------
 !
-!  Compute soil moisture liquid-to-total ratio over land
+!  compute soil moisture liquid-to-total ratio over land
 !
-        DO J=1, LSOIL
-        DO I=1, LEN
-         IF(SMCFCS(I,J) .NE. 0.)  THEN
-            SWRATIO(I,J) = SLCFCS(I,J)/SMCFCS(I,J)
-           ELSE
-            SWRATIO(I,J) = -999.
-         ENDIF
-        ENDDO
-        ENDDO
-!Clu -----------------------------------------------------------------------
+        do j=1, lsoil
+        do i=1, len
+         if(smcfcs(i,j) .ne. 0.)  then
+            swratio(i,j) = slcfcs(i,j)/smcfcs(i,j)
+           else
+            swratio(i,j) = -999.
+         endif
+        enddo
+        enddo
+!clu -----------------------------------------------------------------------
 !
-        IF(LQCBGS .and. irtacn .eq. 0) THEN
-          CALL QCSLI(SLIANL,SLIFCS,LEN,me)
-          CALL ALBOCN(ALBFCS,SLMASK,ALBOMX,LEN)
+        if(lqcbgs .and. irtacn .eq. 0) then
+          call qcsli(slianl,slifcs,len,me)
+          call albocn(albfcs,slmask,albomx,len)
          do i=1,len
             icefl2(i) = sicfcs(i) .gt. 0.99999
           enddo
-          KQCM=1
-          CALL QCMXMN('Snof    ',SNOFCS,SLIFCS,SNOFCS,icefl1,
-     &                SNOLMX,SNOLMN,SNOOMX,SNOOMN,SNOIMX,SNOIMN,
-     &                SNOJMX,SNOJMN,SNOSMX,SNOSMN,EPSSNO,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('TSFf    ',TSFFCS,SLIFCS,SNOFCS,icefl2,
-     &                TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &                TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+          kqcm=1
+          call qcmxmn('snof    ',snofcs,slifcs,snofcs,icefl1,
+     &                snolmx,snolmn,snoomx,snoomn,snoimx,snoimn,
+     &                snojmx,snojmn,snosmx,snosmn,epssno,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('tsff    ',tsffcs,slifcs,snofcs,icefl2,
+     &                tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &                tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
           do kk = 1, 4
-          CALL QCMXMN('ALBf    ',ALBFCS(1,kk),SLIFCS,SNOFCS,icefl1,
-     &                ALBLMX,ALBLMN,ALBOMX,ALBOMN,ALBIMX,ALBIMN,
-     &                ALBJMX,ALBJMN,ALBSMX,ALBSMN,EPSALB,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+          call qcmxmn('albf    ',albfcs(1,kk),slifcs,snofcs,icefl1,
+     &                alblmx,alblmn,albomx,albomn,albimx,albimn,
+     &                albjmx,albjmn,albsmx,albsmn,epsalb,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
           enddo
-        IF(FNWETC(1:8).NE.'        ' .OR. FNWETA(1:8).NE.'        ' )
-     &                                                          THEN
-          CALL QCMXMN('WETf    ',WETFCS,SLIFCS,SNOFCS,icefl1,
-     &                WETLMX,WETLMN,WETOMX,WETOMN,WETIMX,WETIMN,
-     &                WETJMX,WETJMN,WETSMX,WETSMN,EPSWET,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-        ENDIF
-          CALL QCMXMN('ZORf    ',ZORFCS,SLIFCS,SNOFCS,icefl1,
-     &                ZORLMX,ZORLMN,ZOROMX,ZOROMN,ZORIMX,ZORIMN,
-     &                ZORJMX,ZORJMN,ZORSMX,ZORSMN,EPSZOR,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!       IF(FNPLRC(1:8).NE.'        ' .OR. FNPLRA(1:8).NE.'        ' )
-!         CALL QCMXMN('PLNf    ',PLRFCS,SLIFCS,SNOFCS,icefl1,
-!    &                PLRLMX,PLRLMN,PLROMX,PLROMN,PLRIMX,PLRIMN,
-!    &                PLRJMX,PLRJMN,PLRSMX,PLRSMN,EPSPLR,
-!    &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!       ENDIF
-          CALL QCMXMN('TG3f    ',TG3FCS,SLIFCS,SNOFCS,icefl1,
-     &                TG3LMX,TG3LMN,TG3OMX,TG3OMN,TG3IMX,TG3IMN,
-     &                TG3JMX,TG3JMN,TG3SMX,TG3SMN,EPSTG3,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Cwu [+8L] ---------------------------------------------------------------
-          CALL QCMXMN('SIHf    ',SIHFCS,SLIFCS,SNOFCS,icefl1,
-     &                SIHLMX,SIHLMN,SIHOMX,SIHOMN,SIHIMX,SIHIMN,
-     &                SIHJMX,SIHJMN,SIHSMX,SIHSMN,EPSSIH,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SICf    ',SICFCS,SLIFCS,SNOFCS,icefl1,
-     &                SICLMX,SICLMN,SICOMX,SICOMN,SICIMX,SICIMN,
-     &                SICJMX,SICJMN,SICSMX,SICSMN,EPSSIC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SMC1f    ',SMCFCS(1,1),SLIFCS,SNOFCS,icefl1,
-     &                SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &                SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SMC2f   ',SMCFCS(1,2),SLIFCS,SNOFCS,icefl1,
-     &                SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &                SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add smcfcs(3:4)
-          IF(LSOIL.GT.2) THEN
-          CALL QCMXMN('SMC3f    ',SMCFCS(1,3),SLIFCS,SNOFCS,icefl1,
-     &                SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &                SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SMC4f   ',SMCFCS(1,4),SLIFCS,SNOFCS,icefl1,
-     &                SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &                SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          ENDIF
-          CALL QCMXMN('STC1f   ',STCFCS(1,1),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('STC2f   ',STCFCS(1,2),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add stcfcs(3:4)
-         IF(LSOIL.GT.2) THEN
-          CALL QCMXMN('STC3f   ',STCFCS(1,3),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('STC4f   ',STCFCS(1,4),SLIFCS,SNOFCS,icefl1,
-     &                STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &                STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-         ENDIF
-          CALL QCMXMN('VEGf    ',VEGFCS,SLIFCS,SNOFCS,icefl1,
-     &                VEGLMX,VEGLMN,VEGOMX,VEGOMN,VEGIMX,VEGIMN,
-     &                VEGJMX,VEGJMN,VEGSMX,VEGSMN,EPSVEG,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('VETf    ',VETFCS,SLIFCS,SNOFCS,icefl1,
-     &                VETLMX,VETLMN,VETOMX,VETOMN,VETIMX,VETIMN,
-     &                VETJMX,VETJMN,VETSMX,VETSMN,EPSVET,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SOTf    ',SOTFCS,SLIFCS,SNOFCS,icefl1,
-     &                SOTLMX,SOTLMN,SOTOMX,SOTOMN,SOTIMX,SOTIMN,
-     &                SOTJMX,SOTJMN,SOTSMX,SOTSMN,EPSSOT,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+        if(fnwetc(1:8).ne.'        ' .or. fnweta(1:8).ne.'        ' )
+     &                                                          then
+          call qcmxmn('wetf    ',wetfcs,slifcs,snofcs,icefl1,
+     &                wetlmx,wetlmn,wetomx,wetomn,wetimx,wetimn,
+     &                wetjmx,wetjmn,wetsmx,wetsmn,epswet,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+        endif
+          call qcmxmn('zorf    ',zorfcs,slifcs,snofcs,icefl1,
+     &                zorlmx,zorlmn,zoromx,zoromn,zorimx,zorimn,
+     &                zorjmx,zorjmn,zorsmx,zorsmn,epszor,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!       if(fnplrc(1:8).ne.'        ' .or. fnplra(1:8).ne.'        ' )
+!         call qcmxmn('plnf    ',plrfcs,slifcs,snofcs,icefl1,
+!    &                plrlmx,plrlmn,plromx,plromn,plrimx,plrimn,
+!    &                plrjmx,plrjmn,plrsmx,plrsmn,epsplr,
+!    &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!       endif
+          call qcmxmn('tg3f    ',tg3fcs,slifcs,snofcs,icefl1,
+     &                tg3lmx,tg3lmn,tg3omx,tg3omn,tg3imx,tg3imn,
+     &                tg3jmx,tg3jmn,tg3smx,tg3smn,epstg3,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!cwu [+8l] ---------------------------------------------------------------
+          call qcmxmn('sihf    ',sihfcs,slifcs,snofcs,icefl1,
+     &                sihlmx,sihlmn,sihomx,sihomn,sihimx,sihimn,
+     &                sihjmx,sihjmn,sihsmx,sihsmn,epssih,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('sicf    ',sicfcs,slifcs,snofcs,icefl1,
+     &                siclmx,siclmn,sicomx,sicomn,sicimx,sicimn,
+     &                sicjmx,sicjmn,sicsmx,sicsmn,epssic,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('smc1f    ',smcfcs(1,1),slifcs,snofcs,icefl1,
+     &                smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &                smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('smc2f   ',smcfcs(1,2),slifcs,snofcs,icefl1,
+     &                smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &                smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add smcfcs(3:4)
+          if(lsoil.gt.2) then
+          call qcmxmn('smc3f    ',smcfcs(1,3),slifcs,snofcs,icefl1,
+     &                smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &                smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('smc4f   ',smcfcs(1,4),slifcs,snofcs,icefl1,
+     &                smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &                smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          endif
+          call qcmxmn('stc1f   ',stcfcs(1,1),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('stc2f   ',stcfcs(1,2),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add stcfcs(3:4)
+         if(lsoil.gt.2) then
+          call qcmxmn('stc3f   ',stcfcs(1,3),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('stc4f   ',stcfcs(1,4),slifcs,snofcs,icefl1,
+     &                stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &                stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+         endif
+          call qcmxmn('vegf    ',vegfcs,slifcs,snofcs,icefl1,
+     &                veglmx,veglmn,vegomx,vegomn,vegimx,vegimn,
+     &                vegjmx,vegjmn,vegsmx,vegsmn,epsveg,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('vetf    ',vetfcs,slifcs,snofcs,icefl1,
+     &                vetlmx,vetlmn,vetomx,vetomn,vetimx,vetimn,
+     &                vetjmx,vetjmn,vetsmx,vetsmn,epsvet,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('sotf    ',sotfcs,slifcs,snofcs,icefl1,
+     &                sotlmx,sotlmn,sotomx,sotomn,sotimx,sotimn,
+     &                sotjmx,sotjmn,sotsmx,sotsmn,epssot,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
 
-!Clu [+16L] ---------------------------------------------------------------
-          CALL QCMXMN('VMNf    ',VMNFCS,SLIFCS,SNOFCS,icefl1,
-     &                VMNLMX,VMNLMN,VMNOMX,VMNOMN,VMNIMX,VMNIMN,
-     &                VMNJMX,VMNJMN,VMNSMX,VMNSMN,EPSVMN,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('VMXf    ',VMXFCS,SLIFCS,SNOFCS,icefl1,
-     &                VMXLMX,VMXLMN,VMXOMX,VMXOMN,VMXIMX,VMXIMN,
-     &                VMXJMX,VMXJMN,VMXSMX,VMXSMN,EPSVMX,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('SLPf    ',SLPFCS,SLIFCS,SNOFCS,icefl1,
-     &                SLPLMX,SLPLMN,SLPOMX,SLPOMN,SLPIMX,SLPIMN,
-     &                SLPJMX,SLPJMN,SLPSMX,SLPSMN,EPSSLP,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-          CALL QCMXMN('ABSf    ',ABSFCS,SLIFCS,SNOFCS,icefl1,
-     &                ABSLMX,ABSLMN,ABSOMX,ABSOMN,ABSIMX,ABSIMN,
-     &                ABSJMX,ABSJMN,ABSSMX,ABSSMN,EPSABS,
-     &                RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu -----------------------------------------------------------------------
-        ENDIF
-      ENDIF
+!clu [+16l] ---------------------------------------------------------------
+          call qcmxmn('vmnf    ',vmnfcs,slifcs,snofcs,icefl1,
+     &                vmnlmx,vmnlmn,vmnomx,vmnomn,vmnimx,vmnimn,
+     &                vmnjmx,vmnjmn,vmnsmx,vmnsmn,epsvmn,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('vmxf    ',vmxfcs,slifcs,snofcs,icefl1,
+     &                vmxlmx,vmxlmn,vmxomx,vmxomn,vmximx,vmximn,
+     &                vmxjmx,vmxjmn,vmxsmx,vmxsmn,epsvmx,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('slpf    ',slpfcs,slifcs,snofcs,icefl1,
+     &                slplmx,slplmn,slpomx,slpomn,slpimx,slpimn,
+     &                slpjmx,slpjmn,slpsmx,slpsmn,epsslp,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+          call qcmxmn('absf    ',absfcs,slifcs,snofcs,icefl1,
+     &                abslmx,abslmn,absomx,absomn,absimx,absimn,
+     &                absjmx,absjmn,abssmx,abssmn,epsabs,
+     &                rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu -----------------------------------------------------------------------
+        endif
+      endif
 !
-      IF (MONFCS) THEN
+      if (monfcs) then
        if (me .eq. 0) then
-        PRINT *,' '
-        PRINT *,'MONITOR OF GUESS'
-        PRINT *,' '
-!       CALL COUNT(SLIFCS,SNOFCS,LEN)
-        PRINT *,' '
-!        CALL MONITR('TSFFCS',TSFFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('ALBFCS',ALBFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('AISFCS',AISFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SNOFCS',SNOFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SMCFCS1',SMCFCS(1,1),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SMCFCS2',SMCFCS(1,2),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('STCFCS1',STCFCS(1,1),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('STCFCS2',STCFCS(1,2),SLIFCS,SNOFCS,LEN)
-!Clu [+4L] add smcfcs(3:4) and stcfcs(3:4)
-        IF(LSOIL.GT.2) THEN
-!        CALL MONITR('SMCFCS3',SMCFCS(1,3),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SMCFCS4',SMCFCS(1,4),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('STCFCS3',STCFCS(1,3),SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('STCFCS4',STCFCS(1,4),SLIFCS,SNOFCS,LEN)
-        ENDIF
-!        CALL MONITR('TG3FCS',TG3FCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('ZORFCS',ZORFCS,SLIFCS,SNOFCS,LEN)
-!       IF (GAUS) THEN
-!          CALL MONITR('CVAFCS',CVFCS ,SLIFCS,SNOFCS,LEN)
-!          CALL MONITR('CVBFCS',CVBFCS,SLIFCS,SNOFCS,LEN)
-!          CALL MONITR('CVTFCS',CVTFCS,SLIFCS,SNOFCS,LEN)
-!       ENDIF
-!        CALL MONITR('SLIFCS',SLIFCS,SLIFCS,SNOFCS,LEN)
-!       CALL MONITR('PLRFCS',PLRFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('OROG  ',OROG  ,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('VEGFCS',VEGFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('VETFCS',VETFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SOTFCS',SOTFCS,SLIFCS,SNOFCS,LEN)
-!Cwu [+2L] add sih, sic
-!        CALL MONITR('SIHFCS',SIHFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SICFCS',SICFCS,SLIFCS,SNOFCS,LEN)
-!Clu [+4L] add vmn, vmx, slp, abs
-!        CALL MONITR('VMNFCS',VMNFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('VMXFCS',VMXFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('SLPFCS',SLPFCS,SLIFCS,SNOFCS,LEN)
-!        CALL MONITR('ABSFCS',ABSFCS,SLIFCS,SNOFCS,LEN)
+        print *,' '
+        print *,'monitor of guess'
+        print *,' '
+!       call count(slifcs,snofcs,len)
+        print *,' '
+        call monitr('tsffcs',tsffcs,slifcs,snofcs,len)
+        call monitr('albfcs',albfcs,slifcs,snofcs,len)
+        call monitr('aisfcs',aisfcs,slifcs,snofcs,len)
+        call monitr('snofcs',snofcs,slifcs,snofcs,len)
+        call monitr('smcfcs1',smcfcs(1,1),slifcs,snofcs,len)
+        call monitr('smcfcs2',smcfcs(1,2),slifcs,snofcs,len)
+        call monitr('stcfcs1',stcfcs(1,1),slifcs,snofcs,len)
+        call monitr('stcfcs2',stcfcs(1,2),slifcs,snofcs,len)
+!clu [+4l] add smcfcs(3:4) and stcfcs(3:4)
+        if(lsoil.gt.2) then
+        call monitr('smcfcs3',smcfcs(1,3),slifcs,snofcs,len)
+        call monitr('smcfcs4',smcfcs(1,4),slifcs,snofcs,len)
+        call monitr('stcfcs3',stcfcs(1,3),slifcs,snofcs,len)
+        call monitr('stcfcs4',stcfcs(1,4),slifcs,snofcs,len)
+        endif
+        call monitr('tg3fcs',tg3fcs,slifcs,snofcs,len)
+        call monitr('zorfcs',zorfcs,slifcs,snofcs,len)
+!       if (gaus) then
+          call monitr('cvafcs',cvfcs ,slifcs,snofcs,len)
+          call monitr('cvbfcs',cvbfcs,slifcs,snofcs,len)
+          call monitr('cvtfcs',cvtfcs,slifcs,snofcs,len)
+!       endif
+        call monitr('slifcs',slifcs,slifcs,snofcs,len)
+!       call monitr('plrfcs',plrfcs,slifcs,snofcs,len)
+        call monitr('orog  ',orog  ,slifcs,snofcs,len)
+        call monitr('vegfcs',vegfcs,slifcs,snofcs,len)
+        call monitr('vetfcs',vetfcs,slifcs,snofcs,len)
+        call monitr('sotfcs',sotfcs,slifcs,snofcs,len)
+!cwu [+2l] add sih, sic
+        call monitr('sihfcs',sihfcs,slifcs,snofcs,len)
+        call monitr('sicfcs',sicfcs,slifcs,snofcs,len)
+!clu [+4l] add vmn, vmx, slp, abs
+        call monitr('vmnfcs',vmnfcs,slifcs,snofcs,len)
+        call monitr('vmxfcs',vmxfcs,slifcs,snofcs,len)
+        call monitr('slpfcs',slpfcs,slifcs,snofcs,len)
+        call monitr('absfcs',absfcs,slifcs,snofcs,len)
        endif
-      ENDIF
+      endif
 !
 !...   update annual cycle in the sst guess..
 !
 !     if(lprnt) print *,'tsfclm=',tsfclm(iprnt),' tsfcl2=',tsfcl2(iprnt)
 !    *,' tsffcs=',tsffcs(iprnt),' slianl=',slianl(iprnt)
-      DO I=1,LEN
-        IF(SLIANL(I) .EQ. 0.0) THEN
-          TSFFCS(I)=TSFFCS(I) + (TSFCLM(I) - TSFCL2(I))
-        ENDIF
-      ENDDO
+
+      if (fh > 0.0) then
+        do i=1,len
+          if(slianl(i) == 0.0) then
+            tsffcs(i) = tsffcs(i) + (tsfclm(i) - tsfcl2(i))
+          endif
+        enddo
+      endif
 !
-!  Quality control analysis using forecast guess
+!  quality control analysis using forecast guess
 !
-      CALL QCBYFC(TSFFCS,SNOFCS,QCTSFS,QCSNOS,QCTSFI,LEN,LSOIL,
-     &            SNOANL,AISANL,SLIANL,TSFANL,ALBANL,
-     &            ZORANL,SMCANL,
-     &            SMCCLM,TSFSMX,ALBOMX,ZOROMX,me)
+      call qcbyfc(tsffcs,snofcs,qctsfs,qcsnos,qctsfi,len,lsoil,
+     &            snoanl,aisanl,slianl,tsfanl,albanl,
+     &            zoranl,smcanl,
+     &            smcclm,tsfsmx,albomx,zoromx,me)
 !
-!  BLEND CLIMATOLOGY AND PREDICTED FIELDS
+!  blend climatology and predicted fields
 !
       if(me .eq. 0) then
-        WRITE(6,*) '=============='
-        WRITE(6,*) '   MERGING'
-        WRITE(6,*) '=============='
+        write(6,*) '=============='
+        write(6,*) '   merging'
+        write(6,*) '=============='
       endif
 !     if(lprnt) print *,' tsffcs=',tsffcs(iprnt)
 !
-      PERCRIT=CRITP3
+      percrit=critp3
 !
-!  Merge analysis and forecast.  Note TG3, AIS are not merged
+!  merge analysis and forecast.  note tg3, ais are not merged
 !
-
-      CALL MERGE(LEN,LSOIL,IY,IM,ID,IH,FH,
-!Cwu [+1L] add ()fcs for sih, sic
-     &           SIHFCS,SICFCS,
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &           VMNFCS,VMXFCS,SLPFCS,ABSFCS, 
-     &           TSFFCS,WETFCS,SNOFCS,ZORFCS,ALBFCS,AISFCS,
-     &           CVFCS ,CVBFCS,CVTFCS,
-     &           CNPFCS,SMCFCS,STCFCS,SLIFCS,VEGFCS,
+      call merge(len,lsoil,iy,im,id,ih,fh,deltsfc,
+     &           sihfcs,sicfcs,
+     &           vmnfcs,vmxfcs,slpfcs,absfcs, 
+     &           tsffcs,wetfcs,snofcs,zorfcs,albfcs,aisfcs,
+     &           cvfcs ,cvbfcs,cvtfcs,
+     &           cnpfcs,smcfcs,stcfcs,slifcs,vegfcs,
      &           vetfcs,sotfcs,alffcs,
-!Cwu [+1L] add ()anl for sih, sic
-     &           SIHANL,SICANL,                
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &           VMNANL,VMXANL,SLPANL,ABSANL,       
-     &           TSFANL,TSFAN2,WETANL,SNOANL,ZORANL,ALBANL,AISANL,
-     &           CVANL ,CVBANL,CVTANL,
-     &           CNPANL,SMCANL,STCANL,SLIANL,VEGANL,
-     &           vetanl,sotanl,ALFANL,
-     &           CTSFL,CALBL,CAISL,CSNOL,CSMCL,CZORL,CSTCL,CVEGL,
-     &           CTSFS,CALBS,CAISS,CSNOS,CSMCS,CZORS,CSTCS,CVEGS,
-     &           CCV,CCVB,CCVT,CCNP,cvetl,cvets,csotl,csots,
+     &           sihanl,sicanl,                
+     &           vmnanl,vmxanl,slpanl,absanl,       
+     &           tsfanl,tsfan2,wetanl,snoanl,zoranl,albanl,aisanl,
+     &           cvanl ,cvbanl,cvtanl,
+     &           cnpanl,smcanl,stcanl,slianl,veganl,
+     &           vetanl,sotanl,alfanl,
+     &           ctsfl,calbl,caisl,csnol,csmcl,czorl,cstcl,cvegl,
+     &           ctsfs,calbs,caiss,csnos,csmcs,czors,cstcs,cvegs,
+     &           ccv,ccvb,ccvt,ccnp,cvetl,cvets,csotl,csots,
      &           calfl,calfs,
-!Cwu [+1L] add c()l, c()s  for sih, sic
-     &           CSIHL,CSIHS,CSICL,CSICS,
-!Clu [+1L] add c()l, c()s  for vmn, vmx, slp, abs
-     &           CVMNL,CVMNS,CVMXL,CVMXS,CSLPL,CSLPS,CABSL,CABSS, 
-     &           IRTTSF,IRTWET,IRTSNO,IRTZOR,IRTALB,IRTAIS,
-     &           IRTTG3,IRTSCV,IRTACN,IRTSMC,IRTSTC,IRTVEG,
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
-     &           IRTVMN,IRTVMX,IRTSLP,IRTABS,        
-!cggg landice start
-!cggg     &           irtvet,irtsot,irtalf,me)
+     &           csihl,csihs,csicl,csics,
+     &           cvmnl,cvmns,cvmxl,cvmxs,cslpl,cslps,cabsl,cabss, 
+     &           irttsf,irtwet,irtsno,irtzor,irtalb,irtais,
+     &           irttg3,irtscv,irtacn,irtsmc,irtstc,irtveg,
+     &           irtvmn,irtvmx,irtslp,irtabs,        
      &           irtvet,irtsot,irtalf,landice,me)
-!cggg landice end
-      CALL SETZRO(SNOANL,EPSSNO,LEN)
+
+      call setzro(snoanl,epssno,len)
+
 !     if(lprnt) print *,' tanlm=',tsfanl(iprnt),' tfcsm=',tsffcs(iprnt)
 !     if(lprnt) print *,' sliam=',slianl(iprnt),' slifm=',slifcs(iprnt)
 
 !
-!  New ice/Melted ice
+!  new ice/melted ice
 !
-      CALL NEWICE(SLIANL,SLIFCS,TSFANL,TSFFCS,LEN,LSOIL,
-!Cwu [+1L] add SIHNEW, AISLIM, SIHANL & SICANL
-     &            SIHNEW,AISLIM,SIHANL,SICANL,      
-     &            ALBANL,SNOANL,ZORANL,SMCANL,STCANL,
-     &            ALBOMX,SNOOMX,ZOROMX,SMCOMX,SMCIMX,
-!Cwu [-1L/+1L] change ALBIMX to ALBIMN - NOTE ALBIMX & ALBIMN have been modified
-!    &            TSFOMN,TSFIMX,ALBIMX,ZORIMX,TGICE,
-     &            TSFOMN,TSFIMX,ALBIMN,ZORIMX,TGICE,
-     &            RLA,RLO,me)
+      call newice(slianl,slifcs,tsfanl,tsffcs,len,lsoil,
+!cwu [+1l] add sihnew, aislim, sihanl & sicanl
+     &            sihnew,aislim,sihanl,sicanl,      
+     &            albanl,snoanl,zoranl,smcanl,stcanl,
+     &            albomx,snoomx,zoromx,smcomx,smcimx,
+!cwu [-1l/+1l] change albimx to albimn - note albimx & albimn have been modified
+!    &            tsfomn,tsfimx,albimx,zorimx,tgice,
+     &            tsfomn,tsfimx,albimn,zorimx,tgice,
+     &            rla,rlo,me)
 
 !     if(lprnt) print *,'tsfanl=',tsfanl(iprnt),' tsffcs=',tsffcs(iprnt)
 !     if(lprnt) print *,' slian=',slianl(iprnt),' slifn=',slifcs(iprnt)
 !
-!  Set tsfc to TSNOW over snow
+!  set tsfc to tsnow over snow
 !
-      CALL SNOSFC(SNOANL,TSFANL,TSFSMX,LEN,me)
+      call snosfc(snoanl,tsfanl,tsfsmx,len,me)
 !
       do i=1,len
         icefl2(i) = sicanl(i) .gt. 0.99999
       enddo
-      KQCM=0
-      CALL QCMXMN('SnowM   ',SNOANL,SLIANL,SNOANL,icefl1,
-     &            SNOLMX,SNOLMN,SNOOMX,SNOOMN,SNOIMX,SNOIMN,
-     &            SNOJMX,SNOJMN,SNOSMX,SNOSMN,EPSSNO,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('TsfM    ',TSFANL,SLIANL,SNOANL,icefl2,
-     &            TSFLMX,TSFLMN,TSFOMX,TSFOMN,TSFIMX,TSFIMN,
-     &            TSFJMX,TSFJMN,TSFSMX,TSFSMN,EPSTSF,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      kqcm=0
+      call qcmxmn('snowm   ',snoanl,slianl,snoanl,icefl1,
+     &            snolmx,snolmn,snoomx,snoomn,snoimx,snoimn,
+     &            snojmx,snojmn,snosmx,snosmn,epssno,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('tsfm    ',tsfanl,slianl,snoanl,icefl2,
+     &            tsflmx,tsflmn,tsfomx,tsfomn,tsfimx,tsfimn,
+     &            tsfjmx,tsfjmn,tsfsmx,tsfsmn,epstsf,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       do kk = 1, 4
-      CALL QCMXMN('AlbM    ',ALBANL(1,kk),SLIANL,SNOANL,icefl1,
-     &            ALBLMX,ALBLMN,ALBOMX,ALBOMN,ALBIMX,ALBIMN,
-     &            ALBJMX,ALBJMN,ALBSMX,ALBSMN,EPSALB,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      call qcmxmn('albm    ',albanl(1,kk),slianl,snoanl,icefl1,
+     &            alblmx,alblmn,albomx,albomn,albimx,albimn,
+     &            albjmx,albjmn,albsmx,albsmn,epsalb,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
       enddo
-      IF(FNWETC(1:8).NE.'        ' .OR. FNWETA(1:8).NE.'        ' )
-     &                                                 THEN
-      CALL QCMXMN('WetM    ',WETANL,SLIANL,SNOANL,icefl1,
-     &            WETLMX,WETLMN,WETOMX,WETOMN,WETIMX,WETIMN,
-     &            WETJMX,WETJMN,WETSMX,WETSMN,EPSWET,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      CALL QCMXMN('ZorM    ',ZORANL,SLIANL,SNOANL,icefl1,
-     &            ZORLMX,ZORLMN,ZOROMX,ZOROMN,ZORIMX,ZORIMN,
-     &            ZORJMX,ZORJMN,ZORSMX,ZORSMN,EPSZOR,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     IF(FNPLRC(1:8).NE.'        ' .OR. FNPLRA(1:8).NE.'        ' )
-!    &                                                 THEN
-!     CALL QCMXMN('PlntM   ',PLRANL,SLIANL,SNOANL,icefl1,
-!    &            PLRLMX,PLRLMN,PLROMX,PLROMN,PLRIMX,PLRIMN,
-!    &            PLRJMX,PLRJMN,PLRSMX,PLRSMN,EPSPLR,
-!    &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!     ENDIF
-      CALL QCMXMN('Stc1M   ',STCANL(1,1),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('Stc2M   ',STCANL(1,2),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add stcanl(3:4)
-       IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('Stc3M   ',STCANL(1,3),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('Stc4M   ',STCANL(1,4),SLIANL,SNOANL,icefl1,
-     &            STCLMX,STCLMN,STCOMX,STCOMN,STCIMX,STCIMN,
-     &            STCJMX,STCJMN,STCSMX,STCSMN,EPTSFC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-       ENDIF
-      CALL QCMXMN('Smc1M   ',SMCANL(1,1),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('Smc2M   ',SMCANL(1,2),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+8L] add smcanl(3:4)
-       IF(LSOIL.GT.2) THEN
-      CALL QCMXMN('Smc3M   ',SMCANL(1,3),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('Smc4M   ',SMCANL(1,4),SLIANL,SNOANL,icefl1,
-     &            SMCLMX,SMCLMN,SMCOMX,SMCOMN,SMCIMX,SMCIMN,
-     &            SMCJMX,SMCJMN,SMCSMX,SMCSMN,EPSSMC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      ENDIF
-      KQCM=1
-      CALL QCMXMN('VEGm    ',VEGANL,SLIANL,SNOANL,icefl1,
-     &            VEGLMX,VEGLMN,VEGOMX,VEGOMN,VEGIMX,VEGIMN,
-     &            VEGJMX,VEGJMN,VEGSMX,VEGSMN,EPSVEG,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VETm    ',VETANL,SLIANL,SNOANL,icefl1,
-     &            VETLMX,VETLMN,VETOMX,VETOMN,VETIMX,VETIMN,
-     &            VETJMX,VETJMN,VETSMX,VETSMN,EPSVET,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SOTm    ',SOTANL,SLIANL,SNOANL,icefl1,
-     &            SOTLMX,SOTLMN,SOTOMX,SOTOMN,SOTIMX,SOTIMN,
-     &            SOTJMX,SOTJMN,SOTSMX,SOTSMN,EPSSOT,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Cwu [+8L] add sih, sic,
-      CALL QCMXMN('SIHm    ',SIHANL,SLIANL,SNOANL,icefl1,
-     &            SIHLMX,SIHLMN,SIHOMX,SIHOMN,SIHIMX,SIHIMN,
-     &            SIHJMX,SIHJMN,SIHSMX,SIHSMN,EPSSIH,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SICm    ',SICANL,SLIANL,SNOANL,icefl1,
-     &            SICLMX,SICLMN,SICOMX,SICOMN,SICIMX,SICIMN,
-     &            SICJMX,SICJMN,SICSMX,SICSMN,EPSSIC,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-!Clu [+16L] add vmn, vmx, slp, abs
-      CALL QCMXMN('VMNm    ',VMNANL,SLIANL,SNOANL,icefl1,
-     &            VMNLMX,VMNLMN,VMNOMX,VMNOMN,VMNIMX,VMNIMN,
-     &            VMNJMX,VMNJMN,VMNSMX,VMNSMN,EPSVMN,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('VMXm    ',VMXANL,SLIANL,SNOANL,icefl1,
-     &            VMXLMX,VMXLMN,VMXOMX,VMXOMN,VMXIMX,VMXIMN,
-     &            VMXJMX,VMXJMN,VMXSMX,VMXSMN,EPSVMX,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('SLPm    ',SLPANL,SLIANL,SNOANL,icefl1,
-     &            SLPLMX,SLPLMN,SLPOMX,SLPOMN,SLPIMX,SLPIMN,
-     &            SLPJMX,SLPJMN,SLPSMX,SLPSMN,EPSSLP,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
-      CALL QCMXMN('ABSm    ',ABSANL,SLIANL,SNOANL,icefl1,
-     &            ABSLMX,ABSLMN,ABSOMX,ABSOMN,ABSIMX,ABSIMN,
-     &            ABSJMX,ABSJMN,ABSSMX,ABSSMN,EPSABS,
-     &            RLA,RLO,LEN,KQCM,PERCRIT,LGCHEK,me)
+      if(fnwetc(1:8).ne.'        ' .or. fnweta(1:8).ne.'        ' )
+     &                                                 then
+      call qcmxmn('wetm    ',wetanl,slianl,snoanl,icefl1,
+     &            wetlmx,wetlmn,wetomx,wetomn,wetimx,wetimn,
+     &            wetjmx,wetjmn,wetsmx,wetsmn,epswet,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      call qcmxmn('zorm    ',zoranl,slianl,snoanl,icefl1,
+     &            zorlmx,zorlmn,zoromx,zoromn,zorimx,zorimn,
+     &            zorjmx,zorjmn,zorsmx,zorsmn,epszor,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     if(fnplrc(1:8).ne.'        ' .or. fnplra(1:8).ne.'        ' )
+!    &                                                 then
+!     call qcmxmn('plntm   ',plranl,slianl,snoanl,icefl1,
+!    &            plrlmx,plrlmn,plromx,plromn,plrimx,plrimn,
+!    &            plrjmx,plrjmn,plrsmx,plrsmn,epsplr,
+!    &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!     endif
+      call qcmxmn('stc1m   ',stcanl(1,1),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc2m   ',stcanl(1,2),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add stcanl(3:4)
+       if(lsoil.gt.2) then
+      call qcmxmn('stc3m   ',stcanl(1,3),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('stc4m   ',stcanl(1,4),slianl,snoanl,icefl1,
+     &            stclmx,stclmn,stcomx,stcomn,stcimx,stcimn,
+     &            stcjmx,stcjmn,stcsmx,stcsmn,eptsfc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+       endif
+      call qcmxmn('smc1m   ',smcanl(1,1),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc2m   ',smcanl(1,2),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+8l] add smcanl(3:4)
+       if(lsoil.gt.2) then
+      call qcmxmn('smc3m   ',smcanl(1,3),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('smc4m   ',smcanl(1,4),slianl,snoanl,icefl1,
+     &            smclmx,smclmn,smcomx,smcomn,smcimx,smcimn,
+     &            smcjmx,smcjmn,smcsmx,smcsmn,epssmc,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      endif
+      kqcm=1
+      call qcmxmn('vegm    ',veganl,slianl,snoanl,icefl1,
+     &            veglmx,veglmn,vegomx,vegomn,vegimx,vegimn,
+     &            vegjmx,vegjmn,vegsmx,vegsmn,epsveg,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('vetm    ',vetanl,slianl,snoanl,icefl1,
+     &            vetlmx,vetlmn,vetomx,vetomn,vetimx,vetimn,
+     &            vetjmx,vetjmn,vetsmx,vetsmn,epsvet,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sotm    ',sotanl,slianl,snoanl,icefl1,
+     &            sotlmx,sotlmn,sotomx,sotomn,sotimx,sotimn,
+     &            sotjmx,sotjmn,sotsmx,sotsmn,epssot,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!cwu [+8l] add sih, sic,
+      call qcmxmn('sihm    ',sihanl,slianl,snoanl,icefl1,
+     &            sihlmx,sihlmn,sihomx,sihomn,sihimx,sihimn,
+     &            sihjmx,sihjmn,sihsmx,sihsmn,epssih,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('sicm    ',sicanl,slianl,snoanl,icefl1,
+     &            siclmx,siclmn,sicomx,sicomn,sicimx,sicimn,
+     &            sicjmx,sicjmn,sicsmx,sicsmn,epssic,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+!clu [+16l] add vmn, vmx, slp, abs
+      call qcmxmn('vmnm    ',vmnanl,slianl,snoanl,icefl1,
+     &            vmnlmx,vmnlmn,vmnomx,vmnomn,vmnimx,vmnimn,
+     &            vmnjmx,vmnjmn,vmnsmx,vmnsmn,epsvmn,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('vmxm    ',vmxanl,slianl,snoanl,icefl1,
+     &            vmxlmx,vmxlmn,vmxomx,vmxomn,vmximx,vmximn,
+     &            vmxjmx,vmxjmn,vmxsmx,vmxsmn,epsvmx,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('slpm    ',slpanl,slianl,snoanl,icefl1,
+     &            slplmx,slplmn,slpomx,slpomn,slpimx,slpimn,
+     &            slpjmx,slpjmn,slpsmx,slpsmn,epsslp,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
+      call qcmxmn('absm    ',absanl,slianl,snoanl,icefl1,
+     &            abslmx,abslmn,absomx,absomn,absimx,absimn,
+     &            absjmx,absjmn,abssmx,abssmn,epsabs,
+     &            rla,rlo,len,kqcm,percrit,lgchek,me)
 
 !
       if(me .eq. 0) then
-        WRITE(6,*) '=============='
-        WRITE(6,*) 'FINAL RESULTS'
-        WRITE(6,*) '=============='
+        write(6,*) '=============='
+        write(6,*) 'final results'
+        write(6,*) '=============='
       endif
 !
-!  Foreward correction to TG3 and TSF at the last stage
+!  foreward correction to tg3 and tsf at the last stage
 !
 !     if(lprnt) print *,' tsfbc=',tsfanl(iprnt)
       if (use_ufo) then
-        ZTSFC = 1.
-        CALL TSFCOR(TG3ANL,OROGd,SLMASK,ZTSFC,LEN,RLAPSE)
-        ZTSFC = 0.
-        CALL TSFCOR(TSFANL,OROGd,SLMASK,ZTSFC,LEN,RLAPSE)
+        ztsfc = 1.
+        call tsfcor(tg3anl,orogd,slmask,ztsfc,len,rlapse)
+        ztsfc = 0.
+        call tsfcor(tsfanl,orogd,slmask,ztsfc,len,rlapse)
       else
-        ZTSFC = 0.
-        CALL TSFCOR(TSFANL,OROG,SLMASK,ZTSFC,LEN,RLAPSE)
+        ztsfc = 0.
+        call tsfcor(tsfanl,orog,slmask,ztsfc,len,rlapse)
       endif
 !     if(lprnt) print *,' tsfaf=',tsfanl(iprnt)
 !
-!  CHECK THE FINAL MERGED PRODUCT
+!  check the final merged product
 !
-      IF (MONMER) THEN
+      if (monmer) then
        if(me .eq. 0) then
-        PRINT *,' '
-        PRINT *,'MONITOR OF UPDATED SURFACE FIELDS'
-        PRINT *,'   (Includes angulation correction)'
-        PRINT *,' '
-!       CALL COUNT(SLIANL,SNOANL,LEN)
-        PRINT *,' '
-!        CALL MONITR('TSFANL',TSFANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBANL',ALBANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('AISANL',AISANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SNOANL',SNOANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL1',SMCANL(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL2',SMCANL(1,2),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL1',STCANL(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL2',STCANL(1,2),SLIANL,SNOANL,LEN)
-!Clu [+4L] add smcanl(3:4) and stcanl(3:4)
-        IF(LSOIL.GT.2) THEN
-!        CALL MONITR('SMCANL3',SMCANL(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL4',SMCANL(1,4),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL3',STCANL(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL4',STCANL(1,4),SLIANL,SNOANL,LEN)
-!        CALL MONITR('TG3ANL',TG3ANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ZORANL',ZORANL,SLIANL,SNOANL,LEN)
-        ENDIF
-!       IF (GAUS) THEN
-!          CALL MONITR('CVAANL',CVANL ,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVBANL',CVBANL,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVTANL',CVTANL,SLIANL,SNOANL,LEN)
-!       ENDIF
-!        CALL MONITR('SLIANL',SLIANL,SLIANL,SNOANL,LEN)
-!       CALL MONITR('PLRANL',PLRANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('OROG  ',OROG  ,SLIANL,SNOANL,LEN)
-!        CALL MONITR('CNPANL',CNPANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VEGANL',VEGANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VETANL',VETANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SOTANL',SOTANL,SLIANL,SNOANL,LEN)
-!Cwu [+2L] add sih, sic,
-!        CALL MONITR('SIHANL',SIHANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SICANL',SICANL,SLIANL,SNOANL,LEN)
-!Clu [+4L] add vmn, vmx, slp, abs
-!        CALL MONITR('VMNANL',VMNANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VMXANL',VMXANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SLPANL',SLPANL,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ABSANL',ABSANL,SLIANL,SNOANL,LEN)
+        print *,' '
+        print *,'monitor of updated surface fields'
+        print *,'   (includes angulation correction)'
+        print *,' '
+!       call count(slianl,snoanl,len)
+        print *,' '
+        call monitr('tsfanl',tsfanl,slianl,snoanl,len)
+        call monitr('albanl',albanl,slianl,snoanl,len)
+        call monitr('aisanl',aisanl,slianl,snoanl,len)
+        call monitr('snoanl',snoanl,slianl,snoanl,len)
+        call monitr('smcanl1',smcanl(1,1),slianl,snoanl,len)
+        call monitr('smcanl2',smcanl(1,2),slianl,snoanl,len)
+        call monitr('stcanl1',stcanl(1,1),slianl,snoanl,len)
+        call monitr('stcanl2',stcanl(1,2),slianl,snoanl,len)
+!clu [+4l] add smcanl(3:4) and stcanl(3:4)
+        if(lsoil.gt.2) then
+        call monitr('smcanl3',smcanl(1,3),slianl,snoanl,len)
+        call monitr('smcanl4',smcanl(1,4),slianl,snoanl,len)
+        call monitr('stcanl3',stcanl(1,3),slianl,snoanl,len)
+        call monitr('stcanl4',stcanl(1,4),slianl,snoanl,len)
+        call monitr('tg3anl',tg3anl,slianl,snoanl,len)
+        call monitr('zoranl',zoranl,slianl,snoanl,len)
+        endif
+!       if (gaus) then
+          call monitr('cvaanl',cvanl ,slianl,snoanl,len)
+          call monitr('cvbanl',cvbanl,slianl,snoanl,len)
+          call monitr('cvtanl',cvtanl,slianl,snoanl,len)
+!       endif
+        call monitr('slianl',slianl,slianl,snoanl,len)
+!       call monitr('plranl',plranl,slianl,snoanl,len)
+        call monitr('orog  ',orog  ,slianl,snoanl,len)
+        call monitr('cnpanl',cnpanl,slianl,snoanl,len)
+        call monitr('veganl',veganl,slianl,snoanl,len)
+        call monitr('vetanl',vetanl,slianl,snoanl,len)
+        call monitr('sotanl',sotanl,slianl,snoanl,len)
+!cwu [+2l] add sih, sic,
+        call monitr('sihanl',sihanl,slianl,snoanl,len)
+        call monitr('sicanl',sicanl,slianl,snoanl,len)
+!clu [+4l] add vmn, vmx, slp, abs
+        call monitr('vmnanl',vmnanl,slianl,snoanl,len)
+        call monitr('vmxanl',vmxanl,slianl,snoanl,len)
+        call monitr('slpanl',slpanl,slianl,snoanl,len)
+        call monitr('absanl',absanl,slianl,snoanl,len)
        endif
-      ENDIF
+      endif
 !
-      IF (MONDIF) THEN
-        DO I=1,LEN
-          TSFFCS(I) = TSFANL(I) - TSFFCS(I)
-          SNOFCS(I) = SNOANL(I) - SNOFCS(I)
-          TG3FCS(I) = TG3ANL(I) - TG3FCS(I)
-          ZORFCS(I) = ZORANL(I) - ZORFCS(I)
-!         PLRFCS(I) = PLRANL(I) - PLRFCS(I)
-!         ALBFCS(I) = ALBANL(I) - ALBFCS(I)
-          SLIFCS(I) = SLIANL(I) - SLIFCS(I)
-          AISFCS(I) = AISANL(I) - AISFCS(I)
-          CNPFCS(I) = CNPANL(I) - CNPFCS(I)
-          VEGFCS(I) = VEGANL(I) - VEGFCS(I)
-          VETFCS(I) = VETANL(I) - VETFCS(I)
-          SOTFCS(I) = SOTANL(I) - SOTFCS(I)
-!Clu [+2L] add sih, sic
-          SIHFCS(I) = SIHANL(I) - SIHFCS(I)
-          SICFCS(I) = SICANL(I) - SICFCS(I)
-!Clu [+4L] add vmn, vmx, slp, abs
-          VMNFCS(I) = VMNANL(I) - VMNFCS(I)
-          VMXFCS(I) = VMXANL(I) - VMXFCS(I)
-          SLPFCS(I) = SLPANL(I) - SLPFCS(I)
-          ABSFCS(I) = ABSANL(I) - ABSFCS(I)
-        ENDDO
-        DO J = 1,LSOIL
-          DO I = 1,LEN
-            SMCFCS(I,J) = SMCANL(I,J) - SMCFCS(I,J)
-            STCFCS(I,J) = STCANL(I,J) - STCFCS(I,J)
-          ENDDO
-        ENDDO
-        DO J = 1,4
-          DO I = 1,LEN
-            ALBFCS(I,J) = ALBANL(I,J) - ALBFCS(I,J)
-          ENDDO
-        ENDDO
+      if (mondif) then
+        do i=1,len
+          tsffcs(i) = tsfanl(i) - tsffcs(i)
+          snofcs(i) = snoanl(i) - snofcs(i)
+          tg3fcs(i) = tg3anl(i) - tg3fcs(i)
+          zorfcs(i) = zoranl(i) - zorfcs(i)
+!         plrfcs(i) = plranl(i) - plrfcs(i)
+!         albfcs(i) = albanl(i) - albfcs(i)
+          slifcs(i) = slianl(i) - slifcs(i)
+          aisfcs(i) = aisanl(i) - aisfcs(i)
+          cnpfcs(i) = cnpanl(i) - cnpfcs(i)
+          vegfcs(i) = veganl(i) - vegfcs(i)
+          vetfcs(i) = vetanl(i) - vetfcs(i)
+          sotfcs(i) = sotanl(i) - sotfcs(i)
+!clu [+2l] add sih, sic
+          sihfcs(i) = sihanl(i) - sihfcs(i)
+          sicfcs(i) = sicanl(i) - sicfcs(i)
+!clu [+4l] add vmn, vmx, slp, abs
+          vmnfcs(i) = vmnanl(i) - vmnfcs(i)
+          vmxfcs(i) = vmxanl(i) - vmxfcs(i)
+          slpfcs(i) = slpanl(i) - slpfcs(i)
+          absfcs(i) = absanl(i) - absfcs(i)
+        enddo
+        do j = 1,lsoil
+          do i = 1,len
+            smcfcs(i,j) = smcanl(i,j) - smcfcs(i,j)
+            stcfcs(i,j) = stcanl(i,j) - stcfcs(i,j)
+          enddo
+        enddo
+        do j = 1,4
+          do i = 1,len
+            albfcs(i,j) = albanl(i,j) - albfcs(i,j)
+          enddo
+        enddo
 !
-!  MONITORING PRINTS
+!  monitoring prints
 !
        if(me .eq. 0) then
-        PRINT *,' '
-        PRINT *,'MONITOR OF DIFFERENCE'
-        PRINT *,'   (Includes angulation correction)'
-        PRINT *,' '
-!        CALL MONITR('TSFDIF',TSFFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBDIF',ALBFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBDIF1',ALBFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBDIF2',ALBFCS(1,2),SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBDIF3',ALBFCS(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('ALBDIF4',ALBFCS(1,4),SLIANL,SNOANL,LEN)
-!        CALL MONITR('AISDIF',AISFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SNODIF',SNOFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL1',SMCFCS(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL2',SMCFCS(1,2),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL1',STCFCS(1,1),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL2',STCFCS(1,2),SLIANL,SNOANL,LEN)
-!Clu [+4L] add smcfcs(3:4) and stc(3:4)
-        IF(LSOIL.GT.2) THEN
-!        CALL MONITR('SMCANL3',SMCFCS(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('SMCANL4',SMCFCS(1,4),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL3',STCFCS(1,3),SLIANL,SNOANL,LEN)
-!        CALL MONITR('STCANL4',STCFCS(1,4),SLIANL,SNOANL,LEN)
-        ENDIF
-!        CALL MONITR('TG3DIF',TG3FCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ZORDIF',ZORFCS,SLIANL,SNOANL,LEN)
-!       IF (GAUS) THEN
-!          CALL MONITR('CVADIF',CVFCS ,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVBDIF',CVBFCS,SLIANL,SNOANL,LEN)
-!          CALL MONITR('CVTDIF',CVTFCS,SLIANL,SNOANL,LEN)
-!       ENDIF
-!        CALL MONITR('SLIDIF',SLIFCS,SLIANL,SNOANL,LEN)
-!       CALL MONITR('PLRDIF',PLRFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('CNPDIF',CNPFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VEGDIF',VEGFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VETDIF',VETFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SOTDIF',SOTFCS,SLIANL,SNOANL,LEN)
-!Cwu [+2L] add sih, sic
-!        CALL MONITR('SIHDIF',SIHFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SICDIF',SICFCS,SLIANL,SNOANL,LEN)
-!Clu [+4L] add vmn, vmx, slp, abs
-!        CALL MONITR('VMNDIF',VMNFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('VMXDIF',VMXFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('SLPDIF',SLPFCS,SLIANL,SNOANL,LEN)
-!        CALL MONITR('ABSDIF',ABSFCS,SLIANL,SNOANL,LEN)
+        print *,' '
+        print *,'monitor of difference'
+        print *,'   (includes angulation correction)'
+        print *,' '
+        call monitr('tsfdif',tsffcs,slianl,snoanl,len)
+        call monitr('albdif',albfcs,slianl,snoanl,len)
+        call monitr('albdif1',albfcs,slianl,snoanl,len)
+        call monitr('albdif2',albfcs(1,2),slianl,snoanl,len)
+        call monitr('albdif3',albfcs(1,3),slianl,snoanl,len)
+        call monitr('albdif4',albfcs(1,4),slianl,snoanl,len)
+        call monitr('aisdif',aisfcs,slianl,snoanl,len)
+        call monitr('snodif',snofcs,slianl,snoanl,len)
+        call monitr('smcanl1',smcfcs(1,1),slianl,snoanl,len)
+        call monitr('smcanl2',smcfcs(1,2),slianl,snoanl,len)
+        call monitr('stcanl1',stcfcs(1,1),slianl,snoanl,len)
+        call monitr('stcanl2',stcfcs(1,2),slianl,snoanl,len)
+!clu [+4l] add smcfcs(3:4) and stc(3:4)
+        if(lsoil.gt.2) then
+        call monitr('smcanl3',smcfcs(1,3),slianl,snoanl,len)
+        call monitr('smcanl4',smcfcs(1,4),slianl,snoanl,len)
+        call monitr('stcanl3',stcfcs(1,3),slianl,snoanl,len)
+        call monitr('stcanl4',stcfcs(1,4),slianl,snoanl,len)
+        endif
+        call monitr('tg3dif',tg3fcs,slianl,snoanl,len)
+        call monitr('zordif',zorfcs,slianl,snoanl,len)
+!       if (gaus) then
+          call monitr('cvadif',cvfcs ,slianl,snoanl,len)
+          call monitr('cvbdif',cvbfcs,slianl,snoanl,len)
+          call monitr('cvtdif',cvtfcs,slianl,snoanl,len)
+!       endif
+        call monitr('slidif',slifcs,slianl,snoanl,len)
+!       call monitr('plrdif',plrfcs,slianl,snoanl,len)
+        call monitr('cnpdif',cnpfcs,slianl,snoanl,len)
+        call monitr('vegdif',vegfcs,slianl,snoanl,len)
+        call monitr('vetdif',vetfcs,slianl,snoanl,len)
+        call monitr('sotdif',sotfcs,slianl,snoanl,len)
+!cwu [+2l] add sih, sic
+        call monitr('sihdif',sihfcs,slianl,snoanl,len)
+        call monitr('sicdif',sicfcs,slianl,snoanl,len)
+!clu [+4l] add vmn, vmx, slp, abs
+        call monitr('vmndif',vmnfcs,slianl,snoanl,len)
+        call monitr('vmxdif',vmxfcs,slianl,snoanl,len)
+        call monitr('slpdif',slpfcs,slianl,snoanl,len)
+        call monitr('absdif',absfcs,slianl,snoanl,len)
        endif
-      ENDIF
+      endif
 !
 !
-      DO I=1,LEN
-        TSFFCS(I) = TSFANL(I)
-        SNOFCS(I) = SNOANL(I)
-        TG3FCS(I) = TG3ANL(I)
-        ZORFCS(I) = ZORANL(I)
-!       PLRFCS(I) = PLRANL(I)
-!       ALBFCS(I) = ALBANL(I)
-        SLIFCS(I) = SLIANL(I)
-        AISFCS(I) = AISANL(I)
-        CVFCS(I)  = CVANL(I)
-        CVBFCS(I) = CVBANL(I)
-        CVTFCS(I) = CVTANL(I)
-        CNPFCS(I) = CNPANL(I)
-        vegFCS(I) = vegANL(I)
-        vetFCS(I) = vetANL(I)
-        sotFCS(I) = sotANL(I)
-!Clu [+4L] add vmn, vmx, slp, abs
-        VMNFCS(I) = VMNANL(I)
-        VMXFCS(I) = VMXANL(I)
-        SLPFCS(I) = SLPANL(I)
-        ABSFCS(I) = ABSANL(I)
-      ENDDO
-      DO J = 1,LSOIL
-        DO I = 1,LEN
-          SMCFCS(I,J) = SMCANL(I,J)
-          IF (SLIFCS(I) .GT. 0.0) THEN
-             STCFCS(I,J) = STCANL(I,J)
-          ELSE
-             STCFCS(I,J) = TSFFCS(I)
-          ENDIF
-        ENDDO
-      ENDDO
-      DO J = 1,4
-        DO I = 1,LEN
-          ALBFCS(I,J) = ALBANL(I,J)
-        ENDDO
-      ENDDO
-      DO J = 1,2
-        DO I = 1,LEN
-          ALFFCS(I,J) = ALFANL(I,J)
-        ENDDO
-      ENDDO
+      do i=1,len
+        tsffcs(i) = tsfanl(i)
+        snofcs(i) = snoanl(i)
+        tg3fcs(i) = tg3anl(i)
+        zorfcs(i) = zoranl(i)
+!       plrfcs(i) = plranl(i)
+!       albfcs(i) = albanl(i)
+        slifcs(i) = slianl(i)
+        aisfcs(i) = aisanl(i)
+        cvfcs(i)  = cvanl(i)
+        cvbfcs(i) = cvbanl(i)
+        cvtfcs(i) = cvtanl(i)
+        cnpfcs(i) = cnpanl(i)
+        vegfcs(i) = veganl(i)
+        vetfcs(i) = vetanl(i)
+        sotfcs(i) = sotanl(i)
+!clu [+4l] add vmn, vmx, slp, abs
+        vmnfcs(i) = vmnanl(i)
+        vmxfcs(i) = vmxanl(i)
+        slpfcs(i) = slpanl(i)
+        absfcs(i) = absanl(i)
+      enddo
+      do j = 1,lsoil
+        do i = 1,len
+          smcfcs(i,j) = smcanl(i,j)
+          if (slifcs(i) .gt. 0.0) then
+             stcfcs(i,j) = stcanl(i,j)
+          else
+             stcfcs(i,j) = tsffcs(i)
+          endif
+        enddo
+      enddo
+      do j = 1,4
+        do i = 1,len
+          albfcs(i,j) = albanl(i,j)
+        enddo
+      enddo
+      do j = 1,2
+        do i = 1,len
+          alffcs(i,j) = alfanl(i,j)
+        enddo
+      enddo
 
-!Cwu [+20L] update SIHFCS, SICFCS. Remove sea ice over non-ice points
-      CRIT=AISLIM
-      DO I=1,LEN
-        SIHFCS(I) = SIHANL(I)
-        SITFCS(I) = TSFFCS(I)
-        IF (SLIFCS(I).GE.2.) THEN
-          IF (SICFCS(I).GT.CRIT) THEN
-            TSFFCS(I) = (SICANL(I)*TSFFCS(I)
-     &                + (SICFCS(I)-SICANL(I))*TGICE)/SICFCS(I)
-            SITFCS(I) = (TSFFCS(I)-TGICE*(1.0-SICFCS(I))) / SICFCS(I)
-          ELSE
-            TSFFCS(I) = Tsfanl(i)
-!           TSFFCS(I) = TGICE
-            SIHFCS(I) = SIHNEW
-          ENDIF
-        ENDIF
-        SICFCS(I) = SICANL(I)
-      ENDDO
-      DO I=1,LEN
-        IF (SLIFCS(I).LT.1.5) THEN
-          SIHFCS(I) = 0.
-          SICFCS(I) = 0.
-          SITFCS(I) = TSFFCS(I)
-        ELSE IF ((SLIFCS(I).GE.1.5).AND.(SICFCS(I).LT.CRIT)) THEN
-          PRINT *,'WARNING: CHECK, SLIFCS and SICFCS',
-     &            SLIFCS(I),SICFCS(I)
-        ENDIF
-      ENDDO
+!cwu [+20l] update sihfcs, sicfcs. remove sea ice over non-ice points
+      crit=aislim
+      do i=1,len
+        sihfcs(i) = sihanl(i)
+        sitfcs(i) = tsffcs(i)
+        if (slifcs(i).ge.2.) then
+          if (sicfcs(i).gt.crit) then
+            tsffcs(i) = (sicanl(i)*tsffcs(i)
+     &                + (sicfcs(i)-sicanl(i))*tgice)/sicfcs(i)
+            sitfcs(i) = (tsffcs(i)-tgice*(1.0-sicfcs(i))) / sicfcs(i)
+          else
+            tsffcs(i) = tsfanl(i)
+!           tsffcs(i) = tgice
+            sihfcs(i) = sihnew
+          endif
+        endif
+        sicfcs(i) = sicanl(i)
+      enddo
+      do i=1,len
+        if (slifcs(i).lt.1.5) then
+          sihfcs(i) = 0.
+          sicfcs(i) = 0.
+          sitfcs(i) = tsffcs(i)
+        else if ((slifcs(i).ge.1.5).and.(sicfcs(i).lt.crit)) then
+          print *,'warning: check, slifcs and sicfcs',
+     &            slifcs(i),sicfcs(i)
+        endif
+      enddo
 
-!Clu [+44L]--------------------------------------------------------------------
 !
 ! ensure the consistency between slc and smc
 !
-       DO K=1, LSOIL
-        FIXRATIO(K) = .False.
-        IF (FSMCL(K).LT.99999.) FIXRATIO(K) = .True.
-       ENDDO
+       do k=1, lsoil
+        fixratio(k) = .false.
+        if (fsmcl(k).lt.99999.) fixratio(k) = .true.
+       enddo
 
        if(me .eq. 0) then
-       print *,'DBGX --fixratio:',(FIXRATIO(K),K=1,LSOIL)
+       print *,'dbgx --fixratio:',(fixratio(k),k=1,lsoil)
        endif
 
-       DO K=1, LSOIL
-        IF(FIXRATIO(K)) THEN
-         DO I = 1, LEN
-           IF(SWRATIO(I,K) .EQ. -999.) THEN
-            SLCFCS(I,K) = SMCFCS(I,K)
-           ELSE
-            SLCFCS(I,K) = SWRATIO(I,K) * SMCFCS(I,K)
-           ENDIF
-!cggg
+       do k=1, lsoil
+        if(fixratio(k)) then
+         do i = 1, len
+           if(swratio(i,k) .eq. -999.) then
+            slcfcs(i,k) = smcfcs(i,k)
+           else
+            slcfcs(i,k) = swratio(i,k) * smcfcs(i,k)
+           endif
            if (slifcs(i) .ne. 1.0) slcfcs(i,k) = 1.0  ! flag value for non-land points.
-         ENDDO
-        ENDIF
-       ENDDO
-!cggg landice start
-!cggg set liquid soil moisture to a flag value of 1.0
-       IF (LANDICE) THEN
-         DO I = 1, LEN
-           IF (SLIFCS(I) .EQ. 1.0 .AND. VETFCS(I) == 13.0) THEN
-             DO K=1, LSOIL
-               SLCFCS(I,K) = 1.0
-             ENDDO
-           ENDIF
-         ENDDO
-       END IF
-!cggg landice end
+         enddo
+        endif
+       enddo
+! set liquid soil moisture to a flag value of 1.0
+       if (landice) then
+         do i = 1, len
+           if (slifcs(i) .eq. 1.0 .and. 
+     &         nint(vetfcs(i)) == veg_type_landice) then
+             do k=1, lsoil
+               slcfcs(i,k) = 1.0
+             enddo
+           endif
+         enddo
+       end if
 !
 ! ensure the consistency between snwdph and sheleg
 !
-      IF(FSNOL .LT. 99999.) THEN  
+      if(fsnol .lt. 99999.) then  
        if(me .eq. 0) then
-       print *,'DBGX -- scale snwdph from sheleg'
+       print *,'dbgx -- scale snwdph from sheleg'
        endif
-       DO I = 1, LEN
-        IF(SLIFCS(I).EQ.1.) SWDFCS(I) = 10.* SNOFCS(I)
-       ENDDO
-      ENDIF
+       do i = 1, len
+        if(slifcs(i).eq.1.) swdfcs(i) = 10.* snofcs(i)
+       enddo
+      endif
 
 ! sea ice model only uses the liquid equivalent depth.
 ! so update the physical depth only for display purposes.
@@ -2555,465 +2465,482 @@
         if (slifcs(i).ne.1) swdfcs(i) = 3.*snofcs(i)
       enddo
 
-      DO I = 1, LEN
-        IF(SLIFCS(I).EQ.1.) THEN
-        IF(SNOFCS(I).NE.0. .AND. SWDFCS(I).EQ.0.) THEN
-          print *,'DBGX --scale snwdph from sheleg',
-     +        I, SWDFCS(I), SNOFCS(I)
-          SWDFCS(I) = 10.* SNOFCS(I)
-        ENDIF
-        ENDIF
-      ENDDO
-!cggg landice mods start  - impose same minimum snow depth at
-!cggg                       landice as noah lsm.  also ensure
-!cggg                       lower thermal boundary condition
-!cggg                       and skin t is no warmer than freezing
-!cggg                       after adjustment to terrain.
-       IF (LANDICE) THEN
-         DO I = 1, LEN
-           IF (SLIFCS(I) .EQ. 1.0 .AND. VETFCS(I) == 13.0) THEN
-             SNOFCS(I) = MAX(SNOFCS(I),100.0)  ! IN MM
-             SWDFCS(I) = MAX(SWDFCS(I),1000.0) ! IN MM
-             TG3FCS(I) = MIN(TG3FCS(I),273.15)
-             TSFFCS(I) = MIN(TSFFCS(I),273.15)
-           ENDIF
-         ENDDO
-       END IF
-!cggg landice mods end
-!Clu---------------------------------------------------------------------------
+      do i = 1, len
+        if(slifcs(i).eq.1.) then
+        if(snofcs(i).ne.0. .and. swdfcs(i).eq.0.) then
+          print *,'dbgx --scale snwdph from sheleg',
+     +        i, swdfcs(i), snofcs(i)
+          swdfcs(i) = 10.* snofcs(i)
+        endif
+        endif
+      enddo
+! landice mods  - impose same minimum snow depth at
+!                 landice as noah lsm.  also ensure
+!                 lower thermal boundary condition
+!                 and skin t is no warmer than freezing
+!                 after adjustment to terrain.
+       if (landice) then
+         do i = 1, len
+           if (slifcs(i) .eq. 1.0 .and. 
+     &         nint(vetfcs(i)) == veg_type_landice) then
+             snofcs(i) = max(snofcs(i),100.0)  ! in mm
+             swdfcs(i) = max(swdfcs(i),1000.0) ! in mm
+             tg3fcs(i) = min(tg3fcs(i),273.15)
+             tsffcs(i) = min(tsffcs(i),273.15)
+           endif
+         enddo
+       end if
 !
-!     if(lprnt) print *,' tsffcsF=',tsffcs(iprnt)
-      RETURN
-      END SUBROUTINE SFCCYCLE 
-      SUBROUTINE COUNT(SLIMSK,SNO,IJMAX)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+!     if(lprnt) print *,' tsffcsf=',tsffcs(iprnt)
+      return
+      end subroutine sfccycle 
+      subroutine count(slimsk,sno,ijmax)
+      use machine , only : kind_io8,kind_io4
       implicit none
       real (kind=kind_io8) rl3,rl1,rl0,rl2,rl6,rl7,rl4,rl5
       integer l8,l7,l1,l2,ijmax,l0,l3,l5,l6,l4,ij
 !
-      REAL (KIND=KIND_IO8) SLIMSK(1),SNO(1)
+      real (kind=kind_io8) slimsk(1),sno(1)
 !
-!  COUNT NUMBER OF POINTS FOR THE FOUR SURFACE CONDITIONS
+!  count number of points for the four surface conditions
 !
-      L0 = 0
-      L1 = 0
-      L2 = 0
-      L3 = 0
-      L4 = 0
-      DO IJ=1,IJMAX
-        IF(SLIMSK(IJ).EQ.0.) L1 = L1 + 1
-        IF(SLIMSK(IJ).EQ.1. .AND. SNO(IJ).LE.0.) L0 = L0 + 1
-        IF(SLIMSK(IJ).EQ.2. .AND. SNO(IJ).LE.0.) L2 = L2 + 1
-        IF(SLIMSK(IJ).EQ.1. .AND. SNO(IJ).GT.0.) L3 = L3 + 1
-        IF(SLIMSK(IJ).EQ.2. .AND. SNO(IJ).GT.0.) L4 = L4 + 1
-      ENDDO
-      L5  = L0 + L3
-      L6  = L2 + L4
-      L7  = L1 + L6
-      L8  = L1 + L5 + L6
-      RL0 = FLOAT(L0) / FLOAT(L8)*100.
-      RL3 = FLOAT(L3) / FLOAT(L8)*100.
-      RL1 = FLOAT(L1) / FLOAT(L8)*100.
-      RL2 = FLOAT(L2) / FLOAT(L8)*100.
-      RL4 = FLOAT(L4) / FLOAT(L8)*100.
-      RL5 = FLOAT(L5) / FLOAT(L8)*100.
-      RL6 = FLOAT(L6) / FLOAT(L8)*100.
-      RL7 = FLOAT(L7) / FLOAT(L8)*100.
-      PRINT *,'1) NO. OF NOT SNOW-COVERED LAND POINTS   ',L0,' ',RL0,' '
-      PRINT *,'2) NO. OF SNOW COVERED LAND POINTS       ',L3,' ',RL3,' '
-      PRINT *,'3) NO. OF OPEN SEA POINTS                ',L1,' ',RL1,' '
-      PRINT *,'4) NO. OF NOT SNOW-COVERED SEAICE POINTS ',L2,' ',RL2,' '
-      PRINT *,'5) NO. OF SNOW COVERED SEA ICE POINTS    ',L4,' ',RL4,' '
-      PRINT *,' '
-      PRINT *,'6) NO. OF LAND POINTS                    ',L5,' ',RL5,' '
-      PRINT *,'7) NO. SEA POINTS (INCLUDING SEA ICE)    ',L7,' ',RL7,' '
-      PRINT *,'   (NO. OF SEA ICE POINTS)          (',L6,')',' ',RL6,' '
-      PRINT *,' '
-      PRINT *,'9) NO. OF TOTAL GRID POINTS               ',L8
-!     PRINT *,' '
-!     PRINT *,' '
+      l0 = 0
+      l1 = 0
+      l2 = 0
+      l3 = 0
+      l4 = 0
+      do ij=1,ijmax
+        if(slimsk(ij).eq.0.) l1 = l1 + 1
+        if(slimsk(ij).eq.1. .and. sno(ij).le.0.) l0 = l0 + 1
+        if(slimsk(ij).eq.2. .and. sno(ij).le.0.) l2 = l2 + 1
+        if(slimsk(ij).eq.1. .and. sno(ij).gt.0.) l3 = l3 + 1
+        if(slimsk(ij).eq.2. .and. sno(ij).gt.0.) l4 = l4 + 1
+      enddo
+      l5  = l0 + l3
+      l6  = l2 + l4
+      l7  = l1 + l6
+      l8  = l1 + l5 + l6
+      rl0 = float(l0) / float(l8)*100.
+      rl3 = float(l3) / float(l8)*100.
+      rl1 = float(l1) / float(l8)*100.
+      rl2 = float(l2) / float(l8)*100.
+      rl4 = float(l4) / float(l8)*100.
+      rl5 = float(l5) / float(l8)*100.
+      rl6 = float(l6) / float(l8)*100.
+      rl7 = float(l7) / float(l8)*100.
+      print *,'1) no. of not snow-covered land points   ',l0,' ',rl0,' '
+      print *,'2) no. of snow covered land points       ',l3,' ',rl3,' '
+      print *,'3) no. of open sea points                ',l1,' ',rl1,' '
+      print *,'4) no. of not snow-covered seaice points ',l2,' ',rl2,' '
+      print *,'5) no. of snow covered sea ice points    ',l4,' ',rl4,' '
+      print *,' '
+      print *,'6) no. of land points                    ',l5,' ',rl5,' '
+      print *,'7) no. sea points (including sea ice)    ',l7,' ',rl7,' '
+      print *,'   (no. of sea ice points)          (',l6,')',' ',rl6,' '
+      print *,' '
+      print *,'9) no. of total grid points               ',l8
+!     print *,' '
+!     print *,' '
 
 !
-!     if(lprnt) print *,' tsffcsF=',tsffcs(iprnt)
-      RETURN
-      END
-      SUBROUTINE MONITR(LFLD,FLD,SLIMSK,SNO,IJMAX)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+!     if(lprnt) print *,' tsffcsf=',tsffcs(iprnt)
+      return
+      end
+      subroutine monitr(lfld,fld,slimsk,sno,ijmax)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer ij,n,ijmax
 !
-      REAL (KIND=KIND_IO8) FLD(IJMAX), SLIMSK(IJMAX),SNO(IJMAX)
+      real (kind=kind_io8) fld(ijmax), slimsk(ijmax),sno(ijmax)
 !
-      REAL (KIND=KIND_IO8) RMAX(5),RMIN(5)
-      CHARACTER*8 LFLD
+      real (kind=kind_io8) rmax(5),rmin(5)
+      character(len=*) lfld
 !
-!  FIND MAX/MIN
+!  find max/min
 !
-      DO N=1,5
-        RMAX(N) = -9.E20
-        RMIN(N) =  9.E20
-      ENDDO
+      do n=1,5
+        rmax(n) = -9.e20
+        rmin(n) =  9.e20
+      enddo
 !
-      DO IJ=1,IJMAX
-         IF(SLIMSK(IJ).EQ.0.) THEN
-            RMAX(1) = MAX(RMAX(1), FLD(IJ))
-            RMIN(1) = MIN(RMIN(1), FLD(IJ))
-         ELSEIF(SLIMSK(IJ).EQ.1.) THEN
-            IF(SNO(IJ).LE.0.) THEN
-               RMAX(2) = MAX(RMAX(2), FLD(IJ))
-               RMIN(2) = MIN(RMIN(2), FLD(IJ))
-            ELSE
-               RMAX(4) = MAX(RMAX(4), FLD(IJ))
-               RMIN(4) = MIN(RMIN(4), FLD(IJ))
-            ENDIF
-         ELSE
-            IF(SNO(IJ).LE.0.) THEN
-               RMAX(3) = MAX(RMAX(3), FLD(IJ))
-               RMIN(3) = MIN(RMIN(3), FLD(IJ))
-            ELSE
-               RMAX(5) = MAX(RMAX(5), FLD(IJ))
-               RMIN(5) = MIN(RMIN(5), FLD(IJ))
-            ENDIF
-         ENDIF
-      ENDDO
+      do ij=1,ijmax
+         if(slimsk(ij).eq.0.) then
+            rmax(1) = max(rmax(1), fld(ij))
+            rmin(1) = min(rmin(1), fld(ij))
+         elseif(slimsk(ij).eq.1.) then
+            if(sno(ij).le.0.) then
+               rmax(2) = max(rmax(2), fld(ij))
+               rmin(2) = min(rmin(2), fld(ij))
+            else
+               rmax(4) = max(rmax(4), fld(ij))
+               rmin(4) = min(rmin(4), fld(ij))
+            endif
+         else
+            if(sno(ij).le.0.) then
+               rmax(3) = max(rmax(3), fld(ij))
+               rmin(3) = min(rmin(3), fld(ij))
+            else
+               rmax(5) = max(rmax(5), fld(ij))
+               rmin(5) = min(rmin(5), fld(ij))
+            endif
+         endif
+      enddo
 !
-      PRINT 100,LFLD
-      PRINT 101,RMAX(1),RMIN(1)
-      PRINT 102,RMAX(2),RMIN(2), RMAX(4), RMIN(4)
-      PRINT 103,RMAX(3),RMIN(3), RMAX(5), RMIN(5)
+      print 100,lfld
+      print 101,rmax(1),rmin(1)
+      print 102,rmax(2),rmin(2), rmax(4), rmin(4)
+      print 103,rmax(3),rmin(3), rmax(5), rmin(5)
 !
-!     PRINT 102,RMAX(2),RMIN(2)
-!     PRINT 103,RMAX(3),RMIN(3)
-!     PRINT 104,RMAX(4),RMIN(4)
-!     PRINT 105,RMAX(5),RMIN(5)
-  100 FORMAT('0  *** ',A8,' ***')
-  101 FORMAT(' OPEN SEA  ......... MAX=',E12.4,' MIN=',E12.4)
-  102 FORMAT(' LAND NOSNOW/SNOW .. MAX=',E12.4,' MIN=',E12.4
-     &,                          ' MAX=',E12.4,' MIN=',E12.4)
-  103 FORMAT(' SEAICE NOSNOW/SNOW  MAX=',E12.4,' MIN=',E12.4
-     &,                          ' MAX=',E12.4,' MIN=',E12.4)
+!     print 102,rmax(2),rmin(2)
+!     print 103,rmax(3),rmin(3)
+!     print 104,rmax(4),rmin(4)
+!     print 105,rmax(5),rmin(5)
+  100 format('0  *** ',a8,' ***')
+  101 format(' open sea  ......... max=',e12.4,' min=',e12.4)
+  102 format(' land nosnow/snow .. max=',e12.4,' min=',e12.4
+     &,                          ' max=',e12.4,' min=',e12.4)
+  103 format(' seaice nosnow/snow  max=',e12.4,' min=',e12.4
+     &,                          ' max=',e12.4,' min=',e12.4)
 !
-! 100 FORMAT('0',2X,'*** ',A8,' ***')
-! 102 FORMAT(2X,' LAND WITHOUT SNOW ..... MAX=',E12.4,' MIN=',E12.4)
-! 103 FORMAT(2X,' SEAICE WITHOUT SNOW ... MAX=',E12.4,' MIN=',E12.4)
-! 104 FORMAT(2X,' LAND WITH SNOW ........ MAX=',E12.4,' MIN=',E12.4)
-! 105 FORMAT(2X,' SEA ICE WITH SNOW ..... MAX=',E12.4,' MIN=',E12.4)
+! 100 format('0',2x,'*** ',a8,' ***')
+! 102 format(2x,' land without snow ..... max=',e12.4,' min=',e12.4)
+! 103 format(2x,' seaice without snow ... max=',e12.4,' min=',e12.4)
+! 104 format(2x,' land with snow ........ max=',e12.4,' min=',e12.4)
+! 105 format(2x,' sea ice with snow ..... max=',e12.4,' min=',e12.4)
 !
-      RETURN
-      END
-      SUBROUTINE DAYOYR(IYR,IMO,IDY,LDY)
+      return
+      end
+      subroutine dayoyr(iyr,imo,idy,ldy)
       implicit none
       integer ldy,i,idy,iyr,imo
 !
-!  THIS ROUTINE FIGURES OUT THE DAY OF THE YEAR GIVEN IMO AND IDY
+!  this routine figures out the day of the year given imo and idy
 !
-      INTEGER MONTH(13)
-      DATA MONTH/0,31,28,31,30,31,30,31,31,30,31,30,31/
-      IF(MOD(IYR,4).EQ.0) MONTH(3) = 29
-      LDY = IDY
-      DO I = 1, IMO
-        LDY = LDY + MONTH(I)
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE HMSKRD(LUGB,IMSK,JMSK,FNMSKH,
-     &                  KPDS5,SLMSKH,GAUSM,BLNMSK,BLTMSK,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      integer month(13)
+      data month/0,31,28,31,30,31,30,31,31,30,31,30,31/
+      if(mod(iyr,4).eq.0) month(3) = 29
+      ldy = idy
+      do i = 1, imo
+        ldy = ldy + month(i)
+      enddo
+      return
+      end
+      subroutine hmskrd(lugb,imsk,jmsk,fnmskh,
+     &                  kpds5,slmskh,gausm,blnmsk,bltmsk,me)
+      use machine , only : kind_io8,kind_io4
       use sfccyc_module, only : mdata, xdata, ydata
       implicit none
       integer kpds5,me,i,imsk,jmsk,lugb
 !
-      CHARACTER*500 FNMSKH
+      character*500 fnmskh
 !
-      REAL (KIND=KIND_IO8) SLMSKH(mdata)
-      LOGICAL GAUSM
-      REAL (KIND=KIND_IO8) BLNMSK,BLTMSK
+      real (kind=kind_io8) slmskh(mdata)
+      logical gausm
+      real (kind=kind_io8) blnmsk,bltmsk
 !
-      IMSK = xdata
-      JMSK = ydata
+      imsk = xdata
+      jmsk = ydata
 
       if (me .eq. 0) then
-      write(6,*)' IMSK=',IMSK,' JMSK=',JMSK,' xdata=',xdata,' ydata='
-     &,ydata
+        write(6,*)' imsk=',imsk,' jmsk=',jmsk,' xdata=',xdata,' ydata='
+     &,             ydata
       endif
-      CALL FIXRDG(LUGB,IMSK,JMSK,FNMSKH,
-     &            KPDS5,SLMSKH,GAUSM,BLNMSK,BLTMSK,me)
-      DO I=1,IMSK*JMSK
-         SLMSKH(I) = NINT(SLMSKH(I))
-      ENDDO
+
+      call fixrdg(lugb,imsk,jmsk,fnmskh,
+     &            kpds5,slmskh,gausm,blnmsk,bltmsk,me)
+
+!     print *,'in sfc_sub, aft fixrdg,slmskh=',maxval(slmskh),
+!    &  minval(slmskh),'mdata=',mdata,'imsk*jmsk=',imsk*jmsk
+
+      do i=1,imsk*jmsk
+         slmskh(i) = nint(slmskh(i))
+      enddo
 !
-      RETURN
-      END
-      SUBROUTINE FIXRDG(LUGB,IDIM,JDIM,FNGRIB,
-     &                  KPDS5,GDATA,GAUS,BLNO,BLTO,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine fixrdg(lugb,idim,jdim,fngrib,
+     &                  kpds5,gdata,gaus,blno,blto,me)
+      use machine      , only : kind_io8,kind_io4
       use sfccyc_module, only : mdata
       implicit none
       integer lgrib,n,lskip,jret,j,ndata,lugi,jdim,idim,lugb,
-     &        iret, me,kpds5,kdata,i
+     &        iret, me,kpds5,kdata,i,w3kindreal,w3kindint
 !
-      CHARACTER*(*) FNGRIB
+      character*(*) fngrib
 !
-      REAL (KIND=KIND_IO8) GDATA(IDIM*JDIM)
-      LOGICAL GAUS
-      REAL (KIND=KIND_IO8) BLNO,BLTO
-      real(kind=kind_io8) data4(idim*jdim)
+      real (kind=kind_io8) gdata(idim*jdim)
+      logical gaus
+      real (kind=kind_io8) blno,blto
+      real (kind=kind_io8) data8(idim*jdim)
+      real (kind=kind_io4), allocatable :: data4(:)
 !
-      LOGICAL*1 LBMS(mdata)
+      logical*1 lbms(mdata)
 !
-      INTEGER KPDS(200),KGDS(200)
-      INTEGER JPDS(200),JGDS(200), KPDS0(200)
+      integer kpds(200),kgds(200)
+      integer jpds(200),jgds(200), kpds0(200)
 !
 !     if(me .eq. 0) then
-!     WRITE(6,*) ' '
-!     WRITE(6,*) '************************************************'
+!     write(6,*) ' '
+!     write(6,*) '************************************************'
 !     endif
 !
-      CLOSE(LUGB)
+      close(lugb)
       call baopenr(lugb,fngrib,iret)
-      IF (IRET .NE. 0) THEN
-        WRITE(6,*) ' ERROR IN OPENING FILE ',trim(FNGRIB)
-        PRINT *,'ERROR IN OPENING FILE ',trim(FNGRIB)
-        CALL ABORT
-      ENDIF
-      if (me .eq. 0) WRITE(6,*) ' FILE ',trim(FNGRIB),
-     &              ' opened. Unit=',LUGB
+      if (iret .ne. 0) then
+        write(6,*) ' error in opening file ',trim(fngrib)
+        print *,'error in opening file ',trim(fngrib)
+        call abort
+      endif
+      if (me .eq. 0) write(6,*) ' file ',trim(fngrib),
+     &              ' opened. unit=',lugb
       lugi    = 0
       lskip   = -1
-      N       = 0
-      JPDS    = -1
-      JGDS    = -1
-      JPDS(5) = KPDS5
-      KPDS    = JPDS
+      n       = 0
+      jpds    = -1
+      jgds    = -1
+      jpds(5) = kpds5
+      kpds    = jpds
 !
       call getgbh(lugb,lugi,lskip,jpds,jgds,lgrib,ndata,
      &            lskip,kpds,kgds,iret)
 !
       if(me .eq. 0) then
-        WRITE(6,*) ' First grib record.'
-        WRITE(6,*) ' KPDS( 1-10)=',(KPDS(J),J= 1,10)
-        WRITE(6,*) ' KPDS(11-20)=',(KPDS(J),J=11,20)
-        WRITE(6,*) ' KPDS(21-  )=',(KPDS(J),J=21,22)
+        write(6,*) ' first grib record.'
+        write(6,*) ' kpds( 1-10)=',(kpds(j),j= 1,10)
+        write(6,*) ' kpds(11-20)=',(kpds(j),j=11,20)
+        write(6,*) ' kpds(21-  )=',(kpds(j),j=21,22)
       endif
 !
-      KPDS0=JPDS
-      KPDS0(4)=-1
-      KPDS0(18)=-1
-      IF(IRET.NE.0) THEN
-        WRITE(6,*) ' Error in GETGBH. IRET: ', iret
-        IF (IRET == 99) WRITE(6,*) ' Field not found.'
-        CALL ABORT
-      ENDIF
+      kpds0=jpds
+      kpds0(4)=-1
+      kpds0(18)=-1
+      if(iret.ne.0) then
+        write(6,*) ' error in getgbh. iret: ', iret
+        if (iret == 99) write(6,*) ' field not found.'
+        call abort
+      endif
 !
       jpds = kpds0
       lskip = -1
       kdata=idim*jdim
-      call getgb(lugb,lugi,kdata,lskip,jpds,jgds,ndata,lskip,
-     &                kpds,kgds,lbms,data4,jret)
+      call w3kind(w3kindreal,w3kindint)
+      if (w3kindreal == 8) then
+        call getgb(lugb,lugi,kdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data8,jret)
+      else if (w3kindreal == 4) then
+        allocate(data4(idim*jdim))
+        call getgb(lugb,lugi,kdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data4,jret)
+        data8 = data4
+        deallocate(data4)
+      else
+        write(0,*)' Invalid w3kindreal --- aborting'
+        call abort
+      endif
 !
-      if(jret.eq.0) then
-        IF(NDATA.EQ.0) THEN
-          WRITE(6,*) ' Error in getgb'
-          WRITE(6,*) ' KPDS=',KPDS
-          WRITE(6,*) ' KGDS=',KGDS
-          CALL ABORT
-        ENDIF
-        IDIM=KGDS(2)
-        JDIM=KGDS(3)
-        gaus=kgds(1).eq.4
-        blno=kgds(5)*1.d-3
-        blto=kgds(4)*1.d-3
-        gdata(1:idim*jdim)=data4(1:idim*jdim)
-        if (me .eq. 0) WRITE(6,*) 'IDIM,JDIM=',IDIM,JDIM
+      if(jret == 0) then
+        if(ndata.eq.0) then
+          write(6,*) ' error in getgb'
+          write(6,*) ' kpds=',kpds
+          write(6,*) ' kgds=',kgds
+          call abort
+        endif
+        idim = kgds(2)
+        jdim = kgds(3)
+        gaus = kgds(1).eq.4
+        blno = kgds(5)*1.d-3
+        blto = kgds(4)*1.d-3
+        gdata(1:idim*jdim) = data8(1:idim*jdim)
+        if (me == 0) write(6,*) 'idim,jdim=',idim,jdim
      &,                ' gaus=',gaus,' blno=',blno,' blto=',blto
-      ELSE
-        if (me .eq. 0) WRITE(6,*) 'IDIM,JDIM=',IDIM,JDIM
+      else
+        if (me ==. 0) write(6,*) 'idim,jdim=',idim,jdim
      &,                ' gaus=',gaus,' blno=',blno,' blto=',blto
-        WRITE(6,*) ' Error in GETGB : JRET=',JRET
-        WRITE(6,*) ' KPDS(13)=',KPDS(13),' KPDS(15)=',KPDS(15)
-        CALL ABORT
-      ENDIF
+        write(6,*) ' error in getgb : jret=',jret
+        write(6,*) ' kpds(13)=',kpds(13),' kpds(15)=',kpds(15)
+        call abort
+      endif
 !
-      RETURN
-      END
-      SUBROUTINE GETAREA(KGDS,DLAT,DLON,RSLAT,RNLAT,WLON,ELON,IJORDR
+      return
+      end
+      subroutine getarea(kgds,dlat,dlon,rslat,rnlat,wlon,elon,ijordr
      &,                  me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer j,me,kgds11
       real (kind=kind_io8) f0lon,f0lat,elon,dlon,dlat,rslat,wlon,rnlat
 !
-!  Get area of the grib record
+!  get area of the grib record
 !
-      Integer KGDS(22)
-      LOGICAL IJORDR
+      integer kgds(22)
+      logical ijordr
 !
       if (me .eq. 0) then
-       WRITE(6,*) ' KGDS( 1-12)=',(KGDS(J),J= 1,12)
-       WRITE(6,*) ' KGDS(13-22)=',(KGDS(J),J=13,22)
+       write(6,*) ' kgds( 1-12)=',(kgds(j),j= 1,12)
+       write(6,*) ' kgds(13-22)=',(kgds(j),j=13,22)
       endif
 !
-      IF(KGDS(1).EQ.0) THEN                      !  Lat/Lon grid
+      if(kgds(1).eq.0) then                      !  lat/lon grid
 !
-        if (me .eq. 0) WRITE(6,*) 'LAT/LON GRID'
-        DLAT   = FLOAT(KGDS(10)) * 0.001
-        DLON   = FLOAT(KGDS( 9)) * 0.001
-        F0LON  = FLOAT(KGDS(5))  * 0.001
-        F0LAT  = FLOAT(KGDS(4))  * 0.001
-        KGDS11 = KGDS(11)
-        IF(KGDS11.GE.128) THEN
-          WLON = F0LON - DLON*(KGDS(2)-1)
-          ELON = F0LON
-          IF(DLON*KGDS(2).GT.359.99) THEN
-            WLON =F0LON - DLON*KGDS(2)
-          ENDIF
-          DLON   = -DLON
-          KGDS11 = KGDS11 - 128
-        ELSE
-          WLON = F0LON
-          ELON = F0LON + DLON*(KGDS(2)-1)
-          IF(DLON*KGDS(2).GT.359.99) THEN
-            ELON = F0LON + DLON*KGDS(2)
-          ENDIF
-        ENDIF
-        IF(KGDS11.GE.64) THEN
-          RNLAT  = F0LAT + DLAT*(KGDS(3)-1)
-          RSLAT  = F0LAT
-          KGDS11 = KGDS11 - 64
-        ELSE
-          RNLAT = F0LAT
-          RSLAT = F0LAT - DLAT*(KGDS(3)-1)
-          DLAT  = -DLAT
-        ENDIF
-        IF(KGDS11.GE.32) THEN
-          IJORDR = .FALSE.
-        ELSE
-          IJORDR = .TRUE.
-        ENDIF
+        if (me .eq. 0) write(6,*) 'lat/lon grid'
+        dlat   = float(kgds(10)) * 0.001
+        dlon   = float(kgds( 9)) * 0.001
+        f0lon  = float(kgds(5))  * 0.001
+        f0lat  = float(kgds(4))  * 0.001
+        kgds11 = kgds(11)
+        if(kgds11.ge.128) then
+          wlon = f0lon - dlon*(kgds(2)-1)
+          elon = f0lon
+          if(dlon*kgds(2).gt.359.99) then
+            wlon =f0lon - dlon*kgds(2)
+          endif
+          dlon   = -dlon
+          kgds11 = kgds11 - 128
+        else
+          wlon = f0lon
+          elon = f0lon + dlon*(kgds(2)-1)
+          if(dlon*kgds(2).gt.359.99) then
+            elon = f0lon + dlon*kgds(2)
+          endif
+        endif
+        if(kgds11.ge.64) then
+          rnlat  = f0lat + dlat*(kgds(3)-1)
+          rslat  = f0lat
+          kgds11 = kgds11 - 64
+        else
+          rnlat = f0lat
+          rslat = f0lat - dlat*(kgds(3)-1)
+          dlat  = -dlat
+        endif
+        if(kgds11.ge.32) then
+          ijordr = .false.
+        else
+          ijordr = .true.
+        endif
 
-        IF(WLON.GT.180.) WLON = WLON - 360.
-        IF(ELON.GT.180.) ELON = ELON - 360.
-        WLON  = NINT(WLON*1000.)  * 0.001
-        ELON  = NINT(ELON*1000.)  * 0.001
-        RSLAT = NINT(RSLAT*1000.) * 0.001
-        RNLAT = NINT(RNLAT*1000.) * 0.001
-        RETURN
+        if(wlon.gt.180.) wlon = wlon - 360.
+        if(elon.gt.180.) elon = elon - 360.
+        wlon  = nint(wlon*1000.)  * 0.001
+        elon  = nint(elon*1000.)  * 0.001
+        rslat = nint(rslat*1000.) * 0.001
+        rnlat = nint(rnlat*1000.) * 0.001
+        return
 !
-      ELSEIF(KGDS(1).EQ.1) THEN                  !  Mercator projection
-        WRITE(6,*) 'Mercator GRID'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
+      elseif(kgds(1).eq.1) then                  !  mercator projection
+        write(6,*) 'mercator grid'
+        write(6,*) 'cannot process'
+        call abort
 !
-      ELSEIF(KGDS(1).EQ.2) THEN                  !  Gnomonic projection
-        WRITE(6,*) 'Gnomonic GRID'
-        WRITE(6,*) 'ERROR!! Gnomonic projection not coded'
-        CALL ABORT
+      elseif(kgds(1).eq.2) then                  !  gnomonic projection
+        write(6,*) 'gnomonic grid'
+        write(6,*) 'error!! gnomonic projection not coded'
+        call abort
 !
-      ELSEIF(KGDS(1).EQ.3) THEN                  !  Lambert conformal
-        WRITE(6,*) 'Lambert conformal'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
-      ELSEIF(KGDS(1).EQ.4) THEN                  !  Gaussian grid
+      elseif(kgds(1).eq.3) then                  !  lambert conformal
+        write(6,*) 'lambert conformal'
+        write(6,*) 'cannot process'
+        call abort
+      elseif(kgds(1).eq.4) then                  !  gaussian grid
 !
-        if (me .eq. 0) WRITE(6,*) 'Gaussian GRID'
-        DLAT   = 99.
-        DLON   = FLOAT(KGDS( 9)) / 1000.0
-        F0LON  = FLOAT(KGDS(5))  / 1000.0
-        F0LAT  = 99.
-        KGDS11 = KGDS(11)
-        IF(KGDS11.GE.128) THEN
-          WLON = F0LON
-          ELON = F0LON
-          IF(DLON*KGDS(2).GT.359.99) THEN
-            WLON = F0LON - DLON*KGDS(2)
-          ENDIF
-          DLON   = -DLON
-          KGDS11 = KGDS11-128
-        ELSE
-          WLON = F0LON
-          ELON = F0LON + DLON*(KGDS(2)-1)
-          IF(DLON*KGDS(2).GT.359.99) THEN
-            ELON = F0LON + DLON*KGDS(2)
-          ENDIF
-        ENDIF
-        IF(KGDS11.GE.64) THEN
-          RNLAT  = 99.
-          RSLAT  = 99.
-          KGDS11 = KGDS11 - 64
-        ELSE
-          RNLAT = 99.
-          RSLAT = 99.
-          DLAT  = -99.
-        ENDIF
-        IF(KGDS11.GE.32) THEN
-          IJORDR = .FALSE.
-        ELSE
-          IJORDR = .TRUE.
-        ENDIF
-        RETURN
+        if (me .eq. 0) write(6,*) 'gaussian grid'
+        dlat   = 99.
+        dlon   = float(kgds( 9)) / 1000.0
+        f0lon  = float(kgds(5))  / 1000.0
+        f0lat  = 99.
+        kgds11 = kgds(11)
+        if(kgds11.ge.128) then
+          wlon = f0lon
+          elon = f0lon
+          if(dlon*kgds(2).gt.359.99) then
+            wlon = f0lon - dlon*kgds(2)
+          endif
+          dlon   = -dlon
+          kgds11 = kgds11-128
+        else
+          wlon = f0lon
+          elon = f0lon + dlon*(kgds(2)-1)
+          if(dlon*kgds(2).gt.359.99) then
+            elon = f0lon + dlon*kgds(2)
+          endif
+        endif
+        if(kgds11.ge.64) then
+          rnlat  = 99.
+          rslat  = 99.
+          kgds11 = kgds11 - 64
+        else
+          rnlat = 99.
+          rslat = 99.
+          dlat  = -99.
+        endif
+        if(kgds11.ge.32) then
+          ijordr = .false.
+        else
+          ijordr = .true.
+        endif
+        return
 !
-      ELSEIF(KGDS(1).EQ.5) THEN                  !  Polar Strereographic
-        WRITE(6,*) 'Polar Stereographic GRID'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
-        RETURN
+      elseif(kgds(1).eq.5) then                  !  polar strereographic
+        write(6,*) 'polar stereographic grid'
+        write(6,*) 'cannot process'
+        call abort
+        return
 !
-      ELSEIF(KGDS(1).EQ.13) THEN                 !  Oblique Lambert conformal
-        WRITE(6,*) 'Oblique Lambert conformal GRID'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
+      elseif(kgds(1).eq.13) then                 !  oblique lambert conformal
+        write(6,*) 'oblique lambert conformal grid'
+        write(6,*) 'cannot process'
+        call abort
 !
-      ELSEIF(KGDS(1).EQ.50) THEN                 !  Spherical Coefficient
-        WRITE(6,*) 'Spherical Coefficient'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
-        RETURN
+      elseif(kgds(1).eq.50) then                 !  spherical coefficient
+        write(6,*) 'spherical coefficient'
+        write(6,*) 'cannot process'
+        call abort
+        return
 !
-      ELSEIF(KGDS(1).EQ.90) THEN                 !  Space view perspective
+      elseif(kgds(1).eq.90) then                 !  space view perspective
 !                                                  (orthographic grid)
-        WRITE(6,*) 'Space view perspective GRID'
-        WRITE(6,*) 'Cannot process'
-        CALL ABORT
-        RETURN
+        write(6,*) 'space view perspective grid'
+        write(6,*) 'cannot process'
+        call abort
+        return
 !
-      ELSE                                       !  Unknown projection.  Abort.
-        WRITE(6,*) 'ERROR!! Unknown map projection'
-        WRITE(6,*) 'KGDS(1)=',KGDS(1)
-        PRINT *,'ERROR!! Unknown map projection'
-        PRINT *,'KGDS(1)=',KGDS(1)
-        CALL ABORT
-      ENDIF
+      else                                       !  unknown projection.  abort.
+        write(6,*) 'error!! unknown map projection'
+        write(6,*) 'kgds(1)=',kgds(1)
+        print *,'error!! unknown map projection'
+        print *,'kgds(1)=',kgds(1)
+        call abort
+      endif
 !
-      RETURN
-      END
-      SUBROUTINE SUBST(DATA,IMAX,JMAX,DLON,DLAT,IJORDR)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine subst(data,imax,jmax,dlon,dlat,ijordr)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,j,ii,jj,jmax,imax,iret
-      REAL (KIND=KIND_IO8) dlat,dlon
+      real (kind=kind_io8) dlat,dlon
 !
-      LOGICAL IJORDR
+      logical ijordr
 !
-      REAL (KIND=KIND_IO8) DATA(imax,jmax)
-      REAL (KIND=KIND_IO8), allocatable ::  WORK(:,:)
+      real (kind=kind_io8) data(imax,jmax)
+      real (kind=kind_io8), allocatable ::  work(:,:)
 !
-      IF(.NOT.IJORDR.OR.
-     &  (IJORDR.AND.(DLAT.GT.0..OR.DLON.LT.0.))) THEN
-        allocate (WORK(imax,jmax))
+      if(.not.ijordr.or.
+     &  (ijordr.and.(dlat.gt.0..or.dlon.lt.0.))) then
+        allocate (work(imax,jmax))
 
-        IF(.NOT.IJORDR) THEN
-          DO J=1,JMAX
-            DO I=1,IMAX
+        if(.not.ijordr) then
+          do j=1,jmax
+            do i=1,imax
               work(i,j) = data(j,i)
-            ENDDO
-          ENDDO
-        ELSE
-          DO J=1,JMAX
-            DO I=1,IMAX
+            enddo
+          enddo
+        else
+          do j=1,jmax
+            do i=1,imax
               work(i,j) = data(i,j)
-            ENDDO
-          ENDDO
-        ENDIF
+            enddo
+          enddo
+        endif
         if (dlat > 0.0) then
           if (dlon > 0.0) then
             do j=1,jmax
@@ -3042,345 +2969,345 @@
             enddo
           endif
         endif
-        deallocate (WORK, stat=iret)
-      ENDIF
-      RETURN
-      END
-      SUBROUTINE LA2GA(REGIN,IMXIN,JMXIN,RINLON,RINLAT,RLON,RLAT,INTTYP,
-     &                 GAUOUT,LEN,LMASK,RSLMSK,SLMASK
-     &,                OUTLAT, OUTLON,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+        deallocate (work, stat=iret)
+      endif
+      return
+      end
+      subroutine la2ga(regin,imxin,jmxin,rinlon,rinlat,rlon,rlat,inttyp,
+     &                 gauout,len,lmask,rslmsk,slmask
+     &,                outlat, outlon,me)
+      use machine , only : kind_io8,kind_io4
       implicit none
-      REAL (KIND=KIND_IO8) wei4,wei3,wei2,sum2,sum1,sum3,wei1,sum4,
+      real (kind=kind_io8) wei4,wei3,wei2,sum2,sum1,sum3,wei1,sum4,
      &                     wsum,tem,wsumiv,sums,sumn,wi2j2,x,y,wi1j1,
      &                     wi1j2,wi2j1,rlat,rlon,aphi,
      &                     rnume,alamd,denom
       integer jy,ifills,ix,len,inttyp,me,i,j,jmxin,imxin,jq,jx,j1,j2,
-     &        ii,i1,i2,KMAMI,it
+     &        ii,i1,i2,kmami,it
       integer nx,kxs,kxt
       integer, allocatable, save :: imxnx(:)
       integer, allocatable       :: ifill(:)
 !
-!  INTERPOLATION FROM LAT/LON OR GAUSSIAN GRID TO OTHER LAT/LON GRID
+!  interpolation from lat/lon or gaussian grid to other lat/lon grid
 !
-      REAL (KIND=KIND_IO8) OUTLON(LEN),OUTLAT(LEN),GAUOUT(LEN),
-     &                     SLMASK(LEN)
-      REAL (KIND=KIND_IO8) REGIN (IMXIN,JMXIN),RSLMSK(IMXIN,JMXIN)
+      real (kind=kind_io8) outlon(len),outlat(len),gauout(len),
+     &                     slmask(len)
+      real (kind=kind_io8) regin (imxin,jmxin),rslmsk(imxin,jmxin)
 !
-      REAL (KIND=KIND_IO8)    RINLAT(JMXIN),  RINLON(IMXIN)
-      INTEGER IINDX1(LEN),    IINDX2(LEN)
-      INTEGER JINDX1(LEN),    JINDX2(LEN)
-      REAL (KIND=KIND_IO8)    DDX(LEN),       DDY(LEN),   WRK(LEN)
+      real (kind=kind_io8)    rinlat(jmxin),  rinlon(imxin)
+      integer iindx1(len),    iindx2(len)
+      integer jindx1(len),    jindx2(len)
+      real (kind=kind_io8)    ddx(len),       ddy(len),   wrk(len)
 !
-      LOGICAL LMASK
+      logical lmask
 !
       logical first
-      integer   NUM_THREADS
+      integer   num_threads
       data first /.true./
-      save NUM_THREADS, first
+      save num_threads, first
 !
-      integer LEN_THREAD_M, LEN_THREAD, I1_T, I2_T
-      integer NUM_PARTHDS
+      integer len_thread_m, len_thread, i1_t, i2_t
+      integer num_parthds
 !
       if (first) then
-         NUM_THREADS = NUM_PARTHDS()
+         num_threads = num_parthds()
          first = .false.
-         if (.not. allocated(imxnx)) allocate (imxnx(NUM_THREADS))
+         if (.not. allocated(imxnx)) allocate (imxnx(num_threads))
       endif
 !
-      if (me == 0) print *,' NUM_THREADS =',NUM_THREADS,' me=',me
+      if (me == 0) print *,' num_threads =',num_threads,' me=',me
 !
 !     if(me .eq. 0) then
-!     PRINT *,'RLON=',RLON,' me=',me
-!     PRINT *,'RLAT=',RLAT,' me=',me,' imxin=',imxin,' jmxin=',jmxin
+!     print *,'rlon=',rlon,' me=',me
+!     print *,'rlat=',rlat,' me=',me,' imxin=',imxin,' jmxin=',jmxin
 !     endif
 !
-!     DO J=1,JMXIN
-!       IF(RLAT.GT.0.) THEN
-!         RINLAT(J) = RLAT - FLOAT(J-1)*DLAIN
-!       ELSE
-!         RINLAT(J) = RLAT + FLOAT(J-1)*DLAIN
-!       ENDIF
-!     ENDDO
+!     do j=1,jmxin
+!       if(rlat.gt.0.) then
+!         rinlat(j) = rlat - float(j-1)*dlain
+!       else
+!         rinlat(j) = rlat + float(j-1)*dlain
+!       endif
+!     enddo
 !
 !     if (me .eq. 0) then
-!       PRINT *,'RINLAT='
-!       PRINT *,(RINLAT(J),J=1,JMXIN)
-!       PRINT *,'RINLON='
-!       PRINT *,(RINLON(I),I=1,IMXIN)
+!       print *,'rinlat='
+!       print *,(rinlat(j),j=1,jmxin)
+!       print *,'rinlon='
+!       print *,(rinlon(i),i=1,imxin)
 !
-!       PRINT *,'OUTLAT='
-!       PRINT *,(OUTLAT(J),J=1,LEN)
-!       PRINT *,(OUTLON(J),J=1,LEN)
+!       print *,'outlat='
+!       print *,(outlat(j),j=1,len)
+!       print *,(outlon(j),j=1,len)
 !     endif
 !
-!     DO I=1,IMXIN
-!       RINLON(I) = RLON + FLOAT(I-1)*DLOIN
-!     ENDDO
+!     do i=1,imxin
+!       rinlon(i) = rlon + float(i-1)*dloin
+!     enddo
 !
-!     PRINT *,'RINLON='
-!     PRINT *,(RINLON(I),I=1,IMXIN)
+!     print *,'rinlon='
+!     print *,(rinlon(i),i=1,imxin)
 !
-      LEN_THREAD_M  = (LEN+NUM_THREADS-1) / NUM_THREADS
+      len_thread_m  = (len+num_threads-1) / num_threads
 
-      if (INTTYP /=1) allocate (ifill(NUM_THREADS))
+      if (inttyp /=1) allocate (ifill(num_threads))
 !
-!$OMP PARALLEL DO PRIVATE(I1_T,I2_T,LEN_THREAD,IT,I,II,I1,I2)
-!$OMP+PRIVATE(J,J1,J2,JQ,IX,JY,NX,KXS,KXT,KMAMI)
-!$OMP+PRIVATE(ALAMD,DENOM,RNUME,APHI,X,Y,WSUM,WSUMIV,SUM1,SUM2)
-!$OMP+PRIVATE(SUM3,SUM4,WI1J1,WI2J1,WI1J2,WI2J2,WEI1,WEI2,WEI3,WEI4)
-!$OMP+PRIVATE(SUMN,SUMS)
-!$OMP+SHARED(IMXIN,JMXIN,IFILL)
-!$OMP+SHARED(OUTLON,OUTLAT,WRK,IINDX1,RINLON,JINDX1,RINLAT,DDX,DDY)
-!$OMP+SHARED(RLON,RLAT,REGIN,GAUOUT,IMXNX)
+!$omp parallel do private(i1_t,i2_t,len_thread,it,i,ii,i1,i2)
+!$omp+private(j,j1,j2,jq,ix,jy,nx,kxs,kxt,kmami)
+!$omp+private(alamd,denom,rnume,aphi,x,y,wsum,wsumiv,sum1,sum2)
+!$omp+private(sum3,sum4,wi1j1,wi2j1,wi1j2,wi2j2,wei1,wei2,wei3,wei4)
+!$omp+private(sumn,sums)
+!$omp+shared(imxin,jmxin,ifill)
+!$omp+shared(outlon,outlat,wrk,iindx1,rinlon,jindx1,rinlat,ddx,ddy)
+!$omp+shared(rlon,rlat,regin,gauout,imxnx)
 !
-      DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-        I1_T       = (IT-1)*LEN_THREAD_M+1
-        I2_T       = MIN(I1_T+LEN_THREAD_M-1,LEN)
-        LEN_THREAD = I2_T-I1_T+1
+      do it=1,num_threads   ! start of threaded loop ...................
+        i1_t       = (it-1)*len_thread_m+1
+        i2_t       = min(i1_t+len_thread_m-1,len)
+        len_thread = i2_t-i1_t+1
 !
-!       FIND I-INDEX FOR INTERPOLATION
+!       find i-index for interpolation
 !
-        DO I=I1_T, I2_T
-          ALAMD = OUTLON(I)
-          IF (ALAMD .LT. RLON)   ALAMD = ALAMD + 360.0
-          IF (ALAMD .GT. 360.0+RLON) ALAMD = ALAMD - 360.0
-          WRK(I)    = ALAMD
-          IINDX1(I) = IMXIN
-        ENDDO
-        DO I=I1_T,I2_T
-          DO II=1,IMXIN
-            IF(WRK(I) .GE. RINLON(II)) IINDX1(I) = II
-          ENDDO
-        ENDDO
-        DO I=I1_T,I2_T
-          I1 = IINDX1(I)
-          IF (I1 .LT. 1) I1 = IMXIN
-          I2 = I1 + 1
-          IF (I2 .GT. IMXIN) I2 = 1
-          IINDX1(I) = I1
-          IINDX2(I) = I2
-          DENOM     = RINLON(I2) - RINLON(I1)
-          IF(DENOM.LT.0.) DENOM = DENOM + 360.
-          RNUME = WRK(I) - RINLON(I1)
-          IF(RNUME.LT.0.) RNUME = RNUME + 360.
-          DDX(I) = RNUME / DENOM
-        ENDDO
+        do i=i1_t, i2_t
+          alamd = outlon(i)
+          if (alamd .lt. rlon)   alamd = alamd + 360.0
+          if (alamd .gt. 360.0+rlon) alamd = alamd - 360.0
+          wrk(i)    = alamd
+          iindx1(i) = imxin
+        enddo
+        do i=i1_t,i2_t
+          do ii=1,imxin
+            if(wrk(i) .ge. rinlon(ii)) iindx1(i) = ii
+          enddo
+        enddo
+        do i=i1_t,i2_t
+          i1 = iindx1(i)
+          if (i1 .lt. 1) i1 = imxin
+          i2 = i1 + 1
+          if (i2 .gt. imxin) i2 = 1
+          iindx1(i) = i1
+          iindx2(i) = i2
+          denom     = rinlon(i2) - rinlon(i1)
+          if(denom.lt.0.) denom = denom + 360.
+          rnume = wrk(i) - rinlon(i1)
+          if(rnume.lt.0.) rnume = rnume + 360.
+          ddx(i) = rnume / denom
+        enddo
 !
-!  FIND J-INDEX FOR INTERPLATION
+!  find j-index for interplation
 !
-        IF(RLAT.GT.0.) THEN
-          DO J=I1_T,I2_T
-            JINDX1(J)=0
-          ENDDO
-          DO JX=1,JMXIN
-            DO J=I1_T,I2_T
-              IF(OUTLAT(J).LE.RINLAT(JX)) JINDX1(J) = JX
-            ENDDO
-          ENDDO
-          DO J=I1_T,I2_T
-            JQ = JINDX1(J)
-            APHI=OUTLAT(J)
-            IF(JQ.GE.1 .AND. JQ .LT. JMXIN) THEN
-              J2=JQ+1
-              J1=JQ
-             DDY(J)=(APHI-RINLAT(J1))/(RINLAT(J2)-RINLAT(J1))
-            ELSEIF (JQ .EQ. 0) THEN
-              J2=1
-              J1=1
-              IF(ABS(90.-RINLAT(J1)).GT.0.001) THEN
-                DDY(J)=(APHI-RINLAT(J1))/(90.-RINLAT(J1))
-              ELSE
-                DDY(J)=0.0
-              ENDIF
-            ELSE
-              J2=JMXIN
-              J1=JMXIN
-              IF(ABS(-90.-RINLAT(J1)).GT.0.001) THEN
-                DDY(J)=(APHI-RINLAT(J1))/(-90.-RINLAT(J1))
-              ELSE
-                DDY(J)=0.0
-              ENDIF
-            ENDIF
-            JINDX1(J)=J1
-            JINDX2(J)=J2
-          ENDDO
-        ELSE
-          DO J=I1_T,I2_T
-            JINDX1(J) = JMXIN+1
-          ENDDO
-          DO JX=JMXIN,1,-1
-            DO J=I1_T,I2_T
-              IF(OUTLAT(J).LE.RINLAT(JX)) JINDX1(J) = JX
-            ENDDO
-          ENDDO
-          DO J=I1_T,I2_T
-            JQ = JINDX1(J)
-            APHI=OUTLAT(J)
-            IF(JQ.GT.1 .AND. JQ .LE. JMXIN) THEN
-              J2=JQ
-              J1=JQ-1
-              DDY(J)=(APHI-RINLAT(J1))/(RINLAT(J2)-RINLAT(J1))
-            ELSEIF (JQ .EQ. 1) THEN
-              J2=1
-              J1=1
-              IF(ABS(-90.-RINLAT(J1)).GT.0.001) THEN
-                 DDY(J)=(APHI-RINLAT(J1))/(-90.-RINLAT(J1))
-              ELSE
-                 DDY(J)=0.0
-              ENDIF
-            ELSE
-              J2=JMXIN
-              J1=JMXIN
-              IF(ABS(90.-RINLAT(J1)).GT.0.001) THEN
-                 DDY(J)=(APHI-RINLAT(J1))/(90.-RINLAT(J1))
-              ELSE
-                 DDY(J)=0.0
-              ENDIF
-            ENDIF
-            JINDX1(J)=J1
-            JINDX2(J)=J2
-          ENDDO
-        ENDIF
+        if(rlat.gt.0.) then
+          do j=i1_t,i2_t
+            jindx1(j)=0
+          enddo
+          do jx=1,jmxin
+            do j=i1_t,i2_t
+              if(outlat(j).le.rinlat(jx)) jindx1(j) = jx
+            enddo
+          enddo
+          do j=i1_t,i2_t
+            jq = jindx1(j)
+            aphi=outlat(j)
+            if(jq.ge.1 .and. jq .lt. jmxin) then
+              j2=jq+1
+              j1=jq
+             ddy(j)=(aphi-rinlat(j1))/(rinlat(j2)-rinlat(j1))
+            elseif (jq .eq. 0) then
+              j2=1
+              j1=1
+              if(abs(90.-rinlat(j1)).gt.0.001) then
+                ddy(j)=(aphi-rinlat(j1))/(90.-rinlat(j1))
+              else
+                ddy(j)=0.0
+              endif
+            else
+              j2=jmxin
+              j1=jmxin
+              if(abs(-90.-rinlat(j1)).gt.0.001) then
+                ddy(j)=(aphi-rinlat(j1))/(-90.-rinlat(j1))
+              else
+                ddy(j)=0.0
+              endif
+            endif
+            jindx1(j)=j1
+            jindx2(j)=j2
+          enddo
+        else
+          do j=i1_t,i2_t
+            jindx1(j) = jmxin+1
+          enddo
+          do jx=jmxin,1,-1
+            do j=i1_t,i2_t
+              if(outlat(j).le.rinlat(jx)) jindx1(j) = jx
+            enddo
+          enddo
+          do j=i1_t,i2_t
+            jq = jindx1(j)
+            aphi=outlat(j)
+            if(jq.gt.1 .and. jq .le. jmxin) then
+              j2=jq
+              j1=jq-1
+              ddy(j)=(aphi-rinlat(j1))/(rinlat(j2)-rinlat(j1))
+            elseif (jq .eq. 1) then
+              j2=1
+              j1=1
+              if(abs(-90.-rinlat(j1)).gt.0.001) then
+                 ddy(j)=(aphi-rinlat(j1))/(-90.-rinlat(j1))
+              else
+                 ddy(j)=0.0
+              endif
+            else
+              j2=jmxin
+              j1=jmxin
+              if(abs(90.-rinlat(j1)).gt.0.001) then
+                 ddy(j)=(aphi-rinlat(j1))/(90.-rinlat(j1))
+              else
+                 ddy(j)=0.0
+              endif
+            endif
+            jindx1(j)=j1
+            jindx2(j)=j2
+          enddo
+        endif
 !
 !     if (me .eq. 0 .and. inttyp .eq. 1) then
-!       PRINT *,'LA2GA'
-!       PRINT *,'IINDX1'
-!       PRINT *,(IINDX1(N),N=1,LEN)
-!       PRINT *,'IINDX2'
-!       PRINT *,(IINDX2(N),N=1,LEN)
-!       PRINT *,'JINDX1'
-!       PRINT *,(JINDX1(N),N=1,LEN)
-!       PRINT *,'JINDX2'
-!       PRINT *,(JINDX2(N),N=1,LEN)
-!       PRINT *,'DDY'
-!       PRINT *,(DDY(N),N=1,LEN)
-!       PRINT *,'DDX'
-!       PRINT *,(DDX(N),N=1,LEN)
+!       print *,'la2ga'
+!       print *,'iindx1'
+!       print *,(iindx1(n),n=1,len)
+!       print *,'iindx2'
+!       print *,(iindx2(n),n=1,len)
+!       print *,'jindx1'
+!       print *,(jindx1(n),n=1,len)
+!       print *,'jindx2'
+!       print *,(jindx2(n),n=1,len)
+!       print *,'ddy'
+!       print *,(ddy(n),n=1,len)
+!       print *,'ddx'
+!       print *,(ddx(n),n=1,len)
 !     endif
 !
-        SUM1 = 0.
-        SUM2 = 0.
-        SUM3 = 0.
-        SUM4 = 0.
-        IF (LMASK) THEN
-          WEI1 = 0.
-          WEI2 = 0.
-          WEI3 = 0.
-          WEI4 = 0.
-          DO I=1,IMXIN
-            SUM1 = SUM1 + REGIN(I,1) * RSLMSK(I,1)
-            SUM2 = SUM2 + REGIN(I,JMXIN) * RSLMSK(I,JMXIN)
-            WEI1 = WEI1 + RSLMSK(I,1)
-            WEI2 = WEI2 + RSLMSK(I,JMXIN)
+        sum1 = 0.
+        sum2 = 0.
+        sum3 = 0.
+        sum4 = 0.
+        if (lmask) then
+          wei1 = 0.
+          wei2 = 0.
+          wei3 = 0.
+          wei4 = 0.
+          do i=1,imxin
+            sum1 = sum1 + regin(i,1) * rslmsk(i,1)
+            sum2 = sum2 + regin(i,jmxin) * rslmsk(i,jmxin)
+            wei1 = wei1 + rslmsk(i,1)
+            wei2 = wei2 + rslmsk(i,jmxin)
 !
-            SUM3 = SUM3 + REGIN(I,1) * (1.0-RSLMSK(I,1))
-            SUM4 = SUM4 + REGIN(I,JMXIN) * (1.0-RSLMSK(I,JMXIN))
-            WEI3 = WEI3 + (1.0-RSLMSK(I,1))
-            WEI4 = WEI4 + (1.0-RSLMSK(I,JMXIN))
-          ENDDO
+            sum3 = sum3 + regin(i,1) * (1.0-rslmsk(i,1))
+            sum4 = sum4 + regin(i,jmxin) * (1.0-rslmsk(i,jmxin))
+            wei3 = wei3 + (1.0-rslmsk(i,1))
+            wei4 = wei4 + (1.0-rslmsk(i,jmxin))
+          enddo
 !
-          IF(WEI1.GT.0.) THEN
-            SUM1 = SUM1 / WEI1
-          ELSE
-            SUM1 = 0.
-          ENDIF
-          IF(WEI2.GT.0.) THEN
-            SUM2 = SUM2 / WEI2
-          ELSE
-            SUM2 = 0.
-          ENDIF
-          IF(WEI3.GT.0.) THEN
-            SUM3 = SUM3 / WEI3
-          ELSE
-            SUM3 = 0.
-          ENDIF
-          IF(WEI4.GT.0.) THEN
-            SUM4 = SUM4 / WEI4
-          ELSE
-            SUM4 = 0.
-          ENDIF
-        ELSE
-          DO I=1,IMXIN
-            SUM1 = SUM1 + REGIN(I,1)
-            SUM2 = SUM2 + REGIN(I,JMXIN)
-          ENDDO
-          SUM1 = SUM1 / IMXIN
-          SUM2 = SUM2 / IMXIN
-          SUM3 = SUM1
-          SUM4 = SUM2
-        ENDIF
+          if(wei1.gt.0.) then
+            sum1 = sum1 / wei1
+          else
+            sum1 = 0.
+          endif
+          if(wei2.gt.0.) then
+            sum2 = sum2 / wei2
+          else
+            sum2 = 0.
+          endif
+          if(wei3.gt.0.) then
+            sum3 = sum3 / wei3
+          else
+            sum3 = 0.
+          endif
+          if(wei4.gt.0.) then
+            sum4 = sum4 / wei4
+          else
+            sum4 = 0.
+          endif
+        else
+          do i=1,imxin
+            sum1 = sum1 + regin(i,1)
+            sum2 = sum2 + regin(i,jmxin)
+          enddo
+          sum1 = sum1 / imxin
+          sum2 = sum2 / imxin
+          sum3 = sum1
+          sum4 = sum2
+        endif
 !
-!     print *,' SUM1=',SUM1,' SUM2=',SUM2
-!    *,' SUM3=',SUM3,' SUM4=',SUM4
-!     print *,' RSLMSK=',(RSLMSK(I,1),I=1,IMXIN)
-!     print *,' SLMASK=',(SLMASK(I),I=1,IMXOUT)
+!     print *,' sum1=',sum1,' sum2=',sum2
+!    *,' sum3=',sum3,' sum4=',sum4
+!     print *,' rslmsk=',(rslmsk(i,1),i=1,imxin)
+!     print *,' slmask=',(slmask(i),i=1,imxout)
 !    *,' j1=',jindx1(1),' j2=',jindx2(1)
 !
 !
-!  INTTYP=1  Take the closest point value
+!  inttyp=1  take the closest point value
 !
-        IF(INTTYP.EQ.1) THEN
+        if(inttyp.eq.1) then
 
-          DO I=I1_T,I2_T
-            JY = JINDX1(I)
-            IF(DDY(I) .GE. 0.5) JY = JINDX2(I)
-            IX = IINDX1(I)
-            IF(DDX(I) .GE. 0.5) IX = IINDX2(I)
+          do i=i1_t,i2_t
+            jy = jindx1(i)
+            if(ddy(i) .ge. 0.5) jy = jindx2(i)
+            ix = iindx1(i)
+            if(ddx(i) .ge. 0.5) ix = iindx2(i)
 !
 !cggg start
 !
             if (.not. lmask) then
 
-              GAUOUT(I) = REGIN(IX,JY)
+              gauout(i) = regin(ix,jy)
 
             else
 
-              IF(SLMASK(I).EQ.RSLMSK(IX,JY)) THEN
+              if(slmask(i).eq.rslmsk(ix,jy)) then
 
-                GAUOUT(I) = REGIN(IX,JY)
+                gauout(i) = regin(ix,jy)
 
               else
 
                 i1 = ix
                 j1 = jy
 
-! SPIRAL AROUND UNTIL MATCHING MASK IS FOUND.
-                DO NX=1,JMXIN*IMXIN/2
-                  KXS=SQRT(4*NX-2.5)
-                  KXT=NX-INT(KXS**2/4+1)
-                  SELECT CASE(MOD(KXS,4))
-                  CASE(1)
-                    IX=I1-KXS/4+KXT
-                    JX=J1-KXS/4
-                  CASE(2)
-                    IX=I1+1+KXS/4
-                    JX=J1-KXS/4+KXT
-                  CASE(3)
-                    IX=I1+1+KXS/4-KXT
-                    JX=J1+1+KXS/4
-                  CASE DEFAULT
-                    IX=I1-KXS/4
-                    JX=J1+KXS/4-KXT
-                  END SELECT
-                  IF(JX.LT.1) THEN
-                    IX=IX+IMXIN/2
-                    JX=2-JX
-                  ELSEIF(JX.GT.JMXIN) THEN
-                    IX=IX+IMXIN/2
-                    JX=2*JMXIN-JX
-                  ENDIF
-                  IX=MODULO(IX-1,IMXIN)+1
-                  IF(SLMASK(I).EQ.RSLMSK(IX,JX)) THEN
-                    GAUOUT(I) = REGIN(IX,JX)
-                    GO TO 81
-                  ENDIF
-                ENDDO
+! spiral around until matching mask is found.
+                do nx=1,jmxin*imxin/2
+                  kxs=sqrt(4*nx-2.5)
+                  kxt=nx-int(kxs**2/4+1)
+                  select case(mod(kxs,4))
+                  case(1)
+                    ix=i1-kxs/4+kxt
+                    jx=j1-kxs/4
+                  case(2)
+                    ix=i1+1+kxs/4
+                    jx=j1-kxs/4+kxt
+                  case(3)
+                    ix=i1+1+kxs/4-kxt
+                    jx=j1+1+kxs/4
+                  case default
+                    ix=i1-kxs/4
+                    jx=j1+kxs/4-kxt
+                  end select
+                  if(jx.lt.1) then
+                    ix=ix+imxin/2
+                    jx=2-jx
+                  elseif(jx.gt.jmxin) then
+                    ix=ix+imxin/2
+                    jx=2*jmxin-jx
+                  endif
+                  ix=modulo(ix-1,imxin)+1
+                  if(slmask(i).eq.rslmsk(ix,jx)) then
+                    gauout(i) = regin(ix,jx)
+                    go to 81
+                  endif
+                enddo
 
 !cggg here, set the gauout value to be 0, and let's sarah's land
 !cggg routine assign a default.
 
-              if (NUM_THREADS == 1) then
+              if (num_threads == 1) then
                 print*,'no matching mask found ',i,i1,j1,ix,jx
                 print*,'set to default value.'
               endif
@@ -3395,346 +3322,346 @@
 
 !cggg end
 
-          ENDDO
-          KMAMI=1
-          if (me == 0 .and. NUM_THREADS == 1)
-     &                  CALL MAXMIN(GAUOUT(I1_T),LEN_THREAD,KMAMI)
-        ELSE  ! nearest neighbor interpolation
+          enddo
+          kmami=1
+          if (me == 0 .and. num_threads == 1)
+     &                  call maxmin(gauout(i1_t),len_thread,kmami)
+        else  ! nearest neighbor interpolation
 
 !
-!  QUASI-BILINEAR INTERPOLATION
+!  quasi-bilinear interpolation
 !
-          IFILL(it) = 0
-          IMXNX(it) = 0
-          DO I=I1_T,I2_T
-            Y  = DDY(I)
-            J1 = JINDX1(I)
-            J2 = JINDX2(I)
-            X  = DDX(I)
-            I1 = IINDX1(I)
-            I2 = IINDX2(I)
+          ifill(it) = 0
+          imxnx(it) = 0
+          do i=i1_t,i2_t
+            y  = ddy(i)
+            j1 = jindx1(i)
+            j2 = jindx2(i)
+            x  = ddx(i)
+            i1 = iindx1(i)
+            i2 = iindx2(i)
 !
-            WI1J1 = (1.-X) * (1.-Y)
-            WI2J1 =     X  *( 1.-Y)
-            WI1J2 = (1.-X) *      Y
-            WI2J2 =     X  *      Y
+            wi1j1 = (1.-x) * (1.-y)
+            wi2j1 =     x  *( 1.-y)
+            wi1j2 = (1.-x) *      y
+            wi2j2 =     x  *      y
 !
-            TEM = 4.*SLMASK(I) - RSLMSK(I1,J1) - RSLMSK(I2,J1)
-     &                         - RSLMSK(I1,J2) - RSLMSK(I2,J2)
-            IF(LMASK .AND. ABS(TEM) .GT. 0.01) THEN
-              IF(SLMASK(I).EQ.1.) THEN
-                  WI1J1 = WI1J1 * RSLMSK(I1,J1)
-                  WI2J1 = WI2J1 * RSLMSK(I2,J1)
-                  WI1J2 = WI1J2 * RSLMSK(I1,J2)
-                  WI2J2 = WI2J2 * RSLMSK(I2,J2)
-              ELSE
-                  WI1J1 = WI1J1 * (1.0-RSLMSK(I1,J1))
-                  WI2J1 = WI2J1 * (1.0-RSLMSK(I2,J1))
-                  WI1J2 = WI1J2 * (1.0-RSLMSK(I1,J2))
-                  WI2J2 = WI2J2 * (1.0-RSLMSK(I2,J2))
-              ENDIF
-            ENDIF
+            tem = 4.*slmask(i) - rslmsk(i1,j1) - rslmsk(i2,j1)
+     &                         - rslmsk(i1,j2) - rslmsk(i2,j2)
+            if(lmask .and. abs(tem) .gt. 0.01) then
+              if(slmask(i).eq.1.) then
+                  wi1j1 = wi1j1 * rslmsk(i1,j1)
+                  wi2j1 = wi2j1 * rslmsk(i2,j1)
+                  wi1j2 = wi1j2 * rslmsk(i1,j2)
+                  wi2j2 = wi2j2 * rslmsk(i2,j2)
+              else
+                  wi1j1 = wi1j1 * (1.0-rslmsk(i1,j1))
+                  wi2j1 = wi2j1 * (1.0-rslmsk(i2,j1))
+                  wi1j2 = wi1j2 * (1.0-rslmsk(i1,j2))
+                  wi2j2 = wi2j2 * (1.0-rslmsk(i2,j2))
+              endif
+            endif
 !
-            WSUM   = WI1J1 + WI2J1 + WI1J2 + WI2J2
-            WRK(I) = WSUM
-            IF(WSUM.NE.0.) THEN
-              WSUMIV = 1./WSUM
+            wsum   = wi1j1 + wi2j1 + wi1j2 + wi2j2
+            wrk(i) = wsum
+            if(wsum.ne.0.) then
+              wsumiv = 1./wsum
 !
-              IF(J1.NE.J2) THEN
-                GAUOUT(I) = (WI1J1*REGIN(I1,J1) + WI2J1*REGIN(I2,J1) +
-     &                       WI1J2*REGIN(I1,J2) + WI2J2*REGIN(I2,J2))
-     &                    *WSUMIV
-              ELSE
+              if(j1.ne.j2) then
+                gauout(i) = (wi1j1*regin(i1,j1) + wi2j1*regin(i2,j1) +
+     &                       wi1j2*regin(i1,j2) + wi2j2*regin(i2,j2))
+     &                    *wsumiv
+              else
 !
-                IF (RLAT .GT. 0.0) THEN
-                  IF (SLMASK(I) .EQ. 1.0) THEN
-                    SUMN = SUM1
-                    SUMS = SUM2
-                  ELSE
-                    SUMN = SUM3
-                    SUMS = SUM4
-                  ENDIF
-                  IF( J1 .EQ. 1) THEN
-                    GAUOUT(I) = (WI1J1*SUMN        +WI2J1*SUMN        +
-     &                           WI1J2*REGIN(I1,J2)+WI2J2*REGIN(I2,J2))
-     &                        * WSUMIV
-                  ELSEIF (J1 .EQ. JMXIN) THEN
-                    GAUOUT(I) = (WI1J1*REGIN(I1,J1)+WI2J1*REGIN(I2,J1)+
-     &                           WI1J2*SUMS        +WI2J2*SUMS        )
-     &                        * WSUMIV
-                  ENDIF
+                if (rlat .gt. 0.0) then
+                  if (slmask(i) .eq. 1.0) then
+                    sumn = sum1
+                    sums = sum2
+                  else
+                    sumn = sum3
+                    sums = sum4
+                  endif
+                  if( j1 .eq. 1) then
+                    gauout(i) = (wi1j1*sumn        +wi2j1*sumn        +
+     &                           wi1j2*regin(i1,j2)+wi2j2*regin(i2,j2))
+     &                        * wsumiv
+                  elseif (j1 .eq. jmxin) then
+                    gauout(i) = (wi1j1*regin(i1,j1)+wi2j1*regin(i2,j1)+
+     &                           wi1j2*sums        +wi2j2*sums        )
+     &                        * wsumiv
+                  endif
 !       print *,' slmask=',slmask(i),' sums=',sums,' sumn=',sumn
 !    &  ,' regin=',regin(i1,j2),regin(i2,j2),' j1=',j1,' j2=',j2
 !    &  ,' wij=',wi1j1, wi2j1, wi1j2, wi2j2,wsumiv
-                ELSE
-                  IF (SLMASK(I) .EQ. 1.0) THEN
-                    SUMS = SUM1
-                    SUMN = SUM2
-                  ELSE
-                    SUMS = SUM3
-                    SUMN = SUM4
-                  ENDIF
-                  IF( J1 .EQ. 1) THEN
-                    GAUOUT(I) = (WI1J1*REGIN(I1,J1)+WI2J1*REGIN(I2,J1)+
-     &                           WI1J2*SUMS        +WI2J2*SUMS        )
-     &                        * WSUMIV
-                  ELSEIF (J1 .EQ. JMXIN) THEN
-                    GAUOUT(I) = (WI1J1*SUMN        +WI2J1*SUMN        +
-     &                           WI1J2*REGIN(I1,J2)+WI2J2*REGIN(I2,J2))
-     &                        * WSUMIV
-                  ENDIF
-                ENDIF
-              ENDIF            ! if j1 .ne. j2
-            ENDIF
-          ENDDO
-          DO I=I1_T,I2_T
-            J1 = JINDX1(I)
-            J2 = JINDX2(I)
-            I1 = IINDX1(I)
-            I2 = IINDX2(I)
-            IF(WRK(I) .EQ. 0.0) THEN
-              IF(.NOT.LMASK) THEN
-                if (NUM_THREADS == 1)
-     &            WRITE(6,*) ' LA2GA called with LMASK=.TRUE. but bad',
-     &                     ' RSLMSK or SLMASK given'
-                CALL ABORT
-              ENDIF
-              IFILL(it) = IFILL(it) + 1
-              IF(IFILL(it) <= 2 ) THEN
-                if (me == 0 .and. NUM_THREADS == 1) then
-                  WRITE(6,*) 'I1,I2,J1,J2=',I1,I2,J1,J2
-                  WRITE(6,*) 'RSLMSK=',RSLMSK(I1,J1),RSLMSK(I1,J2),
-     &                                 RSLMSK(I2,J1),RSLMSK(I2,J2)
-!                 WRITE(6,*) 'I,J=',I,J,' SLMASK(I)=',SLMASK(I)
-                  WRITE(6,*) 'I=',I,' SLMASK(I)=',SLMASK(I)
+                else
+                  if (slmask(i) .eq. 1.0) then
+                    sums = sum1
+                    sumn = sum2
+                  else
+                    sums = sum3
+                    sumn = sum4
+                  endif
+                  if( j1 .eq. 1) then
+                    gauout(i) = (wi1j1*regin(i1,j1)+wi2j1*regin(i2,j1)+
+     &                           wi1j2*sums        +wi2j2*sums        )
+     &                        * wsumiv
+                  elseif (j1 .eq. jmxin) then
+                    gauout(i) = (wi1j1*sumn        +wi2j1*sumn        +
+     &                           wi1j2*regin(i1,j2)+wi2j2*regin(i2,j2))
+     &                        * wsumiv
+                  endif
+                endif
+              endif            ! if j1 .ne. j2
+            endif
+          enddo
+          do i=i1_t,i2_t
+            j1 = jindx1(i)
+            j2 = jindx2(i)
+            i1 = iindx1(i)
+            i2 = iindx2(i)
+            if(wrk(i) .eq. 0.0) then
+              if(.not.lmask) then
+                if (num_threads == 1)
+     &            write(6,*) ' la2ga called with lmask=.true. but bad',
+     &                     ' rslmsk or slmask given'
+                call abort
+              endif
+              ifill(it) = ifill(it) + 1
+              if(ifill(it) <= 2 ) then
+                if (me == 0 .and. num_threads == 1) then
+                  write(6,*) 'i1,i2,j1,j2=',i1,i2,j1,j2
+                  write(6,*) 'rslmsk=',rslmsk(i1,j1),rslmsk(i1,j2),
+     &                                 rslmsk(i2,j1),rslmsk(i2,j2)
+!                 write(6,*) 'i,j=',i,j,' slmask(i)=',slmask(i)
+                  write(6,*) 'i=',i,' slmask(i)=',slmask(i)
      &,           ' outlon=',outlon(i),' outlat=',outlat(i)
                 endif
-              ENDIF
-! SPIRAL AROUND UNTIL MATCHING MASK IS FOUND.
-              DO NX=1,JMXIN*IMXIN/2
-                KXS=SQRT(4*NX-2.5)
-                KXT=NX-INT(KXS**2/4+1)
-                SELECT CASE(MOD(KXS,4))
-                CASE(1)
-                  IX=I1-KXS/4+KXT
-                  JX=J1-KXS/4
-                CASE(2)
-                  IX=I1+1+KXS/4
-                  JX=J1-KXS/4+KXT
-                CASE(3)
-                  IX=I1+1+KXS/4-KXT
-                  JX=J1+1+KXS/4
-                CASE DEFAULT
-                  IX=I1-KXS/4
-                  JX=J1+KXS/4-KXT
-                END SELECT
-                IF(JX.LT.1) THEN
-                  IX=IX+IMXIN/2
-                  JX=2-JX
-                ELSEIF(JX.GT.JMXIN) THEN
-                  IX=IX+IMXIN/2
-                  JX=2*JMXIN-JX
-                ENDIF
-                IX=MODULO(IX-1,IMXIN)+1
-                IF(SLMASK(I).EQ.RSLMSK(IX,JX)) THEN
-                  GAUOUT(I) = REGIN(IX,JX)
-                  IMXNX(it) = MAX(IMXNX(it),NX)
-                  GO TO 71
-                ENDIF
-              ENDDO
-!
-              if (NUM_THREADS == 1) then
-                WRITE(6,*) ' ERROR!!! No filling value found in LA2GA'
-!               WRITE(6,*) ' I IX JX SLMASK(I) RSLMSK ',
-!    &                       I,IX,JX,SLMASK(I),RSLMSK(IX,JX)
               endif
-              CALL ABORT
+! spiral around until matching mask is found.
+              do nx=1,jmxin*imxin/2
+                kxs=sqrt(4*nx-2.5)
+                kxt=nx-int(kxs**2/4+1)
+                select case(mod(kxs,4))
+                case(1)
+                  ix=i1-kxs/4+kxt
+                  jx=j1-kxs/4
+                case(2)
+                  ix=i1+1+kxs/4
+                  jx=j1-kxs/4+kxt
+                case(3)
+                  ix=i1+1+kxs/4-kxt
+                  jx=j1+1+kxs/4
+                case default
+                  ix=i1-kxs/4
+                  jx=j1+kxs/4-kxt
+                end select
+                if(jx.lt.1) then
+                  ix=ix+imxin/2
+                  jx=2-jx
+                elseif(jx.gt.jmxin) then
+                  ix=ix+imxin/2
+                  jx=2*jmxin-jx
+                endif
+                ix=modulo(ix-1,imxin)+1
+                if(slmask(i).eq.rslmsk(ix,jx)) then
+                  gauout(i) = regin(ix,jx)
+                  imxnx(it) = max(imxnx(it),nx)
+                  go to 71
+                endif
+              enddo
 !
-   71         CONTINUE
-            ENDIF
+              if (num_threads == 1) then
+                write(6,*) ' error!!! no filling value found in la2ga'
+!               write(6,*) ' i ix jx slmask(i) rslmsk ',
+!    &                       i,ix,jx,slmask(i),rslmsk(ix,jx)
+              endif
+              call abort
 !
-          ENDDO
-        ENDIF
-      ENDDO            ! END OF THREADED LOOP ...................
-!$OMP END PARALLEL DO
+   71         continue
+            endif
 !
-      IF(INTTYP /= 1)then
+          enddo
+        endif
+      enddo            ! end of threaded loop ...................
+!$omp end parallel do
+!
+      if(inttyp /= 1)then
         ifills = 0
         do it=1,num_threads
           ifills = ifills + ifill(it)
         enddo
 
-        IF(IFILLS.GT.1) THEN
+        if(ifills.gt.1) then
           if (me .eq. 0) then
-          WRITE(6,*) ' Unable to interpolate.  Filled with nearest',
-     &               ' point value at ',IFILLS,' points'
-!    &               ' point value at ',IFILLS,' points  imxnx=',imxnx(:)
+          write(6,*) ' unable to interpolate.  filled with nearest',
+     &               ' point value at ',ifills,' points'
+!    &               ' point value at ',ifills,' points  imxnx=',imxnx(:)
           endif
-        ENDIF
+        endif
         deallocate (ifill)
-      ENDIF
+      endif
 !
-      KMAMI=1
-      if (me .eq. 0) CALL MAXMIN(GAUOUT,LEN,KMAMI)
+      kmami=1
+      if (me .eq. 0) call maxmin(gauout,len,kmami)
 !
-      RETURN
-      END SUBROUTINE LA2GA
-      SUBROUTINE MAXMIN(F,IMAX,KMAX)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end subroutine la2ga
+      subroutine maxmin(f,imax,kmax)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,iimin,iimax,kmax,imax,k
-      REAL (KIND=KIND_IO8) fmin,fmax
+      real (kind=kind_io8) fmin,fmax
 !
-      REAL (KIND=KIND_IO8) F(IMAX,KMAX)
+      real (kind=kind_io8) f(imax,kmax)
 !
-      DO K=1,KMAX
+      do k=1,kmax
 !
-        FMAX = F(1,K)
-        FMIN = F(1,K)
+        fmax = f(1,k)
+        fmin = f(1,k)
 !
-        DO I=1,IMAX
-          IF(FMAX.LE.F(I,K)) THEN
-            FMAX  = F(I,K)
-            IIMAX = I
-          ENDIF
-          IF(FMIN.GE.F(I,K)) THEN
-            FMIN  = F(I,K)
-            IIMIN = I
-          ENDIF
-        ENDDO
+        do i=1,imax
+          if(fmax.le.f(i,k)) then
+            fmax  = f(i,k)
+            iimax = i
+          endif
+          if(fmin.ge.f(i,k)) then
+            fmin  = f(i,k)
+            iimin = i
+          endif
+        enddo
 !
-      WRITE(6,100) K,FMAX,IIMAX,FMIN,IIMIN
-  100 FORMAT(2X,'LEVEL=',I2,' MAX=',E11.4,' AT I=',I7,
-     &                      ' MIN=',E11.4,' AT I=',I7)
+      write(6,100) k,fmax,iimax,fmin,iimin
+  100 format(2x,'level=',i2,' max=',e11.4,' at i=',i7,
+     &                      ' min=',e11.4,' at i=',i7)
 !
-      ENDDO
+      enddo
 !
-      RETURN
-      END
-      SUBROUTINE FILANL(TSFANL,TSFAN2,WETANL,SNOANL,ZORANL,ALBANL,
-     &                  AISANL,
-     &                  TG3ANL,CVANL ,CVBANL,CVTANL,
-     &                  CNPANL,SMCANL,STCANL,SLIANL,SCVANL,VEGANL,
-     &                  vetanl,sotanl,ALFANL,
-!Cwu [+1L] add ()anl for sih, sic
-     &                  SIHANL,SICANL,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &                  VMNANL,VMXANL,SLPANL,ABSANL,
-     &                  TSFCLM,TSFCL2,WETCLM,SNOCLM,ZORCLM,ALBCLM,
-     &                  AISCLM,
-     &                  TG3CLM,CVCLM ,CVBCLM,CVTCLM,
-     &                  CNPCLM,SMCCLM,STCCLM,SLICLM,SCVCLM,VEGCLM,
-     &                  vetclm,sotclm,ALFCLM,
-!Cwu [+1L] add ()clm for sih, sic
-     &                  SIHCLM,SICCLM,
-!Clu [+1L] add ()clm for vmn, vmx, slp, abs
-     &                  VMNCLM,VMXCLM,SLPCLM,ABSCLM,
-     &                  LEN,LSOIL)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine filanl(tsfanl,tsfan2,wetanl,snoanl,zoranl,albanl,
+     &                  aisanl,
+     &                  tg3anl,cvanl ,cvbanl,cvtanl,
+     &                  cnpanl,smcanl,stcanl,slianl,scvanl,veganl,
+     &                  vetanl,sotanl,alfanl,
+!cwu [+1l] add ()anl for sih, sic
+     &                  sihanl,sicanl,
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &                  vmnanl,vmxanl,slpanl,absanl,
+     &                  tsfclm,tsfcl2,wetclm,snoclm,zorclm,albclm,
+     &                  aisclm,
+     &                  tg3clm,cvclm ,cvbclm,cvtclm,
+     &                  cnpclm,smcclm,stcclm,sliclm,scvclm,vegclm,
+     &                  vetclm,sotclm,alfclm,
+!cwu [+1l] add ()clm for sih, sic
+     &                  sihclm,sicclm,
+!clu [+1l] add ()clm for vmn, vmx, slp, abs
+     &                  vmnclm,vmxclm,slpclm,absclm,
+     &                  len,lsoil)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,j,len,lsoil
 !
-      REAL (KIND=KIND_IO8) TSFANL(LEN),TSFAN2(LEN),WETANL(LEN),
-     &     SNOANL(LEN),
-     &     ZORANL(LEN),ALBANL(LEN,4),AISANL(LEN),
-     &     TG3ANL(LEN),
-     &     CVANL (LEN),CVBANL(LEN),CVTANL(LEN),
-     &     CNPANL(LEN),
-     &     SMCANL(LEN,LSOIL),STCANL(LEN,LSOIL),
-     &     SLIANL(LEN),SCVANL(LEN),VEGANL(LEN),
-     &     vetanl(LEN),sotanl(LEN),ALFANL(LEN,2)
-!Cwu [+1L] add ()anl for sih, sic
-     &,    SIHANL(LEN),SICANL(LEN)
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &,    VMNANL(LEN),VMXANL(LEN),SLPANL(LEN),ABSANL(LEN)
-      REAL (KIND=KIND_IO8) TSFCLM(LEN),TSFCL2(LEN),WETCLM(LEN),
-     &     SNOCLM(LEN),
-     &     ZORCLM(LEN),ALBCLM(LEN,4),AISCLM(LEN),
-     &     TG3CLM(LEN),
-     &     CVCLM (LEN),CVBCLM(LEN),CVTCLM(LEN),
-     &     CNPCLM(LEN),
-     &     SMCCLM(LEN,LSOIL),STCCLM(LEN,LSOIL),
-     &     SLICLM(LEN),SCVCLM(LEN),VEGCLM(LEN),
-     &     vetclm(LEN),sotclm(LEN),ALFCLM(LEN,2)
-!Cwu [+1L] add ()clm for sih, sic
-     &,    SIHCLM(LEN),SICCLM(LEN)
-!Clu [+1L] add ()clm for vmn, vmx, slp, abs
-     &,    VMNCLM(LEN),VMXCLM(LEN),SLPCLM(LEN),ABSCLM(LEN)
+      real (kind=kind_io8) tsfanl(len),tsfan2(len),wetanl(len),
+     &     snoanl(len),
+     &     zoranl(len),albanl(len,4),aisanl(len),
+     &     tg3anl(len),
+     &     cvanl (len),cvbanl(len),cvtanl(len),
+     &     cnpanl(len),
+     &     smcanl(len,lsoil),stcanl(len,lsoil),
+     &     slianl(len),scvanl(len),veganl(len),
+     &     vetanl(len),sotanl(len),alfanl(len,2)
+!cwu [+1l] add ()anl for sih, sic
+     &,    sihanl(len),sicanl(len)
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &,    vmnanl(len),vmxanl(len),slpanl(len),absanl(len)
+      real (kind=kind_io8) tsfclm(len),tsfcl2(len),wetclm(len),
+     &     snoclm(len),
+     &     zorclm(len),albclm(len,4),aisclm(len),
+     &     tg3clm(len),
+     &     cvclm (len),cvbclm(len),cvtclm(len),
+     &     cnpclm(len),
+     &     smcclm(len,lsoil),stcclm(len,lsoil),
+     &     sliclm(len),scvclm(len),vegclm(len),
+     &     vetclm(len),sotclm(len),alfclm(len,2)
+!cwu [+1l] add ()clm for sih, sic
+     &,    sihclm(len),sicclm(len)
+!clu [+1l] add ()clm for vmn, vmx, slp, abs
+     &,    vmnclm(len),vmxclm(len),slpclm(len),absclm(len)
 !
-      DO I=1,LEN
-        TSFANL(I)   = TSFCLM(I)      !  Tsf at t
-        TSFAN2(I)   = TSFCL2(I)      !  Tsf at t-deltsfc
-        WETANL(I)   = WETCLM(I)      !  Soil Wetness
-        SNOANL(I)   = SNOCLM(I)      !  SNOW
-        SCVANL(I)   = SCVCLM(I)      !  SNOW COVER
-        AISANL(I)   = AISCLM(I)      !  SEAICE
-        SLIANL(I)   = SLICLM(I)      !  LAND/SEA/SNOW mask
-        ZORANL(I)   = ZORCLM(I)      !  Surface roughness
-!       PLRANL(I)   = PLRCLM(I)      !  Maximum stomatal resistance
-        TG3ANL(I)   = TG3CLM(I)      !  Deep soil temperature
-        CNPANL(I)   = CNPCLM(I)      !  Canopy water content
-        VEGANL(I)   = VEGCLM(I)      !  Vegetation cover
-        VEtANL(I)   = VEtCLM(I)      !  Vegetation type
-        sotANL(I)   = sotCLM(I)      !  Soil type
-        CVANL(I)    = CVCLM(I)       !  CV
-        CVBANL(I)   = CVBCLM(I)      !  CVB
-        CVTANL(I)   = CVTCLM(I)      !  CVT
-!Cwu [+4L] add sih, sic
-        SIHANL(I)   = SIHCLM(I)      !  Sea ice thickness
-        SICANL(I)   = SICCLM(I)      !  Sea ice concentration
-!Clu [+4L] add vmn, vmx, slp, abs
-        VMNANL(I)   = VMNCLM(I)      !  Min vegetation cover
-        VMXANL(I)   = VMXCLM(I)      !  Max vegetation cover 
-        SLPANL(I)   = SLPCLM(I)      !  slope type
-        ABSANL(I)   = ABSCLM(I)      !  Max snow albedo
-      ENDDO
+      do i=1,len
+        tsfanl(i)   = tsfclm(i)      !  tsf at t
+        tsfan2(i)   = tsfcl2(i)      !  tsf at t-deltsfc
+        wetanl(i)   = wetclm(i)      !  soil wetness
+        snoanl(i)   = snoclm(i)      !  snow
+        scvanl(i)   = scvclm(i)      !  snow cover
+        aisanl(i)   = aisclm(i)      !  seaice
+        slianl(i)   = sliclm(i)      !  land/sea/snow mask
+        zoranl(i)   = zorclm(i)      !  surface roughness
+!       plranl(i)   = plrclm(i)      !  maximum stomatal resistance
+        tg3anl(i)   = tg3clm(i)      !  deep soil temperature
+        cnpanl(i)   = cnpclm(i)      !  canopy water content
+        veganl(i)   = vegclm(i)      !  vegetation cover
+        vetanl(i)   = vetclm(i)      !  vegetation type
+        sotanl(i)   = sotclm(i)      !  soil type
+        cvanl(i)    = cvclm(i)       !  cv
+        cvbanl(i)   = cvbclm(i)      !  cvb
+        cvtanl(i)   = cvtclm(i)      !  cvt
+!cwu [+4l] add sih, sic
+        sihanl(i)   = sihclm(i)      !  sea ice thickness
+        sicanl(i)   = sicclm(i)      !  sea ice concentration
+!clu [+4l] add vmn, vmx, slp, abs
+        vmnanl(i)   = vmnclm(i)      !  min vegetation cover
+        vmxanl(i)   = vmxclm(i)      !  max vegetation cover 
+        slpanl(i)   = slpclm(i)      !  slope type
+        absanl(i)   = absclm(i)      !  max snow albedo
+      enddo
 !
-      DO J=1,LSOIL
-        DO I=1,LEN
-          SMCANL(I,J) = SMCCLM(I,J)  !   Layer soil wetness
-          STCANL(I,J) = STCCLM(I,J)  !   Soil temperature
-        ENDDO
-      ENDDO
-      DO J=1,4
-        DO I=1,LEN
-          ALBANL(I,J) = ALBCLM(I,J)  !  Albedo
-        ENDDO
-      ENDDO
-      DO J=1,2
-        DO I=1,LEN
-          ALFANL(I,J) = ALFCLM(I,J)  !  Vegetation fraction for Albedo
-        ENDDO
-      ENDDO
+      do j=1,lsoil
+        do i=1,len
+          smcanl(i,j) = smcclm(i,j)  !   layer soil wetness
+          stcanl(i,j) = stcclm(i,j)  !   soil temperature
+        enddo
+      enddo
+      do j=1,4
+        do i=1,len
+          albanl(i,j) = albclm(i,j)  !  albedo
+        enddo
+      enddo
+      do j=1,2
+        do i=1,len
+          alfanl(i,j) = alfclm(i,j)  !  vegetation fraction for albedo
+        enddo
+      enddo
 !
-      RETURN
-      END
-      SUBROUTINE ANALY(LUGB,IY,IM,ID,IH,FH,LEN,LSOIL,
-     &                 SLMASK,FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &                 FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,FNVEGA,
+      return
+      end
+      subroutine analy(lugb,iy,im,id,ih,fh,len,lsoil,
+     &                 slmask,fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &                 fntg3a,fnscva,fnsmca,fnstca,fnacna,fnvega,
      &                 fnveta,fnsota,
-!Clu [+1L] add fn()a for vmn, vmx, slp, abs
-     &                 FNVMNA,FNVMXA,FNSLPA,FNABSA,
-     &                 TSFANL,WETANL,SNOANL,ZORANL,ALBANL,AISANL,
-     &                 TG3ANL,CVANL ,CVBANL,CVTANL,
-     &                 SMCANL,STCANL,SLIANL,SCVANL,ACNANL,VEGANL,
-     &                 vetanl,sotanl,ALFANL,TSFAN0,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &                 VMNANL,VMXANL,SLPANL,ABSANL,
-!cggg snow mods start    &        KPDTSF,KPDWET,KPDSNO,KPDZOR,KPDALB,KPDAIS,
-     &                 KPDTSF,KPDWET,KPDSNO,KPDSND,KPDZOR,KPDALB,KPDAIS,
+!clu [+1l] add fn()a for vmn, vmx, slp, abs
+     &                 fnvmna,fnvmxa,fnslpa,fnabsa,
+     &                 tsfanl,wetanl,snoanl,zoranl,albanl,aisanl,
+     &                 tg3anl,cvanl ,cvbanl,cvtanl,
+     &                 smcanl,stcanl,slianl,scvanl,acnanl,veganl,
+     &                 vetanl,sotanl,alfanl,tsfan0,
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &                 vmnanl,vmxanl,slpanl,absanl,
+!cggg snow mods start    &        kpdtsf,kpdwet,kpdsno,kpdzor,kpdalb,kpdais,
+     &                 kpdtsf,kpdwet,kpdsno,kpdsnd,kpdzor,kpdalb,kpdais,
 !cggg snow mods end
-     &                 KPDTG3,KPDSCV,KPDACN,KPDSMC,KPDSTC,KPDVEG,
+     &                 kpdtg3,kpdscv,kpdacn,kpdsmc,kpdstc,kpdveg,
      &                 kprvet,kpdsot,kpdalf,
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
-     &                 KPDVMN,KPDVMX,KPDSLP,KPDABS,
-     &                 IRTTSF,IRTWET,IRTSNO,IRTZOR,IRTALB,IRTAIS,
-     &                 IRTTG3,IRTSCV,IRTACN,IRTSMC,IRTSTC,IRTVEG,
+!clu [+1l] add kpd() for vmn, vmx, slp, abs
+     &                 kpdvmn,kpdvmx,kpdslp,kpdabs,
+     &                 irttsf,irtwet,irtsno,irtzor,irtalb,irtais,
+     &                 irttg3,irtscv,irtacn,irtsmc,irtstc,irtveg,
      &                 irtvet,irtsot,irtalf
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
-     &,                IRTVMN,IRTVMX,IRTSLP,IRTABS
-     &,                IMSK, JMSK, SLMSKH, OUTLAT, OUTLON
-     &,                GAUS, BLNO, BLTO, me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+!clu [+1l] add irt() for vmn, vmx, slp, abs
+     &,                irtvmn,irtvmx,irtslp,irtabs
+     &,                imsk, jmsk, slmskh, outlat, outlon
+     &,                gaus, blno, blto, me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer irtsmc,irtacn,irtstc,irtvet,irtveg,irtscv,irtzor,irtsno,
      &        irtalb,irttg3,irtais,iret,me,kk,kpdvet,i,irtalf,irtsot,
@@ -3743,209 +3670,209 @@
 !cggg snow mods end
      &        lugb,im,ih,id,kpdveg,kpdstc,kprvet,irttsf,kpdsot,kpdsmc,
      &        kpdais,kpdzor,kpdtg3,kpdacn,kpdscv,j
-!Clu [+1L] add kpd() and irt() for vmn, vmx, slp, abs
+!clu [+1l] add kpd() and irt() for vmn, vmx, slp, abs
      &,       kpdvmn,kpdvmx,kpdslp,kpdabs,irtvmn,irtvmx,irtslp,irtabs
-      REAL (KIND=KIND_IO8) blto,blno,fh
+      real (kind=kind_io8) blto,blno,fh
 !
-      REAL (KIND=KIND_IO8)    SLMASK(LEN)
-      REAL (KIND=KIND_IO8)    SLMSKH(IMSK,JMSK)
-      REAL (KIND=KIND_IO8)    OUTLAT(LEN), OUTLON(LEN)
-      INTEGER kpdalb(4),   kpdalf(2)
+      real (kind=kind_io8)    slmask(len)
+      real (kind=kind_io8)    slmskh(imsk,jmsk)
+      real (kind=kind_io8)    outlat(len), outlon(len)
+      integer kpdalb(4),   kpdalf(2)
 !cggg snow mods start
-      INTEGER KPDS(1000),KGDS(1000),JPDS(1000),JGDS(1000)
-      INTEGER LUGI, LSKIP, LGRIB, NDATA
+      integer kpds(1000),kgds(1000),jpds(1000),jgds(1000)
+      integer lugi, lskip, lgrib, ndata
 !cggg snow mods end
 !
-      CHARACTER*500 FNTSFA,FNWETA,FNSNOA,FNZORA,FNALBA,FNAISA,
-     &             FNTG3A,FNSCVA,FNSMCA,FNSTCA,FNACNA,FNVEGA,
+      character*500 fntsfa,fnweta,fnsnoa,fnzora,fnalba,fnaisa,
+     &             fntg3a,fnscva,fnsmca,fnstca,fnacna,fnvega,
      &             fnveta,fnsota
-!Clu [+1L] add fn()a for vmn, vmx, slp, abs
-     &,            FNVMNA,FNVMXA,FNSLPA,FNABSA
+!clu [+1l] add fn()a for vmn, vmx, slp, abs
+     &,            fnvmna,fnvmxa,fnslpa,fnabsa
 
-      REAL (KIND=KIND_IO8) TSFANL(LEN), WETANL(LEN),   SNOANL(LEN),
-     &     ZORANL(LEN), ALBANL(LEN,4), AISANL(LEN),
-     &     TG3ANL(LEN), ACNANL(LEN),
-     &     CVANL (LEN), CVBANL(LEN),   CVTANL(LEN),
-     &     SLIANL(LEN), SCVANL(LEN),   VEGANL(LEN),
-     &     vetanl(LEN), sotanl(LEn),   ALFANL(LEN,2),
-     &     SMCANL(LEN,LSOIL), STCANL(LEN,LSOIL),
-     &     TSFAN0(LEN)
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &,    VMNANL(LEN),VMXANL(LEN),SLPANL(LEN),ABSANL(LEN)
+      real (kind=kind_io8) tsfanl(len), wetanl(len),   snoanl(len),
+     &     zoranl(len), albanl(len,4), aisanl(len),
+     &     tg3anl(len), acnanl(len),
+     &     cvanl (len), cvbanl(len),   cvtanl(len),
+     &     slianl(len), scvanl(len),   veganl(len),
+     &     vetanl(len), sotanl(len),   alfanl(len,2),
+     &     smcanl(len,lsoil), stcanl(len,lsoil),
+     &     tsfan0(len)
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &,    vmnanl(len),vmxanl(len),slpanl(len),absanl(len)
 !
-      LOGICAL GAUS
+      logical gaus
 !
-! TSF
+! tsf
 !
-      IRTTSF=0
-      IF(FNTSFA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNTSFA,KPDTSF,SLMASK,
-     &             IY,IM,ID,IH,FH,TSFANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTTSF=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'T SURFACE ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irttsf = 1
+      if(fntsfa(1:8).ne.'        ') then
+        call fixrda(lugb,fntsfa,kpdtsf,slmask,
+     &             iy,im,id,ih,fh,tsfanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irttsf = iret
+        if(iret.eq.1) then
+          write(6,*) 't surface analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD T SURFACE ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old t surface analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'T SURFACE ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO TSF ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'t surface analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no tsf analysis available.  climatology used'
+        endif
+      endif
 !
-! TSF0
+! tsf0
 !
-!     IF(FNTSFA(1:8).NE.'        ') THEN
-!       CALL FIXRDA(LUGB,FNTSFA,KPDTSF,SLMASK,
-!    &             IY,IM,ID,IH,0.,TSFAN0,LEN,IRET
-!    &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-!    &,            OUTLAT, OUTLON, me)
-!       IF(IRET.EQ.1) THEN
-!         WRITE(6,*) 'T SURFACE AT FT=0 ANALYSIS READ ERROR'
-!         CALL ABORT
-!       ELSEIF(IRET.EQ.-1) THEN
-!         WRITE(6,*) 'COULD NOT FIND T SURFACE ANALYSIS AT FT=0'
-!         CALL ABORT
-!       ELSE
-!         PRINT *,'T SURFACE ANALYSIS AT FT=0 FOUND.'
-!       ENDIF
-!     ELSE
-!       DO I=1,LEN
-!         TSFAN0(I)=-999.9
-!       ENDDO
-!     ENDIF
+!     if(fntsfa(1:8).ne.'        ') then
+!       call fixrda(lugb,fntsfa,kpdtsf,slmask,
+!    &             iy,im,id,ih,0.,tsfan0,len,iret
+!    &,            imsk, jmsk, slmskh, gaus,blno, blto
+!    &,            outlat, outlon, me)
+!       if(iret.eq.1) then
+!         write(6,*) 't surface at ft=0 analysis read error'
+!         call abort
+!       elseif(iret.eq.-1) then
+!         write(6,*) 'could not find t surface analysis at ft=0'
+!         call abort
+!       else
+!         print *,'t surface analysis at ft=0 found.'
+!       endif
+!     else
+!       do i=1,len
+!         tsfan0(i)=-999.9
+!       enddo
+!     endif
 !
-!  ALBEDO
+!  albedo
 !
-      IRTALB=0
-      IF(FNALBA(1:8).NE.'        ') THEN
-        DO KK = 1, 4
-          CALL FIXRDA(LUGB,FNALBA,KPDALB(KK),SLMASK,
-     &               IY,IM,ID,IH,FH,ALBANL(1,KK),LEN,IRET
-     &,              IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,              OUTLAT, OUTLON, me)
-          IRTALB=IRET
-          IF(IRET.EQ.1) THEN
-            WRITE(6,*) 'ALBEDO ANALYSIS READ ERROR'
-            CALL ABORT
-          ELSEIF(IRET.EQ.-1) THEN
+      irtalb=0
+      if(fnalba(1:8).ne.'        ') then
+        do kk = 1, 4
+          call fixrda(lugb,fnalba,kpdalb(kk),slmask,
+     &               iy,im,id,ih,fh,albanl(1,kk),len,iret
+     &,              imsk, jmsk, slmskh, gaus,blno, blto
+     &,              outlat, outlon, me)
+          irtalb=iret
+          if(iret.eq.1) then
+            write(6,*) 'albedo analysis read error'
+            call abort
+          elseif(iret.eq.-1) then
             if (me .eq. 0) then
-            PRINT *,'OLD ALBEDO ANALYSIS PROVIDED, Indicating proper',
-     &              ' file name is given.  No error suspected.'
-            WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+            print *,'old albedo analysis provided, indicating proper',
+     &              ' file name is given.  no error suspected.'
+            write(6,*) 'forecast guess will be used'
             endif
-          ELSE
+          else
             if (me .eq. 0 .and. kk .eq. 4)
-     &                  PRINT *,'ALBEDO ANALYSIS PROVIDED.'
-          ENDIF
-        ENDDO
-      ELSE
+     &                  print *,'albedo analysis provided.'
+          endif
+        enddo
+      else
         if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO ALBEDO ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
+!       print *,'************************************************'
+        print *,'no albedo analysis available.  climatology used'
         endif
-      ENDIF
+      endif
 !
-!  Vegetation Fraction for albedo
+!  vegetation fraction for albedo
 !
-      IRTALF=0
-      IF(FNALBA(1:8).NE.'        ') THEN
-        DO KK = 1, 2
-          CALL FIXRDA(LUGB,FNALBA,KPDALF(KK),SLMASK,
-     &               IY,IM,ID,IH,FH,ALFANL(1,KK),LEN,IRET
-     &,              IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,              OUTLAT, OUTLON, me)
-          IRTALF=IRET
-          IF(IRET.EQ.1) THEN
-            WRITE(6,*) 'ALBEDO ANALYSIS READ ERROR'
-            CALL ABORT
-          ELSEIF(IRET.EQ.-1) THEN
+      irtalf=0
+      if(fnalba(1:8).ne.'        ') then
+        do kk = 1, 2
+          call fixrda(lugb,fnalba,kpdalf(kk),slmask,
+     &               iy,im,id,ih,fh,alfanl(1,kk),len,iret
+     &,              imsk, jmsk, slmskh, gaus,blno, blto
+     &,              outlat, outlon, me)
+          irtalf=iret
+          if(iret.eq.1) then
+            write(6,*) 'albedo analysis read error'
+            call abort
+          elseif(iret.eq.-1) then
             if (me .eq. 0) then
-            PRINT *,'OLD ALBEDO ANALYSIS PROVIDED, Indicating proper',
-     &              ' file name is given.  No error suspected.'
-            WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+            print *,'old albedo analysis provided, indicating proper',
+     &              ' file name is given.  no error suspected.'
+            write(6,*) 'forecast guess will be used'
             endif
-          ELSE
+          else
             if (me .eq. 0 .and. kk .eq. 4)
-     &                  PRINT *,'ALBEDO ANALYSIS PROVIDED.'
-          ENDIF
-        ENDDO
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO VEGFALBEDO ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
-        endif
-      ENDIF
-!
-!  Soil Wetness
-!
-      IRTWET=0
-      IRTSMC=0
-      IF(FNWETA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNWETA,KPDWET,SLMASK,
-     &             IY,IM,ID,IH,FH,WETANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTWET=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'BUCKET WETNESS ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
-          if (me .eq. 0) then
-          PRINT *,'OLD WETNESS ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+     &                  print *,'albedo analysis provided.'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'BUCKET WETNESS ANALYSIS PROVIDED.'
-        ENDIF
-      ELSEIF(FNSMCA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNSMCA,KPDSMC,SLMASK,
-     &             IY,IM,ID,IH,FH,SMCANL(1,1),LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        CALL FIXRDA(LUGB,FNSMCA,KPDSMC,SLMASK,
-     &             IY,IM,ID,IH,FH,SMCANL(1,2),LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTSMC=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'LAYER SOIL WETNESS ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
-          if (me .eq. 0) then
-          PRINT *,'OLD LAYER SOIL WETNESS ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
-          endif
-        ELSE
-          if (me .eq. 0) PRINT *,'LAYER SOIL WETNESS ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
+        enddo
+      else
         if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO SOIL WETNESS ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
+!       print *,'************************************************'
+        print *,'no vegfalbedo analysis available.  climatology used'
         endif
-      ENDIF
+      endif
 !
-!  READ IN SNOW DEPTH/SNOW COVER
+!  soil wetness
 !
-      IRTSCV=0
-      IF(FNSNOA(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          SCVANL(I)=0.
-        ENDDO
+      irtwet=0
+      irtsmc=0
+      if(fnweta(1:8).ne.'        ') then
+        call fixrda(lugb,fnweta,kpdwet,slmask,
+     &             iy,im,id,ih,fh,wetanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtwet=iret
+        if(iret.eq.1) then
+          write(6,*) 'bucket wetness analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
+          if (me .eq. 0) then
+          print *,'old wetness analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
+          endif
+        else
+          if (me .eq. 0) print *,'bucket wetness analysis provided.'
+        endif
+      elseif(fnsmca(1:8).ne.'        ') then
+        call fixrda(lugb,fnsmca,kpdsmc,slmask,
+     &             iy,im,id,ih,fh,smcanl(1,1),len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        call fixrda(lugb,fnsmca,kpdsmc,slmask,
+     &             iy,im,id,ih,fh,smcanl(1,2),len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtsmc=iret
+        if(iret.eq.1) then
+          write(6,*) 'layer soil wetness analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
+          if (me .eq. 0) then
+          print *,'old layer soil wetness analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
+          endif
+        else
+          if (me .eq. 0) print *,'layer soil wetness analysis provided.'
+        endif
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no soil wetness analysis available.  climatology used'
+        endif
+      endif
+!
+!  read in snow depth/snow cover
+!
+      irtscv=0
+      if(fnsnoa(1:8).ne.'        ') then
+        do i=1,len
+          scvanl(i)=0.
+        enddo
 !cggg snow mods start
 !cggg need to determine if the snow data is on the gaussian grid
 !cggg or not.  if gaussian, then data is a depth, not liq equiv
@@ -3953,711 +3880,689 @@
 !cggg program and is a liquid equiv.  need to communicate
 !cggg this to routine fixrda via the 3rd argument which is
 !cggg the grib parameter id number.
-        CALL BAOPENR(LUGB,FNSNOA,IRET)
-        IF (IRET .NE. 0) THEN
-          WRITE(6,*) ' ERROR IN OPENING FILE ',trim(FNSNOA)
-          PRINT *,'ERROR IN OPENING FILE ',trim(FNSNOA)
-          CALL ABORT
-        ENDIF
-        LUGI=0
+        call baopenr(lugb,fnsnoa,iret)
+        if (iret .ne. 0) then
+          write(6,*) ' error in opening file ',trim(fnsnoa)
+          print *,'error in opening file ',trim(fnsnoa)
+          call abort
+        endif
+        lugi=0
         lskip=-1
-        JPDS=-1
-        JGDS=-1
-        KPDS=JPDS
-        CALL GETGBH(LUGB,LUGI,LSKIP,JPDS,JGDS,LGRIB,NDATA,
-     &              LSKIP,KPDS,KGDS,IRET)
-        CLOSE(LUGB)
-        IF (IRET .NE. 0) THEN
-          WRITE(6,*) ' ERROR READING HEADER OF FILE: ',trim(FNSNOA)
-          PRINT *,'ERROR READING HEADER OF FILE: ',trim(FNSNOA)
-          CALL ABORT
-        ENDIF
-        IF (KGDS(1) == 4) THEN  ! GAUSSIAN DATA IS DEPTH
-          CALL FIXRDA(LUGB,FNSNOA,KPDSND,SLMASK,
-     &                IY,IM,ID,IH,FH,SNOANL,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          SNOANL=SNOANL*100.  ! CONVERT FROM METERS TO LIQ. EQ.
-                              ! DEPTH IN MM USING 10:1 RATIO
-        ELSE                    ! LAT/LON DATA IS LIQ EQUV. DEPTH
-          CALL FIXRDA(LUGB,FNSNOA,KPDSNO,SLMASK,
-     &                IY,IM,ID,IH,FH,SNOANL,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-        ENDIF
+        jpds=-1
+        jgds=-1
+        kpds=jpds
+        call getgbh(lugb,lugi,lskip,jpds,jgds,lgrib,ndata,
+     &              lskip,kpds,kgds,iret)
+        close(lugb)
+        if (iret .ne. 0) then
+          write(6,*) ' error reading header of file: ',trim(fnsnoa)
+          print *,'error reading header of file: ',trim(fnsnoa)
+          call abort
+        endif
+        if (kgds(1) == 4) then  ! gaussian data is depth
+          call fixrda(lugb,fnsnoa,kpdsnd,slmask,
+     &                iy,im,id,ih,fh,snoanl,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          snoanl=snoanl*100.  ! convert from meters to liq. eq.
+                              ! depth in mm using 10:1 ratio
+        else                    ! lat/lon data is liq equv. depth
+          call fixrda(lugb,fnsnoa,kpdsno,slmask,
+     &                iy,im,id,ih,fh,snoanl,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+        endif
 !cggg snow mods end
-        IRTSCV=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'SNOW DEPTH ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+        irtscv=iret
+        if(iret.eq.1) then
+          write(6,*) 'snow depth analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD SNOW DEPTH ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old snow depth analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'SNOW DEPTH ANALYSIS PROVIDED.'
-        ENDIF
-        IRTSNO=0
-      ELSEIF(FNSCVA(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          SNOANL(I)=0.
-        ENDDO
-        CALL FIXRDA(LUGB,FNSCVA,KPDSCV,SLMASK,
-     &             IY,IM,ID,IH,FH,SCVANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTSNO=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'SNOW COVER ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+        else
+          if (me .eq. 0) print *,'snow depth analysis provided.'
+        endif
+        irtsno=0
+      elseif(fnscva(1:8).ne.'        ') then
+        do i=1,len
+          snoanl(i)=0.
+        enddo
+        call fixrda(lugb,fnscva,kpdscv,slmask,
+     &             iy,im,id,ih,fh,scvanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtsno=iret
+        if(iret.eq.1) then
+          write(6,*) 'snow cover analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD SNOW COVER ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old snow cover analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'SNOW COVER ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
+        else
+          if (me .eq. 0) print *,'snow cover analysis provided.'
+        endif
+      else
         if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO SNOW/SNOCOV ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
+!       print *,'************************************************'
+        print *,'no snow/snocov analysis available.  climatology used'
         endif
-      ENDIF
+      endif
 !
-!  Sea ice mask
+!  sea ice mask
 !
-      IRTACN=0
-      IRTAIS=0
-      IF(FNACNA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNACNA,KPDACN,SLMASK,
-     &             IY,IM,ID,IH,FH,ACNANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTACN=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'ICE CONCENTRATION ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtacn=0
+      irtais=0
+      if(fnacna(1:8).ne.'        ') then
+        call fixrda(lugb,fnacna,kpdacn,slmask,
+     &             iy,im,id,ih,fh,acnanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtacn=iret
+        if(iret.eq.1) then
+          write(6,*) 'ice concentration analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD ICE CONCENTRATION ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old ice concentration analysis provided',
+     &            ' indicating proper file name is given'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'ICE CONCENTRATION ANALYSIS PROVIDED.'
-        ENDIF
-      ELSEIF(FNAISA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNAISA,KPDAIS,SLMASK,
-     &             IY,IM,ID,IH,FH,AISANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTAIS=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'ICE MASK ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+        else
+          if (me .eq. 0) print *,'ice concentration analysis provided.'
+        endif
+      elseif(fnaisa(1:8).ne.'        ') then
+        call fixrda(lugb,fnaisa,kpdais,slmask,
+     &             iy,im,id,ih,fh,aisanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtais=iret
+        if(iret.eq.1) then
+          write(6,*) 'ice mask analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD ICE-MASK ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old ice-mask analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'ICE MASK ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
+        else
+          if (me .eq. 0) print *,'ice mask analysis provided.'
+        endif
+      else
         if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO SEA-ICE ANALYSIS AVAILABLE.  CLIMATOLOGY USED'
+!       print *,'************************************************'
+        print *,'no sea-ice analysis available.  climatology used'
         endif
-      ENDIF
+      endif
 !
-!  Surface Roughness
+!  surface roughness
 !
-      IRTZOR=0
-      IF(FNZORA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNZORA,KPDZOR,SLMASK,
-     &             IY,IM,ID,IH,FH,ZORANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTZOR=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'ROUGHNESS ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtzor=0
+      if(fnzora(1:8).ne.'        ') then
+        call fixrda(lugb,fnzora,kpdzor,slmask,
+     &             iy,im,id,ih,fh,zoranl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtzor=iret
+        if(iret.eq.1) then
+          write(6,*) 'roughness analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD ROUGHNESS ANALYSIS PROVIDED, Indicating proper',
-     &            ' file name is given.  No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old roughness analysis provided, indicating proper',
+     &            ' file name is given.  no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'ROUGHNESS ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-          if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO SRFC ROUGHNESS ANALYSIS AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'roughness analysis provided.'
         endif
-      ENDIF
-!
-!  Deep Soil Temperature
-!
-      IRTTG3=0
-      IRTSTC=0
-      IF(FNTG3A(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNTG3A,KPDTG3,SLMASK,
-     &             IY,IM,ID,IH,FH,TG3ANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTTG3=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'DEEP SOIL TMP ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      else
           if (me .eq. 0) then
-          PRINT *,'OLD DEEP SOIL TEMP ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
-          endif
-        ELSE
-          if (me .eq. 0) PRINT *,'DEEP SOIL TMP ANALYSIS PROVIDED.'
-        ENDIF
-      ELSEIF(FNSTCA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNSTCA,KPDSTC,SLMASK,
-     &             IY,IM,ID,IH,FH,STCANL(1,1),LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        CALL FIXRDA(LUGB,FNSTCA,KPDSTC,SLMASK,
-     &             IY,IM,ID,IH,FH,STCANL(1,2),LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTSTC=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'LAYER SOIL TMP ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+!       print *,'************************************************'
+        print *,'no srfc roughness analysis available. climatology used'
+        endif
+      endif
+!
+!  deep soil temperature
+!
+      irttg3=0
+      irtstc=0
+      if(fntg3a(1:8).ne.'        ') then
+        call fixrda(lugb,fntg3a,kpdtg3,slmask,
+     &             iy,im,id,ih,fh,tg3anl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irttg3=iret
+        if(iret.eq.1) then
+          write(6,*) 'deep soil tmp analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD DEEP SOIL TEMP ANALYSIS PROVIDED',
-     &            'iIndicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old deep soil temp analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'LAYER SOIL TMP ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
+        else
+          if (me .eq. 0) print *,'deep soil tmp analysis provided.'
+        endif
+      elseif(fnstca(1:8).ne.'        ') then
+        call fixrda(lugb,fnstca,kpdstc,slmask,
+     &             iy,im,id,ih,fh,stcanl(1,1),len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        call fixrda(lugb,fnstca,kpdstc,slmask,
+     &             iy,im,id,ih,fh,stcanl(1,2),len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtstc=iret
+        if(iret.eq.1) then
+          write(6,*) 'layer soil tmp analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
+          if (me .eq. 0) then
+          print *,'old deep soil temp analysis provided',
+     &            'iindicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
+          endif
+        else
+          if (me .eq. 0) print *,'layer soil tmp analysis provided.'
+        endif
+      else
         if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO DEEP SOIL TEMP ANALY AVAILABLE.  CLIMATOLOGY USED'
+!       print *,'************************************************'
+        print *,'no deep soil temp analy available.  climatology used'
         endif
-      ENDIF
+      endif
 !
-!  VEGETATION COVER
+!  vegetation cover
 !
-      IRTVEG=0
-      IF(FNVEGA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNVEGA,KPDVEG,SLMASK,
-     &             IY,IM,ID,IH,FH,VEGANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTVEG=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'VEGETATION COVER ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtveg=0
+      if(fnvega(1:8).ne.'        ') then
+        call fixrda(lugb,fnvega,kpdveg,slmask,
+     &             iy,im,id,ih,fh,veganl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtveg=iret
+        if(iret.eq.1) then
+          write(6,*) 'vegetation cover analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD VEGETATION COVER ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old vegetation cover analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'GEGETATION COVER ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO VEGETATION COVER ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'gegetation cover analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no vegetation cover anly available. climatology used'
+        endif
+      endif
 !
-!  VEGETATION type
+!  vegetation type
 !
-      IRTVEt=0
-      IF(FNVEtA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNVEtA,KPDVEt,SLMASK,
-     &             IY,IM,ID,IH,FH,VEtANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTVEt=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'VEGETATION type ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtvet=0
+      if(fnveta(1:8).ne.'        ') then
+        call fixrda(lugb,fnveta,kpdvet,slmask,
+     &             iy,im,id,ih,fh,vetanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtvet=iret
+        if(iret.eq.1) then
+          write(6,*) 'vegetation type analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD VEGETATION type ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old vegetation type analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'VEGETATION type ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO VEGETATION type ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'vegetation type analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no vegetation type anly available. climatology used'
+        endif
+      endif
 !
 !  soil type
 !
-      IRTsot=0
-      IF(FNsotA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNsotA,KPDsot,SLMASK,
-     &             IY,IM,ID,IH,FH,sotANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTsot=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'soil type ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtsot=0
+      if(fnsota(1:8).ne.'        ') then
+        call fixrda(lugb,fnsota,kpdsot,slmask,
+     &             iy,im,id,ih,fh,sotanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtsot=iret
+        if(iret.eq.1) then
+          write(6,*) 'soil type analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD soil type ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old soil type analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'soil type ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO soil type ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'soil type analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no soil type anly available. climatology used'
+        endif
+      endif
 
-!Clu [+120L]--------------------------------------------------------------
+!clu [+120l]--------------------------------------------------------------
 !
-!  Min vegetation cover
+!  min vegetation cover
 !
-      IRTvmn=0
-      IF(FNvmnA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNvmnA,KPDvmn,SLMASK,
-     &             IY,IM,ID,IH,FH,vmnANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTvmn=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'shdmin ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtvmn=0
+      if(fnvmna(1:8).ne.'        ') then
+        call fixrda(lugb,fnvmna,kpdvmn,slmask,
+     &             iy,im,id,ih,fh,vmnanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtvmn=iret
+        if(iret.eq.1) then
+          write(6,*) 'shdmin analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD shdmin ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old shdmin analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'shdmin ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO shdmin ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'shdmin analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no shdmin anly available. climatology used'
+        endif
+      endif
 
 !
-!  Max vegetation cover
+!  max vegetation cover
 !
-      IRTvmx=0
-      IF(FNvmxA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNvmxA,KPDvmx,SLMASK,
-     &             IY,IM,ID,IH,FH,vmxANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTvmx=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'shdmax ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtvmx=0
+      if(fnvmxa(1:8).ne.'        ') then
+        call fixrda(lugb,fnvmxa,kpdvmx,slmask,
+     &             iy,im,id,ih,fh,vmxanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtvmx=iret
+        if(iret.eq.1) then
+          write(6,*) 'shdmax analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD shdmax ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old shdmax analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'shdmax ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO shdmax ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'shdmax analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no shdmax anly available. climatology used'
+        endif
+      endif
 
 !
 !  slope type
 !
-      IRTslp=0
-      IF(FNslpA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNslpA,KPDslp,SLMASK,
-     &             IY,IM,ID,IH,FH,slpANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTslp=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'slope type ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtslp=0
+      if(fnslpa(1:8).ne.'        ') then
+        call fixrda(lugb,fnslpa,kpdslp,slmask,
+     &             iy,im,id,ih,fh,slpanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtslp=iret
+        if(iret.eq.1) then
+          write(6,*) 'slope type analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD slope type ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old slope type analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'slope type ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO slope type ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'slope type analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no slope type anly available. climatology used'
+        endif
+      endif
 
 !
-!  Max snow albedo
+!  max snow albedo
 !
-      IRTabs=0
-      IF(FNabsA(1:8).NE.'        ') THEN
-        CALL FIXRDA(LUGB,FNabsA,KPDabs,SLMASK,
-     &             IY,IM,ID,IH,FH,absANL,LEN,IRET
-     &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,            OUTLAT, OUTLON, me)
-        IRTabs=IRET
-        IF(IRET.EQ.1) THEN
-          WRITE(6,*) 'snoalb ANALYSIS READ ERROR'
-          CALL ABORT
-        ELSEIF(IRET.EQ.-1) THEN
+      irtabs=0
+      if(fnabsa(1:8).ne.'        ') then
+        call fixrda(lugb,fnabsa,kpdabs,slmask,
+     &             iy,im,id,ih,fh,absanl,len,iret
+     &,            imsk, jmsk, slmskh, gaus,blno, blto
+     &,            outlat, outlon, me)
+        irtabs=iret
+        if(iret.eq.1) then
+          write(6,*) 'snoalb analysis read error'
+          call abort
+        elseif(iret.eq.-1) then
           if (me .eq. 0) then
-          PRINT *,'OLD snoalb ANALYSIS PROVIDED',
-     &            ' Indicating proper file name is given.'
-          PRINT *,' No error suspected.'
-          WRITE(6,*) 'FORECAST GUESS WILL BE USED'
+          print *,'old snoalb analysis provided',
+     &            ' indicating proper file name is given.'
+          print *,' no error suspected.'
+          write(6,*) 'forecast guess will be used'
           endif
-        ELSE
-          if (me .eq. 0) PRINT *,'snoalb ANALYSIS PROVIDED.'
-        ENDIF
-      ELSE
-        if (me .eq. 0) then
-!       PRINT *,'************************************************'
-        PRINT *,'NO snoalb ANLY AVAILABLE. CLIMATOLOGY USED'
+        else
+          if (me .eq. 0) print *,'snoalb analysis provided.'
         endif
-      ENDIF
+      else
+        if (me .eq. 0) then
+!       print *,'************************************************'
+        print *,'no snoalb anly available. climatology used'
+        endif
+      endif
 
-!Clu ----------------------------------------------------------------------
+!clu ----------------------------------------------------------------------
 !
-      RETURN
-      END
-      SUBROUTINE FILFCS(TSFFCS,WETFCS,SNOFCS,ZORFCS,ALBFCS,
-     &                  TG3FCS,CVFCS ,CVBFCS,CVTFCS,
-     &                  CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,
-     &                  VEGFCS, vetfcs, sotfcs, alffcs,
-!Cwu [+1L] add ()fcs for sih, sic
-     &                  SIHFCS,SICFCS,
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &                  VMNFCS,VMXFCS,SLPFCS,ABSFCS,
-     &                  TSFANL,WETANL,SNOANL,ZORANL,ALBANL,
-     &                  TG3ANL,CVANL ,CVBANL,CVTANL,
-     &                  CNPANL,SMCANL,STCANL,SLIANL,AISANL,
-     &                  VEGANL, vetanl, sotanl, ALFANL,
-!Cwu [+1L] add ()anl for sih, sic
-     &                  SIHANL,SICANL,
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &                  VMNANL,VMXANL,SLPANL,ABSANL,
-     &                  LEN,LSOIL)
+      return
+      end
+      subroutine filfcs(tsffcs,wetfcs,snofcs,zorfcs,albfcs,
+     &                  tg3fcs,cvfcs ,cvbfcs,cvtfcs,
+     &                  cnpfcs,smcfcs,stcfcs,slifcs,aisfcs,
+     &                  vegfcs, vetfcs, sotfcs, alffcs,
+!cwu [+1l] add ()fcs for sih, sic
+     &                  sihfcs,sicfcs,
+!clu [+1l] add ()fcs for vmn, vmx, slp, abs
+     &                  vmnfcs,vmxfcs,slpfcs,absfcs,
+     &                  tsfanl,wetanl,snoanl,zoranl,albanl,
+     &                  tg3anl,cvanl ,cvbanl,cvtanl,
+     &                  cnpanl,smcanl,stcanl,slianl,aisanl,
+     &                  veganl, vetanl, sotanl, alfanl,
+!cwu [+1l] add ()anl for sih, sic
+     &                  sihanl,sicanl,
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &                  vmnanl,vmxanl,slpanl,absanl,
+     &                  len,lsoil)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,j,len,lsoil
-      REAL (KIND=KIND_IO8) TSFFCS(LEN),WETFCS(LEN),SNOFCS(LEN),
-     &     ZORFCS(LEN),ALBFCS(LEN,4),AISFCS(LEN),
-     &     TG3FCS(LEN),
-     &     CVFCS (LEN),CVBFCS(LEN),CVTFCS(LEN),
-     &     CNPFCS(LEN),
-     &     SMCFCS(LEN,LSOIL),STCFCS(LEN,LSOIL),
-     &     SLIFCS(LEN),VEGFCS(LEn),
-     &     vetfcs(LEN),sotfcs(LEN),alffcs(LEN,2)
-!Cwu [+1L] add ()fcs for sih, sic
-     &,    SIHFCS(LEN),SICFCS(LEN)
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &,    VMNFCS(LEN),VMXFCS(LEN),SLPFCS(LEN),ABSFCS(LEN)
-      REAL (KIND=KIND_IO8) TSFANL(LEN),WETANL(LEN),SNOANL(LEN),
-     &     ZORANL(LEN),ALBANL(LEN,4),AISANL(LEN),
-     &     TG3ANL(LEN),
-     &     CVANL (LEN),CVBANL(LEN),CVTANL(LEN),
-     &     CNPANL(LEN),
-     &     SMCANL(LEN,LSOIL),STCANL(LEN,LSOIL),
-     &     SLIANL(LEN),VEGANL(LEN),
-     &     vetanl(LEN),sotanl(LEN),ALFANL(LEN,2)
-!Cwu [+1L] add ()anl for sih, sic
-     &,    SIHANL(LEN),SICANL(LEN)
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &,    VMNANL(LEN),VMXANL(LEN),SLPANL(LEN),ABSANL(LEN)
+      real (kind=kind_io8) tsffcs(len),wetfcs(len),snofcs(len),
+     &     zorfcs(len),albfcs(len,4),aisfcs(len),
+     &     tg3fcs(len),
+     &     cvfcs (len),cvbfcs(len),cvtfcs(len),
+     &     cnpfcs(len),
+     &     smcfcs(len,lsoil),stcfcs(len,lsoil),
+     &     slifcs(len),vegfcs(len),
+     &     vetfcs(len),sotfcs(len),alffcs(len,2)
+!cwu [+1l] add ()fcs for sih, sic
+     &,    sihfcs(len),sicfcs(len)
+!clu [+1l] add ()fcs for vmn, vmx, slp, abs
+     &,    vmnfcs(len),vmxfcs(len),slpfcs(len),absfcs(len)
+      real (kind=kind_io8) tsfanl(len),wetanl(len),snoanl(len),
+     &     zoranl(len),albanl(len,4),aisanl(len),
+     &     tg3anl(len),
+     &     cvanl (len),cvbanl(len),cvtanl(len),
+     &     cnpanl(len),
+     &     smcanl(len,lsoil),stcanl(len,lsoil),
+     &     slianl(len),veganl(len),
+     &     vetanl(len),sotanl(len),alfanl(len,2)
+!cwu [+1l] add ()anl for sih, sic
+     &,    sihanl(len),sicanl(len)
+!clu [+1l] add ()anl for vmn, vmx, slp, abs
+     &,    vmnanl(len),vmxanl(len),slpanl(len),absanl(len)
 !
-      WRITE(6,*) '  THIS IS A DEAD START RUN, TSFC OVER LAND IS',
-     &           ' SET AS LOWEST SIGMA LEVEL TEMPERTURE IF GIVEN.'
-      WRITE(6,*) '  IF NOT, SET TO CLIMATOLOGICAL TSF OVER LAND IS USED'
+      write(6,*) '  this is a dead start run, tsfc over land is',
+     &           ' set as lowest sigma level temperture if given.'
+      write(6,*) '  if not, set to climatological tsf over land is used'
 !
 !
-      DO I=1,LEN
-        TSFFCS(I)   = TSFANL(I)      !  Tsf
-        ALBFCS(I,1) = ALBANL(I,1)    !  Albedo
-        ALBFCS(I,2) = ALBANL(I,2)    !  Albedo
-        ALBFCS(I,3) = ALBANL(I,3)    !  Albedo
-        ALBFCS(I,4) = ALBANL(I,4)    !  Albedo
-        WETFCS(I)   = WETANL(I)      !  Soil Wetness
-        SNOFCS(I)   = SNOANL(I)      !  SNOW
-        AISFCS(I)   = AISANL(I)      !  SEAICE
-        SLIFCS(I)   = SLIANL(I)      !  LAND/SEA/SNOW mask
-        ZORFCS(I)   = ZORANL(I)      !  Surface roughness
-!       PLRFCS(I)   = PLRANL(I)      !  Maximum stomatal resistance
-        TG3FCS(I)   = TG3ANL(I)      !  Deep soil temperature
-        CNPFCS(I)   = CNPANL(I)      !  Canopy water content
-        CVFCS(I)    = CVANL(I)       !  CV
-        CVBFCS(I)   = CVBANL(I)      !  CVB
-        CVTFCS(I)   = CVTANL(I)      !  CVT
-        VEGFCS(I)   = VEGANL(I)      !  Vegetation Cover
-        vetfcs(I)   = vetanl(I)      !  Vegetation Type
-        sotfcs(I)   = sotanl(I)      !  Soil type
-        alffcs(I,1) = ALFANL(I,1)    !  Vegetation fraction for albedo
-        alffcs(I,2) = ALFANL(I,2)    !  Vegetation fraction for albedo
-!Cwu [+2L] add sih, sic
-        SIHFCS(I)   = SIHANL(I)      !  Sea ice thickness
-        SICFCS(I)   = SICANL(I)      !  Sea ice concentration
-!Clu [+4L] add vmn, vmx, slp, abs
-        VMNFCS(I)   = VMNANL(I)      !  Min vegetation Cover
-        VMXFCS(I)   = VMXANL(I)      !  Max vegetation Cover
-        SLPFCS(I)   = SLPANL(I)      !  Slope type
-        ABSFCS(I)   = ABSANL(I)      !  Max snow albedo
-      ENDDO
+      do i=1,len
+        tsffcs(i)   = tsfanl(i)      !  tsf
+        albfcs(i,1) = albanl(i,1)    !  albedo
+        albfcs(i,2) = albanl(i,2)    !  albedo
+        albfcs(i,3) = albanl(i,3)    !  albedo
+        albfcs(i,4) = albanl(i,4)    !  albedo
+        wetfcs(i)   = wetanl(i)      !  soil wetness
+        snofcs(i)   = snoanl(i)      !  snow
+        aisfcs(i)   = aisanl(i)      !  seaice
+        slifcs(i)   = slianl(i)      !  land/sea/snow mask
+        zorfcs(i)   = zoranl(i)      !  surface roughness
+!       plrfcs(i)   = plranl(i)      !  maximum stomatal resistance
+        tg3fcs(i)   = tg3anl(i)      !  deep soil temperature
+        cnpfcs(i)   = cnpanl(i)      !  canopy water content
+        cvfcs(i)    = cvanl(i)       !  cv
+        cvbfcs(i)   = cvbanl(i)      !  cvb
+        cvtfcs(i)   = cvtanl(i)      !  cvt
+        vegfcs(i)   = veganl(i)      !  vegetation cover
+        vetfcs(i)   = vetanl(i)      !  vegetation type
+        sotfcs(i)   = sotanl(i)      !  soil type
+        alffcs(i,1) = alfanl(i,1)    !  vegetation fraction for albedo
+        alffcs(i,2) = alfanl(i,2)    !  vegetation fraction for albedo
+!cwu [+2l] add sih, sic
+        sihfcs(i)   = sihanl(i)      !  sea ice thickness
+        sicfcs(i)   = sicanl(i)      !  sea ice concentration
+!clu [+4l] add vmn, vmx, slp, abs
+        vmnfcs(i)   = vmnanl(i)      !  min vegetation cover
+        vmxfcs(i)   = vmxanl(i)      !  max vegetation cover
+        slpfcs(i)   = slpanl(i)      !  slope type
+        absfcs(i)   = absanl(i)      !  max snow albedo
+      enddo
 !
-      DO J=1,LSOIL
-        DO I=1,LEN
-          SMCFCS(I,J) = SMCANL(I,J)  !   Layer soil wetness
-          STCFCS(I,J) = STCANL(I,J)  !   Soil temperature
-        ENDDO
-      ENDDO
+      do j=1,lsoil
+        do i=1,len
+          smcfcs(i,j) = smcanl(i,j)  !   layer soil wetness
+          stcfcs(i,j) = stcanl(i,j)  !   soil temperature
+        enddo
+      enddo
 !
-      RETURN
-      END
-      SUBROUTINE BKTGES(SMCFCS,SLIANL,STCFCS,LEN,LSOIL)
+      return
+      end
+      subroutine bktges(smcfcs,slianl,stcfcs,len,lsoil)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,j,len,lsoil,k
-      REAL (KIND=KIND_IO8) SMCFCS(LEN,LSOIL), STCFCS(LEN,LSOIL),
-     &                     SLIANL(LEN)
+      real (kind=kind_io8) smcfcs(len,lsoil), stcfcs(len,lsoil),
+     &                     slianl(len)
 !
-!  Note that SMFCS comes in with the original unit (cm?) (not GRIB file)
+!  note that smfcs comes in with the original unit (cm?) (not grib file)
 !
-      DO I = 1, LEN
-        SMCFCS(I,1) = (SMCFCS(I,1)/150.) * .37 + .1
-      ENDDO
-      DO K = 2, LSOIL
-        DO I = 1, LEN
-          SMCFCS(I,K) = SMCFCS(I,1)
-        ENDDO
-      ENDDO
-      IF(LSOIL.GT.2) THEN
-        DO K = 3, LSOIL
-          DO I = 1, LEN
-            STCFCS(I,K) = STCFCS(I,2)
-          ENDDO
-        ENDDO
-      ENDIF
+      do i = 1, len
+        smcfcs(i,1) = (smcfcs(i,1)/150.) * .37 + .1
+      enddo
+      do k = 2, lsoil
+        do i = 1, len
+          smcfcs(i,k) = smcfcs(i,1)
+        enddo
+      enddo
+      if(lsoil.gt.2) then
+        do k = 3, lsoil
+          do i = 1, len
+            stcfcs(i,k) = stcfcs(i,2)
+          enddo
+        enddo
+      endif
 !
-      RETURN
-      END
-      SUBROUTINE ROF01(AISFLD,LEN,OP,CRIT)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine rof01(aisfld,len,op,crit)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) AISFLD(LEN),crit
-      CHARACTER*2 OP
+      real (kind=kind_io8) aisfld(len),crit
+      character*2 op
 !
-      IF(OP.EQ.'GE') THEN
-        DO I=1,LEN
-          IF(AISFLD(I).GE.CRIT) THEN
-            AISFLD(I)=1.
-          ELSE
-            AISFLD(I)=0.
-          ENDIF
-        ENDDO
-      ELSEIF(OP.EQ.'GT') THEN
-        DO I=1,LEN
-          IF(AISFLD(I).GT.CRIT) THEN
-            AISFLD(I)=1.
-          ELSE
-            AISFLD(I)=0.
-          ENDIF
-        ENDDO
-      ELSEIF(OP.EQ.'LE') THEN
-        DO I=1,LEN
-          IF(AISFLD(I).LE.CRIT) THEN
-            AISFLD(I)=1.
-          ELSE
-            AISFLD(I)=0.
-          ENDIF
-        ENDDO
-      ELSEIF(OP.EQ.'LT') THEN
-        DO I=1,LEN
-          IF(AISFLD(I).LT.CRIT) THEN
-            AISFLD(I)=1.
-          ELSE
-            AISFLD(I)=0.
-          ENDIF
-        ENDDO
-      ELSE
-        WRITE(6,*) ' Illegal operator in ROF01.  OP=',OP
-        CALL ABORT
-      ENDIF
+      if(op.eq.'ge') then
+        do i=1,len
+          if(aisfld(i).ge.crit) then
+            aisfld(i)=1.
+          else
+            aisfld(i)=0.
+          endif
+        enddo
+      elseif(op.eq.'gt') then
+        do i=1,len
+          if(aisfld(i).gt.crit) then
+            aisfld(i)=1.
+          else
+            aisfld(i)=0.
+          endif
+        enddo
+      elseif(op.eq.'le') then
+        do i=1,len
+          if(aisfld(i).le.crit) then
+            aisfld(i)=1.
+          else
+            aisfld(i)=0.
+          endif
+        enddo
+      elseif(op.eq.'lt') then
+        do i=1,len
+          if(aisfld(i).lt.crit) then
+            aisfld(i)=1.
+          else
+            aisfld(i)=0.
+          endif
+        enddo
+      else
+        write(6,*) ' illegal operator in rof01.  op=',op
+        call abort
+      endif
 !
-      RETURN
-      END
-      SUBROUTINE TSFCOR(TSFC,OROG,SLMASK,UMASK,LEN,RLAPSE)
+      return
+      end
+      subroutine tsfcor(tsfc,orog,slmask,umask,len,rlapse)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) rlapse,umask
-      REAL (KIND=KIND_IO8) TSFC(LEN), OROG(LEN), SLMASK(LEN)
+      real (kind=kind_io8) rlapse,umask
+      real (kind=kind_io8) tsfc(len), orog(len), slmask(len)
 !
-      DO I=1,LEN
-        IF(SLMASK(I).EQ.UMASK) THEN
-          TSFC(I) = TSFC(I) - OROG(I)*RLAPSE
-        ENDIF
-      ENDDO
-      RETURN
-      END
-!cggg landice mods start
-!      SUBROUTINE SNODPTH(SCVANL,SLIANL,TSFANL,SNOCLM,
-!     &                   GLACIR,SNWMAX,SNWMIN,LEN,SNOANL, me)
-      SUBROUTINE SNODPTH(SCVANL,SLIANL,TSFANL,SNOCLM,
-     &                   GLACIR,SNWMAX,SNWMIN,LANDICE,LEN,SNOANL, me)
-!cggg landice mods end
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      do i=1,len
+        if(slmask(i).eq.umask) then
+          tsfc(i) = tsfc(i) - orog(i)*rlapse
+        endif
+      enddo
+      return
+      end
+      subroutine snodpth(scvanl,slianl,tsfanl,snoclm,
+     &                   glacir,snwmax,snwmin,landice,len,snoanl, me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,me,len
-!cggg landice mods start
-      LOGICAL, INTENT(IN) :: LANDICE
-!cggg landice mods end
-      REAL (KIND=KIND_IO8) sno,snwmax,snwmin
+      logical, intent(in) :: landice
+      real (kind=kind_io8) sno,snwmax,snwmin
 !
-      REAL (KIND=KIND_IO8) SCVANL(LEN), SLIANL(LEN), TSFANL(LEN),
-     &     SNOCLM(LEN), SNOANL(LEN), GLACIR(LEN)
+      real (kind=kind_io8) scvanl(len), slianl(len), tsfanl(len),
+     &     snoclm(len), snoanl(len), glacir(len)
 !
-      if (me .eq. 0) WRITE(6,*) 'SNODPTH'
+      if (me .eq. 0) write(6,*) 'snodpth'
 !
-!  USE SURFACE TEMPERATURE TO GET SNOW DEPTH ESTIMATE
+!  use surface temperature to get snow depth estimate
 !
-      DO I=1,LEN
-        SNO = 0.0
+      do i=1,len
+        sno = 0.0
 !
-!  OVER LAND
+!  over land
 !
-        IF(SLIANL(I).EQ.1.) THEN
-          IF(SCVANL(I).EQ.1.0) THEN
-            IF(TSFANL(I).LT.243.0) THEN
-              SNO = SNWMAX
-            ELSEIF(TSFANL(I).LT.273.0) THEN
-              SNO = SNWMIN+(SNWMAX-SNWMIN)*(273.0-TSFANL(I))/30.0
-            ELSE
-              SNO = SNWMIN
-            ENDIF
-          ENDIF
+        if(slianl(i).eq.1.) then
+          if(scvanl(i).eq.1.0) then
+            if(tsfanl(i).lt.243.0) then
+              sno = snwmax
+            elseif(tsfanl(i).lt.273.0) then
+              sno = snwmin+(snwmax-snwmin)*(273.0-tsfanl(i))/30.0
+            else
+              sno = snwmin
+            endif
+          endif
 !
-!  IF GLACIAL POINTS HAS SNOW IN CLIMATOLOGY, SET SNO TO SNOMAX
+!  if glacial points has snow in climatology, set sno to snomax
 !
-!cggg landice mods start
-          IF (.NOT.LANDICE) THEN
-!cggg landice mods end
-            IF(GLACIR(I).EQ.1.0) THEN
-              SNO = SNOCLM(I)
-              IF(SNO.EQ.0.) SNO=SNWMAX
-            ENDIF
-!cggg landice mods start
-          ENDIF
-!cggg landice mods end
-        ENDIF
+          if (.not.landice) then
+            if(glacir(i).eq.1.0) then
+              sno = snoclm(i)
+              if(sno.eq.0.) sno=snwmax
+            endif
+          endif
+        endif
 !
-!  OVER SEA ICE
+!  over sea ice
 !
-!  Snow over sea ice is cycled as of 01/01/94.....Hua-Lu Pan
+!  snow over sea ice is cycled as of 01/01/94.....hua-lu pan
 !
-        IF(SLIANL(I).EQ.2.0) THEN
-          SNO=SNOCLM(I)
-          IF(SNO.EQ.0.) SNO=SNWMAX
-        ENDIF
+        if(slianl(i).eq.2.0) then
+          sno=snoclm(i)
+          if(sno.eq.0.) sno=snwmax
+        endif
 !
-        SNOANL(I) = SNO
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE MERGE(LEN,LSOIL,IY,IM,ID,IH,FH,
-!Cwu [+1L] add SIHFCS & SICFCS
-     &                 SIHFCS,SICFCS,
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &                 VMNFCS,VMXFCS,SLPFCS,ABSFCS,
-     &                 TSFFCS,WETFCS,SNOFCS,ZORFCS,ALBFCS,AISFCS,
-     &                 CVFCS ,CVBFCS,CVTFCS,
-     &                 CNPFCS,SMCFCS,STCFCS,SLIFCS,VEGFCS,
+        snoanl(i) = sno
+      enddo
+      return
+      end subroutine snodpth
+      subroutine merge(len,lsoil,iy,im,id,ih,fh,deltsfc,
+     &                 sihfcs,sicfcs,
+     &                 vmnfcs,vmxfcs,slpfcs,absfcs,
+     &                 tsffcs,wetfcs,snofcs,zorfcs,albfcs,aisfcs,
+     &                 cvfcs ,cvbfcs,cvtfcs,
+     &                 cnpfcs,smcfcs,stcfcs,slifcs,vegfcs,
      &                 vetfcs,sotfcs,alffcs,
-!Cwu [+1L] add SIHANL & SICANL
-     &                 SIHANL,SICANL,                 
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &                 VMNANL,VMXANL,SLPANL,ABSANL,
-     &                 TSFANL,TSFAN2,WETANL,SNOANL,ZORANL,ALBANL,AISANL,
-     &                 CVANL ,CVBANL,CVTANL,
-     &                 CNPANL,SMCANL,STCANL,SLIANL,VEGANL,
-     &                 vetanl,sotanl,ALFANL,
-     &                 CTSFL,CALBL,CAISL,CSNOL,CSMCL,CZORL,CSTCL,CVEGL,
-     &                 CTSFS,CALBS,CAISS,CSNOS,CSMCS,CZORS,CSTCS,CVEGS,
-     &                 CCV,CCVB,CCVT,CCNP,cvetl,cvets,csotl,csots,
+     &                 sihanl,sicanl,                 
+     &                 vmnanl,vmxanl,slpanl,absanl,
+     &                 tsfanl,tsfan2,wetanl,snoanl,zoranl,albanl,aisanl,
+     &                 cvanl ,cvbanl,cvtanl,
+     &                 cnpanl,smcanl,stcanl,slianl,veganl,
+     &                 vetanl,sotanl,alfanl,
+     &                 ctsfl,calbl,caisl,csnol,csmcl,czorl,cstcl,cvegl,
+     &                 ctsfs,calbs,caiss,csnos,csmcs,czors,cstcs,cvegs,
+     &                 ccv,ccvb,ccvt,ccnp,cvetl,cvets,csotl,csots,
      &                 calfl,calfs,
-!Cwu [+1L] add c()l and c()s for sih, sic
-     &                 CSIHL,CSIHS,CSICL,CSICS,
-!Clu [+1L] add c()l and c()s for vmn, vmx, slp, abs
-     &                 CVMNL,CVMNS,CVMXL,CVMXS,CSLPL,CSLPS,CABSL,CABSS,
-     &                 IRTTSF,IRTWET,IRTSNO,IRTZOR,IRTALB,IRTAIS,
-     &                 IRTTG3,IRTSCV,IRTACN,IRTSMC,IRTSTC,IRTVEG,
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
-     &                 IRTVMN,IRTVMX,IRTSLP,IRTABS,
-!cggg landice start
-!cggg     &                 irtvet,irtsot,irtalf, me)
+     &                 csihl,csihs,csicl,csics,
+     &                 cvmnl,cvmns,cvmxl,cvmxs,cslpl,cslps,cabsl,cabss,
+     &                 irttsf,irtwet,irtsno,irtzor,irtalb,irtais,
+     &                 irttg3,irtscv,irtacn,irtsmc,irtstc,irtveg,
+     &                 irtvmn,irtvmx,irtslp,irtabs,
      &                 irtvet,irtsot,irtalf, landice, me)
-!cggg landice end
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
+      use sfccyc_module, only : veg_type_landice, soil_type_landice
       implicit none
       integer k,i,im,id,iy,len,lsoil,ih,irtacn,irtsmc,irtscv,irtais,
      &        irttg3,irtstc,irtalf,me,irtsot,irtveg,irtvet, irtzor,
      &        irtalb,irtsno,irttsf,irtwet,j
-!Clu [+1L] add irt() for vmn, vmx, slp, abs
      &,       irtvmn,irtvmx,irtslp,irtabs
-!cggg landice start
       logical, intent(in)  :: landice
-!cggg landice end
-      REAL (KIND=KIND_IO8) rvegs,rvets,rzors,raiss,rsnos,rsots,rcnp,
+      real (kind=kind_io8) rvegs,rvets,rzors,raiss,rsnos,rsots,rcnp,
      &                     rcvt,rcv,rcvb,rsnol,rzorl,raisl,ralbl,
      &                     ralfl,rvegl,ralbs,ralfs,rtsfs,rvetl,rsotl,
      &                     qzors,qvegs,qsnos,qalfs,qaiss,qvets,qcvt,
@@ -4666,1597 +4571,1586 @@
      &                     qvetl,rtsfl,calbs,caiss,ctsfs,czorl,cvegl,
      &                     csnos,ccvb,ccvt,ccv,czors,cvegs,caisl,csnol,
      &                     calbl,fh,ctsfl,ccnp,csots,calfl,csotl,cvetl,
-     &                     cvets,calfs
-!Cwu [+3L] add c(), q(), r() for sih, sic
-     &,                    csihl,csihs,csicl,csics,
+     &                     cvets,calfs,deltsfc,
+     &                     csihl,csihs,csicl,csics,
      &                     rsihl,rsihs,rsicl,rsics,
      &                     qsihl,qsihs,qsicl,qsics
-!Clu [+4L] add c(), q(), r() for vmn, vmx, slp, abs
      &,                    cvmnl,cvmns,cvmxl,cvmxs,cslpl,cslps
      &,                    cabsl,cabss,rvmnl,rvmns,rvmxl,rvmxs
      &,                    rslpl,rslps,rabsl,rabss,qvmnl,qvmns
      &,                    qvmxl,qvmxs,qslpl,qslps,qabsl,qabss
 !
-      REAL (KIND=KIND_IO8) TSFFCS(LEN), WETFCS(LEN),   SNOFCS(LEN),
-     &     ZORFCS(LEN), ALBFCS(LEN,4), AISFCS(LEN),
-     &     CVFCS (LEN), CVBFCS(LEN),   CVTFCS(LEN),
-     &     CNPFCS(LEN),
-     &     SMCFCS(LEN,LSOIL),STCFCS(LEN,LSOIL),
-     &     SLIFCS(LEN), VEGFCS(LEN),
-     &     vetfcs(LEN), sotfcs(LEN),   alffcs(LEN,2)
-!Cwu [+1L] add SIHFCS & SICFCS
-     &,    SIHFCS(LEN), SICFCS(LEN)
-!Clu [+1L] add ()fcs for vmn, vmx, slp, abs
-     &,    VMNFCS(LEN),VMXFCS(LEN),SLPFCS(LEN),ABSFCS(LEN)
-      REAL (KIND=KIND_IO8) TSFANL(LEN),TSFAN2(LEN),
-     &     WETANL(LEN),SNOANL(LEN),
-     &     ZORANL(LEN), ALBANL(LEN,4), AISANL(LEN),
-     &     CVANL (LEN), CVBANL(LEN),   CVTANL(LEN),
-     &     CNPANL(LEN),
-     &     SMCANL(LEN,LSOIL),STCANL(LEN,LSOIL),
-     &     SLIANL(LEN), VEGANL(LEN),
-     &     vetanl(LEN), sotanl(LEN),   ALFANL(LEN,2)
-!Cwu [+1L] add SIHANL & SICANL
-     &,    SIHANL(LEN),SICANL(LEN)           
-!Clu [+1L] add ()anl for vmn, vmx, slp, abs
-     &,    VMNANL(LEN),VMXANL(LEN),SLPANL(LEN),ABSANL(LEN)
-!    &,    TSFAN2(LEN)
+      real (kind=kind_io8) tsffcs(len), wetfcs(len),   snofcs(len),
+     &     zorfcs(len), albfcs(len,4), aisfcs(len),
+     &     cvfcs (len), cvbfcs(len),   cvtfcs(len),
+     &     cnpfcs(len),
+     &     smcfcs(len,lsoil),stcfcs(len,lsoil),
+     &     slifcs(len), vegfcs(len),
+     &     vetfcs(len), sotfcs(len),   alffcs(len,2)
+     &,    sihfcs(len), sicfcs(len)
+     &,    vmnfcs(len),vmxfcs(len),slpfcs(len),absfcs(len)
+      real (kind=kind_io8) tsfanl(len),tsfan2(len),
+     &     wetanl(len),snoanl(len),
+     &     zoranl(len), albanl(len,4), aisanl(len),
+     &     cvanl (len), cvbanl(len),   cvtanl(len),
+     &     cnpanl(len),
+     &     smcanl(len,lsoil),stcanl(len,lsoil),
+     &     slianl(len), veganl(len),
+     &     vetanl(len), sotanl(len),   alfanl(len,2)
+     &,    sihanl(len),sicanl(len)           
+     &,    vmnanl(len),vmxanl(len),slpanl(len),absanl(len)
 !
-      REAL (KIND=KIND_IO8) CSMCL(LSOIL), CSMCS(LSOIL),
-     &                     CSTCL(LSOIL), CSTCS(LSOIL)
-      REAL (KIND=KIND_IO8) RSMCL(LSOIL), RSMCS(LSOIL),
-     &                     RSTCL(LSOIL), RSTCS(LSOIL)
-      REAL (KIND=KIND_IO8) QSMCL(LSOIL), QSMCS(LSOIL),
-     &                     QSTCL(LSOIL), QSTCS(LSOIL)
+      real (kind=kind_io8) csmcl(lsoil), csmcs(lsoil),
+     &                     cstcl(lsoil), cstcs(lsoil)
+      real (kind=kind_io8) rsmcl(lsoil), rsmcs(lsoil),
+     &                     rstcl(lsoil), rstcs(lsoil)
+      real (kind=kind_io8) qsmcl(lsoil), qsmcs(lsoil),
+     &                     qstcl(lsoil), qstcs(lsoil)
       logical first
-      integer   NUM_THREADS
+      integer   num_threads
       data first /.true./
-      save NUM_THREADS, first
+      save num_threads, first
 !
-      integer LEN_THREAD_M, I1_T, I2_T, IT
-      integer NUM_PARTHDS
+      integer len_thread_m, i1_t, i2_t, it
+      integer num_parthds
 !
       if (first) then
-         NUM_THREADS = NUM_PARTHDS()
+         num_threads = num_parthds()
          first = .false.
       endif
 !
-!  COEEFICIENTS OF BLENDING FORECAST AND INTERPOLATED CLIM
-!  (OR ANALYZED) FIELDS OVER SEA OR LAND(L) (NOT FOR CLOUDS)
-!  1.0 = USE OF FORECAST
-!  0.0 = REPLACE WITH INTERPOLATED ANALYSIS
+!  coeeficients of blending forecast and interpolated clim
+!  (or analyzed) fields over sea or land(l) (not for clouds)
+!  1.0 = use of forecast
+!  0.0 = replace with interpolated analysis
 !
-!  Merging coefficients are defined by PARAMETER statement in calling program
+!  merging coefficients are defined by parameter statement in calling program
 !  and therefore they should not be modified in this program.
 !
-!
-      RTSFL = CTSFL
-      RALBL = CALBL
-      RALFL = CALFL
-      RAISL = CAISL
-      RSNOL = CSNOL
-!Clu  RSMCL = CSMCL
-      RZORL = CZORL
-      RVEGL = CVEGL
+      rtsfl = ctsfl
+      ralbl = calbl
+      ralfl = calfl
+      raisl = caisl
+      rsnol = csnol
+!clu  rsmcl = csmcl
+      rzorl = czorl
+      rvegl = cvegl
       rvetl = cvetl
       rsotl = csotl
-!Cwu [+2L] add sih, sic
-      RsihL = CsihL
-      RsicL = CsicL
-!Clu [+4L] add vmn, vmx, slp, abs
-      RvmnL = CvmnL
-      RvmxL = CvmxL
-      RslpL = CslpL
-      RabsL = CabsL
+      rsihl = csihl
+      rsicl = csicl
+      rvmnl = cvmnl
+      rvmxl = cvmxl
+      rslpl = cslpl
+      rabsl = cabsl
 !
-      RTSFS = CTSFS
-      RALBS = CALBS
-      RALFS = CALFS
-      RAISS = CAISS
-      RSNOS = CSNOS
-!     RSMCS = CSMCS
-      RZORS = CZORS
-      RVEGS = CVEGS
+      rtsfs = ctsfs
+      ralbs = calbs
+      ralfs = calfs
+      raiss = caiss
+      rsnos = csnos
+!     rsmcs = csmcs
+      rzors = czors
+      rvegs = cvegs
       rvets = cvets
       rsots = csots
-!Cwu [+2L] add sih, sic
-      RsihS = CsihS
-      RsicS = CsicS
-!Clu [+4L] add vmn, vmx, slp, abs
-      RvmnS = CvmnS
-      RvmxS = CvmxS
-      RslpS = CslpS
-      RabsS = CabsS
+      rsihs = csihs
+      rsics = csics
+      rvmns = cvmns
+      rvmxs = cvmxs
+      rslps = cslps
+      rabss = cabss
 !
-      RCV  = CCV
-      RCVB = CCVB
-      RCVT = CCVT
-      RCNP = CCNP
+      rcv  = ccv
+      rcvb = ccvb
+      rcvt = ccvt
+      rcnp = ccnp
 !
-      DO K=1,LSOIL
-        RSMCL(K) = CSMCL(K)
-        RSMCS(K) = CSMCS(K)
-        RSTCL(K) = CSTCL(K)
-        RSTCS(K) = CSTCS(K)
-      ENDDO
+      do k=1,lsoil
+        rsmcl(k) = csmcl(k)
+        rsmcs(k) = csmcs(k)
+        rstcl(k) = cstcl(k)
+        rstcs(k) = cstcs(k)
+      enddo
+      if (fh-deltsfc < -0.001 .and. irttsf == 1) then
+        rtsfs = 1.0
+        rtsfl = 1.0
+!       do k=1,lsoil
+!         rsmcl(k) = 1.0
+!         rsmcs(k) = 1.0
+!         rstcl(k) = 1.0
+!         rstcs(k) = 1.0
+!       enddo
+      endif
 !
-!  If analysis file name is given but no matching analysis date found,
-!  use guess (these are flagged by IRT???=1).
+!  if analysis file name is given but no matching analysis date found,
+!  use guess (these are flagged by irt???=1).
 !
-      IF(IRTTSF.EQ.-1) THEN
-        RTSFL = 1.
-        RTSFS = 1.
-      ENDIF
-      IF(IRTALB.EQ.-1) THEN
-        RALBL = 1.
-        RALBS = 1.
+      if(irttsf == -1) then
+        rtsfl = 1.
+        rtsfs = 1.
+      endif
+      if(irtalb == -1) then
+        ralbl = 1.
+        ralbs = 1.
         ralfl = 1.
         ralfs = 1.
-      ENDIF
-      IF(IRTAIS.EQ.-1) THEN
-        RAISL = 1.
-        RAISS = 1.
-      ENDIF
-      IF(IRTSNO.EQ.-1.OR.IRTSCV.EQ.-1) THEN
-        RSNOL = 1.
-        RSNOS = 1.
-      ENDIF
-      IF(IRTSMC.EQ.-1.OR.IRTWET.EQ.-1) THEN
-!       RSMCL = 1.
-!       RSMCS = 1.
-        DO K=1,LSOIL
-          RSMCL(K) = 1.
-          RSMCS(K) = 1.
-        ENDDO
-      ENDIF
-      IF(IRTSTC.EQ.-1) THEN
-        DO K=1,LSOIL
-          RSTCL(K) = 1.
-          RSTCS(K) = 1.
-        ENDDO
-      ENDIF
-      IF(IRTZOR.EQ.-1) THEN
-        RZORL = 1.
-        RZORS = 1.
-      ENDIF
-      IF(IRTVEG.EQ.-1) THEN
-        RVEGL = 1.
-        RVEGS = 1.
-      ENDIF
-      IF(IRTvet.EQ.-1) THEN
-        RvetL = 1.
-        RvetS = 1.
-      ENDIF
-      IF(IRTsot.EQ.-1) THEN
-        RsotL = 1.
-        RsotS = 1.
-      ENDIF
+      endif
+      if(irtais == -1) then
+        raisl = 1.
+        raiss = 1.
+      endif
+      if(irtsno == -1 .or. irtscv == -1) then
+        rsnol = 1.
+        rsnos = 1.
+      endif
+      if(irtsmc == -1 .or. irtwet == -1) then
+!       rsmcl = 1.
+!       rsmcs = 1.
+        do k=1,lsoil
+          rsmcl(k) = 1.
+          rsmcs(k) = 1.
+        enddo
+      endif
+      if(irtstc.eq.-1) then
+        do k=1,lsoil
+          rstcl(k) = 1.
+          rstcs(k) = 1.
+        enddo
+      endif
+      if(irtzor == -1) then
+        rzorl = 1.
+        rzors = 1.
+      endif
+      if(irtveg == -1) then
+        rvegl = 1.
+        rvegs = 1.
+      endif
+      if(irtvet.eq.-1) then
+        rvetl = 1.
+        rvets = 1.
+      endif
+      if(irtsot == -1) then
+        rsotl = 1.
+        rsots = 1.
+      endif
 
-!Cwu [+4L] -----------------------------------------------------------------
-      IF(IRTacn.EQ.-1) THEN
-        RsicL = 1.
-        RsicS = 1.
-      ENDIF
-!Clu [+16L] -----------------------------------------------------------------
-      IF(IRTvmn.EQ.-1) THEN
-        RvmnL = 1.
-        RvmnS = 1.
-      ENDIF
-      IF(IRTvmx.EQ.-1) THEN
-        RvmxL = 1.
-        RvmxS = 1.
-      ENDIF
-      IF(IRTslp.EQ.-1) THEN
-        RslpL = 1.
-        RslpS = 1.
-      ENDIF
-      IF(IRTabs.EQ.-1) THEN
-        RabsL = 1.
-        RabsS = 1.
-      ENDIF
-!Clu --------------------------------------------------------------------------
+      if(irtacn == -1) then
+        rsicl = 1.
+        rsics = 1.
+      endif
+      if(irtvmn == -1) then
+        rvmnl = 1.
+        rvmns = 1.
+      endif
+      if(irtvmx == -1) then
+        rvmxl = 1.
+        rvmxs = 1.
+      endif
+      if(irtslp == -1) then
+        rslpl = 1.
+        rslps = 1.
+      endif
+      if(irtabs == -1) then
+        rabsl = 1.
+        rabss = 1.
+      endif
 !
-      if(raiss.eq.1..or.irtacn.eq.-1) then
-        if (me .eq. 0) print *,'use forecast land-sea-ice mask'
-        do i = 1, LEN
+      if(raiss == 1. .or. irtacn == -1) then
+        if (me == 0) print *,'use forecast land-sea-ice mask'
+        do i = 1, len
           aisanl(i) = aisfcs(i)
           slianl(i) = slifcs(i)
         enddo
       endif
 !
-      if (me .eq. 0) then
-      WRITE(6,100) RTSFL,RALBL,RAISL,RSNOL,RSMCL,RZORL,RVEGL
-  100 FORMAT('RTSFL,RALBL,RAISL,RSNOL,RSMCL,RZORL,RVEGL=',10F7.3)
-      WRITE(6,101) RTSFS,RALBS,RAISS,RSNOS,RSMCS,RZORS,RVEGS
-  101 FORMAT('RTSFS,RALBS,RAISS,RSNOS,RSMCS,RZORS,RVEGS=',10F7.3)
+      if (me == 0) then
+      write(6,100) rtsfl,ralbl,raisl,rsnol,rsmcl,rzorl,rvegl
+  100 format('rtsfl,ralbl,raisl,rsnol,rsmcl,rzorl,rvegl=',10f7.3)
+      write(6,101) rtsfs,ralbs,raiss,rsnos,rsmcs,rzors,rvegs
+  101 format('rtsfs,ralbs,raiss,rsnos,rsmcs,rzors,rvegs=',10f7.3)
 !     print *,' ralfl=',ralfl,' ralfs=',ralfs,' rsotl=',rsotl
 !    *,' rsots=',rsots,' rvetl=',rvetl,' rvets=',rvets
       endif
 !
-      QTSFL = 1. - RTSFL
-      QALBL = 1. - RALBL
-      QALFL = 1. - RALFL
-      QAISL = 1. - RAISL
-      QSNOL = 1. - RSNOL
-!     QSMCL = 1. - RSMCL
-      QZORL = 1. - RZORL
-      QVEGL = 1. - RVEGL
-      QVETL = 1. - RVETL
-      QsoTL = 1. - RsoTL
-!Cwu [+2L] add sih, sic
-      QsihL = 1. - RsihL
-      QsicL = 1. - RsicL
-!Clu [+4L] add vmn, vmx, slp, abs
-      QvmnL = 1. - RvmnL
-      QvmxL = 1. - RvmxL
-      QslpL = 1. - RslpL
-      QabsL = 1. - RabsL
+      qtsfl = 1. - rtsfl
+      qalbl = 1. - ralbl
+      qalfl = 1. - ralfl
+      qaisl = 1. - raisl
+      qsnol = 1. - rsnol
+!     qsmcl = 1. - rsmcl
+      qzorl = 1. - rzorl
+      qvegl = 1. - rvegl
+      qvetl = 1. - rvetl
+      qsotl = 1. - rsotl
+      qsihl = 1. - rsihl
+      qsicl = 1. - rsicl
+      qvmnl = 1. - rvmnl
+      qvmxl = 1. - rvmxl
+      qslpl = 1. - rslpl
+      qabsl = 1. - rabsl
 !
-      QTSFS = 1. - RTSFS
-      QALBS = 1. - RALBS
-      QALFS = 1. - RALFS
-      QAISS = 1. - RAISS
-      QSNOS = 1. - RSNOS
-!     QSMCS = 1. - RSMCS
-      QZORS = 1. - RZORS
-      QVEGS = 1. - RVEGS
-      QVEtS = 1. - RVEtS
-      QsotS = 1. - RsotS
-!Cwu [+2L] add sih, sic
-      QsihS = 1. - RsihS
-      QsicS = 1. - RsicS
-!Clu [+4L] add vmn, vmx, slp, abs
-      QvmnS = 1. - RvmnS
-      QvmxS = 1. - RvmxS
-      QslpS = 1. - RslpS
-      QabsS = 1. - RabsS
+      qtsfs = 1. - rtsfs
+      qalbs = 1. - ralbs
+      qalfs = 1. - ralfs
+      qaiss = 1. - raiss
+      qsnos = 1. - rsnos
+!     qsmcs = 1. - rsmcs
+      qzors = 1. - rzors
+      qvegs = 1. - rvegs
+      qvets = 1. - rvets
+      qsots = 1. - rsots
+      qsihs = 1. - rsihs
+      qsics = 1. - rsics
+      qvmns = 1. - rvmns
+      qvmxs = 1. - rvmxs
+      qslps = 1. - rslps
+      qabss = 1. - rabss
 !
-      QCV   = 1. - RCV
-      QCVB  = 1. - RCVB
-      QCVT  = 1. - RCVT
-      QCNP  = 1. - RCNP
+      qcv   = 1. - rcv
+      qcvb  = 1. - rcvb
+      qcvt  = 1. - rcvt
+      qcnp  = 1. - rcnp
 !
-      DO K=1,LSOIL
-        QSMCL(K) = 1. - RSMCL(K)
-        QSMCS(K) = 1. - RSMCS(K)
-        QSTCL(K) = 1. - RSTCL(K)
-        QSTCS(K) = 1. - RSTCS(K)
-      ENDDO
+      do k=1,lsoil
+        qsmcl(k) = 1. - rsmcl(k)
+        qsmcs(k) = 1. - rsmcs(k)
+        qstcl(k) = 1. - rstcl(k)
+        qstcs(k) = 1. - rstcs(k)
+      enddo
 !
-!  Merging
+!  merging
 !
-
-!CluX  
       if(me .eq. 0) then
-        print *, 'DBGX-- CSMCL:', (CSMCL(K),K=1,LSOIL)
-        print *, 'DBGX-- RSMCL:', (RSMCL(K),K=1,LSOIL)
-        print *, 'DBGX-- CSNOL, CSNOS:',CSNOL,CSNOS
-        print *, 'DBGX-- RSNOL, RSNOS:',RSNOL,RSNOS
+        print *, 'dbgx-- csmcl:', (csmcl(k),k=1,lsoil)
+        print *, 'dbgx-- rsmcl:', (rsmcl(k),k=1,lsoil)
+        print *, 'dbgx-- csnol, csnos:',csnol,csnos
+        print *, 'dbgx-- rsnol, rsnos:',rsnol,rsnos
       endif
 
-!     print *, RTSFS, QTSFS, RAISS , QAISS
-!    *,        RSNOS , QSNOS, RZORS , QZORS, RVEGS , QVEGS
-!    *,        RvetS , QvetS, RsotS , QsotS
-!    *,        RCV, RCVB, RCVT, QCV, QCVB, QCVT
-!    *,        RALBS, QALBS, RALFS, QALFS
-!     print *, RTSFL, QTSFL, RAISL , QAISL
-!    *,        RSNOL , QSNOL, RZORL , QZORL, RVEGL , QVEGL
-!    *,        RvetL , QvetL, RsotL , QsotL
-!    *,        RALBL, QALBL, RALFL, QALFL
+!     print *, rtsfs, qtsfs, raiss , qaiss
+!    *,        rsnos , qsnos, rzors , qzors, rvegs , qvegs
+!    *,        rvets , qvets, rsots , qsots
+!    *,        rcv, rcvb, rcvt, qcv, qcvb, qcvt
+!    *,        ralbs, qalbs, ralfs, qalfs
+!     print *, rtsfl, qtsfl, raisl , qaisl
+!    *,        rsnol , qsnol, rzorl , qzorl, rvegl , qvegl
+!    *,        rvetl , qvetl, rsotl , qsotl
+!    *,        ralbl, qalbl, ralfl, qalfl
 !
 !
-      LEN_THREAD_M  = (LEN+NUM_THREADS-1) / NUM_THREADS
+      len_thread_m  = (len+num_threads-1) / num_threads
+
+!$omp parallel do private(i1_t,i2_t,it,i)
+      do it=1,num_threads   ! start of threaded loop ...................
+        i1_t       = (it-1)*len_thread_m+1
+        i2_t       = min(i1_t+len_thread_m-1,len)
+        do i=i1_t,i2_t
+          if(slianl(i).eq.0.) then
+            vetanl(i) = vetfcs(i)*rvets + vetanl(i)*qvets
+            sotanl(i) = sotfcs(i)*rsots + sotanl(i)*qsots
+          else
+            vetanl(i) = vetfcs(i)*rvetl + vetanl(i)*qvetl
+            sotanl(i) = sotfcs(i)*rsotl + sotanl(i)*qsotl
+          endif
+        enddo
+      enddo
+!$omp end parallel do
 !
-!$OMP PARALLEL DO PRIVATE(I1_T,I2_T,IT,I,K)
-!!$OMP+PRIVATE(ALAMD,DENOM,RNUME,APHI,X,Y,WSUM,WSUMIV,SUM1,SUM2)
+!$omp parallel do private(i1_t,i2_t,it,i,k)
 !
-      DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-        I1_T       = (IT-1)*LEN_THREAD_M+1
-        I2_T       = MIN(I1_T+LEN_THREAD_M-1,LEN)
+      do it=1,num_threads   ! start of threaded loop ...................
+        i1_t       = (it-1)*len_thread_m+1
+        i2_t       = min(i1_t+len_thread_m-1,len)
 !
-      DO I=I1_T,I2_T
-        IF(SLIANL(I).EQ.0.) THEN
+      do i=i1_t,i2_t
+        if(slianl(i).eq.0.) then
 !.... tsffc2 is the previous anomaly + today's climatology
-!         TSFFC2 = (TSFFCS(I)-TSFAN2(I))+TSFANL(I)
-!         TSFANL(I) = TSFFC2    *RTSFS+TSFANL(I)*QTSFS
+!         tsffc2 = (tsffcs(i)-tsfan2(i))+tsfanl(i)
+!         tsfanl(i) = tsffc2    *rtsfs+tsfanl(i)*qtsfs
 !
-          TSFANL(I) = TSFFCS(I)*RTSFS + TSFANL(I)*QTSFS
-!         ALBANL(I) = ALBFCS(I)*RALBS + ALBANL(I)*QALBS
-          AISANL(I) = AISFCS(I)*RAISS + AISANL(I)*QAISS
-          SNOANL(I) = SNOFCS(I)*RSNOS + SNOANL(I)*QSNOS
+          tsfanl(i) = tsffcs(i)*rtsfs + tsfanl(i)*qtsfs
+!         albanl(i) = albfcs(i)*ralbs + albanl(i)*qalbs
+          aisanl(i) = aisfcs(i)*raiss + aisanl(i)*qaiss
+          snoanl(i) = snofcs(i)*rsnos + snoanl(i)*qsnos
           
-          ZORANL(I) = ZORFCS(I)*RZORS + ZORANL(I)*QZORS
-          VEGANL(I) = VEGFCS(I)*RVEGS + VEGANL(I)*QVEGS
-          vetANL(I) = vetFCS(I)*RvetS + vetANL(I)*QvetS
-          sotANL(I) = sotFCS(I)*RsotS + sotANL(I)*QsotS
-!Cwu [+2L] add sih, sic
-          SIHANL(I) = SIHFCS(I)*RSIHS + SIHANL(I)*QSIHS
-          SICANL(I) = SICFCS(I)*RSICS + SICANL(I)*QSICS
-!Clu [+4L] add vmn, vmx, slp, abs
-          VMNANL(I) = VMNFCS(I)*RVMNS + VMNANL(I)*QVMNS
-          VMXANL(I) = VMXFCS(I)*RVMXS + VMXANL(I)*QVMXS
-          SLPANL(I) = SLPFCS(I)*RSLPS + SLPANL(I)*QSLPS
-          ABSANL(I) = ABSFCS(I)*RABSS + ABSANL(I)*QABSS
-!Cwu [+3L] add "SLIANL(I).GE.2" for sih, sic
-!mi     ELSE IF(SLIANL(I).GE.2.) THEN
-!mi       SIHANL(I) = SIHFCS(I)*RSIHS + SIHANL(I)*QSIHS
-!mi       SICANL(I) = SICFCS(I)*RSICS + SICANL(I)*QSICS
-        ELSE
-          vetANL(I) = vetFCS(I)*RvetL + vetANL(I)*QvetL
-          TSFANL(I) = TSFFCS(I)*RTSFL + TSFANL(I)*QTSFL
-!         ALBANL(I) = ALBFCS(I)*RALBL + ALBANL(I)*QALBL
-          AISANL(I) = AISFCS(I)*RAISL + AISANL(I)*QAISL
-         IF(RSNOL.GE.0)THEN
-          SNOANL(I) = SNOFCS(I)*RSNOL + SNOANL(I)*QSNOL
-         ELSE
-          IF(SNOANL(I).NE.0)THEN
-           SNOANL(I) = MAX(-SNOANL(I)/RSNOL,
-     &                 MIN(-SNOANL(I)*RSNOL, SNOFCS(I)))
-          ENDIF
-         ENDIF
-          ZORANL(I) = ZORFCS(I)*RZORL + ZORANL(I)*QZORL
-!cggg landice start
-!cggg at landice points (vegetation type 13) set the
-!cggg soil type, slope type and greenness fields to flag values.
-!cggg otherwise, perform merging.
-          IF (LANDICE           .AND. 
-     &        SLIANL(I) == 1.0  .AND. 
-     &        VETANL(I) == 13.0) THEN
-            VEGANL(I) = 0.0
-            SOTANL(I) = 9.0
-            SLPANL(I) = 9.0
-            VMNANL(I) = 0.0
-            VMXANL(I) = 0.0
-          ELSE
-            VEGANL(I) = VEGFCS(I)*RVEGL + VEGANL(I)*QVEGL
-            sotANL(I) = sotFCS(I)*RsotL + sotANL(I)*QsotL
-            VMNANL(I) = VMNFCS(I)*RVMNL + VMNANL(I)*QVMNL
-            VMXANL(I) = VMXFCS(I)*RVMXL + VMXANL(I)*QVMXL
-            SLPANL(I) = SLPFCS(I)*RSLPL + SLPANL(I)*QSLPL
-          END IF
-!cggg landice end
-          ABSANL(I) = ABSFCS(I)*RABSL + ABSANL(I)*QABSL
-          SIHANL(I) = SIHFCS(I)*RSIHL + SIHANL(I)*QSIHL
-          SICANL(I) = SICFCS(I)*RSICL + SICANL(I)*QSICL
-        ENDIF
-          CNPANL(I) = CNPFCS(I)*RCNP + CNPANL(I)*QCNP
+          zoranl(i) = zorfcs(i)*rzors + zoranl(i)*qzors
+          veganl(i) = vegfcs(i)*rvegs + veganl(i)*qvegs
+          sihanl(i) = sihfcs(i)*rsihs + sihanl(i)*qsihs
+          sicanl(i) = sicfcs(i)*rsics + sicanl(i)*qsics
+          vmnanl(i) = vmnfcs(i)*rvmns + vmnanl(i)*qvmns
+          vmxanl(i) = vmxfcs(i)*rvmxs + vmxanl(i)*qvmxs
+          slpanl(i) = slpfcs(i)*rslps + slpanl(i)*qslps
+          absanl(i) = absfcs(i)*rabss + absanl(i)*qabss
+        else
+          tsfanl(i) = tsffcs(i)*rtsfl + tsfanl(i)*qtsfl
+!         albanl(i) = albfcs(i)*ralbl + albanl(i)*qalbl
+          aisanl(i) = aisfcs(i)*raisl + aisanl(i)*qaisl
+          if(rsnol.ge.0)then
+            snoanl(i) = snofcs(i)*rsnol + snoanl(i)*qsnol
+          else  ! envelope method
+            if(snoanl(i).ne.0)then
+             snoanl(i) = max(-snoanl(i)/rsnol,
+     &                   min(-snoanl(i)*rsnol, snofcs(i)))
+            endif
+          endif
+          zoranl(i) = zorfcs(i)*rzorl + zoranl(i)*qzorl
+          veganl(i) = vegfcs(i)*rvegl + veganl(i)*qvegl
+          vmnanl(i) = vmnfcs(i)*rvmnl + vmnanl(i)*qvmnl
+          vmxanl(i) = vmxfcs(i)*rvmxl + vmxanl(i)*qvmxl
+          slpanl(i) = slpfcs(i)*rslpl + slpanl(i)*qslpl
+          absanl(i) = absfcs(i)*rabsl + absanl(i)*qabsl
+          sihanl(i) = sihfcs(i)*rsihl + sihanl(i)*qsihl
+          sicanl(i) = sicfcs(i)*rsicl + sicanl(i)*qsicl
+        endif
+
+        cnpanl(i) = cnpfcs(i)*rcnp + cnpanl(i)*qcnp
 !
 !  snow over sea ice is cycled
 !
         if(slianl(i).eq.2.) then
           snoanl(i) = snofcs(i)
         endif
-      ENDDO
-      DO I=I1_T,I2_T
-        CVANL(I)  = CVFCS(I)*RCV   + CVANL(I)*QCV
-        CVBANL(I) = CVBFCS(I)*RCVB + CVBANL(I)*QCVB
-        CVTANL(I) = CVTFCS(I)*RCVT + CVTANL(I)*QCVT
-      ENDDO
 !
-      DO K = 1, 4
-        DO I=I1_T,I2_T
-          IF(SLIANL(I).EQ.0.) THEN
-            ALBANL(I,K) = ALBFCS(I,K)*RALBS + ALBANL(I,K)*QALBS
-          ELSE
-            ALBANL(I,K) = ALBFCS(I,K)*RALBL + ALBANL(I,K)*QALBL
-          ENDIF
-        ENDDO
-      ENDDO
+      enddo
+
+! at landice points, set the soil type, slope type and
+! greenness fields to flag values.
+
+      if (landice) then
+        do i=i1_t,i2_t
+          if (nint(slianl(i)) == 1) then
+            if (nint(vetanl(i)) == veg_type_landice) then
+              sotanl(i) = soil_type_landice
+              veganl(i) = 0.0
+              slpanl(i) = 9.0
+              vmnanl(i) = 0.0
+              vmxanl(i) = 0.0
+            endif
+          end if  ! if land
+        enddo
+      endif
+
+      do i=i1_t,i2_t
+        cvanl(i)  = cvfcs(i)*rcv   + cvanl(i)*qcv
+        cvbanl(i) = cvbfcs(i)*rcvb + cvbanl(i)*qcvb
+        cvtanl(i) = cvtfcs(i)*rcvt + cvtanl(i)*qcvt
+      enddo
 !
-      DO K = 1, 2
-        DO I=I1_T,I2_T
-          IF(SLIANL(I).EQ.0.) THEN
-            ALFANL(I,K) = ALFFCS(I,K)*RALFS + ALFANL(I,K)*QALFS
-          ELSE
-            ALFANL(I,K) = ALFFCS(I,K)*RALFL + ALFANL(I,K)*QALFL
-          ENDIF
-        ENDDO
-      ENDDO
+      do k = 1, 4
+        do i=i1_t,i2_t
+          if(slianl(i).eq.0.) then
+            albanl(i,k) = albfcs(i,k)*ralbs + albanl(i,k)*qalbs
+          else
+            albanl(i,k) = albfcs(i,k)*ralbl + albanl(i,k)*qalbl
+          endif
+        enddo
+      enddo
 !
-      DO K = 1, LSOIL
-        DO I=I1_T,I2_T
-          IF(SLIANL(I).EQ.0.) THEN
-            SMCANL(I,K) = SMCFCS(I,K)*RSMCS(K) + SMCANL(I,K)*QSMCS(K)
-            STCANL(I,K) = STCFCS(I,K)*RSTCS(K) + STCANL(I,K)*QSTCS(K)
-          ELSE
-!cggg landice start  soil moisture not used at landice points, so
-!cggg don't bother merging it.  also, for now don't allow nudging
-!cggg to raise subsurface temperature above freezing.
-            STCANL(I,K) = STCFCS(I,K)*RSTCL(K) + STCANL(I,K)*QSTCL(K)
-            IF (LANDICE .AND. SLIANL(I) == 1.0 .AND.
-     &          VETANL(I) == 13.0) THEN
-              SMCANL(I,K) = 1.0  ! use value as flag
-              STCANL(I,K) = MIN(STCANL(I,K), 273.15)
-            ELSE
-              SMCANL(I,K) = SMCFCS(I,K)*RSMCL(K) + SMCANL(I,K)*QSMCL(K)
-            END IF
-!cggg landice end
-          ENDIF
-        ENDDO
-      ENDDO
+      do k = 1, 2
+        do i=i1_t,i2_t
+          if(slianl(i).eq.0.) then
+            alfanl(i,k) = alffcs(i,k)*ralfs + alfanl(i,k)*qalfs
+          else
+            alfanl(i,k) = alffcs(i,k)*ralfl + alfanl(i,k)*qalfl
+          endif
+        enddo
+      enddo
 !
-      ENDDO            ! END OF THREADED LOOP ...................
-!$OMP END PARALLEL DO
-      RETURN
-      END
-      SUBROUTINE NEWICE(SLIANL,SLIFCS,TSFANL,TSFFCS,LEN,LSOIL,
-!Cwu [+1L] add SIHNEW,SICNEW,SIHANL,SICANL
-     &                   SIHNEW,SICNEW,SIHANL,SICANL,      
-     &                   ALBANL,SNOANL,ZORANL,SMCANL,STCANL,
-     &                   ALBSEA,SNOSEA,ZORSEA,SMCSEA,SMCICE,
-     &                   TSFMIN,TSFICE,ALBICE,ZORICE,TGICE,
-     &                   RLA,RLO,me)
+      do k = 1, lsoil
+        do i=i1_t,i2_t
+          if(slianl(i).eq.0.) then
+            smcanl(i,k) = smcfcs(i,k)*rsmcs(k) + smcanl(i,k)*qsmcs(k)
+            stcanl(i,k) = stcfcs(i,k)*rstcs(k) + stcanl(i,k)*qstcs(k)
+          else
+! soil moisture not used at landice points, so
+! don't bother merging it.  also, for now don't allow nudging
+! to raise subsurface temperature above freezing.
+            stcanl(i,k) = stcfcs(i,k)*rstcl(k) + stcanl(i,k)*qstcl(k)
+            if (landice .and. slianl(i) == 1.0 .and.
+     &          nint(vetanl(i)) == veg_type_landice) then
+              smcanl(i,k) = 1.0  ! use value as flag
+              stcanl(i,k) = min(stcanl(i,k), 273.15)
+            else
+              smcanl(i,k) = smcfcs(i,k)*rsmcl(k) + smcanl(i,k)*qsmcl(k)
+            end if
+          endif
+        enddo
+      enddo
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      enddo            ! end of threaded loop ...................
+!$omp end parallel do
+      return
+      end subroutine merge
+      subroutine newice(slianl,slifcs,tsfanl,tsffcs,len,lsoil,
+!cwu [+1l] add sihnew,sicnew,sihanl,sicanl
+     &                   sihnew,sicnew,sihanl,sicanl,      
+     &                   albanl,snoanl,zoranl,smcanl,stcanl,
+     &                   albsea,snosea,zorsea,smcsea,smcice,
+     &                   tsfmin,tsfice,albice,zorice,tgice,
+     &                   rla,rlo,me)
+!
+      use machine , only : kind_io8,kind_io4
       implicit none
       real (kind=kind_io8), parameter :: one=1.0
-      REAL (KIND=KIND_IO8) tgice,albice,zorice,tsfice,albsea,snosea,
+      real (kind=kind_io8) tgice,albice,zorice,tsfice,albsea,snosea,
      &                     smcice,tsfmin,zorsea,smcsea
-!Cwu [+1L] add sicnew,sihnew
+!cwu [+1l] add sicnew,sihnew
      &,                    sicnew,sihnew   
       integer i,me,kount1,kount2,k,len,lsoil
-      REAL (KIND=KIND_IO8) SLIANL(LEN),   SLIFCS(LEN),
-     &                     TSFFCS(LEN),TSFANL(LEN)
-      REAL (KIND=KIND_IO8) ALBANL(LEN,4), SNOANL(LEN), ZORANL(LEN)
-      REAL (KIND=KIND_IO8) SMCANL(LEN,LSOIL), STCANL(LEN,LSOIL)
-!Cwu [+1L] add sihanl & sicanl
-      REAL (KIND=KIND_IO8) SIHANL(LEN), SICANL(LEN)
+      real (kind=kind_io8) slianl(len),   slifcs(len),
+     &                     tsffcs(len),tsfanl(len)
+      real (kind=kind_io8) albanl(len,4), snoanl(len), zoranl(len)
+      real (kind=kind_io8) smcanl(len,lsoil), stcanl(len,lsoil)
+!cwu [+1l] add sihanl & sicanl
+      real (kind=kind_io8) sihanl(len), sicanl(len)
 !
-      REAL (KIND=KIND_IO8) RLA(LEN), RLO(LEN)
+      real (kind=kind_io8) rla(len), rlo(len)
 !
-      if (me .eq. 0) WRITE(6,*) 'NEWICE'
+      if (me .eq. 0) write(6,*) 'newice'
 !
-      KOUNT1 = 0
-      KOUNT2 = 0
-      DO I=1,LEN
-        IF(SLIFCS(I).NE.SLIANL(I)) THEN
-          IF(SLIFCS(I).EQ.1..OR.SLIANL(I).EQ.1.) THEN
-            PRINT *,'INCONSISTENCY IN SLIFCS OR SLIANL'
-            PRINT 910,RLA(I),RLO(I),SLIFCS(I),SLIANL(I),
-     &                TSFFCS(I),TSFANL(I)
-  910       FORMAT(2X,'AT LAT=',F5.1,' LON=',F5.1,' SLIFCS=',F4.1,
-     &          ' SLIMSK=',F4.1,' TSFFCS=',F5.1,' SET TO TSFANL=',F5.1)
-            CALL ABORT
-          ENDIF
+      kount1 = 0
+      kount2 = 0
+      do i=1,len
+        if(slifcs(i).ne.slianl(i)) then
+          if(slifcs(i).eq.1..or.slianl(i).eq.1.) then
+            print *,'inconsistency in slifcs or slianl'
+            print 910,rla(i),rlo(i),slifcs(i),slianl(i),
+     &                tsffcs(i),tsfanl(i)
+  910       format(2x,'at lat=',f5.1,' lon=',f5.1,' slifcs=',f4.1,
+     &          ' slimsk=',f4.1,' tsffcs=',f5.1,' set to tsfanl=',f5.1)
+            call abort
+          endif
 !
-!  INTERPOLATED CLIMATOLOGY INDICATES MELTED SEA ICE
+!  interpolated climatology indicates melted sea ice
 !
-          IF(SLIANL(I).EQ.0..AND.SLIFCS(I).EQ.2.) THEN
-            TSFANL(I)   = TSFMIN
-            ALBANL(I,1) = ALBSEA
-            ALBANL(I,2) = ALBSEA
-            ALBANL(I,3) = ALBSEA
-            ALBANL(I,4) = ALBSEA
-            SNOANL(I)   = SNOSEA
-            ZORANL(I)   = ZORSEA
-            DO K = 1, LSOIL
-              SMCANL(I,K) = SMCSEA
-!Cwu [+1L] set STCANL to TGICE (over SEA-ICE)
-              STCANL(I,K) = TGICE 
-            ENDDO
-!Cwu [+2L] set siganl and sicanl
-            SIHANL(I) = 0.
-            SICANL(I) = 0.
-            KOUNT1 = KOUNT1 + 1
-          ENDIF
+          if(slianl(i).eq.0..and.slifcs(i).eq.2.) then
+            tsfanl(i)   = tsfmin
+            albanl(i,1) = albsea
+            albanl(i,2) = albsea
+            albanl(i,3) = albsea
+            albanl(i,4) = albsea
+            snoanl(i)   = snosea
+            zoranl(i)   = zorsea
+            do k = 1, lsoil
+              smcanl(i,k) = smcsea
+!cwu [+1l] set stcanl to tgice (over sea-ice)
+              stcanl(i,k) = tgice 
+            enddo
+!cwu [+2l] set siganl and sicanl
+            sihanl(i) = 0.
+            sicanl(i) = 0.
+            kount1 = kount1 + 1
+          endif
 !
-!  INTERPLATED CLIMATOLOYG/ANALYSIS INDICATES NEW SEA ICE
+!  interplated climatoloyg/analysis indicates new sea ice
 !
-          IF(SLIANL(I).EQ.2..AND.SLIFCS(I).EQ.0.) THEN
-            TSFANL(I)   = TSFICE
-            ALBANL(I,1) = ALBICE
-            ALBANL(I,2) = ALBICE
-            ALBANL(I,3) = ALBICE
-            ALBANL(I,4) = ALBICE
-            SNOANL(I)   = 0.
-            ZORANL(I)   = ZORICE
-            DO K = 1, LSOIL
-              SMCANL(I,K) = SMCICE
-              STCANL(I,K) = TGICE
-            ENDDO
-!Cwu [+2L] add SIHANL & SICANL
-            SIHANL(I) = SIHNEW
-            SICANL(I) = min(one, max(SICNEW,SICANL(i)))
-            KOUNT2 = KOUNT2 + 1
-          ENDIF
-        ENDIF
-      ENDDO
+          if(slianl(i).eq.2..and.slifcs(i).eq.0.) then
+            tsfanl(i)   = tsfice
+            albanl(i,1) = albice
+            albanl(i,2) = albice
+            albanl(i,3) = albice
+            albanl(i,4) = albice
+            snoanl(i)   = 0.
+            zoranl(i)   = zorice
+            do k = 1, lsoil
+              smcanl(i,k) = smcice
+              stcanl(i,k) = tgice
+            enddo
+!cwu [+2l] add sihanl & sicanl
+            sihanl(i) = sihnew
+            sicanl(i) = min(one, max(sicnew,sicanl(i)))
+            kount2 = kount2 + 1
+          endif
+        endif
+      enddo
 !
       if (me .eq. 0) then
-      IF(KOUNT1.GT.0) THEN
-        WRITE(6,*) 'Sea ice melted.  TSF,ALB,ZOR are filled',
-     &             ' at ',KOUNT1,' points'
-      ENDIF
-      IF(KOUNT2.GT.0) THEN
-        WRITE(6,*) 'Sea ice formed.  TSF,ALB,ZOR are filled',
-     &             ' at ',KOUNT2,' points'
-      ENDIF
+      if(kount1.gt.0) then
+        write(6,*) 'sea ice melted.  tsf,alb,zor are filled',
+     &             ' at ',kount1,' points'
+      endif
+      if(kount2.gt.0) then
+        write(6,*) 'sea ice formed.  tsf,alb,zor are filled',
+     &             ' at ',kount2,' points'
+      endif
       endif
 !
-      RETURN
-      END
-!cggg landice mods start
-!      SUBROUTINE QCSNOW(SNOANL,SLMASK,AISANL,GLACIR,LEN,SNOVAL,me)
-      SUBROUTINE QCSNOW(SNOANL,SLMASK,AISANL,GLACIR,LEN,SNOVAL,
-     &                  LANDICE,me)
-!cggg landice mods end
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine qcsnow(snoanl,slmask,aisanl,glacir,len,snoval,
+     &                  landice,me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer kount,i,len,me
-!cggg landice mods start
-      LOGICAL, INTENT(IN)  :: LANDICE
-!cggg landice mods end
-      REAL (KIND=KIND_IO8) per,snoval
-      REAL (KIND=KIND_IO8) SNOANL(LEN),SLMASK(LEN),
-     &                     AISANL(LEN),GLACIR(LEN)
+      logical, intent(in)  :: landice
+      real (kind=kind_io8) per,snoval
+      real (kind=kind_io8) snoanl(len),slmask(len),
+     &                     aisanl(len),glacir(len)
       if (me .eq. 0) then
-        WRITE(6,*) ' '
-        WRITE(6,*) 'QC of SNOW'
+        write(6,*) ' '
+        write(6,*) 'qc of snow'
       endif
-!cggg landice mods start
-      IF (.NOT.LANDICE) THEN
-!cggg landice mods end
-        KOUNT=0
-        DO I=1,LEN
-          IF(GLACIR(I).NE.0..AND.SNOANL(I).EQ.0.) THEN
-!         IF(GLACIR(I).NE.0..AND.SNOANL(I).LT.SNOVAL*0.5) THEN
-            SNOANL(I) = SNOVAL
-            KOUNT     = KOUNT + 1
-          ENDIF
-        ENDDO
-        PER = FLOAT(KOUNT) / FLOAT(LEN)*100.
-        IF(KOUNT.GT.0) THEN
-          if (me .eq. 0) then
-          PRINT *,'SNOW filled over glacier points at ',KOUNT,
-     &            ' POINTS (',PER,'percent)'
+      if (.not.landice) then
+        kount=0
+        do i=1,len
+          if(glacir(i).ne.0..and.snoanl(i).eq.0.) then
+!         if(glacir(i).ne.0..and.snoanl(i).lt.snoval*0.5) then
+            snoanl(i) = snoval
+            kount     = kount + 1
           endif
-        ENDIF
-!cggg landice mods start
-      ENDIF ! LANDICE CHECK
-!cggg landice mods end
-      KOUNT = 0
-      DO I=1,LEN
-        IF(SLMASK(I).EQ.0.AND.AISANL(I).EQ.0) THEN
-          SNOANL(I) = 0.
-          KOUNT     = KOUNT + 1
-        ENDIF
-      ENDDO
-      PER = FLOAT(KOUNT) / FLOAT(LEN)*100.
-      IF(KOUNT.GT.0) THEN
-        if (me .eq. 0) then
-        PRINT *,'SNOW set to zero over open sea at ',KOUNT,
-     &          ' POINTS (',PER,'percent)'
+        enddo
+        per = float(kount) / float(len)*100.
+        if(kount.gt.0) then
+          if (me .eq. 0) then
+          print *,'snow filled over glacier points at ',kount,
+     &            ' points (',per,'percent)'
+          endif
         endif
-      ENDIF
-      RETURN
-      END
-      SUBROUTINE QCSICE(AIS,GLACIR,AMXICE,AICICE,AICSEA,SLLND,SLMASK,
-     &                  RLA,RLO,LEN,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      endif ! landice check
+      kount = 0
+      do i=1,len
+        if(slmask(i).eq.0.and.aisanl(i).eq.0) then
+          snoanl(i) = 0.
+          kount     = kount + 1
+        endif
+      enddo
+      per = float(kount) / float(len)*100.
+      if(kount.gt.0) then
+        if (me .eq. 0) then
+        print *,'snow set to zero over open sea at ',kount,
+     &          ' points (',per,'percent)'
+        endif
+      endif
+      return
+      end subroutine qcsnow
+      subroutine qcsice(ais,glacir,amxice,aicice,aicsea,sllnd,slmask,
+     &                  rla,rlo,len,me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer kount1,kount,i,me,len
-      REAL (KIND=KIND_IO8) per,aicsea,aicice,sllnd
+      real (kind=kind_io8) per,aicsea,aicice,sllnd
 !
-      REAL (KIND=KIND_IO8) AIS(LEN), GLACIR(LEN),
-     &                     AMXICE(LEN), SLMASK(LEN)
-      REAL (KIND=KIND_IO8) RLA(LEN), RLO(LEN)
+      real (kind=kind_io8) ais(len), glacir(len),
+     &                     amxice(len), slmask(len)
+      real (kind=kind_io8) rla(len), rlo(len)
 !
-!  CHECK SEA-ICE COVER MASK AGAINST LAND-SEA MASK
+!  check sea-ice cover mask against land-sea mask
 !
-      if (me .eq. 0) WRITE(6,*) 'QC of sea ice'
-      KOUNT  = 0
-      KOUNT1 = 0
-      DO I=1,LEN
-        IF(AIS(I).NE.AICICE.AND.AIS(I).NE.AICSEA) THEN
-          PRINT *,'SEA ICE MASK NOT ',AICICE,' OR ',AICSEA
-          PRINT *,'AIS(I),AICICE,AICSEA,RLA(I),RLO(I,=',
-     &             AIS(I),AICICE,AICSEA,RLA(I),RLO(I)
-          CALL ABORT
-        ENDIF
-        IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.1..AND.
-!       IF(SLMASK(I).EQ.0..AND.GLACIR(I).EQ.2..AND.
-     &     AIS(I).NE.1.) THEN
-          KOUNT1 = KOUNT1 + 1
-          AIS(I) = 1.
-        ENDIF
-        IF(SLMASK(I).EQ.SLLND.AND.AIS(I).EQ.AICICE) THEN
-          KOUNT  = KOUNT + 1
-          AIS(I) = AICSEA
-        ENDIF
-      ENDDO
-!     ENDDO
-      PER = FLOAT(KOUNT) / FLOAT(LEN)*100.
-      IF(KOUNT.GT.0) THEN
+      if (me .eq. 0) write(6,*) 'qc of sea ice'
+      kount  = 0
+      kount1 = 0
+      do i=1,len
+        if(ais(i).ne.aicice.and.ais(i).ne.aicsea) then
+          print *,'sea ice mask not ',aicice,' or ',aicsea
+          print *,'ais(i),aicice,aicsea,rla(i),rlo(i,=',
+     &             ais(i),aicice,aicsea,rla(i),rlo(i)
+          call abort
+        endif
+        if(slmask(i).eq.0..and.glacir(i).eq.1..and.
+!       if(slmask(i).eq.0..and.glacir(i).eq.2..and.
+     &     ais(i).ne.1.) then
+          kount1 = kount1 + 1
+          ais(i) = 1.
+        endif
+        if(slmask(i).eq.sllnd.and.ais(i).eq.aicice) then
+          kount  = kount + 1
+          ais(i) = aicsea
+        endif
+      enddo
+!     enddo
+      per = float(kount) / float(len)*100.
+      if(kount.gt.0) then
         if(me .eq. 0) then
-        PRINT *,' Sea ice over land mask at ',KOUNT,' points (',PER,
+        print *,' sea ice over land mask at ',kount,' points (',per,
      &          'percent)'
         endif
-      ENDIF
-      PER = FLOAT(KOUNT1) / FLOAT(LEN)*100.
-      IF(KOUNT1.GT.0) THEN
+      endif
+      per = float(kount1) / float(len)*100.
+      if(kount1.gt.0) then
         if(me .eq. 0) then
-        PRINT *,' Sea ice set over glacier points over ocean at ',
-     &          KOUNT1,' points (',PER,'percent)'
+        print *,' sea ice set over glacier points over ocean at ',
+     &          kount1,' points (',per,'percent)'
         endif
-      ENDIF
-!     KOUNT=0
-!     DO J=1,JDIM
-!     DO I=1,IDIM
-!       IF(AMXICE(I,J).NE.0..AND.AIS(I,J).EQ.0.) THEN
-!         AIS(I,J)=0.
-!         KOUNT=KOUNT+1
-!       ENDIF
-!     ENDDO
-!     ENDDO
-!     PER=FLOAT(KOUNT)/FLOAT(IDIM*JDIM)*100.
-!     IF(KOUNT.GT.0) THEN
-!       PRINT *,' Sea ice exceeds maxice at ',KOUNT,' points (',PER,
+      endif
+!     kount=0
+!     do j=1,jdim
+!     do i=1,idim
+!       if(amxice(i,j).ne.0..and.ais(i,j).eq.0.) then
+!         ais(i,j)=0.
+!         kount=kount+1
+!       endif
+!     enddo
+!     enddo
+!     per=float(kount)/float(idim*jdim)*100.
+!     if(kount.gt.0) then
+!       print *,' sea ice exceeds maxice at ',kount,' points (',per,
 !    &          'percent)'
-!     ENDIF
+!     endif
 !
-!  Remove isolated open ocean surrounded by sea ice and/or land
+!  remove isolated open ocean surrounded by sea ice and/or land
 !
-!  Remove isolated open ocean surrounded by sea ice and/or land
+!  remove isolated open ocean surrounded by sea ice and/or land
 !
-!     IJ = 0
-!     DO J=1,JDIM
-!       DO I=1,IDIM
-!         IJ = IJ + 1
-!         IP = I  + 1
-!         IM = I  - 1
-!         JP = J  + 1
-!         JM = J  - 1
-!         IF(JP.GT.JDIM) JP = JDIM - 1
-!         IF(JM.LT.1)    JM = 2
-!         IF(IP.GT.IDIM) IP = 1
-!         IF(IM.LT.1)    IM = IDIM
-!         IF(SLMASK(I,J).EQ.0..AND.AIS(I,J).EQ.0.) THEN
-!           IF((SLMASK(IP,JP).EQ.1..OR.AIS(IP,JP).EQ.1.).AND.
-!    &         (SLMASK(I ,JP).EQ.1..OR.AIS(I ,JP).EQ.1.).AND.
-!    &         (SLMASK(IM,JP).EQ.1..OR.AIS(IM,JP).EQ.1.).AND.
-!    &         (SLMASK(IP,J ).EQ.1..OR.AIS(IP,J ).EQ.1.).AND.
-!    &         (SLMASK(IM,J ).EQ.1..OR.AIS(IM,J ).EQ.1.).AND.
-!    &         (SLMASK(IP,JM).EQ.1..OR.AIS(IP,JM).EQ.1.).AND.
-!    &         (SLMASK(I ,JM).EQ.1..OR.AIS(I ,JM).EQ.1.).AND.
-!    &         (SLMASK(IM,JM).EQ.1..OR.AIS(IM,JM).EQ.1.)) THEN
-!               AIS(I,J) = 1.
-!             WRITE(6,*) ' Isolated open sea point surrounded by',
+!     ij = 0
+!     do j=1,jdim
+!       do i=1,idim
+!         ij = ij + 1
+!         ip = i  + 1
+!         im = i  - 1
+!         jp = j  + 1
+!         jm = j  - 1
+!         if(jp.gt.jdim) jp = jdim - 1
+!         if(jm.lt.1)    jm = 2
+!         if(ip.gt.idim) ip = 1
+!         if(im.lt.1)    im = idim
+!         if(slmask(i,j).eq.0..and.ais(i,j).eq.0.) then
+!           if((slmask(ip,jp).eq.1..or.ais(ip,jp).eq.1.).and.
+!    &         (slmask(i ,jp).eq.1..or.ais(i ,jp).eq.1.).and.
+!    &         (slmask(im,jp).eq.1..or.ais(im,jp).eq.1.).and.
+!    &         (slmask(ip,j ).eq.1..or.ais(ip,j ).eq.1.).and.
+!    &         (slmask(im,j ).eq.1..or.ais(im,j ).eq.1.).and.
+!    &         (slmask(ip,jm).eq.1..or.ais(ip,jm).eq.1.).and.
+!    &         (slmask(i ,jm).eq.1..or.ais(i ,jm).eq.1.).and.
+!    &         (slmask(im,jm).eq.1..or.ais(im,jm).eq.1.)) then
+!               ais(i,j) = 1.
+!             write(6,*) ' isolated open sea point surrounded by',
 !    &                   ' sea ice or land modified to sea ice',
-!    &                   ' at LAT=',RLA(I,J),' LON=',RLO(I,J)
-!           ENDIF
-!         ENDIF
-!       ENDDO
-!     ENDDO
-      RETURN
-      END
-      SUBROUTINE SETLSI(SLMASK,AISFLD,LEN,AICICE,SLIFLD)
+!    &                   ' at lat=',rla(i,j),' lon=',rlo(i,j)
+!           endif
+!         endif
+!       enddo
+!     enddo
+      return
+      end
+      subroutine setlsi(slmask,aisfld,len,aicice,slifld)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) aicice
-      REAL (KIND=KIND_IO8) SLMASK(LEN), SLIFLD(LEN), AISFLD(LEN)
+      real (kind=kind_io8) aicice
+      real (kind=kind_io8) slmask(len), slifld(len), aisfld(len)
 !
-!  Set surface condition indicator slimsk
+!  set surface condition indicator slimsk
 !
-      DO I=1,LEN
-        SLIFLD(I) = SLMASK(I)
-!       IF(AISFLD(I).EQ.AICICE) SLIFLD(I) = 2.0
-        IF(AISFLD(I).EQ.AICICE .AND. SLMASK(I) .EQ. 0.0)
-     &                                SLIFLD(I) = 2.0
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE SCALE(FLD,LEN,SCL)
+      do i=1,len
+        slifld(i) = slmask(i)
+!       if(aisfld(i).eq.aicice) slifld(i) = 2.0
+        if(aisfld(i).eq.aicice .and. slmask(i) .eq. 0.0)
+     &                                slifld(i) = 2.0
+      enddo
+      return
+      end
+      subroutine scale(fld,len,scl)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) FLD(LEN),scl
-      DO I=1,LEN
-        FLD(I) = FLD(I) * SCL
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE QCMXMN(TTL,FLD,SLIMSK,SNO,ICEFLG,
-     &                  FLDLMX,FLDLMN,FLDOMX,FLDOMN,FLDIMX,FLDIMN,
-     &                  FLDJMX,FLDJMN,FLDSMX,FLDSMN,EPSFLD,
-     &                  RLA,RLO,LEN,MODE,PERCRIT,LGCHEK,me)
+      real (kind=kind_io8) fld(len),scl
+      do i=1,len
+        fld(i) = fld(i) * scl
+      enddo
+      return
+      end
+      subroutine qcmxmn(ttl,fld,slimsk,sno,iceflg,
+     &                  fldlmx,fldlmn,fldomx,fldomn,fldimx,fldimn,
+     &                  fldjmx,fldjmn,fldsmx,fldsmn,epsfld,
+     &                  rla,rlo,len,mode,percrit,lgchek,me)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
-      REAL (KIND=KIND_IO8) permax,per,fldimx,fldimn,fldjmx,fldomn,
+      real (kind=kind_io8) permax,per,fldimx,fldimn,fldjmx,fldomn,
      &                     fldlmx,fldlmn,fldomx,fldjmn,percrit,
      &                     fldsmx,fldsmn,epsfld
       integer kmaxi,kmini,kmaxj,kmino,kmaxl,kminl,kmaxo,mmprt,kminj,
      &        ij,nprt,kmaxs,kmins,i,me,len,mode
-      PARAMETER(MMPRT=2)
+      parameter(mmprt=2)
 !
-      CHARACTER*8 TTL
-      logical iceflg(LEN)
-      REAL (KIND=KIND_IO8) FLD(LEN),SLIMSK(LEN),SNO(LEN),
-     &                     RLA(LEN), RLO(LEN)
-      INTEGER IWK(LEN)
-      LOGICAL LGCHEK
+      character*8 ttl
+      logical iceflg(len)
+      real (kind=kind_io8) fld(len),slimsk(len),sno(len),
+     &                     rla(len), rlo(len)
+      integer iwk(len)
+      logical lgchek
 !
       logical first
-      integer   NUM_THREADS
+      integer   num_threads
       data first /.true./
-      save NUM_THREADS, first
+      save num_threads, first
 !
-      integer LEN_THREAD_M, I1_T, I2_T, IT
-      integer NUM_PARTHDS
+      integer len_thread_m, i1_t, i2_t, it
+      integer num_parthds
 !
       if (first) then
-         NUM_THREADS = NUM_PARTHDS()
+         num_threads = num_parthds()
          first = .false.
       endif
 !
-!  CHECK AGAINST LAND-SEA MASK AND ICE COVER MASK
+!  check against land-sea mask and ice cover mask
 !
       if(me .eq. 0) then
-!     PRINT *,' '
-      PRINT *,'Performing QC of ',TTL,' MODE=',MODE,
+!     print *,' '
+      print *,'performing qc of ',ttl,' mode=',mode,
      &        '(0=count only, 1=replace)'
       endif
 !
-      LEN_THREAD_M  = (LEN+NUM_THREADS-1) / NUM_THREADS
+      len_thread_m  = (len+num_threads-1) / num_threads
 !
-!$OMP PARALLEL DO PRIVATE(I1_T,I2_T,IT,I)
-!$OMP+PRIVATE(nprt,ij,iwk,KMAXS,KMINS)
-!$OMP+PRIVATE(KMAXL,KMINL,KMAXO,KMINO,KMAXI,KMINI,KMAXJ,KMINJ)
-!$OMP+SHARED(mode,epsfld)
-!$OMP+SHARED(fldlmx,fldlmn,fldomx,fldjmn,fldsmx,fldsmn)
-!$OMP+SHARED(fld,slimsk,sno,rla,rlo)
+!$omp parallel do private(i1_t,i2_t,it,i)
+!$omp+private(nprt,ij,iwk,kmaxs,kmins)
+!$omp+private(kmaxl,kminl,kmaxo,kmino,kmaxi,kmini,kmaxj,kminj)
+!$omp+shared(mode,epsfld)
+!$omp+shared(fldlmx,fldlmn,fldomx,fldjmn,fldsmx,fldsmn)
+!$omp+shared(fld,slimsk,sno,rla,rlo)
 !
-      DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-        I1_T       = (IT-1)*LEN_THREAD_M+1
-        I2_T       = MIN(I1_T+LEN_THREAD_M-1,LEN)
+      do it=1,num_threads   ! start of threaded loop ...................
+        i1_t       = (it-1)*len_thread_m+1
+        i2_t       = min(i1_t+len_thread_m-1,len)
 !
-        KMAXL = 0
-        KMINL = 0
-        KMAXO = 0
-        KMINO = 0
-        KMAXI = 0
-        KMINI = 0
-        KMAXJ = 0
-        KMINJ = 0
-        KMAXS = 0
-        KMINS = 0
+        kmaxl = 0
+        kminl = 0
+        kmaxo = 0
+        kmino = 0
+        kmaxi = 0
+        kmini = 0
+        kmaxj = 0
+        kminj = 0
+        kmaxs = 0
+        kmins = 0
 !
 !
-!  Lower bound check over bare land
+!  lower bound check over bare land
 !
-        IF (FLDLMN .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.1..AND.SNO(I).LE.0..AND.
-     &         FLD(I).LT.FLDLMN-EPSFLD) THEN
-               KMINL=KMINL+1
-               IWK(KMINL) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMINL)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8001,RLA(IJ),RLO(IJ),FLD(IJ),FLDLMN
- 8001         FORMAT(' Bare land min. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E13.6, ' to ',E13.6)
-            ENDDO
+        if (fldlmn .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.1..and.sno(i).le.0..and.
+     &         fld(i).lt.fldlmn-epsfld) then
+               kminl=kminl+1
+               iwk(kminl) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kminl)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8001,rla(ij),rlo(ij),fld(ij),fldlmn
+ 8001         format(' bare land min. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e13.6, ' to ',e13.6)
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMINL
-              FLD(IWK(I)) = FLDLMN
-            ENDDO
-          ENDIF
-        ENDIF
-!
-!  Upper bound check over bare land
-!
-        IF (FLDLMX .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.1..AND.SNO(I).LE.0..AND.
-     &         FLD(I).GT.FLDLMX+EPSFLD) THEN
-               KMAXL=KMAXL+1
-               IWK(KMAXL) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMAXL)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8002,RLA(IJ),RLO(IJ),FLD(IJ),FLDLMX
- 8002         FORMAT(' Bare land max. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E13.6, ' to ',E13.6)
-            ENDDO
+          if (mode .eq. 1) then
+            do i=1,kminl
+              fld(iwk(i)) = fldlmn
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMAXL
-              FLD(IWK(I)) = FLDLMX
-            ENDDO
-          ENDIF
-        ENDIF
+        endif
 !
-!  Lower bound check over snow covered land
+!  upper bound check over bare land
 !
-        IF (FLDSMN .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.1..AND.SNO(I).GT.0..AND.
-     &         FLD(I).LT.FLDSMN-EPSFLD) THEN
-               KMINS=KMINS+1
-               IWK(KMINS) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMINS)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8003,RLA(IJ),RLO(IJ),FLD(IJ),FLDSMN
- 8003         FORMAT(' Sno covrd land min. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+        if (fldlmx .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.1..and.sno(i).le.0..and.
+     &         fld(i).gt.fldlmx+epsfld) then
+               kmaxl=kmaxl+1
+               iwk(kmaxl) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmaxl)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8002,rla(ij),rlo(ij),fld(ij),fldlmx
+ 8002         format(' bare land max. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e13.6, ' to ',e13.6)
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMINS
-              FLD(IWK(I)) = FLDSMN
-            ENDDO
-          ENDIF
-        ENDIF
-!
-!  Upper bound check over snow covered land
-!
-        IF (FLDSMX .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.1..AND.SNO(I).GT.0..AND.
-     &         FLD(I).GT.FLDSMX+EPSFLD) THEN
-               KMAXS=KMAXS+1
-               IWK(KMAXS) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMAXS)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8004,RLA(IJ),RLO(IJ),FLD(IJ),FLDSMX
- 8004         FORMAT(' Snow land max. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+          if (mode .eq. 1) then
+            do i=1,kmaxl
+              fld(iwk(i)) = fldlmx
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMAXS
-              FLD(IWK(I)) = FLDSMX
-            ENDDO
-          ENDIF
-        ENDIF
+        endif
 !
-!  Lower bound check over open ocean
+!  lower bound check over snow covered land
 !
-        IF (FLDOMN .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.0..AND.
-     &         FLD(I).LT.FLDOMN-EPSFLD) THEN
-               KMINO=KMINO+1
-               IWK(KMINO) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMINO)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8005,RLA(IJ),RLO(IJ),FLD(IJ),FLDOMN
- 8005         FORMAT(' Open ocean min. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4,' to ',E11.4)
-            ENDDO
+        if (fldsmn .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.1..and.sno(i).gt.0..and.
+     &         fld(i).lt.fldsmn-epsfld) then
+               kmins=kmins+1
+               iwk(kmins) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmins)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8003,rla(ij),rlo(ij),fld(ij),fldsmn
+ 8003         format(' sno covrd land min. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMINO
-              FLD(IWK(I)) = FLDOMN
-            ENDDO
-          ENDIF
-      ENDIF
-!
-!  Upper bound check over open ocean
-!
-        IF (FLDOMX .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(FLDOMX.NE.999..AND.SLIMSK(I).EQ.0..AND.
-     &         FLD(I).GT.FLDOMX+EPSFLD) THEN
-               KMAXO=KMAXO+1
-               IWK(KMAXO) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMAXO)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8006,RLA(IJ),RLO(IJ),FLD(IJ),FLDOMX
- 8006         FORMAT(' Open ocean max. check. LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+          if (mode .eq. 1) then
+            do i=1,kmins
+              fld(iwk(i)) = fldsmn
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMAXO
-              FLD(IWK(I)) = FLDOMX
-            ENDDO
-          ENDIF
-        ENDIF
+        endif
 !
-!  Lower bound check over sea ice without snow
+!  upper bound check over snow covered land
 !
-        IF (FLDIMN .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.2..AND.SNO(I).LE.0..AND.
-     &         FLD(I).LT.FLDIMN-EPSFLD) THEN
-               KMINI=KMINI+1
-               IWK(KMINI) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMINI)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8007,RLA(IJ),RLO(IJ),FLD(IJ),FLDIMN
- 8007         FORMAT(' Seaice no snow min. check LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+        if (fldsmx .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.1..and.sno(i).gt.0..and.
+     &         fld(i).gt.fldsmx+epsfld) then
+               kmaxs=kmaxs+1
+               iwk(kmaxs) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmaxs)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8004,rla(ij),rlo(ij),fld(ij),fldsmx
+ 8004         format(' snow land max. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMINI
-              FLD(IWK(I)) = FLDIMN
-            ENDDO
-          ENDIF
-        ENDIF
-!
-!  Upper bound check over sea ice without snow
-!
-        IF (FLDIMX .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.2..AND.SNO(I).LE.0..AND.
-     &         FLD(I).GT.FLDIMX+EPSFLD  .AND. ICEFLG(I)) THEN
-!    &         FLD(I).GT.FLDIMX+EPSFLD) THEN
-               KMAXI=KMAXI+1
-               IWK(KMAXI) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMAXI)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8008,RLA(IJ),RLO(IJ),FLD(IJ),FLDIMX
- 8008         FORMAT(' Seaice no snow max. check LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+          if (mode .eq. 1) then
+            do i=1,kmaxs
+              fld(iwk(i)) = fldsmx
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMAXI
-              FLD(IWK(I)) = FLDIMX
-            ENDDO
-          ENDIF
-        ENDIF
+        endif
 !
-!  Lower bound check over sea ice with snow
+!  lower bound check over open ocean
 !
-        IF (FLDJMN .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.2..AND.SNO(I).GT.0..AND.
-     &         FLD(I).LT.FLDJMN-EPSFLD) THEN
-               KMINJ=KMINJ+1
-               IWK(KMINJ) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMINJ)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8009,RLA(IJ),RLO(IJ),FLD(IJ),FLDJMN
- 8009         FORMAT(' Sea ice snow min. check LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+        if (fldomn .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.0..and.
+     &         fld(i).lt.fldomn-epsfld) then
+               kmino=kmino+1
+               iwk(kmino) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmino)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8005,rla(ij),rlo(ij),fld(ij),fldomn
+ 8005         format(' open ocean min. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4,' to ',e11.4)
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMINJ
-              FLD(IWK(I)) = FLDJMN
-            ENDDO
-          ENDIF
-        ENDIF
-!
-!  Upper bound check over sea ice with snow
-!
-        IF (FLDJMX .NE. 999.0) THEN
-          DO I=I1_T,I2_T
-            IF(SLIMSK(I).EQ.2..AND.SNO(I).GT.0..AND.
-     &         FLD(I).GT.FLDJMX+EPSFLD  .AND. ICEFLG(I)) THEN
-!    &         FLD(I).GT.FLDJMX+EPSFLD) THEN
-               KMAXJ=KMAXJ+1
-               IWK(KMAXJ) = I
-            ENDIF
-          ENDDO
-          if(me == 0 . and. it == 1 .and. NUM_THREADS == 1) then
-            NPRT = MIN(MMPRT,KMAXJ)
-            DO I=1,NPRT
-              IJ = IWK(I)
-              PRINT 8010,RLA(IJ),RLO(IJ),FLD(IJ),FLDJMX
- 8010         FORMAT(' Seaice snow max check LAT=',F5.1,
-     &             ' LON=',F6.1,' FLD=',E11.4, ' to ',E11.4)
-            ENDDO
+          if (mode .eq. 1) then
+            do i=1,kmino
+              fld(iwk(i)) = fldomn
+            enddo
           endif
-          IF (MODE .EQ. 1) THEN
-            DO I=1,KMAXJ
-              FLD(IWK(I)) = FLDJMX
-            ENDDO
-          ENDIF
-        ENDIF
-      ENDDO            ! END OF THREADED LOOP ...................
-!$OMP END PARALLEL DO
+      endif
 !
-!  Print results
+!  upper bound check over open ocean
+!
+        if (fldomx .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(fldomx.ne.999..and.slimsk(i).eq.0..and.
+     &         fld(i).gt.fldomx+epsfld) then
+               kmaxo=kmaxo+1
+               iwk(kmaxo) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmaxo)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8006,rla(ij),rlo(ij),fld(ij),fldomx
+ 8006         format(' open ocean max. check. lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
+          endif
+          if (mode .eq. 1) then
+            do i=1,kmaxo
+              fld(iwk(i)) = fldomx
+            enddo
+          endif
+        endif
+!
+!  lower bound check over sea ice without snow
+!
+        if (fldimn .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.2..and.sno(i).le.0..and.
+     &         fld(i).lt.fldimn-epsfld) then
+               kmini=kmini+1
+               iwk(kmini) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmini)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8007,rla(ij),rlo(ij),fld(ij),fldimn
+ 8007         format(' seaice no snow min. check lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
+          endif
+          if (mode .eq. 1) then
+            do i=1,kmini
+              fld(iwk(i)) = fldimn
+            enddo
+          endif
+        endif
+!
+!  upper bound check over sea ice without snow
+!
+        if (fldimx .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.2..and.sno(i).le.0..and.
+     &         fld(i).gt.fldimx+epsfld  .and. iceflg(i)) then
+!    &         fld(i).gt.fldimx+epsfld) then
+               kmaxi=kmaxi+1
+               iwk(kmaxi) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmaxi)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8008,rla(ij),rlo(ij),fld(ij),fldimx
+ 8008         format(' seaice no snow max. check lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
+          endif
+          if (mode .eq. 1) then
+            do i=1,kmaxi
+              fld(iwk(i)) = fldimx
+            enddo
+          endif
+        endif
+!
+!  lower bound check over sea ice with snow
+!
+        if (fldjmn .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.2..and.sno(i).gt.0..and.
+     &         fld(i).lt.fldjmn-epsfld) then
+               kminj=kminj+1
+               iwk(kminj) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kminj)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8009,rla(ij),rlo(ij),fld(ij),fldjmn
+ 8009         format(' sea ice snow min. check lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
+          endif
+          if (mode .eq. 1) then
+            do i=1,kminj
+              fld(iwk(i)) = fldjmn
+            enddo
+          endif
+        endif
+!
+!  upper bound check over sea ice with snow
+!
+        if (fldjmx .ne. 999.0) then
+          do i=i1_t,i2_t
+            if(slimsk(i).eq.2..and.sno(i).gt.0..and.
+     &         fld(i).gt.fldjmx+epsfld  .and. iceflg(i)) then
+!    &         fld(i).gt.fldjmx+epsfld) then
+               kmaxj=kmaxj+1
+               iwk(kmaxj) = i
+            endif
+          enddo
+          if(me == 0 . and. it == 1 .and. num_threads == 1) then
+            nprt = min(mmprt,kmaxj)
+            do i=1,nprt
+              ij = iwk(i)
+              print 8010,rla(ij),rlo(ij),fld(ij),fldjmx
+ 8010         format(' seaice snow max check lat=',f5.1,
+     &             ' lon=',f6.1,' fld=',e11.4, ' to ',e11.4)
+            enddo
+          endif
+          if (mode .eq. 1) then
+            do i=1,kmaxj
+              fld(iwk(i)) = fldjmx
+            enddo
+          endif
+        endif
+      enddo            ! end of threaded loop ...................
+!$omp end parallel do
+!
+!  print results
 !
       if(me .eq. 0) then
-!     WRITE(6,*) 'SUMMARY OF QC'
-      PERMAX=0.
-      IF(KMINL.GT.0) THEN
-        PER=FLOAT(KMINL)/FLOAT(LEN)*100.
-        PRINT 9001,FLDLMN,KMINL,PER
- 9001   FORMAT(' Bare land min check.  Modified to ',F8.1,
-     &         ' at ',I5,' points ',F8.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMAXL.GT.0) THEN
-        PER=FLOAT(KMAXL)/FLOAT(LEN)*100.
-        PRINT 9002,FLDLMX,KMAXL,PER
- 9002   FORMAT(' Bare land max check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMINO.GT.0) THEN
-        PER=FLOAT(KMINO)/FLOAT(LEN)*100.
-        PRINT 9003,FLDOMN,KMINO,PER
- 9003   FORMAT(' Open ocean min check.  Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMAXO.GT.0) THEN
-        PER=FLOAT(KMAXO)/FLOAT(LEN)*100.
-        PRINT 9004,FLDOMX,KMAXO,PER
- 9004   FORMAT(' Open sea max check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMINS.GT.0) THEN
-        PER=FLOAT(KMINS)/FLOAT(LEN)*100.
-        PRINT 9009,FLDSMN,KMINS,PER
- 9009   FORMAT(' Snow covered land min check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMAXS.GT.0) THEN
-        PER=FLOAT(KMAXS)/FLOAT(LEN)*100.
-        PRINT 9010,FLDSMX,KMAXS,PER
- 9010   FORMAT(' Snow covered land max check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMINI.GT.0) THEN
-        PER=FLOAT(KMINI)/FLOAT(LEN)*100.
-        PRINT 9005,FLDIMN,KMINI,PER
- 9005   FORMAT(' Bare ice min check.  Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMAXI.GT.0) THEN
-        PER=FLOAT(KMAXI)/FLOAT(LEN)*100.
-        PRINT 9006,FLDIMX,KMAXI,PER
- 9006   FORMAT(' Bare ice max check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMINJ.GT.0) THEN
-        PER=FLOAT(KMINJ)/FLOAT(LEN)*100.
-        PRINT 9007,FLDJMN,KMINJ,PER
- 9007   FORMAT(' Snow covered ice min check.  Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-      IF(KMAXJ.GT.0) THEN
-        PER=FLOAT(KMAXJ)/FLOAT(LEN)*100.
-        PRINT 9008,FLDJMX,KMAXJ,PER
- 9008   FORMAT(' Snow covered ice max check. Modified to ',F8.1,
-     &         ' at ',I5,' points ',F4.1,'percent')
-        IF(PER.GT.PERMAX) PERMAX=PER
-      ENDIF
-!     Commented on 06/30/99  -- Moorthi
-!     IF(LGCHEK) THEN
-!       IF(PERMAX.GT.PERCRIT) THEN
-!         WRITE(6,*) ' Too many bad points.  Aborting ....'
-!         CALL ABORT
-!       ENDIF
-!     ENDIF
+!     write(6,*) 'summary of qc'
+      permax=0.
+      if(kminl.gt.0) then
+        per=float(kminl)/float(len)*100.
+        print 9001,fldlmn,kminl,per
+ 9001   format(' bare land min check.  modified to ',f8.1,
+     &         ' at ',i5,' points ',f8.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmaxl.gt.0) then
+        per=float(kmaxl)/float(len)*100.
+        print 9002,fldlmx,kmaxl,per
+ 9002   format(' bare land max check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmino.gt.0) then
+        per=float(kmino)/float(len)*100.
+        print 9003,fldomn,kmino,per
+ 9003   format(' open ocean min check.  modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmaxo.gt.0) then
+        per=float(kmaxo)/float(len)*100.
+        print 9004,fldomx,kmaxo,per
+ 9004   format(' open sea max check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmins.gt.0) then
+        per=float(kmins)/float(len)*100.
+        print 9009,fldsmn,kmins,per
+ 9009   format(' snow covered land min check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmaxs.gt.0) then
+        per=float(kmaxs)/float(len)*100.
+        print 9010,fldsmx,kmaxs,per
+ 9010   format(' snow covered land max check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmini.gt.0) then
+        per=float(kmini)/float(len)*100.
+        print 9005,fldimn,kmini,per
+ 9005   format(' bare ice min check.  modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmaxi.gt.0) then
+        per=float(kmaxi)/float(len)*100.
+        print 9006,fldimx,kmaxi,per
+ 9006   format(' bare ice max check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kminj.gt.0) then
+        per=float(kminj)/float(len)*100.
+        print 9007,fldjmn,kminj,per
+ 9007   format(' snow covered ice min check.  modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+      if(kmaxj.gt.0) then
+        per=float(kmaxj)/float(len)*100.
+        print 9008,fldjmx,kmaxj,per
+ 9008   format(' snow covered ice max check. modified to ',f8.1,
+     &         ' at ',i5,' points ',f4.1,'percent')
+        if(per.gt.permax) permax=per
+      endif
+!     commented on 06/30/99  -- moorthi
+!     if(lgchek) then
+!       if(permax.gt.percrit) then
+!         write(6,*) ' too many bad points.  aborting ....'
+!         call abort
+!       endif
+!     endif
 !
       endif
 !
-      RETURN
-      END
-      SUBROUTINE SETZRO(FLD,EPS,LEN)
+      return
+      end
+      subroutine setzro(fld,eps,len)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) FLD(LEN),eps
-      DO I=1,LEN
-        IF(ABS(FLD(I)).LT.EPS) FLD(I) = 0.
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE GETSCV(SNOFLD,SCVFLD,LEN)
+      real (kind=kind_io8) fld(len),eps
+      do i=1,len
+        if(abs(fld(i)).lt.eps) fld(i) = 0.
+      enddo
+      return
+      end
+      subroutine getscv(snofld,scvfld,len)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) SNOFLD(LEN),SCVFLD(LEN)
+      real (kind=kind_io8) snofld(len),scvfld(len)
 !
-      DO I=1,LEN
-        SCVFLD(I) = 0.
-        IF(SNOFLD(I).GT.0.) SCVFLD(I) = 1.
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE GETSTC(TSFFLD,TG3FLD,SLIFLD,LEN,LSOIL,STCFLD,TSFIMX)
+      do i=1,len
+        scvfld(i) = 0.
+        if(snofld(i).gt.0.) scvfld(i) = 1.
+      enddo
+      return
+      end
+      subroutine getstc(tsffld,tg3fld,slifld,len,lsoil,stcfld,tsfimx)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer k,i,len,lsoil
-      REAL (KIND=KIND_IO8) factor,tsfimx
-      REAL (KIND=KIND_IO8) TSFFLD(LEN), TG3FLD(LEN), SLIFLD(LEN)
-      REAL (KIND=KIND_IO8) STCFLD(LEN,LSOIL)
+      real (kind=kind_io8) factor,tsfimx
+      real (kind=kind_io8) tsffld(len), tg3fld(len), slifld(len)
+      real (kind=kind_io8) stcfld(len,lsoil)
 !
-!  Layer Soil temperature
+!  layer soil temperature
 !
-      DO K = 1, LSOIL
-        DO I = 1, LEN
-          IF(SLIFLD(I).EQ.1.0) THEN
-            FACTOR = ((K-1) * 2 + 1) / (2. * LSOIL)
-            STCFLD(I,K) = FACTOR*TG3FLD(I)+(1.-FACTOR)*TSFFLD(I)
-          ELSEIF(SLIFLD(I).EQ.2.0) THEN
-            FACTOR = ((K-1) * 2 + 1) / (2. * LSOIL)
-            STCFLD(I,K) = FACTOR*TSFIMX+(1.-FACTOR)*TSFFLD(I)
-          ELSE
-            STCFLD(I,K) = TG3FLD(I)
-          ENDIF
-        ENDDO
-      ENDDO
-      IF(LSOIL.GT.2) THEN
-        DO K = 3, LSOIL
-          DO I = 1, LEN
-            STCFLD(I,K) = STCFLD(I,2)
-          ENDDO
-        ENDDO
-      ENDIF
-      RETURN
-      END
-      SUBROUTINE GETSMC(WETFLD,LEN,LSOIL,SMCFLD,me)
+      do k = 1, lsoil
+        do i = 1, len
+          if(slifld(i).eq.1.0) then
+            factor = ((k-1) * 2 + 1) / (2. * lsoil)
+            stcfld(i,k) = factor*tg3fld(i)+(1.-factor)*tsffld(i)
+          elseif(slifld(i).eq.2.0) then
+            factor = ((k-1) * 2 + 1) / (2. * lsoil)
+            stcfld(i,k) = factor*tsfimx+(1.-factor)*tsffld(i)
+          else
+            stcfld(i,k) = tg3fld(i)
+          endif
+        enddo
+      enddo
+      if(lsoil.gt.2) then
+        do k = 3, lsoil
+          do i = 1, len
+            stcfld(i,k) = stcfld(i,2)
+          enddo
+        enddo
+      endif
+      return
+      end
+      subroutine getsmc(wetfld,len,lsoil,smcfld,me)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer k,i,len,lsoil,me
-      REAL (KIND=KIND_IO8) WETFLD(LEN), SMCFLD(LEN,LSOIL)
+      real (kind=kind_io8) wetfld(len), smcfld(len,lsoil)
 !
-      if (me .eq. 0) WRITE(6,*) 'GETSMC'
+      if (me .eq. 0) write(6,*) 'getsmc'
 !
-!  Layer Soil wetness
+!  layer soil wetness
 !
-      DO K = 1, LSOIL
-        DO I = 1, LEN
-          SMCFLD(I,K) = (WETFLD(I)*1000./150.)*.37 + .1
-        ENDDO
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE USESGT(SIG1T,SLIANL,TG3ANL,LEN,LSOIL,TSFANL,STCANL,
-     &                  TSFIMX)
+      do k = 1, lsoil
+        do i = 1, len
+          smcfld(i,k) = (wetfld(i)*1000./150.)*.37 + .1
+        enddo
+      enddo
+      return
+      end
+      subroutine usesgt(sig1t,slianl,tg3anl,len,lsoil,tsfanl,stcanl,
+     &                  tsfimx)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len,lsoil
-      REAL (KIND=KIND_IO8) tsfimx
-      REAL (KIND=KIND_IO8) SIG1T(LEN), SLIANL(LEN), TG3ANL(LEN)
-      REAL (KIND=KIND_IO8) TSFANL(LEN), STCANL(LEN,LSOIL)
+      real (kind=kind_io8) tsfimx
+      real (kind=kind_io8) sig1t(len), slianl(len), tg3anl(len)
+      real (kind=kind_io8) tsfanl(len), stcanl(len,lsoil)
 !
-!  Soil temperature
+!  soil temperature
 !
-      IF(SIG1T(1).GT.0.) THEN
-        DO I=1,LEN
-          IF(SLIANL(I).NE.0.) THEN
-            TSFANL(I) = SIG1T(I)
-          ENDIF
-        ENDDO
-      ENDIF
-      CALL GETSTC(TSFANL,TG3ANL,SLIANL,LEN,LSOIL,STCANL,TSFIMX)
+      if(sig1t(1).gt.0.) then
+        do i=1,len
+          if(slianl(i).ne.0.) then
+            tsfanl(i) = sig1t(i)
+          endif
+        enddo
+      endif
+      call getstc(tsfanl,tg3anl,slianl,len,lsoil,stcanl,tsfimx)
 !
-      RETURN
-      END
-      SUBROUTINE SNOSFC(SNOANL,TSFANL,TSFSMX,LEN,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine snosfc(snoanl,tsfanl,tsfsmx,len,me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer kount,i,len,me
-      REAL (KIND=KIND_IO8) per,tsfsmx
-      REAL (KIND=KIND_IO8) SNOANL(LEN), TSFANL(LEN)
+      real (kind=kind_io8) per,tsfsmx
+      real (kind=kind_io8) snoanl(len), tsfanl(len)
 !
-      if (me .eq. 0) WRITE(6,*) 'Set snow temp to TSFSMX if greater'
-      KOUNT=0
-      DO I=1,LEN
-        IF(SNOANL(I).GT.0.) THEN
-          IF(TSFANL(I).GT.TSFSMX) TSFANL(I)=TSFSMX
-          KOUNT = KOUNT + 1
-        ENDIF
-      ENDDO
-      IF(KOUNT.GT.0) THEN
-        if(me .eq. 0) then
-        PER=FLOAT(KOUNT)/FLOAT(LEN)*100.
-        WRITE(6,*) 'Snow sfc.  TSF set to ',TSFSMX,' at ',
-     &              KOUNT, ' POINTS ',PER,'percent'
+      if (me .eq. 0) write(6,*) 'set snow temp to tsfsmx if greater'
+      kount=0
+      do i=1,len
+        if(snoanl(i).gt.0.) then
+          if(tsfanl(i).gt.tsfsmx) tsfanl(i)=tsfsmx
+          kount = kount + 1
         endif
-      ENDIF
-      RETURN
-      END
-      SUBROUTINE ALBOCN(ALBCLM,SLMASK,ALBOMX,LEN)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      enddo
+      if(kount.gt.0) then
+        if(me .eq. 0) then
+        per=float(kount)/float(len)*100.
+        write(6,*) 'snow sfc.  tsf set to ',tsfsmx,' at ',
+     &              kount, ' points ',per,'percent'
+        endif
+      endif
+      return
+      end
+      subroutine albocn(albclm,slmask,albomx,len)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) albomx
-      REAL (KIND=KIND_IO8) ALBCLM(LEN,4), SLMASK(LEN)
-      DO I=1,LEN
-        IF(SLMASK(I).EQ.0) THEN
-          ALBCLM(I,1) = ALBOMX
-          ALBCLM(I,2) = ALBOMX
-          ALBCLM(I,3) = ALBOMX
-          ALBCLM(I,4) = ALBOMX
-        ENDIF
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE QCMXICE(GLACIR,AMXICE,LEN,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      real (kind=kind_io8) albomx
+      real (kind=kind_io8) albclm(len,4), slmask(len)
+      do i=1,len
+        if(slmask(i).eq.0) then
+          albclm(i,1) = albomx
+          albclm(i,2) = albomx
+          albclm(i,3) = albomx
+          albclm(i,4) = albomx
+        endif
+      enddo
+      return
+      end
+      subroutine qcmxice(glacir,amxice,len,me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,kount,len,me
-      REAL (KIND=KIND_IO8) GLACIR(LEN),AMXICE(LEN),per
-      if (me .eq. 0) WRITE(6,*) 'QC of maximum ice extent'
-      KOUNT=0
-      DO I=1,LEN
-        IF(GLACIR(I).EQ.1..AND.AMXICE(I).EQ.0.) THEN
-          AMXICE(I) = 0.
-          KOUNT     = KOUNT + 1
-        ENDIF
-      ENDDO
-      IF(KOUNT.GT.0) THEN
-        PER = FLOAT(KOUNT) / FLOAT(LEN)*100.
-        if(me .eq. 0) WRITE(6,*) ' Max ice limit less than glacier'
-     &,            ' coverage at ', KOUNT, ' POINTS ',PER,'percent'
-      ENDIF
-      RETURN
-      END
-      SUBROUTINE QCSLI(SLIANL,SLIFCS,LEN,me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
-      implicit none
-      integer i,kount,len,me
-      REAL (KIND=KIND_IO8) SLIANL(LEN), SLIFCS(LEN),per
-      if (me .eq. 0) then
-      WRITE(6,*) ' '
-      WRITE(6,*) 'QCSLI'
+      real (kind=kind_io8) glacir(len),amxice(len),per
+      if (me .eq. 0) write(6,*) 'qc of maximum ice extent'
+      kount=0
+      do i=1,len
+        if(glacir(i).eq.1..and.amxice(i).eq.0.) then
+          amxice(i) = 0.
+          kount     = kount + 1
+        endif
+      enddo
+      if(kount.gt.0) then
+        per = float(kount) / float(len)*100.
+        if(me .eq. 0) write(6,*) ' max ice limit less than glacier'
+     &,            ' coverage at ', kount, ' points ',per,'percent'
       endif
-      KOUNT=0
-      DO I=1,LEN
-        IF(SLIANL(I).EQ.1..AND.SLIFCS(I).EQ.0.) THEN
-          KOUNT      = KOUNT + 1
-          SLIFCS(I) = 1.
-        ENDIF
-        IF(SLIANL(I).EQ.0..AND.SLIFCS(I).EQ.1.) THEN
-          KOUNT      = KOUNT + 1
-          SLIFCS(I) = 0.
-        ENDIF
-        IF(SLIANL(I).EQ.2..AND.SLIFCS(I).EQ.1.) THEN
-          KOUNT      = KOUNT + 1
-          SLIFCS(I) = 0.
-        ENDIF
-        IF(SLIANL(I).EQ.1..AND.SLIFCS(I).EQ.2.) THEN
-          KOUNT      = KOUNT + 1
-          SLIFCS(I) = 1.
-        ENDIF
-      ENDDO
-      IF(KOUNT.GT.0) THEN
-        PER=FLOAT(KOUNT)/FLOAT(LEN)*100.
+      return
+      end
+      subroutine qcsli(slianl,slifcs,len,me)
+      use machine , only : kind_io8,kind_io4
+      implicit none
+      integer i,kount,len,me
+      real (kind=kind_io8) slianl(len), slifcs(len),per
+      if (me .eq. 0) then
+      write(6,*) ' '
+      write(6,*) 'qcsli'
+      endif
+      kount=0
+      do i=1,len
+        if(slianl(i).eq.1..and.slifcs(i).eq.0.) then
+          kount      = kount + 1
+          slifcs(i) = 1.
+        endif
+        if(slianl(i).eq.0..and.slifcs(i).eq.1.) then
+          kount      = kount + 1
+          slifcs(i) = 0.
+        endif
+        if(slianl(i).eq.2..and.slifcs(i).eq.1.) then
+          kount      = kount + 1
+          slifcs(i) = 0.
+        endif
+        if(slianl(i).eq.1..and.slifcs(i).eq.2.) then
+          kount      = kount + 1
+          slifcs(i) = 1.
+        endif
+      enddo
+      if(kount.gt.0) then
+        per=float(kount)/float(len)*100.
         if(me .eq. 0) then
-        WRITE(6,*) ' Inconsistency of SLMASK between forecast and',
-     &             ' analysis corrected at ',KOUNT, ' POINTS ',PER,
+        write(6,*) ' inconsistency of slmask between forecast and',
+     &             ' analysis corrected at ',kount, ' points ',per,
      &             'percent'
         endif
-      ENDIF
-      RETURN
-      END
-!     SUBROUTINE NNTPRT(DATA,IMAX,FACT)
-!     REAL (KIND=KIND_IO8) DATA(IMAX)
-!     ILAST=0
-!     I1=1
-!     I2=80
-!1112 CONTINUE
-!     IF(I2.GE.IMAX) THEN
-!       ILAST=1
-!       I2=IMAX
-!     ENDIF
-!     WRITE(6,*) ' '
-!     DO J=1,JMAX
-!       WRITE(6,1111) (NINT(DATA(IMAX*(J-1)+I)*FACT),I=I1,I2)
-!     ENDDO
-!     IF(ILAST.EQ.1) RETURN
-!     I1=I1+80
-!     I2=I1+79
-!     IF(I2.GE.IMAX) THEN
-!       ILAST=1
-!       I2=IMAX
-!     ENDIF
-!     GO TO 1112
-!1111 FORMAT(80I1)
-!     RETURN
-!     END
-      SUBROUTINE QCBYFC(TSFFCS,SNOFCS,QCTSFS,QCSNOS,QCTSFI,
-     &                  LEN,LSOIL,SNOANL,AISANL,SLIANL,TSFANL,ALBANL,
-     &                  ZORANL,SMCANL,
-     &                  SMCCLM,TSFSMX,ALBOMX,ZOROMX, me)
+      endif
+      return
+      end
+!     subroutine nntprt(data,imax,fact)
+!     real (kind=kind_io8) data(imax)
+!     ilast=0
+!     i1=1
+!     i2=80
+!1112 continue
+!     if(i2.ge.imax) then
+!       ilast=1
+!       i2=imax
+!     endif
+!     write(6,*) ' '
+!     do j=1,jmax
+!       write(6,1111) (nint(data(imax*(j-1)+i)*fact),i=i1,i2)
+!     enddo
+!     if(ilast.eq.1) return
+!     i1=i1+80
+!     i2=i1+79
+!     if(i2.ge.imax) then
+!       ilast=1
+!       i2=imax
+!     endif
+!     go to 1112
+!1111 format(80i1)
+!     return
+!     end
+      subroutine qcbyfc(tsffcs,snofcs,qctsfs,qcsnos,qctsfi,
+     &                  len,lsoil,snoanl,aisanl,slianl,tsfanl,albanl,
+     &                  zoranl,smcanl,
+     &                  smcclm,tsfsmx,albomx,zoromx, me)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer kount,me,k,i,lsoil,len
-      REAL (KIND=KIND_IO8) zoromx,per,albomx,qctsfi,qcsnos,qctsfs,tsfsmx
-      REAL (KIND=KIND_IO8) TSFFCS(LEN), SNOFCS(LEN)
-      REAL (KIND=KIND_IO8) SNOANL(LEN), AISANL(LEN),
-     &     SLIANL(LEN), ZORANL(LEN),
-     &     TSFANL(LEN), ALBANL(LEN,4),
-     &     SMCANL(LEN,LSOIL)
-      REAL (KIND=KIND_IO8) SMCCLM(LEN,LSOIL)
+      real (kind=kind_io8) zoromx,per,albomx,qctsfi,qcsnos,qctsfs,tsfsmx
+      real (kind=kind_io8) tsffcs(len), snofcs(len)
+      real (kind=kind_io8) snoanl(len), aisanl(len),
+     &     slianl(len), zoranl(len),
+     &     tsfanl(len), albanl(len,4),
+     &     smcanl(len,lsoil)
+      real (kind=kind_io8) smcclm(len,lsoil)
 !
-      if (me .eq. 0) WRITE(6,*) 'QC of snow and sea-ice ANALYSIS'
+      if (me .eq. 0) write(6,*) 'qc of snow and sea-ice analysis'
 !
-! QC of snow analysis
+! qc of snow analysis
 !
-!  Questionable snow cover
+!  questionable snow cover
 !
-      KOUNT = 0
-      DO I=1,LEN
-        IF(SLIANL(I).GT.0..AND.
-     &     TSFFCS(I).GT.QCTSFS.AND.SNOANL(I).GT.0.) THEN
-          KOUNT      = KOUNT + 1
-          SNOANL(I) = 0.
-          TSFANL(I) = TSFFCS(I)
-        ENDIF
-      ENDDO
-      IF(KOUNT.GT.0) THEN
-        PER=FLOAT(KOUNT)/FLOAT(LEN)*100.
+      kount = 0
+      do i=1,len
+        if(slianl(i).gt.0..and.
+     &     tsffcs(i).gt.qctsfs.and.snoanl(i).gt.0.) then
+          kount      = kount + 1
+          snoanl(i) = 0.
+          tsfanl(i) = tsffcs(i)
+        endif
+      enddo
+      if(kount.gt.0) then
+        per=float(kount)/float(len)*100.
         if (me .eq. 0) then
-        WRITE(6,*) ' Guess surface temp .GT. ',QCTSFS,
+        write(6,*) ' guess surface temp .gt. ',qctsfs,
      &             ' but snow analysis indicates snow cover'
-        WRITE(6,*) ' Snow analysis set to zero',
-     &             ' at ',KOUNT, ' POINTS ',PER,'percent'
+        write(6,*) ' snow analysis set to zero',
+     &             ' at ',kount, ' points ',per,'percent'
         endif
-      ENDIF
+      endif
 !
-!  Questionable no snow cover
+!  questionable no snow cover
 !
-      KOUNT = 0
-      DO I=1,LEN
-        IF(SLIANL(I).GT.0..AND.
-     &     SNOFCS(I).GT.QCSNOS.AND.SNOANL(I).LT.0.) THEN
-          KOUNT      = KOUNT + 1
-          SNOANL(I) = SNOFCS(I)
-          TSFANL(I) = TSFFCS(I)
-        ENDIF
-      ENDDO
-      IF(KOUNT.GT.0) THEN
-        PER=FLOAT(KOUNT)/FLOAT(LEN)*100.
+      kount = 0
+      do i=1,len
+        if(slianl(i).gt.0..and.
+     &     snofcs(i).gt.qcsnos.and.snoanl(i).lt.0.) then
+          kount      = kount + 1
+          snoanl(i) = snofcs(i)
+          tsfanl(i) = tsffcs(i)
+        endif
+      enddo
+      if(kount.gt.0) then
+        per=float(kount)/float(len)*100.
         if (me .eq. 0) then
-        WRITE(6,*) ' Guess snow depth .GT. ',QCSNOS,
+        write(6,*) ' guess snow depth .gt. ',qcsnos,
      &             ' but snow analysis indicates no snow cover'
-        WRITE(6,*) ' Snow analysis set to guess value',
-     &             ' at ',KOUNT, ' POINTS ',PER,'percent'
+        write(6,*) ' snow analysis set to guess value',
+     &             ' at ',kount, ' points ',per,'percent'
         endif
-      ENDIF
+      endif
 !
-!  Questionable sea ice cover ! This QC is disable to correct error in
+!  questionable sea ice cover ! this qc is disable to correct error in
 !  surface temparature over observed sea ice points
 !
-!     KOUNT = 0
-!     DO I=1,LEN
-!       IF(SLIANL(I).EQ.2..AND.
-!    &     TSFFCS(I).GT.QCTSFI.AND.AISANL(I).EQ.1.) THEN
-!         KOUNT        = KOUNT + 1
-!         AISANL(I)   = 0.
-!         SLIANL(I)   = 0.
-!         TSFANL(I)   = TSFFCS(I)
-!         SNOANL(I)   = 0.
-!         ZORANL(I)   = ZOROMX
-!         ALBANL(I,1) = ALBOMX
-!         ALBANL(I,2) = ALBOMX
-!         ALBANL(I,3) = ALBOMX
-!         ALBANL(I,4) = ALBOMX
-!         DO K=1,LSOIL
-!           SMCANL(I,K) = SMCCLM(I,K)
-!         ENDDO
-!       ENDIF
-!     ENDDO
-!     IF(KOUNT.GT.0) THEN
-!       PER=FLOAT(KOUNT)/FLOAT(LEN)*100.
-!       if (me .eq. 0) then
-!       WRITE(6,*) ' Guess surface temp .GT. ',QCTSFI,
-!    &             ' but sea-ice analysis indicates sea-ice'
-!       WRITE(6,*) ' Sea-ice analysis set to zero',
-!    &             ' at ',KOUNT, ' POINTS ',PER,'percent'
+!     kount = 0
+!     do i=1,len
+!       if(slianl(i).eq.2..and.
+!    &     tsffcs(i).gt.qctsfi.and.aisanl(i).eq.1.) then
+!         kount        = kount + 1
+!         aisanl(i)   = 0.
+!         slianl(i)   = 0.
+!         tsfanl(i)   = tsffcs(i)
+!         snoanl(i)   = 0.
+!         zoranl(i)   = zoromx
+!         albanl(i,1) = albomx
+!         albanl(i,2) = albomx
+!         albanl(i,3) = albomx
+!         albanl(i,4) = albomx
+!         do k=1,lsoil
+!           smcanl(i,k) = smcclm(i,k)
+!         enddo
 !       endif
-!     ENDIF
+!     enddo
+!     if(kount.gt.0) then
+!       per=float(kount)/float(len)*100.
+!       if (me .eq. 0) then
+!       write(6,*) ' guess surface temp .gt. ',qctsfi,
+!    &             ' but sea-ice analysis indicates sea-ice'
+!       write(6,*) ' sea-ice analysis set to zero',
+!    &             ' at ',kount, ' points ',per,'percent'
+!       endif
+!     endif
 !
-      RETURN
-      END
-      SUBROUTINE SETRMSK(KPDS5,SLMASK,IGAUL,JGAUL,WLON,RNLAT,
-     &                   DATA,IMAX,JMAX,RLNOUT,RLTOUT,LMASK,RSLMSK
-     &,                  GAUS,BLNO, BLTO, kgds1, kpds4, lbms)
-      USE MACHINE , ONLY : kind_io8,kind_io4
-      USE sfccyc_module
+      return
+      end
+      subroutine setrmsk(kpds5,slmask,igaul,jgaul,wlon,rnlat,
+     &                   data,imax,jmax,rlnout,rltout,lmask,rslmsk
+     &,                  gaus,blno, blto, kgds1, kpds4, lbms)
+      use machine , only : kind_io8,kind_io4
+      use sfccyc_module
       implicit none
-      REAL (KIND=KIND_IO8) blno,blto,wlon,rnlat,crit,data_max
+      real (kind=kind_io8) blno,blto,wlon,rnlat,crit,data_max
       integer i,j,ijmax,jgaul,igaul,kpds5,jmax,imax, kgds1, kspla
       integer, intent(in)   :: kpds4
       logical*1, intent(in) :: lbms(imax,jmax)
       real*4                :: dummy(imax,jmax)
 
-      REAL (KIND=KIND_IO8)    SLMASK(IGAUL,JGAUL)
-      REAL (KIND=KIND_IO8)    DATA(IMAX,JMAX),RSLMSK(IMAX,JMAX)
-     &,                       RLNOUT(IMAX), RLTOUT(JMAX)
-      REAL (KIND=KIND_IO8)    A(JMAX), W(JMAX), RADI, dlat, dlon
-      LOGICAL LMASK, GAUS
+      real (kind=kind_io8)    slmask(igaul,jgaul)
+      real (kind=kind_io8)    data(imax,jmax),rslmsk(imax,jmax)
+     &,                       rlnout(imax), rltout(jmax)
+      real (kind=kind_io8)    a(jmax), w(jmax), radi, dlat, dlon
+      logical lmask, gaus
 !
-!     Set the longitude and latitudes for the grib file
+!     set the longitude and latitudes for the grib file
 !
-      if (kgds1 .eq. 4) then         ! grib file on Gaussian grid
-        KSPLA=4
-        CALL SPLAT(KSPLA, JMAX, A, W)
+      if (kgds1 .eq. 4) then         ! grib file on gaussian grid
+        kspla=4
+        call splat(kspla, jmax, a, w)
 !
-        RADI = 180.0 / (4.*ATAN(1.))
-        DO  J=1,JMAX
-          RLTOUT(J) = ACOS(A(J)) * RADI
-        ENDDO
+        radi = 180.0 / (4.*atan(1.))
+        do  j=1,jmax
+          rltout(j) = acos(a(j)) * radi
+        enddo
 !
         if (rnlat .gt. 0.0) then
-          DO J=1,JMAX
-            RLTOUT(J) = 90. - RLTOUT(J)
-          ENDDO
+          do j=1,jmax
+            rltout(j) = 90. - rltout(j)
+          enddo
         else
-          DO J=1,JMAX
-            RLTOUT(J) = -90. + RLTOUT(J)
-          ENDDO
+          do j=1,jmax
+            rltout(j) = -90. + rltout(j)
+          enddo
         endif
       elseif (kgds1 .eq. 0) then     ! grib file on lat/lon grid
-        DLAT = -(RNLAT+RNLAT) / FLOAT(JMAX-1)
-        DO J=1,JMAX
-         RLTOUT(J) = RNLAT + (J-1) * DLAT
-        ENDDO
+        dlat = -(rnlat+rnlat) / float(jmax-1)
+        do j=1,jmax
+         rltout(j) = rnlat + (j-1) * dlat
+        enddo
       else                           ! grib file on some other grid
         call abort
       endif
       dlon = 360.0 / imax
-      DO I=1,IMAX
-        RLNOUT(I) = WLON + (I-1)*DLON
-      ENDDO
+      do i=1,imax
+        rlnout(i) = wlon + (i-1)*dlon
+      enddo
 !
 !
-      IJMAX  = IMAX*JMAX
-      RSLMSK = 0.
+      ijmax  = imax*jmax
+      rslmsk = 0.
 !
-!  Surface temperature
+!  surface temperature
 !
-      IF(KPDS5.EQ.KPDTSF) THEN
-!       LMASK=.FALSE.
-        CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-        CRIT=0.5
-        CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-        LMASK=.TRUE.
+      if(kpds5.eq.kpdtsf) then
+!       lmask=.false.
+        call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+        crit=0.5
+        call rof01(rslmsk,ijmax,'ge',crit)
+        lmask=.true.
 !
-!  Bucket soil wetness
+!  bucket soil wetness
 !
-      ELSEIF(KPDS5.EQ.KPDWET) THEN
-        CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-        CRIT=0.5
-        CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-        LMASK=.TRUE.
-!       WRITE(6,*) 'WET RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+      elseif(kpds5.eq.kpdwet) then
+        call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+        crit=0.5
+        call rof01(rslmsk,ijmax,'ge',crit)
+        lmask=.true.
+!       write(6,*) 'wet rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Snow depth
+!  snow depth
 !
-      ELSEIF(KPDS5.EQ.KPDSND) THEN
-        IF(KPDS4 == 192) THEN  ! USE THE BITMAP
-          RSLMSK = 0.
-          DO J = 1, JMAX
-            DO I = 1, IMAX
-              IF (LBMS(I,J)) THEN
-                RSLMSK(I,J) = 1.
-              END IF
-            ENDDO
-          ENDDO
-          LMASK=.TRUE.
-        ELSE
-          LMASK=.FALSE.
-        END IF
+      elseif(kpds5.eq.kpdsnd) then
+        if(kpds4 == 192) then  ! use the bitmap
+          rslmsk = 0.
+          do j = 1, jmax
+            do i = 1, imax
+              if (lbms(i,j)) then
+                rslmsk(i,j) = 1.
+              end if
+            enddo
+          enddo
+          lmask=.true.
+        else
+          lmask=.false.
+        end if
 !
-! SNOW LIQ EQUIVALENT DEPTH
+! snow liq equivalent depth
 !
-      ELSEIF(KPDS5.EQ.KPDSNO) THEN
-        CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-        CRIT=0.5
-        CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-        LMASK=.TRUE.
-!       WRITE(6,*) 'SNO RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+      elseif(kpds5.eq.kpdsno) then
+        call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+        crit=0.5
+        call rof01(rslmsk,ijmax,'ge',crit)
+        lmask=.true.
+!       write(6,*) 'sno rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Soil Moisture
+!  soil moisture
 !
-      ELSEIF(KPDS5.EQ.KPDSMC) THEN
-        IF(KPDS4 == 192) THEN  ! USE THE BITMAP
-          RSLMSK = 0.
-          DO J = 1, JMAX
-            DO I = 1, IMAX
-              IF (LBMS(I,J)) THEN
-                RSLMSK(I,J) = 1.
-              END IF
-            ENDDO
-          ENDDO
-          LMASK=.TRUE.
-        ELSE
-          CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-          CRIT=0.5
-          CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-          LMASK=.TRUE.
-        ENDIF
+      elseif(kpds5.eq.kpdsmc) then
+        if(kpds4 == 192) then  ! use the bitmap
+          rslmsk = 0.
+          do j = 1, jmax
+            do i = 1, imax
+              if (lbms(i,j)) then
+                rslmsk(i,j) = 1.
+              end if
+            enddo
+          enddo
+          lmask=.true.
+        else
+          call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+          crit=0.5
+          call rof01(rslmsk,ijmax,'ge',crit)
+          lmask=.true.
+        endif
 !
-!  Surface roughness
+!  surface roughness
 !
-      ELSEIF(KPDS5.EQ.KPDZOR) THEN
-        DO J=1,JMAX
-          DO I=1,IMAX
-            RSLMSK(I,J)=DATA(I,J)
-          ENDDO
-        ENDDO
-        CRIT=9.9
-        CALL ROF01(RSLMSK,IJMAX,'LT',CRIT)
-        LMASK=.TRUE.
-!       WRITE(6,*) 'ZOR RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+      elseif(kpds5.eq.kpdzor) then
+        do j=1,jmax
+          do i=1,imax
+            rslmsk(i,j)=data(i,j)
+          enddo
+        enddo
+        crit=9.9
+        call rof01(rslmsk,ijmax,'lt',crit)
+        lmask=.true.
+!       write(6,*) 'zor rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Albedo
+!  albedo
 !
-!     ELSEIF(KPDS5.EQ.KPDALB) THEN
-!       DO J=1,JMAX
-!         DO I=1,IMAX
-!           RSLMSK(I,J)=DATA(I,J)
-!         ENDDO
-!       ENDDO
-!       CRIT=99.
-!       CALL ROF01(RSLMSK,IJMAX,'LT',CRIT)
-!       LMASK=.TRUE.
-!       WRITE(6,*) 'ALB RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+!     elseif(kpds5.eq.kpdalb) then
+!       do j=1,jmax
+!         do i=1,imax
+!           rslmsk(i,j)=data(i,j)
+!         enddo
+!       enddo
+!       crit=99.
+!       call rof01(rslmsk,ijmax,'lt',crit)
+!       lmask=.true.
+!       write(6,*) 'alb rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Albedo
+!  albedo
 !
 !cbosu  new snowfree albedo database has bitmap, use it.
-      ELSEIF(KPDS5.EQ.KPDALB(1)) THEN
+      elseif(kpds5.eq.kpdalb(1)) then
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
           do j = 1, jmax
@@ -6268,9 +6162,9 @@
           enddo
           lmask = .true.
         else  ! no bitmap. old database has no water flag.
-          LMASK=.FALSE.
+          lmask=.false.
         end if
-      ELSEIF(KPDS5.EQ.KPDALB(2)) THEN
+      elseif(kpds5.eq.kpdalb(2)) then
 !cbosu
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
@@ -6283,9 +6177,9 @@
           enddo
           lmask = .true.
         else  ! no bitmap. old database has no water flag.
-          LMASK=.FALSE.
+          lmask=.false.
         end if
-      ELSEIF(KPDS5.EQ.KPDALB(3)) THEN
+      elseif(kpds5.eq.kpdalb(3)) then
 !cbosu
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
@@ -6298,9 +6192,9 @@
           enddo
           lmask = .true.
         else  ! no bitmap. old database has no water flag.
-          LMASK=.FALSE.
+          lmask=.false.
         end if
-      ELSEIF(KPDS5.EQ.KPDALB(4)) THEN
+      elseif(kpds5.eq.kpdalb(4)) then
 !cbosu
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
@@ -6313,32 +6207,32 @@
           enddo
           lmask = .true.
         else  ! no bitmap. old database has no water flag.
-          LMASK=.FALSE.
+          lmask=.false.
         end if
 !
-!  Vegetation fraction for Albedo
+!  vegetation fraction for albedo
 !
-      ELSEIF(KPDS5.EQ.KPDALF(1)) THEN
-!       RSLMSK=DATA
-!       CRIT=0.
-!       CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-!       LMASK=.TRUE.
-        LMASK=.FALSE.
-      ELSEIF(KPDS5.EQ.KPDALF(2)) THEN
-!       RSLMSK=DATA
-!       CRIT=0.
-!       CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-!       LMASK=.TRUE.
-        LMASK=.FALSE.
+      elseif(kpds5.eq.kpdalf(1)) then
+!       rslmsk=data
+!       crit=0.
+!       call rof01(rslmsk,ijmax,'gt',crit)
+!       lmask=.true.
+        lmask=.false.
+      elseif(kpds5.eq.kpdalf(2)) then
+!       rslmsk=data
+!       crit=0.
+!       call rof01(rslmsk,ijmax,'gt',crit)
+!       lmask=.true.
+        lmask=.false.
 !
-!  Sea ice
+!  sea ice
 !
-      ELSEIF(KPDS5.EQ.KPDAIS) THEN
-        LMASK=.FALSE.
-!       CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-!       CRIT=0.5
-!       CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
+      elseif(kpds5.eq.kpdais) then
+        lmask=.false.
+!       call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+!    &,            dlon, dlat, gaus, blno, blto)
+!       crit=0.5
+!       call rof01(rslmsk,ijmax,'ge',crit)
 !
         data_max = 0.0
         do j=1,jmax
@@ -6347,82 +6241,82 @@
               data_max= max(data_max,data(i,j))
           enddo
         enddo
-        CRIT=1.0
-        if (data_max .gt. CRIT) then
-          CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-          LMASK=.TRUE.
+        crit=1.0
+        if (data_max .gt. crit) then
+          call rof01(rslmsk,ijmax,'gt',crit)
+          lmask=.true.
         else
-          LMASK=.FALSE.
+          lmask=.false.
         endif
-!       WRITE(6,*) 'ACN RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+!       write(6,*) 'acn rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Deep soil temperature
+!  deep soil temperature
 !
-      ELSEIF(KPDS5.EQ.KPDTG3) THEN
-        LMASK=.FALSE.
-!       CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-!    &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-!       CRIT=0.5
-!       CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-!       LMASK=.TRUE.
+      elseif(kpds5.eq.kpdtg3) then
+        lmask=.false.
+!       call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+!    &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+!       crit=0.5
+!       call rof01(rslmsk,ijmax,'ge',crit)
+!       lmask=.true.
 !
-!  Plant resistance
+!  plant resistance
 !
-!     ELSEIF(KPDS5.EQ.KPDPLR) THEN
-!       CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-!    &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-!       CRIT=0.5
-!       CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-!       LMASK=.TRUE.
+!     elseif(kpds5.eq.kpdplr) then
+!       call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+!    &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+!       crit=0.5
+!       call rof01(rslmsk,ijmax,'ge',crit)
+!       lmask=.true.
 !
-!       WRITE(6,*) 'PLR RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+!       write(6,*) 'plr rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Glacier points
+!  glacier points
 !
-      ELSEIF(KPDS5.EQ.KPDGLA) THEN
-        LMASK=.FALSE.
+      elseif(kpds5.eq.kpdgla) then
+        lmask=.false.
 !
-!  Max ice extent
+!  max ice extent
 !
-      ELSEIF(KPDS5.EQ.KPDMXI) THEN
-        LMASK=.FALSE.
+      elseif(kpds5.eq.kpdmxi) then
+        lmask=.false.
 !
-!  Snow cover
+!  snow cover
 !
-      ELSEIF(KPDS5.EQ.KPDSCV) THEN
-        CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-        CRIT=0.5
-        CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-        LMASK=.TRUE.
-!       WRITE(6,*) 'SCV RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+      elseif(kpds5.eq.kpdscv) then
+        call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+        crit=0.5
+        call rof01(rslmsk,ijmax,'ge',crit)
+        lmask=.true.
+!       write(6,*) 'scv rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Sea ice concentration
+!  sea ice concentration
 !
-      ELSEIF(KPDS5.EQ.KPDACN) THEN
-        LMASK=.FALSE.
-        CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
-        CRIT=0.5
-        CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-        LMASK=.TRUE.
-!       WRITE(6,*) 'ACN RSLMSK'
-!       ZNNT=1.
-!       CALL NNTPRT(RSLMSK,IJMAX,ZNNT)
+      elseif(kpds5.eq.kpdacn) then
+        lmask=.false.
+        call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,            rlnout, rltout, gaus, blno, blto)
+!    &,            dlon, dlat, gaus, blno, blto)
+        crit=0.5
+        call rof01(rslmsk,ijmax,'ge',crit)
+        lmask=.true.
+!       write(6,*) 'acn rslmsk'
+!       znnt=1.
+!       call nntprt(rslmsk,ijmax,znnt)
 !
-!  Vegetation cover
+!  vegetation cover
 !
-      ELSEIF(KPDS5.EQ.KPDVEG) THEN
+      elseif(kpds5.eq.kpdveg) then
 !cggg
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
@@ -6436,58 +6330,67 @@
           lmask = .true.
         else  ! no bitmap, set mask the old way.
 
-          CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-     &,              RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-          CRIT=0.5
-          CALL ROF01(RSLMSK,IJMAX,'GE',CRIT)
-          LMASK=.TRUE.
+          call ga2la(slmask,igaul,jgaul,rslmsk,imax,jmax,wlon,rnlat
+     &,              rlnout, rltout, gaus, blno, blto)
+          crit=0.5
+          call rof01(rslmsk,ijmax,'ge',crit)
+          lmask=.true.
 
        end if
 !
-!  Soil type
+!  soil type
 !
-      ELSEIF(KPDS5.EQ.KPDSOT) THEN
-!       CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-!    &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
+      elseif(kpds5.eq.kpdsot) then
 
-
-!cggg soil type is zero over water, use this to get a bitmap.
-
-        do j = 1, jmax
+        if (kpds4 == 192) then  ! use the bitmap
+          rslmsk = 0.
+          do j = 1, jmax
+            do i = 1, imax
+              if (lbms(i,j)) then
+                rslmsk(i,j) = 1.
+              end if
+            enddo
+          enddo
+!  soil type is zero over water, use this to get a bitmap.
+        else
+          do j = 1, jmax
           do i = 1, imax
             rslmsk(i,j) = data(i,j)
           enddo
-        enddo
-
-        CRIT=0.1
-        CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-        LMASK=.TRUE.
-
+          enddo
+          crit=0.1
+          call rof01(rslmsk,ijmax,'gt',crit)
+        endif
+        lmask=.true.
 !
-!  Vegetation type
+!  vegetation type
 !
-      ELSEIF(KPDS5.EQ.KPDVET) THEN
-!       CALL GA2LA(SLMASK,IGAUL,JGAUL,RSLMSK,IMAX,JMAX,WLON,RNLAT
-!    &,            RLNOUT, RLTOUT, GAUS, BLNO, BLTO)
-!    &,            DLON, DLAT, GAUS, BLNO, BLTO)
+      elseif(kpds5.eq.kpdvet) then
 
-
-!cggg veg type is zero over water, use this to get a bitmap.
-
-        do j = 1, jmax
+        if (kpds4 == 192) then  ! use the bitmap
+          rslmsk = 0.
+          do j = 1, jmax
+            do i = 1, imax
+              if (lbms(i,j)) then
+                rslmsk(i,j) = 1.
+              end if
+            enddo
+          enddo
+!  veg type is zero over water, use this to get a bitmap.
+        else
+          do j = 1, jmax
           do i = 1, imax
             rslmsk(i,j) = data(i,j)
           enddo
-        enddo
-
-        CRIT=0.1
-        CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-        LMASK=.TRUE.
+          enddo
+          crit=0.1
+          call rof01(rslmsk,ijmax,'gt',crit)
+        endif
+        lmask=.true.
 !
-!      These are for four new data type added by Clu -- not sure its correct!
+!      these are for four new data type added by clu -- not sure its correct!
 !
-      ELSEIF(KPDS5.EQ.KPDVMN) THEN
+      elseif(kpds5.eq.kpdvmn) then
 !
 !cggg  greenness is zero over water, use this to get a bitmap.
 !
@@ -6497,12 +6400,12 @@
           enddo
         enddo
 !
-        CRIT=0.1
-        CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-        LMASK=.TRUE.
-!cggg        LMASK=.FALSE.
+        crit=0.1
+        call rof01(rslmsk,ijmax,'gt',crit)
+        lmask=.true.
+!cggg        lmask=.false.
 !
-      ELSEIF(KPDS5.EQ.KPDVMX) THEN
+      elseif(kpds5.eq.kpdvmx) then
 !
 !cggg  greenness is zero over water, use this to get a bitmap.
 !
@@ -6512,12 +6415,12 @@
           enddo
         enddo
 !
-        CRIT=0.1
-        CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-        LMASK=.TRUE.
-!cggg        LMASK=.FALSE.
+        crit=0.1
+        call rof01(rslmsk,ijmax,'gt',crit)
+        lmask=.true.
+!cggg        lmask=.false.
 !
-      ELSEIF(KPDS5.EQ.KPDSLP) THEN
+      elseif(kpds5.eq.kpdslp) then
 !
 !cggg slope type is zero over water, use this to get a bitmap.
 !
@@ -6527,13 +6430,13 @@
           enddo
         enddo
 !
-        CRIT=0.1
-        CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-        LMASK=.TRUE.
-!cggg        LMASK=.FALSE.
+        crit=0.1
+        call rof01(rslmsk,ijmax,'gt',crit)
+        lmask=.true.
+!cggg        lmask=.false.
 !
 !cbosu new maximum snow albedo database has bitmap
-      ELSEIF(KPDS5.EQ.KPDABS) THEN
+      elseif(kpds5.eq.kpdabs) then
         if (kpds4 == 192) then  ! use the bitmap
           rslmsk = 0.
           do j = 1, jmax
@@ -6550,396 +6453,398 @@
               rslmsk(i,j) = data(i,j)
             enddo
           enddo
-          CRIT=0.1
-          CALL ROF01(RSLMSK,IJMAX,'GT',CRIT)
-          LMASK=.TRUE.
+          crit=0.1
+          call rof01(rslmsk,ijmax,'gt',crit)
+          lmask=.true.
         end if
-      ENDIF
+      endif
 !
-      RETURN
-      END
-      SUBROUTINE GA2LA(GAUIN,IMXIN,JMXIN,REGOUT,IMXOUT,JMXOUT,
-     &                 WLON,RNLAT,RLNOUT,RLTOUT,GAUS,BLNO, BLTO)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine ga2la(gauin,imxin,jmxin,regout,imxout,jmxout,
+     &                 wlon,rnlat,rlnout,rltout,gaus,blno, blto)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i1,i2,j2,ishft,i,jj,j1,jtem,jmxout,imxin,jmxin,imxout,
      &        j,iret
-      REAL (KIND=KIND_IO8) alamd,dxin,aphi,x,sum1,sum2,y,dlati,wlon,
+      real (kind=kind_io8) alamd,dxin,aphi,x,sum1,sum2,y,dlati,wlon,
      &                     rnlat,dxout,dphi,dlat,facns,tem,blno,
      &                     blto
 !
-!  INTERPOLATION FROM LAT/LON GRID TO OTHER LAT/LON GRID
+!  interpolation from lat/lon grid to other lat/lon grid
 !
-      REAL (KIND=KIND_IO8) GAUIN (IMXIN,JMXIN), REGOUT(IMXOUT,JMXOUT)
-     &,                    RLNOUT(IMXOUT), RLTOUT(JMXOUT)
-      LOGICAL GAUS
+      real (kind=kind_io8) gauin (imxin,jmxin), regout(imxout,jmxout)
+     &,                    rlnout(imxout), rltout(jmxout)
+      logical gaus
 !
-      Real, allocatable :: GAUL(:)
-      REAL (KIND=KIND_IO8) DDX(IMXOUT),DDY(JMXOUT)
-      Integer IINDX1(IMXOUT), IINDX2(IMXOUT),
-     &        JINDX1(JMXOUT), JINDX2(JMXOUT)
-      integer JMXSAV,N,KSPLA
-      data    JMXSAV/0/
+      real, allocatable :: gaul(:)
+      real (kind=kind_io8) ddx(imxout),ddy(jmxout)
+      integer iindx1(imxout), iindx2(imxout),
+     &        jindx1(jmxout), jindx2(jmxout)
+      integer jmxsav,n,kspla
+      data    jmxsav/0/
       save    jmxsav, gaul, dlati
-      REAL (KIND=KIND_IO8) radi
-      REAL (KIND=KIND_IO8) A(jmxin), W(jmxin)
+      real (kind=kind_io8) radi
+      real (kind=kind_io8) a(jmxin), w(jmxin)
 !
 !
       logical first
-      integer   NUM_THREADS
+      integer   num_threads
       data first /.true./
-      save NUM_THREADS, first
+      save num_threads, first
 !
-      integer LEN_THREAD_M, J1_T, J2_T, IT
-      integer NUM_PARTHDS
+      integer len_thread_m, j1_t, j2_t, it
+      integer num_parthds
 !
       if (first) then
-         NUM_THREADS = NUM_PARTHDS()
+         num_threads = num_parthds()
          first = .false.
       endif
 !
       if (jmxin .ne. jmxsav) then
-        if (jmxsav .gt. 0) deallocate (GAUL, STAT=iret)
-        allocate (GAUL(JMXIN))
-        jmxsav = JMXIN
-        IF (GAUS) THEN
-cjfe      CALL GAULAT(GAUL,JMXIN)
+        if (jmxsav .gt. 0) deallocate (gaul, stat=iret)
+        allocate (gaul(jmxin))
+        jmxsav = jmxin
+        if (gaus) then
+cjfe      call gaulat(gaul,jmxin)
 cjfe
 !
-          KSPLA=4
-          CALL SPLAT(KSPLA, JMXIN, A, W)
+          kspla=4
+          call splat(kspla, jmxin, a, w)
 !
-          RADI = 180.0 / (4.*ATAN(1.))
-          DO  N=1,JMXIN
-            GAUL(N) = ACOS(A(N)) * RADI
-          ENDDO
+          radi = 180.0 / (4.*atan(1.))
+          do  n=1,jmxin
+            gaul(n) = acos(a(n)) * radi
+          enddo
 cjfe
-          DO J=1,JMXIN
-            GAUL(J) = 90. - GAUL(J)
-          ENDDO
-        ELSE
-          DLAT = -2*BLTO / FLOAT(JMXIN-1)
-          DLATI = 1 / DLAT
-          DO J=1,JMXIN
-           GAUL(J) = BLTO + (J-1) * DLAT
-          ENDDO
-        ENDIF
-      ENDIF
+          do j=1,jmxin
+            gaul(j) = 90. - gaul(j)
+          enddo
+        else
+          dlat = -2*blto / float(jmxin-1)
+          dlati = 1 / dlat
+          do j=1,jmxin
+           gaul(j) = blto + (j-1) * dlat
+          enddo
+        endif
+      endif
 !
 !
-      DXIN  = 360. / FLOAT(IMXIN )
+      dxin  = 360. / float(imxin )
 !
-      DO I=1,IMXOUT
-        ALAMD = RLNOUT(I)
-        I1     = FLOOR((ALAMD-BLNO)/DXIN) + 1
-        DDX(I) = (ALAMD-BLNO)/DXIN-(I1-1)
-        IINDX1(I) = MODULO(I1-1,IMXIN) + 1
-        IINDX2(I) = MODULO(I1  ,IMXIN) + 1
-      ENDDO
-!
-!
-      LEN_THREAD_M  = (JMXOUT+NUM_THREADS-1) / NUM_THREADS
-!
-      IF (GAUS) THEN
-!
-!$OMP PARALLEL DO PRIVATE(J1_T,J2_T,IT,J1,J2,JJ)
-!$OMP+PRIVATE(APHI)
-!$OMP+SHARED(NUM_THREADS,LEN_THREAD_M)
-!$OMP+SHARED(JMXIN,JMXOUT,GAUL,RLTOUT,JINDX1,DDY)
-!
-        DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-          J1_T       = (IT-1)*LEN_THREAD_M+1
-          J2_T       = MIN(J1_T+LEN_THREAD_M-1,JMXOUT)
-!
-          J2=1
-          DO 40 J=J1_T,J2_T
-            APHI=RLTOUT(J)
-            DO 50 JJ=1,JMXIN
-              IF(APHI.LT.GAUL(JJ)) GO TO 50
-              J2=JJ
-              GO TO 42
-   50       CONTINUE
-   42       CONTINUE
-            IF(J2.GT.2) GO TO 43
-            J1=1
-            J2=2
-            GO TO 44
-   43       CONTINUE
-            IF(J2.LE.JMXIN) GO TO 45
-            J1=JMXIN-1
-            J2=JMXIN
-            GO TO 44
-   45       CONTINUE
-            J1=J2-1
-   44       CONTINUE
-            JINDX1(J)=J1
-            JINDX2(J)=J2
-            DDY(J)=(APHI-GAUL(J1))/(GAUL(J2)-GAUL(J1))
-   40     CONTINUE
-        ENDDO             ! END OF THREADED LOOP ...................
-!$OMP   END PARALLEL DO
-!
-      ELSE
-!$OMP PARALLEL DO PRIVATE(J1_T,J2_T,IT,J1,J2,JTEM)
-!$OMP+PRIVATE(APHI)
-!$OMP+SHARED(NUM_THREADS,LEN_THREAD_M)
-!$OMP+SHARED(JMXIN,JMXOUT,GAUL,RLTOUT,JINDX1,DDY,DLATI,BLTO)
-!
-        DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-          J1_T       = (IT-1)*LEN_THREAD_M+1
-          J2_T       = MIN(J1_T+LEN_THREAD_M-1,JMXOUT)
-!
-          J2=1
-          DO 400 J=J1_T,J2_T
-            APHI=RLTOUT(J)
-            JTEM = (APHI - BLTO) * DLATI + 1
-            IF (JTEM .GE. 1 .AND. JTEM .LT. JMXIN) THEN
-              J1 = JTEM
-              J2 = J1 + 1
-              DDY(J)=(APHI-GAUL(J1))/(GAUL(J2)-GAUL(J1))
-            ELSEIF (JTEM .EQ. JMXIN) THEN
-              J1 = JMXIN
-              J2 = JMXIN
-              DDY(J)=1.0
-            ELSE
-              J1 = 1
-              J2 = 1
-              DDY(J)=1.0
-            ENDIF
-!
-            JINDX1(J) = J1
-            JINDX2(J) = J2
-  400     CONTINUE
-        ENDDO             ! END OF THREADED LOOP ...................
-!$OMP   END PARALLEL DO
-      ENDIF
-!
-!     WRITE(6,*) 'GA2LA'
-!     WRITE(6,*) 'IINDX1'
-!     WRITE(6,*) (IINDX1(N),N=1,IMXOUT)
-!     WRITE(6,*) 'IINDX2'
-!     WRITE(6,*) (IINDX2(N),N=1,IMXOUT)
-!     WRITE(6,*) 'JINDX1'
-!     WRITE(6,*) (JINDX1(N),N=1,JMXOUT)
-!     WRITE(6,*) 'JINDX2'
-!     WRITE(6,*) (JINDX2(N),N=1,JMXOUT)
-!     WRITE(6,*) 'DDY'
-!     WRITE(6,*) (DDY(N),N=1,JMXOUT)
-!     WRITE(6,*) 'DDX'
-!     WRITE(6,*) (DDX(N),N=1,JMXOUT)
+      do i=1,imxout
+        alamd = rlnout(i)
+        i1     = floor((alamd-blno)/dxin) + 1
+        ddx(i) = (alamd-blno)/dxin-(i1-1)
+        iindx1(i) = modulo(i1-1,imxin) + 1
+        iindx2(i) = modulo(i1  ,imxin) + 1
+      enddo
 !
 !
-!$OMP PARALLEL DO PRIVATE(J1_T,J2_T,IT,I,I1,I2)
-!$OMP+PRIVATE(J,J1,J2,X,Y)
-!$OMP+SHARED(NUM_THREADS,LEN_THREAD_M)
-!$OMP+SHARED(IMXOUT,IINDX1,JINDX1,DDX,DDY,GAUIN,REGOUT)
+      len_thread_m  = (jmxout+num_threads-1) / num_threads
 !
-      DO IT=1,NUM_THREADS   ! START OF THREADED LOOP ...................
-        J1_T       = (IT-1)*LEN_THREAD_M+1
-        J2_T       = MIN(J1_T+LEN_THREAD_M-1,JMXOUT)
+      if (gaus) then
 !
-        DO  J=J1_T,J2_T
-          Y  = DDY(J)
-          J1 = JINDX1(J)
-          J2 = JINDX2(J)
-          DO I=1,IMXOUT
-            X  = DDX(I)
-            I1 = IINDX1(I)
-            I2 = IINDX2(I)
-            REGOUT(I,J) = (1.-X)*((1.-Y)*GAUIN(I1,J1) + Y*GAUIN(I1,J2))
-     &                  +     X *((1.-Y)*GAUIN(I2,J1) + Y*GAUIN(I2,J2))
-          ENDDO
-        ENDDO
-      ENDDO             ! END OF THREADED LOOP ...................
-!$OMP END PARALLEL DO
+!$omp parallel do private(j1_t,j2_t,it,j1,j2,jj)
+!$omp+private(aphi)
+!$omp+shared(num_threads,len_thread_m)
+!$omp+shared(jmxin,jmxout,gaul,rltout,jindx1,ddy)
 !
-      SUM1 = 0.
-      SUM2 = 0.
-      DO I=1,IMXIN
-        SUM1 = SUM1 + GAUIN(I,1)
-        SUM2 = SUM2 + GAUIN(I,JMXIN)
-      ENDDO
-      SUM1 = SUM1 / FLOAT(IMXIN)
-      SUM2 = SUM2 / FLOAT(IMXIN)
+        do it=1,num_threads   ! start of threaded loop ...................
+          j1_t       = (it-1)*len_thread_m+1
+          j2_t       = min(j1_t+len_thread_m-1,jmxout)
 !
-      IF (GAUS) THEN
-        IF (RNLAT .GT. 0.0) THEN
-          DO I=1,IMXOUT
-            REGOUT(I,     1) = SUM1
-            REGOUT(I,JMXOUT) = SUM2
-          ENDDO
-        ELSE
-          DO I=1,IMXOUT
-            REGOUT(I,     1) = SUM2
-            REGOUT(I,JMXOUT) = SUM1
-          ENDDO
-        ENDIF
-      ELSE
-        IF (BLTO .LT. 0.0) THEN
-          IF (RNLAT .GT. 0.0) THEN
-            DO I=1,IMXOUT
-              REGOUT(I,     1) = SUM2
-              REGOUT(I,JMXOUT) = SUM1
-            ENDDO
-          ELSE
-            DO I=1,IMXOUT
-              REGOUT(I,     1) = SUM1
-              REGOUT(I,JMXOUT) = SUM2
-            ENDDO
-          ENDIF
-        ELSE
-          IF (RNLAT .LT. 0.0) THEN
-            DO I=1,IMXOUT
-              REGOUT(I,     1) = SUM2
-              REGOUT(I,JMXOUT) = SUM1
-            ENDDO
-          ELSE
-            DO I=1,IMXOUT
-              REGOUT(I,     1) = SUM1
-              REGOUT(I,JMXOUT) = SUM2
-            ENDDO
-          ENDIF
-        ENDIF
-      ENDIF
+          j2=1
+          do 40 j=j1_t,j2_t
+            aphi=rltout(j)
+            do 50 jj=1,jmxin
+              if(aphi.lt.gaul(jj)) go to 50
+              j2=jj
+              go to 42
+   50       continue
+   42       continue
+            if(j2.gt.2) go to 43
+            j1=1
+            j2=2
+            go to 44
+   43       continue
+            if(j2.le.jmxin) go to 45
+            j1=jmxin-1
+            j2=jmxin
+            go to 44
+   45       continue
+            j1=j2-1
+   44       continue
+            jindx1(j)=j1
+            jindx2(j)=j2
+            ddy(j)=(aphi-gaul(j1))/(gaul(j2)-gaul(j1))
+   40     continue
+        enddo             ! end of threaded loop ...................
+!$omp   end parallel do
 !
-      RETURN
-      END
-!Clu [-1L/+1L] add slptype
-!Clu  subroutine landtyp(vegtype,soiltype,slmask,LEN)
-      subroutine landtyp(vegtype,soiltype,slptype,slmask,LEN)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      else
+!$omp parallel do private(j1_t,j2_t,it,j1,j2,jtem)
+!$omp+private(aphi)
+!$omp+shared(num_threads,len_thread_m)
+!$omp+shared(jmxin,jmxout,gaul,rltout,jindx1,ddy,dlati,blto)
+!
+        do it=1,num_threads   ! start of threaded loop ...................
+          j1_t       = (it-1)*len_thread_m+1
+          j2_t       = min(j1_t+len_thread_m-1,jmxout)
+!
+          j2=1
+          do 400 j=j1_t,j2_t
+            aphi=rltout(j)
+            jtem = (aphi - blto) * dlati + 1
+            if (jtem .ge. 1 .and. jtem .lt. jmxin) then
+              j1 = jtem
+              j2 = j1 + 1
+              ddy(j)=(aphi-gaul(j1))/(gaul(j2)-gaul(j1))
+            elseif (jtem .eq. jmxin) then
+              j1 = jmxin
+              j2 = jmxin
+              ddy(j)=1.0
+            else
+              j1 = 1
+              j2 = 1
+              ddy(j)=1.0
+            endif
+!
+            jindx1(j) = j1
+            jindx2(j) = j2
+  400     continue
+        enddo             ! end of threaded loop ...................
+!$omp   end parallel do
+      endif
+!
+!     write(6,*) 'ga2la'
+!     write(6,*) 'iindx1'
+!     write(6,*) (iindx1(n),n=1,imxout)
+!     write(6,*) 'iindx2'
+!     write(6,*) (iindx2(n),n=1,imxout)
+!     write(6,*) 'jindx1'
+!     write(6,*) (jindx1(n),n=1,jmxout)
+!     write(6,*) 'jindx2'
+!     write(6,*) (jindx2(n),n=1,jmxout)
+!     write(6,*) 'ddy'
+!     write(6,*) (ddy(n),n=1,jmxout)
+!     write(6,*) 'ddx'
+!     write(6,*) (ddx(n),n=1,jmxout)
+!
+!
+!$omp parallel do private(j1_t,j2_t,it,i,i1,i2)
+!$omp+private(j,j1,j2,x,y)
+!$omp+shared(num_threads,len_thread_m)
+!$omp+shared(imxout,iindx1,jindx1,ddx,ddy,gauin,regout)
+!
+      do it=1,num_threads   ! start of threaded loop ...................
+        j1_t       = (it-1)*len_thread_m+1
+        j2_t       = min(j1_t+len_thread_m-1,jmxout)
+!
+        do  j=j1_t,j2_t
+          y  = ddy(j)
+          j1 = jindx1(j)
+          j2 = jindx2(j)
+          do i=1,imxout
+            x  = ddx(i)
+            i1 = iindx1(i)
+            i2 = iindx2(i)
+            regout(i,j) = (1.-x)*((1.-y)*gauin(i1,j1) + y*gauin(i1,j2))
+     &                  +     x *((1.-y)*gauin(i2,j1) + y*gauin(i2,j2))
+          enddo
+        enddo
+      enddo             ! end of threaded loop ...................
+!$omp end parallel do
+!
+      sum1 = 0.
+      sum2 = 0.
+      do i=1,imxin
+        sum1 = sum1 + gauin(i,1)
+        sum2 = sum2 + gauin(i,jmxin)
+      enddo
+      sum1 = sum1 / float(imxin)
+      sum2 = sum2 / float(imxin)
+!
+      if (gaus) then
+        if (rnlat .gt. 0.0) then
+          do i=1,imxout
+            regout(i,     1) = sum1
+            regout(i,jmxout) = sum2
+          enddo
+        else
+          do i=1,imxout
+            regout(i,     1) = sum2
+            regout(i,jmxout) = sum1
+          enddo
+        endif
+      else
+        if (blto .lt. 0.0) then
+          if (rnlat .gt. 0.0) then
+            do i=1,imxout
+              regout(i,     1) = sum2
+              regout(i,jmxout) = sum1
+            enddo
+          else
+            do i=1,imxout
+              regout(i,     1) = sum1
+              regout(i,jmxout) = sum2
+            enddo
+          endif
+        else
+          if (rnlat .lt. 0.0) then
+            do i=1,imxout
+              regout(i,     1) = sum2
+              regout(i,jmxout) = sum1
+            enddo
+          else
+            do i=1,imxout
+              regout(i,     1) = sum1
+              regout(i,jmxout) = sum2
+            enddo
+          endif
+        endif
+      endif
+!
+      return
+      end
+      subroutine landtyp(vegtype,soiltype,slptype,slmask,len)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) vegtype(LEN),soiltype(LEN),slmask(LEN)
-!Clu [+1L] add slptype
-     +,                    slptype(LEN)  
+      real (kind=kind_io8) vegtype(len),soiltype(len),slmask(len)
+     +,                    slptype(len)  
 !
 !  make sure that the soil type and veg type are non-zero over land
 !
-      do i = 1, LEN
+      do i = 1, len
         if (slmask(i) .eq. 1) then
           if (vegtype(i)  .eq. 0.)  vegtype(i)  = 7
           if (soiltype(i) .eq. 0.)  soiltype(i) = 2
-!Clu [+1L] add slptype
           if (slptype(i)  .eq. 0.)  slptype(i)  = 1
         endif
       enddo
       return
-      end
-      SUBROUTINE GAULAT(GAUL,K)
+      end subroutine landtyp
+      subroutine gaulat(gaul,k)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer n,k
-      REAL (KIND=KIND_IO8) radi
-      REAL (KIND=KIND_IO8) A(K), W(K), GAUL(K)
+      real (kind=kind_io8) radi
+      real (kind=kind_io8) a(k), w(k), gaul(k)
 !
-      CALL SPLAT(4, K, A, W)
+      call splat(4, k, a, w)
 !
-      RADI = 180.0 / (4.*ATAN(1.))
-      DO  N=1,K
-        GAUL(N) = ACOS(A(N)) * RADI
-      ENDDO
+      radi = 180.0 / (4.*atan(1.))
+      do  n=1,k
+        gaul(n) = acos(a(n)) * radi
+      enddo
 !
-!     PRINT *,'GAUSSIAN LAT (DEG) FOR JMAX=',K
-!     PRINT *,(GAUL(N),N=1,K)
+!     print *,'gaussian lat (deg) for jmax=',k
+!     print *,(gaul(n),n=1,k)
 !
-      RETURN
-   70 WRITE(6,6000)
- 6000 FORMAT(//5X,'ERROR IN GAUAW'//)
-      STOP
-      END
+      return
+   70 write(6,6000)
+ 6000 format(//5x,'error in gauaw'//)
+      stop
+      end
 !-----------------------------------------------------------------------
-      SUBROUTINE ANOMINT(TSFAN0,TSFCLM,TSFCL0,TSFANL,LEN)
+      subroutine anomint(tsfan0,tsfclm,tsfcl0,tsfanl,len)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,len
-      REAL (KIND=KIND_IO8) TSFANL(LEN), TSFAN0(LEN),
-     &                     TSFCLM(LEN), TSFCL0(LEN)
+      real (kind=kind_io8) tsfanl(len), tsfan0(len),
+     &                     tsfclm(len), tsfcl0(len)
 !
-!  Time interpolation of anomalies
-!  Add initial anomaly to date interpolated climatology
+!  time interpolation of anomalies
+!  add initial anomaly to date interpolated climatology
 !
-      WRITE(6,*) 'ANOMINT'
-      DO I=1,LEN
-        TSFANL(I) = TSFAN0(I) - TSFCL0(I) + TSFCLM(I)
-      ENDDO
-      RETURN
-      END
-      SUBROUTINE CLIMA(LUGB,IY,IM,ID,IH,FH,LEN,LSOIL,
-     &                 SLMASK,FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &                 FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,FNVEGC,
+      write(6,*) 'anomint'
+      do i=1,len
+        tsfanl(i) = tsfan0(i) - tsfcl0(i) + tsfclm(i)
+      enddo
+      return
+      end
+      subroutine clima(lugb,iy,im,id,ih,fh,len,lsoil,
+     &                 slmask,fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &                 fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,fnvegc,
      &                 fnvetc,fnsotc,
-!Clu [+1L] add fn()c for vmn, vmx, slp, abs
-     &                 FNVMNC,FNVMXC,FNSLPC,FNABSC,
-     &                 TSFCLM,TSFCL2,WETCLM,SNOCLM,ZORCLM,ALBCLM,AISCLM,
-     &                 TG3CLM,CVCLM ,CVBCLM,CVTCLM,
-     &                 CNPCLM,SMCCLM,STCCLM,SLICLM,SCVCLM,ACNCLM,VEGCLM,
-     &                 vetclm,sotclm,ALFCLM,
-!Clu [+1L] add ()clm for vmn, vmx, slp, abs
-     &                 VMNCLM,VMXCLM,SLPCLM,ABSCLM,
-     &                 KPDTSF,KPDWET,KPDSNO,KPDZOR,KPDALB,KPDAIS,
-     &                 KPDTG3,KPDSCV,KPDACN,KPDSMC,KPDSTC,KPDVEG,
-     &                 kpdvet,kpdsot,kpdalf,TSFCL0,
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
-     &                 KPDVMN,KPDVMX,KPDSLP,KPDABS,
-     &                 DELTSFC, LANOM
-     &,                IMSK, JMSK, SLMSKH, OUTLAT, OUTLON
-     &,                GAUS, BLNO, BLTO, me,lprnt,iprnt, FNALBC2, IALB)
+     &                 fnvmnc,fnvmxc,fnslpc,fnabsc,
+     &                 tsfclm,tsfcl2,wetclm,snoclm,zorclm,albclm,aisclm,
+     &                 tg3clm,cvclm ,cvbclm,cvtclm,
+     &                 cnpclm,smcclm,stcclm,sliclm,scvclm,acnclm,vegclm,
+     &                 vetclm,sotclm,alfclm,
+     &                 vmnclm,vmxclm,slpclm,absclm,
+     &                 kpdtsf,kpdwet,kpdsno,kpdzor,kpdalb,kpdais,
+     &                 kpdtg3,kpdscv,kpdacn,kpdsmc,kpdstc,kpdveg,
+     &                 kpdvet,kpdsot,kpdalf,tsfcl0,
+     &                 kpdvmn,kpdvmx,kpdslp,kpdabs,
+     &                 deltsfc, lanom
+     &,                imsk, jmsk, slmskh, outlat, outlon
+     &,                gaus, blno, blto, me,lprnt,iprnt, fnalbc2, ialb)
 !
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      use machine , only : kind_io8,kind_io4
       implicit none
-      REAL (KIND=KIND_IO8) rjday,wei1x,wei2x,rjdayh,wei2m,wei1m,wei1s,
+      real (kind=kind_io8) rjday,wei1x,wei2x,rjdayh,wei2m,wei1m,wei1s,
      &                     wei2s,fh,stcmon1s,blto,blno,deltsfc,rjdayh2
+      real (kind=kind_io8) wei1y,wei2y
       integer jdoy,jday,jh,jdow,mmm,mmp,mm,iret,monend,i,k,jm,jd,iy4,
      &        jy,mon1,is2,isx,kpd9,is1,l,nn,mon2,mon,is,kpdsno,
      &        kpdzor,kpdtsf,kpdwet,kpdscv,kpdacn,kpdais,kpdtg3,im,id,
      &        lugb,iy,len,lsoil,ih,kpdsmc,iprnt,me,m1,m2,k1,k2,
      &        kpdvet,kpdsot,kpdstc,kpdveg,jmsk,imsk,j,ialb
-!Clu [+1L] add kpd() for vmn, vmx, slp, abs
-     &,       kpdvmn,kpdvmx,kpdslp,kpdabs
-      INTEGER kpdalb(4), kpdalf(2)
+     &,       kpdvmn,kpdvmx,kpdslp,kpdabs,landice_cat
+      integer kpdalb(4), kpdalf(2)
 !
-!cbosu
-
-      CHARACTER*500 FNTSFC,FNWETC,FNSNOC,FNZORC,FNALBC,FNAISC,
-     &             FNTG3C,FNSCVC,FNSMCC,FNSTCC,FNACNC,FNVEGC,
+      character*500 fntsfc,fnwetc,fnsnoc,fnzorc,fnalbc,fnaisc,
+     &             fntg3c,fnscvc,fnsmcc,fnstcc,fnacnc,fnvegc,
      &             fnvetc,fnsotc,fnalbc2
-!Clu [+1L] add fn()c for vmn, vmx, slp, abs
-     &,            FNVMNC,FNVMXC,FNSLPC,FNABSC
-      REAL (KIND=KIND_IO8) TSFCLM(LEN),TSFCL2(LEN),
-     &     WETCLM(LEN),SNOCLM(LEN),
-     &     ZORCLM(LEN),ALBCLM(LEN,4),AISCLM(LEN),
-     &     TG3CLM(LEN),ACNCLM(LEN),
-     &     CVCLM (LEN),CVBCLM(LEN),CVTCLM(LEN),
-     &     CNPCLM(LEN),
-     &     SMCCLM(LEN,LSOIL),STCCLM(LEN,LSOIL),
-     &     SLICLM(LEN),SCVCLM(LEN),VEGCLM(LEN),
-     &     vetclm(LEN),sotclm(LEN),ALFCLM(LEN,2)
-!Clu [+1L] add ()cm for vmn, vmx, slp, abs
-     &,    VMNCLM(LEN),VMXCLM(LEN),SLPCLM(LEN),ABSCLM(LEN)
-      REAL (KIND=KIND_IO8) SLMSKH(IMSK,JMSK)
-      REAL (KIND=KIND_IO8) OUTLAT(LEN), OUTLON(LEN)
+     &,            fnvmnc,fnvmxc,fnslpc,fnabsc
+      real (kind=kind_io8) tsfclm(len),tsfcl2(len),
+     &     wetclm(len),snoclm(len),
+     &     zorclm(len),albclm(len,4),aisclm(len),
+     &     tg3clm(len),acnclm(len),
+     &     cvclm (len),cvbclm(len),cvtclm(len),
+     &     cnpclm(len),
+     &     smcclm(len,lsoil),stcclm(len,lsoil),
+     &     sliclm(len),scvclm(len),vegclm(len),
+     &     vetclm(len),sotclm(len),alfclm(len,2)
+     &,    vmnclm(len),vmxclm(len),slpclm(len),absclm(len)
+      real (kind=kind_io8) slmskh(imsk,jmsk)
+      real (kind=kind_io8) outlat(len), outlon(len)
 !
-      REAL (KIND=KIND_IO8) SLMASK(LEN), TSFCL0(LEN)
-      REAL (KIND=KIND_IO8), ALLOCATABLE :: SLMASK_NOICE(:)
+      real (kind=kind_io8) slmask(len), tsfcl0(len)
+      real (kind=kind_io8), allocatable :: slmask_noice(:)
 !
-      LOGICAL LANOM, GAUS, first
+      logical lanom, gaus, first
 !
 ! set z0 based on sib vegetation type
-      REAL (KIND=KIND_IO8) Z0_SIB(13)
-      DATA Z0_SIB /2.653, 0.826, 0.563, 1.089, 0.854, 0.856,
-     &             0.035, 0.238, 0.065, 0.076, 0.011, 0.035,
+      real (kind=kind_io8) z0_sib(13)
+      data z0_sib /2.653, 0.826, 0.563, 1.089, 0.854, 0.856,
+     &             0.035, 0.238, 0.065, 0.076, 0.011, 0.125,
      &             0.011 /
+! set z0 based on igbp vegetation type
+      real (kind=kind_io8) z0_igbp_min(20), z0_igbp_max(20)
+      real (kind=kind_io8) z0_season(12)
+      data z0_igbp_min /1.089, 2.653, 0.854, 0.826, 0.800, 0.050,
+     &                  0.030, 0.856, 0.856, 0.150, 0.040, 0.130,
+     &                  1.000, 0.250, 0.011, 0.011, 0.001, 0.076,
+     &                  0.050, 0.030/
+      data z0_igbp_max /1.089, 2.653, 0.854, 0.826, 0.800, 0.050,
+     &                  0.030, 0.856, 0.856, 0.150, 0.040, 0.130,
+     &                  1.000, 0.250, 0.011, 0.011, 0.001, 0.076,
+     &                  0.050, 0.030/
 !
-! DAYHF : JULIAN DAY OF THE MIDDLE OF EACH MONTH
+! dayhf : julian day of the middle of each month
 !
-      REAL (KIND=KIND_IO8) DAYHF(13)
-      DATA DAYHF/ 15.5, 45.0, 74.5,105.0,135.5,166.0,
+      real (kind=kind_io8) dayhf(13)
+      data dayhf/ 15.5, 45.0, 74.5,105.0,135.5,166.0,
      &           196.5,227.5,258.0,288.5,319.0,349.5,380.5/
 !
       real (kind=kind_io8) fha(5)
+      real(4) fha4(5)
+      integer w3kindreal,w3kindint
       integer ida(8),jda(8),ivtyp, kpd7
 !
       real (kind=kind_io8), allocatable :: tsf(:,:),sno(:,:),
@@ -6948,76 +6853,73 @@ cjfe
      &                     tg3(:),   alb(:,:,:), alf(:,:),
      &                     vet(:),   sot(:),     tsf2(:),
      &                     veg(:,:), stc(:,:,:)
-!Clu [+1L] add vmn, vmx, slp, abs
      &,                    vmn(:), vmx(:),  slp(:), abs(:)
 !
-      integer mon1s, mon2s, sea1s, sea2s, sea1, sea2
+      integer mon1s, mon2s, sea1s, sea2s, sea1, sea2, hyr1, hyr2
       data first/.true./
       data mon1s/0/, mon2s/0/, sea1s/0/, sea2s/0/
 !
       save first, tsf, sno, zor, wet,  ais, acn, scv, smc, tg3,
      &     alb,   alf, vet, sot, tsf2, veg, stc
-!Clu [+1L] add vmn, vmx, slp, abs
      &,    vmn,   vmx, slp, abs,
      &     mon1s, mon2s, sea1s, sea2s, dayhf, k1, k2, m1, m2
 !
       logical lprnt
 !
-      DO I=1,LEN
-        TSFCLM(I) = 0.0
-        TSFCL2(I) = 0.0
-        SNOCLM(I) = 0.0
-        WETCLM(I) = 0.0
-        ZORCLM(I) = 0.0
-        AISCLM(I) = 0.0
-        TG3CLM(I) = 0.0
-        ACNCLM(I) = 0.0
-        CVCLM(I)  = 0.0
-        CVBCLM(I) = 0.0
-        CVTCLM(I) = 0.0
-        CNPCLM(I) = 0.0
-        SLICLM(I) = 0.0
-        SCVCLM(I) = 0.0
-!Clu [+4L]  add ()clm for vmn, vmx, slp, abs
-        VMNCLM(I) = 0.0
-        VMXCLM(I) = 0.0
-        SLPCLM(I) = 0.0
-        ABSCLM(I) = 0.0
-      ENDDO
-      DO K=1,LSOIL
-        DO I=1,LEN
-          SMCCLM(I,K) = 0.0
-          STCCLM(I,K) = 0.0
-        ENDDO
-      ENDDO
-      DO K=1,4
-        DO I=1,LEN
-          ALBCLM(I,K) = 0.0
-        ENDDO
-      ENDDO
-      DO K=1,2
-        DO I=1,LEN
-          ALFCLM(I,K) = 0.0
-        ENDDO
-      ENDDO
+      do i=1,len
+        tsfclm(i) = 0.0
+        tsfcl2(i) = 0.0
+        snoclm(i) = 0.0
+        wetclm(i) = 0.0
+        zorclm(i) = 0.0
+        aisclm(i) = 0.0
+        tg3clm(i) = 0.0
+        acnclm(i) = 0.0
+        cvclm(i)  = 0.0
+        cvbclm(i) = 0.0
+        cvtclm(i) = 0.0
+        cnpclm(i) = 0.0
+        sliclm(i) = 0.0
+        scvclm(i) = 0.0
+        vmnclm(i) = 0.0
+        vmxclm(i) = 0.0
+        slpclm(i) = 0.0
+        absclm(i) = 0.0
+      enddo
+      do k=1,lsoil
+        do i=1,len
+          smcclm(i,k) = 0.0
+          stcclm(i,k) = 0.0
+        enddo
+      enddo
+      do k=1,4
+        do i=1,len
+          albclm(i,k) = 0.0
+        enddo
+      enddo
+      do k=1,2
+        do i=1,len
+          alfclm(i,k) = 0.0
+        enddo
+      enddo
 !
-      IRET   = 0
-      MONEND = 9999
+      iret   = 0
+      monend = 9999
 !
       if (first) then
 !
-!    Allocate variables to be saved
+!    allocate variables to be saved
 !
-       Allocate (tsf(len,2), sno(len,2),      zor(len,2),
+       allocate (tsf(len,2), sno(len,2),      zor(len,2),
      &           wet(len,2), ais(len,2),      acn(len,2),
      &           scv(len,2), smc(len,lsoil,2),
      &           tg3(len),   alb(len,4,2),    alf(len,2),
      &           vet(len),   sot(len), tsf2(len),
-!Clu [+1L] add vmn, vmx, slp, abs
+!clu [+1l] add vmn, vmx, slp, abs
      &           vmn(len),   vmx(len), slp(len), abs(len),
      &           veg(len,2), stc(len,lsoil,2))
 !
-!     Get TSF climatology for the begining of the forecast
+!     get tsf climatology for the begining of the forecast
 !
         if (fh .gt. 0.0) then
 !cbosu
@@ -7033,64 +6935,70 @@ cjfe
           ida(2)=im
           ida(3)=id
           ida(5)=ih
-          call w3movdat(fha,ida,jda)
+          call w3kind(w3kindreal,w3kindint)
+          if(w3kindreal == 4) then
+            fha4=fha
+            call w3movdat(fha4,ida,jda)
+          else
+            call w3movdat(fha,ida,jda)
+          endif
           jy=jda(1)
           jm=jda(2)
           jd=jda(3)
           jh=jda(5)
-          if (me .eq. 0) write(6,*) ' Forecast JY,JM,JD,JH',
+          if (me .eq. 0) write(6,*) ' forecast jy,jm,jd,jh',
      &                   jy,jm,jd,jh
           jdow = 0
           jdoy = 0
           jday = 0
           call w3doxdat(jda,jdow,jdoy,jday)
           rjday=jdoy+jda(5)/24.
-          IF(RJDAY.LT.DAYHF(1)) RJDAY=RJDAY+365.
+          if(rjday.lt.dayhf(1)) rjday=rjday+365.
 !
-          if (me .eq. 0) WRITE(6,*) 'Forecast JY,JM,JD,JH=',JY,JM,JD,JH
+          if (me .eq. 0) write(6,*) 'forecast jy,jm,jd,jh=',jy,jm,jd,jh
 !
-!         For monthly mean climatology
+!         for monthly mean climatology
 !
-          MONEND = 12
-          DO MM=1,MONEND
-            MMM=MM
-            MMP=MM+1
-            IF(RJDAY.GE.DAYHF(MMM).AND.RJDAY.LT.DAYHF(MMP)) THEN
-               MON1=MMM
-               MON2=MMP
-               GO TO 10
-            ENDIF
-          ENDDO
-          PRINT *,'WRONG RJDAY',RJDAY
-          CALL ABORT
-   10     CONTINUE
-          WEI1M = (DAYHF(MON2)-RJDAY)/(DAYHF(MON2)-DAYHF(MON1))
-          WEI2M = (RJDAY-DAYHF(MON1))/(DAYHF(MON2)-DAYHF(MON1))
-          IF(MON2.EQ.13) MON2=1
-          if (me .eq. 0) PRINT *,'RJDAY,MON1,MON2,WEI1M,WEI2M=',
-     &                   RJDAY,MON1,MON2,WEI1M,WEI2M
+          monend = 12
+          do mm=1,monend
+            mmm=mm
+            mmp=mm+1
+            if(rjday.ge.dayhf(mmm).and.rjday.lt.dayhf(mmp)) then
+               mon1=mmm
+               mon2=mmp
+               go to 10
+            endif
+          enddo
+          print *,'wrong rjday',rjday
+          call abort
+   10     continue
+          wei1m = (dayhf(mon2)-rjday)/(dayhf(mon2)-dayhf(mon1))
+          wei2m = (rjday-dayhf(mon1))/(dayhf(mon2)-dayhf(mon1))
+          if(mon2.eq.13) mon2=1
+          if (me .eq. 0) print *,'rjday,mon1,mon2,wei1m,wei2m=',
+     &                   rjday,mon1,mon2,wei1m,wei2m
 !
-!       Read Monthly mean climatology of TSF
+!       read monthly mean climatology of tsf
 !
           kpd7 = -1
           do nn=1,2
-            MON = MON1
-            if (NN .eq. 2) MON = MON2
-            CALL FIXRDC(LUGB,FNTSFC,KPDTSF,kpd7,MON,SLMASK,
-     &                 TSF(1,NN),LEN,IRET
-     &,                IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                OUTLAT, OUTLON, me)
+            mon = mon1
+            if (nn .eq. 2) mon = mon2
+            call fixrdc(lugb,fntsfc,kpdtsf,kpd7,mon,slmask,
+     &                 tsf(1,nn),len,iret
+     &,                imsk, jmsk, slmskh, gaus,blno, blto
+     &,                outlat, outlon, me)
           enddo
 !
-!  TSF AT THE BEGINING OF FORECAST I.E. FH=0
+!  tsf at the begining of forecast i.e. fh=0
 !
-          DO I=1,LEN
-            TSFCL0(I) = wei1m * tsf(i,1) + wei2m * tsf(i,2)
-          ENDDO
+          do i=1,len
+            tsfcl0(i) = wei1m * tsf(i,1) + wei2m * tsf(i,2)
+          enddo
         endif
       endif
 !
-!  Compute current JY,JM,JD,JH of forecast and the day of the year
+!  compute current jy,jm,jd,jh of forecast and the day of the year
 !
       iy4=iy
       if(iy.lt.101) iy4=1900+iy4
@@ -7102,78 +7010,107 @@ cjfe
       ida(2) = im
       ida(3) = id
       ida(5) = ih
-      call w3movdat(fha,ida,jda)
+      call w3kind(w3kindreal,w3kindint)
+      if(w3kindreal==4) then
+        fha4=fha
+        call w3movdat(fha4,ida,jda)
+      else
+        call w3movdat(fha,ida,jda)
+      endif
       jy     = jda(1)
       jm     = jda(2)
       jd     = jda(3)
       jh     = jda(5)
-!     if (me .eq. 0) write(6,*) ' Forecast JY,JM,JD,JH,rjday=',
+!     if (me .eq. 0) write(6,*) ' forecast jy,jm,jd,jh,rjday=',
 !    &               jy,jm,jd,jh,rjday
       jdow   = 0
       jdoy   = 0
       jday   = 0
       call w3doxdat(jda,jdow,jdoy,jday)
       rjday  = jdoy+jda(5)/24.
-      IF(RJDAY.LT.DAYHF(1)) RJDAY=RJDAY+365.
+      if(rjday.lt.dayhf(1)) rjday=rjday+365.
 
-      if (me .eq. 0) write(6,*) ' Forecast JY,JM,JD,JH,rjday=',
+      if (me .eq. 0) write(6,*) ' forecast jy,jm,jd,jh,rjday=',
      &               jy,jm,jd,jh,rjday
 !
-      if (me .eq. 0) WRITE(6,*) 'Forecast JY,JM,JD,JH=',JY,JM,JD,JH
+      if (me .eq. 0) write(6,*) 'forecast jy,jm,jd,jh=',jy,jm,jd,jh
 !
-!     For monthly mean climatology
+!     for monthly mean climatology
 !
-      MONEND = 12
-      DO MM=1,MONEND
-         MMM=MM
-         MMP=MM+1
-         IF(RJDAY.GE.DAYHF(MMM).AND.RJDAY.LT.DAYHF(MMP)) THEN
-            MON1=MMM
-            MON2=MMP
-            GO TO 20
-         ENDIF
-      ENDDO
-      PRINT *,'WRONG RJDAY',RJDAY
-      CALL ABORT
-   20 CONTINUE
-      WEI1M=(DAYHF(MON2)-RJDAY)/(DAYHF(MON2)-DAYHF(MON1))
-      WEI2M=(RJDAY-DAYHF(MON1))/(DAYHF(MON2)-DAYHF(MON1))
-      IF(MON2.EQ.13) MON2=1
-      if (me .eq. 0) PRINT *,'RJDAY,MON1,MON2,WEI1M,WEI2M=',
-     &               RJDAY,MON1,MON2,WEI1M,WEI2M
+      monend = 12
+      do mm=1,monend
+         mmm=mm
+         mmp=mm+1
+         if(rjday.ge.dayhf(mmm).and.rjday.lt.dayhf(mmp)) then
+            mon1=mmm
+            mon2=mmp
+            go to 20
+         endif
+      enddo
+      print *,'wrong rjday',rjday
+      call abort
+   20 continue
+      wei1m=(dayhf(mon2)-rjday)/(dayhf(mon2)-dayhf(mon1))
+      wei2m=(rjday-dayhf(mon1))/(dayhf(mon2)-dayhf(mon1))
+      if(mon2.eq.13) mon2=1
+      if (me .eq. 0) print *,'rjday,mon1,mon2,wei1m,wei2m=',
+     &               rjday,mon1,mon2,wei1m,wei2m
 !
-!     For seasonal mean climatology
+!     for seasonal mean climatology
 !
-      MONEND = 4
-      IS     = IM/3 + 1
-      IF (IS.EQ.5) IS = 1
-      DO MM=1,MONEND
-        MMM = MM*3 - 2
-        MMP = (MM+1)*3 - 2
-        IF(RJDAY.GE.DAYHF(MMM).AND.RJDAY.LT.DAYHF(MMP)) THEN
-          SEA1 = MMM
-          SEA2 = MMP
-          GO TO 30
-        ENDIF
-      ENDDO
-      PRINT *,'WRONG RJDAY',RJDAY
-      CALL ABORT
-   30 CONTINUE
-      WEI1S = (DAYHF(SEA2)-RJDAY)/(DAYHF(SEA2)-DAYHF(SEA1))
-      WEI2S = (RJDAY-DAYHF(SEA1))/(DAYHF(SEA2)-DAYHF(SEA1))
-      IF(SEA2.EQ.13) SEA2=1
-      if (me .eq. 0) PRINT *,'RJDAY,SEA1,SEA2,WEI1S,WEI2S=',
-     &               RJDAY,SEA1,SEA2,WEI1S,WEI2S
+      monend = 4
+      is     = im/3 + 1
+      if (is.eq.5) is = 1
+      do mm=1,monend
+        mmm = mm*3 - 2
+        mmp = (mm+1)*3 - 2
+        if(rjday.ge.dayhf(mmm).and.rjday.lt.dayhf(mmp)) then
+          sea1 = mmm
+          sea2 = mmp
+          go to 30
+        endif
+      enddo
+      print *,'wrong rjday',rjday
+      call abort
+   30 continue
+      wei1s = (dayhf(sea2)-rjday)/(dayhf(sea2)-dayhf(sea1))
+      wei2s = (rjday-dayhf(sea1))/(dayhf(sea2)-dayhf(sea1))
+      if(sea2.eq.13) sea2=1
+      if (me .eq. 0) print *,'rjday,sea1,sea2,wei1s,wei2s=',
+     &               rjday,sea1,sea2,wei1s,wei2s
 !
-!  START READING IN CLIMATOLOGY AND INTERPOLATE TO THE DATE
+!     for summer and winter values (maximum and minimum).
 !
-      FIRST_TIME : if (first) then
+      monend = 2
+      is     = im/6 + 1
+      if (is.eq.3) is = 1
+      do mm=1,monend
+        mmm = mm*6 - 5
+        mmp = (mm+1)*6 - 5
+        if(rjday.ge.dayhf(mmm).and.rjday.lt.dayhf(mmp)) then
+          hyr1 = mmm
+          hyr2 = mmp
+          go to 31
+        endif
+      enddo
+      print *,'wrong rjday',rjday
+      call abort
+   31 continue
+      wei1y = (dayhf(hyr2)-rjday)/(dayhf(hyr2)-dayhf(hyr1))
+      wei2y = (rjday-dayhf(hyr1))/(dayhf(hyr2)-dayhf(hyr1))
+      if(hyr2.eq.13) hyr2=1
+      if (me .eq. 0) print *,'rjday,hyr1,hyr2,wei1y,wei2y=',
+     &               rjday,hyr1,hyr2,wei1y,wei2y
+!
+!  start reading in climatology and interpolate to the date
+!
+      first_time : if (first) then
 !cbosu
         if (me == 0) print*,'bosu first time thru'
 !
-!     Annual mean climatology
+!     annual mean climatology
 !
-!  Fraction of vegetation field for albedo --  There are two
+!  fraction of vegetation field for albedo --  there are two
 !  fraction fields in this version: strong zeneith angle dependent
 !  and weak zeneith angle dependent
 !
@@ -7187,308 +7124,326 @@ cjfe
 !cbosu    still need facsf and facwf.  read them from the production
 !cbosu    file
 !cbosu
-          CALL FIXRDC(LUGB,FNALBC2,KPDALF(1),kpd7,kpd9,SLMASK
-     &,               ALF,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
+          call fixrdc(lugb,fnalbc2,kpdalf(1),kpd7,kpd9,slmask
+     &,               alf,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
         else
-          CALL FIXRDC(LUGB,FNALBC,KPDALF(1),kpd7,kpd9,SLMASK
-     &,               ALF,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
+          call fixrdc(lugb,fnalbc,kpdalf(1),kpd7,kpd9,slmask
+     &,               alf,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
         endif
-        do I = 1, LEN
-          if(slmask(I).eq.1.) then
-            alf(I,2) = 100. - alf(I,1)
+        do i = 1, len
+          if(slmask(i).eq.1.) then
+            alf(i,2) = 100. - alf(i,1)
           endif
         enddo
 !
-!  Deep Soil Temperature
+!  deep soil temperature
 !
-        IF(FNTG3C(1:8).NE.'        ') THEN
+        if(fntg3c(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNTG3C,KPDTG3,kpd7,kpd9,SLMASK,
-     &                TG3,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-        ENDIF
+          call fixrdc(lugb,fntg3c,kpdtg3,kpd7,kpd9,slmask,
+     &                tg3,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+        endif
 !
-!  Vegetation type
+!  vegetation type
 !
-        IF(FNVEtC(1:8).NE.'        ') THEN
+!  when using the new gldas soil moisture climatology, a veg type
+!  dataset must be selected.
+!
+        if(fnvetc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNVEtC,KPDVEt,kpd7,kpd9,SLMASK,
-     &                VEt,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological vegetation',
+          call fixrdc(lugb,fnvetc,kpdvet,kpd7,kpd9,slmask,
+     &                vet,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological vegetation',
      &                              ' type read in.'
-        ENDIF
+          landice_cat=13
+          if (maxval(vet)> 13.0) landice_cat=15
+        elseif(index(fnsmcc,'soilmgldas') /= 0) then ! new soil moisture climo
+          if (me .eq. 0) write(6,*) 'fatal error: must choose'
+          if (me .eq. 0) write(6,*) 'climatological veg type when'
+          if (me .eq. 0) write(6,*) 'using new gldas soil moisture.'
+          call abort
+        endif
 !
 !  soil type
 !
-        IF(FNsotC(1:8).NE.'        ') THEN
+        if(fnsotc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNsotC,KPDsot,kpd7,kpd9,SLMASK,
-     &                sot,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological soil type read in.'
-        ENDIF
+          call fixrdc(lugb,fnsotc,kpdsot,kpd7,kpd9,slmask,
+     &                sot,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological soil type read in.'
+        endif
 
-!Clu ----------------------------------------------------------------------
 !
-!  Min vegetation cover
+!  min vegetation cover
 !
-        IF(FNvmnC(1:8).NE.'        ') THEN
+        if(fnvmnc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNvmnC,KPDvmn,kpd7,kpd9,SLMASK,
-     &                vmn,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological shdmin read in.'
-        ENDIF
+          call fixrdc(lugb,fnvmnc,kpdvmn,kpd7,kpd9,slmask,
+     &                vmn,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological shdmin read in.'
+        endif
 !
-!  Max vegetation cover
+!  max vegetation cover
 !
-        IF(FNvmxC(1:8).NE.'        ') THEN
+        if(fnvmxc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNvmxC,KPDvmx,kpd7,kpd9,SLMASK,
-     &                vmx,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological shdmax read in.'
-        ENDIF
+          call fixrdc(lugb,fnvmxc,kpdvmx,kpd7,kpd9,slmask,
+     &                vmx,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological shdmax read in.'
+        endif
 !
-!  Slope type
+!  slope type
 !
-        IF(FNslpC(1:8).NE.'        ') THEN
+        if(fnslpc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNslpC,KPDslp,kpd7,kpd9,SLMASK,
-     &                slp,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological slope read in.'
-        ENDIF
+          call fixrdc(lugb,fnslpc,kpdslp,kpd7,kpd9,slmask,
+     &                slp,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological slope read in.'
+        endif
 !
-!  Max snow albeod
+!  max snow albeod
 !
-        IF(FNabsC(1:8).NE.'        ') THEN
+        if(fnabsc(1:8).ne.'        ') then
           kpd7=-1
-          CALL FIXRDC(LUGB,FNabsC,KPDabs,kpd7,kpd9,SLMASK,
-     &                abs,LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
-          if (me .eq. 0) WRITE(6,*) 'Climatological snoalb read in.'
-        ENDIF
-!Clu ----------------------------------------------------------------------
+          call fixrdc(lugb,fnabsc,kpdabs,kpd7,kpd9,slmask,
+     &                abs,len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+          if (me .eq. 0) write(6,*) 'climatological snoalb read in.'
+        endif
+!clu ----------------------------------------------------------------------
 !
-        IS1 = SEA1/3 + 1
-        IS2 = SEA2/3 + 1
-        IF (IS1 .EQ. 5) IS1 = 1
-        IF (IS2 .EQ. 5) IS2 = 1
-        DO NN=1,2
+        is1 = sea1/3 + 1
+        is2 = sea2/3 + 1
+        if (is1 .eq. 5) is1 = 1
+        if (is2 .eq. 5) is2 = 1
+        do nn=1,2
 !
-!     Seasonal mean climatology
-          IF(NN.EQ.1) THEN
-             ISX=IS1
-          ELSE
-             ISX=IS2
-          ENDIF
-          IF(ISX.EQ.1) kpd9 = 12
-          IF(ISX.EQ.2) kpd9 = 3
-          IF(ISX.EQ.3) kpd9 = 6
-          IF(ISX.EQ.4) kpd9 = 9
+!     seasonal mean climatology
+          if(nn.eq.1) then
+             isx=is1
+          else
+             isx=is2
+          endif
+          if(isx.eq.1) kpd9 = 12
+          if(isx.eq.2) kpd9 = 3
+          if(isx.eq.3) kpd9 = 6
+          if(isx.eq.4) kpd9 = 9
 !
-!         Seasonal mean climatology
+!         seasonal mean climatology
 !
-!  ALBEDO
-!  There are four albedo fields in this version:
-!  two for strong zeneith angle dependent (visible and near IR)
-!  and two for weak zeneith angle dependent (VIS ANS NIR)
+!  albedo
+!  there are four albedo fields in this version:
+!  two for strong zeneith angle dependent (visible and near ir)
+!  and two for weak zeneith angle dependent (vis ans nir)
 !
           if (ialb == 0) then
             kpd7=-1
-            DO K = 1, 4
-              CALL FIXRDC(LUGB,FNALBC,KPDALB(K),kpd7,kpd9,SLMASK,
-     &                    ALB(1,K,NN),LEN,IRET
-     &,                   IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                   OUTLAT, OUTLON, me)
-            ENDDO
+            do k = 1, 4
+              call fixrdc(lugb,fnalbc,kpdalb(k),kpd7,kpd9,slmask,
+     &                    alb(1,k,nn),len,iret
+     &,                   imsk, jmsk, slmskh, gaus,blno, blto
+     &,                   outlat, outlon, me)
+            enddo
           endif
 !
-!         Monthly mean climatology
+!         monthly mean climatology
 !
-          MON = MON1
-          if (NN .eq. 2) MON = MON2
+          mon = mon1
+          if (nn .eq. 2) mon = mon2
 !cbosu
 !cbosu  new snowfree albedo database is monthly.  
           if (ialb == 1) then
-            print*,'first call to fixrdc for snowfree alb ', first,
-     &              nn, mon
             kpd7=-1
-            DO K = 1, 4
-              CALL FIXRDC(LUGB,FNALBC,KPDALB(K),kpd7,mon,SLMASK,
-     &                    ALB(1,K,NN),LEN,IRET
-     &,                   IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                   OUTLAT, OUTLON, me)
-            ENDDO
+            do k = 1, 4
+              call fixrdc(lugb,fnalbc,kpdalb(k),kpd7,mon,slmask,
+     &                    alb(1,k,nn),len,iret
+     &,                   imsk, jmsk, slmskh, gaus,blno, blto
+     &,                   outlat, outlon, me)
+            enddo
           endif
 
 !     if(lprnt) print *,' mon1=',mon1,' mon2=',mon2
 !
-!  TSF AT THE CURRENT TIME T
+!  tsf at the current time t
 !
           kpd7=-1
-          CALL FIXRDC(LUGB,FNTSFC,KPDTSF,kpd7,MON,SLMASK,
-     &               TSF(1,NN),LEN,IRET
-     &,              IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,              OUTLAT, OUTLON, me)
+          call fixrdc(lugb,fntsfc,kpdtsf,kpd7,mon,slmask,
+     &               tsf(1,nn),len,iret
+     &,              imsk, jmsk, slmskh, gaus,blno, blto
+     &,              outlat, outlon, me)
 !     if(lprnt) print *,' tsf=',tsf(iprnt,nn),' nn=',nn
 !
-!  TSF...AT TIME T-DELTSFC
+!  tsf...at time t-deltsfc
 !
-!     FH2 = FH - DELTSFC
-!     IF (FH2 .GT. 0.0) THEN
-!       CALL FIXRD(LUGB,FNTSFC,KPDTSF,LCLIM,SLMASK,
-!    &             IY,IM,ID,IH,FH2,TSFCL2,LEN,IRET
-!    &,            IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-!    &,            OUTLAT, OUTLON, me)
-!     ELSE
-!       DO I=1,LEN
-!         TSFCL2(I) = TSFCLM(I)
-!       ENDDO
-!     ENDIF
+!     fh2 = fh - deltsfc
+!     if (fh2 .gt. 0.0) then
+!       call fixrd(lugb,fntsfc,kpdtsf,lclim,slmask,
+!    &             iy,im,id,ih,fh2,tsfcl2,len,iret
+!    &,            imsk, jmsk, slmskh, gaus,blno, blto
+!    &,            outlat, outlon, me)
+!     else
+!       do i=1,len
+!         tsfcl2(i) = tsfclm(i)
+!       enddo
+!     endif
 !
-!  SOIL WETNESS
+!  soil wetness
 !
-          IF(FNWETC(1:8).NE.'        ') THEN
+          if(fnwetc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNWETC,KPDWET,kpd7,MON,SLMASK,
-     &                  WET(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSEIF(FNSMCC(1:8).NE.'        ') THEN
-            IF (INDEX(FNSMCC,'global_soilmcpc.1x1.grb') /= 0) THEN ! the old climo data
+            call fixrdc(lugb,fnwetc,kpdwet,kpd7,mon,slmask,
+     &                  wet(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          elseif(fnsmcc(1:8).ne.'        ') then
+            if (index(fnsmcc,'global_soilmcpc.1x1.grb') /= 0) then ! the old climo data
               kpd7=-1
-              CALL FIXRDC(LUGB,FNSMCC,KPDSMC,kpd7,MON,SLMASK,
-     &                    SMC(1,LSOIL,NN),LEN,IRET
-     &,                   IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                   OUTLAT, OUTLON, me)
+              call fixrdc(lugb,fnsmcc,kpdsmc,kpd7,mon,slmask,
+     &                    smc(1,lsoil,nn),len,iret
+     &,                   imsk, jmsk, slmskh, gaus,blno, blto
+     &,                   outlat, outlon, me)
               do l=1,lsoil-1
-                do i = 1, LEN
-                 smc(i,l,NN) = smc(i,LSOIL,NN)
+                do i = 1, len
+                 smc(i,l,nn) = smc(i,lsoil,nn)
                 enddo
               enddo
-            ELSE
-              DO K = 1, LSOIL
-                IF (K==1) kpd7=10     ! 0_10 cm    (pds octs 11 and 12)
-                IF (K==2) kpd7=2600   ! 10_40 cm
-                IF (K==3) kpd7=10340  ! 40_100 cm
-                IF (K==4) kpd7=25800  ! 100_200 cm
-                ALLOCATE(SLMASK_NOICE(LEN))
-                SLMASK_NOICE=0.0
-                WHERE (NINT(VET)>0 .AND. NINT(VET)<13) SLMASK_NOICE=1.0
-                CALL FIXRDC(LUGB,FNSMCC,KPDSMC,kpd7,MON,SLMASK_NOICE,
-     &                      SMC(1,K,NN),LEN,IRET
-     &,                     IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                     OUTLAT, OUTLON, me)
-                DEALLOCATE(SLMASK_NOICE)
-              ENDDO
-            ENDIF
-          ELSE
-            WRITE(6,*) 'Climatological Soil wetness file not given'
-            CALL ABORT
-          ENDIF
+            else  ! the new gldas data.  it does not have data defined at landice
+                  ! points.  so for efficiency, don't have fixrdc try to
+                  ! find a value at landice points as defined by the vet type (vet).
+              allocate(slmask_noice(len))
+              slmask_noice=1.0
+              do i = 1, len
+                if (nint(vet(i)) < 1 .or.
+     &              nint(vet(i)) == landice_cat) then
+                  slmask_noice(i) = 0.0
+                endif
+              enddo
+              do k = 1, lsoil
+                if (k==1) kpd7=10     ! 0_10 cm    (pds octs 11 and 12)
+                if (k==2) kpd7=2600   ! 10_40 cm
+                if (k==3) kpd7=10340  ! 40_100 cm
+                if (k==4) kpd7=25800  ! 100_200 cm
+                call fixrdc(lugb,fnsmcc,kpdsmc,kpd7,mon,slmask_noice,
+     &                      smc(1,k,nn),len,iret
+     &,                     imsk, jmsk, slmskh, gaus,blno, blto
+     &,                     outlat, outlon, me)
+              enddo
+              deallocate(slmask_noice)
+            endif
+          else
+            write(6,*) 'climatological soil wetness file not given'
+            call abort
+          endif
 !
-!  SOIL TEMPERATURE
+!  soil temperature
 !
-          IF(FNSTCC(1:8).NE.'        ') THEN
+          if(fnstcc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNSTCC,KPDSTC,kpd7,MON,SLMASK,
-     &                  STC(1,LSOIL,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
+            call fixrdc(lugb,fnstcc,kpdstc,kpd7,mon,slmask,
+     &                  stc(1,lsoil,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
             do l=1,lsoil-1
-              do i = 1, LEN
-               stc(i,l,NN) = stc(i,LSOIL,NN)
+              do i = 1, len
+               stc(i,l,nn) = stc(i,lsoil,nn)
               enddo
             enddo
-          ENDIF
+          endif
 !
-!  SEA ICE
-!
-          kpd7=-1
-          IF(FNACNC(1:8).NE.'        ') THEN
-            CALL FIXRDC(LUGB,FNACNC,KPDACN,kpd7,MON,SLMASK,
-     &                  ACN(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSEIF(FNAISC(1:8).NE.'        ') THEN
-            CALL FIXRDC(LUGB,FNAISC,KPDAIS,kpd7,MON,SLMASK,
-     &                  AIS(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSE
-            WRITE(6,*) 'Climatological ice cover file not given'
-            CALL ABORT
-          ENDIF
-!
-!  SNOW DEPTH
+!  sea ice
 !
           kpd7=-1
-          CALL FIXRDC(LUGB,FNSNOC,KPDSNO,kpd7,MON,SLMASK,
-     &                SNO(1,NN),LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
+          if(fnacnc(1:8).ne.'        ') then
+            call fixrdc(lugb,fnacnc,kpdacn,kpd7,mon,slmask,
+     &                  acn(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          elseif(fnaisc(1:8).ne.'        ') then
+            call fixrdc(lugb,fnaisc,kpdais,kpd7,mon,slmask,
+     &                  ais(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          else
+            write(6,*) 'climatological ice cover file not given'
+            call abort
+          endif
 !
-!  SNOW COVER
+!  snow depth
 !
-          IF(FNSCVC(1:8).NE.'        ') THEN
+          kpd7=-1
+          call fixrdc(lugb,fnsnoc,kpdsno,kpd7,mon,slmask,
+     &                sno(1,nn),len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+!
+!  snow cover
+!
+          if(fnscvc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNSCVC,KPDSCV,kpd7,MON,SLMASK,
-     &                  SCV(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-            WRITE(6,*) 'Climatological snow cover read in.'
-          ENDIF
+            call fixrdc(lugb,fnscvc,kpdscv,kpd7,mon,slmask,
+     &                  scv(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+            write(6,*) 'climatological snow cover read in.'
+          endif
 !
-!  SURFACE ROUGHNESS
+!  surface roughness
 !
-      IF(FNZORC(1:3) == 'sib') THEN
+      if(fnzorc(1:3) == 'sib') then
         if (me == 0) then
-          WRITE(6,*) 'Roughness length to be set from sib veg type'
+          write(6,*) 'roughness length to be set from sib veg type'
         endif
-      ELSE
+      elseif(fnzorc(1:4) == 'igbp') then
+        if (me == 0) then
+          write(6,*) 'roughness length to be set from igbp veg type'
+        endif
+      else
         kpd7=-1
-        CALL FIXRDC(LUGB,FNZORC,KPDZOR,kpd7,MON,SLMASK,
-     &              ZOR(1,NN),LEN,IRET
-     &,             IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,             OUTLAT, OUTLON, me)
-      ENDIF
+        call fixrdc(lugb,fnzorc,kpdzor,kpd7,mon,slmask,
+     &              zor(1,nn),len,iret
+     &,             imsk, jmsk, slmskh, gaus,blno, blto
+     &,             outlat, outlon, me)
+      endif
 !
-          DO I = 1, LEN
-!                           Set clouds climatology to zero
-            CVCLM (I) = 0.
-            CVBCLM(I) = 0.
-            CVTCLM(I) = 0.
+          do i = 1, len
+!                           set clouds climatology to zero
+            cvclm (i) = 0.
+            cvbclm(i) = 0.
+            cvtclm(i) = 0.
 !
-            CNPCLM(I) = 0.  !Set canopy water content climatology to zero
-          ENDDO
+            cnpclm(i) = 0.  !set canopy water content climatology to zero
+          enddo
 !
-!  Vegetation cover
+!  vegetation cover
 !
-          IF(FNVEGC(1:8).NE.'        ') THEN
+          if(fnvegc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNVEGC,KPDVEG,kpd7,MON,SLMASK,
-     &                  VEG(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-            if (me .eq. 0) WRITE(6,*) 'Climatological vegetation',
+            call fixrdc(lugb,fnvegc,kpdveg,kpd7,mon,slmask,
+     &                  veg(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+            if (me .eq. 0) write(6,*) 'climatological vegetation',
      &                                ' cover read in for mon=',mon
-          ENDIF
+          endif
 
-        ENDDO
+        enddo
 !
       mon1s = mon1 ; mon2s = mon2 ; sea1s = sea1 ; sea2s = sea2
 !
@@ -7499,40 +7454,44 @@ cjfe
         m1  = 1 ; m2 = 2
 !
         first = .false.
-      endif FIRST_TIME
+      endif first_time
 !
-!     To get TSF climatology at the previous call to SFCCYCLE
+!     to get tsf climatology at the previous call to sfccycle
 !
-      rjdayh = rjday - deltsfc/24.0
+!     if (fh-deltsfc >= 0.0) then
+        rjdayh = rjday - deltsfc/24.0
+!     else
+!       rjdayh = rjday
+!     endif
 !     if(lprnt) print *,' rjdayh=',rjdayh,' mon1=',mon1,' mon2='
 !    &,mon2,' mon1s=',mon1s,' mon2s=',mon2s,' k1=',k1,' k2=',k2
-      if (rjdayh .ge. DAYHF(mon1)) then
+      if (rjdayh .ge. dayhf(mon1)) then
         if (mon2 .eq. 1) mon2 = 13
-        WEI1X = (DAYHF(mon2)-rjdayh)/(DAYHF(mon2)-DAYHF(mon1))
-        WEI2X = 1.0 - WEI1X
+        wei1x = (dayhf(mon2)-rjdayh)/(dayhf(mon2)-dayhf(mon1))
+        wei2x = 1.0 - wei1x
         if (mon2 .eq. 13) mon2 = 1
       else
         rjdayh2 = rjdayh
-        IF (RJDAYh .LT. DAYHF(1)) RJDAYh2 = RJDAYh2 + 365.0
+        if (rjdayh .lt. dayhf(1)) rjdayh2 = rjdayh2 + 365.0
         if (mon1s .eq. mon1) then
           mon1s = mon1 - 1
           if (mon1s .eq. 0) mon1s = 12
           k2  = k1
           k1  = mod(k2,2) + 1
-          MON = mon1s
+          mon = mon1s
           kpd7=-1
-          CALL FIXRDC(LUGB,FNTSFC,KPDTSF,kpd7,MON,SLMASK,
-     &               TSF(1,k1),LEN,IRET
-     &,              IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,              OUTLAT, OUTLON, me)
+          call fixrdc(lugb,fntsfc,kpdtsf,kpd7,mon,slmask,
+     &               tsf(1,k1),len,iret
+     &,              imsk, jmsk, slmskh, gaus,blno, blto
+     &,              outlat, outlon, me)
         endif
         mon2s = mon1s + 1
 !       if (mon2s .eq. 1) mon2s = 13
-        WEI1X = (DAYHF(mon2s)-rjdayh2)/(DAYHF(mon2s)-DAYHF(mon1s))
-        WEI2X = 1.0 - WEI1X
+        wei1x = (dayhf(mon2s)-rjdayh2)/(dayhf(mon2s)-dayhf(mon1s))
+        wei2x = 1.0 - wei1x
         if (mon2s .eq. 13) mon2s = 1
         do i=1,len
-          tsf2(I) = wei1x * tsf(i,k1) + wei2x * tsf(i,k2)
+          tsf2(i) = wei1x * tsf(i,k1) + wei2x * tsf(i,k2)
         enddo
       endif
 !
@@ -7543,29 +7502,29 @@ cjfe
          m1    = mod(m1,2) + 1
          m2    = mod(m1,2) + 1
 !
-!     Seasonal mean climatology
+!     seasonal mean climatology
 !
-         ISX   = SEA2/3 + 1
-         IF (ISX .EQ. 5) ISX = 1
-         IF(ISX.EQ.1) kpd9 = 12
-         IF(ISX.EQ.2) kpd9 = 3
-         IF(ISX.EQ.3) kpd9 = 6
-         IF(ISX.EQ.4) kpd9 = 9
+         isx   = sea2/3 + 1
+         if (isx .eq. 5) isx = 1
+         if(isx.eq.1) kpd9 = 12
+         if(isx.eq.2) kpd9 = 3
+         if(isx.eq.3) kpd9 = 6
+         if(isx.eq.4) kpd9 = 9
 !
-!  ALBEDO
-!  There are four albedo fields in this version:
-!  two for strong zeneith angle dependent (visible and near IR)
-!  and two for weak zeneith angle dependent (VIS ANS NIR)
+!  albedo
+!  there are four albedo fields in this version:
+!  two for strong zeneith angle dependent (visible and near ir)
+!  and two for weak zeneith angle dependent (vis ans nir)
 !
 !cbosu  
         if (ialb == 0) then
            kpd7=-1
-           DO K = 1, 4
-             CALL FIXRDC(LUGB,FNALBC,KPDALB(K),kpd7,kpd9,SLMASK
-     &,                 ALB(1,K,m2),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-           ENDDO
+           do k = 1, 4
+             call fixrdc(lugb,fnalbc,kpdalb(k),kpd7,kpd9,slmask
+     &,                 alb(1,k,m2),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+           enddo
         endif
 
       endif
@@ -7577,181 +7536,212 @@ cjfe
          k1    = mod(k1,2) + 1
          k2    = mod(k1,2) + 1
 !
-!     Monthly mean climatology
+!     monthly mean climatology
 !
-          MON = MON2
-          NN  = k2
+          mon = mon2
+          nn  = k2
 !cbosu
           if (ialb == 1) then
             if (me == 0) print*,'bosu 2nd time in clima for month ',
      &                   mon, k1,k2
             kpd7=-1
-            DO K = 1, 4
-              CALL FIXRDC(LUGB,FNALBC,KPDALB(K),kpd7,MON,SLMASK,
-     &                    ALB(1,K,NN),LEN,IRET
-     &,                   IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                   OUTLAT, OUTLON, me)
-            ENDDO
+            do k = 1, 4
+              call fixrdc(lugb,fnalbc,kpdalb(k),kpd7,mon,slmask,
+     &                    alb(1,k,nn),len,iret
+     &,                   imsk, jmsk, slmskh, gaus,blno, blto
+     &,                   outlat, outlon, me)
+            enddo
           endif
 !
-!  TSF AT THE CURRENT TIME T
+!  tsf at the current time t
 !
           kpd7=-1
-          CALL FIXRDC(LUGB,FNTSFC,KPDTSF,kpd7,MON,SLMASK,
-     &               TSF(1,NN),LEN,IRET
-     &,              IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,              OUTLAT, OUTLON, me)
+          call fixrdc(lugb,fntsfc,kpdtsf,kpd7,mon,slmask,
+     &               tsf(1,nn),len,iret
+     &,              imsk, jmsk, slmskh, gaus,blno, blto
+     &,              outlat, outlon, me)
 !
-!  SOIL WETNESS
+!  soil wetness
 !
-          IF(FNWETC(1:8).NE.'        ') THEN
+          if(fnwetc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNWETC,KPDWET,kpd7,MON,SLMASK,
-     &                  WET(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSEIF(FNSMCC(1:8).NE.'        ') THEN
-            IF (INDEX(FNSMCC,'global_soilmcpc.1x1.grb') /= 0) THEN ! the old climo data
+            call fixrdc(lugb,fnwetc,kpdwet,kpd7,mon,slmask,
+     &                  wet(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          elseif(fnsmcc(1:8).ne.'        ') then
+            if (index(fnsmcc,'global_soilmcpc.1x1.grb') /= 0) then ! the old climo data
               kpd7=-1
-              CALL FIXRDC(LUGB,FNSMCC,KPDSMC,kpd7,MON,SLMASK,
-     &                    SMC(1,LSOIL,NN),LEN,IRET
-     &,                   IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                   OUTLAT, OUTLON, me)
+              call fixrdc(lugb,fnsmcc,kpdsmc,kpd7,mon,slmask,
+     &                    smc(1,lsoil,nn),len,iret
+     &,                   imsk, jmsk, slmskh, gaus,blno, blto
+     &,                   outlat, outlon, me)
               do l=1,lsoil-1
-                do i = 1, LEN
-                 smc(i,l,NN) = smc(i,LSOIL,NN)
+                do i = 1, len
+                 smc(i,l,nn) = smc(i,lsoil,nn)
                 enddo
               enddo
-            ELSE
-              DO K = 1, LSOIL
-                IF (K==1) kpd7=10     ! 0_10 cm   (pds octs 11 and 12)
-                IF (K==2) kpd7=2600   ! 10_40 cm
-                IF (K==3) kpd7=10340  ! 40_100 cm
-                IF (K==4) kpd7=25800  ! 100_200 cm
-                ALLOCATE(SLMASK_NOICE(LEN))
-                SLMASK_NOICE=0.0
-                WHERE (NINT(VET)>0 .AND. NINT(VET)<13) SLMASK_NOICE=1.0
-                CALL FIXRDC(LUGB,FNSMCC,KPDSMC,kpd7,MON,SLMASK_NOICE,
-     &                      SMC(1,K,NN),LEN,IRET
-     &,                     IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                     OUTLAT, OUTLON, me)
-                DEALLOCATE(SLMASK_NOICE)
-              ENDDO
-            ENDIF
-          ELSE
-            WRITE(6,*) 'Climatological Soil wetness file not given'
-            CALL ABORT
-          ENDIF
+            else  ! the new gldas data.  it does not have data defined at landice
+                  ! points.  so for efficiency, don't have fixrdc try to
+                  ! find a value at landice points as defined by the vet type (vet).
+              allocate(slmask_noice(len))
+              slmask_noice=1.0
+              do i = 1, len
+                if (nint(vet(i)) < 1 .or.
+     &              nint(vet(i)) == landice_cat) then
+                  slmask_noice(i) = 0.0
+                endif
+              enddo
+              do k = 1, lsoil
+                if (k==1) kpd7=10     ! 0_10 cm   (pds octs 11 and 12)
+                if (k==2) kpd7=2600   ! 10_40 cm
+                if (k==3) kpd7=10340  ! 40_100 cm
+                if (k==4) kpd7=25800  ! 100_200 cm
+                call fixrdc(lugb,fnsmcc,kpdsmc,kpd7,mon,slmask_noice,
+     &                      smc(1,k,nn),len,iret
+     &,                     imsk, jmsk, slmskh, gaus,blno, blto
+     &,                     outlat, outlon, me)
+              enddo
+              deallocate(slmask_noice)
+            endif
+          else
+            write(6,*) 'climatological soil wetness file not given'
+            call abort
+          endif
 !
-!  SEA ICE
-!
-          kpd7=-1
-          IF(FNACNC(1:8).NE.'        ') THEN
-            CALL FIXRDC(LUGB,FNACNC,KPDACN,kpd7,MON,SLMASK,
-     &                  ACN(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSEIF(FNAISC(1:8).NE.'        ') THEN
-            CALL FIXRDC(LUGB,FNAISC,KPDAIS,kpd7,MON,SLMASK,
-     &                  AIS(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-          ELSE
-            WRITE(6,*) 'Climatological ice cover file not given'
-            CALL ABORT
-          ENDIF
-!
-!  SNOW DEPTH
+!  sea ice
 !
           kpd7=-1
-          CALL FIXRDC(LUGB,FNSNOC,KPDSNO,kpd7,MON,SLMASK,
-     &                SNO(1,NN),LEN,IRET
-     &,               IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,               OUTLAT, OUTLON, me)
+          if(fnacnc(1:8).ne.'        ') then
+            call fixrdc(lugb,fnacnc,kpdacn,kpd7,mon,slmask,
+     &                  acn(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          elseif(fnaisc(1:8).ne.'        ') then
+            call fixrdc(lugb,fnaisc,kpdais,kpd7,mon,slmask,
+     &                  ais(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+          else
+            write(6,*) 'climatological ice cover file not given'
+            call abort
+          endif
 !
-!  SNOW COVER
+!  snow depth
 !
-          IF(FNSCVC(1:8).NE.'        ') THEN
+          kpd7=-1
+          call fixrdc(lugb,fnsnoc,kpdsno,kpd7,mon,slmask,
+     &                sno(1,nn),len,iret
+     &,               imsk, jmsk, slmskh, gaus,blno, blto
+     &,               outlat, outlon, me)
+!
+!  snow cover
+!
+          if(fnscvc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNSCVC,KPDSCV,kpd7,MON,SLMASK,
-     &                  SCV(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-            WRITE(6,*) 'Climatological snow cover read in.'
-          ENDIF
+            call fixrdc(lugb,fnscvc,kpdscv,kpd7,mon,slmask,
+     &                  scv(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+            write(6,*) 'climatological snow cover read in.'
+          endif
 !
-!  SURFACE ROUGHNESS
+!  surface roughness
 !
-      IF(FNZORC(1:3) == 'sib') THEN
+      if(fnzorc(1:3) == 'sib') then
         if (me == 0) then
-          WRITE(6,*) 'Roughness length to be set from sib veg type'
+          write(6,*) 'roughness length to be set from sib veg type'
         endif
-      ELSE
+      elseif(fnzorc(1:4) == 'igbp') then
+        if (me == 0) then
+          write(6,*) 'roughness length to be set from igbp veg type'
+        endif
+      else
         kpd7=-1
-        CALL FIXRDC(LUGB,FNZORC,KPDZOR,kpd7,MON,SLMASK,
-     &              ZOR(1,NN),LEN,IRET
-     &,             IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,             OUTLAT, OUTLON, me)
-      ENDIF
+        call fixrdc(lugb,fnzorc,kpdzor,kpd7,mon,slmask,
+     &              zor(1,nn),len,iret
+     &,             imsk, jmsk, slmskh, gaus,blno, blto
+     &,             outlat, outlon, me)
+      endif
 !
-!  Vegetation cover
+!  vegetation cover
 !
-          IF(FNVEGC(1:8).NE.'        ') THEN
+          if(fnvegc(1:8).ne.'        ') then
             kpd7=-1
-            CALL FIXRDC(LUGB,FNVEGC,KPDVEG,kpd7,MON,SLMASK,
-     &                  VEG(1,NN),LEN,IRET
-     &,                 IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                 OUTLAT, OUTLON, me)
-!           if (me .eq. 0) WRITE(6,*) 'Climatological vegetation',
+            call fixrdc(lugb,fnvegc,kpdveg,kpd7,mon,slmask,
+     &                  veg(1,nn),len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+!           if (me .eq. 0) write(6,*) 'climatological vegetation',
 !    &                                ' cover read in for mon=',mon
-          ENDIF
+          endif
 !
       endif
 !
-!     Now perform the time interpolation
+!     now perform the time interpolation
 !
 ! when chosen, set the z0 based on the vegetation type.
-! for this option to work, namelist variable FNVETC must be
-! set to point at the sib vegetation type file.
-      IF(FNZORC(1:3) == 'sib') THEN
-        IF(FNVETC(1:4) == '   ') THEN
-          IF (ME==0) WRITE(6,*) "MUST CHOOSE SIB VEG TYPE CLIMO FILE"
-          CALL ABORT
-        ENDIF
-        ZORCLM = 0.0
-        DO I=1,LEN
-          IVTYP=NINT(VET(I))
-          IF (IVTYP >= 1 .AND. IVTYP <= 13) THEN
-            ZORCLM(I) = Z0_SIB(IVTYP)
-          ENDIF
-        ENDDO
-      ELSE
-        DO I=1,LEN
-          ZORCLM(I) = wei1m * zor(i,k1) + wei2m * zor(i,k2)
-        ENDDO
-      ENDIF
+! for this option to work, namelist variable fnvetc must be
+! set to point at the proper vegetation type file.
+      if(fnzorc(1:3) == 'sib') then
+        if(fnvetc(1:4) == '   ') then
+          if (me==0) write(6,*) "must choose sib veg type climo file"
+          call abort
+        endif
+        zorclm = 0.0
+        do i=1,len
+          ivtyp=nint(vet(i))
+          if (ivtyp >= 1 .and. ivtyp <= 13) then
+            zorclm(i) = z0_sib(ivtyp)
+          endif
+        enddo
+      elseif(fnzorc(1:4) == 'igbp') then
+        if(fnvetc(1:4) == '   ') then
+          if (me==0) write(6,*) "must choose igbp veg type climo file"
+          call abort
+        endif
+        zorclm = 0.0
+        do i=1,len
+          ivtyp=nint(vet(i))
+          if (ivtyp >= 1 .and. ivtyp <= 20) then
+            z0_season(1) = z0_igbp_min(ivtyp)
+            z0_season(7) = z0_igbp_max(ivtyp)
+            if(outlat(i) < 0.0)then
+              zorclm(i) = wei1y * z0_season(hyr2) + 
+     &                    wei2y *z0_season(hyr1)
+             else
+              zorclm(i) = wei1y * z0_season(hyr1) + 
+     &                    wei2y *z0_season(hyr2)
+           endif
+          endif
+        enddo
+      else
+        do i=1,len
+          zorclm(i) = wei1m * zor(i,k1) + wei2m * zor(i,k2)
+        enddo
+      endif
 !
-      DO I=1,LEN
-        TSFCLM(I) = wei1m * tsf(i,k1) + wei2m * tsf(i,k2)
-        SNOCLM(I) = wei1m * sno(i,k1) + wei2m * sno(i,k2)
-        CVCLM(I)  = 0.0
-        CVBCLM(I) = 0.0
-        CVTCLM(I) = 0.0
-        CNPCLM(I) = 0.0
-        tsfcl2(I) = tsf2(i)
-      ENDDO
+      do i=1,len
+        tsfclm(i) = wei1m * tsf(i,k1) + wei2m * tsf(i,k2)
+        snoclm(i) = wei1m * sno(i,k1) + wei2m * sno(i,k2)
+        cvclm(i)  = 0.0
+        cvbclm(i) = 0.0
+        cvtclm(i) = 0.0
+        cnpclm(i) = 0.0
+        tsfcl2(i) = tsf2(i)
+      enddo
 !     if(lprnt) print *,' tsfclm=',tsfclm(iprnt),' wei1m=',wei1m
 !    &,' wei2m=',wei2m,' tsfk12=',tsf(iprnt,k1),tsf(iprnt,k2)
 !
       if (fh .eq. 0.0) then
         do i=1,len
-          TSFCL0(i) = tsfclm(i)
+          tsfcl0(i) = tsfclm(i)
         enddo
       endif
-      if (rjdayh .ge. DAYHF(mon1)) then
+      if (rjdayh .ge. dayhf(mon1)) then
         do i=1,len
-          tsf2(I)   = wei1x * tsf(i,k1) + wei2x * tsf(i,k2)
-          tsfcl2(I) = tsf2(i)
+          tsf2(i)   = wei1x * tsf(i,k1) + wei2x * tsf(i,k2)
+          tsfcl2(i) = tsf2(i)
         enddo
       endif
 !     if(lprnt) print *,' tsf2=',tsf2(iprnt),' wei1x=',wei1x
@@ -7759,153 +7749,154 @@ cjfe
 !    &,' mon1s=',mon1s,' mon2s=',mon2s
 !    &,' slmask=',slmask(iprnt)
 !
-      IF(FNACNC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          ACNCLM(I) = wei1m * acn(i,k1) + wei2m * acn(i,k2)
-        ENDDO
-      ELSEIF(FNAISC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          AISCLM(I) = wei1m * ais(i,k1) + wei2m * ais(i,k2)
-        ENDDO
+      if(fnacnc(1:8).ne.'        ') then
+        do i=1,len
+          acnclm(i) = wei1m * acn(i,k1) + wei2m * acn(i,k2)
+        enddo
+      elseif(fnaisc(1:8).ne.'        ') then
+        do i=1,len
+          aisclm(i) = wei1m * ais(i,k1) + wei2m * ais(i,k2)
+        enddo
       endif
 !
-      IF(FNWETC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          WETCLM(I) = wei1m * wet(i,k1) + wei2m * wet(i,k2)
-        ENDDO
-      ELSEIF(FNSMCC(1:8).NE.'        ') THEN
-        DO K=1,LSOIL
-          DO I=1,LEN
-            SMCCLM(I,K) = wei1m * smc(i,k,k1) + wei2m * smc(i,k,k2)
-          ENDDO
-        ENDDO
+      if(fnwetc(1:8).ne.'        ') then
+        do i=1,len
+          wetclm(i) = wei1m * wet(i,k1) + wei2m * wet(i,k2)
+        enddo
+      elseif(fnsmcc(1:8).ne.'        ') then
+        do k=1,lsoil
+          do i=1,len
+            smcclm(i,k) = wei1m * smc(i,k,k1) + wei2m * smc(i,k,k2)
+          enddo
+        enddo
       endif
 !
-      IF(FNSCVC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          SCVCLM(I) = wei1m * scv(i,k1) + wei2m * scv(i,k2)
-        ENDDO
+      if(fnscvc(1:8).ne.'        ') then
+        do i=1,len
+          scvclm(i) = wei1m * scv(i,k1) + wei2m * scv(i,k2)
+        enddo
       endif
 !
-      IF(FNTG3C(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          TG3CLM(I) =         TG3(i)
-        ENDDO
-      ELSEIF(FNSTCC(1:8).NE.'        ') THEN
-        DO K=1,LSOIL
-          DO I=1,LEN
-            STCCLM(I,K) = wei1m * stc(i,k,k1) + wei2m * stc(i,k,k2)
-          ENDDO
-        ENDDO
+      if(fntg3c(1:8).ne.'        ') then
+        do i=1,len
+          tg3clm(i) =         tg3(i)
+        enddo
+      elseif(fnstcc(1:8).ne.'        ') then
+        do k=1,lsoil
+          do i=1,len
+            stcclm(i,k) = wei1m * stc(i,k,k1) + wei2m * stc(i,k,k2)
+          enddo
+        enddo
       endif
 !
-      IF(FNVEGC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          VEGCLM(I) = wei1m * veg(i,k1) + wei2m * veg(i,k2)
-        ENDDO
+      if(fnvegc(1:8).ne.'        ') then
+        do i=1,len
+          vegclm(i) = wei1m * veg(i,k1) + wei2m * veg(i,k2)
+        enddo
       endif
 !
-      IF(FNVEtC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          VETCLM(I) =         vet(i)
-        ENDDO
+      if(fnvetc(1:8).ne.'        ') then
+        do i=1,len
+          vetclm(i) =         vet(i)
+        enddo
       endif
 !
-      IF(FNsotC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          SOTCLM(I) =         sot(i)
-        ENDDO
+      if(fnsotc(1:8).ne.'        ') then
+        do i=1,len
+          sotclm(i) =         sot(i)
+        enddo
       endif
 
 
-!Clu ----------------------------------------------------------------------
+!clu ----------------------------------------------------------------------
 !
-      IF(FNvmnC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          VMNCLM(I) =         vmn(i)
-        ENDDO
+      if(fnvmnc(1:8).ne.'        ') then
+        do i=1,len
+          vmnclm(i) =         vmn(i)
+        enddo
       endif
 !
-      IF(FNvmxC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          VMXCLM(I) =         vmx(i)
-        ENDDO
+      if(fnvmxc(1:8).ne.'        ') then
+        do i=1,len
+          vmxclm(i) =         vmx(i)
+        enddo
       endif
 !
-      IF(FNslpC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          SLPCLM(I) =         slp(i)
-        ENDDO
+      if(fnslpc(1:8).ne.'        ') then
+        do i=1,len
+          slpclm(i) =         slp(i)
+        enddo
       endif
 !
-      IF(FNabsC(1:8).NE.'        ') THEN
-        DO I=1,LEN
-          ABSCLM(I) =         abs(i)
-        ENDDO
+      if(fnabsc(1:8).ne.'        ') then
+        do i=1,len
+          absclm(i) =         abs(i)
+        enddo
       endif
-!Clu ----------------------------------------------------------------------
+!clu ----------------------------------------------------------------------
 !
 !cbosu  diagnostic print
       if (me == 0) print*,'monthly albedo weights are ', 
      &             wei1m,' for k', k1, wei2m, ' for k', k2
 
       if (ialb == 1) then
-        DO K=1,4
-          DO I=1,LEN
-            ALBCLM(I,K) = wei1m * alb(i,k,k1) + wei2m * alb(i,k,k2)
-          ENDDO
-        ENDDO
+        do k=1,4
+          do i=1,len
+            albclm(i,k) = wei1m * alb(i,k,k1) + wei2m * alb(i,k,k2)
+          enddo
+        enddo
       else
-        DO K=1,4
-          DO I=1,LEN
-            ALBCLM(I,K) = wei1s * alb(i,k,m1) + wei2s * alb(i,k,m2)
-          ENDDO
-        ENDDO
+        do k=1,4
+          do i=1,len
+            albclm(i,k) = wei1s * alb(i,k,m1) + wei2s * alb(i,k,m2)
+          enddo
+        enddo
       endif
 !
-      DO K=1,2
-        DO I=1,LEN
-          ALFCLM(I,K) = alf(i,k)
-        ENDDO
-      ENDDO
+      do k=1,2
+        do i=1,len
+          alfclm(i,k) = alf(i,k)
+        enddo
+      enddo
 !
-!  END OF CLIMATOLOGY READS
+!  end of climatology reads
 !
-      RETURN
-      END
-      SUBROUTINE FIXRDC(LUGB,FNGRIB,KPDS5,KPDS7,MON,SLMASK,
-     &                 GDATA,LEN,IRET
-     &,                IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                OUTLAT, OUTLON, me)
-      USE MACHINE ,      ONLY : kind_io8,kind_io4
+      return
+      end subroutine clima
+      subroutine fixrdc(lugb,fngrib,kpds5,kpds7,mon,slmask,
+     &                 gdata,len,iret
+     &,                imsk, jmsk, slmskh, gaus,blno, blto
+     &,                outlat, outlon, me)
+      use machine ,      only : kind_io8,kind_io4
       use sfccyc_module, only : mdata
       implicit none
       integer imax,jmax,ijmax,i,j,n,jret,inttyp,iret,imsk,
-     &        jmsk,len,lugb,kpds5,mon,lskip,lgrib,ndata,lugi,me,KMAMI
-     &,       jj
-      REAL (KIND=KIND_IO8) wlon,elon,rnlat,dlat,dlon,rslat,blno,blto
+     &        jmsk,len,lugb,kpds5,mon,lskip,lgrib,ndata,lugi,me,kmami
+     &,       jj,w3kindreal,w3kindint
+      real (kind=kind_io8) wlon,elon,rnlat,dlat,dlon,rslat,blno,blto
 !
-!   Read in GRIB climatology files and interpolate to the input
-!   grid.  GRIB files should allow all the necessary parameters
+!   read in grib climatology files and interpolate to the input
+!   grid.  grib files should allow all the necessary parameters
 !   to be extracted from the description records.
 !
 !
-      CHARACTER*500 FNGRIB
-!     CHARACTER*80 FNGRIB, ASGNSTR
+      character*500 fngrib
+!     character*80 fngrib, asgnstr
 !
-      REAL (KIND=KIND_IO8) SLMSKH(IMSK,JMSK)
+      real (kind=kind_io8) slmskh(imsk,jmsk)
 !
-      REAL (KIND=KIND_IO8) GDATA(LEN), SLMASK(LEN)
-      REAL (KIND=KIND_IO8), allocatable :: DATA(:,:), RSLMSK(:,:)
-      real(kind=kind_io8) data4(mdata)
+      real (kind=kind_io8) gdata(len), slmask(len)
+      real (kind=kind_io8), allocatable :: data(:,:), rslmsk(:,:)
+      real (kind=kind_io8) data8(mdata)
+      real (kind=kind_io4), allocatable ::  data4(:)
       real (kind=kind_io8), allocatable :: rlngrb(:), rltgrb(:)
 !
-      LOGICAL LMASK, YR2KC, GAUS, IJORDR
-      LOGICAL*1 LBMS(mdata)
+      logical lmask, yr2kc, gaus, ijordr
+      logical*1 lbms(mdata)
 !
-      INTEGER, INTENT(IN) :: KPDS7
-      INTEGER KPDS(1000),KGDS(1000)
-      INTEGER JPDS(1000),JGDS(1000), KPDS0(1000)
+      integer, intent(in) :: kpds7
+      integer kpds(1000),kgds(1000)
+      integer jpds(1000),jgds(1000), kpds0(1000)
       real (kind=kind_io8) outlat(len), outlon(len)
 !
 !     integer imax_sv, jmax_sv, wlon_sv, rnlat_sv, kpds1_sv
@@ -7914,187 +7905,196 @@ cjfe
 !     save imax_sv, jmax_sv, wlon_sv, rnlat_sv, kpds1_sv
 !    &,    rlngrb, rltgrb
 !
-      IRET   = 0
+      iret   = 0
 !
-      if (me .eq. 0) WRITE(6,*) ' IN FIXRDC for MON=',MON
-     &,' FNGRIB=',trim(FNGRIB)
+      if (me .eq. 0) write(6,*) ' in fixrdc for mon=',mon
+     &,' fngrib=',trim(fngrib)
 !
-      CLOSE(LUGB)
+      close(lugb)
       call baopenr(lugb,fngrib,iret)
-      IF (IRET .NE. 0) THEN
-        WRITE(6,*) ' ERROR IN OPENING FILE ',trim(FNGRIB)
-        PRINT *,'ERROR IN OPENING FILE ',trim(FNGRIB)
-        CALL ABORT
-      ENDIF
-      if (me .eq. 0) WRITE(6,*) ' FILE ',trim(FNGRIB),
-     &             ' opened. Unit=',LUGB
+      if (iret .ne. 0) then
+        write(6,*) ' error in opening file ',trim(fngrib)
+        print *,'error in opening file ',trim(fngrib)
+        call abort
+      endif
+      if (me .eq. 0) write(6,*) ' file ',trim(fngrib),
+     &             ' opened. unit=',lugb
 !
       lugi = 0
 !
       lskip   = -1
-      JPDS    = -1
-      JGDS    = -1
-      JPDS(5) = KPDS5
-      JPDS(7) = KPDS7
+      jpds    = -1
+      jgds    = -1
+      jpds(5) = kpds5
+      jpds(7) = kpds7
       kpds    = jpds
       call getgbh(lugb,lugi,lskip,jpds,jgds,lgrib,ndata,
      &            lskip,kpds,kgds,iret)
       if (me .eq. 0) then
-      WRITE(6,*) ' First grib record.'
-      WRITE(6,*) ' KPDS( 1-10)=',(KPDS(J),J= 1,10)
-      WRITE(6,*) ' KPDS(11-20)=',(KPDS(J),J=11,20)
-      WRITE(6,*) ' KPDS(21-  )=',(KPDS(J),J=21,22)
+      write(6,*) ' first grib record.'
+      write(6,*) ' kpds( 1-10)=',(kpds(j),j= 1,10)
+      write(6,*) ' kpds(11-20)=',(kpds(j),j=11,20)
+      write(6,*) ' kpds(21-  )=',(kpds(j),j=21,22)
       endif
       yr2kc     = (kpds(8) / 100) .gt. 0
-      KPDS0     = JPDS
-      KPDS0(4)  = -1
-      KPDS0(18) = -1
-      IF(IRET.NE.0) THEN
-        WRITE(6,*) ' Error in GETGBH. IRET: ', iret
-        IF (IRET==99) WRITE(6,*) ' Field not found.'
-        CALL ABORT
-      ENDIF
+      kpds0     = jpds
+      kpds0(4)  = -1
+      kpds0(18) = -1
+      if(iret.ne.0) then
+        write(6,*) ' error in getgbh. iret: ', iret
+        if (iret==99) write(6,*) ' field not found.'
+        call abort
+      endif
 !
-!   Handling climatology file
+!   handling climatology file
 !
       lskip   = -1
-      N       = 0
-      JPDS    = KPDS0
-      JPDS(9) = MON
-      IF(JPDS(9).EQ.13) JPDS(9) = 1
-      call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
-     &          kpds,kgds,lbms,data4,jret)
-      if (me .eq. 0) WRITE(6,*) ' Input grib file dates=',
-     &              (KPDS(I),I=8,11)
+      n       = 0
+      jpds    = kpds0
+      jpds(9) = mon
+      if(jpds(9).eq.13) jpds(9) = 1
+      call w3kind(w3kindreal,w3kindint)
+      if(w3kindreal==8) then
+        call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data8,jret)
+      else if (w3kindreal==4) then
+        allocate(data4(mdata))
+        call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data4,jret)
+        data8 = data4
+        deallocate(data4)
+      endif
+      if (me .eq. 0) write(6,*) ' input grib file dates=',
+     &              (kpds(i),i=8,11)
       if(jret.eq.0) then
-        IF(NDATA.EQ.0) THEN
-          WRITE(6,*) ' Error in getgb'
-          WRITE(6,*) ' KPDS=',KPDS
-          WRITE(6,*) ' KGDS=',KGDS
-          CALL ABORT
-        ENDIF
-        IMAX=KGDS(2)
-        JMAX=KGDS(3)
-        IJMAX=IMAX*JMAX
+        if(ndata.eq.0) then
+          write(6,*) ' error in getgb'
+          write(6,*) ' kpds=',kpds
+          write(6,*) ' kgds=',kgds
+          call abort
+        endif
+        imax=kgds(2)
+        jmax=kgds(3)
+        ijmax=imax*jmax
         allocate (data(imax,jmax))
         do j=1,jmax
           jj = (j-1)*imax
           do i=1,imax
-            data(i,j) = data4(jj+i)
+            data(i,j) = data8(jj+i)
           enddo
         enddo
-        if (me .eq. 0) WRITE(6,*) 'IMAX,JMAX,IJMAX=',IMAX,JMAX,IJMAX
-      ELSE
-        WRITE(6,*) ' Error in getgb - jret=', jret
-        CALL ABORT
-      ENDIF
-!
-      if (me .eq. 0) then
-      WRITE(6,*) ' MAXMIN of input as is'
-      KMAMI=1
-      CALL MAXMIN(DATA(1,1),IJMAX,KMAMI)
+        if (me .eq. 0) write(6,*) 'imax,jmax,ijmax=',imax,jmax,ijmax
+      else
+        write(6,*) ' error in getgb - jret=', jret
+        call abort
       endif
 !
-      CALL GETAREA(KGDS,DLAT,DLON,RSLAT,RNLAT,WLON,ELON,IJORDR,me)
       if (me .eq. 0) then
-      WRITE(6,*) 'IMAX,JMAX,IJMAX,DLON,DLAT,IJORDR,WLON,RNLAT='
-      WRITE(6,*)  IMAX,JMAX,IJMAX,DLON,DLAT,IJORDR,WLON,RNLAT
+      write(6,*) ' maxmin of input as is'
+      kmami=1
+      call maxmin(data(1,1),ijmax,kmami)
       endif
-      CALL SUBST(DATA,IMAX,JMAX,DLON,DLAT,IJORDR)
 !
-!   First get SLMASK over input grid
+      call getarea(kgds,dlat,dlon,rslat,rnlat,wlon,elon,ijordr,me)
+      if (me .eq. 0) then
+      write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
+      write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
+      endif
+      call subst(data,imax,jmax,dlon,dlat,ijordr)
+!
+!   first get slmask over input grid
 !
         allocate (rlngrb(imax), rltgrb(jmax))
         allocate (rslmsk(imax,jmax))
 
-        CALL SETRMSK(KPDS5,SLMSKH,IMSK,JMSK,WLON,RNLAT,
-     &               DATA,IMAX,JMAX,RLNGRB,RLTGRB,LMASK,RSLMSK
-!    &               DATA,IMAX,JMAX,ABS(DLON),ABS(DLAT),LMASK,RSLMSK
-!cggg
-     &,                  GAUS,BLNO, BLTO, kgds(1), kpds(4), lbms)
-!       WRITE(6,*) ' KPDS5=',KPDS5,' LMASK=',LMASK
+        call setrmsk(kpds5,slmskh,imsk,jmsk,wlon,rnlat,
+     &               data,imax,jmax,rlngrb,rltgrb,lmask,rslmsk
+     &,                  gaus,blno, blto, kgds(1), kpds(4), lbms)
+!       write(6,*) ' kpds5=',kpds5,' lmask=',lmask
 !
-                         INTTYP = 0
-        IF(KPDS5.EQ.225) INTTYP = 1
-        IF(KPDS5.EQ.230) INTTYP = 1
-!Clu [+1L] add slope (=236)
-        IF(KPDS5.EQ.236) INTTYP = 1  
+                         inttyp = 0
+        if(kpds5.eq.225) inttyp = 1
+        if(kpds5.eq.230) inttyp = 1
+        if(kpds5.eq.236) inttyp = 1  
+        if(kpds5.eq.224) inttyp = 1  
         if (me .eq. 0) then
-        if(inttyp.eq.1) print *, ' Nearest grid point used'
+        if(inttyp.eq.1) print *, ' nearest grid point used'
      &,   ' kpds5=',kpds5, ' lmask = ',lmask
         endif
 !
-        CALL LA2GA(DATA,IMAX,JMAX,RLNGRB,RLTGRB,WLON,RNLAT,INTTYP,
-     &             GDATA,LEN,LMASK,RSLMSK,SLMASK
-     &,            OUTLAT, OUTLON,me)
+        call la2ga(data,imax,jmax,rlngrb,rltgrb,wlon,rnlat,inttyp,
+     &             gdata,len,lmask,rslmsk,slmask
+     &,            outlat, outlon,me)
 !
-        deallocate (rlngrb, STAT=iret)
-        deallocate (rltgrb, STAT=iret)
-        deallocate (data, STAT=iret)
-        deallocate (rslmsk, STAT=iret)
+        deallocate (rlngrb, stat=iret)
+        deallocate (rltgrb, stat=iret)
+        deallocate (data, stat=iret)
+        deallocate (rslmsk, stat=iret)
       call baclose(lugb,iret)
 !
-      RETURN
-      END
-      SUBROUTINE FIXRDA(LUGB,FNGRIB,KPDS5,SLMASK,
-     &                 IY,IM,ID,IH,FH,GDATA,LEN,IRET
-     &,                IMSK, JMSK, SLMSKH, GAUS,BLNO, BLTO
-     &,                OUTLAT, OUTLON, me)
-      USE MACHINE      , ONLY : kind_io8,kind_io4
+      return
+      end
+      subroutine fixrda(lugb,fngrib,kpds5,slmask,
+     &                  iy,im,id,ih,fh,gdata,len,iret
+     &,                 imsk, jmsk, slmskh, gaus,blno, blto
+     &,                 outlat, outlon, me)
+      use machine      , only : kind_io8,kind_io4
       use sfccyc_module, only : mdata
       implicit none
       integer nrepmx,nvalid,imo,iyr,idy,jret,ihr,nrept,lskip,lugi,
      &        lgrib,j,ndata,i,inttyp,jmax,imax,ijmax,ij,jday,len,iret,
      &        jmsk,imsk,ih,kpds5,lugb,iy,id,im,jh,jd,jdoy,jdow,jm,me,
-     &        monend,jy,iy4,KMAMI,iret2,jj
-      REAL (KIND=KIND_IO8) rnlat,rslat,wlon,elon,dlon,dlat,fh,blno,
+     &        monend,jy,iy4,kmami,iret2,jj,w3kindreal,w3kindint
+      real (kind=kind_io8) rnlat,rslat,wlon,elon,dlon,dlat,fh,blno,
      &                     rjday,blto
 !
-!   Read in GRIB climatology/analysis files and interpolate to the input
-!   dates and the grid.  GRIB files should allow all the necessary parameters
+!   read in grib climatology/analysis files and interpolate to the input
+!   dates and the grid.  grib files should allow all the necessary parameters
 !   to be extracted from the description records.
 !
-!  NREPMX:  Max number of days for going back date search
-!  NVALID:  Analysis later than (Current date - NVALID) is regarded as
+!  nrepmx:  max number of days for going back date search
+!  nvalid:  analysis later than (current date - nvalid) is regarded as
 !           valid for current analysis
 !
-      PARAMETER(NREPMX=15, NVALID=4)
+      parameter(nrepmx=15, nvalid=4)
 !
-      CHARACTER*500 FNGRIB
-!     CHARACTER*80 FNGRIB, ASGNSTR
+      character*500 fngrib
+!     character*80 fngrib, asgnstr
 !
-      REAL (KIND=KIND_IO8) SLMSKH(IMSK,JMSK)
+      real (kind=kind_io8) slmskh(imsk,jmsk)
 !
-      REAL (KIND=KIND_IO8) GDATA(LEN), SLMASK(LEN)
-      REAL (KIND=KIND_IO8), allocatable :: DATA(:,:),RSLMSK(:,:)
-      real(kind=kind_io8) data4(mdata)
+      real (kind=kind_io8) gdata(len), slmask(len)
+      real (kind=kind_io8), allocatable :: data(:,:),rslmsk(:,:)
+      real (kind=kind_io8) data8(mdata)
+      real (kind=kind_io4), allocatable :: data4(:)
       real (kind=kind_io8), allocatable :: rlngrb(:), rltgrb(:)
 !
-      LOGICAL LMASK, YR2KC, GAUS, IJORDR
-      LOGICAL*1  LBMS(mdata)
+      logical lmask, yr2kc, gaus, ijordr
+      logical*1  lbms(mdata)
 !
-      INTEGER KPDS(1000),KGDS(1000)
-      INTEGER JPDS(1000),JGDS(1000), KPDS0(1000)
+      integer kpds(1000),kgds(1000)
+      integer jpds(1000),jgds(1000), kpds0(1000)
       real (kind=kind_io8) outlat(len), outlon(len)
 !
-! DAYHF : JULIAN DAY OF THE MIDDLE OF EACH MONTH
+! dayhf : julian day of the middle of each month
 !
-      REAL (KIND=KIND_IO8) DAYHF(13)
-      DATA DAYHF/ 15.5, 45.0, 74.5,105.0,135.5,166.0,
+      real (kind=kind_io8) dayhf(13)
+      data dayhf/ 15.5, 45.0, 74.5,105.0,135.5,166.0,
      &           196.5,227.5,258.0,288.5,319.0,349.5,380.5/
 !
-! MJDAY : NUMBER OF DAYS IN A MONTH
+! mjday : number of days in a month
 !
-      INTEGER MJDAY(12)
-      DATA MJDAY/31,28,31,30,31,30,31,31,30,31,30,31/
+      integer mjday(12)
+      data mjday/31,28,31,30,31,30,31,31,30,31,30,31/
 !
       real (kind=kind_io8) fha(5)
+      real(4) fha4(5)
       integer ida(8),jda(8)
-
-      IRET   = 0
-      MONEND = 9999
 !
-!  Compute JY,JM,JD,JH of forecast and the day of the year
+      iret   = 0
+      monend = 9999
+!
+!  compute jy,jm,jd,jh of forecast and the day of the year
 !
       iy4=iy
       if(iy.lt.101) iy4=1900+iy4
@@ -8106,248 +8106,268 @@ cjfe
       ida(2)=im
       ida(3)=id
       ida(5)=ih
-      call w3movdat(fha,ida,jda)
+      call w3kind(w3kindreal,w3kindint)
+      if(w3kindreal==4) then
+        fha4=fha
+        call w3movdat(fha4,ida,jda)
+      else
+        call w3movdat(fha,ida,jda)
+      endif
       jy=jda(1)
       jm=jda(2)
       jd=jda(3)
       jh=jda(5)
-!     if (me .eq. 0) write(6,*) ' Forecast JY,JM,JD,JH,rjday=',
+!     if (me .eq. 0) write(6,*) ' forecast jy,jm,jd,jh,rjday=',
 !    &               jy,jm,jd,jh,rjday
       jdow = 0
       jdoy = 0
       jday = 0
       call w3doxdat(jda,jdow,jdoy,jday)
       rjday=jdoy+jda(5)/24.
-      IF(RJDAY.LT.DAYHF(1)) RJDAY=RJDAY+365.
+      if(rjday.lt.dayhf(1)) rjday=rjday+365.
 
-      if (me .eq. 0) write(6,*) ' Forecast JY,JM,JD,JH,rjday=',
+      if (me .eq. 0) write(6,*) ' forecast jy,jm,jd,jh,rjday=',
      &               jy,jm,jd,jh,rjday
 !
       if (me .eq. 0) then
-      WRITE(6,*) 'Forecast JY,JM,JD,JH=',JY,JM,JD,JH
+      write(6,*) 'forecast jy,jm,jd,jh=',jy,jm,jd,jh
 !
-      WRITE(6,*) ' '
-      WRITE(6,*) '************************************************'
+      write(6,*) ' '
+      write(6,*) '************************************************'
       endif
 !
-      CLOSE(LUGB)
+      close(lugb)
       call baopenr(lugb,fngrib,iret)
-      IF (IRET .NE. 0) THEN
-        WRITE(6,*) ' ERROR IN OPENING FILE ',trim(FNGRIB)
-        PRINT *,'ERROR IN OPENING FILE ',trim(FNGRIB)
-        CALL ABORT
-      ENDIF
-      if (me .eq. 0) WRITE(6,*) ' FILE ',trim(FNGRIB),
-     &             ' opened. Unit=',LUGB
+      if (iret .ne. 0) then
+        write(6,*) ' error in opening file ',trim(fngrib)
+        print *,'error in opening file ',trim(fngrib)
+        call abort
+      endif
+      if (me .eq. 0) write(6,*) ' file ',trim(fngrib),
+     &             ' opened. unit=',lugb
 !
       lugi = 0
 !
       lskip=-1
-      JPDS=-1
-      JGDS=-1
-      JPDS(5)=KPDS5
+      jpds=-1
+      jgds=-1
+      jpds(5)=kpds5
       kpds = jpds
       call getgbh(lugb,lugi,lskip,jpds,jgds,lgrib,ndata,
      &            lskip,kpds,kgds,iret)
       if (me .eq. 0) then
-      WRITE(6,*) ' First grib record.'
-      WRITE(6,*) ' KPDS( 1-10)=',(KPDS(J),J= 1,10)
-      WRITE(6,*) ' KPDS(11-20)=',(KPDS(J),J=11,20)
-      WRITE(6,*) ' KPDS(21-  )=',(KPDS(J),J=21,22)
+      write(6,*) ' first grib record.'
+      write(6,*) ' kpds( 1-10)=',(kpds(j),j= 1,10)
+      write(6,*) ' kpds(11-20)=',(kpds(j),j=11,20)
+      write(6,*) ' kpds(21-  )=',(kpds(j),j=21,22)
       endif
       yr2kc = (kpds(8) / 100) .gt. 0
-      KPDS0=JPDS
-      KPDS0(4)=-1
-      KPDS0(18)=-1
-      IF(IRET.NE.0) THEN
-        WRITE(6,*) ' Error in GETGBH. IRET: ', iret
-        IF(IRET==99) WRITE(6,*) ' Field not found.'
-        CALL ABORT
-      ENDIF
+      kpds0=jpds
+      kpds0(4)=-1
+      kpds0(18)=-1
+      if(iret.ne.0) then
+        write(6,*) ' error in getgbh. iret: ', iret
+        if(iret==99) write(6,*) ' field not found.'
+        call abort
+      endif
 !
-!  Handling analysis file
+!  handling analysis file
 !
-!  Find record for the given hour/day/month/year
+!  find record for the given hour/day/month/year
 !
-      NREPT=0
-      JPDS=KPDS0
+      nrept=0
+      jpds=kpds0
       lskip = -1
-      IYR=JY
+      iyr=jy
       if(iyr.le.100) iyr=2050-mod(2050-iyr,100)
-      IMO=JM
-      IDY=JD
-      IHR=JH
-!     Year 2000 compatible data
+      imo=jm
+      idy=jd
+      ihr=jh
+!     year 2000 compatible data
       if (yr2kc) then
          jpds(8) = iyr
       else
          jpds(8) = mod(iyr,1900)
       endif
-   50 CONTINUE
-      JPDS( 8)=MOD(IYR-1,100)+1
-      JPDS( 9)=IMO
-      JPDS(10)=IDY
-      JPDS(11)=IHR
-      JPDS(21)=(IYR-1)/100+1
-      if (me .eq. 0) write(6,*) ' Will search for date ',jpds(8:11)
-      call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
-     &           kpds,kgds,lbms,data4,jret)
-      if (me .eq. 0) WRITE(6,*) ' Input grib file dates=',
-     &              (KPDS(I),I=8,11)
-      IF(jret.eq.0) THEN
-        IF(NDATA.EQ.0) THEN
-          WRITE(6,*) ' Error in getgb'
-          WRITE(6,*) ' KPDS=',KPDS
-          WRITE(6,*) ' KGDS=',KGDS
-          CALL ABORT
-        ENDIF
-        IMAX=KGDS(2)
-        JMAX=KGDS(3)
-        IJMAX=IMAX*JMAX
+   50 continue
+      jpds( 8)=mod(iyr-1,100)+1
+      jpds( 9)=imo
+      jpds(10)=idy
+!     jpds(11)=ihr
+      jpds(21)=(iyr-1)/100+1
+      call w3kind(w3kindreal,w3kindint)
+      if (w3kindreal == 8) then
+        call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data8,jret)
+      elseif (w3kindreal == 4) then
+        allocate (data4(mdata))
+        call getgb(lugb,lugi,mdata,lskip,jpds,jgds,ndata,lskip,
+     &             kpds,kgds,lbms,data4,jret)
+        data8 = data4
+        deallocate(data4)
+      endif
+      if (me .eq. 0) write(6,*) ' input grib file dates=',
+     &              (kpds(i),i=8,11)
+      if(jret.eq.0) then
+        if(ndata.eq.0) then
+          write(6,*) ' error in getgb'
+          write(6,*) ' kpds=',kpds
+          write(6,*) ' kgds=',kgds
+          call abort
+        endif
+        imax=kgds(2)
+        jmax=kgds(3)
+        ijmax=imax*jmax
         allocate (data(imax,jmax))
         do j=1,jmax
           jj = (j-1)*imax
           do i=1,imax
-            data(i,j) = data4(jj+i)
+            data(i,j) = data8(jj+i)
           enddo
         enddo
-      ELSE
-        IF(NREPT.EQ.0) THEN
+      else
+        if(nrept.eq.0) then
           if (me .eq. 0) then
-          WRITE(6,*) ' No matching dates found.  Start searching',
+          write(6,*) ' no matching dates found.  start searching',
      &               ' nearest matching dates (going back).'
           endif
-        ENDIF
+        endif
 !
-!  No matching IH found. Search nearest hour
+!  no matching ih found. search nearest hour
 !
-        IF(IHR.GE.1.AND.IHR.LE.23) THEN
-          IHR=IHR-1
-          GO TO 50
-        ELSEIF(IHR.EQ.0.OR.IHR.EQ.-1) THEN
-          IDY=IDY-1
-          IF(IDY.EQ.0) THEN
-            IMO=IMO-1
-            IF(IMO.EQ.0) THEN
-              IYR=IYR-1
-              IF(IYR.LT.0) IYR=99
-              IMO=12
-            ENDIF
-            IDY=31
-            IF(IMO.EQ.4.OR.IMO.EQ.6.OR.IMO.EQ.9.OR.IMO.EQ.11) IDY=30
-            IF(IMO.EQ.2) THEN
-              IF(MOD(IYR,4).EQ.0) THEN
-                IDY=29
-              ELSE
-                IDY=28
-              ENDIF
-            ENDIF
-          ENDIF
-          IHR=-1
-          if (me .eq. 0) WRITE(6,*) ' Decremented dates=',
-     &                              IYR,IMO,IDY,IHR
-          NREPT=NREPT+1
-          IF(NREPT.GT.NVALID) IRET=-1
-          IF(NREPT.GT.NREPMX) THEN
-            if (me .eq. 0) then
-              WRITE(6,*) ' <WARNING:CYCL> Searching range exceeded.'
-     &,                  ' May be WRONG grib file given'
-              WRITE(6,*) ' <WARNING:CYCL> FNGRIB=',trim(FNGRIB)
-              WRITE(6,*) ' <WARNING:CYCL> Terminating search and',
-     &                   ' and setting gdata to -999'
-              WRITE(6,*) ' Range max=',NREPMX
+        if(ihr.eq.6) then
+          ihr=0
+          go to 50
+        elseif(ihr.eq.12) then
+          ihr=0
+          go to 50
+        elseif(ihr.eq.18) then
+          ihr=12
+          go to 50
+        elseif(ihr.eq.0.or.ihr.eq.-1) then
+          idy=idy-1
+          if(idy.eq.0) then
+            imo=imo-1
+            if(imo.eq.0) then
+              iyr=iyr-1
+              if(iyr.lt.0) iyr=99
+              imo=12
             endif
-!           IMAX=KGDS(2)
-!           JMAX=KGDS(3)
-!           IJMAX=IMAX*JMAX
-!           DO IJ=1,IJMAX
-!             DATA(IJ)=0.
-!           ENDDO
-            GO TO 100
-          ENDIF
-          GO TO 50
-        ELSE
-          if (me .eq. 0) then
-            WRITE(6,*) ' Search of analysis for IHR=',IHR,' failed.'
-            WRITE(6,*) ' KPDS=',KPDS
-            WRITE(6,*) ' IYR,IMO,IDY,IHR=',IYR,IMO,IDY,IHR
+            idy=31
+            if(imo.eq.4.or.imo.eq.6.or.imo.eq.9.or.imo.eq.11) idy=30
+            if(imo.eq.2) then
+              if(mod(iyr,4).eq.0) then
+                idy=29
+              else
+                idy=28
+              endif
+            endif
           endif
-          GO TO 100
-        ENDIF
-      ENDIF
-!
-   80 CONTINUE
-      if (me .eq. 0) then
-      WRITE(6,*) ' MAXMIN of input as is'
-      KMAMI=1
-      CALL MAXMIN(DATA(1,1),IJMAX,KMAMI)
+          ihr=-1
+          if (me .eq. 0) write(6,*) ' decremented dates=',
+     &                              iyr,imo,idy,ihr
+          nrept=nrept+1
+          if(nrept.gt.nvalid) iret=-1
+          if(nrept.gt.nrepmx) then
+            if (me .eq. 0) then
+              write(6,*) ' <warning:cycl> searching range exceeded.'
+     &,                  ' may be wrong grib file given'
+              write(6,*) ' <warning:cycl> fngrib=',trim(fngrib)
+              write(6,*) ' <warning:cycl> terminating search and',
+     &                   ' and setting gdata to -999'
+              write(6,*) ' range max=',nrepmx
+            endif
+!           imax=kgds(2)
+!           jmax=kgds(3)
+!           ijmax=imax*jmax
+!           do ij=1,ijmax
+!             data(ij)=0.
+!           enddo
+            go to 100
+          endif
+          go to 50
+        else
+          if (me .eq. 0) then
+            write(6,*) ' search of analysis for ihr=',ihr,' failed.'
+            write(6,*) ' kpds=',kpds
+            write(6,*) ' iyr,imo,idy,ihr=',iyr,imo,idy,ihr
+          endif
+          go to 100
+        endif
       endif
 !
-      CALL GETAREA(KGDS,DLAT,DLON,RSLAT,RNLAT,WLON,ELON,IJORDR,me)
+   80 continue
       if (me .eq. 0) then
-      WRITE(6,*) 'IMAX,JMAX,IJMAX,DLON,DLAT,IJORDR,WLON,RNLAT='
-      WRITE(6,*)  IMAX,JMAX,IJMAX,DLON,DLAT,IJORDR,WLON,RNLAT
+      write(6,*) ' maxmin of input as is'
+      kmami=1
+      call maxmin(data(1,1),ijmax,kmami)
       endif
-      CALL SUBST(DATA,IMAX,JMAX,DLON,DLAT,IJORDR)
 !
-!   First get SLMASK over input grid
+      call getarea(kgds,dlat,dlon,rslat,rnlat,wlon,elon,ijordr,me)
+      if (me .eq. 0) then
+      write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
+      write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
+      endif
+      call subst(data,imax,jmax,dlon,dlat,ijordr)
+!
+!   first get slmask over input grid
 !
         allocate (rlngrb(imax), rltgrb(jmax))
         allocate (rslmsk(imax,jmax))
-        CALL SETRMSK(KPDS5,SLMSKH,IMSK,JMSK,WLON,RNLAT,
-     &               DATA,IMAX,JMAX,RLNGRB,RLTGRB,LMASK,RSLMSK
-!    &               DATA,IMAX,JMAX,ABS(DLON),ABS(DLAT),LMASK,RSLMSK
-!cggg     &,                  GAUS,BLNO, BLTO, kgds(1))
-     &,                  GAUS,BLNO, BLTO, kgds(1), kpds(4), lbms)
+        call setrmsk(kpds5,slmskh,imsk,jmsk,wlon,rnlat,
+     &               data,imax,jmax,rlngrb,rltgrb,lmask,rslmsk
+!    &               data,imax,jmax,abs(dlon),abs(dlat),lmask,rslmsk
+!cggg     &,                  gaus,blno, blto, kgds(1))
+     &,                  gaus,blno, blto, kgds(1), kpds(4), lbms)
 
-!       WRITE(6,*) ' KPDS5=',KPDS5,' LMASK=',LMASK
+!       write(6,*) ' kpds5=',kpds5,' lmask=',lmask
 !
-                         INTTYP = 0
-        IF(KPDS5.EQ.225) INTTYP = 1
-        IF(KPDS5.EQ.230) INTTYP = 1
-        IF(KPDS5.EQ.66)  INTTYP = 1
-        if(inttyp.eq.1) print *, ' Nearest grid point used'
+                         inttyp = 0
+        if(kpds5.eq.225) inttyp = 1
+        if(kpds5.eq.230) inttyp = 1
+        if(kpds5.eq.66)  inttyp = 1
+        if(inttyp.eq.1) print *, ' nearest grid point used'
 !
-        CALL LA2GA(DATA,IMAX,JMAX,RLNGRB,RLTGRB,WLON,RNLAT,INTTYP,
-     &             GDATA,LEN,LMASK,RSLMSK,SLMASK
-     &,            OUTLAT, OUTLON, me)
+        call la2ga(data,imax,jmax,rlngrb,rltgrb,wlon,rnlat,inttyp,
+     &             gdata,len,lmask,rslmsk,slmask
+     &,            outlat, outlon, me)
 !
-      deallocate (rlngrb, STAT=iret)
-      deallocate (rltgrb, STAT=iret)
-      deallocate (data, STAT=iret)
-      deallocate (rslmsk, STAT=iret)
+      deallocate (rlngrb, stat=iret)
+      deallocate (rltgrb, stat=iret)
+      deallocate (data, stat=iret)
+      deallocate (rslmsk, stat=iret)
       call baclose(lugb,iret2)
-!     WRITE(6,*) ' '
-      RETURN
+!     write(6,*) ' '
+      return
 !
-  100 CONTINUE
-      IRET=1
-      DO I=1,LEN
-        GDATA(I) = -999.
-      ENDDO
+  100 continue
+      iret=1
+      do i=1,len
+        gdata(i) = -999.
+      enddo
 !
       call baclose(lugb,iret2)
 !
-      RETURN
-      END SUBROUTINE FIXRDA
-      SUBROUTINE SNODPTH2(GLACIR,SNWMAX,SNOANL, LEN, me)
-      USE MACHINE , ONLY : kind_io8,kind_io4
+      return
+      end subroutine fixrda
+      subroutine snodpth2(glacir,snwmax,snoanl, len, me)
+      use machine , only : kind_io8,kind_io4
       implicit none
       integer i,me,len
-      REAL (KIND=KIND_IO8) snwmax
+      real (kind=kind_io8) snwmax
 !
-      REAL (KIND=KIND_IO8) SNOANL(LEN), GLACIR(LEN)
+      real (kind=kind_io8) snoanl(len), glacir(len)
 !
-      if (me .eq. 0) WRITE(6,*) 'SNODPTH2'
+      if (me .eq. 0) write(6,*) 'snodpth2'
 !
-      DO I=1,LEN
+      do i=1,len
 !
-!  IF GLACIAL POINTS HAS SNOW IN CLIMATOLOGY, SET SNO TO SNOMAX
+!  if glacial points has snow in climatology, set sno to snomax
 !
-        IF(GLACIR(I).NE.0..AND.SNOANL(I).LT.SNWMAX*0.5) THEN
-            SNOANL(I) = SNWMAX + SNOANL(I)
-        ENDIF
+        if(glacir(i).ne.0..and.snoanl(i).lt.snwmax*0.5) then
+            snoanl(i) = snwmax + snoanl(i)
+        endif
 !
-      ENDDO
-      RETURN
-      END
+      enddo
+      return
+      end

@@ -3,61 +3,40 @@
 ####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         global_chgres.sh           
-# Script description:  Changes resolution of global restart files.
+# Script description:  Convert GFS restart files to the FV3 cubed-sphere grid.
 #
 # Author:        Mark Iredell       Org: NP23         Date: 1999-03-01
 #
-# Abstract: This script changes the resolution of the global restart files,
-#   namely the sigma file, surface file, nst file or all 3.  When converting
-#   an nst file, you must also convert a surface file.  The resolution
-#   of the output files is given in the argument list or as imported
-#   environment variables.  The resolution of the input files are taken
-#   from the header records in the respective files.  Resolution is
-#   given as spectral truncation, number of levels, number of longitudes
-#   and number of latitudes.  The names of the input and output restart files
-#   are also given in the argument list or as imported environment variables.
-#   Other control variables may be specified in the imported environment, too.
-#   For example, an alternate orography and sigma level structure may be
-#   specified for the output sigma file, while an alternate sea-land mask
-#   may be specified for the surface file.
+# Abstract: This script converts the GFS restart files, namely the sigma
+#   file, surface file, nst file or all 3, to the cubed-sphere grid.  When 
+#   converting an nst file, you must also convert a surface file. 
+#   All input files are specified by the first three arguments.
+#   The horizontal/vertical resolution of the output files is given by 
+#   the CRES/LEVS arguments.  When the input sigma file is sigio format,
+#   the conversion is done in two steps.  First, the spectral coefficients
+#   are converted to grid point space.  By default, this intermediate
+#   data are on a gaussian grid with i/j dimension as described by the
+#   input file header.  These defaults may be overridden by the IDRT,
+#   LONB and LATB environment variables.  The sigma file is converted
+#   to all six sides of the cube.  The surface and nst files are only
+#   converted to one side of the cube (as specified by the TILE_NUM
+#   environment variable).  I.e., you must run this script six times
+#   to fully convert a surface or nst file.
 #
 # Script history log:
 # 1999-03-01  Mark Iredell
 # 2011-08-05  Added logic for nst restart files.  G. Gayno
 # 2011-10-10  Updated for gaea  - S. Moorthi
+# 2016-12-27  Updated for FV3 core.  G. Gayno
 #
-# Usage:  global_chgres.sh SIGINP SFCINP SIGOUT SFCOUT JCAP LEVS LONB LATB \
-#                          GFSOUT OUTTYP IDRT NSTINP NSTOUT SFNOUT
+# Usage:  global_chgres.sh SIGINP SFCINP NSTINP CRES LEVS
 #
 #   Input script positional parameters:
-#     1             Input sigma file
-#                   defaults to $SIGINP; skip sigma conversion if missing
-#     2             Input surface file
-#                   defaults to $SFCINP; skip surface conversion if missing
-#     3             Output sigma file
-#                   defaults to $SIGOUT, then to sigout
-#     4             Output sigma file
-#                   defaults to $SFCOUT, then to sfcout
-#     5             New spectral truncation
-#                   defaults to $JCAP; one or the other is required
-#     6             New number of levels
-#                   defaults to $LEVS; one or the other is required
-#     7             New number of longitudes
-#                   defaults to $LONB; one or the other is required
-#     8             New number of latitudes
-#                   defaults to $LATB; one or the other is required
-#     9             Output gfsio file
-#                   defaults to $GFSOUT, then to gfsout
-#     10            Output file type 
-#                   defaults to $OUTTYP, then to 1
-#     11            Grid output file type 
-#                   defaults to $IDRT, then to 4
-#     12            Input nst file
-#                   defaults to $NSTINP; skip nst conversion if missing
-#     13            Output nst file
-#                   defaults to $NSTOUT, then to nstout
-#     14            Output gfsio surface file
-#                   defaults to $SFNOUT; then to sfnout
+#     1             Input sigma file (SIGINP) 
+#     2             Input surface file (SFCINP)
+#     3             Input nst file (NSTINP)
+#     4             Output cubed-sphere resolution (CRES)
+#     5             New number of vertical sigma levels (LEVS)
 #
 #   Imported Shell Variables:
 #     SIGINP        Input sigma file
@@ -65,37 +44,28 @@
 #     SFCINP        Input surface file
 #                   overridden by $2; skip surface conversion if missing
 #     NSTINP        Input nst file
-#                   overridden by $12; skip surface conversion if missing
-#     OUTTYP        Output file type
-#                   1: gfsio ; 2: sigio sigma (default); 0: both 
-#     IDRT          Grid output file type
-#                   4: guassian(default); 0: lat-lon                            
-#     SIGOUT        Output sigma file
-#                   overridden by $3; defaults to sigout
-#     GFSOUT        Output gfsio/nemsio file
-#                   overridden by $9; defaults to gfsout
-#     SFCOUT        Output surface file
-#                   overridden by $4; defaults to sfcout
-#     NSTOUT        Output nst file (nstio format)
-#                   overridden by $13; defaults to nstout
-#     NSNOUT        output nst files (nemsio format)
-#                   defaults to nsnout
-#     SFNOUT        Output gfsio surface file
-#                   overridden by $14; defaults to sfnout
-#     JCAP          New spectral truncation
+#                   overridden by $3; skip surface conversion if missing
+#     CRES          Output cubed-sphere resolution.  
+#                   overridden by $4.
+#     LEVS          New number of sigma levels
 #                   overridden by $5; one or the other is required
-#     LEVS          New number of levels
-#                   overridden by $6; one or the other is required
-#     LONB          New number of longitudes
-#                   overridden by $7; one or the other is required
-#     LATB          New number of latitudes
-#                   overridden by $8; one or the other is required
+#     OUTTYP        Output file type.  Not used yet.  The sigma and
+#                   surface files are output in netcdf.  The nst file
+#                   is nemsio.  These can't be changed.
+#     IDRT          Intermediate grid type output from spectral conversion
+#                   4: guassian(default); 0: lat-lon                            
+#     LONB          Number of longitudes of intermediate grid type output
+#                   from spectral conversion
+#     LATB          Number of latitudes of intermediate grid type output
+#                   from spectral conversion
 #     NTRAC         New number of tracers
 #                   defaults to input sigma file value
 #     IDVC          New vertical coordinate id (1 for sigma, 2 for hybrid)
 #                   defaults to input sigma file value
 #     IDSL          New midlayer pressure id (1 for phillips, 2 for mean)
 #                   defaults to input sigma file value
+#     TILE_NUM      The number of the cubed-sphere tile to convert surface
+#                   and nst data.
 #     NWROOT        A string that defaults to /nwprod
 #     FIXSUBDA      Subdirectory string for fix fields; defaults to /fix
 #                   To use parallel fix, set it to /fix/fix_am
@@ -108,16 +78,8 @@
 #                   defaults to current working directory
 #     XC            Suffix to add to executables
 #                   defaults to none
-#     OROGRAPHY     New orography ("NULL" to use from input sigma file)
-#                   defaults to ${FIXgsm}/global_orography.t${JCAP}.grb
-#     OROGRAPHY_UF  New unfiltered orography
-#                   defaults to ${FIXgsm}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb
 #     SIGLEVEL      New sigma levels ("NULL" to use from input sigma file)
 #                   defaults to ${FIXgsm}/global_siglevel.l${LEVS}.txt
-#     O3CLIM        New ozone climatology (required if adding ozone)
-#                   defaults to ${FIXgsm}/global_o3clim.txt
-#     SLMASK        New sea-land mask ("NULL" to use from input surface file)
-#                   defaults to ${FIXgsm}/global_slmask.t${JCAP}.grb
 #     FNGLAC        Input glacier climatology GRIB file
 #                   defaults to ${FIXgsm}/global_glacier.2x2.grb
 #     FNMXIC        Input maximum sea ice climatology GRIB file
@@ -144,7 +106,7 @@
 #     FNSOTC        Input soil type climatology GRIB file
 #                   defaults to ${FIXgsm}/global_soiltype.1x1.grb
 #     FNSMCC        Input soil moisture climatology GRIB file
-#                   defaults to ${FIXgsm}/global_soilmgldas.t$JCAP.$LONB.$LATB.grb
+#                   defaults to ${FIXgsm}/global_soilmgldas.t$CRES.grb
 #     FNVMNC        Input min veg frac climatology GRIB file
 #                   defaults to ${FIXgsm}/global_shdmin.0.144x0.144.grb
 #     FNVMXC        Input max veg frac climatology GRIB file
@@ -173,7 +135,6 @@
 #     IVSSFC        Version number of surface restart file
 #                   0-Default, same as input file.
 #     LONSPERLAT    New lonsperlat ("NULL" to use from input surface file)
-#                   defaults to ${FIXgsm}/global_lonsperlat.t${JCAP}.txt
 #     CHGRESEXEC    Change resolution executable
 #                   defaults to ${EXECgsm}/global_chgres   
 #     INISCRIPT     Preprocessing script
@@ -185,8 +146,7 @@
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
 #     CHGRESVARS    Other namelist inputs to the change resolution executable
-#                   such as LONBI,LATBI,IGEN,MGG,JC,MQUICK
-#                   defaults to none set
+#                   such as IGEN,MQUICK.  Defaults to none set.
 #     NTHREADS      Number of threads
 #                   defaults to 1
 #     NTHSTACK      Size of stack per thread
@@ -203,6 +163,10 @@
 #                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
 #     VERBOSE       Verbose flag (YES or NO)
 #                   defaults to NO
+#     FV3GRID_TILE# Contains grid information (lat/lon) for the cubed-sphere grid.
+#                   One file for each of the six tiles.
+#     FV3OROG_TILE# Contains mask and orography for the cubed-sphere grid.
+#                   One file for each of the six tiles.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -220,32 +184,23 @@
 #
 #     input data : $1 or $SIGINP
 #                  $2 or $SFCINP
-#                  $12 or $NSTINP
-#                  $OROGRAPHY
-#                  $OROGRAPHY_UF
+#                  $3 or $NSTINP
 #                  $SIGLEVEL
-#                  $O3CLIM
-#                  $SLMASK
 #                  $LONSPERLAT
+#                  $FVGRID_TILE[1-6]
+#                  $FVOROG_TILE[1-6]
 #
-#     output data: $3 or $SIGOUT
-#                  $4 or $SFCOUT
-#                  $9 or $GFSOUT
-#                  $13 or $NSTOUT
-#                  $14 or $SFNOUT
+#     output data: 
 #                  $PGMOUT
 #                  $PGMERR
 #
 #     scratch    : ${DATA}/chgres.inp.sig
-#                  ${DATA}/chgres.inp.orogb
 #                  ${DATA}/chgres.inp.siglevel
 #                  ${DATA}/chgres.inp.sfc
 #                  ${DATA}/chgres.inp.nst
-#                  ${DATA}/chgres.inp.slmgb
-#                  ${DATA}/chgres.out.sig
-#                  ${DATA}/chgres.out.sfc
-#                  ${DATA}/chgres.out.nst
-#                  ${DATA}/chgres.out.nsn
+#                  ${DATA}/chgres.inp.lpl3
+#                  ${DATA}/chgres.fv3.grd.t[1-6]
+#                  ${DATA}/chgres.fv3.orog.t[1-6]
 #                  ${DATA}/fort.35
 #                  ${DATA}/fort.81
 #                  ${DATA}/NULL
@@ -284,19 +239,9 @@ fi
 export APRUNC=${APRUNC:-""}
 export SIGINP=${1:-${SIGINP:-NULL}}
 export SFCINP=${2:-${SFCINP:-NULL}}
-export NSTINP=${12:-${NSTINP:-NULL}}
-export OUTTYP=${10:-${OUTTYP:-1}}
-export SIGOUT=${3:-${SIGOUT:-sigout}}
-export GFSOUT=${9:-${GFSOUT:-gfsout}}
-export SFCOUT=${4:-${SFCOUT:-sfcout}}
-export NSTOUT=${13:-${NSTOUT:-nstout}}  # nstio format
-export NSNOUT=${NSNOUT:-nsnout}         # nemsio format
-export SFNOUT=${14:-${SFNOUT:-sfnout}}
-export JCAP=${5:-${JCAP:?}}
-export LEVS=${6:-${LEVS:?}}
-export LONB=${7:-${LONB:?}}
-export LATB=${8:-${LATB:?}}
-export IDRT=${11:-${IDRT:-4}}
+export NSTINP=${3:-${NSTINP:-NULL}}
+export CRES=${4:-${CRES:?}}
+export LEVS=${5:-${LEVS:?}}
 #  Directories.
 export global_shared_ver=${global_shared_ver:-v14.0.0}
 export BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
@@ -308,14 +253,25 @@ export DATA=${DATA:-$(pwd)}
 #  Filenames.
 export XC=${XC}
 export CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
-export OROGRAPHY=${OROGRAPHY:-${FIXgsm}/global_orography.t${JCAP}.${LONB}.${LATB}.grb}
-export OROGRAPHY_UF=${OROGRAPHY_UF:-${FIXgsm}/global_orography_uf.t${JCAP}.$LONB.$LATB.grb}
+
+export FV3GRID_TILE1=${FV3GRID_TILE1:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile1.nc}
+export FV3GRID_TILE2=${FV3GRID_TILE2:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile2.nc}
+export FV3GRID_TILE3=${FV3GRID_TILE3:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile3.nc}
+export FV3GRID_TILE4=${FV3GRID_TILE4:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile4.nc}
+export FV3GRID_TILE5=${FV3GRID_TILE5:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile5.nc}
+export FV3GRID_TILE6=${FV3GRID_TILE6:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile6.nc}
+
+export FV3OROG_TILE1=${FV3OROG_TILE1:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile1.nc}
+export FV3OROG_TILE2=${FV3OROG_TILE2:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile2.nc}
+export FV3OROG_TILE3=${FV3OROG_TILE3:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile3.nc}
+export FV3OROG_TILE4=${FV3OROG_TILE4:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile4.nc}
+export FV3OROG_TILE5=${FV3OROG_TILE5:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile5.nc}
+export FV3OROG_TILE6=${FV3OROG_TILE6:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile6.nc}
+
 export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 if [ $LEVS = 128 ]; then
   export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}B.txt}
 fi
-export O3CLIM=${O3CLIM:-${FIXgsm}/global_o3clim.txt}
-export SLMASK=${SLMASK:-${FIXgsm}/global_slmask.t${JCAP}.${LONB}.${LATB}.grb}
 export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
 export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
 export FNTSFC=${FNTSFC:-${FIXgsm}/cfs_oi2sst1x1monclim19822001.grb}
@@ -328,7 +284,7 @@ export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
 export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
 export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
 export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
-export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
+export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.c${CRES}.grb}
 export FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
 export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
@@ -340,12 +296,17 @@ export SOILTYPE_INP=${SOILTYPE_INP:-"zobler"}
 export SOILTYPE_OUT=${SOILTYPE_OUT:-"zobler"}
 export VEGTYPE_INP=${VEGTYPE_INP:-"sib"}
 export VEGTYPE_OUT=${VEGTYPE_OUT:-"sib"}
-export LONSPERLAT=${LONSPERLAT:-${FIXgsm}/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt}
+export LONSPERLAT=${LONSPERLAT:-NULL}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
+export TILE_NUM=${TILE_NUM:-1}
+export LONB=${LONB:-0}
+export LATB=${LATB:-0}
+export IDRT=${IDRT:-4}
+export OUTTYP=${OUTTYP:-999}
 export NTRAC=${NTRAC:-3}
 export IALB=${IALB:-0}
 export IDVC=${IDVC:-2}
@@ -373,12 +334,6 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
-if [ $OUTTYP = 1 ]; then
-  export GRDFMT_CH='bin4'
-elif [ $OUTTYP = 2 ]; then
-  export GRDFMT_CH='grib'
-fi
-export GRDFMT=${GRDFMT:-${GRDFMT_CH:-'bin4'}}
 export CHGRESVARS=${CHGRESVARS}
 ################################################################################
 #  Preprocessing
@@ -400,21 +355,22 @@ export pgm=$PGM
 $LOGSCRIPT
 rm -f NULL
 ln -sf $SIGINP        chgres.inp.sig
-ln -sf $OROGRAPHY     chgres.inp.orogb
-ln -sf $OROGRAPHY_UF  chgres.inp.orogb_uf
 ln -sf $SIGLEVEL      chgres.inp.siglevel
-ln -sf $O3CLIM        chgres.inp.o3clim
 ln -sf $SFCINP        chgres.inp.sfc
 ln -sf $NSTINP        chgres.inp.nst
-ln -sf $SLMASK        chgres.inp.slmgb
-ln -sf $LONSPERLAT    chgres.inp.lonsperlat
 ln -sf $LONSPERLAT    chgres.inp.lpl3
-ln -sf $SIGOUT        chgres.out.sig
-ln -sf $GFSOUT        chgres.out.grd
-ln -sf $SFCOUT        chgres.out.sfc
-ln -sf $NSTOUT        chgres.out.nst
-ln -sf $NSNOUT        chgres.out.nsn
-ln -sf $SFNOUT        chgres.out.sfn
+ln -fs $FV3GRID_TILE1 chgres.fv3.grd.t1
+ln -fs $FV3GRID_TILE2 chgres.fv3.grd.t2
+ln -fs $FV3GRID_TILE3 chgres.fv3.grd.t3
+ln -fs $FV3GRID_TILE4 chgres.fv3.grd.t4
+ln -fs $FV3GRID_TILE5 chgres.fv3.grd.t5
+ln -fs $FV3GRID_TILE6 chgres.fv3.grd.t6
+ln -fs $FV3OROG_TILE1 chgres.fv3.orog.t1
+ln -fs $FV3OROG_TILE2 chgres.fv3.orog.t2
+ln -fs $FV3OROG_TILE3 chgres.fv3.orog.t3
+ln -fs $FV3OROG_TILE4 chgres.fv3.orog.t4
+ln -fs $FV3OROG_TILE5 chgres.fv3.orog.t5
+ln -fs $FV3OROG_TILE6 chgres.fv3.orog.t6
 
 if [[ $LANDICE_OPT = 3 || $LANDICE_OPT = 4 ]]
 then
@@ -552,42 +508,24 @@ EOF
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-${CHGRESTHREAD:-1}}
 
-#if [ $machine = IBM ] ; then
  eval $APRUNC $CHGRESEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
-  &NAMCHG JCAP=$JCAP, LEVS=$LEVS, LONB=$LONB, LATB=$LATB,
+  &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB,
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
            LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP,
-           IDRT=$IDRT, GRDFMT=$GRDFMT, IALB=$IALB, ISOT=$ISOT,
-           IVEGSRC=$IVEGSRC, $CHGRESVARS,
+           IDRT=$IDRT, IALB=$IALB, ISOT=$ISOT,
+           IVEGSRC=$IVEGSRC, TILE_NUM=$TILE_NUM, $CHGRESVARS,
  /
 EOF
-#else
-# export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-1}
-# export mpi_tasks_ch=${mpi_tasks_ch:-1}
-# export npe_node=${npe_node:-24}
-# export pe_node=$((npe_node/OMP_NUM_THREADS))
-# if [ $pe_node -gt $mpi_tasks_ch ] ; then export pe_node=$mpi_tasks_ch ; fi
-# VDATE=${VDATE:-""}
-#echo aprun -n$mpi_tasks_ch -N$pe_node -d$OMP_NUM_THREADS $CHGRESEXEC  >out_chgres_$VDATE
-#aprun -n$mpi_tasks_ch -N$pe_node -d$OMP_NUM_THREADS $CHGRESEXEC <<EOF  >o_out_chgres_$VDATE 2>e_out_chgres_$VDATE
-#&NAMCHG JCAP=$JCAP, LEVS=$LEVS, LONB=$LONB, LATB=$LATB,
-#          NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
-#          LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP, IDRT=$IDRT, $CHGRESVARS
-#/
-#EOF
-
-#fi
-
 
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT||exit 2
 
 rm -f NULL
-rm -f chgres.inp.sig chgres.inp.orogb chgres.inp.siglevel chgres.inp.o3clim
-rm -f chgres.inp.sfc chgres.inp.nst chgres.inp.slmgb chgres.inp.lonsperlat
-rm -f chgres.out.sig chgres.out.sfc chgres.out.nst chgres.out.grd fort.35 fort.81
-rm -f chgres.out.nsn
+rm -f chgres.inp.sig chgres.inp.siglevel
+rm -f chgres.inp.sfc chgres.inp.nst chgres.inp.lpl3
+rm -f fort.35 fort.81
+rm -f chgres.fv3.grd.t? chgres.fv3.orog.t?
 ################################################################################
 #  Postprocessing
 cd $pwd
