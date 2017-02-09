@@ -15,3 +15,7 @@ write out nemsio, S->N is reversed to N->S to follow NCEP convention
 
 12/18/2016
 updated to handle output of any frequency and any accumulation bucket
+
+
+01/10/2017
+updated to handle both hydrostatic and nonhydrostatic cases. They have different output numbers and variable names.

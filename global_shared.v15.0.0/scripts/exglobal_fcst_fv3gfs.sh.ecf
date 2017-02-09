@@ -291,7 +291,7 @@ cat > diag_table << EOF
 ${NAME}.${CASE}.${MODE}.${MONO}
 $y $m $d $h 0 0 
 EOF
-cat ${PARM_FV3DIAG}/diag_table >> diag_table
+cat ${DIAGTABLE:-$PARM_FV3DIAG/diag_table} >> diag_table
 
 # copy over the other tables and executable
 $NCP ${PARM_FV3DIAG}/data_table data_table
@@ -506,7 +506,7 @@ $ERRSCRIPT||exit 2
 
 #------------------------------------------------------------------
 if [ $ERR -eq 0 -a $SEND = "YES" ]; then 
- for type in atmos_4xdaily atmos_static grid_spec nggps2d nggps3d; do
+ for type in atmos_4xdaily atmos_static grid_spec nggps2d nggps3d fv3_history fv3_history2d; do
    n=1; while [ $n -le $ntiles ]; do
     $NCP $DATA/${CDATE}0000.$type.tile${n}.nc $COMROT/. 
     n=$((n+1))

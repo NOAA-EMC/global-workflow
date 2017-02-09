@@ -61,7 +61,8 @@ int mpp_open(const char *file, int action) {
   char curfile[STRING];
   char errmsg[512];  
   int ncid, status, istat, n, fid;
-  size_t blksz=65536;
+/* size_t blksz=65536; */
+  size_t blksz=1048576;
   
   /* write only from root pe. */
   if(action != MPP_READ && mpp_pe() != mpp_root_pe() ) return -1;

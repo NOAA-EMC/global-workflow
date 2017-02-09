@@ -1,11 +1,15 @@
 FORECASTSH=$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf
 EXECDIR=$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin
-#IC_DIR=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/ICs
-IC_DIR=/gpfs/hps/ptmp/Fanglin.Yang/FV3IC/ICs
+IC_DIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs
+if [ $REMAP_GRID = latlon ]; then
+ DIAGTABLE=$BASE_GSM/parm/parm_fv3diag/diag_table
+else
+ DIAGTABLE=$BASE_GSM/parm/parm_fv3diag/diag_table_history
+fi
 
 npes=$(( ${layout_x} * ${layout_y} * 6 ))
 tasks=$npes                         # number of PEs for 1st segment
-nth_f=2                             # number of threads for AM forecast 2nd segment
+nth_f=2                             # number of threads for AM forecast
 npe_node_f=$pe_node                 # number of pes per node for AM forecast
 task_per_node=$((npe_node_f/nth_f))
 

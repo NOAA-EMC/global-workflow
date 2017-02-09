@@ -7,4 +7,3 @@ netcdfio_interface.o: netcdfio_interface.f90 kinds.o
 interpolation_interface.o: interpolation_interface.f90 constants.o kinds.o namelist_def.o netcdfio_interface.o
 gfs_nems_interface.o: gfs_nems_interface.f90 variable_interface.o constants.o kinds.o mpi_interface.o namelist_def.o
 fv3_interface.o: fv3_interface.f90 variable_interface.o interpolation_interface.o constants.o kinds.o mpi_interface.o namelist_def.o netcdfio_interface.o gfs_nems_interface.o
-regrid_nemsio_interface.o: regrid_nemsio_interface.f90 constants.o kinds.o gfs_nems_interface.o mpi_interface.o namelist_def.o fv3_interface.o

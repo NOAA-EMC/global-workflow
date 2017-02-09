@@ -12,6 +12,7 @@ module netcdfio_interface
 
   use namelist_def
   use netcdf
+  use mpi_interface
 
   !-----------------------------------------------------------------------
 
@@ -157,6 +158,11 @@ contains
        varvalue = -1.e30
     else
        ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue)
+       if (ncstatus .ne. 0) then
+          print *,'fv3 read failed for ',trim(adjustl(varname))
+          call mpi_interface_terminate()
+          stop
+       endif
     endif
     ncstatus = nf90_close(ncfileid)
 
@@ -190,10 +196,20 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(ncstatic)       start = (/1,1,1/)
     if(.not. ncstatic) start = (/1,1,ncrec/)
     count    = (/ncxdim,ncydim,1/)
     ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue,start,count)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(debug) write(6,500) trim(adjustl(varname)), minval(varvalue),      &
          & maxval(varvalue)
     ncstatus = nf90_close(ncfileid)
@@ -235,10 +251,20 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(ncstatic)       start = (/1,1,1,1/)
     if(.not. ncstatic) start = (/1,1,1,ncrec/)
     count    = (/ncxdim,ncydim,nczdim,1/)
     ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue,start,count)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(debug) write(6,500) trim(adjustl(varname)), minval(varvalue),      &
          & maxval(varvalue)
     ncstatus = nf90_close(ncfileid)
@@ -275,10 +301,20 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if (ncstatus /= 0) then
        varvalue = -1.e30
     else
        ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue)
+       if (ncstatus .ne. 0) then
+           print *,'fv3 read failed for ',trim(adjustl(varname))
+           call mpi_interface_terminate()
+           stop
+       endif
     endif
     ncstatus = nf90_close(ncfileid)
 
@@ -312,10 +348,20 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(ncstatic)       start = (/1,1,1/)
     if(.not. ncstatic) start = (/1,1,ncrec/)
     count    = (/ncxdim,ncydim,1/)
     ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue,start,count)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(debug) write(6,500) trim(adjustl(varname)), minval(varvalue),      &
          & maxval(varvalue)
     ncstatus = nf90_close(ncfileid)
@@ -357,10 +403,20 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(ncstatic)       start = (/1,1,1,1/)
     if(.not. ncstatic) start = (/1,1,1,ncrec/)
     count    = (/ncxdim,ncydim,nczdim,1/)
     ncstatus = nf90_get_var(ncfileid,ncvarid,varvalue,start,count)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(debug) write(6,500) trim(adjustl(varname)), minval(varvalue),      &
          & maxval(varvalue)
     ncstatus = nf90_close(ncfileid)
@@ -479,6 +535,11 @@ contains
     ncstatus = nf90_open(path=trim(adjustl(filename)),mode=nf90_nowrite,  &
          & ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,trim(adjustl(varname)),ncvarid)
+    if (ncstatus .ne. 0) then
+        print *,'fv3 read failed for ',trim(adjustl(varname))
+        call mpi_interface_terminate()
+        stop
+    endif
     if(ncstatic)       start = (/1,1,1,1/)
     if(.not. ncstatic) start = (/1,1,1,ncrec/)
     count    = (/ncxdim,ncydim,nczdim,1/)

@@ -39,7 +39,9 @@ program regrid_nemsio_main
   !---------------------------------------------------------------------
 
   use mpi_interface
-  use regrid_nemsio_interface
+  use fv3_interface
+  use namelist_def
+  use constants
 
   !---------------------------------------------------------------------
 
@@ -57,46 +59,30 @@ program regrid_nemsio_main
   ! Define local variables
 
   call mpi_interface_initialize()
-
-  ! Check local variable and proceed accordingly
+  call init_constants(.false.)
 
   if(mpi_procid .eq. mpi_masternode) then
-
-     ! Define local variables
 
      call cpu_time(exectime_start)
 
-  end if ! if(mpi_procid .eq. mpi_masternode)
-
-  ! Define local variables
-
+  end if
   call mpi_barrier(mpi_comm_world,mpi_ierror)
 
-  ! Compute local variables
+  call namelistparams()
+  call fv3_regrid_nemsio()
 
-  call regrid_nemsio()
-
-  ! Check local variable and proceed accordingly
 
   if(mpi_procid .eq. mpi_masternode) then
 
-     ! Define local variables
-
      call cpu_time(exectime_finish)
-
-     ! Print message to user
-
      write(6,500) exectime_finish - exectime_start
      
   end if ! if(mpi_procid .eq. mpi_masternode)
-
-  ! Define local variables
 
   call mpi_barrier(mpi_comm_world,mpi_ierror)
   call mpi_interface_terminate()
 
   !=====================================================================
-
   ! Define format statements
 
 500 format('MAIN: Execution time: ', f13.5, ' seconds.')

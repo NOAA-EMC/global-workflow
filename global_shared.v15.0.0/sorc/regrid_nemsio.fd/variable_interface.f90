@@ -50,28 +50,14 @@ contains
 
   !=======================================================================
 
-  ! variable_clip.f90:
-
-  !-----------------------------------------------------------------------
-
   subroutine variable_clip(grid)
 
-    ! Define variables passed to routine
 
     real(r_double)                                                       :: grid(:)
-
-    ! Define variables computed within routine
-
     real(r_double)                                                       :: clip
-
-    !=====================================================================
-
-    ! Define local variables
 
     clip = tiny(grid(1))
     where(grid .le. dble(0.0)) grid = clip
-
-    !=====================================================================
 
   end subroutine variable_clip
 

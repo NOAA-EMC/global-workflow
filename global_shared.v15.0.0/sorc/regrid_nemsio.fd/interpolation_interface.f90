@@ -14,6 +14,7 @@ module interpolation_interface
   use namelist_def
   use netcdf
   use netcdfio_interface
+  use mpi_interface
 
   !-----------------------------------------------------------------------
 
@@ -25,11 +26,13 @@ module interpolation_interface
 
   private
   public :: interpolation_initialize_gridvar
-  public :: interpolation_cleanup_gridvar
+  public :: interpolation_initialize_esmf
   public :: interpolation_define_gridvar
   public :: interpolation_define_gridvar_out
-  public :: interpolation_compute
+  public :: interpolation_esmf
+  public :: interpolation_esmf_vect
   public :: gridvar
+  public :: esmfgrid
 
   !-----------------------------------------------------------------------
 
@@ -41,7 +44,11 @@ module interpolation_interface
      real(r_double),                    dimension(:),      allocatable :: s
      integer,                           dimension(:),      allocatable :: col
      integer,                           dimension(:),      allocatable :: row
-     integer                                                           :: n_s
+     real(r_double),                    dimension(:),      allocatable :: inlats
+     real(r_double),                    dimension(:),      allocatable :: inlons
+     real(r_double),                    dimension(:),      allocatable :: outlats
+     real(r_double),                    dimension(:),      allocatable :: outlons
+     integer                                                           :: n_s,n_a,n_b
   end type esmfgrid ! type esmfgrid
 
   type gridvar
@@ -65,143 +72,57 @@ contains
 
   !=======================================================================
 
-  ! interpolation_compute.f90:
-
-  !-----------------------------------------------------------------------
-
-  subroutine interpolation_compute(invar,outvar,is_bilinear,is_nrstnghbr)
-
-    ! Define variables passed to routine
-
-    type(gridvar)                                                        :: invar
-    type(gridvar)                                                        :: outvar
-    logical                                                              :: is_bilinear
-    logical                                                              :: is_nrstnghbr 
-
-    !=====================================================================
-
-    ! Check local variable and proceed accordingly
-
-    call interpolation_esmf(invar,outvar,is_bilinear, &
-         & is_nrstnghbr)
-
-    !=====================================================================
-
-  end subroutine interpolation_compute
-
-  !=======================================================================
-
-  ! interpolation_define_gridvar.f90:
-
-  !-----------------------------------------------------------------------
-
   subroutine interpolation_define_gridvar(grid,xdim,ydim,ngrid,input)
-
-    ! Define variables passed to routine
+!  collapses the cubed grid into a 1-d array
+!  Define variables passed to routine
 
     use nemsio_module, only: nemsio_realkind
-    integer                                                              :: ngrid
-    integer                                                              :: xdim
-    integer                                                              :: ydim
-    type(gridvar)                                                        :: grid
-    real(nemsio_realkind)                                                   :: input(ngrid,xdim,ydim)
+    integer,intent(in)                         :: ngrid
+    integer,intent(in)                         :: xdim,ydim
+    type(gridvar),intent(inout)                :: grid
+    real(nemsio_realkind),intent(in)           :: input(ngrid,xdim,ydim)
 
-    ! Define variables computed within routine
-
-    integer                                                              :: ncount
-
-    ! Define counting variables
-
-    integer                                                              :: i, j, k
-
-    !=====================================================================
-
-    ! Define local variables
+! locals
+    integer                 	     :: i,j,k,ncount
 
     ncount = 1
-
-    ! Loop through local variable
-
     do k = 1, ngrid
-
-       ! Loop through local variable
-
        do j = 1, ydim
-
-          ! Loop through local variable
-       
           do i = 1, xdim
-          
-             ! Define local variables
-          
              grid%var(ncount) = input(k,i,j)
              ncount           = ncount + 1
+          end do
+       end do
+    end do
 
-          end do ! do i = 1, xdim
-
-       end do ! do j = 1, ydim
-
-    end do ! do k = 1, ngrid
-
-    !=====================================================================
 
   end subroutine interpolation_define_gridvar
 
-  !=======================================================================
+!=======================================================================
 
-  ! interpolation_define_gridvar_out.f90:
-
-  !-----------------------------------------------------------------------
 
   subroutine interpolation_define_gridvar_out(grid,xdim,ydim,output)
-
+! make a 2-d array for output
     ! Define variables passed to routine
 
-    integer                                                              :: xdim
-    integer                                                              :: ydim
-    type(gridvar)                                                        :: grid
-    real(r_double)                                                       :: output(xdim,ydim)
+    integer,intent(in)                :: xdim,ydim
+    type(gridvar),intent(in)          :: grid
+    real(r_double),intent(out)         :: output(xdim,ydim)
 
-    ! Define variables computed within routine
-
-    integer                                                              :: ncount
-
-    ! Define counting variables
-
-    integer                                                              :: i, j, k
-
-    !=====================================================================
-
-    ! Define local variables
+! locals
+    integer               :: i,j,ncount
 
     ncount = 1 
-    
-    ! Loop through local variable
-    
     do j = 1, ydim
-       
-       ! Loop through local variable
-       
        do i = 1, xdim
-
-          ! Define local variables
-
           output(j,i) = grid%var(ncount)
           ncount      = ncount + 1
-       
-       end do ! do j = 1, ydim
-
-    end do ! do i = 1, xdim
-
-    !=====================================================================
+       enddo
+    enddo
 
   end subroutine interpolation_define_gridvar_out
 
   !=======================================================================
-
-  ! interpolation_initialize_gridvar.f90:
-
-  !-----------------------------------------------------------------------
 
   subroutine interpolation_initialize_gridvar(grid)
 
@@ -209,46 +130,13 @@ contains
 
     type(gridvar)                                                        :: grid
 
-    !=====================================================================
-
-    ! Allocate memory for local variables
-
-    if(.not. allocated(grid%check)) allocate(grid%check(grid%ncoords))
-    if(.not. allocated(grid%var))   allocate(grid%var(grid%ncoords))
-
-    !=====================================================================
+    allocate(grid%var(grid%ncoords))
 
   end subroutine interpolation_initialize_gridvar
 
-  !=======================================================================
 
-  ! interpolation_cleanup_gridvar.f90:
-
-  !-----------------------------------------------------------------------
-
-  subroutine interpolation_cleanup_gridvar(grid)
-
-    ! Define variables passed to routine
-
-    type(gridvar)                                                        :: grid
-
-    !=====================================================================
-    
-    ! Deallocate memory for local variables
-
-    if(allocated(grid%check)) deallocate(grid%check)
-    if(allocated(grid%var))   deallocate(grid%var)
-
-    !=====================================================================
-
-  end subroutine interpolation_cleanup_gridvar
-
-  !=======================================================================
-
-  ! interpolation_initialize_esmf.f90:
-
-  !-----------------------------------------------------------------------
-
+!======================================================================= 
+  
   subroutine interpolation_initialize_esmf(grid)
 
     ! Define variables passed to routine
@@ -257,188 +145,190 @@ contains
 
     !=====================================================================
 
-    ! Deallocate memory for local variables
-
-    call interpolation_cleanup_esmf(grid)
-
     ! Define local variables
 
     ncstatus = nf90_open(path=trim(adjustl(grid%filename)),mode=           &
          & nf90_nowrite,ncid=ncfileid)
     ncstatus = nf90_inq_dimid(ncfileid,'n_s',ncdimid)
     ncstatus = nf90_inquire_dimension(ncfileid,ncdimid,len=grid%n_s)
-    ncstatus = nf90_close(ncfileid)
+    ncstatus = nf90_inq_dimid(ncfileid,'n_a',ncdimid)
+    ncstatus = nf90_inquire_dimension(ncfileid,ncdimid,len=grid%n_a)
+    ncstatus = nf90_inq_dimid(ncfileid,'n_b',ncdimid)
+    ncstatus = nf90_inquire_dimension(ncfileid,ncdimid,len=grid%n_b)
+    
 
     ! Allocate memory for local variables
 
-    if(.not. allocated(grid%s))                                            &
-         & allocate(grid%s(grid%n_s))
-    if(.not. allocated(grid%row))                                          &
-         & allocate(grid%row(grid%n_s))
-    if(.not. allocated(grid%col))                                          &
-         & allocate(grid%col(grid%n_s))
+    allocate(grid%s(grid%n_s))
+    allocate(grid%row(grid%n_s))
+    allocate(grid%col(grid%n_s))
+    
+    allocate(grid%inlats(grid%n_a))
+    allocate(grid%inlons(grid%n_a))
+    allocate(grid%outlats(grid%n_b))
+    allocate(grid%outlons(grid%n_b))
 
-    ! Define local variables
-
-    ncstatus = nf90_open(path=trim(adjustl(grid%filename)),mode=           &
-         & nf90_nowrite,ncid=ncfileid)
     ncstatus = nf90_inq_varid(ncfileid,'col',ncvarid)
     ncstatus = nf90_get_var(ncfileid,ncvarid,grid%col)
     ncstatus = nf90_inq_varid(ncfileid,'row',ncvarid)
     ncstatus = nf90_get_var(ncfileid,ncvarid,grid%row)
     ncstatus = nf90_inq_varid(ncfileid,'S',ncvarid)
     ncstatus = nf90_get_var(ncfileid,ncvarid,grid%s)
+    ncstatus = nf90_inq_varid(ncfileid,'yc_a',ncvarid)
+    ncstatus = nf90_get_var(ncfileid,ncvarid,grid%inlats)
+    ncstatus = nf90_inq_varid(ncfileid,'xc_a',ncvarid)
+    ncstatus = nf90_get_var(ncfileid,ncvarid,grid%inlons)
+    where(grid%inlons .LT. 0.0) 
+       grid%inlons=360+grid%inlons
+    endwhere
+    ncstatus = nf90_inq_varid(ncfileid,'yc_b',ncvarid)
+    ncstatus = nf90_get_var(ncfileid,ncvarid,grid%outlats)
+    ncstatus = nf90_inq_varid(ncfileid,'xc_b',ncvarid)
+    ncstatus = nf90_get_var(ncfileid,ncvarid,grid%outlons)
     ncstatus = nf90_close(ncfileid)
 
     !=====================================================================
 
   end subroutine interpolation_initialize_esmf
 
-  !=======================================================================
+
+!=======================================================================
 
 
-  ! interpolation_cleanup_esmf.f90:
-
-  !-----------------------------------------------------------------------
-
-  subroutine interpolation_cleanup_esmf(grid)
-
-    ! Define variables passed to routine
-
-    type(esmfgrid)                                                       :: grid
-
-    !=====================================================================
-
-    ! Deallocate memory for local variables
-
-    if(allocated(grid%s))   deallocate(grid%s)
-    if(allocated(grid%row)) deallocate(grid%row)
-    if(allocated(grid%col)) deallocate(grid%col)
-
-    !=====================================================================
-
-  end subroutine interpolation_cleanup_esmf
-
-  !=======================================================================
-
-  ! interpolation_esmf.f90:
-
-  !-----------------------------------------------------------------------
-
-  subroutine interpolation_esmf(invar,outvar,is_bilinear,is_nrstnghbr)
+  subroutine interpolation_esmf(invar,outvar,grid,is_nrstnghbr)
 
     ! Define variables passed to routine
 
     type(gridvar)                                                        :: invar
     type(gridvar)                                                        :: outvar
-    logical                                                              :: is_bilinear
     logical                                                              :: is_nrstnghbr 
-
-    ! Define variables computed within routine
 
     type(esmfgrid)                                                       :: grid
 
-    ! Define counting variables
-
     integer                                                              :: i, j, k, l
 
-    !=====================================================================
-
-    ! Define local variables
-
-    outvar%check = .false.
     outvar%var   = dble(0.0)
 
-    ! Check local variable and proceed accordingly
-    
-    if(is_bilinear) then
-       
-       ! Define local variables
-       
-       grid%filename = esmf_bilinear_filename
-       
-    else if(is_nrstnghbr) then
-       
-       ! Define local variables
-       
-       grid%filename = esmf_neareststod_filename
-       
-    end if ! if(is_bilinear)
-    
-    ! Check local variable and proceed accordingly
-    
-    if(trim(adjustl(grid%filename)) .eq. 'NOT USED') then
-       
-       ! Define local variables
-       
-       write(6,500) grid%filename
-       stop
-       
-    end if ! if(trim(adjustl(grid%filename)) .eq. 'NOT USED')
-
-    ! Define local variables
-    
-    call interpolation_initialize_esmf(grid)
-       
-    ! Loop through local variable 
-    
-    do i = 1, grid%n_s
-       
-       ! Compute local variables
-       
-       outvar%var(grid%row(i)) = outvar%var(grid%row(i)) +                  &
-            & grid%s(i)*invar%var(grid%col(i))
-       
-       ! Define local variables
-
-       outvar%check(grid%row(i)) = .true.
-       
-    end do ! do i = 1, grid%n_s
-
-    ! Deallocate memory for local variables
-    
-    call interpolation_cleanup_esmf(grid)
-
-    ! Define local variables
-       
-    grid%filename = esmf_neareststod_filename
-
-    ! Check local variable and proceed accordingly
-
-    if(trim(adjustl(grid%filename)) .ne. 'NOT USED') then
-
-       ! Define local variables
-
-       call interpolation_initialize_esmf(grid)
-
-       ! Loop through local variable 
-    
+    if(is_nrstnghbr) then
        do i = 1, grid%n_s
-
-          ! Check local variable and proceed accordingly
-
-          if(.not. outvar%check(grid%row(i))) then
-       
-             ! Compute local variables
-       
-             outvar%var(grid%row(i)) = outvar%var(grid%row(i)) +           &
-                  & grid%s(i)*invar%var(grid%col(i))
-
-          end if ! if(.not. outvar%check(grid%row(i)))
-       
-       end do ! do i = 1, grid%n_s
-
-    end if ! if(trim(adjustl(grid%filename)) .ne. 'NOT USED')
-
-    !=====================================================================
-
-    ! Define format statements
-
-500 format('INTERPOLATION_ESMF: Filename ', a, ' is invalid. Aborting!!!')
-
-    !=====================================================================
-
+          outvar%var(grid%row(i)) = invar%var(grid%col(i))
+       enddo
+    else
+       do i = 1, grid%n_s
+          outvar%var(grid%row(i)) = outvar%var(grid%row(i)) + grid%s(i)*invar%var(grid%col(i))
+       end do
+    end if
+    
   end subroutine interpolation_esmf
+!=====================================================================  
+
+    subroutine interpolation_esmf_vect(invaru,invarv,grid,outvaru,outvarv)
+
+    ! Define variables passed to routine
+
+    type(gridvar)                                                        :: invaru,invarv
+    type(gridvar)                                                        :: outvaru,outvarv
+    type(esmfgrid)                                                       :: grid
+
+    integer                                                              :: i, j, k, l
+    real(r_double) :: cxy,sxy,urot,vrot
+
+
+    outvaru%var   = dble(0.0)
+    outvarv%var   = dble(0.0)
+
+    do i = 1, grid%n_s
+       CALL MOVECT(grid%inlats(grid%col(i)),grid%inlons(grid%col(i)),&
+                   grid%outlats(grid%row(i)),grid%outlons(grid%row(i)),&
+                           cxy,sxy)
+       urot=cxy*invaru%var(grid%col(i))-sxy*invarv%var(grid%col(i))
+       vrot=sxy*invaru%var(grid%col(i))+cxy*invarv%var(grid%col(i))
+       outvaru%var(grid%row(i)) = outvaru%var(grid%row(i)) +  grid%s(i)*urot
+       outvarv%var(grid%row(i)) = outvarv%var(grid%row(i)) +  grid%s(i)*vrot
+       
+    end do
+
+  end subroutine interpolation_esmf_vect
+
+!===================================================================== 
+
+ SUBROUTINE MOVECT(FLAT,FLON,TLAT,TLON,CROT,SROT)
+!$$$  SUBPROGRAM DOCUMENTATION BLOCK
+!
+! SUBPROGRAM:  MOVECT     MOVE A VECTOR ALONG A GREAT CIRCLE
+!   PRGMMR: IREDELL       ORG: W/NMC23       DATE: 96-04-10
+!
+! ABSTRACT: THIS SUBPROGRAM PROVIDES THE ROTATION PARAMETERS
+!           TO MOVE A VECTOR ALONG A GREAT CIRCLE FROM ONE
+!           POSITION TO ANOTHER WHILE CONSERVING ITS ORIENTATION
+!           WITH RESPECT TO THE GREAT CIRCLE.  THESE ROTATION
+!           PARAMETERS ARE USEFUL FOR VECTOR INTERPOLATION.
+!
+! PROGRAM HISTORY LOG:
+!   96-04-10  IREDELL
+! 1999-04-08  IREDELL  GENERALIZE PRECISION
+!
+! USAGE:    CALL MOVECT(FLAT,FLON,TLAT,TLON,CROT,SROT)
+!
+!   INPUT ARGUMENT LIST:
+!     FLAT     - REAL LATITUDE IN DEGREES FROM WHICH TO MOVE THE VECTOR
+!     FLON     - REAL LONGITUDE IN DEGREES FROM WHICH TO MOVE THE VECTOR
+!     TLAT     - REAL LATITUDE IN DEGREES TO WHICH TO MOVE THE VECTOR
+!     TLON     - REAL LONGITUDE IN DEGREES TO WHICH TO MOVE THE VECTOR
+!
+!   OUTPUT ARGUMENT LIST:
+!     CROT     - REAL CLOCKWISE VECTOR ROTATION COSINE
+!     SROT     - REAL CLOCKWISE VECTOR ROTATION SINE
+!                (UTO=CROT*UFROM-SROT*VFROM;
+!                 VTO=SROT*UFROM+CROT*VFROM)
+!
+! ATTRIBUTES:
+!   LANGUAGE: FORTRAN 90
+!
+!$$$
+ IMPLICIT NONE
+!
+ INTEGER,         PARAMETER     :: KD=SELECTED_REAL_KIND(15,45)
+!
+ REAL(KIND=r_double),            INTENT(IN   ) :: FLAT, FLON
+ REAL(KIND=r_double),            INTENT(IN   ) :: TLAT, TLON
+ REAL(KIND=r_double),            INTENT(  OUT) :: CROT, SROT
+!
+ REAL(KIND=r_double),   PARAMETER     :: CRDLIM=0.9999999
+ REAL(KIND=r_double),   PARAMETER     :: PI=3.14159265358979
+ REAL(KIND=r_double),   PARAMETER     :: DPR=180./PI
+!
+ REAL(KIND=r_double)                  :: CTLAT,STLAT,CFLAT,SFLAT
+ REAL(KIND=r_double)                  :: CDLON,SDLON,CRD
+ REAL(KIND=r_double)                  :: SRD2RN,STR,CTR,SFR,CFR
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  COMPUTE COSINE OF THE RADIAL DISTANCE BETWEEN THE POINTS.
+ CTLAT=COS(TLAT/DPR)
+ STLAT=SIN(TLAT/DPR)
+CFLAT=COS(FLAT/DPR)
+ SFLAT=SIN(FLAT/DPR)
+ CDLON=COS((FLON-TLON)/DPR)
+ SDLON=SIN((FLON-TLON)/DPR)
+ CRD=STLAT*SFLAT+CTLAT*CFLAT*CDLON
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  COMPUTE ROTATIONS AT BOTH POINTS WITH RESPECT TO THE GREAT CIRCLE
+!  AND COMBINE THEM TO GIVE THE TOTAL VECTOR ROTATION PARAMETERS.
+ IF(ABS(CRD).LE.CRDLIM) THEN
+   SRD2RN=-1/(1-CRD**2)
+   STR=CFLAT*SDLON
+   CTR=CFLAT*STLAT*CDLON-SFLAT*CTLAT
+   SFR=CTLAT*SDLON
+   CFR=CTLAT*SFLAT*CDLON-STLAT*CFLAT
+   CROT=SRD2RN*(CTR*CFR-STR*SFR)
+   SROT=SRD2RN*(CTR*SFR+STR*CFR)
+!  USE A DIFFERENT APPROXIMATION FOR NEARLY COINCIDENT POINTS.
+!  MOVING VECTORS TO ANTIPODAL POINTS IS AMBIGUOUS ANYWAY.
+ ELSE
+   CROT=CDLON
+   SROT=SDLON*STLAT
+ ENDIF
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ END SUBROUTINE MOVECT
 
   !=======================================================================
 

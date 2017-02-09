@@ -41,14 +41,14 @@ MKDIR           = /bin/mkdir -p
 # Include machine dependent compile & load options
 #------------
 
-  MAKE_CONF = Makefile.conf
-include $(MAKE_CONF)
+#  MAKE_CONF = Makefile.conf
+#include $(MAKE_CONF)
 
 # -------------
 # This makefile
 # -------------
 
-  MAKE_FILE = Makefile
+  MAKE_FILE = Makefile_cray
 
 # -----------
 # Load module
@@ -60,7 +60,7 @@ include $(MAKE_CONF)
 # Installing directory
 # --------------------
 
-  INSTALL_DIR = ./
+##  INSTALL_DIR = ./
 
 # --------
 # Log file
@@ -130,7 +130,8 @@ clean:
        netcdfio_interface.f90                        \
        interpolation_interface.f90                   \
        gfs_nems_interface.f90                        \
-       fv3_interface.f90                             
+       fv3_interface.f90                              
+##      regrid_nemsio_interface.f90
 
   SRCS =  $(SRCSF77) $(SRCSF90)
 
