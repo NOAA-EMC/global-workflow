@@ -19,16 +19,18 @@ set -ax
 #  and submit_chgres.csh provided by GFDL.  APRUN and environment variables are added to run on 
 #  WCOSS CRAY.  Directory and file names are standaridized to follow NCEP global model convention.
 #  This script calls fv3gfs_chgres.sh.
+# Fanglin Yang and George Gayno, 02/08/2017
+#  Further modified to use the new CHGRES George Gayno developed.
 #-------------------------------------------------------------------------------------------------
 
 . $MODULESHOME/init/sh 2>>/dev/null
 module load PrgEnv-intel 2>>/dev/null
 export NODES=1
-#export OMP_NUM_THREADS=24
-export HUGETLB_MORECORE=yes
-export APRUNC="aprun -n 1 -N 1 -j 1 -d 24 -cc depth"
+export OMP_NUM_THREADS_CH=24
+#export HUGETLB_MORECORE=yes
+export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
 export USER=$LOGNAME                 # your username 
-
+export VERBOSE=YES
 
 export res=${res:-768}               # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
 export date=${cdate:-2016120100}     # format yyyymmddhh yyyymmddhh ... 

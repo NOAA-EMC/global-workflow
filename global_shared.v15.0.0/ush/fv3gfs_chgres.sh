@@ -52,15 +52,14 @@ else
 fi
 
 export JCAP=$(($LATB-2))
-export LEVS=64
-export IDVC=2
-export OUTTYP=1
-export IDRT=4
-export LANDICE_OPT=2
-export CLIMO_FIELDS_OPT=3
-export NTRAC=3
-export IDSL=1
-export LSOIL=0
+export LEVS=${LEVS:-64}
+export IDVC=${IDVC:-2}
+export IDRT=${IDRT:-4}
+export LANDICE_OPT=${LANDICE_OPT:-2}
+export CLIMO_FIELDS_OPT=${CLIMO_FIELDS_OPT:-3}
+export NTRAC=${NTRAC:-3}
+export IDSL=${IDSL:-1}
+export LSOIL=${LSOIL:-4}
 export IVSSFC=0
 if [ $type = "GFS" ]; then
   export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1"
@@ -91,7 +90,7 @@ else
  ln -sf ${gfs_dir}/gfs.t${hr}z.sfcanl chgres.inp.sfc
 fi
 
-ln -sf $FIXGLOBAL/global_hyblev.l64.txt chgres.inp.siglevel
+ln -sf $FIXGLOBAL/global_hyblev.l${LEVS}.txt chgres.inp.siglevel
 ln -sf $FIXGLOBAL/global_o3clim.txt chgres.inp.o3clim
 
 export FNGLAC=$FIXGLOBAL/global_glacier.2x2.grb
@@ -113,30 +112,20 @@ export FNABSC=${FIXGLOBAL}/global_snoalb.1x1.grb
 export FNMSKH=${FIXGLOBAL}/seaice_newland.grb
 
 
-if [ $type = "GFS" ]; then
-  export OUTGRID="${griddir}/C${res}_grid"
-  export OUTOROG=""
-  ln -fs NULL chgres.inp.sfc
-else
-  export OUTGRID="${griddir}/C${res}_grid.tile$tile.nc"
-  export OUTOROG="${griddir}/C${res}_oro_data.tile$tile.nc"
-  ln -fs NULL chgres.inp.sig
-fi
 export ntiles=${ntiles:-6}
-
-ln -fs ${griddir}/C${res}_grid.tile1.nc chgres.fv3.grd.t1
-ln -fs ${griddir}/C${res}_grid.tile2.nc chgres.fv3.grd.t2
-ln -fs ${griddir}/C${res}_grid.tile3.nc chgres.fv3.grd.t3
-ln -fs ${griddir}/C${res}_grid.tile4.nc chgres.fv3.grd.t4
-ln -fs ${griddir}/C${res}_grid.tile5.nc chgres.fv3.grd.t5
-ln -fs ${griddir}/C${res}_grid.tile6.nc chgres.fv3.grd.t6
-
-ln -fs ${griddir}/C${res}_oro_data.tile1.nc chgres.fv3.orog.t1
-ln -fs ${griddir}/C${res}_oro_data.tile2.nc chgres.fv3.orog.t2
-ln -fs ${griddir}/C${res}_oro_data.tile3.nc chgres.fv3.orog.t3
-ln -fs ${griddir}/C${res}_oro_data.tile4.nc chgres.fv3.orog.t4
-ln -fs ${griddir}/C${res}_oro_data.tile5.nc chgres.fv3.orog.t5
-ln -fs ${griddir}/C${res}_oro_data.tile6.nc chgres.fv3.orog.t6
+if [ $type = "GFS" ]; then
+  ln -fs NULL chgres.inp.sfc
+  tile=1
+  while [ $tile -le $ntiles ]; do
+   ln -fs ${griddir}/C${res}_grid.tile$tile.nc chgres.fv3.grd.t$tile
+   ln -fs ${griddir}/C${res}_oro_data.tile$tile.nc chgres.fv3.orog.t$tile
+   tile=$((tile+1))
+  done
+else
+  ln -fs NULL chgres.inp.sig
+  ln -fs ${griddir}/C${res}_grid.tile$tile.nc chgres.fv3.grd.t$tile
+  ln -fs ${griddir}/C${res}_oro_data.tile$tile.nc chgres.fv3.orog.t$tile
+fi
 
 if [ $LANDICE_OPT -eq 3 -o $LANDICE_OPT -eq 4 ]; then
   export LANDICE=.false.
@@ -211,7 +200,7 @@ EOF
  $APRUNC global_chgres <<EOF '1>&1' '2>&2'
   &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB, 
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
-           LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP, IDRT=$IDRT, 
+           LSOIL=$LSOIL, IVSSFC=$IVSSFC, IDRT=$IDRT, 
            ntiles=$ntiles, $CHGRESVARS
  /
 EOF
@@ -228,7 +217,7 @@ else
          tile=$((tile+1))
       done
       mv gfs_ctrl.nc $outdir/gfs_ctrl.nc 
-      mv gfs_data.nc  $outdir
+      #mv gfs_data.nc  $outdir
    else
       mv out.sfc.tile$tile.nc $outdir/sfc_data.tile$tile.nc
    fi
