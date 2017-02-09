@@ -108,10 +108,10 @@ end subroutine    fv3_netcdf_read_2d
 end subroutine    fv3_netcdf_read_3d
 !-----------------------------------------------------------------------
 
-  subroutine define_nemsio_meta(meta_nemsio,nlons,nlats,nlevs,nvar2d,lons,lats)
+  subroutine define_nemsio_meta(meta_nemsio,nlons,nlats,nlevs,nvar2d,nvar3d,lons,lats)
     implicit none
     type(nemsio_meta)               :: meta_nemsio
-    integer                         :: nlons,nlats,nlevs,i, j, k,nvar2d
+    integer                         :: nlons,nlats,nlevs,i,j,k,nvar2d,nvar3d
     integer*8                       :: ct
     real                         :: lons(nlons),lats(nlats)
 ! local
@@ -120,7 +120,7 @@ end subroutine    fv3_netcdf_read_3d
     meta_nemsio%idate(7)   = 1
     meta_nemsio%modelname  = 'GFS'
     meta_nemsio%version    = 198410
-    meta_nemsio%nrec       = nvar2d + nlevs*9 
+    meta_nemsio%nrec       = nvar2d + nlevs*nvar3d 
     meta_nemsio%nmeta      = 8
     meta_nemsio%nmetavari  = 3
     meta_nemsio%nmetavarr  = 1
@@ -290,15 +290,17 @@ end subroutine    fv3_netcdf_read_3d
       meta_nemsio%recname(k+nvar2d+nlevs*5)   =  'pres'
       meta_nemsio%reclevtyp(k+nvar2d+nlevs*5) =  'mid layer'
       meta_nemsio%reclev(k+nvar2d+nlevs*5)    =  k
-      meta_nemsio%recname(k+nvar2d+nlevs*6)   =  'vvel'
+      meta_nemsio%recname(k+nvar2d+nlevs*6)   =  'clwmr'
       meta_nemsio%reclevtyp(k+nvar2d+nlevs*6) =  'mid layer'
       meta_nemsio%reclev(k+nvar2d+nlevs*6)    =  k
-      meta_nemsio%recname(k+nvar2d+nlevs*7)   =  'clwmr'
+      meta_nemsio%recname(k+nvar2d+nlevs*7)   =  'dpres'
       meta_nemsio%reclevtyp(k+nvar2d+nlevs*7) =  'mid layer'
       meta_nemsio%reclev(k+nvar2d+nlevs*7)    =  k
-      meta_nemsio%recname(k+nvar2d+nlevs*8)   =  'dpres'
-      meta_nemsio%reclevtyp(k+nvar2d+nlevs*8) =  'mid layer'
-      meta_nemsio%reclev(k+nvar2d+nlevs*8)    =  k
+      if (nvar3d == 9) then
+       meta_nemsio%recname(k+nvar2d+nlevs*8)   =  'vvel'
+       meta_nemsio%reclevtyp(k+nvar2d+nlevs*8) =  'mid layer'
+       meta_nemsio%reclev(k+nvar2d+nlevs*8)    =  k
+      endif
    ENDDO
 
   end subroutine define_nemsio_meta

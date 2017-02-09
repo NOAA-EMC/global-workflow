@@ -44,8 +44,8 @@ module constants
   real(r_kind) fv,deg2rad,rad2deg,pi,tiny_r_kind,huge_r_kind,huge_i_kind
   real(r_kind) ozcon,rozcon,tpwcon,rd_over_g,rd_over_cp,g_over_rd
   real(r_kind) amsua_clw_d1,amsua_clw_d2,constoz,zero,one,two,four
-  real(r_kind) one_tenth,quarter,three,five,rd_over_cp_mass, gamma
-  real(r_kind) rearth_equator,stndrd_atmos_ps,r1000
+  real(r_kind) one_tenth,quarter,three,five,rd_over_cp_mass
+  real(r_kind) rearth_equator,stndrd_atmos_ps,r1000,stndrd_atmos_lapse
   real(r_kind) semi_major_axis,semi_minor_axis,n_a,n_b
   real(r_kind) eccentricity,grav_polar,grav_ratio
   real(r_kind) grav_equator,earth_omega,grav_constant
@@ -245,7 +245,7 @@ contains
     logical regional
     real(r_kind) reradius,g,r_d,r_v,cliq_wrf
 
-    gamma = 0.0065
+    stndrd_atmos_lapse = 0.0065
 
 !   Define regional constants here
     if (regional) then

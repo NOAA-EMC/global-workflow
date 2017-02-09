@@ -206,7 +206,7 @@ contains
          & allocate(meta_nemsio%lon(grid%ncoords))
     if(.not. allocated(meta_nemsio%lat))                                   &
          & allocate(meta_nemsio%lat(grid%ncoords))
-
+    meta_nemsio%vcoord(:,:,:)=0.0
     ! Define local variables
 
     meta_nemsio%lon                       =                                &
@@ -357,8 +357,8 @@ contains
     call nemsio_init(iret=nemsio_iret)
     write(suffix,500) meta_nemsio2d%nfhour
     filename = trim(adjustl(datapathout2d))//suffix
-    meta_nemsio2d%gdatatype = trim(adjustl(nemsio_opt))
-    meta_nemsio3d%gdatatype = trim(adjustl(nemsio_opt))
+    meta_nemsio2d%gdatatype = trim(adjustl(nemsio_opt2d))
+    meta_nemsio3d%gdatatype = trim(adjustl(nemsio_opt3d))
     call nemsio_open(gfile2d,trim(adjustl(filename)),'write',                &
          & iret=nemsio_iret,                                               &
          & modelname=trim(adjustl(meta_nemsio2d%modelname)),                 &

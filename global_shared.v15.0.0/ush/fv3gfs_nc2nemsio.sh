@@ -38,6 +38,10 @@ if [ ! -s $in_3d -o ! -s $in_2d ]; then
  exit 1
 fi
 
+#--check if the output is from non-hydrostatic case
+nhrun=$(ncdump -c $in_3d |grep nhpres)
+nhcase=$?
+
 if [ $fdiag = none ]; then
  fdiag=$( for (( num=1; num<=$NFCST; num++ )); do printf "%d," $(((num-1)*FHOUT)); done )
 fi
@@ -50,8 +54,8 @@ for fhour in $(echo $fdiag | sed "s?,? ?g"); do
    fhzh=$(( (ifhour/FHZER-1)*FHZER ))          ;#bucket accumulation starting hour
    if [ $fhzh -lt 0 ]; then fhzh=0; fi
    outfile=${CASE}_nemsio${GG}
-   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outfile
-   if [ $? -ne 0 ]; then err=$? ; fi
+   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outfile $nhcase
+   err=$?
 done
 
 echo $(date) EXITING $0 with return code $err >&2

@@ -6,19 +6,20 @@ program fv3_main
 
   type(nemsio_gfile)         :: gfile
   type(nemsio_meta)          :: meta_nemsio
-  integer,parameter          :: nvar2d=48,nvar3d=9
-  character(nemsio_charkind) :: name2d(nvar2d),name3din(nvar3d)
-  character(nemsio_charkind) :: name3dout(nvar3d),varname,levtype
-  character(len=300)                        :: inpath,outpath
-  character(len=100)                        ::infile2d,infile3d,outfile
-  character(len=10) :: analdate
-  character(len=5)  :: cfhr        
-  character(len=5)  :: cfhzh
-  character(len=10) :: cfhour
-  real , allocatable  :: lons(:),lats(:),tmp2d(:,:), tmp2dx(:,:)
-  real*8,allocatable :: tmp1d(:),tmp1dx(:),fhours(:)
-  real*4  :: fhour
-  integer :: fhzh
+  integer,parameter          :: nvar2d=48
+  character(nemsio_charkind) :: name2d(nvar2d)
+  integer                    :: nvar3d
+  character(nemsio_charkind), allocatable :: name3din(:), name3dout(:)
+  character(nemsio_charkind) :: varname,levtype
+  character(len=300)         :: inpath,outpath
+  character(len=100)         :: infile2d,infile3d,outfile
+  character(len=10)          :: analdate, cfhour
+  character(len=5)           :: cfhr,cfhzh        
+  character(len=2)           :: nhcase            
+  real , allocatable         :: lons(:),lats(:),tmp2d(:,:), tmp2dx(:,:)
+  real*8,allocatable         :: tmp1d(:),tmp1dx(:),fhours(:)
+  real*4                     :: fhour
+  integer                    :: fhzh, nhcas
   
   integer :: ii,i,j,k,ncid2d,ncid3d,ifhr,nlevs,nlons,nlats,ntimes,nargs,iargc,YYYY,MM,DD,HH,stat,varid
 
@@ -29,14 +30,12 @@ program fv3_main
 	       'WEASDsfc','SNODsfc','ZORLsfc','VFRACsfc','F10Msfc','VTYPEsfc','STYPEsfc',&
                'TCDCclm', 'TCDChcl', 'TCDCmcl', 'TCDClcl'/
 
-  data name3din /'ucomp','vcomp','temp','sphum','o3mr','nhpres','w','clwmr','delp'/
-  data name3dout /'ugrd','vgrd','tmp','spfh','o3mr','pres','vvel','clwmr','dpres'/
     !=====================================================================
  
    ! read in from command line
    nargs=iargc()
-   IF (nargs .NE. 9) THEN
-      print*,'usage fv3_interface analdate ifhr fhzh fhour  inpath infile2d infile3d outpath,outfile'
+   IF (nargs .NE. 10) THEN
+      print*,'usage fv3_interface analdate ifhr fhzh fhour  inpath infile2d infile3d outpath,outfile,nhcase'
       STOP
    ENDIF
    call getarg(1,analdate)
@@ -48,8 +47,10 @@ program fv3_main
    call getarg(7,infile3d)
    call getarg(8,outpath)
    call getarg(9,outfile)
-!  print*,analdate,cfhr,cfhzh,cfhour,inpath,infile2d,infile3d,outpath,outfile                          
+   call getarg(10,nhcase)
+!  print*,analdate,cfhr,cfhzh,cfhour,inpath,infile2d,infile3d,outpath,outfile,nhcase                          
    
+   read(nhcase,'(i2.1)')  nhcas
    read(cfhr,'(i5.1)')  ifhr
    read(cfhzh,'(i5.1)')  fhzh 
    read(cfhour,'(f10.4)')  fhour 
@@ -59,6 +60,18 @@ program fv3_main
    read(analdate(9:10),'(i2)') HH
    print*,"ifhr,fhzh,fhour,analdate ",ifhr,fhzh,fhour,analdate     
 
+   if (nhcas == 0 ) then  !non-hydrostatic case
+    nvar3d=9
+    allocate (name3din(nvar3d), name3dout(nvar3d))
+    name3din=(/'ucomp','vcomp','temp','sphum','o3mr','nhpres','w','clwmr','delp'/)
+    name3dout=(/'ugrd','vgrd','tmp','spfh','o3mr','pres','vvel','clwmr','dpres'/)
+   else
+    nvar3d=8
+    allocate (name3din(nvar3d), name3dout(nvar3d))
+    name3din=(/'ucomp','vcomp','temp','sphum','o3mr','hypres','clwmr','delp'/)
+    name3dout=(/'ugrd','vgrd','tmp','spfh','o3mr','pres','clwmr','dpres'/)
+   endif
+    
     ! open netcdf files
     print*,'reading',trim(inpath)//'/'//trim(infile2d)
     stat = nf90_open(trim(inpath)//'/'//trim(infile2d),NF90_NOWRITE, ncid2d)
@@ -126,7 +139,7 @@ program fv3_main
     if (stat .NE.0) print*,stat
     if (stat .NE. 0) STOP
     
-   call define_nemsio_meta(meta_nemsio,nlons,nlats,nlevs,nvar2d,lons,lats)
+   call define_nemsio_meta(meta_nemsio,nlons,nlats,nlevs,nvar2d,nvar3d,lons,lats)
 
    allocate (tmp2d(nlons,nlats))
    allocate (tmp2dx(nlons,nlats))
@@ -197,6 +210,7 @@ program fv3_main
    stat = nf90_close(ncid3d)
 
    deallocate(tmp2dx,tmp2d)
+   deallocate(name3din,name3dout)
 
    stop
 end program fv3_main

@@ -236,7 +236,7 @@ FIT_DIR=$ARCDIR/fits                                    # Directory for SAVEFITS
 HORZ_DIR=$ARCDIR/horiz                                  # Directory for SAVEFITS output
 DATATMP='$STMP/$LOGNAME/$PSLOT$CDATE$CDUMP$CSTEP'
 eval TMPDIR=$DATATMP
-KEEPDATA=NO  
+KEEPDATA=NO
 
 # ---------------------------
 # utilities and misc options
@@ -296,19 +296,18 @@ nknd=${CKND:-${nknd:-1}}
 # -------------------------------------------------------------
 gfs_cyc=1                          # GFS cycles (00, 06, 12 and 18Z), defaults to 1 (00Z) cycle
 gdas_cyc=4                         # number of GDAS cycles
-#fseg=2                             # number of AM forecast segments for gfs 
 fseg=1                             # number of AM forecast segments for gfs 
 FHCYC=24                             # Surface cycle calling interval
  
 LEVS=64                            # number of AM levels
-CASE1=C96                          # 1st segment resolution (0-240 hr)
-CASE2=C48                          # 2nd segment resolution (240-384 hr)
+CASE1=C192                         # 1st segment resolution (0-240 hr)
+CASE2=C192                         # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
 CASE=$(eval echo \${CASE$nknd})
 if [ $CSTEP = efmn -o $CSTEP = epos ]; then CASE=$CASE_ENKF; fi
 
 case $CASE in
-  C49)   DELTIM=3600; layout_x=4  ; layout_y=8  ;;
+  C48)   DELTIM=3600; layout_x=4  ; layout_y=8  ;;
   C96)   DELTIM=1800; layout_x=4  ; layout_y=8  ;;
   C192)  DELTIM=900 ; layout_x=4  ; layout_y=8  ;;
   C384)  DELTIM=450 ; layout_x=4  ; layout_y=8  ;;
@@ -347,8 +346,9 @@ NFCST=$(echo $fdiag |awk -F '[\t,]' '{print NF}')   ;#number of forecast output
 
 
 
-CCPOST=NO                          # To run concurrent post
-ARCHIVE=YES                        # make online archive
+REMAP_GRID=latlon        #gaussian or latlon for using fregrid or regrid_nemsio for remapping 
+CCPOST=NO                # To run concurrent post
+ARCHIVE=YES              # make online archive
 
 #  ----------------------------------
 #  dump info used by multiple steps

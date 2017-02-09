@@ -28,13 +28,19 @@ export PERR=${PERR:-$SHDIR/perr}
 $PBEG
 ################################################################################
 
-echo
-$REMAPSH                                         #remap 6-tile output to global array in netcdf
-if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+if [ ${REMAP_GRID:-latlon} = latlon ]; then
+ echo
+ $REMAPSH                                         #remap 6-tile output to global array in netcdf
+ if [[ $? -ne 0 ]];then $PERR;exit 1;fi
 
-echo
-$NC2NEMSIOSH                                     #convert netcdf to nemsio
-if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+ echo
+ $NC2NEMSIOSH                                     #convert netcdf to nemsio
+ if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+else
+ echo
+ $REGRIDNEMSIOSH
+ if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+fi
 
 echo
 $POSTJJOB                                        #converts nemsio to grib2 and run down-stream jobs

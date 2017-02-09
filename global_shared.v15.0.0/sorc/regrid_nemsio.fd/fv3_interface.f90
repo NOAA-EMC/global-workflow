@@ -29,6 +29,7 @@ module fv3_interface
 
   type analysis_grid
      character(len=500)                                            :: filename
+     character(len=500)                                            :: filename2d
      integer                                                       :: nx
      integer                                                       :: ny
      integer                                                       :: nz
@@ -37,7 +38,7 @@ module fv3_interface
 
   ! Define global variables
 
-  integer n2dvar,n3dvar,ntvars
+  integer n2dvar,n3dvar,ntvars,nrecs,nvvars
   real(nemsio_realkind),                   dimension(:,:,:,:),  allocatable :: fv3_var_3d
   real(nemsio_realkind),                   dimension(:,:,:),    allocatable :: fv3_var_2d                   
 
@@ -52,31 +53,9 @@ module fv3_interface
 
 contains
 
-  !=======================================================================
-
-  ! fv3_regrid_nemsio.f90:
-
   !-----------------------------------------------------------------------
 
   subroutine fv3_regrid_nemsio()
-
-    !=====================================================================
-
-    ! Compute local variables
-    
-    call fv3_regrid_nemsio_compute()
-
-    !=====================================================================
-
-  end subroutine fv3_regrid_nemsio
-
-  !=======================================================================
-
-  ! fv3_regrid_nemsio_compute.f90:
-
-  !-----------------------------------------------------------------------
-
-  subroutine fv3_regrid_nemsio_compute()
 
     ! Define variables computed within routine
 
@@ -84,9 +63,13 @@ contains
     type(analysis_grid)                                                  :: anlygrd(ngrids)
     type(varinfo), allocatable, dimension(:)                             :: var_info,var_info2d,var_info3d
     type(gfs_grid)                                                       :: gfs_grid
-    type(gridvar)                                                        :: invar
-    type(gridvar)                                                        :: outvar
+    type(gridvar)                                                        :: invar,invar2
+    type(gridvar)                                                        :: outvar,outvar2
     type(nemsio_meta)                                                    :: meta_nemsio2d, meta_nemsio3d
+
+    type(esmfgrid)                                                       :: grid_bilin
+    type(esmfgrid)                                                       :: grid_nn
+    
     character(len=20)                                                    :: var_name
     character(len=20)                                                    :: nems_name
     character(len=20)                                                    :: nems_levtyp
@@ -99,12 +82,12 @@ contains
     real, dimension(:),  allocatable :: sendbuffer,recvbuffer
     integer                                                              :: fhour
     integer                                                              :: ncoords
-    integer nems_lev,ndims,istatus
+    integer nems_lev,ndims,istatus,ncol,levs_fix
     logical clip
 
     ! Define counting variables
 
-    integer                                                              :: i, j, k, l,nlev,k2,k3
+    integer                                                              :: i, j, k, l,nlev,k2,k3,nrec
 
     !=====================================================================
 
@@ -120,25 +103,31 @@ contains
        print *,'--------------'
        open(912,file=trim(variable_table),form='formatted')
        ntvars=0; n2dvar=0; n3dvar=0
+       nrecs = 0
        loop_read:  do while (istatus == 0)
          read(912,199,iostat=istatus) var_name,nems_name,nems_levtyp,nems_lev,itrptyp,clip,ndims
          if( istatus /= 0 ) exit loop_read
-         ntvars = ntvars + 1
-         if (ndims == 2) then
-            n2dvar = n2dvar+1
-         else if (ndims == 3) then
-            n3dvar = n3dvar+1
-         else
-            print *,'ndims must be 2 or 3 in variable_table.txt'
-            call mpi_abort(mpi_comm_world,-91,mpi_ierror)
-            stop
+         nrecs = nrecs + 1
+         if(var_name(1:1) .ne. "#") then
+            ntvars = ntvars + 1
+            ntvars = ntvars + 1
+            if (ndims == 2) then
+               n2dvar = n2dvar+1
+            else if (ndims == 3) then
+               n3dvar = n3dvar+1
+            else
+               print *,'ndims must be 2 or 3 in variable_table.txt'
+               call mpi_abort(mpi_comm_world,-91,mpi_ierror)
+               stop
+            endif
+            !print *,'ntvars,n2dvar,n3dvar',ntvars,n2dvar,n3dvar
+            !write(6,199) var_name, nems_name,nems_levtyp,nems_lev,itrptyp,clip,ndims
          endif
-         !print *,'ntvars,n2dvar,n3dvar',ntvars,n2dvar,n3dvar
-         !write(6,199) var_name, nems_name,nems_levtyp,nems_lev,itrptyp,clip,ndims
        enddo loop_read 
        close(912)
-       print *,'ntvars,n2dvar,n3dvar',ntvars,n2dvar,n3dvar
+       print *,'nrecs,ntvars,n2dvar,n3dvar',nrecs,ntvars,n2dvar,n3dvar
     endif
+    call mpi_bcast(nrecs,1,mpi_integer,mpi_masternode,mpi_comm_world,mpi_ierror)
     call mpi_bcast(n2dvar,1,mpi_integer,mpi_masternode,mpi_comm_world,mpi_ierror)
     call mpi_bcast(n3dvar,1,mpi_integer,mpi_masternode,mpi_comm_world,mpi_ierror)
     call mpi_bcast(ntvars,1,mpi_integer,mpi_masternode,mpi_comm_world,mpi_ierror)
@@ -149,19 +138,37 @@ contains
     endif
     allocate(var_info(ntvars))
     open(912,file=trim(variable_table),form='formatted')
-    do k = 1, ntvars
-       read(912,199,iostat=istatus) var_info(k)%var_name,var_info(k)%nems_name,&
-       var_info(k)%nems_levtyp,var_info(k)%nems_lev,var_info(k)%itrptyp,var_info(k)%clip,var_info(k)%ndims
-       if(mpi_procid .eq. mpi_masternode) then
-          write(6,199) var_info(k)%var_name, var_info(k)%nems_name,var_info(k)%nems_levtyp, &
-          var_info(k)%nems_lev,var_info(k)%itrptyp,var_info(k)%clip,var_info(k)%ndims
+    k = 0
+    nvvars = 0 ! number of vector variables
+    do nrec = 1, nrecs
+       read(912,199,iostat=istatus) var_name,nems_name,nems_levtyp,nems_lev,itrptyp,clip,ndims
+       if (var_name(1:1) .ne. "#") then
+          k = k + 1
+          var_info(k)%var_name = var_name
+          var_info(k)%nems_name = nems_name
+          var_info(k)%nems_levtyp = nems_levtyp
+          var_info(k)%nems_lev = nems_lev
+          var_info(k)%itrptyp = itrptyp
+	  if (itrptyp.EQ.'vector') then
+	      nvvars=nvvars+1
+	  endif
+          var_info(k)%clip = clip
+          var_info(k)%ndims = ndims
+          if(mpi_procid .eq. mpi_masternode) then
+             write(6,199) var_info(k)%var_name, var_info(k)%nems_name,var_info(k)%nems_levtyp, &
+             var_info(k)%nems_lev,var_info(k)%itrptyp,var_info(k)%clip,var_info(k)%ndims
+          endif
        endif
     end do ! do k = 1, ntvars
+    ! assume vectors are in pairs
+    nvvars=nvvars/2
+    call mpi_bcast(nvvars,1,mpi_integer,mpi_masternode,mpi_comm_world,mpi_ierror)
     close(912)
 199 format(a20,1x,a20,1x,a20,1x,i1,1x,a20,1x,l1,1x,i1)
     allocate(var_info3d(n3dvar+2))
     allocate(var_info2d(n2dvar))
     k2 = 0
+    k3 = 0
     do k=1,ntvars
        if (var_info(k)%ndims == 2) then
           k2 = k2 + 1
@@ -182,6 +189,7 @@ contains
 
     do i = 1, ngrids
        anlygrd(i)%filename = analysis_filename(i)
+       anlygrd(i)%filename2d = analysis_filename2d(i)
        call fv3_regrid_initialize(anlygrd(i))
     end do ! do i = 1, ngrids
 
@@ -197,9 +205,13 @@ contains
     nctdim                 = anlygrd(1)%ntime
     ncoords                = ncxdim*ncydim
     invar%ncoords          = ncoords*ngrids
+    invar2%ncoords          = ncoords*ngrids
     outvar%ncoords         = gfs_grid%ncoords
+    outvar2%ncoords         = gfs_grid%ncoords
     call interpolation_initialize_gridvar(invar)
+    call interpolation_initialize_gridvar(invar2)
     call interpolation_initialize_gridvar(outvar)
+    call interpolation_initialize_gridvar(outvar2)
     meta_nemsio3d%modelname  = 'GFS'
     meta_nemsio3d%version    = 200509
     meta_nemsio3d%nrec       = 2 + nczdim*n3dvar
@@ -259,8 +271,24 @@ contains
 
            ! Define local variables
 
-           call netcdfio_values_1d(anlygrd(1)%filename,'pk',pk)
-           call netcdfio_values_1d(anlygrd(1)%filename,'bk',bk)
+           if (gfs_hyblevs_filename == 'NOT USED' ) then
+            call netcdfio_values_1d(anlygrd(1)%filename,'pk',pk)
+            call netcdfio_values_1d(anlygrd(1)%filename,'bk',bk)
+           else
+            open(913,file=trim(gfs_hyblevs_filename),form='formatted')
+            read(913,*) ncol, levs_fix
+            if (levs_fix /= (nczdim+1) ) then
+             call mpi_barrier(mpi_comm_world, mpi_ierror)
+             print *,'levs in ', gfs_hyblevs_filename, ' not equal to',(nczdim+1)
+             call mpi_interface_terminate()
+             stop
+            endif
+            do k=nczdim,1,-1
+             read(913,*) pk(k),bk(k)
+            enddo
+            close(913)
+           endif
+
            if (minval(pk) < -1.e10 .or. minval(bk) < -1.e10) then
               print *,'pk,bk not found in netcdf file..'
               meta_nemsio3d%vcoord = -9999._nemsio_realkind
@@ -280,7 +308,13 @@ contains
 
     end if ! if(mpi_procid .eq. mpi_masternode)
 
-    ! Loop through local variable
+    ! initialize/read in interpolation weight
+
+      grid_bilin%filename = esmf_bilinear_filename
+      call interpolation_initialize_esmf(grid_bilin)
+     
+      grid_nn%filename = esmf_neareststod_filename
+      call interpolation_initialize_esmf(grid_nn)
 
     do l = 1, nctdim
 
@@ -308,8 +342,8 @@ contains
        call mpi_barrier(mpi_comm_world,mpi_ierror)
 
        ! Loop through local variables
-
-       do k = 1, ntvars
+       k2=1
+       do k = 1, ntvars - nvvars
 
           ! Define local variables
 
@@ -318,7 +352,7 @@ contains
 
           ! Do 2D variables.
 
-          if(var_info(k)%ndims .eq. 2) then
+          if(var_info(k2)%ndims .eq. 2) then
 
              ! Check local variable and proceed accordingly
 
@@ -326,119 +360,110 @@ contains
 
                 ! Check local variable and proceed accordingly
 
-                call fv3_grid_read(anlygrd(1:ngrids),                   &
-                     & var_info(k)%var_name,.true.,.false.)
+                call fv3_grid_read(anlygrd(1:ngrids), var_info(k2)%var_name,.true.,.false.)
 
-                call interpolation_define_gridvar(invar,ncxdim,ncydim,     &
-                     & ngrids,fv3_var_2d)
+                call interpolation_define_gridvar(invar,ncxdim,ncydim, ngrids,fv3_var_2d)
+                if (trim(var_info(k2)%nems_name) == 'pres') then
+                   ! interpolate in exner(pressure) 
+                   invar%var = (invar%var/stndrd_atmos_ps)**(rd_over_g*stndrd_atmos_lapse)
+                end if
 
-                ! Check local variable and proceed accordingly
-
-                if(var_info(k)%itrptyp .eq. 'bilinear') then
-
-                   ! Define local variables
-
-                   itrp_bilinear = .true.
-
-                end if ! if(var_info(k)%itrptyp .eq. 'bilinear')
+                if(var_info(k2)%itrptyp .eq. 'bilinear') then
+                   call interpolation_esmf(invar,outvar,grid_bilin, .false.)
+                end if 
                 
-                ! Check local variable and proceed accordingly
+                if(var_info(k2)%itrptyp .eq. 'nrstnghbr') then
+                   call interpolation_esmf(invar,outvar,grid_nn, .true.)
+                end if 
 
-                if(var_info(k)%itrptyp .eq. 'nrstnghbr') then
+                if (trim(var_info(k2)%nems_name) == 'pres') then
+                    outvar%var = stndrd_atmos_ps*(outvar%var**(g_over_rd/stndrd_atmos_lapse))
+                end if
 
-                   ! Define local variables
-
-                   itrp_nrstnghbr = .true.
-
-                end if ! if(var_info(k)%itrptyp .eq. 'nrstnghbr')
-
-                ! Compute local variables
-
-                call interpolation_compute(invar,outvar,itrp_bilinear,    &
-                     & itrp_nrstnghbr)
+                if(var_info(k2)%itrptyp .eq. 'vector') then
+		  ! read in u winds
+                  call fv3_grid_read(anlygrd(1:ngrids), var_info(k2)%var_name,.true.,.false.)
+                  call interpolation_define_gridvar(invar,ncxdim,ncydim,ngrids,fv3_var_2d)
+                  ! read in v winds
+                  call fv3_grid_read(anlygrd(1:ngrids), var_info(k2+1)%var_name,.true.,.false.)
+                  call interpolation_define_gridvar(invar2,ncxdim,ncydim,ngrids,fv3_var_2d)
+                  call interpolation_esmf_vect(invar,invar2,grid_bilin,outvar,outvar2)
+                end if 
 
                 ! Clip variable to zero if desired.
-
-                if(var_info(k)%clip) call variable_clip(outvar%var)
+                if(var_info(k2)%clip) call variable_clip(outvar%var)
 
                 ! Write to NEMSIO file.
-
                 call gfs_nems_write('2d',real(outvar%var),                     &
-                var_info(k)%nems_name,var_info(k)%nems_levtyp,var_info(k)%nems_lev)
-                if (trim(var_info(k)%nems_name) == 'pres' .or. &
-                    trim(var_info(k)%nems_name) == 'orog') then
-                if (trim(var_info(k)%nems_name) == 'orog') then
-                call gfs_nems_write('3d',real(outvar%var),                     &
-                'hgt                 ',var_info(k)%nems_levtyp,1)
-                else
-                call gfs_nems_write('3d',real(outvar%var),                     &
-                var_info(k)%nems_name,var_info(k)%nems_levtyp,1)
+                var_info(k2)%nems_name,var_info(k2)%nems_levtyp,var_info(k2)%nems_lev)
+                if (trim(var_info(k2)%nems_name) == 'pres' .or. &
+                    trim(var_info(k2)%nems_name) == 'orog' .or. &
+                    trim(var_info(k2)%nems_name) == 'hgt') then
+                   ! write surface height and surface pressure to 3d file.
+                   ! (surface height called 'orog' in nemsio bin4, 'hgt' in
+                   ! grib)
+                   if (trim(var_info(k2)%nems_name) == 'orog') then
+                       call gfs_nems_write('3d',real(outvar%var),                     &
+                      'hgt                 ',var_info(k2)%nems_levtyp,1)
+                   else
+                      call gfs_nems_write('3d',real(outvar%var),                     &
+                      var_info(k2)%nems_name,var_info(k2)%nems_levtyp,1)
+                   endif
                 endif
+                if(var_info(k2)%itrptyp .eq. 'vector') then ! write v winds
+                   call gfs_nems_write('2d',real(outvar2%var),                     &
+                   var_info(k2+1)%nems_name,var_info(k2+1)%nems_levtyp,var_info(k2+1)%nems_lev)
                 endif
-
              end if ! if(mpi_procid .eq. mpi_masternode)
 
              ! Define local variables
-
              call mpi_barrier(mpi_comm_world,mpi_ierror)
 
-          end if ! if(var_info(k)%ndims .eq. 2)
+          end if ! if(var_info(k2)%ndims .eq. 2)
 
           ! Do 3D variables.
 
-          if(var_info(k)%ndims .eq. 3) then
-
-             ! Allocate memory for local variables
+          if(var_info(k2)%ndims .eq. 3) then
 
              ! read 3d grid on master node, send to other tasks
              if(mpi_procid .eq. mpi_masternode) then
-                call fv3_grid_read(anlygrd(1:ngrids),                     &
-                     & var_info(k)%var_name,.false.,.true.)
+                call fv3_grid_read(anlygrd(1:ngrids), var_info(k2)%var_name,.false.,.true.)
                 do nlev=1,nczdim
                    call mpi_send(fv3_var_3d(1,1,1,nlev),ngrids*ncxdim*ncydim,mpi_real,&
                                  nlev,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
                 enddo                  
+                if(trim(adjustl(var_info(k2)%itrptyp)) .eq. 'vector') then  ! winds
+		   call mpi_barrier(mpi_comm_world,mpi_ierror)
+                   call fv3_grid_read(anlygrd(1:ngrids), var_info(k2+1)%var_name,.false.,.true.)
+                   do nlev=1,nczdim
+                      call mpi_send(fv3_var_3d(1,1,1,nlev),ngrids*ncxdim*ncydim,mpi_real,&
+                                   nlev,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
+                  enddo
+               endif 
              else if (mpi_procid .le. nczdim) then
                 ! do interpolation, one level on each task.
                 call mpi_recv(fv3_var_3d(1,1,1,mpi_procid),ngrids*ncxdim*ncydim,mpi_real,&
                               0,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
-                call interpolation_define_gridvar(invar,ncxdim,ncydim,    &
-                     & ngrids,fv3_var_3d(:,:,:,mpi_procid))                
-                itrp_bilinear  = .false.
-                itrp_nrstnghbr = .false.
-
-                ! Check local variable and proceed accordingly
                 
-                if(trim(adjustl(var_info(k)%itrptyp)) .eq. 'bilinear')    &
-                     & then
-                   
-                   ! Define local variables
-                   
-                   itrp_bilinear = .true.
-                   
-                end if ! if(trim(adjustl(var_info(k)%itrptyp))
-                       ! .eq. 'bilinear')
-
-                ! Check local variable and proceed accordingly
+                call interpolation_define_gridvar(invar,ncxdim,ncydim, ngrids,fv3_var_3d(:,:,:,mpi_procid))                
                 
-                if(trim(adjustl(var_info(k)%itrptyp)) .eq.                &
-                     & 'nrstnghbr') then
-                   
-                   ! Define local variables
-                   
-                   itrp_nrstnghbr = .true.
-                   
-                end if ! if(trim(adjustl(var_info(k)%itrptyp))
-                       ! .eq. 'nrstnghbr')
+                if(var_info(k2)%itrptyp .eq. 'bilinear') then
+                   call interpolation_esmf(invar,outvar,grid_bilin, .false.)
+                end if ! if(var_info(k2)%itrptyp .eq. 'bilinear')
+                
+                if(var_info(k2)%itrptyp .eq. 'nrstnghbr') then
+                   call interpolation_esmf(invar,outvar,grid_nn, .true.)
+                end if ! if(var_info(k2)%itrptyp .eq. 'nrstnghbr')
 
-                ! Compute local variables
+                if(trim(adjustl(var_info(k2)%itrptyp)) .eq. 'vector') then  ! winds
+		   call mpi_barrier(mpi_comm_world,mpi_ierror)
+                   call mpi_recv(fv3_var_3d(1,1,1,mpi_procid),ngrids*ncxdim*ncydim,mpi_real,&
+                              0,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
+                   call interpolation_define_gridvar(invar2,ncxdim,ncydim,ngrids,fv3_var_3d(:,:,:,mpi_procid))   
+                   call interpolation_esmf_vect(invar,invar2,grid_bilin,outvar,outvar2)
+                endif
 
-                call interpolation_compute(invar,outvar,itrp_bilinear,    &
-                     & itrp_nrstnghbr)
-
-                ! Define local variables
-
-                if(var_info(k)%clip) call variable_clip(outvar%var(:))
+                if(var_info(k2)%clip) call variable_clip(outvar%var(:))
 
              end if ! if(mpi_procid .ne. mpi_masternode .and.             &
                     ! mpi_procid .le. nczdim)
@@ -469,25 +494,60 @@ contains
 
                 ! Loop through local variable
 
-                
                 do j = 1, nczdim
                    
                    ! Define local variables
 
                    call gfs_nems_write('3d',workgrid(:,nczdim - j + 1),  &
-                        & var_info(k)%nems_name,var_info(k)%nems_levtyp,  &
+                        & var_info(k2)%nems_name,var_info(k2)%nems_levtyp,  &
                         & j)
 
                 end do !  do j = 1, nczdim
 
              end if ! if(mpi_procid .eq. mpi_masternode)
 
+             if(trim(adjustl(var_info(k2)%itrptyp)) .eq. 'vector') then  ! winds
+                if (mpi_procid == mpi_masternode) then
+                  ! receive one level of interpolated data on root task.
+                  if (.not. allocated(workgrid))  allocate(workgrid(gfs_grid%ncoords,nczdim))
+                  if (.not. allocated(recvbuffer)) allocate(recvbuffer(gfs_grid%ncoords))
+                  do nlev=1,nczdim
+                     call mpi_recv(recvbuffer,gfs_grid%ncoords,mpi_real,&
+                                   nlev,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
+                     workgrid(:,nlev) = recvbuffer
+                  enddo
+                  deallocate(recvbuffer)
+                else
+                  ! send one level of interpolated data to root task.
+                  if (.not. allocated(sendbuffer)) allocate(sendbuffer(gfs_grid%ncoords))
+                  sendbuffer(:) = outvar2%var(:)
+                  call mpi_send(sendbuffer,gfs_grid%ncoords,mpi_real,&
+                                0,1,mpi_comm_world,mpi_errorstatus,mpi_ierror)
+                endif
+
+             ! Write to NEMSIO file.
+
+                if(mpi_procid .eq. mpi_masternode) then
+                   
+                   do j = 1, nczdim
+
+                      call gfs_nems_write('3d',workgrid(:,nczdim - j + 1),  &
+                           & var_info(k2+1)%nems_name,var_info(k2+1)%nems_levtyp,  &
+                           & j)
+                   end do !  do j = 1, nczdim
+   
+                end if ! if(mpi_procid .eq. mpi_masternode)
+             endif
+
              ! wait here
 
              call mpi_barrier(mpi_comm_world,mpi_ierror)
 
-          end if ! if(var_info(k)%ndims .eq. 3)
-
+          end if ! if(var_info(k2)%ndims .eq. 3)
+	  if(var_info(k2)%itrptyp .eq. 'vector') then ! skip v record here
+             k2=k2+1
+          endif
+          k2=k2+1
        end do ! do k = 1, ntvars
 
        ! Wait here.
@@ -504,25 +564,10 @@ contains
 
     end do ! do l = 1, nctdim
 
-    ! Deallocate memory for local variables
-       
-    if(allocated(pk))            deallocate(pk)
-    if(allocated(bk))            deallocate(bk)
-    if(allocated(fv3_var_2d))    deallocate(fv3_var_2d)
-    if(allocated(fv3_var_3d))    deallocate(fv3_var_3d)
-    if(allocated(var_info))      deallocate(var_info)
-    if(allocated(var_info2d))      deallocate(var_info2d)
-    if(allocated(var_info3d))      deallocate(var_info3d)
-    if(allocated(sendbuffer))    deallocate(sendbuffer)
-    if(allocated(recvbuffer))    deallocate(recvbuffer)
-    call interpolation_cleanup_gridvar(invar)
-    call interpolation_cleanup_gridvar(outvar)
-    call gfs_nems_meta_cleanup(meta_nemsio2d, meta_nemsio2d)
-    call gfs_grid_cleanup(gfs_grid)
 
-    !=====================================================================
+!=====================================================================
 
-  end subroutine fv3_regrid_nemsio_compute
+  end subroutine fv3_regrid_nemsio
 
   !=======================================================================
 
@@ -586,8 +631,14 @@ contains
 
           ! Define local variables
 
+          ! orog and psfc are in 3d file.
+          if (trim(varname) == 'orog' .or. trim(varname) == 'psfc') then
           call netcdfio_values_2d(anlygrd(k)%filename,varname,             &
                & fv3_var_2d(k,:,:))
+          else
+          call netcdfio_values_2d(anlygrd(k)%filename2d,varname,             &
+               & fv3_var_2d(k,:,:))
+          endif
 
        end if ! if(is_2d)
 

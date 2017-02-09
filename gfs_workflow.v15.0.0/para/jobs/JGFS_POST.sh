@@ -31,6 +31,7 @@ export FHMAX=${FHMAX:-240}
 export FHOUT=${FHOUT:-6}
 export NFCST=${NFCST:-$((FHMAX/FHOUT+1))} ;#number of forecatsts included in netCDF file
 export fdiag=${fdiag:-none}               ;#specified forecast output hours 
+export REMAP_GRID=${REMAP_GRID:-latlon}   ;#input grid type, lat-lon or gaussian 
 
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
@@ -117,12 +118,22 @@ export post_times=$(printf "%03d" $fhour)
 #######################################
 # export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
 # export restart_file=${COMIN}/${RUN}.t${cyc}z.sf 
-  export restart_file=$COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR
 
+if [ $REMAP_GRID = latlon ]; then
+ export restart_file=$COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR
  ln -fs $COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR${post_times}  $COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio 
  ln -fs $COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR${post_times}  $COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
  export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio
  export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
+ export IDRT=0
+else
+ export restart_file=$COMROT/gfn${PDY}${cyc}.${RUN}.fhr            
+ ln -fs $COMROT/gfn${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio 
+ ln -fs $COMROT/fln${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
+ export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio
+ export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
+ export IDRT=4
+fi
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -138,7 +149,6 @@ export OUTTYP=4
 export GRIBVERSION=grib2
 export res=$GG
 
-export IDRT=0
 if [ $IDRT -eq 0 ] ; then
 # 0.125 deg
   if [ $res = "0p125deg" ] ; then

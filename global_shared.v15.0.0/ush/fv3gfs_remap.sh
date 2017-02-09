@@ -49,27 +49,46 @@ if [ $GG = 0p125deg ]; then  export nlon=2880 ; export nlat=1440 ;fi
 cd $COMROT ||exit 8
 err=0
 
-export atmos_4xdaily_s="slp, vort850, vort200, tm, \
-             t1000, t850, t700, t500, t200, t100, t50, t10,\
-             h1000, h850, h700, h500, h200, h100, h50, h10,\
-             w850, w700, w500, w200, \
-             q1000, q850, q700, q500, q200, q100, q50, q10,\
-             rh1000, rh850, rh700, rh500, rh200, \
-             omg1000, omg850, omg700, omg500, omg200, omg100, omg50, omg10, \
-             us, u1000, u850, u700, u500, u200, u100, u50, u10, \
-             vs, v1000, v850, v700, v500, v200, v100, v50, v10"
+#--for non-hydrostatic case
+export atmos_4xdaily_nh="slp, vort850, vort200,\
+        us, u1000, u850, u700, u500, u200, u100, u50, u10,\
+        vs, v1000, v850, v700, v500, v200, v100, v50, v10,\
+        tm, t1000, t850, t700, t500, t200, t100, t50, t10,\
+        h1000, h850, h700, h500, h200, h100, h50, h10,\
+        q1000, q850, q700, q500, q200, q100, q50, q10,\
+        rh1000, rh850, rh700, rh500, rh200,\
+        omg1000, omg850, omg700, omg500, omg200, omg100, omg50, omg10,\
+        w700,w850,w500, w200" 
 
-export nggps2d_s="ALBDOsfc, CPRATsfc, PRATEsfc, DLWRFsfc, ULWRFsfc, DSWRFsfc,\
-         USWRFsfc, DSWRFtoa, USWRFtoa, ULWRFtoa, GFLUXsfc, HGTsfc,\
-         HPBLsfc, ICECsfc, SLMSKsfc, LHTFLsfc, SHTFLsfc, PRESsfc,\
-         PWATclm, SOILM, SOILW1, SOILW2, SOILW3, SOILW4, SPFH2m,\
-         TCDCclm, TCDChcl, TCDClcl, TCDCmcl,\
-         SOILT1, SOILT2, SOILT3, SOILT4,\
-         TMP2m, TMPsfc, UGWDsfc, VGWDsfc, UFLXsfc, VFLXsfc,\
-         WEASDsfc, SNODsfc, ZORLsfc, VFRACsfc, F10Msfc,\
-         VTYPEsfc, STYPEsfc, UGRD10m, VGRD10m"
+#--for hydrostatic case
+export atmos_4xdaily_hy="slp, vort850, vort200,\
+        us, u1000, u850, u700, u500, u200, u100, u50, u10,\
+        vs, v1000, v850, v700, v500, v200, v100, v50, v10,\
+        tm, t1000, t850, t700, t500, t200, t100, t50, t10,\
+        h1000, h850, h700, h500, h200, h100, h50, h10,\
+        q1000, q850, q700, q500, q200, q100, q50, q10,\
+        rh1000, rh850, rh700, rh500, rh200,\
+        omg1000, omg850, omg700, omg500, omg200, omg100, omg50, omg10,\
+        w700"                     
 
-export nggps3d_s="ucomp, vcomp, temp, delp, sphum, o3mr, clwmr, nhpres, w, delz"
+export nggps2d_nh="ALBDOsfc, CPRATsfc, PRATEsfc, DLWRFsfc, ULWRFsfc,\
+        DSWRFsfc, USWRFsfc, DSWRFtoa, USWRFtoa, ULWRFtoa,\
+        GFLUXsfc, HGTsfc, HPBLsfc, ICECsfc, SLMSKsfc,\
+        LHTFLsfc, SHTFLsfc, PRESsfc, PWATclm, SOILM,\
+        SOILW1, SOILW2, SOILW3, SOILW4, SPFH2m,\
+        TCDCclm, TCDChcl, TCDClcl, TCDCmcl,\
+        SOILT1, SOILT2, SOILT3, SOILT4,\
+        TMP2m, TMPsfc, UGWDsfc, VGWDsfc, UFLXsfc,\
+        VFLXsfc, UGRD10m, VGRD10m, WEASDsfc, SNODsfc,\
+        ZORLsfc, VFRACsfc, F10Msfc, VTYPEsfc, STYPEsfc"
+export nggps2d_hy="$nggps2d_nh"
+
+
+export nggps3d_nh="ucomp, vcomp, temp, delp, sphum, o3mr, clwmr, nhpres, w, delz"     #for non-hydrostatic case
+export nggps3d_hy="ucomp, vcomp, temp, delp, sphum, o3mr, clwmr, hypres"              #for hydrostatic case
+
+nhrun=$(ncdump -c ${CDATE}0000.nggps3d.tile4.nc |grep nhpres) 
+testout=$?
 #--------------------------------------------------
 
 for type in atmos_4xdaily nggps2d nggps3d ; do
@@ -77,7 +96,11 @@ for type in atmos_4xdaily nggps2d nggps3d ; do
 export in_file="${CDATE}0000.${type}"
 export out_file=${CASE}_${CDATE}.${type}.${GG}.nc
 if [ -s $COMROT/$out_file ]; then rm -f $COMROT/$out_file ; fi
-export fld=$(eval echo \${${type}_s})
+if [ $testout -eq 0 ]; then
+ export fld=$(eval echo \${${type}_nh})
+else
+ export fld=$(eval echo \${${type}_hy})
+fi
 
 
  $APRUN_REMAP $REMAPEXE --input_dir $COMROT \
@@ -89,7 +112,7 @@ export fld=$(eval echo \${${type}_s})
                 --interp_method conserve_order1 \
                 --remap_file $weight_file \
                 --nlon $nlon --nlat $nlat
- if [ $? -ne 0 ]; then err=$? ;fi
+ err=$?
 done
 
 echo $(date) EXITING $0 with return code $err >&2

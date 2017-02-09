@@ -1,14 +1,13 @@
 #!/bin/sh
 #BSUB -L /bin/sh
 #BSUB -P FV3GFS-T2O
-#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/fv3gfs_fcst.out
-#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/fv3gfs_fcst.out
+#BSUB -oo fv3gfs.out
+#BSUB -eo fv3gfs.out
 #BSUB -J fv3gfs   
 #BSUB -q dev
 #BSUB -M 1024
 ##BSUB -x
 #BSUB -W 10:00
-#BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang
 #BSUB -extsched 'CRAYLINUX[]'
 set -x
 
@@ -36,14 +35,14 @@ export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
-export CASE=C96
+export CASE=C768
 export res=`echo $CASE|cut -c 2-`
 export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
-START=20170109
-LAST=20170109
+START=20170201
+LAST=20170201
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
