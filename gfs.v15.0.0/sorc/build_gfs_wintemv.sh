@@ -56,6 +56,6 @@ else
 fi
 
 cd wintemv.fd
-make
-make clean
-mv wintemv  ../../exec/
+make -f makefile.$target
+make -f makefile.$target install
+make -f makefile.$target clean

@@ -7,6 +7,8 @@ export RUN_ENVIR=${RUN_ENVIR:-nco}
 if [ $RUN_ENVIR != nco ] ; then
   PBEG=${PBEG:-""}
   $PBEG
+  . ${PARA_CONFIG:-/global/save/${LOGNAME}/para_gfs/pr4devb/para_config}
+  export userid=$LOGNAME
 fi
 
 export PS4='$SECONDS + '
@@ -34,14 +36,6 @@ export cycle=t${cyc}z
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
-####################################
-# Specify version numbers
-####################################
-export gfs_ver=${gfs_ver:-v13.0.0}
-export global_shared_ver=${global_shared_ver:-v13.0.0}
-export NWROOT=${NWROOT:-/nwprod2}
-export COMROOT=${COMROOT:-/com2}
-export GESROOT=${GESROOT:-/nwges2}
 
 ####################################
 # File To Log Msgs
@@ -58,7 +52,7 @@ export pgmerr=errfile
 
 ####################################
 # RERUN    - Rerun fcst from beginning (default yes)
-# VERBOSE  - Specify Verbose Output in exglobal_fcst.sh.ecf
+# VERBOSE  - Specify Verbose Output in exglobal_fcst_nems.sh.ecf
 ####################################
 export RERUN=${RERUN:-YES}
 export VERBOSE=${VERBOSE:-YES}
@@ -70,6 +64,7 @@ export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export HOMEglobal=${HOMEglobal:-$NWROOT/global_shared.${global_shared_ver}}
 export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
+export SCRgsm=${SCRgsm:-$HOMEglobal/scripts}
 export FIXgsm=${FIXgsm:-$HOMEglobal/fix/fix_am}
 export USHgsm=${USHgsm:-$HOMEglobal/ush}
 export PARMgsm=${PARMgsm:-$HOMEglobal/parm}
@@ -86,8 +81,11 @@ setpdy.sh
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
+export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
+export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
+export COMIN=${COM_IN}/${RUN}.${PDY}
+export COMOUT=${COM_OUT}/${RUN}.${PDY}
+
 mkdir -m 775 -p $COMOUT
 
 ##############################################
@@ -97,6 +95,20 @@ gespath=${gespath:-$GESROOT/${envir}}
 export GESdir=${GESdir:-$gespath/${RUN}.${PDY}}
 mkdir -m 775 -p $GESdir
 
+##############################################
+# WCOSS_C environment settings
+##############################################
+export machine=${machine:-WCOSS_C}
+export MKL_NUM_THREADS=1
+export MKL_CBWR=AVX
+export MP_MPILIB=mpich2
+export USEBULKXFER=NO
+export MPICH_GNI_COLL_OPT_OFF=MPI_Alltoallv
+export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
+export APRUN=${APRUN:-"aprun -j1 -n $ntasks -N $ptile -d $threads -cc depth"}
+export APRUNC=${APRUNC:-"aprun -n 1 -N 1 -j 1 -d 24 -cc depth"}
+
+
 ####################################
 # Specify Special Fcst Vars
 ####################################
@@ -105,42 +117,22 @@ mkdir -m 775 -p $GESdir
 #
 # Restart File Names
 #
+export GRDR1=${GRDR1:-$GESdir/$RUN.$cycle.grdr1.t${JCAP}l${LEVS}}
+export GRDR2=${GRDR2:-$GESdir/$RUN.$cycle.grdr2.t${JCAP}l${LEVS}}
 export SIGR1=${SIGR1:-$GESdir/$RUN.$cycle.sigr1.t${JCAP}l${LEVS}}
 export SIGR2=${SIGR2:-$GESdir/$RUN.$cycle.sigr2.t${JCAP}l${LEVS}}
 export SFCR=${SFCR:-$GESdir/$RUN.$cycle.sfcr.t${JCAP}l${LEVS}}
+export NSTR=${NSTR:-$GESdir/$RUN.$cycle.nstr.t${JCAP}l${LEVS}}
 
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 
-###########################################################
-ulimit -s unlimited
-export NTHREADS=${NTHREADS:-${OMP_NUM_THREADS:-2}}
-export OMP_NUM_THREADS=${OMP_NUM_THREADS:-$NTHREADS}
-export MP_EUIDEVICE=${MP_EUIDEVICE:-min}
-export MP_EUILIB=${MP_EUILIB:-us}
-export MP_TASK_AFFINITY=${MP_TASK_AFFINITY:-cpu:$OMP_NUM_THREADS}
-export MP_EUIDEVELOP=${MP_EUIDEVELOP:-min}
-export KMP_STACKSIZE=${KMP_STACKSIZE:-2048m}
-export F_UFMTENDIAN=${F_UFMTENDIAN:-big}
-export MPICH_ALLTOALL_THROTTLE=${MPICH_ALLTOALL_THROTTLE:-0}
-export MP_SINGLE_THREAD=${MP_SINGLE_THREAD:-yes}
-export MP_EAGER_LIMIT=${MP_EAGER_LIMIT:-65536}
-export MP_USE_BULK_XFER=${MP_USE_BULK_XFER:-no}
-export MP_SHARED_MEMORY=${MP_SHARED_MEMORY:-yes}
-export MP_MPILIB=${MP_MPILIB:-mpich2}
-export MP_LABELIO=${MP_LABELIO:-yes}
-export MP_STDOUTMODE=${MP_STDOUTMODE:-unordered}
-export MP_COLLECTIVE_OFFLOAD=${MP_COLLECTIVE_OFFLOAD:-no}
-export APRUN=${APRUN:-mpirun.lsf}
-###########################################################
-
-env
 
 # Variables for High Frequency Output
 export FHOUT_HF=1      # High Frequency Forecast Output Interval
 export FHMAX_HF=0      # High Frequency Forecast Length (Hours)
 
-FORECASTSH=${FORECASTSH:-$HOMEglobal/scripts/exglobal_fcst.sh.ecf}
+FORECASTSH=${FORECASTSH:-$HOMEglobal/scripts/exglobal_fcst_nems.sh.ecf}
 export FCSTEXEC=${FCSTEXEC:-${EXECgsm}/global_fcst}
 
 # Determine whether or not to run 12-hour spin-up for low job
@@ -151,17 +143,23 @@ SPINUPLOW=${SPINUPLOW:-NO}
 ############################################################
 
 #-----------------------------------
-if [ -f $SIGR1 -a -f $SIGR2 -a -f $SFCR -a $RERUN = NO ] ; then
+if [ -f $GRDR1 -a -f $SIGR1 -a -f $SIGR2 -a -f $SFCR -a -f $NSTR -a $RERUN = NO ] ; then
 #-----------------------------------
+  cp $GRDR1 $DATA/grdr1
+  cp $GRDR2 $DATA/grdr2
   cp $SIGR1 $DATA/sigr1
   cp $SIGR2 $DATA/sigr2
   cp $SFCR $DATA/sfcr
+  cp $NSTR $DATA/nstr
 
+  export GRDI=$GRDR1
+  export GRDI2=$GRDR2
   export SIGI=$SIGR1
   export SIGI2=$SIGR2
   export SFCI=$SFCR
+  export NSTI=$NSTR
 
-  if [ -f $SIGI -a -f SIGI2 -a -f $SFCI ] ; then
+  if [ -f $GRDI -a -f $GRDI2 -a -f $SIGI -a -f SIGI2 -a -f $SFCI -a -f $NSTI ] ; then
      msg="Forecast Starting With Restart Files in $GESdir"
      postmsg "$jlogfile" "$msg"
   else
@@ -184,14 +182,20 @@ else
    export FHINI=240
   fi
 
-  export SIGINP=$GESdir/$RUN.$cycle.sf$FHINI
-  export SFCINP=$GESdir/$RUN.$cycle.bf$FHINI
-  export SIGOUT=$DATA/$RUN.$cycle.sigr.chgres
-  export SFCOUT=$DATA/$RUN.$cycle.sfcr.chgres
+  export SIGINP=$GESdir/$RUN.$cycle.atmf$FHINI.nemsio
+  export SFCINP=$GESdir/$RUN.$cycle.sfcf$FHINI.nemsio
+  export NSTINP=$GESdir/$RUN.$cycle.nstf$FHINI.nemsio
+  export GFSOUT=$DATA/$RUN.$cycle.grdr.chgres
+  export SFNOUT=$DATA/$RUN.$cycle.sfcr.chgres
+  export NSNOUT=$DATA/$RUN.$cycle.nstr.chgres
 
 # Set SIGLEVEL according to vertical coordinate type in $SIGINP
-  export SIGHDR=$EXECgsm/global_sighdr
-  export IDVC=$(echo idvc|$SIGHDR ${SIGINP})
+  if [ $NEMSIO_IN = .true. ]; then
+     export IDVC=${IDVC:-$($nemsioget ${SIGINP} IDVC |grep -i "IDVC" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
+  else
+     export SIGHDR=$EXECgsm/global_sighdr
+     export IDVC=$(echo idvc|$SIGHDR ${SIGINP})
+  fi
   if [ $IDVC = 1 ] ; then
      export SIGLEVEL=$FIXgsm/global_siglevel.l$LEVS.txt
   elif [ $IDVC = 2 ] ; then
@@ -199,17 +203,18 @@ else
   fi
 
 # Run global_chgres
-  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=0,"
-  export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-16}
+  export CHGRESVARS="use_ufo=$use_ufo,nst_anl=$NST_ANL,rdgrid=$rdgrid,idvc=$IDVC,idvt=$idvt,idsl=$IDSL,IDVM=$idvm,OUTTYP=$OUTTYP_CH,nopdpvv=$nopdpvv"
+  export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
   ${CHGRESSH:-$HOMEglobal/ush/global_chgres.sh}
   rc=$?
   if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
   cat $pgmout
 
-  export SIGI=$SIGOUT
-  export SFCI=$SFCOUT
+  export GRDI=$GFSOUT
+  export SFCI=$SFNOUT
+  export NSTI=$NSNOUT
 
-  if [ -f $SIGI -a -f $SFCI ] ; then
+  if [ -f $GRDI -a -f $SFCI -a -f $NSTI ] ; then
      msg="Forecast Starting with Fields Produced by CHGRES"
      postmsg "$jlogfile" "$msg"
   else
@@ -235,9 +240,11 @@ if [ $SPINUPLOW = YES ]; then
 #
 # Output File Names (Don't Save the Forecast Output/Just need the restart)
 #
+  export GRDO=/dev/null
   export SIGO=/dev/null
   export SFCO=/dev/null
   export FLXO=/dev/null
+  export NSTO=/dev/null
   export LOGO=/dev/null
 #
 # Execute the Forecast script
@@ -262,7 +269,7 @@ else
 fi
 export FHOUT=12        # Forecast Hour Output Frequency
 export FHMAX=384       # Forecast Length (Hours)
-export FHRES=408       # Forecast Hour Restart Frequency (408- turned off restart)
+export FHRES=480       # Forecast Hour Restart Frequency (408- turned off restart)
 export FHZER=12        # Interval to Zero out precip field,etc. Should not be less that FHOUT
 export FHCYC=24        # Surface cycling boundary condition update frequency in hours
 #
@@ -271,23 +278,37 @@ unset FHINI
 #
 # Output File Names
 #
-export SIGO=$COMOUT/$RUN.$cycle.sf'${FH}'
-export SFCO=$COMOUT/$RUN.$cycle.bf'${FH}'
-export FLXO=$COMOUT/$RUN.$cycle.sfluxgrbf'${FH}'
-export LOGO=$COMOUT/$RUN.$cycle.logf'${FH}'
+export SIGO=${SIGO:-$COMOUT/$RUN.$cycle.atmf'${FH3}'.nemsio}
+export SFCO=${SFCO:-$COMOUT/$RUN.$cycle.sfcf'${FH3}'.nemsio}
+export FLXO=${FLXO:-$COMOUT/$RUN.$cycle.flxf'${FH3}'.nemsio}
+export NSTO=${NSTO:-$COMOUT/$RUN.$cycle.nstf'${FH3}'.nemsio}
+export G3DO=${G3DO:-$COMOUT/$RUN.$cycle.d3df'${FH3}'.nemsio}
+export LOGO=${LOGO:-$COMOUT/$RUN.$cycle.logf'${FH3}'.nemsio}
+
 
 if [ $SPINUPLOW = YES ]; then
+ cp $GRDR1 $DATA/grdr1
+ cp $GRDR2 $DATA/grdr2
  cp $SIGR1 $DATA/sigr1
  cp $SIGR2 $DATA/sigr2
  cp $SFCR $DATA/sfcr
+ cp $NSTR $DATA/nstr
+ export GRDI=$DATA/grdr1
+ export GRDI2=$DATA/grdr2
  export SIGI=$DATA/sigr1
  export SIGI2=$DATA/sigr2
  export SFCI=$DATA/sfcr
+ export NSTI=$DATA/nstr
 else
+ export GRDI=$DATA/$RUN.$cycle.grdr.chgres
+ export GRDI2=/dev/null
  export SIGI=$DATA/$RUN.$cycle.sigr.chgres
  export SIGI2=/dev/null   
  export SFCI=$DATA/$RUN.$cycle.sfcr.chgres
+ export NSTI=$DATA/$RUN.$cycle.nstr.chgres
 fi
+
+env
 
 #
 # PDS Grid Designator

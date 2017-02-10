@@ -39,7 +39,7 @@ else
    echo " Number of arguments were not passed "
    echo ""
    echo ""
-   echo "Usage: exgfs_grib_awips.sh.sm  \$fcsthrs  (3-digit) "
+   echo "Usage: $0  \$fcsthrs  (3-digit) "
    echo ""
    exit 16
 fi

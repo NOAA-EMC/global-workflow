@@ -8,6 +8,8 @@ set -xa
 #
 export envir=${envir:-prod}
 
+export KEEPDATA=${KEEPDATA:-NO}
+
 ####################################
 # Specify version numbers
 ####################################
@@ -172,7 +174,7 @@ restart_file=$COMIN/${RUN}.t${cyc}z.logf
 # SLEEP_INT  - Amount of time to wait between
 #              checking for restart files
 ####################################
-export SLEEP_TIME=900
+export SLEEP_TIME=5 # 900
 export SLEEP_INT=5
 
 env
@@ -203,7 +205,8 @@ fi
 
 #############################################################
 # Execute the regular master ncep post script
-${SCRgfs}/exgfs_nceppost.sh.ecf
+#${SCRgfs}/exgfs_nceppost.sh.ecf
+$SCRglobal/exgfs_nceppost.sh.ecf
 #############################################################
 
 if [ $post_times -eq 84  ]
@@ -215,6 +218,8 @@ fi
 # Remove the Temporary working directory
 ##############################
 cd /tmpnwprd1
-rm -rf $DATA
+if [ $KEEPDATA = 'NO' ] ; then 
+    rm -rf $DATA
+fi
 
 date

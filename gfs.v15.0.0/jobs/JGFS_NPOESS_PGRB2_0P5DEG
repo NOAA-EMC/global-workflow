@@ -83,7 +83,7 @@ export IGEN_FCST=96
 #######################################
 # Specify Restart File Name to Key Off
 #######################################
-restart_file=$COMIN/${RUN}.t${cyc}z.master.grb2if
+restart_file=$COMIN/${RUN}.t${cyc}z.pgrb2.0p50.f
 
 ####################################
 # Specify Timeout Behavior of Post

@@ -92,14 +92,12 @@ export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
 ###############################################################
 
-#### cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}  tmpfile2${fcsthrs}
-#### cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b${fcsthrs}
 cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}  tmpfile2${fcsthrs}
 cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b${fcsthrs}
 
 if [ -f tmpfile2${fcsthrs} -a -f tmpfile2b${fcsthrs} ];
 then
-   echo "File exist."
+   echo "Source file exist "
 else
 # When file not exist, exception handling
   icount=1
@@ -123,7 +121,23 @@ else
   done
 fi
 
+rc=0
 cat tmpfile2${fcsthrs}    tmpfile2b${fcsthrs}   >  tmpfile${fcsthrs}
+rc=$?
+if [[ $rc -eq 0 ]]; then
+ echo "Temp file exist "
+else
+ msg="AWIPS20KM-CAT failed debug statement follow"
+ pwd
+ date
+ ls -l tmpfile2${fcsthrs}
+ ls -cl tmpfile2${fcsthrs}
+ ls -l tmpfile2b${fcsthrs}
+ ls -cl tmpfile2b${fcsthrs}
+ echo "End of AWIPS20KM-CAT debug"
+ err_exit $msg
+fi
+
 $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile${fcsthrs}  tmpfile${fcsthrs}
 
 ##################################################################
@@ -132,9 +146,6 @@ $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2
 ##################################################################
 export FORT11=masterfile${fcsthrs}
 export FORT51=tmp_masterfile${fcsthrs}
-
-#### 
-EXECgfs=/gpfs/hps/emc/global/noscrub/emc.glopara/para_gfs/prtestn/awips_20km/exec
 
 $EXECgfs/overpdtg2 << EOF
 10
@@ -201,7 +212,6 @@ do
     msg="ABORTING after 1 minute of waiting for the awps_file_f${fcsthrs}_${GRID} !"
     err_exit $msg
   fi
-####
   numrec=` $WGRIB2 awps_file_f${fcsthrs}_${GRID} | wc -l `
 done
 
@@ -225,7 +235,6 @@ done
       # Post Files to PCOM
       ##############################
 
-####      mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
         awips20km_name=gfs_awips_f${fcsthrs}_20km_${cyc}
         mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
 
@@ -236,7 +245,6 @@ done
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
         # JY - turn back on the pac alert - 05/11/2016
         # if [ $GRID = conus -o $GRID = prico -o $GRID = ak ]; then  ##XXW: Turn off pacific region alert for now
-####         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
          $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
         # fi
       else
@@ -255,7 +263,7 @@ done
    elif [ $fhcnt -ge 84 ] ; then
      let fhcnt=fhcnt+6
    fi
-   rm  awps_file_*${fcsthrs}* awps_file_*{fcsthrs}_${GRID}*  tmpfile*${fcsthrs}* *masterfile${fcsthrs}* 
+   date
 done
 
 cat $pgmout

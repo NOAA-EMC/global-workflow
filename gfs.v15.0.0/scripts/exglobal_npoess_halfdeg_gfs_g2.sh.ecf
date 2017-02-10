@@ -29,7 +29,6 @@ postmsg "$jlogfile" "$msg"
 #               generation.
 ############################################################
 
-
 SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
 export fhr=$SHOUR
@@ -71,14 +70,17 @@ do
     msg="Starting half degree grib generation for fhr=$fhr"
     postmsg "$jlogfile" "$msg"
 
-    cp $COMIN/${RUN}.t${cyc}z.master.grb2f$fhr masterfile
-
     paramlist=${PARMgfs}/global_npoess_paramlist_g2
 
-    $WGRIB2 masterfile | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile masterfile
-    grid="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0"
-    $COPYGB2 -g "$grid" -i0 -x tmpfile pgb2file
+#    Replaced gfs master by gfs 0p50 deg
+#    cp $COMIN/${RUN}.t${cyc}z.master.grb2f$fhr masterfile
+#    grid="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0"
+#    $COPYGB2 -g "$grid" -i0 -x tmpfile pgb2file
 
+    cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
+    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}  tmpfile2b
+    cat tmpfile2    tmpfile2b   > tmpfile
+    $WGRIB2 tmpfile | grep -F -f $paramlist | $WGRIB2 -i -grib  pgb2file tmpfile
 
     if test $SENDCOM = "YES"
     then
@@ -89,18 +91,22 @@ do
           $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f$fhr.npoess
        fi
 
-       if test $fhr -lt 100
-       then
-          pad="0"
-       else
-          pad=""
-       fi
-       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
+#       if test $fhr -lt 100
+#       then
+#          pad="0"
+#       else
+#          pad=""
+#       fi
+#       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
+       echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
     fi
     rm tmpfile pgbfile pgb2file
 
     export fhr=`expr $fhr + $FHINC`
     if test $fhr -lt 10
+    then
+       export fhr="00$fhr"
+    elif test $fhr -lt 100
     then
        export fhr="0$fhr"
     fi

@@ -67,9 +67,8 @@ export FORT51="tran.fbwnd_pacific"
 
 startmsg
 
-# $EXECgfs/fbwndgfs < $PARMgfs/fbwnd_pacific.stnlist >> $pgmout 2> errfile
-$EXECgfs/fbwndgfs < $PARMgfs/fbwnd_pacific.stnlist
-err=$?;export err;err_chk
+$EXECgfs/fbwndgfs < $PARMgfs/fbwnd_pacific.stnlist >> $pgmout 2> errfile
+export err=$?; err_chk
 
 if test "$SENDCOM" = 'YES'
 then

@@ -30,7 +30,7 @@ else
    echo " Number of arguments were not passed "
    echo ""
    echo ""
-   echo "Usage: exgfs_grib_awips_1p0deg.sh.ecf  \$fcsthrs (3 digits) "
+   echo "Usage: $0  \$fcsthrs (3 digits) "
    echo ""
    exit 16
 fi
@@ -98,6 +98,21 @@ EOF
 export err=$?; err_chk
 $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
 
+###########################################################################
+# Checking fields in awps_file_f${fcsthrs}_${GRID} file
+# before TOCGRIB2 adding WMO headers for AWIPS products.
+#
+# NOTE: numparm is the total of fields in grib2_awpgfs000.003 file 
+###########################################################################
+numparm=107
+numrec=` $WGRIB2 awps_file_f${fcsthrs}_${GRID} | wc -l `
+
+if [ $numrec -lt $numparm ]
+then
+    msg="ABORTING : awps_file_f${fcsthrs}_${GRID} file is missing fields for AWIPS !"
+    err_exit $msg
+fi
+
 # Processing AWIPS GRIB2 grids with WMO headers
 
    pgm=tocgrib2
@@ -109,8 +124,7 @@ $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
    export FORT51=grib2.awpgfs${fcsthrs}.${GRID}
 
    $TOCGRIB2 < $PARMgfs/grib2_awpgfs${fcsthrs}.${GRID} >> $pgmout 2> errfile
-
-   err=$?;export err ;err_chk
+   export err=$?; err_chk
    echo " error from tocgrib2=",$err
 
    if [ $SENDCOM = "YES" ] ; then
@@ -136,7 +150,7 @@ $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
    msg="Awip Processing ${fcsthrs} hour  completed normally"
    postmsg "$jlogfile" "$msg"
 
-   rm awps_file_${fcsthrs}_${GRID} awps_file_fi${fcsthrs}_${GRID}
+   rm awps_file_f${fcsthrs}_${GRID} awps_file_fi${fcsthrs}_${GRID}
 
 cat $pgmout
 

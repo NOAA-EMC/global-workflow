@@ -76,7 +76,7 @@ echo "          " >> tall_ur_label.t
 for fhr in `echo ${fhr_list}`
 do
         OUTP=">"
-        rm chart.list
+#        rm chart.list
         ncharts=0
 
         ###################################################
@@ -138,9 +138,10 @@ do
         # Insert GDATTIM for this date and fhr into local
         # copy of big parm file
         ###################################################
-        PARMFILE=$FIXgempak/waf_tiff3.parm
-
-        sed s/SUBDATE/$subdate/g $PARMFILE > temp1.t
+        cp $FIXgfs/waf1 .
+        cp $FIXgfs/waf2 .
+        cp $FIXgfs/waf_tiff3.parm .
+        sed s/SUBDATE/$subdate/g waf_tiff3.parm > temp1.t
         sed s/Q/$char4/g temp1.t > BIG_PARM
 
         ###################################################

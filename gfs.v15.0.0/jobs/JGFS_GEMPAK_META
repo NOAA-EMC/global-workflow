@@ -92,7 +92,7 @@ export COMIN=${COMIN:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}/meta}
 
 export COMINROOTukmet=${COMINROOTukmet:-${COMROOTp1}/nawips/prod}
-export COMINROOTecmwf=${COMINROOTecmwf:-${COMROOT}/nawips/prod}
+export COMINROOTecmwf=${COMINROOTecmwf:-${COMROOTp2}/nawips/prod}
 export COMINROOTnam=${COMINROOTnam:-${COMROOTp1}/nawips/prod}
 
 msg="Begin job for $job"

@@ -1,3 +1,5 @@
+#!/bin/ksh
+
 #####################################################################
 echo "-----------------------------------------------------"
 echo " exgfs_nceppost.sh.ecf" 
@@ -379,7 +381,7 @@ EOF
 # process satellite look alike separately so that master pgb gets out in time    
 # set outtyp to 2 because master post already generates gfs io files
      
-    export OUTTYP=3
+    export OUTTYP=${OUTTYP:-3}
    
 # specify output file name from chgres which is input file name to nceppost 
 # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
@@ -438,10 +440,62 @@ EOF
 
        mv goesfile $COMOUT/${SPECIALFL}f$fhr
        mv goesifile $COMOUT/${SPECIALFLIDX}f$fhr
-
     fi
-    rm flxfile flxifile goesfile goesifile    
+    rm goesfile goesifile
 # end of satellite processing
+
+##########################  GTG  start ##########################
+# process  gtg turbulence separately so that master pgb and 
+# satellite look alike gets out in time.
+
+# process gtg turbulence only when fhr is every 3 hour between [3, 36]
+    if [[ $fhr -ge 3  &&  $fhr -le 36  && $((fhr%3)) -eq 0 ]] ; then
+      export OUTTYP=${OUTTYP:-3}
+   
+# specify output file name from chgres which is input file name to nceppost 
+# if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
+# new imported variable for global_nceppost.sh
+      export GFSOUT=${RUN}.${cycle}.gfsio${fhr}     
+
+      # gtg has its own configurations
+      cp $PARMglobal/gtg.config.gfs gtg.config
+
+      if [[ $RUN = gfs && $GRIBVERSION = 'grib2' ]] ; then
+          export PostFlatFile=$PARMglobal/postxconfig-NT-GFS-GTG.txt      
+	  export CTLFILE=${CTLFILEGTG:-$PARMglobal/postcntrl_gfs_gtg.xml}
+
+	  export SIGINP=sigfile
+	  export NEMSINP=${NEMSINP:-nemsfile}
+	  export SFCINPUT=sfcfile
+	  export FLXINP=${FLXINP:-flxfile}
+	  export FLXIOUT=flxifile
+	  export PGBOUT=gtgfile
+	  export PGIOUT=gtgifile
+	  export FILTER=0
+	  export IGEN=$IGEN_GFS
+    
+	  $POSTGPSH
+
+	  SPECIALFL=gfs.${cycle}.gtg.grb2
+	  SPECIALFLIDX=gfs.${cycle}.gtg.grb2i
+
+	  if test $SENDCOM = "YES"
+	  then
+	      cp $PGBOUT $COMOUT/${SPECIALFL}f$fhr
+	      cp $PGIOUT $COMOUT/${SPECIALFLIDX}f$fhr
+
+	  fi
+      else
+          echo 'Warning!!!! GTG is NOT generated!!! Currently GTG only supports GFS and grib2.'
+      fi
+    else
+	echo 'Warning!!!! GTG is NOT generated!!! Currently GTG forecast hour is every 3 hour between [3, 36].'
+    fi # $fhr [3, 36]
+###########################  GTG  end ###########################
+
+
+    rm flxfile flxifile gtgfile gtgifile
+# end of gtg turbulence processing
 
 done
 

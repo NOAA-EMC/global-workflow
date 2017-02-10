@@ -1,0 +1,32 @@
+# Set variables
+export NWROOT=$NWTEST
+export COM_IN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para
+export COM_OUT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/test
+export SENDDBN=YES
+export SAVEGES=NO
+export GETGES_NWG=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
+export gesenvir=para
+export GETGES_COM=/gpfs/hps/ptmp/emc.glopara/com2
+export GESROOT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
+export gespath=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
+export KEEPDATA=NO
+
+
+# Set paths
+export HOMEgfs=$NWTEST/gfs.${gfs_ver}
+export HOMEgsm=$NWTEST/global_shared.${global_shared_ver}
+
+
+# Set fix files
+
+
+# Set scripts
+
+
+# Set executables
+
+
+# Dev para jobs
+export ERRSCRIPT='eval [[ $err = 0 ]]'
+
+
