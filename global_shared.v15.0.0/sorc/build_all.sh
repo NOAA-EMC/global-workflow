@@ -19,7 +19,7 @@ BUILD_TOOLS.csh
 cd $pwd/fv3nc2nemsio.fd
 makefile.sh
 
-cd regrid_nemsio.fd/
+cd $pwd/regrid_nemsio.fd/
 makefile_$target.sh
 
 exit
