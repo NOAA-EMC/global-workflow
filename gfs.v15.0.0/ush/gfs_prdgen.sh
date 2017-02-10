@@ -5,6 +5,10 @@ export fhr=$1
 export filetype=$2
 export res=$3
 
+# Set type of Interpolation for WRGIB2
+export option1=' -set_grib_type same -new_grid_winds earth '
+export option2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+
 cd $DATA/${filetype}_${res}
 
 # Set local var fhm3 to YES if it is 000 or 3 hourly 
@@ -37,20 +41,27 @@ elif [ $filetype = pgrb2b ]; then
 fi
    
 case $res in 
-  0p25) RES=0P25;;
+  0p25) RES=0P25
+        #  grid="0 6 0 0 0 0 0 0 1440 721 0 -1 90000000 0 48 -90000000 359750000 250000 250000 0";;
+        export grid="latlon 0:1440:0.25 90:721:-0.25";;
   0p50) RES=0P5
-        grid="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0";;
+        #  grid="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0";;
+        export grid="latlon 0:720:0.5 90:361:-0.5";;
   1p00) RES=1P0
-        grid="0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0";;
+        # grid="0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0";;
+        export grid="latlon 0:360:1.0 90:181:-1.0";;
   2p50) RES=2P5
-        grid="0 6 0 0 0 0 0 0 144 73 0 0 90000000 0 48 -90000000 357500000 2500000 2500000 0";;
+        # grid="0 6 0 0 0 0 0 0 144 73 0 0 90000000 0 48 -90000000 357500000 2500000 2500000 0";;
+        export grid="latlon 0:144:2.5 90:73:-2.5";;
 esac
 
 if [ $filetype = pgrb2 ]; then
 
 # Only generate 0P25 for hourly output
   if [ $res = 0P25 -o $fhm3 = YES ]; then
-    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile_${fhr} ${filetype}file_${fhr3}_${res}
+#    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile_${fhr} ${filetype}file_${fhr3}_${res}
+
+    $WGRIB2  $DATA/tmpfile_${fhr} $opt1 $opt2 -new_grid $grid ${filetype}file_${fhr3}_${res}
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 
@@ -66,7 +77,8 @@ elif [ $filetype = pgrb2b ]; then
 
 # Only generate 0P25 for hourly output
   if [ $res = 0P25 -o $fhm3 = YES ]; then
-    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile3_${fhr} ${filetype}file_${fhr3}_${res}
+#    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile3_${fhr} ${filetype}file_${fhr3}_${res}
+    $WGRIB2  $DATA/tmpfile3_${fhr} $opt1 $opt2 -new_grid $grid ${filetype}file_${fhr3}_${res}
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 fi
@@ -81,27 +93,27 @@ fi
 
 if [ $SENDCOM = YES ]; then
   if [ $fhr = anl ]; then
-    cp ${filetype}file_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}
-    cp ${filetype}ifile_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}.idx
+    cpfs ${filetype}file_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}
+    cpfs ${filetype}ifile_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}.idx
     if [ $filetype = pgrb2 -a $res = 1p00 ]; then
-      cp pgbfile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrb$fhr
-      cp pgbifile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbi$fhr
+      cpfs pgbfile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrb$fhr
+      cpfs pgbifile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbi$fhr
     fi
   else
 # Only generate 0P25 for hourly output
     if [ $res = 0P25 -o $fhm3 = YES ]; then
-      cp ${filetype}file_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}
-      cp ${filetype}ifile_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}.idx
+      cpfs ${filetype}file_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}
+      cpfs ${filetype}ifile_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}.idx
       if [ $filetype = pgrb2 -a $res = 1p00 -a fhr -le 192 ]; then
-        cp pgbfile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
-        cp pgbifile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
+        cpfs pgbfile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
+        cpfs pgbifile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
       elif [ $filetype = pgrb2 -a $res = 2p50 ]; then
         if [ $fhr -le 192 ]; then
-          cp pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr.2p5deg
-          cp pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr.2p5deg
+          cpfs pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr.2p5deg
+          cpfs pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr.2p5deg
         elif [ $fhr -gt 192 -a `expr $fhr % 12` -eq 0 ]; then
-          cp pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
-          cp pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
+          cpfs pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
+          cpfs  pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
         fi
       fi
     fi

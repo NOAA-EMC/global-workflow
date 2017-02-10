@@ -12,7 +12,7 @@ echo "                    data on the CCS is properly protected."
 set -xa
 
 ####
-export ILPOST=${ILPOST:-3}
+export ILPOST=${ILPOST:-1}
 
 cd $DATA
 RUN=$1

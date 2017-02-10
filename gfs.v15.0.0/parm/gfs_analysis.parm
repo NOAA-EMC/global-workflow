@@ -261,6 +261,8 @@ fi
 #
 export SFCANL=${SFCANL:-${DATA}/${PREINP}sfcanl.nemsio}
 export SIGANL=${SIGANL:-${DATA}/${PREINP}atmanl.nemsio}
+export SFCANL_OUT=${SFCANL_OUT:-sfcanl.nemsio}
+export SIGANL_OUT=${SIGANL_OUT:-atmanl.nemsio}
 export NSTANL=${NSTANL:-${DATA}/${PREINP}nstanl.nemsio}
 export ABIAS=${ABIAS:-${DATA}/${PREINP}abias}
 export ABIASPC=${ABIASPC:-${DATA}/${PREINP}abias_pc}

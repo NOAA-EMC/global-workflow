@@ -23,7 +23,7 @@ export ntasks=480
 export ptile=2
 export threads=12
 
-export CDATE=2016122206
+export CDATE=2017011900
 
 
 #############################################################

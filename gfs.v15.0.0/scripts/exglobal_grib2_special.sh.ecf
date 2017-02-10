@@ -29,6 +29,10 @@ postmsg "$jlogfile" "$msg"
 # NO processing Analysis special Files 
 ############################################################
 
+# Set type of Interpolation for WGRIB2
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+
 SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
 export fhr=$SHOUR
@@ -81,15 +85,22 @@ do
 
     cp $COMIN/${RUN}.t${cyc}z.special.grb2f$fhr masterfile
 
-    $COPYGB2 -g "0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0" -i1,1 -x masterfile pgb2file
+#    $COPYGB2 -g "0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0" -i1,1 -x masterfile pgb2file
+
+    export grid1p0="latlon 0:360:1.0 90:181:-1.0" 
+    $WGRIB2  masterfile $opt1 $opt2  -new_grid $grid1p0 pgb2file
+
 # creating higher resolution goes files for US centers    
-    $COPYGB2 -g "30 6 0 0 0 0 0 0 349 277 1000000 214500000 8 50000000 253000000 32463000 32463000 0 64 50000000 50000000 0 0" -i1,1 -x masterfile pgb2file2 
+#    $COPYGB2 -g "30 6 0 0 0 0 0 0 349 277 1000000  214500000 8 50000000 253000000 32463000 32463000 0 64 50000000 50000000 0 0" -i1,1 -x masterfile pgb2file2 
+
+    export gridconus="lambert:253.0:50.0:50.0 214.5:349:32463.0 1.0:277:32463.0"
+    $WGRIB2  masterfile $opt1 $opt2  -new_grid $gridconus pgb2file2
+
     $WGRIB2 pgb2file -s > pgb2ifile
     $CNVGRIB21_GFS -g21 pgb2file pgbfile
     $GRBINDEX pgbfile pgifile
     $CNVGRIB21_GFS -g21 pgb2file2 pgbfile2
     $GRBINDEX pgbfile2 pgifile2
-
 
     export fhr3=$fhr
     if [ $fhr3 -lt 100 ]; then

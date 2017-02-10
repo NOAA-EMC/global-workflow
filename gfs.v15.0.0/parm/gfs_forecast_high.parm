@@ -1,8 +1,15 @@
 ####################################
-# Specify GFS Special Forecast Vars
-# For First High Resolution Segment
+# Specify Special FORECASST Vars
+# For GFS High-Resolution Forecast
 ####################################
- 
+
+# Temporarily set GLOBAL variables
+FIXgsm=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/fix/fix_am
+export FIXGLOBAL=$FIXgsm
+export PARMGLOBAL=$PARMgsm
+
+
+#
 export JCAP=${JCAP:-1534}            # Spectral Truncation
 export LONB=${LONB:-3072}            # Number of Longitudes
 export LATB=${LATB:-1536}            # Number of Latitudes
@@ -10,28 +17,52 @@ export LONR=${LONR:-3072}            # Number of Physics Longitudes
 export LATR=${LATR:-1536}            # Number of Physics Latitudes
 export LONF=${LONF:-3072}
 export LATG=${LATG:-1536}
+
 #
 export LEVS=${LEVS:-64}             # Number of vertical levels
 #
 export DELTIM=${DELTIM:-450}        # Time step
 export DTPHYS=${DTPHYS:-225}        # Time step for physics
 
+# Set executables
+export SIGHDR=${SIGHDR:-${EXECgsm}/nemsio_get}
+export SFCHDR=${SFCHDR:-${EXECgsm}/nemsio_get}
+export nemsioget=${nemsioget:-${EXECgsm}/nemsio_get}
+
+
+# NEMSIO setup
+export use_gfs_nemsio=.true.
+export NEMSIO_IN=.true.
+export NEMSIO_OUT=.true.
+export SIGIO_IN=.false.
+export SIGIO_OUT=.false.
+export SFCIO_OUT=.false.
+export SIGOSUF=${SIGOSUF:-"gfn"}
+export SFCOSUF=${SFCOSUF:-"sfn"}
+export FLXOSUF=${FLXOSUF:-"fln"}
+export NSTOSUF=${NSTOSUF:-"nsn"}
+export SUFORG=${SUFORG:-"rg."}
+
+ 
 export CO2CON=${CO2CON:-$FIXgsm/global_co2con.l${LEVS}.f77}
 export CO2DIR=${CO2DIR:-$FIXgsm/fix_co2_proj}
 export CO2_seasonal_cycle=${CO2_seasonal_cycle:-$FIXgsm/global_co2monthlycyc1976_2006.txt}
 export O3FORC=${O3FORC:-$FIXgsm/global_o3prdlos.f77}
 export O3CLIM=${O3CLIM:-$FIXgsm/global_o3clim.txt}
-export MTNVAR=${MTNVAR:-$FIXgsm/global_mtnvar.t${JCAP}.$LONB.$LATB.f77}
-export OROGRAPHY=${OROGRAPHY:-$FIXgsm/global_orography.t$JCAP.$LONB.$LATB.grb}
-export OROGRAPHY_UF=${OROGRAPHY_UF:-$FIXgsm/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
+export OROGRAPHY=${OROGRAPHY:-$FIXgsm/global_orography.t$JCAP.$LONB.$LATB.${SUFORG}grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF:-$FIXgsm/global_orography_uf.t$JCAP.$LONB.$LATB.${SUFORG}grb}
 export LONSPERLAT=${LONSPERLAT:-$FIXgsm/global_lonsperlat.t$JCAP.$LONB.$LATB.txt}
 export FNTSFC=${FNTSFC:-${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb}
 export FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 
+
 ############################################################
 # Input parameters to the Model
 ############################################################
-export FHRES=264       # Forecast Hour Restart Frequency (264 turned off)
+export FHROT=0         # Forecast hour to Read One Time level
+export FHOUT=3         # Forecast Hour Output Frequency
+export FHMAX=240       # Forecast Length (Hours)
+export FHRES=264       # Forecast Hour Restart Frequency
 export FHZER=6         # Interval to Zero out precip field,etc. Should not be less that FHOUT
 export FHDFI=3         # Half number of hours of digital filter initialization
 export FHCYC=24        # Surface cycling boundary condition update frequency in hours
@@ -42,11 +73,371 @@ export ISOL=2          # 0--fixed solar constant; 1--changing solar constant
 export IAER=111        # 111--with stratospheric aerosol, tropospheric aerosol LW, troposphere aerosol SW.
 export ICO2=2          # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
 
-######################
-## PDS Grid Designator
-#######################
+#
+# PDS Grid Designator
+#
 export IGEN=81
 
-export SEMILAG=.true.                # semi-lagrangian dynamical core
-export FCSTVARS="SEMILAG=$SEMILAG,DTPHYS=$DTPHYS,nsout=0,liope=.true.,LDIAG3D=.false."
+#
+# Variables for High Frequency Output
+#  
+export FHOUT_HF=1    # High Frequency Forecast Output Interval
+export FHMAX_HF=120  # High Frequency Forecast Length (Hours)
+
+
+# NEMS GSM setup
+nsout=0
+nvcoord=2
+HYBRID=YES
+semilag=.true.          #for Joe-sela semi-Lagrangian
+ndsl=.false.
+ref_pres=100.0          #good for slg 2-time level
+use_ufo=.true.
+
+if [ $semilag = .true. ] ; then
+  ndsl=.false.
+  idvc_a=2
+  idvc_f=2
+  idvt=21
+  IDSL=1
+# IDVM=0
+  k2o=32
+  RUN_ENTHALPY=.false.
+  ENTHALPY=NO
+  ndsl=.false.
+  lingg_a=.true.
+  lingg_b=.true.
+  settls_dep3ds=.true.
+  settls_dep3dg=.true.
+  levwgt='24,30'     #transition layers for Weighted cubic-linear interpolation
+  redgg_a=.true.
+  gg_tracers=.false.
+  fixtrc='.false.,.true.,.false.'
+  yhalo=10
+  phigs_d=60.0
+  shuff_lats_a=.false.
+  shuff_lats_r=.false.
+fi
+
+if [ $ndsl = .true. ] ; then
+  semilag=.false.
+  HYBRID=NO
+  idvc_a=3                  # for hybrid model forecast (GDAS Henry)
+  idvc_f=3                  # for hybrid model forecast (GFS Henry)
+  idvt=21
+  IDSL=2
+  #IDVM=12
+  RUN_ENTHALPY=.false.
+  ENTHALPY=NO
+  GEN_COORD_HYBRID=.true.
+  lingg_a=.false.           # linear grid in dynamics
+  lingg_b=.false.           # linear grid in physics
+  shuff_lats_a=.true.
+  shuff_lats_r=.true.
+fi
+
+# NSST setup
+export NST_FCST=2         # default 0: No NSSTM,                                   W/O  Tr analysis
+                          #         1: With NSSTM but run passively (uncoupled),   W/O  Tr analysis
+                          #         2: With NSSTM and run actively    (coupled),   W/O  Tr analysis
+export NST_GSI=3          # default 0: No NST info at all;
+                          #         1: Input NST info but not used in GSI;
+                          #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                          #         3: Input NST info, used in both CRTM simulation and Tr analysis
+export NST_ANL=.false.    #  .false. : NSST analysis off (default); true = NSST analysis on
+if [ $NST_GSI -eq 3 ]; then export NST_ANL=.true.;  fi
+export NST_RESERVED=0    #  Reserved
+if [ $NST_GSI -eq 3 ]; then export NST_RESERVED=1; fi
+
+export ZSEA1=0           #  the upper depth (in mm) to do vertical mean of T-Profile (0 = default)
+export ZSEA2=5           #  the lower depth (in mm) to do vertical mean of T-Profile (0 = default)
+export nstf_name="$NST_FCST,$NST_SPINUP,$NST_RESERVED,$ZSEA1,$ZSEA2"
+                          #
+                          #  nstf_name is an integer array to hold the NSST model control parameters
+                          #  nstf_name(1) : 0 (default) = No NSSTM; 1 = uncoupled; 2 = coupled (nstf_name(1) = NST_FCST)
+                          #  nstf_name(2) : 0 (default) = NSST Spinup off; 1 = NSST Spinup on
+                          #  nstf_name(3) : Reserved
+                          #  nstf_name(4) : 0 (default) = the upper depth (in mm) to do vertical mean of T-Profile
+                          #  nstf_name(5) : 0 (default) = the lower depth (in mm) to do vertical mean of T-Profile
+
+#land  point to new resolution dependent soil moisture climo file
+FNSMCC=$FIXgsm/global_soilmgldas.t$JCAP.$LONB.$LATB.grb
+#land  use z0 from lookup table, not external file
+FNZORC='igbp'              # sib or igbp
+FNABSC=$FIXgsm/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.${SUFORG}grb
+FNALBC=$FIXgsm/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.${SUFORG}grb
+FNVETC=$FIXgsm/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.${SUFORG}grb
+FNSOTC=$FIXgsm/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.${SUFORG}grb
+FNALBC2=$FIXgsm/global_albedo4.1x1.grb
+
+
+# ------------------------------
+# land model/surface  specifics
+# ------------------------------
+LSOIL=4                             # Number of soil layers
+fcyc=24                             # Surface cycle calling interval
+GLDASCYCHR=24                       # GLDAS cycling frequency
+CDATE_SKIP=2008031500               # ldas modified sfc files not used before
+                                    # this date.  Must be > 24 hours from the start
+MODIS_ALB=YES                       # use modis based albedo product
+ialb=1                              # 0: climatology sw albedo based on surface veg types; 1: MODIS based land surface albedo
+ISOT=1                              # 0: 1-deg 9-type Zolber soil type; 1:  1-km 19-type STASGO dataset
+IVEGSRC=1                           # 2: 1-deg 13-type SIB vegetation; 1: MODIS global 1-km 20-type IGPB vegetation
+
+OPANAL_06=YES                       # For old ICs without LANDICE, only applicable for starting from existing analysis
+#CHG_LDAS=YES                       # To bring in new vegtyp table to LDAS
+snoid=snod                          # Snow id - default to snod
+ivssfc=200509                       # surface file version
+SET_FIX_FLDS=YES                    # creates orographic modis albedo fix fields if they do not exist by copy.sh
+
+cal_pre=.true.
+
+export dt_cpld=${dt_cpld:-3600}
+export dt_ocean=${dt_ocean:-3600}
+export dt_aocpl=${dt_aocpl:-3600}
+
+ZFLXTVD=.false.
+ref_temp=350.0
+sl_epsln=0.02
+cdamp="50000,2.0"
+flgmin='0.180,0.220'
+ncw='20,120'
+bkgd_vdif_m=1.0
+bkgd_vdif_h=1.0
+bkgd_vdif_s=1.0
+pdfcld=.false.
+shcnvcw=.false.
+zhao_mic=.true.
+redrag=.true.
+old_monin=.false.
+cdmbgwd='2.0,0.25'
+crtrh='0.90,0.90,0.90'
+ccwf='1.0,1.0'
+nmtvr=14
+psautco='6.0e-4,3.0e-4'
+prautco='1.0e-4,1.0e-4'
+wminco='1.0e-5,1.0e-5'
+evpco=2.0e-5
+cnvgwd=.true.
+cgwf=0.5,0.05
+hybedmf=.true.
+dspheat=.true.
+
+ras=.false.         # To turn on RAS convection
+if [ $ras = .true. ]; then
+  random_clds=.true.
+  shal_cnv=.false.
+  newsas=1
+  mstrat=.true.
+  catastrophy=.false.
+  ctei_rm='0.60,0.23'
+  dlqf='0.5,0.5'
+else               # SAS and T1534 SLG-GFS
+  random_clds=.false.
+  sashal=1
+  shal_cnv=.true.
+  newsas=1
+  mstrat=.false.
+  ctei_rm='10.0,10.0'
+  dlqf='0.0,0.0'
+fi
+
+
+#----------------------------------
+export mfcnvcld=.true.
+export imfdeepcnv=1
+export imfshalcnv=1
+export cnvcld=.false.
+
+if [ $mfcnvcld = .true. ] ; then
+  export cnvcld=.true.
+#
+# cnvcld: convective cloudiness enhancement in radiation by
+#     suspended cloud condensate within cumulus clouds.
+#
+  export imfdeepcnv=2
+  export imfshalcnv=2
+# export psautco='8.0e-4,8.0e-4'
+#
+# imfdeepcnv - integer, flag for mass-flux deep conv scheme
+#     1: July 2010 version of SAS conv scheme (operational in 2016)
+#     2: scale- & aerosol-aware mass-flux deep conv scheme
+#     0: old SAS version before July 2010
+# imfshalcnv - integer, flag for mass-flux shallow conv scheme
+#     1: mass-flux shallow conv scheme (operational in 2016)
+#     2: scale- & aerosol-aware mass-flux shallow conv scheme
+#     0: modified Tiedtke's eddy-diffusion shallow convection
+#    -1: no shallow convection used
+fi
+#----------------------------------
+
+
+#--------------------------------------------------
+# land - change from 2 to 3.  since z0 is set in sfcsub.f from veg type, must use the veg type from sfcsub.f (=3).
+#                             do not use veg type from input grid (=2)
+CLIMO_FIELDS_OPT=3
+#CLIMO_FIELDS_OPT=2   # Interpolate veg type, soil type and slope type from input grid, all others from sfcsub.f
+#                     # =3 to coldstart higher resolution run.
+
+#--------------------------------------------------
+# For NEMS
+#--------------------------------------------------
+MKL_NUM_THREADS=1
+MKL_CBWR=AVX
+MP_MPILIB=mpich2
+USEBULKXFER=NO
+GOCART=0
+EXPLICIT=.false.
+ADIAB=.false.
+NGRID_A2OI=20
+A2OI_OUT=.false.
+CPLFLX=.false.
+REDUCED_GRID=.true.
+
+# wam model to couple with idea, default is false
+IDEA=.false.
+LDFIFLTO=.true.
+if [ $IDEA = .true. ]; then
+#***************************************************************
+#                    N2 ,    H2O,     O3,        CLW,    O,      O2
+ CPIlist=" 1039.645, 1846.0, 820.2391,    0.0, 1299.185, 918.0969"
+ RIlist="  296.8034, 461.50, 173.2247,    0.0,  519.674, 259.837 "
+#***************************************************************
+ NTRAC=5
+else
+#                   Dry ,    H2O,     O3,        CLW,    O,      O2
+ CPIlist=" 1004.6,   1846.0, 820.2391,    0.0"
+ RIlist="  286.05,   461.50, 173.2247,    0.0"
+fi
+
+FTSFS=0.0
+FAISS=0.0
+if [ $semilag = .true. ] ; then
+    NTRAC=3
+    FTSFS=90.0
+    FAISS=99999
+fi
+
+grid_aldata=.false.
+ENS_NUM=1
+MEMBER_NAMES=c00
+SPECTRAL_LOOP=2
+QUILTING=.true.
+WRT_GROUP=${WRT_GROUP:-6}
+WRTPE_PER_GROUP=${WRTPE_PER_GROUP:-4}
+WRITE_DOPOST=.false.
+POST_GRIBVERSION="grib1"
+GOCART_AER2POST=.false.
+liope=.false.
+if [[ $QUILTING = .false. ]] ; then
+ wrtpe=0
+else
+ wrtpe=$((WRTPE_PER_GROUP*WRT_GROUP))
+ liope=.true.
+fi
+
+MP_STDOUTMODE=ordered
+#export MP_EUIDEVELOP=min
+MP_LABELIO=yes
+MP_SHARED_MEMORY=yes
+MP_COREFILE_FORMAT=lite
+MEMORY_AFFINITY=MCM
+NTHREADS=$threads
+XLSMPOPTS="parthds=$NTHREADS:stack=1024000000"
+SPINLOOPTIME=500
+YIELDLOOPTIME=500
+AIXTHREAD_SCOPE=S
+
+print_esmf=.false.
+grib_input=1
+ENS_SPS=.true.
+HOUTASPS=10000
+ldfiflto=.false.
+
+# For two tracers
+ntrc=3  ; varid=21  ; numcld=1
+PASSIVE_TRACER=.false.
+#
+NTRAC=${NTRAC:-3}
+NTOZ=2
+NTCW=3
+NCLD=1
+NGPTC=10
+NMTVR=14
+lsm=1
+
+hdif_fac=1.0
+hdif_fac2=1.0
+ldfi_spect=.true.
+LDFI_GRD=.false.
+TFILTC=0.85
+IDEA=.false.
+SEMI_IMPLICIT_TEMP_PROFILE=.false.
+pre_rad=.false.
+ldiag3d=.false.
+ccnorm=.false.
+mom4ice=.false.
+lgoc3d=.false.
+trans_trac=.true.
+climate=.false.
+h2o_phys=.false.
+
+RIlist="286.05,   461.50, 173.2247,    0.0,"
+CPIlist="1004.6,   1846.0, 820.2391,    0.0,"
+TRACERVARS="RI=$RIlist,CPI=$CPIlist,"
+
+#------------------------------------------------------
+
+ictm=1               #ICTM=1 in GFS T574 Operations
+IEMS=1               # 0-blackbody ground emission; 1-climatology on one-deg map  
+ISOL=2               # 0--fixed solar constant; 1--changing solar constant
+IAER=111             # 111--with stratospheric aerosol, tropospheric aerosol LW, troposphere aerosol SW.
+IAER_MDL=0           # choosing different aerosol models, such as OPAC-monthly-climatology,
+ICO2=2               # 0--fixed CO2 constant; 1--time varying global mean CO2; 2--changing CO2
+IOVR_SW=1            # 0--random cloud overlap for SW; 1--maximum-random cloud overlap for SW
+IOVR_LW=1            # 0 (1) --random (maximum/random)  cloud overlap for LW
+ISUBC_LW=2           # 0--OPS/standard LW clouds.. no MCICA; 1--prescribed MCICA seeds; 2--random MCICA seeds
+ISUBC_SW=2           # 0--OPS/standard SW clouds.. no MCICA; 1--prescribed MCICA seeds; 2--random MCICA seeds
+
+export print_esmf=.true.
+IOBUF_PARAMS="'*:size=8M'"
+
+DOIAU=NO
+iau_freq=3
  
+ENTHALPY=NO                 ;#control the chgres and nceppost (default NO)
+RUN_ENTHALPY=.false.        ;#control the fcst model (default NO)
+Apercent=100
+
+export DYNVARS="nemsio_in=$NEMSIO_IN,nemsio_out=$NEMSIO_OUT,sigio_out=$SIGIO_OUT,shuff_lats_a=$shuff_lats_a,hdif_fac=$hdif_fac,hdif_fac2=$hdif_fac2,settls_dep3ds=$settls_dep3ds,settls_dep3dg=$settls_dep3dg,redgg_a=$redgg_a,gg_tracers=$gg_tracers,sl_epsln=$sl_epsln,ref_temp=$ref_temp,yhalo=$yhalo,phigs_d=$phigs_d,ldfi_spect=$ldfi_spect,cdamp=$cdamp,k2o=$k2o,ref_pres=$ref_pres"
+
+export PHYVARS="nemsio_in=$NEMSIO_IN,nemsio_out=$NEMSIO_OUT,sfcio_out=$SFCIO_OUT,ras=$ras,zhao_mic=$zhao_mic,lsm=$lsm,old_monin=$old_monin,imfshalcnv=$imfshalcnv,imfdeepcnv=$imfdeepcnv,shal_cnv=$shal_cnv,shuff_lats_r=$shuff_lats_r,ialb=$ialb,pre_rad=$pre_rad,random_clds=$random_clds,iovr_lw=$IOVR_LW,iovr_sw=$IOVR_SW,ISOL=$ISOL,ICO2=$ICO2,IAER=$IAER,ictm=$ictm,nsout=$nsout,use_ufo=$use_ufo,ldiag3d=$ldiag3d,ncw=$ncw,crtrh=$crtrh,flgmin=$flgmin,cnvgwd=$cnvgwd,cgwf=$cgwf,ctei_rm=$ctei_rm,mstrat=$mstrat,ccnorm=$ccnorm,mom4ice=$mom4ice,A2OI_OUT=$A2OI_OUT,CPLFLX=$CPLFLX,NGRID_A2OI=$NGRID_A2OI,lgoc3d=$lgoc3d,trans_trac=$trans_trac,cal_pre=$cal_pre,bkgd_vdif_m=$bkgd_vdif_m,bkgd_vdif_h=$bkgd_vdif_h,bkgd_vdif_s=$bkgd_vdif_s,climate=$climate,psautco=$psautco,prautco=$prautco,evpco=$evpco,wminco=$wminco,CCWF=$ccwf,dlqf=$dlqf,cdmbgwd=$cdmbgwd,grid_aldata=$grid_aldata,semilag=$semilag,redrag=$redrag,hybedmf=$hybedmf,dspheat=$dspheat,cnvcld=$cnvcld,pdfcld=$pdfcld,shcnvcw=$shcnvcw,isubc_lw=$ISUBC_LW,isubc_sw=$ISUBC_SW,fixtrc=$fixtrc,gg_tracers=$gg_tracers,h2o_phys=$h2o_phys,isot=$ISOT,ivegsrc=$IVEGSRC "
+
+
+
+export FCSTVARS="$DYNVARS,$PHYVARS"   # not used by exglobal_fcst_nems.sh.ecf
+
+
+# Turn off stochastic physics
+export SET_STP_SEED=${SET_STP_SEED:-NO}
+
+
+# Forecast executable and scrpt
+export FCSTEXEC=${FCSTEXEC:-${EXECgsm}/global_fcst}
+export FORECASTSH=${FORECASTSH:-$SCRgsm/exglobal_fcst_nems.sh.ecf}
+
+
+# Input variables
+
+#
+# Input fix files
+export FNOROG=${FNOROG:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.${SUFORG}grb}
+export FNMASK=${FNMASK:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.${SUFORG}grb}
+export OROGRAPHY=${OROGRAPHY:-${FIXgsm}/global_orography.t${JCAP}.$LONB.$LATB.${SUFORG}grb}
+export OROGRAPHY_UF=${OROGRAPHY_UF:-${FIXgsm}/global_orography_uf.t${JCAP}.$LONB.$LATB.${SUFORG}grb}
+export LONSPERLAT=${LONSPERLAT:-${FIXgsm}/global_lonsperlat.t${JCAP}.$LONB.$LATB.txt}
+export SLMASK=${SLMASK:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.${SUFORG}grb}
+export MTNVAR=${MTNVAR:-$FIXgsm/global_mtnvar.t$JCAP.$LONB.$LATB.f77}
+export FNTSFC=${FNTSFC:-$FIXgsm/RTGSST.1982.2012.monthly.clim.grb}
+export FNAISC=${FNAISC:-$FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+

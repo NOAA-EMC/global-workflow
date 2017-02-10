@@ -1,7 +1,8 @@
 #####################################################################
 echo "-----------------------------------------------------"
 echo " exglobal_pgrb2_gfs_g2.sh.ecf" 
-echo " Produces 1x1 and 0.25x0.25 degree pgrb2 GRIB2 files from master."
+echo " Produces Global 1p0 deg grid , 0.25x0.25 degree, 0.5x0.5"
+echo " degree, 2.5x2.5 degree pgrb2 GRIB2 files from GFS master."
 echo "-----------------------------------------------------"
 #####################################################################
 
@@ -25,28 +26,37 @@ postmsg "$jlogfile" "$msg"
 #               generation.
 ############################################################
 
+# Set type of Interpolation for WGRIB2
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+
+# Set grid 0p25 deg LAT/LON
+export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
+
 ############################################################
 # Process Analysis Files before starting the Forecast Files
 ############################################################
-#if test -f $COMIN/${RUN}.t${cyc}z.master.grbianl -a ${SHOUR} -eq 0
+#if test -f $COMIN/${RUN}.t${cyc}z.master.grb2ianl -a ${SHOUR} -eq 0
 if [ $post_times = anl ]; then
   cp $COMIN/${RUN}.t${cyc}z.master.grb2anl masterfile_anl
 
 #  paramlist=$PARMPOST/global_1x1_paramlist_g2.anl #for regular pgrb2 files
   paramlist=$PARMgfs/global_1x1_paramlist_g2.anl #for regular pgrb2 files
-  $WGRIB2 masterfile_anl | grep -F -f $paramlist | $WGRIB2 -i -grib tmpfile_anl masterfile_anl
-    
+  $WGRIB2 masterfile_anl | grep -F -f $paramlist | $WGRIB2 -i -grib tmpfile_pgrb2_anl masterfile_anl
+  $WGRIB2  tmpfile_pgrb2_anl $opt1 $opt2 -new_grid $grid0p25 tmpfile_anl
+
 #  paramlistb=$PARMPOST/global_master-catchup_parmlist_g2   #for pgrb2b files
   paramlistb=$PARMgfs/global_master-catchup_parmlist_g2   #for pgrb2b files
-  $WGRIB2 masterfile_anl | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile3_anl masterfile_anl
-    
-  $WGRIB2 tmpfile_anl -s > tmpi2file_anl
+  $WGRIB2 masterfile_anl | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile_pgrb2b_anl masterfile_anl
+  $WGRIB2  tmpfile_pgrb2b_anl $opt1 $opt2 -new_grid $grid0p25 tmpfile3_anl
+
+  $WGRIB2 tmpfile_anl -s > tmpfile2i_anl
   $WGRIB2 tmpfile3_anl -s > tmpfile3i_anl
 
   if test "$SENDCOM" = 'YES'
   then
     cp tmpfile_anl   $COMOUT/${RUN}.${cycle}.pgrb2.0p25.anl
-    cp tmpi2file_anl $COMOUT/${RUN}.${cycle}.pgrb2.0p25.anl.idx
+    cp tmpfile2i_anl $COMOUT/${RUN}.${cycle}.pgrb2.0p25.anl.idx
     cp tmpfile3_anl  $COMOUT/${RUN}.${cycle}.pgrb2b.0p25.anl
     cp tmpfile3i_anl $COMOUT/${RUN}.${cycle}.pgrb2b.0p25.anl.idx
 
@@ -70,7 +80,8 @@ if [ $post_times = anl ]; then
   chmod 775 poescript
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
-  mpirun.lsf
+#  mpirun.lsf
+  $APRUN $DATA/poescript
   export err=$?;err_chk
 
 exit
@@ -138,10 +149,13 @@ do
     err_exit "Input file size does not match copy in working directory"
   fi
 
-  $WGRIB2 masterfile_$fhr | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile_$fhr masterfile_$fhr
-  $WGRIB2 masterfile_$fhr | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile3_$fhr masterfile_$fhr
+  $WGRIB2 masterfile_$fhr | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile_a$fhr masterfile_$fhr
+  $WGRIB2 masterfile_$fhr | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile3_b$fhr masterfile_$fhr
  
-  $WGRIB2 tmpfile_$fhr -s > tmpi2file_$fhr
+  $WGRIB2  tmpfile_a$fhr $opt1 $opt2 -new_grid $grid0p25 tmpfile_$fhr
+  $WGRIB2  tmpfile3_b$fhr $opt1 $opt2 -new_grid $grid0p25 tmpfile3_$fhr
+
+  $WGRIB2 tmpfile_$fhr -s > tmpfile2i_$fhr
   $WGRIB2 tmpfile3_$fhr -s > tmpfile3i_$fhr
 
   if [ $fhr -lt 100 ]; then
@@ -153,7 +167,7 @@ do
   if test "$SENDCOM" = 'YES'
   then
     cp tmpfile_$fhr  $COMOUT/${RUN}.${cycle}.pgrb2.0p25.f${fhr3}
-    cp tmpi2file_$fhr $COMOUT/${RUN}.${cycle}.pgrb2.0p25.f${fhr3}.idx
+    cp tmpfile2i_$fhr $COMOUT/${RUN}.${cycle}.pgrb2.0p25.f${fhr3}.idx
     cp tmpfile3_$fhr  $COMOUT/${RUN}.${cycle}.pgrb2b.0p25.f${fhr3}
     cp tmpfile3i_$fhr $COMOUT/${RUN}.${cycle}.pgrb2b.0p25.f${fhr3}.idx
 
@@ -166,10 +180,6 @@ do
     fi
   fi
 
-#  export grid0p5="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000 500000 0"
-#  export grid1p0="0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0"
-#  export grid2p5="0 6 0 0 0 0 0 0 144 73 0 0 90000000 0 48 -90000000 357500000 2500000 2500000 0"
-
   mkdir -m 775 pgrb2_0p50 pgrb2_1p00 pgrb2_2p50 pgrb2b_0p50 pgrb2b_1p00
   echo "$USHgfs/gfs_prdgen.sh $fhr pgrb2 0p50" >> poescript
   echo "$USHgfs/gfs_prdgen.sh $fhr pgrb2 1p00" >> poescript
@@ -180,7 +190,9 @@ do
   chmod 775 poescript
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
-  mpirun.lsf
+#  mpirun.lsf
+
+  $APRUN  $DATA/poescript
   export err=$?; err_chk
 
 done

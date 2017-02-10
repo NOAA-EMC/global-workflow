@@ -81,7 +81,12 @@ echo "$HOMEgfs/scripts/exgfs_grib_awips.sh.ecf $fcsthrs" >> $DATA/poescript
 chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
-mpirun.lsf
+# mpirun.lsf
+
+export NODES=1
+aprun -n 1 -d 12 cfp $DATA/poescript
+export err=$?;err_chk
+
 export err=$?;err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

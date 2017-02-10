@@ -25,18 +25,25 @@ SCRIPT CHANGES
 
 RESOURCE INFORMATION
  * Current operational GFS runs on WCOSS phase2 nodes.   Q3FY17 NEMS GFS package should be implemented on WCOSS Cray.
+ * Timing tests only run on production Cray:  Luna before 12/30/2016 switch.  Surge after 12/30/2016 switch.
+   Surge run times tend to be a bit higher than Luna.   Run times on development Cray are higher and much more
+   variables.   The Cray configurations given below result in GFS and GDAS/EnKF run times comparable to or faster
+   than current Phase2 operations.  This was intentionally done.  It is easy to dial back and slow down jobs.
+   Ideally would like to see Cray GFS analysis and GDAS/EnKF suite run in same time as current Phase2 operations.
+   This is achievable by altering job configurations.  Most DA job configurations may be altered without changing
+   analysis results.   Tuning job configurations should be done one NCO is able to run entire cycle.
  * JGFS_ANALYSIS
    * job configuration
      * current operations:  240 nodes, 480 tasks, ptile=2, 12 threads
      * propose operations:  240 nodes, 480 tasks, ptile=2, 12 threads
    * run time
-      * current operations:  20.3 - 20.9 minutes
-      * propose operations:  26 - 28 minutes
-        See ../driver/test_gfs_analysis.sh for jobs submission
+      * current operations:  20.0 - 20.9 minutes
+      * propose operations:  20.1 - 20.6 minutes (Luna); 21.7 - 22.3 minutes (Surge)
+        See ../driver/test_gfs_analysis.sh for job submission
  * Disk space required per day for gfs da files
    * /com/gfs/prod/gfs.$PDY (only JGFS_ANALYSIS output)
      * current operations:  16.7 Gb
-     * propose operations:  38.6 Gb (additional 21.9 Gb)
+     * propose operations:  38.6 Gb (additional 21.9 Gb).  Increase due to (1) transition to nemsio, (2) addition of NSST files
    * frequency of run
      * 6 hourly cycle (00, 06, 12, 18Z)
  * Specify all versions of libs, compilers, shared code being used
@@ -60,14 +67,17 @@ DISSEMINATION INFORMATION
  * Who are the users?
    * same as current operational GFS/GDAS GSI
  * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-   * same as current operational GFS/GDAS GSI
-
+   * same as current operational GFS/GDAS GSI - note that v14.1.0 changes the names of operational GFS files
+   * add transfer of following NSST files
+     * gfs.t${cyc}z.nstanl.nemsio
+     * gfs.t${cyc}z.sfcgcy
+     * gfs.t${cyc}z.sfctsk
 
 HPSS ARCHIVE
  * Retention length?
    * same as current operational GFS/GDAS GSI
  * List which output files should be archived
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI - note that v14.1.0 changes the names of operational GFS files
 
 
 IMPLEMENTATION INSTRUCTIONS

@@ -69,30 +69,33 @@ export FORM=$PDY$cyc
 export TIME=$PDY
 
 # This is an ush script version 06/17/2014
-DUMP=${NWROOTp1}/ush/dumpjb
+# DUMP=${NWROOTp1}/ush/dumpjb
+# DUMP=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_hourly.20160914/dumpjb
+
 #
 #  New ush script version v3.2.1 08/10/2015
 #  DUMP=${NWROOTp1}/obsproc_dump.v3.2.1/ush/dumpjb
 
-$DUMP $PDY$cyc 1.5  synop
-export err=$?
-if [ "$err" -ne 0 ]
-then
-   echo "###  No synop data for synop.${PDY}${cyc}! ###"
-   echo "###  Stoping execution of GENDATA          ###"
-   err_chk
-fi
+# $DUMP 2016091900 1.5  synop
+# export err=$?
+# if [ "$err" -ne 0 ]
+# then
+#   echo "###  No synop data for synop.${PDY}${cyc}! ###"
+#   echo "###  Stoping execution of GENDATA          ###"
+#   err_chk
+#fi
 
-for TYPE in metar ships lcman mbuoy dbuoy
-do
-   if [ ! -f ${COMINhourly} ]
-   then
-      $DUMP $PDY$cyc 0.5 $TYPE
-   else
-      cp {COMINhourly}  $TYPE.$PDY$cyc
-   fi
-done
+#for TYPE in metar ships lcman mbuoy dbuoy
+#do
+#   if [ ! -f ${COMINhourly} ]
+#   then
+#      $DUMP 2016091900 0.5 $TYPE
+#   else
+#      cp {COMINhourly}  $TYPE.$PDY$cyc
+#   fi
+# done
 
+# cp /gpfs/hps/emc/global/noscrub/Boi.Vuong/prod_data_20160920/* .
 export pgm=gendata
 . prep_step
 
@@ -108,10 +111,11 @@ export FORT17="graph_pillist1"
 export FORT52="NHPLOT"
 
 startmsg
-${GENDATA} >>$pgmout <<EOF 2>errfile
+${GENDATA} <<EOF 2>errfile
 $PDY$cyc
   50 -50  00 360 006 006
 EOF
+
 export err=$?;err_chk
 
 #########################################################
@@ -281,7 +285,8 @@ export FORT55="putlab.55"
 export FORT81="tropc${cycle}"."${cyc}"
 
 startmsg
-${SIXBITB2} >> $pgmout 2>errfile
+# ${SIXBITB2} >> $pgmout 2>errfile
+${SIXBITB2}
 export err=$?;err_chk
 
  for KEYW in GDTROPC GDTROPE GDTROPW GDTROP_g

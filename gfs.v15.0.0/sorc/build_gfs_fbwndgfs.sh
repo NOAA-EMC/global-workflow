@@ -39,8 +39,6 @@ else
  exit
 fi
 
-# module purge
-
 if [ $target = wcoss -o $target = cray ]; then
  module load ../modulefiles/gfs_fbwndgfs.$target
 else
@@ -50,6 +48,6 @@ fi
 module list
 
 cd fbwndgfs.fd
-make
-make clean
+make -f makefile.$target
+make -f makefile.$target clean
 mv fbwndgfs   ../../exec/

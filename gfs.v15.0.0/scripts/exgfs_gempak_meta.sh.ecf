@@ -111,9 +111,9 @@ do
 
    export fend=$fhr
 sleep 20
-   mpirun.lsf
+#   mpirun.lsf
+   $APRUN $DATA/poescript
    export err=$?; err_chk
-
 
       typeset -Z3 fhr
       if [ $fhr -eq 126 ] ; then

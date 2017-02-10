@@ -21,6 +21,10 @@ typeset -Z3 fcsthrs
 num=$#
 job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
+# Set type of Interpolation
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+
 if test "$num" -ge 1
 then
    echo ""
@@ -31,7 +35,7 @@ else
    echo " Number of arguments were not passed "
    echo ""
    echo ""
-   echo "Usage: exgfs_grib_awips_g2.sh.ecf  \$fcsthrs (3 digits) "
+   echo "Usage: $0  \$fcsthrs (3 digits) "
    echo ""
    exit 16
 fi
@@ -84,41 +88,59 @@ set -x
 cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}  tmpfile2
 cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
 cat tmpfile2    tmpfile2b   >  tmpfile
+$WGRIB2 tmpfile | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
 
 # JY for GRID in 160 161 201 212 213 254
 for GRID in 160 161 213 254
 do
-   $WGRIB2 tmpfile | grep  -F -f $PARMgfs/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
    case $GRID in
      160)
         #  Grid 160 - 47.5 km North Polar Stereographic grid for Alaska
-        export g160="20 6 0 0 0 0 0 0 180 156 19132000 174163000 8 60000000 210000000 47625000 47625000 0 64"
-        $COPYGB2 -g "${g160}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g160="20 6 0 0 0 0 0 0 180 156 19132000 174163000 8 60000000 210000000 47625000 47625000 0 64"
+        # $COPYGB2 -g "${g160}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export grid160="nps:210:60.0 174.163:180:47625 19.132:156:47625"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid160 awps_file_f${fcsthrs}_${GRID}
         ;;
      161)
         #  Grid 161 - 0.5 degree Lat/Lon grid for Puerto Rico
-        export g161="0 6 0 0 0 0 0 0 137 102 0 0 50750000 271750000 8 -250000 340250000 65535000 65535000 0"
-        $COPYGB2 -g "${g161}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g161="0 6 0 0 0 0 0 0 137 102 0 0 50750000 271750000 8 -250000 340250000 65535000 65535000 0"
+        # $COPYGB2 -g "${g161}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export grid161="latlon 271.75:137:0.5 50.75:102:-0.5"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid161 awps_file_f${fcsthrs}_${GRID}
         ;;
      201)
         #  Grid 201 - Northern Hemispheric (Polar Stereographic) 381km
-        export g201="20 6 0 0 0 0 0 0 65 65 -20826000 210000000 8 60000000 255000000 381000000 381000000 0 64"
-        $COPYGB2 -g "${g201}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g201="20 6 0 0 0 0 0 0 65 65 -20826000 210000000 8 60000000 255000000 381000000 381000000 0 64"
+        # $COPYGB2 -g "${g201}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export gridi201="nps:255:60.0 210.0:65:381000 -20.826:65:381000"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid201 awps_file_f${fcsthrs}_${GRID}
         ;;
      212)
         #  Grid 212 - 40 km over Regional - CONUS - Double Resolution (Lambert Conformal)
-        export g212="30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0"
-        $COPYGB2 -g "${g212}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g212="30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0"
+        # $COPYGB2 -g "${g212}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export grid212="lambert:265.0:25.0:25.0 226.541:185:40635 12.19:129:40635"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid212 awps_file_f${fcsthrs}_${GRID}
         ;;
      213)
         #  Grid 213 - National - CONUS - Double Resolution (Polar Stereographic) 95km
-        export g213="20 6 0 0 0 0 0 0 129 85 7838000 218972000 8 60000000 255000000 95250000 95250000 0 64"
-        $COPYGB2 -g "${g213}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g213="20 6 0 0 0 0 0 0 129 85 7838000 218972000 8 60000000 255000000 95250000 95250000 0 64"
+        # $COPYGB2 -g "${g213}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export grid213="nps:255:60.0 218.972:129:95250  7.838:85:95250"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid213 awps_file_f${fcsthrs}_${GRID}
         ;;
      254)
         #  Grid 254 - 40 km Mercator grid for Pacific Region
-        export g254="10 6 0 0 0 0 0 0 369 300 -35000000 110000000 48 20000000 60789000 250871000 64 0 40000000 40000000"
-        $COPYGB2 -g "${g254}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+        # export g254="10 6 0 0 0 0 0 0 369 300 -35000000 110000000 48 20000000 60789000 250871000 64 0 40000000 40000000"
+        # $COPYGB2 -g "${g254}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
+
+        export grid254="mercator:20.0 110.0:369:40000:250.871 -35.0:300:40000:60.789"
+        $WGRIB2  masterfile $opt1 $opt2 -new_grid $grid254 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
@@ -134,8 +156,7 @@ do
    export FORT51=grib2.awpgfs${fcsthrs}.${GRID}
 
    $TOCGRIB2 < $PARMgfs/grib2_awpgfs${fcsthrs}.${GRID} >> $pgmout 2> errfile
-
-   err=$?;export err ;err_chk
+   export err=$? ;err_chk
    echo " error from tocgrib2=",$err
 
    if [ $SENDCOM = "YES" ] ; then
@@ -199,8 +220,12 @@ EOF
 
       $WGRIB2 tmpfile | grep  -F -f wgrib2_parmlist_grb211  | $WGRIB2 -i -grib tmpfile_211 tmpfile
       #  Grid 211 - Regional - CONUS  (Lambert Conformal) 81km
-      export g211="30 6 0 0 0 0 0 0 93 65 12190000 226541000 8 25000000 265000000 81271000 81271000 0 64 25000000 25000000 0 0"
-      $COPYGB2 -g "${g211}" -i0 -x  tmpfile_211  gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
+      # export g211="30 6 0 0 0 0 0 0 93 65 12190000 226541000 8 25000000 265000000 81271000 81271000 0 64 25000000 25000000 0 0"
+      # $COPYGB2 -g "${g211}" -i0 -x  tmpfile_211  gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
+
+      export grid211="lambert:265.0:25.0:25.0 226.541:93:81271 12.19:65:81271"
+      $WGRIB2 tmpfile_211 $opt1 $opt2 -new_grid $grid211 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
+
       $WGRIB2 -s gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2 > gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2.idx
 
       ##############################

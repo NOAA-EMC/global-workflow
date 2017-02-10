@@ -34,6 +34,7 @@ C   2010-05-26  VUONG      CHANGED NO. OF POINTS FOR GFS (T574) GAUSSIAN
 C                          LAT/LON GRID
 C   2012-08-16  VUONG      MODIFIED VARIABLES NNPOS AND CHANGED 
 C                          VARIABLE ENVVAR TO CHARACTER*6
+C   2016-05-16  VUONG      MODIFIED CODE TO USE MODULE GDSWZD_MOD IN IP.v3.0.0
 C
 C USAGE:
 C   INPUT FILES:
@@ -80,6 +81,7 @@ C   MACHINE:  IBM WCOSS
 C
 C$$$
 C
+      use gdswzd_mod
       PARAMETER  (NPTS=1548800)
       PARAMETER  (MAXSTN=800)
       PARAMETER  (IMAX=1760,JMAX=880)
@@ -395,8 +397,10 @@ C...NEXT DAY PLUS 1 IN 'MDATE(3)'
 C
 C   CONVERT EARTH COORDINATES OF STATION TO GRID COORDINATES
                   DO 110 J = 1,NRSTNS
-                     CALL GDSWIZ(KGDS,-1,1,FILL,XPTS(J),YPTS(J),
-     &                    ALON(J),ALAT(J),IRET,0,DUM,DUM)
+C                     CALL GDSWIZ(KGDS,-1,1,FILL,XPTS(J),YPTS(J),
+C     &                    ALON(J),ALAT(J),IRET,0,DUM,DUM)
+                     CALL GDSWZD(KGDS,-1,1,FILL,XPTS(J),YPTS(J),
+     &                    ALON(J),ALAT(J),IRET)
                      ISTN(J) = XPTS(J)
                      JSTN(J) = YPTS(J)
 C                    PRINT 111,STNID(J),ALAT(J),ALON(J),ISTN(J),JSTN(J)
