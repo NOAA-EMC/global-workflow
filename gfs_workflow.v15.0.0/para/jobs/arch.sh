@@ -509,6 +509,14 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENGEMPAK = YES -a ${AWIPS20KM:-NO}
   cd $COMROT/nawips                    
   rm gfs.$pdyr/gfs*_${rdate}* 2>/dev/null
   rm gfs.$pdyr/gfs.t${cycr}z*idx 2>/dev/null
+  rdate2=$($NDATE -24 $rdate)
+  pdyr2=`echo $rdate2 | cut -c1-8`
+  rm -r gfs.$pdyr2 2>/dev/null
+  if [ $AWIPS20KM = YES ];then
+    cd $PRODNAMES_DIR/pcom2/para
+    rm gfs.$pdyr/grib2*_${cycr} 2>/dev/null
+    rm -r gfs.$pdyr2 2>/dev/null
+  fi
 fi
 
 ################################################################################
@@ -518,7 +526,7 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
    export COMIN=$PRODNAMES_DIR/com2/gfs/para/$CDUMP.$PDY
    export COMOUT=$PRODNAMES_DIR/com2/gfs/para/$CDUMP.$PDY
    export COMAWP=$PRODNAMES_DIR/com2/nawips/para/$CDUMP.$PDY
-   export pcom=$PRODNAMES_DIR/pcom2/para/gfs
+   export pcom=$PRODNAMES_DIR/pcom2/para/$CDUMP.$PDY
    mkdir -p $COMOUT $COMAWP $pcom
    export pid=$$
    export JCAP=${JCAP:-574}
@@ -550,14 +558,11 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
    rdate=$($NDATE -$HRKBUFRSND $CDATE)
    pdyr=`echo $rdate | cut -c1-8`
    cycr=`echo $rdate | cut -c9-10`
-   cd $COMROT/nawips/gfs.$pdyr
-   export err=$?
-   if [ $err -eq 0 ] ; then
-    rm -rf bufr.t${cycr}z 2>/dev/null
-    rm gfs.t${cycr}z.bufrsnd.tar.gz 2>/dev/null
-    #rm nawips/gfs_${pdyr}${cycr}* 2>/dev/null
-    #rmdir nawips
-   fi
+   cd $PRODNAMES_DIR/com2/nawips/para
+   rm gfs.$pdyr/gfs*_${rdate}*snd 2>/dev/null
+   cd $PRODNAMES_DIR/com2/gfs/para/gfs.$pdyr
+   rm -r bufr.t${cycr}z 2>/dev/null
+
 fi
 
 ################################################################################
