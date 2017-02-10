@@ -41,6 +41,7 @@ RESOURCE INFORMATION
    * compiler
      * PrgEnv-intel/5.2.56
      * cray-mpich/7.2.0
+     * craype-hugepages4M
    * library modules
      * NetCDF-intel-haswell/3.6.3
      * bufr-intel/11.0.1
@@ -72,14 +73,14 @@ DISSEMINATION INFORMATION
  * Who are the users?
    * same as current operational GFS/GDAS GSI
  * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI.  See gdas.v14.1.0 and gfs.v14.1.0 da release notes for file transfers
 
 
 HPSS ARCHIVE
  * Retention length?
    * same as current operational GFS/GDAS GSI
  * List which output files should be archived
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI.  See gdas.v14.1.0 and gfs.v14.1.0 da release notes for HPSS archive
 
            
 IMPLEMENTATION INSTRUCTIONS

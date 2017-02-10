@@ -404,6 +404,7 @@ for fhr in $( seq -6 $BKGFREQ 3 ) ; do
    echo $sges
 #   stype=sigg${tpref}
    stype=natg${tpref}
+   [[ $RUN = cdas1 ]] && stype=sigg${tpref} ## for cfs
    pges=pg${tpref}prep
    ptype=${pgpref}${tpref}
 

@@ -724,6 +724,8 @@ export SFCGCY=${SFCGCY:-${COMOUT}/${PREINP}sfcgcy}
 export SFCTSK=${SFCTSK:-${COMOUT}/${PREINP}sfctsk}
 export NSTANL=${NSTANL:-${COMOUT}/${PREINP}nstanl}
 export SIGANL=${SIGANL:-${COMOUT}/${PREINP}sanl}
+export SFCANL_OUT=${SFCANL_OUT:-sfcanl}
+export SIGANL_OUT=${SIGANL_OUT:-sanl}
 export ABIAS=${ABIAS:-${COMOUT}/${PREINP}abias}
 export ABIASPC=${ABIASPC:-${COMOUT}/${PREINP}abias_pc}
 export ABIASAIR=${ABIASAIR:-${COMOUT}/${PREINP}abias_air}
@@ -1435,19 +1437,19 @@ fi
 
 if test "$SAVEGES" = "YES"
 then
-   cp $SFCANL   $GESOUT/${PREINP}sfcanl.nemsio
+   cp $SFCANL   $GESOUT/${PREINP}$SFCANL_OUT
    if [ $NST_GSI -gt 0 ] ; then
       cp $NSTANL  $GESOUT/${PREINP}nstanl.nemsio
    fi
-   cp $SIGANL   $GESOUT/${PREINP}atmanl.nemsio
+   cp $SIGANL   $GESOUT/${PREINP}$SIGANL_OUT
    cp $ABIAS    $GESOUT/${PREINP}abias
    cp $ABIASPC  $GESOUT/${PREINP}abias_pc
    cp $ABIASAIR $GESOUT/${PREINP}abias_air
 fi
 if test "$SENDCOM" = "YES"
 then
-   cp $SFCANL   $COMOUT/${PREINP}sfcanl.nemsio
-   cp $SIGANL   $COMOUT/${PREINP}atmanl.nemsio
+   cp $SFCANL   $COMOUT/${PREINP}$SFCANL_OUT
+   cp $SIGANL   $COMOUT/${PREINP}$SIGANL_OUT
    cp $ABIAS    $COMOUT/${PREINP}abias
    cp $ABIASPC  $COMOUT/${PREINP}abias_pc
    cp $ABIASAIR $COMOUT/${PREINP}abias_air

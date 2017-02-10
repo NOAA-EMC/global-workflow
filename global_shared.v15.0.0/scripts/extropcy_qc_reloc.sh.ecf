@@ -111,7 +111,7 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 #  relocation processing in COMSP path
    qual_last=".$tmmark"  # need this because gfs and gdas don't add $tmmark
                          #  qualifer to end of output sigma guess files
-   [ $NET = gfs -o $NET = gdas ]  &&  qual_last=""
+   [ $NET = gfs -o $NET = gdas -o $NET = cfs ]  &&  qual_last=""
 
    if [ $BKGFREQ -eq 1 ]; then
       [ -s sgm3prep ]  &&  cp sgm3prep ${COMSP}sgm3prep${qual_last}

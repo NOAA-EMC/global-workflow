@@ -65,7 +65,7 @@
                          ZGDRAG, CNVCTVMMIXING, VDIFFMACCE, MGDRAG,            &
                          CNVCTUMMIXING, NCNVCTCFRAC, CNVCTUMFLX, CNVCTDETMFLX, &
                          CNVCTZGDRAG, CNVCTMGDRAG, ZMID, ZINT, PMIDV,          &
-                         CNVCTDMFLX, ICING_GFIS
+                         CNVCTDMFLX, ICING_GFIS,GTG
       use vrbls2d, only: T500, W_UP_MAX, W_DN_MAX, W_MEAN, PSLP, FIS, Z1000
       use masks,   only: LMH, SM
       use physcons,only: CON_FVIRT, CON_ROG, CON_EPS, CON_EPSM1
@@ -98,7 +98,8 @@
      &,                                      Q2SL,  WSL,   CFRSL, O3SL, TDSL   &
      &,                                      EGRID1,  EGRID2                   &
      &,                                      FSL_OLD, USL_OLD, VSL_OLD         &
-     &,                                      OSL_OLD, OSL995,  ICINGFSL, ICINGVSL
+     &,                                      OSL_OLD, OSL995                   &
+     &,                                      ICINGFSL, ICINGVSL,GTGSL
 !     REAL D3DSL(IM,JM,27),DUSTSL(IM,JM,NBIN_DU)
       REAL, allocatable  ::  D3DSL(:,:,:), DUSTSL(:,:,:)
 !
@@ -210,6 +211,8 @@
 ! NCAR ICING
          (IGET(450) > 0) .OR. (MODELNAME == 'RAPR') .OR.&
          (IGET(480) > 0) .OR. (MODELNAME == 'RAPR') .OR.&
+! NCAR GTG turbulence
+         (IGET(464) > 0) .OR.                           &
 ! LIFTED INDEX needs 500 mb T
          (IGET(030)>0) .OR. (IGET(031)>0) .OR. (IGET(075)>0)) THEN
 !
@@ -255,6 +258,7 @@
               CFRSL(I,J)    = SPVAL
               ICINGFSL(I,J) = SPVAL
               ICINGVSL(I,J) = SPVAL
+              GTGSL(I,J)    = SPVAL
 !
 !***  LOCATE VERTICAL INDEX OF MODEL MIDLAYER JUST BELOW
 !***  THE PRESSURE LEVEL TO WHICH WE ARE INTERPOLATING.
@@ -348,6 +352,8 @@
 !GFIP
                  IF(ICING_GFIP(I,J,1) < SPVAL) ICINGFSL(I,J) = ICING_GFIP(I,J,1) 
                  IF(ICING_GFIS(I,J,1) < SPVAL) ICINGVSL(I,J) = ICING_GFIS(I,J,1)
+!GTG
+                 IF(GTG(I,J,1) < SPVAL) GTGSL(I,J) = GTG(I,J,1)
 ! DUST
                  if (gocart_on) then
                    DO K = 1, NBIN_DU
@@ -529,6 +535,9 @@
                    endif
                    if(ICINGFSL(I,J)< 0.001) ICINGVSL(I,J) = 0.
 
+! GTG
+                 IF(GTG(I,J,LL) < SPVAL .AND. GTG(I,J,LL-1) < SPVAL)          &
+                   GTGSL(I,J) = GTG(I,J,LL) + (GTG(I,J,LL)-GTG(I,J,LL-1))*FACT 
 ! DUST
                  if (gocart_on) then
                    DO K = 1, NBIN_DU
@@ -2047,6 +2056,33 @@
               cfld = cfld+1
               fld_info(cfld)%ifld=IAVBLFLD(IGET(480))
               fld_info(cfld)%lvl=LVLSXML(LP,IGET(480))
+!$omp parallel do private(i,j,jj)
+              do j=1,jend-jsta+1
+                jj = jsta+j-1
+                do i=1,im
+                  datapd(i,j,cfld) = GRID1(i,jj)
+                enddo
+              enddo
+            endif
+          ENDIF
+        ENDIF
+
+!---  GTG EDR turbulence: ADDED BY Y. MAO
+        IF(IGET(464) >  0) THEN
+          IF(LVLS(LP,IGET(464)) > 0) THEN
+!$omp  parallel do private(i,j)
+             DO J=JSTA,JEND
+               DO I=1,IM
+                 GRID1(I,J) = GTGSL(I,J)
+               ENDDO
+             ENDDO
+            if(grib == 'grib1')then
+               ID(1:25)=0
+               CALL GRIBIT(IGET(464),LP,GRID1,IM,JM)
+             elseif(grib == 'grib2') then
+              cfld = cfld+1
+              fld_info(cfld)%ifld=IAVBLFLD(IGET(464))
+              fld_info(cfld)%lvl=LVLSXML(LP,IGET(464))
 !$omp parallel do private(i,j,jj)
               do j=1,jend-jsta+1
                 jj = jsta+j-1

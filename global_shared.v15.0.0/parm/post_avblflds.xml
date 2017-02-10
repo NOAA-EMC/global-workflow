@@ -4114,6 +4114,56 @@
        <scale>4.0</scale>
     </param>
 
+<!-- 464-466 EDR on ISOBARIC_SFC -->
+    <param>
+       <post_avblfldidx>464</post_avblfldidx>
+       <shortname>EDPARM_GTG_ON_ISOBARIC_SFC</shortname>
+       <pname>EDPARM</pname>
+       <fixed_sfc1_type>isobaric_sfc</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <post_avblfldidx>465</post_avblfldidx>
+       <shortname>CAT_GTG_ON_ISOBARIC_SFC</shortname>
+       <pname>CATEDR</pname>
+       <fixed_sfc1_type>isobaric_sfc</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <post_avblfldidx>466</post_avblfldidx>
+       <shortname>MWTURB_GTG_ON_ISOBARIC_SFC</shortname>
+       <pname>MWTURB</pname>
+       <fixed_sfc1_type>isobaric_sfc</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
+<!-- 467-469 EDR on FD_HEIGHT_LVL -->
+    <param>
+       <post_avblfldidx>467</post_avblfldidx>
+       <shortname>EDPARM_GTG_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <pname>EDPARM</pname>
+       <fixed_sfc1_type>spec_alt_above_mean_sea_lvl</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <post_avblfldidx>468</post_avblfldidx>
+       <shortname>CAT_GTG_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <pname>CATEDR</pname>
+       <fixed_sfc1_type>spec_alt_above_mean_sea_lvl</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <post_avblfldidx>469</post_avblfldidx>
+       <shortname>MWTURB_GTG_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <pname>MWTURB</pname>
+       <fixed_sfc1_type>spec_alt_above_mean_sea_lvl</fixed_sfc1_type>
+       <scale>3.0</scale>
+    </param>
+
     <param>
        <post_avblfldidx>480</post_avblfldidx>
        <shortname>ICSEV_ON_ISOBARIC_SFC</shortname>
