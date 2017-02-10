@@ -39,6 +39,8 @@ export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 CDATEM=`$NDATE -$HRKCOM $CDATE`
 DDATEM=`echo $CDATEM | cut -c 1-8`
 cycm=`echo $CDATEM | cut -c9-10`
+CDATEM2=`$NDATE -24 $CDATEM`
+DDATEM2=`echo $CDATEM2 | cut -c 1-8`
 
 cd $COMIN
 
@@ -58,7 +60,9 @@ if [ $CDUMP = gdas -o $CDUMP = gfs ]; then
  fi
 
  COMOUTM=$COMPROD/com2/gfs/para/$CDUMP.$DDATEM
- if [ -d $COMOUTM ]; then rm -r $COMOUTM/${PRE}.t${cycm}* ;fi         
+ if [ -d $COMOUTM ]; then rm -r $COMOUTM/${PRE}.t${cycm}* ;fi
+ COMOUTM2=$COMPROD/com2/gfs/para/$CDUMP.$DDATEM2
+ if [ -d $COMOUTM2 ]; then rm -r $COMOUTM2 ;fi
 
  for file in *.$CDUMP.$CDATE; do
 
@@ -251,6 +255,8 @@ if [ $CDUMP = enkf ]; then
 
  COMOUTM=$COMPROD/com2/gfs/para/$CDUMP.$DDATEM/$cycm
  if [ -d $COMOUTM ]; then rm -r $COMOUTM ;fi
+ COMOUTM2=$COMPROD/com2/gfs/para/$CDUMP.$DDATEM2
+ if [ -d $COMOUTM2 ]; then rm -r $COMOUTM2 ;fi
 
  for file in *_${CDATE}*; do
   echo $file
@@ -325,6 +331,8 @@ if [ $CDUMP = gdas -o $CDUMP = gfs ]; then
 
  COMOUTM=$COMPROD/com2/gfs/nwges2/$CDUMP.$DDATEM
  if [ -d $COMOUTM ]; then rm -r $COMOUTM/${PRE}.t${cycm}* ;fi
+ COMOUTM2=$COMPROD/com2/gfs/nwges2/$CDUMP.$DDATEM2
+ if [ -d $COMOUTM2 ]; then rm -r $COMOUTM2 ;fi
 
  for file in *.$CDUMP.$CDATE; do
 
@@ -338,19 +346,33 @@ if [ $CDUMP = gdas -o $CDUMP = gfs ]; then
   [ -n "$FH" ] && unset FH
   [ -n "$NCO_BASE" ] && unset NCO_BASE
 
-  FOUND=YES
+  FOUND=NO
 
   case $base in
    sfnanl) NCO_BASE=sfcanl.nemsio;;
    gfnanl) NCO_BASE=atmanl.nemsio;;
-   sfnf*) FH=${base#sfnf};[ $FH -lt 100 ] && FH=0${FH};NCO_BASE=sfcf$FH.nemsio;;
-   gfnf*) FH=${base#gfnf};[ $FH -lt 100 ] && FH=0${FH};NCO_BASE=atmf$FH.nemsio;;
+   nsnanl) NCO_BASE=nstanl.nemsio;;
+   sfnf240) [ $CDUMP = gfs ] && NCO_BASE=sfcf240.nemsio;;
+   sfnf00) [ $CDUMP = gdas ] && NCO_BASE=sfcf000.nemsio;;
+   sfnf03) [ $CDUMP = gdas ] && NCO_BASE=sfcf003.nemsio;;
+   sfnf06) [ $CDUMP = gdas ] && NCO_BASE=sfcf006.nemsio;;
+   sfnf09) [ $CDUMP = gdas ] && NCO_BASE=sfcf009.nemsio;;
+   gfnf240) [ $CDUMP = gfs ] && NCO_BASE=atmf240.nemsio;;
+   gfnf00) [ $CDUMP = gdas ] && NCO_BASE=atmf000.nemsio;;
+   gfnf03) [ $CDUMP = gdas ] && NCO_BASE=atmf003.nemsio;;
+   gfnf06) [ $CDUMP = gdas ] && NCO_BASE=atmf006.nemsio;;
+   gfnf09) [ $CDUMP = gdas ] && NCO_BASE=atmf009.nemsio;;
+   nsnf240) [ $CDUMP = gfs ] && NCO_BASE=nstf240.nemsio;;
+   nsnf00) [ $CDUMP = gdas ] && NCO_BASE=nstf000.nemsio;;
+   nsnf03) [ $CDUMP = gdas ] && NCO_BASE=nstf003.nemsio;;
+   nsnf06) [ $CDUMP = gdas ] && NCO_BASE=nstf006.nemsio;;
+   nsnf09) [ $CDUMP = gdas ] && NCO_BASE=nstf009.nemsio;;
    biascr) NCO_BASE=abias;;
    biascr_pc) NCO_BASE=abias_pc;;
    aircraft_t_bias) NCO_BASE=abias_air;;
-   *) FOUND=NO;;
   esac
   
+  [ -n "$NCO_BASE" ] && FOUND=YES
   if [ $FOUND = YES ]; then
    ln -sf $COMIN/$file $COMOUT/$PRE.t${CYC}z.$NCO_BASE
   else

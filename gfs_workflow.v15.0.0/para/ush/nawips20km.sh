@@ -123,12 +123,19 @@ export MP_LABELIO=YES
 export MP_INFOLEVEL=3
 export MP_STDOUTMODE=ordered
 export NODES=2
-
+rc_awips20km=0
 # Execute the script.
 launcher=${launcher:-$APRUN_GEMPAK}
 $launcher $MP_CMDFILE
 
 cat $pgmout
+
+rc_awips20km=$?
+if [ rc_awips20km = 0 -a ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+
+#### Clean up after jobs finished
+#### if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+
 
 # If requested, submit gempak meta job
 ##if [ $CDUMP = gfs -a $GENGEMPAK_META = YES ];then

@@ -102,7 +102,7 @@ export DO_HD_PGRB=${DO_HD_PGRB:-YES}
 #
 # Set up model and cycle specific variables
 #
-export ILPOST=${ILPOST:-3}
+export ILPOST=${ILPOST:-1}
 export finc=${finc:-3}
 export fstart=${fstart:-0}
 export model=${model:-gfs}

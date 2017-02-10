@@ -118,7 +118,7 @@ if [ $DO_PRODNAMES = YES ] ; then
     rcc=$?
   fi
   if [[ $rcc -eq 0 ]]; then
-     $SETUPPRODNAMESH $COMROT $PRODNAMES_DIR $CDATE enkf $HRKSIG NO          
+     $SETUPPRODNAMESH $COMROT $PRODNAMES_DIR $CDATE enkf $HRKCOM
   else
      echo "EPOS:  ***WARNING*** CANNOT mkdir $PRODNAMES_DIR.  Will NOT run $SETUPPRODNAMESH"
   fi
