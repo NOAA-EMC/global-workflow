@@ -783,6 +783,7 @@ fi
 export WRT_GROUP=${WRT_GROUP:-1}
 export WRTPE_PER_GROUP=${WRTPE_PER_GROUP:-1}
 export WRITE_NEMSIOFLAG=${WRITE_NEMSIOFLAG:-.true.}
+export WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-.false.}
 export QUILTING=${QUILTING:-.true.}
 export GOCART_AER2POST=${GOCART_AER2POST:-.false.}
 if [ $NEMSIO_IN = .true. ]; then
@@ -1072,6 +1073,10 @@ if [[ $ENS_NUM -le 1 ]] ; then
     else
       SUF2=""
     fi
+
+    FH3=$FH
+    [[ $FH -lt 100 ]]&&FH3=0$FH
+
     eval ln -fs ${SIGO}$FNSUB SIG.F${FH}$SUF2
     eval ln -fs ${SFCO}$FNSUB SFC.F${FH}$SUF2
     eval ln -fs ${FLXO}$FNSUB FLX.F${FH}$SUF2
@@ -1152,6 +1157,9 @@ else
       else
         FHIAU=$FH
       fi
+
+      FH3=$FH
+      [[ $FH -lt 100 ]]&&FH3=0$FH
 
       eval ln -fs ${SIGO}$FNSUB SIG.F${FH}${SUF2}_${IMN}
       eval ln -fs ${SFCO}$FNSUB SFC.F${FH}${SUF2}_${IMN}
@@ -1438,6 +1446,7 @@ write_dopost:            $WRITE_DOPOST          # True--> run do on quilt
 post_gribversion:        $POST_GRIBVERSION      # True--> grib version for post output files
 gocart_aer2post:         $GOCART_AER2POST
 write_nemsioflag:        $WRITE_NEMSIOFLAG      # True--> Write nemsio run history files
+write_fsyncflag:         $WRITE_FSYNCFLAG       # True--> check if output files synced to disk
 nfhout:                  $FHOUT
 nfhout_hf:               $FHOUT_HF
 nfhmax_hf:               $FHMAX_HF

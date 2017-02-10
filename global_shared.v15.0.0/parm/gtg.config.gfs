@@ -1,0 +1,1399 @@
+# input parameters for GTG indices driver
+# Changes: add icoord vertical coordinate variable
+#        : uncomment first ' <ln(epsilon' 
+#        : will not use TransitionAltitude since countries have different definations
+#
+#
+#start section 1
+ printflag		   = 0;            ! control level of printout details, print all details when >=2
+ icoord                    = sigma;        | veritical coordicate system
+ use_equal_wts             =.TRUE.;        !
+ comp_full_grid            =.TRUE.;        | compute over entire NWP grid or just over portion containing observations
+ comp_ITFAMWT              =.TRUE.;        | compute MWT combination
+ comp_ITFADYN              =.FALSE.;       | compute CAT combination based on default weights
+ comp_convec_params        =.TRUE.;        | compute possible CIT parameters
+ use_MWT_polygons          =.FALSE.;       | compute mwt diagnostics only in predefined mountain regions (conus only)
+ clampidxL,H               =0.,1.5;        | Index clamps (edr accepted only between L and H)
+ clampitfaL,H              =0.,1.0;        | ITFA combination clamps (edr accepted only between L and H)
+#end section 1
+#
+# static_thresholds_WRFRR.dat
+# Revised by R. Sharman 09/02/2004 based on comparisons to 3 mos. pireps init+6hr fcst
+# Revised by R. Sharman 10/26/2004 to include extreme thresholds, list indices mask, assign
+#    default wts.
+# Revised by R. Sharman 05/27/2009 to include new indices, nonlinear remap thresholds,
+#    default wts. are sum of mogarea**2 + sogarea**2
+# Revised by R. Sharman 07/12/2009 to include both ipickindx and ipickitfa arrays for consistency
+#    with Taiwan project
+# Revised by R. Sharman 11/12/2010 for edr mappings.  Added names as a separate list
+# Revised by R. Sharman 05/26/2015 removed 421 1/STAB
+# Revised by R. Sharman 06/22/2015 removed 411 SCATR
+#
+# start section 2
+# Turbulence Index Names
+# Note Index numbers 400-475 are CAT indices, 476-490 are MWT indices, 491-495 reserved for GTG combo.
+  turbIndexNames = (
+# CAT indices names   units
+  (400, "Brown1",    "1/s"),
+  (401, "Brown2",    "m^2/3 s^-1"),
+  (402, "CP",        "m^2/s-2"),
+  (403, "Ellrod1",   "s^-2"),
+  (404, "Ellrod2",   "s^-2"),
+  (405, "1/Ri",      "ND"),
+  (406, "Ellrod3",   "s^-2"),
+  (407, "Lapse",     "K/m"),
+  (408, "ZBIG",      "m^2/3 s^-1"),
+  (409, "DTF3",      "m^2/s-2"),
+  (410, "Fth/Ri",    "m^2 s^-3"),
+  (411, "UNDEF",     ""),
+  (412, "Dutton",    "1/s"),
+  (413, "Endlich",   "deg/s"),
+  (414, "LAZ",       "m^2/s^2"),
+  (415, "NGM1",      "m s^-2"),
+  (416, "-NGM2",     "K m^-2 s^-2"),
+  (417, "SCHGW",     "m^2/3 s^-1"),
+  (418, "VWS",       "s^-1"),
+  (419, "-DRiDt",    "s^-1"),
+  (420, "HS/Ri",     "s^-1"),
+  (421, "UNDEF",     ""),
+  (422, "DEFSQ",     "s^-2"),
+  (423, "VORTSQ/Ri", "s^-2"),
+  (424, "|DIV|/Ri",  "1/s"),
+  (425, "DEFSQ/Ri",  "s^-2"),
+  (426, "iawind",    "m s^-2"),
+  (427, "AGI",       "s^-2"),
+  (428, "UBF/Ri",    "s^-2"),
+  (429, "1/SATRi",   "ND"),
+  (430, "PVGRAD",    "PVUs/km"),
+  (431, "EDRRCH",    "m^2/3 s^-1"),
+  (432, "EDR",       "m^2/3 s^-1"),
+  (433, "EDRLL",     "m^2/3 s^-1"),
+  (434, "SEDR/Ri",   "m^2/3 s^-1"),
+  (435, "1/RiTW",    "ND"),
+  (436, "LHFK",      "m"),
+  (437, "LHFK/Ri",   "m"),           # previously UNDEF
+  (438, "TEMPG/Ri",  "K/m"),
+  (439, "CTSQ/Ri",   "K^2 m^-2/3"),
+  (440, "Brown1/Ri", "1/s"),         # previously UNDEF
+  (441, "iawind/Ri", "m s^-2"),      # previously UNDEF
+  (442, "NGM1/Ri",   "m/s^2"),       # previously UNDEF
+  (443, "NGM2/Ri",   "K m^-2 s^-2"), # previously UNDEF
+  (444, "SCHGW/Ri",  "m^2/3 s^-1"),  # previously UNDEF
+  (445, "TROPG/Z",   "ND"),
+  (446, "SPEED",     "m/s"),
+  (447, "-Stone",    "s^-2"),
+  (448, "-NVA",      "ND"),
+  (449, "NCSU1",     "s^-3"),
+  (450, "NCSU2/Ri",  "s^-3"),
+  (451, "EDRLUN",    "m^2/3 s^-1"),
+  (452, "wsq",       "m^2/s^2"),
+  (453, "wsq/Ri",    "m^2/s^2"),
+  (454, "EDR/Ri",    "m^4/3 s^-2"),
+  (455, "EDRLL/Ri",  "m^4/3 s^-2"),
+  (456, "SIGW/Ri",   "m^2 s^-2"),
+  (457, "SIGWX/Ri",  "m^2 s^-2"),
+  (458, "F2D/Ri",    "K m s^-1"),
+  (459, "F2DTW/Ri",  "K m s^-1"),
+  (460, "F3D/Ri",    "K m s^-1"),
+  (461, "UNDEF",     ""),
+  (462, "MOGCLIMO",  "ND"),
+  (463, "SOGCLIMO",  "ND"),
+  (464, "MWTCLIMO",  "ND"),
+  (465, "SGSTKE",    "m^2 s^-2"),
+  (466, "SGSTKE/Ri", "m^2 s^-2"),
+  (467, "RTKE",      "m^2 s^-2"),
+  (468, "RTKE/Ri",   "m^2 s^-2"),
+  (469, "VARE",      "m^2 s^-2"),
+  (470, "VARE/Ri",   "m^2 s^-2"),
+  (471, "UNDEF",     ""),
+  (472, "UNDEF",     ""),
+  (473, "UNDEF",     ""),
+  (474, "UNDEF",     ""),
+  (475, "UNDEF",     ""),
+# MWT indices (units of mws are m/s)
+  (476, "MWT1",      "m^3 s^-3"),       # MWT1=mws*wsq
+  (477, "MWT2",      "K^2 m^1/3 s^-1"), # MWT2=mws*CTsq
+  (478, "MWT3",      "K m^2 s^-2"),     # MWT3=mws*F3D
+  (479, "MWT4",      "m^2 s^-2"),       # MWT4=mws*speed
+  (480, "MWT5",      "m s^-2"),         # MWT5=mws*|div|
+  (481, "MWT13",     "m s^-2"),         # MWT13=mws*Defsq/Ri
+  (482, "MWT14",     "m^7/3 s^-3"),     # MWT14=mws*epsLL^2/3
+  (483, "TKE_GWB",   "m^2 s^-2"),
+  (484, "MWT6",      "m^2 s^-3"),       # MWT6=mws*NGM1
+  (485, "MWT7",      "m^3 s^-3"),       # MWT7=mws*SIGW
+  (486, "MWT8",      "m^2 s^-1"),       # MWT8=mws*LHFK
+  (487, "MWT9",      "m^3 s^-2"),       # MWT9=mws*iawind/Ri
+  (488, "MWT10",     "m^7/3 s^-3"),     # MWT10=mws*(eps^2/3)avg
+  (489, "MWT11",     "m^5/3 s^-2"),     # MWT11=mws*SCHGW
+  (490, "MWT12",     "K m s^-1"),       # MWT12=mws*|TEMPG|
+# ITFA indices
+  (491, "ITFA",     "m^2/3 s^-1"),
+  (492, "ITFADEF",  "m^2/3 s^-1"),
+  (493, "ITFAMWT",  "m^2/3 s^-1"),
+  (494, "ITFAMAX",  "m^2/3 s^-1"),
+  (495, "ITFAMAXD", "m^2/3 s^-1")
+);
+# Index static weights (region 1=low-levels, 2=mid-levels, 3=upper levels)
+regionIndexWeights = (
+# CAT index weights - low-levels
+(1, 400,  0.323),    #  Brown1   
+(1, 401,  0.313),    #  Brown2   
+(1, 402,  0.332),    #  CP       
+(1, 403,  0.322),    #  Ellrod1  
+(1, 404,  0.321),    #  Ellrod2  
+(1, 405,  0.403),    #  1/Ri     
+(1, 406,  0.322),    #  Ellrod3  
+(1, 407,  0.381),    #  Lapse    
+(1, 408,  0.413),    #  ZBIG     
+(1, 409,  0.239),    #  DTF3     
+(1, 410,  0.360),    #  Fth/Ri   
+(1, 411, -1.000),    #  UNDEF    
+(1, 412,  0.311),    #  Dutton   
+(1, 413,  0.199),    #  Endlich  
+(1, 414,  0.274),    #  LAZ      
+(1, 415,  0.386),    #  NGM1     
+(1, 416,  0.388),    #  -NGM2    
+(1, 417,  0.365),    #  SCHGW    
+(1, 418,  0.296),    #  VWS      
+(1, 419,  0.251),    #  -DRiDt   
+(1, 420,  0.302),    #  HS/Ri    
+(1, 421, -1.000),    #  UNDEF    
+(1, 422,  0.322),    #  DEFSQ    
+(1, 423,  0.372),    #  VORTSQ/Ri
+(1, 424,  0.410),    #  |DIV|/Ri 
+(1, 425,  0.391),    #  DEFSQ/Ri 
+(1, 426,  0.389),    #  iawind   
+(1, 427,  0.263),    #  AGI      
+(1, 428,  0.409),    #  UBF/Ri   
+(1, 429,  0.391),    #  1/SATRi  
+(1, 430,  0.296),    #  PVGRAD   
+(1, 431,  0.204),    #  EDRRCH   
+(1, 432,  0.262),    #  EDR      
+(1, 433,  0.271),    #  EDRLL    
+(1, 434,  0.398),    #  SEDR/Ri  
+(1, 435,  0.382),    #  1/RiTW   
+(1, 436,  0.394),    #  LHFK     
+(1, 437,  0.429),    #  LHFK/Ri  
+(1, 438,  0.401),    #  TEMPG/Ri 
+(1, 439,  0.393),    #  CTSQ/Ri  
+(1, 440,  0.407),    #  Brown1/Ri
+(1, 441,  0.436),    #  iawind/Ri
+(1, 442,  0.432),    #  NGM1/Ri  
+(1, 443,  0.433),    #  NGM2/Ri  
+(1, 444,  0.414),    #  SCHGW/Ri 
+(1, 445,  0.250),    #  TROPG/Z  
+(1, 446,  0.385),    #  SPEED    
+(1, 447,  0.376),    #  -Stone   
+(1, 448,  0.374),    #  -NVA     
+(1, 449,  0.312),    #  NCSU1    
+(1, 450,  0.397),    #  NCSU2/Ri 
+(1, 451,  0.238),    #  EDRLUN   
+(1, 452,  0.320),    #  wsq      
+(1, 453,  0.428),    #  wsq/Ri   
+(1, 454,  0.352),    #  EDR/Ri   
+(1, 455,  0.386),    #  EDRLL/Ri 
+(1, 456,  0.426),    #  SIGW/Ri  
+(1, 457,  0.424),    #  SIGWX/Ri 
+(1, 458,  0.380),    #  F2D/Ri   
+(1, 459,  0.405),    #  F2DTW/Ri 
+(1, 460,  0.394),    #  F3D/Ri   
+(1, 461, -1.000),    #  UNDEF    
+(1, 462, -1.000),    #  MOGCLIMO 
+(1, 463, -1.000),    #  SOGCLIMO 
+(1, 464, -1.000),    #  MWTCLIMO 
+(1, 465, -1.000),    #  SGSTKE   
+(1, 466, -1.000),    #  SGSTKE/Ri
+(1, 467,  0.010),    #  RTKE   
+(1, 468,  0.010),    #  RTKE/Ri
+(1, 469,  0.010),    #  VARE   
+(1, 470,  0.010),    #  VARE/Ri
+(1, 471, -1.000),    #  UNDEF    
+(1, 472, -1.000),    #  UNDEF    
+(1, 473, -1.000),    #  UNDEF    
+(1, 474, -1.000),    #  UNDEF    
+(1, 475, -1.000),    #  UNDEF    
+# MWT index weights - low-levels
+(1, 476,  0.546),    #  MWT1
+(1, 477,  0.611),    #  MWT2
+(1, 478,  0.535),    #  MWT3
+(1, 479,  0.618),    #  MWT4
+(1, 480,  0.571),    #  MWT5
+(1, 481,  0.507),    #  MWT13
+(1, 482,  0.584),    #  MWT14
+(1, 483,  0.522),    #  TKE_GWB
+(1, 484,  0.605),    #  MWT6
+(1, 485,  0.660),    #  MWT7
+(1, 486,  0.590),    #  MWT8
+(1, 487,  0.606),    #  MWT9
+(1, 488,  0.592),    #  MWT10
+(1, 489,  0.586),    #  MWT11
+(1, 490,  0.569),    #  MWT12
+# ITFA combinations - Set weights to -1
+(1, 491,    -1.),    #  ITFA
+(1, 492,    -1.),    #  ITFADEF
+(1, 493,    -1.),    #  ITFAMWT
+(1, 494,    -1.),    #  ITFAMAX
+(1, 495,    -1.),    #  ITFAMAXD
+# CAT index weights - mid-levels
+(2, 400,  0.468),    #  Brown1   
+(2, 401,  0.423),    #  Brown2   
+(2, 402,  0.374),    #  CP       
+(2, 403,  0.477),    #  Ellrod1  
+(2, 404,  0.462),    #  Ellrod2  
+(2, 405,  0.415),    #  1/Ri     
+(2, 406,  0.467),    #  Ellrod3  
+(2, 407,  0.227),    #  Lapse    
+(2, 408,  0.387),    #  ZBIG     
+(2, 409,  0.410),    #  DTF3     
+(2, 410,  0.462),    #  Fth/Ri   
+(2, 411,    -1.),    #  UNDEF    
+(2, 412,  0.353),    #  Dutton   
+(2, 413,  0.303),    #  Endlich  
+(2, 414,  0.427),    #  LAZ      
+(2, 415,  0.410),    #  NGM1     
+(2, 416,  0.470),    #  -NGM2    
+(2, 417,  0.447),    #  SCHGW    
+(2, 418,  0.369),    #  VWS      
+(2, 419,  0.226),    #  -DRiDt   
+(2, 420,  0.418),    #  HS/Ri    
+(2, 421,    -1.),    #  UNDEF    
+(2, 422,  0.511),    #  DEFSQ    
+(2, 423,  0.464),    #  VORTSQ/Ri
+(2, 424,  0.510),    #  |DIV|/Ri 
+(2, 425,  0.504),    #  DEFSQ/Ri 
+(2, 426,  0.422),    #  iawind   
+(2, 427,  0.426),    #  AGI      
+(2, 428,  0.408),    #  UBF/Ri   
+(2, 429,  0.454),    #  1/SATRi  
+(2, 430,  0.470),    #  PVGRAD   
+(2, 431,  0.398),    #  EDRRCH   
+(2, 432,  0.506),    #  EDR      
+(2, 433,  0.515),    #  EDRLL    
+(2, 434,  0.414),    #  SEDR/Ri  
+(2, 435,  0.551),    #  1/RiTW   
+(2, 436,  0.277),    #  LHFK     
+(2, 437,  0.401),    #  LHFK/Ri  
+(2, 438,  0.461),    #  TEMPG/Ri 
+(2, 439,  0.476),    #  CTSQ/Ri  
+(2, 440,  0.462),    #  Brown1/Ri
+(2, 441,  0.456),    #  iawind/Ri
+(2, 442,  0.442),    #  NGM1/Ri  
+(2, 443,  0.473),    #  NGM2/Ri  
+(2, 444,  0.469),    #  SCHGW/Ri 
+(2, 445,  0.235),    #  TROPG/Z  
+(2, 446,  0.279),    #  SPEED    
+(2, 447,  0.457),    #  -Stone   
+(2, 448,  0.477),    #  -NVA     
+(2, 449,  0.325),    #  NCSU1    
+(2, 450,  0.555),    #  NCSU2/Ri 
+(2, 451,  0.393),    #  EDRLUN   
+(2, 452,  0.466),    #  wsq      
+(2, 453,  0.492),    #  wsq/Ri   
+(2, 454,  0.503),    #  EDR/Ri   
+(2, 455,  0.533),    #  EDRLL/Ri 
+(2, 456,  0.515),    #  SIGW/Ri  
+(2, 457,  0.509),    #  SIGWX/Ri 
+(2, 458,  0.497),    #  F2D/Ri   
+(2, 459,  0.478),    #  F2DTW/Ri 
+(2, 460,  0.507),    #  F3D/Ri   
+(2, 461, -1.000),    #  UNDEF    
+(2, 462, -1.000),    #  MOGCLIMO 
+(2, 463, -1.000),    #  SOGCLIMO 
+(2, 464, -1.000),    #  MWTCLIMO 
+(2, 465, -1.000),    #  SGSTKE   
+(2, 466, -1.000),    #  SGSTKE/Ri
+(2, 467,  0.010),    #  RTKE   
+(2, 468,  0.010),    #  RTKE/Ri
+(2, 469,  0.010),    #  VARE   
+(2, 470,  0.010),    #  VARE/Ri
+(2, 471, -1.000),    #  UNDEF    
+(2, 472, -1.000),    #  UNDEF    
+(2, 473, -1.000),    #  UNDEF    
+(2, 474, -1.000),    #  UNDEF    
+(2, 475, -1.000),    #  UNDEF    
+# MWT index weights - mid-levels
+(2, 476,  0.636),    #  MWT1
+(2, 477,  0.695),    #  MWT2
+(2, 478,  0.691),    #  MWT3
+(2, 479,  0.665),    #  MWT4
+(2, 480,  0.694),    #  MWT5
+(2, 481,  0.642),    #  MWT13
+(2, 482,  0.704),    #  MWT14
+(2, 483,  0.425),    #  TKE_GWB
+(2, 484,  0.669),    #  MWT6
+(2, 485,  0.678),    #  MWT7
+(2, 486,  0.679),    #  MWT8
+(2, 487,  0.680),    #  MWT9
+(2, 488,  0.701),    #  MWT10
+(2, 489,  0.633),    #  MWT11
+(2, 490,  0.711),    #  MWT12
+# ITFA combinations - Set weights to -1
+(2, 491,    -1.),    #  ITFA
+(2, 492,    -1.),    #  ITFADEF
+(2, 493,    -1.),    #  ITFAMWT
+(2, 494,    -1.),    #  ITFAMAX
+(2, 495,    -1.),    #  ITFAMAXD
+# CAT index weights - upper-levels: threshold=0.22 EDR units (revised 10/22/2014)
+(3, 400,  0.480),    #  Brown1   
+(3, 401,  0.555),    #  Brown2   
+(3, 402,  0.444),    #  CP       
+(3, 403,  0.574),    #  Ellrod1  
+(3, 404,  0.560),    #  Ellrod2  
+(3, 405,  0.483),    #  1/Ri     
+(3, 406,  0.575),    #  Ellrod3  
+(3, 407,  0.199),    #  Lapse    
+(3, 408,  0.298),    #  ZBIG     
+(3, 409,  0.505),    #  DTF3     
+(3, 410,  0.531),    #  Fth/Ri   
+(3, 411, -1.000),    #  UNDEF    
+(3, 412,  0.470),    #  Dutton   
+(3, 413,  0.411),    #  Endlich  
+(3, 414,  0.513),    #  LAZ      
+(3, 415,  0.495),    #  NGM1     
+(3, 416,  0.421),    #  -NGM2    
+(3, 417,  0.498),    #  SCHGW    
+(3, 418,  0.498),    #  VWS      
+(3, 419,  0.335),    #  -DRiDt   
+(3, 420,  0.511),    #  HS/Ri    
+(3, 421, -1.000),    #  UNDEF    
+(3, 422,  0.512),    #  DEFSQ    
+(3, 423,  0.505),    #  VORTSQ/Ri
+(3, 424,  0.555),    #  |DIV|/Ri 
+(3, 425,  0.529),    #  DEFSQ/Ri 
+(3, 426,  0.475),    #  iawind   
+(3, 427,  0.372),    #  AGI      
+(3, 428,  0.526),    #  UBF/Ri   
+(3, 429,  0.510),    #  1/SATRi  
+(3, 430,  0.396),    #  PVGRAD   
+(3, 431,  0.436),    #  EDRRCH   
+(3, 432,  0.520),    #  EDR      
+(3, 433,  0.473),    #  EDRLL    
+(3, 434,  0.495),    #  SEDR/Ri  
+(3, 435,  0.503),    #  1/RiTW   
+(3, 436,  0.425),    #  LHFK     
+(3, 437,  0.513),    #  LHFK/Ri  
+(3, 438,  0.532),    #  TEMPG/Ri 
+(3, 439,  0.525),    #  CTSQ/Ri  
+(3, 440,  0.544),    #  Brown1/Ri
+(3, 441,  0.538),    #  iawind/Ri
+(3, 442,  0.541),    #  NGM1/Ri  
+(3, 443,  0.496),    #  NGM2/Ri  
+(3, 444,  0.528),    #  SCHGW/Ri 
+(3, 445,  0.323),    #  TROPG/Z  
+(3, 446,  0.338),    #  SPEED    
+(3, 447,  0.361),    #  -Stone   
+(3, 448,  0.471),    #  -NVA     
+(3, 449,  0.518),    #  NCSU1    
+(3, 450,  0.547),    #  NCSU2/Ri 
+(3, 451,  0.469),    #  EDRLUN   
+(3, 452,  0.465),    #  wsq      
+(3, 453,  0.523),    #  wsq/Ri   
+(3, 454,  0.544),    #  EDR/Ri   
+(3, 455,  0.534),    #  EDRLL/Ri 
+(3, 456,  0.515),    #  SIGW/Ri  
+(3, 457,  0.499),    #  SIGWX/Ri 
+(3, 458,  0.572),    #  F2D/Ri   
+(3, 459,  0.560),    #  F2DTW/Ri 
+(3, 460,  0.573),    #  F3D/Ri   
+(3, 461, -1.000),    #  UNDEF    
+(3, 462, -1.000),    #  MOGCLIMO 
+(3, 463, -1.000),    #  SOGCLIMO 
+(3, 464, -1.000),    #  MWTCLIMO 
+(3, 465, -1.000),    #  SGSTKE   
+(3, 466, -1.000),    #  SGSTKE/Ri
+(3, 467,  0.010),    #  RTKE   
+(3, 468,  0.010),    #  RTKE/Ri
+(3, 469,  0.010),    #  VARE   
+(3, 470,  0.010),    #  VARE/Ri
+(3, 471, -1.000),    #  UNDEF    
+(3, 472, -1.000),    #  UNDEF    
+(3, 473, -1.000),    #  UNDEF    
+(3, 474, -1.000),    #  UNDEF    
+(3, 475, -1.000),    #  UNDEF    
+# MWT index weights - upper-levels
+(3, 476,  0.661),    #  MWT1
+(3, 477,  0.858),    #  MWT2
+(3, 478,  0.854),    #  MWT3
+(3, 479,  0.769),    #  MWT4
+(3, 480,  0.834),    #  MWT5
+(3, 481,  0.810),    #  MWT13
+(3, 482,  0.825),    #  MWT14
+(3, 483,  0.504),    #  TKE_GWB
+(3, 484,  0.793),    #  MWT6
+(3, 485,  0.728),    #  MWT7
+(3, 486,  0.761),    #  MWT8
+(3, 487,  0.813),    #  MWT9
+(3, 488,  0.813),    #  MWT10
+(3, 489,  0.763),    #  MWT11
+(3, 490,  0.851),    #  MWT12
+# ITFA combinations - Set weights to -1
+(3, 491,    -1.),    #  ITFA
+(3, 492,    -1.),    #  ITFADEF
+(3, 493,    -1.),    #  ITFAMWT
+(3, 494,    -1.),    #  ITFAMAX
+(3, 495,    -1.)     #  ITFAMAXD
+);
+# Set ipickindx which specifies which indices to compute
+#     ipickitfa which specifies indices to use in the ITFA weighted sum
+#  (Region, Index, ipickindx, ipickitfa) 
+  regionIndicesSelect = (
+# Specify CAT indices to compute/use in CAT combination: low-levels
+(1, 400,  1,   0),    #  Brown1
+(1, 401,  1,   0),    #  Brown2
+(1, 402,  1,   0),    #  CP
+(1, 403,  1,   0),    #  Ellrod1
+(1, 404,  1,   0),    #  Ellrod2
+(1, 405,  1,   0),    #  1/Ri
+(1, 406,  1,   0),    #  Ellrod3
+(1, 407,  1,   0),    #  Lapse
+(1, 408,  1,   0),    #  ZBIG (previously TKE_GWB)
+(1, 409,  1,   0),    #  DTF3
+(1, 410,  1,   0),    #  Fth/Ri
+(1, 411,  0,   0),    #  UNDEF
+(1, 412,  1,   0),    #  Dutton
+(1, 413,  1,   0),    #  Endlich
+(1, 414,  1,   0),    #  LAZ
+(1, 415,  1,   1),    #  NGM1
+(1, 416,  1,   0),    #  -NGM2
+(1, 417,  1,   0),    #  SCHGW
+(1, 418,  1,   0),    #  VWS
+(1, 419,  1,   0),    #  -DRiDt
+(1, 420,  1,   0),    #  HS
+(1, 421,  0,   0),    #  UNDEF
+(1, 422,  1,   0),    #  DEFSQ 
+(1, 423,  1,   0),    #  VORTSQ/Ri
+(1, 424,  1,   0),    #  |DIV|/Ri
+(1, 425,  1,   0),    #  DEFSQ/Ri
+(1, 426,  1,   0),    #  iawind
+(1, 427,  1,   0),    #  AGI
+(1, 428,  1,   0),    #  UBF/Ri
+(1, 429,  1,   1),    #  1/SATRi
+(1, 430,  1,   0),    #  PVGRAD (PVUs)
+(1, 431,  1,   0),    #  EDRRCH
+(1, 432,  1,   0),    #  EDR
+(1, 433,  1,   0),    #  EDRLL
+(1, 434,  1,   0),    #  SEDR/Ri
+(1, 435,  1,   0),    #  1/RiTW
+(1, 436,  1,   0),    #  LHFK
+(1, 437,  1,   1),    #  LHFK/Ri
+(1, 438,  1,   0),    #  TEMPG/Ri
+(1, 439,  1,   0),    #  CTSQ/Ri
+(1, 440,  1,   0),    #  Brown1/Ri
+(1, 441,  1,   0),    #  iawind/Ri
+(1, 442,  1,   0),    #  NGM1/Ri
+(1, 443,  1,   0),    #  NGM2/Ri
+(1, 444,  1,   0),    #  SCHGW/Ri
+(1, 445,  1,   0),    #  TROPG/Z
+(1, 446,  1,   0),    #  SPEED
+(1, 447,  1,   0),    #  -Stone
+(1, 448,  1,   0),    #  -NVA
+(1, 449,  1,   0),    #  NCSU1
+(1, 450,  1,   0),    #  NCSU2/Ri
+(1, 451,  1,   0),    #  EDRLUN
+(1, 452,  1,   1),    #  wsq
+(1, 453,  1,   0),    #  wsq/Ri
+(1, 454,  1,   0),    #  EDR/Ri
+(1, 455,  1,   0),    #  EDRLL/Ri
+(1, 456,  1,   1),    #  SIGW/Ri
+(1, 457,  1,   0),    #  SIGWX/Ri
+(1, 458,  1,   0),    #  F2D/Ri
+(1, 459,  1,   0),    #  F2DTW/Ri
+(1, 460,  1,   0),    #  F3D/Ri
+(1, 461,  0,   0),    #  UNDEF
+(1, 462,  0,   0),    #  MOGCLIMO
+(1, 463,  0,   0),    #  SOGCLIMO
+(1, 464,  0,   0),    #  MWTCLIMO
+(1, 465,  0,   0),    #  SGSTKE
+(1, 466,  0,   0),    #  SGSTKE/Ri
+(1, 467,  1,   0),    #  RTKE
+(1, 468,  1,   0),    #  RTKE/Ri
+(1, 469,  1,   0),    #  VARE
+(1, 470,  1,   0),    #  VARE/Ri
+(1, 471,  0,   0),    #  UNDEF
+(1, 472,  0,   0),    #  UNDEF
+(1, 473,  0,   0),    #  UNDEF
+(1, 474,  0,   0),    #  UNDEF
+(1, 475,  0,   0),    #  UNDEF
+# Specify MWT indices to compute/use in MWT combination: low-levels
+(1, 476,  1,   0),    #  MWT1=mws*wsq
+(1, 477,  1,   0),    #  MWT2=mws*CTsq
+(1, 478,  1,   0),    #  MWT3=mws*F3D
+(1, 479,  1,   0),    #  MWT4=mws*speed
+(1, 480,  1,   0),    #  MWT5=mws*|div|
+(1, 481,  1,   0),    #  MWT13=mws*Defsq
+(1, 482,  1,   0),    #  MWT14=mws*EDRLL 
+(1, 483,  1,   0),    #  TKE_GWB
+(1, 484,  1,   0),    #  MWT6=mws*NGM1
+(1, 485,  1,   0),    #  MWT7=mws*SIGW 
+(1, 486,  1,   0),    #  MWT8=mws*LHFK
+(1, 487,  1,   1),    #  MWT9=mws*iawind
+(1, 488,  1,   0),    #  MWT10=mws*EDR
+(1, 489,  1,   1),    #  MWT11=mws*SCHGW
+(1, 490,  1,   0),    #  MWT12=mws*|TEMPG|
+# ITFA combinations - Set ipickindx and ipickitfa to 0
+(1, 491,  0,   0),    #  ITFA
+(1, 492,  0,   0),    #  ITFADEF
+(1, 493,  0,   0),    #  ITFAMWT
+(1, 494,  0,   0),    #  ITFAMAX
+(1, 495,  0,   0),    #  ITFAMAXD
+# Specify CAT indices to compute/use in CAT combination: mid-levels
+(2, 400,  1,   0),    #  Brown1
+(2, 401,  1,   0),    #  Brown2
+(2, 402,  1,   0),    #  CP
+(2, 403,  1,   0),    #  Ellrod1
+(2, 404,  1,   0),    #  Ellrod2
+(2, 405,  1,   0),    #  1/Ri
+(2, 406,  1,   0),    #  Ellrod3
+(2, 407,  1,   0),    #  Lapse
+(2, 408,  1,   0),    #  ZBIG (previously TKE_GWB)
+(2, 409,  1,   0),    #  DTF3
+(2, 410,  1,   0),    #  Fth/Ri
+(2, 411,  0,   0),    #  UNDEF
+(2, 412,  1,   0),    #  Dutton
+(2, 413,  0,   0),    #  Endlich
+(2, 414,  1,   0),    #  LAZ
+(2, 415,  1,   1),    #  NGM1
+(2, 416,  1,   0),    #  -NGM2
+(2, 417,  1,   0),    #  SCHGW
+(2, 418,  1,   0),    #  VWS
+(2, 419,  0,   0),    #  -DRiDt
+(2, 420,  1,   0),    #  HS
+(2, 421,  0,   0),    #  UNDEF
+(2, 422,  1,   0),    #  DEFSQ 
+(2, 423,  1,   0),    #  VORTSQ/Ri
+(2, 424,  1,   0),    #  |DIV|/Ri
+(2, 425,  1,   0),    #  DEFSQ/Ri
+(2, 426,  1,   0),    #  iawind
+(2, 427,  0,   0),    #  AGI
+(2, 428,  1,   0),    #  UBF/Ri
+(2, 429,  1,   0),    #  1/SATRi
+(2, 430,  1,   0),    #  PVGRAD (PVUs)
+(2, 431,  1,   0),    #  EDRRCH
+(2, 432,  1,   1),    #  EDR
+(2, 433,  1,   0),    #  EDRLL
+(2, 434,  1,   0),    #  SEDR/Ri
+(2, 435,  1,   1),    #  1/RiTW
+(2, 436,  1,   0),    #  LHFK
+(2, 437,  1,   0),    #  LHFK/Ri
+(2, 438,  1,   0),    #  TEMPG/Ri
+(2, 439,  1,   0),    #  CTSQ/Ri
+(2, 440,  1,   0),    #  Brown1/Ri
+(2, 441,  1,   1),    #  iawind/Ri
+(2, 442,  1,   0),    #  NGM1/Ri
+(2, 443,  1,   0),    #  NGM2/Ri
+(2, 444,  1,   0),    #  SCHGW/Ri
+(2, 445,  0,   0),    #  TROPG/Z
+(2, 446,  1,   0),    #  SPEED
+(2, 447,  1,   0),    #  -Stone
+(2, 448,  0,   0),    #  -NVA
+(2, 449,  0,   0),    #  NCSU1
+(2, 450,  1,   0),    #  NCSU2/Ri
+(2, 451,  1,   0),    #  EDRLUN
+(2, 452,  1,   0),    #  wsq
+(2, 453,  1,   0),    #  wsq/Ri
+(2, 454,  1,   0),    #  EDR/Ri
+(2, 455,  1,   0),    #  EDRLL/Ri
+(2, 456,  1,   0),    #  SIGW/Ri
+(2, 457,  1,   0),    #  SIGWX/Ri
+(2, 458,  1,   0),    #  F2D/Ri
+(2, 459,  1,   0),    #  F2DTW/Ri
+(2, 460,  1,   1),    #  F3D/Ri
+(2, 461,  0,   0),    #  UNDEF
+(2, 462,  0,   0),    #  MOGCLIMO
+(2, 463,  0,   0),    #  SOGCLIMO
+(2, 464,  0,   0),    #  MWTCLIMO
+(2, 465,  0,   0),    #  SGSTKE
+(2, 466,  0,   0),    #  SGSTKE/Ri
+(2, 467,  1,   0),    #  RTKE
+(2, 468,  1,   0),    #  RTKE/Ri
+(2, 469,  1,   0),    #  VARE
+(2, 470,  1,   0),    #  VARE/Ri
+(2, 471,  0,   0),    #  UNDEF
+(2, 472,  0,   0),    #  UNDEF
+(2, 473,  0,   0),    #  UNDEF
+(2, 474,  0,   0),    #  UNDEF
+(2, 475,  0,   0),    #  UNDEF
+# Specify MWT indices to compute/use in MWT combination: mid-levels
+(2, 476,  1,   0),    #  MWT1
+(2, 477,  1,   0),    #  MWT2
+(2, 478,  1,   0),    #  MWT3
+(2, 479,  1,   0),    #  MWT4
+(2, 480,  1,   0),    #  MWT5
+(2, 481,  1,   0),    #  MWT13
+(2, 482,  1,   0),    #  MWT14
+(2, 483,  1,   0),    #  TKE_GWB
+(2, 484,  1,   1),    #  MWT6
+(2, 485,  1,   0),    #  MWT7
+(2, 486,  1,   0),    #  MWT8
+(2, 487,  1,   0),    #  MWT9
+(2, 488,  1,   1),    #  MWT10
+(2, 489,  1,   0),    #  MWT11
+(2, 490,  1,   0),    #  MWT12
+# ITFA combinations - Set ipickindx and ipickitfa to 0
+(2, 491,  0,   0),    #  ITFA
+(2, 492,  0,   0),    #  ITFADEF
+(2, 493,  0,   0),    #  ITFAMWT
+(2, 494,  0,   0),    #  ITFAMAX
+(2, 495,  0,   0),    #  ITFAMAXD
+# Specify CAT indices to compute/use in CAT combination: upper-levels
+(3, 400,  1,   0),    #  Brown1
+(3, 401,  1,   0),    #  Brown2
+(3, 402,  1,   0),    #  CP
+(3, 403,  1,   0),    #  Ellrod1
+(3, 404,  1,   0),    #  Ellrod2
+(3, 405,  1,   0),    #  1/Ri
+(3, 406,  1,   1),    #  Ellrod3
+(3, 407,  1,   0),    #  Lapse
+(3, 408,  0,   0),    #  ZBIG
+(3, 409,  1,   0),    #  DTF3
+(3, 410,  1,   0),    #  Fth/Ri
+(3, 411,  0,   0),    #  UNDEF
+(3, 412,  0,   0),    #  Dutton
+(3, 413,  0,   0),    #  Endlich
+(3, 414,  0,   0),    #  LAZ
+(3, 415,  1,   1),    #  NGM1
+(3, 416,  1,   0),    #  -NGM2
+(3, 417,  1,   0),    #  SCHGW
+(3, 418,  1,   1),    #  VWS
+(3, 419,  0,   0),    #  -DRiDt
+(3, 420,  1,   0),    #  HS
+(3, 421,  0,   0),    #  UNDEF
+(3, 422,  1,   1),    #  DEFSQ 
+(3, 423,  1,   0),    #  VORTSQ/Ri
+(3, 424,  1,   1),    #  |DIV|/Ri
+(3, 425,  1,   0),    #  DEFSQ/Ri
+(3, 426,  1,   0),    #  iawind
+(3, 427,  1,   0),    #  AGI
+(3, 428,  1,   0),    #  UBF/Ri
+(3, 429,  1,   0),    #  1/SATRi
+(3, 430,  1,   0),    #  PVGRAD (PVUs)
+(3, 431,  1,   0),    #  EDRRCH
+(3, 432,  1,   1),    #  EDR
+(3, 433,  1,   0),    #  EDRLL
+(3, 434,  1,   0),    #  SEDR/Ri
+(3, 435,  1,   0),    #  1/RiTW
+(3, 436,  1,   0),    #  LHFK
+(3, 437,  1,   0),    #  LHFK/Ri
+(3, 438,  1,   0),    #  TEMPG/Ri
+(3, 439,  1,   0),    #  CTSQ/Ri
+(3, 440,  1,   0),    #  Brown1/Ri
+(3, 441,  1,   0),    #  iawind/Ri
+(3, 442,  1,   0),    #  NGM1/Ri
+(3, 443,  1,   0),    #  NGM2/Ri
+(3, 444,  1,   0),    #  SCHGW/Ri
+(3, 445,  1,   0),    #  TROPG/Z
+(3, 446,  1,   0),    #  SPEED
+(3, 447,  1,   0),    #  -Stone
+(3, 448,  1,   0),    #  -NVA
+(3, 449,  0,   0),    #  NCSU1
+(3, 450,  1,   0),    #  NCSU2/Ri
+(3, 451,  1,   0),    #  EDRLUN
+(3, 452,  1,   0),    #  wsq
+(3, 453,  1,   1),    #  wsq/Ri
+(3, 454,  1,   0),    #  EDR/Ri
+(3, 455,  1,   0),    #  EDRLL/Ri
+(3, 456,  1,   0),    #  SIGW/Ri
+(3, 457,  1,   1),    #  SIGWX/Ri
+(3, 458,  1,   0),    #  F2D/Ri
+(3, 459,  1,   0),    #  F2DTW/Ri
+(3, 460,  1,   1),    #  F3D/Ri
+(3, 461,  0,   0),    #  UNDEF
+(3, 462,  0,   0),    #  MOGCLIMO
+(3, 463,  0,   0),    #  SOGCLIMO
+(3, 464,  0,   0),    #  MWTCLIMO
+(3, 465,  0,   0),    #  SGSTKE
+(3, 466,  0,   0),    #  SGSTKE/Ri
+(3, 467,  1,   0),    #  RTKE
+(3, 468,  1,   0),    #  RTKE/Ri
+(3, 469,  1,   0),    #  VARE
+(3, 470,  1,   0),    #  VARE/Ri
+(3, 471,  0,   0),    #  UNDEF
+(3, 472,  0,   0),    #  UNDEF
+(3, 473,  0,   0),    #  UNDEF
+(3, 474,  0,   0),    #  UNDEF
+(3, 475,  0,   0),    #  UNDEF
+# Specify MWT indices to compute/use in MWT combination: upper-levels
+(3, 476,  1,   0),    #  MWT1
+(3, 477,  1,   0),    #  MWT2
+(3, 478,  1,   1),    #  MWT3
+(3, 479,  1,   0),    #  MWT4
+(3, 480,  1,   1),    #  MWT5
+(3, 481,  1,   0),    #  MWT13
+(3, 482,  1,   0),    #  MWT14
+(3, 483,  1,   0),    #  TKE_GWB
+(3, 484,  1,   0),    #  MWT6
+(3, 485,  1,   0),    #  MWT7
+(3, 486,  1,   0),    #  MWT8
+(3, 487,  1,   0),    #  MWT9
+(3, 488,  1,   0),    #  MWT10
+(3, 489,  1,   0),    #  MWT11
+(3, 490,  1,   0),    #  MWT12
+# ITFA combinations - Set ipickindx and ipickitfa to 0
+(3, 491,  0,   0),    #  ITFA
+(3, 492,  0,   0),    #  ITFADEF
+(3, 493,  0,   0),    #  ITFAMWT
+(3, 494,  0,   0),    #  ITFAMAX
+(3, 495,  0,   0)     #  ITFAMAXD
+    );
+#
+ remap_option              =2;             | 1=linear piecewise,2=PDF fit
+#
+#
+# Set edr (eps^1/3) thresholds for null,light,moderate,severe,extreme, resp.
+#  Use linearRemapThresholds for linear remaps, pdfRemapThresholds for PDF remaps
+  linearRemapThresholds = (0.0, 0.14,0.31,0.54,0.8);   # EDR thresholds
+# linearRemapThresholds = (0.0, 0.15,0.22,0.38,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# linearRemapThresholds = (0.0, 0.144,0.204,0.407,0.8);  # Dutton Lecture notes in Physics 1971
+# linearRemapThresholds = (0.0, 0.055,0.221,0.50,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons (full categories)
+# linearRemapThresholds = (0.0, 0.014,0.125,0.350,0.8);  # Based on DAL737,UAL757 PIREP-edr comparisons (mid categories)
+# pdfRemapThresholds = (0.0, 0.035,0.070,0.170,0.8);  # Based on DAL737,UAL757 PIREP-edr comparisons - UAL mods
+# pdfRemapThresholds = (0.0, 0.15,0.21,0.32,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.22,0.35,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.24,0.36,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.24,0.38,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.22,0.38,0.88);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.22,0.38,1.00);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+# pdfRemapThresholds = (0.0, 0.15,0.22,0.36,1.00);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+  pdfRemapThresholds = (0.0, 0.15,0.22,0.34,1.00);  # Based on DAL737,UAL757 PIREP-edr comparisons - DAL Triggered
+#
+# Index linear remaps for null,light,moderate,severe,extreme, resp. for each index
+  regionLinearRemap = (
+# Specify CAT thresholds: low-levels
+(1, 400,  0.,   9.5E-5,    1.5E-4,   3.5E-4,   1.0E-3),    #  Brown1
+(1, 401,  0.,    0.040,     0.065,    0.150,      2.0),    #  Brown2
+(1, 402,  0.,      10.,       40.,    200.0,    1.0E3),    #  CP
+(1, 403,  0.,   2.5E-7,    2.0E-6,   6.0E-6,   2.0E-4),    #  Ellrod1
+(1, 404,  0.,   6.0E-7,    2.0E-6,   6.0E-6,   2.0E-4),    #  Ellrod2
+(1, 405,  0.,     0.40,      2.00,      6.0,     60.0),    #  1/Ri
+(1, 406,  0.,   6.0E-7,    2.0E-6,   6.0E-6,   2.0E-4),    #  Ellrod3
+(1, 407,  0.,    0.008,     0.011,    0.020,    0.080),    #  Lapse
+(1, 408,  0.,    0.070,     0.200,    0.500,    0.600),    #  ZBIG
+(1, 409,  0.,      1.2,       3.0,     10.0,    300.0),    #  DTF3
+(1, 410,  0.,   5.0E-4,      0.02,      5.0,     10.0),    #  Fth/Ri
+(1, 411,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 412,  0.,     30.0,      65.0,    200.0,    5000.),    #  Dutton
+(1, 413,  0.,     0.30,      0.70,      2.0,    10.00),    #  Endlich
+(1, 414,  0.,    5.0E2,     1.5E4,    1.0E6,    1.0E8),    #  LAZ
+(1, 415,  0.,   1.0E-3,    2.5E-3,   6.0E-3,   5.0E-2),    #  NGM1
+(1, 416,  0.,   4.0E-7,    9.0E-7,   3.0E-6,   1.0E-5),    #  -NGM2
+(1, 417,  0.,   4.0E-3,    1.0E-2,   5.0E-2,   1.0E-1),    #  SCHGW
+(1, 418,  0.,   7.0E-3,    1.5E-2,    0.025,     0.10),    #  VWS
+(1, 419,  0.,   1.5E-3,    7.0E-3,   2.0E-2,   5.0E-1),    #  -DRiDt
+(1, 420,  0.,   3.0E-5,    8.0E-5,   2.0E-4,   5.0E-4),    #  HS/Ri
+(1, 421,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 422,  0.,   8.0E-9,    2.0E-8,   1.0E-7,   1.0E-5),    #  DEFSQ
+(1, 423,  0.,   2.0E-9,    2.0E-8,   2.0E-7,   1.0E-6),    #  VORTSQ/Ri
+(1, 424,  0.,   2.0E-5,    7.0E-5,   5.0E-4,   1.0E-2),    #  |DIV|/Ri
+(1, 425,  0.,   3.0E-9,    3.0E-8,   6.0E-7,   1.0E-5),    #  DEFSQ/Ri
+(1, 426,  0.,      7.0,      20.0,     45.0,     100.),    #  iawnd
+(1, 427,  0.,  5.0E-16,   1.0E-10,   1.0E-6,   1.0E-5),    #  AGI
+(1, 428,  0.,     10.0,      50.0,    200.0,    1.0E3),    #  UBF/Ri
+(1, 429,  0.,     0.50,      2.50,     25.0,    50.00),    #  1/SATRi
+(1, 430,  0.,   1.0E-2,    5.0E-2,     0.75,      1.0),    #  PVGRAD (PVUs)
+(1, 431,  0.,    0.020,     0.050,     0.10,     0.25),    #  EDRRCH
+(1, 432,  0.,    0.050,      0.10,    0.200,     0.50),    #  EDR
+(1, 433,  0.,    0.050,      0.10,    0.200,     0.50),    #  EDRLL
+(1, 434,  0.,   5.0E-3,    6.0E-2,      1.0,     10.0),    #  SEDR/Ri
+(1, 435,  0.,     1.50,      15.0,    150.0,   500.00),    #  1/RiTW
+(1, 436,  0.,   1.0E-5,    2.0E-5,   1.0E-4,   1.0E-2),    #  LHFK
+(1, 437,  0.,   6.0E-6,    5.0E-5,   6.0E-4,   1.0E-2),    #  LHFK/Ri
+(1, 438,  0.,   8.0E-6,    8.0E-5,   5.0E-4,   1.0E-2),    #  TEMPG/Ri
+(1, 439,  0.,   2.0E-4,    2.0E-3,   1.5E-2,      0.5),    #  CTSQ/Ri
+(1, 440,  0.,   6.0E-5,    2.0E-4,   2.0E-3,   1.0E-2),    #  Brown1/Ri
+(1, 441,  0.,      3.0,      15.0,    150.0,     200.),    #  iawnd/Ri
+(1, 442,  0.,   4.0E-4,    3.0E-3,   5.0E-2,   1.0E-1),    #  NGM1/Ri
+(1, 443,  0.,   1.0E-7,    2.0E-6,   2.5E-5,   5.0E-5),    #  -NGM2/Ri
+(1, 444,  0.,   2.0E-3,    1.0E-2,     0.10,      1.0),    #  SCHGW/Ri
+(1, 445,  0.,   4.0E-4,    6.0E-4,   1.0E-3,   2.4E-3),    #  TROPG/Z
+(1, 446,  0.,      15.,       23.,      33.,      40.),    #  SPEED
+(1, 447,  0.,  1.0E-10,    5.0E-9,   1.0E-7,   1.0E-6),    #  -Stone
+(1, 448,  0.,   7.0E-9,    3.0E-8,   5.0E-7,   1.0E-6),    #  -NVA
+(1, 449,  0.,  3.0E-15,   7.0E-13,  1.0E-10,   1.0E-9),    #  NCSU1
+(1, 450,  0.,   1.0E-9,    1.0E-7,   2.0E-6,   1.0E-5),    #  NCSU2/Ri
+(1, 451,  0.,    0.012,     0.025,     0.05,     0.25),    #  EDRLUN
+(1, 452,  0.,    0.035,     0.090,    0.500,     1.00),    #  wsq
+(1, 453,  0.,    0.030,     0.090,      1.0,      5.0),    #  wsq/Ri
+(1, 454,  0.,   0.0008,     0.0040,    0.05,      1.0),    #  EDR/Ri
+(1, 455,  0.,   0.0008,     0.0040,    0.05,      1.0),    #  EDRLL/Ri
+(1, 456,  0.,   1.0E-3,      0.01,     0.25,     1.00),    #  SIGW/Ri
+(1, 457,  0.,   1.0E-3,      0.01,     0.25,     1.00),    #  SIGWX/Ri
+(1, 458,  0.,  4.0E-10,    4.0E-9,   1.0E-7,   1.0E-6),    #  F2D/Ri
+(1, 459,  0.,  6.0E-10,    5.0E-9,   1.0E-7,   1.0E-6),    #  F2DTW/Ri
+(1, 460,  0.,  4.0E-10,    3.0E-9,   1.0E-7,   1.0E-6),    #  F3D/Ri
+(1, 461,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 462,  0.,     0.25,      0.48,     0.55,     0.99),    #  MOGCLIMO
+(1, 463,  0.,    0.020,     0.055,     0.07,     0.20),    #  SOGCLIMO
+(1, 464,  0.,   1.0E-3,     0.015,    0.100,     0.50),    #  MWTCLIMO
+(1, 465,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE
+(1, 466,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE/Ri
+(1, 467,  0.,     2.50,      4.50,     8.00,     15.0),    #  RTKE
+(1, 468,  0.,     0.10,      5.00,    50.00,    500.0),    #  RTKE/Ri
+(1, 469,  0.,     2.50,      4.50,     8.00,     15.0),    #  VARE
+(1, 470,  0.,     0.10,      5.00,    50.00,    500.0),    #  VARE/Ri
+(1, 471,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 472,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 473,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 474,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(1, 475,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+# Specify MWT thresholds - incorporate TK updates 8 Feb 2013
+(1, 476,  0.,      1.5,      20.0,    400.0,    5.0E3),    #  MWT1
+(1, 477,  0.,      0.3,       1.5,     10.0,    100.0),    #  MWT2
+(1, 478,  0.,   5.0E-7,    5.0E-6,   5.0E-5,   1.0E-3),    #  MWT3
+(1, 479,  0.,    2.5E3,     8.0E3,    3.0E5,    1.0E7),    #  MWT4
+(1, 480,  0.,     0.02,       0.1,      0.5,      5.0),    #  MWT5
+(1, 481,  0.,   8.0E-6,    5.0E-5,   5.0E-4,   1.0E-2),    #  MWT13
+(1, 482,  0.,      0.2,       1.0,     6.00,     20.0),    #  MWT14
+(1, 483,  0.,   2.5E-8,    1.0E-5,   0.0008,      1.0),    #  TKE_GWB
+(1, 484,  0.,     0.35,       1.5,      8.0,     100.),    #  MWT6
+(1, 485,  0.,      5.0,      40.0,    500.0,    1.0E4),    #  MWT7
+(1, 486,  0.,   1.0E-3,    1.0E-2,      0.1,      5.0),    #  MWT8
+(1, 487,  0.,    2.0E3,     9.0E3,    5.0E4,    1.0E6),    #  MWT9
+(1, 488,  0.,      0.3,       1.5,      8.0,     50.0),    #  MWT10
+(1, 489,  0.,      3.0,      15.0,     75.0,    1.0E3),    #  MWT11
+(1, 490,  0.,     0.01,      0.05,      0.2,     10.0),    #  MWT12
+# Initialize ITFA thresholds
+(1, 491,  0.,       0.,        0.,       0.,       0.),    #  ITFA
+(1, 492,  0.,       0.,        0.,       0.,       0.),    #  ITFADEF
+(1, 493,  0.,       0.,        0.,       0.,       0.),    #  ITFAMWT
+(1, 494,  0.,       0.,        0.,       0.,       0.),    #  ITFAMAX
+(1, 495,  0.,       0.,        0.,       0.,       0.),    #  ITFAMAXD
+# Specify CAT thresholds: mid-levels
+(2, 400,  0.,   1.0E-4,    1.6E-4,   3.5E-4,   1.0E-3),    #  Brown1
+(2, 401,  0.,    0.030,     0.045,    0.100,      1.0),    #  Brown2
+(2, 402,  0.,      15.,       60.,    300.0,    1.0E3),    #  CP
+(2, 403,  0.,   4.5E-7,    1.0E-6,   3.5E-6,   1.0E-4),    #  Ellrod1
+(2, 404,  0.,   4.5E-7,    1.0E-6,   3.5E-6,   1.0E-4),    #  Ellrod2
+(2, 405,  0.,     0.25,      0.50,     1.50,    50.00),    #  1/Ri
+(2, 406,  0.,   4.5E-7,    1.5E-6,   4.0E-6,   1.0E-5),    #  Ellrod3
+(2, 407,  0.,   8.0E-3,    9.0E-3,   1.0E-2,     0.10),    #  Lapse
+(2, 408,  0.,     0.03,      0.12,      0.3,      0.6),    #  ZBIG
+(2, 409,  0.,      0.6,      1.50,      5.0,     10.0),    #  DTF3
+(2, 410,  0.,   9.0E-5,    6.0E-4,   4.0E-2,      1.0),    #  Fth/Ri
+(2, 411,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 412,  0.,     20.0,      40.0,    100.0,     300.),    #  Dutton
+(2, 413,  0.,     0.40,      0.75,      1.5,      5.0),    #  Endlich
+(2, 414,  0.,    1.0E2,     1.0E3,    5.0E4,    1.0E6),    #  LAZ
+(2, 415,  0.,   1.8E-3,    3.8E-3,   1.0E-2,   1.0E-1),    #  NGM1
+(2, 416,  0.,   5.0E-7,    9.0E-7,   2.0E-6,   1.0E-5),    #  -NGM2
+(2, 417,  0.,   5.0E-3,    1.5E-2,   3.0E-2,      0.1),    #  SCHGW
+(2, 418,  0.,    0.006,     0.010,    0.020,    0.030),    #  VWS
+(2, 419,  0.,   1.0E-3,    2.0E-3,   6.0E-3,   1.0E-1),    #  -DRiDt
+(2, 420,  0.,   5.0E-5,    1.0E-4,   2.0E-4,   8.0E-4),    #  HS/Ri
+(2, 421,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 422,  0.,   7.0E-9,    3.0E-8,   1.0E-7,   1.0E-6),    #  DEFSQ
+(2, 423,  0.,  5.0E-10,    5.0E-9,   5.0E-8,   1.0E-6),    #  VORTSQ/Ri
+(2, 424,  0.,   6.0E-6,    2.5E-5,   2.0E-4,   1.0E-3),    #  |DIV|/Ri
+(2, 425,  0.,   1.3E-9,    1.0E-8,   2.0E-7,   2.0E-6),    #  DEFSQ/Ri
+(2, 426,  0.,     10.0,      25.0,     70.0,     200.),    #  iawnd
+(2, 427,  0.,  1.0E-15,   2.0E-10,   1.0E-8,   1.0E-7),    #  AGI
+(2, 428,  0.,      6.0,      15.0,     50.0,    100.0),    #  UBF/Ri
+(2, 429,  0.,     0.25,      0.80,     2.50,    25.00),    #  1/SATRi
+(2, 430,  0.,   1.0E-2,    4.0E-2,     0.20,      1.0),    #  PVGRAD (PVUs)
+(2, 431,  0.,    0.016,     0.035,     0.10,     0.20),    #  EDRRCH
+(2, 432,  0.,    0.050,     0.090,    0.200,      0.8),    #  EDR
+(2, 433,  0.,    0.050,     0.090,    0.250,      0.8),    #  EDRLL
+(2, 434,  0.,   5.0E-4,    5.0E-3,    0.050,     0.50),    #  SEDR/Ri
+(2, 435,  0.,     0.40,      1.50,     10.0,     90.0),    #  1/RiTW
+(2, 436,  0.,  2.25E-5,   3.25E-5,   4.5E-5,   5.0E-4),    #  LHFK
+(2, 437,  0.,   5.0E-6,    2.0E-5,   8.0E-5,   1.0E-3),    #  LHFK/Ri
+(2, 438,  0.,   3.0E-6,    2.0E-5,   8.0E-5,   1.0E-3),    #  TEMPG/Ri
+(2, 439,  0.,   6.0E-5,    5.0E-4,   8.0E-3,      0.1),    #  CTSQ/Ri
+(2, 440,  0.,   2.0E-5,    7.0E-5,   4.0E-4,   1.0E-2),    #  Brown1/Ri
+(2, 441,  0.,      2.0,       8.0,     60.0,     500.),    #  iawind/Ri 
+(2, 442,  0.,   3.0E-4,    1.5E-3,   1.0E-2,     0.10),    #  NGM1/Ri
+(2, 443,  0.,   1.0E-7,    4.0E-7,   2.5E-6,   5.0E-5),    #  NGM2/Ri
+(2, 444,  0.,   9.0E-4,    5.0E-3,   4.0E-2,     0.50),    #  SCHGW/Ri
+(2, 445,  0.,   1.0E-8,    1.0E-6,   1.0E-5,   1.0E-4),    #  TROPG/Z
+(2, 446,  0.,      25.,       40.,      70.,      60.),    #  SPEED
+(2, 447,  0.,  4.0E-11,    2.0E-9,   5.0E-8,   1.0E-6),    #  -Stone
+(2, 448,  0.,   8.0E-9,    3.0E-8,   2.0E-7,   1.0E-6),    #  -NVA
+(2, 449,  0.,  2.0E-14,   1.0E-12,  1.0E-10,   1.0E-9),    #  NCSU1
+(2, 450,  0.,  5.0E-12,   5.0E-11,   2.0E-9,   1.0E-7),    #  NCSU2/Ri
+(2, 451,  0.,    0.012,     0.025,     0.04,     0.20),    #  EDRLUN
+(2, 452,  0.,    0.065,     0.150,     0.50,     2.00),    #  wsq
+(2, 453,  0.,    0.010,     0.050,     0.60,     2.00),    #  wsq/Ri
+(2, 454,  0.,   0.0004,     0.003,     0.08,      0.5),    #  EDR/Ri
+(2, 455,  0.,   0.0004,     0.003,     0.08,      0.5),    #  EDRLL/Ri
+(2, 456,  0.,   2.0E-3,    2.5E-2,     0.50,      2.0),    #  SIGW/Ri
+(2, 457,  0.,   2.0E-3,    2.5E-2,     0.50,      2.0),    #  SIGWX/Ri
+(2, 458,  0.,  7.0E-11,   6.0E-10,   5.0E-9,   1.0E-7),    #  F2D/Ri
+(2, 459,  0.,  2.0E-10,    1.0E-9,   8.0E-9,   1.0E-7),    #  F2DTW/Ri
+(2, 460,  0.,  9.0E-11,   6.0E-10,   5.0E-9,   1.0E-7),    #  F3D/Ri
+(2, 461,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 462,  0.,     0.25,      0.48,     0.55,     0.99),    #  MOGCLIMO
+(2, 463,  0.,    0.020,     0.055,     0.07,     0.20),    #  SOGCLIMO
+(2, 464,  0.,   1.0E-3,     0.015,    0.100,     0.50),    #  MWTCLIMO
+(2, 465,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE
+(2, 466,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE/Ri
+(2, 467,  0.,     2.50,      4.50,     8.00,     15.0),    #  RTKE
+(2, 468,  0.,     0.10,      5.00,    50.00,    500.0),    #  RTKE/Ri
+(2, 469,  0.,     2.50,      4.50,     8.00,     15.0),    #  VARE
+(2, 470,  0.,     0.10,      5.00,    50.00,    500.0),    #  VARE/Ri
+(2, 471,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 472,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 473,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 474,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(2, 475,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+# Specify MWT thresholds - incorporate TK updates 11 Feb 2013
+(2, 476,  0.,      1.0,      15.0,    300.0,    1.0E4),    #  MWT1
+(2, 477,  0.,      0.1,       0.5,      5.0,    1.0E2),    #  MWT2
+(2, 478,  0.,   5.0E-7,    2.0E-6,   1.0E-5,   1.0E-4),    #  MWT3
+(2, 479,  0.,   7000.0,     2.5E4,    1.0E5,    1.0E6),    #  MWT4
+(2, 480,  0.,     0.02,       0.1,      0.5,     10.0),    #  MWT5
+(2, 481,  0.,   4.0E-6,    3.0E-5,   2.0E-4,   1.0E-3),    #  MWT13
+(2, 482,  0.,      0.2,      1.00,      10.,    100.0),    #  MWT14
+(2, 483,  0.,   3.0E-6,    0.8E-3,     0.05,      0.5),    #  TKE_GWB
+(2, 484,  0.,      0.5,       2.0,     10.0,     100.),    #  MWT6
+(2, 485,  0.,      5.0,      50.0,    500.0,    1.0E3),    #  MWT7
+(2, 486,  0.,   8.0E-4,    5.0E-3,   5.0E-2,      1.0),    #  MWT8
+(2, 487,  0.,    2.5E3,     1.0E4,    5.0E4,    1.0E6),    #  MWT9
+(2, 488,  0.,      0.3,       2.0,     10.0,    100.0),    #  MWT10
+(2, 489,  0.,      5.0,      15.0,    100.0,    1.0E3),    #  MWT11
+(2, 490,  0.,     0.01,      0.05,      0.1,      1.0),    #  MWT12
+# Initialize ITFA thresholds
+(2, 491,  0.,       0.,        0.,       0.,       0.),    #  ITFA
+(2, 492,  0.,       0.,        0.,       0.,       0.),    #  ITFADEF
+(2, 493,  0.,       0.,        0.,       0.,       0.),    #  ITFAMWT
+(2, 494,  0.,       0.,        0.,       0.,       0.),    #  ITFAMAX
+(2, 495,  0.,       0.,        0.,       0.,       0.),    #  ITFAMAXD
+# Specify CAT thresholds: upper-levels
+(3, 400,  0.,   1.1E-4,    1.6E-4,   2.6E-4,   1.0E-2),    #  Brown1
+(3, 401,  0.,    0.035,     0.060,    0.100,      0.6),    #  Brown2
+(3, 402,  0.,      15.,       75.,     350.,    1.0E3),    #  CP
+(3, 403,  0.,   5.0E-7,    1.5E-6,   4.0E-6,   1.0E-5),    #  Ellrod1
+(3, 404,  0.,   5.0E-7,    1.2E-6,   5.0E-6,   1.0E-5),    #  Ellrod2
+(3, 405,  0.,     0.20,      0.60,      1.5,      5.0),    #  1/Ri
+(3, 406,  0.,   5.5E-7,    1.3E-6,   4.0E-6,   1.0E-5),    #  Ellrod3
+(3, 407,  0.,   1.0E-2,    5.0E-2,   5.0E-1,    10.00),    #  Lapse
+(3, 408,  0.,     0.10,       0.3,     0.51,      1.0),    #  ZBIG
+(3, 409,  0.,     0.50,      1.50,     10.0,     25.0),    #  DTF3
+(3, 410,  0.,   3.0E-5,    2.5E-4,   2.0E-3,   2.0E-2),    #  Fth/Ri
+(3, 411,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 412,  0.,     30.0,      70.0,    200.0,     300.),    #  Dutton
+(3, 413,  0.,     0.30,       0.7,     1.60,     2.00),    #  Endlich
+(3, 414,  0.,    1.0E2,     2.0E3,    5.0E4,    1.0E7),    #  LAZ
+(3, 415,  0.,   3.0E-3,    6.0E-3,   1.5E-2,     0.10),    #  NGM1
+(3, 416,  0.,   4.0E-7,    7.0E-7,   2.0E-6,   1.0E-5),    #  -NGM2
+(3, 417,  0.,   6.0E-3,    0.0150,    0.050,      0.1),    #  SCHGW
+(3, 418,  0.,    0.006,     0.012,    0.025,    0.040),    #  VWS
+(3, 419,  0.,   1.8E-3,    5.0E-3,    0.015,      0.1),    #  -DRiDt
+(3, 420,  0.,   5.0E-5,    1.0E-4,   2.5E-4,   1.0E-3),    #  HS/Ri
+(3, 421,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 422,  0.,   7.0E-9,    2.5E-8,   1.0E-7,   1.0E-6),    #  DEFSQ
+(3, 423,  0.,  6.0E-10,    4.0E-9,   3.0E-8,   1.0E-6),    #  VORTSQ/Ri
+(3, 424,  0.,   6.0E-6,    3.0E-5,   1.0E-4,   5.0E-4),    #  |DIV|/Ri
+(3, 425,  0.,   1.4E-9,    7.0E-9,   6.0E-8,   5.0E-7),    #  DEFSQ/Ri
+(3, 426,  0.,     20.0,      35.0,     75.0,     150.),    #  iawnd
+(3, 427,  0.,  2.0E-12,   4.0E-10,   1.0E-8,   2.0E-8),    #  AGI
+(3, 428,  0.,      4.0,      20.0,     60.0,    125.0),    #  UBF/Ri
+(3, 429,  0.,     0.30,      1.00,     2.00,    10.00),    #  1/SATRi
+(3, 430,  0.,   3.0E-2,    6.0E-2,     0.15,     0.50),    #  PVGRAD
+(3, 431,  0.,    0.020,     0.040,     0.07,     0.20),    #  EDRRCH
+(3, 432,  0.,    0.070,     0.125,     .225,     0.50),    #  EDR
+(3, 433,  0.,    0.060,     0.150,     .250,     0.50),    #  EDRLL
+(3, 434,  0.,   6.0E-4,    7.0E-3,     0.10,     0.40),    #  SEDR/Ri
+(3, 435,  0.,     0.30,       1.0,      5.0,     25.0),    #  1/RiTW
+(3, 436,  0.,   4.0E-5,    5.0E-5,   6.0E-5,   1.0E-4),    #  LHFK
+(3, 437,  0.,   3.0E-6,    2.5E-5,   7.0E-5,   1.0E-4),    #  LHFK/Ri
+(3, 438,  0.,   2.0E-6,    8.0E-6,   3.0E-5,   1.0E-4),    #  TEMPG/Ri
+(3, 439,  0.,   3.0E-5,    2.0E-4,   2.5E-3,   1.0E-2),    #  CTSQ/Ri
+(3, 440,  0.,   2.0E-5,    6.0E-5,   2.5E-4,   1.0E-3),    #  Brown1/Ri
+(3, 441,  0.,      2.5,      12.0,     45.0,     200.),    #  iawind/Ri 
+(3, 442,  0.,   3.0E-4,    2.0E-3,    0.010,    0.050),    #  NGM1/Ri
+(3, 443,  0.,   5.0E-8,    4.0E-7,   1.0E-6,   1.0E-4),    #  NGM2/Ri
+(3, 444,  0.,   5.0E-4,    3.0E-3,   2.0E-2,     0.10),    #  SCHGW/Ri
+(3, 445,  0.,   5.0E-7,    1.0E-6,   4.0E-6,   5.0E-5),    #  TROPG/Z
+(3, 446,  0.,      32.,       48.,      70.,     100.),    #  SPEED
+(3, 447,  0.,  1.0E-10,    3.0E-9,   1.0E-8,   1.0E-7),    #  -Stone
+(3, 448,  0.,   8.0E-9,    2.5E-8,  1.10E-7,   5.0E-7),    #  -NVA
+(3, 449,  0.,  1.0E-14,   5.0E-13,  1.0E-11,   1.0E-9),    #  NCSU1
+(3, 450,  0.,  2.0E-12,   5.0E-11,  6.0E-10,   1.0E-5),    #  NCSU2/Ri
+(3, 451,  0.,    0.015,     0.035,     0.07,     0.20),    #  EDRLUN
+(3, 452,  0.,    0.070,     0.150,    0.500,     1.00),    #  wsq
+(3, 453,  0.,    0.010,     0.035,    0.200,     1.00),    #  wsq/Ri
+(3, 454,  0.,   0.0005,    0.0025,     .020,     0.10),    #  EDR/Ri
+(3, 455,  0.,   0.0005,    0.0025,     .025,     0.10),    #  EDRLL/Ri
+(3, 456,  0.,   5.0E-4,    5.0E-3,    0.100,     0.50),    #  SIGW/Ri
+(3, 457,  0.,   5.0E-4,    5.0E-3,    0.100,     0.50),    #  SIGWX/Ri
+(3, 458,  0.,  1.0E-10,   5.0E-10,   8.0E-9,   1.0E-7),    #  F2D/Ri
+(3, 459,  0.,  3.0E-10,    2.0E-9,   8.0E-9,   5.0E-8),    #  F2DTW/Ri
+(3, 460,  0.,  1.0E-10,   6.0E-10,   5.0E-9,   1.0E-8),    #  F3D/Ri
+(3, 461,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 462,  0.,     0.20,     0.400,     0.70,     0.99),    #  MOGCLIMO
+(3, 463,  0.,    0.015,     0.040,    0.050,     0.10),    #  SOGCLIMO
+(3, 464,  0.,   1.5E-3,     0.030,    0.125,     0.50),    #  MWTCLIMO
+(3, 465,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE
+(3, 466,  0.,       0.,        0.,       0.,       0.),    #  SGSTKE/Ri
+(3, 467,  0.,     2.50,      4.50,     8.00,     15.0),    #  RTKE
+(3, 468,  0.,     0.10,      5.00,    50.00,    500.0),    #  RTKE/Ri
+(3, 469,  0.,     2.50,      4.50,     8.00,     15.0),    #  VARE
+(3, 470,  0.,     0.10,      5.00,    50.00,    500.0),    #  VARE/Ri
+(3, 471,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 472,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 473,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 474,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+(3, 475,  0.,       0.,        0.,       0.,       0.),    #  UNDEF
+# Specify MWT thresholds - incorporate TK updates 11 Feb 2013
+(3, 476,  0.,      0.1,       1.5,      50.,    200.0),    #  MWT1
+(3, 477,  0.,     0.05,      0.25,      2.0,     10.0),    #  MWT2
+(3, 478,  0.,   1.0E-7,    1.0E-6,   5.0E-6,   1.0E-5),    #  MWT3
+(3, 479,  0.,    1.0E4,     5.0E4,    1.0E5,    1.0E7),    #  MWT4
+(3, 480,  0.,     0.01,      0.05,      0.2,     10.0),    #  MWT5
+(3, 481,  0.,   1.0E-6,    1.0E-5,   5.0E-5,   1.0E-4),    #  MWT13
+(3, 482,  0.,      0.1,       0.5,      5.0,    100.0),    #  MWT14
+(3, 483,  0.,   2.0E-4,     0.050,      0.5,      5.0),    #  TKE_GWB
+(3, 484,  0.,      0.5,       2.0,     10.0,     100.),    #  MWT6
+(3, 485,  0.,      1.0,      10.0,    100.0,    1.0E3),    #  MWT7
+(3, 486,  0.,   3.0E-4,    2.0E-3,     0.02,      1.0),    #  MWT8
+(3, 487,  0.,    3.0E3,     1.0E4,    6.0E4,    1.0E6),    #  MWT9
+(3, 488,  0.,     0.15,      0.75,      5.0,     10.0),    #  MWT10
+(3, 489,  0.,      1.5,       6.5,     50.0,    1.0E3),    #  MWT11
+(3, 490,  0.,   5.0E-3,    2.0E-2,    7.0E-2      1.0),    #  MWT12
+# Initialize ITFA thresholds
+(3, 491,  0.,       0.,        0.,       0.,       0.),    #  ITFA
+(3, 492,  0.,       0.,        0.,       0.,       0.),    #  ITFADEF
+(3, 493,  0.,       0.,        0.,       0.,       0.),    #  ITFAMWT
+(3, 494,  0.,       0.,        0.,       0.,       0.),    #  ITFAMAX
+(3, 495,  0.,       0.,        0.,       0.,       0.)     #  ITFAMAXD
+);
+#
+ regionPDFfits = (
+# fcst_index_20140101-20141215_i12f12alltest34x59h.RiQ_00-12                                                                                                                                      
+# fcst_index_20150101-20151231_i06f12alltest34x88smwt.RiQ_00-12                                                                                                                                           
+ <ln(epsilon^(1/3))> = -2.60 SD[ln(epsilon^(1/3))] =  0.50
+# ln(epsilon^(1/3)) = a + b ln(x)
+# Specify CAT dignostic fit parameters
+# index           a           b          <ln x>          SD[ln(x)]      x1            x2         fit error
+ (1, 400,     4.5674    ,  0.72002    ,  -9.9545    ,  0.69442    ,  0.10000E-04,  0.50000E-03,  7.24866E-02),  # Brown1        20160817
+ (1, 401,    0.26192    ,  0.72280    ,  -3.9595    ,  0.69176    ,  0.10000E-02,  0.50000    ,  5.38066E-02),  # Brown2        20160817
+ (1, 402,    -3.1389    ,  0.42906    ,   1.2559    ,   1.1653    ,   1.0000    ,   500.00    ,  3.98360E-02),  # CP            20160817
+ (1, 403,     3.5853    ,  0.38647    ,  -16.004    ,   1.2938    ,  0.10000E-08,  0.50000E-05,  1.64663E-02),  # Ellrod1       20160817
+ (1, 404,     3.1053    ,  0.35470    ,  -16.085    ,   1.4096    ,  0.10000E-08,  0.50000E-05,  1.40689E-02),  # Ellrod2       20160817
+ (1, 405,    -1.7634    ,  0.31819    ,  -2.6294    ,   1.5714    ,  0.10000E-02,   1.0000    ,  1.31574E-02),  # 1/Ri          20160817
+ (1, 406,     3.3947    ,  0.37523    ,  -15.976    ,   1.3325    ,  0.10000E-08,  0.50000E-05,  1.68233E-02),  # Ellrod3       20160817
+ (1, 407,     6.4429    ,   1.7444    ,  -5.1838    ,  0.28662    ,  0.50000E-02,  0.20000E-01,  2.31652E-01),  # Lapse         20160817
+ (1, 408,   -0.29441    ,  0.68964    ,  -3.3432    ,  0.72502    ,  0.10000E-01,  0.50000    ,  8.75589E-02),  # ZBIG          20160817
+ (1, 409,    -2.0577    ,  0.30181    ,  -1.7969    ,   1.6567    ,  0.10000E-02,   10.000    ,  1.14062E-02),  # DTF3          20160817
+ (1, 410,   -0.46870    ,  0.15664    ,  -13.606    ,   3.1920    ,  0.10000E-08,  0.10000E-02,  7.81435E-03),  # Fth/Ri        20160817
+ (1, 411,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (1, 412,    -4.5351    ,  0.69471    ,   2.7855    ,  0.71972    ,   2.0000    ,   100.00    ,  1.51285E-01),  # Dutton        20160817
+ (1, 413,    -1.0755    ,  0.57235    ,  -2.6635    ,  0.87359    ,  0.10000E-01,   2.0000    ,  4.66135E-02),  # Endlich       20160817
+ (1, 414,    -2.8027    ,  0.17397    ,   1.1652    ,   2.8741    ,  0.10000    ,  0.10000E+07,  1.56393E-02),  # LAZ           20160817
+ (1, 415,     1.2667    ,  0.45718    ,  -8.4576    ,   1.0937    ,  0.50000E-05,  0.10000E-01,  1.24471E-02),  # NGM1          20160817
+ (1, 416,     5.6854    ,  0.51971    ,  -15.942    ,  0.96207    ,  0.10000E-07,  0.10000E-01,  2.51442E-02),  # -NGM2         20160817
+ (1, 417,   -0.32735    ,  0.39768    ,  -5.7148    ,   1.2573    ,  0.10000E-03,  0.10000    ,  6.46812E-03),  # SCHGW         20160817
+ (1, 418,    0.21999    ,  0.49271    ,  -5.7234    ,   1.0148    ,  0.10000E-03,  0.20000    ,  4.23500E-02),  # VWS           20160817
+ (1, 419,    0.14417    ,  0.34781    ,  -7.8899    ,   1.4376    ,  0.10000E-04,  0.10000    ,  4.28780E-02),  # -DRiDt        20160817
+ (1, 420,    0.57799    ,  0.23998    ,  -13.243    ,   2.0835    ,  0.10000E-08,  0.50000E-03,  1.44502E-02),  # HS/Ri         20160817
+ (1, 421,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (1, 422,     3.9563    ,  0.31725    ,  -20.666    ,   1.5760    ,  0.10000E-11,  0.20000E-06,  1.04031E-02),  # DEFSQ         20160817
+ (1, 423,     2.0059    ,  0.21116    ,  -21.813    ,   2.3679    ,  0.10000E-10,  0.50000E-07,  6.84943E-03),  # VORTSQ/Ri     20160817
+ (1, 424,    0.53749    ,  0.23374    ,  -13.423    ,   2.1391    ,  0.50000E-08,  0.50000E-03,  1.83989E-02),  # |DIV|/Ri      20160817
+ (1, 425,     1.4855    ,  0.17405    ,  -23.473    ,   2.8727    ,  0.10000E-12,  0.10000E-05,  7.17027E-03),  # DEFSQ/Ri      20160817
+ (1, 426,    -2.7410    ,  0.45670    ,  0.30878    ,   1.0948    ,  0.10000E-01,   100.00    ,  1.03506E-02),  # iawind        20160817
+ (1, 427,     3.2443    ,  0.22969    ,  -25.444    ,   2.1768    ,  0.10000E-12,  0.10000E-07,  1.72829E-02),  # AGI           20160817
+ (1, 428,    -2.1864    ,  0.20088    ,  -2.0587    ,   2.4890    ,  0.10000E-02,   100.00    ,  1.51745E-02),  # UBF/Ri        20160817
+ (1, 429,    -1.8062    ,  0.36175    ,  -2.1943    ,   1.3822    ,  0.10000E-02,   1.0000    ,  2.66628E-02),  # 1/SATRi       20160817
+ (1, 430,   -0.46523    ,  0.29325    ,  -7.2797    ,   1.7050    ,  0.10000E-02,   1.0000    ,  5.70505E-02),  # PVGRAD        20160817
+ (1, 431,    0.42805    ,  0.67745    ,  -4.4697    ,  0.73806    ,  0.20000E-02,  0.10000    ,  1.97664E-02),  # EDRRCH        20160817
+ (1, 432,    0.91896    ,  0.77719    ,  -4.5278    ,  0.64334    ,  0.10000E-02,  0.10000    ,  3.02843E-02),  # EDR           20160817
+ (1, 433,    0.53422    ,  0.60543    ,  -5.1768    ,  0.82586    ,  0.50000E-03,  0.10000    ,  1.12913E-02),  # EDRLL         20160817
+ (1, 434,    -1.3078    ,  0.12957    ,  -9.9724    ,   3.8588    ,  0.10000E-07,  0.10000    ,  3.53868E-03),  # SEDR/Ri       20160817
+ (1, 435,    -1.9759    ,  0.33724    ,  -1.8506    ,   1.4826    ,  0.10000E-02,   10.000    ,  2.77172E-02),  # 1/RiTW        20160817
+ (1, 436,     4.7427    ,  0.58426    ,  -12.568    ,  0.85579    ,  0.10000E-07,  0.10000E-03,  8.70807E-02),  # LHFK          20160817
+ (1, 437,    0.74730    ,  0.22298    ,  -15.012    ,   2.2424    ,  0.10000E-08,  0.10000E-02,  2.08123E-02),  # LHFK/Ri       20160817
+ (1, 438,    0.86298    ,  0.24846    ,  -13.938    ,   2.0124    ,  0.10000E-08,  0.10000E-03,  1.32172E-02),  # TEMPG/Ri      20160817
+ (1, 439,   -0.32807    ,  0.18117    ,  -12.540    ,   2.7598    ,  0.10000E-08,  0.10000E-01,  2.89757E-03),  # CTSQ/Ri       20160817
+ (1, 440,    0.61066    ,  0.26412    ,  -12.156    ,   1.8931    ,  0.10000E-07,  0.50000E-03,  1.73430E-02),  # Brown1/Ri     20160817
+ (1, 441,    -2.1895    ,  0.21998    ,  -1.8662    ,   2.2730    ,  0.10000E-03,   100.00    ,  1.29925E-02),  # iawind/Ri     20160817
+ (1, 442,   -0.23534    ,  0.22258    ,  -10.624    ,   2.2464    ,  0.10000E-07,  0.10000E-01,  1.12427E-02),  # NGM1/Ri       20160817
+ (1, 443,    0.97898    ,  0.19394    ,  -18.454    ,   2.5781    ,  0.10000E-08,  0.10000E-02,  1.14464E-02),  # NGM2/Ri       20160817
+ (1, 444,   -0.99251    ,  0.20368    ,  -7.8924    ,   2.4549    ,  0.10000E-05,  0.10000    ,  8.73548E-03),  # SCHGW/Ri      20160817
+ (1, 445,     9.8721    ,  0.76484    ,  -16.307    ,  0.65373    ,  0.20000E-08,  0.30000E-06, -9.99900E+03),  # TROPG/Z       20160817
+ (1, 446,    -4.9258    ,   1.0565    ,   2.2013    ,  0.47324    ,   5.0000    ,   50.000    ,  1.34348E-01),  # SPEED         20160817
+ (1, 447,    0.98100    ,  0.16406    ,  -21.828    ,   3.0477    ,  0.10000E-09,  0.10000E-04,  1.58322E-02),  # -Stone        20160817
+ (1, 448,     3.8233    ,  0.29907    ,  -21.478    ,   1.6719    ,  0.10000E-10,  0.50000E-06,  1.02857E-02),  # -NVA          20160817
+ (1, 449,     2.6185    ,  0.15423    ,  -33.836    ,   3.2419    ,  0.10000E-18,  0.10000E-09,  3.69340E-03),  # NCSU1         20160817
+ (1, 450,    0.93047    ,  0.12040    ,  -29.323    ,   4.1528    ,  0.10000E-13,  0.10000E-07,  1.30670E-02),  # NCSU2/Ri      20160817
+ (1, 451,   -0.11724    ,  0.48329    ,  -5.1372    ,   1.0346    ,  0.50000E-03,  0.10000    ,  4.77661E-02),  # EDRLUN        20160817
+ (1, 452,    -1.5361    ,  0.22737    ,  -4.6792    ,   2.1990    ,  0.10000E-02,   10.000    ,  7.89732E-03),  # wsq           20160817
+ (1, 453,    -1.3954    ,  0.16583    ,  -7.2637    ,   3.0150    ,  0.10000E-05,   10.000    ,  5.30197E-03),  # wsq/Ri        20160817
+ (1, 454,   -0.33401    ,  0.19425    ,  -11.665    ,   2.5740    ,  0.10000E-08,  0.10000    ,  7.84302E-03),  # EDR/Ri        20160817
+ (1, 455,   -0.33635    ,  0.17654    ,  -12.822    ,   2.8322    ,  0.10000E-08,  0.10000E-01,  3.28519E-03),  # EDRLL/Ri      20160817
+ (1, 456,    -1.4822    ,  0.14901    ,  -7.5016    ,   3.3554    ,  0.10000E-06,   1.0000    ,  5.15621E-03),  # SIGW/Ri       20160817
+ (1, 457,    -1.4746    ,  0.14369    ,  -7.8318    ,   3.4797    ,  0.10000E-06,   1.0000    ,  4.28765E-03),  # SIGWX/Ri      20160817
+ (1, 458,     2.3774    ,  0.19778    ,  -25.166    ,   2.5280    ,  0.10000E-13,  0.10000E-06,  9.05399E-03),  # F2D/Ri        20160817
+ (1, 459,     2.0859    ,  0.18950    ,  -24.728    ,   2.6386    ,  0.10000E-13,  0.10000E-07,  6.41805E-03),  # F2DTW/Ri      20160817
+ (1, 460,     2.0756    ,  0.18296    ,  -25.556    ,   2.7329    ,  0.10000E-12,  0.10000E-06,  5.41999E-03),  # F3D/Ri        20160817
+ (1, 461,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (1, 462,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MOGCLIMO      20160817
+ (1, 463,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SOGCLIMO      20160817
+ (1, 464,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MWTCLIMO      20160817
+ (1, 465,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE        20160817
+ (1, 466,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE/Ri     20160817
+ (1, 467,    -1.9543    ,  0.27874    ,  -2.3164    ,   1.7938    ,  0.10000E-02,   50.000    ,  6.40251E-03),  # RTKE          20160817
+ (1, 468,    -1.7769    ,  0.16848    ,  -4.8854    ,   2.9677    ,  0.10000E-03,   100.00    ,  3.61219E-03),  # RTKE/Ri       20160817
+ (1, 469,    -3.4820    ,  0.47771    ,   1.8462    ,   1.0467    ,  0.10000    ,   200.00    ,  1.33739E-02),  # VARE          20160817
+ (1, 470,    -2.4748    ,  0.20237    , -0.61873    ,   2.4707    ,  0.10000E-02,   2000.0    ,  7.74510E-03),  # VARE/Ri       20160817
+ (1, 471,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (1, 472,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (1, 473,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (1, 474,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (1, 475,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+# Specify MWT dignostic fit parameters
+ (1, 476,    -3.2480    ,  0.15986    ,   4.0537    ,   3.1278    ,   1.0000    ,  0.10000E+07,  8.97127E-03),  # MWT1          20160830
+ (1, 477,    -2.4765    ,  0.20134    , -0.61350    ,   2.4834    ,  0.10000E-01,   1000.0    ,  3.88919E-03),  # MWT2          20160830
+ (1, 478,    0.46923    ,  0.22415    ,  -13.693    ,   2.2307    ,  0.50000E-07,  0.10000E-02,  2.26392E-03),  # MWT3          20160830
+ (1, 479,    -6.5133    ,  0.38596    ,   10.139    ,   1.2955    ,   5000.0    ,  0.10000E+07,  2.67996E-02),  # MWT4          20160830
+ (1, 480,    -1.9063    ,  0.31699    ,  -2.1884    ,   1.5773    ,  0.10000E-01,   10.000    ,  7.09192E-03),  # MWT5          20160830
+ (1, 481,   -0.30739    ,  0.19470    ,  -11.775    ,   2.5681    ,  0.10000E-05,  0.10000    ,  3.90947E-03),  # MWT13         20160830
+ (1, 482,    -2.4581    ,  0.25230    , -0.56253    ,   1.9818    ,   1.0000    ,   1000.0    ,  2.23237E-02),  # MWT14         20160830
+ (1, 483,   -0.70491    ,  0.22058    ,  -8.5915    ,   2.2668    ,  0.10000E-04,  0.10000    ,  3.15918E-03),  # TKE_GWB       20160830
+ (1, 484,    -2.6838    ,  0.27987    ,  0.29955    ,   1.7865    ,  0.10000    ,   1000.0    ,  5.56729E-03),  # MWT6          20160830
+ (1, 485,    -4.0957    ,  0.22322    ,   6.7008    ,   2.2400    ,   50.000    ,  0.10000E+07,  1.11678E-02),  # MWT7          20160830
+ (1, 486,    -1.5038    ,  0.17790    ,  -6.1620    ,   2.8106    ,  0.10000E-03,   10.000    ,  3.34399E-03),  # MWT8          20160830
+ (1, 487,    -5.1464    ,  0.28205    ,   9.0284    ,   1.7728    ,   1000.0    ,  0.50000E+07,  7.42216E-03),  # MWT9          20160830
+ (1, 488,    -2.6472    ,  0.28714    ,  0.16424    ,   1.7413    ,  0.10000    ,   1000.0    ,  1.99009E-02),  # MWT10         20160830
+ (1, 489,    -4.0090    ,  0.32561    ,   4.3274    ,   1.5356    ,   10.000    ,   10000.    ,  1.56514E-02),  # MWT11         20160830
+ (1, 490,    -1.6422    ,  0.34027    ,  -2.8150    ,   1.4694    ,  0.10000E-01,   10.000    ,  8.98972E-03),  # MWT12         20160830
+# Specify GTG dignostic fit parameters
+ (1, 491,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # ITFA          20160105
+ (1, 492,    0.70806E-01,   1.2123    ,  -2.2032    ,  0.41245    ,  0.20000E-01,  0.50000    ,  4.26542E-02),  # ITFADEF       20160916
+ (1, 493,   -0.15545    ,  0.94645    ,  -2.5828    ,  0.52829    ,  0.50000E-01,  0.50000    ,  1.38714E-02),  # ITFAMWT       20160916
+ (1, 494,    0.23851E-02,   1.2012    ,  -2.1665    ,  0.41626    ,  0.20000E-01,  0.50000    ,  4.88599E-02),  # ITFAMAX       20160916
+ (1, 495,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # ITFAMAXD      20160105
+ # Specify dignostic fit parameters: mid-levels
+# fcst_index_20150101-20151231_i06f12alltest34x88smwt.RiQ_08-22                                                                                                                                           
+# DALinsitu2009-2014_all_nointerpnulls_737+767_histograms.out
+ <ln(epsilon^(1/3))> = -2.60 SD[ln(epsilon^(1/3))] =  0.50
+# ln(epsilon^(1/3)) = a + b ln(x)
+# index           a           b          <ln x>          SD[ln(x)]      x1            x2         fit error
+# Specify CAT dignostic fit parameters (fits based on all altitudes with some exceptions)
+ (2, 400,     5.1848    ,  0.78177    ,  -9.9580    ,  0.63958    ,  0.50000E-05,  0.50000E-03,  8.32865E-02),  # Brown1        20160817
+ (2, 401,     1.4308    ,  0.99288    ,  -4.0597    ,  0.50359    ,  0.20000E-02,  0.10000    ,  3.38782E-02),  # Brown2        20160817
+ (2, 402,    -3.6010    ,  0.42772    ,   2.3404    ,   1.1690    ,   2.0000    ,   1000.0    ,  1.93807E-02),  # CP            20160817
+ (2, 403,     4.7941    ,  0.46145    ,  -16.024    ,   1.0835    ,  0.50000E-08,  0.50000E-05,  2.33769E-02),  # Ellrod1       20160817
+ (2, 404,     4.4281    ,  0.43787    ,  -16.050    ,   1.1419    ,  0.50000E-08,  0.50000E-05,  1.87929E-02),  # Ellrod2       20160817
+ (2, 405,    -1.3624    ,  0.40804    ,  -3.0330    ,   1.2254    ,  0.50000E-02,   5.0000    ,  8.38677E-03),  # 1/Ri          20160817
+ (2, 406,     4.7863    ,  0.46212    ,  -15.984    ,   1.0820    ,  0.50000E-08,  0.50000E-05,  2.50326E-02),  # Ellrod3       20160817
+ (2, 407,     7.7669    ,   1.9207    ,  -5.3975    ,  0.26032    ,  0.20000E-02,  0.15000E-01,  6.06969E-01),  # Lapse         20160817
+ (2, 408,    -1.7675    ,  0.28167    ,  -2.9558    ,   1.7751    ,  0.25000E-01,  0.50000    ,  1.11857E-01),  # ZBIG          20160817
+ (2, 409,    -1.7576    ,  0.44775    ,  -1.8813    ,   1.1167    ,  0.20000E-01,   10.000    ,  1.68889E-02),  # DTF3          20160817
+ (2, 410,    0.18108    ,  0.19274    ,  -14.429    ,   2.5942    ,  0.10000E-07,  0.10000E-02,  2.13050E-03),  # Fth/Ri        20160817
+ (2, 411,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (2, 412,    -4.3624    ,  0.71057    ,   2.4803    ,  0.70366    ,   5.0000    ,   200.00    ,  1.70898E-01),  # Dutton        20160817
+ (2, 413,    -1.2667    ,  0.62309    ,  -2.1398    ,  0.80246    ,  0.20000E-01,   2.0000    ,  4.29879E-02),  # Endlich       20160817
+ (2, 414,    -2.8491    ,  0.18754    ,   1.3284    ,   2.6661    ,  0.10000    ,  0.10000E+07,  2.24205E-02),  # LAZ           20160817
+ (2, 415,     1.0221    ,  0.44200    ,  -8.1947    ,   1.1312    ,  0.10000E-04,  0.10000E-01,  1.92934E-02),  # NGM1          20160817
+ (2, 416,     7.5116    ,  0.64665    ,  -15.637    ,  0.77321    ,  0.10000E-07,  0.10000E-02,  2.61113E-02),  # -NGM2         20160817
+ (2, 417,   -0.78510E-01,  0.42580    ,  -5.9217    ,   1.1743    ,  0.10000E-03,  0.10000    ,  8.40266E-03),  # SCHGW         20160817
+ (2, 418,     2.0088    ,  0.77139    ,  -5.9746    ,  0.64818    ,  0.50000E-03,   1.0000    ,  3.87379E-02),  # VWS           20160817
+ (2, 419,     1.3913    ,  0.50730    ,  -7.8677    ,  0.98560    ,  0.10000E-04,  0.10000E-01,  5.40603E-02),  # -DRiDt        20160817
+ (2, 420,     1.3994    ,  0.28791    ,  -13.891    ,   1.7367    ,  0.30000E-08,  0.10000E-02,  1.80968E-03),  # HS/Ri         20160817
+ (2, 421,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (2, 422,     5.2242    ,  0.38275    ,  -20.442    ,   1.3063    ,  0.10000E-10,  0.10000E-06,  1.21950E-02),  # DEFSQ         20160817
+ (2, 423,     3.2689    ,  0.26502    ,  -22.145    ,   1.8867    ,  0.10000E-09,  0.10000E-06,  5.29724E-03),  # VORTSQ/Ri     20160817
+ (2, 424,     1.6534    ,  0.29983    ,  -14.186    ,   1.6676    ,  0.10000E-08,  0.20000E-03,  1.17154E-02),  # |DIV|/Ri      20160817
+ (2, 425,     2.2534    ,  0.20159    ,  -24.076    ,   2.4803    ,  0.10000E-13,  0.10000E-05,  5.05197E-03),  # DEFSQ/Ri      20160817
+ (2, 426,    -2.8069    ,  0.46826    ,  0.44176    ,   1.0678    ,  0.50000E-01,   100.00    ,  2.47929E-02),  # iawind        20160817
+ (2, 427,     3.2580    ,  0.23050    ,  -25.414    ,   2.1692    ,  0.10000E-12,  0.50000E-07,  1.04578E-02),  # AGI           20160817
+ (2, 428,    -1.9047    ,  0.21463    ,  -3.2394    ,   2.3296    ,  0.10000E-01,   100.00    ,  1.86550E-02),  # UBF/Ri        20160817
+ (2, 429,    -1.6144    ,  0.39401    ,  -2.5014    ,   1.2690    ,  0.10000E-02,   5.0000    ,  8.28205E-03),  # 1/SATRi       20160817
+ (2, 430,    0.43637    ,  0.47999    ,  -6.3259    ,   1.0417    ,  0.10000E-03,  0.10000    ,  1.87906E-02),  # PVGRAD        20160817
+ (2, 431,     1.0427    ,  0.81208    ,  -4.4857    ,  0.61571    ,  0.50000E-02,  0.20000    ,  1.26463E-02),  # EDRRCH        20160817
+ (2, 432,     1.1864    ,  0.86035    ,  -4.4010    ,  0.58116    ,  0.20000E-02,  0.10000    ,  4.30275E-02),  # EDR           20160817
+ (2, 433,    0.66602    ,  0.63898    ,  -5.1113    ,  0.78250    ,  0.10000E-02,  0.10000    ,  1.56173E-02),  # EDRLL         20160817
+ (2, 434,   -0.47795    ,  0.20650    ,  -10.276    ,   2.4213    ,  0.50000E-05,  0.10000    ,  1.61372E-02),  # SEDR/Ri       20160817
+ (2, 435,    -1.7478    ,  0.38498    ,  -2.2138    ,   1.2988    ,  0.50000E-02,   5.0000    ,  2.04619E-02),  # 1/RiTW        20160817
+ (2, 436,     3.9201    ,  0.49182    ,  -13.257    ,   1.0166    ,  0.10000E-05,  0.10000E-02,  5.37641E-02),  # LHFK          20160817
+ (2, 437,     2.0787    ,  0.29550    ,  -15.833    ,   1.6920    ,  0.50000E-09,  0.50000E-04,  6.77491E-03),  # LHFK/Ri       20160817
+ (2, 438,     1.9481    ,  0.30806    ,  -14.764    ,   1.6231    ,  0.50000E-08,  0.10000E-03,  1.06204E-02),  # TEMPG/Ri      20160817
+ (2, 439,    0.18624    ,  0.20566    ,  -13.548    ,   2.4312    ,  0.10000E-08,  0.10000E-01,  3.58191E-03),  # CTSQ/Ri       20160817
+ (2, 440,     1.5315    ,  0.31992    ,  -12.914    ,   1.5629    ,  0.10000E-07,  0.10000E-02,  4.50742E-03),  # Brown1/Ri     20160817
+ (2, 441,    -1.9253    ,  0.26336    ,  -2.5621    ,   1.8986    ,  0.10000E-03,   300.00    ,  8.63139E-03),  # iawind/Ri     20160817
+ (2, 442,    0.24431    ,  0.25507    ,  -11.151    ,   1.9602    ,  0.10000E-07,  0.50000E-01,  8.04441E-03),  # NGM1/Ri       20160817
+ (2, 443,     2.8277    ,  0.29257    ,  -18.551    ,   1.7090    ,  0.10000E-10,  0.10000E-02,  3.40709E-03),  # NGM2/Ri       20160817
+ (2, 444,   -0.46959    ,  0.24234    ,  -8.7912    ,   2.0633    ,  0.10000E-05,  0.20000    ,  2.90225E-03),  # SCHGW/Ri      20160817
+ (2, 445,     3.0510    ,  0.37334    ,  -15.137    ,   1.3393    ,  0.10000E-05,  0.10000E-02,  7.11765E-02),  # TROPG/Z       20160817
+ (2, 446,    -4.7290    ,  0.89714    ,   2.3731    ,  0.55732    ,   5.0000    ,   75.000    ,  1.25193E-01),  # SPEED         20160817
+ (2, 447,     3.3432    ,  0.25311    ,  -23.481    ,   1.9754    ,  0.10000E-09,  0.30000E-06,  2.76100E-02),  # -Stone        20160817
+ (2, 448,     4.8849    ,  0.35373    ,  -21.160    ,   1.4135    ,  0.50000E-10,  0.30000E-06,  1.33476E-02),  # -NVA          20160817
+ (2, 449,     3.3830    ,  0.17427    ,  -34.332    ,   2.8691    ,  0.10000E-16,  0.10000E-09,  1.43437E-03),  # NCSU1         20160817
+ (2, 450,     2.6006    ,  0.17385    ,  -29.915    ,   2.8761    ,  0.10000E-14,  0.10000E-08,  1.14905E-02),  # NCSU2/Ri      20160817
+ (2, 451,    0.55508    ,  0.61547    ,  -5.1263    ,  0.81238    ,  0.70000E-03,  0.10000    ,  5.38874E-02),  # EDRLUN        20160817
+ (2, 452,    -1.5335    ,  0.22224    ,  -4.7987    ,   2.2498    ,  0.10000E-04,   5.0000    ,  8.23938E-03),  # wsq           20160817
+ (2, 453,    -1.2521    ,  0.17775    ,  -7.5833    ,   2.8130    ,  0.10000E-05,   1.0000    ,  4.69739E-03),  # wsq/Ri        20160817
+ (2, 454,    0.14288    ,  0.22311    ,  -12.294    ,   2.2411    ,  0.10000E-08,  0.10000E-01,  7.28841E-03),  # EDR/Ri        20160817
+ (2, 455,    0.13344    ,  0.20663    ,  -13.228    ,   2.4197    ,  0.10000E-07,  0.10000E-01,  2.66060E-03),  # EDRLL/Ri      20160817
+ (2, 456,    -1.2723    ,  0.16425    ,  -8.0838    ,   3.0442    ,  0.10000E-06,   1.0000    ,  6.10596E-03),  # SIGW/Ri       20160817
+ (2, 457,    -1.2878    ,  0.15355    ,  -8.5460    ,   3.2563    ,  0.10000E-07,   1.0000    ,  4.15654E-03),  # SIGWX/Ri      20160817
+ (2, 458,     3.3929    ,  0.23296    ,  -25.725    ,   2.1463    ,  0.10000E-14,  0.10000E-06,  9.18478E-03),  # F2D/Ri        20160817
+ (2, 459,     4.0002    ,  0.26260    ,  -25.134    ,   1.9040    ,  0.10000E-11,  0.10000E-05,  2.06806E-02),  # F2DTW/Ri      20160817
+ (2, 460,     3.4315    ,  0.23349    ,  -25.832    ,   2.1414    ,  0.10000E-14,  0.10000E-06,  1.04930E-02),  # F3D/Ri        20160817
+ (2, 461,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (2, 462,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MOGCLIMO      20160817
+ (2, 463,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SOGCLIMO      20160817
+ (2, 464,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MWTCLIMO      20160817
+ (2, 465,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE        20160817
+ (2, 466,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE/Ri     20160817
+ (2, 467,    -1.9301    ,  0.29993    ,  -2.2335    ,   1.6671    ,  0.10000E-02,   50.000    ,  9.20757E-03),  # RTKE          20160817
+ (2, 468,    -1.5751    ,  0.19240    ,  -5.3272    ,   2.5988    ,  0.10000E-05,   10.000    ,  4.90461E-03),  # RTKE/Ri       20160817
+ (2, 469,    -3.5607    ,  0.44055    ,   2.1806    ,   1.1349    ,  0.10000    ,   500.00    ,  2.03617E-02),  # VARE          20160817
+ (2, 470,    -2.3736    ,  0.24406    , -0.92783    ,   2.0487    ,  0.10000E-01,   500.00    ,  6.74505E-03),  # VARE/Ri       20160817
+ (2, 471,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (2, 472,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (2, 473,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (2, 474,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+ (2, 475,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160405
+# Specify MWT dignostic fit parameters
+ (2, 476,    -2.9706    ,  0.14573    ,   2.5430    ,   3.4311    ,  0.10000E-01,  0.10000E+07,  3.43815E-03),  # MWT1          20160830
+ (2, 477,    -2.3248    ,  0.20210    ,  -1.3617    ,   2.4740    ,  0.50000E-02,   500.00    ,  1.14529E-02),  # MWT2          20160830
+ (2, 478,    0.70002    ,  0.23303    ,  -14.162    ,   2.1457    ,  0.10000E-07,  0.10000E-02,  3.22130E-03),  # MWT3          20160830
+ (2, 479,    -6.6660    ,  0.38241    ,   10.633    ,   1.3075    ,   5000.0    ,  0.50000E+07,  1.84950E-02),  # MWT4          20160830
+ (2, 480,    -1.8600    ,  0.32496    ,  -2.2771    ,   1.5387    ,  0.10000E-01,   10.000    ,  1.24169E-02),  # MWT5          20160830
+ (2, 481,    0.20056E-01,  0.22332    ,  -11.732    ,   2.2389    ,  0.10000E-05,  0.10000E-01,  2.91859E-03),  # MWT13         20160830
+ (2, 482,    -2.4223    ,  0.23898    , -0.74350    ,   2.0922    ,  0.10000    ,   500.00    ,  1.50225E-02),  # MWT14         20160830
+ (2, 483,   -0.70288    ,  0.22816    ,  -8.3150    ,   2.1915    ,  0.10000E-04,  0.10000    ,  1.03224E-02),  # TKE_GWB       20160830
+ (2, 484,    -2.7654    ,  0.28975    ,  0.57072    ,   1.7256    ,  0.10000    ,   1000.0    ,  5.41834E-03),  # MWT6          20160830
+ (2, 485,    -3.8230    ,  0.20404    ,   5.9936    ,   2.4504    ,   10.000    ,  0.10000E+07,  9.40387E-03),  # MWT7          20160830
+ (2, 486,    -1.3210    ,  0.18958    ,  -6.7462    ,   2.6374    ,  0.10000E-04,   10.000    ,  1.55736E-03),  # MWT8          20160830
+ (2, 487,    -5.3035    ,  0.29181    ,   9.2646    ,   1.7134    ,   500.00    ,  0.10000E+08,  7.41836E-03),  # MWT9          20160830
+ (2, 488,    -2.6157    ,  0.27584    ,  0.56859E-01,   1.8126    ,  0.10000    ,   1000.0    ,  1.20523E-02),  # MWT10         20160830
+ (2, 489,    -3.6351    ,  0.28000    ,   3.6970    ,   1.7857    ,   1.0000    ,   10000.    ,  1.22213E-02),  # MWT11         20160830
+ (2, 490,    -1.5559    ,  0.34722    ,  -3.0070    ,   1.4400    ,  0.50000E-02,   10.000    ,  6.23326E-03),  # MWT12         20160830
+# Specify GTG dignostic fit parameters
+ (2, 491,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # ITFA          20160111
+ (2, 492,    0.48264    ,   1.2884    ,  -2.3926    ,  0.38807    ,  0.25000E-01,  0.40000    ,  2.85756E-02),  # ITFADEF       20160916
+ (2, 493,    0.44863E-01,   1.0353    ,  -2.5548    ,  0.48297    ,  0.60000E-01,  0.50000    ,  2.69854E-02),  # ITFAMWT       20160916
+ (2, 494,    0.27460    ,   1.2552    ,  -2.2902    ,  0.39834    ,  0.25000E-01,  0.50000    ,  3.93172E-02),  # ITFAMAX       20160916
+ (2, 495,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # ITFAMAXD      20160111
+# Specify dignostic fit parameters: high-levels
+# fcst_index_20150101-20151231_i06f12alltest34x88smwt.RiQ_18-60                                                                                                                                           
+# DALinsitu2009-2014_all_nointerpnulls_737+767_histograms.out
+ <ln(epsilon^(1/3))> = -2.60 SD[ln(epsilon^(1/3))] =  0.50
+# ln(epsilon^(1/3)) = a + b ln(x)
+# index           a           b          <ln x>          SD[ln(x)]      x1            x2         fit error
+# Specify CAT dignostic fit parameters
+ (3, 400,     5.7213    ,  0.83505    ,  -9.9650    ,  0.59877    ,  0.50000E-05,  0.10000E-02,  1.13281E-01),  # Brown1        20160817
+ (3, 401,     1.5733    ,   1.0086    ,  -4.1378    ,  0.49575    ,  0.10000E-02,  0.20000    ,  5.38464E-02),  # Brown2        20160817
+ (3, 402,    -4.3518    ,  0.50879    ,   3.4430    ,  0.98272    ,   20.000    ,   1000.0    ,  4.83059E-02),  # CP            20160817
+ (3, 403,     4.7648    ,  0.44953    ,  -16.383    ,   1.1123    ,  0.50000E-08,  0.10000E-04,  1.64949E-02),  # Ellrod1       20160817
+ (3, 404,     4.6316    ,  0.44232    ,  -16.349    ,   1.1304    ,  0.50000E-08,  0.10000E-04,  1.26010E-02),  # Ellrod2       20160817
+ (3, 405,    -1.1263    ,  0.48562    ,  -3.0346    ,   1.0296    ,  0.10000E-01,   5.0000    ,  5.03172E-02),  # 1/Ri          20160817
+ (3, 406,     4.8120    ,  0.45403    ,  -16.325    ,   1.1012    ,  0.50000E-08,  0.10000E-04,  1.44498E-02),  # Ellrod3       20160817
+ (3, 407,    -1.0420    ,  0.29601    ,  -5.2633    ,   1.6892    ,  0.10000E-03,  0.10000E-01,  4.59153E-01),  # Lapse         20160817
+ (3, 408,    -1.7128    ,  0.31460    ,  -2.8201    ,   1.5893    ,  0.10000E-01,  0.20000    ,  4.70422E-02),  # ZBIG          20160817
+ (3, 409,    -1.8044    ,  0.52158    ,  -1.5254    ,  0.95862    ,  0.10000    ,   50.000    ,  6.75104E-02),  # DTF3          20160817
+ (3, 410,    0.56054    ,  0.22046    ,  -14.336    ,   2.2680    ,  0.10000E-06,  0.10000E-01,  2.37362E-02),  # Fth/Ri        20160817
+ (3, 411,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (3, 412,    -4.6791    ,  0.78908    ,   2.6348    ,  0.63365    ,   2.0000    ,   1000.0    ,  1.25984E-01),  # Dutton        20160817
+ (3, 413,    -1.5130    ,  0.69635    ,  -1.5610    ,  0.71803    ,  0.50000E-01,   5.0000    ,  5.18955E-02),  # Endlich       20160817
+ (3, 414,    -2.9186    ,  0.18894    ,   1.6862    ,   2.6464    ,  0.10000    ,  0.10000E+07,  1.65174E-02),  # LAZ           20160817
+ (3, 415,     1.2594    ,  0.48919    ,  -7.8894    ,   1.0221    ,  0.50000E-04,  0.50000E-01,  2.35865E-02),  # NGM1          20160817
+ (3, 416,     5.2161    ,  0.47670    ,  -16.396    ,   1.0489    ,  0.10000E-07,  0.10000E-04,  7.82285E-02),  # -NGM2         20160817
+ (3, 417,    0.82453E-01,  0.35784    ,  -7.4963    ,   1.3973    ,  0.10000E-04,  0.10000    ,  1.98150E-02),  # SCHGW         20160817
+ (3, 418,     2.4363    ,  0.87198    ,  -5.7757    ,  0.57341    ,  0.10000E-02,  0.50000E-01,  5.28876E-02),  # VWS           20160817
+ (3, 419,    0.59040    ,  0.36267    ,  -8.7970    ,   1.3787    ,  0.50000E-04,  0.50000E-02,  2.80189E-02),  # -DRiDt        20160817
+ (3, 420,     1.4946    ,  0.28278    ,  -14.480    ,   1.7682    ,  0.10000E-07,  0.10000E-02,  1.24681E-02),  # HS/Ri         20160817
+ (3, 421,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (3, 422,     4.6381    ,  0.34350    ,  -21.072    ,   1.4556    ,  0.10000E-10,  0.10000E-06,  7.97987E-03),  # DEFSQ         20160817
+ (3, 423,     3.2146    ,  0.25220    ,  -23.056    ,   1.9826    ,  0.10000E-12,  0.10000E-05,  1.57302E-02),  # VORTSQ/Ri     20160817
+ (3, 424,     1.9937    ,  0.30735    ,  -14.946    ,   1.6268    ,  0.10000E-07,  0.10000E-02,  1.31457E-02),  # |DIV|/Ri      20160817
+ (3, 425,     2.7168    ,  0.21678    ,  -24.526    ,   2.3065    ,  0.50000E-12,  0.50000E-05,  5.85238E-03),  # DEFSQ/Ri      20160817
+ (3, 426,    -3.0736    ,  0.54859    ,  0.86339    ,  0.91143    ,  0.50000    ,   100.00    ,  3.80871E-02),  # iawind        20160817
+ (3, 427,     4.3194    ,  0.27786    ,  -24.903    ,   1.7995    ,  0.10000E-11,  0.50000E-07,  9.66832E-03),  # AGI           20160817
+ (3, 428,    -1.6710    ,  0.27164    ,  -3.4201    ,   1.8407    ,  0.10000E-03,   50.000    ,  1.28370E-02),  # UBF/Ri        20160817
+ (3, 429,    -1.3909    ,  0.42367    ,  -2.8540    ,   1.1802    ,  0.10000E-01,   10.000    ,  2.05336E-02),  # 1/SATRi       20160817
+ (3, 430,    0.12271    ,  0.46867    ,  -5.8095    ,   1.0669    ,  0.50000E-03,  0.50000    ,  3.24274E-02),  # PVGRAD        20160817
+ (3, 431,     1.0594    ,  0.77850    ,  -4.7006    ,  0.64226    ,  0.20000E-02,  0.20000    ,  5.16992E-02),  # EDRRCH        20160817
+ (3, 432,    0.90879    ,  0.75014    ,  -4.6775    ,  0.66654    ,  0.20000E-02,  0.20000    ,  2.82725E-02),  # EDR           20160817
+ (3, 433,    0.67315    ,  0.61624    ,  -5.3115    ,  0.81138    ,  0.10000E-02,  0.20000    ,  3.43808E-02),  # EDRLL         20160817
+ (3, 434,   -0.38479    ,  0.21340    ,  -10.381    ,   2.3430    ,  0.10000E-04,   1.0000    ,  2.49501E-02),  # SEDR/Ri       20160817
+ (3, 435,    -1.5036    ,  0.37041    ,  -2.9599    ,   1.3498    ,  0.50000E-02,   10.000    ,  9.54000E-03),  # 1/RiTW        20160817
+ (3, 436,     5.1214    ,  0.59554    ,  -12.965    ,  0.83957    ,  0.10000E-05,  0.10000E-02,  3.25297E-02),  # LHFK          20160817
+ (3, 437,     2.5369    ,  0.31397    ,  -16.361    ,   1.5925    ,  0.10000E-08,  0.50000E-04,  8.63550E-03),  # LHFK/Ri       20160817
+ (3, 438,     2.4218    ,  0.32947    ,  -15.242    ,   1.5176    ,  0.10000E-07,  0.10000E-03,  8.29138E-03),  # TEMPG/Ri      20160817
+ (3, 439,    0.74503    ,  0.24413    ,  -13.702    ,   2.0481    ,  0.50000E-07,  0.10000E-01,  1.04981E-02),  # CTSQ/Ri       20160817
+ (3, 440,     1.9847    ,  0.34681    ,  -13.220    ,   1.4417    ,  0.10000E-06,  0.50000E-02,  4.44483E-03),  # Brown1/Ri     20160817
+ (3, 441,    -1.8717    ,  0.27021    ,  -2.6953    ,   1.8504    ,  0.10000E-02,   100.00    ,  1.36760E-02),  # iawind/Ri     20160817
+ (3, 442,    0.35088    ,  0.26574    ,  -11.105    ,   1.8816    ,  0.50000E-06,  0.50000E-01,  1.47005E-02),  # NGM1/Ri       20160817
+ (3, 443,     3.4538    ,  0.32085    ,  -18.868    ,   1.5584    ,  0.50000E-09,  0.50000E-04,  1.76790E-02),  # NGM2/Ri       20160817
+ (3, 444,   -0.14996    ,  0.24203    ,  -10.123    ,   2.0658    ,  0.10000E-05,  0.10000    ,  9.08303E-03),  # SCHGW/Ri      20160817
+ (3, 445,     4.4483    ,  0.46587    ,  -15.129    ,   1.0733    ,  0.50000E-06,  0.10000E-02,  8.69614E-02),  # TROPG/Z       20160817
+ (3, 446,    -4.5978    ,  0.75768    ,   2.6368    ,  0.65991    ,   5.0000    ,   75.000    ,  6.46412E-02),  # SPEED         20160817
+ (3, 447,     4.5460    ,  0.30625    ,  -23.333    ,   1.6326    ,  0.10000E-09,  0.10000E-06,  2.97611E-02),  # -Stone        20160817
+ (3, 448,     4.8728    ,  0.34363    ,  -21.747    ,   1.4551    ,  0.10000E-10,  0.30000E-06,  1.77574E-02),  # -NVA          20160817
+ (3, 449,     4.2928    ,  0.20105    ,  -34.284    ,   2.4870    ,  0.10000E-15,  0.50000E-09,  1.61481E-02),  # NCSU1         20160817
+ (3, 450,     2.6202    ,  0.16594    ,  -31.459    ,   3.0132    ,  0.10000E-15,  0.10000E-07,  1.49319E-02),  # NCSU2/Ri      20160817
+ (3, 451,    0.98674    ,  0.68026    ,  -5.2726    ,  0.73502    ,  0.10000E-02,  0.10000    ,  6.11872E-02),  # EDRLUN        20160817
+ (3, 452,    -1.1237    ,  0.20079    ,  -7.3526    ,   2.4902    ,  0.10000E-05,   10.000    ,  8.74882E-03),  # wsq           20160817
+ (3, 453,   -0.87109    ,  0.17750    ,  -9.7406    ,   2.8170    ,  0.50000E-05,   1.0000    ,  1.19411E-02),  # wsq/Ri        20160817
+ (3, 454,    0.40094    ,  0.23973    ,  -12.518    ,   2.0857    ,  0.10000E-06,  0.50000E-01,  7.72311E-03),  # EDR/Ri        20160817
+ (3, 455,    0.41770    ,  0.22775    ,  -13.250    ,   2.1954    ,  0.10000E-06,  0.50000E-01,  1.05634E-02),  # EDRLL/Ri      20160817
+ (3, 456,   -0.83134    ,  0.16485    ,  -10.729    ,   3.0331    ,  0.10000E-05,   1.0000    ,  8.49742E-03),  # SIGW/Ri       20160817
+ (3, 457,   -0.83018    ,  0.15967    ,  -11.084    ,   3.1314    ,  0.10000E-05,   1.0000    ,  8.53597E-03),  # SIGWX/Ri      20160817
+ (3, 458,     3.6863    ,  0.23555    ,  -26.688    ,   2.1227    ,  0.10000E-13,  0.50000E-08,  1.00490E-02),  # F2D/Ri        20160817
+ (3, 459,     3.7375    ,  0.24201    ,  -26.187    ,   2.0660    ,  0.50000E-13,  0.50000E-08,  7.05093E-03),  # F2DTW/Ri      20160817
+ (3, 460,     4.1938    ,  0.25779    ,  -26.354    ,   1.9395    ,  0.10000E-12,  0.50000E-08,  7.16376E-03),  # F3D/Ri        20160817
+ (3, 461,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160817
+ (3, 462,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MOGCLIMO      20160817
+ (3, 463,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SOGCLIMO      20160817
+ (3, 464,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # MWTCLIMO      20160817
+ (3, 465,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE        20160817
+ (3, 466,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # SGSTKE/Ri     20160817
+ (3, 467,    -1.7635    ,  0.30030    ,  -2.7856    ,   1.6650    ,  0.10000E-01,   100.00    ,  2.60803E-02),  # RTKE          20160817
+ (3, 468,    -1.3518    ,  0.20635    ,  -6.0490    ,   2.4230    ,  0.10000E-02,   100.00    ,  1.59711E-02),  # RTKE/Ri       20160817
+ (3, 469,    -3.9421    ,  0.48125    ,   2.7889    ,   1.0390    ,   5.0000    ,   500.00    ,  4.07522E-02),  # VARE          20160817
+ (3, 470,    -2.3887    ,  0.24816    , -0.85165    ,   2.0149    ,  0.10000E-01,   500.00    ,  1.29752E-02),  # VARE/Ri       20160817
+ (3, 471,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160530
+ (3, 472,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160530
+ (3, 473,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160530
+ (3, 474,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160530
+ (3, 475,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03),  # UNDEF         20160530
+# Specify MWT dignostic fit parameters
+ (3, 476,    -2.4906    ,  0.13595    , -0.80476    ,   3.6779    ,  0.50000E-02,  0.10000E+06,  7.43306E-03),  # MWT1          20160830
+ (3, 477,    -2.1194    ,  0.26182    ,  -1.8355    ,   1.9097    ,  0.50000E-02,   100.00    ,  3.51454E-03),  # MWT2          20160830
+ (3, 478,     1.1376    ,  0.25852    ,  -14.458    ,   1.9341    ,  0.10000E-06,  0.10000E-02,  1.40866E-03),  # MWT3          20160830
+ (3, 479,    -6.7995    ,  0.37661    ,   11.151    ,   1.3276    ,   10000.    ,  0.10000E+08,  2.34798E-02),  # MWT4          20160830
+ (3, 480,    -1.6769    ,  0.33392    ,  -2.7643    ,   1.4974    ,  0.10000E-01,   10.000    ,  1.65046E-02),  # MWT5          20160830
+ (3, 481,    0.39887    ,  0.23876    ,  -12.560    ,   2.0941    ,  0.10000E-06,  0.50000E-02,  5.13767E-03),  # MWT13         20160830
+ (3, 482,    -2.2440    ,  0.23096    ,  -1.5414    ,   2.1649    ,  0.10000    ,   1000.0    ,  1.00957E-02),  # MWT14         20160830
+ (3, 483,   -0.89008    ,  0.21190    ,  -8.0694    ,   2.3596    ,  0.10000E-04,   1.0000    ,  1.45993E-02),  # TKE_GWB       20160830
+ (3, 484,    -2.8705    ,  0.31485    ,  0.85903    ,   1.5881    ,   1.0000    ,  0.10000E+06,  1.92623E-02),  # MWT6          20160830
+ (3, 485,    -2.9435    ,  0.15903    ,   2.1600    ,   3.1440    ,   5.0000    ,  0.10000E+06,  7.08866E-03),  # MWT7          20160830
+ (3, 486,    -1.0252    ,  0.20815    ,  -7.5658    ,   2.4021    ,  0.50000E-05,   1.0000    ,  5.43720E-03),  # MWT8          20160830
+ (3, 487,    -5.4563    ,  0.30349    ,   9.4115    ,   1.6475    ,   1000.0    ,  0.10000E+08,  1.59084E-02),  # MWT9          20160830
+ (3, 488,    -2.4410    ,  0.27480    , -0.57856    ,   1.8195    ,  0.50000    ,   10000.    ,  7.66648E-03),  # MWT10         20160830
+ (3, 489,    -3.1132    ,  0.25185    ,   2.0379    ,   1.9853    ,  0.20000    ,   10000.    ,  8.45324E-03),  # MWT11         20160830
+ (3, 490,    -1.3879    ,  0.37568    ,  -3.2264    ,   1.3309    ,  0.50000E-02,   5.0000    ,  1.37274E-02),  # MWT12         20160830
+# Specify GTG dignostic fit parameters
+ (3, 491,    0.47270    ,   1.2146    ,  -2.5297    ,  0.41164    ,  0.25000E-01,  0.40000    ,  4.86292E-02),  # ITFA          20160530
+ (3, 492,    0.48388    ,   1.2184    ,  -2.5310    ,  0.41036    ,  0.40000E-01,  0.50000    ,  4.07879E-02),  # ITFADEF       20160916
+ (3, 493,    0.89750E-01,   1.0385    ,  -2.5899    ,  0.48144    ,  0.50000E-01,  0.50000    ,  2.39472E-02),  # ITFAMWT       20160916
+ (3, 494,    0.12121    ,   1.0912    ,  -2.4937    ,  0.45820    ,  0.20000E-01,  0.50000    ,  7.95374E-02),  # ITFAMAX       20160916
+ (3, 495,    -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    ,  -9999.0    , -9.99900E+03)   # ITFAMAXD      20160530
+    );
+#
+# Boundaries for mountain wave polygons
+MountainWavePolygons = (
+(1,  1,  32.5, -116.5),  # Area 1 = Western US + Canada
+(1,  2,  33.0, -114.0),
+(1,  3,  31.0, -104.0),
+(1,  4,  35.5, -102.0),
+(1,  5,  36.5, -98.50),
+(1,  6,  41.0, -98.50),
+(1,  7,  46.0, -104.0),
+(1,  8,  49.0, -111.0),
+(1,  9,  60.0, -114.0),
+(1, 10,  58.0, -125.0),
+(1, 11,  48.0, -124.0),
+(1, 12,  40.5, -124.0),
+(1, 13,  34.5, -120.0),
+(1, 14,  32.5, -116.5), 
+(2,  1, 42.0, -81.0),    # Area 2 = Appalachians
+(2,  2, 42.0, -74.0),
+(2,  3, 34.0, -80.0),
+(2,  4, 34.0, -87.0),
+(2,  5, 42.0, -81.0) 
+);
+# end section 2

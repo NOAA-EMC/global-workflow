@@ -79,7 +79,8 @@
       use vrbls3d, only: zmid, t, pmid, q, cwm, f_ice, f_rain, f_rimef, qqw, qqi,&
               qqr, qqs, cfr, dbz, dbzr, dbzi, dbzc, qqw, nlice, nrain, qqg, zint, qqni,&
               qqnr, uh, vh, mcvg, omga, wh, q2, ttnd, rswtt, rlwtt, train, tcucn,&
-              o3, rhomid, dpres, el_pbl, pint, icing_gfip, icing_gfis, REF_10CM
+              o3, rhomid, dpres, el_pbl, pint, icing_gfip, icing_gfis, &
+              catedr,mwt,gtg, REF_10CM
       use vrbls2d, only: slp, hbot, htop, cnvcfr, cprate, cnvcfr, &
               sr, prec, vis, czen, pblh, u10, v10, avgprec, avgcprate, &
               REF1KM_10CM,REF4KM_10CM,REFC_10CM,REFD_MAX
@@ -759,7 +760,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 !     ABSOLUTE VORTICITY ON MDL SURFACES.
 !     
 !
-      allocate (RH3D(im,jsta:jend,lm))
+      allocate (RH3D(im,jsta_2l:jend_2u,lm))
       IF ( (IGET(001).GT.0).OR.(IGET(077).GT.0).OR.      &
            (IGET(002).GT.0).OR.(IGET(003).GT.0).OR.      &
            (IGET(004).GT.0).OR.(IGET(005).GT.0).OR.      &
@@ -780,6 +781,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
            (IGET(752).GT.0).OR.(IGET(754).GT.0).OR.      &
            (IGET(278).GT.0).OR.(IGET(264).GT.0).OR.      &
            (IGET(450).GT.0).OR.(IGET(480).GT.0).OR.      &
+           (IGET(464).GT.0).OR.(IGET(467).GT.0).OR.      &
            (IGET(909).GT.0)  )  THEN
 
       DO 190 L=1,LM
@@ -3316,7 +3318,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 !           COMPUTE PBL HEIGHT BASED ON RICHARDSON NUMBER
 !     
             IF ( (IGET(289).GT.0) .OR. (IGET(389).GT.0) .OR. (IGET(454).GT.0)   &
-            .OR. (IGET(245).GT.0) ) THEN
+            .OR. (IGET(245).GT.0)  .or. IGET(464)>0 .or. IGET(467)>0) THEN
 ! should only compute pblri if pblh from model is not computed based on Ri 
 ! post does not yet read pbl scheme used by model.  Will do this soon
 ! For now, compute PBLRI for non GFS models.
@@ -3547,7 +3549,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
             ENDIF
 !	    
 ! CALCULATE Gust based on Ri PBL
-      IF (IGET(245).GT.0) THEN
+      IF (IGET(245).GT.0 .or. IGET(464)>0 .or. IGET(467)>0) THEN
        DO 101 J=JSTA,JEND
         DO 101 I=1,IM
          LPBL(I,J)=LM
@@ -3573,6 +3575,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
        ELSE
         CALL CALGUST(LPBL,PBLRI,GUST)
        END IF
+       IF (IGET(245).GT.0) THEN
 !$omp parallel do private(i,j,jj)
        DO J=JSTA,JEND
          DO I=1,IM
@@ -3595,7 +3598,7 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
           enddo
         enddo
        endif
-
+      ENDIF
       END IF
 !     
 !           COMPUTE PBL REGIME BASED ON WRF version of BULK RICHARDSON NUMBER
@@ -3675,6 +3678,22 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
       ENDIF
 !     
 !
+! COMPUTE NCAR GTG turbulence
+      IF(IGET(464)>0 .or. IGET(467)>0)THEN
+        i=1041
+        j=jend ! 321,541
+        if(me == 0) print*,'sending input to GTG i,j,hgt,gust',i,j,ZINT(i,j,LP1),gust(i,j)
+
+        call gtg_algo(ZINT(1:IM,JSTA_2L:JEND_2U,LP1),GUST,gtg,catedr,mwt)
+
+        i=1041
+        j=jend ! 321,541
+        print*,'GTG output: l,cat,mwt,gtg at',i,j
+        do l=1,lm
+           print*,l,catedr(i,j,l),mwt(i,j,l),gtg(i,j,l)
+        end do
+      ENDIF
+
 ! COMPUTE NCAR FIP
       IF(IGET(450).GT.0 .or. IGET(480).GT.0)THEN
 
@@ -3703,7 +3722,6 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
                 ,gdlon(i,j),zint(i,j,lp1),avgprec(i,j),cprate(i,j)          &
                 ,cape(i,j),cin(i,j)                                         &
                 ,ifhr,icing_gfip(i,j,1:lm),icing_gfis(i,j,1:lm))
-
 !           if(gdlon(i,j)>=274. .and. gdlon(i,j)<=277. .and.  gdlat(i,j)>=42. &
 !           .and. gdlat(i,j)<=45.)then
 !            print*,'sample FIP profile: l, H, T, RH, CWAT, VV, ICE POT at '  &
@@ -3728,7 +3746,6 @@ refl_adj:           IF(REF_10CM(I,J,L)<=DBZmin) THEN
 !	 end if
 !	end do  
       ENDIF
-
 
       DEALLOCATE(EL, RICHNO, PBLRI)
       if (allocated(rh3d)) deallocate(rh3d)
