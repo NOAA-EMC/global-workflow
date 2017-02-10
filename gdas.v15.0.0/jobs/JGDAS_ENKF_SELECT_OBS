@@ -16,8 +16,7 @@ fi
 # Specify NET and RUN Name and model
 ##############################################
 export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
-export RUNENS=${RUNENS:-enkf}
+export RUN=${RUN:-enkf}
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
@@ -97,7 +96,7 @@ export cycleg=t${CYCges}z
 ##############################################
 export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
 export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
-export COMIN=$COM_IN/${RUN}.${PDY}/$cyc
+export COMIN=$COM_IN/gdas.${PDY}/$cyc
 export COMOUT=$COM_OUT/enkf.${PDY}/$cyc
 export COMINgdas=${COMINgdas:-$COM_IN/gdas.${PDY}}
 export COMINenkf=${COMINenkf:-$COM_IN/enkf.${PDY}/$cyc}
@@ -138,7 +137,11 @@ ${ANALYSISSH:-$SCRgsi/exglobal_analysis.sh.ecf}
 ##############################################
 if [ $SENDDBN = YES ] ; then
    $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_gsistat $job $COMOUT/${PREINP}gsistat.ensmean
-   $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+   if [ $NST_GSI -eq 3 ] ; then
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCGCY
+   else
+      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+   fi
 fi
 
 cat $pgmout

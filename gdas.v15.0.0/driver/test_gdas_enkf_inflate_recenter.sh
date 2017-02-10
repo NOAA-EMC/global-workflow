@@ -20,12 +20,7 @@ export ntasks=80
 export ptile=6
 export threads=1
 
-##export NODES=4
-##export ntasks=80
-##export ptile=24
-##export threads=1
-
-export CDATE=2016122206
+export CDATE=2017011900
 
 
 #############################################################

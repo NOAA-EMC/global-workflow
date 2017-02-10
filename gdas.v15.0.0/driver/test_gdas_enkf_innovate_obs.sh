@@ -18,16 +18,11 @@ export ntasks=144
 export ptile=12
 export threads=2
 
-##export NODES=16
-##export ntasks=96
-##export ptile=6
-##export threads=4
-
-export CDATE=2016122206
+export CDATE=2017011900
 export ENSGRP=1
 
 export grp=$ENSGRP
-if [[ $grp -lt 10 ]]; then
+if [[ $grp -lt 20 ]]; then
    export grp=0$grp
 fi
 

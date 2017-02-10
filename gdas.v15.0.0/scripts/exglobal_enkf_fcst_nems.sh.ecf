@@ -458,6 +458,7 @@ while [[ $imem -le $ENSEND ]]; do
        [[ $FH -lt 10 ]]&&FH=0$FH
        if [[ `expr $FH % 3` -eq 0 ]]
        then
+         FH3=0$FH
          $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREINP}sfcf${FH3}${SUFOUT}.nemsio
        fi
        FH=$((FH+FHOUT))

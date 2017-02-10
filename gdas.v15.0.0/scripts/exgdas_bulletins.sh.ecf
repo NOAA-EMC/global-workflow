@@ -38,6 +38,8 @@ if [ $cyc -eq 12 ] ; then
   out=grdbuls.tran.gdas00.${job}
 
   $HOMEgdas/ush/mkbull_ntc.sh "sstgrb 00" $bullparm $out
+  export err=$?;err_chk
+fi
 
 ###################################################
 # Per request from ECMWF, cut needed fields from
@@ -46,36 +48,36 @@ if [ $cyc -eq 12 ] ; then
 # this file needs to continue to be made available
 # to ECMWF.
 ###################################################
-
-  cp $COMIN/gdas1.${cycle}.pgrb2.1p00.anl .
-  $CNVGRIB -g21 gdas1.${cycle}.pgrb2.1p00.anl gdas1.${cycle}.pgrbanl
- 
-  ifile=gdas1.${cycle}.pgrbanl
-
-  $WGRIB -s ${ifile} | \
-       egrep "(:TMP:|:UGRD:|:VGRD:|:RH:|:PRMSL:MSL)" | \
-       egrep "(:1000 mb|:925 mb|:850 mb|:700 mb|:500 mb|:400 mb|:300 mb|:250 mb|:200 mb|:150 mb|:100 mb|:70 mb|:50 mb|:30 mb|:10 mb)" | \
-       egrep "(mb:|:MSL)" | \
-       $WGRIB -i -grib -append $ifile -o wgrib.out
-
-  $CNVGRIB -g12 -p40 wgrib.out wgrib.out.grib2
-
-  if test "$SENDCOM" = "YES"
-  then
-     cp wgrib.out $COMOUT/gdas1.forecmwf.${PDY}${cyc}
-     cp wgrib.out.grib2 $COMOUT/gdas1.forecmwf.${PDY}${cyc}.grib2
-  fi
-
-  if test "$SENDDBN" = "YES"
-  then
-     $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF $job $COMOUT/gdas1.forecmwf.${PDY}${cyc}
-     # JY if test "$SENDDBN_GB2" = "YES"
-     # then
-        $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF_GB2 $job $COMOUT/gdas1.forecmwf.${PDY}${cyc}.grib2
-     # fi
-  fi
-
-fi
+#
+#  Dataflow (10/27/2016) confirmed that STOPPED disseminate in 01/2015.
+#
+#  cp $COMIN/${RUN}.${cycle}.pgrb2.1p00.anl .
+#  $CNVGRIB -g21 ${RUN}.${cycle}.pgrb2.1p00.anl ${RUN}.${cycle}.pgrbanl
+# 
+#  ifile=${RUN}.${cycle}.pgrbanl
+#
+#  $WGRIB -s ${ifile} | \
+#       egrep "(:TMP:|:UGRD:|:VGRD:|:RH:|:PRMSL:MSL)" | \
+#       egrep "(:1000 mb|:925 mb|:850 mb|:700 mb|:500 mb|:400 mb|:300 mb|:250 mb|:200 mb|:150 mb|:100 mb|:70 mb|:50 mb|:30 mb|:10 mb)" | \
+#       egrep "(mb:|:MSL)" | \
+#       $WGRIB -i -grib -append $ifile -o wgrib.out
+#
+#  $CNVGRIB -g12 -p40 wgrib.out wgrib.out.grib2
+#
+#  if test "$SENDCOM" = "YES"
+#  then
+#     cp wgrib.out $COMOUT/${RUN}.forecmwf.${PDY}${cyc}
+#     cp wgrib.out.grib2 $COMOUT/${RUN}.forecmwf.${PDY}${cyc}.grib2
+#  fi
+#
+#  if test "$SENDDBN" = "YES"
+#  then
+#     $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF $job $COMOUT/${RUN}.forecmwf.${PDY}${cyc}
+#     # JY if test "$SENDDBN_GB2" = "YES"
+#     # then
+#        $DBNROOT/bin/dbn_alert MODEL GDAS_FORECMWF_GB2 $job $COMOUT/${RUN}.forecmwf.${PDY}${cyc}.grib2
+#     # fi
+#  fi
 
 #####################################################################
 # GOOD RUN

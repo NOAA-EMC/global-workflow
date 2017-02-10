@@ -8,7 +8,6 @@ date
 # GDAS GEMPAK NCDC PRODUCT GENERATION
 ############################################
 
-
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
@@ -53,11 +52,6 @@ export SRCgdas=${SRCgdas:-$HOMEgdas/scripts}
 export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
 export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
 export USHgempak=${USHgempak:-$HOMEgempak/ush}
-
-#
-# Now set up GEMPAK/NTRANS environment
-#
-#. ${NWROOTp1}/gempak/.gempak
 
 #####################################
 # Specify NET and RUN Name and model

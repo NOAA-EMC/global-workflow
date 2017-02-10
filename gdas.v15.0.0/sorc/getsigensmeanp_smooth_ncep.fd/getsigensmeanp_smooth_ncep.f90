@@ -29,7 +29,7 @@ program getsigensmeanp_smooth
 
   implicit none
 
-  real,parameter :: zero=0.0_4
+  real,parameter :: zero=0.0_8
   integer,parameter :: iunit=21
   integer,parameter :: window=1 ! cosine bell window for smoothing
 
@@ -50,7 +50,7 @@ program getsigensmeanp_smooth
   real(4),allocatable,dimension(:) :: sigdatapert_ps,sigdatapert_z,sigdatapert_d,&
                                       sigdatapert_t,sigdatapert_q,sigdatapert_oz,&
                                       sigdatapert_cw
-  real(4),allocatable,dimension(:,:) :: rwork_mem,rwork_avg
+  real(8),allocatable,dimension(:,:) :: rwork_mem,rwork_avg
   real(4),allocatable,dimension(:) :: rwork_hgt
   real(4),allocatable,dimension(:) :: rwork_lev,rwork_lev2,rwork_spc,rwork_spc2
 
@@ -235,7 +235,7 @@ program getsigensmeanp_smooth
         call nemsio_readrecv(gfile,'hgt','sfc',1,rwork_hgt,iret)
 
         rwork_avg = zero
-        call mpi_allreduce(rwork_mem,rwork_avg,nsize,mpi_real,mpi_sum,new_comm,iret)
+        call mpi_allreduce(rwork_mem,rwork_avg,nsize,mpi_real8,mpi_sum,new_comm,iret)
         rwork_avg = rwork_avg * rnanals
 
         if ( mype == 0 ) then

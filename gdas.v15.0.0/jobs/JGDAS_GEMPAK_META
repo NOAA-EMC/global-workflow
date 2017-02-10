@@ -74,10 +74,10 @@ export COMIN=${COMIN:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}/meta}
 
 export COMINROOTukmet=${COMINROOTukmet:-${COMROOTp1}/nawips/prod}
-export COMINROOTecmwf=${COMINROOTecmwf:-${COMROOT}/nawips/prod}
+export COMINROOTecmwf=${COMINROOTecmwf:-${COMROOTp2}/nawips/prod}
 
 export COMOUTROOTukmet=${COMROOTp1}/nawips/$envir
-export COMOUTROOTecmwf=${COMROOT}/nawips/$envir
+export COMOUTROOTecmwf=${COMROOTp2}/nawips/$envir
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

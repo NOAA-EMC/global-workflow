@@ -2,7 +2,7 @@
 export NWROOT=$NWTEST
 export COM_IN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para
 export COM_OUT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/test
-export SENDDBN=NO
+export SENDDBN=YES
 export SAVEGES=NO
 export SENDCOM=YES
 export GETGES_NWG=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2

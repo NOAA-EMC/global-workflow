@@ -2,7 +2,7 @@
 export NWROOT=$NWTEST
 export COM_IN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para
 export COM_OUT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/test
-export SENDDBN=NO
+export SENDDBN=YES
 export SAVEGES=NO
 export GETGES_NWG=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
 export gesenvir=para
@@ -23,7 +23,6 @@ export HOMEgsm=$NWTEST/global_shared.${global_shared_ver}
 
 
 # Set executables
-export FCSTEXEC=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17/NEMS/NEMSLegacy_q3fy2017_zeta/NEMS/exe/NEMS.x
 
 
 # Dev para jobs
@@ -33,63 +32,33 @@ export ERRSCRIPT='eval [[ $err = 0 ]]'
 # Set beginning and ending ensemble member on EnKF group.
 if [[ $ENSGRP -eq 1 ]]; then
    export ENSBEG=1
-   export ENSEND=4
-elif [[ $ENSGRP -eq 2 ]]; then
-   export ENSBEG=5
    export ENSEND=8
-elif [[ $ENSGRP -eq 3 ]]; then
+elif [[ $ENSGRP -eq 2 ]]; then
    export ENSBEG=9
-   export ENSEND=12
-elif [[ $ENSGRP -eq 4 ]]; then
-   export ENSBEG=13
    export ENSEND=16
-elif [[ $ENSGRP -eq 5 ]]; then
+elif [[ $ENSGRP -eq 3 ]]; then
    export ENSBEG=17
-   export ENSEND=20
-elif [[ $ENSGRP -eq 6 ]]; then
-   export ENSBEG=21
    export ENSEND=24
-elif [[ $ENSGRP -eq 7 ]]; then
+elif [[ $ENSGRP -eq 4 ]]; then
    export ENSBEG=25
-   export ENSEND=28
-elif [[ $ENSGRP -eq 8 ]]; then
-   export ENSBEG=29
    export ENSEND=32
-elif [[ $ENSGRP -eq 9 ]]; then
+elif [[ $ENSGRP -eq 5 ]]; then
    export ENSBEG=33
-   export ENSEND=36
-elif [[ $ENSGRP -eq 10 ]]; then
-   export ENSBEG=37
    export ENSEND=40
-elif [[ $ENSGRP -eq 11 ]]; then
+elif [[ $ENSGRP -eq 6 ]]; then
    export ENSBEG=41
-   export ENSEND=44
-elif [[ $ENSGRP -eq 12 ]]; then
-   export ENSBEG=45
    export ENSEND=48
-elif [[ $ENSGRP -eq 13 ]]; then
+elif [[ $ENSGRP -eq 7 ]]; then
    export ENSBEG=49
-   export ENSEND=52
-elif [[ $ENSGRP -eq 14 ]]; then
-   export ENSBEG=53
    export ENSEND=56
-elif [[ $ENSGRP -eq 15 ]]; then
+elif [[ $ENSGRP -eq 8 ]]; then
    export ENSBEG=57
-   export ENSEND=60
-elif [[ $ENSGRP -eq 16 ]]; then
-   export ENSBEG=61
    export ENSEND=64
-elif [[ $ENSGRP -eq 17 ]]; then
+elif [[ $ENSGRP -eq 9 ]]; then
    export ENSBEG=65
-   export ENSEND=68
-elif [[ $ENSGRP -eq 18 ]]; then
-   export ENSBEG=69
    export ENSEND=72
-elif [[ $ENSGRP -eq 19 ]]; then
+elif [[ $ENSGRP -eq 10 ]]; then
    export ENSBEG=73
-   export ENSEND=76
-elif [[ $ENSGRP -eq 20 ]]; then
-   export ENSBEG=77
    export ENSEND=80
 else
    echo "***ERROR*** INVALID ENSGRP=$ENSGRP"

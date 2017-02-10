@@ -1,7 +1,7 @@
 #%Module##############################################################
 ##                                             Boi.Vuong@noaa.gov
 ##                                             NOAA/NWS/NCEP/EMC
-##  GFS v15.0.0
+##  GFS v14.1.0
 ##  Change Log
 ##  02/22/2016:  Boi Vuong, initial setting
 ##  07/10/2016:  Fanglin Yang, cray version 
@@ -14,13 +14,20 @@ puts stderr "to build the post for WCOSS_Cray production.\n"
 }
 module-whatis "gridbull"
 
-set ver v15.0.0
+set ver v14.1.0
 
 # Loading Intel Compiler Suite
+module unload PrgEnv-cray
 module load PrgEnv-intel/5.2.56
+module switch intel/15.0.6.233
 
-# Loding nceplibs modules
+module swap craype-haswell craype-sandybridge
+module load craype-sandybridge
+
+# Loading IOBUF
+module load iobuf/2.0.7
+
 module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module load bacio-intel/2.0.1
+module load w3emc-intel/2.2.0
 module load w3nco-intel/2.0.6
-module use /usrx/local/nceplibs/modulefiles
-module load bacio-intel/2.0.2

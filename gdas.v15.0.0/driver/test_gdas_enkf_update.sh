@@ -2,9 +2,9 @@
 
 #BSUB -L /bin/sh
 #BSUB -P GFS-T2O
-#BSUB -o gdas_enkf_update_obs.o%J
-#BSUB -e gdas_enkf_update_obs.o%J
-#BSUB -J gdas_enkf_update_obs
+#BSUB -o gdas_enkf_update.o%J
+#BSUB -e gdas_enkf_update.o%J
+#BSUB -J gdas_enkf_update
 #BSUB -q devonprod
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
@@ -18,7 +18,7 @@ export ntasks=240
 export ptile=6
 export threads=4
 
-export CDATE=2016122206
+export CDATE=2017011900
 
 
 #############################################################

@@ -66,8 +66,8 @@ export model=${model:-gdas}
 export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export COMINm1=${COMINm1:-${COMROOT}/${NET}/${envir}/${RUN}.${PDYm1}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export GESIN=${GESROOT}/${envir}
-export GESOUT=${GESROOT}/${envir}
+export GESIN=${GESROOTp1}/${envir}
+export GESOUT=${GESROOTp1}/${envir}
 
 export pcom=${pcom:-${PCOMROOT}/${RUN}}
 

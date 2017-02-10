@@ -13,17 +13,12 @@
 
 set -x
 
-##export NODES=60
-##export ntasks=360
-##export ptile=6
-##export threads=4
-
 export NODES=240
 export ntasks=480
 export ptile=2
 export threads=12
 
-export CDATE=2016122206
+export CDATE=2017011900
 
 
 #############################################################

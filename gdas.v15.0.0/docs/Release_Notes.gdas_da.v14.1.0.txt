@@ -12,6 +12,7 @@ CODE CHANGES
    * getsfcensmeanp.fd - add nemsio capability
    * getsfcnstensupdp.fd - update SFC and NSST ensemble (NEW code)
    * getsigensmeanp_smooth_ncep.fd - add nemsio capability
+   * getsigensstatp.fd - compute EnKF ensemble statistics (NEW code)
    * recentersigp.fd - add nemsio capability
 
 
@@ -46,39 +47,46 @@ SCRIPT CHANGES
 
 
 RESOURCE INFORMATION
- * Current operational GFS runs on WCOSS phase1 nodes.   Q1FY16 GFS package should be implemented on WCOSS phase2 nodes.
+ * Current operational GFS runs on WCOSS phase2 nodes.   Q1FY16 GFS package should be implemented on WCOSS Cray.
+ * Timing tests only run on production Cray:  Luna before 12/30/2016 switch.  Surge after 12/30/2016 switch.
+   Surge run times tend to be a bit higher than Luna.   Run times on development Cray are higher and much more
+   variables.   The Cray configurations given below result in GFS and GDAS/EnKF run times comparable to or faster
+   than current Phase2 operations.  This was intentionally done.  It is easy to dial back and slow down jobs.  
+   Ideally would like to see Cray GFS analysis and GDAS/EnKF suite run in same time as current Phase2 operations.
+   This is achievable by altering job configurations.  Most DA job configurations may be altered without changing
+   analysis results.   Tuning job configurations should be done one NCO is able to run entire cycle.
  * JGDAS_ANALYSIS_HIGH
    * job configuration
      * current operations:  240 nodes, 480 tasks, ptile=2, 12 threads
      * propose operations:  240 nodes, 480 tasks, ptile=2, 12 threads
        see ../driver/test_gdas_analysis_high.sh for job submission
    * run time
-     * current operations:  28.0 - 30.6 minutes
-     * propose operations:  35 - 37 minutes
+     * current operations:  27.2 - 31.1 minutes
+     * propose operations:  28.7 - 29.1 minutes (Luna); 28.0 - 29.4 minutes (Surge)
  * JGDAS_ENKF_SELECT_OBS
    * job configuration
      * current operations:  12 nodes, 144 tasks, ptile=12, 2 threads
-     * propose operations:  24 nodes, 144 tasks, ptile=6,  4 threads
+     * propose operations:  12 nodes, 144 tasks, ptile=12, 2 threads
        see ../driver/test_gdas_enkf_select_obs.sh for job submission
    * run time
-     * current operations:  2.5 - 3.0 minutes
-     * propose operations:  6.0 - 7.0 minutes
+     * current operations:  2.4 - 3.0 minutes
+     * propose operations:  3.4 - 3.6 minutes (Luna); 3.7 - 4.0 minutes (Surge)
  * JGDAS_ENKF_INNOVATE_OBS
    * job configuration
-     * current operations:  12 nodes, 144 tasks, ptile=12, 2 threads
-     * propose operations:  24 nodes, 144 tasks, ptile=6,  4 threads
+     * current operations:  12 nodes, 144 tasks, ptile=12, 2 threads; submit 10 jobs w/each processing 8 EnKF members (120 nodes total)
+     * propose operations:  12 nodes, 144 tasks, ptile=12, 2 threads; submit 20 jobs w/each processing 4 EnKF members (240 nodes total)
        see ../driver/test_gdas_enkf_innovate_obs.sh for job submission
 `   * run time
-     * current operations:  13.3 - 15.6 minutes
-     * propose operations:  35.7 - 37.5 minutes
+     * current operations:  12.8 - 15.9 minutes
+     * propose operations:  10.1 - 12.5 minutes (Luna); 10.5 - 12.7 minutes (Surge)
  * JGDAS_ENKF_UPDATE
    * job configuration
      * current operations:  40 nodes, 240 tasks, ptile=6, 4 threads
      * propose operations:  40 nodes, 240 tasks, ptile=6, 4 threads
        see ../driver/test_gdas_enkf_update.sh for job submission
    * run time
-     * current operations:  7.8 - 9.8 minutes
-     * propose operations:  5.3 - 7.3 minutes
+     * current operations:  7.7 - 9.9 minutes
+     * propose operations:  5.3 - 5.6 minutes (Luna); 5.8 - 6.3 (Surge)
  * JGDAS_ENKF_INFLATE_RECENTER
    * job configuration
      * current operations:  4 nodes, 80 tasks, ptile=24, 1 thread
@@ -86,37 +94,41 @@ RESOURCE INFORMATION
        see ../driver/test_gdas_enkf_inflate_recenter.sh for job submission
    * run time
      * current operations:  2.4 - 2.8 minutes
-     * propose operations:  2.8 - 3.4 minutes
+     * propose operations:  2.2 - 2.4 minutes (Luna); 2.4 - 2.8 minutes (Surge)
  * JGDAS_ENKF_FCST
    * job configuration
-     * current operations:  16 nodes,  96 tasks, ptile=6,  4 threads
-     * propose operations:  12 nodes, 144 tasks, ptile=12, 2 threads
+     * current operations:  16 nodes,  96 tasks, ptile=6,  4 threads; submit 10 jobs w/each processing 8 EnKF members (160 nodes total)
+     * propose operations:  20 nodes,  72 compute tasks + 8 i/o tasks, ptile=4, 6 threads; submit 10 jobs w/each processing 8 EnKF 
+                            members (200 nodes total)
        See ../driver/test_gdas_enkf_fcst.sh for job submission
    * run time
-     * current operations:  17.3 - 19.4 minutes
-     * propose operations:  21.5 - 22.5 minutes
+     * current operations:  17.3 - 19.6 minutes
+     * propose operations:  17.5 - 18.1 minutes (Luna); 17.5 - 18.2 minutes (Surge)
  * JGDAS_ENKF_POST
    * job configuration
      * current operations:  4 nodes, 81 tasks, ptile=24, 1 thread
-     * propose opeations:: 14 nodes, 81 tasks, ptile=6,  1 thread
+     * propose opeations:: 80 nodes, 80 tasks, ptile=1, 24 threads
        see ../driver/test_gdas_enkf_post.sh for job submission
    * run time
-     * current operations:   9.6 - 10.6 minutes
-     * propose operations:  27.0 - 28.3 minutes
+     * current operations:   9.7 - 10.6 minutes
+     * propose operations:  10.0 - 11.1 minutes (Luna); 10.0 - 11.2 minutes (Surge)
 
  * Disk space required per day
    * /com/gfs/prod/gdas.$PDY (only JGDAS_ANALYSIS_HIGH output)
      * current operations: 26.8 Gb
-     * propose operations: 48.8 Gb (additional 22.0 Gb)
+     * propose operations: 48.8 Gb (additional 22.0 Gb).  Increase due to (1) transition to nemsio, (2) addition of NSST files
    * /com/gfs/prod/enkf.$PDY/$cyc (all JGDAS_ENKF* output)
      * current operations:  3314.0 Gb
-     * propose operations:  7092.9 Gb (additional 3778.9 Gb)
+     * propose operations:  7142.1 Gb (additional 3828.1 Gb).  Increase due to (1) transition to nemsio, (2) addition of NSST files,
+                                                               (3) addition of NetCDF EnKF statistic files.   Decrease due to removal
+                                                               of *_t254 EnKF files
  * Frequency of run
    * 6 hourly cycle (00, 06, 12, 18Z)
  * Specify all versions of libs, compilers, shared code being used
    * compiler
      * PrgEnv-intel/5.2.56
      * cray-mpich/7.2.0
+     * craype-hugepages4M
    * library modules
      * NetCDF-intel-haswell/3.6.3
      * bufr-intel/11.0.1
@@ -144,22 +156,33 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 
 DISSEMINATION INFORMATION
  * Where should this output be sent?
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI & EnKF
  * Who are the users?
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI & EnKF
  * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI $ EnKF - note that v14.1.0 changes the names of operational GDAS & EnKF files
+   * add transfer of following NSST and EnKF NetCDF files 
+     * gdas.$PDY/ (the list below only include GSI files, not GSM files)
+       * gdas.t${cyc}z.dtfanl.bin4
+       * gdas.t${cyc}z.nstanl.nemsio
+       * gdas.t${cyc}z.sfcgcy
+       * gdas.t${cyc}z.sfctsk
+     * enkf.$PDY/$cyc
+       * gdas.t${cyc}z*nc4 - NetCDF files (14 files)
+       * gdas.t${cyc}z.nst* - NSST files (888 files) 
+       * gdas.t${cyc}z.flx* - flux files (720 files)
+       * gdas.t${cyc}z.gcy* - NSST files (81 files)
 
 
 HPSS ARCHIVE
  * Retention length?
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI & EnKF
  * List which output files should be archived
-   * same as current operational GFS/GDAS GSI
+   * same as current operational GFS/GDAS GSI & EnKF - note that v14.1.0 changes the names of operational GDAS & EnKF files
 
            
 IMPLEMENTATION INSTRUCTIONS
- * To implement gdas_da.v13.0.0, please do the following:
+ * To implement gdas_da.v14.1.0, please do the following:
    * cd $NWROOThps
    * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gdas.v14.1.0
    * cd $NWROODhps/gdas.v114.1.0/sorc
@@ -167,6 +190,7 @@ IMPLEMENTATION INSTRUCTIONS
      * adderrspec_nmcmeth_spec.x
      * getnstensmeanp.x
      * getsfcensmeanp.x
+     * getsfcnstensupdp.x
      * getsigensmeanp_smooth.x
      * getsigensstatp.x
      * global_enkf

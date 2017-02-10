@@ -116,7 +116,6 @@ mkdir -m 775 -p $COMOUT
 # WCOSS_C environment settings
 ##############################################
 export machine=WCOSS_C
-export npe_node_a=${npe_node_a:-24}
 export APRUN=${APRUN:-"aprun -j1 -n $ntasks -N $ptile -d $threads -cc depth"}
 export APRUNC=${APRUNC:-"aprun -n 1 -N 1 -j 1 -d 24 -cc depth"}
 
