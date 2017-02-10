@@ -28,7 +28,7 @@ then
    set -x
 else
    echo ""
-   echo "Usage: mkbull_ntc.sh "hour_list" bullparm outputname"
+   echo "Usage: $0 bullparm outputname"
    echo ""
    exit 16
 fi

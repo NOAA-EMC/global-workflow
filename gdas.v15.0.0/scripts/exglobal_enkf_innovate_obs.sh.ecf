@@ -651,7 +651,11 @@ while [[ $imem -le $ENSEND ]]; do
    echo "MEMBER $imem : $status" | tee -a $EOMGGRP
 
    if [ $SENDDBN = YES ]; then
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+      if [ $NST_GSI -eq 3 ] ; then
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCGCY
+      else
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+      fi
    fi
 
    (( imem = $imem + 1 ))

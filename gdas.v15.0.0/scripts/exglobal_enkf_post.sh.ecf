@@ -566,7 +566,7 @@ then
 
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
-      member="_mem"`printf %03i $imem`
+      member=${MEMBER_PREFIX}"mem"`printf %03i $imem`
       FHBEG=$FHMIN
       FHEND=$FHMAX
       FH=$FHBEG
@@ -646,15 +646,16 @@ FHEND=$FHMAX
 FH=$FHBEG
 until [[ $FH -gt $FHEND ]];do
   [[ $FH -lt 10 ]]&&FH=0$FH
-  if [[ `expr $FH % 3` -eq 0 ]]; then
-    if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
-      if [ $SENDDBN = YES ]; then 
-        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH}_ensmean 
-      fi 
-      string="DONE bfg fhr $FH"
-    else
-      string="MISS bfg fhr $FH"
-    fi
+  if [[ -s ${datapath}/bfg_${analdate}_fhr${FH}_ensmean ]]; then
+     string="DONE bfg fhr $FH"
+     if [[ `expr $FH % 3` -eq 0 ]]; then
+        if [ $SENDDBN = YES ]; then 
+           FH3=0$FH
+           $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SFCENSMEAN}${FH3}${MEMBER_PREFIX}ensmean${MEMBER_SUFFIX}
+        fi 
+     fi
+  else
+     string="MISS bfg fhr $FH"
   fi
   echo $string | tee -a $ENSSTAT
 
@@ -671,7 +672,7 @@ done
 if [ $SENDDBN = YES ] ; then 
 imem=1 
 while [[ $imem -le $NMEM_ENKF ]]; do 
-   member="_mem"`printf %03i $imem` 
+   member=${MEMBER_PREFIX}"mem"`printf %03i $imem` 
    #FHBEG=$FHMIN 
    FHEND=$FHMAX 
    FH=6 
@@ -679,7 +680,8 @@ while [[ $imem -le $NMEM_ENKF ]]; do
       [[ $FH -lt 10 ]]&&FH=0$FH 
       if [[ `expr $FH % 3` -eq 0 ]]
       then
-        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH}${ENKF_SUFFIX}${member} 
+        FH3=0$FH
+        $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${SIGENS_OUT}${FH3}${ENKF_SUFFIX}${member}${MEMBER_SUFFIX}
       fi
       FH=`expr $FH + $FHOUT` 
    done 

@@ -33,7 +33,7 @@ echo $cyc > parm.job1
 
 # Copy in SFCSHP file for use as input data set
 
-cp ${COMIN}/${RUN}1.${cycle}.sfcshp.tm00.bufr_d.nr SFCSHP
+cp ${COMIN}/${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr SFCSHP
 
 export pgm=navybull;. prep_step
 
@@ -52,9 +52,9 @@ export err=$?; err_chk
 
 case $cyc in
  00) echo 18 > parm.job1
-     cp $COMINm1/${RUN}1.t18z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
+     cp $COMINm1/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
  12) echo 06 > parm.job1
-     cp $COMIN/${RUN}1.t06z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
+     cp $COMIN/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
 esac
 
 export pgm=navybull;. prep_step
@@ -87,7 +87,7 @@ if test $err1 -eq 0 -o $err2 -eq 0; then
   chmod 775 ${GESOUT}/ship.cntl
 
   if test $SENDCOM = 'YES'
-    then
+  then
     cp ship.cntl $COMOUT/ship.cntl.$cyc
     cp navybull.tran.${cyc} $COMOUT
   fi

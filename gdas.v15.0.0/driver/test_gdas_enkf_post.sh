@@ -13,18 +13,12 @@
 
 set -x
 
-export NODES=14
+export NODES=80
 export ntasks=80
-export ptile=6
-export threads=4
+export ptile=1
+export threads=24
 
-# Need to recompile getsigensmeanp_smooth.x using r(8) arrays for reproducibility
-##export NODES=80
-##export ntasks=40
-##export ptile=2
-##export threads=12
-
-export CDATE=2016122206
+export CDATE=2017011900
 
 #############################################################
 # Specify whether the run is production or development

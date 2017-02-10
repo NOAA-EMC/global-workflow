@@ -1,0 +1,200 @@
+#!/bin/sh
+
+# LSBATCH: User input
+#BSUB -J jgdas_mknavybulls_00
+#BSUB -o /gpfs/hps/ptmp/Boi.Vuong/output/gdas_mknavybulls_00.o%J
+#BSUB -e /gpfs/hps/ptmp/Boi.Vuong/output/gdas_mknavybulls_00.o%J
+#BSUB -L /bin/sh
+#BSUB -q dev_shared
+#BSUB -cwd /gpfs/hps/ptmp/Boi.Vuong/output
+#BSUB -W 00:30
+#BSUB -P GFS-T2O
+#BSUB -R rusage[mem=1000]
+
+export OMP_NUM_THREADS=1
+export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=1024m
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered
+
+export PDY=20161116
+export PDY1=`expr $PDY - 1`
+
+export cyc=12
+export cycle=t${cyc}z
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+####################################
+##  Load the GRIB Utilities module
+#####################################
+
+#%include <head.h>
+#%include <envir-p2.h>
+
+. /opt/modules/3.2.6.7/init/sh
+module load PrgEnv-intel/5.2.56
+module load cfp-intel-sandybridge/1.1.0
+module load ESMF-intel-sandybridge/3_1_0rp5
+module load iobuf
+module load craype-hugepages2M
+module load craype-haswell
+module load prod_envir
+module load prod_util/1.0.4
+#
+#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#
+module unload grib_util/1.0.3
+module use /gpfs/hps/nco/ops/nwtest/modulefiles
+module load grib_util/1.0.4
+
+module list
+
+############################################
+# GDAS MKNAVYBULL BULLETIN PRODUCT GENERATION
+############################################
+
+##############################################
+# Define COM, PCOM, COMIN  directories
+##############################################
+
+# set envir=prod or para to test with data in prod or para
+# export envir=para
+ export envir=prod
+
+export SENDDBN=NO
+export job=gdas_mknavybull_${cyc}
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
+export DATAROOT=/gpfs/hps/ptmp/Boi.Vuong/output
+export NWROOT=/gpfs/hps/emc/global/noscrub/Boi.Vuong/svn
+export NWROOTp1=/gpfs/gp1/nco/ops/nwprod
+export COMROOTp1=/gpfs/gp1/nco/ops/com
+export NWROOTp2=/gpfs/gp2/nco/ops/nwprod
+export COMROOTp2=/gpfs/gp2/nco/ops/com
+export COMROOT=/gpfs/gp2/nco/ops/com
+export COMROOT2=/gpfs/hps/ptmp/Boi.Vuong/com
+export PCOMROOT2=/gpfs/hps/ptmp/Boi.Vuong/pcom/$envir
+
+mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
+export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
+
+#############################################################
+# Specify versions
+#############################################################
+export gdas_ver=v14.1.0
+export gfs_ver=v14.1.0
+export util_ver=v1.0.4
+
+##########################################################
+# obtain unique process id (pid) and make temp directory
+##########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+. PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
+export EXECgdas=${EXECgdas:-$HOMEgdas/exec}
+export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
+export FIXgdas=${FIXgdas:-$HOMEgdas/gempak/fix}
+export USHgdas=${USHgdas:-$HOMEgdas/gempak/ush}
+export SRCgdas=${SRCgdas:-$HOMEgdas/scripts}
+
+######################################
+# Set up the GEMPAK directory
+#######################################
+export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
+export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
+export USHgempak=${USHgempak:-$HOMEgempak/ush}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+export model=${model:-gdas}
+
+##############################################
+# Define COM directories
+##############################################
+# export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+# export COMINm1=${COMINm1:-${COMROOT}/${NET}/${envir}/${RUN}.${PDYm1}}
+# export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
+ export GESIN=${GESROOTp1}/${envir}
+ export GESOUT=${GESROOTp1}/${envir}
+
+# export pcom=${pcom:-${PCOMROOT}/${RUN}}
+
+if [ $envir = "prod" ] ; then
+#  This setting is for testing with GDAS (production)
+  export COMIN=${COMROOTp2}/gfs/prod/gdas.${PDY}
+  export RUN=gdas1
+  export model=gdas1
+else
+#  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gdas.${PDY}         ### EMC PARA Realtime
+  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_gdas_${PDY}       ### test with canned data
+fi
+
+export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
+export pcom=${pcom:-${PCOMROOT2}/gdas}
+
+if [ $SENDCOM = YES ] ; then
+
+  mkdir -m 775 -p $COMOUT $pcom
+
+fi
+
+export pgmout=OUTPUT.$$
+
+env
+
+########################################################
+# Execute the script.
+$SRCgdas/exmknavyb.sh.ecf
+export err=$?; err_chk
+########################################################
+
+msg="JOB $job HAS COMPLETED NORMALLY!"
+postmsg $jlogfile "$msg"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ] ; then
+  rm -rf $DATA
+fi
+
+date

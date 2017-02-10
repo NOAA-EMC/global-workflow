@@ -49,8 +49,8 @@ export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
 
 # EnKF ensemble files
-export PREINP=${PREINP:-${RUN}.${cycle}.}
-export PREINPg=${PREINPg:-${RUN}.${cycleg}.}
+export PREINP=${PREINP:-gdas.${cycle}.}
+export PREINPg=${PREINPg:-gdas.${cycleg}.}
 
 export MEMBER_PREFIX=${MEMBER_PREFIX:-"."}
 export GBIASE=${GBIASE:-$COMIN/${PREINP}biascr_int.ensmean}

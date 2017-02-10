@@ -17,7 +17,6 @@ fi
 ##############################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
-export RUNENS=${RUNENS:-enkf}
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
@@ -121,6 +120,7 @@ mkdir -m 775 -p $GESOUT
 # WCOSS_C environment settings
 ##############################################
 export machine=WCOSS_C
+export npe_node_a=${npe_node_a:-24}
 export npe_node_cfp=${npe_node_cfp:-24}
 export APRUNCY=${APRUNCY:-"aprun -n 1 -N 1 -j 1 -d $npe_node_a"}
 export APRUN=${APRUN:-"aprun -j1 -n $ntasks -N $ptile -d $threads -cc depth"}

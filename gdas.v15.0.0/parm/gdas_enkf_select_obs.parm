@@ -118,10 +118,10 @@ export RTMFIX=${RTMFIX:-$CRTM_FIX}
 #
 # Analysis Input Fields
 #
-export PREINP=${PREINP:-${RUN}.${cycle}.}
-export PREINPENS=${PREINPENS:-${RUN}.${cycle}.}
-export PREINPg=${PREINPg:-${RUN}.${cycleg}.}
-export PREINPENSg=${PREINPENSg:-${RUN}.${cycleg}.}
+export PREINP=${PREINP:-gdas.${cycle}.}
+export PREINPENS=${PREINPENS:-gdas.${cycle}.}
+export PREINPg=${PREINPg:-gdas.${cycleg}.}
+export PREINPENSg=${PREINPENSg:-gdas.${cycleg}.}
 export MEMBER_PREFIX=${MEMBER_PREFIX:-"."}
 
 export FNTSFA=${FNTSFA:-${COMINgdas}/${PREINP}rtgssthr.grb}

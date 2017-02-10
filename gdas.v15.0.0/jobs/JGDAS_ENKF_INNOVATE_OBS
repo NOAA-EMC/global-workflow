@@ -99,7 +99,7 @@ export cycleg=t${CYCges}z
 ##############################################
 export COM_IN=${COM_IN:-$COMROOT/${NET}/${envir}}
 export COM_OUT=${COM_OUT:-$COMROOT/${NET}/${envir}}
-export COMIN=$COM_IN/${RUN}.${PDY}/$cyc
+export COMIN=$COM_IN/enkf.${PDY}/$cyc
 export COMOUT=$COM_OUT/enkf.${PDY}/$cyc
 export COMINgdas=${COMINgdas:-$COM_IN/gdas.${PDY}}
 export COMINenkf=${COMINenkf:-$COM_IN/enkf.${PDY}/$cyc}
