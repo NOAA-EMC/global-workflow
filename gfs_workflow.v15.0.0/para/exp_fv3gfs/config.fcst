@@ -13,10 +13,11 @@ nth_f=2                             # number of threads for AM forecast
 npe_node_f=$pe_node                 # number of pes per node for AM forecast
 task_per_node=$((npe_node_f/nth_f))
 
-MODE=64bit           # choices:  32bit, 64bit
+MODE=32bit           # choices:  32bit, 64bit
 TYPE=nh              # choices:  nh, hydro
 HYPT=off             # choices:  on, off  (controls hyperthreading)
 COMP="prod"          # choices:  debug, repro, prod
+ncep_plevels=".true."
 if [ ${HYPT} = on ]; then
    export hyperthread=".true."
    export j_opt="-j 2"

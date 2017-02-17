@@ -26,7 +26,7 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=trunk_r86472
+export tags=trunk_r88010
 export PTMP=/gpfs/hps/ptmp
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
 export BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para     
@@ -35,14 +35,14 @@ export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
-export CASE=C768
+export CASE=C192
 export res=`echo $CASE|cut -c 2-`
 export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
-START=20170201
-LAST=20170201
+START=20160801
+LAST=20161101
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
@@ -55,8 +55,12 @@ for cyc in $cyclist; do
 #--------------------------------------------------------------
 export cdate=${sdate}${cyc}
 
+#.......................................................
 #-- create ICs using operational GFS initial conditions
-export out_dir=$FV3ICDIR/ICs                      
+export out_dir=$FV3ICDIR/ICs
+if [ ! -s $out_dir/${CASE}_${cdate}/gfs_ctrl.nc ]; then
+#.......................................................
+
 export tmp_dir=$FV3ICDIR/chgres_${CASE}_${cdate}
 export inidir=$tmp_dir
 if [ -s $tmp_dir ]; then rm -f $tmp_dir ; fi
@@ -67,10 +71,9 @@ yymmdd=`echo $cdate |cut -c 1-8`
 yymm=`echo $cdate |cut -c 1-6`
 yy=`echo $cdate |cut -c 1-4`
 
-d1=td1
-#chost=`echo $(hostname) |cut -c 1-1`
-#if [ $chost = l ]; then d1=td1; fi
-#if [ $chost = s ]; then d1=gd1; fi
+dev=$(cat /etc/dev)
+if [ $dev = luna ]; then d1=td1; fi
+if [ $dev = surge ]; then d1=gd1; fi
 
 #------------------------------------------------------
 #-- copy over pgbanl for verification
@@ -101,9 +104,15 @@ done
 #------------------------------------------------------
 
 $BASE_GSM/ush/fv3gfs_driver_chgres.sh
+#.......................................................
+fi
+#.......................................................
+
 
 cd $paradir
-$PSUB para_config $cdate gfs fcst1
+if [ -s $out_dir/${CASE}_${cdate}/gfs_ctrl.nc ]; then
+ $PSUB para_config $cdate gfs fcst1
+fi
 sleep 60
 
 #----------------------------------------------------
@@ -116,7 +125,7 @@ done
 export sdate=$edate
 if [ $sdate -le $LAST ]; then
 $SUB -e sdate -a FV3GFS-T2O -q dev -p 1/1/N -r 3072/1/1 -t 10:00:00 \
-    -w "+0200" -j fv3gfs -o fv3gfs_fcst.out submit_fv3gfs.sh
+    -w "+0200" -j fv3gfs -o fv3gfs.out submit_fv3gfs.sh
 fi
 
 exit
