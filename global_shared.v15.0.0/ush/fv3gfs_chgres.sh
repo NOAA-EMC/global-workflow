@@ -89,7 +89,7 @@ else
  ln -sf ${gfs_dir}/gfs.t${hr}z.sfcanl chgres.inp.sfc
 fi
 
-ln -sf $FIXGLOBAL/global_hyblev.l${LEVS}.txt chgres.inp.siglevel
+ln -sf ${SIGLEVEL:-$FIXGLOBAL/global_hyblev.l${LEVS}.txt} chgres.inp.siglevel
 ln -sf $FIXGLOBAL/global_o3clim.txt chgres.inp.o3clim
 
 export FNGLAC=$FIXGLOBAL/global_glacier.2x2.grb
@@ -196,6 +196,7 @@ cat << EOF > fort.81
  /
 EOF
 
+ export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-24}
  $APRUNC global_chgres <<EOF '1>&1' '2>&2'
   &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB, 
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
