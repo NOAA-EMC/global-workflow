@@ -1,0 +1,281 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_enkf_post_fv3gfs.sh.ecf
+# Script description:  Global ensemble forecast post processing
+#
+# $Id$
+#
+# Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+#
+# Abstract: This script post-processes global ensemble forecast output
+#
+# Script history log:
+# 2017-03-02  Rahul Mahajan adapting from exglobal_enkf_post.sh.ecf
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: WCOSS-Cray/Theia
+#
+################################################################################
+
+# Set environment.
+export VERBOSE=${VERBOSE:-"YES"}
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+
+# Directories.
+export HOMEDIR=${HOMEDIR:-$NWROOT}
+export NWPROD=${NWPROD:-$HOMEDIR}
+export BASE_GSI=${BASE_GSI:-$NWPROD}
+export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+export EXECDIR=${EXECDIR:-${ENKFPOSTEXECDIR:-$BASE_GSI/util/EnKF/gfs/exec}}
+export DATA=${DATA:-$(pwd)}
+export COMIN=${COMIN:-$(pwd)}
+export COMOUT=${COMOUT:-$(pwd)}
+
+# Utilities
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export NCP=${NCP:-"/bin/cp"}
+export NLN=${NLN:-"/bin/ln -sf"}
+export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
+
+# Machine related stuff
+export MPMD=${MPMD:-"NO"}
+export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
+export NTHREADS_EPOS=${NTHREADS_EPOS:-1}
+export NTHSTACK=${NTHSTACK:-1024000000}
+export APRUN=${APRUN:-""}
+
+# Ops stuff
+export SENDDBN=${SENDDBN:-"NO"}
+
+# Fix files
+export LEVS=${LEVS:-64}
+export HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
+
+# Executables.
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-"getsigensmeanp_smooth.x"}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-"getsfcensmeanp.x"}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-"getnstensmeanp.x"}
+export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-"getsigensstatp.x"}
+
+# Other variables.
+export PREFIX=${PREFIX:-""}
+export FHMIN=${FHMIN_ENKF:-${FHMIN:-3}}
+export FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
+export FHOUT=${FHOUT_ENKF:-${FHOUT:-1}}
+export SMOOTH_ENS=${SMOOTH_ENS:-"NO"}
+export NMEM_ENS=${NMEM_ENS:-80}
+export NST_GSI=${NST_GSI:-0}
+ENKF_SUFFIX=""
+[[ $SMOOTH_ENS = "YES" ]]&&ENKF_SUFFIX="s"
+
+################################################################################
+#  Preprocessing
+pwd=$(pwd)
+if [ -d $DATA ]; then
+   mkdata=NO
+else
+   mkdata=YES
+   mkdir -p $DATA
+fi
+cd $DATA || exit 99
+
+ENSSTAT=$COMOUT/ensstat_all
+rm $ENSSTAT
+
+################################################################################
+# Copy executables to working directory
+$NCP $EXECDIR/$GETSFCENSMEANEXEC $DATA
+$NCP $EXECDIR/$GETATMENSMEANEXEC $DATA
+$NCP $EXECDIR/$GETATMENSSTATEXEC $DATA
+if [ $NST_GSI -gt 0 ]; then
+   $NCP $EXECDIR/$GETNSTENSMEANEXEC $DATA
+fi
+
+################################################################################
+# Forecast ensemble member files
+for imem in `seq 1 $NMEM_ENS`; do
+   memchar="mem"`printf %03i $imem`
+   for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+      fhrchar=`printf %03i $fhr`
+      $NLN $COMIN/$memchar/${PREFIX}sfcf$fhrchar sfcf${fhrchar}_$memchar
+      $NLN $COMIN/$memchar/${PREFIX}atmf$fhrchar atmf${fhrchar}_$memchar
+      if [ $NST_GSI -gt 0 ]; then
+         $NLN $COMIN/$memchar/${PREFIX}nstf$fhrchar nstf${fhrchar}_$memchar
+      fi
+   done
+done
+
+# Forecast ensemble mean and smoothed files
+for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+   fhrchar=`printf %03i $fhr`
+   $NLN $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean sfcf${fhrchar}.ensmean
+   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean atmf${fhrchar}.ensmean
+   if [ $SMOOTH_ENS = "YES" ]; then
+      for imem in `seq 1 $NMEM_ENS`; do
+         memchar="mem"`printf %03i $imem`
+         $NLN $COMOUT/$memchar/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX} atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+      done
+   fi
+   if [ $NST_GSI -gt 0 ]; then
+      $NLN $COMOUT/${PREFIX}nstf${fhrchar}.ensmean nstf${fhrchar}.ensmean
+   fi
+   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean.nc4   atmf${fhrchar}_ensmean.nc4
+   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensspread.nc4 atmf${fhrchar}_ensspread.nc4
+done
+
+################################################################################
+# Generate ensemble mean surface and atmospheric files
+
+rm ./hybens_smoothinfo
+if [ $SMOOTH_ENS = "YES" ]; then
+   $NCP $HYBENSMOOTH ./hybens_smoothinfo
+fi
+
+export OMP_NUM_THREADS=$NTHREADS_EPOS
+export XLSMPOPTS="stack=$NTHSTACK"
+
+if [ $MPMD = "YES" ]; then
+
+   if [ $machine = WCOSS ] ; then
+      nprocs=$LSB_DJOB_NUMPROC
+   fi
+   cnt=0
+   ncnt=-1
+   for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+      fhrchar=`printf %03i $fhr`
+      cmd[$cnt]="$GETSFCENSMEANEXEC ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS"
+      cmd[$cnt]="$GETATMENSMEANEXEC ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS"
+      cmd[$cnt]="$GETATMENSSTATEXEC ./                        atmf${fhrchar} $NMEM_ENS"
+      if [ $NST_GSI -gt 0 ]; then
+         cmd[$cnt]="$GETNSTENSMEANEXEC ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENS"
+      fi
+      ((cnt+=1))
+      ((ncnt+=1))
+   done
+
+   rm $DATA/cmdfile
+   m=-1
+   n=0
+   while [ $((n+=1)) -le $nprocs ] ;do
+      while [ $((m+=1)) -le $ncnt ] ;do
+         echo "${cmd[m]}" >> $DATA/cmdfile
+         ((n+=1))
+      done
+      if [ $n -le $nprocs ] ; then
+         echo "echo do-nothing" >> $DATA/cmdfile
+      fi
+   done
+   if [ $machine = WCOSS ]; then
+      export MP_PGMMODEL=${MP_PGMMODEL:-mpmd}
+      export MP_CMDFILE=$DATA/cmdfile
+      $APRUN
+      rc=$?
+   fi
+
+else # Run serially instead
+
+   rc=0
+   for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+      fhrchar=`printf %03i $fhr`
+         $APRUN $GETSFCENSMEANEXEC ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS
+         ra=$?
+         ((rc+=ra))
+         $APRUN $GETATMENSMEANEXEC ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS
+         ra=$?
+         ((rc+=ra))
+         if [ $NST_GSI -gt 0 ]; then
+            $APRUN $GETNSTENSMEANEXEC ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENS
+            ra=$?
+            ((rc+=ra))
+         fi
+         $APRUN $GETATMENSSTATEXEC ./ atmf${fhrchar} $NMEM_ENS
+         ra=$?
+         ((rc+=ra))
+   done
+
+fi
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT || exit 2
+
+################################################################################
+# If smoothing on but no smoothing output, copy smoothed ensemble atmospheric files
+if [ "$SMOOTH_ENS" = "YES" ]; then
+   for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+      fhrchar=`printf %03i $fhr`
+      if [ ! -s atmf${fhrchar}${ENKF_SUFFIX}_mem001 ]; then
+         echo WARNING! no smoothed ensemble member for fhour = $fhrchar >&2
+         for imem in `seq 1 $NMEM_ENS`; do
+            memchar="mem"`printf %03i $imem`
+            $NCP atmf${fhrchar}_$memchar atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+         done
+      fi
+   done
+fi
+
+################################################################################
+# Generate status log
+rm log_allsfc log_allatm
+
+for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
+   fhrchar=`printf %03i $fhr`
+   if [ `expr $fhr % 3` -eq 0 ]; then
+      if [ -s ./sfcf${fhrchar}.ensmean ]; then
+         if [ $SENDDBN = "YES" ]; then
+            $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean
+         fi
+         string="DONE"
+      else
+         string="MISS"
+      fi
+   fi
+   rm log log_old log_new
+   $NCP log_allsfc ./log_old
+   echo "$string sfc fhr $fhrchar" > log
+   cat log_old log > log_new
+   $NCP log_new log_allsfc
+
+   if [ -s ./atmf${fhrchar}.ensmean ]; then
+      string="DONE"
+   else
+      string="MISS"
+   fi
+   rm log log_old log_new
+   $NCP log_allatm ./log_old
+   echo "$string atm fhr $fhrchar" > log
+   cat log_old log > log_new
+   $NCP log_new log_allatm
+done
+
+rm log_all
+cat log_allsfc log_allatm > log_all
+$NCP log_all $ENSSTAT
+
+if [ $SENDDBN = "YES" ] ; then
+for imem in `seq 1 $NMEM_ENS`; do
+   memchar="mem"`printf %03i $imem`
+   for fhr in `seq 6 $FHOUT $FHMAX`; do
+      fhrchar=`printf %03i $fhr`
+      if [ `expr $fhr % 3` -eq 0 ]; then
+          $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+      fi
+   done
+done
+fi
+
+################################################################################
+#  Postprocessing
+cd $pwd
+[[ $mkdata = "YES" ]]&&rm -rf $DATA
+set +x
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err

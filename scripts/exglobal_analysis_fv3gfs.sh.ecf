@@ -5,6 +5,8 @@
 # Script name:         exglobal_analysis_fv3.sh.ecf.sh
 # Script description:  Makes a global model upper air analysis with GSI
 #
+# $Id$
+#
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
 # Abstract: This script makes a global model analysis using the GSI
@@ -15,8 +17,6 @@
 # Attributes:
 #   Language: POSIX shell
 #   Machine: WCOSS-Cray / Theia
-#
-# $Id$
 #
 ################################################################################
 
@@ -32,7 +32,7 @@ export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
-export EXECDIR=${EXECDIR:-$BASE_GSI/exec}
+export EXECDIR=${EXECDIR:-${GSIEXECDIR:-$BASE_GSI/exec}}
 export GSIEXEC=${GSIEXEC:-${EXECDIR}/global_gsi}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
