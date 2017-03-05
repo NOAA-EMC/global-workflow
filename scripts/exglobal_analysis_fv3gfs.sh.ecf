@@ -7,7 +7,7 @@
 #
 # $Id$
 #
-# Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+# Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
 # Abstract: This script makes a global model analysis using the GSI
 #
@@ -577,42 +577,43 @@ if [ $USE_CFP = "YES" ] ; then
 fi
 
 ##############################################################
-# namelist options for 3DVar, 3DHybrid and 4DHybrid
-setup_iter="niter(1)=100,niter(2)=100,niter_no_qc(1)=50,niter_no_qc(2)=0"
-ljc4tlevs=".false."
-tlnmc_option="1"
-c_varqc="0.02"
+# GSI Namelist options
 if [ $DOHYBVAR = "YES" ]; then
+   HYBRID_ENSEMBLE="n_ens=$NMEM_ENS,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,jcap_ens_test=$JCAP_ENS,$HYBRID_ENSEMBLE"
    if [ $l4densvar = ".true." ]; then
-      setup_iter="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0"
-      ljc4tlevs=".true."
-      c_varqc="0.04"
-      export SETUP="ens_nstarthr=3,nhr_obsbin=1,nhr_assimilation=6,$SETUP"
-      if [ $lwrite4danl = ".true." ]; then
-         tlnmc_option="3"
-      fi
-   else
-      tlnmc_option="2"
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
+      JCOPTS="ljc4tlevs=.true.,$JCOPTS"
+      STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
+      OBSQC="c_varqc=0.04,$OBSQC"
    fi
+fi
+
+if [ $NST_GSI -gt 0 ]; then
+   NST="nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,zsea1=$ZSEA1,zsea2=$ZSEA2,$NST"
 fi
 
 ##############################################################
 # Create global_gsi namelist
 cat <<EOF > gsiparm.anl
 &SETUP
-  miter=2,$setup_iter,
+  miter=2,
+  niter(1)=100,niter(2)=100,
+  niter_no_qc(1)=50,niter_no_qc(2)=0,
   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
   qoption=2,
-  gencode=${IGEN:-0},factqmin=5.0,factqmax=0.005,deltim=$DELTIM,
+  gencode=${IGEN:-0},deltim=$DELTIM,
+  factqmin=5.0,factqmax=0.005,
   iguess=-1,
   tzr_qc=$TZR_QC,
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-  use_gfs_nemsio=.true.,use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},lrun_subdirs=${lrun_subdirs},
+  use_gfs_nemsio=.true.,
+  use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
+  lrun_subdirs=${lrun_subdirs},
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
-  diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,thin4d=.true.,cwoption=3,
-  l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,
+  diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,
+  cwoption=3,
   $SETUP
 /
 &GRIDOPTS
@@ -635,15 +636,15 @@ cat <<EOF > gsiparm.anl
   $ANBKGERR
 /
 &JCOPTS
-  ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=5.0e7,ljc4tlevs=$ljc4tlevs,
+  ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=5.0e7,
   $JCOPTS
 /
 &STRONGOPTS
-  tlnmc_option=$tlnmc_option,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+  tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
   $STRONGOPTS
 /
 &OBSQC
-  dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=$c_varqc,
+  dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
   $OBSQC
@@ -749,9 +750,10 @@ OBS_INPUT::
   $LAGDATA
 /
 &HYBRID_ENSEMBLE
-  l_hyb_ens=$l_hyb_ens,n_ens=$NMEM_ENS,generate_ens=.false.,
-  beta_s0=0.125,s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
-  jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,jcap_ens_test=$JCAP_ENS,
+  l_hyb_ens=$l_hyb_ens,
+  generate_ens=.false.,
+  beta_s0=0.125,readin_beta=.false.,
+  s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
   aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
   ensemble_path='./ensemble_data/',
   $HYBRID_ENSEMBLE
@@ -770,13 +772,10 @@ OBS_INPUT::
   $SINGLEOB
 /
 &NST
-  nst_gsi=$NST_GSI,nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,
-  zsea1=$ZSEA1,zsea2=$ZSEA2,
+  nst_gsi=$NST_GSI,
   $NST
 /
 EOF
-##############################################################
-
 
 ##############################################################
 #  Make atmospheric analysis
@@ -787,8 +786,8 @@ $APRUN $GSIEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit 2
-##############################################################
 
+##############################################################
 # For eobs, eomn and eupd
 if [ -s satbias_out.int ]; then
    $NCP satbias_out.int $ABIASe
@@ -967,7 +966,7 @@ if [ $DIAG_TARBALL = "YES" ]; then
 fi
 
 ################################################################################
-# Send alerts for SPA's
+# Send alerts
 if [ $SENDDBN = "YES" ]; then
     if [ $RUN = "gdas" ]; then
        $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
