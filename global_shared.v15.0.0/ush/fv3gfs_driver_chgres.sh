@@ -26,7 +26,7 @@ set -ax
 module load PrgEnv-intel 2>>/dev/null
 export NODES=1
 export KMP_AFFINITY=disabled
-export OMP_NUM_THREADS_CH=24
+export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
 #export HUGETLB_MORECORE=yes
 export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
 export USER=$LOGNAME                 # your username 

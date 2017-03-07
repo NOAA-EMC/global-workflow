@@ -283,7 +283,7 @@ contains
              call mpi_interface_terminate()
              stop
             endif
-            do k=nczdim,1,-1
+            do k=nczdim+1,1,-1
              read(913,*) pk(k),bk(k)
             enddo
             close(913)
