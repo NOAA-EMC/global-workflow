@@ -350,8 +350,8 @@ cat > input.nml <<EOF
        n_sponge = ${n_sponge:-8}
        tau = 5.
        rf_cutoff = 8.e2
-       d2_bg_k1 = 0.16
-       d2_bg_k2 = 0.02
+       d2_bg_k1 = ${d2_bg_k1:-0.16}
+       d2_bg_k2 = ${d2_bg_k2:-0.02}
        kord_tm = -11
        kord_mt =  10
        kord_wz =  10
