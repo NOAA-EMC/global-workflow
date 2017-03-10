@@ -5,14 +5,11 @@
 # Script name:         exglobal_enkf_post_fv3gfs.sh.ecf
 # Script description:  Global ensemble forecast post processing
 #
-# $Id$
-#
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
 # Abstract: This script post-processes global ensemble forecast output
 #
-# Script history log:
-# 2017-03-02  Rahul Mahajan adapting from exglobal_enkf_post.sh.ecf
+# $Id$
 #
 # Attributes:
 #   Language: POSIX shell

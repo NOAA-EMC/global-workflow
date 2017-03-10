@@ -5,14 +5,11 @@
 # Script name:         exglobal_analysis_fv3.sh.ecf.sh
 # Script description:  Makes a global model upper air analysis with GSI
 #
-# $Id$
-#
 # Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 #
 # Abstract: This script makes a global model analysis using the GSI
 #
-# Script history log:
-# 2017-03-02  Rahul Mahajan  adapting from legacy exglobal_analysis.sh.ecf
+# $Id$
 #
 # Attributes:
 #   Language: POSIX shell

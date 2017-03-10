@@ -11,9 +11,6 @@
 #
 # $Id$
 #
-# Script history log:
-# 2017-03-02  Rahul Mahajan  adapted from exglobal_enkf_innovate_obs.sh.ecf
-#
 # Attributes:
 #   Language: POSIX shell
 #   Machine: WCOSS-Cray/Theia
@@ -28,12 +25,13 @@ if [ $VERBOSE = "YES" ]; then
 fi
 
 # Directories.
+pwd=$(pwd)
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export SCR_GSI=${SCR_GSI:-$BASE_GSI/scripts}
-export DATA=${DATA:-$(pwd)}
-export COMIN=${COMIN:-$(pwd)}
+export DATA=${DATA:-$pwd}
+export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
@@ -45,7 +43,7 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis.sh.ecf}
+export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Prefix and Suffix Variables.
 export OPREFIX=${OPREFIX:-${PREFIX:-""}}
@@ -65,28 +63,24 @@ export SELECT_OBS=${SELECT_OBS:-$COMOUT/${APREFIX}obsinput.ensmean}
 # Member
 export MEMBER=${MEMBER:-"0"} # <-1: control member,  0: ensemble mean, >0: ensemble member $MEMBER
 
-# Ops stuff
-export SENDDBN=${SENDDBN:-"NO"}
-
 # Observation Operator GSI namelist initialization
-export SETUP_INNOV=${SETUP_INNOV:-""}
-export GRIDOPTS_INNOV=${GRIDOPTS_INNOV:-""}
-export BKGVERR_INNOV=${BKGVERR_INNOV:-""}
-export ANBKGERR_INNOV=${ANBKGERR_INNOV:-""}
-export JCOPTS_INNOV=${JCOPTS_INNOV:-""}
-export STRONGOPTS_INNOV=${STRONGOPTS_INNOV:-""}
-export OBSQC_INNOV=${OBSQC_INNOV:-""}
-export OBSINPUT_INNOV=${OBSINPUT_INNOV:-""}
-export SUPERRAD_INNOV=${SUPERRAD_INNOV:-""}
-export SINGLEOB_INNOV=${SINGLEOB_INNOV:-""}
-export LAGDATA_INNOV=${LAGDATA_INNOV:-""}
-export HYBRID_ENSEMBLE_INNOV=${HYBRID_ENSEMBLE_INNOV:-""}
-export RAPIDREFRESH_CLDSURF_INNOV=${RAPIDREFRESH_CLDSURF_INNOV:-""}
-export CHEM_INNOV=${CHEM_INNOV:-""}
+export SETUP_ENKF=${SETUP_ENKF:-""}
+export GRIDOPTS_ENKF=${GRIDOPTS_ENKF:-""}
+export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
+export ANBKGERR_ENKF=${ANBKGERR_ENKF:-""}
+export JCOPTS_ENKF=${JCOPTS_ENKF:-""}
+export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
+export OBSQC_ENKF=${OBSQC_ENKF:-""}
+export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
+export SUPERRAD_ENKF=${SUPERRAD_ENKF:-""}
+export SINGLEOB_ENKF=${SINGLEOB_ENKF:-""}
+export LAGDATA_ENKF=${LAGDATA_ENKF:-""}
+export HYBRID_ENSEMBLE_ENKF=${HYBRID_ENSEMBLE_ENKF:-""}
+export RAPIDREFRESH_CLDSURF_ENKF=${RAPIDREFRESH_CLDSURF_ENKF:-""}
+export CHEM_ENKF=${CHEM_ENKF:-""}
 
 ################################################################################
 #  Preprocessing
-pwd=$(pwd)
 if [ -d $DATA ]; then
    mkdata=NO
 else
@@ -128,20 +122,20 @@ export DIAG_COMPRESS="NO"
 export DIAG_TARBALL="YES"
 
 # GSI Namelist options for observation operator only
-export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_INNOV"
-export GRIDOPTS="$GRIDOPTS $GRIDOPTS_INNOV"
-export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_INNOV"
-export ANBKGERR="$ANBKGERR $ANBKGERR_INNOV"
-export JCOPTS="$JCOPTS $JCOPTS_INNOV"
-export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_INNOV"
-export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_INNOV"
-export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_INNOV"
-export SUPERRAD="$SUPERRAD $SUPERRAD_INNOV"
-export SINGLEOB="$SINGLEOB $SINGLEOB_INNOV"
-export LAGDATA="$LAGDATA $LAGDATA_INNOV"
+export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
+export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
+export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
+export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"
+export JCOPTS="$JCOPTS $JCOPTS_ENKF"
+export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_ENKF"
+export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_ENKF"
+export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_ENKF"
+export SUPERRAD="$SUPERRAD $SUPERRAD_ENKF"
+export SINGLEOB="$SINGLEOB $SINGLEOB_ENKF"
+export LAGDATA="$LAGDATA $LAGDATA_ENKF"
 export HYBRID_ENSEMBLE=""
-export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_INNOV"
-export CHEM="$CHEM $CHEM_INNOV"
+export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
+export CHEM="$CHEM $CHEM_ENKF"
 
 ################################################################################
 # Directories based on control or ensemble member
@@ -157,23 +151,6 @@ $ANALYSISSH
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit 2
-
-################################################################################
-# Need to work this logic with the new eobs, eomn, eomg scripts
-# Comment for now
-#export DATATOP=$DATA
-#rm log
-#$NCP $DATATOP/log_all ./log_old
-#echo "Process member $MEMBER" > log
-#cat log_old log > log_new
-#$NCP log_new $DATATOP/log_all
-#cp log_all $EOMGGRP
-################################################################################
-
-# Send alerts
-if [ $SENDDBN = "YES" ]; then
-   $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job ${APREFIX}gsistat
-fi
 
 ################################################################################
 # Postprocessing
