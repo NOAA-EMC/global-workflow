@@ -44,7 +44,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 # Scripts.
 export FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_fv3gfs.sh.ecf}
 
-# Enemble group, begin and end 
+# Enemble group, begin and end
 export ENSGRP=${ENSGRP:-1}
 export ENSBEG=${ENSBEG:-1}
 export ENSEND=${ENSEND:-1}
@@ -88,7 +88,7 @@ rm -f $EFCSGRP
 # There are many many model namelist options
 # Some are resolution (CASE) dependent, some depend on the model configuration
 # and will need to be added here before $FORECASTSH is called
-# For now assume that 
+# For now assume that
 # 1. the ensemble and the deterministic are same resolution
 # 2. the ensemble runs with the same configuration as the deterministic
 

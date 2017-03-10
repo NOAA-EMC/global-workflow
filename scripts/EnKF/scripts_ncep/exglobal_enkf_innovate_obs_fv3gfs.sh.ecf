@@ -46,7 +46,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export OBSINNOVSH=${OBSINNOVSH:-$SCR_GSI/exglobal_innovate_obs_fv3gfs.sh.ecf}
 export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis_fv3gfs.sh.ecf}
 
-# Enemble group, begin and end 
+# Enemble group, begin and end
 export ENSGRP=${ENSGRP:-1}
 export ENSBEG=${ENSBEG:-1}
 export ENSEND=${ENSEND:-1}
