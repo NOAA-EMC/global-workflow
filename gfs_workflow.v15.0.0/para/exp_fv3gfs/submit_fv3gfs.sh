@@ -1,13 +1,14 @@
 #!/bin/sh
 #BSUB -L /bin/sh
 #BSUB -P FV3GFS-T2O
-#BSUB -oo fv3gfs.out
-#BSUB -eo fv3gfs.out
-#BSUB -J fv3gfs   
+#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/fv3test.out
+#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/fv3test.out
+#BSUB -J fv3test   
 #BSUB -q dev
 #BSUB -M 1024
 ##BSUB -x
 #BSUB -W 10:00
+#BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang
 #BSUB -extsched 'CRAYLINUX[]'
 set -x
 
@@ -26,7 +27,7 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=trunk_r88010
+export tags=EXP-cyc     
 export PTMP=/gpfs/hps/ptmp
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
 export BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para     
@@ -35,14 +36,14 @@ export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
-export CASE=C192
+export CASE=C96 
 export res=`echo $CASE|cut -c 2-`
 export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
-START=20160801
-LAST=20161101
+START=20170309
+LAST=20170309
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
@@ -57,7 +58,7 @@ export cdate=${sdate}${cyc}
 
 #.......................................................
 #-- create ICs using operational GFS initial conditions
-export out_dir=$FV3ICDIR/ICs
+export out_dir=$FV3ICDIR/ICs                      
 if [ ! -s $out_dir/${CASE}_${cdate}/gfs_ctrl.nc ]; then
 #.......................................................
 
@@ -108,7 +109,6 @@ $BASE_GSM/ush/fv3gfs_driver_chgres.sh
 fi
 #.......................................................
 
-
 cd $paradir
 if [ -s $out_dir/${CASE}_${cdate}/gfs_ctrl.nc ]; then
  $PSUB para_config $cdate gfs fcst1
@@ -125,7 +125,7 @@ done
 export sdate=$edate
 if [ $sdate -le $LAST ]; then
 $SUB -e sdate -a FV3GFS-T2O -q dev -p 1/1/N -r 3072/1/1 -t 10:00:00 \
-    -w "+0200" -j fv3gfs -o fv3gfs.out submit_fv3gfs.sh
+    -w "+0300" -j fv3test -o fv3gfs_fcst.out submit_fv3gfs.sh
 fi
 
 exit

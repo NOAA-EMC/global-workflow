@@ -216,7 +216,7 @@ contains
     meta_nemsio3d%version    = 200509
     meta_nemsio3d%nrec       = 2 + nczdim*n3dvar
     meta_nemsio3d%nmeta      = 5
-    meta_nemsio3d%nmetavari  = 2
+    meta_nemsio3d%nmetavari  = 3
     meta_nemsio3d%nmetaaryi  = 1
     meta_nemsio3d%dimx       = gfs_grid%nlons
     meta_nemsio3d%dimy       = gfs_grid%nlats
@@ -228,6 +228,8 @@ contains
     meta_nemsio3d%idrt       = 4   
     meta_nemsio3d%ncldt      = 3
     meta_nemsio3d%idvc       = 2 
+    meta_nemsio3d%idvm       = 2 
+    meta_nemsio3d%idsl       = 1 
     meta_nemsio3d%idate(1:6) = 0
     meta_nemsio3d%idate(7)   = 1
     read(forecast_timestamp(9:10),'(i2)') meta_nemsio3d%idate(4)
@@ -271,24 +273,23 @@ contains
 
            ! Define local variables
 
-           if (gfs_hyblevs_filename == 'NOT USED' ) then
-            call netcdfio_values_1d(anlygrd(1)%filename,'pk',pk)
-            call netcdfio_values_1d(anlygrd(1)%filename,'bk',bk)
+           if (trim(gfs_hyblevs_filename) == 'NOT USED' ) then
+               call netcdfio_values_1d(anlygrd(1)%filename,'pk',pk)
+               call netcdfio_values_1d(anlygrd(1)%filename,'bk',bk)
            else
-            open(913,file=trim(gfs_hyblevs_filename),form='formatted')
-            read(913,*) ncol, levs_fix
-            if (levs_fix /= (nczdim+1) ) then
-             call mpi_barrier(mpi_comm_world, mpi_ierror)
-             print *,'levs in ', gfs_hyblevs_filename, ' not equal to',(nczdim+1)
-             call mpi_interface_terminate()
-             stop
-            endif
-            do k=nczdim+1,1,-1
-             read(913,*) pk(k),bk(k)
-            enddo
-            close(913)
+               open(913,file=trim(gfs_hyblevs_filename),form='formatted')
+               read(913,*) ncol, levs_fix
+               if (levs_fix /= (nczdim+1) ) then
+                   call mpi_barrier(mpi_comm_world, mpi_ierror)
+                   print *,'levs in ', trim(gfs_hyblevs_filename), ' not equal to',(nczdim+1)
+                   call mpi_interface_terminate()
+                   stop
+               endif
+               do k=nczdim+1,1,-1
+                   read(913,*) pk(k),bk(k)
+               enddo
+               close(913)
            endif
-
            if (minval(pk) < -1.e10 .or. minval(bk) < -1.e10) then
               print *,'pk,bk not found in netcdf file..'
               meta_nemsio3d%vcoord = -9999._nemsio_realkind
@@ -403,7 +404,9 @@ contains
                    ! (surface height called 'orog' in nemsio bin4, 'hgt' in
                    ! grib)
                    if (trim(var_info(k2)%nems_name) == 'orog') then
-                       call gfs_nems_write('3d',real(outvar%var),                     &
+                      if (trim(var_info(k2)%var_name) == 'hgtsfc') &
+                         outvar%var = outvar%var / grav
+                      call gfs_nems_write('3d',real(outvar%var),                     &
                       'hgt                 ',var_info(k2)%nems_levtyp,1)
                    else
                       call gfs_nems_write('3d',real(outvar%var),                     &

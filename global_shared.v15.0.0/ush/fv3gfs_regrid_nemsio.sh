@@ -1,84 +1,103 @@
 #!/bin/ksh
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/prtest/log.regrid
-#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/prtest/log.regrid
-#BSUB -J regrid_fv3 
-#BSUB -q dev
-#BSUB -M 1024
-#BSUB -x
-#BSUB -W 10:00
-#BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang/prtest
-#BSUB -extsched 'CRAYLINUX[]'
-set -ax
 
-#---------------------------------------------------------------------------------------
-#-- Remap FV3GFS forecasts on six tiles in netCDF to a global array on Gaussian grid 
-#   and write out output in nemsio.  Regrid_nemsio.fd is provided by Jeff Whitaker at ESRL.
-#-- Fanglin Yang, January 2017
-#---------------------------------------------------------------------------------------
-##. $MODULESHOME/init/sh 2>>/dev/null
-##module load PrgEnv-intel cray-mpich 2>>/dev/null
+################################################################################
+# UNIX Script Documentation Block
+# Script name:         fv3gfs_regrid_nemsio.sh
+# Script description:  Remap FV3 forecasts on six tile in NetCDF to global Gaussian
+#                      grid with NEMSIO output
+#
+# $Id$
+#
+# Author:   Fanglin Yang       Org: NCEP/EMC       Date: 2017-01-XX
+# Abstract: regrid_nemsio.fd provided by Jeffrey.S.Whitaker OAR/ESRL
+#
+# Script history log:
+# 2017-01-XX  Fanglin Yang
+# 2017-02-13  Rahul Mahajan
+#
+# Attributes:
+#   Language: Portable Operating System Interface (POSIX) Shell
+#   Machine: WCOSS-CRAY, Theia
+################################################################################
+
+#  Set environment.
+export VERBOSE=${VERBOSE:-"YES"}
+if [ $VERBOSE = YES ] ; then
+  echo $(date) EXECUTING $0 $* >&2
+  set -x
+fi
+
+#-------------------------------------------------------
+# Directories and paths
+export DATA=${DATA:-${COMROT:-$(pwd)}}
+export BASE_GSM=${BASE_GSM:-/nwprod}
+export FIX_AM=${FIX_AM:-$BASE_GSM/fix/fix_am}
+export REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
+export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table.txt}
 
 export CDATE=${CDATE:-2017011500}
-export CASE=${CASE:-C768}                 ;#C48 C96 C192 C384 C768 C1152 C3072
-export GG=gaussian                        ;#gaussian or regular lat-lon     
-export NLAT=${NLAT:-1536}
-export NLON=${NLON:-3072}
-export truncation=${JCAP:-$((`echo $CASE|cut -c 2-`*2-2))}
-export out2dname=${out2dname:-fln$CDATE.$CDUMP}
-export out3dname=${out3dname:-gfn$CDATE.$CDUMP}
-export debug_regrid=${debug_regrid:-T}
+export CASE=${CASE:-C768}
+export LEVS=${LEVS:-64}
+export GG=${GG:-gaussian}              ;#gaussian or regular lat-lon
+export JCAP=${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
+export NLAT=${NLAT:-$((`echo $CASE | cut -c 2-`*2))}
+export NLON=${NLON:-$((`echo $CASE | cut -c 2-`*4))}
 
-export PSLOT=${PSLOT:-test}
-export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${COMROT:-$PTMP/$LOGNAME/pr${PSLOT}}                  
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs/trunk_r86472/global_shared.v15.0.0}
-export REGRID_NEMSIO=${REGRID_NEMSIO:-$BASE_GSM/exec/regrid_nemsio}
-export FIX_AM=${FIX_AM:-$BASE_GSM/fix/fix_am}
+export NEMSIO_OUT2DNAME=${NEMSIO_OUT2DNAME:-sfc.$CDATE}
+export NEMSIO_OUT3DNAME=${NEMSIO_OUT3DNAME:-atm.$CDATE}
+export DEBUG=${REGRID_NEMSIO_DEBUG:-".true."}
+
+#-------------------------------------------------------
+# IO specific parameters and error traps
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 #--------------------------------------------------
-#-- ESMF regrid weights and output variable table
+# ESMF regrid weights and output variable table
 export weight_bilinear=${weight_bilinear:-$BASE_GSM/fix/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.bilinear.nc}
 export weight_neareststod=${weight_neareststod:-$BASE_GSM/fix/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.neareststod.nc}
-export variable_table=${variable_table:-$BASE_GSM/parm/parm_fv3diag/variable_table.txt}
 
-export npe_regrid=${npe_regrid:-${LEVS:-64}}
-export pe_node=${pe_node:-24}
-export thread_regrid=${thread_regrid:-1}
-export npe_node_regrid=$((pe_node/thread_regrid))
-export xnodes=$(echo $npe_regrid $thread_regrid $pe_node|awk '{printf "%i", $1*$2/$3}')
-export NODES=3
-export APRUN_LOC="aprun -n $npe_regrid -N $npe_node_regrid -j 1 -d $thread_regrid -cc depth"
-export APRUN_REGRID=${APRUN_REGRID:-$APRUN_LOC}
+#-------------------------------------------------------
+# Go to the directory where the history files are
+cd $DATA
 
-#--------------------------------------------------
-cd $COMROT ||exit 8
-err=0
-
+#-------------------------------------------------------
+# Create namelist
 rm -f regrid-nemsio.input
-cat >regrid-nemsio.input <<EOF
+cat > regrid-nemsio.input << EOF
 &share
-debug=$debug_regrid,nlons=$NLON,nlats=$NLAT,ntrunc=$truncation,
-datapathout2d='$out2dname',
-datapathout3d='$out3dname',
-analysis_filename='${CDATE}0000.fv3_history.tile1.nc','${CDATE}0000.fv3_history.tile2.nc','${CDATE}0000.fv3_history.tile3.nc','${CDATE}0000.fv3_history.tile4.nc','${CDATE}0000.fv3_history.tile5.nc','${CDATE}0000.fv3_history.tile6.nc',
-analysis_filename2d='${CDATE}0000.fv3_history2d.tile1.nc','${CDATE}0000.fv3_history2d.tile2.nc','${CDATE}0000.fv3_history2d.tile3.nc','${CDATE}0000.fv3_history2d.tile4.nc','${CDATE}0000.fv3_history2d.tile5.nc','${CDATE}0000.fv3_history2d.tile6.nc',
-forecast_timestamp='${CDATE}'
-variable_table='$variable_table'
-nemsio_opt3d='bin4'
-nemsio_opt2d='bin4'
+  debug=$DEBUG,
+  ntrunc=$JCAP,
+  nlons=$NLON,
+  nlats=$NLAT,
+  datapathout2d='$NEMSIO_OUT2DNAME',
+  datapathout3d='$NEMSIO_OUT3DNAME',
+  analysis_filename='${CDATE}0000.fv3_history.tile1.nc','${CDATE}0000.fv3_history.tile2.nc','${CDATE}0000.fv3_history.tile3.nc','${CDATE}0000.fv3_history.tile4.nc','${CDATE}0000.fv3_history.tile5.nc','${CDATE}0000.fv3_history.tile6.nc',
+  analysis_filename2d='${CDATE}0000.fv3_history2d.tile1.nc','${CDATE}0000.fv3_history2d.tile2.nc','${CDATE}0000.fv3_history2d.tile3.nc','${CDATE}0000.fv3_history2d.tile4.nc','${CDATE}0000.fv3_history2d.tile5.nc','${CDATE}0000.fv3_history2d.tile6.nc',
+  forecast_timestamp='${CDATE}',
+  variable_table='$REGRID_NEMSIO_TBL',
+  nemsio_opt3d='bin4',
+  nemsio_opt2d='bin4'
 /
+
 &interpio
-esmf_bilinear_filename='$weight_bilinear'
-esmf_neareststod_filename='$weight_neareststod'
-gfs_hyblevs_filename='${FIX_AM}/global_hyblev.l${LEVS}.txt'
+  esmf_bilinear_filename='$weight_bilinear',
+  esmf_neareststod_filename='$weight_neareststod',
+  gfs_hyblevs_filename='$FIX_AM/global_hyblev.l$LEVS.txt'
 /
 EOF
 
-$APRUN_REGRID $REGRID_NEMSIO
-err=$?
+#------------------------------------------------------------------
+$APRUN $REGRID_NEMSIO_EXEC
 
-echo $(date) EXITING $0 with return code $err >&2
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit $err
+
+rm -f regrid-nemsio.input
+
+#------------------------------------------------------------------
+set +x
+if [ $VERBOSE = "YES" ] ; then
+  echo $(date) EXITING $0 with return code $err >&2
+fi
 exit $err
-

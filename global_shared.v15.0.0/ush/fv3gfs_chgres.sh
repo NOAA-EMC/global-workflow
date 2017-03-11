@@ -1,56 +1,53 @@
-#!/bin/ksh 
+#!/bin/ksh
 
-set -ax
+################################################################################
+# UNIX Script Documentation Block
+# Script name:         fv3gfs_chgres.sh
+# Script description:  Remap FV3 forecasts on six tile in NetCDF to global Gaussian
+#                      grid with NEMSIO output
+#
+# Author:   Fanglin Yang       Org: NCEP/EMC       Date: 2017-01-01
+# Abstract:
+#
+# Script history log:
+# 2017-01-01  Fanglin Yang  - First version built upon GFDL tcsh script.
+# 2017-02-13  Rahul Mahajan - Port o Theia, standardize, generalize, remove hard-wired stuff
+#
+# Attributes:
+#   Language: Portable Operating System Interface (POSIX) Shell
+#   Machine: WCOSS-CRAY, Theia
+################################################################################
 
-export type=$1   # GFS or SFC
-
-if [ $type == GFS ]; then
-  if [ $# -ne 7 ]; then
-     echo "when type is GFS, number of arguments must be 7"
-     echo "usage: $0 GFS resolution grid_dir output_dir date gfs_dir grid_type "
-     exit 1
-  fi
-  export res=$2  
-  export griddir=$3
-  export outdir=$4  
-  export d=$5
-  export gfs_dir=$6
-  export gtype=$7
-
-elif [ $type = SFC ]; then
-  if [ $# -ne 7 ]; then
-     echo "when type is SFC, number of arguments must be 7"
-     echo "usage: $0 SFC resolution tile grid_dir output_dir date gfs_dir "
-     exit 1
-  fi
-  export res=$2  
-  export tile=$3   
-  export griddir=$4
-  export outdir=$5 
-  export d=$6
-  export gfs_dir=$7
-
-else
-  echo "first arugment (type) must be GFS or SFC"
-  exit 1
+#-------------------------------------------------------
+#  Set environment.
+export VERBOSE=${VERBOSE:-"YES"}
+if [ $VERBOSE = YES ] ; then
+  echo $(date) EXECUTING $0 $* >&2
+  set -x
 fi
 
-if [ $type == GFS ]; then
-  if [ $res -gt 768 -o $gtype = stretch ]; then
-    export LONB=3072
-    export LATB=1536 
-  else
-    lon=$((res*4))
-    lat=$((res*2))
-    export LONB=$lon
-    export LATB=$lat
-    echo "LONB = $LONB, LATB = $LATB"  
-  fi
-else
-  export LONB=$res
-  export LATB=$res
-fi
+#-------------------------------------------------------
+# Directories and paths
+export CASE=${CASE:-C768}
+export COMOUT=${COMOUT:-$(pwd)}
+export ATMANL=${ATMANL:-atmanl}
+export SFCANL=${SFCANL:-sfcanl}
 
+export BASE_GSM=${BASE_GSM:-/nwprod}
+export FIX_FV3=${FIX_FV3:-$BASE_GSM/fix}
+export FIX_AM=${FIX_AM:-$BASE_GSM/fix/fix_am}
+export STMP=${STMP:-"/stmp"}
+export GLOBAL_CHGRES_EXEC=${GLOBAL_CHGRES_EXEC:-$BASE_GSM/exec/global_chgres}
+
+#-------------------------------------------------------
+# IO specific parameters and error traps
+export NMV=${NMV:-"/bin/mv"}
+export NLN=${NLN:-"/bin/ln -sf"}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+
+#-------------------------------------------------------
+# Namelist and other options
+export ntiles=${ntiles:-6}
 export LEVS=${LEVS:-64}
 export IDVC=${IDVC:-2}
 export IDRT=${IDRT:-4}
@@ -60,71 +57,48 @@ export NTRAC=${NTRAC:-3}
 export IDSL=${IDSL:-1}
 export LSOIL=${LSOIL:-4}
 export IVSSFC=0
-if [ $type = "GFS" ]; then
-  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1"
-else
-  export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1,tile_num=$tile"
+export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1"
+
+res=`echo $CASE |cut -c 2-`
+export LONB_SFC=$res
+export LATB_SFC=$res
+export LONB_ATM=$((res*4))
+export LATB_ATM=$((res*2))
+if [ $res -gt 768 -o $gtype = stretch ]; then
+ export LONB_ATM=3072
+ export LATB_ATM=1536
 fi
+echo "LONB_SFC=$LONB_SFC, LATB_SFC=$LATB_SFC"
+echo "LONB_ATM=$LONB_ATM, LATB_ATM=$LATB_ATM"
 
-export executable=$exec_dir/global_chgres
+#-------------------------------------------------------
+# Working directory
+export DATA=${DATA:-$STMP/fv3_chgres}
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+cd $DATA || exit 8
 
-if [ ! -s $executable ]; then
-  echo "executable does not exist"
-  exit 1 
-fi
+#-------------------------------------------------------
+# Fix files
+$NLN ${SIGLEVEL:-$FIX_AM/global_hyblev.l${LEVS}.txt} chgres.inp.siglevel
+$NLN $FIX_AM/global_o3clim.txt                       chgres.inp.o3clim
 
-export FIXGLOBAL=${fix_gsm_dir:-$NWROOTp2/global_shared.v13.0.3/fix/fix_am}
-export workdir=${TMPDIR:-/ptmp/$LOGNAME/fv3_chgres}
-cd $workdir ||exit 8
-
-cp $executable .
-export day=`echo $d | cut -c1-8`
-export hr=`echo $d | cut -c9-10`
-
-if [ -s ${gfs_dir}/siganl.gfs.$d ]; then
- ln -sf ${gfs_dir}/siganl.gfs.$d chgres.inp.sig
- ln -sf ${gfs_dir}/sfcanl.gfs.$d chgres.inp.sfc
-else
- ln -sf ${gfs_dir}/gfs.t${hr}z.sanl chgres.inp.sig
- ln -sf ${gfs_dir}/gfs.t${hr}z.sfcanl chgres.inp.sfc
-fi
-
-ln -sf ${SIGLEVEL:-$FIXGLOBAL/global_hyblev.l${LEVS}.txt} chgres.inp.siglevel
-ln -sf $FIXGLOBAL/global_o3clim.txt chgres.inp.o3clim
-
-export FNGLAC=$FIXGLOBAL/global_glacier.2x2.grb
-export FNMXIC=${FIXGLOBAL}/global_maxice.2x2.grb
-export FNTSFC=${FIXGLOBAL}/cfs_oi2sst1x1monclim19822001.grb
-export FNSNOC=${FIXGLOBAL}/global_snoclim.1.875.grb
-export FNZORC=sib
-export FNALBC=${FIXGLOBAL}/global_albedo4.1x1.grb
-export FNAISC=${FIXGLOBAL}/cfs_ice1x1monclim19822001.grb
-export FNTG3C=${FIXGLOBAL}/global_tg3clim.2.6x1.5.grb
-export FNVEGC=${FIXGLOBAL}/global_vegfrac.0.144.decpercent.grb
-export FNVETC=${FIXGLOBAL}/global_vegtype.1x1.grb
-export FNSOTC=${FIXGLOBAL}/global_soiltype.1x1.grb
-export FNSMCC=${FIXGLOBAL}/global_soilmcpc.1x1.grb
-export FNVMNC=${FIXGLOBAL}/global_shdmin.0.144x0.144.grb
-export FNVMXC=${FIXGLOBAL}/global_shdmax.0.144x0.144.grb
-export FNSLPC=${FIXGLOBAL}/global_slope.1x1.grb
-export FNABSC=${FIXGLOBAL}/global_snoalb.1x1.grb
-export FNMSKH=${FIXGLOBAL}/seaice_newland.grb
-
-
-export ntiles=${ntiles:-6}
-if [ $type = "GFS" ]; then
-  ln -fs NULL chgres.inp.sfc
-  tile=1
-  while [ $tile -le $ntiles ]; do
-   ln -fs ${griddir}/C${res}_grid.tile$tile.nc chgres.fv3.grd.t$tile
-   ln -fs ${griddir}/C${res}_oro_data.tile$tile.nc chgres.fv3.orog.t$tile
-   tile=$((tile+1))
-  done
-else
-  ln -fs NULL chgres.inp.sig
-  ln -fs ${griddir}/C${res}_grid.tile$tile.nc chgres.fv3.grd.t$tile
-  ln -fs ${griddir}/C${res}_oro_data.tile$tile.nc chgres.fv3.orog.t$tile
-fi
+export FNGLAC=$FIX_AM/global_glacier.2x2.grb
+export FNMXIC=$FIX_AM/global_maxice.2x2.grb
+export FNTSFC=$FIX_AM/cfs_oi2sst1x1monclim19822001.grb
+export FNSNOC=$FIX_AM/global_snoclim.1.875.grb
+export FNZORC=${FNZORC:-sib}
+export FNALBC=$FIX_AM/global_albedo4.1x1.grb
+export FNAISC=$FIX_AM/cfs_ice1x1monclim19822001.grb
+export FNTG3C=$FIX_AM/global_tg3clim.2.6x1.5.grb
+export FNVEGC=$FIX_AM/global_vegfrac.0.144.decpercent.grb
+export FNVETC=$FIX_AM/global_vegtype.1x1.grb
+export FNSOTC=$FIX_AM/global_soiltype.1x1.grb
+export FNSMCC=$FIX_AM/global_soilmcpc.1x1.grb
+export FNVMNC=$FIX_AM/global_shdmin.0.144x0.144.grb
+export FNVMXC=$FIX_AM/global_shdmax.0.144x0.144.grb
+export FNSLPC=$FIX_AM/global_slope.1x1.grb
+export FNABSC=$FIX_AM/global_snoalb.1x1.grb
+export FNMSKH=$FIX_AM/seaice_newland.grb
 
 if [ $LANDICE_OPT -eq 3 -o $LANDICE_OPT -eq 4 ]; then
   export LANDICE=.false.
@@ -132,8 +106,11 @@ else
   export LANDICE=.true.
 fi
 
+#-------------------------------------------------------
+# Namelists and input files
+rm -f fort.35
 cat << EOF > fort.35
- &NAMSFC
+&NAMSFC
   FNGLAC='${FNGLAC}'
   FNMXIC='${FNMXIC}'
   FNTSFC='${FNTSFC}'
@@ -159,8 +136,9 @@ cat << EOF > fort.35
 /
 EOF
 
+rm -f fort.81
 cat << EOF > fort.81
- &soil_parameters
+&soil_parameters
   soil_src_input = "zobler"
   smclow_input  = 0.5
   smchigh_input = 6.0
@@ -183,45 +161,94 @@ cat << EOF > fort.81
                   0.140, 0.360, 0.040
   satdk_output = 1.41e-5, 0.20e-5, 0.10e-5, 0.52e-5, 0.72e-5,
                  0.25e-5, 0.45e-5, 0.34e-5, 1.41e-5
- /
- &veg_parameters
+/
+&veg_parameters
   veg_src_input = "sib"
   veg_src_output = "sib"
   salp_output= -999.
   snup_output= -999.
- /
- &options
+/
+&options
   CLIMO_FIELDS_OPT=${CLIMO_FIELDS_OPT}
   LANDICE_OPT=${LANDICE_OPT}
- /
+/
 EOF
 
- export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-24}
- $APRUNC global_chgres <<EOF '1>&1' '2>&2'
-  &NAMCHG  LEVS=$LEVS, LONB=$LONB, LATB=$LATB, 
-           NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
-           LSOIL=$LSOIL, IVSSFC=$IVSSFC, IDRT=$IDRT, 
-           ntiles=$ntiles, $CHGRESVARS
- /
+#-------------------------------------------------------
+# Ensure global_chgres is running with threads and has adequate stacksize
+export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-24}
+export OMP_STACKSIZE=${OMP_STACKSIZE_CH:-${OMP_STACKSIZE:-2048000}}
+
+#-------------------------------------------------------
+# First CHGRES the 3D atmospheric tiles
+
+# Initial conditions to CHGRES
+$NLN $ATMANL chgres.inp.sig
+$NLN NULL    chgres.inp.sfc
+
+for tile in `seq 1 $ntiles`; do
+  $NLN $FIX_FV3/$CASE/${CASE}_grid.tile${tile}.nc     chgres.fv3.grd.t$tile
+  $NLN $FIX_FV3/$CASE/${CASE}_oro_data.tile${tile}.nc chgres.fv3.orog.t$tile
+done
+
+$APRUN $GLOBAL_CHGRES_EXEC << EOF '1>&1' '2>&2'
+&NAMCHG
+  LEVS=$LEVS, LONB=$LONB_ATM, LATB=$LATB_ATM,
+  NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
+  LSOIL=$LSOIL, IVSSFC=$IVSSFC, IDRT=$IDRT,
+  ntiles=$ntiles, $CHGRESVARS
+/
 EOF
 
-if [ $? -ne 0 ];  then
-   echo "ERROR in running $executable "
-   exit 1
-else
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit $err
+
+rm -f chgres.fv3.grd.t*
+
+#-------------------------------------------------------
+# Next CHGRES the 2D surface tiles
+
+# Initial conditions to CHGRES
+$NLN NULL    chgres.inp.sig
+$NLN $SFCANL chgres.inp.sfc
+
+for tile in `seq 1 $ntiles`; do
+
+  $NLN $FIX_FV3/$CASE/${CASE}_grid.tile$tile.nc     chgres$tile
+  $NLN $FIX_FV3/$CASE/${CASE}_oro_data.tile$tile.nc chgres.fv3.orog.t$tile
+
+  $APRUN $GLOBAL_CHGRES_EXEC << EOF '1>&1' '2>&2'
+&NAMCHG
+  LEVS=$LEVS, LONB=$LONB_SFC, LATB=$LATB_SFC,
+  NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
+  LSOIL=$LSOIL, IVSSFC=$IVSSFC, IDRT=$IDRT,
+  ntiles=$ntiles, tile_num=$tile, $CHGRESVARS
+/
+EOF
+
+  export ERR=$?
+  export err=$ERR
+  $ERRSCRIPT || exit $err
+
+done
+
+#-------------------------------------------------------
 # copy data to output directory
-   if [ $type = GFS ]; then
-      tile=1
-      while [ $tile -le $ntiles ]; do
-         mv gfs_data.tile$tile.nc $outdir/gfs_data.tile$tile.nc
-         tile=$((tile+1))
-      done
-      mv gfs_ctrl.nc $outdir/gfs_ctrl.nc 
-   else
-      mv out.sfc.tile$tile.nc $outdir/sfc_data.tile$tile.nc
-   fi
-   echo "successfully running $executable "
-   echo 0
-fi
+$NMV gfs_ctrl.nc $COMOUT/gfs_ctrl.nc
+for tile in `seq 1 $ntiles`; do
+  $NMV gfs_data.tile${tile}.nc $COMOUT/gfs_data.tile${tile}.nc
+  $NMV out.sfc.tile${tile}.nc  $COMOUT/sfc_data.tile${tile}.nc
+done
 
-exit
+#------------------------------------------------------------------
+# Clean up before leaving
+cd $COMOUT
+if [ ${KEEPDATA:-NO} = "NO" ]; then rm -rf $DATA; fi
+
+#------------------------------------------------------------------
+set +x
+if [ $VERBOSE = "YES" ] ; then
+  echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err
