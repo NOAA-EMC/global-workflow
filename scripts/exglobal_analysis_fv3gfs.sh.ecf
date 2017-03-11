@@ -151,6 +151,7 @@ export NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}
 export ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
 export ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
 export ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
+export ABIASe=${ABIASe:-${COMOUT}/${APREFIX}abias_int}
 export RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
 export GSISTAT=${GSISTAT:-${COMOUT}/${APREFIX}gsistat}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
@@ -227,9 +228,6 @@ export AEROINFO=${AEROINFO:-${FIX_GSI}/global_aeroinfo.txt}
 export SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
 export OBERROR=${OBERROR:-${FIX_GSI}/prepobs_errtable.global}
-
-#  Other variables.
-export ABIASe=${ABIASe:-satbias_int.out}
 
 # GSI namelist
 export SETUP=${SETUP:-""}
@@ -799,7 +797,7 @@ fi
 # Add this statement to release the forecast job once the GSI
 # step is completed.  Do not release forecast when RUN=enkf
 ##############################################################
-if [ $SENDECF = "YES" -a $RUN != "enkf" ]; then
+if [ $SENDECF = "YES" -a "$RUN" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
 
