@@ -35,7 +35,7 @@ export REMAP_GRID=${REMAP_GRID:-latlon}   ;#input grid type, lat-lon or gaussian
 
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${COMROT:-$PTMP/$LOGNAME/pr${PSLOT}}
+export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
 export BASEDIR=${BASEDIR:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/gfs_workflow.v15.0.0/para}
 export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
 
@@ -62,7 +62,7 @@ export RUN=gfs
 
 export DATA=${DATA:-${DATATMP:-$PTMP/$LOGNAME/${PSLOT}post}}                             
 export COMIN=$DATA
-export COMOUT=$COMROT
+export COMOUT=${MEMDIR:-$COMROT}
 if [ ! -s $DATA ]; then mkdir -p $DATA ; fi
 cd $DATA ||exit 8
 rm -f ${DATA}/*

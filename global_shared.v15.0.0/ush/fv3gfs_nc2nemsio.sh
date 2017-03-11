@@ -22,7 +22,7 @@ export fdiag=${fdiag:-none}               ;#specified forecast output hours
 
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${COMROT:-$PTMP/$LOGNAME/pr${PSLOT}}
+export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
 export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
 export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$BASE_GSM/exec/fv3nc2nemsio.x}
 #--------------------------------------------------

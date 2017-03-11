@@ -138,7 +138,8 @@ elif [ $machine = WCOSS_C ]; then
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
- tags=trunk_r88010
+ #tags=trunk_r88010
+ tags=EXP-cyc     
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
 elif [ $machine = THEIA ]; then
@@ -162,10 +163,12 @@ else
  exit
 fi
 
-ROTDIR=$PTMP/$LOGNAME/pr${PSLOT} 
-TOPDRG=$TOPDIR          
-TOPDRC=$TOPDIR         
-TOPDRA=$TOPDIR        
+ymd=`echo $CDATE | cut -c1-8`
+cycn=`echo $CDATE | cut -c9-10`
+month=`echo $CDATE |cut -c5-6`
+
+ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
+MEMDIR=$COMROT/${CDUMP}.$ymd/$cycn
 COMDIR=$TOPDIR                        
 COMROT=$ROTDIR
 DAYDIR=$COMROT
@@ -198,11 +201,8 @@ BASE_TROPCY=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
 #BASE_POST=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
 BASE_POST=$BASE_SVN/fv3gfs/post
 
-#BASE_PREP_POST=$BASE_SVN/obsproc/releases/obsproc_prep_post.$obsproc_prep_post_ver
-BASE_PREP_POST=$BASE_SVN/fv3gfs/obsproc_prep_post.$obsproc_prep_post_ver
 #BASE_PREP=$BASE_SVN/obsproc/releases/obsproc_prep.$obsproc_prep_ver
 BASE_PREP=$BASE_SVN/fv3gfs/obsproc_prep_RB-3.5.0 
-
 #BASE_PREP_GLOBAL=$BASE_SVN/obsproc/releases/obsproc_global.$obsproc_global_ver
 BASE_PREP_GLOBAL=$BASE_SVN/fv3gfs/obsproc_global.$obsproc_global_ver
 BASE_VERIF=$BASE_SVN/verif
@@ -236,7 +236,7 @@ FIT_DIR=$ARCDIR/fits                                    # Directory for SAVEFITS
 HORZ_DIR=$ARCDIR/horiz                                  # Directory for SAVEFITS output
 DATATMP='$STMP/$LOGNAME/$PSLOT$CDATE$CDUMP$CSTEP'
 eval TMPDIR=$DATATMP
-KEEPDATA=NO
+KEEPDATA=YES
 
 # ---------------------------
 # utilities and misc options
@@ -253,8 +253,6 @@ GRB2INDEX=${GRB2INDEX:-/nwprod2/grib_util.v1.0.1/exec/grb2index}
 GRBINDEX2=$GRB2INDEX
 windex=$GRBINDEX
 
-cycn=`echo $CDATE | cut -c9-10`
-month=`echo $CDATE |cut -c5-6`
 PMKR=$BASEDIR/bin/pmkr
 NCP="/bin/cp -p"
 INHERIT_ENV=NO
@@ -300,7 +298,7 @@ fseg=1                             # number of AM forecast segments for gfs
 FHCYC=24                             # Surface cycle calling interval
  
 LEVS=64                            # number of AM levels
-CASE1=C192                         # 1st segment resolution (0-240 hr)
+CASE1=C96                          # 1st segment resolution (0-240 hr)
 CASE2=C192                         # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
 CASE=$(eval echo \${CASE$nknd})
@@ -358,12 +356,7 @@ COMCOP='$DMPDIR/$CDATE/${CDUMP}'
 
 
 #----------------------------------------------------------
-mkdir -p $COMROT
-mkdir -p $COMDAY
-mkdir -p $ARCDIR
-mkdir -p $ARCDIR
-mkdir -p $FIT_DIR
-mkdir -p $HORZ_DIR
+mkdir -p $MEMDIR $COMROT $COMDAY $ARCDIR $ARCDIR $FIT_DIR $HORZ_DIR
 permission=755
 chgrp rstprod $ARCDIR
 chgrp rstprod $FIT_DIR

@@ -87,7 +87,7 @@ include $(MAKE_CONF)
 # Installing directory
 # --------------------
 
-  INSTALL_DIR = ./
+  INSTALL_DIR = ../../exec/
 
 # --------
 # Log file

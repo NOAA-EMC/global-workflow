@@ -11,7 +11,7 @@ set -ux
 ################################################################################
 
 set -a;. $CONFIG;set +a
-echo "-----end of $CONFIG ------------"
+echo "-----end of $CONFIG in $0 --------"
 echo
 
 export CKSH=${CKSH:-$(echo $CSTEP|cut -c-4)}

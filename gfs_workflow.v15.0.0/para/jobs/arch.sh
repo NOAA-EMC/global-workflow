@@ -17,9 +17,9 @@ echo
 export CKSH=$(echo $CSTEP|cut -c-4)
 export CKND=$(echo $CSTEP|cut -c5-)
 eval export DATA=$DATATMP
-export COMROTTMP=${COMROTTMP:-$COMROT}
+export COMROTTMP=${COMROTTMP:-${MEMDIR:-COMROT}}
 eval export COMROT=$COMROTTMP
-eval export COMDAY=${COMDAY:-$COMROT}
+eval export COMDAY=${COMDAY:-${MEMDIR:-COMROT}}
 export RESDIR=${RESDIR:-$COMROT/RESTART}
 export ARCH_TO_HPSS=${ARCH_TO_HPSS:-YES}
 export ARCH_TO_DISK=${ARCH_TO_DISK:-NO}

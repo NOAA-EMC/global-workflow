@@ -39,10 +39,10 @@ module gfs_nems_interface
   type nemsio_meta
      character(nemsio_charkind),   dimension(:),       allocatable :: recname
      character(nemsio_charkind),   dimension(:),       allocatable :: reclevtyp
-     character(16),                dimension(:),       allocatable :: variname
-     character(16),                dimension(:),       allocatable :: varr8name
-     character(16),                dimension(:),       allocatable :: aryiname
-     character(16),                dimension(:),       allocatable :: aryr8name
+     character(nemsio_charkind),   dimension(:),       allocatable :: variname
+     character(nemsio_charkind),   dimension(:),       allocatable :: varr8name
+     character(nemsio_charkind),   dimension(:),       allocatable :: aryiname
+     character(nemsio_charkind),   dimension(:),       allocatable :: aryr8name
      character(nemsio_charkind8)                                   :: gdatatype
      character(nemsio_charkind8)                                   :: modelname
      real(nemsio_realkind),        dimension(:,:,:),   allocatable :: vcoord
@@ -193,6 +193,8 @@ contains
          & allocate(meta_nemsio%reclev(meta_nemsio%nrec))
     if(.not. allocated(meta_nemsio%variname))                              &
          & allocate(meta_nemsio%variname(meta_nemsio%nmetavari))
+    if(.not. allocated(meta_nemsio%varival))                               &
+         & allocate(meta_nemsio%varival(meta_nemsio%nmetavari))
     if(.not. allocated(meta_nemsio%aryiname))                              &
          & allocate(meta_nemsio%aryiname(meta_nemsio%nmetaaryi))
     if(.not. allocated(meta_nemsio%aryilen))                               &
@@ -242,6 +244,12 @@ contains
 
           ! Loop through local variable
 
+          meta_nemsio%variname(1) = 'LEVS'
+          meta_nemsio%varival(1) = meta_nemsio%dimz
+          meta_nemsio%variname(2) = 'NVCOORD'
+          meta_nemsio%varival(2) = 2
+          meta_nemsio%variname(3) = 'IVS'
+          meta_nemsio%varival(3) = 200509
           do k = 1, meta_nemsio%dimz
 
              ! Define local variables
@@ -299,10 +307,6 @@ contains
          & deallocate(meta_nemsio2d%aryilen)
     if(allocated(meta_nemsio2d%vcoord))                                      &
          & deallocate(meta_nemsio2d%vcoord)
-    if(allocated(meta_nemsio2d%aryival))                                     &
-         & deallocate(meta_nemsio2d%aryival)
-    if(allocated(meta_nemsio2d%aryilen))                                     &
-         & deallocate(meta_nemsio2d%aryilen)
     if(allocated(meta_nemsio2d%lon))                                         &
          & deallocate(meta_nemsio2d%lon)
     if(allocated(meta_nemsio2d%lat))                                         &
@@ -323,10 +327,6 @@ contains
          & deallocate(meta_nemsio3d%aryilen)
     if(allocated(meta_nemsio3d%vcoord))                                      &
          & deallocate(meta_nemsio3d%vcoord)
-    if(allocated(meta_nemsio3d%aryival))                                     &
-         & deallocate(meta_nemsio3d%aryival)
-    if(allocated(meta_nemsio3d%aryilen))                                     &
-         & deallocate(meta_nemsio3d%aryilen)
     if(allocated(meta_nemsio3d%lon))                                         &
          & deallocate(meta_nemsio3d%lon)
     if(allocated(meta_nemsio3d%lat))                                         &
@@ -374,11 +374,13 @@ contains
          & idrt=meta_nemsio2d%idrt,                                          &
          & ncldt=meta_nemsio2d%ncldt,                                        &
          & idvc=meta_nemsio2d%idvc,                                          &
+         & idvm=meta_nemsio2d%idvm,                                          &
+         & idsl=meta_nemsio2d%idsl,                                          &
          & nfhour=meta_nemsio2d%fhour,                                       &
          & nfminute=meta_nemsio2d%nfminute,                                  &
          & nfsecondn=meta_nemsio2d%nfsecondn,                                &
          & nfsecondd=meta_nemsio2d%nfsecondd,                                &
-         & extrameta=.true.,                                               &
+         & extrameta=.true.,                                                 &
          & nmetaaryi=meta_nemsio2d%nmetaaryi,                                &
          & recname=meta_nemsio2d%recname,                                    &
          & reclevtyp=meta_nemsio2d%reclevtyp,                                &
@@ -390,11 +392,11 @@ contains
     write(suffix,500) meta_nemsio3d%nfhour
     filename = trim(adjustl(datapathout3d))//suffix
     call nemsio_open(gfile3d,trim(adjustl(filename)),'write',                &
-         & iret=nemsio_iret,                                               &
+         & iret=nemsio_iret,                                                 &
          & modelname=trim(adjustl(meta_nemsio3d%modelname)),                 &
          & version=meta_nemsio3d%version,                                    &
          & gdatatype=meta_nemsio3d%gdatatype,                                &
-         & jcap=meta_nemsio3d%jcap,                                        &
+         & jcap=meta_nemsio3d%jcap,                                          &
          & dimx=meta_nemsio3d%dimx,                                          &
          & dimy=meta_nemsio3d%dimy,                                          &
          & dimz=meta_nemsio3d%dimz,                                          &
@@ -404,11 +406,13 @@ contains
          & idrt=meta_nemsio3d%idrt,                                          &
          & ncldt=meta_nemsio3d%ncldt,                                        &
          & idvc=meta_nemsio3d%idvc,                                          &
+         & idvm=meta_nemsio3d%idvm,                                          &
+         & idsl=meta_nemsio3d%idsl,                                          &
          & nfhour=meta_nemsio3d%fhour,                                       &
          & nfminute=meta_nemsio3d%nfminute,                                  &
          & nfsecondn=meta_nemsio3d%nfsecondn,                                &
          & nfsecondd=meta_nemsio3d%nfsecondd,                                &
-         & extrameta=.true.,                                               &
+         & extrameta=.true.,                                                 &
          & nmetaaryi=meta_nemsio3d%nmetaaryi,                                &
          & recname=meta_nemsio3d%recname,                                    &
          & reclevtyp=meta_nemsio3d%reclevtyp,                                &
@@ -416,6 +420,9 @@ contains
          & aryiname=meta_nemsio3d%aryiname,                                  &
          & aryilen=meta_nemsio3d%aryilen,                                    &
          & aryival=meta_nemsio3d%aryival,                                    &
+         & variname=meta_nemsio3d%variname,                                  &
+         & varival=meta_nemsio3d%varival,                                    &
+         & nmetavari=meta_nemsio3d%nmetavari,                                &
          & vcoord=meta_nemsio3d%vcoord)
 
     !=====================================================================

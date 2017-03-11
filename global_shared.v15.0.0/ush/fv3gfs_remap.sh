@@ -25,8 +25,8 @@ export GG=${master_grid:-0p25deg}         ;#1deg 0p5deg 0p25deg 0p125deg
 
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${COMROT:-$PTMP/$LOGNAME/pr${PSLOT}}                  
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
+export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}                  
+export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gfs/fv3gfs/global_shared.v15.0.0}
 export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
 
 #--------------------------------------------------
