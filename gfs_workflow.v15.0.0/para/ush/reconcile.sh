@@ -55,7 +55,7 @@ elif [ $machine = WCOSS -o $machine = WCOSS_C ] ; then
   DMPDIR=${DMPDIR:-$rdir/shared/glopara}
   memory_node=${memory_node:-28000}
   USE_HPSS=YES
-  POE=NO
+  POE=${POE:-NO}
   PTMP=${PTMP:-/ptmpp1}
   STMP=${STMP:-/stmpp1}
   pe_node=${pe_node:-16}
@@ -1114,7 +1114,6 @@ PRPC=${PRPC:-$BASE_PREP_GLOBAL/parm/prepobs_prepdata.$CDUMP.parm}
 RELOX=${RELOX:-$TROPCYDIR/sorc/relocate_mv_nvortex.fd/relocate_mv_nvortex}
 PRPX=${PRPX:-$BASE_PREP/sorc/prepobs_prepdata.fd/prepobs_prepdata}
 SYNDX=${SYNDX:-$BASE_PREP/sorc/syndat_syndata.fd/syndat_syndata}
-PSTX=${PSTX:-$BASE_PREP_POST/sorc/global_postevents.fd/global_postevents}
 AQCX=${AQCX:-$BASE_PREP/sorc/prepobs_prepacqc.fd/prepobs_prepacqc}
 CQCX=${CQCX:-$BASE_PREP/sorc/prepobs_cqcbufr.fd/prepobs_cqcbufr}
 
@@ -1228,7 +1227,6 @@ OVERPARMEXEC=${OVERPARMEXEC:-$BASEDIR/exec/overparm_grib}
 # VRFY STEP CHANGES
 # Scripts and variables
 
-POSTEVENTSSH=${POSTEVENTSSH:-$BASE_PREP_POST/ush/global_postevents.sh}
 USHPREV=${USHPREV:-$PREPDIR/ush}
 
 # Executables

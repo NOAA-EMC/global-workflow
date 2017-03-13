@@ -18,8 +18,8 @@ module load craype-haswell
 module load prod_envir
 module load prod_util/1.0.4
 module unload grib_util/1.0.3
-module use /usrx/local/nceplibs/grib_util.v1.0.4/modulefiles
-module load grib_util/1.0.4
+module use /gpfs/hps/nco/ops/nwtest/modulefiles
+module load grib_util/1.0.5
 module use /usrx/local/nceplibs/util_shared.v1.0.4/modulefiles
 module load util_shared/1.0.4
 

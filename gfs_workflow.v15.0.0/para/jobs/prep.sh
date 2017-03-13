@@ -78,10 +78,12 @@ if [ $machine = IBMP6 ] ; then
  export NPROCS=$(($(echo $LOADL_PROCESSOR_LIST|wc -w)+0))
 elif [ $machine = WCOSS ] ; then
  export NPROCS=${NPROCS_PREP:-8}
- export BACK=YES
+ export POE=${POE:-NO}
+ export BACK=${BACK:-YES}
 elif [ $machine = WCOSS_C ]; then
  export NPROCS=${NPROCS_PREP:-8}
- export BACK=YES
+ export POE=${POE:-NO}
+ export BACK=${BACK:-YES}
  . $MODULESHOME/init/sh
  module load cfp-intel-sandybridge
 else
@@ -105,6 +107,8 @@ export tmmark=tm00
 export cyc=$(echo $CDATE|cut -c9-10)
 export DUMPROCESSSH=${DUMPROCESSSH:-"echo no special preproccessing"}
 export PREPROCESSSH=${PREPROCESSSH:-"echo no special preproccessing"}
+export POSTPREPSH=${POSTPREPSH:-"echo no special post prep processing"}
+export DO_POSTPREP=${DO_POSTPREP:-NO}
 gcycl=$(echo $GDATE|cut -c9-10)
 gdump=$(echo $GDUMP|tr '[a-z]' '[A-Z]')
 export FHOUT_GES=$(eval echo \${FHOUTFCST$gcycl$gdump:-03}|cut -f1 -d,)
@@ -130,19 +134,14 @@ if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
 
 $PCOP $CDATE/$CDUMP/$CSTEP/OPTI $COMROT $DATA <$RLIST
 
-#if [ $l4densvar = .true. ]; then
-  ln ${SIGOSUF}f03.$GDUMP.$GDATE sgm3prep
-  ln ${SIGOSUF}f04.$GDUMP.$GDATE sgm2prep
-  ln ${SIGOSUF}f05.$GDUMP.$GDATE sgm1prep
-  ln ${SIGOSUF}f06.$GDUMP.$GDATE sgesprep
-  ln ${SIGOSUF}f07.$GDUMP.$GDATE sgp1prep
-  ln ${SIGOSUF}f08.$GDUMP.$GDATE sgp2prep
-  ln ${SIGOSUF}f09.$GDUMP.$GDATE sgp3prep
-#else
-# ln ${SIGOSUF}f03.$GDUMP.$GDATE sgm3prep
-# ln ${SIGOSUF}f06.$GDUMP.$GDATE sgesprep
-# ln ${SIGOSUF}f09.$GDUMP.$GDATE sgp3prep
-#fi
+ln ${SIGOSUF}f03.$GDUMP.$GDATE sgm3prep
+ln ${SIGOSUF}f04.$GDUMP.$GDATE sgm2prep
+ln ${SIGOSUF}f05.$GDUMP.$GDATE sgm1prep
+ln ${SIGOSUF}f06.$GDUMP.$GDATE sgesprep
+ln ${SIGOSUF}f07.$GDUMP.$GDATE sgp1prep
+ln ${SIGOSUF}f08.$GDUMP.$GDATE sgp2prep
+ln ${SIGOSUF}f09.$GDUMP.$GDATE sgp3prep
+
 export pgb_typ4prep=${pgb_typ4prep:-$flag_pgb}
 
 if [ $GRIBVERSION = grib2 ]; then
@@ -158,23 +157,16 @@ else
    export pgb_zero=""
 fi
 
-#if [ $l4densvar = .true. ]; then
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}00.$GDUMP.$GDATE${pgb_suffix} pgm6prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}01.$GDUMP.$GDATE${pgb_suffix} pgm5prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}02.$GDUMP.$GDATE${pgb_suffix} pgm4prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}03.$GDUMP.$GDATE${pgb_suffix} pgm3prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}04.$GDUMP.$GDATE${pgb_suffix} pgm2prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}05.$GDUMP.$GDATE${pgb_suffix} pgm1prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}06.$GDUMP.$GDATE${pgb_suffix} pgesprep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}07.$GDUMP.$GDATE${pgb_suffix} pgp1prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}08.$GDUMP.$GDATE${pgb_suffix} pgp2prep
-  ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}09.$GDUMP.$GDATE${pgb_suffix} pgp3prep
-#else
-# ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}00.$GDUMP.$GDATE${pgb_suffix} pgm6prep
-# ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}03.$GDUMP.$GDATE${pgb_suffix} pgm3prep
-# ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}06.$GDUMP.$GDATE${pgb_suffix} pgesprep
-# ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}09.$GDUMP.$GDATE${pgb_suffix} pgp3prep
-#fi
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}00.$GDUMP.$GDATE${pgb_suffix} pgm6prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}01.$GDUMP.$GDATE${pgb_suffix} pgm5prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}02.$GDUMP.$GDATE${pgb_suffix} pgm4prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}03.$GDUMP.$GDATE${pgb_suffix} pgm3prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}04.$GDUMP.$GDATE${pgb_suffix} pgm2prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}05.$GDUMP.$GDATE${pgb_suffix} pgm1prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}06.$GDUMP.$GDATE${pgb_suffix} pgesprep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}07.$GDUMP.$GDATE${pgb_suffix} pgp1prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}08.$GDUMP.$GDATE${pgb_suffix} pgp2prep
+ln ${pgb_prefix}${pgb_typ4prep}${pgb_zero}09.$GDUMP.$GDATE${pgb_suffix} pgp3prep
 
 $PCOP $CDATE/$CDUMP/$CSTEP/DMPI $COMDMP $DATA <$RLIST
 $PCOP $CDATE/$CDUMP/$CSTEP/DMPG $COMDMPG $DATA <$RLIST
@@ -210,6 +202,10 @@ if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
 
   [ ! -s ${COMSP}tropcy_relocation_status.$tmmark ]  &&  \
     echo "RECORDS PROCESSED" > ${COMSP}tropcy_relocation_status.$tmmark
+
+#### Copy this file to COMROT for prod-look-alike generation  
+ #### cp ${COMSP}tropcy_relocation_status.$tmmark ${COMROT}
+  cp ${COMSP}tropcy_relocation_status.$tmmark ${COMROT}/tropcy_relocation_status.$tmmark.$CDUMP.$CDATE
 
 fi
 
@@ -257,6 +253,13 @@ export DO_QC=${DO_QC:-YES}        # IF NO, programs PREPOBS_PREPACQC, PREPOBS_AC
                                   # should be set to NO only as a last resort!!!
 
 if [[ "$DO_MAKEPREPBUFR" = 'YES' ]]; then
+
+  if [ $NEMSIO_IN = .true. ]; then
+    ln sgm3prep atmgm3.nemsio
+    ln sgesprep atmges.nemsio
+    ln sgp3prep atmgp3.nemsio
+  fi
+
   echo $(date) EXECUTING $MAKEPREPBUFRSH $CDATE >&2
   $MAKEPREPBUFRSH $CDATE
 rc=$?
@@ -288,6 +291,7 @@ if [[ $NST_GSI -gt 0 ]]; then
 
    cat $SFCSHPBF $TESACBF $BATHYBF $TRKOBBF > $NSSTBF
 fi
+
 ################################################################################
 # Copy out restart and output files
   
@@ -297,6 +301,12 @@ if [[ "$DO_MAKEPREPBUFR" = 'YES' ]]; then
   mv prepda.$cycle prepqc.$CDUMP.$CDATE
 else
   mv $PREPBUFRFILE prepqc.$CDUMP.$CDATE
+fi
+
+if [[ "$DO_POSTPREP" = 'YES' ]]; then
+   export PRPI=prepqc.$CDUMP.$CDATE
+   $POSTPREPSH
+   mv $PRPI.unrestricted prepqc_nr.$CDUMP.$CDATE
 fi
 
 chmod 640  prepqc.$CDUMP.$CDATE

@@ -534,10 +534,11 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
    export LATB=${LATB:-880}
    export LONB=${LONB:-1760}
    export STARTHOUR=${STARTHOUR:-00}
-   export ENDHOUR=${ENDHOUR:-180}
+   export ENDHOUR=${ENDHOUR:-240}
    export jn=${PSLOT}${CDATE}${CDUMP}bufrsnd
    export out=$COMROT/${jn}.dayfile
    export SENDCOM=YES
+   export HOMEgsm=$BASE_GSM
    mac=`hostname |cut -c1`
    if [ $mac = g -o $mac = t ]; then
       export launcher=mpirun.lsf
@@ -549,10 +550,10 @@ if [ $CDUMP = gfs -a $DO_PRODNAMES = YES -a $GENBUFRSND = YES ];then
       $SUB -a $ACCOUNT -e machine=$machine,GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,KMP_STACKSIZE=$KMP_STACKSIZE,launcher=$launcher,PARMbufr=$PARMbufr,CDATE=$CDATE,COMROT=$COMROT,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP -q $CUE2RUN -p 3/2/g2  -r 36000/3/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
    elif [ $machine = WCOSS_C ] ; then
       export launcher=aprun
-      export snd_nprocs=5
-      export snd_ptile=1
-      export snd_nthreads=24
-      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,HOMEbufr=$HOMEbufr,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP,launcher=$launcher,snd_nprocs=$snd_nprocs,snd_ptile=$snd_ptile,snd_nthreads=$snd_nthreads,machine=$machine' -m $machine -q $CUE2RUN -p 5/5/N  -r 3072/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
+      export snd_nprocs=12
+      export snd_ptile=6
+      export snd_nthreads=1
+      $SUB -a $ACCOUNT -e 'GFLUX=$GFLUX,GBUFR=$GBUFR,TOCSBUFR=$TOCSBUFR,HOMEbufr=$HOMEbufr,PARMbufr=$PARMbufr,CDATE=$CDATE,COMIN=$COMIN,COMOUT=$COMOUT,COMAWP=$COMAWP,pcom=$pcom,DATA=$DATA,BASEDIR=$BASEDIR,HOMEgsm=$BASE_GSM,JCAP=$JCAP,LEVS=$LEVS,LATB=$LATB,LONB=$LONB,STARTHOUR=$STARTHOUR,ENDHOUR=$ENDHOUR,FIXGLOBAL=$FIXGLOBAL,SENDCOM=$SENDCOM,STMP=$STMP,launcher=$launcher,snd_nprocs=$snd_nprocs,snd_ptile=$snd_ptile,snd_nthreads=$snd_nthreads,machine=$machine' -m $machine -q $CUE2RUN -p 5/5/N  -r 3072/16/1 -t 3:00:00 -j $jn -o $out $POSTSNDSH
    fi
 
    rdate=$($NDATE -$HRKBUFRSND $CDATE)

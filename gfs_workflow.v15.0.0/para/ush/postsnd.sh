@@ -61,7 +61,9 @@ module load prod_util/1.0.5
 module load grib_util/1.0.3
 module load util_shared/1.0.3
 module load gempak/7.3.0
-
+module load iobuf
+##export IOBUF_PARAMS="sigf*:size=128M:count=20:prefetch=0:verbose"
+export IOBUF_PARAMS='sigf*:size=128M:count=20:prefetch=0:verbose,gfs_collectiv*:size=128M:count=2:prefetch=0:verbose,*.snd:size=128M:count=30:prefetch=0:verbose'
 #export HOMEbufr=/nw${envir}
 export HOMEbufr=${HOMEbufr:-$BASEDIR}
 export EXECbufr=$HOMEbufr/exec
@@ -83,7 +85,7 @@ export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
 export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
 export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.${global_shared_ver}}
-export FIXgsm=${HOMEgsm:-$HOMEgsm/fix/fix_am}
+export FIXgsm=$HOMEgsm/fix/fix_am
 
 
 # Run setup to initialize working directory and utility scripts
