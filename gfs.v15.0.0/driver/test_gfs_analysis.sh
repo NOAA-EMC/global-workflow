@@ -23,7 +23,7 @@ export ntasks=480
 export ptile=2
 export threads=12
 
-export CDATE=2017011900
+export CDATE=2017030812
 
 
 #############################################################
@@ -47,7 +47,7 @@ export global_shared_ver=v14.1.0
 export crtm_ver=2.2.4
 export prod_envir_ver=1.0.1
 export grib_util_ver=1.0.3
-export prod_util_ver=1.0.5
+export prod_util_ver=1.0.6
 export util_shared_ver=1.0.3
 
 

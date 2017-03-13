@@ -44,7 +44,7 @@ do
    fi
 done
 
-ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs${FINT}} fort.8
+ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 ln -sf gfs12.dat fort.17
 ln -sf metflxmrf fort.18
 
@@ -67,12 +67,17 @@ mkdir -p $COMOUT/bufr.${cycle}
 cat << EOF > gfsparm
  &NAMMET
   iromb=0,maxwv=$JCAP,levs=$LEVS,makebufr=$bufrflag,
-  dird="$COMOUT/bufr.${cycle}/bufr$FINT",
+  dird="$COMOUT/bufr.${cycle}/bufr",
   nstart=$FSTART,nend=$FEND,nint=$FINT,nsfc=80,f00=$f00flag,
 /
 EOF
 
 hh=$FSTART
+   if test $hh -lt 100
+   then
+      hh1=`echo "${hh#"${hh%??}"}"`
+      hh=$hh1
+   fi
 while  test $hh -le $FEND
 do  
    if test $hh -lt 100
@@ -93,13 +98,13 @@ do
 done  
 
 #  define input BUFR table file.
-ln -sf $PARMbufrsnd/bufr_gfs${FINT}_class1.tbl fort.1
-ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs${FINT}} fort.8
+ln -sf $PARMbufrsnd/bufr_gfs_class1.tbl fort.1
+ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 #ln -sf metflxmrf fort.12
 ln -sf $SIGLEVEL fort.13
 
 #startmsg
-export APRUN=${APRUN:-'aprun -n 1 -N 1 -j 1'}
+export APRUN=${APRUN:-'aprun -n 12 -N 6 -j 1'}
 ${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 

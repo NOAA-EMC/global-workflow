@@ -68,34 +68,41 @@ set -x
 export FORM=$PDY$cyc
 export TIME=$PDY
 
-# This is an ush script version 06/17/2014
-# DUMP=${NWROOTp1}/ush/dumpjb
-# DUMP=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_hourly.20160914/dumpjb
-
-#
-#  New ush script version v3.2.1 08/10/2015
+#  NOTE:
+# These two dumpjb file wil NOT work on CRAY
+# - old dumpjb file in 06/17/2014
+# DUMP=${NWROOTp1}/ush/dumpjb --- version 06/17/2014
+# - version v3.2.1 08/10/2015
 #  DUMP=${NWROOTp1}/obsproc_dump.v3.2.1/ush/dumpjb
 
-# $DUMP 2016091900 1.5  synop
-# export err=$?
-# if [ "$err" -ne 0 ]
-# then
-#   echo "###  No synop data for synop.${PDY}${cyc}! ###"
-#   echo "###  Stoping execution of GENDATA          ###"
-#   err_chk
-#fi
+#
+#  NOTE TO SPA:
+#  When SPA have installed obsproc_dump.v4.0.0
+#  The following lines need to modify: 
+#
+export HOMEobsproc_shared_bufr_dumplist=$NWROOTp2/obsproc_shared/bufr_dumplist.v1.3.0
+export HOMEobsproc_dump=/u/Diane.Stokes/noscrub/workspace/obsproc_dump.tkt-351.crayport
+export TMPDIR=$DATA
 
-#for TYPE in metar ships lcman mbuoy dbuoy
-#do
-#   if [ ! -f ${COMINhourly} ]
+$HOMEobsproc_dump/ush/dumpjb $PDY$cyc 1.5 synop
+export err=$?
+if [ "$err" -ne 0 ]
+then
+   echo "###  No synop data for synop.${PDY}${cyc}! ###"
+   echo "###  Stoping execution of GENDATA          ###"
+   err_chk
+fi
+
+for TYPE in metar ships lcman mbuoy dbuoy
+do
+#   if [ ! -f ${COMINhourly}/$TYPE.$PDY$cyc.bufr ]
 #   then
-#      $DUMP 2016091900 0.5 $TYPE
+      $HOMEobsproc_dump/ush/dumpjb $PDY$cyc 0.5 $TYPE
 #   else
-#      cp {COMINhourly}  $TYPE.$PDY$cyc
+#      cp ${COMINhourly}/$TYPE.$PDY$cyc.bufr $DATA/$TYPE.$PDY$cyc 
 #   fi
-# done
+done
 
-# cp /gpfs/hps/emc/global/noscrub/Boi.Vuong/prod_data_20160920/* .
 export pgm=gendata
 . prep_step
 
@@ -111,7 +118,7 @@ export FORT17="graph_pillist1"
 export FORT52="NHPLOT"
 
 startmsg
-${GENDATA} <<EOF 2>errfile
+${GENDATA} >>$pgmout <<EOF 2>errfile
 $PDY$cyc
   50 -50  00 360 006 006
 EOF
@@ -137,7 +144,11 @@ cp ${COMIN}/gfs.$cycle.pgrb2.1p00.anl .
 $CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
 $COPYGB -xg3 gfs.$cycle.tmppgrbanl gfs.$cycle.pgrbanl
 ${GRBINDEX} gfs.$cycle.pgrbanl gfs.$cycle.pgrbianl
-cp $COMIN/gfs.$cycle.syndata.tcvitals.tm00 tcvitals
+if [ -f $COMIN/gfs.$cycle.syndata.tcvitals.tm00 ] ; then
+   cp $COMIN/gfs.$cycle.syndata.tcvitals.tm00 tcvitals
+else
+   touch tcvitals
+fi
 
 export pgm=trpsfcmv
 . prep_step
@@ -285,8 +296,7 @@ export FORT55="putlab.55"
 export FORT81="tropc${cycle}"."${cyc}"
 
 startmsg
-# ${SIXBITB2} >> $pgmout 2>errfile
-${SIXBITB2}
+${SIXBITB2} >> $pgmout 2>errfile
 export err=$?;err_chk
 
  for KEYW in GDTROPC GDTROPE GDTROPW GDTROP_g

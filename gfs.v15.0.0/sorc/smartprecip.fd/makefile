@@ -3,7 +3,8 @@ SHELL=/bin/sh
 ###SRCS=SMARTPRECIP.f90
 OBJS=SMARTPRECIP.o
 
-FC =   ifort -convert big_endian -g -traceback	
+#FC =   ifort -convert big_endian -g -traceback	
+FC =   ftn -convert big_endian -g -traceback
 
 #### LIBS = -L/usr/local/lib ${W3EMC_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4}   
 LIBS = ${W3EMC_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} ${IP_LIB4}

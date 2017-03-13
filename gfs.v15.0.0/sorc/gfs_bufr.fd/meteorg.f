@@ -1,6 +1,6 @@
       subroutine meteorg(npoint,rlat,rlon,istat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &             iromb,maxwv,kwskip,levso,levs,im,jm,kdim)
+     &       iromb,maxwv,kwskip,levso,levs,im,jm,kdim,landwater)
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !                .      .    .                                       .
@@ -56,7 +56,9 @@
 !      type(sigio_data):: sigdata
       type(nemsio_gfile) :: gfile
       type(nemsio_gfile) :: ffile
+      type(nemsio_gfile) :: ffile2
       integer :: kwskip,iromb,maxwv,nfile,npoint,levso,levs,kdim
+      integer :: nfile1
       integer :: i,j,im,jm,jj,idum,jdum,idvc,idsl
       integer,parameter :: nvcoord=2 
       real :: scalar(kwskip,2+levs*2)
@@ -69,7 +71,9 @@
       real*8 :: data(6*levso+24)
       real :: fhour,pp,ppn,qs,qsn,esn,es,psfc,ppi,dtemp,iwx,nd
       real :: t,q,u,v,td,tlcl,plcl,qw,tw,xlat,xlon,iossil,dlon
-      real :: dx,dy,zhour
+      real :: dx,dy,zhour,zhour2
+      integer,dimension(npoint):: landwater
+      integer,dimension(im,jm):: lwmask, apcp, cpcp
       real,dimension(npoint,2+levso*3):: grids,gridsi
       real,dimension(npoint) :: rlat,rlon,pmsl,ps,psn,elevstn
       real,dimension(im*jm) :: dum1d,dum1d2
@@ -96,6 +100,9 @@
       logical, parameter :: debugprint=.false.
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
+      real :: ap
+      integer :: nf1, fint
+      character*150 :: fngrib2
 
       nsig = 11
       nsfc = 12
@@ -131,6 +138,7 @@
      &        idate(3)*100 + idate(1)
       print *, 'jdate = ', jdate
       print *, 'Total number of stations = ', npoint
+      ap = 0.0
       do j=1,jm
         do i=1,im
           gdlat(i,j)=dum1d((j-1)*im+i)
@@ -279,8 +287,15 @@
 ! read surface data
 !      read(nsfc,err=910) sfc
 ! open nemsio flux file
-      fngrib='flxf00'
-      if(nf.lt.10) then
+       if ( nf .le. 120 ) then
+      nf1 = nf - 1
+      else
+      nf1 = nf - 3
+       endif
+       if ( nf .eq. 0 ) nf1=0
+      if(nf.eq.0) then
+        fngrib='flxf00'
+      elseif(nf.lt.10) then
         fngrib='flxf0'
         write(fngrib(6:6),'(i1)') nf
       elseif(nf.lt.100) then
@@ -290,13 +305,44 @@
         fngrib='flxf'
         write(fngrib(5:7),'(i3)') nf
       endif
+      if(nf1.eq.0) then
+        fngrib2='flxf00'
+      elseif(nf1.lt.10) then
+        fngrib2='flxf0'
+        write(fngrib2(6:6),'(i1)') nf1
+      elseif(nf1.lt.100) then
+        fngrib2='flxf'
+        write(fngrib2(5:6),'(i2)') nf1
+      else
+        fngrib2='flxf'
+        write(fngrib2(5:7),'(i3)') nf1
+      endif
       call nemsio_open(ffile,trim(fngrib),'read',iret=iret)
+      call nemsio_open(ffile2,trim(fngrib2),'read',iret=iret)
+       print*, 'open file1,2= ', trim(fngrib),'  ', trim(fngrib2)
       if ( iret /= 0 ) then
         print*,"fail to open nems flux file";stop
       endif
 ! get hour when buket was last emptied
       call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
-      if(debugprint)print*,'sample zhour= ',zhour
+      call nemsio_getheadvar(ffile2,'zhour',zhour2,iret=iret)
+CC      if(debugprint)print*,'sample zhour= ',zhour
+! land water mask
+      call nemsio_readrecvw34(ffile,'land','sfc',1,data=dum1d,iret=iret)
+      if (iret /= 0) then
+        print*,'land mask not found'
+      else
+        do j=1,jm
+          jj= (j-1)*im
+          do i=1,im
+            lwmask(i,j) = dum1d(jj+i)
+          end do
+        end do
+        if(debugprint)
+     +   print*,'sample land mask= ',lwmask(im/2,jm/4),
+     +          lwmask(im/2,jm/3)
+      end if
+
 ! surface T
       call nemsio_readrecvw34(ffile,'tmp','sfc',1,data=dum1d,iret=iret)
       if (iret /= 0) then
@@ -416,32 +462,92 @@
       end if
 
 ! total precip
-      call nemsio_readrecvw34(ffile,'prate_ave','sfc',
+       if ( nf .le. 120 ) then
+      fint = 1
+      else
+      fint = 3
+       endif
+      if ( mod(nf1,6) .eq. 0) then
+         do j=1,jm
+          do i=1,im
+            apcp(i,j) = 0.0
+          end do
+         end do
+       print*, 'mod(nf1,6)= ', nf1
+      print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2
+      else
+      call nemsio_readrecvw34(ffile2,'prate_ave','sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'total precip not found'
       else
+        if(debugprint)
+     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & '1sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
+     +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            dum2d(i,j,9) = dum1d(jj+i)*3600.*(fhour-zhour)
+            apcp(i,j) = dum1d(jj+i)*3600.*(fhour-zhour2-fint)
           end do
-        end do
-        if(debugprint)
-     +   print*,'sample total precip= ',dum2d(im/2,jm/4,9),
-     +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
-      end if
-
-! convective precip
-      call nemsio_readrecvw34(ffile,'cprat_ave','sfc',
+         end do
+       end if
+       end if
+      call nemsio_readrecvw34(ffile,'prate_ave','sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
-        print*,'latent heat flux not found'
+        print*,'prate_ave not found'
+      else
+        if(debugprint)
+     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & '2sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
+     +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
+        do j=1,jm
+          jj= (j-1)*im
+          do i=1,im
+            ap = 3600.*(fhour-zhour)
+            dum2d(i,j,9) = dum1d(jj+i)*ap - apcp(i,j)
+          end do
+        end do
+      end if
+
+        if(debugprint)
+     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & 'sample total precip= ',dum2d(im/2,jm/4,9),
+     +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
+
+! convective precip
+      if ( mod(nf1,6) .eq. 0) then
+         do j=1,jm
+          do i=1,im
+            cpcp(i,j) = 0.0
+          end do
+         end do
+       print*, 'cpcp mod(nf1,6)= ', nf1
+      else
+      call nemsio_readrecvw34(ffile2,'cprat_ave','sfc',
+     & 1,data=dum1d,iret=iret)
+      if (iret /= 0) then
+        print*,'convective precip not found'
       else
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            dum2d(i,j,10) = dum1d(jj+i)*3600.*(fhour-zhour)
+            cpcp(i,j) = dum1d(jj+i)*3600.*(fhour-zhour2-fint)
+          end do
+        end do
+      end if
+      end if
+      call nemsio_readrecvw34(ffile,'cprat_ave','sfc',
+     & 1,data=dum1d,iret=iret)
+      if (iret /= 0) then
+        print*,'cprat_ave not found'
+      else
+        do j=1,jm
+          jj= (j-1)*im
+          do i=1,im
+            ap = 3600.*(fhour-zhour)
+            dum2d(i,j,10) = dum1d(jj+i)*ap - cpcp(i,j)
           end do
         end do
       end if
@@ -506,6 +612,7 @@
       end if
 
       call nemsio_close(ffile,iret=iret)
+      call nemsio_close(ffile2,iret=iret)
 
 !
 !  find nearest neighbor 
@@ -518,23 +625,148 @@
 
         do j=1,jm-1
          do i=1,im-1
-          if((rdum>=gdlon(i,j) .and. rdum<gdlon(i+1,j)) .and.
-     +    (rlat(np)<=gdlat(i,j).and.rlat(np)>gdlat(i,j+1)))then
-            idum=i
-            jdum=j
+          if((rdum>=gdlon(i,j) .and. rdum<=gdlon(i+1,j)) .and.
+     +    (rlat(np)<=gdlat(i,j).and.rlat(np)>=gdlat(i,j+1)) ) then
+              if(landwater(np) .eq. 2)then
+               idum=i
+               jdum=j
             exit
-          end if 
+              else if(landwater(np) .eq. lwmask(i,j))then
+               idum=i
+               jdum=j      !1
+            exit
+              else if(landwater(np) .eq. lwmask(i+1,j))then
+               idum=i+1
+               jdum=j      ! 2 
+            exit
+              else if(landwater(np) .eq. lwmask(i-1,j))then
+               idum=i-1
+               jdum=j      ! 3
+            exit
+              else if(landwater(np) .eq. lwmask(i,j+1))then
+               idum=i
+               jdum=j+1    ! 4
+            exit
+              else if(landwater(np) .eq. lwmask(i,j-1))then
+               idum=i
+               jdum=j-1    ! 5
+            exit
+              else if(landwater(np) .eq. lwmask(i+1,j-1))then
+               idum=i+1
+               jdum=j-1    ! 6
+            exit
+              else if(landwater(np) .eq. lwmask(i+1,j+1))then
+               idum=i+1
+               jdum=j+1    ! 7
+            exit
+              else if(landwater(np) .eq. lwmask(i-1,j+1))then
+               idum=i-1
+               jdum=j+1    ! 8
+            exit
+              else if(landwater(np) .eq. lwmask(i-1,j-1))then
+               idum=i-1
+               jdum=j-1    ! 9
+            exit
+              else if(landwater(np) .eq. lwmask(i,j+2))then
+               idum=i
+               jdum=j+2    !   10
+            exit
+              else if(landwater(np) .eq. lwmask(i+2,j))then
+               idum=i+2
+               jdum=j      !11
+            exit
+              else if(landwater(np) .eq. lwmask(i,j-2))then
+               idum=i
+               jdum=j-2     !  12
+            exit
+              else if(landwater(np) .eq. lwmask(i-2,j))then
+               idum=i-2
+               jdum=j       !13
+            exit
+              else if(landwater(np) .eq. lwmask(i-2,j+1))then
+               idum=i-2
+               jdum=j+1      ! 14
+            exit
+              else if(landwater(np) .eq. lwmask(i-1,j+2))then
+               idum=i-1
+               jdum=j+2      !15
+            exit
+              else if(landwater(np) .eq. lwmask(i+1,j+2))then
+               idum=i+1
+               jdum=j+2      !16
+            exit
+              else if(landwater(np) .eq. lwmask(i+2,j+1))then
+               idum=i+2
+               jdum=j+1      !17
+            exit
+              else if(landwater(np) .eq. lwmask(i+2,j-1))then
+               idum=i+2
+               jdum=j-1      !18
+            exit
+              else if(landwater(np) .eq. lwmask(i+1,j-2))then
+               idum=i+1
+               jdum=j-2       !19
+            exit
+              else if(landwater(np) .eq. lwmask(i-1,j-2))then
+               idum=i-1
+               jdum=j-2       !20
+            exit
+              else if(landwater(np) .eq. lwmask(i-2,j-1))then
+               idum=i-2
+               jdum=j-1       !21
+            exit
+              else if(landwater(np) .eq. lwmask(i-2,j-2))then
+               idum=i-2
+               jdum=j-2       !22
+            exit
+              else if(landwater(np) .eq. lwmask(i+2,j-2))then
+               idum=i+2
+               jdum=j-2       !23
+            exit
+              else if(landwater(np) .eq. lwmask(i+2,j+2))then
+               idum=i+2
+               jdum=j+2       !24
+            exit
+              else if(landwater(np) .eq. lwmask(i-2,j+2))then
+               idum=i-2
+               jdum=j+2       !25
+            exit
+              else if(landwater(np) .eq. lwmask(i+3,j))then
+               idum=i+3
+               jdum=j         !26
+            exit
+              else if(landwater(np) .eq. lwmask(i-3,j))then
+               idum=i-3
+               jdum=j         !27
+            exit
+              else if(landwater(np) .eq. lwmask(i,j+3))then
+               idum=i
+               jdum=j+3         !28
+            exit
+              else if(landwater(np) .eq. lwmask(i,j-3))then
+               idum=i
+               jdum=j-3         !29
+            exit
+             else
+CC             print*,'no matching land sea mask np,landwater,i,j,mask= '
+CC             print*,  np,landwater(np),i,j,lwmask(i,j)
+CC             print*, ' So it takes i,j '
+               idum=i
+               jdum=j
+             exit
+             end if
+          end if
          end do
         end do
 
         idum=max0(min0(idum,im),1)
         jdum=max0(min0(jdum,jm),1)
-        if(np==1 .or.np==100)print*,'nearest neighbor for station'
-     +  ,idum,jdum,rlon(np),rlat(np)
+
+         if(np==1 .or.np==100)print*,'nearest neighbor for station ',np
+     +  ,idum,jdum,rlon(np),rlat(np),lwmask(i,j),landwater(np)
 
         gridsi(np,1)=hgt(idum,jdum)
         gridsi(np,2)=pint(idum,jdum,1)
-
         ie=idum+1
         iw=idum-1
         jn=jdum-1
@@ -563,6 +795,10 @@
         sfc(30,np)=dum2d(idum,jdum,2)
         sfc(31,np)=dum2d(idum,jdum,3)
 
+CC There may be cases where convective precip is greater than total precip
+CC due to rounding and interpolation errors, correct it here -G.P. Lou:
+        if(sfc(11,np) .gt. sfc(12,np)) sfc(11,np)=sfc(12,np) 
+
         do k=1,levs
           gridsi(np,k+2)=t3d(idum,jdum,k) 
           gridsi(np,k+2+levs)=q3d(idum,jdum,k)
@@ -577,11 +813,11 @@
      +       cos(gdlat(idum,jdum)*dtr)
 !          griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
 !     +        (vh(idum,jn,k)-vh(idum,js,k))/dy 
-          if(np==1.or.np==100)print*,
-     +    'np,k,idum,jdum,uhe,uhw,vhn,vhs,dx,dy,gdlat'
-     +    ,np,k,idum,jdum,uh(ie,jdum,k),uh(iw,jdum,k),vh(idum,jn,k)
-     +    ,vh(idum,js,k),dx,dy,gdlat(idum,jdum),
-     +    cos(gdlat(idum,jdum)*dtr),griddiv(np,k) 
+CC          if(np==1.or.np==100)print*,
+CC     +    'np,k,idum,jdum,uhe,uhw,vhn,vhs,dx,dy,gdlat'
+CC     +    ,np,k,idum,jdum,uh(ie,jdum,k),uh(iw,jdum,k),vh(idum,jn,k)
+CC     +    ,vh(idum,js,k),dx,dy,gdlat(idum,jdum),
+CC     +    cos(gdlat(idum,jdum)*dtr),griddiv(np,k) 
         end do
       end do 
       
@@ -611,10 +847,10 @@
      &       gradx(np),grady(np),griddiv(np,1:levs),
      &       gridui(np,1:levs),gridvi(np,1:levs),
      &       pd1(np,1:levs),pd1(np,1:levs),omegai(np,1:levs))
-       if(np==1.or.mod(np,20)==0)print*,'griddiv after ca modstu'
-     &  ,griddiv(np,1:levs)
-       if(np==1.or.mod(np,20)==0)print*,'omegai after ca modstu'
-     &  ,omegai(np,1:levs)
+CC       if(np==1.or.mod(np,20)==0)print*,'griddiv after ca modstu'
+CC     &  ,griddiv(np,1:levs)
+CC       if(np==1.or.mod(np,20)==0)print*,'omegai after ca modstu'
+CC     &  ,omegai(np,1:levs)
       enddo
 !
 !  put omega (pa/s) in the tracer to prepare for interpolation
@@ -880,7 +1116,14 @@
             print *, ' divergence sounding'
             print *, (griddiv(np,k),k=1,levs)
           endif
+CC        print *, 'in meteorg nf,nfile,nfhour= ',  nf,nfile,nfhour
+       if (nfhour .ge. 123) then
+          nfile1 = 101 + nfhour/3
+C        print *, 'in meteorg nfile1= ', nfile1
+          write(nfile1) data
+       else
           write(nfile) data
+       endif
         enddo  !End loop over stations np
         print *, 'Finished writing bufr data file'
  6101   format(2x,6f12.3)
@@ -900,7 +1143,11 @@
 !      call sigio_axdata(sigdata,iret)
 !      call sigio_sclose(nsig,iret)
 !      call nemsio_close(gfile,iret=iret)
+       if (nfhour .gt. 120) then
+      close(unit=nfile1)
+       else
       close(unit=nfile)
+       endif
       return
  910  print *, ' error reading surface flux file'
       end

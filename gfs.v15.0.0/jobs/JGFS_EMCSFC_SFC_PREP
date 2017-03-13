@@ -9,6 +9,7 @@ date
 # Run config file to get input parameters
 #########################################
 
+export RUN_ENVIR=${RUN_ENVIR:-nco}
 if [ "$RUN_ENVIR" != nco ]
 then
   . ${PARA_CONFIG:-/global/save/${LOGNAME}/para_gfs/pr4devb/para_config}

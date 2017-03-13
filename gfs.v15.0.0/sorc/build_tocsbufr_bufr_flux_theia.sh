@@ -13,8 +13,8 @@ module purge
 source ../modulefiles/gfs_bufr.theia
 
 cd gfs_bufr.fd
-make -f makefile_wcoss_module clean
-make -f makefile_wcoss_module
+make -f makefile_theia_module clean
+make -f makefile_theia_module
 
 for dir in tocsbufr gfs_flux
 do

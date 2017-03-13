@@ -51,9 +51,11 @@ C$$$
       integer :: iromb, maxwv, levs,nstart,nend,nint,nsfc,levsi,im,jm
       integer :: kwskip,npoint,np,ist,is,iret,lss,nss,nf,nsk,nfile
       integer :: ielev
+      integer :: lsfc
       real :: alat,alon,rla,rlo
       real :: wrkd(1),dummy
       real rlat(nsta), rlon(nsta), elevstn(nsta)
+      integer landwater(nsta)
       character*1 ns, ew
       character*4 t3
       character*32 desc
@@ -90,9 +92,11 @@ C
       write(6,nammet)
       kwskip = (maxwv + 1) * ((iromb+1) * maxwv + 2)
       npoint = 0
-   99 FORMAT (I6, F6.2,A1, F7.2,A1,1X,A4, A31, I4)
+   99 FORMAT (I6, F6.2,A1, F7.2,A1,1X,A4,1X,I2, A28, I4)
       do np = 1, nsta+2
-        read(8,99,end=200) IST, ALAT,NS, ALON,EW, T3,DESC,IELEV
+        read(8,99,end=200) IST,ALAT,NS,ALON,EW,T3,lsfc,DESC,IELEV
+CC        print*," IST,ALAT,NS,ALON,EW,T3,lsfc,DESC,IELEV= "
+CC        print*, IST,ALAT,NS,ALON,EW,T3,lsfc,DESC,IELEV
         if(alat.lt.95.) then
           npoint = npoint + 1
                             RLA = 9999.
@@ -105,6 +109,14 @@ C
           rlon(npoint) = rlo
           istat(npoint) = ist
           elevstn(npoint) = ielev
+           
+        if(lsfc .le. 9) then
+          landwater(npoint) = 2    !!nearest
+         else if(lsfc .le. 19) then
+          landwater(npoint) = 1    !!land
+         else if(lsfc .ge. 20) then
+          landwater(npoint) = 0    !!water
+        endif
         endif
       enddo
  200  continue
@@ -144,8 +156,8 @@ c     do nf = nss, nend, nint
       ntot = (nend - nss) / nint + 1
       do n0 = 1, ntot, msize
         nf = (n0 + mrank - 1) * nint + nss
-        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
-     &  nss,mrank,msize
+C        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
+C     &  nss,mrank,msize
         if(n0.eq.1.and.mrank.gt.0) then
 c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
           do nsk = 1, min(mrank,ntot-1)
@@ -158,7 +170,7 @@ c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
           enddo
         endif
         nfile = 21 + (nf / nint)
-        print*, 'nfile = ',nfile
+C        print*, 'nf,nint,nfile = ',nf,nint,nfile
         if(nf.le.nend) then
           if(nf.lt.10) then
             fnsig = 'sigf0'
@@ -197,7 +209,7 @@ c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
           call nemsio_close(gfile,iret=irets)
           call meteorg(npoint,rlat,rlon,istat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &             iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc)
+     &      iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc,landwater)
         endif
       enddo
       call mpi_barrier(mpi_comm_world,ierr)

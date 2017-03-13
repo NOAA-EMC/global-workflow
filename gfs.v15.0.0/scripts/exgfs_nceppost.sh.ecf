@@ -34,25 +34,27 @@ export POSTGPSH=${POSTGPSH:-$USHglobal/global_nceppost.sh}
 ############################################################
 export IO=${LONB:-1440}
 export JO=${LATB:-721}
+# specify default model output format: 3 for sigio and 4
+# for nemsio
+export OUTTYP=${OUTTYP:-4}
 
 ############################################################
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Process analysis when post_times is 00
  export stime=`echo $post_times | cut -c1-3`
-
-if test -f $COMIN/${RUN}.t${cyc}z.sanl -a ${RUN} != "drfmr" -a ${stime} = "anl"
+if [ $OUTTYP -eq 4 ] ; then
+  export loganl=$COMIN/${RUN}.t${cyc}z.atmanl.nemsio
+else
+  export loganl=$COMIN/${RUN}.t${cyc}z.sanl
+fi
+if test -f $loganl -a ${RUN} != "drfmr" -a ${stime} = "anl"
 then
    
 # add new environmental variables for running new ncep post
 # Validation date
 
    export VDATE=${PDY}${cyc}
-   
-# set outtyp to 1 because we need to run chgres in the post before model start running chgres
-# otherwise set to 0, then chgres will not be executed in global_nceppost.sh
-    
-   export OUTTYP=${OUTTYP:-3}
    
 # specify output file name from chgres which is input file name to nceppost 
 # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
@@ -68,7 +70,9 @@ then
      export CTLFILE=$PARMglobal/gfs_cntrl.parm_anl
      export ANOMCATSH=$USHglobal/global_anomcat.sh
    elif [ $GRIBVERSION = 'grib2' ]; then
-     export POSTGRB2TBL=${POSTGRB2TBL:-${NWROOTprod}/lib/g2tmpl/${g2tmpl_ver}/src/params_grib2_tbl_new}
+# use grib2 nomonic table in post directory as default intsead
+# as new table with gtg won't be implemented before FY17 GFS upgrade
+     export POSTGRB2TBL=${POSTGRB2TBL:-$PARMglobal/params_grib2_tbl_new}
      export PostFlatFile=${PostFlatFile:-$PARMglobal/postxconfig-NT-GFS-ANL.txt}
    fi
 
@@ -81,9 +85,13 @@ then
    fi
    
    rm sigfile sfcfile
-   cp $COMIN/${RUN}.t${cyc}z.sanl sigfile
-   cp $COMIN/${RUN}.t${cyc}z.sfcanl sfcfile 
-
+   if [ $OUTTYP -eq 4 ] ; then
+     export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmanl.nemsio
+     cp $COMIN/${RUN}.t${cyc}z.sfcanl.nemsio sfcfile
+   else
+     cp $COMIN/${RUN}.t${cyc}z.sanl sigfile
+     cp $COMIN/${RUN}.t${cyc}z.sfcanl sfcfile 
+   fi
    export SIGINP=sigfile
    export SFCINPUT=sfcfile
    export PGBOUT=pgbfile
@@ -183,11 +191,20 @@ do
     # for backup to start Model Fcst
     ###############################
     rm sigfile sfcfile flxfile
-    cp $COMIN/${RUN}.t${cyc}z.sf$fhr sigfile
-    cp $COMIN/${RUN}.t${cyc}z.bf$fhr sfcfile
-    
+    if [ $OUTTYP -eq 4 ] ; then
+      if [ $fhr -le 99 ] ; then
+        export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf0$fhr.nemsio
+        cp $COMIN/${RUN}.t${cyc}z.sfcf0$fhr.nemsio sfcfile
+      else
+        export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf$fhr.nemsio
+        cp $COMIN/${RUN}.t${cyc}z.sfcf$fhr.nemsio sfcfile
+      fi
+    else
+      cp $COMIN/${RUN}.t${cyc}z.sf$fhr sigfile
+      cp $COMIN/${RUN}.t${cyc}z.bf$fhr sfcfile
+    fi
 # specify 0.25 degree output
-    if [ $IDRT -eq 0 ] ; then
+    if [ $IDRT -eq 0 -a $OUTTYP -le 3 ] ; then
       export D3DINP=
       if [ $LONB -eq 360 ] ; then
         $COPYGB -xg3 $COMIN/${RUN}.t${cyc}z.sfluxgrbf$fhr $DATA/flxfile
@@ -198,7 +215,15 @@ do
       fi
       export FLXINP=$DATA/flxfile
     else
-      cp $COMIN/${RUN}.t${cyc}z.sfluxgrbf$fhr flxfile
+      if [ $OUTTYP -eq 4 ] ; then
+        if [ $fhr -le 99 ] ; then
+          export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf0$fhr.nemsio
+        else
+          export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf$fhr.nemsio
+        fi
+      else
+         cp $COMIN/${RUN}.t${cyc}z.sfluxgrbf$fhr flxfile
+      fi
     fi
 
     if test $fhr -gt 0
@@ -216,7 +241,7 @@ do
 # set outtyp to 1 because we need to run chgres in the post before model start running chgres
 # otherwise set to 0, then chgres will not be executed in global_nceppost.sh
      
-    export OUTTYP=${OUTTYP:-3}
+    export OUTTYP=${OUTTYP:-4}
    
 # specify output file name from chgres which is input file name to nceppost 
 # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
@@ -235,7 +260,9 @@ do
       export CTLFILE=$PARMglobal/gfs_cntrl.parm
       export ANOMCATSH=$USHglobal/global_anomcat.sh
     elif [ $GRIBVERSION = 'grib2' ]; then
-      export POSTGRB2TBL=${POSTGRB2TBL:-${NWROOTprod}/lib/g2tmpl/${g2tmpl_ver}/src/params_grib2_tbl_new}
+# use grib2 nomonic table in post directory as default intsead
+# as new table with gtg won't be implemented before FY17 GFS upgrade
+      export POSTGRB2TBL=${POSTGRB2TBL:-$PARMglobal/params_grib2_tbl_new}
       export PostFlatFile=${PostFlatFile:-$PARMglobal/postxconfig-NT-GFS.txt}
 
       if [ $RUN = gfs ] ; then
@@ -378,10 +405,21 @@ EOF
     fi
     rm pgbfile* pgifile* tfile prmsl h5wav
 
+# use post to generate GFS Grib2 Flux file as model generated Flux file
+# will be in nemsio format after FY17 upgrade.
+    if [ $OUTTYP -eq 4 ] ; then
+      export PostFlatFile=$PARMglobal/postxconfig-NT-GFS-FLUX.txt
+      export PGBOUT=flxfile
+      export FILTER=0
+      $POSTGPSH
+      mv flxfile $COMOUT/${RUN}.t${cyc}z.sfluxgrbf${fhr}.grib2
+      $WGRIB2 -s $COMOUT/${RUN}.t${cyc}z.sfluxgrbf${fhr}.grib2 > $COMOUT/${RUN}.t${cyc}z.sfluxgrbf${fhr}.grib2.idx
+     fi
+      
 # process satellite look alike separately so that master pgb gets out in time    
 # set outtyp to 2 because master post already generates gfs io files
      
-    export OUTTYP=${OUTTYP:-3}
+    export OUTTYP=${OUTTYP:-4}
    
 # specify output file name from chgres which is input file name to nceppost 
 # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
@@ -391,7 +429,7 @@ EOF
 
     # link satellite coefficients files, use hwrf version as ops crtm 2.0.5
     # does not new coefficient files used by post
-    export FIXCRTM=${NWROOTprod}/hwrf.${hwrf_ver}/fix/hwrf-crtm-2.0.6
+    export FIXCRTM=${NWROOTp2}/hwrf.${hwrf_ver}/fix/hwrf-crtm-2.0.6
     $USHglobal/link_crtm_fix.sh $FIXCRTM
 
     if [ $GRIBVERSION = 'grib1' ]; then
@@ -407,7 +445,7 @@ EOF
         cp $CTLFILE1 $CTLFILE
       fi
     fi
-    export FLXINP=flxfile
+    export FLXINP=${FLXINP:-flxfile}
     export FLXIOUT=flxifile
     export PGBOUT=goesfile
     export PGIOUT=goesifile
@@ -415,8 +453,10 @@ EOF
     export IO=0
     export JO=0
     export IGEN=0
-    
-    $POSTGPSH
+
+    if [ $NET = gfs ]; then    
+      $POSTGPSH
+    fi
 
     if [ $GRIBVERSION = 'grib1' ]; then
       SPECIALFL=gfs.${cycle}.special.grb
@@ -450,7 +490,7 @@ EOF
 
 # process gtg turbulence only when fhr is every 3 hour between [3, 36]
     if [[ $fhr -ge 3  &&  $fhr -le 36  && $((fhr%3)) -eq 0 ]] ; then
-      export OUTTYP=${OUTTYP:-3}
+      export OUTTYP=${OUTTYP:-4}
    
 # specify output file name from chgres which is input file name to nceppost 
 # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file

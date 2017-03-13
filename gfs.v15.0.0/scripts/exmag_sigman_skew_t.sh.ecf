@@ -18,9 +18,8 @@ cd $DATA
 
 export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 
-# sort -k 2n,2 ${NWROOTp1}/dictionaries/metar.tbl > metar_stnm.tbl
-cp ${PARMgfs}/dictionaries/sonde.land.tbl .
-cp ${PARMgfs}/dictionaries/metar.tbl .
+cp ${NWROOTp1}/dictionaries/sonde.land.tbl .
+cp ${NWROOTp1}/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
 
 # JY - will check
@@ -28,7 +27,9 @@ sort -k 2n,2 metar.tbl > metar_stnm.tbl
 # cp $COMROOT/${NMODEL}/${envir}/${NMODEL}.${PDY}/${NMODEL}.$cycle.adpupa.tm00.bufr_d fort.40
 cp $COMIN/${NMODEL}.$cycle.adpupa.tm00.bufr_d fort.40
 
-$RDBFMSUA
+$RDBFMSUA  >> $pgmout 2> errfile
+
+err=$?;export err ;err_chk
 
 export filesize=` ls -l rdbfmsua.out | awk '{print $5}' `
 

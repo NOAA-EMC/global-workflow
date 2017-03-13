@@ -33,7 +33,7 @@ set -x
 
     for stn in `cat $file_list`
     do
-       cp ${COMOUT}/bufr.${cycle}/bufr3.$stn.$PDY$cyc $DATA/bufrin
+       cp ${COMOUT}/bufr.${cycle}/bufr.$stn.$PDY$cyc $DATA/bufrin
        export pgm=tocsbufr
        #. prep_step
        export FORT11=$DATA/bufrin
@@ -45,7 +45,7 @@ set -x
   BULHED="$WMOHEAD",KWBX="$CCCC",
   NCEP2STD=.TRUE.,
   SEPARATE=.TRUE.,
-  MAXFILESIZE=200000
+  MAXFILESIZE=600000
  /
 EOF
        # JY export err=$?; err_chk

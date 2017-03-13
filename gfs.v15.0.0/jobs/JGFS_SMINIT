@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh
 export PS4='$SECONDS + '
 date
 set -xa
@@ -22,6 +22,7 @@ set -xa
 # 2013-08-27  Jeff McQueen  - Put in vertical structure     
 # 2014-03-01  DaNa Carlis   - Adapted for GFS to unify NAM and GFS DNG scripts and
 # source code
+# 2016-11-08  Nicole McKee  - Transition to nemsio input
 
 #Changed to modeld to smartinit to accomodate other models COM)IN dir by using NET
 ####################################
@@ -58,7 +59,13 @@ export mdl=${mdl:-gfs}
 # This block can be modified for different Production test
 # environment. This is used for development testings
 ###############################################################
-if [ "$RUN_ENVIR" != nco ];then
+if [ "$RUN_ENVIR" = prod ];then
+ if [ "$envir" != prod ]; then
+  export DBNROOT=/nwprod/spa_util/fakedbn
+  export jlogfile=/com/logs/${envir}/jlogfile
+  export pcom=${pcom:-/pcom/${envir}/gfs}
+ fi
+else
  dng_para_config${RUNTYP}   #EMC User set
 fi
 
@@ -66,7 +73,9 @@ fi
 # obtain unique process id (pid) and make temp directory
 ####################################
 export pid=$$
+export DATA_IN=${DATA_IN:-/tmpnwprd1}
 export DATA=${DATA:-$DATAROOT/${jobid}}
+rm -r $DATA
 mkdir -p $DATA
 cd $DATA
 
@@ -87,12 +96,12 @@ export jlogfile=${jlogfile:-/com/logs/jlogfiles/jlogfile.${job}.$$}
 ####################################
 # SENDECF  - Flag Events on ECF
 # SENDCOM  - Copy files to /com directory
-# RERUN  - If rerun from beginning, default is no
+# RESTART  - If restart ; default is no
 ####################################
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
-export RERUN=${RERUN:-NO}
+export RESTART=${RESTART:-NO}
 
 ####################################
 # Specify Execution Areas
@@ -120,12 +129,11 @@ export PARMPOST=${PARMPOST:-$HOMEPOST/parm}
 ###################################
 # Set up the UTILITIES
 ###################################
+export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
+export utilexec=${utilexec:-$HOMEutil/exec}
+export utilparm=${utilparm:-$HOMEutil/parm}
 export gespath=${gespath:-${GESROOT}/${envir}}
 
-############################################
-# Load the UTILITIES module
-############################################
-# module load grib_util/v1.0.1
 
 ###########################################
 # Run setpdy and initialize PDY variables
@@ -150,9 +158,9 @@ cp ${PARMdng}/SMINIT.CTL $DATA
 ##############################################
 export SHOUR=${SHOUR:-00}
 export EHOUR=${EHOUR:-192}
-export EHOUR_HRLY=12
-export FHINC_HRLY=01
-export FHINC=03
+export EHOUR_HRLY=${EHOUR_HRLY:-12}
+export FHINC_HRLY=${FHINC_HRLY:-6}
+export FHINC=${FHINC:-6}
 
 ###############################################
 # Specify Timeout Behavior of GFS DNG
@@ -162,20 +170,20 @@ export FHINC=03
 # SLEEP_INT  - Amount of time to wait between
 #              checking for input files
 ###############################################
-export SLEEP_TIME=300
+export SLEEP_TIME=600
 export SLEEP_INT=10
 
 ####################################
 # Check if this is a restart
 ####################################
+if test $RESTART = "YES"
+then
 if test -f $COMOUT/$RUN.t${cyc}z.control.smartguam
 then
   modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.smartguam`
   recvy_pdy=`echo $modelrecvy | cut -c1-8`
   recvy_cyc=`echo $modelrecvy | cut -c9-10`
   recvy_shour=`echo $modelrecvy | cut -c11-`
-  if test $RERUN = "NO"
-  then
     if [ $recvy_shour -lt $EHOUR_HRLY ]
       then
       NEW_SHOUR=`expr $recvy_shour + $FHINC_HRLY`
@@ -212,6 +220,6 @@ postmsg "$jlogfile" "$msg"
 ##############################
 # Remove the Temporary working directory
 ##############################
-cd $DATAROOT
+
 rm -rf $DATA
 date

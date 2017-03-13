@@ -49,5 +49,6 @@ C
       TNEW = TNEW1                                                      
       GOTO 1                                                            
  2    TD = TNEW1                                                        
+      IF(TD .GT. T) TD=T
       RETURN                                                            
       END                                                               

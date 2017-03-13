@@ -26,8 +26,8 @@ export LEVS=${LEVS:-64}
 export LATB=${LATB:-1536}
 export LONB=${LONB:-3072}
 export STARTHOUR=${STARTHOUR:-00}
-export ENDHOUR=${ENDHOUR:-180}
-export FINT=3
+export ENDHOUR=${ENDHOUR:-240}
+export FINT=1
 export NZERO=6
 export INCREMENT=12
 export OUTFILE=meteomrf
@@ -73,6 +73,10 @@ do
       fi
    done
 
+## 1-hourly output before 120, 3-hourly output after
+   if [ $FEND -gt 120 ]; then
+     export FINT=3
+   fi
    $USHbufrsnd/gfs_bufr.sh
   
    export FSTART=$FEND
