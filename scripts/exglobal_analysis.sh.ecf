@@ -151,6 +151,8 @@
 #                   defaults to ${COMOUT}/biascor_in; optional
 #     USE_NEWRADBC  Flag to use new radiance bias correction scheme (YES or NO)
 #                   defaults to NO
+#     USE_RADSTAT   Flag to use guess radstat file for bias correction
+#                   initialization (YES or NO).  defaults to NO
 #     RADSTAT       Output radiance assimilation statistics
 #                   defaults to ${COMIN}/${PREINP}radstat
 #     GSISTAT       Output gsi (obs-ges), qc, and iteration statistics
@@ -699,6 +701,7 @@ export NSTG07=${NSTG07:-${COMOUT}/nstf07}
 export NSTG08=${NSTG08:-${COMOUT}/nstf08}
 export NSTG09=${NSTG09:-${COMOUT}/nstf09}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
+export USE_RADSTAT=${USE_RADSTAT:-"NO"}
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
@@ -1157,7 +1160,7 @@ fi
 
 
 # If requested, copy and de-tar guess radstat file
-if [[ "$USE_NEWRADBC" = "YES" ]]; then
+if [ $USE_NEWRADBC = YES -a $USE_RADSTAT = YES ]; then
 
    if [[ $USE_CFP = YES ]]; then
       rm $DATA/unzip.sh
@@ -1193,7 +1196,7 @@ EOFunzip
       fi
    done
 fi
-if [[ $USE_CFP = YES ]] ; then
+if [ $USE_CFP = YES -a $USE_RADSTAT = YES ] ; then
    chmod 755 $DATA/mp_unzip.sh
    ncmd=`cat $DATA/mp_unzip.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
