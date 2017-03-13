@@ -70,9 +70,9 @@ env
 ####################################
 # Specify Forecast Hour Range
 ####################################
-export SHOUR=00
-export FHOUR=24
-export FHINC=03
+export SHOUR=000
+export FHOUR=024
+export FHINC=003
 
 ####################################
 # Specify Special Post Vars

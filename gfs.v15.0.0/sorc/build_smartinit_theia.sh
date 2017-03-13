@@ -14,9 +14,9 @@ source ../modulefiles/modulefile.gfs_smartinit.theia
 
 for dir in smartinit.fd smartprecip.fd; do
  cd ${curdir}/$dir
- make clean
- make
- make clean
+ make -f makefile.theia clean
+ make -f makefile.theia
+ make -f makefile.theia clean
 done
 
 

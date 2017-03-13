@@ -19,7 +19,7 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20160914
+export PDY=20170304
 export PDY1=`expr $PDY - 1`
 
 # export cyc=06
@@ -34,9 +34,6 @@ date
 ##  Load the GRIB Utilities module
 #####################################
 
-#%include <head.h>
-#%include <envir-p2.h>
-
 . $MODULESHOME/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
@@ -45,19 +42,19 @@ module load iobuf/2.0.7
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
+module load prod_util/1.0.5
 #
-#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
 #
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.4
+module load grib_util/1.0.5
 
 #
-#   This is a test version of UTIL_SHARED.v1.0.4 on CRAY
+#   This is a test version of UTIL_SHARED.v1.0.5 on CRAY
 #
-module use /usrx/local/nceplibs/util_shared.v1.0.4/modulefiles
-module load util_shared/1.0.4
+module use /usrx/local/nceplibs/util_shared.v1.0.5/modulefiles
+module load util_shared/1.0.5
 
 module list
 
@@ -66,7 +63,7 @@ module list
 ########################################
 
 # export post_times=anl
- export post_times=00
+ export post_times=03
 
 ##############################################
 # Define COM, PCOM, COMIN  directories
@@ -76,7 +73,9 @@ module list
  export envir=para
 # export envir=prod
 
+export SENDCOM=YES
 export SENDDBN=NO
+export KEEPDATA=YES
 export job=gfs_pgrb2_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -93,7 +92,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 export gdas_ver=v14.1.0
 export gfs_ver=v14.1.0
-export util_ver=v1.0.4
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -101,27 +99,6 @@ export util_ver=v1.0.4
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
 
 ################################
 # Set up the HOME directory
@@ -142,16 +119,13 @@ export model=${model:-gfs}
 ##############################################
 # Define COM directories
 ##############################################
-# export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-# export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-# export PCOM=${PCOM:-${PCOMROOT}/${NET}}
 
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMROOTp2}/gfs/prod/gfs.${PDY}
 else
 #  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}      ### EMC PARA Realtime
-  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_gfs_${PDY}    ### test with canned data
+  export COMIN=/gpfs/sss/emc/global/shared/nceplibs/fix/emc_gfs/para_20170303
 fi
 
 export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
@@ -162,51 +136,8 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $PCOM
 fi
 
-# export pgmout=OUTPUT.$$
+#############################################
+# run the GFS job
+#############################################
+sh $HOMEgfs/jobs/JGFS_PGRB2
 
-env
-
-export NODES=2
-export APRUN="aprun -n 12 -N 6 -d 4 cfp"
-
-#######################################
-# Specify Restart File Name to Key Off
-#######################################
-restart_file=$COMIN/${RUN}.t${cyc}z.master.grb2if
-
-####################################
-# Specify Timeout Behavior of Post
-#
-# SLEEP_TIME - Amount of time to wait for
-#              a restart file before exiting
-# SLEEP_INT  - Amount of time to wait between
-#              checking for restart files
-####################################
-export SLEEP_TIME=900
-export SLEEP_INT=5
-
-#############################################################
-# Execute the script
-$HOMEgfs/scripts/exglobal_pgrb2_gfs_g2_poe.sh.ecf
-export err=$?;err_chk
-#############################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
-############################################
-# print exec I/O output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-
-###################################
-# Remove temp directories
-###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-#  rm -rf $DATA
-   echo "Data is here ! "
-fi
-
-date

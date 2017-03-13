@@ -6,8 +6,10 @@ export filetype=$2
 export res=$3
 
 # Set type of Interpolation for WRGIB2
-export option1=' -set_grib_type same -new_grid_winds earth '
-export option2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt21='  -new_grid_interpolation bilinear -if '
+export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+export opt23=' -new_grid_interpolation neighbor -fi '
 
 cd $DATA/${filetype}_${res}
 
@@ -61,7 +63,7 @@ if [ $filetype = pgrb2 ]; then
   if [ $res = 0P25 -o $fhm3 = YES ]; then
 #    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile_${fhr} ${filetype}file_${fhr3}_${res}
 
-    $WGRIB2  $DATA/tmpfile_${fhr} $opt1 $opt2 -new_grid $grid ${filetype}file_${fhr3}_${res}
+    $WGRIB2  $DATA/tmpfile_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 
@@ -78,7 +80,7 @@ elif [ $filetype = pgrb2b ]; then
 # Only generate 0P25 for hourly output
   if [ $res = 0P25 -o $fhm3 = YES ]; then
 #    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile3_${fhr} ${filetype}file_${fhr3}_${res}
-    $WGRIB2  $DATA/tmpfile3_${fhr} $opt1 $opt2 -new_grid $grid ${filetype}file_${fhr3}_${res}
+    $WGRIB2  $DATA/tmpfile3_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 fi

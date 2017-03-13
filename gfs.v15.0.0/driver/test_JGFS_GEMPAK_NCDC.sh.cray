@@ -17,7 +17,7 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20160914
+export PDY=20170304
 export PDY1=`expr $PDY - 1`
 
 # export cyc=06
@@ -32,9 +32,6 @@ date
 ##  Load the GRIB Utilities module
 #####################################
 
-#%include <head.h>
-#%include <envir-p2.h>
-
  . $MODULESHOME/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
@@ -43,26 +40,27 @@ module load iobuf/2.0.7
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
+module load prod_util/1.0.5
+
+###########################################
+# Now set up GEMPAK/NTRANS environment
+###########################################
+module load gempak/7.3.0
 
 #
-#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
 #
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.4
+module load grib_util/1.0.5
 
 #
-#   This is a test version of UTIL_SHARED.v1.0.4 on CRAY
+#   This is a test version of UTIL_SHARED.v1.0.5 on CRAY
 #
-module use /usrx/local/nceplibs/util_shared.v1.0.4/modulefiles
-module load util_shared/1.0.4
+module use /usrx/local/nceplibs/util_shared.v1.0.5/modulefiles
+module load util_shared/1.0.5
 
 module list
-
-############################################
-# GFS GEMPAK NCDC PRODUCT GENERATION
-############################################
 
 ##############################################
 # Define COM, PCOM, COMIN  directories
@@ -90,7 +88,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 export gdas_ver=v14.1.0
 export gfs_ver=v14.1.0
-export util_ver=v1.0.4
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -98,27 +95,6 @@ export util_ver=v1.0.4
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
 
 ################################
 # Set up the HOME directory
@@ -137,32 +113,12 @@ export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
 export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
 export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
-export MP_PULSE=0
-export MP_TIMEOUT=2000
-export cycle=t${cyc}z
-
-#
-# Set up model and cycle specific variables
-#
-export MODEL=GFS
-# export fend=384
-export fend=06
-
-# set increment to 6 hours  --  3 hours is available.
-export finc=6
-export fstart=00
-
 ###################################
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-
-##############################################
-# Define COM directories
-##############################################
-# export COMIN=${COMIN:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 
 #######################################
 # This is the NCDC GIF processing part
@@ -179,8 +135,7 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GDAS (production)
   export COMIN=${COMROOTp2}/nawips/prod/gfs.${PDY}
 else
-# export COMIN=/gpfs/hps/ptmp/Boi.Vuong/com/nawips/para/gfs.${PDY}            ### EMC PARA Realtime
-  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_nawips_gfs_${PDY}  ### test with canned data
+  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/nawips/para/gfs.${PDY}           ### EMC PARA Realtime
 fi
 
 export COMNCDC=${COMNCDC:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
@@ -190,38 +145,8 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMNCDC $PCOM
 fi
 
-export pgmout=OUTPUT.$$
+#############################################
+# run the GFS job
+#############################################
+sh $HOMEgfs/jobs/JGFS_GEMPAK_NCDC
 
-env
-
-###########################################
-# Now set up GEMPAK/NTRANS environment
-###########################################
-module load gempak/7.3.0
-
-DATA_TMP=$DATA
-
-########################################################
-# Execute the script.
-$SRCgfs/exgempak_gfs_gif_ncdc.sh.ecf
-export err=$?; err_chk
-########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
-############################################
-# print exec I/O output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-
-###################################
-# Remove temp directories
-###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
-fi
-
-date

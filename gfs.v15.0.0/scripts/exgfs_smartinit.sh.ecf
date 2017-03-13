@@ -30,11 +30,32 @@ export ffhr=$SHOUR
 
  while test $ffhr -le $EHOUR
  do
+  let fhr3=ffhr-3
+  let fhr6=ffhr-6  
+  let fhr9=ffhr-9
+ if [ $fhr3 -lt 10 ];then fhr3="0"${fhr3};fi
+ if [ $fhr6 -lt 10 ];then fhr6="0"${fhr6};fi
+ if [ $fhr9 -lt 10 ];then fhr9="0"${fhr9};fi
    export ic=1
    while [ $ic -le $SLEEP_LOOP_MAX ]
    do
      if [ -s $COMIN/${RUN}.t${cyc}z.master.grb2f${ffhr} ] ; then
-       break
+         if [  ${ffhr} -lt 12 ] ; then
+            break
+             else
+               if [ $(( ${ffhr} % 6)) -ne 0 ] ; then
+                  break
+               else
+                 if [ -s  $COMOUT/${mdl}.t${cyc}z.smartguam${fhr3}.tm00 \
+                      -s  $COMOUT/${mdl}.t${cyc}z.smartguam${fhr6}.tm00 \
+                      -s  $COMOUT/${mdl}.t${cyc}z.smartguam${fhr9}.tm00 ] ; then
+                   break
+                 else
+                   ic=`expr $ic + 1`
+                   sleep $SLEEP_INT
+                 fi
+               fi
+         fi 
      else
        ic=`expr $ic + 1`
        sleep $SLEEP_INT
@@ -51,11 +72,15 @@ export ffhr=$SHOUR
 
    echo "$PDY$cyc$ffhr" > $COMOUT/${RUN}.t${cyc}z.control.smartguam
 
+       echo "exgfs_smartinit ffhr,ehour_hrly,fhinc_hrly,fhinc = ",$ffhr,$EHOUR_HRLY,$FHINC_HRLY,$FHINC
    if test $ffhr -lt $EHOUR_HRLY
    then
      export ffhr=`expr $ffhr + $FHINC_HRLY`
    else
      export ffhr=`expr $ffhr + $FHINC`
+     if [ $ffhr -eq 17 ]; then
+        export ffhr=`expr $ffhr - $FHINC_HRLY`
+     fi
    fi
 
    if test $ffhr -lt 10

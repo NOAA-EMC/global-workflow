@@ -14,8 +14,10 @@ export KEEPDATA=${KEEPDATA:-NO}
 # Specify version numbers
 ####################################
 export crtm_ver=${post_crtm_ver:-v2.0.6}
-export gfs_ver=${gfs_ver:-v13.0.0}
-
+export global_shared_ver=${global_shared_ver:-v14.1.0}
+export gfs_ver=${gfs_ver:-v14.1.0}
+export hwrf_ver=${hwrf_ver:-v9.0.20}
+export g2tmpl_ver=${g2tmpl_ve:-v1.3.0}
 
 ####################################
 # obtain unique process id (pid) and make temp directory
@@ -28,7 +30,8 @@ cd $DATA
 ############################################
 # Load the UTILITIES module
 ############################################
-
+. $MODULESHOME/init/sh
+module load prod_envir
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
@@ -103,7 +106,7 @@ export LOGSCRIPT=startmsg
 export REDOUT='1>>'
 export REDERR='2>'
 
-export SIGHDR=${SIGHDR:-$EXECGSM/global_sighdr}
+export SIGHDR=${SIGHDR:-$EXECglobal/global_sighdr}
 
 ##############################################
 # Define COM directories
@@ -205,8 +208,7 @@ fi
 
 #############################################################
 # Execute the regular master ncep post script
-#${SCRgfs}/exgfs_nceppost.sh.ecf
-$SCRglobal/exgfs_nceppost.sh.ecf
+${SCRgfs}/exgfs_nceppost.sh.ecf
 #############################################################
 
 if [ $post_times -eq 84  ]

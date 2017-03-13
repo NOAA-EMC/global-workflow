@@ -56,7 +56,7 @@ export model=${model:-gfs}
 # Define COM directories
 ##############################################
 export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export COMINhourly=${COMINhourly:-${COMROOTp1}/${NET}/${envir}/hourly.${PDY}}
+export COMINhourly=${COMINhourly:-${COMROOTp1}/hourly/${envir}/hourly.${PDY}}
 export COMINm1=${COMINm1:-${COMROOT}/${NET}/${envir}/${RUN}.${PDYm1}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export PCOM=${PCOM:-${PCOMROOT}/${NET}}

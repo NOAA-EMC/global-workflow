@@ -17,7 +17,7 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20160914
+export PDY=20170304
 export PDY1=`expr $PDY - 1`
 
 # export cyc=06
@@ -32,9 +32,6 @@ date
 ##  Load the GRIB Utilities module
 #####################################
 
-#%include <head.h>
-#%include <envir-p2.h>
-
 . $MODULESHOME/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
@@ -43,26 +40,26 @@ module load iobuf/2.0.7
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
-
+module load prod_util/1.0.5
 #
-#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
 #
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.4
+module load grib_util/1.0.5
 
 module list
 
 ##############################################
 # Define COM, PCOM, COMIN  directories
 ##############################################
-
 # set envir=prod or para to test with data in prod or para
  export envir=para
 # export envir=prod
 
+export SENDCOM=YES
 export SENDDBN=NO
+export KEEPDATA=YES
 export job=gfs_fbwind_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -79,35 +76,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 export gdas_ver=v14.1.0
 export gfs_ver=v14.1.0
-export util_ver=v1.0.4
-
-###########################################################
-# obtain unique process id (pid) and make temp directory
-###########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
 
 ################################
 # Set up the HOME directory
@@ -126,57 +94,30 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM directories
+# Define COM, PCOM, COMIN  directories
 ##############################################
-# export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-# export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-# export PCOM=${PCOM:-${PCOMROOT}/${NET}}
-
-
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMROOTp2}/gfs/prod/gfs.${PDY}
 else
-#  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
-  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_gfs_${PDY}       ### test with canned data
+  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
 fi
 
-# export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
-# export PCOM=${PCOM:-${PCOMROOT2}/${NET}}
-
-export COMOUT=/gpfs/hps/emc/global/noscrub/Boi.Vuong/svn/com/${envir}/${RUN}.${PDY}
-export PCOM=/gpfs/hps/emc/global/noscrub/Boi.Vuong/svn/pcom/${envir}/${NET}
+export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
+export PCOM=${PCOM:-${PCOMROOT2}/${NET}}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $PCOM
 fi
 
-export pgmout=OUTPUT.$$
+#########################################################
+# obtain unique process id (pid) and make temp directory
+#########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
 
-env
-
-########################################################
-# Execute the script.
-time  $HOMEgfs/scripts/exgfs_fbwind.sh.ecf
-export err=$?;err_chk
-########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
-############################################
-# print exec I/O output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-
-###################################
-# Remove temp directories
-###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-#   rm -rf $DATA
-echo " No "
-fi
-
-date
+#############################################
+# run the GFS job
+#############################################
+sh $HOMEgfs/jobs/JGFS_FBWIND

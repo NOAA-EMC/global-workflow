@@ -2,6 +2,7 @@
 # Author:        DaNa Carlis       Org: NP22         Date: 2014-03-01
 #
 # Script history log:
+# 2016-11-08  Nicole McKee  - Transition to nemsio input
 #======================================================================
 # RUNTYP: OUTPUT REGION TO DOWNSCALE TO  (IN SMINIT.CTL FILE)
 #=================================================================
@@ -166,24 +167,25 @@ if [ $fhr -lt 10 ] ;then
   typeset -Z2 fhr1 fhr2 fhr3 fhr6 fhr9 fhr ffhr
 fi
     case $natgrd in 
-      initin) 
+      initin)
           if [ $mdl = "gfs" ]; then
-            export GRIBVERSION=grib1
-            export OUTTYP=3
-            export SIGINP=${SIGINP:-$COMIN/$mdl.t${cyc}z.sf$fhr}
-            export SFCINP=${SFCINP:-$COMIN/$mdl.t${cyc}z.bf$fhr}
-            export CTLFILE=${CTLFILE:-$PARMdng/${mdl}_downscale_cntrl.parm}
-            export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
-            export FLXINP=flxfile
-            export PGBOUT=tmpfile4
-            export FILTER=0
-            export IGEN=${IGEN:-96}
-            export IDRT=${IDRT:-0}
-            export LONB=${LONB:-720}
-            export LATB=${LATB:-361}
-	    #Convert guassian grid flux file to lat/lon degree grid 
-            export fgrid=${fgrid:-'255 0 720 361 90000 0 128 -90000 359750 500 500 0'}
-            $COPYGB -g "$fgrid" -x $COMIN/$mdl.t${cyc}z.sfluxgrbf$fhr $FLXINP
+              FHHH=$fhr 
+              if [ $fhr -lt 100 ];then FHHH="0"${fhr};fi
+              export GRIBVERSION=grib1
+              export OUTTYP=${OUTTYP:-3}
+              export SIGINP=${SIGINP:-$COMIN/$mdl.t${cyc}z.atmf$FHHH}
+ 	      export NEMSINP=${NEMSINP:-$COMIN/${mdl}.t${cyc}z.atmf$FHHH.nemsio}
+	      export SFCINP=${SFCINP:-$COMIN/${mdl}.t${cyc}z.sfcf$FHHH.nemsio}
+              export FLXINP=${FLXINP:-$COMIN/$mdl.t${cyc}z.flxf$FHHH.nemsio}
+              export CTLFILE=${CTLFILE:-$PARMdng/${mdl}_downscale_cntrl.parm}
+              export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
+              export PGBOUT=tmpfile4
+              export FILTER=0
+              export IGEN=${IGEN:-96}
+              export IDRT=${IDRT:-0}
+              export LONB=${LONB:-1440}
+              export LATB=${LATB:-721}
+
             export POSTGPEXEC=${POSTGPEXEC:-$EXECPOST/ncep_post}
 	    export POSTGPSH=${POSTGPSH:-$USHPOST/global_nceppost.sh}
 	   
@@ -278,7 +280,8 @@ fi
 # GFS DNG now uses same smartprecip code as the NAM: Create Precip Buckets for smartinit 
 #===============================================================
     echo RUN SMARTPRECIP FOR GFS DNG TO MAKE $freq HR PRECIP BUCKET FILE from fhrs $pfhr2 to $pfhr1 $pfhr3
-    ${SMARTPRECIP:-$EXECdng/smartprecip} <<EOF > ${ppgm}precip${fhr}.out
+    APRUN_SMARTPRECIP=${APRUN_SMARTPRECIP:-""}
+    $APRUN_SMARTPRECIP ${SMARTPRECIP:-$EXECdng/smartprecip} <<EOF > ${ppgm}precip${fhr}.out
 $pfhr1 $pfhr2 $pfhr3 $pfhr4 
 EOF
      export err=$?; #err_chk
@@ -305,7 +308,8 @@ EOF
 
   fi  #fhr -ne 0
 
-  cp /com/date/t${cyc}z DATE
+#  cp /com/date/t${cyc}z DATE
+  cp $COMROOT/date/t${cyc}z DATE
   if [ -s ${prdgfl}.${fhr} ];then    
     cp ${prdgfl}.${fhr} meso${rg}.NDFDf${fhr}  
     echo ${prdgfl}.${fhr} FOUND FOR FORECAST HOUR ${fhr}
@@ -459,7 +463,8 @@ EOF
    esac
 
   export pgm=smartinit; # . prep_step
-  ${SMARTINIT:-$EXECdng/smartinit} $cyc $fhr $ogrd $RGIN $inest $inhrfrq $fhrstr $core >smartinit.out${fhr}
+  APRUN_SMARTINIT=${APRUN_SMARTINIT:-""}
+  $APRUN_SMARTINIT ${SMARTINIT:-$EXECdng/smartinit} $cyc $fhr $ogrd $RGIN $inest $inhrfrq $fhrstr $core >smartinit.out${fhr}
   export err=$?; #err_chk
 
   case $RUNTYP in

@@ -28,7 +28,9 @@ postmsg "$jlogfile" "$msg"
 
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
-export opt2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+export opt21='  -new_grid_interpolation bilinear -if '
+export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+export opt23=' -new_grid_interpolation neighbor -fi '
 
 # Set grid 0p25 deg LAT/LON
 export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
@@ -43,12 +45,12 @@ if [ $post_times = anl ]; then
 #  paramlist=$PARMPOST/global_1x1_paramlist_g2.anl #for regular pgrb2 files
   paramlist=$PARMgfs/global_1x1_paramlist_g2.anl #for regular pgrb2 files
   $WGRIB2 masterfile_anl | grep -F -f $paramlist | $WGRIB2 -i -grib tmpfile_pgrb2_anl masterfile_anl
-  $WGRIB2  tmpfile_pgrb2_anl $opt1 $opt2 -new_grid $grid0p25 tmpfile_anl
+  $WGRIB2  tmpfile_pgrb2_anl $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 tmpfile_anl
 
 #  paramlistb=$PARMPOST/global_master-catchup_parmlist_g2   #for pgrb2b files
   paramlistb=$PARMgfs/global_master-catchup_parmlist_g2   #for pgrb2b files
   $WGRIB2 masterfile_anl | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile_pgrb2b_anl masterfile_anl
-  $WGRIB2  tmpfile_pgrb2b_anl $opt1 $opt2 -new_grid $grid0p25 tmpfile3_anl
+  $WGRIB2  tmpfile_pgrb2b_anl $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 tmpfile3_anl
 
   $WGRIB2 tmpfile_anl -s > tmpfile2i_anl
   $WGRIB2 tmpfile3_anl -s > tmpfile3i_anl
@@ -152,8 +154,8 @@ do
   $WGRIB2 masterfile_$fhr | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile_a$fhr masterfile_$fhr
   $WGRIB2 masterfile_$fhr | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile3_b$fhr masterfile_$fhr
  
-  $WGRIB2  tmpfile_a$fhr $opt1 $opt2 -new_grid $grid0p25 tmpfile_$fhr
-  $WGRIB2  tmpfile3_b$fhr $opt1 $opt2 -new_grid $grid0p25 tmpfile3_$fhr
+  $WGRIB2  tmpfile_a$fhr $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 tmpfile_$fhr
+  $WGRIB2  tmpfile3_b$fhr $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 tmpfile3_$fhr
 
   $WGRIB2 tmpfile_$fhr -s > tmpfile2i_$fhr
   $WGRIB2 tmpfile3_$fhr -s > tmpfile3i_$fhr

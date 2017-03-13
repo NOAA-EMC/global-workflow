@@ -14,7 +14,7 @@
 
 export KMP_AFFINITY=disabled
 
-export PDY=20160914
+export PDY=20170304
 export PDY1=`expr $PDY - 1`
 
 # export cyc=06
@@ -29,9 +29,6 @@ date
 ##  Load the GRIB Utilities module
 ####################################
 
-#%include <head.h>
-#%include <envir-p2.h>
-
 . $MODULESHOME/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
@@ -40,25 +37,25 @@ module load iobuf/2.0.7
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
+module load prod_util/1.0.5
+
+###########################################
+# Now set up GEMPAK/NTRANS environment
+###########################################
+module load gempak/7.3.0
 #
-#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
 #
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.4
-
+module load grib_util/1.0.5
 #
-#   This is a test version of UTIL_SHARED.v1.0.4 on CRAY
+#   This is a test version of UTIL_SHARED.v1.0.5 on CRAY
 #
-module use /usrx/local/nceplibs/util_shared.v1.0.4/modulefiles
-module load util_shared/1.0.4
+module use /usrx/local/nceplibs/util_shared.v1.0.5/modulefiles
+module load util_shared/1.0.5
 
 module list
-
-############################################
-# GFS GEMPAK PRODUCT GENERATION
-############################################
 
 ############################################
 # Define COM, PCOM, COMIN  directories
@@ -68,7 +65,9 @@ module list
  export envir=para
 # export envir=prod
 
+export SENDCOM=YES
 export SENDDBN=NO
+export KEEPDATA=YES
 export job=gfs_gempak_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -85,7 +84,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 export gdas_ver=v14.1.0
 export gfs_ver=v14.1.0
-export util_ver=v1.0.4
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -93,27 +91,6 @@ export util_ver=v1.0.4
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
 
 ################################
 # Set up the HOME directory
@@ -124,26 +101,6 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
-
-# For half-degree P Grib files
-export DO_HD_PGRB=${DO_HD_PGRB:-YES}
-
-#
-# Set up model and cycle specific variables
-#
-export finc=${finc:-3}
-export fstart=${fstart:-0}
-export model=${model:-gfs}
-export GRIB=${GRIB:-pgrb2f}
-export EXT=""
-export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
 
 ###################################
 # Specify NET and RUN Name and model
@@ -164,8 +121,7 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMROOTp2}/gfs/prod/gfs.${PDY}
 else
-#  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}       ### EMC PARA Realtime 
-  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_gfs_${PDY}     ### test with canned data
+  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}       ### EMC PARA Realtime 
 fi
 
 export COMOUT=${COMOUT:-${COMROOT2}/nawips/${envir}/${RUN}.${PDY}}
@@ -174,94 +130,7 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-export pgmout=OUTPUT.$$
-
-env
-
-rm -f poescript
-
-###########################################
-# Now set up GEMPAK/NTRANS environment
-###########################################
-module load gempak/7.3.0
-
-#################################################################
-# Execute the script for the 384 hour 1 degree grib
-##################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$ " >>poescript
-
-
-#################################################################
-# Execute the script for the half-degree grib
-##################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$ " >>poescript
-
-
-#################################################################
-# Execute the script for the quater-degree grib
-####################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$ " >> poescript
-
-
-####################################################################
-# Execute the script to create the 35km Pacific grids for OPC
-#####################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs35_pac 180 GFS_GEMPAK_WWB &> $DATA/gfs35_pac.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs35_pac 180 GFS_GEMPAK_WWB &> $DATA/gfs35_pac.$$ " >>poescript
-
-
-####################################################################
-# Execute the script to create the 35km Atlantic grids for OPC
-#####################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs35_atl 180 GFS_GEMPAK_WWB &> $DATA/gfs35_atl.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs35_atl 180 GFS_GEMPAK_WWB &> $DATA/gfs35_atl.$$ " >>poescript
-
-
-#####################################################################
-# Execute the script to create the 40km grids for HPC
-######################################################################
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs40 180 GFS_GEMPAK_WWB &> $DATA/gfs40.$$ " >>poescript
-echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs40 180 GFS_GEMPAK_WWB &> $DATA/gfs40.$$ " >>poescript
-
-cat poescript
-
-chmod 775 $DATA/poescript
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=$DATA/poescript
-export MP_LABELIO=YES
-export MP_INFOLEVEL=3
-export MP_STDOUTMODE=ordered
-
-# Execute the script.
-# mpirun.lsf
-
-export NODES=2
-aprun -n 34 -N 17 cfp $DATA/poescript
-export err=$?;err_chk
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
-############################################
-# print exec I/O output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-###################################
-# Remove temp directories
-###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-#  rm -rf $DATA
-   echo "  Data  is till here !!! "
-fi
-
-date
+#############################################
+# run the GFS job
+#############################################
+sh $HOMEgfs/jobs/JGFS_GEMPAK

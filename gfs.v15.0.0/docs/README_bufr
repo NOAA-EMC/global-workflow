@@ -1,0 +1,51 @@
+changes for 2017GFS upgrades Bufr soundings
+Bufr sounding subversion log:
+SURGE-slogin1 > svn status
+M       jobs/JGFS_POSTSND
+A       parm/bufr_gfs_class1.tbl
+A       parm/bufr_stalist.meteo.gfs
+D       parm/bufr_stalist.meteo.gfs3.update
+M       scripts/exgfs_postsnd.sh.ecf
+M       sorc/build_gfs_bufrsnd.sh
+M       sorc/gfs_bufr.fd/buff.f
+M       sorc/gfs_bufr.fd/gfsbufr.f
+M       sorc/gfs_bufr.fd/meteorg.f
+M       sorc/gfs_bufr.fd/tdew.f
+M       ush/gfs_bfr2gpk.sh
+M       ush/gfs_bufr.sh
+M       ush/gfs_sndp.sh
+
+-------------------------------------------------------------
+M       jobs/JGFS_POSTSND
+    change aprun parameters to speed up the wall time.
+-------------------------------------------------------------
+A       parm/bufr_gfs_class1.tbl
+A       parm/bufr_stalist.meteo.gfs
+D       parm/bufr_stalist.meteo.gfs3.update
+    expanded number of stations from 1919 to 2021, added water-land designations, etc.
+    the expanded and modified stations can be seen in the TIN:
+    https://docs.google.com/document/d/15exFN-0W36cS4rNULALyh_qTJcl8hBBTBZozdRxM_0s/edit#
+    change files names since these files are used for all output time intervals;
+    parm/bufr_stalist.meteo.gfs3.update is deleted for it is no longer needed.
+    The two files names have been changed by removing "3" in the file names.
+-------------------------------------------------------------
+M       scripts/exgfs_postsnd.sh.ecf
+M       sorc/gfs_bufr.fd/buff.f
+M       sorc/gfs_bufr.fd/gfsbufr.f
+M       sorc/gfs_bufr.fd/meteorg.f
+    modified to accommodate hourly output to 120 hours, and then 3 hourly to 240 hours.
+    change accumulative precipitation to hourly or 3 hourly precipitation.
+    added land/water search functions aside from nearest point and maximun reach is
+    3 grid points.
+    metigated situations when convective precip is larger than total precip
+-------------------------------------------------------------
+M       sorc/gfs_bufr.fd/tdew.f
+    metigated situations when dew points are larger than temperatures.
+-------------------------------------------------------------
+M       ush/gfs_bfr2gpk.sh
+M       ush/gfs_bufr.sh
+M       ush/gfs_sndp.sh
+    modified to accomodate hourly output to 120 hours, and then 3 hourly to 240 hours.
+    changed namelist content, dimention parameters, time interval parameters, etc.
+
+-------------------------------------------------------------
