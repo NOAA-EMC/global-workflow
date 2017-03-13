@@ -6,7 +6,13 @@ set -x
 export regtest=$1
 
 # source the necessary files to setup
-. $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
+if [ "$#" -eq 2 ]; then
+  export regdir=$2
+  . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' $regdir/regression_var.out)
+else
+  . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
+fi
+
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
 
