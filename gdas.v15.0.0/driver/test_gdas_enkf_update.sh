@@ -18,7 +18,7 @@ export ntasks=240
 export ptile=6
 export threads=4
 
-export CDATE=2017011900
+export CDATE=2017030806
 
 
 #############################################################
@@ -40,7 +40,7 @@ export DATAROOT=/gpfs/hps/stmp/$LOGNAME/test
 export gdas_ver=v14.1.0
 export global_shared_ver=v14.1.0
 export grib_util_ver=1.0.3
-export prod_util_ver=1.0.5
+export prod_util_ver=1.0.6
 export util_shared_ver=1.0.3
 
 

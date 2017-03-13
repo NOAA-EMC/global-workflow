@@ -11,7 +11,11 @@ export envir=${envir:-prod}
 ####################################
 # Specify version numbers
 ####################################
-export gfs_ver=${gfs_ver:-v13.0.0}
+export global_shared_ver=${global_shared_ver:-v14.1.0} 
+export gfs_ver=${gfs_ver:-v14.1.0}
+export gdas_ver=${gdas_ver:-v14.1.0}
+export hwrf_ver=${hwrf_ver:-v9.0.20}
+export g2tmpl_ver=${g2tmpl_ver:-v1.3.0}
 
 ####################################
 # obtain unique process id (pid) and make temp directory
@@ -24,6 +28,8 @@ cd $DATA
 ############################################
 # Load the UTILITIES module
 ############################################
+. $MODULESHOME/init/sh
+module load prod_envir
 # module load ibmpe ics lsf grib_util
 
 ###########################################
@@ -37,7 +43,7 @@ setpdy.sh
 # Specify NET and RUN Name and model
 ####################################
 export NET=gfs
-export RUN=gdas1
+export RUN=gdas
 
 ####################################
 # File To Log Msgs
@@ -131,7 +137,7 @@ export FHOUR=09
 ####################################
 # Specify Special Post Vars
 ####################################
-if [ $RUN = gdas1 ]
+if [ $RUN = gdas ]
 then
   export IGEN_GFS="gfs_avn"
   export IGEN_ANL="anal_gfs"

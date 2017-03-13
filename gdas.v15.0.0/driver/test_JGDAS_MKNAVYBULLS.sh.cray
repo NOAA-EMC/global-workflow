@@ -17,7 +17,7 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20161116
+export PDY=20170304
 export PDY1=`expr $PDY - 1`
 
 export cyc=12
@@ -31,9 +31,6 @@ date
 ##  Load the GRIB Utilities module
 #####################################
 
-#%include <head.h>
-#%include <envir-p2.h>
-
 . /opt/modules/3.2.6.7/init/sh
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
@@ -42,13 +39,13 @@ module load iobuf
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
+module load prod_util/1.0.5
 #
-#   This is a test version of GRIB_UTIL.v1.0.4 on CRAY
+#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
 #
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.4
+module load grib_util/1.0.5
 
 module list
 
@@ -61,10 +58,12 @@ module list
 ##############################################
 
 # set envir=prod or para to test with data in prod or para
-# export envir=para
- export envir=prod
+ export envir=para
+# export envir=prod
 
+export SENDCOM=YES
 export SENDDBN=NO
+export KEEPDATA=YES
 export job=gdas_mknavybull_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -86,7 +85,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 export gdas_ver=v14.1.0
 export gfs_ver=v14.1.0
-export util_ver=v1.0.4
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -94,27 +92,6 @@ export util_ver=v1.0.4
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
-
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
 
 ################################
 # Set up the HOME directory
@@ -125,13 +102,6 @@ export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
 export FIXgdas=${FIXgdas:-$HOMEgdas/gempak/fix}
 export USHgdas=${USHgdas:-$HOMEgdas/gempak/ush}
 export SRCgdas=${SRCgdas:-$HOMEgdas/scripts}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
 ###################################
 # Specify NET and RUN Name and model
@@ -157,12 +127,11 @@ if [ $envir = "prod" ] ; then
   export RUN=gdas1
   export model=gdas1
 else
-#  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gdas.${PDY}         ### EMC PARA Realtime
-  export COMIN=/gpfs/hps/emc/global/noscrub/Boi.Vuong/para_gdas_${PDY}       ### test with canned data
+  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gdas.${PDY}         ### EMC PARA Realtime
 fi
 
 export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}}
-export pcom=${pcom:-${PCOMROOT2}/gdas}
+export pcom=${PCOMROOT2}/gdas
 
 if [ $SENDCOM = YES ] ; then
 
@@ -170,31 +139,8 @@ if [ $SENDCOM = YES ] ; then
 
 fi
 
-export pgmout=OUTPUT.$$
+#############################################
+# run the GFS job
+#############################################
+sh $HOMEgdas/jobs/JGDAS_MKNAVYBULLS
 
-env
-
-########################################################
-# Execute the script.
-$SRCgdas/exmknavyb.sh.ecf
-export err=$?; err_chk
-########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
-############################################
-# print exec I/O output
-############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
-fi
-
-###################################
-# Remove temp directories
-###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
-fi
-
-date

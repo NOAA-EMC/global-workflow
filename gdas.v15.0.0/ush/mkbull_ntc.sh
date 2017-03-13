@@ -61,6 +61,7 @@ do
    then
       pgrbfile="sstgrb"
       pgrbifile="sstgrb.index"
+#      cp $COMIN/${RUN}.${cycle}.${pgrbfile}  ${pgrbfile}
       cp $COMIN/${RUN}.${cycle}.${pgrbfile}.grib2  .
       $CNVGRIB -g21 ${RUN}.${cycle}.${pgrbfile}.grib2  $pgrbfile
       $GRBINDEX $pgrbfile $pgrbifile

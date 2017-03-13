@@ -1,7 +1,7 @@
 #%Module##############################################################
 ##                                             Boi.Vuong@noaa.gov
 ##                                             NOAA/NWS/NCEP/EMC
-##  GFS v13.0.0
+##  GFS v14.1.0
 ##  Change Log
 ##  02/22/2016:  Boi Vuong, initial setting
 ##
@@ -13,7 +13,7 @@ puts stderr "to build the post for WCOSS production.\n"
 }
 module-whatis "gridbull"
 
-set ver v13.0.0
+set ver v14.1.0
 
 # Loading Intel Compiler Suite
 module load ics/12.1

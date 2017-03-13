@@ -1481,6 +1481,7 @@ contains
    integer(i_kind),parameter:: nthreshold = 100
    integer(i_kind),parameter:: maxchn = 3000
    integer(i_kind),parameter:: maxdat = 100
+   real(r_kind),   parameter:: atiny  = 1.0e-10_r_kind
 
 !  Declare local variables
    logical lexist
@@ -1504,7 +1505,7 @@ contains
    integer(i_kind),dimension(maxchn):: ich
    integer(i_kind),dimension(maxdat):: ipoint
  
-   real(r_kind):: bias,scan,errinv,rnad,atiny
+   real(r_kind):: bias,scan,errinv,rnad
    real(r_kind):: tlaptmp,tsumtmp,ratio
    real(r_kind),allocatable,dimension(:):: tsum0,tsum,tlap0,tlap1,tlap2,tcnt
    real(r_kind),allocatable,dimension(:,:):: AA
@@ -1752,6 +1753,7 @@ contains
 !           errinv=data_chan(j)%errinv
 !           if (iuse_rad(jj)<=0) errinv=exp(-(data_chan(j)%omgnbc/3.0_r_kind)**2)
                   errinv=exp(-(data_chan(j)%omgnbc/3.0_r_kind)**2)
+                  if (errinv<atiny) cycle loopc
 
                   if (update_tlapmean(jj)) then
                      tlaptmp=data_chan(j)%tlap
@@ -1852,7 +1854,6 @@ contains
          endif
 
 !        Solve linear system
-         atiny=1.0e-10_r_kind
          allocate(AA(np,np),be(np))
          do i=1,new_chan
             if (iobs(i)<nthreshold) cycle

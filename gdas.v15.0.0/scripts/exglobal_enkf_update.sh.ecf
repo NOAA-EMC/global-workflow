@@ -208,6 +208,30 @@ export utilscript=${utilscript:-$NWPROD/util/ush}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+export RUN_PROD=${RUN_PROD:-"NO"}
+
+if [ $RUN_PROD = YES ] ; then
+   RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+   err1=0
+   if [ $RUN_GETGES = YES ]; then
+     GETGESSH=${GETGESSH:-getges.sh}
+     export gesenvir=${gesenvir:-$envir}
+     $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
+     err1=$?
+   fi
+
+   if [ $err1 -eq 0 ] ; then
+      msg="Analysis Starting/Guess Fields Found"
+      postmsg "$jlogfile" "$msg"
+   else
+      msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
+      postmsg "$jlogfile" "$msg"
+      export pgm=$job
+      export err=911
+      err_chk
+   fi
+fi
+
 #  Set script / EnKF update control parameters
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run EnKF update with NEMSIO input/output
 #  Filenames.

@@ -1,98 +1,111 @@
-#!/bin/sh 
+#!/bin/sh
 
-#BSUB -a poe
+#BSUB -o out_gdas_nemsio_p25_para_mpiio.%J
+#BSUB -e err_gdas_nemsio_p25_para_mpiio.%J
+#BSUB -J NEMSPOST 
+#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} + 96*{select[craylinux && vnode]span[ptile=24] cu[type=cabinet]}'
+#BSUB -W 00:40
+#BSUB -q dev
 #BSUB -P GFS-T2O
-#BSUB -eo gdaspost1.dayfile.%J
-#BSUB -oo gdaspost1.dayfile.%J
-#BSUB -J gdaspost1
-#BSUB -network type=sn_all:mode=US
-#BSUB -q "debug2"  
-#BSUB -n 24
-#BSUB -R span[ptile=8]
-#BSUB -R affinity[core(3)]
-#BSUB -x
-#BSUB -W 00:25
-
-#############################################################
-#  Function been tested:            GDAS master pgb file. 
-#
-#  Calling sequence:                run_JGDAS_NCEPPOST.sh -> JGDAS_NCEPPOST -> exgfs_nceppost.sh.ecf -> global_nceppost.sh -> ncep_post
-#
-#  Initial condition:               CDATE=2016020900 (where /global/noscrub/emc.glopara/com/gfs/para/gfs.${PDY}${cyc} has data
-#
-#  Usage:                           bsub<run_JGDAS_NCEPPOST.sh (modify JGDAS_NCEPPOST to keep DATA for review)
-#
-#  Data_In:                         /global/noscrub/emc.glopara/com/gfs/para/gdas.${PDY}${cyc}
-#
-#  Data_Out:                        /ptmpd2/Lin.Gan/nceppostgdas_${PDY}${cyc}
-#
-#  Result verification:             cmp ${DATA}/gdas1.t00z.master.grb2f00 ${Data_Out}/gdas1.t00z.master.grb2f00
-#############################################################
+#BSUB -M 1000
+#BSUB -cwd /gpfs/hps/emc/global/noscrub/Hui-Ya.Chuang/nems_sample_output_T1534
 
 set -x
-export OMP_NUM_THREADS=3
-export MP_MPILIB=mpich2
-export MP_EUILIB=us
+
+# specify user's own post working directory for testing
+export svndir=/gpfs/hps/emc/global/noscrub/Hui-Ya.Chuang/post_trunk
 export MP_LABELIO=yes
-export MP_COMPILER=intel
-export FOR_DISABLE_STACK_TRACE=true
+export OMP_NUM_THREADS=1
+export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=2048M
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered
 
-####################################
+############################################
 # Loading module
-####################################
-module load ibmpe ics lsf prod_util grib_util
-# module load ibmpe ics lsf grib_util
+############################################
+. $MODULESHOME/init/ksh
+module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
+#module load cfp-intel-sandybridge/1.1.0
+module use /gpfs/hps/nco/ops/nwprod/modulefiles
+module load prod_envir
+#module load prod_util
+module load prod_util/1.0.4
+module load grib_util/1.0.3
+
+# specify PDY (the cycle start yyyymmdd) and cycle
+export PDY=20170212
+export cyc=00
+export cycle=t${cyc}z
+
+
+# specify the directory environment for executable, it's either para or prod
+export envir=prod
+
+# set up running dir
+
+export user=`whoami`
+export DATA=/gpfs/hps/ptmp/${user}/gdas.${PDY}${cyc}_nemsio_mpiio
+mkdir -p $DATA
+cd $DATA
+rm -f ${DATA}/*
 
 ####################################
-#Specify whether the run is production or development
+# Specify RUN Name and model
 ####################################
-export LD_LIBRARY_PATH=/nwprod/lib:$LD_LIBRARY_PATH
-export envir=${envir:-prod}
-
-####################################
-# Specify version numbers
-####################################
-export post_ver=${post_ver:-v7.0.0}
-export crtm_ver=${crtm_ver:-v2.0.6}
-export gsm_ver=${gsm_ver:-v13.0.0}
-export gfs_ver=${gfs_ver:-v13.0.0}
-export NWROOT=${NWROOT:-/nwprod2}
-export COMROOT=${COMROOT:-/com}
-export GESROOT=${GESROOT:-/nwges}
-
-export pid=$$
-
-export DATA_IN=/ptmpd2/$USER
-
-#### export CDATE=2016020900
-export CDATE=2016022500
-
-export PDY=`echo $CDATE | cut -c1-8`
-export cyc=`echo $CDATE | cut -c9-10`
-export DATA=$DATA_IN/nceppostgdas_${PDY}
-
-#export job=gdas_nceppost_${cyc}
-
 export NET=gfs
-export RUN=gdas
+#export RUN=gdas
 
 ####################################
-# Reference to testing location of super structure
+# Determine Job Output Name on System
 ####################################
-export HOMEglobal=/global/save/Lin.Gan/prpost7/NCO/ncep_post_test/post_trunk_regression_test/svntags/global_shared.v13.0.0
-export HOMECRTM=${HOMECRTM:-/nw${envir}/lib/crtm/$crtm_ver}
-export FIXCRTM=${FIXCRTM:-$HOMECRTM/sorc/fix}
-export HOMEgfs=/global/save/Lin.Gan/prpost7/NCO/ncep_post_test/post_trunk_regression_test/svntags/gfs.v13.0.0
-export HOMEgdas=/global/save/Lin.Gan/prpost7/NCO/ncep_post_test/post_trunk_regression_test/svntags/gdas.v13.0.0
-#### export COMIN=/global/save/Lin.Gan/prpost7/NCO/ncep_post_test/post_trunk_regression_test/data_in
-export COMIN=/global/noscrub/emc.glopara/com/gfs/para/gdas.20160225
+#export pgmout="OUTPUT.${pid}"
+#export pgmerr=errfile
+
+####################################
+# SENDSMS  - Flag Events on SMS
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+# RERUN    - Rerun posts from beginning (default no)
+# VERBOSE  - Specify Verbose Output in global_postgp.sh
+####################################
+export SAVEGES=NO
+export SENDSMS=NO
+export SENDCOM=YES
+export SENDDBN=NO
+export RERUN=NO
+export VERBOSE=YES
+
+export HOMEglobal=${svndir}
+export HOMEgfs=${svndir}          
+export HOMEgdas=${svndir}
+                                                                                               
+##############################################
+# Define COM directories
+##############################################
+export COMIN=/gpfs/hps/emc/global/noscrub/Hui-Ya.Chuang/para_look_alike/gdas.${PDY}
+# specify my own COMOUT dir to mimic operations
 export COMOUT=$DATA
-
-export POSTGPEXEC=$HOMEglobal/exec/ncep_post
-
-export post_times="09"
-
-${HOMEgdas}/jobs/JGDAS_NCEPPOST
+mkdir -p $COMOUT
 
 date
-exit
+
+#export OUTTYP=4
+# need to set FIXglobal to global share superstructure if testing post in non
+# super structure environement
+export FIXglobal=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/fix
+export APRUN="aprun -j 1 -n24 -N8 -d1 -cc depth"
+export nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/exec/nemsio_get
+
+export KEEPDATA=YES
+#export POSTGRB2TBL=$HOMEglobal/parm/params_grib2_tbl_new
+$HOMEgfs/jobs/JGDAS_NCEPPOST
+
+#############################################################
+
+date
+
+echo $?
+
+
+

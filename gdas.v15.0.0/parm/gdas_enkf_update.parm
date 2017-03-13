@@ -2,6 +2,8 @@
 # Specify Special Vars
 ####################################
 #
+export RUN_PROD=${RUN_PROD:-"YES"}
+
 # Set executable and script
 export SIGHDR=${SIGHDR:-${EXECgsm}/nemsio_get}
 export SFCHDR=${SFCHDR:-${EXECgsm}/nemsio_get}
@@ -79,28 +81,8 @@ export SIGANLENS_TMP=${SIGANLENS_TMP:-${COMOUT}/${PREINP}atmanl}
 #
 # Define Previous Guess File Names (dev users must provide from outside)
 ####################################
-RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
-err1=0
-if [ $RUN_GETGES = YES ]; then
-  GETGESSH=${GETGESSH:-getges.sh}
-  export gesenvir=${gesenvir:-$envir}
-  $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
-err1=$?
-fi
 
 export GBIAS=${GBIAS:-$DATA/gbias}
-
-
-if [ $err1 -eq 0 ] ; then
-   msg="Analysis Starting/Guess Fields Found"
-   postmsg "$jlogfile" "$msg"
-else
-   msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
-   postmsg "$jlogfile" "$msg"
-   export pgm=$job
-   export err=911
-   err_chk
-fi
 
 
 # Set namelist variables for enhanced radiance bias correction scheme

@@ -230,7 +230,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #------------------------------------------------------------------
    if [[ ! -s ${TANKverf}/radmon.${PDY}/${satype_file} || $satype_changes -eq 1 ]]; then
       if [[ ! -d ${TANKverf}/radmon.${PDY} ]]; then
-         mkdir -f ${TANKverf}/radmon.${PDY}
+         mkdir -p ${TANKverf}/radmon.${PDY}
       fi
       if [[ -e ${TANKverf}/radmon.${PDY}/${satype_file} ]]; then
          rm -f ${TANKverf}/radmon.${PDY}/${satype_file}

@@ -1,6 +1,6 @@
 SHELL=/bin/sh
 #
-# This makefile was produced by /usr/bin/fmgen at 12:00:38 PM on 11/27/96
+# This makefile was produced by /usr/bin/fmgen at 12:44:09 PM on 03/12/97
 # If it is invoked by the command line
 #	make -f makefile
 # it will compile the fortran modules indicated by SRCS into the object
@@ -28,9 +28,9 @@ SHELL=/bin/sh
 # parameter.  The new modules are not limited to fortran, but may be C, YACC,
 # LEX, or CAL.  An explicit rule will need to be added for PASCAL modules.
 #
-SRCS=   BIN2CHAR.f BIN2EBCD.f BULLET.f GRIDBUL.f PAKWND.f QUADAX.f WINDY.f
+SRCS=	BULHDR.f NAVYBULL.f 
 
-OBJS=   BIN2CHAR.o BIN2EBCD.o BULLET.o GRIDBUL.o PAKWND.o QUADAX.o WINDY.o
+OBJS=	BULHDR.o NAVYBULL.o 
 
 # Tunable parameters
 #
@@ -40,17 +40,18 @@ OBJS=   BIN2CHAR.o BIN2EBCD.o BULLET.o GRIDBUL.o PAKWND.o QUADAX.o WINDY.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =	        ftn
-LDFLAGS =	
-LIBS= ${W3NCO_LIB4} ${BACIO_LIB4}
-CMD =           gridbull
-PROFLIB =	-lprof
+FC =            ftn
+LDFLAGS =
+LIBS =  -Xlinker --start-group ${W3EMC_LIB8} ${W3NCO_LIB8} ${BUFR_LIB8} ${BACIO_LIB8} 
+CMD =		navybull
+PROFLIB =       -lprof
 
 # To perform the default compilation, use the first line
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
-# WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
-FFLAGS =        -O3  -g -assume byterecl -assume noold_ldout_format -axCORE-AVX2 -fp-model strict
+# WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED
+FFLAGS =        -O3  -g -assume byterecl -axCORE-AVX2 -convert big_endian -assume noold_ldout_format -r8 -i8
+
 #FFLAGS =	 -F
 #FFLAGS =	 -Wf"-ez"
 
