@@ -146,7 +146,7 @@
 !jw
       integer ii,jj,js,je,iyear,imn,iday,itmp,ioutcount,istatus,       &
               I,J,L,ll,k,kf,irtn,igdout,n,Index,nframe,                &
-              impf,jmpf,nframed2,iunitd3d,ierr,idum,iret,nrec
+              impf,jmpf,nframed2,iunitd3d,ierr,idum,iret,nrec,idrt
       real    TSTART,TLMH,TSPH,ES,FACT,soilayert,soilayerb,zhour,dum,  &
               tvll,pmll,tv, tx1, tx2
       real, external :: fpvsnew
@@ -185,6 +185,7 @@
       real, allocatable :: div3d(:,:,:)
       real(kind=4),allocatable :: vcrd(:,:)
       real                     :: omg1(im), omg2(im+2)
+
 !***********************************************************************
 !     START INIT HERE.
 !
@@ -202,9 +203,21 @@
           buf(i,j) = spval
         enddo
       enddo
+
+! initialize nemsio using mpi io module
+      call nemsio_init()
+      call nemsio_open(nfile,trim(filename),'read',mpi_comm_comp,iret=status)
+      if ( status /= 0 ) then
+        print*,'error opening ',fileName, ' Status = ', Status ; stop
+      endif
+      call nemsio_getfilehead(nfile,iret=status,nrec=nrec,idrt=idrt)
+
 !     
 !     STEP 1.  READ MODEL OUTPUT FILE
 !
+!------------------------------
+      if (idrt == 4) then
+!------------------------------
 !     read lonsperlat
       open (201,file='lonsperlat.dat',status='old',form='formatted',     &
                                       action='read',iostat=iret)
@@ -222,6 +235,16 @@
       do j=jm/2+1,jm
         numi(j) = lonsperlat(jm+1-j)
       enddo
+!------------------------------
+      else
+!------------------------------
+      do j=1,jm
+        numi(j) = im                     
+      enddo
+!------------------------------
+      endif
+!------------------------------
+
 !
 !***
 !
@@ -247,13 +270,6 @@
         end do
       end do
 
-! initialize nemsio using mpi io module
-      call nemsio_init()
-      call nemsio_open(nfile,trim(filename),'read',mpi_comm_comp,iret=status)
-      if ( Status /= 0 ) then
-        print*,'error opening ',fileName, ' Status = ', Status ; stop
-      endif
-      call nemsio_getfilehead(nfile,iret=status,nrec=nrec)
 !     write(0,*)'nrec=',nrec
       allocate(recname(nrec),reclevtyp(nrec),reclev(nrec))
       allocate(glat1d(im*jm),glon1d(im*jm))
@@ -262,10 +278,15 @@
       call nemsio_getfilehead(nfile,iret=iret                           &
           ,idate=idate(1:7),nfhour=nfhour,recname=recname               &
           ,reclevtyp=reclevtyp,reclev=reclev,lat=glat1d                 &
-          ,lon=glon1d,nframe=nframe,vcoord=vcoord4)
+          ,lon=glon1d,nframe=nframe,vcoord=vcoord4,idrt=maptype)
 
       if(iret/=0)print*,'error getting idate,nfhour'
       print *,'latstar1=',glat1d(1),glat1d(im*jm)
+
+! Specigy grid staggering type
+      gridtype = 'A'
+      if (me == 0) print *, 'maptype and gridtype is ', &
+      maptype,gridtype
 
       if(debugprint)then
         if (me == 0)then
@@ -291,6 +312,34 @@
          bk5(l) = vcoord4(l,2,1)
         enddo
       endif
+
+!--Fanglin Yang:  nemsio file created from FV3 does not have vcoord.
+      if ( minval(ak5) <0 .or. minval(bk5) <0 ) then
+       open (202,file='global_hyblev.txt',status='old',form='formatted',     &
+                                       action='read',iostat=iret)
+       rewind (202)
+       read(202,*)
+       do l=1,lm+1
+        read (202,*,iostat=iret) ak5(l),bk5(l)                      
+       enddo
+       close (202)
+ 
+       if (iret == 0  ) then 
+         do l=1,lm+1
+          vcoord4(l,1,1)=ak5(l)
+          vcoord4(l,2,1)=bk5(l)
+         enddo
+       else
+         print *, 'ak5 and bk5 not found, stop !'
+         stop
+       endif
+      endif
+
+      if (me == 0)then
+         print *,"ak5",ak5 
+         print *,"bk5",bk5 
+      endif
+
 !     deallocate(glat1d,glon1d,vcoord4)
       deallocate(glat1d,glon1d)
 
@@ -408,19 +457,6 @@
       HBM2 = 1.0
 
       
-! Specigy grid type
-!     if(iostatusFlux == 0) then
-      if(IGDS(4) /= 0) then
-        maptype = IGDS(3)
-      else if((im/2+1) == jm) then
-        maptype = 0 !latlon grid
-      else
-        maptype = 4 ! default gaussian grid
-      end if
-      gridtype = 'A'
-
-      if (me == 0) write(6,*) 'maptype and gridtype is ', maptype,gridtype
-      
 ! start reading nemsio sigma files using parallel read
       fldsize = (jend-jsta+1)*im
       allocate(tmp(fldsize*nrec))
@@ -494,7 +530,7 @@
                           ,recname,reclevtyp,reclev,VarName,VcoordName &
                           ,pint(1,jsta_2l,lp1))
 
-!      if(debugprint)print*,'sample surface pressure = ',pint(isa,jsa,lp1
+       if(debugprint)print*,'sample surface pressure = ',pint(isa,jsa,lp1)
       
        recn_vvel = -999
 !
@@ -620,7 +656,7 @@
             stop
           endif
 
-!         if(debugprint)print*,'sample ',ll,VarName,' = ',ll,pmid(isa,jsa,ll)      
+          if(debugprint)print*,'sample ',ll,VarName,' = ',ll,pmid(isa,jsa,ll)      
         endif
 !                                                      ozone mixing ratio
         VarName = 'o3mr'
@@ -802,6 +838,7 @@
 !----------------------------------------------------------------------
         allocate (vcrd(lm+1,2),  d2d(im,lm), u2d(im,lm), v2d(im,lm),    &
                   pi2d(im,lm+1), pm2d(im,lm), omga2d(im,lm))
+        omga2d=spval
         idvc    = 2
         idsl    = 2
         nvcoord = 2
@@ -1300,30 +1337,31 @@
 ! to compute buket will result in changing bucket with forecast time.
 ! set default bucket for now
 
-!      call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
-!      if(iret == 0) then
-!         tprec   = 1.0*ifhr-zhour
-!         tclod   = tprec
-!         trdlw   = tprec
-!         trdsw   = tprec
-!         tsrfc   = tprec
-!         tmaxmin = tprec
-!         td3d    = tprec
-!         print*,'tprec from flux file header= ',tprec
-!      else
-!         print*,'Error reading accumulation bucket from flux file', &
-!             'header - will try to read from env variable FHZER'
-!         CALL GETENV('FHZER',ENVAR)
-!         read(ENVAR, '(I2)')idum
-!         tprec   = idum*1.0
-!         tclod   = tprec
-!         trdlw   = tprec
-!         trdsw   = tprec
-!         tsrfc   = tprec
-!         tmaxmin = tprec
-!         td3d    = tprec
-!         print*,'TPREC from FHZER= ',tprec
-!      end if
+!     call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
+!     if(iret == 0) then
+!        tprec   = 1.0*ifhr-zhour
+!        tclod   = tprec
+!        trdlw   = tprec
+!        trdsw   = tprec
+!        tsrfc   = tprec
+!        tmaxmin = tprec
+!        td3d    = tprec
+!        print*,'tprec from flux file header= ',tprec
+!     else
+!        print*,'Error reading accumulation bucket from flux file', &
+!            'header - will try to read from env variable FHZER'
+!        CALL GETENV('FHZER',ENVAR)
+!        read(ENVAR, '(I2)')idum
+!        tprec   = idum*1.0
+!        tclod   = tprec
+!        trdlw   = tprec
+!        trdsw   = tprec
+!        tsrfc   = tprec
+!        tmaxmin = tprec
+!        td3d    = tprec
+!        print*,'TPREC from FHZER= ',tprec
+!     end if
+
 
         tprec   = 6.
         if(ifhr>240)tprec=12.
@@ -2334,6 +2372,7 @@
                           ,l,nrec,fldsize,spval,tmp                    &
                           ,recname,reclevtyp,reclev,VarName,VcoordName &
                           ,u10)
+
       do j=jsta,jend
         do i=1,im
           u10h(i,j)=u10(i,j)
@@ -2349,6 +2388,7 @@
                           ,l,nrec,fldsize,spval,tmp                    &
                           ,recname,reclevtyp,reclev,VarName,VcoordName &
                           ,v10)
+
       do j=jsta,jend
         do i=1,im
           v10h(i,j)=v10(i,j)

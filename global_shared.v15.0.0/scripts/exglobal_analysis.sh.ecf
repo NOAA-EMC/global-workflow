@@ -151,6 +151,8 @@
 #                   defaults to ${COMOUT}/biascor_in; optional
 #     USE_NEWRADBC  Flag to use new radiance bias correction scheme (YES or NO)
 #                   defaults to NO
+#     USE_RADSTAT   Flag to use guess radstat file for bias correction
+#                   initialization (YES or NO).  defaults to NO
 #     RADSTAT       Output radiance assimilation statistics
 #                   defaults to ${COMIN}/${PREINP}radstat
 #     GSISTAT       Output gsi (obs-ges), qc, and iteration statistics
@@ -575,6 +577,106 @@ export EXECgsi=${EXECgsi:-$NWPROD/global_shared.${global_shared_ver}/exec}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
+export RUN_PROD=${RUN_PROD:-"NO"}
+export CYCLVARS=${CYCLVARS:-""}
+
+# Execute following block only for operational (production) runs
+if [ $RUN_PROD = YES ]; then
+
+   if [ $RUN = gfs -o $RUN = gdas ] ; then
+
+#     Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+      prev_cdate=$($NDATE -6 $PDY$cyc)
+      RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+      if [ $RUN_GETGES = YES ]; then
+         GETGESSH=${GETGESSH:-getges.sh}
+         export gesenvir=${gesenvir:-$envir}
+         snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n gdas -v $prev_cdate)
+      else
+         snoprv=${snoprv:-$FNSNOG}
+      fi
+      if [ `$WGRIB -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
+          awk -F: '{print $3}'|awk -F= '{print $2}'` -le \
+     `$WGRIB -4yr $snoprv 2>/dev/null |grep -i snowc  |\
+                        awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
+         export FNSNOA=" "
+         export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+      else
+         export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+         export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+      fi
+
+#     Get select background files for analysis
+      err1=0
+      if [ $RUN_GETGES = YES ]; then
+         export gesenvir=${gesenvir:-$envir}
+         $GETGESSH -t nsfges -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas bges
+         err1=$?
+         $GETGESSH -t nsfgm3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm3
+         $GETGESSH -t nsfgm2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm2
+         $GETGESSH -t nsfgm1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm1
+         $GETGESSH -t nsfgp1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp1
+         $GETGESSH -t nsfgp2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp2
+         $GETGESSH -t nsfgp3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp3
+         $GETGESSH -t biascr -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias
+         $GETGESSH -t biascr_pc -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_pc
+         $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
+         $GETGESSH -t radstat -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gradstat
+      fi
+
+
+   elif [ $RUN = enkf ] ; then
+
+
+#     Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+      prev_cdate=$($NDATE -6 ${PDY}$cyc)
+      RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
+      if [ $RUN_GETGES = YES ]; then
+         GETGESSH=${GETGESSH:-getges.sh}
+         export gesenvir=${gesenvir:-$envir}
+         snoprv=$($GETGESSH -q -t snogrb_$JCAP_ENKF -e $gesenvir -n gdas -v $prev_cdate)
+      else
+         snoprv=${snoprv:-$FNSNOG}
+      fi
+      if [ `$WGRIB -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
+            awk -F: '{print $3}'|awk -F= '{print $2}'` -le \
+           `$WGRIB -4yr $snoprv 2>/dev/null |grep -i snowc  |\
+             awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
+         export FNSNOA=" "
+         export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+      else
+         export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+         export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+      fi
+
+#     Get select background files for analysis
+      err1=0
+      if [ $RUN_GETGES = YES ]; then
+         export gesenvir=${gesenvir:-$envir}
+         $GETGESSH -t biascr -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias
+         err1=$?
+         $GETGESSH -t biascr_pc -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gbias_pc
+         $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
+         $GETGESSH -t radstat -r ${JCAP_ges}$LEVS_ges -v ${PDY}$cyc -e $gesenvir -n gdas gradstat
+      fi
+
+   fi
+
+
+#  Check background file err flag
+   if [ $err1 -eq 0 ] ; then
+      msg="Analysis Starting/Guess Fields Found"
+      postmsg "$jlogfile" "$msg"
+   else
+      msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
+      postmsg "$jlogfile" "$msg"
+      export pgm=$job
+      export err=911
+      err_chk
+   fi
+
+fi
+
 #  Set script / GSI control parameters
 NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
@@ -699,6 +801,7 @@ export NSTG07=${NSTG07:-${COMOUT}/nstf07}
 export NSTG08=${NSTG08:-${COMOUT}/nstf08}
 export NSTG09=${NSTG09:-${COMOUT}/nstf09}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
+export USE_RADSTAT=${USE_RADSTAT:-"NO"}
 export SIGG03=${SIGG03:-${COMOUT}/sigf03}
 export SIGG04=${SIGG04:-${COMOUT}/sigf04}
 export SIGG05=${SIGG05:-${COMOUT}/sigf05}
@@ -758,7 +861,7 @@ else
   export CDATE=${CDATE:-$($SFCHDR $SFCGES VDATE||echo 0)}
   export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGES FHOUR||echo 0)}
 fi
-export CYCLVARS=${CYCLVARS}
+##export CYCLVARS=${CYCLVARS:-""}
 export SETUP=${SETUP:-""}
 export GRIDOPTS=${GRIDOPTS:-""}
 export BKGVERR=${BKGVERR:-""}
@@ -1008,7 +1111,7 @@ $FCPLN $NSTG03   nstf03
 $FCPLN $NSTGES   nstf06
 $FCPLN $NSTG09   nstf09
 
-if [[ "$DOHYBVAR" = "YES" && $JCAP != JCAP_A && $JCAP_A = $JCAP_ENKF ]]; then
+if [[ "$DOHYBVAR" = "YES" && $JCAP != $JCAP_A && $JCAP_A = $JCAP_ENKF ]]; then
    if [[ -e $SFCGESENS_MEAN ]]; then
       USE_READIN_ANL_SFCMASK=.true.
       $FCPLN $SFCGESENS_MEAN sfcf06_anlgrid
@@ -1164,7 +1267,7 @@ fi
 
 
 # If requested, copy and de-tar guess radstat file
-if [[ "$USE_NEWRADBC" = "YES" ]]; then
+if [ $USE_NEWRADBC = YES -a $USE_RADSTAT = YES ]; then
 
    if [[ $USE_CFP = YES ]]; then
       rm $DATA/unzip.sh

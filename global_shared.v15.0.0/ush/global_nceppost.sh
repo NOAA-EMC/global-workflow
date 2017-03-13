@@ -220,7 +220,7 @@ export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 export GFSOUT=${GFSOUT:-gfsout}
 export CTLFILE=${CTLFILE:-$NWPROD/parm/gfs_cntrl.parm}
-export MODEL_OUT_FORM=${MODEL_OUT_FORM:-grib}
+export MODEL_OUT_FORM=${MODEL_OUT_FORM:-sigio}
 export GRIBVERSION=${GRIBVERSION:-'grib1'}
 #  Other variables.
 export POSTGPVARS=${POSTGPVARS}
@@ -298,15 +298,15 @@ elif [ ${OUTTYP} -eq 3 ] ; then
 
 # run post to read nemsio file if OUTTYP=4
 elif [ ${OUTTYP} -eq 4 ] ; then
- export nemsioget=${nemsioget:-/nwprod/ngac.v1.0.0/exec/nemsio_get}
- export LONB=${LONB:-$($nemsioget $NEMSINP lonf |grep -i "lonf" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
- export LATB=${LATB:-$($nemsioget $NEMSINP latg |grep -i "latg" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
- export JCAP=${JCAP:-$($nemsioget $NEMSINP jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-
- export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
+ export nemsioget=${nemsioget:-$EXECglobal/nemsio_get}
+ export LONB=`$nemsioget $NEMSINP lonf |grep -i "lonf" |awk -F"= " '{print $2}' |awk -F" " '{print $1}'`
+ export LATB=`$nemsioget $NEMSINP latg |grep -i "latg" |awk -F"= " '{print $2}' |awk -F" " '{print $1}'`
+ export JCAP=`$nemsioget $NEMSINP jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}'`
+ export LEVS=`$nemsioget $NEMSINP levs |grep -i "levs" |awk -F"= " '{print $2}' |awk -F" " '{print $1}'`
+ export MODEL_OUT_FORM=binarynemsiompiio
  export GFSOUT=${NEMSINP}
- ln -sf $FIXglobal/fix_am/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt  ./lonsperlat.dat
-
+ ln -sf $FIXglobal/fix_am/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt  ./lonsperlat.dat 
+ ln -sf $FIXglobal/fix_am/global_hyblev.l${LEVS}.txt                      ./global_hyblev.txt
 fi
 
 # allow threads to use threading in Jim's sp lib
@@ -346,7 +346,7 @@ export MM=`echo $VDATE | cut -c5-6`
 export DD=`echo $VDATE | cut -c7-8`
 export HH=`echo $VDATE | cut -c9-10`
 
-cat > itag <<EOF
+cat > itag << EOF
 $GFSOUT
 ${MODEL_OUT_FORM}
 ${GRIBVERSION}
@@ -472,7 +472,7 @@ then
      $GRBINDEX $PGBOUT $PGIOUT
    fi
 fi
-if [[ -r $FLXINP && -n $FLXIOUT ]]
+if [[ -r $FLXINP && -n $FLXIOUT && $OUTTYP -le 3 ]]
 then
    $GRBINDEX $FLXINP $FLXIOUT
 fi

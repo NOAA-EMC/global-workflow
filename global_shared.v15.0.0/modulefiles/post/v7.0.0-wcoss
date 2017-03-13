@@ -25,7 +25,9 @@ module load z/v1.2.6
 module load sfcio/v1.0.0
 module load nemsio/v2.2.1
 module load bacio/v2.0.2
-module load g2/v2.5.0
+module use /nwtest2/lib/modulefiles
+module load g2/v3.1.0
+#module load g2/v2.5.0
 module load xmlparse/v2.0.0
 module load gfsio/v1.1.0
 module load ip/v2.0.0

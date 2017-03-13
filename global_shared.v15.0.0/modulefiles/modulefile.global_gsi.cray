@@ -55,5 +55,5 @@ module load w3emc-intel/2.2.0
 module load crtm-intel/2.2.4
 module load craype-hugepages4M
 
-module use /usrx/local/nceplibs/modulefiles
+module use /gpfs/hps/nco/ops/nwtest/lib/modulefiles
 module load bacio-intel/2.0.2
