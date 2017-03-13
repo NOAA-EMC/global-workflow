@@ -349,7 +349,6 @@ export rcname
 export tmpregdir
 export result
 export scaling
-echo "HEYYYY this is ptmp $ptmp"
 #export machine
 #export basedir
 #export builddir
