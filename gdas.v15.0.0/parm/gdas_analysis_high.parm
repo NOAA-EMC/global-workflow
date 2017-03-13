@@ -2,6 +2,8 @@
 # Specify Special Fcst Vars
 ####################################
 #
+export RUN_PROD=${RUN_PROD:-"YES"}
+
 # Set executable, script, and fix
 export GSIEXEC=${GSIEXEC:-$EXECgsi/global_gsi}
 export ANALYSISSH=${ANALYSISSH:-$SCRgsi/exglobal_analysis.sh.ecf}
@@ -217,42 +219,8 @@ export NSTG09=${NSTG09:-${COMINgdas}/${PREINPg}nstf009.nemsio}
 export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
+export AMSR2BF=${AMSR2BF:-/dev/null}
 
-
-############################################################################ 
-#
-# Check grib date of current snogrb vs that of prev cycle 
-#
-# if cdate_of_snogrb -le cdate_of_snoprv, i.e. file has not been updated 
-#   then set namelist input to CYCLEXEC to use the snow from the guess
-#   FNSNOA=" ";CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
-#   FNSNOA is the name of the snow depth  analysis file 
-#     when not supplied, signals to CYCLEXEC to blend guess and climatology
-#     (Note: file must be " ", not "" or the shell syntax for default
-#      values X=${X:-default} will reset to default if X="")
-#     FSNOL=99999.,FSNOS=99999., sets the blending of guess and climo to
-#		use 100% guess
-#
-####################################
-prev_cdate=$($NDATE -6 $PDY$cyc)
-RUN_GETGES=${RUN_GETGES:-YES}        # Set to NO if not running getges.sh
-if [ $RUN_GETGES = YES ]; then
- GETGESSH=${GETGESSH:-getges.sh}
- export gesenvir=${gesenvir:-$envir}
- snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n gdas -v $prev_cdate)
-else
- snoprv=${snoprv:-$FNSNOG}
-fi
-if [ `$WGRIB -4yr ${FNSNOA} 2>/dev/null|grep -i snowc |\
-          awk -F: '{print $3}'|awk -F= '{print $2}'` -le \
-     `$WGRIB -4yr $snoprv 2>/dev/null |grep -i snowc  |\
-                        awk -F: '{print $3}'|awk -F= '{print $2}'` ] ; then
-        export FNSNOA=" "
-        export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
-else
-     export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
-     export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
-fi
 
 ############################################################################ 
 #
@@ -283,21 +251,6 @@ export IGEN=${IGEN:-82}
 #
 # Define Previous Guess File Names
 ####################################
-if [ $RUN_GETGES = YES ]; then
-  export gesenvir=${gesenvir:-$envir}
-  $GETGESSH -t nsfges -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas bges
-err1=$?
-  $GETGESSH -t nsfgm3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm3
-  $GETGESSH -t nsfgm2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm2
-  $GETGESSH -t nsfgm1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgm1
-  $GETGESSH -t nsfgp1 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp1
-  $GETGESSH -t nsfgp2 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp2
-  $GETGESSH -t nsfgp3 -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas sfcgp3
-  $GETGESSH -t biascr -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias
-  $GETGESSH -t biascr_pc -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_pc
-  $GETGESSH -t biascr_air -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gbias_air
-  $GETGESSH -t radstat -r ${JCAP_ges}${LEVS_ges} -v $PDY$cyc -e $gesenvir -n gdas gradstat
-fi
 
 export SFCGES=${SFCGES:-$DATA/bges}
 export SFCG03=${SFCG03:-$DATA/sfcgm3}
@@ -311,19 +264,6 @@ export GBIASPC=${GBIASPC:-$DATA/gbias_pc}
 export GBIASAIR=${GBIASAIR:-$DATA/gbias_air}
 export GRADSTAT=${GRADSTAT:-$DATA/gradstat}
 export GESFIL=${GESFIL:-$DATA/gesfile}
-
-if test "$err1" -eq '0'
-then
-   msg="Analysis Starting/Guess Fields Found"
-   postmsg "$jlogfile" "$msg"
-
-else
-   msg="FATAL ERROR:  Analysis Cannot Start/Guess Fields Not Available"
-   postmsg "$jlogfile" "$msg"
-   export pgm=$job
-   export err=911
-   err_chk
-fi
 
 ############################
 if [[ -s $GESFIL ]]; then

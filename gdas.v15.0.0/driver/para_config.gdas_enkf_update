@@ -17,6 +17,9 @@ export HOMEgsm=$NWTEST/global_shared.${global_shared_ver}
 
 
 # Set fix files
+if [ $CDATE -ge 2017030800 -a $CDATE -lt 2017031312 ] ; then
+   SATINFO=/gpfs/hps/emc/global/noscrub/emc.glopara/para_gfs/prnemsrn/global_satinfo.txt
+fi
 
 
 # Set scripts

@@ -91,9 +91,10 @@ export USHradmon=${USHradmon:-$HOMEradmon/ush}
 #############################################
 # Run setpdy and initialize PDY variables
 #############################################
-setpdy.sh
-. ./PDY
-
+if [[ $MY_MACHINE != "theia" ]]; then
+   setpdy.sh
+   . ./PDY
+fi   
 
 #############################################
 # COMOUT - WHERE GSI OUTPUT RESIDES

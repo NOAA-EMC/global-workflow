@@ -71,10 +71,7 @@ while [ $fhcnt -le $fend ] ; do
 
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN = "gfs_0p50" ]; then
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}.idx
-  elif [ $RUN = "gfs_0p25" -o $RUN = "gdas_0p25" -o $RUN = "gfs35_atl" -o $RUN = "gfs35_pac" -o $RUN = "gfs40" ]; then 
+  if [ $RUN = "gdas_0p25" ]; then 
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
@@ -99,19 +96,8 @@ while [ $fhcnt -le $fend ] ; do
   done
 
   #cat ${COMIN}/${model}.${cycle}.pgrb2.1p00.f${fhr} ${COMIN}/${model}.${cycle}.pgrb2b.1p00.f${fhr} > temp
-case $RUN in
- gfs35_pac)
-     $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 0 75125000 130000000 48 17000000 260000000 312000 312000 0" -x $GRIBIN grib$fhr
-   ;;
- gfs35_atl)
-     $COPYGB2 -g "0 6 0 0 0 0 0 0 480 242 0 0 75125000 230000000 48 -500000 20000000 312000 312000 0" -x $GRIBIN grib$fhr
-   ;;
- gfs40)
-     $COPYGB2 -g "30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0" -x $GRIBIN grib$fhr
-   ;;
- *)
-     cp $GRIBIN grib$fhr
-esac
+
+  cp $GRIBIN grib$fhr
 
   export pgm="nagrib2 F$fhr"
   startmsg

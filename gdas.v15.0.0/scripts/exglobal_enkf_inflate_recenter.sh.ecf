@@ -228,8 +228,8 @@ export SFCANL_ENS_TMP=${SFCANL_ENS_TMP:-""}
 export NSTANL_ENS_TMP=${NSTANL_ENS_TMP:-""}
 export MEMBER_PREFIX=${MEMBER_PREFIX:-"_"}
 
-xport REDOUT=${REDOUT:-'1>'}
-xport REDERR=${REDERR:-'2>'}
+export REDOUT=${REDOUT:-'1>'}
+export REDERR=${REDERR:-'2>'}
 
 ################################################################################
 #  Preprocessing

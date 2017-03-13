@@ -1,6 +1,7 @@
-RELEASE NOTES: gdas_post.v13.0.0
+RELEASE NOTES: gdas_post.v14.1.0
+
+        v14.1.0 - released Feb 14, 2017
         v13.0.0 - released Feb 02, 2016
-	
 	
 	SVN HISTORY  (see EMC GDAS Trac ticket #235)
 	 * r68186 - create GDAS.v13.0.0
@@ -11,24 +12,23 @@ CODE CHANGES
 	
 JOB CHANGES
  * The followig jobs (J-job) have been modified in accord with NCO implementation standards
-   All Job cards have same setting for for LSF and production envirnment.
+   All Job cards have same setting for for LSF and production environment.
      # LSBATCH: User input
-     #BSUB -J jgdas_gempak_meta_00
-     #BSUB -o /ptmpd3/Boi.Vuong/com/gdas_gempak_meta_00.o%J
-     #BSUB -e /ptmpd3/Boi.Vuong/com/gdas_gempak_0meta_0.o%J
+	
+     # LSBATCH: User input
+     #BSUB -J gdas_gempak_00
+     #BSUB -o /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
+     #BSUB -e /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
      #BSUB -L /bin/sh
-     #BSUB -W 00:15
-     #BSUB -q debug
-     #BSUB -cwd /ptmpd3/Boi.Vuong/com
-     #BSUB -P GDAS-OPS
-     #BSUB -R rusage[mem=5000]
-     #BSUB -R affinity[core]
+     #BSUB -q dev
+     #BSUB -cwd /gpfs/hps/ptmp/Boi.Vuong/output
+     #BSUB -W 00:35
+     #BSUB -P GFS-T2O
+     #BSUB -R rusage[mem=2000]
 
-     export OMP_NUM_THREADS=1
-     export MP_MPILIB=mpich2
-     export MP_EUILIB=us
-     export MP_LABELIO=yes
-     export MP_COMPILER=intel
+     #BSUB -extsched 'CRAYLINUX[]'    # Request to run on compute nodes
+
+     export KMP_AFFINITY=disabled
 
 J-jobs are following:
    JGDAS_BULLS
@@ -59,13 +59,13 @@ GEMPAK USH SCRIPT CHANGES
 PARM CARDS CHANGES
  * All parm cards have been changed to correct second level fixed surface from "255 0 2" to "255 0 0" 
    in PDT 4.8 for AWIPS products.    See all parm cards (total of 576 files) at svn tags below.
-        https://svnemc.ncep.noaa.gov/projects/gfs/branches/gfs_post/gfs.v12.1.0/parm/
+      https://svnemc.ncep.noaa.gov/projects/gfs/branches/gfs_q3fy17/gfs.v14.1.0/parm
 
 Implementation instructions
 
-To implement gdas.v13.0.0, please do the following:
+To implement gdas.v14.1.0, please do the following:
   * cd  $NWROOT
-  * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/tags/gdas.v13.0.0
+  * svn checkout https://svnemc.ncep.noaa.gov/projects/gfs/branches/gfs_q3fy17/gfs.v14.1.0/
 
 The driver script is located in:
-   https://svnemc.ncep.noaa.gov/projects/gfs/branches/gdas_nco_20160129/driver
+   https://svnemc.ncep.noaa.gov/projects/gfs/branches/gfs_q3fy17/gfs.v14.1.0/driver

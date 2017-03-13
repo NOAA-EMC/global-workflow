@@ -40,7 +40,7 @@ OBJS=   BIN2CHAR.o BIN2EBCD.o BULLET.o GRIDBUL.o PAKWND.o QUADAX.o WINDY.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =	        ftn
+FC =	        ifort
 LDFLAGS =	
 LIBS= ${W3NCO_LIB4} ${BACIO_LIB4}
 CMD =           gridbull
@@ -50,7 +50,7 @@ PROFLIB =	-lprof
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
-FFLAGS =        -O3  -g -assume byterecl -assume noold_ldout_format -axCORE-AVX2 -fp-model strict
+FFLAGS =        -O3  -g -assume byterecl -assume noold_ldout_format -fp-model strict
 #FFLAGS =	 -F
 #FFLAGS =	 -Wf"-ez"
 
