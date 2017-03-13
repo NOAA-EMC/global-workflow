@@ -49,9 +49,8 @@ module use /usrx/local/prod/modulefiles
 	      module load cray-mpich/7.2.0
 	      module load intel/15.0.3.187
               module load nemsio-intel/2.2.2
-#              module load nemsiogfs-intel/1.0.0
-setenv NEMSIOGFS_INC /gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/tags/nemsiogfsv2.0.1/intel/include/nemsiogfs
-setenv NEMSIOGFS_LIB /gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/tags/nemsiogfsv2.0.1/intel/libnemsiogfs.a
+              module load nemsiogfs-intel/2.0.1
+##              module load nemsiogfs-intel/1.0.0
 
 
 

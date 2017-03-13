@@ -31,6 +31,8 @@ module load sfcio-intel/1.0.0
 module load nemsio-intel/2.2.2
 module load bacio-intel/2.0.1
 #### module load g2-intel/1.4.1
+module use /gpfs/hps/nco/ops/nwtest/lib/modulefiles
+module load g2-intel/3.1.0
 module load gfsio-intel/1.1.0
 module load ip-intel/2.0.0
 module load sp-intel/2.0.2
@@ -45,12 +47,12 @@ module load NetCDF-intel-sandybridge/3.6.3
 module load g2tmpl-intel/1.4.0
 
 # temparary g2 library test using g2.v3.0.0
-setenv G2_SRC /usrx/local/nceplibs/g2/v3.0.0/src
-setenv G2_INC4 /usrx/local/nceplibs/g2/v3.0.0/intel/include/g2_v3.0.0_4
-setenv G2_INCd /usrx/local/nceplibs/g2/v3.0.0/intel/include/g2_v3.0.0_d
-setenv G2_LIB4 /usrx/local/nceplibs/g2/v3.0.0/intel/libg2_v3.0.0_4.a
-setenv G2_LIBd /usrx/local/nceplibs/g2/v3.0.0/intel/g2_v3.0.0_d
-setenv G2_VER v3.0.0
+#setenv G2_SRC /usrx/local/nceplibs/g2/v3.0.0/src
+#setenv G2_INC4 /usrx/local/nceplibs/g2/v3.0.0/intel/include/g2_v3.0.0_4
+#setenv G2_INCd /usrx/local/nceplibs/g2/v3.0.0/intel/include/g2_v3.0.0_d
+#setenv G2_LIB4 /usrx/local/nceplibs/g2/v3.0.0/intel/libg2_v3.0.0_4.a
+#setenv G2_LIBd /usrx/local/nceplibs/g2/v3.0.0/intel/g2_v3.0.0_d
+#setenv G2_VER v3.0.0
 
 setenv WRFPATH /gpfs/hps/nco/ops/nwprod/wrf_shared.v1.1.0-intel
 setenv myFC ftn

@@ -102,11 +102,13 @@ else
     # Run first tracker for 180 hours for NHC/JTWC operational forecast:
     ${APRUNTRACK} ${PARATRKR:-$USHDIR/global_extrkr.sh} --gfs-last-hour $gfstrackhour1 --wait-for-data 900
     cp $DATA/trak.$TRACKID.atcfunix.$CDATE $COMOUT/atcfunix.$CDUMP.$CDATE
-    # Run a second tracker for 252 hours for experimental ten day forecasts:
-    if [ $gfstrackhour2 -gt $gfstrackhour1 ]; then;
-     export SENDNHC=NO  
-     ${APRUNTRACK} ${PARATRKR:-$USHDIR/global_extrkr.sh} --gfs-last-hour $gfstrackhour2 --wait-for-data 900
-     cp $DATA/trak.$TRACKID.atcfunix.$CDATE $COMOUT/atcf252hr.$CDUMP.$CDATE
+    if [ $machine = WCOSS_C ]; then
+     # Run a second tracker for 252 hours for experimental ten day forecasts:
+     if [ $gfstrackhour2 -gt $gfstrackhour1 ]; then;
+      export SENDNHC=NO  
+      ${APRUNTRACK} ${PARATRKR:-$USHDIR/global_extrkr.sh} --gfs-last-hour $gfstrackhour2 --wait-for-data 900
+      cp $DATA/trak.$TRACKID.atcfunix.$CDATE $COMOUT/atcf252hr.$CDUMP.$CDATE
+     fi
     fi
 fi
 

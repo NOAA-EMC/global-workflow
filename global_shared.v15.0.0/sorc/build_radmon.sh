@@ -23,11 +23,8 @@ else
 fi
 
 module purge
-if [ $target = wcoss -o $target = theia ]; then
- module load ../modulefiles/RadMonBuild
-else
- module load ../modulefiles/RadMonBuild.$target
-fi
+module use -a ../modulefiles
+module load RadMonBuild.$target
 module list
 
 dlist="verf_radang.fd verf_radbcoef.fd verf_radbcor.fd verf_radtime.fd"

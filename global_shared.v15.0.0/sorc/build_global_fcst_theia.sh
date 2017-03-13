@@ -3,10 +3,12 @@ set -x
 
 curdir=`pwd`
 
-. $MODULESHOME/init/ksh
+. /apps/lmod/lmod/init/sh
+
+module purge
 
 cd $curdir/global_fcst.fd/NEMS/src
-./configure gsm_intel_wcoss_c
+./configure gsm_intel_theia
 
 source ./conf/modules.nems.sh
 module list                                     
@@ -17,7 +19,7 @@ export COMP_BINDIR=$curdir/global_fcst.fd/GSM-INSTALL
 export GSM_BUILDOPT="GOCART_MODE=stub"
 mkdir -p $COMP_BINDIR
 cd $COMP_SRCDIR
-./configure gsm_intel_wcoss_c
+./configure gsm_intel_theia
 gmake GSM_DIR=$COMP_SRCDIR nuopcdistclean                                    
 gmake GSM_DIR=$COMP_SRCDIR $GSM_BUILDOPT DESTDIR= INSTDIR=$COMP_BINDIR nuopcinstall
 cd  $curdir/global_fcst.fd/NEMS/src
