@@ -904,7 +904,18 @@ elif eval $prereqs;then
   rc=$?
   ((rc+=$?))
   if [[ $rc -eq 0 ]];then
-    echo $0: all prerequisites satisfied for step $CSTEP >&2
+    echo $0: prerequisites satisfied for step $CSTEP >&2
+  else
+    echo $0: RS prerequisites not satisfied for step $CSTEP >&2
+    exit 1
+  fi
+  if [ $DO_RELOCATE = YES -a $CSTEP = prep ]; then
+    $PCNE $GDATE/$GDUMP/prep/ROTI $COMROT <$RLIST
+  fi
+  rc=$?
+  ((rc+=$?))
+  if [[ $rc -eq 0 ]];then
+    echo $0: prerequisites satisfied for step $CSTEP >&2
   else
     echo $0: RS prerequisites not satisfied for step $CSTEP >&2
     exit 1

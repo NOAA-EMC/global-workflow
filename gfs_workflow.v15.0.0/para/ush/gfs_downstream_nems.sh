@@ -38,7 +38,9 @@ fi
 
 #--wgrib2 regrid parameters
 export option1=' -set_grib_type same -new_grid_winds earth '    
-export option2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+export option21=' -new_grid_interpolation bilinear  -if '
+export option22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+export option23=' -new_grid_interpolation neighbor -fi '
 export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
 export grid0p5="latlon 0:720:0.5 90:361:-0.5"
 export grid1p0="latlon 0:360:1.0 90:181:-1.0"
@@ -204,7 +206,8 @@ date
 else
 #---------------------------------------------------------------
 #---------------------------------------------------------------
-  $WGRIB2 tmpfile1_$fhr3  $option1 $option2 -new_grid $grid0p25 pgb2file_${fhr3}_0p25 \
+  $WGRIB2 tmpfile1_$fhr3  $option1 $option21 $option22 $option23 \
+                                           -new_grid $grid0p25 pgb2file_${fhr3}_0p25 \
                                            -new_grid $grid0p5  pgb2file_${fhr3}_0p5 \
                                            -new_grid $grid1p0  pgb2file_${fhr3}_1p0
 

@@ -15,21 +15,23 @@ export CNVGRIB=${CNVGRIB:-$${NWPROD:-/nwprod}/util/exec/cnvgrib21}
 export COPYGB2=${COPYGB2:-$${NWPROD:-/nwprod}/util/exec/copygb2}
 export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
 
-export option1=' -set_grib_type same -new_grid_winds earth '
-export option2=' -new_grid_interpolation bilinear  -if ":(VGTYP|SOTYP):" -new_grid_interpolation neighbor -fi '
+export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt21=' -new_grid_interpolation bilinear  -if '
+export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+export opt23=' -new_grid_interpolation neighbor -fi '
 export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
 export grid0p5="latlon 0:720:0.5 90:361:-0.5"
 export grid1p0="latlon 0:360:1.0 90:181:-1.0"
 export grid2p5="latlon 0:144:2.5 90:73:-2.5"
 
 if [ $nset = 1 ]; then
- $WGRIB2 $tmpfile $option1 $option2 -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 \
+ $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 \
                                     -new_grid $grid1p0  pgb2file_${fhr3}_${iproc}_1p0  \
                                     -new_grid $grid0p5  pgb2file_${fhr3}_${iproc}_0p5   
  $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_0p25 pgbfile_${fhr3}_${iproc}_0p25          
  $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_1p0 pgbfile_${fhr3}_${iproc}_1p0          
 elif [ $nset = 2 ]; then
- $WGRIB2 $tmpfile $option1 $option2 -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25 \
+ $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25 \
                                     -new_grid $grid1p0  pgb2bfile_${fhr3}_${iproc}_1p0  \
                                     -new_grid $grid0p5  pgb2bfile_${fhr3}_${iproc}_0p5  
 fi

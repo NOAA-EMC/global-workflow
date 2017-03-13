@@ -81,8 +81,10 @@ if [ $CDUMP = gdas -o $CDUMP = gfs ]; then
    splf*) continue;;
    tcinform_relocate)continue;;
    tcvitals_relocate)continue;;
+   tropcy_relocation_status.tm00) NCO_BASE=tropcy_relocation_status.tm00;;
    atcfunix) continue;;
    prepqc) NCO_BASE=prepbufr;;
+   prepqc_nr) NCO_BASE=prepbufr.nr;;
    prepbufr.acft_profiles) NCO_BASE=prepbufr.acft_profiles;;
    nsstbufr) NCO_BASE=nsstbufr;;
    prepq*) continue;;
@@ -218,7 +220,9 @@ if [ $CDUMP = gdas -o $CDUMP = gfs ]; then
      ln -sf $COMIN/$file $COMOUT/$PRE.t${CYC}z.$NCO_BASE
    fi
 
-   if [ -s $COMIN/${file}.idx ] ; then
+   if [ -s $COMIN/${file}.idx -a $NCO_BASE = master.grb2f$FH ] ; then
+      ln -sf $COMIN/${file}.idx $COMOUT/$PRE.t${CYC}z.master.grb2if$FH
+   elif [ -s $COMIN/${file}.idx ] ; then
       ln -sf $COMIN/${file}.idx $COMOUT/$PRE.t${CYC}z.${NCO_BASE}.idx
    fi
 
