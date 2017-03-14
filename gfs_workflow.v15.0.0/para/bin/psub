@@ -909,7 +909,7 @@ elif eval $prereqs;then
     echo $0: RS prerequisites not satisfied for step $CSTEP >&2
     exit 1
   fi
-  if [ $DO_RELOCATE = YES -a $CSTEP = prep ]; then
+  if [ ${DO_RELOCATE:-YES} = YES -a $CSTEP = prep ]; then
     $PCNE $GDATE/$GDUMP/prep/ROTI $COMROT <$RLIST
   fi
   rc=$?
