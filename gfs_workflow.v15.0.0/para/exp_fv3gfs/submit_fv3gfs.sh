@@ -1,14 +1,13 @@
 #!/bin/sh
 #BSUB -L /bin/sh
 #BSUB -P FV3GFS-T2O
-#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/fv3test.out
-#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/fv3test.out
+#BSUB -oo fv3test.out
+#BSUB -eo fv3test.out
 #BSUB -J fv3test   
 #BSUB -q dev
 #BSUB -M 1024
 ##BSUB -x
 #BSUB -W 10:00
-#BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang
 #BSUB -extsched 'CRAYLINUX[]'
 set -x
 
@@ -27,7 +26,7 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=EXP-cyc     
+export tags=trunk       
 export PTMP=/gpfs/hps/ptmp
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
 export BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para     
@@ -36,14 +35,14 @@ export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
-export CASE=C96 
+export CASE=C192
 export res=`echo $CASE|cut -c 2-`
 export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
 START=20170309
-LAST=20170309
+LAST=20170312
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
