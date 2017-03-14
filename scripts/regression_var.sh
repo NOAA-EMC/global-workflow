@@ -26,6 +26,7 @@ else
   export clean="false"
   export ptmpName=""
 fi
+
 # First determine what machine are we on:
 if [ -d /da ]; then # WCOSS
    export machine="WCOSS"
@@ -41,18 +42,20 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    elif [ -d /scratch4/NCEPDEV/global/noscrub/$LOGNAME ]; then 
      export noscrub="/scratch4/NCEPDEV/global/noscrub/$LOGNAME"
    fi
+elif [ -d /gpfs/tp1/ptmp ]; then # LUNA or SURGE
+   export machine="LUNA"
+   export noscrub="/gpfs/tp1/ptmp/$LOGNAME"
 elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
 fi
 
 contrl="XXXXXXXX"
-updat="XXXXXXXX"
-contrl="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
+if [[ "$machine" = "Theia" ]]; then
 
    export group="global"
    export queue="batch"
@@ -81,9 +84,8 @@ elif [[ "$machine" = "WCOSS" ]]; then
    fi 
    export group="dev"
    export queue="dev"
-   export noscrub="/da/noscrub/$LOGNAME"
 
-   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
+   export ptmp="/gpfs/tp1/ptmp/$LOGNAME/$ptmpName"
 
    export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
@@ -93,6 +95,23 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export accnt=""
 
+elif [[ "$machine" = "LUNA" ]]; then
+
+   if [[ "$cmaketest" = "false" ]]; then
+     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/gsi"
+   fi 
+   export group="dev"
+   export queue="dev"
+
+   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
+
+   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.3/fix"
+   export casesdir="/gpfs/hps/emc/global/noscrub/Mark.Potts/CASES"
+   export ndate="/gpfs/hps/emc/global/noscrub/Mallory.Row/VRFY/vsdb_old/nwprod/util/exec/ndate"
+
+   export check_resource="no"
+
+   export accnt=""
 elif [[ "$machine" = "s4" ]]; then
    if [[ "$cmaketest" = "false" ]]; then
      export basedir="/home/$LOGNAME/gsi"
@@ -123,44 +142,19 @@ if [[ "$cmaketest" = "false" ]]; then
   export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
   export fixgsi="$basedir/$updat/fix"
   export scripts="$basedir/$updat/scripts"
-export arw_netcdf_adate="2008051112"
+fi
 # Paths to tmpdir and savedir base on ptmp
 export tmpdir="$ptmp"
 export savdir="$ptmp"
-export hwrf_nmm_adate="2012102812"
 
 # We are dealing with *which* endian files
 export endianness="Big_Endian"
-export global_T62_ges="$casesdir/global/sigmap/$global_T62_adate"
-export global_4dvar_T62_obs="$casesdir/global/sigmap/$global_4dvar_T62_adate"
-export global_4dvar_T62_ges="$casesdir/global/sigmap/$global_4dvar_T62_adate"
-export global_hybrid_T126_datobs="$casesdir/global/sigmap/$global_hybrid_T126_adate/obs"
-export global_hybrid_T126_datges="$casesdir/global/sigmap/$global_hybrid_T126_adate/ges"
-export global_enkf_T62_datobs="$casesdir/global/sigmap/$global_enkf_T62_adate/obs"
-export global_enkf_T62_datges="$casesdir/global/sigmap/$global_enkf_T62_adate/ges"
-export global_lanczos_T62_obs="$casesdir/global/sigmap/$global_lanczos_T62_adate"
-export global_lanczos_T62_ges="$casesdir/global/sigmap/$global_lanczos_T62_adate"
-export global_nemsio_T62_obs="$casesdir/global/sigmap/$global_nemsio_T62_adate"
-export global_nemsio_T62_ges="$casesdir/global/sigmap_nemsio/$global_nemsio_T62_adate"
-export nmmb_nems_4denvar_obs="$casesdir/regional/nmmb_nems/$nmmb_nems_adate"
-export nmmb_nems_4denvar_ges="$casesdir/regional/nmmb_nems/$nmmb_nems_adate"
-export arw_binary_obs="$casesdir/regional/arw_binary/$arw_binary_adate"
-export arw_binary_ges="$casesdir/regional/arw_binary/$arw_binary_adate"
-export arw_netcdf_obs="$casesdir/regional/arw_netcdf/$arw_netcdf_adate"
-export arw_netcdf_ges="$casesdir/regional/arw_netcdf/$arw_netcdf_adate"
-export nmm_binary_obs="$casesdir/regional/ndas_binary/$nmm_binary_adate"
-export nmm_binary_ges="$casesdir/regional/ndas_binary/$nmm_binary_adate"
-export nmm_netcdf_obs="$casesdir/regional/ndas_binary/$nmm_netcdf_adate"
-export nmm_netcdf_ges="$casesdir/regional/nmm_netcdf/$nmm_netcdf_adate"
-export rtma_obs="$casesdir/regional/rtma_binary/$rtma_adate"
-export rtma_ges="$casesdir/regional/rtma_binary/$rtma_adate"
-export hwrf_nmm_obs="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
-export hwrf_nmm_ges="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
 
 # Variables with the same values are defined below.
 
 # Default resolution
 export JCAP="62"
+
 # Case Study analysis dates
 export global_T62_adate="2014080400"
 export global_4dvar_T62_adate="2014080400"
@@ -175,6 +169,7 @@ export nmm_binary_adate="2010021600"
 export nmm_netcdf_adate="2007122000"
 export rtma_adate="2016021003"
 export hwrf_nmm_adate="2012102812"
+
 # Paths for canned case data.
 export global_T62_obs="$casesdir/global/sigmap/$global_T62_adate"
 export global_T62_ges="$casesdir/global/sigmap/$global_T62_adate"
@@ -202,8 +197,10 @@ export rtma_obs="$casesdir/regional/rtma_binary/$rtma_adate"
 export rtma_ges="$casesdir/regional/rtma_binary/$rtma_adate"
 export hwrf_nmm_obs="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
 export hwrf_nmm_ges="$casesdir/regional/hwrf_nmm/$hwrf_nmm_adate"
+
 # Define type of GPSRO data to be assimilated (refractivity or bending angle)
 export gps_dtype="gps_bnd"
+
 # Regression vfydir
 export regression_vfydir="$noscrub/regression"
 

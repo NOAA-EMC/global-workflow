@@ -13,6 +13,7 @@ else
   export regdir=$(pwd)
   . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
 fi
+export debug=".false."
 
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
@@ -32,15 +33,15 @@ for jn in `seq 1 4`; do
    /bin/sh $sub_cmd -q $queue -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/${regtest}.sh
 
    if [ $debug == ".true." ]; then break; fi
-      $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
-      rc=$?
-      if [ $rc -ne 0 ]; then
-         rm -f ${rcname}
-         exit 1
-      fi
+   $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
+   rc=$?
+   if [ $rc -ne 0 ]; then
+     rm -f ${rcname}
+     exit 1
+   fi
    done
 # When all done, test the results of the regression test
-if [ "$debug" = ".false." ]; then
+if [ "$debug" == ".false." ]; then
 
    export scripts=${scripts_updat:-$scripts}
 
