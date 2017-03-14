@@ -11,7 +11,7 @@ mac=`hostname |cut -c1`
 machine=WCOSS_C
 NEMS=YES
 
-PSLOT=test                   # Experiment ID
+PSLOT=test                  # Experiment ID
 EDATE=2017071600            # Analysis/forecast cycle ending date 
 EDUMP=gdas                  # cycle ending dump
 ESTEP=prep                  # cycle ending step
@@ -138,10 +138,10 @@ elif [ $machine = WCOSS_C ]; then
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
- #tags=trunk_r88010
- tags=EXP-cyc     
+ tags=trunk     
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
+ FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
 elif [ $machine = THEIA ]; then
  TOPDIR=/scratch4/NCEPDEV/global
  DISK_GLOB=$TOPDIR/save              
@@ -158,6 +158,7 @@ elif [ $machine = THEIA ]; then
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
  tags=trunk_r88010
+ FIX_FV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3   
 else
  echo '$machine is not supported, exit'
  exit
@@ -168,11 +169,11 @@ cycn=`echo $CDATE | cut -c9-10`
 month=`echo $CDATE |cut -c5-6`
 
 ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
-MEMDIR=$COMROT/${CDUMP}.$ymd/$cycn
-COMDIR=$TOPDIR                        
+MEMDIR=$ROTDIR/${CDUMP}.$ymd/$cycn
 COMROT=$ROTDIR
-DAYDIR=$COMROT
-COMDAY=$COMROT
+COMDIR=$TOPDIR                        
+DAYDIR=$MEMDIR
+COMDAY=$MEMDIR
  
 # ------------------- 
 # COMPONENT SETTINGS 
@@ -298,7 +299,7 @@ fseg=1                             # number of AM forecast segments for gfs
 FHCYC=24                             # Surface cycle calling interval
  
 LEVS=64                            # number of AM levels
-CASE1=C96                          # 1st segment resolution (0-240 hr)
+CASE1=C192                         # 1st segment resolution (0-240 hr)
 CASE2=C192                         # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
 CASE=$(eval echo \${CASE$nknd})
@@ -317,7 +318,8 @@ case $CASE in
 esac
 
 
-fmax1=240; fmax2=384
+#fmax1=240; fmax2=384
+fmax1=24; fmax2=384
 for cyc in 00 06 12 18; do
  eval FHMAXFCST${cyc}GFS1=$fmax1             # maximum forecast hour for 1st segment
  eval FHMAXFCST${cyc}GFS2=$fmax2             # maximum forecast hour for 2st segment
