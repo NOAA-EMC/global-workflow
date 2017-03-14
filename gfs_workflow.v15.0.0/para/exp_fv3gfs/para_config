@@ -318,8 +318,7 @@ case $CASE in
 esac
 
 
-#fmax1=240; fmax2=384
-fmax1=24; fmax2=384
+fmax1=240; fmax2=384
 for cyc in 00 06 12 18; do
  eval FHMAXFCST${cyc}GFS1=$fmax1             # maximum forecast hour for 1st segment
  eval FHMAXFCST${cyc}GFS2=$fmax2             # maximum forecast hour for 2st segment
