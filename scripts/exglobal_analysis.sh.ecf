@@ -40,6 +40,8 @@
 # 2014-03-13  X. Li          Add NSST
 # 2016-05-10  J. Jung        Added RARS and direct broadcast data
 # 2016-08-28  X. Li          Introduce USE_READIN_ANL_SFCMASK for surface mask consistency between analysis and ensemble grids
+# 2016-05-10  J. Jung        Added RARS and direct broadcast data
+# 2016-08-28  X. Li          Introduce USE_READIN_ANL_SFCMASK for surface mask consistency between analysis and ensemble grids
 #
 # Usage:  global_analysis.sh SFCGES SIGGES NSTGES GBIAS GBIASPC GRADSTAT GBIASAIR
 #                            SFCANL SIGANL NSTANL ABIAS ABIASPC ABIASAIR IGEN
@@ -583,6 +585,7 @@ ZSEA2=${ZSEA2:-0}
 FAC_DTL=${FAC_DTL:-0}
 FAC_TSL=${FAC_TSL:-0}
 NST_TZR=${NST_TZR:-0}
+TZR_QC=${TZR_QC:-0}
 
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run GSI with NEMSIO input/output
 export l4densvar=${l4densvar:-".false."}             # run GSI in hybrid 4D ensemble-variational mode

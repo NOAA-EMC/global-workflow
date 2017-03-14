@@ -344,19 +344,9 @@ export topts
 export popts
 export ropts
 export rcname
-#export ptmp 
-#export tmpdir
 export tmpregdir
 export result
 export scaling
-#export machine
-#export basedir
-#export builddir
-#export gsisrc
-#export gsiexec_updat
-#export enkfexec_updat
-#export gsiexec_contrl
-#export enkfexec_contrl
 
 if [[ "$machine" = "Theia" ]]; then
    export MPI_BUFS_PER_PROC=256

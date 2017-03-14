@@ -449,6 +449,10 @@ elif [[ `expr substr $exp1 1 6` = "global" ]]; then
          echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
          echo 'Thus, the case has failed the regression tests.'
          echo
+      else
+         echo 'The results between the two runs ('${exp1}' and '${exp3}') are not reproducible'
+         echo 'Thus, the case has failed the regression tests.'
+         echo
          failed_test=1
       fi
 
