@@ -41,6 +41,7 @@ export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
+CDUMP=gfs
 START=20170309
 LAST=20170312
 
@@ -77,7 +78,9 @@ if [ $dev = surge ]; then d1=gd1; fi
 
 #------------------------------------------------------
 #-- copy over pgbanl for verification
-cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $ROTDIR/.
+MEMDIR=$ROTDIR/${CDUMP}.${yymmdd}/${cyc}
+if [ ! -d $MEMDIR ]; then mkdir -p $MEMDIR; fi
+cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $MEMDIR/.
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $tmp_dir/siganl.gfs.$cdate
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $tmp_dir/sfcanl.gfs.$cdate
 
