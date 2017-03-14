@@ -27,10 +27,10 @@ fi
 #  Directories.
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
-export EXECDIR=${EXECDIR:-${GSIEXECDIR:-$BASE_GSI/exec}}
-export GSIEXEC=${GSIEXEC:-"global_gsi"}
+export GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
@@ -49,6 +49,10 @@ export COMPRESS=${COMPRESS:-gzip}
 export UNCOMPRESS=${UNCOMPRESS:-gunzip}
 export APRUNCFP=${APRUNCFP:-""}
 export APRUN=${APRUN:-""}
+
+# Dependent Scripts and Executables
+export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
+export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
 
 # OPS flags
 export RUN=${RUN:-""}
@@ -169,7 +173,7 @@ export USE_CFP=${USE_CFP:-"NO"}
 
 # Set script / GSI control parameters
 export DOHYBVAR=${DOHYBVAR:-"NO"}
-export NMEM_ENS=${NMEM_ENS:-0}
+export NMEM_ENKF=${NMEM_ENKF:-0}
 export NST_GSI=${NST_GSI:-0}
 export NSTINFO=${NSTINFO:-0}
 export ZSEA1=${ZSEA1:-0}
@@ -178,7 +182,7 @@ export FAC_DTL=${FAC_DTL:-0}
 export FAC_TSL=${FAC_TSL:-0}
 export TZR_QC=${TZR_QC:-0}
 export USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
-export SMOOTH_ENS=${SMOOTH_ENS:-"NO"}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 
 # Get header information from Guess files
 export JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
@@ -190,18 +194,18 @@ export LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{pr
 if [ $DOHYBVAR = "YES" ]; then
    export SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
    export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
-   export JCAP_ENS=${JCAP_ENS:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export LONB_ENS=${LONB_ENS:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export LATB_ENS=${LATB_ENS:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export NLON_ENS=${NLON_ENS:-$LONB_ENS}
-   export NLAT_ENS=${NLAT_ENS:-$(($LATB_ENS+2))}
+   export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   export NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
+   export NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
 fi
 
 # Set analysis resolution information
 if [ $DOHYBVAR = "YES" ]; then
-   export JCAP_A=${JCAP_A:-${JCAP_ENS:-$JCAP}}
-   export LONA=${LONA:-${LONB_ENS:-$LONB}}
-   export LATA=${LATA:-${LATB_ENS:-$LATB}}
+   export JCAP_A=${JCAP_A:-${JCAP_ENKF:-$JCAP}}
+   export LONA=${LONA:-${LONB_ENKF:-$LONB}}
+   export LATA=${LATA:-${LATB_ENKF:-$LATB}}
 else
    export JCAP_A=${JCAP_A:-$JCAP}
    export LONA=${LONA:-$LONB}
@@ -271,12 +275,7 @@ fi
 ################################################################################
 #  Preprocessing
 pwd=$(pwd)
-if [ -d $DATA ]; then
-   mkdata=NO
-else
-   mkdir -p $DATA
-   mkdata=YES
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
 ################################################################################
@@ -443,7 +442,7 @@ if [ $DOHYBVAR = "YES" ]; then
    mkdir -p ensemble_data
 
    ENKF_SUFFIX=""
-   if [ $SMOOTH_ENS = "YES" ]; then
+   if [ $SMOOTH_ENKF = "YES" ]; then
       ENKF_SUFFIX="s"
    fi
 
@@ -452,7 +451,7 @@ if [ $DOHYBVAR = "YES" ]; then
       fhrs="03 04 05 06 07 08 09"
    fi
 
-   for imem in `seq 1 $NMEM_ENS`; do
+   for imem in `seq 1 $NMEM_ENKF`; do
       memchar="mem"`printf %03i $imem`
       for fhr in $fhrs; do
          $NLN ${COMIN_GES_ENS}/$memchar/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_$memchar
@@ -578,9 +577,9 @@ fi
 ##############################################################
 # GSI Namelist options
 if [ $DOHYBVAR = "YES" ]; then
-   HYBRID_ENSEMBLE="n_ens=$NMEM_ENS,jcap_ens=$JCAP_ENS,nlat_ens=$NLAT_ENS,nlon_ens=$NLON_ENS,jcap_ens_test=$JCAP_ENS,$HYBRID_ENSEMBLE"
+   HYBRID_ENSEMBLE="n_ens=$NMEM_ENKF,jcap_ens=$JCAP_ENKF,nlat_ens=$NLAT_ENKF,nlon_ens=$NLON_ENKF,jcap_ens_test=$JCAP_ENKF,$HYBRID_ENSEMBLE"
    if [ $l4densvar = ".true." ]; then
-      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,nhr_obsbin=1,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
       JCOPTS="ljc4tlevs=.true.,$JCOPTS"
       STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
       OBSQC="c_varqc=0.04,$OBSQC"
@@ -778,8 +777,38 @@ EOF
 
 ##############################################################
 #  Make atmospheric analysis
-$NCP $EXECDIR/$GSIEXEC $DATA
-$APRUN $GSIEXEC 1>&1 2>&2
+$NCP $GSIEXEC $DATA/gsi.x
+exit 0
+$APRUN gsi.x 1>&1 2>&2
+
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit 2
+
+##############################################################
+# Calculate analysis increment here before releasing FV3 forecast
+
+if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+   fhrs="03 04 05 06 07 08 09"
+else
+   fhrs="06"
+fi
+
+rc=0
+for fhr in $fhrs; do
+   export ATMGES="sigf$fhr"
+   if [ $fhr = "06" ]; then
+      export ATMANL="siganl"
+   else
+      export ATMANL="siga$fhr"
+   fi
+   export ATMINC=${COMOUT}/${APREFIX}atmi0$fhr${ASUFFIX}
+
+   $CALC_INCREMENT_SH
+   ra=$?
+   ((rc+=ra))
+done
+
 
 export ERR=$?
 export err=$ERR
@@ -977,7 +1006,7 @@ fi
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]]&&rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&&rm -rf $DATA
 
 set +x
 if [ $VERBOSE = "YES" ]; then

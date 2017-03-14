@@ -28,9 +28,9 @@ fi
 pwd=$(pwd)
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
-export EXECDIR=${EXECDIR:-${ENKFUTILEXECDIR:-$BASE_GSI/util/EnKF/gfs/exec}}
 export DATA=${DATA:-$pwd}
 export COMIN=${COMIN:-$pwd}
 export COMOUT=${COMOUT:-$COMIN}
@@ -44,9 +44,6 @@ export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 # Machine related stuff
 export MPMD=${MPMD:-"NO"}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
-
-export NTHREADS_EPOS=${NTHREADS_EPOS:-1}
-export NTHSTACK=${NTHSTACK:-1024000000}
 export APRUN=${APRUN:-""}
 
 # Ops stuff
@@ -57,10 +54,10 @@ export LEVS=${LEVS:-64}
 export HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-"getsigensmeanp_smooth.x"}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-"getsfcensmeanp.x"}
-export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-"getnstensmeanp.x"}
-export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-"getsigensstatp.x"}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
+export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getnstensmeanp.x}
+export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensstatp.x}
 
 # Other variables.
 export PREFIX=${PREFIX:-""}
@@ -68,20 +65,15 @@ export SUFFIX=${SUFFIX:-""}
 export FHMIN=${FHMIN_ENKF:-${FHMIN:-3}}
 export FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
 export FHOUT=${FHOUT_ENKF:-${FHOUT:-1}}
-export SMOOTH_ENS=${SMOOTH_ENS:-"NO"}
-export NMEM_ENS=${NMEM_ENS:-80}
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
+export NMEM_ENKF=${NMEM_ENKF:-80}
 export NST_GSI=${NST_GSI:-0}
 ENKF_SUFFIX=""
-[[ $SMOOTH_ENS = "YES" ]]&&ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "YES" ]]&&ENKF_SUFFIX="s"
 
 ################################################################################
 #  Preprocessing
-if [ -d $DATA ]; then
-   mkdata=NO
-else
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
 ENSSTAT=$COMOUT/ensstat_all
@@ -89,16 +81,16 @@ rm $ENSSTAT
 
 ################################################################################
 # Copy executables to working directory
-$NCP $EXECDIR/$GETSFCENSMEANEXEC $DATA
-$NCP $EXECDIR/$GETATMENSMEANEXEC $DATA
-$NCP $EXECDIR/$GETATMENSSTATEXEC $DATA
+$NCP $GETSFCENSMEANEXEC $DATA
+$NCP $GETATMENSMEANEXEC $DATA
+$NCP $GETATMENSSTATEXEC $DATA
 if [ $NST_GSI -gt 0 ]; then
-   $NCP $EXECDIR/$GETNSTENSMEANEXEC $DATA
+   $NCP $GETNSTENSMEANEXEC $DATA
 fi
 
 ################################################################################
 # Forecast ensemble member files
-for imem in `seq 1 $NMEM_ENS`; do
+for imem in `seq 1 $NMEM_ENKF`; do
    memchar="mem"`printf %03i $imem`
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
@@ -115,8 +107,8 @@ for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
    fhrchar=`printf %03i $fhr`
    $NLN $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean${SUFFIX} sfcf${fhrchar}.ensmean
    $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean${SUFFIX} atmf${fhrchar}.ensmean
-   if [ $SMOOTH_ENS = "YES" ]; then
-      for imem in `seq 1 $NMEM_ENS`; do
+   if [ $SMOOTH_ENKF = "YES" ]; then
+      for imem in `seq 1 $NMEM_ENKF`; do
          memchar="mem"`printf %03i $imem`
          $NLN $COMOUT/$memchar/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}${SUFFIX} atmf${fhrchar}${ENKF_SUFFIX}_$memchar
       done
@@ -132,12 +124,9 @@ done
 # Generate ensemble mean surface and atmospheric files
 
 rm ./hybens_smoothinfo
-if [ $SMOOTH_ENS = "YES" ]; then
+if [ $SMOOTH_ENKF = "YES" ]; then
    $NCP $HYBENSMOOTH ./hybens_smoothinfo
 fi
-
-export OMP_NUM_THREADS=$NTHREADS_EPOS
-export XLSMPOPTS="stack=$NTHSTACK"
 
 if [ $MPMD = "YES" ]; then
 
@@ -148,11 +137,11 @@ if [ $MPMD = "YES" ]; then
    ncnt=-1
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
-      cmd[$cnt]="$GETSFCENSMEANEXEC ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS"
-      cmd[$cnt]="$GETATMENSMEANEXEC ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS"
-      cmd[$cnt]="$GETATMENSSTATEXEC ./                        atmf${fhrchar} $NMEM_ENS"
+      cmd[$cnt]="$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF"
+      cmd[$cnt]="$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF"
+      cmd[$cnt]="$(basename $GETATMENSSTATEXEC) ./                        atmf${fhrchar} $NMEM_ENKF"
       if [ $NST_GSI -gt 0 ]; then
-         cmd[$cnt]="$GETNSTENSMEANEXEC ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENS"
+          cmd[$cnt]="$(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF"
       fi
       ((cnt+=1))
       ((ncnt+=1))
@@ -182,20 +171,20 @@ else # Run serially instead
    rc=0
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
-         $APRUN $GETSFCENSMEANEXEC ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENS
+      $APRUN $(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
+      ra=$?
+      ((rc+=ra))
+      $APRUN $(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
+      ra=$?
+      ((rc+=ra))
+      if [ $NST_GSI -gt 0 ]; then
+         $APRUN $(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF
          ra=$?
          ((rc+=ra))
-         $APRUN $GETATMENSMEANEXEC ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENS
-         ra=$?
-         ((rc+=ra))
-         if [ $NST_GSI -gt 0 ]; then
-            $APRUN $GETNSTENSMEANEXEC ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENS
-            ra=$?
-            ((rc+=ra))
-         fi
-         $APRUN $GETATMENSSTATEXEC ./ atmf${fhrchar} $NMEM_ENS
-         ra=$?
-         ((rc+=ra))
+      fi
+      $APRUN $(basename $GETATMENSSTATEXEC) ./ atmf${fhrchar} $NMEM_ENKF
+      ra=$?
+      ((rc+=ra))
    done
 
 fi
@@ -206,12 +195,12 @@ $ERRSCRIPT || exit 2
 
 ################################################################################
 # If smoothing on but no smoothing output, copy smoothed ensemble atmospheric files
-if [ "$SMOOTH_ENS" = "YES" ]; then
+if [ "$SMOOTH_ENKF" = "YES" ]; then
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
       if [ ! -s atmf${fhrchar}${ENKF_SUFFIX}_mem001 ]; then
          echo WARNING! no smoothed ensemble member for fhour = $fhrchar >&2
-         for imem in `seq 1 $NMEM_ENS`; do
+         for imem in `seq 1 $NMEM_ENKF`; do
             memchar="mem"`printf %03i $imem`
             $NCP atmf${fhrchar}_$memchar atmf${fhrchar}${ENKF_SUFFIX}_$memchar
          done
@@ -258,7 +247,7 @@ cat log_allsfc log_allatm > log_all
 $NCP log_all $ENSSTAT
 
 if [ $SENDDBN = "YES" ] ; then
-for imem in `seq 1 $NMEM_ENS`; do
+for imem in `seq 1 $NMEM_ENKF`; do
    memchar="mem"`printf %03i $imem`
    for fhr in `seq 6 $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
@@ -272,7 +261,7 @@ fi
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]]&&rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2

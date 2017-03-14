@@ -60,12 +60,7 @@ export SENDECF=${SENDECF:-"NO"}
 
 ################################################################################
 # Preprocessing
-if [ -d $DATA ] ; then
-   mkdata=NO
-else
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 export DATATOP=$DATA
 
@@ -124,7 +119,7 @@ $ERRSCRIPT || exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = YES ]]&& rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXITING $0 with return code $err >&2

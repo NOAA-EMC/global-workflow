@@ -41,13 +41,12 @@ export NCP=${NCP:-"/bin/cp -p"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
-export APRUN=${APRUN:-""}
-export APRUNCFP=${APRUNCFP:-""}
 export USE_CFP=${USE_CFP:-"NO"}
+export APRUNCFP=${APRUNCFP:-""}
+export APRUN=${APRUN:-""}
 
 # Executables
-export ENKFUPDEXECDIR=${ENKFUPDEXECDIR:-${EXECDIR:-$BASE_GSI/exec}}
-export ENKFUPDEXEC=${ENKFUPDEXEC:-global_enkf}
+export ENKFEXEC=${ENKFEXEC:-$BASE_GSI/exec/global_enkf}
 
 # Cycling and forecast hour specific parameters
 export CDATE=${CDATE:-"2001010100"}
@@ -65,14 +64,14 @@ export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
 export APREFIX=${APREFIX:-${PREFIX:-""}}
 export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
 
-export GBIASe=${GBIASe:-${GPREFIX}abias_int}
+export GBIASe=${GBIASe:-${APREFIX}abias_int}
 export CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
 export OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
 export RADSTAT=${RADSTAT:-${APREFIX}radstat}
 export ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
-export NMEM_ENKF=${NMEM_ENKF:-0}
+export NMEM_ENKF=${NMEM_ENKF:-80}
 export NVARS_ENKF=${NVARS_ENKF:-5}
 export NAM_ENKF=${NAM_ENKF:-""}
 export SATOBS_ENKF=${SATOBS_ENKF:-""}
@@ -86,23 +85,17 @@ export REDERR=${REDERR:-'2>'}
 
 ################################################################################
 # Preprocessing
-if [ -d $DATA ]; then
-   mkdata=NO
-else
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
 ################################################################################
-
-
-################################################################################
+# Clean up the run directory
 rm convinfo satinfo ozinfo hybens_info
 rm satbias_angle satbias_in
 rm enkf.nml
 rm sanl*
 
+################################################################################
 if [ $USE_CFP = "YES" ]; then
    rm $DATA/untar.sh $DATA/mp_untar.sh
    set +x
@@ -110,8 +103,8 @@ if [ $USE_CFP = "YES" ]; then
 #!/bin/ksh
 { echo
  memchar=$1
- list="cnvstat oznstat radstat"
- for ftype in $list; do
+ flist="cnvstat oznstat radstat"
+ for ftype in $flist; do
     fname=$COMOUT_ANL_ENS/$memchar/${APREFIX}$ftype
     tar -xvf $fname
  done
@@ -121,6 +114,7 @@ EOFuntar
    chmod 755 $DATA/untar.sh
 fi
 
+################################################################################
 # Fixed files
 $NLN $SATANGL    satbias_angle
 $NLN $SATINFO    satinfo
@@ -129,15 +123,16 @@ $NLN $CONVINFO   convinfo
 $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
 
+################################################################################
 # Ensemble guess, observational data and analysis
 
-$NLN $GBIASe satbias_in
+$NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 
+flist="cnvstat oznstat radstat"
 if [ $USE_CFP = "YES" ]; then
    echo "$DATA/untar.sh /" | tee -a $DATA/mp_untar.sh
 else
-   list="cnvstat oznstat radstat"
-   for ftype in $list; do
+   for ftype in $flist; do
       fname=$COMOUT_ANL_ENS/${APREFIX}$ftype
       tar -xvf $fname
    done
@@ -147,20 +142,19 @@ for imem in `seq 1 $NMEM_ENKF`; do
    if [ $USE_CFP = "YES" ]; then
       echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
    else
-      list="cnvstat oznstat radstat"
       for ftype in $flist; do
-         fname=$COMOUT_ANL_ENS/$memchar/$ftype
+         fname=$COMOUT_ANL_ENS/$memchar/${APREFIX}$ftype
          tar -xvf $fname
       done
    fi
    $NLN  $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
-   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}  sanl_${CDATE}_fhr06_${memchar}
+   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}  sanl_${CDATE}_${memchar}
    # recommend JSW to remove the "datestring" from the guess filename
    # e.g. sfg_${DATE}_fhrHH_memXXX to atm_fHH_memXXX, similar for ensemble mean and sanl
 done
 
 # Ensemble mean guess
-export ATMGES_ENSMEAN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+export ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
 $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
 
 if [ $USE_CFP = "YES" ]; then
@@ -172,12 +166,14 @@ if [ $USE_CFP = "YES" ]; then
    fi
 fi
 
-export LEVS=${LEVS:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
+################################################################################
+export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
 export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
 export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
 export LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
 export LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
 
+################################################################################
 # Create global_enkf namelist
 cat <<EOF > enkf.nml
 &nam_enkf
@@ -191,7 +187,7 @@ cat <<EOF > enkf.nml
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
    saterrfact=1.0,numiter=1,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
-   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS_ENKF,
+   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,nvars=$NVARS_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=.true.,readin_localization=.true.,
    use_gfs_nemsio=.true.,
@@ -279,10 +275,11 @@ cat <<EOF > enkf.nml
 &END
 EOF
 
+################################################################################
 # Run enkf update
-$NCP $ENKFEXECDIR/$ENKFUPDEXEC $DATA
-export PGM='$APRUN $DATA/$ENKFUPDEXEC'
-eval $PGM < enkf.nml $REDOUT$PGMOUT $REDERR$PGMERR
+$NCP $ENKFEXEC $DATA/enkf.x
+export PGM='$APRUN $DATA/enkf.x'
+eval $PGM < enkf.nml 1>&1 2>&2
 rc=$?
 
 export ERR=$rc
@@ -290,12 +287,12 @@ export err=$ERR
 $ERRSCRIPT || exit 2
 
 # Cat runtime output files.
-cat $PGMOUT $PGMERR fort.2* > $COMOUT_ANL_ENS/ENKFSTAT
+cat fort.2* > $COMOUT_ANL_ENS/ENKFSTAT
 
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = YES ]]&&rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2
