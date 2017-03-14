@@ -28,12 +28,13 @@ fi
 pwd=$(pwd)
 export HOMEDIR=${HOMEDIR:-$NWROOT}
 export NWPROD=${NWPROD:-$HOMEDIR}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GFS=${BASE_GFS:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export EXECDIR=${EXECDIR:-${ENKFUTILEXECDIR:-$BASE_GSI/util/EnKF/gfs/exec}}
 export DATA=${DATA:-$pwd}
 export COMIN=${COMIN:-$pwd}
-export COMIN_ENS=${COMIN:-$pwd}
+export COMIN_ENS=${COMIN_ENS:-$pwd}
+export COMIN_GES_ENS=${COMIN_GES_ENS:-${COMIN_ENS:-$pwd}}
 export COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
@@ -42,14 +43,25 @@ export NCP=${NCP:-"/bin/cp"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 
+# Scripts
+export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
+
 # Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-"getsigensmeanp_smooth.x"}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-"getsfcensmeanp.x"}
-export RECENATMPEXEC=${RECENATMPEXEC:-"recentersigp.x"}
+export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
+export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
+export RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
+export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
 
 # Files.
 export PREFIX=${PREFIX:-""}
 export SUFFIX=${SUFFIX:-""}
+export APREFIX=${APREFIX:-${PREFIX:-""}}
+export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
+export GPREFIX=${GPREFIX:-${PREFIX:-""}}
+export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
+
+# Variables
+export NMEM_ENKF=${NMEM_ENKF:-80}
 
 # global_chgres stuff
 export CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
@@ -57,46 +69,30 @@ export CHGRESEXEC=${CHGRESEXEC-$BASE_GFS/exec/global_chgres}
 export CHGRESTHREAD=${CHGRESTHREAD:-24}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 
+export RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
+
 ################################################################################
 # Preprocessing
-if [ -d $DATA ]; then
-   mkdata=NO
-else
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
 ################################################################################
 # Compute ensemble mean analysis
 
 # Link ensemble member analysis files
-for imem in `seq 1 $NMEM_ENS`; do
+for imem in `seq 1 $NMEM_ENKF`; do
    memchar="mem"`printf %03i $imem`
-   $NLN $COMIN_ENS/$memchar/${PREFIX}atmanl$SUFFIX ./atmanl_$memchar
-   $NLN $COMIN_ENS/$memchar/${PREFIX}sfcanl$SUFFIX ./sfcanl_$memchar
+   $NLN $COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX ./atmanl_$memchar
 done
 
 # Link ensemble mean analysis
-$NLN $COMIN_ENS/${PREFIX}atmanl.ensmean$SUFFIX ./atmanl_ensmean
-$NLN $COMIN_ENS/${PREFIX}sfcanl.ensmean$SUFFIX ./sfcanl_ensmean
+$NLN $COMIN_ENS/${APREFIX}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
 
-rc=0
 DATAPATH="./"
 
-$NCP $EXECDIR/$GETATMENSMEANEXEC $DATA
-$APRUN $GETATMENSMEANEXEC $DATAPATH atmanl_ensmean atmanl $NMEM_ENS
-ra=$?
-((rc+=ra))
-
-$NCP $EXECDIR/$GETSFCENSMEANEXEC $DATA
-$APRUN $GETSFCENSMEANEXEC $DATAPATH sfcanl_ensmean sfcanl $NMEM_ENS
-ra=$?
-((rc+=ra))
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
+$NCP $GETATMENSMEANEXEC $DATA
+$APRUN $(basename $GETATMENSMEANEXEC) $DATAPATH atmanl_ensmean atmanl $NMEM_ENKF
+rc=$?
 
 export ERR=$rc
 export err=$ERR
@@ -104,11 +100,9 @@ $ERRSCRIPT || exit 2
 
 ################################################################################
 # Chgres high resolution analysis to ensemble resolution
-export ATMANL_HI=${ATMANL_HI:-$COMIN/${PREFIX}atmanl$SUFFIX}
-export SFCANL_HI=${SFCANL_HI:-$COMIN/${PREFIX}sfcanl$SUFFIX}
+export ATMANL_HI=${ATMANL_HI:-$COMIN/${APREFIX}atmanl$ASUFFIX}
 
 $NLN $ATMANL_HI atmanl_hires
-$NLN $SFCANL_HI sfcanl_hires
 
 export JCAP=${JCAP:-$($NEMSIOGET atmanl_hires jcap | awk '{print $2}')}
 export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}')}
@@ -116,60 +110,95 @@ export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}
 if [ $JCAP = $JCAP_ENKF ]; then
    echo "Ensemble and deterministic analysis are at same resolution"
    echo "Does recentering really make sense?"
+   echo "RECENTER_ENKF = $RECENTER_ENKF"
+   echo "set RECENTER_ENKF = NO to turn off recentering"
 fi
 
-export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
-export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
-export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
+# This is to give the user the option to recenter, default is YES
+if [ $RECENTER_ENKF = "YES" ]; then
 
-export SIGI="atmanl_hires"
-export SFCI="sfcanl_hires"
-export SIGO="atmanl_lores"
-export SFCO="sfcanl_lores"
-export GFSOUT=$SIGO
-rm -f $SIGO
-rm -f $SFCO
+   export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
+   export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
+   export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
 
-export SIGLEVEL="NULL"
-export CHGRESVARS=$CHGRESVARS_ENKF
-export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
+   export SIGI="atmanl_hires"
+   export SFCI="NULL"
+   export SIGO="atmanl_lores"
+   export SFCO="NULL"
+   export GFSOUT=$SIGO
+   rm -f $SIGO
+   rm -f $SFCO
 
-$CHGRESSH $SIGI $SFCI $SIGO $SFCO $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF
-rc=$?
+   export SIGLEVEL="NULL"
+   export CHGRESVARS=$CHGRESVARS_ENKF
+   export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
 
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
+   $CHGRESSH $SIGI $SFCI $SIGO $SFCO $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF
+   rc=$?
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT || exit 2
 
 ################################################################################
-# Recenter ensemble member atmospheric analyses about hires analysis
+   # Recenter ensemble member atmospheric analyses about hires analysis
 
-# Link recentered ensemble members
-for imem in `seq 1 $NMEM_ENS`; do
+   # Link recentered ensemble members
+   for imem in `seq 1 $NMEM_ENKF`; do
+      memchar="mem"`printf %03i $imem`
+      $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
+   done
+
+   export FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
+   export FILENAMEIN="atmanl"
+   export FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
+   export FILENAMEOUT="ratmanl"
+
+   $NCP $RECENATMEXEC $DATA
+   $APRUN $(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
+   rc=$?
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT || exit 2
+
+   # Optionally alert recentered files
+   if [ $SENDDBN = "YES" ]; then
+      for imem in `seq 1 $NMEM_ENKF`; do
+         memchar="mem"`printf %03i $imem`
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
+      done
+   fi
+
+fi
+##############################################################
+# Calculate the increment for each ensemble member
+# This is a serial calculation, and since we have multiple processors available
+# this bit should be parallelized
+# On WCOSS, CFP can be used.
+
+rc=0
+for imem in `seq 1 $NMEM_ENKF`; do
+
    memchar="mem"`printf %03i $imem`
-   $NLN $COMIN_ENS/$memchar/${PREFIX}ratmanl$SUFFIX ./ratmanl_$memchar
+
+   export ATMGES=$COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX
+   if [ $RECENTER_ENKF = "YES" ]; then
+      export ATMANL=$COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
+   else
+      export ATMANL=$COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX
+   fi
+   export ATMINC=$COMIN_ENS/$memchar/${APREFIX}atminc.nc
+
+   $CALC_INCREMENT_SH
+   ra=$?
+   ((rc+=ra))
+
 done
-
-export FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
-export FILENAMEIN="atmanl"
-export FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
-export FILENAMEOUT="ratmanl"
-
-$NCP $EXECDIR/$RECENATMPEXEC $DATA
-$APRUN $RECENATMPEXEC $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENS
-rc=$?
 
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
-
-# Optionally alert recentered files
-if [ $SENDDBN = "YES" ]; then
-   for imem in `seq 1 $NMEM_ENS`; do
-      memchar="mem"`printf %03i $imem`
-      $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMIN_ENS/$memchar/${PREFIX}ratmanl$SUFFIX
-   done
-fi
 
 ################################################################################
 # Update surface and NST analysis
@@ -179,7 +208,7 @@ fi
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]]&&rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2

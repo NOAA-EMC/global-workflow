@@ -34,7 +34,7 @@ export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export DATA=${DATA:-$pwd}
-export COMROT=${COMIN:-$pwd}
+export COMROT=${COMROT:-$pwd}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
@@ -64,14 +64,14 @@ export CDUMP=${CDUMP:-"gdas"}
 # Ops related stuff
 export SENDECF=${SENDECF:-"NO"}
 
+# REGRID_NEMSIO_SH specific (To be removed later)
+export REGRID_NEMSIO_SH=${REGRID_NEMSIO_SH:-$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh}
+export REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
+export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt}
+
 ################################################################################
 # Preprocessing
-if [ -d $DATA ] ; then
-   mkdata=NO
-else
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 export DATATOP=$DATA
 
@@ -125,6 +125,13 @@ export FHCYC=${FHCYC_ENKF:-${FHCYC:-0}}
 # nam_stochy (stochastic physics)
 export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 
+# These are needed for REGRID_NEMSIO_SH to work correctly
+# Once we have the NEMS+FV3 working, this will no longer be needed
+# Revist then; 
+# 1. Only APRUN will be needed, once the REGRID_NEMSIO is no longer needed
+export APRUN_FCST=${APRUN_FCST:-""}
+export APRUN_REGRID=${APRUN_REGRID:-""}
+
 ################################################################################
 # Run forecast for ensemble member
 rc=0
@@ -134,18 +141,29 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    memchar="mem"`printf %03i $MEMBER`
    export DATA=$DATATOP/$memchar
-   if [ -d $DATA ]; then
-      rm -rf $DATA
-   fi
+   if [ -d $DATA ]; then rm -rf $DATA; fi
 
+   export APRUN=$APRUN_FCST
    $FORECASTSH
    ra=$?
-   ((rc+=ra))
 
    # Notify a member forecast failed, freeze epos, but continue on to next member
    if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
       ecflow_client --abort="forecast of member $MEMBER FAILED"
    fi
+
+   # Regrid FV3 tiles to global NEMSIO files
+   # This will be un-necessary once NEMS+FV3 can write out global output in single file
+   # Revisit then
+   if [ $ra -eq 0 ]; then
+      export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
+      export APRUN=$APRUN_REGRID
+      $REGRID_NEMSIO_SH
+      rb=$?
+      ((ra+=rb))
+   fi
+
+   ((rc+=ra))
 
    rm log
    $NCP $DATATOP/log_all ./log_old
@@ -173,7 +191,7 @@ $ERRSCRIPT || exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = YES ]]&& rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATATOP
 set +x
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXITING $0 with return code $err >&2
