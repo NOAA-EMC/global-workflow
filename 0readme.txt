@@ -5,6 +5,64 @@
 -----------------------------------------------------------
 -----------------------------------------------------------
 
+=======================================================================================
+Instruction for Running Forcast Experiments with Operational GFS Initial Conditions, V2.0
+=======================================================================================
+
+1. The package so far only works on Cray (Luna and Surge).
+
+2. create a directory on Luna/Surge: 
+   mkdir -p /gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+   cd  /gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+   
+3. If you are going to run experiments without making changes, check out the trunk 
+   svn co https://svnemc.ncep.noaa.gov/projects/fv3gfs/trunk
+
+4. If you are going to make changes, create a branch of the trunk, for instance
+   svn copy https://svnemc.ncep.noaa.gov/projects/fv3gfs/trunk  https://svnemc.ncep.noaa.gov/projects/fv3gfs/branches/yourname/myfv3
+
+   then checkout your branch: svn co https://svnemc.ncep.noaa.gov/projects/fv3gfs/branches/yourname/myfv3
+
+5. Under either ./trunk or ./myfv3 you will find the following directories
+   gfs_workflow.v15.0.0/
+   global_shared.v15.0.0/
+   gdas.v15.0.0/
+   gfs.v15.0.0/
+   lib/
+
+6. goto ./lib, run "build_sfcio.sh" to build the special sfcio library
+
+7. goto ./global_shared.v15.0.0/sorc, run "build_all.sh cray" to build all utility  executables 
+
+8. goto ./global_shared.v15.0.0/sorc/fv3gfs.fd/BUILD, run "COMP_ALL_avx" to build rwo forecst executables 
+   for non-hydrostatic 32-bit and 64-bit cases.  You need to modify COMP_ALL_avx if you want to build
+   hydrostatic executables as well.
+
+9. create your experiment directory, for instance
+    mkdir -p /gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/prtest
+  
+   then copy all files in ./gfs_workflow.v15.0.0/para/exp_fv3gfs to prtest
+
+10. In ./prtest/submit_fv3gfs.sh, change "BASE_SVN" and "tags" to point to your local package.
+    Change "CASE" for model resolution, and "START"/"LAST" for experiment dates.
+    
+11. Use "bsub <submit_fv3gfs.sh" to submit your job. The script will first run CHGRES to create 
+    FV3GFS initial conditions and then submit a forecast job.  After fcst completes, the system 
+    will automatically submit post, vrfy and arch jobs.
+
+
+Note: the system is still under development.  Chnages are made frequently and committed to the trunk.
+      Not all parts are working without flaws. Cycled experiments cannot be run using this package yet.
+      The forecast model included in this package will soon be replaced with the NEMS FV3GFS, workflow 
+      and scripts will be updated accordingly.
+
+
+
+
+==================
+Instruction V1.0
+==================
+
 1. The first working version that can be used for creating boundary and initial conditions 
    and for running FV3GFS forecast-only experiments on WCOSS CRAY computers was saved in the 
    trunk  https://svnemc.ncep.noaa.gov/projects/fv3gfs/trunk/. It has now been moved to 
