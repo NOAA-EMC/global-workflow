@@ -129,8 +129,8 @@ export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 # Once we have the NEMS+FV3 working, this will no longer be needed
 # Revist then; 
 # 1. Only APRUN will be needed, once the REGRID_NEMSIO is no longer needed
-export APRUN_FCST=${APRUN_FCST:-""}
-export APRUN_REGRID=${APRUN_REGRID:-""}
+export APRUN_FCST=${APRUN_FCST:-${APRUN:-""}}
+export APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
 
 ################################################################################
 # Run forecast for ensemble member
@@ -157,7 +157,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
    # Revisit then
    if [ $ra -eq 0 ]; then
       export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
-      export APRUN=$APRUN_REGRID
+      export APRUN=$APRUN_REGRID_NEMSIO
       $REGRID_NEMSIO_SH
       rb=$?
       ((ra+=rb))
