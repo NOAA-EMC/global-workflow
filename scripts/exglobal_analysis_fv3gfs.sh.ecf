@@ -184,6 +184,7 @@ export TZR_QC=${TZR_QC:-0}
 export USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
 export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 export DOIAU=${DOIAU:-"NO"}
+export DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
 
 # Get header information from Guess files
 export JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
@@ -787,32 +788,33 @@ $ERRSCRIPT || exit 2
 
 ##############################################################
 # Calculate analysis increment here before releasing FV3 forecast
+if [ $DO_CALC_INCREMENT ="YES" ]; then
+  if [ $DOIAU = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+     fhrs="03 04 05 06 07 08 09"
+  else
+     fhrs="06"
+  fi
 
-if [ $DOIAU = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-   fhrs="03 04 05 06 07 08 09"
-else
-   fhrs="06"
+  rc=0
+  for fhr in $fhrs; do
+     export ATMGES="sigf$fhr"
+     if [ $fhr = "06" ]; then
+        export ATMANL="siganl"
+        export ATMINC=${COMOUT}/${APREFIX}atminc.nc
+     else
+        export ATMANL="siga$fhr"
+        export ATMINC=${COMOUT}/${APREFIX}atmi0${fhr}.nc
+     fi
+
+     $CALC_INCREMENT_SH
+     ra=$?
+     ((rc+=ra))
+  done
+
+  export ERR=$rc
+  export err=$ERR
+  $ERRSCRIPT || exit 3
 fi
-
-rc=0
-for fhr in $fhrs; do
-   export ATMGES="sigf$fhr"
-   if [ $fhr = "06" ]; then
-      export ATMANL="siganl"
-      export ATMINC=${COMOUT}/${APREFIX}atminc.nc
-   else
-      export ATMANL="siga$fhr"
-      export ATMINC=${COMOUT}/${APREFIX}atmi0${fhr}.nc
-   fi
-
-   $CALC_INCREMENT_SH
-   ra=$?
-   ((rc+=ra))
-done
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
 
 ##############################################################
 # For eobs, eomn and eupd

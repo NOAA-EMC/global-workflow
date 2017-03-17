@@ -115,6 +115,7 @@ fi
 export DOHYBVAR="NO"
 export DIAG_COMPRESS="NO"
 export DIAG_TARBALL="YES"
+export DO_CALC_INCREMENT="NO"
 
 # GSI Namelist options for observation operator only
 export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
