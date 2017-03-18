@@ -317,7 +317,7 @@ fi
 export y=`echo $CDATE | cut -c1-4`
 export m=`echo $CDATE | cut -c5-6`
 export d=`echo $CDATE | cut -c7-8`
-export h=`echo $CDATE | cut -c10-11`
+export h=`echo $CDATE | cut -c9-10`
 export curr_date="${y},${m},${d},${h},0,0"
 export restart_secs=${restart_secs:-0}
 
