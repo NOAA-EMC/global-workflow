@@ -89,13 +89,7 @@ export GDATE=$($NDATE -$CYINC $CDATE)
 export COMDMPTMP=${COMDMPTMP:-$COMDMP}
 eval export COMDMP=$COMDMPTMP
 eval export COMDMPG=$(CDATE=$GDATE CDUMP=$GDUMP eval echo $COMDMPTMP)
-#
-#[[ -n ${COMDMPTMP:-""} ]]&&eval export COMDMP=$COMDMPTMP
-#export COMDMPG=${COMDMPG:-$COMDMP}
-#[[ -n ${COMDMPTMP:-""} ]]&&export COMDMPG=$(CDATE=$GDATE CDUMP=$GDUMP eval echo $COMDMPTMP)
-#
 p=pr$(echo $PSLOT|tr '[A-Z]' '[a-z]')
-#
 cycle=$(echo $CDATE|cut -c9-10)
 cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
 nknd=${CKND:-1}
@@ -164,17 +158,6 @@ fi
 ################################################################################
 # Fit to obs archive.
 if [[ $SAVEFITS = YES && $CDUMP = $CDFNL ]];then
-# mkdir -p $PTMP/$LOGNAME
-# cd $PTMP/$LOGNAME
-  EXP=$p COMOUT=$COMROT
-# if [ $machine = IBMP6 ] ; then
-#   $SUB -a $ACCOUNT  -g $GROUP -e 'CDATE,EXP,COMOUT,FIT_DIR,HORZ_DIR,EXECDIR_FITS' -j savefits.$PSLOT.$CDATE -o $DATA/savefitsm.$PSLOT.$CDATE $SAVEFITSSH
-# else
-#   $SUB -a $ACCOUNT -e 'CDATE=$CDATE,EXP=$EXP,COMOUT=$COMOUT,FIT_DIR=$FIT_DIR,HORZ_DIR=$HORZ_DIR,EXECDIR_FITS=$EXECDIR_FITS' -j savefits.$PSLOT.$CDATE -p 1/1 -o $DATA/savefitsm.$PSLOT.$CDATE $SAVEFITSSH
-# fi
-#
-# just run directly instead of with new job
-# -----------------------------------------
   export CDATE=$CDATE
   export EXP=$p
   export COMOUT=$COMROT
@@ -264,9 +247,9 @@ if [[ $VRFYGMPK = YES && $LOGNAME = glopara && $PSLOT = X ]];then
   $SUB -j nawips.$RX.$CDATE -o $STMP/glopara/nawips.$RX.$CDATE.out $AWIPSSH $CDATE $RX $PARROT
 fi
 
-#
+
+################################################################################
 #   Run VSDB step1 script here
-#
 
 export vsdbsave=${vsdbsave:-$DISK_GLOB/$LOGNAME/archive/vsdb_data} ;#place where vsdb database is saved
 export vsdbhome=${vsdbhome:-$BASEDIR/vsdb}
@@ -274,6 +257,7 @@ export mdlist=${mdlist:-""}
 VSDB_START_DATE=${VSDB_START_DATE:-$CDATE}
 anltype=${anltype:-gfs}
 vlength=${vlength:-$FHMAX2}
+vhr_rain=${vhr_rain:-$FHMAX}
 xdate=$(echo $($NDATE -$BACKDATEVSDB $CDATE) | cut -c1-8)
 if [ $CDUMP = gfs  ] ; then
  if [ $VRFYPRCP = YES -o $VSDB_STEP1 = YES ] ; then

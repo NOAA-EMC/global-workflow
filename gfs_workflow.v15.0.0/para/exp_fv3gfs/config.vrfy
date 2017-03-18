@@ -38,18 +38,18 @@ fi
 
 export VRFYPRCP=YES                # Precip threat scores
 export VRFYFITS=YES
-export ACPROFit=YES
+export ACPROFIT=YES
 export SAVEFITS=NO
 export VRFYTRAK=YES                # Hurricane tracks
 export VRFYRAD=YES                 # Radiance data extract
 export VRFYOZN=YES                 # Ozone data extract
 
-export VRFYGENESIS=YES             # Genesis tracks
+export VRFYGENESIS=NO              # Genesis tracks
 if [ $machine = WCOSS ] ; then
  export NWROOTGENESIS=/ensemble/save/Jiayi.Peng
 elif [ $machine = WCOSS_C ] ; then
   #export NWROOTGENESIS=/gpfs/hps/emc/ensemble/save/Jiayi.Peng
-  export NWROOTGENESIS=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17
+  export NWROOTGENESIS=$BASE_SVN
 fi
 export GENESISSH=$NWROOTGENESIS/ens_tracker.v2.0.1/gfs_genesis_para.sh
 export GETTX_GEN=$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2
@@ -170,6 +170,7 @@ export mdlist="gfs  pr$PSLOT "      # exps (up to 10) to compare in maps
 VSDB_START_DATE=20120601                          # starting date for vsdb maps
 anltype=gfs                                       # default=gfs, analysis type (gfs or gdas) for verification
 ftyplist=pgbq                                     #files used for computing QPF ETS scores
+vhr_rain=180                                      #length for QPF ETS verification
 
 GENGEMPAK=YES
 if [ $machine = WCOSS_C -a $GENGEMPAK = YES ]; then 

@@ -20,19 +20,26 @@ export FHZER=${FHZER:-6}                  ;#accumulation bucket in hours
 export NFCST=${NFCST:-$((FHMAX/FHOUT+1))} ;#number of forecatsts included in netCDF file
 export fdiag=${fdiag:-none}               ;#specified forecast output hours
 
+cycn=`echo $CDATE | cut -c 9-10`
+export TCYC=${TCYC:-".t${cycn}z."}
+export CDUMP=${CDUMP:-gfs}
+export SUFFIX=${SUFFIX:-".nemsio"}
+
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
+export MEMDIR=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
+export BASE_GSM=${BASE_GSM:-/nwprod2/global_shared.v15.0.0}
 export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$BASE_GSM/exec/fv3nc2nemsio.x}
 #--------------------------------------------------
-cd $COMROT ||exit 8
+cd $MEMDIR ||exit 8
 err=0
-input_dir=$COMROT
-output_dir=$COMROT
+input_dir=$MEMDIR
+output_dir=$MEMDIR
 
-in_3d=${CASE}_${CDATE}.nggps3d.${GG}.nc
-in_2d=${CASE}_${CDATE}.nggps2d.${GG}.nc
+#in_3d=${CASE}_${CDATE}.nggps3d.${GG}.nc
+#in_2d=${CASE}_${CDATE}.nggps2d.${GG}.nc
+in_3d=${CDUMP}${TCYC}nggps3d.${GG}.nc 
+in_2d=${CDUMP}${TCYC}nggps2d.${GG}.nc 
 if [ ! -s $in_3d -o ! -s $in_2d ]; then
  echo "$in_3d and $in_2d are missing. exit"
  exit 1
@@ -53,9 +60,17 @@ for fhour in $(echo $fdiag | sed "s?,? ?g"); do
    ifhour=$(printf "%09d" $fhour)              ;#convert to integer
    fhzh=$(( (ifhour/FHZER-1)*FHZER ))          ;#bucket accumulation starting hour
    if [ $fhzh -lt 0 ]; then fhzh=0; fi
-   outfile=${CASE}_nemsio${GG}
-   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outfile $nhcase
+   outheader=${CASE}_nemsio${GG}
+   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outheader $nhcase
    err=$?
+
+   fhr=$((fhour+0))
+   if [ $fhr -lt 100 ]; then fhr=0$fhr; fi
+   if [ $fhr -lt 10 ];  then fhr=0$fhr; fi
+   if [ $fhr -lt 1 ];   then fhr=000;   fi
+   outtmp=${outheader}.${CDATE}_FHR${fhr}
+   outfile=${CDUMP}${TCYC}atmf${fhr}${SUFFIX}
+   mv $outtmp $outfile
 done
 
 echo $(date) EXITING $0 with return code $err >&2

@@ -1,13 +1,12 @@
 #!/bin/ksh
 ###BSUB -L /bin/sh
 ###BSUB -P GFS-T2O
-###BSUB -e /gpfs/hps/ptmp/Fanglin.Yang/fv3/log.nceppost                             
-###BSUB -o /gpfs/hps/ptmp/Fanglin.Yang/fv3/log.nceppost                             
+###BSUB -e log.nceppost                             
+###BSUB -o log.nceppost                             
 ###BSUB -J nceppost                  
 ###BSUB -q dev     
 ###BSUB -M 3072
 ###BSUB -W 10:00
-###BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang/fv3
 ###BSUB -extsched 'CRAYLINUX[]' 
 set -x
 
@@ -36,8 +35,8 @@ export REMAP_GRID=${REMAP_GRID:-latlon}   ;#input grid type, lat-lon or gaussian
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
 export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
-export BASEDIR=${BASEDIR:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/gfs_workflow.v15.0.0/para}
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/gfs/fv3gfs/global_shared.v15.0.0}
+export BASEDIR=${BASEDIR:-${NWROOThps:-/nwprod}/gfs_workflow.v15.0.0/para}
+export BASE_GSM=${BASE_GSM:-${NWROOThps:-/nwprod}/global_shared.v15.0.0}
 
 #export NODES=4
 #export max_core=${pe_node:-24}
@@ -51,7 +50,9 @@ export APRUN=${APRUN_NP:-""}
 
 export PDY=`echo $CDATE|cut -c 1-8`
 export cyc=`echo $CDATE|cut -c 9-10`
-export cycle=t${cyc}z
+export TCYC=${TCYC:-".t${cyc}z."}
+export SUFFIX=${SUFFIX:-".nemsio"}
+export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 
 ####################################
 # Specify RUN Name and model
@@ -86,7 +87,7 @@ export VERBOSE=YES
 ####################################
 export ver=v15.0.0
 export nemsioget=${nemsioget:-/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get}
-export HOMEglobal=${BASE_POST:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/NGGPS/post/trunk}                     
+export HOMEglobal=${BASE_POST:-$BASE_GSM}                     
 export EXECglobal=$HOMEglobal/exec
 export USHglobal=$HOMEglobal/ush
 export USHgfs=$HOMEglobal/ush
@@ -117,21 +118,16 @@ export post_times=$(printf "%03d" $fhour)
 # Specify Restart File Name to Key Off
 #######################################
 # export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
-# export restart_file=${COMIN}/${RUN}.t${cyc}z.sf 
+export restart_file=$COMROT/${PREFIX}atmf
+
+export NEMSINP=$COMIN/${PREFIX}atmf${post_times}${SUFFIX}     
+export FLXINP=$COMIN/${PREFIX}flxf${post_times}${SUFFIX}       
+ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX}  $NEMSINP                                      
+ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX}  $FLXINP                                      
 
 if [ $REMAP_GRID = latlon ]; then
- export restart_file=$COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR
- ln -fs $COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR${post_times}  $COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio 
- ln -fs $COMROT/${CASE}_nemsio${GG}.${PDY}${cyc}_FHR${post_times}  $COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
- export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio
- export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
  export IDRT=0
 else
- export restart_file=$COMROT/gfn${PDY}${cyc}.${RUN}.fhr            
- ln -fs $COMROT/gfn${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio 
- ln -fs $COMROT/fln${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
- export NEMSINP=$COMIN/${RUN}.t${cyc}z.atmf${post_times}.nemsio
- export FLXINP=$COMIN/${RUN}.t${cyc}z.flxf${post_times}.nemsio
  export IDRT=4
 fi
 
@@ -173,20 +169,22 @@ export MODEL_OUT_FORM=binarynemsiompiio
 $HOMEglobal/scripts/exgfs_nceppost.sh.ecf
 
 #--rename master grib2 following parallel convention
-export PGBOUT2_ops=$COMOUT/${RUN}.${cycle}.master.grb2f${post_times}
-export PGBOUT2_ops_idx=$COMOUT/${RUN}.${cycle}.master.grb2if${post_times}
-export PGBOUT2=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2
-export PGBOUT2_idx=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2.idx
-mv $PGBOUT2_ops $PGBOUT2
-mv $PGBOUT2_ops_idx $PGBOUT2_idx
+export PGBOUT2=$COMOUT/${PREFIX}master.grb2f${post_times}
+export PGBOUT2_idx=$COMOUT/${PREFIX}master.grb2if${post_times}
+#export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2f${post_times}
+#export PGBOUT2_ops_idx=$COMOUT/${PREFIX}master.grb2if${post_times}
+#export PGBOUT2=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2
+#export PGBOUT2_idx=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2.idx
+#mv $PGBOUT2_ops $PGBOUT2
+#mv $PGBOUT2_ops_idx $PGBOUT2_idx
 
 ########################
 # call down-stream jobs 
 ########################
 #export APRUN_DWN="aprun -n 32 -N 8 -j 1 -d 3 cfp"
 export APRUN_DWN=${APRUN_DWN:-""}
-export GFSDOWNSH=${GFSDOWNSH:-$BASEDIR/ush/gfs_downstream_nems.sh}
-export GFSDWNSH=${GFSDWNSH:-$BASEDIR/ush/gfs_dwn_nems.sh}
+export GFSDOWNSH=${GFSDOWNSH:-$BASEDIR/ush/fv3gfs_downstream_nems.sh}
+export GFSDWNSH=${GFSDWNSH:-$BASEDIR/ush/fv3gfs_dwn_nems.sh}
 export PARM_SIB=${PARM_SIB:-$BASE_GSM/parm}
 
 export FH=`expr $post_times + 0 `

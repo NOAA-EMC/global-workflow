@@ -147,6 +147,7 @@ program fv3_main
    meta_nemsio%idate(1)=YYYY
    meta_nemsio%idate(2)=MM
    meta_nemsio%idate(3)=DD
+   meta_nemsio%idate(4)=HH
 
    meta_nemsio%varrval(1)=float(fhzh) 
 !  if (ifhr.EQ.0) then

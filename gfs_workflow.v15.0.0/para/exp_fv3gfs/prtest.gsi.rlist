@@ -177,149 +177,46 @@ sst_exists= YES
 */*/arch/ARCA   =       storms.gfso.atcf_gen.$CDATE
 */*/arch/ARCA   =       storms.gfso.atcf_gen.altg.$CDATE
 */*/arch/ARCA   =       trak.gfso.atcfunix.altg.$CDATE
-*/*/arch/ARCA   =       pgbanl.$CDUMP.$CDATE 
-*/*/arch/ARCA   =       pgrbqanl.$CDUMP.$CDATE.grib2
-*/*/arch/ARCA	=	sfnanl.$CDUMP.$CDATE
-*/*/arch/ARCA	=	nsnanl.$CDUMP.$CDATE
-*/*/arch/ARCA	=	gfnanl.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfnf00.$CDUMP.$CDATE
-*/*/arch/ARCA   =       sfnf00.$CDUMP.$CDATE
-*/*/arch/ARCA   =       nsnf00.$CDUMP.$CDATE
-*/*/arch/ARCA	=	pcpstat.$CDUMP.$CDATE
-*/*/arch/ARCA	=	prepqc.$CDUMP.$CDATE
-*/*/arch/ARCA   =       prepqa.$CDUMP.$CDATE
-*/*/arch/ARCA   =       prepqf.$CDUMP.$CDATE
-*/*/arch/ARCA   =       prepbufr.acft_profiles.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gsistat.$CDUMP.$CDATE
+*/*/arch/ARCA   =       ${CDUMP}*pgrbf*
+*/*/arch/ARCA   =       ${CDUMP}*pgrbanl 
+*/*/arch/ARCA   =       ${CDUMP}*pgrb2.1p00.anl
+*/*/arch/ARCA   =       ${CDUMP}*nstanl.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmanl.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*sfcanl.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*abias  
+*/*/arch/ARCA   =       ${CDUMP}*abias_air
+*/*/arch/ARCA   =       ${CDUMP}*abias_pc  
+*/*/arch/ARCA   =       ${CDUMP}*gsitat  
+*/*/arch/ARCA   =       ${CDUMP}*cnvstat  
+*/*/arch/ARCA   =       ${CDUMP}*oznstat  
+*/*/arch/ARCA   =       ${CDUMP}*radstat  
+*/*/arch/ARCA   =       ${CDUMP}*prepbufr  
+*/*/arch/ARCA   =       ${CDUMP}*prepbufr.nr  
+*/*/arch/ARCA   =       ${CDUMP}*prepbufr.acft_profiles  
 */*/arch/ARCA	=	tcinform_relocate.$CDUMP.$CDATE
 */*/arch/ARCA	=	tcvitals_relocate.$CDUMP.$CDATE
 */*/arch/ARCA	=	seaice.5min.blend.grb.$CDUMP.$CDATE
-*/*/arch/ARCA	=	adpsfc.anl.$CDATE
-*/*/arch/ARCA	=	adpsfc.fcs.$CDATE
-*/*/arch/ARCA	=	adpupa.mand.anl.$CDATE
-*/*/arch/ARCA	=	adpupa.mand.fcs.$CDATE
-*/*/arch/ARCA	=	aircar.anl.$CDATE
-*/*/arch/ARCA	=	aircar.fcs.$CDATE
-*/*/arch/ARCA	=	aircft.anl.$CDATE
-*/*/arch/ARCA	=	aircft.fcs.$CDATE
-*/*/arch/ARCA	=	biascr.$CDUMP.$CDATE
-*/*/arch/ARCA   =       biascr_pc.$CDUMP.$CDATE
-*/*/arch/ARCA   =       aircraft_t_bias.$CDUMP.$CDATE
-*/*/arch/ARCA	=	pcpstat.$CDUMP.$CDATE
-*/*/arch/ARCA	=	sfcshp.anl.$CDATE
-*/*/arch/ARCA	=	sfcshp.fcs.$CDATE
-*/*/arch/ARCA   =       gfngm3.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfngm2.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfngm1.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfnges.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfngp1.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfngp2.$CDUMP.$CDATE
-*/*/arch/ARCA   =       gfngp3.$CDUMP.$CDATE
-*/*/arch/ARCA	=	radstat.$CDUMP.$CDATE
-*/*/arch/ARCA   =       cnvstat.$CDUMP.$CDATE
-*/*/arch/ARCA   =       oznstat.$CDUMP.$CDATE
-*/*/arch/ARCA	=	tcinform_relocate.$CDUMP.$CDATE
-*/*/arch/ARCA	=	tcvitals_relocate.$CDUMP.$CDATE
-*/*/arch/ARCA   =       pgbf*.$CDUMP.$CDATE
 
-#ARCB, only keep pgrbq*grib2
-*/*/arch/ARCB   =       pgrbqanl.$CDUMP.$CDATE.grib2
-*/*/arch/ARCB   =       pgrbq*.$CDUMP.$CDATE.grib2
+*/*/arch/ARCA   =       ${CDUMP}*atmgm3.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmgm2.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmgm1.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmges.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmgp1.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmgp2.nemsio
+*/*/arch/ARCA   =       ${CDUMP}*atmgp3.nemsio
 
-*/gdas/arch/ARCC   =    flnf0[0-9].$CDUMP.$CDATE
-*/gdas/arch/ARCC   =    sfnf0[1-9].$CDUMP.$CDATE
-*/gdas/arch/ARCC   =    nsnf0[1-9].$CDUMP.$CDATE
-*/gdas/arch/ARCD   =    gfnf0[1-9].$CDUMP.$CDATE
+*/*/arch/ARCB   =       ${CDUMP}*pgrb2.0p25* 
 
-*/gfs/arch/ARCC   =     flnf??.$CDUMP.$CDATE
-*/gfs/arch/ARCC   =     flnf1[0-6]?.$CDUMP.$CDATE
-*/gfs/arch/ARCD   =     flnf1[7-9]?.$CDUMP.$CDATE
-*/gfs/arch/ARCD   =     flnf2??.$CDUMP.$CDATE
+*/gdas/arch/ARCC   =    ${CDUMP}*flxf*
+*/gdas/arch/ARCC   =    ${CDUMP}*nstf*
+*/gdas/arch/ARCC   =    ${CDUMP}*sfcf*
+*/gdas/arch/ARCD   =    ${CDUMP}*atmf*
 
+*/gfs/arch/ARCC   =     ${CDUMP}*master.grb2f0*
+*/gfs/arch/ARCD   =     ${CDUMP}*master.grb2f1*
 
-#--save for HWRF
-*/gfs/arch/ARCF   =       pgbm00.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm03.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm06.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm09.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm12.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm15.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm18.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm21.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm24.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm27.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm30.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm33.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm36.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm39.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm42.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm45.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm48.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm51.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm54.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm57.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm60.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm63.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm66.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm69.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm72.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm75.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm78.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm81.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm84.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm87.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm90.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm93.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm96.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm99.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm102.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm105.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm108.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm111.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm114.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm117.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm120.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm123.$CDUMP.$CDATE.grib2
-*/gfs/arch/ARCF   =       pgbm126.$CDUMP.$CDATE.grib2
-
-
-
-# gdas required online arch step
-*/gdas/arch/ARCR        =       gsistat.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       biascr.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       biascr_pc.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       biascr.int.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       aircraft_t_bias.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       pgbanl.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       pgbf00.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       pgbf03.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       pgbf06.$CDUMP.$CDATE
-*/gdas/arch/ARCR        =       pgbf09.$CDUMP.$CDATE
-
-# gdas optional online arch step
-*/gdas/arch/ARCO       =       atcfunix.$CDUMP.$CDATE
-*/gdas/arch/ARCO       =       tcinform_relocate.$CDUMP.$CDATE
-*/gdas/arch/ARCO       =       tcvitals_relocate.$CDUMP.$CDATE
-#*/gdas/arch/ARCO       =       cnvstat.$CDUMP.$CDATE
-
-# gfs required online arch step
-*/gfs/arch/ARCR        =       gsistat.$CDUMP.$CDATE
-*/gfs/arch/ARCR        =       biascr.$CDUMP.$CDATE
-*/gfs/arch/ARCR        =       biascr_pc.$CDUMP.$CDATE
-*/gfs/arch/ARCR        =       aircraft_t_bias.$CDUMP.$CDATE
-
-# gfs optional online arch step
-*/gfs/arch/ARCO        =       pgbanl.$CDUMP.$CDATE
-*/gfs/arch/ARCO        =       pgbf*.$CDUMP.$CDATE
-*/gfs/arch/ARCO        =       atcfunix.$CDUMP.$CDATE
-*/gfs/arch/ARCO        =       atcf252hr.$CDUMP.$CDATE
-*/gfs/arch/ARCO        =       trak.gfso.atcfunix.$CDATE
-*/gfs/arch/ARCO        =       storms.gfso.atcf_gen.$CDATE
-*/gfs/arch/ARCO        =       storms.gfso.atcf_gen.altg.$CDATE
-*/gfs/arch/ARCO        =       trak.gfso.atcfunix.altg.$CDATE
-*/gfs/arch/ARCO        =       tcinform_relocate.$CDUMP.$CDATE
-*/gfs/arch/ARCO        =       tcvitals_relocate.$CDUMP.$CDATE
-
+#--save for HWRF ???
+#*/gfs/arch/ARCF   =       pgbm00.${CDUMP}.$CDATE.grib2
 
 # enkf optional online arch step
 */enkf/arch/ARCO      = gsistat_${CDATE}_ensmean
