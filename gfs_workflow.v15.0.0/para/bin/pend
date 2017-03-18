@@ -60,6 +60,10 @@ $PLOG "$RUNLOG" OK "$jn ended"
 
 export CKSH=$(echo $CSTEP|cut -c-4)
 export CKND=$(echo $CSTEP|cut -c5-)
+
+cycle=$(echo $CDATE|cut -c9-10)
+export TCYC=${TCYC:-".t${cycle}z."}
+export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 #
 export PENDDIR=${PENDDIR:-$PTMP}
 mkdir -p $PENDDIR/$LOGNAME/pend
@@ -237,9 +241,9 @@ post)
 # Get FHMAX_HF
   pgb_fh_seg5=${pgb_fh_seg5:-240}
   pgb_fh_seg6=${pgb_fh_seg6:-120}
-  pgb_fh_seg7=${pgb_fh_seg7:-90}
-  pgb_fh_seg8=${pgb_fh_seg8:-60}
-  pgb_fh_seg9=${pgb_fh_seg9:-30}
+  pgb_fh_seg7=${pgb_fh_seg7:-090}
+  pgb_fh_seg8=${pgb_fh_seg8:-060}
+  pgb_fh_seg9=${pgb_fh_seg9:-030}
 
   if [[ $VRFY_ALL_SEG = YES ]] ; then
      nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy$nknd"
@@ -248,20 +252,20 @@ post)
         nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
       elif [[ $CDUMP = gfs ]]; then 
         if [[ ${ILPOST:-0} -gt 0 ]] ; then
-          if [[ -s $COMROT/pgbf$pgb_fh_seg7.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg8.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg9.$CDUMP.$CDATE && -s $COMROT/pgbf$pgb_fh_seg5.$CDUMP.$CDATE ]] ; then
+          if [[ -s $COMROT/${PREFIX}pgrb2.0p25.f$pgb_fh_seg7 && -s $COMROT/${PREFIX}pgrb2.0p25.f$pgb_fh_seg8 && -s $COMROT/${PREFIX}pgrb2.0p25.f$pgb_fh_seg9 && -s $COMROT/${PREFIX}pgrb2.0p25.f$pgb_fh_seg5 ]] ; then
             nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
           else
             export REDO_POST=NO
             nextjobs=""
           fi
-        elif [[ -s $COMROT/pgbf$(eval echo \$fmax1).$CDUMP.$CDATE && -s $COMROT/pgbf$(eval echo \$fmaxn).$CDUMP.$CDATE ]] ; then
+        elif [[ -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmax1) && -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmaxn) ]] ; then
           nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
         else
           export REDO_POST=NO
           nextjobs=""
         fi
       fi
-  elif [[ $nknd -lt $mfcst && $CDUMP = gfs && -s $COMROT/pgbf$(eval echo \$fmax$mfcst).$CDUMP.$CDATE ]] ; then
+  elif [[ $nknd -lt $mfcst && $CDUMP = gfs && -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmax$mfcst) ]] ; then
       nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
   fi
   if [[ $nknd -eq 1 && $MANAL = 1 && $CDUMP = $CDFNL ]];then

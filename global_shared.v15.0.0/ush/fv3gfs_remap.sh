@@ -1,14 +1,13 @@
 #!/bin/ksh
 ###BSUB -L /bin/sh
-###BSUB -P GFS-T2O
-###BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/log.remap
-###BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/log.remap
+###BSUB -P FV3GFS-T2O
+###BSUB -oo log.remap
+###BSUB -eo log.remap
 ###BSUB -J remap_fv3
 ###BSUB -q dev
 ###BSUB -M 1536
 ####BSUB -x
 ###BSUB -W 10:00
-###BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang
 ###BSUB -extsched 'CRAYLINUX[]'
 set -ax
 
@@ -22,10 +21,13 @@ set -ax
 export CDATE=${CDATE:-2016100300}
 export CASE=${CASE:-C192}                 ;#C48 C96 C192 C384 C768 C1152 C3072
 export GG=${master_grid:-0p25deg}         ;#1deg 0p5deg 0p25deg 0p125deg     
+export CDUMP=${CDUMP:-gfs}
 
+cycn=`echo $CDATE | cut -c 9-10`
+export TCYC=${TCYC:-".t${cycn}z."}
 export PSLOT=${PSLOT:-fv3gfs}
 export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}                  
+export MEMDIR=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}                  
 export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gfs/fv3gfs/global_shared.v15.0.0}
 export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
 
@@ -46,7 +48,7 @@ if [ $GG = 0p5deg  ];  then  export nlon=720 ;  export nlat=360 ;fi
 if [ $GG = 0p25deg ];  then  export nlon=1440 ; export nlat=720 ;fi
 if [ $GG = 0p125deg ]; then  export nlon=2880 ; export nlat=1440 ;fi
 #--------------------------------------------------
-cd $COMROT ||exit 8
+cd $MEMDIR ||exit 8
 err=0
 
 #--for non-hydrostatic case
@@ -94,8 +96,9 @@ testout=$?
 for type in atmos_4xdaily nggps2d nggps3d ; do
 
 export in_file="${CDATE}0000.${type}"
-export out_file=${CASE}_${CDATE}.${type}.${GG}.nc
-if [ -s $COMROT/$out_file ]; then rm -f $COMROT/$out_file ; fi
+#export out_file=${CASE}_${CDATE}.${type}.${GG}.nc
+export out_file=${CDUMP}${TCYC}${type}.${GG}.nc
+if [ -s $MEMDIR/$out_file ]; then rm -f $MEMDIR/$out_file ; fi
 if [ $testout -eq 0 ]; then
  export fld=$(eval echo \${${type}_nh})
 else
@@ -103,9 +106,9 @@ else
 fi
 
 
- $APRUN_REMAP $REMAPEXE --input_dir $COMROT \
+ $APRUN_REMAP $REMAPEXE --input_dir $MEMDIR \
                 --input_file $in_file \
-                --output_dir $COMROT \
+                --output_dir $MEMDIR \
                 --output_file $out_file \
                 --input_mosaic $grid_loc \
                 --scalar_field "$fld" \

@@ -25,22 +25,26 @@ elif [ $machine = THEIA ]; then
 fi
 RLIST=$EXPDIR/pr${PSLOT}.gsi.rlist
 
-# ----------------------------------
-# options for NEMSIO
-# ----------------------------------
+ymd=`echo $CDATE | cut -c1-8`
+cycn=`echo $CDATE | cut -c9-10`
+month=`echo $CDATE |cut -c5-6`
+
+# ---------------------------------------------
+# forecast output file type and name convention
+# ${CDUMP}${TCYC}${FTYPE}${FHR}${SUFFIX}, where   
+# CDUMP  = gfs or gdas
+# TCYC   = .t${cycn}z.  or .${CDATE}z. 
+# FTYPE  = atm, sfc, flx, nst, log
+# FHR    = anl or f$fhour, fhour is three digits
+# SUFFIX    = ".nemsio", ".grib2", or ".nc"
+# ---------------------------------------------
+
 use_gfs_nemsio=.true.
+TCYC=".t${cycn}z."        
+SUFFIX=".nemsio"
+PREFIX=${CDUMP}${TCYC}
 NEMSIO_IN=.true.
 NEMSIO_OUT=.true.
-OUTTYP_F=1                   #NEMSIO
-
-SIGISUF='gfnanl'
-SFCISUF='sfnanl'
-NSTISUF='nsnanl'
-FLXISUF='flnanl'
-SIGOSUF='gfn'
-SFCOSUF='sfn'
-NSTOSUF='nsn'
-FLXOSUF='fln'
 
 # ----------------------------------
 # user account 
@@ -122,7 +126,7 @@ if [ $machine = WCOSS ]; then
  NWPROD=/nwprod
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
- BASE_SVN=/global/save/$LOGNAME/svn
+ BASE_SVN=/global/save/$LOGNAME/svn/fv3gfs
  tags=trunk_r88010
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
@@ -137,8 +141,8 @@ elif [ $machine = WCOSS_C ]; then
  NWPROD=/gpfs/hps/nco/ops/nwprod
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
- BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
- tags=trunk     
+ BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+ tags=trunk_r89554
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
  FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
@@ -146,7 +150,7 @@ elif [ $machine = THEIA ]; then
  TOPDIR=/scratch4/NCEPDEV/global
  DISK_GLOB=$TOPDIR/save              
  NOSCRUB=/scratch4/NCEPDEV/global/noscrub
- BASE_SVN=/scratch4/NCEPDEV/global/save/glopara/svn
+ BASE_SVN=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs
  STMP=/scratch4/NCEPDEV/stmp3
  PTMP=/scratch4/NCEPDEV/stmp4
  DMPDIR=/scratch4/NCEPDEV/global/noscrub/dump
@@ -164,16 +168,18 @@ else
  exit
 fi
 
-ymd=`echo $CDATE | cut -c1-8`
-cycn=`echo $CDATE | cut -c9-10`
-month=`echo $CDATE |cut -c5-6`
+
+envir=para
+NET=gfs
+#COMROUT=$PTMP/$LOGNAME/pr${PSLOT}/com2
+#ROTDIR=$COMROUT/$NET/$envir
 
 ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
 MEMDIR=$ROTDIR/${CDUMP}.$ymd/$cycn
 COMROT=$ROTDIR
 COMDIR=$TOPDIR                        
-DAYDIR=$MEMDIR
 COMDAY=$MEMDIR
+VFYARC=$ROTDIR/vrfyarch
  
 # ------------------- 
 # COMPONENT SETTINGS 
@@ -192,30 +198,30 @@ radmon_ver=2.0.2a
 minmon_ver=1.0.0
 
 # Location
-BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para
-BASE_BUFRSND=$BASE_SVN/fv3gfs/$tags/gfs.$gfs_ver
-BASE_ENKF=$BASE_SVN/fv3gfs/$tags/gdas.$gdas_ver
-BASE_EMCSFC=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
-BASE_GSM=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
-BASE_GSI=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
-BASE_TROPCY=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
-#BASE_POST=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
-BASE_POST=$BASE_SVN/fv3gfs/post
+BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para
+BASE_BUFRSND=$BASE_SVN/$tags/gfs.$gfs_ver
+BASE_ENKF=$BASE_SVN/$tags/gdas.$gdas_ver
+BASE_EMCSFC=$BASE_SVN/$tags/global_shared.$global_shared_ver
+BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
+BASE_GSI=$BASE_SVN/$tags/global_shared.$global_shared_ver
+BASE_TROPCY=$BASE_SVN/$tags/global_shared.$global_shared_ver
+#BASE_POST=$BASE_SVN/$tags/global_shared.$global_shared_ver
+BASE_POST=$BASE_SVN/post_new
 
 #BASE_PREP=$BASE_SVN/obsproc/releases/obsproc_prep.$obsproc_prep_ver
-BASE_PREP=$BASE_SVN/fv3gfs/obsproc_prep_RB-3.5.0 
+BASE_PREP=$BASE_SVN/obsproc_prep_RB-3.5.0 
 #BASE_PREP_GLOBAL=$BASE_SVN/obsproc/releases/obsproc_global.$obsproc_global_ver
-BASE_PREP_GLOBAL=$BASE_SVN/fv3gfs/obsproc_global.$obsproc_global_ver
+BASE_PREP_GLOBAL=$BASE_SVN/obsproc_global.$obsproc_global_ver
 BASE_VERIF=$BASE_SVN/verif
 if [ $machine = WCOSS_C ]; then
- BASE_MINMON=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
- BASE_RADMON=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+ BASE_MINMON=$BASE_SVN/$tags/global_shared.$global_shared_ver
+ BASE_RADMON=$BASE_SVN/$tags/global_shared.$global_shared_ver
 else
  BASE_MINMON=$BASE_SVN/verif/global/tags/Minimization_Monitor_${minmon_ver}
  BASE_RADMON=$BASE_SVN/verif/global/tags/Radiance_Monitor-${radmon_ver}
 fi
 BASE_OZNMON=$BASE_SVN/gsi/REL-5.0.0
-BASE_NEMS=$BASE_SVN/fv3gfs/NEMS/trunk_77848/NEMS
+BASE_NEMS=$BASE_SVN/NEMS/trunk_77848/NEMS
 
 PENDDIR=$PTMP 
 FIXSYND=$BASE_PREP/fix
@@ -237,7 +243,7 @@ FIT_DIR=$ARCDIR/fits                                    # Directory for SAVEFITS
 HORZ_DIR=$ARCDIR/horiz                                  # Directory for SAVEFITS output
 DATATMP='$STMP/$LOGNAME/$PSLOT$CDATE$CDUMP$CSTEP'
 eval TMPDIR=$DATATMP
-KEEPDATA=YES
+KEEPDATA=NO
 
 # ---------------------------
 # utilities and misc options
@@ -357,7 +363,7 @@ COMCOP='$DMPDIR/$CDATE/${CDUMP}'
 
 
 #----------------------------------------------------------
-mkdir -p $MEMDIR $COMROT $COMDAY $ARCDIR $ARCDIR $FIT_DIR $HORZ_DIR
+mkdir -p $MEMDIR $COMROT $COMDAY $ARCDIR $ARCDIR $FIT_DIR $HORZ_DIR $VFYARC
 permission=755
 chgrp rstprod $ARCDIR
 chgrp rstprod $FIT_DIR

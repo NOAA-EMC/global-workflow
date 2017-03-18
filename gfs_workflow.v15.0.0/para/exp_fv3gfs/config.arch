@@ -5,20 +5,14 @@ ATARFILE=$ATARDIR/\$ADAY.tar
 #---------------------------------------
 # file retention hours in ROTDIR  
 #---------------------------------------
-HRKTMP=12                          # Hours to keep tmpdir 
-HRKRES=48                          # Hours to keep restart files 
 HRKROT=168                         # Hours to keep rotating archive
-HRKFLX=48                          # Hours to keep flx files in $COMROT
-HRKSIG=168                         # Hours to keep sigma/gfnf files in $COMROT
-HRKSIGG=48                         # Hours to keep sigma/gfnf files from analysis
-HRKPGBM=264                        # Hours to keep hires pgb files
-HRKOCN_NC=96                       # Hours to keep ocean netcdf file
-HRKOCN_ANL=96                      # Hours to keep ocean analysis file
-HRKOCN_GRB=96                      # Hours to keep ocean grib output file
-HRKENKF=24                         # Hours to keep enkf files
-HRKETMP=06                         # Hours to keep enkf tmpdir
+HRKTMP=12                          # Hours to keep tmpdir 
 HRKTMPGDAS=06                      # Hours to keep GDAS tmpdir
 HRKTMPGFS=12                       # Hours to keep GFS tmpdir 
+HRKVFYARC=240                      # Hours to keep pgbq for precip verification
+
+HRKENKF=24                         # Hours to keep enkf files
+HRKETMP=06                         # Hours to keep enkf tmpdir
 HRKGEMPAK=24                       # Hours to keep GFS GEMPAK
 HRKBUFRSND=24                      # Hours to keep GFS bufr soundings
 HRKCOM=$HRKENKF                    # Hours to keep production look-alike
@@ -43,17 +37,11 @@ USE_HPSS=YES
 ##RSTPRODSH=/nwprod/runhistory.v2.1.23/ush/rhist_restrict.sh
 TIMELIMARCH=06:00:00                  # CPU limit (hhmmss) for hpss archive
 
-io_save=360
-jo_save=181
 
 ARCHCOPY=YES                       #
 ARCHSCP=NO                         # 
 ARCHDAY=0                          # days to delay arch step 
 ARCHSH=$JOBSDIR/arch.sh
-
-DO_PRODNAMES=NO 
-PRODNAMES_DIR=$PTMP/$LOGNAME
-SETUPPRODNAMESH=$BASEDIR/ush/setup_prodnames.sh
 
 PARA_CHECK_STATUS=NO  
 PARA_CHECK_CDUMP="gfs gdas"
@@ -81,19 +69,19 @@ ARCB06GDAS='$CDATE${CDUMP}2.tar'
 ARCB12GDAS='$CDATE${CDUMP}2.tar'
 ARCB18GDAS='$CDATE${CDUMP}2.tar'
 #
-ARCC00GDAS='$CDATE${CDUMP}3.tar'
-ARCC06GDAS='$CDATE${CDUMP}3.tar'
-ARCC12GDAS='$CDATE${CDUMP}3.tar'
-ARCC18GDAS='$CDATE${CDUMP}3.tar'
+#ARCC00GDAS='$CDATE${CDUMP}3.tar'
+#ARCC06GDAS='$CDATE${CDUMP}3.tar'
+#ARCC12GDAS='$CDATE${CDUMP}3.tar'
+#ARCC18GDAS='$CDATE${CDUMP}3.tar'
 #ARCC00GFS='$CDATE${CDUMP}3.tar'
 #ARCC06GFS='$CDATE${CDUMP}3.tar'
 #ARCC12GFS='$CDATE${CDUMP}3.tar'
 #ARCC18GFS='$CDATE${CDUMP}3.tar'
 #
-ARCD00GDAS='$CDATE${CDUMP}4.tar'
-ARCD06GDAS='$CDATE${CDUMP}4.tar'
-ARCD12GDAS='$CDATE${CDUMP}4.tar'
-ARCD18GDAS='$CDATE${CDUMP}4.tar'
+#ARCD00GDAS='$CDATE${CDUMP}4.tar'
+#ARCD06GDAS='$CDATE${CDUMP}4.tar'
+#ARCD12GDAS='$CDATE${CDUMP}4.tar'
+#ARCD18GDAS='$CDATE${CDUMP}4.tar'
 #ARCD00GFS='$CDATE${CDUMP}4.tar'
 #ARCD06GFS='$CDATE${CDUMP}4.tar'
 #ARCD12GFS='$CDATE${CDUMP}4.tar'

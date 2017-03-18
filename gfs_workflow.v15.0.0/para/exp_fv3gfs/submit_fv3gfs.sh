@@ -28,22 +28,26 @@ export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
 export tags=trunk       
 export PTMP=/gpfs/hps/ptmp
-export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn
-export BASEDIR=$BASE_SVN/fv3gfs/$tags/gfs_workflow.$workflow_ver/para     
-export BASE_GSM=$BASE_SVN/fv3gfs/$tags/global_shared.$global_shared_ver
+export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para     
+export BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
 export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
 
 export CASE=C192
 export res=`echo $CASE|cut -c 2-`
-export ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr$PSLOT    
+
+envir=para
+NET=gfs
+COMROUT=/gpfs/hps/ptmp/$LOGNAME/pr${PSLOT}/com2
+ROTDIR=$COMROUT/$NET/$envir
 export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
 mkdir -p $ROTDIR $FV3ICDIR
 
 CDUMP=gfs
 START=20170309
-LAST=20170312
+LAST=20170310
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
@@ -80,7 +84,7 @@ if [ $dev = surge ]; then d1=gd1; fi
 #-- copy over pgbanl for verification
 MEMDIR=$ROTDIR/${CDUMP}.${yymmdd}/${cyc}
 if [ ! -d $MEMDIR ]; then mkdir -p $MEMDIR; fi
-cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $MEMDIR/.
+cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $MEMDIR/gfs.t${cyc}z.pgrbanl
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $tmp_dir/siganl.gfs.$cdate
 cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $tmp_dir/sfcanl.gfs.$cdate
 

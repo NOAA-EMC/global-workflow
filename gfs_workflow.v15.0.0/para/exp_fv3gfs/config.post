@@ -48,8 +48,8 @@ APRUN_NP="aprun -n $npe_po -N $npe_node_po -j 1 -d $NTHRPOST -cc depth"
 
 
 GFS_DOWNSTREAM=YES                               #run downstream jobs 
-GFSDOWNSH=$USHDIR/gfs_downstream_nems.sh
-GFSDWNSH=$USHDIR/gfs_dwn_nems.sh
+GFSDOWNSH=$USHDIR/fv3gfs_downstream_nems.sh
+GFSDWNSH=$USHDIR/fv3gfs_dwn_nems.sh
 downset=1
 npe_node_dwn=8                                   #number of tasks per node 
 npe_dwn=$((NODES*npe_node_dwn))

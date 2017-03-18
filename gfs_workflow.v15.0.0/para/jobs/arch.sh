@@ -17,9 +17,9 @@ echo
 export CKSH=$(echo $CSTEP|cut -c-4)
 export CKND=$(echo $CSTEP|cut -c5-)
 eval export DATA=$DATATMP
-export COMROTTMP=${COMROTTMP:-${MEMDIR:-COMROT}}
-eval export COMROT=$COMROTTMP
-eval export COMDAY=${COMDAY:-${MEMDIR:-COMROT}}
+export ROTDIR=${ROTDIR:-$PTMP/$LOGNAME/pr$PSLOT}
+export COMROT=${MEMDIR:-COMROT}
+export COMDAY=${COMDAY:-$MEMDIR}
 export RESDIR=${RESDIR:-$COMROT/RESTART}
 export ARCH_TO_HPSS=${ARCH_TO_HPSS:-YES}
 export ARCH_TO_DISK=${ARCH_TO_DISK:-NO}
@@ -30,22 +30,18 @@ export BASEDIR=${BASEDIR:-..}
 export SHDIR=${SHDIR:-$BASEDIR/bin}
 export USHDIR=${USHDIR:-$BASEDIR/ush}
 export NWPROD=${NWPROD:-$BASEDIR}
+
+cycn=$(echo $CDATE|cut -c 9-10)
+export TCYC=${TCYC:-".t${cycn}z."} 
+export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 #
 PBEG=${PBEG:-$SHDIR/pbeg}
 PEND=${PEND:-$SHDIR/pend}
 PERR=${PERR:-$SHDIR/perr}
+
 HRKTMP=${HRKTMP:-24}
-HRKRES=${HRKRES:-24}
-HRKSIG=${HRKSIG:-120}
-HRKFLX=${HRKFLX:-192}
-HRKSIGG=${HRKSIGG:-120}
-HRKPGBM=${HRKPGBM:-48}
 HRKROT=${HRKROT:-120}
-HRKDAY=${HRKDAY:-${HRKROT:-120}}
-HRKVFY=${HRKVFY:-${HRKROT:-120}}
-HRKOCN_NC=${HRKOCN_NC:-$HRKSIG}
-HRKOCN_ANL=${HRKOCN_ANL:-$HRKROT}
-HRKOCN_GRB=${HRKOCN_GRB:-$HRKROT}
+HRKVFYARC=${HRKVFYARC:-240}
 HRKTMPGDAS=${HRKTMPGDAS:-$HRKTMP}
 HRKTMPGFS=${HRKTMPGFS:-$HRKTMP}
 HRKGEMPAK=${HRKGEMPAK:-$HRKTMP}
@@ -110,27 +106,35 @@ BDATE=$($NDATE -$BACKDATE $CDATE)    # online archive date only
 #--# Copy files to online archive
 if [[ $ARCHCOPY = YES ]];then
 #--------------------------------
- if [[ ! -s $ARCDIR ]]; then
-    mkdir -p $ARCDIR
- fi
+ if [ ! -s $ARCDIR ]; then mkdir -p $ARCDIR; fi
+ if [ ! -s $VFYARC ]; then mkdir -p $VFYARC; fi
  export CDATE=$BDATE
- cd $DATA ||exit 8
 
- # return code gets checked for any required files (ARCR)
-  $PCOP $CDATE/$CDUMP/arch/ARCR $COMROT   $DATA <$RLIST
-  rc=$?
+# copy 1-def pgbf and other stats data direct to ARCDIR
+cd $COMROT 
+for f in *pgrbf* ; do
+ fhr=$(echo $f |cut -c 15-18)
+ fhr=$((fhr+0)); if [ $fhr -lt 10 ]; then fhr=0$fhr; fi
+ $NCP $f  $ARCDIR/pgbf${fhr}.$CDUMP.$CDATE
+done
+$NCP ${PREFIX}pgrbanl $ARCDIR/pgbanl.$CDUMP.$CDATE
 
- # dayfiles may not be stored in COMROT...
- #    need to work on this to avoid unnecessary errors
- [ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMP/arch/ARCR $COMDAY   $DATA <$RLIST
+for f in cnvstat oznstat radstst gsistat abias abias_air abias_pc ;do 
+ $NCP ${PREFIX}$f $ARCDIR/.                 
+done
+for f in atcf tcinform_relocate tcvitals_relocate trak storm enkfstat ;do
+ $NCP ${f}* $ARCDIR/.                 
+done
 
- ((rc+=$?))
-
- # optional files
- $PCOP $CDATE/$CDUMP/arch/ARCO $COMROT $DATA <$RLIST
- [ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMP/arch/ARCO $COMDAY   $DATA <$RLIST
-
- $NCP *${CDATE}* $ARCDIR/
+#  copy pgbq to temporary directory for precipitation verification
+if [ $CDUMP = gfs -a -d $VFYARC ]; then
+fhr=00
+while [ $fhr -le ${vhr_rain:-180} ]; do
+ $NCP ${PREFIX}pgrbq$fhr  $VFYARC/pgbq${fhr}.$CDUMP.$CDATE
+ fhr=$((fhr+6))
+ if [ $fhr -lt 10 ]; then fhr=0$fhr; fi
+done
+fi
 #-----------------------------
 fi
 #-----------------------------
@@ -257,164 +261,20 @@ fi
 rdate=$($NDATE -$HRKTMPDIR $CDATE)
 rm -rf $(CDATE=$rdate CDUMP=$CDUMP CSTEP='*' eval ls -d $DATATMP) 2>/dev/null
 
-# Save ARCDIR
-export ARCDIR_SAVE=$ARCDIR
 
-# define function to check that verifications files are archived online before clean up.
-chkarc ()
-{
-  set -x
-    ARCDIR=$1
-    for verif_file in `ls $rmfiles 2>/dev/null`
-    do
-      if [ ! -s $ARCDIR/$verif_file ]; then
-        set +x
-        echo "****  VERIFICATION FILE $verif_file MISSING FROM $ARCDIR"
-        echo "****  WILL ATTEMPT TO MOVE $verif_file TO $ARCDIR NOW"
-        echo "****  TAPE ARCHIVE SHOULD BE CHECKED"
-        set -x
-        mv $verif_file $ARCDIR
-      fi
-    done
-}
-
-## for dayfiles, cd to COMDAY to avoid hitting unix line length limit ("Arg list too long.")
-cd $COMDAY
-rdate=$($NDATE -$HRKDAY $CDATE)
-rm $PSLOT$rdate*dayfile 2>/dev/null
-
-## for other files, cd to COMROT to avoid hitting unix line length limit ("Arg list too long.")
-
-cd $COMROT
-
-# FV3 native netcdf and master nemsio files of age HRKSIG
-rdate=$($NDATE -$HRKSIG $CDATE)
-rm *${rdate}*.nc 2>/dev/null
-rm *${rdate}*_FHR* 2>/dev/null
-
-# sigma/gfnf and surface files of age HRKSIG
-rdate=$($NDATE -$HRKSIG $CDATE)
-rm ${SIGOSUF}f*.$CDUMP.$rdate* 2>/dev/null
-rm ${SFCOSUF}f*.$CDUMP.$rdate* 2>/dev/null
-# use touch to prevent system scrubber from removing
-# aged sig and sfc files (3 days) that are used for fit2obs
-if [ $CDUMP = gfs ]; then
- cycle=$(echo $CDATE|cut -c9-10)
- keepday=$($NDATE -72 $(date +%Y%m%d)$cycle )
- sdate=$($NDATE +12 $rdate)
- while [ $sdate -le $CDATE ]; do
-  if [ -s ${SIGOSUF}f24.$CDUMP.$sdate ]; then
-   sigctime=$(stat -c '%y' ${SIGOSUF}f24.$CDUMP.$sdate | cut -c 1-10 | sed 's/-//g')$cycle
-   if [ $keepday -gt $sigctime ]; then
-    touch ${SIGOSUF}f*.$CDUMP.$sdate
-    touch ${SFCOSUF}f*.$CDUMP.$sdate
-   fi
-  fi
-  sdate=$($NDATE +12 $sdate)
- done
-fi
-
-# flx files of age HRKFLX  
-rdate=$($NDATE -$HRKFLX $CDATE)
-rm ${FLXOSUF}f*.$CDUMP.$rdate* 2>/dev/null
-# use touch to prevent system scrubber from removing 
-# aged flx files (3 days) that are used for QPF computation 
-if [ $CDUMP = gfs ]; then
- cycle=$(echo $CDATE|cut -c9-10)
- keepday=$($NDATE -72 $(date +%Y%m%d)$cycle )
- sdate=$($NDATE +12 $rdate)
- while [ $sdate -le $CDATE ]; do
-  if [ -s ${FLXOSUF}f24.$CDUMP.$sdate ]; then
-   flxctime=$(stat -c '%y' ${FLXOSUF}f24.$CDUMP.$sdate | cut -c 1-10 | sed 's/-//g')$cycle
-   if [ $keepday -gt $flxctime ]; then touch ${FLXOSUF}f*.$CDUMP.$sdate ; fi
-  fi
-  sdate=$($NDATE +12 $sdate)
- done
-fi
-
-# sigma/gfnf guess files of age HRKSIGG
-rdate=$($NDATE -$HRKSIGG $CDATE)
-rm sigg*.$CDUMP.$rdate* 2>/dev/null
-
-# gaussin and/or high-resolution pgb files of age HRKPGBM
-rdate=$($NDATE -$HRKPGBM $CDATE)
-rm pg*bm*.$CDUMP.$rdate* 2>/dev/null
-rm pg*bh*.$CDUMP.$rdate* 2>/dev/null
-rm pg*bq*.$CDUMP.$rdate* 2>/dev/null
-# use touch to prevent system scrubber from removing 
-# aged pgbq files (3 days) that are used for QPF computation for NEMS GFS 
-if [ $CDUMP = gfs -a ${NEMSIO_OUT:-.false.} = .true. ]; then
- cycle=$(echo $CDATE|cut -c9-10)
- keepday=$($NDATE -72 $(date +%Y%m%d)$cycle )
- sdate=$($NDATE +12 $rdate)
- while [ $sdate -le $CDATE ]; do
-  if [ -s pgbq24.$CDUMP.$sdate ]; then
-   flxctime=$(stat -c '%y' pgbq24.$CDUMP.$sdate | cut -c 1-10 | sed 's/-//g')$cycle
-   if [ $keepday -gt $flxctime ]; then touch pgbq*.$CDUMP.$sdate ; fi
-  fi
-  sdate=$($NDATE +12 $sdate)
- done
-fi
-
-
-# remaining CDUMP files except flxf or pgbq of age HRKROT
+#---------------------------------------------------
+#-clean NCO-like aged directory, delete all files
 rdate=$($NDATE -$HRKROT $CDATE)
-if [ ${NEMSIO_OUT:-.false.} = .true. ]; then
- rm $(ls *.$CDUMP.$rdate* |grep -v pgbq ) 2>/dev/null
-else
- rm $(ls *.$CDUMP.$rdate* |grep -v ${FLXOSUF}f ) 2>/dev/null
-fi
+rmymd=$(echo $rdate |cut -c 1-8)
+rmcyc=$(echo $rdate |cut -c 9-10)
+rmdir=$ROTDIR/${CDUMP}.$rmymd/$rmcyc
+if [ -d $rmdir ]; then rm -rf $rmdir ; fi
 
-# verification files of age HRKVFY
-rdate=$($NDATE -$HRKVFY $CDATE)
-rdate00=$(echo $rdate|cut -c1-8)
-rmfiles="SCORES${PSLOT}.$rdate pr${PSLOT}_rain_$rdate00"
-# check that they have been archived online.  no check for tape archive.
-[[ $ARCHCOPY = YES ]] && chkarc $ARCDIR
-rm $rmfiles 2>/dev/null
+#-clean aged vrfyarch archive
+rdate=$($NDATE -$HRKVFYARC $CDATE)
+rm -f $VFYARC/*${rdate}*
 
-# check fits safely archived before removal
-rmfiles="f*.acar.$rdate f*.acft.$rdate f*.raob.$rdate f*.sfc.$rdate"
-FIT_DIR=${FIT_DIR:-$ARCDIR}
-chkarc $FIT_DIR
-rm $rmfiles 2>/dev/null
-
-rmfiles="*.anl.$rdate"
-HORZ_DIR=${HORZ_DIR:-$ARCDIR}
-#chkarc ${HORZ_DIR}/anl   # need to pass in modified filename for this to work (do later)
-rm $rmfiles 2>/dev/null
-
-rmfiles="*.fcs.$rdate"
-#chkarc ${HORZ_DIR}/fcs   # need to pass in modified filename for this to work (do later)
-rm $rmfiles 2>/dev/null
-
-#
-# Clean the restart files in the RESTART directory
-#
-#cd $RESDIR
-#rdate=$($NDATE -$HRKRES $CDATE)
-#rm sig1r*.$CDUMP.$rdate*       2>/dev/null
-#rm sig2r*.$CDUMP.$rdate*       2>/dev/null
-#rm sfcr*.$CDUMP.$rdate*       2>/dev/null
-
-#
-# If requested, make symbolic links to create ops-like /com/gfs files
-if [ $DO_PRODNAMES = YES ] ; then
-  rc=0
-  if [ ! -s $PRODNAMES_DIR ] ; then
-    mkdir -p $PRODNAMES_DIR
-    rc=$?
-  fi
-  if [[ $rc -eq 0 ]]; then
-     $SETUPPRODNAMESH $COMROT $PRODNAMES_DIR $CDATE $CDUMP $HRKCOM
-     rc_prod=$?
-  else
-     echo "ARCH:  ***WARNING*** CANNOT mkdir $PRODNAMES_DIR.  Will NOT run $SETUPPRODNAMESH"
-     rc_prod=9
-  fi
-fi
-
-
+#---------------------------------------------------
 # If requested, save special sigf and sfcf files for HWRF group      
 if [ $CDUMP = gfs -a $ARCH_TO_HPSS = YES -a ${HWRF_ARCH:-NO}  = YES ] ; then
 set -x
