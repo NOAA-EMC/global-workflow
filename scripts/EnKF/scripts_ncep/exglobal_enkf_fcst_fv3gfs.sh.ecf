@@ -61,6 +61,9 @@ export DIAG_TABLE=${DIAG_TABLE_ENKF:-$PARM_FV3DIAG/diag_table_da}
 export CDATE=${CDATE:-"2001010100"}
 export CDUMP=${CDUMP:-"gdas"}
 
+# Re-run failed members, or entire group
+export RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
+
 # Ops related stuff
 export SENDECF=${SENDECF:-"NO"}
 
@@ -80,7 +83,13 @@ export DATATOP=$DATA
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
 export EFCSGRP=${EFCSGRP:-$COMROT/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}}
-rm -f $EFCSGRP
+if [ -f $EFCSGRP ]; then
+   if [ $RERUN_EFCSGRP = "YES" ]; then
+      rm -f $EFCSGRP
+   else
+      echo "RERUN_EFCSGRP = $RERUN_EFCSGRP, will re-run FAILED members only!"
+   fi
+fi
 
 ################################################################################
 # Set namelist/model config options common to all members once
@@ -127,7 +136,7 @@ export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 
 # These are needed for REGRID_NEMSIO_SH to work correctly
 # Once we have the NEMS+FV3 working, this will no longer be needed
-# Revist then; 
+# Revist then;
 # 1. Only APRUN will be needed, once the REGRID_NEMSIO is no longer needed
 export APRUN_FCST=${APRUN_FCST:-${APRUN:-""}}
 export APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
@@ -139,31 +148,42 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    export MEMBER=$imem
 
-   memchar="mem"`printf %03i $MEMBER`
-   export DATA=$DATATOP/$memchar
-   if [ -d $DATA ]; then rm -rf $DATA; fi
-
-   export APRUN=$APRUN_FCST
-   $FORECASTSH
-   ra=$?
-
-   # Notify a member forecast failed, freeze epos, but continue on to next member
-   if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
-      ecflow_client --abort="forecast of member $MEMBER FAILED"
+   skip_mem="NO"
+   if [ -f $EFCSGRP ]; then
+      memstat=`cat $EFCSGRP | grep "MEMBER $MEMBER" | grep "PASS" | wc -l`
+      [[ $memstat -eq 1 ]] && skip_mem="YES"
+      ra=0
    fi
 
-   # Regrid FV3 tiles to global NEMSIO files
-   # This will be un-necessary once NEMS+FV3 can write out global output in single file
-   # Revisit then
-   if [ $ra -eq 0 ]; then
-      export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
-      export APRUN=$APRUN_REGRID_NEMSIO
-      $REGRID_NEMSIO_SH
-      rb=$?
-      ((ra+=rb))
-   fi
+   if [ $skip_mem = "NO" ]; then
 
-   ((rc+=ra))
+     memchar="mem"`printf %03i $MEMBER`
+     export DATA=$DATATOP/$memchar
+     if [ -d $DATA ]; then rm -rf $DATA; fi
+
+     export APRUN=$APRUN_FCST
+     $FORECASTSH
+     ra=$?
+
+     # Notify a member forecast failed, freeze epos, but continue on to next member
+     if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
+        ecflow_client --abort="forecast of member $MEMBER FAILED"
+     fi
+
+     # Regrid FV3 tiles to global NEMSIO files
+     # This will be un-necessary once NEMS+FV3 can write out global output in single file
+     # Revisit then
+     if [ $ra -eq 0 ]; then
+        export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
+        export APRUN=$APRUN_REGRID_NEMSIO
+        $REGRID_NEMSIO_SH
+        rb=$?
+        ((ra+=rb))
+     fi
+
+     ((rc+=ra))
+
+   fi
 
    rm log
    $NCP $DATATOP/log_all ./log_old

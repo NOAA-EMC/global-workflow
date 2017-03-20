@@ -55,6 +55,9 @@ export ENSEND=${ENSEND:-1}
 export CDATE=${CDATE:-"2001010100"}
 export CDUMP=${CDUMP:-"gdas"}
 
+# Re-run failed members, or entire group
+export RERUN_EOMGGRP=${RERUN_EOMGGRP:-"YES"}
+
 # Ops related stuff
 export SENDECF=${SENDECF:-"NO"}
 
@@ -69,7 +72,13 @@ export DATATOP=$DATA
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
 export EOMGGRP=${EOMGGRP:-$COMOUT/enkf.${CDUMP}.${cymd}/$chh/eomg.grp${ENSGRP}}
-rm -f $EOMGGRP
+if [ -f $EOMGGRP ]; then
+   if [ $RERUN_EOMGGRP = "YES" ]; then
+      rm -f $EOMGGRP
+   else
+      echo "RERUN_EOMGGRP = $RERUN_EOMGGRP, will re-run FAILED members only!"
+   fi
+fi
 
 ################################################################################
 # Run innovation script for ensemble member
@@ -78,19 +87,30 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    export MEMBER=$imem
 
-   memchar="mem"`printf %03i $MEMBER`
-   export DATA=$DATATOP/$memchar
-   if [ -d $DATA ]; then
-      rm -rf $DATA
+   skip_mem="NO"
+   if [ -f $EOMGGRP ]; then
+      memstat=`cat $EOMGGRP | grep "MEMBER $MEMBER" | grep "PASS" | wc -l`
+      [[ $memstat -eq 1 ]] && skip_mem="YES"
+      ra=0
    fi
 
-   $OBSINNOVSH
-   ra=$?
-   ((rc+=ra))
+   if [ $skip_mem = "NO" ]; then
 
-   # Notify a member observation innovation failed, freeze eupd, but continue on to next member
-   if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
-      ecflow_client --abort="observation innovation of member $MEMBER FAILED"
+      memchar="mem"`printf %03i $MEMBER`
+      export DATA=$DATATOP/$memchar
+      if [ -d $DATA ]; then
+         rm -rf $DATA
+      fi
+
+      $OBSINNOVSH
+      ra=$?
+      ((rc+=ra))
+
+      # Notify a member observation innovation failed, freeze eupd, but continue on to next member
+      if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
+         ecflow_client --abort="observation innovation of member $MEMBER FAILED"
+      fi
+
    fi
 
    rm log
