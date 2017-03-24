@@ -11,7 +11,7 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
 fi
 
 # Name of the branch being tested
-updat="cloudy_radiance"
+updat="cloudy_radiance_after-merge"
 contrl="trunk"
 
 #  Handle machine specific paths for:

@@ -85,6 +85,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/nam_regional_satinfo.txt
+cloudyinfo=$fixgsi/cloudy_radiance_info.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/nam_global_ozinfo.txt
@@ -135,6 +136,7 @@ cp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satinfo  ./satinfo
+cp $cloudyinfo  ./cloudy_radiance_info.txt
 cp $scaninfo ./scaninfo
 cp $pcpinfo  ./pcpinfo
 cp $ozinfo   ./ozinfo

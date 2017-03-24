@@ -34,9 +34,3 @@ export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
 
-if [[ `expr substr $exp 1 6` = "global" ]]; then
-   if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-      $ncp $fixgsi_updat/cloudy_radiance_info.txt ./cloudy_radiance_info.txt
-   fi
-fi
-
