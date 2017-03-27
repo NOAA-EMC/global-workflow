@@ -48,7 +48,8 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export COMPRESS=${COMPRESS:-gzip}
 export UNCOMPRESS=${UNCOMPRESS:-gunzip}
 export APRUNCFP=${APRUNCFP:-""}
-export APRUN=${APRUN:-""}
+export APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
+export NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
 # Dependent Scripts and Executables
 export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
@@ -780,7 +781,8 @@ EOF
 ##############################################################
 #  Make atmospheric analysis
 $NCP $GSIEXEC $DATA/gsi.x
-$APRUN gsi.x 1>&1 2>&2
+export OMP_NUM_THREADS=$NTHREADS_GSI
+$APRUN_GSI gsi.x 1>&1 2>&2
 
 export ERR=$?
 export err=$ERR

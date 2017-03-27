@@ -44,13 +44,11 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 
 # Scripts
-export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
 
 # Executables.
 export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
 export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
 export RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
-export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
 
 # Files.
 export PREFIX=${PREFIX:-""}
@@ -71,6 +69,9 @@ export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 
 export RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
 
+export APRUN_ECEN=${APRUN_ECEN:-${APRUN:-""}}
+export NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
+
 ################################################################################
 # Preprocessing
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
@@ -90,8 +91,10 @@ $NLN $COMIN_ENS/${APREFIX}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
 
 DATAPATH="./"
 
+export OMP_NUM_THREADS=$NTHREADS_ECEN
+
 $NCP $GETATMENSMEANEXEC $DATA
-$APRUN $(basename $GETATMENSMEANEXEC) $DATAPATH atmanl_ensmean atmanl $NMEM_ENKF
+$APRUN_ECEN $(basename $GETATMENSMEANEXEC) $DATAPATH atmanl_ensmean atmanl $NMEM_ENKF
 rc=$?
 
 export ERR=$rc
@@ -140,7 +143,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export err=$ERR
    $ERRSCRIPT || exit 2
 
-################################################################################
+   ################################################################################
    # Recenter ensemble member atmospheric analyses about hires analysis
 
    # Link recentered ensemble members
@@ -154,8 +157,10 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
    export FILENAMEOUT="ratmanl"
 
+   export OMP_NUM_THREADS=$NTHREADS_ECEN
+
    $NCP $RECENATMEXEC $DATA
-   $APRUN $(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
+   $APRUN_ECEN $(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
    rc=$?
 
    export ERR=$rc
@@ -171,34 +176,6 @@ if [ $RECENTER_ENKF = "YES" ]; then
    fi
 
 fi
-##############################################################
-# Calculate the increment for each ensemble member
-# This is a serial calculation, and since we have multiple processors available
-# this bit should be parallelized
-# On WCOSS, CFP can be used.
-
-rc=0
-for imem in `seq 1 $NMEM_ENKF`; do
-
-   memchar="mem"`printf %03i $imem`
-
-   export ATMGES=$COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX
-   if [ $RECENTER_ENKF = "YES" ]; then
-      export ATMANL=$COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
-   else
-      export ATMANL=$COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX
-   fi
-   export ATMINC=$COMIN_ENS/$memchar/${APREFIX}atminc.nc
-
-   $CALC_INCREMENT_SH
-   ra=$?
-   ((rc+=ra))
-
-done
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
 
 ################################################################################
 # Update surface and NST analysis

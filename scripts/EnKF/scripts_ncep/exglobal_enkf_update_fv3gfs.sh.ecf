@@ -43,7 +43,8 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
 export USE_CFP=${USE_CFP:-"NO"}
 export APRUNCFP=${APRUNCFP:-""}
-export APRUN=${APRUN:-""}
+export APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
+export NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
 export ENKFEXEC=${ENKFEXEC:-$BASE_GSI/exec/global_enkf}
@@ -278,7 +279,8 @@ EOF
 ################################################################################
 # Run enkf update
 $NCP $ENKFEXEC $DATA/enkf.x
-export PGM='$APRUN $DATA/enkf.x'
+export OMP_NUM_THREADS=$NTHREADS_ENKF
+export PGM='$APRUN_ENKF $DATA/enkf.x'
 eval $PGM < enkf.nml 1>&1 2>&2
 rc=$?
 

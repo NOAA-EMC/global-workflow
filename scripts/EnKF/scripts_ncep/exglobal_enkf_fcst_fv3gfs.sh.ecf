@@ -40,6 +40,7 @@ export COMROT=${COMROT:-$pwd}
 export NCP=${NCP:-"/bin/cp -p"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 
 # Scripts.
 export FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_fv3gfs.sh.ecf}
@@ -66,6 +67,12 @@ export RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 
 # Ops related stuff
 export SENDECF=${SENDECF:-"NO"}
+
+# Calculate increment before forecast model if warm starting the model
+export ATMGES_FNAME=${ATMGES_FNAME:-"atmf006"}
+export ATMANL_FNAME=${ATMANL_FNAME:-"atmanl"}
+export ATMINC_FNAME=${ATMINC_FNAME:-"atminc"}
+export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
 
 # REGRID_NEMSIO_SH specific (To be removed later)
 export REGRID_NEMSIO_SH=${REGRID_NEMSIO_SH:-$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh}
@@ -141,6 +148,13 @@ export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 export APRUN_FCST=${APRUN_FCST:-${APRUN:-""}}
 export APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
 
+# If warm start, need ensemble guess directory
+if [ $warm_start = ".true." ]; then
+   export GDATE=`$NDATE -6 $CDATE`
+   gymd=`echo $GDATE | cut -c1-8`
+   ghh=`echo  $GDATE | cut -c9-10`
+fi
+
 ################################################################################
 # Run forecast for ensemble member
 rc=0
@@ -158,12 +172,25 @@ for imem in `seq $ENSBEG $ENSEND`; do
    if [ $skip_mem = "NO" ]; then
 
      memchar="mem"`printf %03i $MEMBER`
-     export DATA=$DATATOP/$memchar
-     if [ -d $DATA ]; then rm -rf $DATA; fi
 
-     export APRUN=$APRUN_FCST
-     $FORECASTSH
-     ra=$?
+     ra=0
+     if [ $warm_start = ".true." ]; then
+        export ATMGES=$COMROT/enkf.${CDUMP}.$gymd/$ghh/$memchar/${ATMGES_FNAME}
+        export ATMANL=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMANL_FNAME}
+        export ATMINC=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMINC_FNAME}
+        $CALC_INCREMENT_SH
+        ra=$?
+     fi
+
+     if [ $ra -eq 0 ]; then
+        export DATA=$DATATOP/$memchar
+        if [ -d $DATA ]; then rm -rf $DATA; fi
+
+        export APRUN=$APRUN_FCST
+        $FORECASTSH
+        rb=$?
+        ((ra+=rb))
+     fi
 
      # Notify a member forecast failed, freeze epos, but continue on to next member
      if [ $SENDECF = "YES" -a $ra -ne 0 ]; then

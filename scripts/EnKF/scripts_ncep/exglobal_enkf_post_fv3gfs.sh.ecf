@@ -44,7 +44,7 @@ export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 # Machine related stuff
 export MPMD=${MPMD:-"NO"}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
-export APRUN=${APRUN:-""}
+export APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
 
 # Ops stuff
 export SENDDBN=${SENDDBN:-"NO"}
@@ -162,7 +162,7 @@ if [ $MPMD = "YES" ]; then
    if [ $machine = WCOSS ]; then
       export MP_PGMMODEL=${MP_PGMMODEL:-mpmd}
       export MP_CMDFILE=$DATA/cmdfile
-      $APRUN
+      $APRUN_EPOS
       rc=$?
    fi
 
@@ -171,18 +171,18 @@ else # Run serially instead
    rc=0
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
-      $APRUN $(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS $(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
-      $APRUN $(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS $(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
       if [ $NST_GSI -gt 0 ]; then
-         $APRUN $(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF
+         $APRUN_EPOS $(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF
          ra=$?
          ((rc+=ra))
       fi
-      $APRUN $(basename $GETATMENSSTATEXEC) ./ atmf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS $(basename $GETATMENSSTATEXEC) ./ atmf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
    done
