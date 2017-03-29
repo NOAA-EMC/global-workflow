@@ -13,7 +13,6 @@ else
   export regdir=$(pwd)
   . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
 fi
-export debug=".false."
 
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest

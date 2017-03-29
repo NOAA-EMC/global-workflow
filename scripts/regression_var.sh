@@ -22,6 +22,7 @@ if [ "$#" = 8 ] ; then
 else
 # Name of the branch being tested
   updat="Cmake-unit-tests"
+  contrl="XXXXXXXX"
   export cmaketest="false"
   export clean="false"
   export ptmpName=""
@@ -49,8 +50,6 @@ elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
 fi
-
-contrl="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -85,7 +84,7 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export group="dev"
    export queue="dev"
 
-   export ptmp="/gpfs/tp1/ptmp/$LOGNAME/$ptmpName"
+   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
 
    export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
@@ -137,9 +136,9 @@ if [[ "$cmaketest" = "false" ]]; then
   export builddir=$noscrub/build
   export gsisrc="$basedir/$updat/src"
   export gsiexec_updat="$gsisrc/global_gsi"
-  export gsiexec_contrl="$basedir/trunk/src/global_gsi"
+  export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
   export enkfexec_updat="$gsisrc/enkf/global_enkf"
-  export enkfexec_contrl="$basedir/trunk/src/enkf/global_enkf"
+  export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
   export fixgsi="$basedir/$updat/fix"
   export scripts="$basedir/$updat/scripts"
 fi
