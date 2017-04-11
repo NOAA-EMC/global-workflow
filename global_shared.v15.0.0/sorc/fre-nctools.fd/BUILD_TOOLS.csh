@@ -32,17 +32,28 @@ echo "//////////////////////////////////////////////////////////////////////////
 echo "//////////////////////////////////////////////////////// Environment Settings //"
 echo "////////////////////////////////////////////////////////////////////////////////"
 
+#Original setup is for cray so for now require input only on a different platform.
+set system_site = ${1}
+if ( "$system_site" == "" ) then
+  echo "Usage: BUILD_TOOLS.csh cray or theia"
+  exit 1
+else
+
 source $MODULESHOME/init/tcsh
 #source ${PWD}/../../../IC_scripts/ENV.GAEA
 #setenv FRE_SYSTEM_SITE gaea
-source ${PWD}/../../../modulefiles/fv3gfs/fre-nctools.cray
-setenv FRE_SYSTEM_SITE cray
+source ${PWD}/../../../modulefiles/fv3gfs/fre-nctools.${system_site}
+setenv FRE_SYSTEM_SITE ${system_site}
 
 setenv MPICH_UNEX_BUFFER_SIZE 256m
 setenv MPICH_MAX_SHORT_MSG_SIZE 64000
 setenv MPICH_PTL_UNEX_EVENTS 160k
 setenv KMP_STACKSIZE 2g
 setenv F_UFMTENDIAN big
+if ( ${system_site} == theia ) then
+  setenv HDF5_DIR $HDF5
+  setenv NETCDF_DIR $NETCDF
+endif
 alias make make HDF5_HOME=${HDF5_DIR}  NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${FRE_SYSTEM_SITE} -f fre-nctools.mk
 
 module list
@@ -64,6 +75,7 @@ foreach freNCToolsDir ( $freNCToolsSrc )
   echo "////////////////////////////////////////////////////////////////////////////////"
 
   pushd share/src/$freNCToolsDir
+  cp fre-nctools.mk_${system_site} fre-nctools.mk
   set targets=` grep "TARGETS  :=" fre-nctools.mk | cut -f2 -d'=' `
   if ( $?NOPARALLEL ) then
      set targets=` grep "TARGETS  :=" fre-nctools.mk | cut -f2 -d'=' | sed 's/ \S*_parallel/ /'`
@@ -95,7 +107,7 @@ echo "///////////////////////////////////////////////////////////////// filter_t
 echo "////////////////////////////////////////////////////////////////////////////////"
 
 cd ../tools/filter_topo
-./make.csh
+./make.csh_${system_site}
 mv filter_topo $home_dir/exec/.
 
 echo "\n////////// CLEANING UP TEMPORARY BUILD AREA //////////\n"

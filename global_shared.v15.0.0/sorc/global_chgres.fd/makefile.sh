@@ -2,7 +2,7 @@
 set -x
 
 #-----------------------------------------------------
-#-use standard modules. 
+#-use standard modules.
 #-----------------------------------------------------
 
 export FCMP=${FCMP:-ifort}

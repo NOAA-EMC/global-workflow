@@ -1,0 +1,6 @@
+   module unload intel
+   module load intel/16.1.150
+   module load impi
+   module load hdf5/1.8.14
+   module load netcdf/4.3.0
+
