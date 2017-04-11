@@ -78,12 +78,6 @@ export NAM_ENKF=${NAM_ENKF:-""}
 export SATOBS_ENKF=${SATOBS_ENKF:-""}
 export OZOBS_ENKF=${OZOBS_ENKF:-""}
 
-# Other variables
-export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
-export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
-export REDOUT=${REDOUT:-'1>'}
-export REDERR=${REDERR:-'2>'}
-
 ################################################################################
 # Preprocessing
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
@@ -104,9 +98,9 @@ if [ $USE_CFP = "YES" ]; then
 #!/bin/ksh
 { echo
  memchar=$1
- flist="cnvstat oznstat radstat"
+ flist="$CNVSTAT $OZNSTAT $RADSTAT"
  for ftype in $flist; do
-    fname=$COMOUT_ANL_ENS/$memchar/${APREFIX}$ftype
+    fname=$COMOUT_ANL_ENS/$memchar/$ftype
     tar -xvf $fname
  done
 }
@@ -129,12 +123,12 @@ $NLN $HYBENSINFO hybens_info
 
 $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 
-flist="cnvstat oznstat radstat"
+flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
    echo "$DATA/untar.sh /" | tee -a $DATA/mp_untar.sh
 else
    for ftype in $flist; do
-      fname=$COMOUT_ANL_ENS/${APREFIX}$ftype
+      fname=$COMOUT_ANL_ENS/$ftype
       tar -xvf $fname
    done
 fi
@@ -144,7 +138,7 @@ for imem in `seq 1 $NMEM_ENKF`; do
       echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
    else
       for ftype in $flist; do
-         fname=$COMOUT_ANL_ENS/$memchar/${APREFIX}$ftype
+         fname=$COMOUT_ANL_ENS/$memchar/$ftype
          tar -xvf $fname
       done
    fi
@@ -281,7 +275,7 @@ EOF
 $NCP $ENKFEXEC $DATA/enkf.x
 export OMP_NUM_THREADS=$NTHREADS_ENKF
 export PGM='$APRUN_ENKF $DATA/enkf.x'
-eval $PGM < enkf.nml 1>&1 2>&2
+eval $PGM < enkf.nml 1>stdout 2>stderr
 rc=$?
 
 export ERR=$rc
@@ -289,7 +283,7 @@ export err=$ERR
 $ERRSCRIPT || exit 2
 
 # Cat runtime output files.
-cat fort.2* > $COMOUT_ANL_ENS/ENKFSTAT
+cat stdout stderr > $COMOUT_ANL_ENS/$ENKFSTAT
 
 ################################################################################
 #  Postprocessing

@@ -119,13 +119,13 @@ export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
-export fdiag=${fdiag_ENKF:-${fdiag:-"3,4,5,6,7,8,9"}}     # write output every hour, akin to FHOUT=1
-export FHOUT=${FHOUT_ENKF:-${FHOUT:-3}}
+export fdiag=${fdiag_ENKF:-${fdiag:-6}}     # write output at hour 6
+export FHOUT=${FHOUT_ENKF:-${FHOUT:-6}}
 
 # coupler_nml
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
-export FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
-export restart_secs=${restart_secs_ENKF:-${restart_secs:-0}}
+export FHMAX=${FHMAX_ENKF:-${FHMAX:-6}}
+export restart_secs=${restart_secs_ENKF:-${restart_secs:-21600}}
 
 # gfs_physics_nml
 export FHSWR=${FHSWR_ENKF:-${FHSWR:-3600.}}
