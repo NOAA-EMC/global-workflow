@@ -414,6 +414,8 @@
    TILEFILE="./chgres.fv3.orog.t5"
  ELSEIF (TILE_NUM == 6) THEN
    TILEFILE="./chgres.fv3.orog.t6"
+ ELSEIF (TILE_NUM == 7) THEN
+   TILEFILE="./chgres.fv3.orog.t7"
  ENDIF
 
  PRINT*,'WILL READ GRID DIMENSIONS FROM: ', TRIM(TILEFILE)
@@ -470,6 +472,8 @@
    TILEFILE="./chgres.fv3.orog.t5"
  ELSEIF (TILE_NUM == 6) THEN
    TILEFILE="./chgres.fv3.orog.t6"
+ ELSEIF (TILE_NUM == 7) THEN
+   TILEFILE="./chgres.fv3.orog.t7"
  ENDIF
 
  PRINT*,'WILL READ ',TRIM(FIELD), ' FROM: ', TRIM(TILEFILE)

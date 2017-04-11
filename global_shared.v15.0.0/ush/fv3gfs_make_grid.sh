@@ -51,9 +51,9 @@ elif  [ $nargv -eq 12 ]; then
   export istart_nest=$7
   export jstart_nest=$8
   export iend_nest=$9
-  export jend_nest=$10
-  export halo=$11
-  export script_dir=$12
+  export jend_nest=${10}
+  export halo=${11}
+  export script_dir=${12}
   export ntiles=7
   export executable=$exec_dir/make_hgrid
   if [ ! -s $executable ]; then

@@ -23,9 +23,10 @@
 ##BSUB -R span[ptile=24]
 #----THEIA JOBCARD
 ##PBS -l nodes=1:ppn=24
-##PBS -l walltime=0:12:00
+##PBS -l walltime=00:30:00
 ##PBS -A glbss
 ##PBS -N chgres_fv3
+##PBS -q debug
 ##PBS -o log.chres
 ##PBS -e log.chres
 
@@ -44,23 +45,38 @@ set -ax
 #  Generalized and streamlined the script and enabled to run on multiple platforms.
 #-------------------------------------------------------------------------------------------------
 
+machine=WCOSS_C
+
+ulimit -a
+ulimit -s unlimited
+
+export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
+export CDATE=${CDATE:-${cdate:-2017030800}}  # format yyyymmddhh yyyymmddhh ... 
+
 export machine=${machine:-WCOSS_C}
 export NODES=1
 export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
+export OMP_NUM_THREADS=6
+export OMP_STACKSIZE=2048m
 
 if [ $machine = WCOSS_C ]; then 
  . $MODULESHOME/init/sh 2>>/dev/null
- module load PrgEnv-intel 2>>/dev/null
+ module load PrgEnv-intel prod_envir 2>>/dev/null
  export KMP_AFFINITY=disabled
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
+ export out_dir=${out_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs}
+ export tmp_dir=${tmp_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/chgres_${CASE}_${CDATE}}                                       
 elif [ $machine = WCOSS ]; then 
  . /usrx/local/Modules/default/init/sh 2>>/dev/null
  module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
- export FIX_FV3=${FIX_FV3:-/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3}
 elif [ $machine = THEIA ]; then 
+ . /apps/lmod/lmod/init/sh
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+ module load intel
  module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
- export FIX_FV3=${FIX_FV3:-/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3}
+ export out_dir=${out_dir:-/scratch4/NCEPDEV/stmp3/$LOGNAME/FV3IC/ICs}
+ export tmp_dir=${tmp_dir:-/scratch4/NCEPDEV/stmp3/$LOGNAME/FV3IC/chgres_${CASE}_${CDATE}}
+ COMROOTp2=/scratch4/NCEPDEV/rstprod/com
 else 
  echo "$machine not supported, exit"
  exit
@@ -69,18 +85,13 @@ fi
 export BASE_GSM=${BASE_GSM:-/gpfs/hps/ptmp/emc.glopara/EXP-cyc/global_shared.v15.0.0}                        
 export script_dir=$BASE_GSM/ush
 
-export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
-export CDATE=${CDATE:-${cdate:-2017030800}}  # format yyyymmddhh yyyymmddhh ... 
+export gtype=uniform	          # grid type = uniform, stretch, or nested
 
-export out_dir=${out_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs}
-export tmp_dir=${tmp_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/chgres_${CASE}_${CDATE}}                                       
 if [ ! -s $out_dir ]; then mkdir -p $out_dir; fi           
 if [ ! -s $tmp_dir ]; then mkdir -p $tmp_dir; fi
 export VERBOSE=YES
 #---------------------------------------------------------
 #---------------------------------------------------------
-
-export gtype=uniform	          # grid type = uniform, stretch, or nested
 
 if [ $gtype = uniform ];  then
   echo "creating uniform ICs"
@@ -88,13 +99,13 @@ if [ $gtype = uniform ];  then
   export ntiles=6
 elif [ $gtype = stretch ]; then
   export stetch_fac=       	                 # Stretching factor for the grid
-  export rn=`expr $stetch_fac \* 10 `
+  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
   export name=${CASE}r${rn}       		 # identifier based on refined location (same as grid)
   export ntiles=6
   echo "creating stretched ICs"
 elif [ $gtype = nest ]; then 
   export stetch_fac=  	                         # Stretching factor for the grid
-  export rn=`expr $stetch_fac \* 10 `
+  export rn=$( echo "$stetch_fac * 10" | bc | cut -c1-2 )
   export refine_ratio=   	                 # Specify the refinement ratio for nest grid
   export name=${CASE}r${rn}n${refine_ratio}      # identifier based on nest location (same as grid)
   export ntiles=7

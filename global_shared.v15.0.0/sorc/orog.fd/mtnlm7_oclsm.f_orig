@@ -171,7 +171,6 @@ CFPP$ NOCONCUR F
       END
       SUBROUTINE TERSUB(IMN,JMN,IM,JM,NM,NR,NF0,NF1,NW,EFAC,BLAT,
      &     OUTGRID,INPUTOROG)
-!jaa      use ipfort
       implicit none
       include 'machine.h'
       include 'netcdf.inc'
@@ -230,11 +229,6 @@ C
       complex ffj(im/2+1)
       real    dlat,PHI,DELXN,RS,RN,slma,oroa,vara,var4a,xn,XS,FFF
       real    WWW
-      real :: timef,tbeg,tend,tbeg1
-      logical :: output_binary
-      output_binary = .false.
-      tbeg1=timef()
-      tbeg=timef()
       fsize = 65536
 
        allocate (ZAVG(IMN,JMN))
@@ -561,20 +555,20 @@ C
                 ZSLM(i,j) = 1
            endif
          endif
-!jaa           ALON = float(i-1) * 360./float(IMN)
-!jaa           ALAT = glat(j)
+           ALON = float(i-1) * 360./float(IMN)
+           ALAT = glat(j)
 !           if(  ZAVG(i,j) .ne. zsave1 .and. i .lt. 3 )
 !    & print *,' antarctica change to ZAVG(i=',i,'j=',j,')=',
 !    &    ZAVG(i,j),ZSLM(i,j),' from originally:',zsave1,zsave2
 !     &write(6,151)i,j,ZAVG(i,j),ZSLM(i,j),zsave1,zsave2,ALAT,ALON
 !  151 format(1x,'antarctica ZAVG(i=',i3,' j=',i3,')=',i5,i3,
 !     &' orig:',i5,i3,' Lat=',f8.3,f9.3,'E')
-!jaa            if(  ZAVG(i,j) .ne. zsave1 ) then 
-!jaa          if ( i .le. 1201 .and. i .gt. 1200 )then
-!jaa      write(6,152)i,j,ZAVG(i,j),ZSLM(i,j),zsave1,zsave2,ALAT,ALON,
-!jaa     &      GICE(i,j)
-!jaa          endif
-!jaa            endif
+            if(  ZAVG(i,j) .ne. zsave1 ) then 
+          if ( i .le. 1201 .and. i .gt. 1200 )then
+      write(6,152)i,j,ZAVG(i,j),ZSLM(i,j),zsave1,zsave2,ALAT,ALON,
+     &      GICE(i,j)
+          endif
+            endif
   152 format(1x,' ZAVG(i=',i4,' j=',i4,')=',i5,i3,
      &' orig:',i5,i4,' Lat=',f7.3,f8.2,'E',' GICE=',f8.1)
          enddo
@@ -842,16 +836,11 @@ C
 !         dy(1:IM+1,1:JM) = tmpvar(1:nx+1:2,2:ny:2)
 !         deallocate(tmpvar)         
       endif
-      tend=timef()
-      write(6,*)' Timer 1 time= ',tend-tbeg
                                 !
 ! --- CALL MAKEMT(ZAVG,ZSLM,ORO,OCLSM,mskocn,SLM,VAR,VAR4,GLAT,
       if(grid_from_file) then
-       tbeg=timef()
          CALL MAKEMT2(ZAVG,ZSLM,ORO,SLM,land_frac,VAR,VAR4,GLAT,
      & IM,JM,IMN,JMN,geolon_c,geolat_c)
-      tend=timef()
-      write(6,*)' MAKEMT2 time= ',tend-tbeg
       else
 
         CALL MAKEMT(ZAVG,ZSLM,ORO,SLM,VAR,VAR4,GLAT,
@@ -882,11 +871,8 @@ C
 C ===  Compute mtn principal coord HTENSR: THETA,GAMMA,SIGMA
 C
        if(grid_from_file) then       
-      tbeg=timef()
          CALL MAKEPC2(ZAVG,ZSLM,THETA,GAMMA,SIGMA,GLAT,
      1            IM,JM,IMN,JMN,geolon_c,geolat_c)
-      tend=timef()
-      write(6,*)' MAKEPC2 time= ',tend-tbeg
        else
          CALL MAKEPC(ZAVG,ZSLM,THETA,GAMMA,SIGMA,GLAT,
      1            IST,IEN,JST,JEN,IM,JM,IMN,JMN,XLAT,numi)
@@ -908,13 +894,10 @@ C
        if(grid_from_file) then
          if(trim(INPUTOROG) == "none") then
            print*, "calling MAKEOA2 to compute OA, OL"
-      tbeg=timef()
            CALL MAKEOA2(ZAVG,zslm,VAR,GLAT,OA,OL,IWORK,ELVMAX,ORO,
      1            WORK1,WORK2,WORK3,WORK4,WORK5,WORK6,
      2            IM,JM,IMN,JMN,geolon_c,geolat_c,
      3            geolon,geolat,dx,dy,is_south_pole,is_north_pole)
-      tend=timef()
-      write(6,*)' MAKEOA2 time= ',tend-tbeg
          else
            !-- read the data from INPUTOROG file.
            error=NF__OPEN(trim(INPUTOROG),NF_NOWRITE,fsize,ncid)
@@ -1031,7 +1014,6 @@ C
      2            WORK5,WORK6,
      3            IST,IEN,JST,JEN,IM,JM,IMN,JMN,XLAT,numi)
        endif
-       tbeg=timef()
        call minmxj(IM,JM,OA,'      OA')
        call minmxj(IM,JM,OL,'      OL')
        call minmxj(IM,JM,ELVMAX,'  ELVMAX')
@@ -1390,10 +1372,6 @@ C   check antarctic pole
          endif
       ENDDO
       ENDDO
-      tend=timef()
-      write(6,*)' Timer 5 time= ',tend-tbeg
-      if (output_binary) then
-      tbeg=timef()
 C       OUTPUT BINARY FIELDS
         print *,' OUTPUT BINARY FIELDS'
         WRITE(51) REAL(SLM,4)
@@ -1515,7 +1493,6 @@ C
         CALL BAOPEN(62,'fort.62',IRET)
         CALL PUTGB(62,IM*JM,KPDS,KGDS,LB,ELVMAX,IRET)
       print *,' ELVMAX: putgb-KPDS(22,5),iret:',KPDS(22),KPDS(5),IRET
-      endif ! output_binary
 C
       DELXN = 360./IM
       do i=1,im
@@ -1536,13 +1513,8 @@ C
            xlon(i) = geolon(i,1)
         enddo
       endif
-      tend=timef()
-      write(6,*)' Binary output time= ',tend-tbeg
-      tbeg=timef()
       CALL WRITE_NETCDF(IM,JM,SLM,land_frac,ORO,ORF,HPRIME,1,1,
      1                  GEOLON(1:IM,1:JM),GEOLAT(1:IM,1:JM), XLON,XLAT)
-      tend=timef()
-      write(6,*)' WRITE_NETCDF time= ',tend-tbeg
       print *,' wrote netcdf file out.oro.tile?.nc'
 
       print *,' ===== Deallocate Arrays and ENDING MTN VAR OROG program'
@@ -1550,8 +1522,6 @@ C
       deallocate (ZSLM)
       deallocate (UMD)
       deallocate (GICE)
-      tend=timef()
-      write(6,*)' Total runtime time= ',tend-tbeg1
       RETURN
       END
       SUBROUTINE MAKEMT(ZAVG,ZSLM,ORO,SLM,VAR,VAR4,
@@ -1796,8 +1766,6 @@ C
       integer JM1,i,j,nsum,ii,jj,i1,numx,i2
       integer ilist(IMN)
       real    DELXN,XNSUM,XLAND,XWATR,XL1,XS1,XW1,XW2,XW4
-!jaa
-      real :: xnsum_j,xland_j,xwatr_j
       logical inside_a_polygon
 C==== DATA DEBUG/.TRUE./
       DATA DEBUG/.FALSE./
@@ -1823,10 +1791,6 @@ C
 C---- FIND THE AVERAGE OF THE MODES IN A GRID BOX
 C
 C  (*j*)  for hard wired zero offset (lambda s =0) for terr05 
-!$omp parallel do
-!$omp* private (j,i,xnsum,xland,xwatr,nsum,xl1,xs1,xw1,xw2,xw4,lono,
-!$omp*          lato,jst,jen,ilist,numx,jj,i2,ii,loni,lati,height,
-!$omp*          hgt_1d)
       DO J=1,JM
 !       print*, "J=", J
        DO I=1,IM
@@ -1900,7 +1864,6 @@ C  (*j*)  for hard wired zero offset (lambda s =0) for terr05
             ENDIF
          ENDDO
       ENDDO
-!$omp end parallel do
       WRITE(6,*) "! MAKEMT ORO SLM VAR VAR4 DONE"
 C
 
@@ -2207,11 +2170,6 @@ C
 
 C... DERIVITIVE TENSOR OF HEIGHT
 C
-!$omp parallel do
-!$omp* private (j,i,xnsum,xland,xwatr,xl1,xs1,xfp,yfp,xfpyfp,
-!$omp*          xfp2,yfp2,lono,lato,jst,jen,ilist,numx,j1,i2,i1,
-!$omp*          loni,lati,i0,ip1,height,hi0,hip1,hj0,hjp1,ijax,
-!$omp*          hijax,hi1j1)
       DO J=1,JM
 !        print*, "J=", J
         DO I=1,IM
@@ -2390,7 +2348,6 @@ C            THETA(I,J) = 0.5 * ATAN2(HXY(I,J),HL(I,J))
                   endif
         ENDDO
       ENDDO
-!$omp end parallel do
       WRITE(6,*) "! MAKE Principal Coord  DONE"
 C
       RETURN
@@ -2806,9 +2763,6 @@ C     IN A GRID BOX
 
 ! --- # of peaks > ZAVG value and ZMAX(IM,JM) -- ORO is already avg.
 ! ---  to JM or to JM1
-!$omp parallel do
-!$omp* private (j,i,hc,lono,lato,jst,jen,ilist,numx,j1,ii1,i1,loni,
-!$omp*          lati,height)
       DO J=1,JM
 !        print*, "J=", J 
         DO I=1,IM
@@ -2838,7 +2792,7 @@ C     IN A GRID BOX
           ENDDO ; ENDDO
         ENDDO
       ENDDO
-!$omp end parallel do      
+      
 C
 ! ---  this will make work1 array take on oro's values on return
 ! ---  this will make work1 array take on oro's values on return
@@ -2867,12 +2821,6 @@ C     (KWD = 1  2  3  4)
 C     ( WD = W  S SW NW)
 C
 C
-!$omp parallel do
-!$omp* private (j,i,lon,lat,kwd,dlon,dlat,lon1,lon2,lat1,lat2,
-!$omp*          xnsum11,xnsum12,xnsum21,xnsum22,xnpu,xnpd,
-!$omp*          xnsum1_11,xnsum2_11,hc_11, xnsum1_12,xnsum2_12,
-!$omp*          hc_12,xnsum1_21,xnsum2_21,hc_21, xnsum1_22,
-!$omp*          xnsum2_22,hc_22)
       DO J=1,JM
 !       print*, "j = ", j
         DO I=1,IM
@@ -3072,7 +3020,7 @@ C
           ENDIF          
         ENDDO
       ENDDO
-!$omp end parallel do
+
       DO KWD=1,4
         DO J=1,JM
           DO I=1,IM
@@ -4163,8 +4111,7 @@ C
            pnt2(3) = z2(ip1)
 
            angle = spherical_angle(pnt0, pnt2, pnt1);
-!           anglesum = anglesum + spherical_angle(pnt0, pnt2, pnt1);
-           anglesum = anglesum + angle
+           anglesum = anglesum + spherical_angle(pnt0, pnt2, pnt1);
         enddo
 
         if(abs(anglesum-2*PI) < EPSLN8) then
@@ -4438,17 +4385,3 @@ cgwv      print 102,l,t2-t1,c
  102  format(' time to check ',i9,' words is ',f10.4,' ',a24)
       return
        end
-      real function timef
-      character(8) :: date
-      character(10) :: time
-      character(5) :: zone
-      integer,dimension(8) :: values
-      integer :: total
-      real :: elapsed
-      call date_and_time(date,time,zone,values)
-      total=(3600*values(5))+(60*values(6))
-     *      +values(7)
-      elapsed=float(total) + (1.0e-3*float(values(8)))
-      timef=elapsed
-      return
-      end

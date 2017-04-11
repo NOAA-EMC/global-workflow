@@ -1,4 +1,3 @@
-   sh $MODULESHOME/init/sh
    module  purge
    module load PrgEnv-intel
    module rm intel
