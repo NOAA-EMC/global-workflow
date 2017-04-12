@@ -110,8 +110,7 @@ export SIGINP=NULL
 export SFCINP=$COMROT/sfnanl.gfs.$CDATE
 export NSTINP=$COMROT/nsnanl.gfs.$CDATE
 
-#for tile in '1' '2' '3' '4' '5' '6'
-for tile in '1'
+for tile in '1' '2' '3' '4' '5' '6'
 do
 
  export TILE_NUM=$tile
@@ -124,6 +123,5 @@ do
  fi
 
  mv ${DATA}/*.nc $SAVDIR
- mv ${DATA}/*.nemsio $SAVDIR
 
 done
