@@ -60,10 +60,10 @@ export SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_locinfo.l${LEVS}.txt}
 
 # Filenames.
-export GPREFIX=${GPREFIX:-${PREFIX:-""}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
-export APREFIX=${APREFIX:-${PREFIX:-""}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
+export GPREFIX=${GPREFIX:-""}
+export GSUFFIX=${GSUFFIX:-""}
+export APREFIX=${APREFIX:-""}
+export ASUFFIX=${ASUFFIX:-""}
 
 export GBIASe=${GBIASe:-${APREFIX}abias_int}
 export CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}

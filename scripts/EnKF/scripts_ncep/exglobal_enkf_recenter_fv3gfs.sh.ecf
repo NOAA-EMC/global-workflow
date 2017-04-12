@@ -51,12 +51,10 @@ export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsf
 export RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
 
 # Files.
-export PREFIX=${PREFIX:-""}
-export SUFFIX=${SUFFIX:-""}
-export APREFIX=${APREFIX:-${PREFIX:-""}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
-export GPREFIX=${GPREFIX:-${PREFIX:-""}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
+export APREFIX=${APREFIX:-""}
+export ASUFFIX=${ASUFFIX:-""}
+export GPREFIX=${GPREFIX:-""}
+export GSUFFIX=${GSUFFIX:-""}
 
 # Variables
 export NMEM_ENKF=${NMEM_ENKF:-80}

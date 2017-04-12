@@ -61,8 +61,8 @@ export SENDECF=${SENDECF:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 
 # Observations
-export OPREFIX=${OPREFIX:-${PREFIX:-""}}
-export OSUFFIX=${OSUFFIX:-${SUFFIX:-""}}
+export OPREFIX=${OPREFIX:-""}
+export OSUFFIX=${OSUFFIX:-""}
 export PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
 export PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
 export SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
@@ -119,8 +119,8 @@ export B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 export B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
-export GPREFIX=${GPREFIX:-${PREFIX:-""}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
+export GPREFIX=${GPREFIX:-""}
+export GSUFFIX=${GSUFFIX:-""}
 export SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
 export SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
 export SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
@@ -148,8 +148,8 @@ export GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
 export GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 
 # Analysis files
-export APREFIX=${APREFIX:-${PREFIX:-""}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
+export APREFIX=${APREFIX:-""}
+export ASUFFIX=${ASUFFIX:-""}
 export SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
 export ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
 export NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}

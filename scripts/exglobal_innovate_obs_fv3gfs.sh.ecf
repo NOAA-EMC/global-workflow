@@ -46,19 +46,19 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Prefix and Suffix Variables.
-export OPREFIX=${OPREFIX:-${PREFIX:-""}}
-export OSUFFIX=${OSUFFIX:-${SUFFIX:-""}}
-export GPREFIX=${GPREFIX:-${PREFIX:-""}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX:-""}}
-export APREFIX=${APREFIX:-${PREFIX:-""}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX:-""}}
+export OPREFIX=${OPREFIX:-""}
+export OSUFFIX=${OSUFFIX:-""}
+export GPREFIX=${GPREFIX:-""}
+export GSUFFIX=${GSUFFIX:-""}
+export APREFIX=${APREFIX:-""}
+export ASUFFIX=${ASUFFIX:-""}
 
 # Files.
 export GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
 export GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
 export GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
 export GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
-export SELECT_OBS=${SELECT_OBS:-$COMOUT/${APREFIX}obsinput.ensmean}
+export SELECT_OBS=${SELECT_OBS:-$COMOUT/${APREFIX}obsinput}
 
 # Member
 export MEMBER=${MEMBER:-"0"} # <-1: control member,  0: ensemble mean, >0: ensemble member $MEMBER
@@ -100,7 +100,8 @@ if [ $MEMBER -le 0 ]; then
    lread_obs_skip=".false."
    if [ $MEMBER -eq 0 ]; then
       export DIAG_SUFFIX="_ensmean"
-      export GSUFFIX=".ensmean"
+      export GSUFFIX=".ensmean${GSUFFIX}"
+      export COMIN_GES=$COMIN_GES_ENS
    fi
 else
    memchar="mem"`printf %03i $MEMBER`
@@ -109,6 +110,8 @@ else
    export USE_SELECT="YES"
    lread_obs_save=".false."
    lread_obs_skip=".true."
+   export COMIN_GES=$COMIN_GES_ENS/$memchar
+   export COMOUT=$COMOUT/$memchar
 fi
 
 # Innovation Specific setup for ANALYSISSH
@@ -134,13 +137,7 @@ export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
 export CHEM="$CHEM $CHEM_ENKF"
 
 ################################################################################
-# Directories based on control or ensemble member
-if [ $MEMBER -lt 0 ]; then
-   export COMIN_GES=$COMIN_GES/$memchar
-else
-   export COMIN_GES=$COMIN_GES_ENS/$memchar
-fi
-export COMOUT=$COMOUT/$memchar
+# Execute GSI as a forward operator
 
 $ANALYSISSH
 
