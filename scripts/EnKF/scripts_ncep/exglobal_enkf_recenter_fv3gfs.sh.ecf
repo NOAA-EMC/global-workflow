@@ -111,8 +111,8 @@ export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}
 if [ $JCAP = $JCAP_ENKF ]; then
    echo "Ensemble and deterministic analysis are at same resolution"
    echo "Does recentering really make sense?"
+   echo "set RECENTER_ENKF = YES (NO) to enable (disable) recentering"
    echo "RECENTER_ENKF = $RECENTER_ENKF"
-   echo "set RECENTER_ENKF = NO to turn off recentering"
 fi
 
 # This is to give the user the option to recenter, default is YES
@@ -122,19 +122,23 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
    export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
 
-   export SIGI="atmanl_hires"
-   export SFCI="NULL"
-   export SIGO="atmanl_lores"
-   export SFCO="NULL"
-   export GFSOUT=$SIGO
-   rm -f $SIGO
-   rm -f $SFCO
+   export SIGINP="atmanl_hires"
+   export SFCINP="NULL"
+   export SIGOUT="atmanl_lores"
+   export SFCOUT="NULL"
+   export GFSOUT=$SIGOUT
+   export NSTOUT="NULL"
+   export NSNOUT="NULL"
+   export SFNOUT="NULL"
+
+   rm -f $SIGOUT $SFCOUT
 
    export SIGLEVEL="NULL"
    export CHGRESVARS=$CHGRESVARS_ENKF
+   export LANDICE_OPT=${LANDICE_OPT:-1}
    export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
 
-   $CHGRESSH $SIGI $SFCI $SIGO $SFCO $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF
+   $CHGRESSH $SIGINP $SFCINP $SIGOUT $SFCOUT $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF $GFSOUT
    rc=$?
 
    export ERR=$rc
