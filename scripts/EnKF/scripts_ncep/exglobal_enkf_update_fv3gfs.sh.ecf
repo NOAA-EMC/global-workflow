@@ -91,6 +91,18 @@ rm enkf.nml
 rm sanl*
 
 ################################################################################
+# Fixed files
+$NLN $SATANGL    satbias_angle
+$NLN $SATINFO    satinfo
+$NLN $SCANINFO   scaninfo
+$NLN $CONVINFO   convinfo
+$NLN $OZINFO     ozinfo
+$NLN $HYBENSINFO hybens_info
+
+$NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
+
+################################################################################
+
 if [ $USE_CFP = "YES" ]; then
    rm $DATA/untar.sh $DATA/mp_untar.sh
    set +x
@@ -100,7 +112,11 @@ if [ $USE_CFP = "YES" ]; then
  memchar=$1
  flist="$CNVSTAT $OZNSTAT $RADSTAT"
  for ftype in $flist; do
-    fname=$COMOUT_ANL_ENS/$memchar/$ftype
+    if [ $memchar = "ensmean" ]; then
+       fname=$COMOUT_ANL_ENS/${ftype}.ensmean
+    else
+       fname=$COMOUT_ANL_ENS/$memchar/$ftype
+    fi
     tar -xvf $fname
  done
 }
@@ -110,25 +126,14 @@ EOFuntar
 fi
 
 ################################################################################
-# Fixed files
-$NLN $SATANGL    satbias_angle
-$NLN $SATINFO    satinfo
-$NLN $SCANINFO   scaninfo
-$NLN $CONVINFO   convinfo
-$NLN $OZINFO     ozinfo
-$NLN $HYBENSINFO hybens_info
-
-################################################################################
 # Ensemble guess, observational data and analysis
-
-$NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 
 flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
-   echo "$DATA/untar.sh /" | tee -a $DATA/mp_untar.sh
+   echo "$DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
 else
    for ftype in $flist; do
-      fname=$COMOUT_ANL_ENS/$ftype
+      fname=$COMOUT_ANL_ENS/${ftype}.ensmean
       tar -xvf $fname
    done
 fi
