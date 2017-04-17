@@ -1,31 +1,68 @@
+#!/bin/sh
 # It is now possible to run all regression tests (except RTMA) using the hybrid ensemble option with
 #  internally generated random ensemble perturbations.  No script changes are required.
 #  To run with hybrid ensemble option on, change HYBENS_GLOBAL and/or HYBENS_REGIONAL from "false" to "true".
 #  These are located at the end of this script.
 
+if [ "$#" = 8 ] ; then
+  export machine=$1
+  export basedir=$2
+  export builddir=$3
+  export gsisrc=$4
+  export gsiexec_updat=$5
+  export enkfexec_updat=$6
+  export gsiexec_contrl=$7
+  export enkfexec_contrl=$8
+  export fixgsi="$gsisrc/fix"
+  export scripts="$gsisrc/scripts"
+  export cmaketest="true"
+  export clean="false"
+  export ptmpName=`echo $builddir | sed -e "s/\//_/g"`
+  echo $ptmpName
+else
+# Name of the branch being tested
+  updat="XXXXXXXX"
+  contrl="XXXXXXXX"
+  export cmaketest="false"
+  export clean="false"
+  export ptmpName=""
+fi
+
 # First determine what machine are we on:
 if [ -d /da ]; then # WCOSS
    export machine="WCOSS"
+   if [ -d /da/noscrub/$LOGNAME ]; then 
+     export noscrub=/da/noscrub/$LOGNAME
+   elif [ -d /global/noscrub/$LOGNAME ]; then
+     export noscrub=/global/noscrub/$LOGNAME
+   fi
 elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    export machine="Theia"
+   if [ -d /scratch4/NCEPDEV/da/noscrub/$LOGNAME ]; then 
+     export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
+   elif [ -d /scratch4/NCEPDEV/global/noscrub/$LOGNAME ]; then 
+     export noscrub="/scratch4/NCEPDEV/global/noscrub/$LOGNAME"
+   fi
+elif [ -d /gpfs/tp1/ptmp ]; then # LUNA or SURGE
+   export machine="LUNA"
+   export noscrub="/gpfs/tp1/ptmp/$LOGNAME"
+elif [ -d /data/users ]; then # S4
+   export machine="s4"
+   export noscrub="/data/users/$LOGNAME"
 fi
-
-# Name of the branch being tested
-updat="XXXXXXXX"
-contrl="XXXXXXXX"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
 #  Location of ndate utility, noscrub directory, and account name (accnt = ada by default).
 if [[ "$machine" = "Theia" ]]; then
 
-   export basedir="/scratch4/NCEPDEV/da/save/$LOGNAME"
-
    export group="global"
    export queue="batch"
+   if [[ "$cmaketest" = "false" ]]; then
+     export basedir="/scratch4/home/$LOGNAME/gsi"
+   fi 
 
-   export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME"
-   export noscrub="/scratch4/NCEPDEV/da/noscrub/$LOGNAME"
+   export ptmp="/scratch4/NCEPDEV/stmp3/$LOGNAME/$ptmpName"
 
    export fixcrtm="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
    export casesdir="/scratch4/NCEPDEV/da/noscrub/Michael.Lueken/CASES"
@@ -33,7 +70,7 @@ if [[ "$machine" = "Theia" ]]; then
 
    export check_resource="no"
 
-   export accnt="hybrid"
+   export accnt="da-cpu"
 
    #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
    #  After completion of regression tests, will remove the regression test subdirecories
@@ -41,13 +78,13 @@ if [[ "$machine" = "Theia" ]]; then
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
-   export basedir="/da/save/$LOGNAME"
-
+   if [[ "$cmaketest" = "false" ]]; then
+     export basedir="/global/save/$LOGNAME/gsi"
+   fi 
    export group="dev"
    export queue="dev"
 
-   export ptmp="/ptmpp1/$LOGNAME"
-   export noscrub="/da/noscrub/$LOGNAME"
+   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
 
    export fixcrtm="/da/save/Michael.Lueken/CRTM_REL-2.2.3/crtm_v2.2.3/fix_update"
    export casesdir="/da/noscrub/Michael.Lueken/CASES"
@@ -57,20 +94,54 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export accnt=""
 
+elif [[ "$machine" = "LUNA" ]]; then
+
+   if [[ "$cmaketest" = "false" ]]; then
+     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/gsi"
+   fi 
+   export group="dev"
+   export queue="dev"
+
+   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
+
+   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.3/fix"
+   export casesdir="/gpfs/hps/emc/global/noscrub/Mark.Potts/CASES"
+   export ndate="/gpfs/hps/emc/global/noscrub/Mallory.Row/VRFY/vsdb_old/nwprod/util/exec/ndate"
+
+   export check_resource="no"
+
+   export accnt=""
+elif [[ "$machine" = "s4" ]]; then
+   if [[ "$cmaketest" = "false" ]]; then
+     export basedir="/home/$LOGNAME/gsi"
+   fi 
+   export group="dev"
+   export queue="dev"
+   export NWPROD="/usr/local/jcsda/nwprod_gdas_2014"
+   export ptmp="/scratch/short/$LOGNAME/$ptmpName"
+
+   export fixcrtm="/home/mpotts/gsi/trunk/lib/CRTM_REL-2.2.3/fix_update"
+#  export fixcrtm="/usr/local/jcsda/nwprod_gdas_2014/lib/sorc/crtm_v2.1.3/fix/"
+   export casesdir="/data/users/mpotts/CASES"
+#  export casesdir="/scratch/mpotts/CASES"
+   export ndate="$NWPROD/util/exec/ndate"
+
+   export check_resource="no"
+
+   export accnt="star"
+
 fi
 
-# GSI paths based on basedir
-
-export gsisrc="$basedir/$updat/src"
-export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
-export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
-export fixgsi_updat="$basedir/$updat/fix"
-export scripts_updat="$basedir/$updat/scripts"
-export fixgsi_contrl="$basedir/$contrl/fix"
-export scripts_contrl="$basedir/$contrl/scripts"
-
+if [[ "$cmaketest" = "false" ]]; then
+  export builddir=$noscrub/build
+  export gsisrc="$basedir/$updat/src"
+  export gsiexec_updat="$gsisrc/global_gsi"
+  export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
+  export enkfexec_updat="$gsisrc/enkf/global_enkf"
+  export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
+  export fixgsi="$basedir/$updat/fix"
+  export scripts="$basedir/$updat/scripts"
+fi
 # Paths to tmpdir and savedir base on ptmp
 export tmpdir="$ptmp"
 export savdir="$ptmp"
