@@ -80,11 +80,18 @@ if [ -f $EOMGGRP ]; then
 fi
 
 ################################################################################
+# Save variables from over-writing
+COMIN_GES_SAVE=$COMIN_GES
+COMOUT_SAVE=$COMOUT
+
+# Use selected obs from ensemble mean
+export RUN_SELECT="NO"
+export USE_SELECT="YES"
+
+################################################################################
 # Run innovation script for ensemble member
 rc=0
 for imem in `seq $ENSBEG $ENSEND`; do
-
-   export MEMBER=$imem
 
    skip_mem="NO"
    if [ -f $EOMGGRP ]; then
@@ -98,6 +105,10 @@ for imem in `seq $ENSBEG $ENSEND`; do
       memchar="mem"`printf %03i $imem`
       export DATA=$DATATOP/$memchar
       [[ -d $DATA ]] && rm -rf $DATA
+
+      export DIAG_SUFFIX="_$memchar"
+      export COMIN_GES=$COMIN_GES_ENS/$memchar
+      export COMOUT=$COMOUT_SAVE/$memchar
 
       $INVOBSSH
       ra=$?

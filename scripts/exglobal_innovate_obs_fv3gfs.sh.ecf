@@ -26,62 +26,50 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export SCR_GSI=${SCR_GSI:-$BASE_GSI/scripts}
 export DATA=${DATA:-$pwd}
 export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
-export NCP=${NCP:-"/bin/cp -p"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis_fv3gfs.sh.ecf}
+export ANALYSISSH=${ANALYSISSH:-$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Prefix and Suffix Variables.
-export OPREFIX=${OPREFIX:-""}
-export OSUFFIX=${OSUFFIX:-""}
-export GPREFIX=${GPREFIX:-""}
-export GSUFFIX=${GSUFFIX:-""}
 export APREFIX=${APREFIX:-""}
 export ASUFFIX=${ASUFFIX:-""}
 
-# Files.
-export GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
-export GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
-export GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
-export GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
+# Select obs
+export RUN_SELECT=${RUN_SELECT:-"YES"}
+export USE_SELECT=${USE_SELECT:-"NO"}
 export SELECT_OBS=${SELECT_OBS:-$COMOUT/${APREFIX}obsinput}
 
-# Member
-export MEMBER=${MEMBER:-"0"} # <-1: control member,  0: ensemble mean, >0: ensemble member $MEMBER
-
 # Observation Operator GSI namelist initialization
-export SETUP_ENKF=${SETUP_ENKF:-""}
-export GRIDOPTS_ENKF=${GRIDOPTS_ENKF:-""}
-export BKGVERR_ENKF=${BKGVERR_ENKF:-""}
-export ANBKGERR_ENKF=${ANBKGERR_ENKF:-""}
-export JCOPTS_ENKF=${JCOPTS_ENKF:-""}
-export STRONGOPTS_ENKF=${STRONGOPTS_ENKF:-""}
-export OBSQC_ENKF=${OBSQC_ENKF:-""}
-export OBSINPUT_ENKF=${OBSINPUT_ENKF:-""}
-export SUPERRAD_ENKF=${SUPERRAD_ENKF:-""}
-export SINGLEOB_ENKF=${SINGLEOB_ENKF:-""}
-export LAGDATA_ENKF=${LAGDATA_ENKF:-""}
-export HYBRID_ENSEMBLE_ENKF=${HYBRID_ENSEMBLE_ENKF:-""}
-export RAPIDREFRESH_CLDSURF_ENKF=${RAPIDREFRESH_CLDSURF_ENKF:-""}
-export CHEM_ENKF=${CHEM_ENKF:-""}
+export SETUP_INVOBS=${SETUP_INVOBS:-""}
+export GRIDOPTS_INVOBS=${GRIDOPTS_INVOBS:-""}
+export BKGVERR_INVOBS=${BKGVERR_INVOBS:-""}
+export ANBKGERR_INVOBS=${ANBKGERR_INVOBS:-""}
+export JCOPTS_INVOBS=${JCOPTS_INVOBS:-""}
+export STRONGOPTS_INVOBS=${STRONGOPTS_INVOBS:-""}
+export OBSQC_INVOBS=${OBSQC_INVOBS:-""}
+export OBSINPUT_INVOBS=${OBSINPUT_INVOBS:-""}
+export SUPERRAD_INVOBS=${SUPERRAD_INVOBS:-""}
+export SINGLEOB_INVOBS=${SINGLEOB_INVOBS:-""}
+export LAGDATA_INVOBS=${LAGDATA_INVOBS:-""}
+export HYBRID_ENSEMBLE_INVOBS=${HYBRID_ENSEMBLE_INVOBS:-""}
+export RAPIDREFRESH_CLDSURF_INVOBS=${RAPIDREFRESH_CLDSURF_INVOBS:-""}
+export CHEM_INVOBS=${CHEM_INVOBS:-""}
 
 ################################################################################
 #  Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
 cd $DATA || exit 8
 
 ################################################################################
@@ -89,52 +77,38 @@ cd $DATA || exit 8
 rm -f obs_input*
 $NLN $SELECT_OBS obs_input.tar
 
-################################################################################
-# Special treatment when dealing with control (MEMBER<0) or ensemble mean (MEMBER=0)
-if [ $MEMBER -le 0 ]; then
-   memchar=""
-   export DIAG_SUFFIX=""
-   export RUN_SELECT="YES"
-   export USE_SELECT="NO"
+# Whether to save or skip obs
+if [ $RUN_SELECT = "YES" -a $USE_SELECT = "NO" ]; then
    lread_obs_save=".true."
    lread_obs_skip=".false."
-   if [ $MEMBER -eq 0 ]; then
-      export DIAG_SUFFIX="_ensmean"
-      export GSUFFIX=".ensmean${GSUFFIX}"
-      export COMIN_GES=$COMIN_GES_ENS
-   fi
-else
-   memchar="mem"`printf %03i $MEMBER`
-   export DIAG_SUFFIX="_"$memchar
-   export RUN_SELECT="NO"
-   export USE_SELECT="YES"
+elif [ $RUN_SELECT = "NO" -a $USE_SELECT = "YES" ]; then
    lread_obs_save=".false."
    lread_obs_skip=".true."
-   export COMIN_GES=$COMIN_GES_ENS/$memchar
-   export COMOUT=$COMOUT/$memchar
 fi
 
+################################################################################
 # Innovation Specific setup for ANALYSISSH
+export DIAG_SUFFIX=${DIAG_SUFFIX:-""}
+export DIAG_COMPRESS=${DIAG_COMPRESS:-"NO"}
+export DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 export DOHYBVAR="NO"
-export DIAG_COMPRESS="NO"
-export DIAG_TARBALL="YES"
 export DO_CALC_INCREMENT="NO"
 
 # GSI Namelist options for observation operator only
-export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_ENKF"
-export GRIDOPTS="$GRIDOPTS $GRIDOPTS_ENKF"
-export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_ENKF"
-export ANBKGERR="$ANBKGERR $ANBKGERR_ENKF"
-export JCOPTS="$JCOPTS $JCOPTS_ENKF"
-export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_ENKF"
-export OBSQC="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0,$OBSQC_ENKF"
-export OBSINPUT="dmesh(1)=225.0,dmesh(2)=225.0,$OBSINPUT_ENKF"
-export SUPERRAD="$SUPERRAD $SUPERRAD_ENKF"
-export SINGLEOB="$SINGLEOB $SINGLEOB_ENKF"
-export LAGDATA="$LAGDATA $LAGDATA_ENKF"
+export SETUP="miter=0,niter=1,lread_obs_save=$lread_obs_save,lread_obs_skip=$lread_obs_skip,lwrite_predterms=.true.,lwrite_peakwt=.true.,reduce_diag=.true.,$SETUP_INVOBS"
+export GRIDOPTS="$GRIDOPTS_INVOBS"
+export BKGVERR="bkgv_flowdep=.false.,$BKGVERR_INVOBS"
+export ANBKGERR="$ANBKGERR_INVOBS"
+export JCOPTS="$JCOPTS_INVOBS"
+export STRONGOPTS="tlnmc_option=0,nstrong=0,nvmodes_keep=0,baldiag_full=.false.,baldiag_inc=.false.,$STRONGOPTS_INVOBS"
+export OBSQC="$OBSQC_INVOBS"
+export OBSINPUT="$OBSINPUT_INVOBS"
+export SUPERRAD="$SUPERRAD_INVOBS"
+export SINGLEOB="$SINGLEOB_INVOBS"
+export LAGDATA="$LAGDATA_INVOBS"
 export HYBRID_ENSEMBLE=""
-export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF $RAPIDREFRESH_CLDSURF_ENKF"
-export CHEM="$CHEM $CHEM_ENKF"
+export RAPIDREFRESH_CLDSURF="$RAPIDREFRESH_CLDSURF_INVOBS"
+export CHEM="$CHEM_INVOBS"
 
 ################################################################################
 # Execute GSI as a forward operator
