@@ -26,10 +26,8 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export SCR_GSI=${SCR_GSI:-$BASE_GSI/scripts}
 export DATA=${DATA:-$pwd}
 export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
@@ -43,8 +41,8 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-export OBSINNOVSH=${OBSINNOVSH:-$SCR_GSI/exglobal_innovate_obs_fv3gfs.sh.ecf}
-export ANALYSISSH=${ANALYSISSH:-$SCR_GSI/exglobal_analysis_fv3gfs.sh.ecf}
+export INVOBSSH=${INVOBSSH:-$BASE_GSI/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf}
+export ANALYSISSH=${ANALYSISSH:-$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Enemble group, begin and end
 export ENSGRP=${ENSGRP:-1}
@@ -63,7 +61,8 @@ export SENDECF=${SENDECF:-"NO"}
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
 cd $DATA || exit 99
 export DATATOP=$DATA
 
@@ -89,26 +88,26 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    skip_mem="NO"
    if [ -f $EOMGGRP ]; then
-      memstat=`cat $EOMGGRP | grep "MEMBER $MEMBER" | grep "PASS" | wc -l`
+      memstat=`cat $EOMGGRP | grep "MEMBER $imem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
       ra=0
    fi
 
    if [ $skip_mem = "NO" ]; then
 
-      memchar="mem"`printf %03i $MEMBER`
+      memchar="mem"`printf %03i $imem`
       export DATA=$DATATOP/$memchar
-      if [ -d $DATA ]; then
-         rm -rf $DATA
-      fi
+      [[ -d $DATA ]] && rm -rf $DATA
 
-      $OBSINNOVSH
+      $INVOBSSH
       ra=$?
       ((rc+=ra))
 
       # Notify a member observation innovation failed, freeze eupd, but continue on to next member
-      if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
-         ecflow_client --abort="observation innovation of member $MEMBER FAILED"
+      if [ $ra -ne 0 ]; then
+         msg="observation innovation of member $imem FAILED"
+         echo $msg
+         [[ $SENDECF = "YES" ]] && ecflow_client --abort=$msg
       fi
 
    fi
@@ -116,9 +115,9 @@ for imem in `seq $ENSBEG $ENSEND`; do
    rm log
    $NCP $DATATOP/log_all ./log_old
    if [ $ra -ne 0 ]; then
-      echo "MEMBER $MEMBER : FAIL" > log
+      echo "MEMBER $imem : FAIL" > log
    else
-      echo "MEMBER $MEMBER : PASS" > log
+      echo "MEMBER $imem : PASS" > log
    fi
    cat log_old log > log_new
    $NCP log_new $DATATOP/log_all

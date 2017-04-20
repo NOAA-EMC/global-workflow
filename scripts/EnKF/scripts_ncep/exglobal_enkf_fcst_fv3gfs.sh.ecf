@@ -81,7 +81,8 @@ export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variab
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
 cd $DATA || exit 99
 export DATATOP=$DATA
 
@@ -195,8 +196,10 @@ for imem in `seq $ENSBEG $ENSEND`; do
      fi
 
      # Notify a member forecast failed, freeze epos, but continue on to next member
-     if [ $SENDECF = "YES" -a $ra -ne 0 ]; then
-        ecflow_client --abort="forecast of member $MEMBER FAILED"
+     if [ $ra -ne 0 ]; then
+        msg="forecast of member $MEMBER FAILED"
+        print $msg
+        [[ $SENDECF = "YES" ]] && ecflow_client --abort=$msg
      fi
 
      # Regrid FV3 tiles to global NEMSIO files
