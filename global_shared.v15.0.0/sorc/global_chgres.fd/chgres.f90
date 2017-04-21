@@ -78,6 +78,9 @@
 !   2016-06-01 Gayno G   : option to process nsst files in nemsio format
 !   2017-01-27 Gayno/GFDL : extensive modifications to interpolate gfs data 
 !                           to fv3 cubed sphere grid.
+!   2017-04-12 Gayno      : Write nsst records to the surface netcdf restart
+!                           file.  Previously, the nsst records were written
+!                           to their own nemsio binary file.
 !
 ! NAMELISTS:
 !   NAMCHG:
@@ -119,8 +122,7 @@
 !                CHOSEN.  DEFAULT IS '4' - GLOBAL GAUSSIAN GRID.  CAN ALSO CHOOSE
 !                '0' - GLOBAL REGULAR LAT/LON GRID.
 !     OUTTYP     INTEGER NUMBER OF OUTPUT FILE TYPE.  NOT USED YET.  CURRENTLY,
-!                THE FV3 SIGMA AND SURFACE FILES ARE NETCDF FORMAT ONLY.  AND THE
-!                FV3 NSST FILE IS NEMSIO ONLY.
+!                THE FV3 SIGMA AND SURFACE/NSST FILES ARE NETCDF FORMAT ONLY.
 !     CHGQ0      SET NEGATIVE VALUES OF TRACERS TO ZERO: 0 FALSE; 1 TRUE.
 !
 ! INPUT FILES:
@@ -139,11 +141,9 @@
 !                                        GLOBAL TILES (NETCDF FORMAT)
 ! OUTPUT FILES:
 !   UNIT   ??    gfs_ctrl.nc             FV3 ATMOSPHERIC HEADER FILE (NETCDF FORMAT)
-!   UNIT   ??    out.sfc.tile[1-6].nc    FV3 SURFACE DATA FILE (NETCDF FORMAT)  ONE FILE
-!                                        FOR EACH SIX GLOBAL TILES.
+!   UNIT   ??    out.sfc.tile[1-6].nc    FV3 SURFACE/NSST DATA FILE (NETCDF FORMAT)  ONE
+!                                        FILE FOR EACH SIX GLOBAL TILES.
 !   UNIT   ??    gfs_data.tile[1-6].nc   FVN ATMOSPHERIC FILE (NETCDF FORMAT).  ONE FILE
-!                                        FOR EACH SIX GLOBAL TILES.
-!   UNIT   ??    out.nst.tile[1-6].nc    FV3 NSST DATA FILE (NEMSIO FORMAT)  ONE FILE
 !                                        FOR EACH SIX GLOBAL TILES.
 !
 ! ATTRIBUTES:
@@ -1375,14 +1375,8 @@
 
       DEALLOCATE(OROGO_UF)
 
-      CALL WRITE_FV3_SFC_DATA_NETCDF(IMO,JMO,LSOILO,SFCOUTPUT,F10MO, &
-                         T2MO,Q2MO,UUSTARO, &
-                         FFMMO,FFHHO,TPRCPO,SRFLAGO,TILE_NUM)
-
-      DEALLOCATE(F10MO, T2MO, Q2MO, UUSTARO, FFMMO, FFHHO)
-      DEALLOCATE(TPRCPO, SRFLAGO)
-
       IF (DO_NSST) THEN
+
         ALLOCATE(RLATS_OUTPUT(IJMO))
         RLATS_OUTPUT=SFCOUTPUT%LATS
         ALLOCATE(RLONS_OUTPUT(IJMO))
@@ -1390,9 +1384,6 @@
         ALLOCATE(MASK_OUTPUT(IJMO))
         MASK_OUTPUT=SFCOUTPUT%LSMASK
         WHERE(SFCOUTPUT%SEA_ICE_FLAG==1) MASK_OUTPUT=2
-      ENDIF
-
-      IF (DO_NSST) THEN
 
         ALLOCATE(NSST_OUTPUT(IJMO,NUM_NSST_FIELDS))
         ALLOCATE(NSST_INPUT(IMI,JMI,NUM_NSST_FIELDS))
@@ -1412,22 +1403,31 @@
         PRINT*,"- CHANGE NSST FILE RESOLUTION FROM ",IMI, " X ",JMI
         PRINT*,"                                TO ",IMO, " X ",JMO
 
-        CALL NSST_CHGRES(IMI,JMI,MASK_OUTPUT, &
+        CALL NSST_CHGRES(IMI, JMI, MASK_OUTPUT, SFCOUTPUT%SKIN_TEMP, &
                          IJMO,KGDS_INPUT, NSST_INPUT, MASK_INPUT, &
                          NSST_OUTPUT, NUM_NSST_FIELDS, &
                          KGDS_OUTPUT, RLATS_OUTPUT, RLONS_OUTPUT)
 
         DEALLOCATE(RLATS_OUTPUT,RLONS_OUTPUT)
-        DEALLOCATE(NSST_INPUT,MASK_INPUT)
+        DEALLOCATE(NSST_INPUT,MASK_INPUT,MASK_OUTPUT)
 
-        CALL WRITE_FV3_NSST_DATA_NEMSIO (IMO,JMO,IJMO,NSST_YEAR,  &
-                 NSST_MON, NSST_DAY,NSST_HOUR,NSST_FHOUR,         &
-                 MASK_OUTPUT, NSST_OUTPUT, NUM_NSST_FIELDS, TILE_NUM)
+        CALL WRITE_FV3_SFC_DATA_NETCDF(IMO,JMO,LSOILO,SFCOUTPUT,F10MO, &
+                           T2MO,Q2MO,UUSTARO,FFMMO,FFHHO,TPRCPO, &
+                           SRFLAGO,TILE_NUM,NUM_NSST_FIELDS,NSST_OUTPUT)
 
-        DEALLOCATE(NSST_OUTPUT, MASK_OUTPUT)
+        DEALLOCATE(NSST_OUTPUT)
+
+      ELSE   ! output surface data only.
+
+        CALL WRITE_FV3_SFC_DATA_NETCDF(IMO,JMO,LSOILO,SFCOUTPUT,F10MO, &
+                           T2MO,Q2MO,UUSTARO,FFMMO,FFHHO,TPRCPO, &
+                           SRFLAGO,TILE_NUM,NUM_NSST_FIELDS)
+
 
       ENDIF  ! process nsst file
 
+      DEALLOCATE(F10MO, T2MO, Q2MO, UUSTARO, FFMMO, FFHHO)
+      DEALLOCATE(TPRCPO, SRFLAGO)
       CALL SURFACE_CHGRES_AX1D(SFCOUTPUT)
 
  80   CONTINUE
