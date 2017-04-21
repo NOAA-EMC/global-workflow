@@ -1,5 +1,5 @@
- subroutine nsst_chgres(im_input,jm_input,  &
-                        mask_output, ij_output, kgds_input, &
+ subroutine nsst_chgres(im_input, jm_input,  &
+                        mask_output, tskin_output, ij_output, kgds_input, &
                         data_input, mask_input, data_output, num_nsst_fields, &
                         kgds_output, rlat_output, rlon_output)
 !----------------------------------------------------------------
@@ -35,6 +35,8 @@
  
  real, intent(in)             :: mask_output(ij_output)
                                  ! land mask - output grid 
+ real, intent(in)             :: tskin_output(ij_output)
+                                 ! skin temperature - output grid 
  real, intent(in)             :: rlat_output(ij_output)
                                  ! latitudes on output grid
  real, intent(in)             :: rlon_output(ij_output)
@@ -178,7 +180,11 @@
 !----------------------------------------------------------------
 
  data_output=0.0  ! zero out fields at non-water points
- data_output(:,17)=255.0  ! filler value for tref at non-water points.
+ data_output(:,5)  = 30.0  ! filler value for xz at non-water points
+ data_output(:,17) = tskin_output  ! use skin temperature from the 
+                                   ! land model as fill value 
+                                   ! for tref at non-water points.
+
  do ij=1, count_water
    data_output(ijsav_water(ij),:)=data_water(ij,:)
  enddo

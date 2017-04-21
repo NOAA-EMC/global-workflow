@@ -1403,7 +1403,7 @@
         PRINT*,"- CHANGE NSST FILE RESOLUTION FROM ",IMI, " X ",JMI
         PRINT*,"                                TO ",IMO, " X ",JMO
 
-        CALL NSST_CHGRES(IMI,JMI,MASK_OUTPUT, &
+        CALL NSST_CHGRES(IMI, JMI, MASK_OUTPUT, SFCOUTPUT%SKIN_TEMP, &
                          IJMO,KGDS_INPUT, NSST_INPUT, MASK_INPUT, &
                          NSST_OUTPUT, NUM_NSST_FIELDS, &
                          KGDS_OUTPUT, RLATS_OUTPUT, RLONS_OUTPUT)
