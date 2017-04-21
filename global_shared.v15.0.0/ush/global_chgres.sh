@@ -28,6 +28,8 @@
 # 2011-08-05  Added logic for nst restart files.  G. Gayno
 # 2011-10-10  Updated for gaea  - S. Moorthi
 # 2016-12-27  Updated for FV3 core.  G. Gayno
+# 2017-04-12  Remove references to output nsst file.  nsst data
+#             now written to surface restart file.
 #
 # Usage:  global_chgres.sh SIGINP SFCINP NSTINP CRES LEVS
 #
@@ -49,9 +51,8 @@
 #                   overridden by $4.
 #     LEVS          New number of sigma levels
 #                   overridden by $5; one or the other is required
-#     OUTTYP        Output file type.  Not used yet.  The sigma and
-#                   surface files are output in netcdf.  The nst file
-#                   is nemsio.  These can't be changed.
+#     OUTTYP        Output file type.  Not used yet.  The sigma/atms and
+#                   surface/nsst files are output in netcdf. 
 #     IDRT          Intermediate grid type output from spectral conversion
 #                   4: guassian(default); 0: lat-lon                            
 #     LONB          Number of longitudes of intermediate grid type output

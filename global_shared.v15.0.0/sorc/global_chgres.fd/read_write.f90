@@ -69,13 +69,15 @@
  end subroutine netcdf_err
 
  subroutine write_fv3_sfc_data_netcdf(lonb, latb, lsoil, sfcoutput, f10m, &
-                           t2m, q2m, uustar, ffmm, ffhh, tprcp, srflag, tile)
+                           t2m, q2m, uustar, ffmm, ffhh, tprcp, srflag, tile, &
+                           num_nsst_fields, nsst_output)
 
  use surface_chgres, only        : sfc1d
 
  implicit none
 
  integer, intent(in)            :: latb, lonb, lsoil, tile
+ integer, intent(in)            :: num_nsst_fields
  character(len=128)             :: outfile
 
  integer                        :: fsize=65536, inital = 0
@@ -95,7 +97,15 @@
  integer                        :: id_srflag, id_snwdph, id_shdmin
  integer                        :: id_shdmax, id_slope, id_snoalb
  integer                        :: id_stc, id_smc, id_slc
+ integer                        :: id_tref, id_z_c, id_c_0
+ integer                        :: id_c_d, id_w_0, id_w_d
+ integer                        :: id_xt, id_xs, id_xu, id_xv
+ integer                        :: id_xz, id_zm, id_xtts, id_xzts
+ integer                        :: id_d_conv, id_ifd, id_dt_cool
+ integer                        :: id_qrain
  
+ logical                        :: write_nsst
+
  real, intent(in)               :: f10m(lonb,latb)
  real, intent(in)               :: q2m(lonb,latb)
  real, intent(in)               :: t2m(lonb,latb)
@@ -104,6 +114,7 @@
  real, intent(in)               :: ffhh(lonb,latb)
  real, intent(in)               :: tprcp(lonb,latb)
  real, intent(in)               :: srflag(lonb,latb)
+ real, intent(in), optional     :: nsst_output(lonb*latb,num_nsst_fields)
  real(kind=4)                   :: lsoil_data(lsoil)
  real(kind=4), allocatable      :: dum2d(:,:), dum3d(:,:,:)
 
@@ -111,7 +122,14 @@
 
  include "netcdf.inc"
 
- print*,'- WRITE FV3 SURFACE DATA TO NETCDF FILE'
+ write_nsst = .false.
+ if (present(nsst_output)) write_nsst = .true.
+
+ if (write_nsst) then
+   print*,'- WRITE FV3 SURFACE AND NSST DATA TO NETCDF FILE'
+ else
+   print*,'- WRITE FV3 SURFACE DATA TO NETCDF FILE'
+ endif
 
  WRITE(OUTFILE, '(A, I1, A)'), 'out.sfc.tile', tile, '.nc'
 
@@ -212,6 +230,44 @@
  call netcdf_err(error, 'DEFINING SMC' )
  error = nf_def_var(ncid, 'slc', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lsoil/), id_slc)
  call netcdf_err(error, 'DEFINING SLC' )
+ if (write_nsst) then
+   error = nf_def_var(ncid, 'tref', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tref)
+   call netcdf_err(error, 'DEFINING TREF' )
+   error = nf_def_var(ncid, 'z_c', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_z_c)
+   call netcdf_err(error, 'DEFINING Z_C' )
+   error = nf_def_var(ncid, 'c_0', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_c_0)
+   call netcdf_err(error, 'DEFINING C_0' )
+   error = nf_def_var(ncid, 'c_d', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_c_d)
+   call netcdf_err(error, 'DEFINING C_D' )
+   error = nf_def_var(ncid, 'w_0', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_w_0)
+   call netcdf_err(error, 'DEFINING W_0' )
+   error = nf_def_var(ncid, 'w_d', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_w_d)
+   call netcdf_err(error, 'DEFINING W_D' )
+   error = nf_def_var(ncid, 'xt', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xt)
+   call netcdf_err(error, 'DEFINING XT' )
+   error = nf_def_var(ncid, 'xs', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xs)
+   call netcdf_err(error, 'DEFINING XS' )
+   error = nf_def_var(ncid, 'xu', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xu)
+   call netcdf_err(error, 'DEFINING XU' )
+   error = nf_def_var(ncid, 'xv', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xv)
+   call netcdf_err(error, 'DEFINING XV' )
+   error = nf_def_var(ncid, 'xz', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xz)
+   call netcdf_err(error, 'DEFINING XZ' )
+   error = nf_def_var(ncid, 'zm', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_zm)
+   call netcdf_err(error, 'DEFINING ZM' )
+   error = nf_def_var(ncid, 'xtts', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xtts)
+   call netcdf_err(error, 'DEFINING XTTS' )
+   error = nf_def_var(ncid, 'xzts', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xzts)
+   call netcdf_err(error, 'DEFINING XZTS' )
+   error = nf_def_var(ncid, 'd_conv', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_d_conv)
+   call netcdf_err(error, 'DEFINING D_CONV' )
+   error = nf_def_var(ncid, 'ifd', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ifd)
+   call netcdf_err(error, 'DEFINING IFD' )
+   error = nf_def_var(ncid, 'dt_cool', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_dt_cool)
+   call netcdf_err(error, 'DEFINING DT_COOL' )
+   error = nf_def_var(ncid, 'qrain', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_qrain)
+   call netcdf_err(error, 'DEFINING QRAIN' )
+ endif
 
  error = nf__enddef(ncid, header_buffer_val,4,0,4)
  call netcdf_err(error, 'DEFINING HEADER' )
@@ -381,6 +437,86 @@
  call netcdf_err(error, 'WRITING SLC RECORD' )
 
  deallocate (dum3d)
+
+ if (write_nsst) then
+
+   allocate(dum2d(lonb,latb))
+
+   dum2d = reshape(nsst_output(:,17), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_tref, dum2d)
+   call netcdf_err(error, 'WRITING TREF RECORD' )
+
+   dum2d = reshape(nsst_output(:,10), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_z_c, dum2d)
+   call netcdf_err(error, 'WRITING Z_C RECORD' )
+
+   dum2d = reshape(nsst_output(:,11), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_c_0, dum2d)
+   call netcdf_err(error, 'WRITING C_0 RECORD' )
+
+   dum2d = reshape(nsst_output(:,12), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_c_d, dum2d)
+   call netcdf_err(error, 'WRITING C_D RECORD' )
+
+   dum2d = reshape(nsst_output(:,13), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_w_0, dum2d)
+   call netcdf_err(error, 'WRITING W_0 RECORD' )
+
+   dum2d = reshape(nsst_output(:,14), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_w_d, dum2d)
+   call netcdf_err(error, 'WRITING W_D RECORD' )
+
+   dum2d = reshape(nsst_output(:,1), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xt, dum2d)
+   call netcdf_err(error, 'WRITING XT RECORD' )
+
+   dum2d = reshape(nsst_output(:,2), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xs, dum2d)
+   call netcdf_err(error, 'WRITING XS RECORD' )
+
+   dum2d = reshape(nsst_output(:,3), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xu, dum2d)
+   call netcdf_err(error, 'WRITING XU RECORD' )
+
+   dum2d = reshape(nsst_output(:,4), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xv, dum2d)
+   call netcdf_err(error, 'WRITING XV RECORD' )
+
+   dum2d = reshape(nsst_output(:,5), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xz, dum2d)
+   call netcdf_err(error, 'WRITING XZ RECORD' )
+
+   dum2d = reshape(nsst_output(:,6), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_zm, dum2d)
+   call netcdf_err(error, 'WRITING ZM RECORD' )
+
+   dum2d = reshape(nsst_output(:,7), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xtts, dum2d)
+   call netcdf_err(error, 'WRITING XTTS RECORD' )
+
+   dum2d = reshape(nsst_output(:,8), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_xzts, dum2d)
+   call netcdf_err(error, 'WRITING XZTS RECORD' )
+
+   dum2d = reshape(nsst_output(:,15), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_d_conv, dum2d)
+   call netcdf_err(error, 'WRITING D_CONV RECORD' )
+
+   dum2d = reshape(nsst_output(:,16), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_ifd, dum2d)
+   call netcdf_err(error, 'WRITING IFD RECORD' )
+
+   dum2d = reshape(nsst_output(:,9), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_dt_cool, dum2d)
+   call netcdf_err(error, 'WRITING DT_COOL RECORD' )
+
+   dum2d = reshape(nsst_output(:,18), (/lonb,latb/) )
+   error = nf_put_var_real(ncid, id_qrain, dum2d)
+   call netcdf_err(error, 'WRITING QRAIN RECORD' )
+
+   deallocate(dum2d)
+
+ endif
 
  error = nf_close(ncid)
 
@@ -1061,177 +1197,6 @@
  call nemsio_finalize()
 
  END SUBROUTINE READ_GFS_NSST_DATA_NEMSIO
-
- SUBROUTINE WRITE_FV3_NSST_DATA_NEMSIO (IMO,JMO,IJMO,YEAR,MON,DAY,HOUR, &
-                 FHOUR, MASK_OUTPUT, NSST_OUTPUT,  &
-                 NUM_NSST_FIELDS, TILE)
-
-!-----------------------------------------------------------------------
-! Subroutine: write nsst data to a nemsio formatted file.
-!
-! Author: George Gayno/EMC
-!
-! Abstract: Writes nsst data to a nemsio file.
-!
-! Input files: none
-!
-! Output files:  
-!     "out.nst.tile#.nemsio"  - output nemsio file
-!
-! History:
-!   2016-06-05   Gayno - Initial version
-!   2016-11-29   Gayno - Modified for cubed-sphere grid
-!
-! Condition codes:  all non-zero codes are fatal
-!     26 - bad nemsio initialization
-!     27 - bad open of nemsio output file
-!     28 - bad write of nemsio output file
-!-----------------------------------------------------------------------
-
- use nemsio_module
-
- implicit none
-
- integer, intent(in)   :: imo, jmo, ijmo, year, mon, day, hour
- integer, intent(in)   :: num_nsst_fields, tile
-
- real,    intent(in)   :: fhour, mask_output(ijmo)
- real,    intent(in)   :: nsst_output(ijmo,num_nsst_fields)
-
- integer(nemsio_intkind), parameter     :: nrec=19
- integer(nemsio_intkind), parameter     :: nmetavari=1
-
- type(nemsio_gfile)        :: gfile
-
- character(len=7)          :: gdatatype
- character(len=3)          :: modelname
- character(len=8)          :: recname(nrec)
- character(len=3)          :: reclevtyp(nrec)
- character(len=6)          :: variname(nmetavari)
- character(len=100)        :: outfile
-
- integer(nemsio_intkind)   :: dimx, dimy, dimz, iret, j
- integer(nemsio_intkind)   :: idate(7), idrt, nsoil, ntrac
- integer(nemsio_intkind)   :: nmeta, nfhour, reclev(nrec)
- integer(nemsio_intkind)   :: varival(nmetavari)
- integer                   :: fieldsize
-
- logical(nemsio_logickind) :: extrameta
-
- real(nemsio_realkind), allocatable :: dummy(:)
-
- data recname   /"land    ", "xt      ", "xs      ", &
-                 "xu      ", "xv      ", "xz      ", &
-                 "zm      ", "xtts    ", "xzts    ", &
-                 "dtcool  ", "zc      ", "c0      ", &
-                 "cd      ", "w0      ", "wd      ", &
-                 "dconv   ", "ifd     ", "tref    ", &
-                 "qrain   " /
-
- data reclevtyp /"sfc", "sfc", "sfc", "sfc", "sfc", "sfc", &
-                 "sfc", "sfc", "sfc", "sfc", "sfc", "sfc", &
-                 "sfc", "sfc", "sfc", "sfc", "sfc", "sfc", &
-                 "sfc" /
-
- data reclev   /1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, &
-                1, 1, 1, 1, 1, 1 /
-
- print*,"- WRITE NSST DATA IN NEMSIO FORMAT"
-
-!------------------------------------------------------------------------
-! First meta data record.
-!------------------------------------------------------------------------
-
- gdatatype="bin4_be"
- modelname="GFS"
- nmeta=5  ! number meta data records.
-
-!------------------------------------------------------------------------
-! Second meta data record.  The 3rd, 4th and 5th meta data records
-! are "recname", "reclevtyp" and "reclev".
-!------------------------------------------------------------------------
-
- dimx      = imo
- dimy      = jmo
- dimz      = 1
- idrt      = 4
- idate(1)  = year
- idate(2)  = mon
- idate(3)  = day
- idate(4)  = hour
- idate(5)  = 0
- idate(6)  = 0    ! seconds numerator
- idate(7)  = 100  ! seconds denominator
- nfhour    = nint(fhour)  ! assumes whole hours
- nsoil     = 0
- ntrac     = 0
- extrameta = .true.
-
-!------------------------------------------------------------------------
-! User-defined meta data.
-!------------------------------------------------------------------------
-
- variname(1) = "ivsnst"
- varival(1)  = 200907
-
-!------------------------------------------------------------------------
-! Write out data to nemsio file.
-!------------------------------------------------------------------------
-
- call nemsio_init(iret=iret)
- if (iret /= 0) then
-   print*,"- FATAL ERROR: bad nemsio initialization."
-   print*,"- IRET IS ", iret
-   call errexit(115)
- endif
-
- write(outfile, '(a, i1, a)'), 'out.nst.tile', tile, '.nemsio'
-
- call nemsio_open(gfile, outfile, "write", iret=iret, &
-        modelname=modelname, &
-        dimx=dimx, dimy=dimy, dimz=dimz, nsoil=nsoil, ntrac=ntrac, &
-        nrec=nrec, nmeta=nmeta, recname=recname, reclevtyp=reclevtyp, &
-        reclev=reclev, nfhour=nfhour, &
-        nmetavari=nmetavari, extrameta=extrameta, variname=variname, &
-        varival=varival, &
-        idrt=idrt, idate=idate, gdatatype=gdatatype)
-
- if (iret /= 0) then
-   print*,"FATAL ERROR: bad open of file: ", trim(outfile)
-   print*,"- IRET IS ", iret
-   call errexit(116)
- endif
-
- fieldsize = imo*jmo
- allocate (dummy(fieldsize))   
-
- dummy = mask_output
-
- j=1
- call nemsio_writerec(gfile,j,dummy,iret=iret)
-
- if (iret /= 0) then
-   print*,"- FATAL ERROR: bad write of ", trim(outfile), " record 1"
-   print*,"- IRET IS ", iret
-   call errexit(117)
- endif
-
- do j = 2, nrec
-   dummy = nsst_output(:,j-1)
-   call nemsio_writerec(gfile,j,dummy,iret=iret)
-   if (iret /= 0) then
-     print*,"- FATAL ERROR: bad write of ", trim(outfile), " record ",j
-     print*,"- IRET IS ", iret
-     call errexit(118)
-   endif
- enddo
-
- deallocate (dummy)
-
- call nemsio_close(gfile,iret=iret)
- call nemsio_finalize()
-
- END SUBROUTINE WRITE_FV3_NSST_DATA_NEMSIO
 
  SUBROUTINE READ_GFS_SFC_HEADER_NEMSIO (IMI,JMI,IVSI,LSOILI, &
                  FCSTHOUR,IDATE4O,KGDS_INPUT)
