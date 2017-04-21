@@ -31,7 +31,6 @@ export BASE_GSI=${BASE_GSI:-$NWPROD}
 export DATA=${DATA:-$pwd}
 export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
-export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
 
@@ -81,12 +80,7 @@ fi
 
 ################################################################################
 # Save variables from over-writing
-COMIN_GES_SAVE=$COMIN_GES
 COMOUT_SAVE=$COMOUT
-
-# Use selected obs from ensemble mean
-export RUN_SELECT="NO"
-export USE_SELECT="YES"
 
 ################################################################################
 # Run innovation script for ensemble member
