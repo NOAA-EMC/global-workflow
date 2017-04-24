@@ -87,16 +87,20 @@ COMOUT_SAVE=$COMOUT
 rc=0
 for imem in `seq $ENSBEG $ENSEND`; do
 
+   cmem=`printf %03i $imem`
+   memchar="mem$cmem"
+
+   echo "Processing MEMBER: $cmem"
+
    skip_mem="NO"
    if [ -f $EOMGGRP ]; then
-      memstat=`cat $EOMGGRP | grep "MEMBER $imem" | grep "PASS" | wc -l`
+      memstat=`cat $EOMGGRP | grep "MEMBER $cmem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
       ra=0
    fi
 
    if [ $skip_mem = "NO" ]; then
 
-      memchar="mem"`printf %03i $imem`
       export DATA=$DATATOP/$memchar
       [[ -d $DATA ]] && rm -rf $DATA
 
@@ -110,7 +114,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
       # Notify a member observation innovation failed, freeze eupd, but continue on to next member
       if [ $ra -ne 0 ]; then
-         msg="observation innovation of member $imem FAILED"
+         msg="observation innovation of member $cmem FAILED"
          echo $msg
          [[ $SENDECF = "YES" ]] && ecflow_client --abort=$msg
       fi
@@ -120,9 +124,9 @@ for imem in `seq $ENSBEG $ENSEND`; do
    rm log
    $NCP $DATATOP/log_all ./log_old
    if [ $ra -ne 0 ]; then
-      echo "MEMBER $imem : FAIL" > log
+      echo "MEMBER $cmem : FAIL" > log
    else
-      echo "MEMBER $imem : PASS" > log
+      echo "MEMBER $cmem : PASS" > log
    fi
    cat log_old log > log_new
    $NCP log_new $DATATOP/log_all
@@ -130,9 +134,11 @@ for imem in `seq $ENSBEG $ENSEND`; do
 done
 
 ################################################################################
-# Save log
+# Save and echo log
 cd $DATATOP
 $NCP log_all $EOMGGRP
+echo "Status of ensemble members in group $ENSGRP:"
+cat $EOMGGRP
 
 ################################################################################
 # If any members failed, error out

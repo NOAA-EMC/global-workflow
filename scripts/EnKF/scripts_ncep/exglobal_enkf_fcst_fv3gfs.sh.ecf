@@ -164,18 +164,19 @@ fi
 rc=0
 for imem in `seq $ENSBEG $ENSEND`; do
 
-   export MEMBER=$imem
+   cmem=`printf %03i $imem`
+   memchar="mem$cmem"
+
+   echo "Processing MEMBER: $cmem"
 
    skip_mem="NO"
    if [ -f $EFCSGRP ]; then
-      memstat=`cat $EFCSGRP | grep "MEMBER $MEMBER" | grep "PASS" | wc -l`
+      memstat=`cat $EFCSGRP | grep "MEMBER $cmem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
       ra=0
    fi
 
    if [ $skip_mem = "NO" ]; then
-
-     memchar="mem"`printf %03i $MEMBER`
 
      ra=0
      if [ $warm_start = ".true." ]; then
@@ -188,6 +189,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
      fi
 
      if [ $ra -eq 0 ]; then
+        export MEMBER=$imem
         export DATA=$DATATOP/$memchar
         if [ -d $DATA ]; then rm -rf $DATA; fi
         $FORECASTSH
@@ -197,7 +199,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
      # Notify a member forecast failed, freeze epos, but continue on to next member
      if [ $ra -ne 0 ]; then
-        msg="forecast of member $MEMBER FAILED"
+        msg="forecast of member $cmem FAILED"
         print $msg
         [[ $SENDECF = "YES" ]] && ecflow_client --abort=$msg
      fi
@@ -219,9 +221,9 @@ for imem in `seq $ENSBEG $ENSEND`; do
    rm log
    $NCP $DATATOP/log_all ./log_old
    if [ $ra -ne 0 ]; then
-      echo "MEMBER $MEMBER : FAIL" > log
+      echo "MEMBER $cmem : FAIL" > log
    else
-      echo "MEMBER $MEMBER : PASS" > log
+      echo "MEMBER $cmem : PASS" > log
    fi
    cat log_old log > log_new
    $NCP log_new $DATATOP/log_all
@@ -229,9 +231,11 @@ for imem in `seq $ENSBEG $ENSEND`; do
 done
 
 ################################################################################
-# Save log
+# Save and echo log
 cd $DATATOP
 $NCP log_all $EFCSGRP
+echo "Status of ensemble members in group $ENSGRP:"
+cat $EFCSGRP
 
 ################################################################################
 # If any members failed, error out
