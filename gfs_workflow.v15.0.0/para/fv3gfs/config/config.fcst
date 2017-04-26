@@ -1,0 +1,64 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.fcst ##########
+# Forecast specific
+
+echo "BEGIN: config.fcst"
+
+# Task and thread configuration
+export wtime_fcst="00:04:00"
+export wtime_fcst_gfs="00:15:00"
+export npe_fcst=192 # This is model resolution dependent and is derived as: $layout_x * $layout_y * ntiles (6)
+export npe_node_fcst=12
+
+export FORECASTSH="$BASE_GSM/scripts/exglobal_fcst_fv3gfs.sh.ecf"
+export FCSTEXECDIR="$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin"
+export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
+export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+export nth_fv3=2
+
+# Model configuration
+export TYPE="hydro"
+export MONO="mono"
+
+# Disable the use of coupler.res; read from input.nml
+export USE_COUPLER_RES="NO"
+
+# Model resolution dependent parameters (below for C192)
+export DELTIM=900
+export layout_x=4
+export layout_y=8
+export cdmbgwd="0.25,2.0"        # mountain blocking and gravity wave drag
+
+if [ $CDUMP = "gdas" ]; then # GDAS cycle specific parameters
+
+    # Variables used in DA cycling
+    export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
+
+    # Write restart files at next assimilation time
+    export restart_secs=`echo "6 * 60 * 60" | bc`
+
+elif [ $CDUMP = "gfs" ]; then # GFS cycle specific parameters
+
+    # Write more variables to output
+    export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table"
+
+fi
+
+# Remap tiles to global latlon grid in NetCDF
+export REMAPSH="$BASE_GSM/ush/fv3gfs_remap.sh"
+export master_grid="0p5deg" # 1deg 0p5deg 0p25deg 0p125deg etc
+export npe_remap=$npe_fcst
+export nth_remap=2
+
+# Global latlon NetCDF to nemsio utility parameters
+export NC2NEMSIOSH="$BASE_GSM/ush/fv3gfs_nc2nemsio.sh"
+
+echo "END: config.fcst"

@@ -1,0 +1,19 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+CONFIG_DIR="."
+[[ $# -eq 1 ]] && CONFIG_DIR=$1
+
+configs="base anal fcst post arch eobs eupd ecen efcs epos earc"
+for config in $configs; do
+    CONFIG=$CONFIG_DIR/config.$config
+    set -a; . $CONFIG; set +a
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done

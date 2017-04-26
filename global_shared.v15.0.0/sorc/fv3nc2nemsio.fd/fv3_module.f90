@@ -305,7 +305,7 @@ end subroutine    fv3_netcdf_read_3d
 
   end subroutine define_nemsio_meta
 
-  subroutine nems_write_init(datapath,filename_base,analdate,meta_nemsio,gfile)
+  subroutine nems_write_init(datapath,filename_base,meta_nemsio,gfile)
  
    
     implicit none
@@ -314,12 +314,11 @@ end subroutine    fv3_netcdf_read_3d
     character(len=200)                                               :: datapath
     character(len=100)                                               :: filename_base
     character(len=400)                                               :: filename
-    character(len=10)                                                :: analdate
     type(nemsio_gfile)                                               :: gfile
     integer                                                          :: nemsio_iret
     integer                                                          :: i, j, k
 
-    write(filename,500) trim(datapath)//'/'//trim(filename_base)//'.'//analdate//'_FHR',meta_nemsio%nfhour
+    write(filename,500) trim(datapath)//'/'//trim(filename_base)
 500 format(a,i3.3)
     print*,trim(filename)
     call nemsio_init(iret=nemsio_iret)

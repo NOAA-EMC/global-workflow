@@ -33,10 +33,13 @@ export DATA=${DATA:-$(pwd)}
 export BASE_GSM=${BASE_GSM:-/nwprod}
 export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
 
-export ATMGES=${ATMGES:-"atmanl"}
-export ATMANL=${ATMANL:-"atmf006"}
-export ATMINC=${ATMINC:-"atminc"}
+export ATMGES=${1:-${ATMGES:-"atmf006"}}
+export ATMANL=${2:-${ATMANL:-"atmanl"}}
+export ATMINC=${3:-${ATMINC:-"atminc"}}
 export DEBUG=${CALC_INCREMENT_DEBUG:-".true."}
+
+export APRUN=${APRUN_CALC_INCREMENT:-${APRUN:-""}}
+export NTHREADS=${NTHREADS_CALC_INCREMENT:-${NTHREADS:-1}}
 
 #-------------------------------------------------------
 # IO specific parameters and error traps
@@ -59,7 +62,8 @@ cat > calc-increment.input << EOF
 EOF
 
 #------------------------------------------------------------------
-$CALC_INCREMENT_EXEC
+export OMP_NUM_THREADS=$NTHREADS
+$APRUN $CALC_INCREMENT_EXEC
 
 export ERR=$?
 export err=$ERR

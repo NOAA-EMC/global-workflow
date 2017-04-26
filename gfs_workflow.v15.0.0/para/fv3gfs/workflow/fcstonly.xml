@@ -1,0 +1,154 @@
+    <!-- BEGIN: Forecast only workflow -->
+
+    <!-- BEGIN: GETICS -->
+    <task name="getics" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/getics.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_getics_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_GETICS;</queue>
+        &RESOURCES_GETICS;
+        <walltime>&WALLTIME_GETICS;</walltime>
+        <native>&NATIVE_GETICS;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/getics.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <!-- Not necessary to add some dependency here -->
+            <false></false>
+        </dependency>
+
+    </task>
+    <!-- END: GETICS -->
+
+    <!-- BEGIN: CHGRES -->
+    <task name="chgres" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/chgres.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_chgres_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_CHGRES;</queue>
+        &RESOURCES_CHGRES;
+        <walltime>&WALLTIME_CHGRES;</walltime>
+        <native>&NATIVE_CHGRES;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/chgres.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <taskdep task="getics"/>
+        </dependency>
+
+    </task>
+    <!-- END: CHGRES -->
+
+    <!-- BEGIN: FCST -->
+    <task name="fcst" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/fcst.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_fcst_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_FCST;</queue>
+        &RESOURCES_FCST;
+        <walltime>&WALLTIME_FCST;</walltime>
+        <native>&NATIVE_FCST;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/fcst.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <taskdep task="chgres"/>
+        </dependency>
+
+    </task>
+    <!-- END: FCST -->
+
+    <!-- BEGIN: POST -->
+    <task name="post" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/post.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_post_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_POST;</queue>
+        &RESOURCES_POST;
+        <walltime>&WALLTIME_POST;</walltime>
+        <native>&NATIVE_POST;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/post.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <taskdep task="fcst"/>
+        </dependency>
+
+    </task>
+    <!-- END: POST -->
+
+    <!-- BEGIN: VRFY -->
+    <task name="vrfy" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/vrfy.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_vrfy_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_VRFY;</queue>
+        &RESOURCES_VRFY;
+        <walltime>&WALLTIME_VRFY;</walltime>
+        <native>&NATIVE_VRFY;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/vrfy.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <taskdep task="post"/>
+        </dependency>
+
+    </task>
+    <!-- END: VRFY -->
+
+    <!-- BEGIN: ARCH -->
+    <task name="arch" cycledefs="fcstonly" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/arch.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_arch_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_ARCH;</queue>
+        &RESOURCES_ARCH;
+        <walltime>&WALLTIME_ARCH;</walltime>
+        <native>&NATIVE_ARCH;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/arch.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMP;
+
+        <dependency>
+            <taskdep task="vrfy"/>
+        </dependency>
+
+    </task>
+    <!-- END: ARCH -->
+
+    <!-- END: Forecast only workflow -->
