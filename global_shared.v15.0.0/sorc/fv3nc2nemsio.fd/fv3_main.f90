@@ -36,7 +36,7 @@ program fv3_main
    nargs=iargc()
    IF (nargs .NE. 10) THEN
       print*,'usage fv3_interface analdate ifhr fhzh fhour  inpath infile2d infile3d outpath,outfile,nhcase'
-      STOP
+      STOP 1
    ENDIF
    call getarg(1,analdate)
    call getarg(2,cfhr)
@@ -53,7 +53,7 @@ program fv3_main
    read(nhcase,'(i2.1)')  nhcas
    read(cfhr,'(i5.1)')  ifhr
    read(cfhzh,'(i5.1)')  fhzh 
-   read(cfhour,'(f10.4)')  fhour 
+   read(cfhour,*)  fhour 
    read(analdate(1:4),'(i4)')  YYYY
    read(analdate(5:6),'(i2)')  MM
    read(analdate(7:8),'(i2)')  DD
@@ -83,30 +83,30 @@ program fv3_main
 
     stat = nf90_inq_dimid(ncid2d,'time',varid)
     if (stat .NE.0) print*,stat,varid
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_inquire_dimension(ncid2d,varid,len=ntimes)
     if (stat .NE.0) print*,stat,ntimes
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     allocate(fhours(ntimes))
     stat = nf90_inq_varid(ncid2d,'time',varid)
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_get_var(ncid2d,varid,fhours)
     if (stat .NE.0) print*,stat,fhours
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     
     stat = nf90_inq_dimid(ncid3d,'grid_xt',varid)
     if (stat .NE.0) print*,stat,varid
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_inquire_dimension(ncid3d,varid,len=nlons)
     if (stat .NE.0) print*,stat,nlons
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     allocate(lons(nlons))
     allocate(tmp1d(nlons))
     stat = nf90_inq_varid(ncid3d,'grid_xt',varid)
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_get_var(ncid3d,varid,tmp1d)
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
 
     lons=real(tmp1d,kind=4)
     !print*,lons(1),lons(3072)
@@ -114,17 +114,17 @@ program fv3_main
     
     stat = nf90_inq_dimid(ncid3d,'grid_yt',varid)
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_inquire_dimension(ncid3d,varid,len=nlats)
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     allocate(lats(nlats))
     allocate(tmp1d(nlats))
     allocate(tmp1dx(nlats))
     stat = nf90_inq_varid(ncid3d,'grid_yt',varid)
     stat = nf90_get_var(ncid3d,varid,tmp1dx,start=(/1/),count=(/nlats/))
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
      do j=1,nlats
       tmp1d(j)=tmp1dx(nlats-j+1)
      enddo
@@ -134,10 +134,10 @@ program fv3_main
     
     stat = nf90_inq_dimid(ncid3d,'pfull',varid)
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     stat = nf90_inquire_dimension(ncid3d,varid,len=nlevs)
     if (stat .NE.0) print*,stat
-    if (stat .NE. 0) STOP
+    if (stat .NE. 0) STOP 1
     
    call define_nemsio_meta(meta_nemsio,nlons,nlats,nlevs,nvar2d,nvar3d,lons,lats)
 
@@ -163,10 +163,10 @@ program fv3_main
    if (fhour .ne.  fhours(ifhr) )then
     print*, 'requested ',fhour, ' not equal to fhours(ifhr) ', fhours(ifhr)
     print*, 'abort ! '                                       
-    stop
+    stop 1
    endif
 
-   call nems_write_init(outpath,outfile,analdate,meta_nemsio,gfile)
+   call nems_write_init(outpath,outfile,meta_nemsio,gfile)
 ! read in all of the 2d variables   and write out
    print*,'calling write',meta_nemsio%rlat_min,meta_nemsio%rlat_max
    print*,'lats',minval(meta_nemsio%lat),maxval(meta_nemsio%lat)
@@ -201,7 +201,7 @@ program fv3_main
          call nems_write(gfile,name3dout(i),levtype,nlevs-k+1,nlons*nlats,tmp2d(:,:),stat)
 	 IF (stat .NE. 0) then
              print*,'error writing ,named3dout(i)',stat
-             STOP
+             STOP 1
          ENDIF    
       ENDDO
    ENDDO

@@ -19,7 +19,10 @@ export CKND=$(echo $CSTEP|cut -c5-)
 export machine=${machine:-WCOSS}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 eval export DATA=$DATATMP
-rm -rf $DATA||exit 1;mkdir -p $DATA||exit 1;cd $DATA||exit 1
+if [ $DATA != $COMROT ]; then
+ rm -rf $DATA||exit 1;mkdir -p $DATA||exit 1
+fi
+cd $DATA||exit 1
 chmod ${permission:-755} $DATA
 #
 export PBEG=${PBEG:-$SHDIR/pbeg}
@@ -49,6 +52,6 @@ if [[ $? -ne 0 ]];then $PERR;exit 1;fi
 
 ################################################################################
 # Exit gracefully
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+if [ ${KEEPDATA:-NO} != YES -a $DATA != $COMROT ] ; then rm -rf $DATA ; fi
 $PEND
 

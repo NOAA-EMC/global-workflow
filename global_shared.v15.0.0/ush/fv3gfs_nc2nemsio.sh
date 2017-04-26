@@ -1,4 +1,4 @@
-#!/bin/ksh 
+#!/bin/ksh
 set -x
 #----------------------------------------------------------------------------
 #--Fanglin Yang, October 2016: convert FV3 NetCDF files to NEMSIO format.
@@ -8,70 +8,64 @@ set -x
 #    X(1,1)=[0.25E,89.75S], X(nlon,nlat)=[359.75E,89.75N]
 #---------------------------------------------------------------------------
 
-##. $MODULESHOME/init/sh 2>>/dev/null
-##module load PrgEnv-intel 2>>/dev/null
+export CDATE=${CDATE:-"2016100300"}
+export GG=${master_grid:-"0p25deg"}         # 1deg 0p5deg 0p25deg 0p125deg
+export FHZER=${FHZER:-6}                    # accumulation bucket in hours
+export fdiag=${fdiag:-"none"}               # specified forecast output hours
 
-export CDATE=${CDATE:-2016100300}
-export CASE=${CASE:-C192}                 ;#C48 C96 C192 C384 C768 C1152 C3072
-export GG=${master_grid:-0p25deg}         ;#1deg 0p5deg 0p25deg 0p125deg     
-export FHMAX=${FHMAX:-240}             
-export FHOUT=${FHOUT:-6}             
-export FHZER=${FHZER:-6}                  ;#accumulation bucket in hours             
-export NFCST=${NFCST:-$((FHMAX/FHOUT+1))} ;#number of forecatsts included in netCDF file
-export fdiag=${fdiag:-none}               ;#specified forecast output hours
+pwd=$(pwd)
+export DATA=${DATA:-$pwd}
+export NWPROD=${NWPROD:-$pwd}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
+export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$BASE_GSM/exec/fv3nc2nemsio.x}
 
 cycn=`echo $CDATE | cut -c 9-10`
 export TCYC=${TCYC:-".t${cycn}z."}
 export CDUMP=${CDUMP:-gfs}
+
+export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 export SUFFIX=${SUFFIX:-".nemsio"}
 
-export PSLOT=${PSLOT:-fv3gfs}
-export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export MEMDIR=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
-export BASE_GSM=${BASE_GSM:-/nwprod2/global_shared.v15.0.0}
-export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$BASE_GSM/exec/fv3nc2nemsio.x}
 #--------------------------------------------------
-cd $MEMDIR ||exit 8
-err=0
-input_dir=$MEMDIR
-output_dir=$MEMDIR
+cd $DATA || exit 8
 
-#in_3d=${CASE}_${CDATE}.nggps3d.${GG}.nc
-#in_2d=${CASE}_${CDATE}.nggps2d.${GG}.nc
-in_3d=${CDUMP}${TCYC}nggps3d.${GG}.nc 
-in_2d=${CDUMP}${TCYC}nggps2d.${GG}.nc 
+input_dir=$DATA
+output_dir=$DATA
+
+in_3d=${PREFIX}nggps3d.${GG}.nc
+in_2d=${PREFIX}nggps2d.${GG}.nc
 if [ ! -s $in_3d -o ! -s $in_2d ]; then
- echo "$in_3d and $in_2d are missing. exit"
- exit 1
+  echo "$in_3d and $in_2d are missing. exit"
+  exit 1
 fi
 
 #--check if the output is from non-hydrostatic case
-nhrun=$(ncdump -c $in_3d |grep nhpres)
+nhrun=$(ncdump -c $in_3d | grep nhpres)
 nhcase=$?
 
-if [ $fdiag = none ]; then
- fdiag=$( for (( num=1; num<=$NFCST; num++ )); do printf "%d," $(((num-1)*FHOUT)); done )
-fi
+# If no information on the time interval is given, deduce from the netCDF file
+[[ $fdiag = "none" ]] && fdiag=$(ncks -H -s "%g " -C -v time $in_3d)
+
 #---------------------------------------------------
 nt=0
-for fhour in $(echo $fdiag | sed "s?,? ?g"); do
-#---------------------------------------------------
+err=0
+for fhour in $(echo $fdiag | sed "s/,/ /g"); do
    nt=$((nt+1))
-   ifhour=$(printf "%09d" $fhour)              ;#convert to integer
-   fhzh=$(( (ifhour/FHZER-1)*FHZER ))          ;#bucket accumulation starting hour
-   if [ $fhzh -lt 0 ]; then fhzh=0; fi
-   outheader=${CASE}_nemsio${GG}
-   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outheader $nhcase
-   err=$?
+   ifhour=$(printf "%09d" $fhour)              # convert to integer
+   fhzh=$(( (ifhour/FHZER-1)*FHZER ))          # bucket accumulation starting hour
+   [[ $fhzh -lt 0 ]] && fhzh=0
 
-   fhr=$((fhour+0))
-   if [ $fhr -lt 100 ]; then fhr=0$fhr; fi
-   if [ $fhr -lt 10 ];  then fhr=0$fhr; fi
-   if [ $fhr -lt 1 ];   then fhr=000;   fi
-   outtmp=${outheader}.${CDATE}_FHR${fhr}
-   outfile=${CDUMP}${TCYC}atmf${fhr}${SUFFIX}
-   mv $outtmp $outfile
+   fhr=$(printf "%03d" $fhour)
+   outfile=${PREFIX}atmf${fhr}${SUFFIX}
+
+   $NC2NEMSIOEXE $CDATE $nt $fhzh $fhour $input_dir $in_2d $in_3d $output_dir $outfile $nhcase
+   rc=$?
+   ((err+=rc))
+
+   [[ ! -f $outfile ]] && ((err+=1))
+
 done
 
+#---------------------------------------------------
 echo $(date) EXITING $0 with return code $err >&2
 exit $err

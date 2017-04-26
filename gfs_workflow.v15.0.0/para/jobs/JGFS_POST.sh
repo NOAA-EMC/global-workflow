@@ -1,71 +1,75 @@
 #!/bin/ksh
-###BSUB -L /bin/sh
-###BSUB -P GFS-T2O
-###BSUB -e log.nceppost                             
-###BSUB -o log.nceppost                             
-###BSUB -J nceppost                  
-###BSUB -q dev     
-###BSUB -M 3072
-###BSUB -W 10:00
-###BSUB -extsched 'CRAYLINUX[]' 
 set -x
-
-export machine=${machine:-WCOSS_C}
-##if [ $machine = WCOSS_C ]; then 
-## . $MODULESHOME/init/sh 2>>/dev/null
-## module load PrgEnv-intel cray-mpich prod_util prod_envir grib_util/1.0.3 2>>/dev/null
-## module load cfp-intel-sandybridge crtm-intel/2.2.4 g2tmpl-intel/1.4.0 2>>/dev/null
-##fi
 
 #--------------------------------------------------------------------
 #--Fanglin Yang, December 2016
 #  Running NCEP Unified Post to process FV3GFS forecasts.
+#  Rahul Mahajan, April 2017
+#  Running NCEP Unified Post to process FV3GFS analysis.
 #--------------------------------------------------------------------
 
-export CDATE=${CDATE:-2016100300}
+export CDATE=${CDATE:-"2016100300"}
 export CDUMP=${CDUMP:-gfs}
-export CASE=${CASE:-C192}              ;#C48 C96 C192 C384 C768 C1152 C3072
-export GG=${master_grid:-0p25deg}      ;#1deg 0p5deg 0p25deg 0p125deg
-export FHMAX=${FHMAX:-240}
-export FHOUT=${FHOUT:-6}
-export NFCST=${NFCST:-$((FHMAX/FHOUT+1))} ;#number of forecatsts included in netCDF file
-export fdiag=${fdiag:-none}               ;#specified forecast output hours 
-export REMAP_GRID=${REMAP_GRID:-latlon}   ;#input grid type, lat-lon or gaussian 
 
-export PSLOT=${PSLOT:-fv3gfs}
-export PTMP=${PTMP:-/gpfs/hps/ptmp}
-export COMROT=${MEMDIR:-$PTMP/$LOGNAME/pr${PSLOT}}
-export BASEDIR=${BASEDIR:-${NWROOThps:-/nwprod}/gfs_workflow.v15.0.0/para}
-export BASE_GSM=${BASE_GSM:-${NWROOThps:-/nwprod}/global_shared.v15.0.0}
+# Forecast specific variables
+export GG=${master_grid:-"0p25deg"}         # 1deg 0p5deg 0p25deg 0p125deg
+export REMAP_GRID=${REMAP_GRID:-"latlon"}   # input grid type, lat-lon or gaussian; relevant to forecast
 
-#export NODES=4
-#export max_core=${pe_node:-24}
-#export thread=${thread:-1}
-##export npe_node=$((max_core/thread))
-#export npe_node_po=8                     
-#export npes=$((NODES*npe_node_po))
-#export APRUN_loc="aprun -n $npes -N $npe_node_po -j 1 -d $thread -cc depth"
-export APRUN=${APRUN_NP:-""}
-#-------------------------------------------------------------------
+# Process analysis file only
+export ANALYSIS_POST=${ANALYSIS_POST:-"NO"}
 
-export PDY=`echo $CDATE|cut -c 1-8`
-export cyc=`echo $CDATE|cut -c 9-10`
-export TCYC=${TCYC:-".t${cyc}z."}
-export SUFFIX=${SUFFIX:-".nemsio"}
-export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
+pwd=$(pwd)
+export NWPROD=${NWPROD:-$pwd}
+export COMROT=${COMROT:-$pwd}
+export COMOUT=${COMOUT:-${COMROT:-$pwd}}
+export BASEDIR=${BASEDIR:-$NWPROD}   # gfs_workflow.v15.0.0/para
+export BASE_GSM=${BASE_GSM:-$NWPROD} # global_shared.v15.0.0
+
+export ver=v15.0.0
+export nemsioget=${nemsioget:-${NEMSIOGET:-$NWPROD/util/exec/nemsio_get}}
+export HOMEglobal=${BASE_POST:-$NWPROD}
+export EXECglobal=$HOMEglobal/exec
+export USHglobal=$HOMEglobal/ush
+export USHgfs=$HOMEglobal/ush
+export PARMglobal=$HOMEglobal/parm
+export FIXglobal=$BASE_GSM/fix
+export NWROOTprod=$NWROOT
+export ens=NO
+
+export POSTGPEXEC=${POSTGPEXEC:-$HOMEglobal/exec/ncep_post}
+export POSTGPSH=${POSTGPSH:-$HOMEglobal/ush/global_nceppost.sh}
+export POSTGRB2TBL=${POSTGRB2TBL:-$NWPROD/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new}
+export MODEL_OUT_FORM=${MODEL_OUT_FORM:-"binarynemsiompiio"}
+
+export APRUN=${APRUN_NP:-${APRUN:-""}}
+
+export GFSDOWNSH=${GFSDOWNSH:-$BASEDIR/ush/gfs_downstream_nems.sh}
+export GFSDWNSH=${GFSDWNSH:-$BASEDIR/ush/gfs_dwn_nems.sh}
+export PARM_SIB=${PARM_SIB:-$BASE_GSM/parm}
+export APRUN_DWN=${APRUN_DWN:-${APRUN:-""}}
 
 ####################################
 # Specify RUN Name and model
 ####################################
-export envir=prod
-export NET=fv3
-export RUN=gfs
+export envir=${envir:-"prod"}
+export NET=${NET:-"fv3"}
+export RUN=${RUN:-${CDUMP:-gfs}}
 
-export DATA=${DATA:-${DATATMP:-$PTMP/$LOGNAME/${PSLOT}post}}                             
+# Set cycle time and date parameters
+export PDY=`echo $CDATE | cut -c1-8`
+export cyc=`echo $CDATE | cut -c9-10`
+export TCYC=${TCYC:-".t${cyc}z."}
+export SUFFIX=${SUFFIX:-".nemsio"}
+export PREFIX=${PREFIX:-${RUN}${TCYC}}
+
+####################################
+# Specify Execution Areas
+####################################
+
+export DATA=${DATA:-${DATATMP:-${pwd}$$}}
 export COMIN=$DATA
-export COMOUT=${MEMDIR:-$COMROT}
 if [ ! -s $DATA ]; then mkdir -p $DATA ; fi
-cd $DATA ||exit 8
+cd $DATA || exit 8
 rm -f ${DATA}/*
 
 ####################################
@@ -83,53 +87,14 @@ export RERUN=NO
 export VERBOSE=YES
 
 ####################################
-# Specify Execution Areas
-####################################
-export ver=v15.0.0
-export nemsioget=${nemsioget:-/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get}
-export HOMEglobal=${BASE_POST:-$BASE_GSM}                     
-export EXECglobal=$HOMEglobal/exec
-export USHglobal=$HOMEglobal/ush
-export USHgfs=$HOMEglobal/ush
-export PARMglobal=$HOMEglobal/parm
-export FIXglobal=$BASE_GSM/fix
-export NWROOTprod=$NWROOT
-export ens=NO
-
-
-
-####################################
 # Specify Special Post Vars
 ####################################
 export IGEN_ANL=81
 export IGEN_FCST=96
 export POSTGPVARS="KPO=47,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,30.,20.,10.,7.,5.,3.,2.,1.,"
 
-
-if [ $fdiag = none ]; then
- fdiag=$( for (( num=1; num<=$NFCST; num++ )); do printf "%d," $(((num-1)*FHOUT)); done )
-fi
-#---------------------------------------------------
-for fhour in $(echo $fdiag | sed "s?,? ?g"); do
-#---------------------------------------------------
-export post_times=$(printf "%03d" $fhour)
-
-#######################################
-# Specify Restart File Name to Key Off
-#######################################
-# export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
-export restart_file=$COMROT/${PREFIX}atmf
-
-export NEMSINP=$COMIN/${PREFIX}atmf${post_times}${SUFFIX}     
-export FLXINP=$COMIN/${PREFIX}flxf${post_times}${SUFFIX}       
-ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX}  $NEMSINP                                      
-ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX}  $FLXINP                                      
-
-if [ $REMAP_GRID = latlon ]; then
- export IDRT=0
-else
- export IDRT=4
-fi
+export OUTTYP=4
+export GRIBVERSION=grib2
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -141,63 +106,144 @@ fi
 export SLEEP_TIME=900
 export SLEEP_INT=5
 
-export OUTTYP=4
-export GRIBVERSION=grib2
-export res=$GG
+# Add a return error code to track success
+# Note: This script will always return with 0 status because
+# exgfs_nceppost.sh always returns with non-zero (Genius!).
+# I won't go fix exgfs_nceppost.sh
+err=0
 
+#---------------------------------------------------
+# work on analysis file
+if [ $ANALYSIS_POST = "YES" ]; then
+
+  export IGEN_GDAS_ANL=82
+  export IDRT=4
+
+  export flist="$COMROT/${PREFIX}atmanl${SUFFIX}"
+  export post_times="anl"
+  
+  export restart_file=$COMROT/${PREFIX}atmanl${SUFFIX}
+  ln -fs $COMROT/${PREFIX}atmanl${SUFFIX}  $COMIN/${PREFIX}atmanl${SUFFIX}
+  ln -fs NULL                              $COMIN/${PREFIX}flxanl${SUFFIX}
+  ln -fs NULL                              $COMIN/${PREFIX}sfcanl${SUFFIX}
+  
+  export NEMSINP=$COMIN/${PREFIX}atmanl${SUFFIX}
+  export FLXINP=$COMIN/${PREFIX}flxanl${SUFFIX}
+  
+  $HOMEglobal/scripts/exgfs_nceppost.sh.ecf
+  rc=$?
+  echo $rc
+  
+  #--rename master grib2 following parallel convention
+  export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2anl
+  export PGBOUT2_ops_idx=$COMOUT/${PREFIX}master.grb2ianl
+  export PGBOUT2=$COMOUT/pgrbm${post_times}.${RUN}.${CDATE}.grib2
+  export PGBOUT2_idx=$COMOUT/pgrbm${post_times}.${RUN}.${CDATE}.grib2.idx
+  mv $PGBOUT2_ops $PGBOUT2
+  mv $PGBOUT2_ops_idx $PGBOUT2_idx
+  
+  # call down-stream job
+  if [ $GFS_DOWNSTREAM = "YES" ]; then
+    export FH=-1
+    $GFSDOWNSH
+    rc=$?
+    echo $rc
+  fi
+
+  [[ ${KEEPDATA:-"YES"} = "YES" ]] && rm -rf $DATA
+  exit $err
+
+fi
+#---------------------------------------------------
+
+#---------------------------------------------------
+# Now work on forecast files
+
+# Parameters dependent on REMAP_GRID
+if [ $REMAP_GRID = "latlon" ]; then
+   export IDRT=0
+else
+   export IDRT=4
+fi
+
+####################################
+# Specify resolution dependent parameters
+####################################
 if [ $IDRT -eq 0 ] ; then
-# 0.125 deg
-  if [ $res = "0p125deg" ] ; then
+   # 0.125 deg
+  if [ $GG = "0p125deg" ] ; then
     export LONB=2880
     export LATB=1440
-# 0.25 deg
-  elif [ $res = "0p25deg" ] ; then
+  # 0.25 deg
+  elif [ $GG = "0p25deg" ] ; then
     export LONB=1440
     export LATB=720
-# 0.5 deg
-  elif [ $res = "0p50deg" ] ; then
+  # 0.5 deg
+  elif [ $GG = "0p50deg" ] ; then
     export LONB=720
     export LATB=360
   fi
 fi
 
-export POSTGPEXEC=${POSTGPEXEC:-$HOMEglobal/exec/ncep_post}
-export POSTGPSH=${POSTGPSH:-$HOMEglobal/ush/global_nceppost.sh}
-export POSTGRB2TBL=${POSTGRB2TBL:-/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new}     
-export MODEL_OUT_FORM=binarynemsiompiio
 
-$HOMEglobal/scripts/exgfs_nceppost.sh.ecf
+#---------------------------------------------------
+# Get a list of forecast files that are to be worked on
+if [ $REMAP_GRID = "latlon" ]; then
+   export flist=`ls -1 $COMROT/${PREFIX}atmf???${SUFFIX}`
+else
+   export flist=`ls -1 $COMROT/gfn${PDY}${cyc}.${RUN}.fhr???`
+fi
 
-#--rename master grib2 following parallel convention
-export PGBOUT2=$COMOUT/${PREFIX}master.grb2f${post_times}
-export PGBOUT2_idx=$COMOUT/${PREFIX}master.grb2if${post_times}
-#export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2f${post_times}
-#export PGBOUT2_ops_idx=$COMOUT/${PREFIX}master.grb2if${post_times}
-#export PGBOUT2=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2
-#export PGBOUT2_idx=$COMOUT/pgrbm${post_times}.gfs.${CDATE}.grib2.idx
-#mv $PGBOUT2_ops $PGBOUT2
-#mv $PGBOUT2_ops_idx $PGBOUT2_idx
+#---------------------------------------------------
+# Loop over files
+for fname in $flist; do
 
-########################
-# call down-stream jobs 
-########################
-#export APRUN_DWN="aprun -n 32 -N 8 -j 1 -d 3 cfp"
-export APRUN_DWN=${APRUN_DWN:-""}
-export GFSDOWNSH=${GFSDOWNSH:-$BASEDIR/ush/fv3gfs_downstream_nems.sh}
-export GFSDWNSH=${GFSDWNSH:-$BASEDIR/ush/fv3gfs_dwn_nems.sh}
-export PARM_SIB=${PARM_SIB:-$BASE_GSM/parm}
+   if [ $REMAP_GRID = "latlon" ]; then
+      fname=`basename $fname`
+      export post_times=`echo $fname | cut -d. -f3 | cut -c5-`
+   else
+      export post_times=`echo $fname | rev | cut -c-3 | rev`
+   fi
 
-export FH=`expr $post_times + 0 `
-if [ $FH -lt 10 ]; then export FH=0$FH; fi
-if [ $post_times = anl ]; then export FH=-1 ; fi
+   if [ $REMAP_GRID = "latlon" ]; then
+      export restart_file=$COMROT/${PREFIX}atmf
+      ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
+      ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+   else
+      export restart_file=$COMROT/gfn${PDY}${cyc}.${RUN}.fhr
+      ln -fs $COMROT/gfn${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
+      ln -fs $COMROT/fln${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+   fi
+   export NEMSINP=$COMIN/${PREFIX}atmf${post_times}${SUFFIX}
+   export FLXINP=$COMIN/${PREFIX}flxf${post_times}${SUFFIX}
 
-$GFSDOWNSH
-echo $?
+   $HOMEglobal/scripts/exgfs_nceppost.sh.ecf
+   rc=$?
+   echo $rc
 
-sleep 10
-rm -f ${DATA}/*
-#----------------
+   #--rename master grib2 following parallel convention
+   export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2f${post_times}
+   export PGBOUT2_ops_idx=$COMOUT/${PREFIX}master.grb2if${post_times}
+   export PGBOUT2=$COMOUT/pgrbm${post_times}.${RUN}.${CDATE}.grib2
+   export PGBOUT2_idx=$COMOUT/pgrbm${post_times}.${RUN}.${CDATE}.grib2.idx
+   mv $PGBOUT2_ops $PGBOUT2
+   mv $PGBOUT2_ops_idx $PGBOUT2_idx
+
+   export FH=`expr $post_times + 0`
+   if [ $FH -lt 10 ]; then export FH=0$FH; fi
+
+   # call down-stream jobs
+   if [ $GFS_DOWNSTREAM = "YES" ]; then
+      $GFSDOWNSH
+      rc=$?
+      echo $rc
+   fi
+
+   sleep 10
+   rm -f ${DATA}/*
+
 done
 #----------------
 
-exit
+[[ ${KEEPDATA:-"YES"} = "YES" ]] && rm -rf $DATA
+exit $err

@@ -1,0 +1,20 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.earc ##########
+# Ensemble archive specific
+
+echo "BEGIN: config.earc"
+
+# Task and thread configuration
+export wtime_earc="06:00:00"
+export npe_earc=1
+export npe_node_earc=1
+
+echo "END: config.earc"

@@ -74,7 +74,7 @@ fi
 
 #-----------------------------------------------------
 #-----------------------------------------------------
-if [ $machine = WCOSS -o $machine = THEIA -o $machine = WCOSS_C ]; then
+if [ $machine = WCOSS -o $machine = WCOSS_C ]; then
 #-----------------------------------------------------
 #-----------------------------------------------------
 export nset=1
@@ -133,9 +133,6 @@ date
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
   if [ $machine = WCOSS_C ] ; then
-     launcher=${launcher:-$APRUN_DWN}
-     $launcher $MP_CMDFILE
-  elif [ $machine = THEIA ] ; then
      launcher=${launcher:-$APRUN_DWN}
      $launcher $MP_CMDFILE
   else

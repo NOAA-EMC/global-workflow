@@ -1,6 +1,6 @@
-   module unload intel
-   module load intel/16.1.150
-   module load impi
-   module load hdf5/1.8.14
    module load netcdf/4.3.0
+   module load hdf5/1.8.14
+   setenv HDF5_DIR $HDF5
+   setenv NETCDF_DIR $NETCDF
+   setenv LIBRARY_PATH ${LIBRARY_PATH}:${NETCDF}/lib:${HDF5}/lib
 

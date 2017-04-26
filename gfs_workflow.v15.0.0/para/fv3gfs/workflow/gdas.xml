@@ -1,0 +1,161 @@
+    <!-- BEGIN: Deterministic part of the GDAS workflow -->
+
+    <!-- BEGIN: GDAS PREP -->
+    <task name="prep" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/prep.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_prep_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_PREP;</queue>
+        &RESOURCES_PREP;
+        <walltime>&WALLTIME_PREP;</walltime>
+        <native>&NATIVE_PREP;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/prep.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <taskdep task="post" cycle_offset="-06:00:00"/>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS PREP -->
+
+    <!-- BEGIN: GDAS ANAL -->
+    <task name="anal" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/anal.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_anal_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_ANAL;</queue>
+        &RESOURCES_ANAL;
+        <walltime>&WALLTIME_ANAL;</walltime>
+        <native>&NATIVE_ANAL;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/anal.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <and>
+                <taskdep task="prep"/>
+                @EPOSDEP@
+            </and>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS ANAL -->
+
+    <!-- BEGIN: GDAS FCST -->
+    <task name="fcst" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/fcst.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_fcst_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_FCST;</queue>
+        &RESOURCES_FCST;
+        <walltime>&WALLTIME_FCST;</walltime>
+        <native>&NATIVE_FCST;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/fcst.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <or>
+                <taskdep task="anal"/>
+                <not>
+                    <cycleexistdep cycle_offset="-6:00:00"/>
+                </not>
+            </or>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS FCST -->
+
+    <!-- BEGIN: GDAS POST -->
+    <task name="post" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/post.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_post_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_POST;</queue>
+        &RESOURCES_POST;
+        <walltime>&WALLTIME_POST;</walltime>
+        <native>&NATIVE_POST;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/post.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <taskdep task="fcst"/>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS POST -->
+
+    <!-- BEGIN: GDAS VRFY -->
+    <task name="vrfy" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/vrfy.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_vrfy_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_VRFY;</queue>
+        &RESOURCES_VRFY;
+        <walltime>&WALLTIME_VRFY;</walltime>
+        <native>&NATIVE_VRFY;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/vrfy.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <taskdep task="post"/>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS VRFY -->
+
+    <!-- BEGIN: GDAS ARCH -->
+    <task name="arch" cycledefs="gdas" maxtries="&MAXTRIES;">
+
+        <command>&JOBS_DIR;/arch.sh</command>
+
+        <jobname><cyclestr>&PSLOT;_arch_@H</cyclestr></jobname>
+        <account>&ACCOUNT;</account>
+        <queue>&QUEUE_ARCH;</queue>
+        &RESOURCES_ARCH;
+        <walltime>&WALLTIME_ARCH;</walltime>
+        <native>&NATIVE_ARCH;</native>
+
+        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/arch.log</cyclestr></join>
+
+        &eEXPDIR;
+        &eCDATE;
+        &eCDUMPGDAS;
+
+        <dependency>
+            <taskdep task="vrfy"/>
+        </dependency>
+
+    </task>
+    <!-- END: GDAS ARCH -->
+
+    <!-- END: Deterministic part of the GDAS workflow -->

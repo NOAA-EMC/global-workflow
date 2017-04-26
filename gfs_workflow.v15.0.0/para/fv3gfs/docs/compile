@@ -1,0 +1,22 @@
+#!/bin/ksh -x
+
+machine=${1:-${machine:-"WCOSS_C"}}
+machine=$(echo $machine | tr '[a-z]' '[A-Z]')
+
+if [ $machine = "THEIA" ]; then
+    doxygen=/scratch3/NCEPDEV/hwrf/save/Samuel.Trahan/doxygen-1.8.10/bin/doxygen
+elif [ $machine = "WCOSS_C" ]; then
+    doxygen=/gpfs/hps/emc/hwrf/noscrub/soft/doxygen-1.8.10/bin/doxygen
+elif [ $machine = "WCOSS" ]; then
+    doxygen=/hwrf/noscrub/soft/doxygen-1.8.10/bin/doxygen
+elif [ $machine = "JET" ]; then
+    doxygen=/contrib/doxygen/1.8.10/bin/doxygen
+else
+    echo "machine $machine is unrecognized, ABORT!"
+    echo "try system doxygen"
+    doxygen=`which doxygen`
+fi
+
+$doxygen
+status=$?
+exit $status

@@ -1,0 +1,19 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.prep ##########
+# Prep step specific
+
+echo "BEGIN: config.prep"
+
+export wtime_prep="00:05:00"
+export npe_prep=1
+export npe_node_prep=1
+
+echo "END: config.prep"

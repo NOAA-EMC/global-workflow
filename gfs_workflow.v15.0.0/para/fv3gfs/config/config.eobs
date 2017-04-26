@@ -1,0 +1,32 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.eobs config.eomg ##########
+# Ensemble innovation specific, dependency config.anal
+
+echo "BEGIN: config.eobs"
+
+# Task and thread configuration
+export wtime_eobs="00:10:00"
+export wtime_eomn="01:00:00"
+export npe_eobs=144
+export npe_node_eobs=6
+export memory_eobs="3072M"
+
+export INVOBSSH="$BASE_GSI/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
+export ENKFINVOBSSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
+export NMEM_ENKF_GRP=10
+export npe_gsi=$npe_eobs
+export nth_gsi=4
+
+# GSI namelist options related to observer for EnKF
+export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0"
+export OBSQC_INVOBS="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+
+echo "END: config.eobs"
