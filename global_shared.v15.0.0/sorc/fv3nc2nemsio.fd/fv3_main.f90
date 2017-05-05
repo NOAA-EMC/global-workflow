@@ -160,7 +160,8 @@ program fv3_main
    meta_nemsio%nfhour= fhours(ifhr)
    meta_nemsio%fhour= fhours(ifhr)
    print*,fhours(ifhr),ifhr,'calling netcdf read'
-   if (fhour .ne.  fhours(ifhr) )then
+!--for ifhr=1, fhours=dt but fhour=00 if diag is determined by FHOUT
+   if (fhour .ne.  fhours(ifhr) .and. ifhr.gt.1 )then
     print*, 'requested ',fhour, ' not equal to fhours(ifhr) ', fhours(ifhr)
     print*, 'abort ! '                                       
     stop 1

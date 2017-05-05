@@ -5,8 +5,63 @@
 -----------------------------------------------------------
 -----------------------------------------------------------
 
+=============================================================
+Instruction for Running Forcast-Only Experiments Using 
+NEMS FV3GFS with Q7FY17 NEMS GSM Analyses, V3.0
+May 2017
+=============================================================
+
+The workflow has been updated to run the NEMS FV3GFS instead 
+of the stand-alone FV3GFS.  NEMS FV3GFS contains the Interoperable 
+Physics Driver Version 4.0 (IPD4). The Near Sea Surface Temperature
+(NSST) model is now included in IPD4. The forecast-only workflow
+has been tested on WCOSS (Luna and Surge). Minor changes may be 
+required for running forecast-only experiments on Theia.
+
+A prototype Rocoto-based workflow has been developed as well. Please 
+contact Rahul.Mahajan@noaa.gov if users wish to run cycled experiments 
+with data assimilation. Right now it does not support verification.
+
+The instruction given below is for running forecast-only experiments 
+using the traditional psub and pend-based workflow.
+
+1. Check out model https://svnemc.ncep.noaa.gov/projects/nems/apps/NEMSfv3gfs/trunk
+   Use ./trunk/tests/compile.sh to compile for a particular configuration of the model.  
+   /gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs/NEMSfv3gfs/build.sh can 
+   be used to create different executables at once with hydro or non-hydro and 
+   32-bit or 64-bit options.
+   
+2. create a directory on Luna/Surge
+   mkdir -p /gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+   cd  /gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+   Check out the workflow repository from the trunk or a branch you created
+      https://svnemc.ncep.noaa.gov/projects/fv3gfs/trunk
+   
+3. Under either ./trunk  you will find the following directories
+   gfs_workflow.v15.0.0/
+   global_shared.v15.0.0/
+   gdas.v15.0.0/
+   gfs.v15.0.0/
+
+4. goto ./global_shared.v15.0.0/sorc, run "build_all.sh cray or theia" to compile 
+   all utilities.
+
+5. create your experiment directory, for instance
+    mkdir -p /gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/prfv3test
+  
+   then copy all files in ./gfs_workflow.v15.0.0/para/exp_fv3gfs to prfv3test
+
+6. In ./prtest/submit_fv3gfs.sh, change "BASE_SVN" and "tags" to point to your local package.
+    Change "CASE" for model resolution, and "START"/"LAST" for experiment dates.
+    
+7. Use "bsub <submit_fv3gfs.sh" to submit your job. The script will first run CHGRES to create 
+    FV3GFS initial conditions using analyses from NEMS GSM parallel prnemsrn,  then submit a 
+    forecast job.  After fcst completes, the system will automatically submit post, vrfy and arch jobs.
+
+
 =======================================================================================
 Instruction for Running Forcast Experiments with Operational GFS Initial Conditions, V2.0
+March 2017
 =======================================================================================
 
 1. The package so far only works on Cray (Luna and Surge).
@@ -61,6 +116,7 @@ Note: the system is still under development.  Chnages are made frequently and co
 
 ==================
 Instruction V1.0
+December 2016
 ==================
 
 1. The first working version that can be used for creating boundary and initial conditions 

@@ -237,6 +237,8 @@ post)
   nknd=${CKND:-1}
   VRFY_ALL_SEG=${VRFY_ALL_SEG:-NO}
   fmaxn=$(eval echo \${fmax$mfcst})
+  fmax1=$(printf "%03d" $fmax1)
+  fmaxn=$(printf "%03d" $fmaxn)
 
 # Get FHMAX_HF
   pgb_fh_seg5=${pgb_fh_seg5:-240}
@@ -258,14 +260,14 @@ post)
             export REDO_POST=NO
             nextjobs=""
           fi
-        elif [[ -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmax1) && -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmaxn) ]] ; then
+        elif [[ -s $COMROT/${PREFIX}pgrb2.0p25.f$fmax1 && -s $COMROT/${PREFIX}pgrb2.0p25.f$fmaxn ]] ; then
           nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
         else
           export REDO_POST=NO
           nextjobs=""
         fi
       fi
-  elif [[ $nknd -lt $mfcst && $CDUMP = gfs && -s $COMROT/${PREFIX}pgrb2.0p25.f$(eval echo \$fmax$mfcst) ]] ; then
+  elif [[ $nknd -lt $mfcst && $CDUMP = gfs && -s $COMROT/${PREFIX}pgrb2.0p25.f$fmaxn ]] ; then
       nextjobs="$CONFIG,$CDATE,$CDUMP,vrfy"
   fi
   if [[ $nknd -eq 1 && $MANAL = 1 && $CDUMP = $CDFNL ]];then

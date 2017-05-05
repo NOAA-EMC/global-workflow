@@ -16,7 +16,7 @@
  INTEGER             :: FSIZE=65536, INITAL = 0
  INTEGER             :: HEADER_BUFFER_VAL = 16384
 
- REAL(KIND=4)        :: TMP(LEVS_P1,NVCOORD)
+ REAL(KIND=8)        :: TMP(LEVS_P1,NVCOORD)
 
  include "netcdf.inc"
 
@@ -34,7 +34,7 @@
  ERROR = NF_DEF_VAR(NCID, 'ntrac', NF_INT, 0, (/0/), ID_NTRAC)
  CALL NETCDF_ERR(ERROR, 'define var ntrac for file='//TRIM(OUTFILE) )
 
- ERROR = NF_DEF_VAR(NCID, 'vcoord', NF_FLOAT, 2, (/DIM_LEVSP, DIM_NVCOORD/), ID_VCOORD)
+ ERROR = NF_DEF_VAR(NCID, 'vcoord', NF_DOUBLE, 2, (/DIM_LEVSP, DIM_NVCOORD/), ID_VCOORD)
  CALL NETCDF_ERR(ERROR, 'define var vcoord for file='//TRIM(OUTFILE) )   
 
  ERROR = NF__ENDDEF(NCID, HEADER_BUFFER_VAL,4,0,4)
@@ -44,7 +44,7 @@
  CALL NETCDF_ERR(ERROR, 'write var ntrac for file='//TRIM(OUTFILE) )
 
  TMP(1:LEVS_P1,:) = VCOORD(LEVS_P1:1:-1,:)
- ERROR = NF_PUT_VAR_REAL( NCID, ID_VCOORD, TMP)
+ ERROR = NF_PUT_VAR_DOUBLE( NCID, ID_VCOORD, TMP)
  CALL NETCDF_ERR(ERROR, 'write var vcoord for file='//TRIM(OUTFILE) )
 
  ERROR = NF_CLOSE(NCID)
@@ -1169,12 +1169,21 @@
 
  allocate(dummy(imi*jmi))
 
+!-----------------------------------------------------------------------
+! Read land mask.  Note: older file versions use 'slmsk'
+! as the header id.
+!-----------------------------------------------------------------------
+
  call nemsio_readrecv(gfile,recname(1),levtyp,lev, &
            dummy,nframe,iret)
  if (iret /= 0) then
-   print*,"- FATAL ERROR: bad read of landmask record."
-   print*,"- IRET IS ", iret
-   call errexit(113)
+   call nemsio_readrecv(gfile,"slmsk",levtyp,lev, &
+             dummy,nframe,iret)
+   if (iret /= 0) then
+     print*,"- FATAL ERROR: bad read of landmask record."
+     print*,"- IRET IS ", iret
+     call errexit(113)
+   endif
  endif
  mask_input = reshape (dummy, (/imi,jmi/))
 

@@ -231,11 +231,11 @@ if [[ "$VERBOSE" = "YES" ]] ; then
 fi
 export machine=${machine:-WCOSS}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-if [ $machine = WCOSS_C ]; then
-  . $MODULESHOME/init/sh
-  module load PrgEnv-intel intel cray-mpich
-  module load prod_envir prod_util grib_util
-fi
+#if [ $machine = WCOSS_C ]; then
+#  . $MODULESHOME/init/sh
+#  module load PrgEnv-intel intel cray-mpich
+#  module load prod_envir prod_util grib_util
+#fi
 #  Command line arguments.
 export APRUNC=${APRUNC:-""}
 export SIGINP=${1:-${SIGINP:-NULL}}

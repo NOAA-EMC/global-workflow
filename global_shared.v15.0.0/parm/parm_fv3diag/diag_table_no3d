@@ -62,14 +62,14 @@
  "dynamics",  "t50",         "t50",        "atmos_4xdaily", "all", .false.,  "none", 2
 # "dynamics",  "t10",         "t10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
- "dynamics",  "h1000",       "h1000",      "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "h850",        "h850",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "h700",        "h700",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "h500",        "h500",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "h200",        "h200",       "atmos_4xdaily", "all", .false.,  "none", 2
- "dynamics",  "h100",        "h100",       "atmos_4xdaily", "all", .false.,  "none", 2
-# "dynamics",  "h50",         "h50",        "atmos_4xdaily", "all", .false.,  "none", 2
-# "dynamics",  "h10",         "h10",        "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z1000",       "z1000",      "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z850",        "z850",       "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z700",        "z700",       "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z500",        "z500",       "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z200",        "z200",       "atmos_4xdaily", "all", .false.,  "none", 2
+ "dynamics",  "z100",        "z100",       "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z50",         "z50",        "atmos_4xdaily", "all", .false.,  "none", 2
+# "dynamics",  "z10",         "z10",        "atmos_4xdaily", "all", .false.,  "none", 2
 ####
 # "dynamics",  "w1000",       "w1000",      "atmos_4xdaily", "all", .false.,  "none", 2
 # "dynamics",  "w850",        "w850",       "atmos_4xdaily", "all", .false.,  "none", 2
@@ -394,7 +394,7 @@
 # "dynamics",      "lw",          "lw",          "atmos_month", "all", .true.,  "none", 2
 # "dynamics",      "aam",         "aam",         "atmos_month", "all", .true.,  "none", 2
 # "dynamics",      "amdt",        "amdt",        "atmos_month", "all", .true.,  "none", 2
-# "dynamics",      "h500",        "h500",        "atmos_month", "all", .true.,  "none", 2
+# "dynamics",      "z500",        "z500",        "atmos_month", "all", .true.,  "none", 2
 # "dynamics",      "temp",        "temp",        "atmos_month", "all", .true.,  "none", 2
 # "dynamics",      "ucomp",       "ucomp",       "atmos_month", "all", .true.,  "none", 2
 # "dynamics",      "vcomp",       "vcomp",       "atmos_month", "all", .true.,  "none", 2

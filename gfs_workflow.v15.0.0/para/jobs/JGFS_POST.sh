@@ -245,5 +245,5 @@ for fname in $flist; do
 done
 #----------------
 
-[[ ${KEEPDATA:-"YES"} = "YES" ]] && rm -rf $DATA
+[[ ${KEEPDATA:-NO} != YES ]] && rm -rf $DATA
 exit $err

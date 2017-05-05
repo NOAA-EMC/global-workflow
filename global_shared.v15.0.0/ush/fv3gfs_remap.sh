@@ -23,8 +23,8 @@ export CDUMP=${CDUMP:-gfs}
 export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 
 #--------------------------------------------------
-export grid_loc=$BASE_GSM/fix/$CASE/${CASE}_mosaic.nc
-export weight_file=$BASE_GSM/fix/$CASE/remap_weights_${CASE}_${GG}.nc
+export grid_loc=${FIX_FV3:-$BASE_GSM/fix/fix_fv3}/$CASE/${CASE}_mosaic.nc
+export weight_file=${FIX_FV3:-$BASE_GSM/fix/fix_fv3}/$CASE/remap_weights_${CASE}_${GG}.nc
 
 export APRUN_REMAP=${APRUN_REMAP:-${APRUN:-""}}
 export NTHREADS_REMAP=${NTHREADS_REMAP:-${NTHREADS:-1}}

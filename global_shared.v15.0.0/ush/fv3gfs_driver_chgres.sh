@@ -2,10 +2,10 @@
 #----WCOSS_CRAY JOBCARD
 #BSUB -L /bin/sh
 #BSUB -P FV3GFS-T2O
-#BSUB -oo log.chgres
-#BSUB -eo log.chgres
+#BSUB -oo log.chgres.%J
+#BSUB -eo log.chgres.%J
 #BSUB -J chgres_fv3
-#BSUB -q devonprod
+#BSUB -q dev
 #BSUB -W 06:00
 #BSUB -M 1024
 #BSUB -extsched 'CRAYLINUX[]'
@@ -31,7 +31,7 @@
 ##PBS -e log.chres
 
 
-set -ax
+set -eux
 #-------------------------------------------------------------------------------------------------
 # Makes ICs on fv3 globally uniform cubed-sphere grid using operational GFS initial conditions.
 # Fanglin Yang, 09/30/2016
@@ -51,7 +51,7 @@ ulimit -a
 ulimit -s unlimited
 
 export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
-export CDATE=${CDATE:-${cdate:-2017030800}}  # format yyyymmddhh yyyymmddhh ... 
+export CDATE=${CDATE:-${cdate:-2017041900}}  # format yyyymmddhh yyyymmddhh ... 
 
 export machine=${machine:-WCOSS_C}
 export NODES=1
@@ -66,6 +66,7 @@ if [ $machine = WCOSS_C ]; then
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
  export out_dir=${out_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs}
  export tmp_dir=${tmp_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/chgres_${CASE}_${CDATE}}                                       
+ export BASE_GSM=${BASE_GSM:-$LS_SUBCWD/..}
 elif [ $machine = WCOSS ]; then 
  . /usrx/local/Modules/default/init/sh 2>>/dev/null
  module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
@@ -77,13 +78,12 @@ elif [ $machine = THEIA ]; then
  export out_dir=${out_dir:-/scratch4/NCEPDEV/stmp3/$LOGNAME/FV3IC/ICs}
  export tmp_dir=${tmp_dir:-/scratch4/NCEPDEV/stmp3/$LOGNAME/FV3IC/chgres_${CASE}_${CDATE}}
  COMROOTp2=/scratch4/NCEPDEV/rstprod/com
+ export BASE_GSM=${BASE_GSM:-$PBS_O_WORKDIR/..}
 else 
  echo "$machine not supported, exit"
  exit
 fi
 
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/ptmp/emc.glopara/EXP-cyc/global_shared.v15.0.0}                        
-export script_dir=$BASE_GSM/ush
 
 export gtype=uniform	          # grid type = uniform, stretch, or nested
 
@@ -137,7 +137,7 @@ fi
 
 
   # make atmospheric and surface data
-  $script_dir/fv3gfs_chgres.sh
+  $BASE_GSM/ush/fv3gfs_chgres.sh
 
 exit
 
