@@ -11,7 +11,7 @@ mac=`hostname |cut -c1`
 machine=WCOSS_C
 NEMS=YES
 
-PSLOT=test                  # Experiment ID
+PSLOT=fv3test                  # Experiment ID
 EDATE=2017071600            # Analysis/forecast cycle ending date 
 EDUMP=gdas                  # cycle ending dump
 ESTEP=prep                  # cycle ending step
@@ -45,6 +45,7 @@ SUFFIX=".nemsio"
 PREFIX=${CDUMP}${TCYC}
 NEMSIO_IN=.true.
 NEMSIO_OUT=.true.
+IPD4=YES
 
 # ----------------------------------
 # user account 
@@ -141,7 +142,8 @@ elif [ $machine = WCOSS_C ]; then
  NWPROD=/gpfs/hps/nco/ops/nwprod
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
- BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+#BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+ BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
  tags=trunk_r89554
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
@@ -175,10 +177,8 @@ NET=gfs
 #ROTDIR=$COMROUT/$NET/$envir
 
 ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
-MEMDIR=$ROTDIR/${CDUMP}.$ymd/$cycn
-COMROT=$ROTDIR
-COMDIR=$TOPDIR                        
-COMDAY=$MEMDIR
+COMROT=$ROTDIR/${CDUMP}.$ymd/$cycn
+COMDAY=$COMROT
 VFYARC=$ROTDIR/vrfyarch
  
 # ------------------- 
@@ -206,7 +206,7 @@ BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
 BASE_GSI=$BASE_SVN/$tags/global_shared.$global_shared_ver
 BASE_TROPCY=$BASE_SVN/$tags/global_shared.$global_shared_ver
 #BASE_POST=$BASE_SVN/$tags/global_shared.$global_shared_ver
-BASE_POST=$BASE_SVN/post_new
+BASE_POST=$BASE_SVN/post4fv3
 
 #BASE_PREP=$BASE_SVN/obsproc/releases/obsproc_prep.$obsproc_prep_ver
 BASE_PREP=$BASE_SVN/obsproc_prep_RB-3.5.0 
@@ -305,7 +305,7 @@ fseg=1                             # number of AM forecast segments for gfs
 FHCYC=24                             # Surface cycle calling interval
  
 LEVS=64                            # number of AM levels
-CASE1=C192                         # 1st segment resolution (0-240 hr)
+CASE1=C96                        # 1st segment resolution (0-240 hr)
 CASE2=C192                         # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
 CASE=$(eval echo \${CASE$nknd})
@@ -324,12 +324,12 @@ case $CASE in
 esac
 
 
-fmax1=240; fmax2=384
+fmax1=24; fmax2=384
 for cyc in 00 06 12 18; do
  eval FHMAXFCST${cyc}GFS1=$fmax1             # maximum forecast hour for 1st segment
  eval FHMAXFCST${cyc}GFS2=$fmax2             # maximum forecast hour for 2st segment
  eval FHMAXFCST${cyc}GDAS=9                  # maximum forecast hour for GDAS          
- eval FHOUTFCST${cyc}GFS1=6  
+ eval FHOUTFCST${cyc}GFS1=3  
  eval FHOUTFCST${cyc}GFS2=12  
  eval FHOUTFCST${cyc}GDAS=1  
  eval FHZERFCST${cyc}GFS1=6  
@@ -345,9 +345,10 @@ FHZER=$(eval echo \${FHZERFCST$cycn$cdump$nknd})
 
 
 #---if fdiag is given, it overwrites FHOUT
-fh00=$(echo $DELTIM 3600|awk '{printf "%f", $1/$2}')
-fdiag="$fh00,6.,12.,18.,24.,30.,36.,42.,48.,54.,60.,66.,72.,78.,84.,90.,96.,102.,108.,114.,120.,126.,132.,138.,144.,150.,156.,162.,168.,174.,180.,186.,192.,198.,204.,210.,216.,222.,228.,234.,240."
-NFCST=$(echo $fdiag |awk -F '[\t,]' '{print NF}')   ;#number of forecast output
+#fh00=$(echo $DELTIM 3600|awk '{printf "%f", $1/$2}')
+#fdiag="$fh00,6.,12.,18.,24.,30.,36.,42.,48.,54.,60.,66.,72.,78.,84.,90.,96.,102.,108.,114.,120.,126.,132.,138.,144.,150.,156.,162.,168.,174.,180.,186.,192.,198.,204.,210.,216.,222.,228.,234.,240."
+warm_start=.false.
+#NFCST=$(echo $fdiag |awk -F '[\t,]' '{print NF}')   ;#number of forecast output
 
 
 
@@ -363,7 +364,7 @@ COMCOP='$DMPDIR/$CDATE/${CDUMP}'
 
 
 #----------------------------------------------------------
-mkdir -p $MEMDIR $COMROT $COMDAY $ARCDIR $ARCDIR $FIT_DIR $HORZ_DIR $VFYARC
+mkdir -p $COMROT $COMDAY $ARCDIR $FIT_DIR $HORZ_DIR $VFYARC
 permission=755
 chgrp rstprod $ARCDIR
 chgrp rstprod $FIT_DIR

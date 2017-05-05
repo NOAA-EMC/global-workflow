@@ -1,3 +1,0 @@
-export FCS=ifort
-mkdir -p ../incmod
-make -f makefile_4

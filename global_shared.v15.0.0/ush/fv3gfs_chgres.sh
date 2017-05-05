@@ -34,7 +34,7 @@ export ATMANL=${ATMANL:-atmanl}
 export SFCANL=${SFCANL:-sfcanl}
 
 export BASE_GSM=${BASE_GSM:-/nwprod}
-export FIX_FV3=${FIX_FV3:-$BASE_GSM/fix}
+export FIX_FV3=${FIX_FV3:-$BASE_GSM/fix/fix_fv3}
 export FIX_AM=${FIX_AM:-$BASE_GSM/fix/fix_am}
 export STMP=${STMP:-"/stmp"}
 export GLOBAL_CHGRES_EXEC=${GLOBAL_CHGRES_EXEC:-$BASE_GSM/exec/global_chgres}
@@ -57,7 +57,7 @@ export NTRAC=${NTRAC:-3}
 export IDSL=${IDSL:-1}
 export LSOIL=${LSOIL:-4}
 export IVSSFC=0
-export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=1"
+export CHGRESVARS="use_ufo=.true.,IALB=0,ntrac=3,idvc=2,idvt=21,idsl=1,IDVM=0"
 
 res=`echo $CASE |cut -c 2-`
 export LONB_SFC=$res

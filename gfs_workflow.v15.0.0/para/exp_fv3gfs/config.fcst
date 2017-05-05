@@ -1,10 +1,11 @@
-FORECASTSH=$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf
+#FORECASTSH=$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf
+FORECASTSH=$SCRDIR/exglobal_fcst_nemsfv3gfs.sh         
 EXECDIR=$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin
 IC_DIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs
 if [ $REMAP_GRID = latlon ]; then
- DIAGTABLE=$BASE_GSM/parm/parm_fv3diag/diag_table
+ DIAG_TABLE=$BASE_GSM/parm/parm_fv3diag/diag_table
 else
- DIAGTABLE=$BASE_GSM/parm/parm_fv3diag/diag_table_history
+ DIAG_TABLE=$BASE_GSM/parm/parm_fv3diag/diag_table_history
 fi
 
 npes=$(( ${layout_x} * ${layout_y} * 6 ))
@@ -25,6 +26,9 @@ else
    export hyperthread=".false."
    export j_opt="-j 1"
 fi
+
+#FCSTEXECDIR=$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin                                                                 
+FCSTEXECDIR=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs/NEMSfv3gfs/trunk/NEMS/exe
 FCSTEXEC=fv3_gfs_${TYPE}.${COMP}.${MODE}.x
 APRUN="aprun -n $tasks -N $task_per_node -d $nth_f $j_opt -cc depth" 
 

@@ -8,11 +8,11 @@
 #
 # $Id$
 #
-# Author:   Fanglin Yang       Org: NCEP/EMC       Date: 2017-01-XX
+# Author:   Fanglin Yang       Org: NCEP/EMC       Date: 2016-12-01
 # Abstract: regrid_nemsio.fd provided by Jeffrey.S.Whitaker OAR/ESRL
 #
 # Script history log:
-# 2017-01-XX  Fanglin Yang
+# 2016-12-01  Fanglin Yang
 # 2017-02-13  Rahul Mahajan
 #
 # Attributes:
@@ -78,6 +78,7 @@ fi
 #-------------------------------------------------------
 # Create namelist
 rm -f regrid-nemsio.input
+
 cat > regrid-nemsio.input << EOF
 &share
   debug=$DEBUG,
@@ -86,8 +87,8 @@ cat > regrid-nemsio.input << EOF
   nlats=$NLAT,
   datapathout2d='$NEMSIO_OUT2DNAME',
   datapathout3d='$NEMSIO_OUT3DNAME',
-  analysis_filename='${CDATE}0000.fv3_history.tile1.nc','${CDATE}0000.fv3_history.tile2.nc','${CDATE}0000.fv3_history.tile3.nc','${CDATE}0000.fv3_history.tile4.nc','${CDATE}0000.fv3_history.tile5.nc','${CDATE}0000.fv3_history.tile6.nc',
-  analysis_filename2d='${CDATE}0000.fv3_history2d.tile1.nc','${CDATE}0000.fv3_history2d.tile2.nc','${CDATE}0000.fv3_history2d.tile3.nc','${CDATE}0000.fv3_history2d.tile4.nc','${CDATE}0000.fv3_history2d.tile5.nc','${CDATE}0000.fv3_history2d.tile6.nc',
+  analysis_filename='fv3_history.tile1.nc','fv3_history.tile2.nc','fv3_history.tile3.nc','fv3_history.tile4.nc','fv3_history.tile5.nc','fv3_history.tile6.nc',
+  analysis_filename2d='fv3_history2d.tile1.nc','fv3_history2d.tile2.nc','fv3_history2d.tile3.nc','fv3_history2d.tile4.nc','fv3_history2d.tile5.nc','fv3_history2d.tile6.nc',
   forecast_timestamp='${CDATE}',
   variable_table='$REGRID_NEMSIO_TBL',
   nemsio_opt3d='bin4',

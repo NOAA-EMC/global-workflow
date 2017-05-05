@@ -18,8 +18,8 @@ export CKSH=$(echo $CSTEP|cut -c-4)
 export CKND=$(echo $CSTEP|cut -c5-)
 eval export DATA=$DATATMP
 export ROTDIR=${ROTDIR:-$PTMP/$LOGNAME/pr$PSLOT}
-export COMROT=${MEMDIR:-COMROT}
-export COMDAY=${COMDAY:-$MEMDIR}
+export COMROT=${COMROT:-$pwd}
+export COMDAY=${COMDAY:-$COMROT}
 export RESDIR=${RESDIR:-$COMROT/RESTART}
 export ARCH_TO_HPSS=${ARCH_TO_HPSS:-YES}
 export ARCH_TO_DISK=${ARCH_TO_DISK:-NO}
@@ -267,7 +267,7 @@ rm -rf $(CDATE=$rdate CDUMP=$CDUMP CSTEP='*' eval ls -d $DATATMP) 2>/dev/null
 rdate=$($NDATE -$HRKROT $CDATE)
 rmymd=$(echo $rdate |cut -c 1-8)
 rmcyc=$(echo $rdate |cut -c 9-10)
-rmdir=$ROTDIR/${CDUMP}.$rmymd/$rmcyc
+rmdir=$ROTDIR/${CDUMP}.$rmymd
 if [ -d $rmdir ]; then rm -rf $rmdir ; fi
 
 #-clean aged vrfyarch archive

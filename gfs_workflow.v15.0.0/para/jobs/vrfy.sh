@@ -31,7 +31,7 @@ export USHDIR=${USHDIR:-$BASEDIR/ush}
 export NWPROD=${NWPROD:-$BASEDIR}
 export HOMEcfs=${HOMEcfs:-$BASEDIR}
 export USHcfs=${USHcfs:-$USHDIR}
-export COMROT=${MEMDIR:-$COMROT}
+export COMROT=${COMROT:-$pwd}
 #
 PBEG=${PBEG:-$SHDIR/pbeg}
 PEND=${PEND:-$SHDIR/pend}

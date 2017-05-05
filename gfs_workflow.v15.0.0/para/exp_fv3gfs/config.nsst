@@ -11,7 +11,7 @@
                              #         3: Input NST info, used in both CRTM simulation and Tr analysis
 
  export NST_SPINUP=0      #  0 = NSSTM spinup off (default); 1 = NSSTM spinup on
- if [ $CDATE -eq 2016091406 ] ; then export NST_SPINUP=1; fi
+#if [ $CDATE -eq 2017041700 ] ; then export NST_SPINUP=1; fi
  export NST_RESERVED=0    #  Reserved
  if [ $NST_GSI -eq 3 ]; then export NST_RESERVED=1; fi
 
@@ -26,8 +26,8 @@
                           #  nstf_name(4) : 0 (default) = the upper depth (in mm) to do vertical mean of T-Profile
                           #  nstf_name(5) : 0 (default) = the lower depth (in mm) to do vertical mean of T-Profile
 
- export NST_ANL=.false.   #  .fasle. : NSST analysis off (default); true = NSST analysis on
- if [ $NST_GSI -eq 3 ]; then export NST_ANL=.true.;  fi
+ export nst_anl=.false.   #  .fasle. : NSST analysis off (default); true = NSST analysis on
+ if [ $NST_GSI -eq 3 ]; then export nst_anl=.true.;  fi
  export NSTINFO=0         # number of elements added in obs. data array (default = 0)
  if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
 

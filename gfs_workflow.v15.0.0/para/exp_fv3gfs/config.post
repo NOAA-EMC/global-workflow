@@ -19,7 +19,8 @@ variable_table=$BASE_GSM/parm/parm_fv3diag/variable_table.txt
 npe_regrid=$LEVS
 thread_regrid=1
 npe_node_regrid=$((pe_node/thread_regrid))
-APRUN_REGRID="aprun -n $npe_regrid -N $npe_node_regrid -j 1 -d $thread_regrid -cc depth"
+NTHREADS_REGRID_NEMSIO=$thread_regrid
+APRUN_REGRID_NEMSIO="aprun -n $npe_regrid -N $npe_node_regrid -j 1 -d $thread_regrid -cc depth"
 
 
 #------------------------------------------------------------------------------

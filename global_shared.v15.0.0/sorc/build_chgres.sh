@@ -41,3 +41,9 @@ curdir=`pwd`
 
 cd ${curdir}/global_chgres.fd
 ./makefile.sh
+
+if [ -d ${curdir}/nst_mask_namchg.fd ]; then
+ cd ${curdir}/nst_mask_namchg.fd
+ ./makefile.sh
+fi
+
