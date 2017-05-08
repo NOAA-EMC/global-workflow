@@ -64,6 +64,7 @@ export CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-$BASE_GFS/exec/global_chgres}
 export CHGRESTHREAD=${CHGRESTHREAD:-24}
 export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
+export APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 export RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
 
@@ -138,6 +139,8 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export LANDICE_OPT=${LANDICE_OPT:-1}
    export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
 
+   export APRUNC=$APRUN_CHGRES
+
    $CHGRESSH $SIGINP $SFCINP $SIGOUT $SFCOUT $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF $GFSOUT
    rc=$?
 
@@ -170,7 +173,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
    $ERRSCRIPT || exit 2
 
    # Optionally alert recentered files
-   if [ $SENDDBN = "YES" ]; then
+   if [ ${SENDDBN:-"NO"} = "YES" ]; then
       for imem in `seq 1 $NMEM_ENKF`; do
          memchar="mem"`printf %03i $imem`
          $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
