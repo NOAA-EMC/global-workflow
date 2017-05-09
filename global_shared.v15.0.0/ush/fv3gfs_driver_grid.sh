@@ -76,8 +76,8 @@ export script_dir=$home_dir/ush
 export topo=$workflow_dir/util/fix
 export exec_dir=$home_dir/exec
 
-export out_dir=$home_dir/fix/C${res}
-#export out_dir=/gpfs/hps/ptmp/$LOGNAME/fv3_grid/fix/C${res}
+#export out_dir=$home_dir/fix/C${res}
+export out_dir=/gpfs/hps/ptmp/$LOGNAME/fv3_grid/fix/C${res}
 mkdir -p $out_dir $TMPDIR
 cd $TMPDIR ||exit 8
 
