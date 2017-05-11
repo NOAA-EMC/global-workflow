@@ -74,7 +74,7 @@ if [[ "$machine" = "Theia" ]]; then
 
    #  On Theia, there are no scrubbers to remove old contents from stmp* directories.
    #  After completion of regression tests, will remove the regression test subdirecories
-   export clean=".true."
+#  export clean=".true."
 
 elif [[ "$machine" = "WCOSS" ]]; then
 
