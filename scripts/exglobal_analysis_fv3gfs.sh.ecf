@@ -782,7 +782,7 @@ EOF
 #  Make atmospheric analysis
 $NCP $GSIEXEC $DATA/gsi.x
 export OMP_NUM_THREADS=$NTHREADS_GSI
-$APRUN_GSI gsi.x 1>&1 2>&2
+$APRUN_GSI ${DATA}/gsi.x 1>&1 2>&2
 
 export ERR=$?
 export err=$ERR

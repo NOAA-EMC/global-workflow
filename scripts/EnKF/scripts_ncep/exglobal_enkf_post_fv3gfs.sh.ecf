@@ -171,18 +171,18 @@ else # Run serially instead
    rc=0
    for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
       fhrchar=`printf %03i $fhr`
-      $APRUN_EPOS $(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
-      $APRUN_EPOS $(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
       if [ $NST_GSI -gt 0 ]; then
-         $APRUN_EPOS $(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF
+         $APRUN_EPOS ${DATA}/$(basename $GETNSTENSMEANEXEC) ./ nstf${fhrchar}.ensmean nstf${fhrchar} $NMEM_ENKF
          ra=$?
          ((rc+=ra))
       fi
-      $APRUN_EPOS $(basename $GETATMENSSTATEXEC) ./ atmf${fhrchar} $NMEM_ENKF
+      $APRUN_EPOS ${DATA}/$(basename $GETATMENSSTATEXEC) ./ atmf${fhrchar} $NMEM_ENKF
       ra=$?
       ((rc+=ra))
    done
