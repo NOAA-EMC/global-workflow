@@ -6,7 +6,14 @@ set -x
 export regtest=$1
 
 # source the necessary files to setup
-. $(awk '{ print $1 }' regression_var.out)
+if [ "$#" -eq 2 ]; then
+  export regdir=$2
+  . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' $regdir/regression_var.out)
+else
+  export regdir=$(pwd)
+  . $(awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9 }' regression_var.out)
+fi
+
 export scripts=${scripts_updat:-$scripts}
 . $scripts/regression_param.sh $regtest
 
@@ -20,23 +27,20 @@ for jn in `seq 1 4`; do
       export scripts=${scripts_contrl:-$scripts}
       export fixgsi=${fixgsi_contrl:-$fixgsi}
    fi
-
    rm -f ${job[$jn]}.out
 
    /bin/sh $sub_cmd -q $queue -j ${job[$jn]} -t ${topts[$jn]} -p ${popts[$jn]} -r ${ropts[$jn]} $scripts/${regtest}.sh
 
    if [ $debug == ".true." ]; then break; fi
-
    $scripts/regression_wait.sh ${job[$jn]} ${rcname} $check_resource
    rc=$?
    if [ $rc -ne 0 ]; then
-      rm -f ${rcname}
-      exit
+     rm -f ${rcname}
+     exit 1
    fi
-done
-
+   done
 # When all done, test the results of the regression test
-if [ "$debug" = ".false." ]; then
+if [ "$debug" == ".false." ]; then
 
    export scripts=${scripts_updat:-$scripts}
 
@@ -45,7 +49,10 @@ if [ "$debug" = ".false." ]; then
    else
       /bin/sh $scripts/regression_test.sh ${job[1]} ${job[2]} ${job[3]} ${job[4]} ${tmpregdir} ${result} ${scaling[1]} ${scaling[2]} ${scaling[3]}
    fi
-
+   rc=$?
+   if [ $rc -ne 0 ]; then
+      exit 1
+   fi
 fi
 
 # Clean-up
