@@ -839,7 +839,6 @@ cd $DATA
 
 # Cat runtime output files.
 cat fort.2* > $GSISTAT
-cat fort.2*
 
 # If requested, create obs_input tarball
 if [ $RUN_SELECT = "YES" ]; then

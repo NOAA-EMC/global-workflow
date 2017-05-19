@@ -147,7 +147,7 @@ for imem in `seq 1 $NMEM_ENKF`; do
          tar -xvf $fname
       done
    fi
-   $NLN  $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
    $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}  sanl_${CDATE}_${memchar}
    # recommend JSW to remove the "datestring" from the guess filename
    # e.g. sfg_${DATE}_fhrHH_memXXX to atm_fHH_memXXX, similar for ensemble mean and sanl
@@ -194,7 +194,6 @@ cat <<EOF > enkf.nml
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    $NAM_ENKF
 /
-&END
 &satobs_enkf
    sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
    sattypes_rad(2) = 'amsua_n18',     dsis(2) = 'amsua_n18',
@@ -260,7 +259,6 @@ cat <<EOF > enkf.nml
    sattypes_rad(62)= 'saphir_meghat', dsis(62)= 'saphir_meghat',
    $SATOBS_ENKF
 /
-&END
 &ozobs_enkf
    sattypes_oz(1) = 'sbuv2_n16',
    sattypes_oz(2) = 'sbuv2_n17',
@@ -272,7 +270,6 @@ cat <<EOF > enkf.nml
    sattypes_oz(8) = 'mls30_aura',
    $OZOBS_ENKF
 /
-&END
 EOF
 
 ################################################################################
