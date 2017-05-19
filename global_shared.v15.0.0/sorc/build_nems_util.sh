@@ -19,8 +19,10 @@ if [ $target = wcoss ]; then
 . /usrx/local/Modules/3.2.10/init/sh
 elif [ $target = cray ]; then
 . $MODULESHOME/init/sh
+export FCMP=ftn
 elif [ $target = theia ]; then
 . /apps/lmod/lmod/init/sh
+export FCMP=ifort
 else
  exit
 fi

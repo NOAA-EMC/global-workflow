@@ -10,12 +10,58 @@
 ########## config.vrfy ##########
 # Verification step specific
 
+# Verification scripts still rely on some legacy parts and I don't have
+# either energy or desire to replace those, so I am going
+# to let VRFY be. However, I am going to extract pieces that
+# are needed for functional cycling verification and diagnostics and
+# streamline as much as possible.
+# If you are interested in Bells and Whistles, contact the
+# appropriate person or motivate yourself.
+
 echo "BEGIN: config.vrfy"
 
-# Task and thread configuration
-export wtime_vrfy="00:01:00"
-export npe_vrfy=1
-export npe_node_vrfy=1
-export memory_vrfy="3072M"
+# Get task specific resources
+. $EXPDIR/config.resources vrfy
+
+export VDUMP="gfs"       # verifying dump
+export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
+export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
+
+# What we want turned ON/OFF
+export VSDB_STEP1="YES"
+export VSDB_STEP2="NO"
+export VRFYG2OBS="YES"
+export VRFYFITS="YES"        # Fits
+export VRFYPRCP="YES"        # Precip threat scores
+export VRFYMINMON="NO"
+export VRFYRAD="NO"
+export VRFYOZN="NO"
+export VRFYTRAK="NO"
+export VRFYGENESIS="NO"
+export VRFYGMPK="NO"
+
+export CDFNL="gdas"
+
+# Legacy stuff for vrfy.sh to be able to submit to the scheduler
+if [ $machine = "WCOSS" ]; then
+    export SUB="$BASEDIR/bin/sub_wcoss"
+elif [ $machine = "WCOSS_C" ]; then
+    export SUB="$BASEDIR/bin/sub_wcoss_c"
+elif [ $machine = "THEIA" ]; then
+    export SUB="$BASEDIR/bin/sub_theia"
+fi
+
+# fit2obs
+if [ $machine = "WCOSS" ]; then
+    export fitdir=$BASE_VERIF/global/parafits.nems/batrun
+    export PREPQFITSH="$fitdir/subfits_wcoss"
+elif [ $machine = WCOSS_C ]; then
+    export fitdir=$BASE_VERIF/global/parafits.nems.test/batrun
+    export PREPQFITSH="$fitdir/subfits_cray_nems"
+elif [ $machine = THEIA ]; then
+    export fitdir=$BASE_VERIF/global/parafits/batrun
+    export PREPQFITSH="$fitdir/subfits_theia_nems"
+fi
+
 
 echo "END: config.vrfy"

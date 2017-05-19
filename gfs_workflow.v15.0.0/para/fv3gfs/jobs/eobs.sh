@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env eobs
+. $BASE_ENV/${machine}.env eobs
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

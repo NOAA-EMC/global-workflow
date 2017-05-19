@@ -13,7 +13,7 @@
 echo "BEGIN: config.base"
 
 # Machine environment
-export machine="WCOSS_C"
+export machine="@MACHINE@"
 
 # Account, queue, etc.
 if [ $machine = "THEIA" ]; then
@@ -24,8 +24,8 @@ if [ $machine = "THEIA" ]; then
 
 elif [ $machine = "WCOSS_C" ]; then
 
-    export ACCOUNT="GFS-T2O"
-    export QUEUE="devhigh"
+    export ACCOUNT="FV3GFS-T2O"
+    export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
 fi
@@ -55,7 +55,13 @@ if [ $machine = "THEIA" ]; then
 elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="LUNA"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="SURGE"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
+    fi
     module load crtm-intel/2.2.4 >> /dev/null 2>&1
     export RTMFIX=$CRTM_FIX
 
@@ -71,8 +77,9 @@ if [ $machine = "THEIA" ]; then
     export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 
     # Base directories for various builds
-    export BASESVN="/scratch4/NCEPDEV/global/save/Rahul.Mahajan/svn"
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
     export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
+    export MYBASE_SVN="/scratch4/NCEPDEV/global/save/Rahul.Mahajan/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
 
@@ -83,15 +90,16 @@ elif [ $machine = "WCOSS_C" ]; then
     export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
 
     # Base directories for various builds
-    export BASESVN="/gpfs/hps/emc/global/noscrub/Rahul.Mahajan/svn"
+    export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
     export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
+    export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/Rahul.Mahajan/svn"
 
 fi
 
 # Utilities needed in the scripts (mostly post)
 if [ $machine = "THEIA" ]; then
 
-    export NEMSIOGET="$HOME/bin/nemsio_get"
+    export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
     export WGRIB="$NWPROD/util/exec/wgrib"
@@ -128,11 +136,13 @@ fi
 # CLEAR
 ####################################################
 
-# Build paths relative to $BASESVN
-export BASE_WORKFLOW="$BASESVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
-export BASE_GSM="$BASESVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
-export BASE_GSI="$BASESVN/gsi/branches/EXP-fv3gsi"
-export BASE_POST="$BASESVN/fv3gfs/tags/post4fv3"
+# Build paths relative to $BASE_SVN
+export BASE_WORKFLOW="$MYBASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
+export BASE_GSM="$MYBASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
+export BASE_GSI="$MYBASE_SVN/gsi/branches/EXP-fv3gsi"
+export BASE_POST="$MYBASE_SVN/fv3gfs/tags/post4fv3"
+export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
+export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -150,17 +160,17 @@ export BASE_JOB="$BASE_WORKFLOW/fv3gfs/jobs"
 export SDATE=2016100100
 export EDATE=2016100500
 export assim_freq=6
-export PSLOT="FV3e1"
-export EXPDIR="$HOMEDIR/tests/$PSLOT"
-export ROTDIR="$PTMP/ROTDIRS/$PSLOT"
+export PSLOT="@PSLOT@"
+export EXPDIR="@EXPDIR@/$PSLOT"
+export ROTDIR="@ROTDIR@/$PSLOT"
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ATARDIR="/NCEPDEV/emc-global/1year/$USER/$machine/scratch/$PSLOT"
 
 # Resolution specific parameters
 export LEVS=64
-export CASE="C192"
-export CASE_ENKF="C192"
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequence
 export FHCYC=6
@@ -171,7 +181,7 @@ export FHMAX=9
 export FHOUT=3
 
 # GFS cycle info
-export gfs_cyc=2 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export gfs_cyc=1 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0
@@ -181,7 +191,7 @@ export FHOUT_GFS=6
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=80
+export NMEM_ENKF=@NMEM_ENKF@
 export RECENTER_ENKF="YES"
 export l4densvar=".false."
 export lwrite4danl=".false."
@@ -190,6 +200,7 @@ export lwrite4danl=".false."
 if [ $DOHYBVAR = "YES" ]; then
     export FHOUT_ENKF=1
     if [ $l4densvar = ".true." ]; then
+        export FHOUT=1
         export FHMIN_ENKF=3
         export FHMAX_ENKF=9
     else

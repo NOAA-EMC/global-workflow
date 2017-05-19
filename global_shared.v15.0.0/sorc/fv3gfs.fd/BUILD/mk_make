@@ -5,7 +5,7 @@ set root = $PWD
 if ( ${2} == "clean" || ${3} == "clean" ) then
   echo " cleaning build directory in 4 seconds "
   sleep 4
-  (cd exec ; \rm -f *.f90 *.o *.mod test.x)
+  #(cd exec ; \rm -f *.f90 *.o *.mod test.x)
 endif
 
 #-- load the development environment

@@ -12,12 +12,8 @@
 
 echo "BEGIN: config.post"
 
-# Task and thread configuration
-export wtime_post="00:10:00"
-export wtime_post_gfs="03:00:00"
-export npe_post=72
-export npe_node_post=12
-export memory_post="3072M"
+# Get task specific resources
+. $EXPDIR/config.resources post
 
 # Convert nemsio files to grib files using post job
 #-------------------------------------------

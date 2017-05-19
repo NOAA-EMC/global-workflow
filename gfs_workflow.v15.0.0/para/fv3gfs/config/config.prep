@@ -12,8 +12,12 @@
 
 echo "BEGIN: config.prep"
 
-export wtime_prep="00:05:00"
-export npe_prep=1
-export npe_node_prep=1
+# Get task specific resources
+. $EXPDIR/config.resources prep
+
+export DO_RELOCATE="NO"
+
+export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export DRIVE_MAKEPREPBUFRSH="$BASE_WORKFLOW/fv3gfs/ush/drive_makeprepbufr.sh"
 
 echo "END: config.prep"

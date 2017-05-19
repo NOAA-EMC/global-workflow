@@ -67,13 +67,13 @@ if [ $machine = "THEIA" ]; then
 
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export STMP="/scratch3/NCEPDEV/stmp1/$USER"
-    export BASESVN="/scratch4/NCEPDEV/global/save/Rahul.Mahajan"
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/Rahul.Mahajan"
 
 elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
     export STMP="/gpfs/hps/stmp/$USER"
-    export BASESVN="/gpfs/hps/emc/global/noscrub/Rahul.Mahajan/svn"
+    export BASE_SVN="/gpfs/hps/emc/global/noscrub/Rahul.Mahajan/svn"
 
 fi
 
@@ -105,10 +105,10 @@ elif [ $machine = "WCOSS_C" ]; then
     export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
 fi
 
-# Build paths relative to $BASESVN
-export BASE_WORKFLOW="$BASESVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
-export BASE_GSM="$BASESVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
-export BASE_POST="$BASESVN/fv3gfs/branches/Rahul.Mahajan/EXP-fv3gfspost/post"
+# Build paths relative to $BASE_SVN
+export BASE_WORKFLOW="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
+export BASE_GSM="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
+export BASE_POST="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-fv3gfspost/post"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"

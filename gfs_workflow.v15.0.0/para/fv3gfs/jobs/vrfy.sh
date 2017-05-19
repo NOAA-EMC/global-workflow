@@ -27,5 +27,11 @@ for config in $configs; do
 done
 
 ###############################################################
+# Source machine runtime environment
+. $BASE_ENV/${machine}.env vrfy
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+###############################################################
 # Exit out cleanly
 exit 0

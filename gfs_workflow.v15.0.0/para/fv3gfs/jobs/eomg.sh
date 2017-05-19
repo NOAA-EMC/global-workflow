@@ -29,7 +29,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env eobs
+. $BASE_ENV/${machine}.env eobs
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -77,9 +77,9 @@ export USE_SELECT="YES"
 export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
 
 ###############################################################
-# Get ENSBEG/ENSEND from ENSGRP and NMEM_ENKF_GRP
-ENSEND=`echo "$NMEM_ENKF_GRP * $ENSGRP" | bc`
-ENSBEG=`echo "$ENSEND - $NMEM_ENKF_GRP + 1" | bc`
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EOMGGRP
+ENSEND=`echo "$NMEM_EOMGGRP * $ENSGRP" | bc`
+ENSBEG=`echo "$ENSEND - $NMEM_EOMGGRP + 1" | bc`
 export ENSBEG=$ENSBEG
 export ENSEND=$ENSEND
 

@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env ecen
+. $BASE_ENV/${machine}.env ecen
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

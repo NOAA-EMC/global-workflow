@@ -12,11 +12,11 @@
 
 echo "BEGIN: config.fcst"
 
-# Task and thread configuration
-export wtime_fcst="00:04:00"
-export wtime_fcst_gfs="00:15:00"
-export npe_fcst=192 # This is model resolution dependent and is derived as: $layout_x * $layout_y * ntiles (6)
-export npe_node_fcst=12
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE
+
+# Get task specific resources
+. $EXPDIR/config.resources fcst
 
 export FORECASTSH="$BASE_GSM/scripts/exglobal_fcst_fv3gfs.sh.ecf"
 export FCSTEXECDIR="$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin"
@@ -24,18 +24,23 @@ export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 export nth_fv3=2
 
+# Remember config.efcs will over-ride these values for ensemble forecasts
+# if these variables are re-defined there.
+# Otherwise, the ensemble forecast will inherit from config.fcst
+
 # Model configuration
 export TYPE="hydro"
 export MONO="mono"
 
+export do_vort_damp=".true."    # vorticity and divergence damping
+export consv_te="0."            # conserve total energy
+export fv_sg_adj=900            # time-scale to remove 2dz instability
+export dspheat=".false."        # dissipative heating
+export shal_cnv=".true."        # shallow convection
+export agrid_vel_rst=".true."   # write velocity restarts on agrid?
+
 # Disable the use of coupler.res; read from input.nml
 export USE_COUPLER_RES="NO"
-
-# Model resolution dependent parameters (below for C192)
-export DELTIM=900
-export layout_x=4
-export layout_y=8
-export cdmbgwd="0.25,2.0"        # mountain blocking and gravity wave drag
 
 if [ $CDUMP = "gdas" ]; then # GDAS cycle specific parameters
 
@@ -48,7 +53,7 @@ if [ $CDUMP = "gdas" ]; then # GDAS cycle specific parameters
 elif [ $CDUMP = "gfs" ]; then # GFS cycle specific parameters
 
     # Write more variables to output
-    export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table"
+    export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_cyc"
 
 fi
 

@@ -12,11 +12,8 @@
 
 echo "BEGIN: config.epos"
 
-# Task and thread configuration
-export wtime_epos="00:15:00"
-export npe_epos=84
-export npe_node_epos=12
-export memory_epos="254M"
+# Get task specific resources
+. $EXPDIR/config.resources epos
 
 export ENKFPOSTSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_post_fv3gfs.sh.ecf"
 export nth_epos=2

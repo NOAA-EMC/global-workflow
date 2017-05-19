@@ -11,7 +11,7 @@
 ## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
 ## Abstract:
-## Prepare for analysis driver script
+## Do prepatory tasks
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
@@ -27,12 +27,13 @@ for config in $configs; do
 done
 
 ###############################################################
-# Set script and dependency variables
+# Source machine runtime environment
+. $BASE_ENV/${machine}.env prep
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
-# This is a dummy prep step
-# It is simply copying prepbufr and prepbufr.acft_profiles
-# from operations and placing it in COMROT
-# In the near future, we will create them instead.
+###############################################################
+# Set script and dependency variables
 
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
@@ -43,8 +44,22 @@ export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
 export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
-$NCP $COMIN_OBS/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-$NCP $COMIN_OBS/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+# Do relocation
+if [ $DO_RELOCATE = "YES" ]; then
+    $DRIVE_RELOCATESH
+    echo "RELOCATION IS TURNED OFF in FV3, DRIVE_RELOCATESH does not exist, ABORT!"
+    status=1
+    [[ $status -ne 0 ]] && exit $status
+fi
+
+# Generate prepbufr files from dumps or copy from OPS
+if [ $DO_MAKEPREPBUFR = "YES" ]; then
+    $DRIVE_MAKEPREPBUFRSH
+    [[ $status -ne 0 ]] && exit $status
+else
+    $NCP $COMIN_OBS/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+    $NCP $COMIN_OBS/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+fi
 
 ###############################################################
 # Exit out cleanly

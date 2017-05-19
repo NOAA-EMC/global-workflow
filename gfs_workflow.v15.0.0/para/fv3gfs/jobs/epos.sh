@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env epos
+. $BASE_ENV/${machine}.env epos
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
