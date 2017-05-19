@@ -31,7 +31,7 @@
     <!-- BEGIN: GDAS EOMN -->
     <metatask name="eomn">
 
-        <var name="grp">@EOMNGROUPS@</var>
+        <var name="grp">@EOMGGROUPS@</var>
 
         <task name="eomg#grp#" cycledefs="gdas" maxtries="&MAXTRIES;">
 
@@ -39,10 +39,10 @@
 
             <jobname><cyclestr>&PSLOT;_eomg#grp#_@H</cyclestr></jobname>
             <account>&ACCOUNT;</account>
-            <queue>&QUEUE_EOBS;</queue>
-            &RESOURCES_EOBS;
+            <queue>&QUEUE_EOMG;</queue>
+            &RESOURCES_EOMG;
             <walltime>&WALLTIME_EOMG;</walltime>
-            <native>&NATIVE_EOBS;</native>
+            <native>&NATIVE_EOMG;</native>
 
             <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/eomg#grp#.log</cyclestr></join>
 
@@ -120,7 +120,7 @@
     <!-- BEGIN: GDAS EFMN -->
     <metatask name="efmn">
 
-        <var name="grp">@EFMNGROUPS@</var>
+        <var name="grp">@EFCSGROUPS@</var>
 
         <task name="efcs#grp#" cycledefs="gdas" maxtries="&MAXTRIES;">
 

@@ -17,15 +17,11 @@
 
     FILE DEPENDENCIES:
         1. config files for the parallel; e.g. config.base, config.fcst[.gfs], etc.
-        2. XML templates for GDAS, GFS and Hybrid tasks; gdas.xml, gfs.xml, gdashyb.xml
         Without these dependencies, the script will fail
 
     OUTPUT:
         1. PSLOT.xml: XML workflow
         2. PSLOT.crontab: crontab for ROCOTO run command
-
-    THANKS:
-        module shellvars.py from the Internet, adapted for local use.
 '''
 
 import os
@@ -34,136 +30,93 @@ import glob
 from distutils.spawn import find_executable
 from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from subprocess import Popen, PIPE
-
+import shellvars
+import rocoto
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
-    parser.add_argument('--xmldir', help='full path to directory containing XML templates', type=str, required=True)
-
     args = parser.parse_args()
 
-    expdir = args.expdir
-    xmldir = args.xmldir
+    # Source the configs in expdir once and return a dictionary
+    dict_configs = source_configs(args.expdir)
 
     # First create workflow XML
-    create_xml(expdir, xmldir)
+    create_xml(dict_configs)
 
     # Next create the crontab
-    create_crontab(expdir)
+    create_crontab(dict_configs['base'])
 
     return
 
 
-class ShellScriptException(Exception):
-    def __init__(self, shell_script, shell_error):
-        self.shell_script = shell_script
-        self.shell_error = shell_error
-        msg = "Error processing script %s: %s" % (shell_script, shell_error)
-        Exception.__init__(self, msg)
+def source_configs(expdir):
+    '''
+        Given an experiment directory containing config files
+        source the configs and return a dictionary for each task
+    '''
 
+    configs = glob.glob('%s/config.*' % expdir)
 
-class ShellVars():
-    """
-    Module that sources the shell script and returns an object that can be used to get a key
-    value pair for a single variable or all variables or just a list of variables defined in the
-    script.
-    ShellVars.list_vars : return a list list all variables in the script
-    ShellVars.get_vars  : return a dictionary of key value pairs for all variables in the script
-    ShellVars.get_var   : return a key value pair for desired variable in the script
-    """
+    dict_configs = {}
 
-    def __init__(self, script_path, ignore=None):
-        """
-        Given a shell script, initializes the class ShellVars
-        :param script_path: Path to the shell script
-        :type script_path: str or unicode
-        :param ignore: variable names to ignore.  By default we ignore variables
-                        that env injects into the script's environment.
-                        See IGNORE_DEFAULT.
-        :type ignore: iterable
-        """
-        IGNORE_DEFAULT = set(["SHLVL", "PWD", "_"])
+    # First read "config.base", gather basic info
+    print 'sourcing config.base'
+    dict_configs['base'] = config_parser(find_config('config.base', configs))
+    base = dict_configs['base']
 
-        self.script_path = script_path
-        self.ignore = IGNORE_DEFAULT if ignore is None else ignore
+    if expdir != base['EXPDIR']:
+        print 'MISMATCH in experiment directories!'
+        print 'config.base: EXPDIR = %s' % base['EXPDIR']
+        print 'input arg:     --expdir = %s' % expdir
+        sys.exit(1)
 
-        return
+    # GDAS/GFS tasks
+    for task in ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']:
 
+        print 'sourcing config.%s' % task
 
-    def _noscripterror(self):
-        return IOError("File does not exist: %s" % self.script_path)
+        files = []
+        files.append(find_config('config.base', configs))
+        files.append(find_config('config.%s' % task, configs))
 
+        dict_configs[task] = config_parser(files)
 
-    def list_vars(self):
-        """
-        Given a shell script, returns a list of shell variable names.
-        Note: this method executes the script, so beware if it contains side-effects.
-        :return: Key value pairs representing the environment variables defined
-                in the script.
-        :rtype: list
-        """
-        if os.path.isfile(self.script_path):
-            input = (""". "%s" > /dev/null 2>&1; env | awk -F = '/[a-zA-Z_][a-zA-Z_0-9]*=/ """ % self.script_path +
-                     """{ if (!system("[ -n \\"${" $1 "}\\" ]")) print $1 }'""")
-            cmd = "env -i bash".split()
+    # Hybrid tasks
+    if dict_configs['base']['DOHYBVAR'] == 'YES':
 
-            p = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            stdout_data, stderr_data = p.communicate(input=input)
-            if stderr_data:
-                raise ShellScriptException(self.script_path, stderr_data)
+        for task in ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']:
+
+            files = []
+            files.append(find_config('config.base', configs))
+            if task in ['eobs', 'eomg']:
+                files.append(find_config('config.anal', configs))
+                files.append(find_config('config.eobs', configs))
+            elif task in ['eupd']:
+                files.append(find_config('config.anal', configs))
+                files.append(find_config('config.eupd', configs))
+            elif task in ['efcs']:
+                files.append(find_config('config.fcst', configs))
+                files.append(find_config('config.efcs', configs))
             else:
-                lines = stdout_data.split()
-                return [elt for elt in lines if elt not in self.ignore]
-        else:
-            raise self._noscripterror()
+                files.append(find_config('config.%s' % task, configs))
+
+            print 'sourcing config.%s' % task
+            dict_configs[task] = config_parser(files)
+
+    return dict_configs
 
 
-    def get_vars(self):
-        """
-        Gets the values of environment variables defined in a shell script.
-        Note: this method executes the script potentially many times.
-        :return: Key value pairs representing the environment variables defined
-                in the script.
-        :rtype: dict
-        """
-
-        # Iterate over every var independently:
-        # This is slower than using env, but enables us to capture multiline variables
-        return dict((var, self.get_var(var)) for var in self.list_vars())
-
-
-    def get_var(self, var):
-        """
-        Given the name of an environment variable, returns the
-        value of the environment variable.
-        :param var: environment variable name
-        :type var: str or unicode
-        :return: str
-        """
-        if os.path.isfile(self.script_path):
-            input = '. "%s" > /dev/null 2>&1; echo -n "$%s"\n'% (self.script_path, var)
-            pipe = Popen(["bash"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            stdout_data, stderr_data = pipe.communicate(input=input)
-            if stderr_data:
-                raise ShellScriptException(self.script_path, stderr_data)
-            else:
-                return stdout_data
-        else:
-            raise self._noscripterror()
-
-
-def config_parser(filename):
+def config_parser(files):
     """
     Given the name of config file, key-value pair of all variables in the config file is returned as a dictionary
-    :param filename: config file
-    :type filename: str or unicode
+    :param files: config file or list of config files
+    :type files: list or str or unicode
     :return: Key value pairs representing the environment variables defined
             in the script.
     :rtype: dict
     """
-    sv = ShellVars(filename)
+    sv = shellvars.ShellVars(files)
     varbles = sv.get_vars()
     for key,value in varbles.iteritems():
         if any(x in key for x in ['CDATE','SDATE','EDATE']): # likely a date, convert to datetime
@@ -197,34 +150,35 @@ def get_scheduler(machine):
     '''
 
     if machine in ['ZEUS', 'THEIA']:
-        scheduler = 'moabtorque'
+        return 'moabtorque'
     elif machine in ['WCOSS']:
-        scheduler = 'lsf'
+        return 'lsf'
     elif machine in ['WCOSS_C']:
-        scheduler = 'lsfcray'
+        return 'lsfcray'
+    else:
+        msg = 'Unknown machine: %s, ABORT!' % machine
+        Exception.__init__(self,msg)
 
-    return scheduler
 
-
-def get_gfs_cyc_dates(base_in):
+def get_gfs_cyc_dates(base):
     '''
         Generate GFS dates from experiment dates and gfs_cyc choice
     '''
 
-    gfs_cyc = base_in['gfs_cyc']
-    sdate = base_in['SDATE']
-    edate = base_in['EDATE']
+    base_out = base.copy()
 
-    base_out = base_in.copy()
+    gfs_cyc = base['gfs_cyc']
+    sdate = base['SDATE']
+    edate = base['EDATE']
 
     # Set GFS cycling dates
     hrdet = 0
     if gfs_cyc == 1:
-        interval = '24:00:00'
+        interval_gfs = '24:00:00'
         hrinc = 24 - sdate.hour
         hrdet = edate.hour
     elif gfs_cyc == 2:
-        interval = '12:00:00'
+        interval_gfs = '12:00:00'
         if sdate.hour in [0, 12]:
             hrinc = 12
         elif sdate.hour in [6, 18]:
@@ -232,7 +186,7 @@ def get_gfs_cyc_dates(base_in):
         if edate.hour in [6, 18]:
             hrdet = 6
     elif gfs_cyc == 4:
-        interval = '06:00:00'
+        interval_gfs = '06:00:00'
         hrinc = 6
     sdate_gfs = sdate + timedelta(hours=hrinc)
     edate_gfs = edate - timedelta(hours=hrdet)
@@ -244,9 +198,9 @@ def get_gfs_cyc_dates(base_in):
         gfs_cyc = 0
 
     base_out['gfs_cyc'] = gfs_cyc
-    base_out['INTERVAL_GFS'] = interval
     base_out['SDATE_GFS'] = sdate_gfs
     base_out['EDATE_GFS'] = edate_gfs
+    base_out['INTERVAL_GFS'] = interval_gfs
 
     return base_out
 
@@ -261,17 +215,17 @@ def get_preamble():
     strings.append('<?xml version="1.0"?>\n')
     strings.append('<!DOCTYPE workflow\n')
     strings.append('[\n')
-    strings.append('    <!--\n')
-    strings.append('        PROGRAM\n')
-    strings.append('            Main workflow manager for cycling Global Forecast System\n')
+    strings.append('\t<!--\n')
+    strings.append('\tPROGRAM\n')
+    strings.append('\t\tMain workflow manager for cycling Global Forecast System\n')
     strings.append('\n')
-    strings.append('        AUTHOR:\n')
-    strings.append('            Rahul Mahajan\n')
-    strings.append('            rahul.mahajan@noaa.gov\n')
+    strings.append('\tAUTHOR:\n')
+    strings.append('\t\tRahul Mahajan\n')
+    strings.append('\t\trahul.mahajan@noaa.gov\n')
     strings.append('\n')
-    strings.append('        NOTES:\n')
-    strings.append('            This workflow was automatically generated at %s\n' % datetime.now())
-    strings.append('    -->\n')
+    strings.append('\tNOTES:\n')
+    strings.append('\t\tThis workflow was automatically generated at %s\n' % datetime.now())
+    strings.append('\t-->\n')
 
     return ''.join(strings)
 
@@ -284,37 +238,32 @@ def get_definitions(base):
     strings = []
 
     strings.append('\n')
-    strings.append('    <!-- User definitions -->\n')
-    strings.append('    <!ENTITY LOGNAME "%s">\n' % os.environ['USER'])
+    strings.append('\t<!-- User definitions -->\n')
+    strings.append('\t<!ENTITY LOGNAME "%s">\n' % os.environ['USER'])
     strings.append('\n')
-    strings.append('    <!-- Experiment parameters such as name, starting, ending dates -->\n')
-    strings.append('    <!ENTITY PSLOT "%s">\n' % base['PSLOT'])
-    strings.append('    <!ENTITY SDATE "%s">\n' % base['SDATE'].strftime('%Y%m%d%H%M'))
-    strings.append('    <!ENTITY EDATE "%s">\n' % base['EDATE'].strftime('%Y%m%d%H%M'))
+    strings.append('\t<!-- Experiment parameters such as name, starting, ending dates -->\n')
+    strings.append('\t<!ENTITY PSLOT "%s">\n' % base['PSLOT'])
+    strings.append('\t<!ENTITY SDATE "%s">\n' % base['SDATE'].strftime('%Y%m%d%H%M'))
+    strings.append('\t<!ENTITY EDATE "%s">\n' % base['EDATE'].strftime('%Y%m%d%H%M'))
     strings.append('\n')
-    strings.append('    <!-- Experiment and Rotation directory -->\n')
-    strings.append('    <!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
-    strings.append('    <!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
+    strings.append('\t<!-- Experiment and Rotation directory -->\n')
+    strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
+    strings.append('\t<!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
     strings.append('\n')
-    strings.append('    <!-- Directories for driving the workflow -->\n')
-    strings.append('    <!ENTITY JOBS_DIR "%s/fv3gfs/jobs">\n' % base['BASE_WORKFLOW'])
+    strings.append('\t<!-- Directories for driving the workflow -->\n')
+    strings.append('\t<!ENTITY JOBS_DIR "%s/fv3gfs/jobs">\n' % base['BASE_WORKFLOW'])
     strings.append('\n')
-    strings.append('    <!-- Machine related entities -->\n')
-    strings.append('    <!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
-    strings.append('    <!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-    strings.append('    <!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-    strings.append('    <!ENTITY SCHEDULER  "%s">\n' % base['SCHEDULER'])
+    strings.append('\t<!-- Machine related entities -->\n')
+    strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
+    strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
+    strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % get_scheduler(base['machine']))
     strings.append('\n')
-    strings.append('    <!-- ROCOTO parameters that control workflow -->\n')
-    strings.append('    <!ENTITY CYCLETHROTTLE "3">\n')
-    strings.append('    <!ENTITY TASKTHROTTLE  "20">\n')
-    strings.append('    <!ENTITY MAXTRIES      "2">\n')
+    strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
+    strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
+    strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
+    strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
-    strings.append('    <!-- Environment variables used in tasks -->\n')
-    strings.append('    <!ENTITY eEXPDIR    "<envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>">\n')
-    strings.append('    <!ENTITY eCDATE     "<envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>">\n')
-    strings.append('    <!ENTITY eCDUMPGDAS "<envar><name>CDUMP</name><value>gdas</value></envar>">\n')
-    strings.append('    <!ENTITY eCDUMPGFS  "<envar><name>CDUMP</name><value>gfs</value></envar>">\n')
 
     return ''.join(strings)
 
@@ -327,15 +276,15 @@ def get_gfs_dates(base):
     strings = []
 
     strings.append('\n')
-    strings.append('    <!-- Starting and ending dates for GFS cycle -->\n')
-    strings.append('    <!ENTITY SDATE_GFS    "%s">\n' % base['SDATE_GFS'].strftime('%Y%m%d%H%M'))
-    strings.append('    <!ENTITY EDATE_GFS    "%s">\n' % base['EDATE_GFS'].strftime('%Y%m%d%H%M'))
-    strings.append('    <!ENTITY INTERVAL_GFS "%s">\n' % base['INTERVAL_GFS'])
+    strings.append('\t<!-- Starting and ending dates for GFS cycle -->\n')
+    strings.append('\t<!ENTITY SDATE_GFS    "%s">\n' % base['SDATE_GFS'].strftime('%Y%m%d%H%M'))
+    strings.append('\t<!ENTITY EDATE_GFS    "%s">\n' % base['EDATE_GFS'].strftime('%Y%m%d%H%M'))
+    strings.append('\t<!ENTITY INTERVAL_GFS "%s">\n' % base['INTERVAL_GFS'])
 
     return ''.join(strings)
 
 
-def get_gdasgfs_resources(configs, base, cdump='gdas'):
+def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     '''
         Create GDAS or GFS resource entities
     '''
@@ -343,20 +292,21 @@ def get_gdasgfs_resources(configs, base, cdump='gdas'):
     strings = []
 
     strings.append('\n')
-    strings.append('    <!-- BEGIN: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
+    strings.append('\t<!-- BEGIN: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
     strings.append('\n')
+
+    base = dict_configs['base']
 
     tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
     for task in tasks:
 
-        cfg = config_parser(find_config('config.%s' % task, configs))
-        if cdump == 'gfs' and any('config.%s.gfs' % task in s for s in configs):
-            cfg = config_parser('config.%s.gfs' % task)
+        cfg = dict_configs[task]
 
-        if cdump in ['gfs'] and task in ['fcst', 'post']:
+        if cdump in ['gfs'] and 'wtime_%s_gfs' % task in cfg.keys():
             walltime = cfg['wtime_%s_gfs' % task]
         else:
             walltime = cfg['wtime_%s' % task]
+
         tasks = cfg['npe_%s' % task]
         ppn = cfg['npe_node_%s' % task]
         nodes = tasks / ppn
@@ -380,19 +330,19 @@ def get_gdasgfs_resources(configs, base, cdump='gdas'):
         taskstr = '%s_GFS' % task.upper() if cdump == 'gfs' else '%s' % task.upper()
         queuestr = '&QUEUE_ARCH;' if task in ['arch'] else '&QUEUE;'
 
-        strings.append('    <!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        strings.append('    <!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, walltime))
-        strings.append('    <!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('    <!ENTITY NATIVE_%s    "">\n'   % (taskstr))
+        strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, walltime))
+        strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
+        strings.append('\t<!ENTITY NATIVE_%s    "">\n'   % (taskstr))
 
         strings.append('\n')
 
-    strings.append('    <!-- END: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
+    strings.append('\t<!-- END: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
 
     return ''.join(strings)
 
 
-def get_gdashyb_resources(configs, base):
+def get_hyb_resources(dict_configs, cdump='gdas'):
     '''
         Create hybrid resource entities
     '''
@@ -400,21 +350,20 @@ def get_gdashyb_resources(configs, base):
     strings = []
 
     strings.append('\n')
-    strings.append('    <!-- BEGIN: Resource requirements for hybrid part of the workflow -->\n')
+    strings.append('\t<!-- BEGIN: Resource requirements for hybrid part of the workflow -->\n')
     strings.append('\n')
+
+    base = dict_configs['base']
 
     hybrid_tasks = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
     for task in hybrid_tasks:
 
-        if task == 'eomg':
-            cfg = config_parser(find_config('config.eobs', configs))
-        else:
-            cfg = config_parser(find_config('config.%s' % task, configs))
+        cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
 
-        if task == 'eomg':
+        if task in ['eomg']:
             tasks = cfg['npe_eobs']
             ppn = cfg['npe_node_eobs']
-            walltime = cfg['wtime_eomn']
+            walltime = cfg['wtime_eomg']
             memory = cfg['memory_eobs'] if 'memory_%s' % task in cfg.keys() else None
         else:
             tasks = cfg['npe_%s' % task]
@@ -441,96 +390,310 @@ def get_gdashyb_resources(configs, base):
         taskstr = task.upper()
         queuestr = '&QUEUE_ARCH;' if task in ['earc'] else '&QUEUE;'
 
-        strings.append('    <!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        strings.append('    <!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, walltime))
-        strings.append('    <!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('    <!ENTITY NATIVE_%s    "">\n'   % (taskstr))
+        strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, walltime))
+        strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
+        strings.append('\t<!ENTITY NATIVE_%s    "">\n'   % (taskstr))
 
         strings.append('\n')
 
-    strings.append('    <!-- END: Resource requirements for hybrid part of the workflow-->\n')
+    strings.append('\t<!-- END: Resource requirements for hybrid part of the workflow-->\n')
 
     return ''.join(strings)
 
 
-def create_task():
+def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
+                   metatask=None, varname=None, varval=None):
 
-    strings = []
+    if metatask is None:
+        taskstr = '%s' % task
+    else:
+        taskstr = '%s#%s#' % (task, varname)
+        metataskstr = '%s' % metatask
+        metatask_dict = {'metataskname': metataskstr, \
+                         'varname': '%s' % varname, \
+                         'varval': '%s' % varval}
 
-    return strings
+    if cdump in ['gfs']:
+        cdumpstr = '_GFS'
+        taskstr = 'gfs%s' % taskstr
+    elif cdump in ['gdas']:
+        cdumpstr = ''
+
+    task_dict = {'taskname': '%s' % taskstr, \
+                 'cycledef': '%s' % cdump, \
+                 'maxtries': '&MAXTRIES;', \
+                 'command': '&JOBS_DIR;/%s.sh' % task, \
+                 'jobname': '&PSLOT;_%s_@H' % taskstr, \
+                 'account': '&ACCOUNT;', \
+                 'queue': '&QUEUE_%s%s;' % (task.upper(), cdumpstr), \
+                 'walltime': '&WALLTIME_%s%s;' % (task.upper(), cdumpstr), \
+                 'native': '&NATIVE_%s%s;' % (task.upper(), cdumpstr), \
+                 'resources': '&RESOURCES_%s%s;' % (task.upper(), cdumpstr), \
+                 'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
+                 'envar': envar, \
+                 'dependency': dependency}
+
+    if metatask is None:
+        task = rocoto.create_task(task_dict)
+    else:
+        task = rocoto.create_metatask(task_dict, metatask_dict)
+    task = ''.join(task)
+
+    return task
 
 
 def create_firstcyc_task():
-
-    strings = []
-
-    strings.append('    <!-- BEGIN: FIRST cycle -->\n')
-    strings.append('\n')
-    strings.append('    <!-- BEGIN: FIRST firstcyc -->\n')
-    strings.append('    <task name="firstcyc" cycledefs="first" maxtries="&MAXTRIES;" final="true">\n')
-    strings.append('\n')
-    strings.append('        <command>sleep 1</command>\n')
-    strings.append('\n')
-    strings.append('        <jobname><cyclestr>&PSLOT;_firstcyc_@H</cyclestr></jobname>\n')
-    strings.append('        <account>&ACCOUNT;</account>\n')
-    strings.append('        <queue>&QUEUE_ARCH;</queue>\n')
-    strings.append('        &RESOURCES_ARCH;\n')
-    strings.append('        <walltime>&WALLTIME_ARCH;</walltime>\n')
-    strings.append('        <native>&NATIVE_ARCH;</native>\n')
-    strings.append('\n')
-    strings.append('        <join><cyclestr>&ROTDIR;/logs/@Y@m@d@H/firstcyc.log</cyclestr></join>\n')
-    strings.append('\n')
-    strings.append('        <dependency>\n')
-    strings.append('            <and>\n')
-    strings.append('                <datadep><cyclestr offset="24:00:00">&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></datadep>\n')
-    strings.append('                <not>\n')
-    strings.append('                    <cycleexistdep cycle_offset="-6:00:00"/>\n')
-    strings.append('                </not>\n')
-    strings.append('            </and>\n')
-    strings.append('        </dependency>\n')
-    strings.append('\n')
-    strings.append('    </task>\n')
-    strings.append('    <!-- END: FIRST firstcyc -->\n')
-    strings.append('\n')
-    strings.append('    <!-- END: FIRST cycle -->\n')
-
-    return ''.join(strings)
-
-
-def get_gdasgfs_workflow(xmldir, cdump='gdas', dohybvar='NO'):
     '''
-        Read GDAS or GFS XML template
+    This task is needed to run to finalize the first half cycle
     '''
 
-    fr = open('%s/%s.xml' % (xmldir, cdump), 'r')
-    lines = fr.readlines()
-    fr.close()
+    task = 'firstcyc'
+    taskstr = '%s' % task
 
-    if dohybvar == 'YES':
-        lines = [l.replace('@EPOSDEP@', '<taskdep task="epos" cycle_offset="-06:00:00"/>') for l in lines]
+    deps = []
+    data = '&EXPDIR;/logs/@Y@m@d@H.log'
+    dep_dict = {'type':'data', 'data':data, 'offset':'24:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'condition':'not', 'type':'cycleexist', 'offset':'-06:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    task_dict = {'taskname': '%s' % taskstr, \
+                 'cycledef': 'first', \
+                 'maxtries': '&MAXTRIES;', \
+                 'final' : 'true', \
+                 'command': 'sleep 1', \
+                 'jobname': '&PSLOT;_%s_@H' % taskstr, \
+                 'account': '&ACCOUNT;', \
+                 'queue': '&QUEUE_ARCH;', \
+                 'walltime': '&WALLTIME_ARCH;', \
+                 'native': '&NATIVE_ARCH;', \
+                 'resources': '&RESOURCES_ARCH;', \
+                 'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
+                 'dependency': dependencies}
+
+    task = rocoto.create_task(task_dict)
+
+    return ''.join(task)
+
+
+def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
+    '''
+        Create GDAS or GFS tasks
+    '''
+
+    envars = []
+    envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
+    envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
+
+    tasks = []
+
+    # prep
+    taskname = 'prep'
+    deps = []
+    dep_dict = {'name':'post', 'type':'task', 'offset':'-06:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # anal
+    taskname = 'anal'
+    deps = []
+    if cdump in ['gdas']:
+        dep_dict = {'name':'prep', 'type':'task'}
+        deps.append(rocoto.add_dependency(dep_dict))
+    elif cdump in ['gfs']:
+        dep_dict = {'name':'gfsprep', 'type':'task'}
+        deps.append(rocoto.add_dependency(dep_dict))
+    if dohybvar in ['y', 'Y', 'yes', 'YES']:
+        dep_dict = {'name':'epos', 'type':'task', 'offset':'-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:
-        lines = [l.replace('@EPOSDEP@', '') for l in lines]
+        dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
-    lines.append('\n')
+    tasks.append(task)
+    tasks.append('\n')
 
-    return ''.join(lines)
+    # fcst
+    taskname = 'fcst'
+    deps = []
+    if cdump in ['gdas']:
+        dep_dict = {'name':'anal', 'type':'task'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'condition':'not', 'type':'cycleexist', 'offset':'-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+    elif cdump in ['gfs']:
+        dep_dict = {'name':'gfsanal', 'type':'task'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # post
+    taskname = 'post'
+    deps = []
+    if cdump in ['gdas']:
+        dep_dict = {'name':'fcst', 'type':'task'}
+    elif cdump in ['gfs']:
+        dep_dict = {'name':'gfsfcst', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # vrfy
+    taskname = 'vrfy'
+    deps = []
+    if cdump in ['gdas']:
+        dep_dict = {'name':'post', 'type':'task'}
+    elif cdump in ['gfs']:
+        dep_dict = {'name':'gfspost', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # arch
+    taskname = 'arch'
+    deps = []
+    if cdump in ['gdas']:
+        dep_dict = {'name':'vrfy', 'type':'task'}
+    elif cdump in ['gfs']:
+        dep_dict = {'name':'gfsvrfy', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    return ''.join(tasks)
 
 
-def get_gdashyb_workflow(xmldir, EOMNGROUPS, EFMNGROUPS):
+def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, cdump='gdas'):
     '''
-        Read GDAS Hybrid XML template
+        Create Hybrid tasks
     '''
 
-    fr = open('%s/gdashyb.xml' % xmldir, 'r')
-    lines = fr.readlines()
-    fr.close()
+    envars = []
+    envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
+    envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
 
-    lines = [l.replace('@EOMNGROUPS@', EOMNGROUPS) for l in lines]
-    lines = [l.replace('@EFMNGROUPS@', EFMNGROUPS) for l in lines]
+    ensgrp = rocoto.create_envar(name='ENSGRP', value='#grp#')
 
-    lines.append('\n')
+    tasks = []
 
-    return ''.join(lines)
+    # eobs
+    taskname = 'eobs'
+    deps = []
+    dep_dict = {'name':'prep', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'name':'epos', 'type':'task', 'offset':'-06:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # eomn, eomg
+    metataskname = 'eomn'
+    varname = 'grp'
+    varval = EOMGGROUPS
+    taskname = 'eomg'
+    deps = []
+    dep_dict = {'name':'eobs', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+#    eomgenvars = envars + ['&eENSGRP;']
+    eomgenvars = envars + [ensgrp]
+    task = create_wf_task(taskname, cdump=cdump, envar=eomgenvars, dependency=dependencies, \
+           metatask=metataskname, varname=varname, varval=varval)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # eupd
+    taskname = 'eupd'
+    deps = []
+    dep_dict = {'name':'eomn', 'type':'metatask'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # ecen
+    taskname = 'ecen'
+    deps = []
+    dep_dict = {'name':'anal', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'name':'eupd', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # efmn
+    metataskname = 'efmn'
+    varname = 'grp'
+    varval = EFCSGROUPS
+    taskname = 'efcs'
+    deps = []
+    dep_dict = {'name':'ecen', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'condition':'not', 'type':'cycleexist', 'offset':'-06:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+#    efcsenvars = envars + ['&eENSGRP;']
+    efcsenvars = envars + [ensgrp]
+    task = create_wf_task(taskname, cdump=cdump, envar=efcsenvars, dependency=dependencies, \
+           metatask=metataskname, varname=varname, varval=varval)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # epos
+    taskname = 'epos'
+    deps = []
+    dep_dict = {'name':'efmn', 'type':'metatask'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    # earc
+    taskname = 'earc'
+    deps = []
+    dep_dict = {'name':'epos', 'type':'task'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+
+    tasks.append(task)
+    tasks.append('\n')
+
+    return ''.join(tasks)
 
 
 def get_workflow_header(base):
@@ -545,13 +708,13 @@ def get_workflow_header(base):
     strings.append('\n')
     strings.append('<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
     strings.append('\n')
-    strings.append('    <log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>\n')
+    strings.append('\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>\n')
     strings.append('\n')
-    strings.append('    <!-- Define the cycles -->\n')
-    strings.append('    <cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>\n')
-    strings.append('    <cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>\n')
+    strings.append('\t<!-- Define the cycles -->\n')
+    strings.append('\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>\n')
+    strings.append('\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>\n')
     if base['gfs_cyc'] != 0:
-        strings.append('    <cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>\n')
+        strings.append('\t<cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>\n')
 
     strings.append('\n')
 
@@ -564,12 +727,12 @@ def get_workflow_footer():
     '''
 
     strings = []
-    strings.append('</workflow>\n')
+    strings.append('\n</workflow>\n')
 
     return ''.join(strings)
 
 
-def create_crontab(expdir, cronint=5):
+def create_crontab(base, cronint=5):
     '''
         Create crontab to execute rocotorun every cronint (5) minutes
     '''
@@ -579,11 +742,6 @@ def create_crontab(expdir, cronint=5):
     if rocotoruncmd is None:
         print 'Failed to find rocotorun, crontab will not be created'
         return
-
-    configs = glob.glob('%s/config.*' % expdir)
-
-    # read "config.base", gather basic info
-    base = config_parser(find_config('config.base', configs))
 
     cronintstr = '*/%d * * * *' % cronint
     rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
@@ -615,95 +773,76 @@ def create_crontab(expdir, cronint=5):
     return
 
 
-def create_xml(expdir, xmldir):
+def create_xml(dict_configs):
     '''
-        Given an experiment directory containing config files and
-        XML directory containing XML templates, create the workflow XML
+        Given an dictionary of sourced config files,
+        create the workflow XML
     '''
 
-    configs = glob.glob('%s/config.*' % expdir)
+    if dict_configs['base']['gfs_cyc'] != 0:
+        dict_configs['base'] = get_gfs_cyc_dates(dict_configs['base'])
 
-    # First read "config.base", gather basic info needed for xml
-    base = config_parser(find_config('config.base', configs))
+    base = dict_configs['base']
 
-    if expdir != base['EXPDIR']:
-        print 'MISMATCH in experiment directories!'
-        print 'config.base: EXPDIR = %s' % base['EXPDIR']
-        print 'input arg:     --expdir = %s' % expdir
-        sys.exit(1)
-
-    base['SCHEDULER'] = get_scheduler(base['machine'])
-
-    if base['gfs_cyc'] != 0:
-        base = get_gfs_cyc_dates(base)
-
-    # Determine EOMN/EFMN groups based on ensemble size and grouping
-    if base['DOHYBVAR'] == "YES":
-        nens = base['NMEM_ENKF']
-        eobs = config_parser(find_config('config.eobs', configs))
-        efcs = config_parser(find_config('config.efcs', configs))
-        nens_eomn = eobs['NMEM_ENKF_GRP']
-        nens_efmn = efcs['NMEM_ENKF_GRP']
-        neomn_grps = nens / nens_eomn
-        nefmn_grps = nens / nens_efmn
-        EOMNGROUPS = ' '.join(['%02d' % x for x in range(1, neomn_grps+1)])
-        EFMNGROUPS = ' '.join(['%02d' % x for x in range(1, nefmn_grps+1)])
-
+    # Start collecting workflow pieces
     preamble = get_preamble()
     definitions = get_definitions(base)
-
-    if base['gfs_cyc'] != 0:
-        gfs_dates = get_gfs_dates(base)
-
-    gdas_resources = get_gdasgfs_resources(configs, base)
-    gdas_workflow = get_gdasgfs_workflow(xmldir, dohybvar=base['DOHYBVAR'])
-
-    if base['DOHYBVAR'] == "YES":
-        gdashyb_resources = get_gdashyb_resources(configs, base)
-        gdashyb_workflow = get_gdashyb_workflow(xmldir, EOMNGROUPS, EFMNGROUPS)
-
-    if base['gfs_cyc'] != 0:
-        gfs_resources = get_gdasgfs_resources(configs, base, cdump='gfs')
-        gfs_workflow = get_gdasgfs_workflow(xmldir, cdump='gfs', dohybvar=base['DOHYBVAR'])
-
     workflow_header = get_workflow_header(base)
     workflow_footer = get_workflow_footer()
 
-    # Start writing the XML file
-    fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')
+    # Get GDAS related entities, resources, workflow
+    gdas_resources = get_gdasgfs_resources(dict_configs)
+    gdas_tasks = get_gdasgfs_tasks(dohybvar=base['DOHYBVAR'])
 
-    fh.write(preamble)
-
-    fh.write(definitions)
-
-    if base['gfs_cyc'] != 0:
-        fh.write(gfs_dates)
-
-    fh.write(gdas_resources)
-
+    # Get hybrid related entities, resources, workflow
     if base['DOHYBVAR'] == "YES":
-        fh.write(gdashyb_resources)
 
+        # Determine EOMG/EFCS groups based on ensemble size and grouping
+        nens = base['NMEM_ENKF']
+        eobs = dict_configs['eobs']
+        efcs = dict_configs['efcs']
+        nens_eomg = eobs['NMEM_EOMGGRP']
+        nens_efcs = efcs['NMEM_EFCSGRP']
+        neomg_grps = nens / nens_eomg
+        nefcs_grps = nens / nens_efcs
+        EOMGGROUPS = ' '.join(['%02d' % x for x in range(1, neomg_grps+1)])
+        EFCSGROUPS = ' '.join(['%02d' % x for x in range(1, nefcs_grps+1)])
+
+        hyb_resources = get_hyb_resources(dict_configs)
+        hyb_tasks = get_hyb_tasks(EOMGGROUPS, EFCSGROUPS)
+
+    # Get GFS cycle related entities, resources, workflow
     if base['gfs_cyc'] != 0:
-        fh.write(gfs_resources)
+        gfs_dates = get_gfs_dates(base)
+        gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
+        gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'])
 
-    fh.write(workflow_header)
-
-    fh.write(gdas_workflow)
-
+    xmlfile = []
+    xmlfile.append(preamble)
+    xmlfile.append(definitions)
+    if base['gfs_cyc'] != 0:
+        xmlfile.append(gfs_dates)
+    xmlfile.append(gdas_resources)
+    if base['DOHYBVAR'] == "YES":
+        xmlfile.append(hyb_resources)
+    if base['gfs_cyc'] != 0:
+        xmlfile.append(gfs_resources)
+    xmlfile.append(workflow_header)
+    xmlfile.append(gdas_tasks)
     if base['DOHYBVAR'] == 'YES':
-        fh.write(gdashyb_workflow)
-
+        xmlfile.append(hyb_tasks)
     if base['gfs_cyc'] != 0:
-        fh.write(gfs_workflow)
+        xmlfile.append(gfs_tasks)
+    xmlfile.append(create_firstcyc_task())
+    xmlfile.append(workflow_footer)
 
-    fh.write(create_firstcyc_task())
-
-    fh.write(workflow_footer)
-
+    # Write the XML file
+    fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')
+    fh.write(''.join(xmlfile))
     fh.close()
 
     return
+
 
 if __name__ == '__main__':
     main()

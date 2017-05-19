@@ -68,14 +68,14 @@ module fv3_interface
   end type analysis_grid ! type analysis_grid
 
   type increment_grid
-     real(r_kind),                   dimension(:,:,:),     allocatable :: delp_inc     
-     real(r_kind),                   dimension(:,:,:),     allocatable :: u_inc      
-     real(r_kind),                   dimension(:,:,:),     allocatable :: v_inc 
-     real(r_kind),                   dimension(:,:,:),     allocatable :: sphum_inc 
-     real(r_kind),                   dimension(:,:,:),     allocatable :: temp_inc 
-     real(r_kind),                   dimension(:,:,:),     allocatable :: clwmr_inc 
+     real(r_kind),                   dimension(:,:,:),     allocatable :: delp_inc
+     real(r_kind),                   dimension(:,:,:),     allocatable :: u_inc
+     real(r_kind),                   dimension(:,:,:),     allocatable :: v_inc
+     real(r_kind),                   dimension(:,:,:),     allocatable :: sphum_inc
+     real(r_kind),                   dimension(:,:,:),     allocatable :: temp_inc
+     real(r_kind),                   dimension(:,:,:),     allocatable :: clwmr_inc
      real(r_kind),                   dimension(:,:,:),     allocatable :: o3mr_inc
-     real(r_kind),                   dimension(:),         allocatable :: lon 
+     real(r_kind),                   dimension(:),         allocatable :: lon
      real(r_kind),                   dimension(:),         allocatable :: lat
      real(r_kind),                   dimension(:),         allocatable :: lev
      real(r_kind),                   dimension(:),         allocatable :: ilev
@@ -115,7 +115,7 @@ contains
 
     ! Define variables computed within routine
 
-    type(increment_grid)                                                 :: grid 
+    type(increment_grid)                                                 :: grid
 
     !=====================================================================
 
@@ -173,7 +173,7 @@ contains
     integer                                                              :: ncvarid
     integer                                                              :: ncdimid
     integer                                                              :: ncstatus
-    
+
     !=====================================================================
 
     ! Define local variables
@@ -183,27 +183,27 @@ contains
          cmode=ior(NF90_CLOBBER,NF90_64BIT_OFFSET),ncid=ncfileid)
     if (ncstatus /= nf90_noerr) then
        print *, 'error opening file ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_dim(ncfileid,'lon',grid%nx,dimid_lon)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lon dim ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_dim(ncfileid,'lat',grid%ny,dimid_lat)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lat dim ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_dim(ncfileid,'lev',grid%nz,dimid_lev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lev dim ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_dim(ncfileid,'ilev',grid%nzp1,dimid_ilev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating ilev dim ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     dimid_1d(1) = dimid_lon
     ncstatus    = nf90_def_var(ncfileid,'lon',nf90_float,dimid_1d,         &
@@ -211,56 +211,56 @@ contains
     print *,'dims',grid%nx,grid%ny,grid%nz,grid%nzp1
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lon ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_att(ncfileid,varid_lon,'units','degrees_east')
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lon units ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     dimid_1d(1) = dimid_lat
     ncstatus    = nf90_def_var(ncfileid,'lat',nf90_float,dimid_1d,         &
          & varid_lat)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lat ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_att(ncfileid,varid_lat,'units','degrees_north')
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lat units ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     dimid_1d(1) = dimid_lev
     ncstatus    = nf90_def_var(ncfileid,'lev',nf90_float,dimid_1d,         &
          & varid_lev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating lev ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'pfull',nf90_float,dimid_1d,       &
          & varid_pfull)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating pfull ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     dimid_1d(1) = dimid_ilev
     ncstatus    = nf90_def_var(ncfileid,'ilev',nf90_float,dimid_1d,        &
          & varid_ilev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating ilev ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'hyai',nf90_float,dimid_1d,        &
          & varid_hyai)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating hyai ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'hybi',nf90_float,dimid_1d,        &
          & varid_hybi)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating hybi ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     dimid_3d(1) = dimid_lon
     dimid_3d(2) = dimid_lat
@@ -269,137 +269,147 @@ contains
          & varid_u_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating u_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'v_inc',nf90_float,dimid_3d,       &
          & varid_v_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating v_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'delp_inc',nf90_float,dimid_3d,    &
          & varid_delp_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating delp_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'T_inc',nf90_float,dimid_3d,       &
          & varid_t_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating T_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'sphum_inc',nf90_float,dimid_3d,   &
          & varid_sphum_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating sphum_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'liq_wat_inc',nf90_float,dimid_3d, &
          & varid_liq_wat_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating liq_wat_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_def_var(ncfileid,'o3mr_inc',nf90_float,dimid_3d,    &
          & varid_o3mr_inc)
     if (ncstatus /= nf90_noerr) then
        print *, 'error creating o3mr_inc ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
+    endif
+    ncstatus    = nf90_put_att(ncfileid,nf90_global,'source','GSI')
+    if (ncstatus /= nf90_noerr) then
+       print *, 'error creating global attribute source',trim(nf90_strerror(ncstatus))
+       stop 1
+    endif
+    ncstatus    = nf90_put_att(ncfileid,nf90_global,'comment','global analysis increment from calc_increment.x')
+    if (ncstatus /= nf90_noerr) then
+       print *, 'error creating global attribute comment',trim(nf90_strerror(ncstatus))
+       stop 1
     endif
     ncstatus    = nf90_enddef(ncfileid)
     if (ncstatus /= nf90_noerr) then
        print *,'enddef error ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_lon,grid%lon)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing lon ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_lat,grid%lat)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing lat ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_lev,grid%lev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing lev ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_pfull,grid%pfull)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing pfull ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_ilev,grid%ilev)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing ilev ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_hyai,grid%hyai)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing hyai ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_put_var(ncfileid,varid_hybi,grid%hybi)
     if (ncstatus /= nf90_noerr) then
        print *, 'error writing hybi ',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing u_inc, min/max =',&
      minval(grid%u_inc),maxval(grid%u_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_u_inc,grid%u_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing v_inc, min/max =',&
     minval(grid%v_inc),maxval(grid%v_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_v_inc,grid%v_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing delp_inc, min/max =',&
     minval(grid%delp_inc),maxval(grid%delp_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_delp_inc,grid%delp_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing temp_inc, min/max =',&
     minval(grid%temp_inc),maxval(grid%temp_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_t_inc,grid%temp_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing sphum_inc, min/max =',&
     minval(grid%sphum_inc),maxval(grid%sphum_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_sphum_inc,grid%sphum_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing clwmr_inc, min/max =',&
     minval(grid%clwmr_inc),maxval(grid%clwmr_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_liq_wat_inc,grid%clwmr_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     print *,'writing o3mr_inc, min/max =',&
     minval(grid%o3mr_inc),maxval(grid%o3mr_inc)
     ncstatus    = nf90_put_var(ncfileid,varid_o3mr_inc,grid%o3mr_inc)
     if (ncstatus /= nf90_noerr) then
        print *, trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
     ncstatus    = nf90_close(ncfileid)
     if (ncstatus /= nf90_noerr) then
        print *, 'error closing file:',trim(nf90_strerror(ncstatus))
-       stop
+       stop 1
     endif
 
     !=====================================================================
@@ -420,7 +430,7 @@ contains
 
     ! Define variables computed within routine
 
-    type(gfs_grid)                                                       :: grid    
+    type(gfs_grid)                                                       :: grid
 
     ! Define counting variables
 
@@ -460,7 +470,7 @@ contains
        do j=1,grid%nlats
           incr_grid%lat(j) = grid%rlat(1,grid%nlats-j+1)
        enddo
-    else 
+    else
        incr_grid%lat = grid%rlat(1,:)
     endif
 
@@ -545,7 +555,7 @@ contains
     print *,'flip_lats',flip_lats
     call gfs_nems_vcoord(meta_nemsio,grid%filename,vcoord)
     grid%ak           = vcoord(:,1,1)
-    grid%bk           = vcoord(:,2,1)    
+    grid%bk           = vcoord(:,2,1)
     var_info%var_name = 'psfc'
     call variable_lookup(var_info)
     call gfs_nems_read(workgrid,var_info%nems_name,var_info%nems_levtyp,   &

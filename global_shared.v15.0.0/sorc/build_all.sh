@@ -3,7 +3,6 @@ set -x
 
 target=${1:-cray}    ;#wcoss, cray or theia
 
-
 #--link large fixed fields for respective machines
 if [ -d ../fix ]; then rm -f fix; fi
 if [ $target = cray -o $target = wcoss ]; then
@@ -15,7 +14,6 @@ else
  exit
 fi
  
-
 pwd=`pwd`
 for script in build_gsi.sh build_gsm.sh build_radmon.sh build_nems_util.sh build_chgres.sh build_orog.sh; do
  cd $pwd
@@ -29,10 +27,9 @@ sh build_tropcy_NEMS_cray.sh
 cd $pwd/fre-nctools.fd
 BUILD_TOOLS.csh
 
-cd $pwd/fv3nc2nemsio.fd
-makefile.sh
-
-cd $pwd/regrid_nemsio.fd/
-makefile_$target.sh
+for util in fv3nc2nemsio.fd regrid_nemsio.fd calc_increment.fd; do
+ cd $pwd/$util
+ makefile.sh $target
+done
 
 exit

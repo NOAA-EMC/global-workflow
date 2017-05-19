@@ -12,11 +12,8 @@
 
 echo "BEGIN: config.eupd"
 
-# Task and thread configuration
-export wtime_eupd="00:30:00"
-export npe_eupd=120
-export npe_node_eupd=12
-export memory_eupd="3072M"
+# Get task specific resources
+. $EXPDIR/config.resources eupd
 
 export ENKFUPDSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_update_fv3gfs.sh.ecf"
 export ENKFEXEC="$BASE_GSI/src/enkf/global_enkf"

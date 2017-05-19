@@ -12,17 +12,15 @@
 
 echo "BEGIN: config.ecen"
 
-export wtime_ecen="00:05:00"
-export npe_ecen=84
-export npe_node_ecen=12
-export memory_ecen="3072M"
+# Get task specific resources
+. $EXPDIR/config.resources ecen
 
 export ENKFRECENSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_recenter_fv3gfs.sh.ecf"
 export nth_ecen=2
 
 export CHGRESSH="$BASE_GFS/ush/global_chgres.sh"
 export CHGRESEXEC="$BASE_GFS/exec/global_chgres"
-export CHGRESVARS_ENKF="use_ufo=.false.,nopdpvv=.true."
+export CHGRESVARS_ENKF="use_ufo=.true.,nopdpvv=.true."
 export CHGRESTHREAD=12
 
 echo "END: config.ecen"

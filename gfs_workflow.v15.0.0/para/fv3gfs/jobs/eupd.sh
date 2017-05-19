@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env eupd
+. $BASE_ENV/${machine}.env eupd
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

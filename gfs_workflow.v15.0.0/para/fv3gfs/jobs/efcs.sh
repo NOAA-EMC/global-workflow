@@ -29,7 +29,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env efcs
+. $BASE_ENV/${machine}.env efcs
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -85,12 +85,12 @@ else
 fi
 FHMIN_=$(($FHMIN + $FHOUT))
 for fhr in `seq $FHMIN_ $FHOUT $FHMAX`; do
-    export fdiag_ENKF="$fdiag,$fhr"
+    export fdiag_ENKF="$fdiag_ENKF,$fhr"
 done
 
-# Get ENSBEG/ENSEND from ENSGRP and NMEM_ENKF_GRP
-ENSEND=`echo "$NMEM_ENKF_GRP * $ENSGRP" | bc`
-ENSBEG=`echo "$ENSEND - $NMEM_ENKF_GRP + 1" | bc`
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+ENSEND=`echo "$NMEM_EFCSGRP * $ENSGRP" | bc`
+ENSBEG=`echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc`
 export ENSBEG=$ENSBEG
 export ENSEND=$ENSEND
 

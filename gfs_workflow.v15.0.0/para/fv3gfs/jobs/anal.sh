@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env anal
+. $BASE_ENV/${machine}.env anal
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

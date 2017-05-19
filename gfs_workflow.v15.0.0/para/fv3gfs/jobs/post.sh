@@ -11,7 +11,7 @@
 ## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
 ## Abstract:
-## Regridding and NCEP post driver script
+## NCEP post driver script
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
@@ -28,7 +28,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/$machine.env post
+. $BASE_ENV/${machine}.env post
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

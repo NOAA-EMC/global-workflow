@@ -1,14 +1,14 @@
-#!/bin/sh
+#!/bin/ksh
 #----WCOSS_CRAY JOBCARD
-#BSUB -L /bin/sh
-#BSUB -P FV3GFS-T2O
-#BSUB -oo log.chgres
-#BSUB -eo log.chgres
-#BSUB -J chgres_fv3
-#BSUB -q devonprod
-#BSUB -W 06:00
-#BSUB -M 1024
-#BSUB -extsched 'CRAYLINUX[]'
+##BSUB -L /bin/sh
+##BSUB -P FV3GFS-T2O
+##BSUB -oo log.chgres
+##BSUB -eo log.chgres
+##BSUB -J chgres_fv3
+##BSUB -q devonprod
+##BSUB -W 06:00
+##BSUB -M 1024
+##BSUB -extsched 'CRAYLINUX[]'
 
 #----WCOSS JOBCARD
 ##BSUB -L /bin/sh
@@ -35,7 +35,7 @@ set -ax
 # Makes ICs on fv3 globally uniform cubed-sphere grid using operational GFS initial conditions.
 # Fanglin Yang, 09/30/2016
 #  This script is created based on the C-shell scripts fv3_gfs_preproc/IC_scripts/DRIVER_CHGRES.csh
-#  and submit_chgres.csh provided by GFDL.  APRUN and environment variables are added to run on 
+#  and submit_chgres.csh provided by GFDL.  APRUN and environment variables are added to run on
 #  WCOSS CRAY.  Directory and file names are standaridized to follow NCEP global model convention.
 #  This script calls fv3gfs_chgres.sh.
 # Fanglin Yang and George Gayno, 02/08/2017
@@ -51,35 +51,46 @@ export machine=${machine:-WCOSS_C}
 export NODES=1
 export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
 
-export APRUNC=""     
-if [ $machine = WCOSS_C ]; then 
+export APRUNC=""
+if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load PrgEnv-intel 2>>/dev/null
  export KMP_AFFINITY=disabled
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
- export FIXfv3=${FIXfv3:-/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3}
-elif [ $machine = WCOSS ]; then 
+elif [ $machine = WCOSS ]; then
  . /usrx/local/Modules/default/init/sh 2>>/dev/null
  module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
- export FIXfv3=${FIXfv3:-/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3}
-elif [ $machine = THEIA ]; then 
+elif [ $machine = THEIA ]; then
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
  module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
- export FIXfv3=${FIXfv3:-/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3}
-else 
+else
  echo "$machine not supported, exit"
  exit
 fi
 #-------------------------------------------------------------------------------------------------
 
-export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072         
-export CRES=`echo $CASE |cut -c 2-`
-export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ... 
+export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
+export CRES=`echo $CASE | cut -c 2-`
+export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ...
 export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
 export LEVS=${LEVS:-64}
 export LSOIL=${LSOIL:-4}
 export ictype=${ictype:-nemsgfs}             # nemsgfs for q3fy17 gfs with new land datasets; opsgfs for q2fy16 gfs.
 export nst_anl=${nst_anl:-".false."}         # to include NST analysis
+
+export VERBOSE=YES
+pwd=$(pwd)
+export NWPROD=${NWPROD:-$pwd}
+export BASE_GSM=${BASE_GSM:-$NWPROD/global_shared}
+export FIXgsm=$BASE_GSM/fix/fix_am
+export FIXfv3=$BASE_GSM/fix/fix_fv3
+export CHGRESEXEC=$BASE_GSM/exec/global_chgres
+export CHGRESSH=$BASE_GSM/ush/global_chgres.sh
+
+# Location of initial conditions for GFS (before chgres) and FV3 (after chgres)
+export INIDIR=${INIDIR:-$pwd}
+export OUTDIR=${OUTDIR:-$pwd/INPUT}
+mkdir -p $OUTDIR
 
 #---------------------------------------------------------
 export gtype=uniform	          # grid type = uniform, stretch, or nested
@@ -94,7 +105,7 @@ elif [ $gtype = stretch ]; then
   export name=${CASE}r${rn}       		 # identifier based on refined location (same as grid)
   export ntiles=6
   echo "creating stretched ICs"
-elif [ $gtype = nest ]; then 
+elif [ $gtype = nest ]; then
   export stetch_fac=  	                         # Stretching factor for the grid
   export rn=`expr $stetch_fac \* 10 `
   export refine_ratio=   	                 # Specify the refinement ratio for nest grid
@@ -106,18 +117,11 @@ else
 fi
 
 #---------------------------------------------------------------
-export SAVEDIR=${out_dir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs}
-export DATA=${rundir:-/gpfs/hps/ptmp/$LOGNAME/FV3IC/rundir}                                       
-if [ ! -s $SAVEDIR ]; then mkdir -p $SAVEDIR; fi           
-if [ ! -s $DATA ];    then mkdir -p $DATA; fi           
+
+# Temporary rundirectory
+export DATA=${DATA:-${RUNDIR:-$pwd/rundir$$}}
+if [ ! -s $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 8
-
-export VERBOSE=YES
-export BASE_GSM=${BASE_GSM:-/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs/trunk_r89554/global_shared.v15.0.0}
-export FIXgsm=$BASE_GSM/fix/fix_am             
-export CHGRESEXEC=$BASE_GSM/exec/global_chgres
-export CHGRESSH=$BASE_GSM/ush/global_chgres.sh
-
 
 export CLIMO_FIELDS_OPT=3
 export LANDICE_OPT=2
@@ -134,7 +138,7 @@ export FNTG3C=${FIXgsm}/global_tg3clim.2.6x1.5.grb
 export FNVEGC=${FIXgsm}/global_vegfrac.0.144.decpercent.grb
 export FNVETC=${FIXgsm}/global_vegtype.1x1.grb
 export FNSOTC=${FIXgsm}/global_soiltype.1x1.grb
-export FNSMCC=${FIXgsm}/global_soilmcpc.1x1.grb     
+export FNSMCC=${FIXgsm}/global_soilmcpc.1x1.grb
 export FNVMNC=${FIXgsm}/global_shdmin.0.144x0.144.grb
 export FNVMXC=${FIXgsm}/global_shdmax.0.144x0.144.grb
 export FNSLPC=${FIXgsm}/global_slope.1x1.grb
@@ -156,22 +160,20 @@ export FV3OROG_TILE4=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile4.nc
 export FV3OROG_TILE5=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile5.nc
 export FV3OROG_TILE6=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile6.nc
 
-
-export ymd=`echo $CDATE |cut -c 1-8`
-export cyc=`echo $CDATE|cut -c 9-10`
-export inidir=${inidir:-$COMROOTp2/gfs/prod/gfs.$ymd} 
-export outdir=$SAVEDIR/${name}_${CDATE}
-mkdir -p $outdir
-
+export ymd=`echo $CDATE | cut -c 1-8`
+export cyc=`echo $CDATE | cut -c 9-10`
 
 if [ $ictype = opsgfs ]; then
  nst_anl=".false."
- if [ -s ${inidir}/siganl.${CDUMP}.$CDATE ]; then
-   export ATMANL=$inidir/siganl.${CDUMP}.$CDATE
-   export SFCANL=$inidir/sfcanl.${CDUMP}.$CDATE
- else
-   export ATMANL=$inidir/${CDUMP}.t${cyc}z.sanl 
-   export SFCANL=$inidir/${CDUMP}.t${cyc}z.sfcanl 
+ if test -s $ATMANL
+ then
+  if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
+   export ATMANL=$INIDIR/siganl.${CDUMP}.$CDATE
+   export SFCANL=$INIDIR/sfcanl.${CDUMP}.$CDATE
+  else
+   export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.sanl
+   export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl
+  fi
  fi
  export SOILTYPE_INP=zobler
  export SOILTYPE_OUT=zobler
@@ -191,14 +193,17 @@ if [ $ictype = opsgfs ]; then
  fi
 
 elif [ $ictype = nemsgfs ]; then
- if [ -s ${inidir}/gfnanl.${CDUMP}.$CDATE ]; then
-   export ATMANL=$inidir/gfnanl.${CDUMP}.$CDATE
-   export SFCANL=$inidir/sfnanl.${CDUMP}.$CDATE
-   export NSTANL=$inidir/nsnanl.${CDUMP}.$CDATE
- else
-   export ATMANL=$inidir/${CDUMP}.t${cyc}z.atmanl.nemsio
-   export SFCANL=$inidir/${CDUMP}.t${cyc}z.sfcanl.nemsio
-   export NSTANL=$inidir/${CDUMP}.t${cyc}z.nstanl.nemsio
+ if test -s $ATMANL
+ then
+  if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
+   export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
+   export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
+   export NSTANL=$INIDIR/nsnanl.${CDUMP}.$CDATE
+  else
+   export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmanl.nemsio
+   export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl.nemsio
+   export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
+  fi
  fi
  # to use new albedo, soil/veg type
  export IALB=1
@@ -222,7 +227,7 @@ fi
 # Convert atmospheric file.
 #------------------------------------------------
 export CHGRESVARS="use_ufo=.false.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
-export SIGINP=$ATMANL            
+export SIGINP=$ATMANL
 export SFCINP=NULL
 export NSTINP=NULL
 export LATB=$LATB_ATM
@@ -232,19 +237,19 @@ $CHGRESSH
 rc=$?
 if [[ $rc -ne 0 ]] ; then
   echo "***ERROR*** rc= $rc"
-  exit
+  exit $rc
 fi
 
-mv ${DATA}/gfs_data.tile*.nc  $outdir/.
-mv ${DATA}/gfs_ctrl.nc        $outdir/.
+mv ${DATA}/gfs_data.tile*.nc  $OUTDIR/.
+mv ${DATA}/gfs_ctrl.nc        $OUTDIR/.
 
 #---------------------------------------------------
 # Convert surface and nst files one tile at a time.
 #---------------------------------------------------
 export CHGRESVARS="use_ufo=.true.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
 export SIGINP=NULL
-export SFCINP=$SFCANL             
-export NSTINP=$NSTANL                  
+export SFCINP=$SFCANL
+export NSTINP=$NSTANL
 export LATB=$LATB_SFC
 export LONB=$LONB_SFC
 
@@ -254,12 +259,11 @@ for tile in '1' '2' '3' '4' '5' '6' ; do
  rc=$?
  if [[ $rc -ne 0 ]] ; then
    echo "***ERROR*** rc= $rc"
-   exit
+   exit $rc
  fi
- mv ${DATA}/out.sfc.tile${tile}.nc     $outdir/sfc_data.tile${tile}.nc
- mv ${DATA}/out.nst.tile${tile}.nemsio $outdir/nst_data.tile${tile}.nemsio
+ mv ${DATA}/out.sfc.tile${tile}.nc $OUTDIR/sfc_data.tile${tile}.nc
+ [[ $nst_anl = ".true." ]] && mv ${DATA}/out.nst.tile${tile}.nemsio $OUTDIR/nst_data.tile${tile}.nemsio
 done
 
-
-exit
+exit 0
 

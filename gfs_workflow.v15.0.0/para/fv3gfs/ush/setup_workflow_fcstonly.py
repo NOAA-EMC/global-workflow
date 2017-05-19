@@ -24,8 +24,6 @@
         1. PSLOT.xml: XML workflow
         2. PSLOT.crontab: crontab for ROCOTO run command
 
-    THANKS:
-        module shellvars.py from the Internet, adapted for local use.
 '''
 
 import os
@@ -34,7 +32,7 @@ import glob
 from distutils.spawn import find_executable
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from subprocess import Popen, PIPE
+import shellvars
 
 
 def main():
@@ -47,111 +45,69 @@ def main():
     expdir = args.expdir
     xmldir = args.xmldir
 
+    # Source the configs in expdir once and return a dictionary
+    dict_configs = source_configs(expdir)
+
     # First create workflow XML
-    create_xml(expdir, xmldir)
+    create_xml(dict_configs, xmldir)
 
     # Next create the crontab
-    create_crontab(expdir)
+    create_crontab(dict_configs['base'])
 
     return
 
 
-class ShellScriptException(Exception):
-    def __init__(self, shell_script, shell_error):
-        self.shell_script = shell_script
-        self.shell_error = shell_error
-        msg = "Error processing script %s: %s" % (shell_script, shell_error)
-        Exception.__init__(self, msg)
+def source_configs(expdir):
+    '''
+        Given an experiment directory containing config files
+        source the configs and return a dictionary for each task
+    '''
 
+    configs = glob.glob('%s/config.*' % expdir)
 
-class ShellVars():
-    """
-    Module that sources the shell script and returns an object that can be used to get a key
-    value pair for a single variable or all variables or just a list of variables defined in the
-    script.
-    ShellVars.list_vars : return a list list all variables in the script
-    ShellVars.get_vars  : return a dictionary of key value pairs for all variables in the script
-    ShellVars.get_var   : return a key value pair for desired variable in the script
-    """
+    dict_configs = {}
 
-    def __init__(self, script_path, ignore=None):
-        """
-        Given a shell script, initializes the class ShellVars
-        :param script_path: Path to the shell script
-        :type script_path: str or unicode
-        :param ignore: variable names to ignore.  By default we ignore variables
-                        that env injects into the script's environment.
-                        See IGNORE_DEFAULT.
-        :type ignore: iterable
-        """
-        IGNORE_DEFAULT = set(["SHLVL", "PWD", "_"])
+    # First read "config.base", gather basic info
+    dict_configs['base'] = config_parser(find_config('config.base', configs))
+    base = dict_configs['base']
 
-        self.script_path = script_path
-        self.ignore = IGNORE_DEFAULT if ignore is None else ignore
+    if expdir != base['EXPDIR']:
+        print 'MISMATCH in experiment directories!'
+        print 'config.base: EXPDIR = %s' % base['EXPDIR']
+        print 'input arg:     --expdir = %s' % expdir
+        sys.exit(1)
 
-        return
+    # GDAS/GFS tasks
+    for task in ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']:
 
+        files = []
+        files.append(find_config('config.base', configs))
+        files.append(find_config('config.%s' % task, configs))
 
-    def _noscripterror(self):
-        return IOError("File does not exist: %s" % self.script_path)
+        dict_configs[task] = config_parser(files)
 
+    # Hybrid tasks
+    if dict_configs['base']['DOHYBVAR'] == 'YES':
 
-    def list_vars(self):
-        """
-        Given a shell script, returns a list of shell variable names.
-        Note: this method executes the script, so beware if it contains side-effects.
-        :return: Key value pairs representing the environment variables defined
-                in the script.
-        :rtype: list
-        """
-        if os.path.isfile(self.script_path):
-            input = (""". "%s" > /dev/null 2>&1; env | awk -F = '/[a-zA-Z_][a-zA-Z_0-9]*=/ """ % self.script_path +
-                     """{ if (!system("[ -n \\"${" $1 "}\\" ]")) print $1 }'""")
-            cmd = "env -i bash".split()
+        for task in ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']:
 
-            p = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            stdout_data, stderr_data = p.communicate(input=input)
-            if stderr_data:
-                raise ShellScriptException(self.script_path, stderr_data)
+            files = []
+            files.append(find_config('config.base', configs))
+            if task in ['eobs', 'eomg']:
+                files.append(find_config('config.anal', configs))
+                files.append(find_config('config.eobs', configs))
+            elif task in ['eupd']:
+                files.append(find_config('config.anal', configs))
+                files.append(find_config('config.eupd', configs))
+            elif task in ['efcs']:
+                files.append(find_config('config.fcst', configs))
+                files.append(find_config('config.efcs', configs))
             else:
-                lines = stdout_data.split()
-                return [elt for elt in lines if elt not in self.ignore]
-        else:
-            raise self._noscripterror()
+                files.append(find_config('config.%s' % task, configs))
 
+            dict_configs[task] = config_parser(files)
 
-    def get_vars(self):
-        """
-        Gets the values of environment variables defined in a shell script.
-        Note: this method executes the script potentially many times.
-        :return: Key value pairs representing the environment variables defined
-                in the script.
-        :rtype: dict
-        """
-
-        # Iterate over every var independently:
-        # This is slower than using env, but enables us to capture multiline variables
-        return dict((var, self.get_var(var)) for var in self.list_vars())
-
-
-    def get_var(self, var):
-        """
-        Given the name of an environment variable, returns the
-        value of the environment variable.
-        :param var: environment variable name
-        :type var: str or unicode
-        :return: str
-        """
-        if os.path.isfile(self.script_path):
-            input = '. "%s" > /dev/null 2>&1; echo -n "$%s"\n'% (self.script_path, var)
-            pipe = Popen(["bash"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            stdout_data, stderr_data = pipe.communicate(input=input)
-            if stderr_data:
-                raise ShellScriptException(self.script_path, stderr_data)
-            else:
-                return stdout_data
-        else:
-            raise self._noscripterror()
+    return dict_configs
 
 
 def config_parser(filename):
@@ -163,7 +119,7 @@ def config_parser(filename):
             in the script.
     :rtype: dict
     """
-    sv = ShellVars(filename)
+    sv = shellvars.ShellVars(filename)
     varbles = sv.get_vars()
     for key,value in varbles.iteritems():
         if any(x in key for x in ['CDATE','SDATE','EDATE']): # likely a date, convert to datetime
@@ -196,14 +152,15 @@ def get_scheduler(machine):
         Determine the scheduler
     '''
 
-    if machine in ['THEIA']:
-        scheduler = 'moabtorque'
+    if machine in ['ZEUS', 'THEIA']:
+        return 'moabtorque'
     elif machine in ['WCOSS']:
-        scheduler = 'lsf'
+        return 'lsf'
     elif machine in ['WCOSS_C']:
-        scheduler = 'lsfcray'
-
-    return scheduler
+        return 'lsfcray'
+    else:
+        msg = 'Unknown machine: %s, ABORT!' % machine
+        Exception.__init__(self,msg)
 
 
 def get_interval(cyc_input):
@@ -274,7 +231,7 @@ def get_definitions(base):
     strings.append('    <!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
     strings.append('    <!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
     strings.append('    <!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-    strings.append('    <!ENTITY SCHEDULER  "%s">\n' % base['SCHEDULER'])
+    strings.append('    <!ENTITY SCHEDULER  "%s">\n' % get_scheduler(base['machine']))
     strings.append('\n')
     strings.append('    <!-- ROCOTO parameters that control workflow -->\n')
     strings.append('    <!ENTITY CYCLETHROTTLE "4">\n')
@@ -289,7 +246,7 @@ def get_definitions(base):
     return ''.join(strings)
 
 
-def get_resources(configs, base, cdump='gdas'):
+def get_resources(dict_configs, cdump='gdas'):
     '''
         Create resource entities
     '''
@@ -300,12 +257,12 @@ def get_resources(configs, base, cdump='gdas'):
     strings.append('    <!-- BEGIN: Resource requirements for forecast only workflow -->\n')
     strings.append('\n')
 
+    base = dict_configs['base']
+
     tasks = ['getics', 'chgres', 'fcst', 'post', 'vrfy', 'arch']
     for task in tasks:
 
-        cfg = config_parser(find_config('config.%s' % task, configs))
-        if cdump == 'gfs' and any('config.%s.gfs' % task in s for s in configs):
-            cfg = config_parser('config.%s.gfs' % task)
+        cfg = dict_configs['task']
 
         if cdump in ['gfs'] and 'wtime_%s_gfs' % task in cfg.keys():
             walltime = cfg['wtime_%s_gfs' % task]
@@ -382,7 +339,7 @@ def get_workflow_body(xmldir):
     return ''.join(strings)
 
 
-def create_crontab(expdir, cronint=5):
+def create_crontab(base, cronint=5):
     '''
         Create crontab to execute rocotorun every cronint (5) minutes
     '''
@@ -393,10 +350,6 @@ def create_crontab(expdir, cronint=5):
         print 'Failed to find rocotorun, crontab will not be created'
         return
 
-    configs = glob.glob('%s/config.*' % expdir)
-
-    # read "config.base", gather basic info
-    base = config_parser(find_config('config.base', configs))
 
     cronintstr = '*/%d * * * *' % cronint
     rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
@@ -428,29 +381,19 @@ def create_crontab(expdir, cronint=5):
     return
 
 
-def create_xml(expdir, xmldir):
+def create_xml(dict_configs, xmldir):
     '''
         Given an experiment directory containing config files and
         XML directory containing XML templates, create the workflow XML
     '''
 
-    configs = glob.glob('%s/config.*' % expdir)
 
-    # First read "config.base", gather basic info needed for xml
-    base = config_parser(find_config('config.base', configs))
-
-    if expdir != base['EXPDIR']:
-        print 'MISMATCH in experiment directories!'
-        print 'config.base: EXPDIR = %s' % base['EXPDIR']
-        print 'input arg:     --expdir = %s' % expdir
-        sys.exit(1)
-
-    base['SCHEDULER'] = get_scheduler(base['machine'])
-    base['INTERVAL'] = get_interval(base['gfs_cyc'])
+    dict_configs['base']['INTERVAL'] = get_interval(dict_configs['base']['gfs_cyc'])
+    base = dict_configs['base']
 
     preamble = get_preamble()
     definitions = get_definitions(base)
-    resources = get_resources(configs, base, cdump=base['CDUMP'])
+    resources = get_resources(dict_configs, cdump=base['CDUMP'])
     workflow = get_workflow_body(xmldir)
 
     # Start writing the XML file

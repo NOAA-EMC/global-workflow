@@ -84,7 +84,7 @@ for imem in `seq 1 $NMEM_ENKF`; do
         echo "HSI $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
         exit $status
     fi
-        
+
     rm -rf $tmpmemdir
 
 done
@@ -131,14 +131,14 @@ if [ $status -ne 0 ]; then
     echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
     exit $status
 fi
-    
+
 hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}.tar
 status=$?
 if [ $status -ne 0 ]; then
     echo "HSI $CDATE enkf.${CDUMP}.tar failed"
     exit $status
 fi
-    
+
 rm -rf enkf.$CDUMP
 
 ###############################################################

@@ -12,17 +12,17 @@
 
 echo "BEGIN: config.efcs"
 
-# Task and thread configuration
-export wtime_efcs="00:30:00"
-export npe_efcs=192 # This is model resolution dependent and is derived as: $layout_x (4) * $layout_y (8) * ntiles (6)
-export npe_node_efcs=24
-export memory_efcs="254M"
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE_ENKF
+
+# Get task specific resources
+. $EXPDIR/config.resources efcs
 
 export npe_fv3=$npe_efcs
 export nth_fv3=1
 
 export ENKFFCSTSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_fcst_fv3gfs.sh.ecf"
-export NMEM_ENKF_GRP=10
+export NMEM_EFCSGRP=10
 export RERUN_EFCSGRP="NO"
 
 # Stochastic physics parameters (only for ensemble forecasts)
@@ -33,17 +33,6 @@ export SHUM_LSCALE=250000.
 export SPPT=0.8
 export SPPT_TAU=21600.
 export SPPT_LSCALE=500000.
-
-# Model configuration
-export dspheat=".true."         # dissipative heating
-export shal_cnv=".true."        # shallow convection
-export agrid_vel_rst=".true."   # write velocity restarts on agrid?
-
-# Model resolution dependent parameters (below for C192)
-export DELTIM=900
-export layout_x=4
-export layout_y=8
-export cdmbgwd="0.25,2.0"       # mountain blocking and gravity wave drag
 
 export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
 

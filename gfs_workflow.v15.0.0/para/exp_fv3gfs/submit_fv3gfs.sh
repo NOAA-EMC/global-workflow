@@ -3,7 +3,7 @@
 #BSUB -P FV3GFS-T2O
 #BSUB -oo fv3test.out
 #BSUB -eo fv3test.out
-#BSUB -J fv3test   
+#BSUB -J fv3test
 #BSUB -q dev
 #BSUB -M 1024
 ##BSUB -x
@@ -17,8 +17,8 @@ set -x
 # December 2016, Fanglin Yang
 #--------------------------------------------------------------------------------
 
-export PSLOT=fv3test          
-paradir=/gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/pr$PSLOT 
+export PSLOT=fv3test
+paradir=/gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/pr$PSLOT
 
 . $MODULESHOME/init/sh  2>>/dev/null
 module load prod_util hpss >>/dev/null
@@ -26,11 +26,11 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=trunk_r89554     
+export tags=trunk_r89554
 export PTMP=/gpfs/hps/ptmp
 #export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
-export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para     
+export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para
 export BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
 export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
@@ -45,11 +45,11 @@ export nemsgfs_exp=prnemsrn            #real-time nems gfs parallel
 envir=para
 NET=gfs
 ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr${PSLOT}
-export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC       
+export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC
 mkdir -p $ROTDIR $FV3ICDIR
 
 CDUMP=gfs
-START=20170426 
+START=20170426
 LAST=20170426
 
 cyclist="00"
@@ -65,15 +65,15 @@ export cdate=${sdate}${cyc}
 
 #.......................................................
 #-- create ICs using operational GFS initial conditions
-export out_dir=$FV3ICDIR/ICs                      
-if [ ! -s $out_dir/${CASE}_${cdate}/gfs_data.tile6.nc ]; then
+export OUTDIR=$FV3ICDIR/ICs/${CASE}_${cdate}
+if [ ! -s $OUTDIR/gfs_data.tile6.nc ]; then
 #.......................................................
 
-export inidir=$FV3ICDIR/chgres_${CASE}_${cdate}
-export rundir=$FV3ICDIR/chgres_${CASE}_${cdate}
-export tmp_dir=$inidir
-if [ -s $inidir ]; then rm -rf $inidir ; fi
-mkdir -p $out_dir $inidir ; cd $inidir ||exit 8
+export INIDIR=$FV3ICDIR/chgres_${CASE}_${cdate}
+export RUNDIR=$FV3ICDIR/chgres_${CASE}_${cdate}
+export tmp_dir=$INIDIR # Is this even used anywhere?
+if [ -s $INIDIR ]; then rm -rf $INIDIR ; fi
+mkdir -p $OUTDIR $INIDIR ; cd $INIDIR ||exit 8
 
 #--start from operational GFS initial conditions
 yymmdd=`echo $cdate |cut -c 1-8`
@@ -91,24 +91,24 @@ if [ ! -d $COMROT ]; then mkdir -p $COMROT; fi
 if [ $ictype = opsgfs ]; then
 #******************************
 cp /gpfs/$d1/emc/global/noscrub/emc.glopara/global/gfs/pgbanl.gfs.$cdate $COMROT/gfs.t${cyc}z.pgrbanl
-cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $inidir/siganl.gfs.$cdate
-cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $inidir/sfcanl.gfs.$cdate
+cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sanl $INIDIR/siganl.gfs.$cdate
+cp $COMROOTp2/gfs/prod/gfs.$yymmdd/gfs.t${cyc}z.sfcanl $INIDIR/sfcanl.gfs.$cdate
 
 #---------------------
 if [ $? -ne 0 ]; then
 cat >read_hpss.sh <<EOF
- cd $inidir
+ cd $INIDIR
  $HPSSTAR get /NCEPPROD/hpssprod/runhistory/rh$yy/$yymm/$yymmdd/com2_gfs_prod_gfs.$cdate.anl.tar ./gfs.t${cyc}z.sanl ./gfs.t${cyc}z.sfcanl
  mv gfs.t${cyc}z.sanl siganl.gfs.$cdate
  mv gfs.t${cyc}z.sfcanl sfcanl.gfs.$cdate
 EOF
 chmod u+x read_hpss.sh
-$SUB -a FV3GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh    
+$SUB -a FV3GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
 fi
 #---------------------
 
-testfile=$inidir/sfcanl.gfs.$cdate                       
-nsleep=0; tsleep=120;  msleep=50 
+testfile=$INIDIR/sfcanl.gfs.$cdate
+nsleep=0; tsleep=120;  msleep=50
 while test ! -s $testfile -a $nsleep -lt $msleep;do
   sleep $tsleep; nsleep=`expr $nsleep + 1`
 done
@@ -121,23 +121,23 @@ expdir=/gpfs/hps/ptmp/emc.glopara/$nemsgfs_exp
 arcdir=/gpfs/hps/emc/global/noscrub/emc.glopara/archive/$nemsgfs_exp
 
 cp $arcdir/pgbanl.gfs.$cdate $COMROT/gfs.t${cyc}z.pgrbanl
-cp $expdir/gfnanl.gfs.$cdate $inidir/.                 
-cp $expdir/sfnanl.gfs.$cdate $inidir/.                 
-cp $expdir/nsnanl.gfs.$cdate $inidir/.                 
+cp $expdir/gfnanl.gfs.$cdate $INIDIR/.
+cp $expdir/sfnanl.gfs.$cdate $INIDIR/.
+cp $expdir/nsnanl.gfs.$cdate $INIDIR/.
 
 #---------------------
 if [ $? -ne 0 ]; then
 cat >read_hpss.sh <<EOF
- cd $inidir
- $HPSSTAR get /5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$nemsgfs_exp/${cdate}gfs.tar gfnanl.gfs.$cdate sfnanl.gfs.$cdate nsnanl.gfs.$cdate 
+ cd $INIDIR
+ $HPSSTAR get /5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$nemsgfs_exp/${cdate}gfs.tar gfnanl.gfs.$cdate sfnanl.gfs.$cdate nsnanl.gfs.$cdate
 EOF
 chmod u+x read_hpss.sh
-$SUB -a FV3GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh    
+$SUB -a FV3GFS-T2O -q dev_transfer -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
 fi
 #---------------------
 
-testfile=$inidir/sfnanl.gfs.$cdate                       
-nsleep=0; tsleep=120;  msleep=50 
+testfile=$INIDIR/sfnanl.gfs.$cdate
+nsleep=0; tsleep=120;  msleep=50
 while test ! -s $testfile -a $nsleep -lt $msleep;do
   sleep $tsleep; nsleep=`expr $nsleep + 1`
 done
@@ -152,11 +152,11 @@ fi
 #********************************
 
 #------------------------------------------------------
-#- old nsnanl uses lsmask, change to land           
+#- old nsnanl uses lsmask, change to land
 #$BASE_GSM/exec/nemsio_read nsnanl.gfs.$cdate |grep land
 #if [ $? -ne 0 ]; then
 # mv nsnanl.gfs.$cdate fnsti
-# APRUN_NST='aprun -q -j1 -n1 -N1 -d1 -cc depth' 
+# APRUN_NST='aprun -q -j1 -n1 -N1 -d1 -cc depth'
 # $APRUN_NST $BASE_GSM/exec/nst_mask_namchg
 # if [ -s fnsto ]; then
 #  mv fnsto nsnanl.gfs.$cdate
@@ -172,7 +172,7 @@ fi
 #.......................................................
 
 cd $paradir
-if [ -s $out_dir/${CASE}_${cdate}/gfs_data.tile6.nc ]; then
+if [ -s $OUTDIR/gfs_data.tile6.nc ]; then
  $PSUB para_config $cdate gfs fcst1
 fi
 sleep 60

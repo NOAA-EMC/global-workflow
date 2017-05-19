@@ -55,7 +55,7 @@ export NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_FV3=${FIX_FV3:-$FIX_DIR}
+export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
 export DATA=${DATA:-$pwd/fv3tmp$$}  #temporary running directory
 export COMROT=${COMROT:-$pwd}       #rotating directory
 export IC_DIR=${IC_DIR:-$pwd}       #cold start initial conditions
@@ -163,10 +163,10 @@ fi
 #--------------------------------------------------------------------------
 # Grid and orography data
 for n in `seq 1 $ntiles`; do
-  $NLN $FIX_DIR/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-  $NLN $FIX_DIR/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+  $NLN $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+  $NLN $FIX_FV3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 done
-$NLN $FIX_DIR/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+$NLN $FIX_FV3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 
 # GFS standard input data
 
@@ -224,7 +224,7 @@ export npx=$resp
 export npy=$resp
 export npz=`expr $LEVS - 1 `
 export io_layout="1,1"
-export ncols=$(( (${npx}- 1)*(${npy}-1)*3/2 ))
+export ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
 
 # blocking factor used for threading and general physics performance
 export nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
@@ -290,7 +290,7 @@ export n_split=${n_split:-6}
 if [ `echo ${MONO} | cut -c-4` = "mono" ];  then # monotonic options
 
   export d_con="0."
-  export do_vort_damp=".false."
+  export do_vort_damp=${do_vort_damp:-".false."}
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
     export hord_mt=" 10"
     export hord_xx="-10"
@@ -302,7 +302,7 @@ if [ `echo ${MONO} | cut -c-4` = "mono" ];  then # monotonic options
 else # non-monotonic options
 
   export d_con="1."
-  export do_vort_damp=".true."
+  export do_vort_damp=${do_vort_damp:-".true."}
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
     export hord_mt=" 6"
     export hord_xx="-5"
@@ -437,7 +437,7 @@ cat > input.nml <<EOF
   na_init = $na_init
   d_ext = 0.
   dnats = 0
-  fv_sg_adj = 600
+  fv_sg_adj = ${fv_sg_adj:-600}
   d2_bg = 0.
   nord = 2
   dddmp = 0.2
@@ -628,7 +628,7 @@ fi
 cd $DATA
 $NCP $EXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
-$APRUN_FV3 $FCSTEXEC 1>&1 2>&2
+$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 
 export ERR=$?
 export err=$ERR
@@ -639,8 +639,8 @@ if [ $SEND = "YES" ]; then
   # Copy model output files
   cd $DATA
   for n in `seq 1 $ntiles`; do
-    for file in $DATA/${CDATE}0000.*.tile${n}.nc; do
-      $NCP $file $memdir/.
+    for file in ${CDATE}0000.*.tile${n}.nc; do
+      $NCP $file $memdir/$(echo $(basename $file) | sed -e "s/${CDATE}0000\.//g")
     done
   done
 

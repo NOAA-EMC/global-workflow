@@ -15,6 +15,81 @@ import shutil
 from datetime import datetime
 from argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 
+
+def create_EXPDIR(expdir, configdir):
+
+    if os.path.exists(expdir): shutil.rmtree(expdir)
+    os.makedirs(expdir)
+    configs = glob.glob('%s/config.*' % configdir)
+    if len(configs) == 0:
+        msg = 'no config files found in %s' % configdir
+        raise msg
+    for config in configs:
+        shutil.copy(config, expdir)
+
+    return
+
+
+def create_COMROT(comrot, icsdir, idate, cdump='gdas'):
+
+    idatestr = idate.strftime('%Y%m%d%H')
+    cymd = idate.strftime('%Y%m%d')
+    chh = idate.strftime('%H')
+
+    if os.path.exists(comrot): shutil.rmtree(comrot)
+    os.makedirs(comrot)
+
+    # Link ensemble member initial conditions
+    enkfdir = 'enkf.%s.%s/%s' % (cdump,cymd,chh)
+    os.makedirs(os.path.join(comrot,enkfdir))
+    for i in range(1,nens+1):
+        os.makedirs(os.path.join(comrot,enkfdir,'mem%03d'%i))
+        os.symlink(os.path.join(icsdir,idatestr,'C%d'%resens,'mem%03d'%i,'INPUT'),os.path.join(comrot,enkfdir,'mem%03d'%i,'INPUT'))
+
+    # Link deterministic initial conditions
+    detdir = '%s.%s/%s' % (cdump,cymd,chh)
+    os.makedirs(os.path.join(comrot,detdir))
+    os.symlink(os.path.join(icsdir,idatestr,'C%d'%resdet,'control','INPUT'),os.path.join(comrot,detdir,'INPUT'))
+
+    # Link bias correction and radiance diagnostics files
+    for fname in ['abias','abias_pc','abias_air','radstat']:
+        os.symlink(os.path.join(icsdir,idatestr,'%s.t%sz.%s'%(cdump,chh,fname)),os.path.join(comrot,detdir,'%s.t%sz.%s'%(cdump,chh,fname)))
+
+    return
+
+
+def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens):
+
+    base_config = '%s/config.base' % expdir
+
+    # make a copy of the default before editing
+    shutil.copy(base_config, base_config+'.default')
+
+    fh = open(base_config,'r')
+    lines = fh.readlines()
+    fh.close()
+    lines = [l.replace('@MACHINE@', machine.upper()) for l in lines]
+    lines = [l.replace('@PSLOT@', pslot) for l in lines]
+    if expdir is not None:
+        lines = [l.replace('@EXPDIR@', os.path.dirname(expdir)) for l in lines]
+    if comrot is not None:
+        lines = [l.replace('@ROTDIR@', os.path.dirname(comrot)) for l in lines]
+    lines = [l.replace('@CASECTL@', 'C%d'%resdet) for l in lines]
+    lines = [l.replace('@CASEENS@', 'C%d'%resens) for l in lines]
+    lines = [l.replace('@NMEM_ENKF@', '%d'%nens) for l in lines]
+    fh = open(base_config,'w')
+    fh.writelines(lines)
+    fh.close()
+
+    print ''
+    print 'EDITED: %s/config.base as per experiment setup.' % expdir
+    print 'please verify before proceeding.'
+    print 'DEFAULT: %s/config.base.default can be removed, it is not used.'
+    print ''
+
+    return
+
+
 if __name__ == '__main__':
 
     description = '''Setup files and directories to start a GFS parallel.
@@ -23,19 +98,21 @@ Create COMROT experiment directory structure,
 link initial condition files from $ICSDIR to $COMROT'''
 
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--pslot',help='parallel experiment name',type=str,required=True)
-    parser.add_argument('--configdir',help='full path to directory containing the config files',type=str,required=True)
-    parser.add_argument('--idate',help='date of initial conditions',type=str,required=False,default='2016100100')
-    parser.add_argument('--icsdir',help='full path to initial condition directory',type=str,required=False,default='/scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS')
-    parser.add_argument('--resdet',help='resolution of the deterministic model forecast',type=int,required=False,default=384)
-    parser.add_argument('--resens',help='resolution of the ensemble model forecast',type=int,required=False,default=192)
-    parser.add_argument('--comrot',help='full path to COMROT',type=str,required=False,default=None)
-    parser.add_argument('--expdir',help='full path to EXPDIR',type=str,required=False,default=None)
-    parser.add_argument('--nens',help='number of ensemble members',type=int,required=False,default=80)
-    parser.add_argument('--cdump',help='CDUMP to start the experiment',type=str,required=False,default='gdas')
+    parser.add_argument('--machine', help='machine name', type=str, choices=['THEIA', 'WCOSS_C'], default='WCOSS_C', required=False)
+    parser.add_argument('--pslot', help='parallel experiment name', type=str, required=True)
+    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=True)
+    parser.add_argument('--idate', help='date of initial conditions', type=str, required=False, default='2016100100')
+    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False,default='/scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS')
+    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
+    parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
+    parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
+    parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
+    parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=80)
+    parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
 
     args = parser.parse_args()
 
+    machine = args.machine
     pslot = args.pslot
     configdir = args.configdir
     idate = datetime.strptime(args.idate,'%Y%m%d%H')
@@ -47,15 +124,9 @@ link initial condition files from $ICSDIR to $COMROT'''
     nens = args.nens
     cdump = args.cdump
 
-    idatestr = idate.strftime('%Y%m%d%H')
-    cymd = idate.strftime('%Y%m%d')
-    chh = idate.strftime('%H')
-
-    rc = 0
-
     if not os.path.exists(icsdir):
-        print 'Initial conditions do not exist in %s' % icsdir
-        sys.exit(1)
+        msg = 'Initial conditions do not exist in %s' % icsdir
+        raise IOError(msg)
 
     create_comrot = False if comrot is None else True
     if create_comrot and os.path.exists(comrot):
@@ -75,31 +146,11 @@ link initial condition files from $ICSDIR to $COMROT'''
 
     # Create COMROT directory
     if create_comrot:
-        if os.path.exists(comrot): shutil.rmtree(comrot)
-        os.makedirs(comrot)
+        create_COMROT(comrot, icsdir, idate, cdump=cdump)
 
-        # Link ensemble member initial conditions
-        enkfdir = 'enkf.%s.%s/%s' % (cdump,cymd,chh)
-        os.makedirs(os.path.join(comrot,enkfdir))
-        for i in range(1,nens+1):
-            os.makedirs(os.path.join(comrot,enkfdir,'mem%03d'%i))
-            os.symlink(os.path.join(icsdir,idatestr,'C%d'%resens,'mem%03d'%i,'INPUT'),os.path.join(comrot,enkfdir,'mem%03d'%i,'INPUT'))
-
-        # Link deterministic initial conditions
-        detdir = '%s.%s/%s' % (cdump,cymd,chh)
-        os.makedirs(os.path.join(comrot,detdir))
-        os.symlink(os.path.join(icsdir,idatestr,'C%d'%resdet,'control','INPUT'),os.path.join(comrot,detdir,'INPUT'))
-
-        # Link bias correction and radiance diagnostics files
-        for fname in ['abias','abias_pc','abias_air','radstat']:
-            os.symlink(os.path.join(icsdir,idatestr,'%s.t%sz.%s'%(cdump,chh,fname)),os.path.join(comrot,detdir,'%s.t%sz.%s'%(cdump,chh,fname)))
-
-    # Create EXP directory and copy config
+    # Create EXP directory, copy config and edit config.base
     if create_expdir:
-        if os.path.exists(expdir): shutil.rmtree(expdir)
-        os.makedirs(expdir)
-        configs = glob.glob('%s/config.*' % configdir)
-        for config in configs:
-            shutil.copy(config,expdir)
+        create_EXPDIR(expdir, configdir)
+        edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens)
 
     sys.exit(0)

@@ -12,9 +12,7 @@
 
 echo "BEGIN: config.earc"
 
-# Task and thread configuration
-export wtime_earc="06:00:00"
-export npe_earc=1
-export npe_node_earc=1
+# Get task specific resources
+. $EXPDIR/config.resources earc
 
 echo "END: config.earc"
