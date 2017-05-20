@@ -57,7 +57,7 @@ export SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
 export CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
 export SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_locinfo.l${LEVS}.txt}
+export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
 
 # Filenames.
 export GPREFIX=${GPREFIX:-""}
@@ -65,7 +65,7 @@ export GSUFFIX=${GSUFFIX:-""}
 export APREFIX=${APREFIX:-""}
 export ASUFFIX=${ASUFFIX:-""}
 
-export GBIASe=${GBIASe:-${APREFIX}abias_int}
+export GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
 export CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
 export OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
 export RADSTAT=${RADSTAT:-${APREFIX}radstat}
@@ -99,6 +99,7 @@ $NLN $CONVINFO   convinfo
 $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
 
+# Bias correction coefficients based on the ensemble mean
 $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 
 ################################################################################

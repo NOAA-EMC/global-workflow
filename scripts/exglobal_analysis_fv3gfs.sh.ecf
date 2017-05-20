@@ -819,7 +819,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
 fi
 
 ##############################################################
-# For eobs, eomn and eupd
+# For eupd
 if [ -s satbias_out.int ]; then
    $NCP satbias_out.int $ABIASe
 else
