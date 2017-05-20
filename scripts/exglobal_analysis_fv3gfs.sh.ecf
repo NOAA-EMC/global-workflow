@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_analysis_fv3.sh.ecf.sh
+# Script name:         exglobal_analysis_fv3gfs.sh.ecf.sh
 # Script description:  Makes a global model upper air analysis with GSI
 #
 # Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -25,14 +25,14 @@ if [ $VERBOSE = "YES" ]; then
 fi
 
 #  Directories.
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
+pwd=$(pwd)
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
 export GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
-export DATA=${DATA:-$(pwd)}
-export COMIN=${COMIN:-$(pwd)}
+export DATA=${DATA:-$pwd/analysis.$$}
+export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}

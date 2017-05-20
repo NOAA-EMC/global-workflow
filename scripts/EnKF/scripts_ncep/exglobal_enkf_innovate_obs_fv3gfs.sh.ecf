@@ -28,7 +28,7 @@ fi
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export DATA=${DATA:-$pwd}
+export DATA=${DATA:-$pwd/enkf_innovate_obs.$$}
 export COMIN=${COMIN:-$pwd}
 export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
@@ -69,7 +69,7 @@ export DATATOP=$DATA
 # Set output data
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export EOMGGRP=${EOMGGRP:-$COMOUT/enkf.${CDUMP}.${cymd}/$chh/eomg.grp${ENSGRP}}
+export EOMGGRP=${EOMGGRP:-$COMOUT/eomg.grp${ENSGRP}}
 if [ -f $EOMGGRP ]; then
    if [ $RERUN_EOMGGRP = "YES" ]; then
       rm -f $EOMGGRP
@@ -107,6 +107,12 @@ for imem in `seq $ENSBEG $ENSEND`; do
       export DIAG_SUFFIX="_$memchar"
       export COMIN_GES=$COMIN_GES_ENS/$memchar
       export COMOUT=$COMOUT_SAVE/$memchar
+
+      # Ensure clean tarballs for ensemble member
+      for ftype in cnvstat oznstat radstat; do
+         fstat=$COMOUT/${APREFIX}$ftype
+         [[ -f $fstat ]] && rm -f $fstat
+      done
 
       $INVOBSSH
       ra=$?
