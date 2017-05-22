@@ -92,7 +92,8 @@ cd $workdir
 
   cp ${indir}/thirty.second.antarctic.new.bin fort.15
   cp ${indir}/landcover30.fixed .
-  cp ${indir}/gtopo30_gg.fine fort.235
+#  cp ${indir}/gtopo30_gg.fine fort.235
+  cp /gpfs/gd1/emc/global/noscrub/George.Gayno/gmted2010/30sec/gmted2010.30sec.int fort.235
   if [ $inorogexist -eq 1 ]; then
      cp $inputorog .
   fi   
