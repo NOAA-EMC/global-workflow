@@ -38,6 +38,7 @@
 # 2012-02-14  S. Moorthi     Edited for Zeus and Gaea
 # 2013-10-31  R. Todling     Revisit OBS_INPUT (add table) 
 # 2014-03-13  X. Li          Add NSST
+# 2016-05-01  Yanqiu Zhu     Add RADCLOUDINFO and use satinfo with icloud & iaerosol
 # 2016-05-10  J. Jung        Added RARS and direct broadcast data
 # 2016-08-28  X. Li          Introduce USE_READIN_ANL_SFCMASK for surface mask consistency between analysis and ensemble grids
 #
@@ -215,6 +216,8 @@
 #                   defaults to ${FIXgsm}/global_satangbias.txt
 #     SATINFO       Input satellite information file
 #                   defaults to ${FIXgsm}/global_satinfo.txt
+#     RADCLOUDINFO  Input cloud-related usage for satellite intrument
+#                   defaults to ${FIXgsm}/cloudy_radiance_info.txt
 #     ATMSFILTER    Path to file describing how ATMS is spatially filtered
 #                   defaults to ${FIXgsm}/atms_beamwidth.txt
 #     RTMFIX        Input directory containing CRTM coefficients
@@ -429,6 +432,7 @@
 #     fixed data : $BERROR
 #                  $SATANGL
 #                  $SATINFO
+#                  $RADCLOUDINFO
 #                  $ATMSFILTER
 #                  $RTMFIX
 #                  $ANAVINFO
@@ -619,6 +623,7 @@ export CYCLESH=${CYCLESH:-${USHgsm}/global_cycle.sh}
 export BERROR=${BERROR:-${FIXgsi}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export RADCLOUDINFO=${RADCLOUDINFO:-${FIXgsi}/cloudy_radiance_info.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
 export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
 export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
@@ -900,6 +905,7 @@ fi
 $FCPLN $BERROR   berror_stats
 $FCPLN $SATANGL  satbias_angle
 $FCPLN $SATINFO  satinfo
+$FCPLN $RADCLOUDINFO cloudy_radiance_info.txt
 $FCPLN $ATMSFILTER atms_beamwidth.txt 
 $FCPLN $ANAVINFO anavinfo
 $FCPLN $CONVINFO convinfo
