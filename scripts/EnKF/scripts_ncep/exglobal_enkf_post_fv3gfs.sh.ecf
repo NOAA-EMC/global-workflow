@@ -26,9 +26,7 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
-export BASE_GSM=${BASE_GSM:-$NWPROD}
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
 export DATA=${DATA:-$pwd}
@@ -39,7 +37,6 @@ export COMOUT=${COMOUT:-$COMIN}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NCP=${NCP:-"/bin/cp"}
 export NLN=${NLN:-"/bin/ln -sf"}
-export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 
 # Machine related stuff
 export MPMD=${MPMD:-"NO"}
@@ -75,9 +72,6 @@ ENKF_SUFFIX=""
 #  Preprocessing
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
-
-ENSSTAT=$COMOUT/ensstat_all
-rm $ENSSTAT
 
 ################################################################################
 # Copy executables to working directory
@@ -209,9 +203,7 @@ if [ "$SMOOTH_ENKF" = "YES" ]; then
 fi
 
 ################################################################################
-# Generate status log
-rm log_allsfc log_allatm
-
+# Send DBN alerts
 for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
    fhrchar=`printf %03i $fhr`
    if [ `expr $fhr % 3` -eq 0 ]; then
@@ -219,32 +211,9 @@ for fhr in `seq $FHMIN $FHOUT $FHMAX`; do
          if [ $SENDDBN = "YES" ]; then
             $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean${SUFFIX}
          fi
-         string="DONE"
-      else
-         string="MISS"
       fi
    fi
-   rm log log_old log_new
-   $NCP log_allsfc ./log_old
-   echo "$string sfc fhr $fhrchar" > log
-   cat log_old log > log_new
-   $NCP log_new log_allsfc
-
-   if [ -s ./atmf${fhrchar}.ensmean ]; then
-      string="DONE"
-   else
-      string="MISS"
-   fi
-   rm log log_old log_new
-   $NCP log_allatm ./log_old
-   echo "$string atm fhr $fhrchar" > log
-   cat log_old log > log_new
-   $NCP log_new log_allatm
 done
-
-rm log_all
-cat log_allsfc log_allatm > log_all
-$NCP log_all $ENSSTAT
 
 if [ $SENDDBN = "YES" ] ; then
 for imem in `seq 1 $NMEM_ENKF`; do
@@ -261,7 +230,7 @@ fi
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2
