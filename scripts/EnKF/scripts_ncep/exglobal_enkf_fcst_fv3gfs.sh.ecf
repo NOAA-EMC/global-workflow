@@ -164,16 +164,19 @@ fi
 rc=0
 for imem in `seq $ENSBEG $ENSEND`; do
 
+   cd $DATATOP
+
    cmem=`printf %03i $imem`
    memchar="mem$cmem"
 
    echo "Processing MEMBER: $cmem"
 
+   ra=0
+
    skip_mem="NO"
    if [ -f $EFCSGRP ]; then
       memstat=`cat $EFCSGRP | grep "MEMBER $cmem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
-      ra=0
    fi
 
    if [ $skip_mem = "NO" ]; then
@@ -218,15 +221,17 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    fi
 
-   rm log
-   $NCP $DATATOP/log_all ./log_old
+   cd $DATATOP
+
+   $NCP log_all log_old
+   rm log log_new
    if [ $ra -ne 0 ]; then
       echo "MEMBER $cmem : FAIL" > log
    else
       echo "MEMBER $cmem : PASS" > log
    fi
    cat log_old log > log_new
-   $NCP log_new $DATATOP/log_all
+   $NCP log_new log_all
 
 done
 
