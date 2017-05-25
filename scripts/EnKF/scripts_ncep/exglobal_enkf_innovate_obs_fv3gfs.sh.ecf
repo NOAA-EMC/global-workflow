@@ -69,12 +69,13 @@ export DATATOP=$DATA
 # Set output data
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export EOMGGRP=${EOMGGRP:-$COMOUT/eomg.grp${ENSGRP}}
+export EOMGGRP=$COMOUT/eomg.grp${ENSGRP}
 if [ -f $EOMGGRP ]; then
    if [ $RERUN_EOMGGRP = "YES" ]; then
       rm -f $EOMGGRP
    else
       echo "RERUN_EOMGGRP = $RERUN_EOMGGRP, will re-run FAILED members only!"
+      $NCP $EOMGGRP ${EOMGGRP}.fail
    fi
 fi
 
@@ -97,8 +98,8 @@ for imem in `seq $ENSBEG $ENSEND`; do
    ra=0
 
    skip_mem="NO"
-   if [ -f $EOMGGRP ]; then
-      memstat=`cat $EOMGGRP | grep "MEMBER $cmem" | grep "PASS" | wc -l`
+   if [ -f ${EOMGGRP}.fail ]; then
+      memstat=`cat ${EOMGGRP}.fail | grep "MEMBER $cmem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
    fi
 
@@ -132,7 +133,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    cd $DATATOP
 
-   $NCP log_all log_old
+   $NCP $EOMGGRP log_old
    rm log log_new
    if [ $ra -ne 0 ]; then
       echo "MEMBER $cmem : FAIL" > log
@@ -140,16 +141,16 @@ for imem in `seq $ENSBEG $ENSEND`; do
       echo "MEMBER $cmem : PASS" > log
    fi
    cat log_old log > log_new
-   $NCP log_new log_all
+   $NCP log_new $EOMGGRP
 
 done
 
 ################################################################################
-# Save and echo log
+# Echo status of ensemble group
 cd $DATATOP
-$NCP log_all $EOMGGRP
 echo "Status of ensemble members in group $ENSGRP:"
 cat $EOMGGRP
+rm ${EOMGGRP}.fail
 
 ################################################################################
 # If any members failed, error out

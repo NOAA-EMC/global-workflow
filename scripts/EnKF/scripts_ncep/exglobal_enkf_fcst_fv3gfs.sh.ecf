@@ -33,7 +33,7 @@ export NWPROD=${NWPROD:-$HOMEDIR}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export DATA=${DATA:-$pwd}
+export DATA=${DATA:-$pwd/enkf_fcst.$$}
 export COMROT=${COMROT:-$pwd}
 
 # Utilities
@@ -43,7 +43,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 
 # Scripts.
-export FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_fv3gfs.sh.ecf}
+export FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_nemsfv3gfs.sh.ecf}
 
 # Enemble group, begin and end
 export ENSGRP=${ENSGRP:-1}
@@ -90,12 +90,13 @@ export DATATOP=$DATA
 # Set output data
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export EFCSGRP=${EFCSGRP:-$COMROT/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}}
+EFCSGRP=$COMROT/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
    else
       echo "RERUN_EFCSGRP = $RERUN_EFCSGRP, will re-run FAILED members only!"
+      $NCP $EFCSGRP ${EFCSGRP}.fail
    fi
 fi
 
@@ -142,6 +143,7 @@ export FHZER=${FHZER_ENKF:-${FHZER:-6}}
 export FHCYC=${FHCYC_ENKF:-${FHCYC:-6}}
 
 # nam_stochy (stochastic physics)
+export USE_STOCH_PHYS=${USE_STOCH_PHYS:-"YES"}
 export SET_STP_SEED=${SET_STP_SEED:-"NO"}
 
 # APRUN for different executables
@@ -174,8 +176,8 @@ for imem in `seq $ENSBEG $ENSEND`; do
    ra=0
 
    skip_mem="NO"
-   if [ -f $EFCSGRP ]; then
-      memstat=`cat $EFCSGRP | grep "MEMBER $cmem" | grep "PASS" | wc -l`
+   if [ -f ${EFCSGRP}.fail ]; then
+      memstat=`cat ${EFCSGRP}.fail | grep "MEMBER $cmem" | grep "PASS" | wc -l`
       [[ $memstat -eq 1 ]] && skip_mem="YES"
    fi
 
@@ -223,7 +225,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
    cd $DATATOP
 
-   $NCP log_all log_old
+   $NCP $EFCSGRP log_old
    rm log log_new
    if [ $ra -ne 0 ]; then
       echo "MEMBER $cmem : FAIL" > log
@@ -231,16 +233,16 @@ for imem in `seq $ENSBEG $ENSEND`; do
       echo "MEMBER $cmem : PASS" > log
    fi
    cat log_old log > log_new
-   $NCP log_new log_all
+   $NCP log_new $EFCSGRP
 
 done
 
 ################################################################################
-# Save and echo log
+# Echo status of ensemble group
 cd $DATATOP
-$NCP log_all $EFCSGRP
 echo "Status of ensemble members in group $ENSGRP:"
 cat $EFCSGRP
+rm ${EFCSGRP}.fail
 
 ################################################################################
 # If any members failed, error out
