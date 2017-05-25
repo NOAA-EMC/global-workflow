@@ -357,6 +357,7 @@ export CYCLESH=${CYCLESH:-${USHgsm}/global_cycle.sh}
 export BERROR=${BERROR:-${FIXgsi}/global_berror.l${LEVS}y${NLAT_A}.f77}
 export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export RADCLOUDINFO=${RADCLOUDINFO:-${FIXgsi}/cloudy_radiance_info.txt}
 export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
 export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
