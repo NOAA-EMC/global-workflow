@@ -25,7 +25,7 @@ sh build_tropcy_NEMS_cray.sh
 #sh build_ncep_post.sh
 
 cd $pwd/fre-nctools.fd
-BUILD_TOOLS.csh
+BUILD_TOOLS.csh $target
 
 for util in fv3nc2nemsio.fd regrid_nemsio.fd calc_increment.fd; do
  cd $pwd/$util
