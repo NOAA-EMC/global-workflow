@@ -27,31 +27,30 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWROOT=${NWROOT:-/nwprod}
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export DATA=${DATA:-$pwd/enkf_fcst.$$}
-export COMROT=${COMROT:-$pwd}
+export ROTDIR=${ROTDIR:-$pwd}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
+export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 
 # Scripts.
-export FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_nemsfv3gfs.sh.ecf}
+FORECASTSH=${FORECASTSH:-$BASE_GSM/scripts/exglobal_fcst_nemsfv3gfs.sh.ecf}
 
 # Enemble group, begin and end
-export ENSGRP=${ENSGRP:-1}
-export ENSBEG=${ENSBEG:-1}
-export ENSEND=${ENSEND:-1}
+ENSGRP=${ENSGRP:-1}
+ENSBEG=${ENSBEG:-1}
+ENSEND=${ENSEND:-1}
 
 # Model builds
-export EXECDIR=${EXECDIR:-${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}}
+export FCSTEXECDIR=${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}
 export FCSTEXEC=${FCSTEXEC:-fv3gfs.x}
 
 # Get DA specific diag table.
@@ -63,19 +62,19 @@ export CDATE=${CDATE:-"2001010100"}
 export CDUMP=${CDUMP:-"gdas"}
 
 # Re-run failed members, or entire group
-export RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
+RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 
 # Ops related stuff
-export SENDECF=${SENDECF:-"NO"}
+SENDECF=${SENDECF:-"NO"}
 
 # Calculate increment before forecast model if warm starting the model
-export ATMGES_FNAME=${ATMGES_FNAME:-"atmf006"}
-export ATMANL_FNAME=${ATMANL_FNAME:-"atmanl"}
-export ATMINC_FNAME=${ATMINC_FNAME:-"atminc"}
-export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
+ATMGES_FNAME=${ATMGES_FNAME:-"atmf006"}
+ATMANL_FNAME=${ATMANL_FNAME:-"atmanl"}
+ATMINC_FNAME=${ATMINC_FNAME:-"atminc"}
+CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
 
 # REGRID_NEMSIO_SH specific (To be removed later)
-export REGRID_NEMSIO_SH=${REGRID_NEMSIO_SH:-$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh}
+REGRID_NEMSIO_SH=${REGRID_NEMSIO_SH:-$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh}
 export REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
 export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt}
 
@@ -84,19 +83,19 @@ export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variab
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA || exit 99
-export DATATOP=$DATA
+DATATOP=$DATA
 
 ################################################################################
 # Set output data
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-EFCSGRP=$COMROT/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}
+EFCSGRP=$ROTDIR/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
    else
       echo "RERUN_EFCSGRP = $RERUN_EFCSGRP, will re-run FAILED members only!"
-      $NCP $EFCSGRP ${EFCSGRP}.fail
+      $NMV $EFCSGRP ${EFCSGRP}.fail
    fi
 fi
 
@@ -124,10 +123,10 @@ export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 export fdiag=${fdiag_ENKF:-${fdiag:-6}}     # write output at hour 6
 export FHOUT=${FHOUT_ENKF:-${FHOUT:-6}}
 
-# coupler_nml
+# model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-${FHMAX:-6}}
-export restart_secs=${restart_secs_ENKF:-${restart_secs:-21600}}
+export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
 
 # gfs_physics_nml
 export FHSWR=${FHSWR_ENKF:-${FHSWR:-3600.}}
@@ -156,7 +155,7 @@ export NTHREADS_CALC_INCREMENT=${NTHREADS_CALC_INCREMENT:-${NTHREADS:-1}}
 
 # If warm start, need ensemble guess directory
 if [ $warm_start = ".true." ]; then
-   export GDATE=`$NDATE -6 $CDATE`
+   GDATE=`$NDATE -6 $CDATE`
    gymd=`echo $GDATE | cut -c1-8`
    ghh=`echo  $GDATE | cut -c9-10`
 fi
@@ -185,10 +184,10 @@ for imem in `seq $ENSBEG $ENSEND`; do
 
      ra=0
      if [ $warm_start = ".true." ]; then
-        export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
-        export ATMGES=$COMROT/enkf.${CDUMP}.$gymd/$ghh/$memchar/${ATMGES_FNAME}
-        export ATMANL=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMANL_FNAME}
-        export ATMINC=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMINC_FNAME}
+        export DATA=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar
+        export ATMGES=$ROTDIR/enkf.${CDUMP}.$gymd/$ghh/$memchar/${ATMGES_FNAME}
+        export ATMANL=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMANL_FNAME}
+        export ATMINC=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${ATMINC_FNAME}
         $CALC_INCREMENT_SH
         ra=$?
      fi
@@ -213,7 +212,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
      # This will be un-necessary once NEMS+FV3 can write out global output in single file
      # Revisit then
      if [ $ra -eq 0 ]; then
-        export DATA=$COMROT/enkf.${CDUMP}.$cymd/$chh/$memchar
+        export DATA=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar
         $REGRID_NEMSIO_SH
         rb=$?
         ((ra+=rb))
@@ -253,7 +252,7 @@ $ERRSCRIPT || exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATATOP
+[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATATOP
 set +x
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXITING $0 with return code $err >&2

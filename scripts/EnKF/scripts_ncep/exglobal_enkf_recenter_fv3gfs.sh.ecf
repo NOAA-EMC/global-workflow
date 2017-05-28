@@ -18,7 +18,7 @@
 ################################################################################
 
 # Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
@@ -26,50 +26,49 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
+export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GFS=${BASE_GFS:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export DATA=${DATA:-$pwd}
-export COMIN=${COMIN:-$pwd}
-export COMIN_ENS=${COMIN_ENS:-$pwd}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-${COMIN_ENS:-$pwd}}
-export COMOUT=${COMOUT:-$COMIN}
+COMIN=${COMIN:-$pwd}
+COMIN_ENS=${COMIN_ENS:-$pwd}
+COMIN_GES_ENS=${COMIN_GES_ENS:-${COMIN_ENS:-$pwd}}
+COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export NCP=${NCP:-"/bin/cp"}
-export NLN=${NLN:-"/bin/ln -sf"}
-export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+NCP=${NCP:-"/bin/cp"}
+NLN=${NLN:-"/bin/ln -sf"}
+NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 
 # Scripts
 
 # Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
-export RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
 
 # Files.
-export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-""}
-export GPREFIX=${GPREFIX:-""}
-export GSUFFIX=${GSUFFIX:-""}
+APREFIX=${APREFIX:-""}
+ASUFFIX=${ASUFFIX:-""}
+GPREFIX=${GPREFIX:-""}
+GSUFFIX=${GSUFFIX:-""}
 
 # Variables
-export NMEM_ENKF=${NMEM_ENKF:-80}
+NMEM_ENKF=${NMEM_ENKF:-80}
 
 # global_chgres stuff
-export CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
+CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-$BASE_GFS/exec/global_chgres}
 export CHGRESTHREAD=${CHGRESTHREAD:-24}
-export CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
-export APRUN_CHGRES=${APRUN_CHGRES:-""}
+CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
+APRUN_CHGRES=${APRUN_CHGRES:-""}
 
-export RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
+RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
 
-export APRUN_ECEN=${APRUN_ECEN:-${APRUN:-""}}
-export NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
+APRUN_ECEN=${APRUN_ECEN:-${APRUN:-""}}
+NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
 
 ################################################################################
 # Preprocessing
@@ -102,12 +101,12 @@ $ERRSCRIPT || exit 2
 
 ################################################################################
 # Chgres high resolution analysis to ensemble resolution
-export ATMANL_HI=${ATMANL_HI:-$COMIN/${APREFIX}atmanl$ASUFFIX}
+ATMANL_HI=${ATMANL_HI:-$COMIN/${APREFIX}atmanl$ASUFFIX}
 
 $NLN $ATMANL_HI atmanl_hires
 
-export JCAP=${JCAP:-$($NEMSIOGET atmanl_hires jcap | awk '{print $2}')}
-export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}')}
+JCAP=${JCAP:-$($NEMSIOGET atmanl_hires jcap | awk '{print $2}')}
+JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}')}
 
 if [ $JCAP = $JCAP_ENKF ]; then
    echo "Ensemble and deterministic analysis are at same resolution"
@@ -119,15 +118,15 @@ fi
 # This is to give the user the option to recenter, default is YES
 if [ $RECENTER_ENKF = "YES" ]; then
 
-   export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
-   export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
-   export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
+   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
+   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
+   LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
 
-   export SIGINP="atmanl_hires"
-   export SFCINP="NULL"
-   export SIGOUT="atmanl_lores"
-   export SFCOUT="NULL"
-   export GFSOUT=$SIGOUT
+   SIGINP="atmanl_hires"
+   SFCINP="NULL"
+   SIGOUT="atmanl_lores"
+   SFCOUT="NULL"
+   GFSOUT=$SIGOUT
    export NSTOUT="NULL"
    export NSNOUT="NULL"
    export SFNOUT="NULL"
@@ -157,10 +156,10 @@ if [ $RECENTER_ENKF = "YES" ]; then
       $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
    done
 
-   export FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
-   export FILENAMEIN="atmanl"
-   export FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
-   export FILENAMEOUT="ratmanl"
+   FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
+   FILENAMEIN="atmanl"
+   FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
+   FILENAMEOUT="ratmanl"
 
    export OMP_NUM_THREADS=$NTHREADS_ECEN
 

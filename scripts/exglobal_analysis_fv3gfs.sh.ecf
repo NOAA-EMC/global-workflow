@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -45,213 +45,213 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export COMPRESS=${COMPRESS:-gzip}
-export UNCOMPRESS=${UNCOMPRESS:-gunzip}
-export APRUNCFP=${APRUNCFP:-""}
-export APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
-export NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
+COMPRESS=${COMPRESS:-gzip}
+UNCOMPRESS=${UNCOMPRESS:-gunzip}
+APRUNCFP=${APRUNCFP:-""}
+APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
+NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
 # Dependent Scripts and Executables
-export CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
+CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
 export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
 
 # OPS flags
-export RUN=${RUN:-""}
-export SENDECF=${SENDECF:-"NO"}
-export SENDDBN=${SENDDBN:-"NO"}
+RUN=${RUN:-""}
+SENDECF=${SENDECF:-"NO"}
+SENDDBN=${SENDDBN:-"NO"}
 
 # Observations
-export OPREFIX=${OPREFIX:-""}
-export OSUFFIX=${OSUFFIX:-""}
-export PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
-export PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
-export SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
-export OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
-export RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
-export GSNDBF=${GSNDBF:-${COMIN_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
-export GSNDBF1=${GSNDBF1:-${COMIN_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
-export B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}}
-export B1MSU=${B1MSU:-${COMIN_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
-export B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}}
-export B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}}
-export B1AMUA=${B1AMUA:-${COMIN_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
-export B1AMUB=${B1AMUB:-${COMIN_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
-export B1MHS=${B1MHS:-${COMIN_OBS}/${OPREFIX}1bmhs.tm00.bufr_d${OSUFFIX}}
-export ESHRS3=${ESHRS3:-${COMIN_OBS}/${OPREFIX}eshrs3.tm00.bufr_d${OSUFFIX}}
-export ESAMUA=${ESAMUA:-${COMIN_OBS}/${OPREFIX}esamua.tm00.bufr_d${OSUFFIX}}
-export ESAMUB=${ESAMUB:-${COMIN_OBS}/${OPREFIX}esamub.tm00.bufr_d${OSUFFIX}}
-export ESMHS=${ESMHS:-${COMIN_OBS}/${OPREFIX}esmhs.tm00.bufr_d${OSUFFIX}}
-export HRS3DB=${HRS3DB:-${COMIN_OBS}/${OPREFIX}hrs3db.tm00.bufr_d${OSUFFIX}}
-export AMUADB=${AMUADB:-${COMIN_OBS}/${OPREFIX}amuadb.tm00.bufr_d${OSUFFIX}}
-export AMUBDB=${AMUBDB:-${COMIN_OBS}/${OPREFIX}amubdb.tm00.bufr_d${OSUFFIX}}
-export MHSDB=${MHSDB:-${COMIN_OBS}/${OPREFIX}mhsdb.tm00.bufr_d${OSUFFIX}}
-export AIRSBF=${AIRSBF:-${COMIN_OBS}/${OPREFIX}airsev.tm00.bufr_d${OSUFFIX}}
-export IASIBF=${IASIBF:-${COMIN_OBS}/${OPREFIX}mtiasi.tm00.bufr_d${OSUFFIX}}
-export ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
-export IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
-export AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
-export AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
-export GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}}
-export SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
-export SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
-export AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahi.tm00.bufr_d${OSUFFIX}}
-export CRISBF=${CRISBF:-${COMIN_OBS}/${OPREFIX}cris.tm00.bufr_d${OSUFFIX}}
-export ESCRIS=${ESCRIS:-${COMIN_OBS}/${OPREFIX}escris.tm00.bufr_d${OSUFFIX}}
-export CRISDB=${CRISDB:-${COMIN_OBS}/${OPREFIX}crisdb.tm00.bufr_d${OSUFFIX}}
-export CRISFSBF=${CRISFSBF:-${COMIN_OBS}/${OPREFIX}crisfs.tm00.bufr_d${OSUFFIX}}
-export ESCRISFS=${ESCRISFS:-${COMIN_OBS}/${OPREFIX}escrisfs.tm00.bufr_d${OSUFFIX}}
-export CRISFSDB=${CRISFSDB:-${COMIN_OBS}/${OPREFIX}crisfsdb.tm00.bufr_d${OSUFFIX}}
-export ATMSBF=${ATMSBF:-${COMIN_OBS}/${OPREFIX}atms.tm00.bufr_d${OSUFFIX}}
-export ESATMS=${ESATMS:-${COMIN_OBS}/${OPREFIX}esatms.tm00.bufr_d${OSUFFIX}}
-export ATMSDB=${ATMSDB:-${COMIN_OBS}/${OPREFIX}atmsdb.tm00.bufr_d${OSUFFIX}}
-export SSMITBF=${SSMITBF:-${COMIN_OBS}/${OPREFIX}ssmit.tm00.bufr_d${OSUFFIX}}
-export SSMISBF=${SSMISBF:-${COMIN_OBS}/${OPREFIX}ssmisu.tm00.bufr_d${OSUFFIX}}
-export SBUVBF=${SBUVBF:-${COMIN_OBS}/${OPREFIX}osbuv8.tm00.bufr_d${OSUFFIX}}
-export GOMEBF=${GOMEBF:-${COMIN_OBS}/${OPREFIX}gome.tm00.bufr_d${OSUFFIX}}
-export OMIBF=${OMIBF:-${COMIN_OBS}/${OPREFIX}omi.tm00.bufr_d${OSUFFIX}}
-export MLSBF=${MLSBF:-${COMIN_OBS}/${OPREFIX}mls.tm00.bufr_d${OSUFFIX}}
-export SMIPCP=${SMIPCP:-${COMIN_OBS}/${OPREFIX}spssmi.tm00.bufr_d${OSUFFIX}}
-export TMIPCP=${TMIPCP:-${COMIN_OBS}/${OPREFIX}sptrmm.tm00.bufr_d${OSUFFIX}}
-export GPSROBF=${GPSROBF:-${COMIN_OBS}/${OPREFIX}gpsro.tm00.bufr_d${OSUFFIX}}
-export TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
-export NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr.tm00.bufr_d${OSUFFIX}}
-export B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
-export B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
+OPREFIX=${OPREFIX:-""}
+OSUFFIX=${OSUFFIX:-""}
+PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
+PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
+SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
+OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
+RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
+GSNDBF=${GSNDBF:-${COMIN_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
+GSNDBF1=${GSNDBF1:-${COMIN_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
+B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}}
+B1MSU=${B1MSU:-${COMIN_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
+B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}}
+B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}}
+B1AMUA=${B1AMUA:-${COMIN_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
+B1AMUB=${B1AMUB:-${COMIN_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
+B1MHS=${B1MHS:-${COMIN_OBS}/${OPREFIX}1bmhs.tm00.bufr_d${OSUFFIX}}
+ESHRS3=${ESHRS3:-${COMIN_OBS}/${OPREFIX}eshrs3.tm00.bufr_d${OSUFFIX}}
+ESAMUA=${ESAMUA:-${COMIN_OBS}/${OPREFIX}esamua.tm00.bufr_d${OSUFFIX}}
+ESAMUB=${ESAMUB:-${COMIN_OBS}/${OPREFIX}esamub.tm00.bufr_d${OSUFFIX}}
+ESMHS=${ESMHS:-${COMIN_OBS}/${OPREFIX}esmhs.tm00.bufr_d${OSUFFIX}}
+HRS3DB=${HRS3DB:-${COMIN_OBS}/${OPREFIX}hrs3db.tm00.bufr_d${OSUFFIX}}
+AMUADB=${AMUADB:-${COMIN_OBS}/${OPREFIX}amuadb.tm00.bufr_d${OSUFFIX}}
+AMUBDB=${AMUBDB:-${COMIN_OBS}/${OPREFIX}amubdb.tm00.bufr_d${OSUFFIX}}
+MHSDB=${MHSDB:-${COMIN_OBS}/${OPREFIX}mhsdb.tm00.bufr_d${OSUFFIX}}
+AIRSBF=${AIRSBF:-${COMIN_OBS}/${OPREFIX}airsev.tm00.bufr_d${OSUFFIX}}
+IASIBF=${IASIBF:-${COMIN_OBS}/${OPREFIX}mtiasi.tm00.bufr_d${OSUFFIX}}
+ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
+IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
+AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
+AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}}
+SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
+SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
+AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahi.tm00.bufr_d${OSUFFIX}}
+CRISBF=${CRISBF:-${COMIN_OBS}/${OPREFIX}cris.tm00.bufr_d${OSUFFIX}}
+ESCRIS=${ESCRIS:-${COMIN_OBS}/${OPREFIX}escris.tm00.bufr_d${OSUFFIX}}
+CRISDB=${CRISDB:-${COMIN_OBS}/${OPREFIX}crisdb.tm00.bufr_d${OSUFFIX}}
+CRISFSBF=${CRISFSBF:-${COMIN_OBS}/${OPREFIX}crisfs.tm00.bufr_d${OSUFFIX}}
+ESCRISFS=${ESCRISFS:-${COMIN_OBS}/${OPREFIX}escrisfs.tm00.bufr_d${OSUFFIX}}
+CRISFSDB=${CRISFSDB:-${COMIN_OBS}/${OPREFIX}crisfsdb.tm00.bufr_d${OSUFFIX}}
+ATMSBF=${ATMSBF:-${COMIN_OBS}/${OPREFIX}atms.tm00.bufr_d${OSUFFIX}}
+ESATMS=${ESATMS:-${COMIN_OBS}/${OPREFIX}esatms.tm00.bufr_d${OSUFFIX}}
+ATMSDB=${ATMSDB:-${COMIN_OBS}/${OPREFIX}atmsdb.tm00.bufr_d${OSUFFIX}}
+SSMITBF=${SSMITBF:-${COMIN_OBS}/${OPREFIX}ssmit.tm00.bufr_d${OSUFFIX}}
+SSMISBF=${SSMISBF:-${COMIN_OBS}/${OPREFIX}ssmisu.tm00.bufr_d${OSUFFIX}}
+SBUVBF=${SBUVBF:-${COMIN_OBS}/${OPREFIX}osbuv8.tm00.bufr_d${OSUFFIX}}
+GOMEBF=${GOMEBF:-${COMIN_OBS}/${OPREFIX}gome.tm00.bufr_d${OSUFFIX}}
+OMIBF=${OMIBF:-${COMIN_OBS}/${OPREFIX}omi.tm00.bufr_d${OSUFFIX}}
+MLSBF=${MLSBF:-${COMIN_OBS}/${OPREFIX}mls.tm00.bufr_d${OSUFFIX}}
+SMIPCP=${SMIPCP:-${COMIN_OBS}/${OPREFIX}spssmi.tm00.bufr_d${OSUFFIX}}
+TMIPCP=${TMIPCP:-${COMIN_OBS}/${OPREFIX}sptrmm.tm00.bufr_d${OSUFFIX}}
+GPSROBF=${GPSROBF:-${COMIN_OBS}/${OPREFIX}gpsro.tm00.bufr_d${OSUFFIX}}
+TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
+NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr.tm00.bufr_d${OSUFFIX}}
+B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
+B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
-export GPREFIX=${GPREFIX:-""}
-export GSUFFIX=${GSUFFIX:-""}
-export SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
-export SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
-export SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
-export SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006${GSUFFIX}}
-export SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007${GSUFFIX}}
-export SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008${GSUFFIX}}
-export SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009${GSUFFIX}}
-export ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
-export ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
-export ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
-export ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
-export ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
-export ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
-export ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
-export NSTG03=${NSTG03:-${COMIN_GES}/${GPREFIX}nstf003${GSUFFIX}}
-export NSTG04=${NSTG04:-${COMIN_GES}/${GPREFIX}nstf004${GSUFFIX}}
-export NSTG05=${NSTG05:-${COMIN_GES}/${GPREFIX}nstf005${GSUFFIX}}
-export NSTGES=${NSTGES:-${COMIN_GES}/${GPREFIX}nstf006${GSUFFIX}}
-export NSTG07=${NSTG07:-${COMIN_GES}/${GPREFIX}nstf007${GSUFFIX}}
-export NSTG08=${NSTG08:-${COMIN_GES}/${GPREFIX}nstf008${GSUFFIX}}
-export NSTG09=${NSTG09:-${COMIN_GES}/${GPREFIX}nstf009${GSUFFIX}}
-export GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
-export GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
-export GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
-export GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
+GPREFIX=${GPREFIX:-""}
+GSUFFIX=${GSUFFIX:-""}
+SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
+SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
+SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
+SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006${GSUFFIX}}
+SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007${GSUFFIX}}
+SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008${GSUFFIX}}
+SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009${GSUFFIX}}
+ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
+ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
+ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
+ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
+ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
+ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
+ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
+NSTG03=${NSTG03:-${COMIN_GES}/${GPREFIX}nstf003${GSUFFIX}}
+NSTG04=${NSTG04:-${COMIN_GES}/${GPREFIX}nstf004${GSUFFIX}}
+NSTG05=${NSTG05:-${COMIN_GES}/${GPREFIX}nstf005${GSUFFIX}}
+NSTGES=${NSTGES:-${COMIN_GES}/${GPREFIX}nstf006${GSUFFIX}}
+NSTG07=${NSTG07:-${COMIN_GES}/${GPREFIX}nstf007${GSUFFIX}}
+NSTG08=${NSTG08:-${COMIN_GES}/${GPREFIX}nstf008${GSUFFIX}}
+NSTG09=${NSTG09:-${COMIN_GES}/${GPREFIX}nstf009${GSUFFIX}}
+GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
+GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
+GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
+GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 
 # Analysis files
-export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-""}
-export SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
-export ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
-export NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}
-export ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
-export ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
-export ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
-export ABIASe=${ABIASe:-${COMOUT}/${APREFIX}abias_int}
-export RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
-export GSISTAT=${GSISTAT:-${COMOUT}/${APREFIX}gsistat}
-export PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
-export CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
-export OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
+APREFIX=${APREFIX:-""}
+ASUFFIX=${ASUFFIX:-""}
+SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
+NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}
+ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
+ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
+ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
+ABIASe=${ABIASe:-${COMOUT}/${APREFIX}abias_int}
+RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
+GSISTAT=${GSISTAT:-${COMOUT}/${APREFIX}gsistat}
+PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
+CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
+OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
 
 # Obs diag
-export RUN_SELECT=${RUN_SELECT:-"NO"}
-export USE_SELECT=${USE_SELECT:-"NO"}
-export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
-export DIAG_SUFFIX=${DIAG_SUFFIX:-""}
-export DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
-export DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
-export USE_CFP=${USE_CFP:-"NO"}
+RUN_SELECT=${RUN_SELECT:-"NO"}
+USE_SELECT=${USE_SELECT:-"NO"}
+SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
+DIAG_SUFFIX=${DIAG_SUFFIX:-""}
+DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
+DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
+USE_CFP=${USE_CFP:-"NO"}
 
 # Set script / GSI control parameters
-export DOHYBVAR=${DOHYBVAR:-"NO"}
-export NMEM_ENKF=${NMEM_ENKF:-0}
-export NST_GSI=${NST_GSI:-0}
-export NSTINFO=${NSTINFO:-0}
-export ZSEA1=${ZSEA1:-0}
-export ZSEA2=${ZSEA2:-0}
-export FAC_DTL=${FAC_DTL:-0}
-export FAC_TSL=${FAC_TSL:-0}
-export TZR_QC=${TZR_QC:-0}
-export USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
-export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
-export DOIAU=${DOIAU:-"NO"}
-export DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
+DOHYBVAR=${DOHYBVAR:-"NO"}
+NMEM_ENKF=${NMEM_ENKF:-0}
+NST_GSI=${NST_GSI:-0}
+NSTINFO=${NSTINFO:-0}
+ZSEA1=${ZSEA1:-0}
+ZSEA2=${ZSEA2:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
+TZR_QC=${TZR_QC:-0}
+USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
+DOIAU=${DOIAU:-"NO"}
+DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
 
 # Get header information from Guess files
-export JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-export LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-export LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-export LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
 
 # Get header information from Ensemble Guess files
 if [ $DOHYBVAR = "YES" ]; then
-   export SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
-   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
-   export JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   export NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
-   export NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
+   ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
+   JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
+   NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
 fi
 
 # Set analysis resolution information
 if [ $DOHYBVAR = "YES" ]; then
-   export JCAP_A=${JCAP_A:-${JCAP_ENKF:-$JCAP}}
-   export LONA=${LONA:-${LONB_ENKF:-$LONB}}
-   export LATA=${LATA:-${LATB_ENKF:-$LATB}}
+   JCAP_A=${JCAP_A:-${JCAP_ENKF:-$JCAP}}
+   LONA=${LONA:-${LONB_ENKF:-$LONB}}
+   LATA=${LATA:-${LATB_ENKF:-$LATB}}
 else
-   export JCAP_A=${JCAP_A:-$JCAP}
-   export LONA=${LONA:-$LONB}
-   export LATA=${LATA:-$LATB}
+   JCAP_A=${JCAP_A:-$JCAP}
+   LONA=${LONA:-$LONB}
+   LATA=${LATA:-$LATB}
 fi
-export NLON_A=${NLON_A:-$LONA}
-export NLAT_A=${NLAT_A:-$(($LATA+2))}
+NLON_A=${NLON_A:-$LONA}
+NLAT_A=${NLAT_A:-$(($LATA+2))}
 
-export DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
-export CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
+DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
+CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
 
 # GSI Fix files
-export RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
-export BERROR=${BERROR:-${FIX_GSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
-export SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
-export ATMSFILTER=${ATMSFILTER:-${FIX_GSI}/atms_beamwidth.txt}
-export ANAVINFO=${ANAVINFO:-${FIX_GSI}/global_anavinfo.l${LEVS}.txt}
-export CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
-export INSITUINFO=${INSITUINFO:-${FIX_GSI}/global_insituinfo.txt}
-export OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
-export PCPINFO=${PCPINFO:-${FIX_GSI}/global_pcpinfo.txt}
-export AEROINFO=${AEROINFO:-${FIX_GSI}/global_aeroinfo.txt}
-export SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
-export OBERROR=${OBERROR:-${FIX_GSI}/prepobs_errtable.global}
+RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
+BERROR=${BERROR:-${FIX_GSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
+ATMSFILTER=${ATMSFILTER:-${FIX_GSI}/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIX_GSI}/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
+INSITUINFO=${INSITUINFO:-${FIX_GSI}/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIX_GSI}/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIX_GSI}/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIX_GSI}/prepobs_errtable.global}
 
 # GSI namelist
-export SETUP=${SETUP:-""}
-export GRIDOPTS=${GRIDOPTS:-""}
-export BKGVERR=${BKGVERR:-""}
-export ANBKGERR=${ANBKGERR:-""}
-export JCOPTS=${JCOPTS:-""}
-export STRONGOPTS=${STRONGOPTS:-""}
-export OBSQC=${OBSQC:-""}
-export OBSINPUT=${OBSINPUT:-""}
-export SUPERRAD=${SUPERRAD:-""}
-export SINGLEOB=${SINGLEOB:-""}
-export LAGDATA=${LAGDATA:-""}
-export HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
-export RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
-export CHEM=${CHEM:-""}
-export NST=${NST:-""}
+SETUP=${SETUP:-""}
+GRIDOPTS=${GRIDOPTS:-""}
+BKGVERR=${BKGVERR:-""}
+ANBKGERR=${ANBKGERR:-""}
+JCOPTS=${JCOPTS:-""}
+STRONGOPTS=${STRONGOPTS:-""}
+OBSQC=${OBSQC:-""}
+OBSINPUT=${OBSINPUT:-""}
+SUPERRAD=${SUPERRAD:-""}
+SINGLEOB=${SINGLEOB:-""}
+LAGDATA=${LAGDATA:-""}
+HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
+RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
+CHEM=${CHEM:-""}
+NST=${NST:-""}
 
 # GSI Namelist parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
@@ -267,17 +267,16 @@ fi
 
 # Set 4D-EnVar specific variables
 if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-   export ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
-   export ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
-   export ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
-   export ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
-   export ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
-   export ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
+   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
+   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
+   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
+   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
+   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
+   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
 fi
 
 ################################################################################
 #  Preprocessing
-pwd=$(pwd)
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
@@ -572,7 +571,7 @@ if [ $USE_CFP = "YES" ] ; then
    chmod 755 $DATA/mp_unzip.sh
    ncmd=`cat $DATA/mp_unzip.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
-      export APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
+      APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
       $APRUNCFP_UNZIP $DATA/mp_unzip.sh
    fi
 fi
@@ -965,7 +964,7 @@ if [ $USE_CFP = "YES" ] ; then
    chmod 755 $DATA/mp_diag.sh
    ncmd=`cat $DATA/mp_diag.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
-      export APRUNCFP_DIAG=$(eval echo $APRUNCFP)
+      APRUNCFP_DIAG=$(eval echo $APRUNCFP)
       $APRUNCFP_DIAG $DATA/mp_diag.sh
    fi
 fi

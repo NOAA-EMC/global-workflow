@@ -18,7 +18,7 @@
 ################################################################################
 
 # Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
@@ -26,57 +26,56 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export HOMEDIR=${HOMEDIR:-$NWROOT}
-export NWPROD=${NWPROD:-$HOMEDIR}
-export BASE_GSI=${BASE_GSI:-$NWPROD}
-export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
-export DATA=${DATA:-$pwd/enkf_update.$$}
-export COMIN=${COMIN:-$pwd}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
-export COMOUT=${COMOUT:-$COMIN}
-export COMOUT_ANL_ENS=${COMOUT_ANL_ENS:-$COMOUT}
+NWPROD=${NWPROD:-$pwd}
+BASE_GSI=${BASE_GSI:-$NWPROD}
+FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+DATA=${DATA:-$pwd/enkf_update.$$}
+COMIN=${COMIN:-$pwd}
+COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
+COMOUT=${COMOUT:-$COMIN}
+COMOUT_ANL_ENS=${COMOUT_ANL_ENS:-$COMOUT}
 
 # Utilities
-export NCP=${NCP:-"/bin/cp -p"}
-export NLN=${NLN:-"/bin/ln -sf"}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
-export USE_CFP=${USE_CFP:-"NO"}
-export APRUNCFP=${APRUNCFP:-""}
-export APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
-export NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
+NCP=${NCP:-"/bin/cp -p"}
+NLN=${NLN:-"/bin/ln -sf"}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
+USE_CFP=${USE_CFP:-"NO"}
+APRUNCFP=${APRUNCFP:-""}
+APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
+NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-export ENKFEXEC=${ENKFEXEC:-$BASE_GSI/exec/global_enkf}
+ENKFEXEC=${ENKFEXEC:-$BASE_GSI/exec/global_enkf}
 
 # Cycling and forecast hour specific parameters
-export CDATE=${CDATE:-"2001010100"}
+CDATE=${CDATE:-"2001010100"}
 
-export SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
-export SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
-export CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
-export OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
-export SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
-export HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
+SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
+CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
+OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
+SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
 
 # Filenames.
-export GPREFIX=${GPREFIX:-""}
-export GSUFFIX=${GSUFFIX:-""}
-export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-""}
+GPREFIX=${GPREFIX:-""}
+GSUFFIX=${GSUFFIX:-""}
+APREFIX=${APREFIX:-""}
+ASUFFIX=${ASUFFIX:-""}
 
-export GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
-export CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
-export OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
-export RADSTAT=${RADSTAT:-${APREFIX}radstat}
-export ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
+GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
+CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
+OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
+RADSTAT=${RADSTAT:-${APREFIX}radstat}
+ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
-export NMEM_ENKF=${NMEM_ENKF:-80}
-export NVARS_ENKF=${NVARS_ENKF:-5}
-export NAM_ENKF=${NAM_ENKF:-""}
-export SATOBS_ENKF=${SATOBS_ENKF:-""}
-export OZOBS_ENKF=${OZOBS_ENKF:-""}
+NMEM_ENKF=${NMEM_ENKF:-80}
+NVARS_ENKF=${NVARS_ENKF:-5}
+NAM_ENKF=${NAM_ENKF:-""}
+SATOBS_ENKF=${SATOBS_ENKF:-""}
+OZOBS_ENKF=${OZOBS_ENKF:-""}
 
 ################################################################################
 # Preprocessing
@@ -155,24 +154,24 @@ for imem in `seq 1 $NMEM_ENKF`; do
 done
 
 # Ensemble mean guess
-export ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
 $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
 
 if [ $USE_CFP = "YES" ]; then
    chmod 755 $DATA/mp_untar.sh
    ncmd=`cat $DATA/mp_untar.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
-      export APRUNCFP=$(eval echo $APRUNCFP)
+      APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
    fi
 fi
 
 ################################################################################
-export LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
-export LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
-export LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
-export LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
-export LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
+LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
+LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
+LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
+LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
+LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
 
 ################################################################################
 # Create global_enkf namelist
@@ -275,10 +274,9 @@ EOF
 
 ################################################################################
 # Run enkf update
-$NCP $ENKFEXEC $DATA/enkf.x
 export OMP_NUM_THREADS=$NTHREADS_ENKF
-export PGM='$APRUN_ENKF $DATA/enkf.x'
-eval $PGM < enkf.nml 1>stdout 2>stderr
+$NCP $ENKFEXEC $DATA/enkf.x
+$APRUN_ENKF $DATA/enkf.x < enkf.nml 1>stdout 2>stderr
 rc=$?
 
 export ERR=$rc

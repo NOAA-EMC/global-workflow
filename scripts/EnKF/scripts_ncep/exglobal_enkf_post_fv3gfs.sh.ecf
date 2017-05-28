@@ -18,7 +18,7 @@
 ################################################################################
 
 # Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
@@ -26,47 +26,47 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export BASE_GSI=${BASE_GSI:-$NWPROD}
-export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
-export DATA=${DATA:-$pwd}
-export COMIN=${COMIN:-$pwd}
-export COMOUT=${COMOUT:-$COMIN}
+NWPROD=${NWPROD:-$pwd}
+BASE_GSI=${BASE_GSI:-$NWPROD}
+FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+DATA=${DATA:-$pwd}
+COMIN=${COMIN:-$pwd}
+COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export NCP=${NCP:-"/bin/cp"}
-export NLN=${NLN:-"/bin/ln -sf"}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+NCP=${NCP:-"/bin/cp"}
+NLN=${NLN:-"/bin/ln -sf"}
 
 # Machine related stuff
 export MPMD=${MPMD:-"NO"}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
-export APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
+APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
 
 # Ops stuff
-export SENDDBN=${SENDDBN:-"NO"}
+SENDDBN=${SENDDBN:-"NO"}
 
 # Fix files
-export LEVS=${LEVS:-64}
-export HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
+LEVS=${LEVS:-64}
+HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-export GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
-export GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
-export GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getnstensmeanp.x}
-export GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensstatp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
+GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getnstensmeanp.x}
+GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensstatp.x}
 
 # Other variables.
-export PREFIX=${PREFIX:-""}
-export SUFFIX=${SUFFIX:-""}
-export FHMIN=${FHMIN_ENKF:-${FHMIN:-3}}
-export FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
-export FHOUT=${FHOUT_ENKF:-${FHOUT:-1}}
-export SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
-export NMEM_ENKF=${NMEM_ENKF:-80}
-export NST_GSI=${NST_GSI:-0}
+PREFIX=${PREFIX:-""}
+SUFFIX=${SUFFIX:-""}
+FHMIN=${FHMIN_ENKF:-${FHMIN:-3}}
+FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
+FHOUT=${FHOUT_ENKF:-${FHOUT:-1}}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
+NMEM_ENKF=${NMEM_ENKF:-80}
+NST_GSI=${NST_GSI:-0}
 ENKF_SUFFIX=""
-[[ $SMOOTH_ENKF = "YES" ]]&&ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "YES" ]] && ENKF_SUFFIX="s"
 
 ################################################################################
 #  Preprocessing

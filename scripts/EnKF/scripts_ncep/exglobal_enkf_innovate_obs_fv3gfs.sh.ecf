@@ -28,54 +28,54 @@ fi
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export DATA=${DATA:-$pwd/enkf_innovate_obs.$$}
 export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
+DATA=${DATA:-$pwd/enkf_innovate_obs.$$}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
+export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-export INVOBSSH=${INVOBSSH:-$BASE_GSI/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf}
+INVOBSSH=${INVOBSSH:-$BASE_GSI/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf}
 export ANALYSISSH=${ANALYSISSH:-$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Enemble group, begin and end
-export ENSGRP=${ENSGRP:-1}
-export ENSBEG=${ENSBEG:-1}
-export ENSEND=${ENSEND:-1}
+ENSGRP=${ENSGRP:-1}
+ENSBEG=${ENSBEG:-1}
+ENSEND=${ENSEND:-1}
 
 # Cycling and forecast hour specific parameters
 export CDATE=${CDATE:-"2001010100"}
 export CDUMP=${CDUMP:-"gdas"}
 
 # Re-run failed members, or entire group
-export RERUN_EOMGGRP=${RERUN_EOMGGRP:-"YES"}
+RERUN_EOMGGRP=${RERUN_EOMGGRP:-"YES"}
 
 # Ops related stuff
-export SENDECF=${SENDECF:-"NO"}
+SENDECF=${SENDECF:-"NO"}
 
 ################################################################################
 # Preprocessing
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA || exit 99
-export DATATOP=$DATA
+DATATOP=$DATA
 
 ################################################################################
 # Set output data
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export EOMGGRP=$COMOUT/eomg.grp${ENSGRP}
+EOMGGRP=$COMOUT/eomg.grp${ENSGRP}
 if [ -f $EOMGGRP ]; then
    if [ $RERUN_EOMGGRP = "YES" ]; then
       rm -f $EOMGGRP
    else
       echo "RERUN_EOMGGRP = $RERUN_EOMGGRP, will re-run FAILED members only!"
-      $NCP $EOMGGRP ${EOMGGRP}.fail
+      $NMV $EOMGGRP ${EOMGGRP}.fail
    fi
 fi
 
