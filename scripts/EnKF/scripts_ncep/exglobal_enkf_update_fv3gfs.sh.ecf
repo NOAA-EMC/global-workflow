@@ -106,20 +106,18 @@ $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 if [ $USE_CFP = "YES" ]; then
    rm $DATA/untar.sh $DATA/mp_untar.sh
    set +x
-   cat <<\EOFuntar > $DATA/untar.sh
-#!/bin/ksh
-{ echo
- memchar=$1
- flist="$CNVSTAT $OZNSTAT $RADSTAT"
- for ftype in $flist; do
-    if [ $memchar = "ensmean" ]; then
-       fname=$COMOUT_ANL_ENS/${ftype}.ensmean
-    else
-       fname=$COMOUT_ANL_ENS/$memchar/$ftype
-    fi
-    tar -xvf $fname
- done
-}
+   cat > $DATA/untar.sh << EOFuntar
+#!/bin/sh
+memchar=\$1
+flist="$CNVSTAT $OZNSTAT $RADSTAT"
+for ftype in \$flist; do
+   if [ \$memchar = "ensmean" ]; then
+      fname=$COMOUT_ANL_ENS/\${ftype}.ensmean
+   else
+      fname=$COMOUT_ANL_ENS/\$memchar/\$ftype
+   fi
+   tar -xvf \$fname
+done
 EOFuntar
    set -x
    chmod 755 $DATA/untar.sh
@@ -175,7 +173,7 @@ LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
 
 ################################################################################
 # Create global_enkf namelist
-cat <<EOF > enkf.nml
+cat > enkf.nml << EOFnml
 &nam_enkf
    datestring="$CDATE",datapath="$DATA/",
    analpertwtnh=0.85,analpertwtsh=0.85,analpertwttr=0.85,
@@ -270,7 +268,7 @@ cat <<EOF > enkf.nml
    sattypes_oz(8) = 'mls30_aura',
    $OZOBS_ENKF
 /
-EOF
+EOFnml
 
 ################################################################################
 # Run enkf update

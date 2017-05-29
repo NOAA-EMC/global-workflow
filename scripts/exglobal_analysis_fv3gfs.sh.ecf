@@ -534,22 +534,16 @@ fi
 ##############################################################
 # If requested, copy and de-tar guess radstat file
 if [ $USE_CFP = "YES" ]; then
-   rm $DATA/unzip.sh
-   rm $DATA/mp_unzip.sh
-   set +x
-cat <<\EOFunzip > unzip.sh
-#!/bin/ksh
-{ echo
- set -aux
- diag_file=$1
- fname=`echo $diag_file | cut -d'.' -f1`
- date=`echo $diag_file | cut -d'.' -f2`
- $UNCOMPRESS $diag_file
- fnameges=$(echo $fname|sed 's/_ges//g')
- $NMV $fname.$date $fnameges
-}
+   rm $DATA/unzip.sh $DATA/mp_unzip.sh
+cat > $DATA/unzip.sh << EOFunzip
+#!/bin/sh
+   diag_file=\$1
+   fname=\$(echo \$diag_file | cut -d'.' -f1)
+   fdate=\$(echo \$diag_file | cut -d'.' -f2)
+   $UNCOMPRESS \$diag_file
+   fnameges=\$(echo \$fname | sed 's/_ges//g')
+   $NMV \$fname.\$fdate \$fnameges
 EOFunzip
-   set -x
    chmod 755 $DATA/unzip.sh
 fi
 
@@ -881,33 +875,27 @@ else
 fi
 
 if [ $USE_CFP = "YES" ]; then
-   rm $DATA/diag.sh
-   rm $DATA/mp_diag.sh
-   set +x
-cat <<\EOFdiag > $DATA/diag.sh
-#!/bin/ksh
-{ echo
- set -aux
- lrun_subdirs=$1
- type=$2
- loop=$3
- string=$4
- CDATE=$5
- DIAG_COMPRESS=$6
- DIAG_SUFFIX=$7
- if [ $lrun_subdirs = ".true." ]; then
+   rm $DATA/diag.sh $DATA/mp_diag.sh
+   cat > $DATA/diag.sh << EOFdiag
+#!/bin/sh
+lrun_subdirs=\$1
+type=\$2
+loop=\$3
+string=\$4
+CDATE=\$5
+DIAG_COMPRESS=\$6
+DIAG_SUFFIX=\$7
+if [ \$lrun_subdirs = ".true." ]; then
    prefix=" dir.*/"
- else
+else
    prefix="pe*"
- fi
- file=diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
- cat ${prefix}${type}_${loop}* > $file
- if [ $DIAG_COMPRESS = "YES" ]; then
-  $COMPRESS $file
- fi
-}
+fi
+file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
+cat \${prefix}\${type}_\${loop}* > \$file
+if [ \$DIAG_COMPRESS = "YES" ]; then
+   $COMPRESS \$file
+fi
 EOFdiag
-   set -x
    chmod 755 $DATA/diag.sh
 fi
 
