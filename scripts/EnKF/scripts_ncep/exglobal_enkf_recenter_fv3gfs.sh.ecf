@@ -49,6 +49,10 @@ GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmea
 GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
 RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
 
+CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
+export APRUN_CALC_INCREMENT=${APRUN_CALC_INCREMENT:-${APRUN:-""}}
+export NTHREADS_CALC_INCREMENT=${NTHREADS_CALC_INCREMENT:-${NTHREADS:-1}}
+
 # Files.
 APREFIX=${APREFIX:-""}
 ASUFFIX=${ASUFFIX:-""}
@@ -180,6 +184,30 @@ if [ $RECENTER_ENKF = "YES" ]; then
    fi
 
 fi
+
+################################################################################
+# Calculate ensemble analysis increment
+
+rc=0
+for imem in `seq 1 $NMEM_ENKF`; do
+    memchar="mem"`printf %03i $imem`
+    export DATA=$COMIN_ENS/$memchar
+    export ATMGES=$COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX
+    if [ $RECENTER_ENKF = "YES" ]; then
+        export ATMANL=$COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
+    else
+        export ATMANL=$COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX
+    fi
+    export ATMINC=$COMIN_ENS/$memchar/${APREFIX}atminc.nc
+    $CALC_INCREMENT_SH
+    ra=$?
+    ((rc+=ra))
+done
+
+export ERR=$rc
+export err=$rc
+$ERRSCRIPT || exit 3
+
 
 ################################################################################
 # Update surface and NST analysis
