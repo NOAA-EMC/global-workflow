@@ -18,6 +18,8 @@
 # If you are interested in Bells and Whistles, contact the
 # appropriate person or motivate yourself.
 
+# Only VSDB_STEP1 is enabled to create the VSDB database
+
 echo "BEGIN: config.vrfy"
 
 # Get task specific resources
@@ -28,16 +30,16 @@ export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
 
 # What we want turned ON/OFF
-export VSDB_STEP1="YES"
+export VSDB_STEP1="YES"      # populate VSDB database (YES)
 export VSDB_STEP2="NO"
-export VRFYG2OBS="YES"
-export VRFYFITS="YES"        # Fits
-export VRFYPRCP="YES"        # Precip threat scores
-export VRFYMINMON="NO"
-export VRFYRAD="NO"
-export VRFYOZN="NO"
-export VRFYTRAK="NO"
-export VRFYGENESIS="NO"
+export VRFYG2OBS="NO"        # Grid to observations
+export VRFYFITS="NO"         # Fit to observations
+export VRFYPRCP="NO"         # Precip threat scores
+export VRFYMINMON="NO"       # GSI minimization monitoring
+export VRFYRAD="NO"          # Radiance data assimilation monitoring
+export VRFYOZN="NO"          # Ozone data assimilation monitoring
+export VRFYTRAK="NO"         # Hurricane track forecasts
+export VRFYGENESIS="NO"      # Cyclone genesis
 export VRFYGMPK="NO"
 
 export CDFNL="gdas"
@@ -51,17 +53,30 @@ elif [ $machine = "THEIA" ]; then
     export SUB="$BASEDIR/bin/sub_theia"
 fi
 
-# fit2obs
-if [ $machine = "WCOSS" ]; then
-    export fitdir=$BASE_VERIF/global/parafits.nems/batrun
-    export PREPQFITSH="$fitdir/subfits_wcoss"
-elif [ $machine = WCOSS_C ]; then
-    export fitdir=$BASE_VERIF/global/parafits.nems.test/batrun
-    export PREPQFITSH="$fitdir/subfits_cray_nems"
-elif [ $machine = THEIA ]; then
-    export fitdir=$BASE_VERIF/global/parafits/batrun
-    export PREPQFITSH="$fitdir/subfits_theia_nems"
+# Fit to Observations
+if [ $VRFYFITS = "YES" ]; then
+    if [ $machine = "WCOSS" ]; then
+        export fitdir=$BASE_VERIF/global/parafits.nems/batrun
+        export PREPQFITSH="$fitdir/subfits_wcoss"
+    elif [ $machine = WCOSS_C ]; then
+        export fitdir=$BASE_VERIF/global/parafits.nems.test/batrun
+        export PREPQFITSH="$fitdir/subfits_cray_nems"
+    elif [ $machine = THEIA ]; then
+        export fitdir=$BASE_VERIF/global/parafits/batrun
+        export PREPQFITSH="$fitdir/subfits_theia_nems"
+    fi
 fi
 
+# VSDB STEP1, Verify Precipipation and Grid To Obs options
+# Only VSDB step1 works, but these options are needed for all three
+if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+    export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
+    export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
+    export vsdbhome=$BASE_VERIF                     # location of global verification scripts
+    export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+    export vlength=$FHMAX_GFS                       # verification length
+    #export vhr_rain=$FHMAX_GFS                      # verification length for precip
+    #export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
+fi
 
 echo "END: config.vrfy"

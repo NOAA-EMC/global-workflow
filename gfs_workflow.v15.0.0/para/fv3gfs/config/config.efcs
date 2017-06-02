@@ -26,6 +26,7 @@ export NMEM_EFCSGRP=10
 export RERUN_EFCSGRP="NO"
 
 # Stochastic physics parameters (only for ensemble forecasts)
+export USE_STOCH_PHYS="NO"
 export SET_STP_SEED="NO"
 export SHUM=0.006
 export SHUM_TAU=21600.
@@ -37,6 +38,6 @@ export SPPT_LSCALE=500000.
 export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
 
 # FV3 model namelist parameters to over-ride
-export restart_secs=`echo "6 * 60 * 60" | bc`
+export restart_interval=6
 
 echo "END: config.efcs"

@@ -69,6 +69,7 @@ elif [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh  2>>/dev/null
  module load PrgEnv-intel cray-mpich crtm-intel/2.2.4 cfp-intel-sandybridge 2>>/dev/null
  module load prod_envir prod_util grib_util/1.0.3 hpss g2tmpl-intel/1.4.0 2>>/dev/null
+ module load nco-gnu-sandybridge/4.4.4 cray-netcdf 2>>/dev/null
  CUE2RUN=dev
  CUE2RUN1=dev
  CUE2RUNA=dev_transfer
@@ -81,6 +82,7 @@ elif [ $machine = WCOSS_C ]; then
  memory_node=3072
 
 elif [ $machine = THEIA ]; then
+ module load netcdf/4.3.0
  CUE2RUN=batch
  CUE2RUN1=batch
  CUE2RUNA=service
@@ -128,7 +130,7 @@ if [ $machine = WCOSS ]; then
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/global/save/$LOGNAME/svn/fv3gfs
- tags=trunk_r88010
+ tags=trunk
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
 elif [ $machine = WCOSS_C ]; then
@@ -142,9 +144,8 @@ elif [ $machine = WCOSS_C ]; then
  NWPROD=/gpfs/hps/nco/ops/nwprod
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
-#BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
- BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
- tags=trunk_r89554
+ BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+ tags=trunk
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
  FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
@@ -163,7 +164,7 @@ elif [ $machine = THEIA ]; then
  utilscript=/scratch4/NCEPDEV/rstprod/nwprod/util/ush
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
- tags=trunk_r88010
+ tags=trunk
  FIX_FV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3   
 else
  echo '$machine is not supported, exit'

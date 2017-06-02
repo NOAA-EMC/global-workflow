@@ -18,6 +18,6 @@ echo "BEGIN: config.prep"
 export DO_RELOCATE="NO"
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
-export DRIVE_MAKEPREPBUFRSH="$BASE_WORKFLOW/fv3gfs/ush/drive_makeprepbufr.sh"
+export DRIVE_MAKEPREPBUFRSH="$BASE_GSM/ush/drive_makeprepbufr.sh"
 
 echo "END: config.prep"

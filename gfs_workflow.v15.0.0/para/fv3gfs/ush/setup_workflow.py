@@ -38,8 +38,9 @@ def main():
     parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
     args = parser.parse_args()
 
-    # Source the configs in expdir once and return a dictionary
-    dict_configs = source_configs(args.expdir)
+    configs = get_configs(args.expdir)
+
+    dict_configs = source_configs(args.expdir, configs)
 
     # First create workflow XML
     create_xml(dict_configs)
@@ -50,13 +51,37 @@ def main():
     return
 
 
-def source_configs(expdir):
+def get_configs(expdir):
     '''
-        Given an experiment directory containing config files
-        source the configs and return a dictionary for each task
+        Given an experiment directory containing config files,
+        return a list of configs minus the ones ending with ".default"
     '''
 
     configs = glob.glob('%s/config.*' % expdir)
+
+    # remove any defaults from the list
+    for c, config in enumerate(configs):
+        if config.endswith('.default'):
+            configs.pop(c)
+
+    return configs
+
+
+def find_config(config_name, configs):
+
+    for config in configs:
+        if config_name == os.path.basename(config):
+            return config
+
+    # no match found
+    raise IOError("%s does not exist, ABORT!" % config_name)
+
+
+def source_configs(expdir, configs):
+    '''
+        Given list of config files, source them
+        and return a dictionary for each task
+    '''
 
     dict_configs = {}
 
@@ -134,14 +159,6 @@ def config_parser(files):
                 varbles[key] = value
 
     return varbles
-
-
-def find_config(config_name,configs):
-    if any(config_name in s for s in configs):
-        config = filter(lambda x: config_name in x, configs)[0]
-        return config
-    else:
-        raise IOError("config file does not exist: %s" % config_name)
 
 
 def get_scheduler(machine):
@@ -620,7 +637,6 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, cdump='gdas'):
     dep_dict = {'name':'eobs', 'type':'task'}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
-#    eomgenvars = envars + ['&eENSGRP;']
     eomgenvars = envars + [ensgrp]
     task = create_wf_task(taskname, cdump=cdump, envar=eomgenvars, dependency=dependencies, \
            metatask=metataskname, varname=varname, varval=varval)
@@ -663,7 +679,6 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, cdump='gdas'):
     dep_dict = {'condition':'not', 'type':'cycleexist', 'offset':'-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-#    efcsenvars = envars + ['&eENSGRP;']
     efcsenvars = envars + [ensgrp]
     task = create_wf_task(taskname, cdump=cdump, envar=efcsenvars, dependency=dependencies, \
            metatask=metataskname, varname=varname, varval=varval)

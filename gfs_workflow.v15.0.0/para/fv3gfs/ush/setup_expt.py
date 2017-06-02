@@ -18,12 +18,15 @@ from argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 
 def create_EXPDIR(expdir, configdir):
 
+    if configdir is None:
+        msg = 'Input argument --configdir is required to create EXPDIR'
+        raise IOError(msg)
     if os.path.exists(expdir): shutil.rmtree(expdir)
     os.makedirs(expdir)
     configs = glob.glob('%s/config.*' % configdir)
     if len(configs) == 0:
         msg = 'no config files found in %s' % configdir
-        raise msg
+        raise IOError(msg)
     for config in configs:
         shutil.copy(config, expdir)
 
@@ -58,7 +61,7 @@ def create_COMROT(comrot, icsdir, idate, cdump='gdas'):
     return
 
 
-def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens):
+def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate):
 
     base_config = '%s/config.base' % expdir
 
@@ -70,6 +73,7 @@ def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens):
     fh.close()
     lines = [l.replace('@MACHINE@', machine.upper()) for l in lines]
     lines = [l.replace('@PSLOT@', pslot) for l in lines]
+    lines = [l.replace('@SDATE@', idate.strftime('%Y%m%d%H')) for l in lines]
     if expdir is not None:
         lines = [l.replace('@EXPDIR@', os.path.dirname(expdir)) for l in lines]
     if comrot is not None:
@@ -82,9 +86,9 @@ def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens):
     fh.close()
 
     print ''
-    print 'EDITED: %s/config.base as per experiment setup.' % expdir
-    print 'please verify before proceeding.'
-    print 'DEFAULT: %s/config.base.default can be removed, it is not used.'
+    print 'EDITED:  %s/config.base as per user input.' % expdir
+    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
+    print 'Please verify and delete the default file before proceeding.'
     print ''
 
     return
@@ -100,7 +104,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--machine', help='machine name', type=str, choices=['THEIA', 'WCOSS_C'], default='WCOSS_C', required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=True)
-    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=True)
+    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--idate', help='date of initial conditions', type=str, required=False, default='2016100100')
     parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False,default='/scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS')
     parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
@@ -151,6 +155,5 @@ link initial condition files from $ICSDIR to $COMROT'''
     # Create EXP directory, copy config and edit config.base
     if create_expdir:
         create_EXPDIR(expdir, configdir)
-        edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens)
-
+        edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate)
     sys.exit(0)

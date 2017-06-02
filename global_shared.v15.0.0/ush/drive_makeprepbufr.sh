@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/sh -x
 ###############################################################
 # < next few lines under version control, D O  N O T  E D I T >
 # $Date$
@@ -34,23 +34,23 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export GDATE=`$NDATE -$assim_freq $CDATE`
+GDATE=`$NDATE -$assim_freq $CDATE`
 
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
 gymd=`echo $GDATE | cut -c1-8`
 ghh=`echo  $GDATE | cut -c9-10`
 
-export OPREFIX="${CDUMP}.t${chh}z."
-export OSUFFIX=".bufr_d"
-export GPREFIX="gdas.t${ghh}z."
-export GSUFFIX=".nemsio"
-export APREFIX="${CDUMP}.t${chh}z."
-export ASUFFIX=".nemsio"
+OPREFIX="${CDUMP}.t${chh}z."
+OSUFFIX=".bufr_d"
+GPREFIX="gdas.t${ghh}z."
+GSUFFIX=".nemsio"
+APREFIX="${CDUMP}.t${chh}z."
+ASUFFIX=".nemsio"
 
-export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
-export COMIN_GES="$ROTDIR/gdas.$gymd/$ghh"
-export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
+COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+COMIN_GES="$ROTDIR/gdas.$gymd/$ghh"
+COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 export DATA="$RUNDIR/$CDATE/$CDUMP/prepbufr"
 [[ -d $DATA ]] && rm -rf $DATA

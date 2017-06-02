@@ -140,9 +140,11 @@ fi
 export BASE_WORKFLOW="$MYBASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
 export BASE_GSM="$MYBASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
 export BASE_GSI="$MYBASE_SVN/gsi/branches/EXP-fv3gsi"
-export BASE_POST="$MYBASE_SVN/fv3gfs/tags/post4fv3"
+export BASE_NEMSfv3gfs="$BASE_SVN/nems/apps/NEMSfv3gfs/trunk"
+export BASE_POST="$BASE_SVN/fv3gfs/tags/post4fv3"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
 export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
+export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -157,8 +159,8 @@ export BASE_ENV="$BASE_WORKFLOW/fv3gfs/env"
 export BASE_JOB="$BASE_WORKFLOW/fv3gfs/jobs"
 
 # EXPERIMENT specific environment parameters
-export SDATE=2016100100
-export EDATE=2016100500
+export SDATE=@SDATE@
+export EDATE=@SDATE@
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
@@ -198,14 +200,13 @@ export lwrite4danl=".false."
 
 # EnKF output and frequency [needed in epos as well]
 if [ $DOHYBVAR = "YES" ]; then
-    export FHOUT_ENKF=1
+    export FHMIN_ENKF=0
+    export FHMAX_ENKF=9
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
-        export FHMIN_ENKF=3
-        export FHMAX_ENKF=9
+        export FHOUT_ENKF=1
     else
-        export FHMIN_ENKF=6
-        export FHMAX_ENKF=6
+        export FHOUT_ENKF=3
     fi
 fi
 

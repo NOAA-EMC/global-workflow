@@ -32,12 +32,12 @@ done
 # CURRENT CYCLE
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export APREFIX="${CDUMP}.t${chh}z."
-export ASUFFIX=".nemsio"
+APREFIX="${CDUMP}.t${chh}z."
+ASUFFIX=".nemsio"
 
-export COMIN="$ROTDIR/$CDUMP.$cymd/$chh"
+COMIN="$ROTDIR/$CDUMP.$cymd/$chh"
 
-export DATA="$RUNDIR/$CDATE/$CDUMP/arch"
+DATA="$RUNDIR/$CDATE/$CDUMP/arch"
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
@@ -93,8 +93,8 @@ for file in $files; do
 done
 
 $NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
-$NCP $COMIN/pgrbfanl.${CDUMP}.${CDATE}.grib2* .
-[[ $CDUMP = "gfs" ]] && $NCP $COMIN/pgrbf*.${CDUMP}.${CDATE}.grib2* .
+$NCP $COMIN/${APREFIX}pgrb2.*.fanl* .
+[[ $CDUMP = "gfs" ]] && $NCP $COMIN/${APREFIX}pgrb2.*.f* .
 
 cd $DATA
 
@@ -116,37 +116,55 @@ rm -rf $CDUMP
 
 ###############################################################
 # Archive online for verification and diagnostics
-[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-cd $ARCDIR
+cd $COMIN
 
-$NCP $COMIN/${APREFIX}gsistat gsistat.${CDUMP}.${CDATE}
-$NCP $COMIN/pgrbfanl.${CDUMP}.${CDATE}.grib2* .
-[[ $CDUMP = "gfs" ]] && $NCP $COMIN/pgrbf*.${CDUMP}.${CDATE}.grib2* .
+[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+$NCP ${APREFIX}pgrbanl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
+
+# Archive 1 degree forecast GRIB1 files for verification
+if [ $CDUMP = "gfs" ]; then
+    for fname in ${APREFIX}pgrbf*; do
+        fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
+        $NCP $fname $ARCDIR/pgbf${fhr}.${CDUMP}.${CDATE}
+    done
+fi
+
+# Temporary archive quarter degree GRIB1 files for precip verification
+VFYARC=$ROTDIR/vrfyarch
+[[ ! -d $VFYARC ]] && mkdir -p $VFYARC
+if [ $CDUMP = "gfs" ]; then
+    $NCP ${APREFIX}pgrbqnl $VFYARC/pgbqnl.${CDUMP}.${CDATE}
+    for fname in ${APREFIX}pgrbq*; do
+        fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
+        $NCP $fname $VFYARC/pgbq${fhr}.${CDUMP}.${CDATE}
+    done
+fi
 
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
-export GDATE=`$NDATE -$assim_freq $CDATE`
+GDATE=`$NDATE -$assim_freq $CDATE`
 
 # PREVIOUS to the PRIOR CYCLE
-export GDATE=`$NDATE -$assim_freq $GDATE`
+GDATE=`$NDATE -$assim_freq $GDATE`
 gymd=`echo $GDATE | cut -c1-8`
 ghh=`echo  $GDATE | cut -c9-10`
 
 # Remove the TMPDIR directory
-export COMIN="$RUNDIR/$GDATE"
+COMIN="$RUNDIR/$GDATE"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
-# Remove the COMROT directory
-export COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
+# Remove the hour directory
+COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 # PREVIOUS 00Z day; remove the whole day
-export GDATE=`$NDATE -48 $CDATE`
+GDATE=`$NDATE -48 $CDATE`
 gymd=`echo $GDATE | cut -c1-8`
 ghh=`echo  $GDATE | cut -c9-10`
 
-export COMIN="$ROTDIR/$CDUMP.$gymd"
+COMIN="$ROTDIR/$CDUMP.$gymd"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 ###############################################################

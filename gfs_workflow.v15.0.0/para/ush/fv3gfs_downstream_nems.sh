@@ -6,20 +6,20 @@ set -x
 #  This script was written to include all new Grib2 GFS downstream post processing in
 #  EMC's parallel so that EMC can reproduce all operational pgb files as in operations.
 #  Due to EMC's limited resources, MPMD is used to speed up downstream post processing.
-#-Hui-Ya Chuang, September 2015: 
-#  modification to generate select grids on non-WCOSS machines without using MPMD.  
+#-Hui-Ya Chuang, September 2015:
+#  modification to generate select grids on non-WCOSS machines without using MPMD.
 #  NCEP R&D machines do not have MPMD.
 #-Fanglin Yang, September 2015
 #  1. restructured and simplified the script.
-#  2. use wgrib2 instead of copygb2 for interpolation. copygb2 is slow and is not 
-#     working for converting grib2 files that are produced by nceppost using nemsio files. 
-#  3. use wgrib2 to convert pgbm on quarter-degree (no matter gaussian or lat-lon) grid 
+#  2. use wgrib2 instead of copygb2 for interpolation. copygb2 is slow and is not
+#     working for converting grib2 files that are produced by nceppost using nemsio files.
+#  3. use wgrib2 to convert pgbm on quarter-degree (no matter gaussian or lat-lon) grid
 #     to pgbq on quarter-degree lat-lon grid.
-#  4. Between using COPYGB2 and WGRIB2, about 50% of the fields are bit-wise identical. 
+#  4. Between using COPYGB2 and WGRIB2, about 50% of the fields are bit-wise identical.
 #     Others are different at the noise level at spotted points.
 #-Fanglin Yang, February 2016
 #  1. For NEMSIO, gfspost1 exceends 6-hour CPU limits on WCOSS. Remove pgrbh and pgrbl
-#-Fanglin Yang, March 2017   
+#-Fanglin Yang, March 2017
 #  1. Modified for FV3GFS, using NCEP-NCO standard output name convention
 #-----------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ fi
 
 
 #--wgrib2 regrid parameters
-export option1=' -set_grib_type same -new_grid_winds earth '    
+export option1=' -set_grib_type same -new_grid_winds earth '
 export option21=' -new_grid_interpolation bilinear  -if '
 export option22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export option23=' -new_grid_interpolation neighbor -fi '
@@ -91,7 +91,7 @@ if [ $downset = 1 ]; then totalset=1 ; fi
 #..............................................
 while [ $nset -le $totalset ]; do
 #..............................................
-  export tmpfile=$(eval echo tmpfile${nset}_${fhr3})    
+  export tmpfile=$(eval echo tmpfile${nset}_${fhr3})
 
 # split of Grib files to run downstream jobs using MPMD
   export ncount=`$WGRIB2 $tmpfile |wc -l`
@@ -164,36 +164,36 @@ date
      cat pgb2bfile_${fhr3}_${iproc}_0p5 >> pgb2bfile_${fhr3}_0p5
      cat pgb2bfile_${fhr3}_${iproc}_1p0 >> pgb2bfile_${fhr3}_1p0
     fi
-    export iproc=`expr $iproc + 1` 
+    export iproc=`expr $iproc + 1`
   done
 date
 
   if [ $nset = 1 ]; then
    $WGRIB2 -s pgb2file_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}.idx
    $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}.idx
-   cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}             
-   cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}             
+   cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}
+   cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}
 
    if [ $fhr3 = anl ]; then
-    $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.anl.idx    
-    cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.anl        
-    cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrbanl             
-    cp pgbfile_${fhr3}_0p25   $COMOUT/${PREFIX}pgrbqnl            
+    $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.anl.idx
+    cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.anl
+    cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrbanl
+    cp pgbfile_${fhr3}_0p25   $COMOUT/${PREFIX}pgrbqnl
    else
-    $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}.idx     
-    cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}          
-    cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrbf${FH}           
-    cp pgbfile_${fhr3}_0p25   $COMOUT/${PREFIX}pgrbq${FH}         
+    $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}.idx
+    cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}
+    cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrbf${FH}
+    cp pgbfile_${fhr3}_0p25   $COMOUT/${PREFIX}pgrbq${FH}
    fi
 
   elif [ $nset = 2 ]; then
 
-   $WGRIB2 -s pgb2bfile_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}.idx             
-   $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}.idx            
-   $WGRIB2 -s pgb2bfile_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}.idx            
-   cp pgb2bfile_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}            
-   cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}           
-   cp pgb2bfile_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}           
+   $WGRIB2 -s pgb2bfile_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}.idx
+   $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}.idx
+   $WGRIB2 -s pgb2bfile_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}.idx
+   cp pgb2bfile_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}
+   cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}
+   cp pgb2bfile_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}
   fi
 
 #..............................................
@@ -204,7 +204,7 @@ date
 
 #---------------------------------------------------------------
 #---------------------------------------------------------------
-# R&D machine has no MPDP. Only generate 0.25 and 1 deg files 
+# R&D machine has no MPDP. Only generate 0.25 and 1 deg files
 else
 #---------------------------------------------------------------
 #---------------------------------------------------------------
@@ -213,24 +213,28 @@ else
                                            -new_grid $grid0p5  pgb2file_${fhr3}_0p5 \
                                            -new_grid $grid1p0  pgb2file_${fhr3}_1p0
 
-# convert 1 deg files back to Grib1 for verification 
+# convert 1 deg files back to Grib1 for verification
   if [ $fhr3 = anl ]; then
-   $CNVGRIB -g21 pgb2file_${fhr3}_1p0  $COMOUT/${PREFIX}pgrbanl           
+   $CNVGRIB -g21 pgb2file_${fhr3}_0p25 $COMOUT/${PREFIX}pgrbqnl
+#  $CNVGRIB -g21 pgb2file_${fhr3}_0p5  $COMOUT/${PREFIX}pgrbhnl
+   $CNVGRIB -g21 pgb2file_${fhr3}_1p0  $COMOUT/${PREFIX}pgrbanl
   else
-   $CNVGRIB -g21 pgb2file_${fhr3}_1p0  $COMOUT/${PREFIX}pgrbf${FH}          
+   $CNVGRIB -g21 pgb2file_${fhr3}_0p25 $COMOUT/${PREFIX}pgrbq${FH}
+#  $CNVGRIB -g21 pgb2file_${fhr3}_0p5  $COMOUT/${PREFIX}pgrbh${FH}
+   $CNVGRIB -g21 pgb2file_${fhr3}_1p0  $COMOUT/${PREFIX}pgrbf${FH}
   fi
 
    $WGRIB2 -s pgb2file_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}.idx
 #  $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}.idx
-   $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}.idx     
-   cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}             
-#  cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}             
-   cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}          
+   $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}.idx
+   cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}
+#  cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}
+   cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}
 
 #---------------------------------------------------------------
-fi 
+fi
 echo "!!!!!!CREATION OF SELECT GFS DOWNSTREAM PRODUCTS COMPLETED FOR FHR = $FH !!!!!!!"
 #---------------------------------------------------------------
 
 
-exit
+exit 0

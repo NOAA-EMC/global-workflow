@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/sh
 
 ################################################################################
 # UNIX Script Documentation Block
@@ -21,51 +21,51 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = YES ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
+    echo $(date) EXECUTING $0 $* >&2
+    set -x
 fi
 
 #-------------------------------------------------------
 # Directories and paths
 pwd=$(pwd)
-export DATA=${DATA:-$pwd}
-export NWPROD=${NWPROD:-$pwd}
-export BASE_GSM=${BASE_GSM:-$NWPROD}
-export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
-export REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
-export REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table.txt}
+DATA=${DATA:-$pwd}
+NWPROD=${NWPROD:-$pwd}
+BASE_GSM=${BASE_GSM:-$NWPROD}
+FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
+FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
+REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
+REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table.txt}
 
-export CDATE=${CDATE:-2017011500}
-export CDUMP=${CDUMP:-"gdas"}
-export CASE=${CASE:-C768}
-export LEVS=${LEVS:-64}
-export GG=${GG:-gaussian}              # gaussian or regular lat-lon
-export JCAP=${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
-export NLAT=${NLAT:-$((`echo $CASE | cut -c 2-`*2))}
-export NLON=${NLON:-$((`echo $CASE | cut -c 2-`*4))}
+CDATE=${CDATE:-2017011500}
+CDUMP=${CDUMP:-"gdas"}
+CASE=${CASE:-C768}
+LEVS=${LEVS:-64}
+GG=${GG:-gaussian}              # gaussian or regular lat-lon
+JCAP=${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
+NLAT=${NLAT:-$((`echo $CASE | cut -c 2-`*2))}
+NLON=${NLON:-$((`echo $CASE | cut -c 2-`*4))}
 
-export NEMSIO_OUT2DNAME=${NEMSIO_OUT2DNAME:-sfc.$CDATE}
-export NEMSIO_OUT3DNAME=${NEMSIO_OUT3DNAME:-atm.$CDATE}
-export DEBUG=${REGRID_NEMSIO_DEBUG:-".true."}
+NEMSIO_OUT2DNAME=${NEMSIO_OUT2DNAME:-sfc.$CDATE}
+NEMSIO_OUT3DNAME=${NEMSIO_OUT3DNAME:-atm.$CDATE}
+DEBUG=${REGRID_NEMSIO_DEBUG:-".true."}
 
-export APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
-export NTHREADS_REGRID_NEMSIO=${NTHREADS_REGRID_NEMSIO:-${NTHREADS:-1}}
+APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
+NTHREADS_REGRID_NEMSIO=${NTHREADS_REGRID_NEMSIO:-${NTHREADS:-1}}
 
-export NCO_NAMING_CONV=${NCO_NAMING_CONV:-"NO"}
-export NMV=${NMV:-"/bin/mv"}
+NCO_NAMING_CONV=${NCO_NAMING_CONV:-"NO"}
+NMV=${NMV:-"/bin/mv"}
 
 #-------------------------------------------------------
 # IO specific parameters and error traps
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 #--------------------------------------------------
 # ESMF regrid weights and output variable table
-export weight_bilinear=${weight_bilinear:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.bilinear.nc}
-export weight_neareststod=${weight_neareststod:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.neareststod.nc}
+weight_bilinear=${weight_bilinear:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.bilinear.nc}
+weight_neareststod=${weight_neareststod:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.neareststod.nc}
 
 #-------------------------------------------------------
 # Go to the directory where the history files are
@@ -73,8 +73,8 @@ cd $DATA || exit 8
 
 #-------------------------------------------------------
 if [ $NCO_NAMING_CONV = "YES" ]; then
-  export NEMSIO_OUT2DNAME=sfc.$CDATE
-  export NEMSIO_OUT3DNAME=atm.$CDATE
+    NEMSIO_OUT2DNAME=sfc.$CDATE
+    NEMSIO_OUT3DNAME=atm.$CDATE
 fi
 
 #-------------------------------------------------------
@@ -116,21 +116,21 @@ rm -f regrid-nemsio.input
 
 #------------------------------------------------------------------
 if [ $NCO_NAMING_CONV = "YES" ]; then
-  cymd=`echo $CDATE | cut -c1-8`
-  chh=`echo  $CDATE | cut -c9-10`
-  export PREFIX=${PREFIX:-"${CDUMP}.t${chh}z."}
-  export SUFFIX=${SUFFIX:-".nemsio"}
-  for ftype in atm sfc; do
-    for file in `ls -1 ${ftype}.${CDATE}.fhr*`; do
-      fhrchar=`echo $file | cut -d. -f3 | cut -c4-`
-      $NMV $file ${PREFIX}${ftype}f${fhrchar}${SUFFIX}
+    cymd=`echo $CDATE | cut -c1-8`
+    chh=`echo  $CDATE | cut -c9-10`
+    PREFIX=${PREFIX:-"${CDUMP}.t${chh}z."}
+    SUFFIX=${SUFFIX:-".nemsio"}
+    for ftype in atm sfc; do
+        for file in `ls -1 ${ftype}.${CDATE}.fhr*`; do
+            fhrchar=`echo $file | cut -d. -f3 | cut -c4-`
+            $NMV $file ${PREFIX}${ftype}f${fhrchar}${SUFFIX}
+        done
     done
-  done
 fi
 
 #------------------------------------------------------------------
 set +x
 if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXITING $0 with return code $err >&2
+    echo $(date) EXITING $0 with return code $err >&2
 fi
 exit $err
