@@ -34,27 +34,37 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export COMROT=$ROTDIR
 export DATA=$RUNDIR/$CDATE/$CDUMP/fcst
 [[ -d $DATA ]] && rm -rf $DATA
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 
-# If this is not the first cycle, we warm start the model
-if [ $CDATE -gt $SDATE ]; then
+# Default warm_start is OFF
+export warm_start=".false."
+
+# If RESTART conditions exist; warm start the model
+if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
-    export read_increment=".true."
-else
-    export warm_start=".false."
+    if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
+        export read_increment=".true."
+    else
+        echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
+    fi
 fi
 
 # Restart files for GFS cycle come from the GDAS cycle
 if [ $CDUMP = "gfs" ]; then
-    if [ $warm_start = ".true." ]; then
-        mkdir -p $COMROT/${CDUMP}.$cymd/$chh/RESTART
-        cd $COMROT/${CDUMP}.$cymd/$chh/RESTART
-        $NLN $COMROT/gdas.$cymd/$chh/RESTART/${cymd}.${chh}0000.* .
+    if [ -f $ROTDIR/gdas.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
+        export warm_start=".true."
+        mkdir -p $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
+        cd $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
+        $NCP $ROTDIR/gdas.$cymd/$chh/RESTART/${cymd}.${chh}0000.* .
+        if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
+            export read_increment=".true."
+        else
+            echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
+        fi
     fi
 fi
 
@@ -75,14 +85,15 @@ fi
 
 # Output frequency
 if [ $FHMIN -eq 0 ]; then
-    export fdiag=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
+    fdiag_=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
 else
-    export fdiag=$FHMIN
+    fdiag_=$FHMIN
 fi
 FHMIN_=$(($FHMIN + $FHOUT))
 for fhr in `seq $FHMIN_ $FHOUT $FHMAX`; do
-    export fdiag="$fdiag,$fhr"
+    fdiag_="$fdiag_,$fhr"
 done
+export fdiag=$fdiag_
 
 ###############################################################
 # Run relevant exglobal script

@@ -20,19 +20,19 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXECUTING $0 $* >&2
   set -x
 fi
 
 # This should be in the script that calls this script, not here
-export machine=${machine:-WCOSS_C}
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+machine=${machine:-WCOSS_C}
+machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 if [ $machine = WCOSS_C ] ; then
  . $MODULESHOME/init/sh 2>/dev/null
- export PRGENV=${PRGENV:-intel}
- export HUGEPAGES=${HUGEPAGES:-hugepages4M}
+ PRGENV=${PRGENV:-intel}
+ HUGEPAGES=${HUGEPAGES:-hugepages4M}
  module  unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
  module  load   prod_util iobuf/2.0.8 PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
  export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
@@ -40,58 +40,58 @@ if [ $machine = WCOSS_C ] ; then
 fi
 
 # Cycling and forecast hour specific parameters
-export CASE=${CASE:-C768}
-export CDATE=${CDATE:-2016100300}
-export CDUMP=${CDUMP:-gdas}
-export FHMIN=${FHMIN:-3}
-export FHMAX=${FHMAX:-9}
-export FHOUT=${FHOUT:-3}
-export FHZER=${FHZER:-6}
-export FHCYC=${FHCYC:-0}
+CASE=${CASE:-C768}
+CDATE=${CDATE:-2016100300}
+CDUMP=${CDUMP:-gdas}
+FHMIN=${FHMIN:-0}
+FHMAX=${FHMAX:-9}
+FHOUT=${FHOUT:-3}
+FHZER=${FHZER:-6}
+FHCYC=${FHCYC:-24}
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-${NWROOT:-$pwd}}
-export BASE_GSM=${BASE_GSM:-$NWPROD}
-export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
-export DATA=${DATA:-$pwd/fv3tmp$$}  #temporary running directory
-export COMROT=${COMROT:-$pwd}       #rotating directory
-export IC_DIR=${IC_DIR:-$pwd}       #cold start initial conditions
+NWPROD=${NWPROD:-${NWROOT:-$pwd}}
+BASE_GSM=${BASE_GSM:-$NWPROD}
+FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
+FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
+DATA=${DATA:-$pwd/fv3tmp$$}  #temporary running directory
+ROTDIR=${ROTDIR:-$pwd}       #rotating directory
+IC_DIR=${IC_DIR:-$pwd}       #cold start initial conditions
 
 # Model resolution specific parameters
-export DELTIM=${DELTIM:-225}
-export layout_x=${layout_x:-8}
-export layout_y=${layout_y:-16}
-export cdmbgwd=${cdmbgwd:-"3.5,0.25"}
-export LEVS=${LEVS:-64}
+DELTIM=${DELTIM:-225}
+layout_x=${layout_x:-8}
+layout_y=${layout_y:-16}
+cdmbgwd=${cdmbgwd:-"3.5,0.25"}
+LEVS=${LEVS:-64}
 
 # Utilities
-export NCP=${NCP:-"/bin/cp -p"}
-export NLN=${NLN:-"/bin/ln -sf"}
-export SEND=${SEND:-"YES"}   #move final result to rotating directory
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export NDATE=${NDATE:-$NWPROD/util/exec/ndate}
+NCP=${NCP:-"/bin/cp -p"}
+NLN=${NLN:-"/bin/ln -sf"}
+SEND=${SEND:-"YES"}   #move final result to rotating directory
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 
 # Other options
-export MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
+MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 
 # Model specific stuff
-export EXECDIR=${EXECDIR:-${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}}
-export FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
-export PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
+EXECDIR=${EXECDIR:-${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}}
+FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
+PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
 
 # Model config options
-export APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-export NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nthreads:-${nth_f:-1}}}}
-export cores_per_node=${cores_per_node:-${npe_node_f:-24}}
-export ntiles=${ntiles:-6}
-export TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
-export MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
+APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
+NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nthreads:-${nth_f:-1}}}}
+cores_per_node=${cores_per_node:-${npe_node_f:-24}}
+ntiles=${ntiles:-6}
+TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
+MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
 
 #-------------------------------------------------------
-if [ ! -d $COMROT ]; then mkdir -p $COMROT; fi
+if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
 if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
 mkdir -p $DATA/RESTART $DATA/INPUT
 cd $DATA || exit 8
@@ -106,15 +106,15 @@ else
   memchar=mem`printf %03i $MEMBER`
 fi
 cymd=`echo $CDATE | cut -c1-8`
-chh=`echo   $CDATE | cut -c9-10`
-memdir=$COMROT/${prefix}.$cymd/$chh/$memchar
+chh=`echo  $CDATE | cut -c9-10`
+memdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 #-------------------------------------------------------
 # initial conditions
-export warm_start=${warm_start:-".false."}
-export read_increment=${read_increment:-".false."}
-export increment_file=${increment_file:-$memdir/${CDUMP}.t${chh}z.atminc.nc}
+warm_start=${warm_start:-".false."}
+read_increment=${read_increment:-".false."}
+increment_file=${increment_file:-$memdir/${CDUMP}.t${chh}z.atminc.nc}
 
 if [ $warm_start = ".false." ]; then
   if [ -d $IC_DIR/${CASE}_$CDATE ]; then
@@ -150,7 +150,7 @@ else
     if [ -f $increment_file ]; then
       $NLN $increment_file $DATA/INPUT/fv3_increment.nc
     else
-      export read_increment=".false."
+      read_increment=".false."
     fi
   fi
 fi
@@ -170,10 +170,10 @@ $NLN $FIX_FV3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 
 # GFS standard input data
 
-export IEMS=${IEMS:-1}
-export ISOL=${ISOL:-2}
-export IAER=${IAER:-111}
-export ICO2=${ICO2:-2}
+IEMS=${IEMS:-1}
+ISOL=${ISOL:-2}
+IAER=${IAER:-111}
+ICO2=${ICO2:-2}
 
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/INPUT/solarconstant_noaa_an.txt
 $NLN $FIX_AM/global_o3prdlos.f77               $DATA/INPUT/global_o3prdlos.f77
@@ -194,165 +194,165 @@ if [ $IAER -gt 0 ] ; then
   done
 fi
 
-export FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
-export FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
-export FNTSFC=${FNTSFC:-"$FIX_AM/cfs_oi2sst1x1monclim19822001.grb"}
-export FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
-export FNZORC=${FNZORC:-"$FIX_AM/global_zorclim.1x1.grb"}
-export FNALBC=${FNALBC:-"$FIX_AM/global_albedo4.1x1.grb"}
-export FNAISC=${FNAISC:-"$FIX_AM/cfs_ice1x1monclim19822001.grb"}
-export FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-export FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-export FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.1x1.grb"}
-export FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.1x1.grb"}
-export FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmcpc.1x1.grb"}
-export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
-export FNTSFA=${FNTSFA:-""}
-export FNACNA=${FNACNA:-""}
-export FNSNOA=${FNSNOA:-""}
-export FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-export FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-export FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-export FNABSC=${FNABSC:-"$FIX_AM/global_snoalb.1x1.grb"}
+FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
+FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
+FNTSFC=${FNTSFC:-"$FIX_AM/cfs_oi2sst1x1monclim19822001.grb"}
+FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
+FNZORC=${FNZORC:-"$FIX_AM/global_zorclim.1x1.grb"}
+FNALBC=${FNALBC:-"$FIX_AM/global_albedo4.1x1.grb"}
+FNAISC=${FNAISC:-"$FIX_AM/cfs_ice1x1monclim19822001.grb"}
+FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
+FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
+FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.1x1.grb"}
+FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.1x1.grb"}
+FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmcpc.1x1.grb"}
+FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+FNTSFA=${FNTSFA:-""}
+FNACNA=${FNACNA:-""}
+FNSNOA=${FNSNOA:-""}
+FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
+FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
+FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
+FNABSC=${FNABSC:-"$FIX_AM/global_snoalb.1x1.grb"}
 
 #------------------------------------------------------------------
 # changeable parameters
 # dycore definitions
 res=`echo $CASE |cut -c2-5`
 resp=`expr $res + 1 `
-export npx=$resp
-export npy=$resp
-export npz=`expr $LEVS - 1 `
-export io_layout="1,1"
-export ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
+npx=$resp
+npy=$resp
+npz=`expr $LEVS - 1 `
+io_layout="1,1"
+ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
 
 # blocking factor used for threading and general physics performance
-export nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
-export nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
-if [ $nxblocks -le 0 ]; then export nxblocks=1 ; fi
+nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
+nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
+if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
 
-# export the pre-conditioning of the solution
+# the pre-conditioning of the solution
 # =0 implies no pre-conditioning
 # >0 means new adiabatic pre-conditioning
 # <0 means older adiabatic pre-conditioning
-export na_init=${na_init:-1}
-[[ $warm_start = ".true." ]] && export na_init=0
+na_init=${na_init:-1}
+[[ $warm_start = ".true." ]] && na_init=0
 
 # variables for controlling initialization of NCEP/NGGPS ICs
-export filtered_terrain=${filtered_terrain:-".true."}
-export ncep_plevels=${ncep_plevels:-".true."}
-export gfs_dwinds=${gfs_dwinds:-".true."}
+filtered_terrain=${filtered_terrain:-".true."}
+ncep_plevels=${ncep_plevels:-".true."}
+gfs_dwinds=${gfs_dwinds:-".true."}
 
 # determines whether FV3 or GFS physics calculate geopotential
-export gfs_phil=${gfs_phil:-".false."}
+gfs_phil=${gfs_phil:-".false."}
 
 # Dissipative heating
-export dspheat=${dspheat:-".false."}
+dspheat=${dspheat:-".false."}
 
 # Shallow convection
-export shal_cnv=${shal_cnv:-".false."}
+shal_cnv=${shal_cnv:-".false."}
 
 # determine whether ozone production occurs in GFS physics
-export ozcalc=${ozcalc:-".true."}
+ozcalc=${ozcalc:-".true."}
 
-# export various debug options
-export no_dycore=${no_dycore:-".false."}
-export dycore_only=${adiabatic:-".false."}
-export print_freq=${print_freq:-6}
+# various debug options
+no_dycore=${no_dycore:-".false."}
+dycore_only=${adiabatic:-".false."}
+print_freq=${print_freq:-6}
 
 if [ ${TYPE} = "nh" ]; then # non-hydrostatic options
 
-  export hydrostatic=".false."
-  export phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
-  export use_hydro_pressure=".false."   # use hydrostatic pressure for physics
+  hydrostatic=".false."
+  phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
+  use_hydro_pressure=".false."   # use hydrostatic pressure for physics
   if [ $warm_start = ".true." ]; then
-    export make_nh=".false."              # restarts contain non-hydrostatic state
+    make_nh=".false."              # restarts contain non-hydrostatic state
   else
-    export make_nh=".true."               # re-initialize non-hydrostatic state
+    make_nh=".true."               # re-initialize non-hydrostatic state
   fi
 
 else # hydrostatic options
 
-  export hydrostatic=".true."
-  export phys_hydrostatic=".false."     # ignored when hydrostatic = T
-  export use_hydro_pressure=".false."   # ignored when hydrostatic = T
-  export make_nh=".false."              # running in hydrostatic mode
+  hydrostatic=".true."
+  phys_hydrostatic=".false."     # ignored when hydrostatic = T
+  use_hydro_pressure=".false."   # ignored when hydrostatic = T
+  make_nh=".false."              # running in hydrostatic mode
 
 fi
 
 # Conserve total energy as heat globally
-export consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
+consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
 
 # time step parameters in FV3
-export k_split=${k_split:-2}
-export n_split=${n_split:-6}
+k_split=${k_split:-2}
+n_split=${n_split:-6}
 
 if [ `echo ${MONO} | cut -c-4` = "mono" ];  then # monotonic options
 
-  export d_con="0."
-  export do_vort_damp=${do_vort_damp:-".false."}
+  d_con="0."
+  do_vort_damp=${do_vort_damp:-".false."}
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-    export hord_mt=" 10"
-    export hord_xx="-10"
+    hord_mt=" 10"
+    hord_xx="-10"
   else # hydrostatic
-    export hord_mt=" 10"
-    export hord_xx="-10"
+    hord_mt=" 10"
+    hord_xx="-10"
   fi
 
 else # non-monotonic options
 
-  export d_con="1."
-  export do_vort_damp=${do_vort_damp:-".true."}
+  d_con="1."
+  do_vort_damp=${do_vort_damp:-".true."}
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-    export hord_mt=" 6"
-    export hord_xx="-5"
+    hord_mt=" 6"
+    hord_xx="-5"
   else # hydrostatic
-    export hord_mt=" 10"
-    export hord_xx="-10"
+    hord_mt=" 10"
+    hord_xx="-10"
   fi
 
 fi
 
 if [ `echo ${MONO} | cut -c-4` != "mono" -a ${TYPE} = "nh" ]; then
-  export vtdm4="0.06"
+  vtdm4="0.06"
 else
-  export vtdm4="0.05"
+  vtdm4="0.05"
 fi
 
 
 if [ $warm_start = ".true." ]; then # warm start from restart file
 
-  export nggps_ic=".false."
-  export external_ic=".false."
-  export mountain=".true."
+  nggps_ic=".false."
+  external_ic=".false."
+  mountain=".true."
   if [ $read_increment = ".true." ]; then # add increment on the fly to the restarts
-    export res_latlon_dynamics="fv3_increment.nc"
+    res_latlon_dynamics="fv3_increment.nc"
   else
-    export res_latlon_dynamics='""'
+    res_latlon_dynamics='""'
   fi
 
 else # CHGRES'd GFS analyses
 
-  export nggps_ic=${nggps_ic:-".true."}
-  export external_ic=".true."
-  export mountain=".false."
-  export read_increment=".false."
-  export res_latlon_dynamics='""'
+  nggps_ic=${nggps_ic:-".true."}
+  external_ic=".true."
+  mountain=".false."
+  read_increment=".false."
+  res_latlon_dynamics='""'
 
 fi
 
 # build the date for curr_date and diag_table from CDATE
-export y=`echo $CDATE | cut -c1-4`
-export m=`echo $CDATE | cut -c5-6`
-export d=`echo $CDATE | cut -c7-8`
-export h=`echo $CDATE | cut -c9-10`
-export curr_date="${y},${m},${d},${h},0,0"
-export restart_secs=${restart_secs:-0}
+y=`echo $CDATE | cut -c1-4`
+m=`echo $CDATE | cut -c5-6`
+d=`echo $CDATE | cut -c7-8`
+h=`echo $CDATE | cut -c9-10`
+curr_date="${y},${m},${d},${h},0,0"
+restart_secs=${restart_secs:-0}
 
 # copy over the tables
-export DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
-export DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
-export FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
+DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
+DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
+FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 # build the diag_table with the experiment name and date stamp
 cat > diag_table << EOF
@@ -651,7 +651,7 @@ if [ $SEND = "YES" ]; then
     RDATE=`$NDATE +$restart_hrs $CDATE`
     rymd=`echo $RDATE | cut -c1-8`
     rhh=`echo  $RDATE | cut -c9-10`
-    rmemdir=$COMROT/${prefix}.$rymd/$rhh/$memchar
+    rmemdir=$ROTDIR/${prefix}.$rymd/$rhh/$memchar
     mkdir -p $rmemdir/RESTART
     if [ $restart_hrs -eq $FHMAX ]; then
       for file in `ls -1` ; do

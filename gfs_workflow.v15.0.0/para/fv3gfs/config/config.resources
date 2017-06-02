@@ -41,14 +41,14 @@ elif [ $step = "anal" ]; then
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="00:10:00"
-    export wtime_fcst_gfs="00:30:00"
+    export wtime_fcst_gfs="03:00:00"
     export npe_fcst=`echo "$layout_x * $layout_y * 6" | bc`
     export npe_node_fcst=12
     export memory_fcst="1024M"
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="00:10:00"
+    export wtime_post="00:15:00"
     export wtime_post_gfs="03:00:00"
     export npe_post=72
     export npe_node_post=12
@@ -56,7 +56,8 @@ elif [ $step = "post" ]; then
 
 elif [ $step = "vrfy" ]; then
 
-    export wtime_vrfy="00:01:00"
+    export wtime_vrfy="01:00:00"
+    export wtime_vrfy_gfs="01:00:00"
     export npe_vrfy=1
     export npe_node_vrfy=1
     export memory_vrfy="3072M"
@@ -69,8 +70,8 @@ elif [ $step = "arch" ]; then
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
-    export wtime_eobs="00:10:00"
-    export wtime_eomg="01:00:00"
+    export wtime_eobs="00:15:00"
+    export wtime_eomg="01:30:00"
     export npe_eobs=144
     export npe_node_eobs=6
     export memory_eobs="3072M"
@@ -84,14 +85,14 @@ elif [ $step = "eupd" ]; then
 
 elif [ $step = "ecen" ]; then
 
-    export wtime_ecen="00:05:00"
+    export wtime_ecen="00:30:00"
     export npe_ecen=84
     export npe_node_ecen=12
     export memory_ecen="3072M"
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="00:30:00"
+    export wtime_efcs="01:00:00"
     export npe_efcs=`echo "$layout_x * $layout_y * 6" | bc`
     export npe_node_efcs=24
     export memory_efcs="254M"

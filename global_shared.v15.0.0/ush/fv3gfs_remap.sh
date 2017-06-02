@@ -17,7 +17,7 @@ export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
 export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
-export IPD4=${IPD4:-NO}
+export IPD4=${IPD4:-"YES"}
 
 cycn=`echo $CDATE | cut -c 9-10`
 export TCYC=${TCYC:-".t${cycn}z."}

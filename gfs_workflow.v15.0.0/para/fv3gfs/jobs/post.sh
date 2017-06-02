@@ -48,12 +48,11 @@ export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
 export PREFIX="$CDUMP.t${chh}z."
 export SUFFIX=".nemsio"
 
-export ATMANL=$COMROT/${PREFIX}atmanl$SUFFIX
-
 export DATA=$RUNDIR/$CDATE/$CDUMP/post
 [[ -d $DATA ]] && rm -rf $DATA
 
 # Run post job to create analysis grib files
+export ATMANL=$ROTDIR/$CDUMP.$cymd/$chh/${PREFIX}atmanl$SUFFIX
 if [ -f $ATMANL ]; then
     export ANALYSIS_POST="YES"
     $POSTJJOBSH

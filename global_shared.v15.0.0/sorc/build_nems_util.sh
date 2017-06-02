@@ -1,17 +1,16 @@
-SHELL=/bin/sh
-set -x
+#!/bin/sh
+set -eux
 
 #####################################################################################
 # 08/06/2016 Fanglin.Yang@noaa.gov:   to build nemsio_util on wcoss, theia and cray
 #####################################################################################
 
-target=$1
 if [ $# -ne 1 ]; then
  echo "Usage: $0 wcoss or cray or theia"
  exit
 fi
+target=$1
 
-set -x -e
 EXECdir=../exec
 [ -d $EXECdir ] || mkdir $EXECdir
 
@@ -30,7 +29,7 @@ fi
 if [ $target = wcoss -o $target = cray ]; then
  module load ../modulefiles/module_nemsutil.$target
 else
- source ../modulefiles/module_nemsutil.$target          
+ source ../modulefiles/module_nemsutil.$target
 fi
 module list
 

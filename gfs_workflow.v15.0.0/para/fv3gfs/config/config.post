@@ -27,8 +27,8 @@ export npe_postgp=$npe_post
 export nth_postgp=1
 
 export GFS_DOWNSTREAM="YES"
-export GFSDOWNSH="$BASE_WORKFLOW/ush/gfs_downstream_nems.sh"
-export GFSDWNSH="$BASE_WORKFLOW/ush/gfs_dwn_nems.sh"
+export GFSDOWNSH="$BASE_WORKFLOW/ush/fv3gfs_downstream_nems.sh"
+export GFSDWNSH="$BASE_WORKFLOW/ush/fv3gfs_dwn_nems.sh"
 export downset=1
 export npe_dwn=$npe_post
 export nth_dwn=2

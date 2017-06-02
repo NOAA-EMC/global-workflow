@@ -33,5 +33,30 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
+cymd=`echo $CDATE | cut -c1-8`
+chh=`echo  $CDATE | cut -c9-10`
+
+###############################################################
+# Verify Fits
+if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
+    export CDUMPFCST=$VDUMP
+    export TMPDIR="$RUNDIR/$CDUMP/$CDATE/vrfy/fit2obs/tmpdir"
+    [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
+    $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
+fi
+
+###############################################################
+# Run VSDB Step1, Verify precipitation and Grid2Obs
+# Only VSDB_STEP1 works
+if [ $CDUMP = "gfs" ]; then
+    if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+        xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
+        export ARCDIR1="$NOSCRUB/archive"
+        export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
+        $VSDBSH $xdate $xdate $vlength $chh $PSLOT $CDATE $CDUMP $gfs_cyc
+    fi
+fi
+
+###############################################################
 # Exit out cleanly
 exit 0

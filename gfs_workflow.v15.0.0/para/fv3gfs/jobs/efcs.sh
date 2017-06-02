@@ -36,32 +36,28 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 export CASE=$CASE_ENKF
-export COMROT=$ROTDIR
 export DATA=$RUNDIR/$CDATE/$CDUMP/efcs.grp$ENSGRP
 [[ -d $DATA ]] && rm -rf $DATA
 
-export GDATE=`$NDATE -$assim_freq $CDATE`
-chh=`echo $CDATE | cut -c9-10`
-ghh=`echo $GDATE | cut -c9-10`
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+ENSEND=`echo "$NMEM_EFCSGRP * $ENSGRP" | bc`
+ENSBEG=`echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc`
+export ENSBEG=$ENSBEG
+export ENSEND=$ENSEND
 
-export APREFIX="${CDUMP}.t${chh}z."
-export ASUFFIX=".nemsio"
-export GPREFIX="${CDUMP}.t${ghh}z."
-export GSUFFIX=".nemsio"
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 
-# If this is not the first cycle, we warm start the model
-if [ $CDATE -gt $SDATE ]; then
+# Default warm_start is OFF
+export warm_start=".false."
+
+# If RESTART conditions exist; warm start the model
+memchar="mem"`printf %03i $ENSBEG`
+if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
-    export read_increment=".true."
-    export ATMGES_FNAME="${GPREFIX}atmf006$GSUFFIX"
-    if [ $RECENTER_ENKF = "YES" ]; then
-        export ATMANL_FNAME="${APREFIX}ratmanl$ASUFFIX"
-    else
-        export ATMANL_FNAME="${APREFIX}atmanl$ASUFFIX"
+    if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${CDUMP}.t${chh}z.atminc.nc ]; then
+        export read_increment=".true."
     fi
-    export ATMINC_FNAME="${APREFIX}atminc.nc"
-else
-    export warm_start=".false."
 fi
 
 # Since we do not update SST, SNOW or ICE via global_cycle;
@@ -79,20 +75,15 @@ export FHMAX=$FHMAX_ENKF
 
 # Output frequency
 if [ $FHMIN -eq 0 ]; then
-    export fdiag_ENKF=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
+    fdiag_ENKF_=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
 else
-    export fdiag_ENKF=$FHMIN
+    fdiag_ENKF_=$FHMIN
 fi
 FHMIN_=$(($FHMIN + $FHOUT))
 for fhr in `seq $FHMIN_ $FHOUT $FHMAX`; do
-    export fdiag_ENKF="$fdiag_ENKF,$fhr"
+    fdiag_ENKF_="$fdiag_ENKF_,$fhr"
 done
-
-# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
-ENSEND=`echo "$NMEM_EFCSGRP * $ENSGRP" | bc`
-ENSBEG=`echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc`
-export ENSBEG=$ENSBEG
-export ENSEND=$ENSEND
+export fdiag_ENKF=$fdiag_ENKF_
 
 ###############################################################
 # Run relevant exglobal script

@@ -49,6 +49,7 @@ export GSUFFIX=".nemsio"
 
 export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
 export COMIN_GES="$ROTDIR/$CDUMP.$gymd/$ghh"
+export COMIN_ANL="$ROTDIR/$CDUMP.$cymd/$chh"
 export COMIN_GES_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
 export COMOUT="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
 export DATA="$RUNDIR/$CDATE/$CDUMP/eobs"
@@ -65,8 +66,8 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 # Link observational data
-export PREPQC="$COMOUT/${OPREFIX}prepbufr"
-export PREPQCPF="$COMOUT/${OPREFIX}prepbufr.acft_profiles"
+export PREPQC="$COMIN_ANL/${OPREFIX}prepbufr"
+export PREPQCPF="$COMIN_ANL/${OPREFIX}prepbufr.acft_profiles"
 
 # Guess Bias correction coefficients related to control
 export GBIAS=${COMIN_GES}/${GPREFIX}abias
@@ -93,11 +94,20 @@ export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
 
 export DIAG_SUFFIX="_ensmean"
 
+# GSI namelist options specific to eobs
+export SETUP_INVOBS="passive_bc=.false."
+
 # Over-write variables
 COMIN_GES_SAVE=$COMIN_GES
 GSUFFIX_SAVE=$GSUFFIX
 export COMIN_GES=$COMIN_GES_ENS
 export GSUFFIX=".ensmean$GSUFFIX"
+
+###############################################################
+# Ensure clean stat tarballs for ensemble mean
+for fstat in $CNVSTAT $OZNSTAT $RADSTAT; do
+    [[ -f $fstat ]] && rm -f $fstat
+done
 
 ###############################################################
 # Run relevant exglobal script

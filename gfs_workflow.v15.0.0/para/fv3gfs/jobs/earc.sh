@@ -32,12 +32,12 @@ done
 # CURRENT CYCLE
 cymd=`echo $CDATE | cut -c1-8`
 chh=`echo  $CDATE | cut -c9-10`
-export APREFIX="${CDUMP}.t${chh}z."
-export ASUFFIX=".nemsio"
+APREFIX="${CDUMP}.t${chh}z."
+ASUFFIX=".nemsio"
 
-export COMIN_ENS="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
+COMIN_ENS="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
 
-export DATA="$RUNDIR/$CDATE/$CDUMP/earc"
+DATA="$RUNDIR/$CDATE/$CDUMP/earc"
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
@@ -152,23 +152,23 @@ $NCP $COMIN_ENS/${APREFIX}gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
-export GDATE=`$NDATE -$assim_freq $CDATE`
+GDATE=`$NDATE -$assim_freq $CDATE`
 
 # PREVIOUS to the PRIOR CYCLE
 # Now go 2 cycles back and remove the directory
-export GDATE=`$NDATE -$assim_freq $GDATE`
+GDATE=`$NDATE -$assim_freq $GDATE`
 gymd=`echo $GDATE | cut -c1-8`
 ghh=`echo  $GDATE | cut -c9-10`
 
-export COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
+COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
 [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 # PREVIOUS day 00Z remove the whole day
-export GDATE=`$NDATE -48 $CDATE`
+GDATE=`$NDATE -48 $CDATE`
 gymd=`echo $GDATE | cut -c1-8`
 ghh=`echo  $GDATE | cut -c9-10`
 
-export COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
+COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
 [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 exit 0
