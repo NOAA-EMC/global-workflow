@@ -249,25 +249,18 @@ export BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
 export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
+export FIXfv3=${FIXfv3:-$HOMEglobal//fix/fix_fv3}
 export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
 export DATA=${DATA:-$(pwd)}
 #  Filenames.
-export XC=${XC}
 export CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
-
-export FV3GRID_TILE1=${FV3GRID_TILE1:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile1.nc}
-export FV3GRID_TILE2=${FV3GRID_TILE2:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile2.nc}
-export FV3GRID_TILE3=${FV3GRID_TILE3:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile3.nc}
-export FV3GRID_TILE4=${FV3GRID_TILE4:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile4.nc}
-export FV3GRID_TILE5=${FV3GRID_TILE5:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile5.nc}
-export FV3GRID_TILE6=${FV3GRID_TILE6:-${FIXgsm}/C${CRES}/C${CRES}_grid.tile6.nc}
-
-export FV3OROG_TILE1=${FV3OROG_TILE1:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile1.nc}
-export FV3OROG_TILE2=${FV3OROG_TILE2:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile2.nc}
-export FV3OROG_TILE3=${FV3OROG_TILE3:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile3.nc}
-export FV3OROG_TILE4=${FV3OROG_TILE4:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile4.nc}
-export FV3OROG_TILE5=${FV3OROG_TILE5:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile5.nc}
-export FV3OROG_TILE6=${FV3OROG_TILE6:-${FIXgsm}/C${CRES}/C${CRES}_oro.tile6.nc}
+#
+tile=1
+while [ $tile -le $ntiles ]; do
+ ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+ ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+ tile=`expr $tile + 1 `
+done
 
 export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 if [ $LEVS = 128 ]; then
@@ -360,18 +353,6 @@ ln -sf $SIGLEVEL      chgres.inp.siglevel
 ln -sf $SFCINP        chgres.inp.sfc
 ln -sf $NSTINP        chgres.inp.nst
 ln -sf $LONSPERLAT    chgres.inp.lpl3
-ln -fs $FV3GRID_TILE1 chgres.fv3.grd.t1
-ln -fs $FV3GRID_TILE2 chgres.fv3.grd.t2
-ln -fs $FV3GRID_TILE3 chgres.fv3.grd.t3
-ln -fs $FV3GRID_TILE4 chgres.fv3.grd.t4
-ln -fs $FV3GRID_TILE5 chgres.fv3.grd.t5
-ln -fs $FV3GRID_TILE6 chgres.fv3.grd.t6
-ln -fs $FV3OROG_TILE1 chgres.fv3.orog.t1
-ln -fs $FV3OROG_TILE2 chgres.fv3.orog.t2
-ln -fs $FV3OROG_TILE3 chgres.fv3.orog.t3
-ln -fs $FV3OROG_TILE4 chgres.fv3.orog.t4
-ln -fs $FV3OROG_TILE5 chgres.fv3.orog.t5
-ln -fs $FV3OROG_TILE6 chgres.fv3.orog.t6
 
 if [[ $LANDICE_OPT = 3 || $LANDICE_OPT = 4 ]]
 then
@@ -515,6 +496,7 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-${CHGRESTHREAD:-1}}
            LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP,
            IDRT=$IDRT, IALB=$IALB, ISOT=$ISOT,
            IVEGSRC=$IVEGSRC, TILE_NUM=$TILE_NUM, $CHGRESVARS,
+           NTILES=$ntiles
  /
 EOF
 

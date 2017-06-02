@@ -1,35 +1,4 @@
 #!/bin/ksh
-#----WCOSS_CRAY JOBCARD
-##BSUB -L /bin/sh
-##BSUB -P FV3GFS-T2O
-##BSUB -oo log.chgres
-##BSUB -eo log.chgres
-##BSUB -J chgres_fv3
-##BSUB -q devonprod
-##BSUB -W 06:00
-##BSUB -M 1024
-##BSUB -extsched 'CRAYLINUX[]'
-
-#----WCOSS JOBCARD
-##BSUB -L /bin/sh
-##BSUB -P FV3GFS-T2O
-##BSUB -oo log.chgres
-##BSUB -eo log.chgres
-##BSUB -J chgres_fv3
-##BSUB -q devonprod
-##BSUB -x
-##BSUB -a openmp
-##BSUB -n 24
-##BSUB -R span[ptile=24]
-#----THEIA JOBCARD
-##PBS -l nodes=1:ppn=24
-##PBS -l walltime=0:12:00
-##PBS -A glbss
-##PBS -N chgres_fv3
-##PBS -o log.chres
-##PBS -e log.chres
-
-
 set -ax
 #-------------------------------------------------------------------------------------------------
 # Makes ICs on fv3 globally uniform cubed-sphere grid using operational GFS initial conditions.
@@ -48,26 +17,8 @@ set -ax
 #-------------------------------------------------------------------------------------------------
 
 export machine=${machine:-WCOSS_C}
-export NODES=1
 export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
-
-export APRUNC=""
-if [ $machine = WCOSS_C ]; then
- . $MODULESHOME/init/sh 2>>/dev/null
- module load PrgEnv-intel 2>>/dev/null
- export KMP_AFFINITY=disabled
- export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
-elif [ $machine = WCOSS ]; then
- . /usrx/local/Modules/default/init/sh 2>>/dev/null
- module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
-elif [ $machine = THEIA ]; then
- module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
- module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
-else
- echo "$machine not supported, exit"
- exit
-fi
-#-------------------------------------------------------------------------------------------------
+export APRUNC=${APRUNC:-"time"}
 
 export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
 export CRES=`echo $CASE | cut -c 2-`
@@ -82,7 +33,7 @@ export VERBOSE=YES
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD/global_shared}
-export FIXgsm=$BASE_GSM/fix/fix_am
+export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
 export FIXfv3=$BASE_GSM/fix/fix_fv3
 export CHGRESEXEC=$BASE_GSM/exec/global_chgres
 export CHGRESSH=$BASE_GSM/ush/global_chgres.sh
@@ -93,7 +44,7 @@ export OUTDIR=${OUTDIR:-$pwd/INPUT}
 mkdir -p $OUTDIR
 
 #---------------------------------------------------------
-export gtype=uniform	          # grid type = uniform, stretch, or nested
+export gtype=${gtype:-uniform}	          # grid type = uniform, stretch, or nest
 
 if [ $gtype = uniform ];  then
   echo "creating uniform ICs"
@@ -106,9 +57,9 @@ elif [ $gtype = stretch ]; then
   export ntiles=6
   echo "creating stretched ICs"
 elif [ $gtype = nest ]; then
-  export stetch_fac=  	                         # Stretching factor for the grid
+  export stetch_fac=1.5  	                         # Stretching factor for the grid
   export rn=`expr $stetch_fac \* 10 `
-  export refine_ratio=   	                 # Specify the refinement ratio for nest grid
+  export refine_ratio=3   	                 # Specify the refinement ratio for nest grid
   export name=${CASE}r${rn}n${refine_ratio}      # identifier based on nest location (same as grid)
   export ntiles=7
   echo "creating nested ICs"
@@ -145,20 +96,6 @@ export FNSLPC=${FIXgsm}/global_slope.1x1.grb
 export FNABSC=${FIXgsm}/global_snoalb.1x1.grb
 export FNMSKH=${FIXgsm}/seaice_newland.grb
 
-
-# fixed fields describing fv3 grid
-export FV3GRID_TILE1=$FIXfv3/C${CRES}/C${CRES}_grid.tile1.nc
-export FV3GRID_TILE2=$FIXfv3/C${CRES}/C${CRES}_grid.tile2.nc
-export FV3GRID_TILE3=$FIXfv3/C${CRES}/C${CRES}_grid.tile3.nc
-export FV3GRID_TILE4=$FIXfv3/C${CRES}/C${CRES}_grid.tile4.nc
-export FV3GRID_TILE5=$FIXfv3/C${CRES}/C${CRES}_grid.tile5.nc
-export FV3GRID_TILE6=$FIXfv3/C${CRES}/C${CRES}_grid.tile6.nc
-export FV3OROG_TILE1=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile1.nc
-export FV3OROG_TILE2=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile2.nc
-export FV3OROG_TILE3=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile3.nc
-export FV3OROG_TILE4=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile4.nc
-export FV3OROG_TILE5=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile5.nc
-export FV3OROG_TILE6=$FIXfv3/C${CRES}/C${CRES}_oro_data.tile6.nc
 
 export ymd=`echo $CDATE | cut -c 1-8`
 export cyc=`echo $CDATE | cut -c 9-10`
@@ -253,7 +190,8 @@ export NSTINP=$NSTANL
 export LATB=$LATB_SFC
 export LONB=$LONB_SFC
 
-for tile in '1' '2' '3' '4' '5' '6' ; do
+tile=1
+while [ $tile -le $ntiles ]; do
  export TILE_NUM=$tile
  $CHGRESSH
  rc=$?
@@ -263,6 +201,7 @@ for tile in '1' '2' '3' '4' '5' '6' ; do
  fi
  mv ${DATA}/out.sfc.tile${tile}.nc $OUTDIR/sfc_data.tile${tile}.nc
  [[ $nst_anl = ".true." ]] && mv ${DATA}/out.nst.tile${tile}.nemsio $OUTDIR/nst_data.tile${tile}.nemsio
+tile=`expr $tile + 1 `
 done
 
 exit 0
