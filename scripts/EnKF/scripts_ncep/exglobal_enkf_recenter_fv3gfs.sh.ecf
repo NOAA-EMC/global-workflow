@@ -27,7 +27,6 @@ fi
 # Directories.
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
-export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GFS=${BASE_GFS:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export DATA=${DATA:-$pwd}
@@ -38,7 +37,7 @@ COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-NCP=${NCP:-"/bin/cp"}
+NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
 NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 
@@ -48,10 +47,7 @@ NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
 GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
 RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
-
-CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
-export APRUN_CALC_INCREMENT=${APRUN_CALC_INCREMENT:-${APRUN:-""}}
-export NTHREADS_CALC_INCREMENT=${NTHREADS_CALC_INCREMENT:-${NTHREADS:-1}}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
 
 # Files.
 APREFIX=${APREFIX:-""}
@@ -80,23 +76,27 @@ if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
 ################################################################################
-# Compute ensemble mean analysis
-
-# Link ensemble member analysis files
+# Link ensemble member guess, analysis and increment files
 for imem in `seq 1 $NMEM_ENKF`; do
    memchar="mem"`printf %03i $imem`
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX ./atmf006_$memchar
    $NLN $COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX ./atmanl_$memchar
+   $NLN $COMIN_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
+   [[ $RECENTER_ENKF = "YES" ]] && $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
 done
 
 # Link ensemble mean analysis
 $NLN $COMIN_ENS/${APREFIX}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
 
+# Compute ensemble mean analysis
 DATAPATH="./"
+ATMANLNAME="atmanl"
+ATMANLMEANNAME="atmanl_ensmean"
 
 export OMP_NUM_THREADS=$NTHREADS_ECEN
 
 $NCP $GETATMENSMEANEXEC $DATA
-$APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH atmanl_ensmean atmanl $NMEM_ENKF
+$APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENKF
 rc=$?
 
 export ERR=$rc
@@ -149,16 +149,10 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
    export ERR=$rc
    export err=$ERR
-   $ERRSCRIPT || exit 2
+   $ERRSCRIPT || exit 3
 
    ################################################################################
    # Recenter ensemble member atmospheric analyses about hires analysis
-
-   # Link recentered ensemble members
-   for imem in `seq 1 $NMEM_ENKF`; do
-      memchar="mem"`printf %03i $imem`
-      $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
-   done
 
    FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
    FILENAMEIN="atmanl"
@@ -188,26 +182,25 @@ fi
 ################################################################################
 # Calculate ensemble analysis increment
 
-rc=0
-for imem in `seq 1 $NMEM_ENKF`; do
-    memchar="mem"`printf %03i $imem`
-    export DATA=$COMIN_ENS/$memchar
-    export ATMGES=$COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX
-    if [ $RECENTER_ENKF = "YES" ]; then
-        export ATMANL=$COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
-    else
-        export ATMANL=$COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX
-    fi
-    export ATMINC=$COMIN_ENS/$memchar/${APREFIX}atminc.nc
-    $CALC_INCREMENT_SH
-    ra=$?
-    ((rc+=ra))
-done
+DATAPATH="./"
+ATMGESNAME="atmf006"
+ATMINCNAME="atminc"
+if [ $RECENTER_ENKF = "YES" ]; then
+    ATMANLNAME='ratmanl'
+else
+    ATMANLNAME='atmanl'
+fi
+DEBUG='.false.'
+
+export OMP_NUM_THREADS=1
+
+$NCP $CALCINCEXEC $DATA
+$APRUN_ECEN ${DATA}/$(basename $CALCINCEXEC) $DATAPATH $ATMANLNAME $ATMGESNAME $ATMINCNAME $DEBUG $NMEM_ENKF
+rc=$?
 
 export ERR=$rc
 export err=$rc
-$ERRSCRIPT || exit 3
-
+$ERRSCRIPT || exit 4
 
 ################################################################################
 # Update surface and NST analysis
@@ -217,7 +210,7 @@ $ERRSCRIPT || exit 3
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2

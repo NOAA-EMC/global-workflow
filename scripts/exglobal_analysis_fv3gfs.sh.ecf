@@ -52,8 +52,9 @@ APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
 NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
 # Dependent Scripts and Executables
-CALC_INCREMENT_SH=${CALC_INCREMENT_SH:-$BASE_GSM/ush/fv3gfs_calc_increment.sh}
-export CALC_INCREMENT_EXEC=${CALC_INCREMENT_EXEC:-$BASE_GSM/exec/calc_increment.x}
+NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
+APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -785,26 +786,25 @@ $ERRSCRIPT || exit 2
 # Calculate analysis increment here before releasing FV3 forecast
 if [ $DO_CALC_INCREMENT = "YES" ]; then
   if [ $DOIAU = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-     fhrs="03 04 05 06 07 08 09"
+     ncmd=7
+     $NLN sigf03 atmges_mem001 ; $NLN siga03 atmanl_mem001 ; $NLN ${COMOUT}/${APREFIX}atmi003.nc atminc_mem001
+     $NLN sigf04 atmges_mem002 ; $NLN siga04 atmanl_mem002 ; $NLN ${COMOUT}/${APREFIX}atmi004.nc atminc_mem002
+     $NLN sigf05 atmges_mem003 ; $NLN siga05 atmanl_mem003 ; $NLN ${COMOUT}/${APREFIX}atmi005.nc atminc_mem003
+     $NLN sigf06 atmges_mem004 ; $NLN siganl atmanl_mem004 ; $NLN ${COMOUT}/${APREFIX}atminc.nc  atminc_mem004
+     $NLN sigf07 atmges_mem005 ; $NLN siga07 atmanl_mem005 ; $NLN ${COMOUT}/${APREFIX}atmi007.nc atminc_mem005
+     $NLN sigf08 atmges_mem006 ; $NLN siga08 atmanl_mem006 ; $NLN ${COMOUT}/${APREFIX}atmi008.nc atminc_mem006
+     $NLN sigf09 atmges_mem007 ; $NLN siga09 atmanl_mem007 ; $NLN ${COMOUT}/${APREFIX}atmi009.nc atminc_mem007
   else
-     fhrs="06"
+     ncmd=1
+     $NLN sigf06 atmges_mem001 ; $NLN siganl atmanl_mem001 ; $NLN ${COMOUT}/${APREFIX}atminc.nc  atminc_mem001
   fi
 
-  rc=0
-  for fhr in $fhrs; do
-     export ATMGES="sigf$fhr"
-     if [ $fhr = "06" ]; then
-        export ATMANL="siganl"
-        export ATMINC=${COMOUT}/${APREFIX}atminc.nc
-     else
-        export ATMANL="siga$fhr"
-        export ATMINC=${COMOUT}/${APREFIX}atmi0${fhr}.nc
-     fi
+  export OMP_NUM_THREADS=$NTHREADS_CALCINC
+  $NCP $CALCINCEXEC $DATA
 
-     $CALC_INCREMENT_SH
-     ra=$?
-     ((rc+=ra))
-  done
+  APRUN=$(eval echo $APRUN_CALCINC)
+  $APRUN $DATA/$(basename $CALCINCEXEC) ./ atmanl atmges atminc .false. $ncmd
+  rc=$?
 
   export ERR=$rc
   export err=$ERR
