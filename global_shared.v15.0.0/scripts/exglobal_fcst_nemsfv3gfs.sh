@@ -324,8 +324,8 @@ else # non-monotonic options
   d_con=${d_con:-"1."}
   do_vort_damp=".true."
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-    hord_mt=${hord_mt:-"6"}
-    hord_xx=${hord_xx:-"6"}
+    hord_mt=${hord_mt:-"5"}
+    hord_xx=${hord_xx:-"5"}
   else # hydrostatic
     hord_mt=${hord_mt:-"10"}
     hord_xx=${hord_xx:-"10"}
@@ -334,7 +334,7 @@ else # non-monotonic options
 fi
 
 if [ `echo ${MONO} | cut -c-4` != "mono" -a ${TYPE} = "nh" ]; then
-  vtdm4=${vtdm4:-"0.02"}
+  vtdm4=${vtdm4:-"0.03"}
 else
   vtdm4=${vtdm4:-"0.05"}
 fi
@@ -528,7 +528,7 @@ cat > input.nml <<EOF
   hord_vt = $hord_xx
   hord_tm = $hord_xx
   hord_dp = $hord_xx
-  hord_tr = ${hord:-"8"}
+  hord_tr = ${hord_tr:-"8"}
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
   consv_te = $consv_te
   consv_am = .false.
