@@ -332,7 +332,7 @@ def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
     return task
 
 
-def get_fcstonly_workflow():
+def get_fcstonly_workflow(cdump='gdas'):
     '''
         Create tasks for forecast only workflow
     '''
@@ -349,7 +349,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     # chgres
     taskname = 'chgres'
@@ -360,7 +360,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     # fcst
     taskname = 'fcst'
@@ -371,7 +371,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     # post
     taskname = 'post'
@@ -382,7 +382,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     # vrfy
     taskname = 'vrfy'
@@ -393,7 +393,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     # arch
     taskname = 'arch'
@@ -404,7 +404,7 @@ def get_fcstonly_workflow():
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
-    task.append('\n')
+    tasks.append('\n')
 
     return ''.join(tasks)
 

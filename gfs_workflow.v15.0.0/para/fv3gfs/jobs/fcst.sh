@@ -44,27 +44,21 @@ chh=$(echo  $CDATE | cut -c9-10)
 export warm_start=".false."
 
 # If RESTART conditions exist; warm start the model
-if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
+# Restart conditions for GFS cycle come from GDAS
+rCDUMP=$CDUMP
+[[ $CDUMP = "gfs" ]] && rCDUMP="gdas"
+
+if [ -f $ROTDIR/${rCDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
+    if [ $CDUMP = "gfs" ]; then
+        mkdir -p $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
+        cd $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
+        $NCP $ROTDIR/${rCDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.* .
+    fi
     if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
         export read_increment=".true."
     else
         echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
-    fi
-fi
-
-# Restart files for GFS cycle come from the GDAS cycle
-if [ $CDUMP = "gfs" ]; then
-    if [ -f $ROTDIR/gdas.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
-        export warm_start=".true."
-        mkdir -p $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
-        cd $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
-        $NCP $ROTDIR/gdas.$cymd/$chh/RESTART/${cymd}.${chh}0000.* .
-        if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
-            export read_increment=".true."
-        else
-            echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
-        fi
     fi
 fi
 

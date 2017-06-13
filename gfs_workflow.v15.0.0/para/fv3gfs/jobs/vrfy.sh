@@ -47,12 +47,13 @@ fi
 
 ###############################################################
 # Run VSDB Step1, Verify precipitation and Grid2Obs
-# Only VSDB_STEP1 works
+# VSDB_STEP1 and VRFYPRCP works
 if [ $CDUMP = "gfs" ]; then
     if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
         xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
         export ARCDIR1="$NOSCRUB/archive"
         export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
+        export COMROT="$ROTDIR/vrfyarch/dummy" # vrfyarch/dummy is required because of clumsiness in mkup_rain_stat.sh
         $VSDBSH $xdate $xdate $vlength $chh $PSLOT $CDATE $CDUMP $gfs_cyc
     fi
 fi

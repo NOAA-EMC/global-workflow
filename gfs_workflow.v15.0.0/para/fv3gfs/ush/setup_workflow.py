@@ -110,7 +110,7 @@ def source_configs(expdir, configs):
     # Hybrid tasks
     if dict_configs['base']['DOHYBVAR'] == 'YES':
 
-        for task in ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']:
+        for task in ['eobs', 'eupd', 'ecen', 'efcs', 'epos', 'earc']:
 
             files = []
             files.append(find_config('config.base', configs))
@@ -128,6 +128,8 @@ def source_configs(expdir, configs):
 
             print 'sourcing config.%s' % task
             dict_configs[task] = config_parser(files)
+
+        dict_configs['eomg'] = dict_configs['eobs']
 
     return dict_configs
 
@@ -180,6 +182,7 @@ def get_scheduler(machine):
 def get_gfs_cyc_dates(base):
     '''
         Generate GFS dates from experiment dates and gfs_cyc choice
+        Set realtime flag
     '''
 
     base_out = base.copy()
@@ -218,6 +221,12 @@ def get_gfs_cyc_dates(base):
     base_out['SDATE_GFS'] = sdate_gfs
     base_out['EDATE_GFS'] = edate_gfs
     base_out['INTERVAL_GFS'] = interval_gfs
+
+    # over-write realtime flag with T or F
+    realtime = 'F'
+    if base.has_key('REALTIME'):
+        realtime = 'T' if base['REALTIME'].upper() in ['Y', 'YES', '.T.', '.TRUE.'] else 'F'
+    base_out['REALTIME'] = realtime
 
     return base_out
 
@@ -262,6 +271,10 @@ def get_definitions(base):
     strings.append('\t<!ENTITY PSLOT "%s">\n' % base['PSLOT'])
     strings.append('\t<!ENTITY SDATE "%s">\n' % base['SDATE'].strftime('%Y%m%d%H%M'))
     strings.append('\t<!ENTITY EDATE "%s">\n' % base['EDATE'].strftime('%Y%m%d%H%M'))
+    strings.append('\n')
+    strings.append('\t<!ENTITY REALTIME "%s">\n' % base['REALTIME'])
+    if base['REALTIME'] in ['T']:
+        strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
     strings.append('\n')
     strings.append('\t<!-- Experiment and Rotation directory -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
@@ -495,7 +508,7 @@ def create_firstcyc_task():
     return ''.join(task)
 
 
-def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
+def get_gdasgfs_tasks(realtime='F', cdump='gdas', dohybvar='NO'):
     '''
         Create GDAS or GFS tasks
     '''
@@ -512,7 +525,13 @@ def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
     deps = []
     dep_dict = {'name':'post', 'type':'task', 'offset':'-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
+    if realtime in ['T']:
+        data = '&DMPDIR;/@Y@m@d@H/%s/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, cdump)
+        dep_dict = {'type':'data', 'data':data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    else:
+        dependencies = rocoto.create_dependency(dep=deps)
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
@@ -721,7 +740,7 @@ def get_workflow_header(base):
     strings.append('\n')
     strings.append(']>\n')
     strings.append('\n')
-    strings.append('<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
+    strings.append('<workflow realtime="&REALTIME;" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
     strings.append('\n')
     strings.append('\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>\n')
     strings.append('\n')
@@ -807,7 +826,7 @@ def create_xml(dict_configs):
 
     # Get GDAS related entities, resources, workflow
     gdas_resources = get_gdasgfs_resources(dict_configs)
-    gdas_tasks = get_gdasgfs_tasks(dohybvar=base['DOHYBVAR'])
+    gdas_tasks = get_gdasgfs_tasks(dohybvar=base['DOHYBVAR'], realtime=base['REALTIME'])
 
     # Get hybrid related entities, resources, workflow
     if base['DOHYBVAR'] == "YES":
@@ -830,7 +849,7 @@ def create_xml(dict_configs):
     if base['gfs_cyc'] != 0:
         gfs_dates = get_gfs_dates(base)
         gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
-        gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'])
+        gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'], realtime=base['REALTIME'])
 
     xmlfile = []
     xmlfile.append(preamble)

@@ -159,6 +159,7 @@ export BASE_ENV="$BASE_WORKFLOW/fv3gfs/env"
 export BASE_JOB="$BASE_WORKFLOW/fv3gfs/jobs"
 
 # EXPERIMENT specific environment parameters
+export REALTIME="NO"
 export SDATE=@SDATE@
 export EDATE=@SDATE@
 export assim_freq=6
@@ -212,7 +213,6 @@ fi
 
 # Shared scripts
 export REGRID_NEMSIO_SH="$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh"
-export CALC_INCREMENT_SH="$BASE_GSM/ush/fv3gfs_calc_increment.sh"
 
 # Shared tables
 export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"

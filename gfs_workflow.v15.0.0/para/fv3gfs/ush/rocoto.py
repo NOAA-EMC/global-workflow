@@ -156,7 +156,10 @@ def add_dependency(dep_dict):
         if dep_offset is not None:
             string += '<cyclestr offset="%s">%s</cyclestr>' % (dep_offset, dep_data)
         else:
-            string += '%s' % (dep_data)
+            if '@' in dep_data:
+                string += '<cyclestr>%s</cyclestr>' % dep_data
+            else:
+                string += '%s' % (dep_data)
 
     if dep_type in ['data']:
         string += '</datadep>'
