@@ -57,6 +57,8 @@ if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/RESTART/${cymd}.${chh}0000.cou
     export warm_start=".true."
     if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${CDUMP}.t${chh}z.atminc.nc ]; then
         export read_increment=".true."
+    else
+        echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
     fi
 fi
 

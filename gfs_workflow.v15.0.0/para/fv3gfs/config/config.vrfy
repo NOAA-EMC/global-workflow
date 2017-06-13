@@ -18,8 +18,6 @@
 # If you are interested in Bells and Whistles, contact the
 # appropriate person or motivate yourself.
 
-# Only VSDB_STEP1 is enabled to create the VSDB database
-
 echo "BEGIN: config.vrfy"
 
 # Get task specific resources
@@ -34,7 +32,7 @@ export VSDB_STEP1="YES"      # populate VSDB database (YES)
 export VSDB_STEP2="NO"
 export VRFYG2OBS="NO"        # Grid to observations
 export VRFYFITS="NO"         # Fit to observations
-export VRFYPRCP="NO"         # Precip threat scores
+export VRFYPRCP="YES"        # Precip threat scores
 export VRFYMINMON="NO"       # GSI minimization monitoring
 export VRFYRAD="NO"          # Radiance data assimilation monitoring
 export VRFYOZN="NO"          # Ozone data assimilation monitoring
@@ -68,15 +66,17 @@ if [ $VRFYFITS = "YES" ]; then
 fi
 
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
-# Only VSDB step1 works, but these options are needed for all three
-if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
-    export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
-    export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
-    export vsdbhome=$BASE_VERIF                     # location of global verification scripts
-    export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
-    export vlength=$FHMAX_GFS                       # verification length
-    #export vhr_rain=$FHMAX_GFS                      # verification length for precip
-    #export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
+# All these call $VSDBSH
+if [ $CDUMP = "gfs" ]; then
+    if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+        export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
+        export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
+        export vsdbhome=$BASE_VERIF                     # location of global verification scripts
+        export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export vlength=$FHMAX_GFS                       # verification length
+        export vhr_rain=$FHMAX_GFS                      # verification length for precip
+        export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
+    fi
 fi
 
 echo "END: config.vrfy"
