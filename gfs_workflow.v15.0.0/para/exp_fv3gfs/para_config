@@ -353,7 +353,7 @@ warm_start=.false.
 
 
 
-REMAP_GRID=gaussian      #gaussian or latlon for using fregrid or regrid_nemsio for remapping 
+REMAP_GRID=latlon      #gaussian or latlon for using fregrid or regrid_nemsio for remapping 
 CCPOST=NO                # To run concurrent post
 ARCHIVE=YES              # make online archive
 
