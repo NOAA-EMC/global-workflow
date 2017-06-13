@@ -26,7 +26,7 @@ vtype                vtype                sfc                  1 nrstnghbr      
 stype                sotyp                sfc                  1 nrstnghbr            F 2
 facsf                facsf                sfc                  1 bilinear             F 2
 facwf                facwf                sfc                  1 bilinear             F 2
-#uustar               fricv                sfc                  1 bilinear             F 2
+uustar               fricv                sfc                  1 bilinear             F 2
 ffmm                 ffmm                 sfc                  1 bilinear             F 2
 ffhh                 ffhh                 sfc                  1 bilinear             F 2
 hice                 icetk                sfc                  1 nrstnghbr            T 2
@@ -41,7 +41,7 @@ slc_3                slc                  soil layer           3 nrstnghbr      
 slc_4                slc                  soil layer           4 nrstnghbr            T 2
 shdmin               shdmin               sfc                  1 nrstnghbr            T 2
 shdmax               shdmax               sfc                  1 nrstnghbr            T 2
-#slope                sltyp                sfc                  1 nrstnghbr            F 2
+slope                sltyp                sfc                  1 nrstnghbr            F 2
 snoalb               snoalb               sfc                  1 nrstnghbr            F 2
 hgtsfc               orog                 sfc                  1 bilinear             F 2
 pressfc              pres                 sfc                  1 bilinear             F 2

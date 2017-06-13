@@ -22,9 +22,7 @@ for script in  build_nems_util.sh build_chgres.sh build_orog.sh; do
 done
 
 #sh build_emcsfc.sh
-#if [ $target = cray ]; then
-# sh build_tropcy_NEMS_cray.sh
-#fi
+sh build_tropcy_NEMS_$target.sh
 #sh build_ncep_post.sh
 
 cd $pwd/fre-nctools.fd

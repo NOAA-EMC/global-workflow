@@ -130,7 +130,7 @@ if [ $machine = WCOSS ]; then
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/global/save/$LOGNAME/svn/fv3gfs
- tags=trunk
+ tags=trunk_r88010
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
 elif [ $machine = WCOSS_C ]; then
@@ -145,7 +145,7 @@ elif [ $machine = WCOSS_C ]; then
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
- tags=trunk
+ tags=trunk_r93576
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
  FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
@@ -164,7 +164,7 @@ elif [ $machine = THEIA ]; then
  utilscript=/scratch4/NCEPDEV/rstprod/nwprod/util/ush
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
- tags=trunk
+ tags=trunk_r88010
  FIX_FV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3   
 else
  echo '$machine is not supported, exit'
@@ -305,7 +305,7 @@ gdas_cyc=4                         # number of GDAS cycles
 fseg=1                             # number of AM forecast segments for gfs 
 FHCYC=24                             # Surface cycle calling interval
  
-LEVS=64                            # number of AM levels
+LEVS=65                            # number of AM levels
 CASE1=C96                        # 1st segment resolution (0-240 hr)
 CASE2=C192                         # 2nd segment resolution (240-384 hr)
 CASE_ENKF=C382                     # ENKF resolution 
@@ -353,7 +353,7 @@ warm_start=.false.
 
 
 
-REMAP_GRID=latlon        #gaussian or latlon for using fregrid or regrid_nemsio for remapping 
+REMAP_GRID=gaussian      #gaussian or latlon for using fregrid or regrid_nemsio for remapping 
 CCPOST=NO                # To run concurrent post
 ARCHIVE=YES              # make online archive
 

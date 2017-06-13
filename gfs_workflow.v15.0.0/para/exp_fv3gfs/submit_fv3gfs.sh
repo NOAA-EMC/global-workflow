@@ -19,21 +19,43 @@ set -x
 
 export PSLOT=fv3test
 paradir=/gpfs/hps/emc/global/noscrub/$LOGNAME/para_gfs/pr$PSLOT
-
-. $MODULESHOME/init/sh  2>>/dev/null
-module load prod_util hpss >>/dev/null
+machine=WCOSS_C
 export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=trunk
+export tags=trunk_r93576
 export PTMP=/gpfs/hps/ptmp
-export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+#export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+export BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
 export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para
 export BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
+export FIXfv3=$BASE_GSM/fix/fix_fv3
 export PSUB=$BASEDIR/bin/psub
 export SUB=$BASEDIR/bin/sub_wcoss_c
 export HPSSTAR=/u/emc.glopara/bin/hpsstar
+
+export OMP_NUM_THREADS_CH=24
+export APRUNC=""
+if [ $machine = WCOSS_C ]; then
+ . $MODULESHOME/init/sh 2>>/dev/null
+ module load prod_util hpss >>/dev/null
+ module load PrgEnv-intel 2>>/dev/null
+ export KMP_AFFINITY=disabled
+ export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
+elif [ $machine = WCOSS ]; then
+ . /usrx/local/Modules/default/init/sh 2>>/dev/null
+ module load ics/12.1 NetCDF/4.2/serial 2>>/dev/null
+elif [ $machine = THEIA ]; then
+ module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+ module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
+ export APRUNC=time
+else
+ echo "$machine not supported, exit"
+ exit
+fi
+#--
+
 
 export CASE=C96
 export res=`echo $CASE|cut -c 2-`
@@ -48,8 +70,8 @@ export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC
 mkdir -p $ROTDIR $FV3ICDIR
 
 CDUMP=gfs
-START=20170426
-LAST=20170426
+START=20170602
+LAST=20170602
 
 cyclist="00"
 NDAT=1      ;##how many forecast only jobs to run at one time.
@@ -165,6 +187,7 @@ fi
 # fi
 #fi
 
+export LEVS=65
 $BASE_GSM/ush/global_chgres_driver.sh
 #.......................................................
 fi

@@ -1,4 +1,3 @@
-#!/bin/ksh -x
 NUMPROCPREP=7                      # number of pes for prep step
 NPROCS_PREP=1
 NSPLIT=3
