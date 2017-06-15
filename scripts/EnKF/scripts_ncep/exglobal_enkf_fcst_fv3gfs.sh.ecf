@@ -136,8 +136,7 @@ export FHZER=${FHZER_ENKF:-${FHZER:-6}}
 export FHCYC=${FHCYC_ENKF:-${FHCYC:-6}}
 
 # nam_stochy (stochastic physics)
-export USE_STOCH_PHYS=${USE_STOCH_PHYS:-"YES"}
-export SET_STP_SEED=${SET_STP_SEED:-"NO"}
+export SET_STP_SEED=${SET_STP_SEED:-"YES"}
 
 # APRUN for different executables
 export APRUN_FV3=${APRUN_FV3:-${APRUN:-""}}

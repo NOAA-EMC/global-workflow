@@ -803,7 +803,12 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
   $NCP $CALCINCEXEC $DATA
 
   APRUN=$(eval echo $APRUN_CALCINC)
-  $APRUN $DATA/$(basename $CALCINCEXEC) ./ atmanl atmges atminc .false. $ncmd
+  DATAPATH="./"
+  ATMANLFNAME="atmanl"
+  ATMGESFNAME="atmges"
+  ATMINCFNAME="atminc"
+  DEBUG_CALCINC=".false."
+  $APRUN $DATA/$(basename $CALCINCEXEC) $DATAPATH $ATMANLFNAME $ATMGESFNAME $ATMINCFNAME $DEBUG_CALCINC $ncmd
   rc=$?
 
   export ERR=$rc
