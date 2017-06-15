@@ -75,7 +75,7 @@ IC_DIR=${IC_DIR:-$pwd}         #cold start initial conditions
 DELTIM=${DELTIM:-225}
 layout_x=${layout_x:-8}
 layout_y=${layout_y:-16}
-LEVS=${LEVS:-64}
+LEVS=${LEVS:-65}
 
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
@@ -172,7 +172,7 @@ else
   fi
 fi
 nfiles=`ls -1 $DATA/INPUT/* | wc -l`
-if [ $nfiles -lt 0 ]; then
+if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
   exit 1
 fi

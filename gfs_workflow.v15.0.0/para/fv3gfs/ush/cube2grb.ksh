@@ -31,7 +31,7 @@
 ###############################################################
 
 export CASE="C192"
-export LEVS=64
+export LEVS=65
 export CDATE="2016100118"
 export COMROT="/scratch3/NCEPDEV/stmp2/Rahul.Mahajan/ROTDIRS/FV3e1/gfs.20161001/18"
 

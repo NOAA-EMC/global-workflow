@@ -24,7 +24,7 @@ export CASE=${CASE:-C96}                     # resolution of tile: 48, 96, 192, 
 export CRES=`echo $CASE | cut -c 2-`
 export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ...
 export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
-export LEVS=${LEVS:-64}
+export LEVS=${LEVS:-65}
 export LSOIL=${LSOIL:-4}
 export ictype=${ictype:-nemsgfs}             # nemsgfs for q3fy17 gfs with new land datasets; opsgfs for q2fy16 gfs.
 export nst_anl=${nst_anl:-".false."}         # to include NST analysis
@@ -102,8 +102,7 @@ export cyc=`echo $CDATE | cut -c 9-10`
 
 if [ $ictype = opsgfs ]; then
  nst_anl=".false."
- if test -s $ATMANL
- then
+ if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/siganl.${CDUMP}.$CDATE
    export SFCANL=$INIDIR/sfcanl.${CDUMP}.$CDATE
@@ -130,8 +129,7 @@ if [ $ictype = opsgfs ]; then
  fi
 
 elif [ $ictype = nemsgfs ]; then
- if test -s $ATMANL
- then
+ if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
    export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
