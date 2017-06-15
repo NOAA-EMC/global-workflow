@@ -124,7 +124,7 @@ if [ $ictype = opsgfs ]; then
  export LATB_SFC=$CRES
  export LONB_ATM=$((CRES*4))
  export LATB_ATM=$((CRES*2))
- if [ $CRES -gt 768 -o $gtype = stretch ]; then
+ if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
   export LONB_ATM=3072
   export LATB_ATM=1536
  fi
