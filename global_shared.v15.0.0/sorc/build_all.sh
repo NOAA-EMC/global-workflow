@@ -28,7 +28,7 @@ sh build_tropcy_NEMS_$target.sh
 cd $pwd/fre-nctools.fd
 ./BUILD_TOOLS.csh $target
 
-for util in fv3nc2nemsio.fd regrid_nemsio.fd calc_increment.fd; do
+for util in fv3nc2nemsio.fd regrid_nemsio.fd; do
  cd $pwd/$util
  ./makefile.sh $target
 done

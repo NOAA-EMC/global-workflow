@@ -171,7 +171,7 @@ export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ATARDIR="/NCEPDEV/emc-global/1year/$USER/$machine/scratch/$PSLOT"
 
 # Resolution specific parameters
-export LEVS=64
+export LEVS=65
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
