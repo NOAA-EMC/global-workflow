@@ -199,7 +199,7 @@ radmon_ver=2.0.2a
 minmon_ver=1.0.0
 
 # Location
-BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para
+BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver
 BASE_BUFRSND=$BASE_SVN/$tags/gfs.$gfs_ver
 BASE_ENKF=$BASE_SVN/$tags/gdas.$gdas_ver
 BASE_EMCSFC=$BASE_SVN/$tags/global_shared.$global_shared_ver
