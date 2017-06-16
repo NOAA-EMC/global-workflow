@@ -156,7 +156,8 @@ export oro_bin_uf=global_orography_uf.$string.f77
 export slm_bin=global_slmask.$string.f77
 
 
-export FIX_TERR=$UTILDIR/fix
+#export FIX_TERR=$UTILDIR/fix
+export FIX_TERR=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
 export MTNDIR=$FIX_TERR
 export MTN_SLM=TOP8M_slm.80I1.asc
 export HIRES_TERR=$FIX_TERR/thirty.second.antarctic.new.bin
