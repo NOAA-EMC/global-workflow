@@ -223,7 +223,7 @@ CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F=
 
 # GSI Fix files
 RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
-BERROR=${BERROR:-${FIX_GSI}/global_berror.l${LEVS}y${NLAT_A}.f77}
+BERROR=${BERROR:-${FIX_GSI}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
 ATMSFILTER=${ATMSFILTER:-${FIX_GSI}/atms_beamwidth.txt}
