@@ -44,8 +44,9 @@ icnt=1
 while [ $icnt -lt 1000 ]
 do
   for fhr in $postjobs
-  do    
-    if [ -s ${COMIN}/gfs.${cycle}.logf${fhr} ]
+  do 
+    fhr3=`printf "%03d" $fhr`   
+    if [ -s ${COMIN}/gfs.${cycle}.logf${fhr}.nemsio -o  -s ${COMIN}/gfs.${cycle}.logf${fhr3}.nemsio ]
     then
       if [ $fhr -eq 0 ]
       then 

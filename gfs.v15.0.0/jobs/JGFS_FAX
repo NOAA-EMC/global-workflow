@@ -73,10 +73,10 @@ env
 # The PATH has been modified to pick up the NCAR graphics.
 # The variable NCARG_ROOT is also needed for NCAR graphics.
 ############################################################
-module load  ncarg-intel-sandybridge/6.1.0
 export NCARG_ROOT=${NCARG_ROOT}
 export PATH="$PATH":${NCARG_BIN}
 
+export HOMEobsproc_shared_bufr_dumplist=${HOMEobsproc_shared_bufr_dumplist:-$NWROOT/obsproc_shared/bufr_dumplist.${obsproc_shared_bufr_dumplist_ver}}
 ########################################################
 # Execute the script.
 $HOMEgfs/scripts/exgfs_fax.sh.ecf $fcsthrs

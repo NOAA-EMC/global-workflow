@@ -57,7 +57,7 @@ c 300        continue
           enddo
 C 3hourly output starts here
             nfile = 141
-          do nf = 123, 240, 3
+          do nf = 123, nend, 3
             nfile = nfile + 1
             kf = nfile - 20
             read(nfile) data

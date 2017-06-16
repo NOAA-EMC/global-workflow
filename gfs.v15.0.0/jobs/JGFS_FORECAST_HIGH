@@ -134,7 +134,7 @@ export FHOUT=3         # Forecast Hour Output Frequency
 export FHMAX=240       # Forecast Length (Hours)
 export FHOUT_HF=1                  # High Frequency Forecast Output Interval
 export FHMAX_HF=${FHMAX_HF:-120}    # High Frequency Forecast Length (Hours)
-fhm=48;   if [ ! -f $COMOUT/$RUN.$cycle.atmf$fhm.nemsio ]; then RERUN=YES ; fi
+fhm=048;   if [ ! -f $COMOUT/$RUN.$cycle.atmf$fhm.nemsio ]; then RERUN=YES ; fi
 
 #-------------------------------
 if [ $RERUN = NO ] ; then
@@ -271,17 +271,17 @@ if [ $SPINUPLOW = YES ]; then
  cp ${COMOUT}/$RUN.$cycle.sfcf${spinstartfh}.nemsio $GESdir
  cp ${COMOUT}/$RUN.$cycle.nstf${spinstartfh}.nemsio $GESdir
 else
- cp ${COMOUT}/$RUN.$cycle.atmf${FHMAX} $GESdir
- cp ${COMOUT}/$RUN.$cycle.sfcf${FHMAX} $GESdir
- cp ${COMOUT}/$RUN.$cycle.nstf${FHMAX} $GESdir
+ cp ${COMOUT}/$RUN.$cycle.atmf${FHMAX}.nemsio $GESdir
+ cp ${COMOUT}/$RUN.$cycle.sfcf${FHMAX}.nemsio $GESdir
+ cp ${COMOUT}/$RUN.$cycle.nstf${FHMAX}.nemsio $GESdir
 fi
 
-cp $GRDR1 $GESdir/$RUN.$cycle.grdr1.f$FHMAX
-cp $GRDR2 $GESdir/$RUN.$cycle.grdr2.f$FHMAX
-cp $SIGR1 $GESdir/$RUN.$cycle.sigr1.f$FHMAX
-cp $SIGR2 $GESdir/$RUN.$cycle.sigr2.f$FHMAX
-cp $SFCR $GESdir/$RUN.$cycle.sfcr.f$FHMAX
-cp $NSTR $GESdir/$RUN.$cycle.nstr.f$FHMAX
+#### cp $GRDR1 $GESdir/$RUN.$cycle.grdr1.f$FHMAX
+#### cp $GRDR2 $GESdir/$RUN.$cycle.grdr2.f$FHMAX
+#### cp $SIGR1 $GESdir/$RUN.$cycle.sigr1.f$FHMAX
+#### cp $SIGR2 $GESdir/$RUN.$cycle.sigr2.f$FHMAX
+#### cp $SFCR $GESdir/$RUN.$cycle.sfcr.f$FHMAX
+#### cp $NSTR $GESdir/$RUN.$cycle.nstr.f$FHMAX
 
 #
 cat $pgmout

@@ -17,7 +17,7 @@ export OMP_STACKSIZE=1024m
 export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
-export PDY=20170304
+export PDY=20170412
 export PDY1=`expr $PDY - 1`
 
 # export cyc=06
@@ -44,12 +44,7 @@ module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
 module load prod_util/1.0.5
-#
-#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
-#
-module unload grib_util/1.0.3
-module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.5
+module load grib_util/1.0.3
 
 module list
 

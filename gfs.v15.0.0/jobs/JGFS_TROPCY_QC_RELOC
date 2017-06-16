@@ -87,7 +87,7 @@ if [ ! -d ${ARCHSYND} ]; then
   mkdir -p $ARCHSYND
 fi
 
-export HOMENHC=${HOMENHC:-/nhc/save/guidance/storm-data/ncep}
+export HOMENHC=${HOMENHC:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 
 export HOMEglobal=${HOMEglobal:-${NWROOT}/global_shared.${global_shared_ver}}
 export HOMESYND=${HOMESYND:-$HOMEglobal}
@@ -105,6 +105,16 @@ export HOMERELO=${HOMERELO:-$HOMEglobal}
 export EXECRELO=${EXECRELO:-${HOMERELO}/exec}
 export FIXRELO=${FIXRELO:-${HOMERELO}/fix}
 export USHRELO=${USHRELO:-${HOMERELO}/ush}
+
+###################################
+# Set up the UTILITIES
+###################################
+export machine=${machine:-WCOSS_C}
+if [ $machine = WCOSS_C ] ; then
+   export APRNGETTX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
+   export APRNRELOC="time aprun -q -j1 -n7 -N1 -d24 -cc depth "
+   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
+fi
 
 ##############################
 # Run setpdy and initialize PDY variables

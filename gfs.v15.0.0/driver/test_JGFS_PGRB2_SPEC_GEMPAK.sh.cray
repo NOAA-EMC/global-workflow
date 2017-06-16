@@ -46,12 +46,7 @@ module load prod_util/1.0.5
 ###########################################
 module load gempak/7.3.0
 
-#
-#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
-#
-module unload grib_util/1.0.3
-module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.5
+module load grib_util/1.0.3
 
 module list
 

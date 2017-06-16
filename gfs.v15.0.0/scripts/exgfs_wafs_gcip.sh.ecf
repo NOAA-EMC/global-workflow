@@ -109,8 +109,29 @@ while test $ffhr -le $EHOUR ; do
 	  sleep $SLEEP_INT
 	  icnt=$((icnt + 1))
 	  if [ $icnt -ge $SLEEP_LOOP_MAX ] ; then
-            msg="ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
-            err_exit $msg
+            msg="GCIP at ${vhour}z ABORTING after $SLEEP_TIME seconds of waiting for satellite $channel file!"
+            postmsg $jlogfile "$msg"
+            rc=1
+            echo $msg >> $COMOUT/${RUN}.gcip.log
+            
+            if [ $envir != prod ]; then
+              export maillist='ncep.list.spa-helpdesk@noaa.gov'
+            fi
+            export maillist=${maillist:-'ncep.list.spa-helpdesk@noaa.gov,ncep.list.sos@lstsrv.ncep.noaa.gov'}
+
+            export subject="Missing GLOBCOMPVIS Satellite Data for $PDY t${cyc}z $job"
+            echo "*************************************************************" > mailmsg
+            echo "*** WARNING !! COULD NOT FIND GLOBCOMPVIS Satellite Data  *** " >> mailmsg
+            echo "*************************************************************" >> mailmsg
+            echo >> mailmsg
+            echo "One or more GLOBCOMPVIS Satellite Data files are missing, including " >> mailmsg
+            echo "   $COMINsat/$satFile " >> mailmsg
+            echo >> mailmsg
+            echo "$job will gracfully exited" >> mailmsg
+            cat mailmsg > $COMOUT/${RUN}.t${cyc}z.gcip.emailbody
+            cat $COMOUT/${RUN}.t${cyc}z.gcip.emailbody | mail.py -s "$subject" $maillist -v
+
+            exit $rc
 	  fi
 	done
 
@@ -193,7 +214,7 @@ while test $ffhr -le $EHOUR ; do
 #######################################################
 # Run GCIP
 
-  pgm=gcip
+  export pgm=gcip
 
   cpreq $FIXgfs/gcip_near_ir_refl.table near_ir_refl.table
 
