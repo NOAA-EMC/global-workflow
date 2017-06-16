@@ -1,8 +1,9 @@
 ####################################
-# Specify Special Fcst Vars
+# Specify Special Vars
 ####################################
 #
 export RUN_PROD=${RUN_PROD:-"YES"}
+export NCP=${NCP:-cpreq}
 
 # Set executable, script, and fix
 export GSIEXEC=${GSIEXEC:-$EXECgsi/global_gsi}
@@ -12,7 +13,6 @@ export SFCHDR=${SFCHDR:-${EXECgsm}/nemsio_get}
 export COMPRESS=${COMPRESS:-/bin/gzip}
 export UNCOMPRESS=${UNCOMPRESS:-'/bin/gunzip -f'}
 
-#
 # Forecast Horizontal Resolution
 #
 export JCAP=${JCAP:-1534}
@@ -136,8 +136,6 @@ export AIRSBF=${AIRSBF:-${COMIN}/${PREINP}airsev.tm00.bufr_d}
 export IASIBF=${IASIBF:-${COMIN}/${PREINP}mtiasi.tm00.bufr_d}
 export ESIASI=${ESIASI:-${COMIN}/${PREINP}esiasi.tm00.bufr_d}
 export IASIDB=${IASIDB:-${COMIN}/${PREINP}iasidb.tm00.bufr_d}
-export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d}
-export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d}
 export GMI1CRBF=${GMI1CRBF:-${COMIN}/${PREINP}gmi1cr.tm00.bufr_d}
 export SAPHIRBF=${SAPHIRBF:-${COMIN}/${PREINP}saphir.tm00.bufr_d}
 export SEVIRIBF=${SEVIRIBF:-${COMIN}/${PREINP}sevcsr.tm00.bufr_d}
@@ -151,7 +149,6 @@ export CRISFSDB=${CRISFSDB:-${COMIN}/${PREINP}crisfsdb.tm00.bufr_d}
 export ATMSBF=${ATMSBF:-${COMIN}/${PREINP}atms.tm00.bufr_d}
 export ESATMS=${ESATMS:-${COMIN}/${PREINP}esatms.tm00.bufr_d}
 export ATMSDB=${ATMSDB:-${COMIN}/${PREINP}atmsdb.tm00.bufr_d}
-export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d}
 export SSMISBF=${SSMISBF:-${COMIN}/${PREINP}ssmisu.tm00.bufr_d}
 export SBUVBF=${SBUVBF:-${COMIN}/${PREINP}osbuv8.tm00.bufr_d}
 export GOMEBF=${GOMEBF:-${COMIN}/${PREINP}gome.tm00.bufr_d}
@@ -182,7 +179,6 @@ export NSTGESENS_MEAN=${NSTGESENS_MEAN:-${COMINenkf}/${PREINPENSg}nstf006.ensmea
 export SFCGESENS_MEAN=${SFCGESENS_MEAN:-${COMINenkf}/${PREINPENSg}sfcf006.ensmean.nemsio}
 export SFCGCYENS_MEAN=${SFCGCYENS_MEAN:-${COMINenkf}/${PREINPENSg}gcyanl.ensmean.nemsio}
 export SFCANLENS_MEAN=${SFCANLENS_MEAN:-${COMINenkf}/${PREINPENSg}sfcanl.ensmean.nemsio}
-export DTFANL=${DTFANL:-${COMIN}/${PREINP}dtfanl.bin4}
 
 export SIGF03ENS=${SIGF03ENS:-${COMINenkf}/${PREINPENSg}atmf003s}
 export SIGF04ENS=${SIGF04ENS:-${COMINenkf}/${PREINPENSg}atmf004s}
@@ -217,6 +213,10 @@ export NSTG08=${NSTG08:-${COMINgdas}/${PREINPGDASg}nstf008.nemsio}
 export NSTG09=${NSTG09:-${COMINgdas}/${PREINPGDASg}nstf009.nemsio}
 
 # Set non-assimilated obs fles as /dev/null to prevent reading
+#export AMSREBF=${AMSREBF:-${COMIN}/${PREINP}amsre.tm00.bufr_d}
+#export SSMITBF=${SSMITBF:-${COMIN}/${PREINP}ssmit.tm00.bufr_d}
+#export AMSR2BF=${AMSR2BF:-${COMIN}/${PREINP}amsr2.tm00.bufr_d}
+
 export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
@@ -241,6 +241,7 @@ export RADSTAT=${RADSTAT:-${COMOUT}/${PREINP}radstat}
 export GSISTAT=${GSISTAT:-${COMOUT}/${PREINP}gsistat}
 export CNVSTAT=${CNVSTAT:-${COMOUT}/${PREINP}cnvstat}
 export OZNSTAT=${OZNSTAT:-${COMOUT}/${PREINP}oznstat}
+export DTFANL=${DTFANL:-${COMOUT}/${PREINP}dtfanl.bin4}
 
 #
 # PDS Grid Designator

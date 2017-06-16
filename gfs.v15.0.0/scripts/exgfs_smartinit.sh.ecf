@@ -61,10 +61,10 @@ export ffhr=$SHOUR
        sleep $SLEEP_INT
      fi
      if [ $ic -eq $SLEEP_LOOP_MAX ] ; then
-       msg="gfs sigma file not found after waiting over $SLEEP_TIME seconds"
-       postmsg "$jlogfile" "$msg"
-       echo "gfs sigma file not found after waiting ",$SLEEP_TIME, "exitting"
-       export err=1; #err_chk
+       msg="gfs master grib file for hour $ffhr not found after waiting $SLEEP_TIME seconds"
+       echo $msg
+       export err=1
+       err_exit $msg
      fi
    done
 

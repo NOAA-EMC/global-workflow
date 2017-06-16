@@ -1,0 +1,17 @@
+SHELL=/bin/sh
+
+######################################################################
+#
+# Build executable utility: cnvgrib2_gfs using module compile standard
+#
+######################################################################
+######################################################################
+
+. /apps/lmod/lmod/init/sh
+module purge
+source ../modulefiles/gfs_cnvgrib2_gfs.theia
+
+cd cnvgrib2_gfs.fd
+make
+make clean
+mv cnvgrib2_gfs   ../../exec/

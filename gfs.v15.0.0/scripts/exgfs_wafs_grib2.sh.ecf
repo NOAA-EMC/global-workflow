@@ -78,7 +78,7 @@ do
   echo " "
   set -x
 
-  pgm=awc_wafavn
+  export pgm=awc_wafavn
 
   if [[ -z $master2 ]] ; then 
      # ===================  process master file grib1  ===================
@@ -119,11 +119,12 @@ do
      # 3 minutes for new 3072 x 1536 master file for each forecast.
      # To reduce the time, will grab the required files from new master file,
      # then convert to 1440 x 721.
-     npts=`wgrib2  -npts $master2 | head -n1 | cut -d'=' -f2`
+#    npts=`wgrib2  -npts $master2 | head -n1 | cut -d'=' -f2`
+     npts=`$WGRIB2 -npts $master2 | head -n1 | cut -d'=' -f2`
      if [ $npts -gt 1038240 ] ; then
        # required fields searching criteria, according to type(pdt_t) parameters from sorc/awc_wafavn.fd/waf_grib2.f90 
        criteria=":PRES:surface:|:PRES:convective|:CPRAT:|:HGT:.* mb:|:TMP:.* mb:|:UGRD:.* mb:|VGRD:.* mb:|:RH:.* mb:|:CLWMR:.* mb:|:ICIP:.* mb:"
-       $WGRIB2 $master2 | egrep "$criteria"|  wgrib2 -i $master2 -grib masterfilef${fcsthrs}.new
+       $WGRIB2 $master2 | egrep "$criteria"| $WGRIB2 -i $master2 -grib masterfilef${fcsthrs}.new
        $WGRIB2 masterfilef${fcsthrs}.new -new_grid_interpolation bilinear -new_grid latlon 0:1440:0.25 90:721:-0.25 masterfilef${fcsthrs}
        rm masterfilef${fcsthrs}.new
      else

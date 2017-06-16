@@ -44,13 +44,13 @@ do
    fi
 done
 
-ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
-ln -sf gfs12.dat fort.17
-ln -sf metflxmrf fort.18
+##ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
+##ln -sf gfs12.dat fort.17
+##ln -sf metflxmrf fort.18
 
 #startmsg
 #${GFLUX:-$EXECbufrsnd/gfs_flux} < gfsflxparm >> $pgmout 2>>errfile
-export err=$?
+##export err=$?
 
 export pgm=gfs_bufr
 #. prep_step
@@ -61,8 +61,6 @@ then
 else
    bufrflag=".false."
 fi
-
-mkdir -p $COMOUT/bufr.${cycle}
 
 cat << EOF > gfsparm
  &NAMMET
@@ -108,4 +106,4 @@ export APRUN=${APRUN:-'aprun -n 12 -N 6 -j 1'}
 ${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 
-rm  metflxmrf gfs12.dat 
+##rm  metflxmrf gfs12.dat 

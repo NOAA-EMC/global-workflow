@@ -51,7 +51,9 @@ while [ $icnt -lt 1000 ]
 do
 #  if [ -s $COMIN/${RUN}.${cycle}.pgrbf$fcsthrs ]
 # file name and forecast hour of GFS model data in Grib2 are 3 digits
-  fcsthrs000="$(printf "%03d" $fcsthrs)"
+# fcsthrs000="$(printf "%03d" $fcsthrs)"
+  fcsthrs000="$(printf "%03d" $(( 10#$fcsthrs )) )"
+
   if [ -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fcsthrs000 ]
   then
      break

@@ -187,9 +187,10 @@ do
      pac)
         #  Grid 20km_pac - 20 km Mercator grid for Pacific Region
         # export grid_20km_pac="10 6 0 0 0 0 0 0 837 692 -45000000 110000000 48 20000000 65720000 270000000 64 0 20000000 20000000"
+        # NEW export grid_20km_pac="10 6 0 0 0 0 0 0 837 725 -45000000 110000000 48 20000000 65734500 270000000 64 0 20000000 20000000"
         # $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile${fcsthrs}  awps_file_f${fcsthrs}_${GRID}
 
-        export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:692:20000:65.72"
+        export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:725:20000:65.7345"
         $WGRIB2  tmp_masterfile${fcsthrs} $opt1 $opt21 $opt22 $opt23  -new_grid $gridpac awps_file_f${fcsthrs}_${GRID}
         ;;
    esac

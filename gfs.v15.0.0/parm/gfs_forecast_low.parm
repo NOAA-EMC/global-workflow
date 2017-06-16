@@ -4,7 +4,8 @@
 ####################################
 
 # Temporarily set GLOBAL variables
-FIXgsm=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/fix/fix_am
+#### FIXgsm=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/fix/fix_am
+FIXgsm=${FIXgsm:-/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0/fix/fix_am}
 export FIXGLOBAL=$FIXgsm
 export PARMGLOBAL=$PARMgsm
 

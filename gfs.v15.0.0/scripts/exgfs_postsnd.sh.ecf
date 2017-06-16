@@ -26,7 +26,7 @@ export LEVS=${LEVS:-64}
 export LATB=${LATB:-1536}
 export LONB=${LONB:-3072}
 export STARTHOUR=${STARTHOUR:-00}
-export ENDHOUR=${ENDHOUR:-240}
+export ENDHOUR=${ENDHOUR:-180}
 export FINT=1
 export NZERO=6
 export INCREMENT=12
@@ -34,7 +34,8 @@ export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
 export SIGLEVEL=${SIGLEVEL:-$FIXgsm/global_siglevel.l${LEVS}.txt}
-
+rm -f -r ${COMOUT}/bufr.${cycle}
+mkdir ${COMOUT}/bufr.${cycle}
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -59,7 +60,7 @@ do
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.atmf$FEND.nemsio ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.nemsio ]
       then
           sleep 10
           ic=`expr $ic + 1`
@@ -102,12 +103,31 @@ fi
 # Create Regional Collectives of BUFR data and 
 # add appropriate WMO Headers.
 ########################################
-$USHbufrsnd/gfs_sndp.sh
+collect=' 1 2 3 4 5 6 7 8 9'
+rm -rf poe_col
+echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
+for m in ${collect}
+do
+echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
+##$USHbufrsnd/gfs_sndp.sh
+done
+
+mv poe_col cmdfile
+
+cat cmdfile
+chmod +x cmdfile
+export MP_PGMMODEL=mpmd
+export MP_CMDFILE=cmdfile
+export MP_LABELIO=YES
+export MP_INFOLEVEL=3
+export MP_STDOUTMODE=ordered
+
+aprun -j 1 -n 10 -N 5 -d 1 cfp cmdfile
 
 ################################################
 # Convert the bufr soundings into GEMPAK files
 ################################################
-$USHbufrsnd/gfs_bfr2gpk.sh
+##$USHbufrsnd/gfs_bfr2gpk.sh
 
 #####################################################################
 # GOOD RUN

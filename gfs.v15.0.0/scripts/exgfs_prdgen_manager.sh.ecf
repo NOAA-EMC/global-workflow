@@ -23,7 +23,7 @@ do
      if [ $hour -eq 99 ]; then
        typeset -Z3 hour
      fi
-     if [ $hour -lt 12 ]
+     if [ $hour -lt 120 ]
      then
        let "hour=hour+1"
      else

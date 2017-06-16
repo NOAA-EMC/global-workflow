@@ -24,7 +24,7 @@ for fhr in 06 12 18 24
 do
 
   cp $COMIN/gfs.${cycle}.pgrb2.1p00.f0${fhr}   .
-  $CNVGRIB21_GFS -g21 gfs.${cycle}.pgrb2.1p00.f0${fhr} pgrbf${fhr}
+  $EXECgfs/cnvgrib21_gfs -g21 gfs.${cycle}.pgrb2.1p00.f0${fhr} pgrbf${fhr}
   $GRBINDEX  pgrbf${fhr}   pgrbif${fhr}
 
 done

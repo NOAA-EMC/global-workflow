@@ -61,9 +61,12 @@ export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 
-export NET=gfs
-export RUN=gfs
-export model=gfs
+#### export NET=gfs
+#### export RUN=gfs
+#### export model=gfs
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export model=${model:-gfs}
 
 ###################################
 # Set up the UTILITIES
@@ -78,12 +81,12 @@ export model=gfs
 #export utilscript=${utilscript:-$HOMEutil/ush}
 #export utilexec=${utilexec:-$HOMEutil/exec}
 
-. $MODULESHOME/init/sh
-module load prod_envir
-module load prod_util/1.0.5
-module load grib_util/1.0.3
-module load util_shared/1.0.3
-module load gempak/7.3.0
+#### . $MODULESHOME/init/sh
+#### module load prod_envir
+#### module load prod_util/1.0.5
+#### module load grib_util/1.0.3
+#### module load util_shared/1.0.3
+#### module load gempak/7.3.0
 
 export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
 #export HOMEbufrsnd=${HOMEbufrsnd:-/nw${envir}/bufrsnd.$bufrsnd_ver}
@@ -94,7 +97,7 @@ export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
 export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
 export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.${global_shared_ver}}
-export FIXgsm=${HOMEgsm:-$HOMEgsm/fix/fix_am}
+export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
 
 # Run setup to initialize working directory and utility scripts
 #$utilscript/setup.sh
@@ -107,8 +110,9 @@ setpdy.sh
 ##############################
 export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
-mkdir -p $COMOUT
-
+export pcom=${pcom:-${PCOMROOT}/gfs}
+mkdir -p $COMOUT $pcom
+export COMAWP=${COMAWP:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
 env
 
 ########################################################
@@ -119,6 +123,7 @@ $SCRbufrsnd/exgfs_postsnd.sh.ecf
 
 cat $pgmout
 
-cd /tmpnwprd1
+#### cd /tmpnwprd1
+cd ${DATAROOT}
 rm -rf $DATA
 date

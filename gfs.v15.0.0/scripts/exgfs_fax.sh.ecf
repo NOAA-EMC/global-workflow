@@ -104,7 +104,7 @@ do
       grib2file=${RUN}.${cycle}.pgrb2.1p00.f${hr}
   fi
   cp $COMIN/$grib2file  .
-  $CNVGRIB -g21 $grib2file pgrbf${hr}
+  $EXECgfs/cnvgrib21_gfs -g21 $grib2file pgrbf${hr}
   $GRBINDEX pgrbf${hr}  pgrbif${hr}
   hr=`expr $hr + $inc`
   if [ $hr -lt 10 ]; then hr=0$hr; fi

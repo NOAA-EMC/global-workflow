@@ -5,6 +5,8 @@ export fhr=$1
 export filetype=$2
 export res=$3
 
+export 'PS4=${fhr}-${filetype}-${res}:$SECONDS + '
+
 # Set type of Interpolation for WRGIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
 export opt21='  -new_grid_interpolation bilinear -if '
@@ -61,26 +63,34 @@ if [ $filetype = pgrb2 ]; then
 
 # Only generate 0P25 for hourly output
   if [ $res = 0P25 -o $fhm3 = YES ]; then
-#    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile_${fhr} ${filetype}file_${fhr3}_${res}
+#    $COPYGB2 -g "$grid" -i0 -x $DATA/maser_pgrb2_${fhr} ${filetype}file_${fhr3}_${res}
 
-    $WGRIB2  $DATA/tmpfile_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
+    $WGRIB2  $DATA/master_pgrb2_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
+#generate second land mask using bi-linear interpolation and append to the end
+    rm -f land.grb newland.grb newnewland.grb
+    $WGRIB2 $DATA/master_pgrb2_${fhr} -match "LAND:surface" -grib land.grb
+    $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid $grid newland.grb
+    $WGRIB2 newland.grb -set_byte 4 11 218 -grib newnewland.grb
+    cat ./newnewland.grb >> ${filetype}file_${fhr3}_${res} 
+#
+     
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 
 # Only if it is 3 hourly
-  if [ $res = 1p00 -a $fhr -le 192 -a $fhm3 = YES ]; then
-    $CNVGRIB21_GFS -g21 ${filetype}file_${fhr3}_${res} pgbfile_${fhr}_1p0
+  if [ $res = 1p00 -a $fhm3 = YES ]; then
+    $EXECgfs/cnvgrib21_gfs -g21 ${filetype}file_${fhr3}_${res} pgbfile_${fhr}_1p0
     $GRBINDEX pgbfile_${fhr}_1p0 pgbifile_${fhr}_1p0
-  elif [ $res = 2p50 -a $fhm3 = YES ]; then
-    $CNVGRIB21_GFS -g21 ${filetype}file_${fhr3}_${res} pgbfile_${fhr}_2p5
+  elif [ $res = 2p50  -a $fhr -le 192 -a $fhm3 = YES ]; then
+    $EXECgfs/cnvgrib21_gfs -g21 ${filetype}file_${fhr3}_${res} pgbfile_${fhr}_2p5
     $GRBINDEX pgbfile_${fhr}_2p5 pgbifile_${fhr}_2p5
   fi
 elif [ $filetype = pgrb2b ]; then
 
 # Only generate 0P25 for hourly output
   if [ $res = 0P25 -o $fhm3 = YES ]; then
-#    $COPYGB2 -g "$grid" -i0 -x $DATA/tmpfile3_${fhr} ${filetype}file_${fhr3}_${res}
-    $WGRIB2  $DATA/tmpfile3_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
+#    $COPYGB2 -g "$grid" -i0 -x $DATA/master_pgrb2b_${fhr} ${filetype}file_${fhr3}_${res}
+    $WGRIB2  $DATA/master_pgrb2b_${fhr} $opt1 $opt21 $opt22 $opt23 -new_grid $grid ${filetype}file_${fhr3}_${res}
     $WGRIB2 ${filetype}file_${fhr3}_${res} -s > ${filetype}ifile_${fhr3}_${res}
   fi
 fi
@@ -106,17 +116,17 @@ if [ $SENDCOM = YES ]; then
     if [ $res = 0P25 -o $fhm3 = YES ]; then
       cpfs ${filetype}file_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}
       cpfs ${filetype}ifile_${fhr3}_${res} $COMOUT/${RUN}.${cycle}.${filetype}.${res}.f${fhr3}.idx
-      if [ $filetype = pgrb2 -a $res = 1p00 -a fhr -le 192 ]; then
+      if [ $filetype = pgrb2 -a $res = 1p00 ]; then
         cpfs pgbfile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
         cpfs pgbifile_${fhr}_1p0 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
-      elif [ $filetype = pgrb2 -a $res = 2p50 ]; then
-        if [ $fhr -le 192 ]; then
+      elif [ $filetype = pgrb2 -a $res = 2p50 -a $fhr -le 192 ]; then
+#        if [ $fhr -le 192 ]; then
           cpfs pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr.2p5deg
           cpfs pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr.2p5deg
-        elif [ $fhr -gt 192 -a `expr $fhr % 12` -eq 0 ]; then
-          cpfs pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
-          cpfs  pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
-        fi
+#        elif [ $fhr -gt 192 -a `expr $fhr % 12` -eq 0 ]; then
+#          cpfs pgbfile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbf$fhr
+#          cpfs  pgbifile_${fhr}_2p5 $COMOUT/${RUN}.${cycle}.pgrbif$fhr
+#        fi
       fi
     fi
 
@@ -127,7 +137,7 @@ if [ $SENDDBN = YES ]; then
   if [ $fhr = anl ]; then
     $DBNROOT/bin/dbn_alert MODEL GFS_${FILET}_${RES} $job $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}
     $DBNROOT/bin/dbn_alert MODEL GFS_${FILET}_${RES}_WIDX $job $COMOUT/${RUN}.${cycle}.${filetype}.${res}.${fhr3}.idx
-    if [ $res = 1p00 ]; then
+    if [ $filetype = pgrb2 -a $res = 1p00 ]; then
       $DBNROOT/bin/dbn_alert MODEL GFS_PGB $job $COMOUT/${RUN}.${cycle}.pgrb$fhr
       $DBNROOT/bin/dbn_alert MODEL GFS_PGBI $job $COMOUT/${RUN}.${cycle}.pgrbi$fhr
     fi

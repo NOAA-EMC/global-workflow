@@ -35,7 +35,8 @@ device="nc | ${metaname}"
 if [ ${cyc} -eq "12" ] || [ ${cyc} -eq "18" ] 
 then
     exit
-elif [ ${cyc} -eq "00" ] && [ `echo $COMIN | awk -F/ '{print $5}' | awk -F. '{print $1}'` = "gfs" ]
+# elif [ ${cyc} -eq "00" ] && [ `echo $COMIN | awk -F/ '{print $5}' | awk -F. '{print $1}'` = "gfs" ]
+elif [ ${cyc} -eq "00" ] && [ ${mdl} = "gfs" ]
 then 
     # don't want to run from 00z gfs
     exit

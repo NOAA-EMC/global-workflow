@@ -32,7 +32,7 @@ postmsg "$jlogfile" "$msg"
 
 
 #
-NAGRIB=nagrib2
+NAGRIB=nagrib2_nc
 #
 
 cpyfil=gds
