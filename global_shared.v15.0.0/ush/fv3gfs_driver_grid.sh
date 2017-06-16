@@ -54,7 +54,7 @@ if [ $machine = WCOSS_C ]; then
  export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
  export KMP_AFFINITY=disabled
  export home_dir=$LS_SUBCWD/..
- export workflow_dir=$LS_SUBCWD/../../gfs_workflow.v15.0.0/para
+ export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
  export TMPDIR=/gpfs/hps/ptmp/$LOGNAME/fv3_grid.$gtype
 elif [ $machine = THEIA ]; then
  . /apps/lmod/lmod/init/sh
@@ -67,13 +67,12 @@ elif [ $machine = THEIA ]; then
  module list
  export APRUN=time
  export home_dir=$PBS_O_WORKDIR/..
- export workflow_dir=$PBS_O_WORKDIR/../../gfs_workflow.v15.0.0/para
+ export topo=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix/fix_orog
  export TMPDIR=/scratch3/NCEPDEV/stmp1/$LOGNAME/fv3_grid.$gtype
  set -x
 fi
 #----------------------------------------------------------------
 export script_dir=$home_dir/ush
-export topo=$workflow_dir/util/fix
 export exec_dir=$home_dir/exec
 
 #export out_dir=$home_dir/fix/C${res}
