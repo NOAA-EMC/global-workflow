@@ -33,7 +33,7 @@
 export CASE="C192"
 export LEVS=65
 export CDATE="2016100118"
-export COMROT="/scratch3/NCEPDEV/stmp2/Rahul.Mahajan/ROTDIRS/FV3e1/gfs.20161001/18"
+export COMROT="/scratch4/NCEPDEV/stmp4/$USER/ROTDIRS/FV3test/gfs.20161001/18"
 
 export machine="THEIA"
 
@@ -67,13 +67,13 @@ if [ $machine = "THEIA" ]; then
 
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export STMP="/scratch3/NCEPDEV/stmp1/$USER"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/Rahul.Mahajan"
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
     export STMP="/gpfs/hps/stmp/$USER"
-    export BASE_SVN="/gpfs/hps/emc/global/noscrub/Rahul.Mahajan/svn"
+    export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
 
 fi
 
@@ -106,9 +106,9 @@ elif [ $machine = "WCOSS_C" ]; then
 fi
 
 # Build paths relative to $BASE_SVN
-export BASE_WORKFLOW="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/gfs_workflow.v15.0.0/para"
-export BASE_GSM="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-cyc/global_shared.v15.0.0"
-export BASE_POST="$BASE_SVN/fv3gfs/branches/Rahul.Mahajan/EXP-fv3gfspost/post"
+export BASE_WORKFLOW="$BASE_SVN/fv3gfs/trunk/gfs_workflow.v15.0.0"
+export BASE_GSM="$BASE_SVN/fv3gfs/trunk/global_shared.v15.0.0"
+export BASE_POST="$BASE_SVN/fv3gfs/tags/post4fv3"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -139,8 +139,8 @@ export nth_postgp=1
 
 # Downstream grib files at different resolutions, some in Grib1 format
 export GFS_DOWNSTREAM="YES"
-export GFSDOWNSH="$BASE_WORKFLOW/ush/gfs_downstream_nems.sh"
-export GFSDWNSH="$BASE_WORKFLOW/ush/gfs_dwn_nems.sh"
+export GFSDOWNSH="$BASE_WORKFLOW/ush/fv3gfs_downstream_nems.sh"
+export GFSDWNSH="$BASE_WORKFLOW/ush/fv3gfs_dwn_nems.sh"
 export downset=1
 export npe_dwn=$npe_post
 export nth_dwn=2
