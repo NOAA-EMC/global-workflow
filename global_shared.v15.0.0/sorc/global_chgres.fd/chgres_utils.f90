@@ -165,7 +165,7 @@
       PRINT*,'' 
       PRINT*,"READ VERTICAL COORDS FROM UNIT ",NSIL 
       READ(NSIL,*,IOSTAT=IRET) IDVCI,LEVSI,NVCOORDI 
-      write(0,*)'IDVCI=',IDVCI,' LEVSI=',LEVSI,' NVCOORDI=',NVCOORDI 
+      write(*,*)'IDVCI=',IDVCI,' LEVSI=',LEVSI,' NVCOORDI=',NVCOORDI 
       IF(IRET == 0) THEN 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
                                  ! Added by Moorthi for gaea            
