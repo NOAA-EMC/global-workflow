@@ -75,18 +75,6 @@ export FHMIN=$FHMIN_ENKF
 export FHOUT=$FHOUT_ENKF
 export FHMAX=$FHMAX_ENKF
 
-# Output frequency
-if [ $FHMIN -eq 0 ]; then
-    fdiag_ENKF_=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
-else
-    fdiag_ENKF_=$FHMIN
-fi
-FHMIN_=$(($FHMIN + $FHOUT))
-for fhr in `seq $FHMIN_ $FHOUT $FHMAX`; do
-    fdiag_ENKF_="$fdiag_ENKF_,$fhr"
-done
-export fdiag_ENKF=$fdiag_ENKF_
-
 ###############################################################
 # Run relevant exglobal script
 $ENKFFCSTSH

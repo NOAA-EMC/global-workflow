@@ -77,18 +77,6 @@ if [ $CDUMP = "gfs" ]; then
     export FHMAX=$FHMAX_GFS
 fi
 
-# Output frequency
-if [ $FHMIN -eq 0 ]; then
-    fdiag_=$(echo $DELTIM 3600 | awk '{printf "%f", $1/$2}')
-else
-    fdiag_=$FHMIN
-fi
-FHMIN_=$(($FHMIN + $FHOUT))
-for fhr in `seq $FHMIN_ $FHOUT $FHMAX`; do
-    fdiag_="$fdiag_,$fhr"
-done
-export fdiag=$fdiag_
-
 ###############################################################
 # Run relevant exglobal script
 $FORECASTSH
