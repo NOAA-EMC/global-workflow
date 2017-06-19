@@ -7,6 +7,6 @@
 !  num_parthds = 4
 !!$OMP END PARALLEL
 
- write(0,*)' NUM_PARTHDS=',num_parthds
+ write(*,*)' NUM_PARTHDS=',num_parthds
  return
  END FUNCTION NUM_PARTHDS
