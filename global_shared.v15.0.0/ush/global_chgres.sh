@@ -255,13 +255,6 @@ export DATA=${DATA:-$(pwd)}
 #  Filenames.
 export CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
 #
-tile=1
-while [ $tile -le $ntiles ]; do
- ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
- ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
- tile=`expr $tile + 1 `
-done
-
 export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 if [ $LEVS = 128 ]; then
   export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}B.txt}
@@ -353,6 +346,13 @@ ln -sf $SIGLEVEL      chgres.inp.siglevel
 ln -sf $SFCINP        chgres.inp.sfc
 ln -sf $NSTINP        chgres.inp.nst
 ln -sf $LONSPERLAT    chgres.inp.lpl3
+
+tile=1
+while [ $tile -le $ntiles ]; do
+ ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+ ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+ tile=`expr $tile + 1 `
+done
 
 if [[ $LANDICE_OPT = 3 || $LANDICE_OPT = 4 ]]
 then
