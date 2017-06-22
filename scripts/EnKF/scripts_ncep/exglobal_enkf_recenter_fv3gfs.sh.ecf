@@ -1,0 +1,218 @@
+#!/bin/ksh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_enkf_recenter_fv3gfs.sh.ecf
+# Script description:  recenter ensemble around hi-res deterministic analysis
+#
+# Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+#
+# Abstract: This script recenters ensemble around hi-res deterministic analysis
+#
+# $Id$
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: WCOSS-Cray/Theia
+#
+################################################################################
+
+# Set environment.
+VERBOSE=${VERBOSE:-"YES"}
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+
+# Directories.
+pwd=$(pwd)
+export NWPROD=${NWPROD:-$pwd}
+export BASE_GFS=${BASE_GFS:-$NWPROD}
+export BASE_GSI=${BASE_GSI:-$NWPROD}
+export DATA=${DATA:-$pwd}
+COMIN=${COMIN:-$pwd}
+COMIN_ENS=${COMIN_ENS:-$pwd}
+COMIN_GES_ENS=${COMIN_GES_ENS:-${COMIN_ENS:-$pwd}}
+COMOUT=${COMOUT:-$COMIN}
+
+# Utilities
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+NCP=${NCP:-"/bin/cp -p"}
+NLN=${NLN:-"/bin/ln -sf"}
+NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
+
+# Scripts
+
+# Executables.
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
+
+# Files.
+APREFIX=${APREFIX:-""}
+ASUFFIX=${ASUFFIX:-""}
+GPREFIX=${GPREFIX:-""}
+GSUFFIX=${GSUFFIX:-""}
+
+# Variables
+NMEM_ENKF=${NMEM_ENKF:-80}
+
+# global_chgres stuff
+CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
+export CHGRESEXEC=${CHGRESEXEC-$BASE_GFS/exec/global_chgres}
+export CHGRESTHREAD=${CHGRESTHREAD:-24}
+CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
+APRUN_CHGRES=${APRUN_CHGRES:-""}
+
+RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
+
+APRUN_ECEN=${APRUN_ECEN:-${APRUN:-""}}
+NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
+
+################################################################################
+# Preprocessing
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+cd $DATA || exit 99
+
+################################################################################
+# Link ensemble member guess, analysis and increment files
+for imem in `seq 1 $NMEM_ENKF`; do
+   memchar="mem"`printf %03i $imem`
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX ./atmf006_$memchar
+   $NLN $COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX ./atmanl_$memchar
+   $NLN $COMIN_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
+   [[ $RECENTER_ENKF = "YES" ]] && $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
+done
+
+# Link ensemble mean analysis
+$NLN $COMIN_ENS/${APREFIX}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
+
+# Compute ensemble mean analysis
+DATAPATH="./"
+ATMANLNAME="atmanl"
+ATMANLMEANNAME="atmanl_ensmean"
+
+export OMP_NUM_THREADS=$NTHREADS_ECEN
+
+$NCP $GETATMENSMEANEXEC $DATA
+$APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENKF
+rc=$?
+
+export ERR=$rc
+export err=$ERR
+$ERRSCRIPT || exit 2
+
+################################################################################
+# Chgres high resolution analysis to ensemble resolution
+ATMANL_HI=${ATMANL_HI:-$COMIN/${APREFIX}atmanl$ASUFFIX}
+
+$NLN $ATMANL_HI atmanl_hires
+
+JCAP=${JCAP:-$($NEMSIOGET atmanl_hires jcap | awk '{print $2}')}
+JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}')}
+
+if [ $JCAP = $JCAP_ENKF ]; then
+   echo "Ensemble and deterministic analysis are at same resolution"
+   echo "Does recentering really make sense?"
+   echo "set RECENTER_ENKF = YES (NO) to enable (disable) recentering"
+   echo "RECENTER_ENKF = $RECENTER_ENKF"
+fi
+
+# This is to give the user the option to recenter, default is YES
+if [ $RECENTER_ENKF = "YES" ]; then
+
+   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
+   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
+   LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
+
+   SIGINP="atmanl_hires"
+   SFCINP="NULL"
+   SIGOUT="atmanl_lores"
+   SFCOUT="NULL"
+   GFSOUT=$SIGOUT
+   export NSTOUT="NULL"
+   export NSNOUT="NULL"
+   export SFNOUT="NULL"
+
+   rm -f $SIGOUT $SFCOUT
+
+   export SIGLEVEL="NULL"
+   export CHGRESVARS=$CHGRESVARS_ENKF
+   export LANDICE_OPT=${LANDICE_OPT:-1}
+   export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
+
+   export APRUNC=$APRUN_CHGRES
+
+   $CHGRESSH $SIGINP $SFCINP $SIGOUT $SFCOUT $JCAP_ENKF $LEVS_ENKF $LONB_ENKF $LATB_ENKF $GFSOUT
+   rc=$?
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT || exit 3
+
+   ################################################################################
+   # Recenter ensemble member atmospheric analyses about hires analysis
+
+   FILENAME_MEANIN="atmanl_ensmean"   # EnKF ensemble mean analysis
+   FILENAMEIN="atmanl"
+   FILENAME_MEANOUT="atmanl_lores"    # recenter around GSI analysis
+   FILENAMEOUT="ratmanl"
+
+   export OMP_NUM_THREADS=$NTHREADS_ECEN
+
+   $NCP $RECENATMEXEC $DATA
+   $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
+   rc=$?
+
+   export ERR=$rc
+   export err=$ERR
+   $ERRSCRIPT || exit 2
+
+   # Optionally alert recentered files
+   if [ ${SENDDBN:-"NO"} = "YES" ]; then
+      for imem in `seq 1 $NMEM_ENKF`; do
+         memchar="mem"`printf %03i $imem`
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
+      done
+   fi
+
+fi
+
+################################################################################
+# Calculate ensemble analysis increment
+
+DATAPATH="./"
+ATMGESNAME="atmf006"
+ATMINCNAME="atminc"
+if [ $RECENTER_ENKF = "YES" ]; then
+    ATMANLNAME='ratmanl'
+else
+    ATMANLNAME='atmanl'
+fi
+DEBUG='.false.'
+
+export OMP_NUM_THREADS=1
+
+$NCP $CALCINCEXEC $DATA
+$APRUN_ECEN ${DATA}/$(basename $CALCINCEXEC) $DATAPATH $ATMANLNAME $ATMGESNAME $ATMINCNAME $DEBUG $NMEM_ENKF
+rc=$?
+
+export ERR=$rc
+export err=$rc
+$ERRSCRIPT || exit 4
+
+################################################################################
+# Update surface and NST analysis
+# Since we don't have NST in the FV3 system,
+# we will revisit this section at a later time
+
+################################################################################
+# Postprocessing
+cd $pwd
+[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
+set +x
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err
