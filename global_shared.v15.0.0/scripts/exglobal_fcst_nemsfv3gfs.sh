@@ -128,6 +128,7 @@ if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 warm_start=${warm_start:-".false."}
 read_increment=${read_increment:-".false."}
 increment_file=${increment_file:-$memdir/${CDUMP}.t${chh}z.atminc.nc}
+restart_interval=${restart_interval:-0}
 
 if [ $warm_start = ".false." ]; then
   if [ -d $IC_DIR/${CASE}_$CDATE ]; then
@@ -142,7 +143,11 @@ if [ $warm_start = ".false." ]; then
     done
   fi
 else
-  # Handle .res.tile?.nc and .suf.tile?.nc files
+ if [ $restart_interval -eq 0 ]; then 
+  # start from the end of last forecast run
+  $NLN $memdir/RESTART/* $DATA/INPUT/.
+ else
+  # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
   for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
     file2=$(echo $(basename $file))
     file2=`echo $file2 | cut -d. -f3-` # remove the date from file
@@ -152,7 +157,7 @@ else
       $NLN $file $DATA/INPUT/$file2
     fi
   done
-  # Handle coupler.res file
+  # Handle coupler.res file for DA cycling
   if [ ${USE_COUPLER_RES:-"YES"} = "YES" ]; then
     # In DA, this is not really a "true restart",
     # and the model start time is the analysis time
@@ -170,6 +175,7 @@ else
       read_increment=".false."
     fi
   fi
+ fi
 fi
 nfiles=`ls -1 $DATA/INPUT/* | wc -l`
 if [ $nfiles -le 0 ]; then
@@ -368,7 +374,6 @@ SMONTH=`echo $CDATE | cut -c5-6`
 SDAY=`echo $CDATE | cut -c7-8`
 SHOUR=`echo $CDATE | cut -c9-10`
 curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
-restart_interval=${restart_interval:-0}
 rsecs=$((restart_interval*3600))
 restart_secs=${rsecs:-0}
 
@@ -739,14 +744,9 @@ if [ $SEND = "YES" ]; then
       $NCP $file $rmemdir/RESTART/$file
     done
   else
-    # Save the restart files in same directory as RESTART
-    # as per Fanglin's needs, add a timestamp
-    # If restart_interval /= 0 and /= 6,
-    # there are multiple restart times and * will copy all these and
-    # put them in the RESTART directory, whether you want it or not.
-    # Fanglin.Yang will correct it when his need change
+    # Save restart files at the end of the forecast in ROTDIR/RESTART directory
     mkdir -p $memdir/RESTART
-    for file in * ; do
+    for file in `ls * |grep -v 0000`  ; do
       $NCP $file $memdir/RESTART/$file
     done
   fi
