@@ -143,39 +143,39 @@ if [ $warm_start = ".false." ]; then
     done
   fi
 else
- if [ $restart_interval -eq 0 ]; then 
-  # start from the end of last forecast run
-  $NLN $memdir/RESTART/* $DATA/INPUT/.
- else
-  # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
-  for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
-    file2=$(echo $(basename $file))
-    file2=`echo $file2 | cut -d. -f3-` # remove the date from file
-    fres=`echo $file2 | cut -d. -f2`
-    fsuf=`echo $file2 | cut -d. -f1 | cut -c1-3`
-    if [ $fres = "res" -o $fsuf = "sfc" ]; then
+  if [ ${restart_test:-"NO"} = "YES" ]; then 
+    # start from the end of last forecast run
+    $NLN $memdir/RESTART/* $DATA/INPUT/.
+  else
+    # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
+    for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
+      file2=$(echo $(basename $file))
+      file2=`echo $file2 | cut -d. -f3-` # remove the date from file
+      fres=`echo $file2 | cut -d. -f2`
+      fsuf=`echo $file2 | cut -d. -f1 | cut -c1-3`
+      if [ $fres = "res" -o $fsuf = "sfc" ]; then
+        $NLN $file $DATA/INPUT/$file2
+      fi
+    done
+    # Handle coupler.res file for DA cycling
+    if [ ${USE_COUPLER_RES:-"YES"} = "YES" ]; then
+      # In DA, this is not really a "true restart",
+      # and the model start time is the analysis time
+      # The alternative is to replace
+      # model start time with current model time in coupler.res
+      file=$memdir/RESTART/${cymd}.${chh}0000.coupler.res
+      file2=$(echo $(basename $file))
+      file2=`echo $file2 | cut -d. -f3-` # remove the date from file
       $NLN $file $DATA/INPUT/$file2
     fi
-  done
-  # Handle coupler.res file for DA cycling
-  if [ ${USE_COUPLER_RES:-"YES"} = "YES" ]; then
-    # In DA, this is not really a "true restart",
-    # and the model start time is the analysis time
-    # The alternative is to replace
-    # model start time with current model time in coupler.res
-    file=$memdir/RESTART/${cymd}.${chh}0000.coupler.res
-    file2=$(echo $(basename $file))
-    file2=`echo $file2 | cut -d. -f3-` # remove the date from file
-    $NLN $file $DATA/INPUT/$file2
-  fi
-  if [ $read_increment = ".true." ]; then
-    if [ -f $increment_file ]; then
-      $NLN $increment_file $DATA/INPUT/fv3_increment.nc
-    else
-      read_increment=".false."
+    if [ $read_increment = ".true." ]; then
+      if [ -f $increment_file ]; then
+        $NLN $increment_file $DATA/INPUT/fv3_increment.nc
+      else
+        read_increment=".false."
+      fi
     fi
   fi
- fi
 fi
 nfiles=`ls -1 $DATA/INPUT/* | wc -l`
 if [ $nfiles -le 0 ]; then
