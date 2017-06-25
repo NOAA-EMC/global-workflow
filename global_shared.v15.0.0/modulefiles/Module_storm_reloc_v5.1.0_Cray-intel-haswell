@@ -11,8 +11,8 @@ module use /opt/cray/craype/default/modulefiles
 module use /opt/modulefiles
 module use /opt/cray/modulefiles
 module use /opt/cray/ari/modulefiles
-module use /cm/local/modulefiles
-module use /cm/shared/modulefiles
+#module use /cm/local/modulefiles
+#module use /cm/shared/modulefiles
 module use /usrx/local/prod/modulefiles
               module load modules/3.2.6.7
               module load eswrap/1.1.0-1.020200.1231.0
