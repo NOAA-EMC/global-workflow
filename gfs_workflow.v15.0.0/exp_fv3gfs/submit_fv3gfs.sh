@@ -24,11 +24,11 @@ export NODES=1
 
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
-export tags=trunk_r93576
+export tags=trunk
 export PTMP=/gpfs/hps/ptmp
 #export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
-export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver/para
+export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver
 export BASE_GSM=$BASE_SVN/$tags/global_shared.$global_shared_ver
 export FIXfv3=$BASE_GSM/fix/fix_fv3
 export PSUB=$BASEDIR/bin/psub

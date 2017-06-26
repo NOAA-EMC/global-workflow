@@ -130,7 +130,7 @@ if [ $machine = WCOSS ]; then
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/global/save/$LOGNAME/svn/fv3gfs
- tags=trunk_r88010
+ tags=trunk
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
 elif [ $machine = WCOSS_C ]; then
@@ -145,7 +145,7 @@ elif [ $machine = WCOSS_C ]; then
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
- tags=trunk_r93576
+ tags=trunk
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
  FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
@@ -164,7 +164,7 @@ elif [ $machine = THEIA ]; then
  utilscript=/scratch4/NCEPDEV/rstprod/nwprod/util/ush
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
- tags=trunk_r88010
+ tags=trunk
  FIX_FV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3   
 else
  echo '$machine is not supported, exit'
