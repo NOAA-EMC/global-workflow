@@ -16,7 +16,7 @@ module load iobuf
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.4
+module load prod_util
 module unload grib_util/1.0.3
 module use /gpfs/hps/nco/ops/nwtest/modulefiles
 module load grib_util/1.0.5

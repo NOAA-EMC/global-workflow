@@ -57,7 +57,7 @@ export pcom=${pcom:-${PCOMROOT}/gfs}
 . $MODULESHOME/init/sh
 module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
 module load prod_envir
-module load prod_util/1.0.5
+module load prod_util
 module load grib_util/1.0.3
 module load util_shared/1.0.3
 module load gempak/7.3.0
