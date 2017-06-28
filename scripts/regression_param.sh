@@ -12,6 +12,10 @@ case $regtest in
            topts[1]="0:30:00" ; popts[1]="16/2/" ; ropts[1]="/1"
            topts[2]="0:30:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="1:45:00" ; popts[1]="20/4" ; ropts[1]="/1"
+           topts[2]="1:45:00" ; popts[2]="40/2" ; ropts[2]="/2"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -32,6 +36,10 @@ case $regtest in
             topts[1]="0:15:00" ; popts[1]="16/1/" ; ropts[1]="/1"
             topts[2]="0:15:00" ; popts[2]="16/2/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="0:25:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+           topts[2]="0:25:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -52,10 +60,19 @@ case $regtest in
             topts[1]="0:35:00" ; popts[1]="16/2/" ; ropts[1]="/1"
             topts[2]="0:25:00" ; popts[2]="16/4/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:55:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+            topts[2]="0:45:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
            topts[1]="0:45:00"
+           if [[ "$machine" = "Theia" ]]; then
+              popts[1]="12/5/"
+           elif [[ "$machine" = "WCOSS" ]]; then
+              popts[1]="16/4/"
+           fi
         fi
 
         scaling[1]=5; scaling[2]=8; scaling[3]=2
@@ -72,6 +89,10 @@ case $regtest in
            topts[1]="0:15:00" ; popts[1]="16/2/" ; ropts[1]="/1"
            topts[2]="0:15:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="0:25:00" ; popts[1]="20/4/" ; ropts[1]="/1"
+           topts[2]="0:25:00" ; popts[2]="40/4/" ; ropts[2]="/2"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -85,10 +106,12 @@ case $regtest in
     global_4denvar_T126)
 
         if [[ "$machine" = "Theia" ]]; then
-           topts[1]="0:15:00" ; popts[1]="12/3/" ; ropts[1]="/1"
-           topts[2]="0:15:00" ; popts[2]="12/5/" ; ropts[2]="/2"
+           topts[1]="0:25:00" ; popts[1]="6/24/" ; ropts[1]="/1"
+           topts[2]="0:25:00" ; popts[2]="8/24/" ; ropts[2]="/2"
            sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
+#          topts[1]="0:15:00" ; popts[1]="6/24/" ; ropts[1]="/1"
+#          topts[2]="0:15:00" ; popts[2]="8/24/" ; ropts[2]="/2"
            topts[1]="0:35:00" ; popts[1]="16/2/" ; ropts[1]="/1"
            topts[2]="0:35:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
@@ -112,6 +135,10 @@ case $regtest in
            topts[1]="0:20:00" ; popts[1]="16/2/" ; ropts[1]="/1"
            topts[2]="0:20:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="0:30:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+           topts[2]="0:30:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -132,6 +159,10 @@ case $regtest in
            topts[1]="0:15:00" ; popts[1]="16/2/" ; ropts[1]="/1"
            topts[2]="0:15:00" ; popts[2]="16/4/" ; ropts[2]="/2"
            sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="0:25:00" ; popts[1]="16/2/" ; ropts[1]="/1"
+           topts[2]="0:25:00" ; popts[2]="16/4/" ; ropts[2]="/2"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -152,6 +183,10 @@ case $regtest in
             topts[1]="0:15:00" ; popts[1]="16/1/" ; ropts[1]="/1"
             topts[2]="0:15:00" ; popts[2]="16/2/" ; ropts[2]="/1"
             sub_cmd="sub_wcoss -a RDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+           topts[1]="0:25:00" ; popts[1]="16/1/" ; ropts[1]="/1"
+           topts[2]="0:25:00" ; popts[2]="16/2/" ; ropts[2]="/1"
+           sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -172,6 +207,10 @@ case $regtest in
             topts[1]="0:30:00" ; popts[1]="7/12/" ; ropts[1]="/1"
             topts[2]="0:30:00" ; popts[2]="9/12/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a RDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:50:00" ; popts[1]="7/12/" ; ropts[1]="/1"
+            topts[2]="0:50:00" ; popts[2]="9/12/" ; ropts[2]="/2"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -192,6 +231,10 @@ case $regtest in
             topts[1]="0:15:00" ; popts[1]="8/1/"  ; ropts[1]="/1"
             topts[2]="0:15:00" ; popts[2]="16/1/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a RDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:25:00" ; popts[1]="8/1/"  ; ropts[1]="/1"
+            topts[2]="0:25:00" ; popts[2]="16/1/" ; ropts[2]="/2"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -212,6 +255,10 @@ case $regtest in
             topts[1]="0:30:00" ; popts[1]="7/10/" ; ropts[1]="/1"
             topts[2]="0:30:00" ; popts[2]="9/10/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a RDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:50:00" ; popts[1]="7/10/" ; ropts[1]="/1"
+            topts[2]="0:50:00" ; popts[2]="9/10/" ; ropts[2]="/2"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -225,13 +272,17 @@ case $regtest in
     rtma)
 
         if [[ "$machine" = "Theia" ]]; then
-            topts[1]="0:35:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
-            topts[2]="0:35:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
+            topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
+            topts[2]="0:15:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
             sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
             topts[1]="0:15:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
             topts[2]="0:15:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
             sub_cmd="sub_wcoss -a RTMA-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:25:00" ; popts[1]="8/6/"  ; ropts[1]="/1"
+            topts[2]="0:25:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -252,10 +303,14 @@ case $regtest in
             topts[1]="0:20:00" ; popts[1]="6/6/"  ; ropts[1]="/1"
             topts[2]="0:20:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
             sub_cmd="sub_wcoss -a HWRF-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:40:00" ; popts[1]="6/6/"  ; ropts[1]="/1"
+            topts[2]="0:40:00" ; popts[2]="8/8/"  ; ropts[2]="/1"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
-           topts[1]="0:45:00"
+           topts[1]="1:00:00"
         fi
 
         scaling[1]=5; scaling[2]=10; scaling[3]=2
@@ -272,6 +327,10 @@ case $regtest in
             topts[1]="0:15:00" ; popts[1]="16/2/" ; ropts[1]="/1"
             topts[2]="0:15:00" ; popts[2]="16/4/" ; ropts[2]="/2"
             sub_cmd="sub_wcoss -a GDAS-T2O -d $PWD"
+        elif [[ "$machine" = "s4" ]]; then
+            topts[1]="0:25:00" ; popts[1]="32/2/" ; ropts[1]="/1"
+            topts[2]="0:25:00" ; popts[2]="32/4/" ; ropts[2]="/2"
+            sub_cmd="sub_s4"
         fi
 
         if [ "$debug" = ".true." ] ; then
@@ -320,4 +379,13 @@ elif [[ "$machine" = "WCOSS" ]]; then
    export MP_USE_BULK_XFER=yes
    export MP_BULK_MIN_MSG_SIZE=64k
    export APRUN="mpirun.lsf"
+elif [[ "$machine" = "s4" ]]; then
+   export APRUN="srun"
+   export MPI_BUFS_PER_PROC=2048
+   export MPI_BUFS_PER_HOST=2048
+   export MPI_GROUP_MAX=256
+   export MPI_MEMMAP_OFF=1
+   export MP_STDOUTMODE=ORDERED
+   export KMP_STACKSIZE=512MB 
+   export KMP_AFFINITY=scatter
 fi

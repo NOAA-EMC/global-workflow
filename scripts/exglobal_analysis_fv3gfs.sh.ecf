@@ -1,0 +1,1010 @@
+#!/bin/sh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exglobal_analysis_fv3gfs.sh.ecf.sh
+# Script description:  Makes a global model upper air analysis with GSI
+#
+# Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+#
+# Abstract: This script makes a global model analysis using the GSI
+#
+# $Id$
+#
+# Attributes:
+#   Language: POSIX shell
+#   Machine: WCOSS-Cray / Theia
+#
+################################################################################
+
+#  Set environment.
+export VERBOSE=${VERBOSE:-"YES"}
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXECUTING $0 $* >&2
+   set -x
+fi
+
+#  Directories.
+pwd=$(pwd)
+export NWPROD=${NWPROD:-$pwd}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
+export BASE_GSI=${BASE_GSI:-$NWPROD}
+export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+export GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
+export DATA=${DATA:-$pwd/analysis.$$}
+export COMIN=${COMIN:-$pwd}
+export COMIN_OBS=${COMIN_OBS:-$COMIN}
+export COMIN_GES=${COMIN_GES:-$COMIN}
+export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
+export COMOUT=${COMOUT:-$COMIN}
+
+# Utilities
+export NCP=${NCP:-"/bin/cp"}
+export NMV=${NMV:-"/bin/mv"}
+export NLN=${NLN:-"/bin/ln -sf"}
+export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
+export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+COMPRESS=${COMPRESS:-gzip}
+UNCOMPRESS=${UNCOMPRESS:-gunzip}
+APRUNCFP=${APRUNCFP:-""}
+APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
+NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
+
+# Dependent Scripts and Executables
+NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
+APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
+
+# OPS flags
+RUN=${RUN:-""}
+SENDECF=${SENDECF:-"NO"}
+SENDDBN=${SENDDBN:-"NO"}
+
+# Observations
+OPREFIX=${OPREFIX:-""}
+OSUFFIX=${OSUFFIX:-""}
+PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
+PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
+SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
+OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
+RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
+GSNDBF=${GSNDBF:-${COMIN_OBS}/${OPREFIX}goesnd.tm00.bufr_d${OSUFFIX}}
+GSNDBF1=${GSNDBF1:-${COMIN_OBS}/${OPREFIX}goesfv.tm00.bufr_d${OSUFFIX}}
+B1HRS2=${B1HRS2:-${COMIN_OBS}/${OPREFIX}1bhrs2.tm00.bufr_d${OSUFFIX}}
+B1MSU=${B1MSU:-${COMIN_OBS}/${OPREFIX}1bmsu.tm00.bufr_d${OSUFFIX}}
+B1HRS3=${B1HRS3:-${COMIN_OBS}/${OPREFIX}1bhrs3.tm00.bufr_d${OSUFFIX}}
+B1HRS4=${B1HRS4:-${COMIN_OBS}/${OPREFIX}1bhrs4.tm00.bufr_d${OSUFFIX}}
+B1AMUA=${B1AMUA:-${COMIN_OBS}/${OPREFIX}1bamua.tm00.bufr_d${OSUFFIX}}
+B1AMUB=${B1AMUB:-${COMIN_OBS}/${OPREFIX}1bamub.tm00.bufr_d${OSUFFIX}}
+B1MHS=${B1MHS:-${COMIN_OBS}/${OPREFIX}1bmhs.tm00.bufr_d${OSUFFIX}}
+ESHRS3=${ESHRS3:-${COMIN_OBS}/${OPREFIX}eshrs3.tm00.bufr_d${OSUFFIX}}
+ESAMUA=${ESAMUA:-${COMIN_OBS}/${OPREFIX}esamua.tm00.bufr_d${OSUFFIX}}
+ESAMUB=${ESAMUB:-${COMIN_OBS}/${OPREFIX}esamub.tm00.bufr_d${OSUFFIX}}
+ESMHS=${ESMHS:-${COMIN_OBS}/${OPREFIX}esmhs.tm00.bufr_d${OSUFFIX}}
+HRS3DB=${HRS3DB:-${COMIN_OBS}/${OPREFIX}hrs3db.tm00.bufr_d${OSUFFIX}}
+AMUADB=${AMUADB:-${COMIN_OBS}/${OPREFIX}amuadb.tm00.bufr_d${OSUFFIX}}
+AMUBDB=${AMUBDB:-${COMIN_OBS}/${OPREFIX}amubdb.tm00.bufr_d${OSUFFIX}}
+MHSDB=${MHSDB:-${COMIN_OBS}/${OPREFIX}mhsdb.tm00.bufr_d${OSUFFIX}}
+AIRSBF=${AIRSBF:-${COMIN_OBS}/${OPREFIX}airsev.tm00.bufr_d${OSUFFIX}}
+IASIBF=${IASIBF:-${COMIN_OBS}/${OPREFIX}mtiasi.tm00.bufr_d${OSUFFIX}}
+ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
+IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
+AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
+AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}}
+SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
+SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
+AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahi.tm00.bufr_d${OSUFFIX}}
+CRISBF=${CRISBF:-${COMIN_OBS}/${OPREFIX}cris.tm00.bufr_d${OSUFFIX}}
+ESCRIS=${ESCRIS:-${COMIN_OBS}/${OPREFIX}escris.tm00.bufr_d${OSUFFIX}}
+CRISDB=${CRISDB:-${COMIN_OBS}/${OPREFIX}crisdb.tm00.bufr_d${OSUFFIX}}
+CRISFSBF=${CRISFSBF:-${COMIN_OBS}/${OPREFIX}crisfs.tm00.bufr_d${OSUFFIX}}
+ESCRISFS=${ESCRISFS:-${COMIN_OBS}/${OPREFIX}escrisfs.tm00.bufr_d${OSUFFIX}}
+CRISFSDB=${CRISFSDB:-${COMIN_OBS}/${OPREFIX}crisfsdb.tm00.bufr_d${OSUFFIX}}
+ATMSBF=${ATMSBF:-${COMIN_OBS}/${OPREFIX}atms.tm00.bufr_d${OSUFFIX}}
+ESATMS=${ESATMS:-${COMIN_OBS}/${OPREFIX}esatms.tm00.bufr_d${OSUFFIX}}
+ATMSDB=${ATMSDB:-${COMIN_OBS}/${OPREFIX}atmsdb.tm00.bufr_d${OSUFFIX}}
+SSMITBF=${SSMITBF:-${COMIN_OBS}/${OPREFIX}ssmit.tm00.bufr_d${OSUFFIX}}
+SSMISBF=${SSMISBF:-${COMIN_OBS}/${OPREFIX}ssmisu.tm00.bufr_d${OSUFFIX}}
+SBUVBF=${SBUVBF:-${COMIN_OBS}/${OPREFIX}osbuv8.tm00.bufr_d${OSUFFIX}}
+GOMEBF=${GOMEBF:-${COMIN_OBS}/${OPREFIX}gome.tm00.bufr_d${OSUFFIX}}
+OMIBF=${OMIBF:-${COMIN_OBS}/${OPREFIX}omi.tm00.bufr_d${OSUFFIX}}
+MLSBF=${MLSBF:-${COMIN_OBS}/${OPREFIX}mls.tm00.bufr_d${OSUFFIX}}
+SMIPCP=${SMIPCP:-${COMIN_OBS}/${OPREFIX}spssmi.tm00.bufr_d${OSUFFIX}}
+TMIPCP=${TMIPCP:-${COMIN_OBS}/${OPREFIX}sptrmm.tm00.bufr_d${OSUFFIX}}
+GPSROBF=${GPSROBF:-${COMIN_OBS}/${OPREFIX}gpsro.tm00.bufr_d${OSUFFIX}}
+TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
+NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr.tm00.bufr_d${OSUFFIX}}
+B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
+B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
+
+# Guess files
+GPREFIX=${GPREFIX:-""}
+GSUFFIX=${GSUFFIX:-""}
+SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
+SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
+SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
+SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006${GSUFFIX}}
+SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007${GSUFFIX}}
+SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008${GSUFFIX}}
+SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009${GSUFFIX}}
+ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
+ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
+ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
+ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
+ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
+ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
+ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
+NSTG03=${NSTG03:-${COMIN_GES}/${GPREFIX}nstf003${GSUFFIX}}
+NSTG04=${NSTG04:-${COMIN_GES}/${GPREFIX}nstf004${GSUFFIX}}
+NSTG05=${NSTG05:-${COMIN_GES}/${GPREFIX}nstf005${GSUFFIX}}
+NSTGES=${NSTGES:-${COMIN_GES}/${GPREFIX}nstf006${GSUFFIX}}
+NSTG07=${NSTG07:-${COMIN_GES}/${GPREFIX}nstf007${GSUFFIX}}
+NSTG08=${NSTG08:-${COMIN_GES}/${GPREFIX}nstf008${GSUFFIX}}
+NSTG09=${NSTG09:-${COMIN_GES}/${GPREFIX}nstf009${GSUFFIX}}
+GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
+GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
+GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
+GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
+
+# Analysis files
+APREFIX=${APREFIX:-""}
+ASUFFIX=${ASUFFIX:-""}
+SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
+NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}
+ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
+ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
+ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
+ABIASe=${ABIASe:-${COMOUT}/${APREFIX}abias_int}
+RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
+GSISTAT=${GSISTAT:-${COMOUT}/${APREFIX}gsistat}
+PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
+CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
+OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
+
+# Obs diag
+RUN_SELECT=${RUN_SELECT:-"NO"}
+USE_SELECT=${USE_SELECT:-"NO"}
+SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
+DIAG_SUFFIX=${DIAG_SUFFIX:-""}
+DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
+DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
+USE_CFP=${USE_CFP:-"NO"}
+
+# Set script / GSI control parameters
+DOHYBVAR=${DOHYBVAR:-"NO"}
+NMEM_ENKF=${NMEM_ENKF:-0}
+NST_GSI=${NST_GSI:-0}
+NSTINFO=${NSTINFO:-0}
+ZSEA1=${ZSEA1:-0}
+ZSEA2=${ZSEA2:-0}
+FAC_DTL=${FAC_DTL:-0}
+FAC_TSL=${FAC_TSL:-0}
+TZR_QC=${TZR_QC:-0}
+USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
+DOIAU=${DOIAU:-"NO"}
+DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
+
+# Get header information from Guess files
+JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+
+# Get header information from Ensemble Guess files
+if [ $DOHYBVAR = "YES" ]; then
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
+   ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
+   JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
+   NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
+fi
+
+# Set analysis resolution information
+if [ $DOHYBVAR = "YES" ]; then
+   JCAP_A=${JCAP_A:-${JCAP_ENKF:-$JCAP}}
+   LONA=${LONA:-${LONB_ENKF:-$LONB}}
+   LATA=${LATA:-${LATB_ENKF:-$LATB}}
+else
+   JCAP_A=${JCAP_A:-$JCAP}
+   LONA=${LONA:-$LONB}
+   LATA=${LATA:-$LATB}
+fi
+NLON_A=${NLON_A:-$LONA}
+NLAT_A=${NLAT_A:-$(($LATA+2))}
+
+DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
+CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
+
+# GSI Fix files
+RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
+BERROR=${BERROR:-${FIX_GSI}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
+ATMSFILTER=${ATMSFILTER:-${FIX_GSI}/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIX_GSI}/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
+INSITUINFO=${INSITUINFO:-${FIX_GSI}/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIX_GSI}/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIX_GSI}/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIX_GSI}/prepobs_errtable.global}
+
+# GSI namelist
+SETUP=${SETUP:-""}
+GRIDOPTS=${GRIDOPTS:-""}
+BKGVERR=${BKGVERR:-""}
+ANBKGERR=${ANBKGERR:-""}
+JCOPTS=${JCOPTS:-""}
+STRONGOPTS=${STRONGOPTS:-""}
+OBSQC=${OBSQC:-""}
+OBSINPUT=${OBSINPUT:-""}
+SUPERRAD=${SUPERRAD:-""}
+SINGLEOB=${SINGLEOB:-""}
+LAGDATA=${LAGDATA:-""}
+HYBRID_ENSEMBLE=${HYBRID_ENSEMBLE:-""}
+RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
+CHEM=${CHEM:-""}
+NST=${NST:-""}
+
+# GSI Namelist parameters
+lrun_subdirs=${lrun_subdirs:-".true."}
+if [ $DOHYBVAR = "YES" ]; then
+   l_hyb_ens=.true.
+   l4densvar=${l4densvar:-".false."}
+   lwrite4danl=${lwrite4danl:-".false."}
+else
+   l_hyb_ens=.false.
+   l4densvar=.false.
+   lwrite4danl=.false.
+fi
+
+# Set 4D-EnVar specific variables
+if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
+   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
+   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
+   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
+   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
+   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
+fi
+
+################################################################################
+#  Preprocessing
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+cd $DATA || exit 99
+
+################################################################################
+# Clean the run-directory
+rm berror_stats hybens_info
+rm scaninfo satbias_angle satinfo
+rm anavinfo convinfo ozinfo pcpinfo aeroinfo
+rm errtable atms_beamwidth.txt
+
+rm prepbufr prepbufr_profl
+rm gpsrobufr
+rm tcvitl
+rm gsndrbufr gsnd1bufr
+rm ssmisbufr ssmitbufr ssmirrbufr tmirrbufr
+rm sbuvbufr gomebufr omibufr mlsbufr msubufr
+rm airsbufr
+rm iasibufr iasibufrears iasibufr_db
+rm amsrebufr amsr2bufr
+rm gmibufr saphirbufr
+rm hirs2bufr hirs3bufr hirs4bufr hirs3bufr_db hirs3bufrears
+rm amsuabufr amsuabufr_db amsuabufrears
+rm amsubbufr amsubbufr_db amsubbufrears
+rm mhsbufr mhsbufr_db mhsbufrears
+rm seviribufr ahibufr
+rm crisbufr crisbufrears crisbufr_db crisfsbufr crisfsbufrears crisfsbufr_db
+rm atmsbufr atmsbufr_db atmsbufrears
+
+rm satbias_in satbias_ang.in satbias_out satbias_pc satbias_pc.out satbias_out.int
+rm aircftbias_in aircftbias_out
+
+rm sfcf* sigf* nstf*
+rm sfca* siga* nsta*
+
+rm gsiparm.anl
+
+rm -rf dir*
+rm -rf crtm_coeffs
+rm -rf ensemble_data
+
+##############################################################
+# Fixed files
+$NLN $BERROR       berror_stats
+$NLN $SATANGL      satbias_angle
+$NLN $SATINFO      satinfo
+$NLN $ATMSFILTER   atms_beamwidth.txt
+$NLN $ANAVINFO     anavinfo
+$NLN $CONVINFO     convinfo
+$NLN $INSITUINFO   insituinfo
+$NLN $OZINFO       ozinfo
+$NLN $PCPINFO      pcpinfo
+$NLN $AEROINFO     aeroinfo
+$NLN $SCANINFO     scaninfo
+$NLN $HYBENSINFO   hybens_info
+$NLN $OBERROR      errtable
+
+##############################################################
+# CRTM Spectral and Transmittance coefficients
+mkdir -p crtm_coeffs
+for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
+   $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/
+   $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/
+done
+
+$NLN $RTMFIX/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
+$NLN $RTMFIX/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
+$NLN $RTMFIX/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
+$NLN $RTMFIX/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
+$NLN $RTMFIX/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
+
+##############################################################
+# Observational data
+$NLN $PREPQC           prepbufr
+$NLN $PREPQCPF         prepbufr_profl
+$NLN $SATWND           satwndbufr
+$NLN $OSCATBF          oscatbufr
+$NLN $RAPIDSCATBF      rapidscatbufr
+$NLN $GSNDBF           gsndrbufr
+$NLN $GSNDBF1          gsnd1bufr
+$NLN $B1HRS2           hirs2bufr
+$NLN $B1MSU            msubufr
+$NLN $B1HRS3           hirs3bufr
+$NLN $B1HRS4           hirs4bufr
+$NLN $B1AMUA           amsuabufr
+$NLN $B1AMUB           amsubbufr
+$NLN $B1MHS            mhsbufr
+$NLN $ESHRS3           hirs3bufrears
+$NLN $ESAMUA           amsuabufrears
+$NLN $ESAMUB           amsubbufrears
+#$NLN $ESMHS            mhsbufrears
+$NLN $HRS3DB           hirs3bufr_db
+$NLN $AMUADB           amsuabufr_db
+$NLN $AMUBDB           amsubbufr_db
+#$NLN $MHSDB            mhsbufr_db
+$NLN $SBUVBF           sbuvbufr
+$NLN $GOMEBF           gomebufr
+$NLN $OMIBF            omibufr
+$NLN $MLSBF            mlsbufr
+$NLN $SMIPCP           ssmirrbufr
+$NLN $TMIPCP           tmirrbufr
+$NLN $AIRSBF           airsbufr
+$NLN $IASIBF           iasibufr
+$NLN $ESIASI           iasibufrears
+$NLN $IASIDB           iasibufr_db
+$NLN $AMSREBF          amsrebufr
+$NLN $AMSR2BF          amsr2bufr
+$NLN $GMI1CRBF         gmibufr
+$NLN $SAPHIRBF         saphirbufr
+$NLN $SEVIRIBF         seviribufr
+$NLN $CRISBF           crisbufr
+#$NLN $ESCRIS           crisbufrears
+$NLN $CRISDB           crisbufr_db
+#$NLN $CRISFSBF         crisfsbufr
+#$NLN $ESCRISFS         crisfsbufrears
+#$NLN $CRISFSDB         crisfsbufr_db
+$NLN $ATMSBF           atmsbufr
+#$NLN $ESATMS           atmsbufrears
+$NLN $ATMSDB           atmsbufr_db
+$NLN $SSMITBF          ssmitbufr
+$NLN $SSMISBF          ssmisbufr
+$NLN $GPSROBF          gpsrobufr
+$NLN $TCVITL           tcvitl
+$NLN $NSSTBF           nsstbufr
+$NLN $B1AVHAM          avhambufr
+$NLN $B1AVHPM          avhpmbufr
+$NLN $AHIBF            ahibufr
+
+##############################################################
+# Required bias guess files
+$NLN $GBIAS    satbias_in
+$NLN $GBIASPC  satbias_pc
+$NLN $GBIASAIR aircftbias_in
+$NLN $GRADSTAT radstat.gdas
+
+##############################################################
+# Required model guess files
+$NLN $ATMG03   sigf03
+$NLN $ATMGES   sigf06
+$NLN $ATMG09   sigf09
+
+$NLN $SFCG03   sfcf03
+$NLN $SFCGES   sfcf06
+$NLN $SFCG09   sfcf09
+
+if [ $NST_GSI -gt 0 ]; then
+   $NLN $NSTG03   nstf03
+   $NLN $NSTGES   nstf06
+   $NLN $NSTG09   nstf09
+   if [ $NST_GSI -eq 3 ]; then
+      $NLN $SFCGCY  sfcgcy
+   else
+      $NLN $SFCANL  sfcgcy # $SFCANL is no longer created before GSI is executed!
+   fi
+fi
+
+if [ $DOHYBVAR = "YES" ]; then
+
+   # Link ensemble members
+   mkdir -p ensemble_data
+
+   ENKF_SUFFIX=""
+   if [ $SMOOTH_ENKF = "YES" ]; then
+      ENKF_SUFFIX="s"
+   fi
+
+   fhrs="06"
+   if [ $l4densvar = ".true." ]; then
+      fhrs="03 04 05 06 07 08 09"
+   fi
+
+   for imem in `seq 1 $NMEM_ENKF`; do
+      memchar="mem"`printf %03i $imem`
+      for fhr in $fhrs; do
+         $NLN ${COMIN_GES_ENS}/$memchar/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_$memchar
+      done
+   done
+
+   # Link hourly backgrounds for 4DHybrid
+   if [ $l4densvar = ".true." ]; then
+      $NLN $ATMG04   sigf04
+      $NLN $ATMG05   sigf05
+      $NLN $ATMG07   sigf07
+      $NLN $ATMG08   sigf08
+
+      $NLN $SFCG04   sfcf04
+      $NLN $SFCG05   sfcf05
+      $NLN $SFCG07   sfcf07
+      $NLN $SFCG08   sfcf08
+
+      if [ $NST_GSI -gt 0 ]; then
+         $NLN $NSTG04   nstf04
+         $NLN $NSTG05   nstf05
+         $NLN $NSTG07   nstf07
+         $NLN $NSTG08   nstf08
+      fi
+   fi
+
+fi
+
+##############################################################
+# Handle inconsistent surface mask between background, ensemble and analysis grids
+if [ $JCAP != $JCAP_A ]; then
+   if [ $DOHYBVAR = "YES" && $JCAP_A = $JCAP_ENKF ]; then
+      if [ -e $SFCGES_ENSMEAN ]; then
+         USE_READIN_ANL_SFCMASK=.true.
+         $NLN $SFCGES_ENSMEAN sfcf06_anlgrid
+      else
+         echo "Warning: Inconsistent sfc mask between analysis and ensemble grids, GSI will interpolate"
+      fi
+    else
+      echo "Warning: Inconsistent sfc mask between analysis and background grids, GSI will interpolate"
+   fi
+fi
+
+##############################################################
+# Output files
+# $SFCANL is no longer created here since global_cycle is not called
+$NLN $ATMANL siganl
+if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+   $NLN $ATMA03   siga03
+   $NLN $ATMA04   siga04
+   $NLN $ATMA05   siga05
+   $NLN $ATMA07   siga07
+   $NLN $ATMA08   siga08
+   $NLN $ATMA09   siga09
+fi
+$NLN $ABIAS    satbias_out
+$NLN $ABIASPC  satbias_pc.out
+$NLN $ABIASAIR aircftbias_out
+
+if [ $NST_GSI -gt 0 ] ; then
+   $NLN $NSTANL nstanl
+   $NLN $SFCTSK sfctsk
+   if [ $DOHYBVAR = "YES" ]; then
+      $NLN $DTFANL dtfanl
+   fi
+   if [ $NST_GSI -eq 3 ] ; then
+      $NLN $SFCANL sfcanl
+   fi
+fi
+
+# If requested, link and de-tar obs_input
+if [ $USE_SELECT = "YES" ]; then
+  rm obs_input*
+  $NLN $SELECT_OBS obs_input.tar
+  tar -xvf obs_input.tar
+fi
+
+##############################################################
+# If requested, copy and de-tar guess radstat file
+if [ $USE_CFP = "YES" ]; then
+   rm $DATA/unzip.sh $DATA/mp_unzip.sh
+cat > $DATA/unzip.sh << EOFunzip
+#!/bin/sh
+   diag_file=\$1
+   fname=\$(echo \$diag_file | cut -d'.' -f1)
+   fdate=\$(echo \$diag_file | cut -d'.' -f2)
+   $UNCOMPRESS \$diag_file
+   fnameges=\$(echo \$fname | sed 's/_ges//g')
+   $NMV \$fname.\$fdate \$fnameges
+EOFunzip
+   chmod 755 $DATA/unzip.sh
+fi
+
+listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+for type in $listdiag; do
+   diag_file=`echo $type | cut -d',' -f1`
+   if [ $USE_CFP = "YES" ] ; then
+      echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
+   else
+      fname=`echo $diag_file | cut -d'.' -f1`
+      date=`echo $diag_file | cut -d'.' -f2`
+      $UNCOMPRESS $diag_file
+      fnameges=$(echo $fname|sed 's/_ges//g')
+      $NMV $fname.$date $fnameges
+   fi
+done
+
+if [ $USE_CFP = "YES" ] ; then
+   chmod 755 $DATA/mp_unzip.sh
+   ncmd=`cat $DATA/mp_unzip.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
+      $APRUNCFP_UNZIP $DATA/mp_unzip.sh
+   fi
+fi
+
+##############################################################
+# GSI Namelist options
+if [ $DOHYBVAR = "YES" ]; then
+   HYBRID_ENSEMBLE="n_ens=$NMEM_ENKF,jcap_ens=$JCAP_ENKF,nlat_ens=$NLAT_ENKF,nlon_ens=$NLON_ENKF,jcap_ens_test=$JCAP_ENKF,$HYBRID_ENSEMBLE"
+   if [ $l4densvar = ".true." ]; then
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,nhr_obsbin=1,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
+      JCOPTS="ljc4tlevs=.true.,$JCOPTS"
+      STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
+      OBSQC="c_varqc=0.04,$OBSQC"
+   fi
+fi
+
+if [ $NST_GSI -gt 0 ]; then
+   NST="nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,zsea1=$ZSEA1,zsea2=$ZSEA2,$NST"
+fi
+
+##############################################################
+# Create global_gsi namelist
+cat <<EOF > gsiparm.anl
+&SETUP
+  miter=2,
+  niter(1)=100,niter(2)=100,
+  niter_no_qc(1)=50,niter_no_qc(2)=0,
+  write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
+  qoption=2,
+  gencode=${IGEN:-0},deltim=$DELTIM,
+  factqmin=5.0,factqmax=0.005,
+  iguess=-1,
+  tzr_qc=$TZR_QC,
+  oneobtest=.false.,retrieval=.false.,l_foto=.false.,
+  use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
+  use_gfs_nemsio=.true.,
+  use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
+  lrun_subdirs=${lrun_subdirs},
+  crtm_coeffs_path='./crtm_coeffs/',
+  newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
+  diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=3,
+  cwoption=3,
+  $SETUP
+/
+&GRIDOPTS
+  JCAP_B=$JCAP,JCAP=$JCAP_A,NLAT=$NLAT_A,NLON=$NLON_A,nsig=$LEVS,
+  regional=.false.,nlayers(63)=3,nlayers(64)=6,
+  $GRIDOPTS
+/
+&BKGERR
+  vs=0.7,
+  hzscl=1.7,0.8,0.5,
+  hswgt=0.45,0.3,0.25,
+  bw=0.0,norsp=4,
+  bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
+  bkgv_write=.false.,
+  cwcoveqqcov=.false.,
+  $BKGVERR
+/
+&ANBKGERR
+  anisotropic=.false.,
+  $ANBKGERR
+/
+&JCOPTS
+  ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=5.0e7,
+  $JCOPTS
+/
+&STRONGOPTS
+  tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
+  $STRONGOPTS
+/
+&OBSQC
+  dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
+  use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.,
+  aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
+  $OBSQC
+/
+&OBS_INPUT
+  dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,time_window_max=3.0,
+  $OBSINPUT
+/
+OBS_INPUT::
+!  dfile          dtype       dplat       dsis                dval    dthin dsfcalc
+   prepbufr       ps          null        ps                  0.0     0     0
+   prepbufr       t           null        t                   0.0     0     0
+   prepbufr_profl t           null        t                   0.0     0     0
+   prepbufr       q           null        q                   0.0     0     0
+   prepbufr_profl q           null        q                   0.0     0     0
+   prepbufr       pw          null        pw                  0.0     0     0
+   prepbufr       uv          null        uv                  0.0     0     0
+   prepbufr_profl uv          null        uv                  0.0     0     0
+   satwndbufr     uv          null        uv                  0.0     0     0
+   prepbufr       spd         null        spd                 0.0     0     0
+   prepbufr       dw          null        dw                  0.0     0     0
+   radarbufr      rw          null        rw                  0.0     0     0
+   nsstbufr       sst         nsst        sst                 0.0     0     0
+   gpsrobufr      gps_bnd     null        gps                 0.0     0     0
+   ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi            0.0    -1     0
+   tmirrbufr      pcp_tmi     trmm        pcp_tmi             0.0    -1     0
+   sbuvbufr       sbuv2       n16         sbuv8_n16           0.0     0     0
+   sbuvbufr       sbuv2       n17         sbuv8_n17           0.0     0     0
+   sbuvbufr       sbuv2       n18         sbuv8_n18           0.0     0     0
+   hirs3bufr      hirs3       n17         hirs3_n17           0.0     1     0
+   hirs4bufr      hirs4       metop-a     hirs4_metop-a       0.0     1     1
+   gimgrbufr      goes_img    g11         imgr_g11            0.0     1     0
+   gimgrbufr      goes_img    g12         imgr_g12            0.0     1     0
+   airsbufr       airs        aqua        airs_aqua           0.0     1     1
+   amsuabufr      amsua       n15         amsua_n15           0.0     1     1
+   amsuabufr      amsua       n18         amsua_n18           0.0     1     1
+   amsuabufr      amsua       metop-a     amsua_metop-a       0.0     1     1
+   airsbufr       amsua       aqua        amsua_aqua          0.0     1     1
+   amsubbufr      amsub       n17         amsub_n17           0.0     1     1
+   mhsbufr        mhs         n18         mhs_n18             0.0     1     1
+   mhsbufr        mhs         metop-a     mhs_metop-a         0.0     1     1
+   ssmitbufr      ssmi        f15         ssmi_f15            0.0     1     0
+   amsrebufr      amsre_low   aqua        amsre_aqua          0.0     1     0
+   amsrebufr      amsre_mid   aqua        amsre_aqua          0.0     1     0
+   amsrebufr      amsre_hig   aqua        amsre_aqua          0.0     1     0
+   ssmisbufr      ssmis       f16         ssmis_f16           0.0     1     0
+   ssmisbufr      ssmis       f17         ssmis_f17           0.0     1     0
+   ssmisbufr      ssmis       f18         ssmis_f18           0.0     1     0
+   ssmisbufr      ssmis       f19         ssmis_f19           0.0     1     0
+   gsnd1bufr      sndrd1      g12         sndrD1_g12          0.0     1     0
+   gsnd1bufr      sndrd2      g12         sndrD2_g12          0.0     1     0
+   gsnd1bufr      sndrd3      g12         sndrD3_g12          0.0     1     0
+   gsnd1bufr      sndrd4      g12         sndrD4_g12          0.0     1     0
+   gsnd1bufr      sndrd1      g11         sndrD1_g11          0.0     1     0
+   gsnd1bufr      sndrd2      g11         sndrD2_g11          0.0     1     0
+   gsnd1bufr      sndrd3      g11         sndrD3_g11          0.0     1     0
+   gsnd1bufr      sndrd4      g11         sndrD4_g11          0.0     1     0
+   gsnd1bufr      sndrd1      g13         sndrD1_g13          0.0     1     0
+   gsnd1bufr      sndrd2      g13         sndrD2_g13          0.0     1     0
+   gsnd1bufr      sndrd3      g13         sndrD3_g13          0.0     1     0
+   gsnd1bufr      sndrd4      g13         sndrD4_g13          0.0     1     0
+   iasibufr       iasi        metop-a     iasi_metop-a        0.0     1     1
+   gomebufr       gome        metop-a     gome_metop-a        0.0     2     0
+   omibufr        omi         aura        omi_aura            0.0     2     0
+   sbuvbufr       sbuv2       n19         sbuv8_n19           0.0     0     0
+   hirs4bufr      hirs4       n19         hirs4_n19           0.0     1     1
+   amsuabufr      amsua       n19         amsua_n19           0.0     1     1
+   mhsbufr        mhs         n19         mhs_n19             0.0     1     1
+   tcvitl         tcp         null        tcp                 0.0     0     0
+   seviribufr     seviri      m08         seviri_m08          0.0     1     0
+   seviribufr     seviri      m09         seviri_m09          0.0     1     0
+   seviribufr     seviri      m10         seviri_m10          0.0     1     0
+   hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
+   amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
+   mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
+   iasibufr       iasi        metop-b     iasi_metop-b        0.0     1     1
+   gomebufr       gome        metop-b     gome_metop-b        0.0     2     0
+   atmsbufr       atms        npp         atms_npp            0.0     1     0
+   crisbufr       cris        npp         cris_npp            0.0     1     0
+   crisfsbufr     cris-fsr    npp         cris-fsr_npp        0.0     1     0
+   gsnd1bufr      sndrd1      g14         sndrD1_g14          0.0     1     0
+   gsnd1bufr      sndrd2      g14         sndrD2_g14          0.0     1     0
+   gsnd1bufr      sndrd3      g14         sndrD3_g14          0.0     1     0
+   gsnd1bufr      sndrd4      g14         sndrD4_g14          0.0     1     0
+   gsnd1bufr      sndrd1      g15         sndrD1_g15          0.0     1     0
+   gsnd1bufr      sndrd2      g15         sndrD2_g15          0.0     1     0
+   gsnd1bufr      sndrd3      g15         sndrD3_g15          0.0     1     0
+   gsnd1bufr      sndrd4      g15         sndrD4_g15          0.0     1     0
+   oscatbufr      uv          null        uv                  0.0     0     0
+   mlsbufr        mls30       aura        mls30_aura          0.0     0     0
+   avhambufr      avhrr       metop-a     avhrr3_metop-a      0.0     1     0
+   avhpmbufr      avhrr       n18         avhrr3_n18          0.0     1     0
+   amsr2bufr      amsr2       gcom-w1     amsr2_gcom-w1       0.0     3     0
+   gmibufr        gmi         gpm         gmi_gpm             0.0     3     0
+   saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
+   ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
+   rapidscatbufr  uv          null        uv                  0.0     0     0
+::
+&SUPEROB_RADAR
+  $SUPERRAD
+/
+&LAG_DATA
+  $LAGDATA
+/
+&HYBRID_ENSEMBLE
+  l_hyb_ens=$l_hyb_ens,
+  generate_ens=.false.,
+  beta_s0=0.125,readin_beta=.false.,
+  s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
+  aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
+  ensemble_path='./ensemble_data/',
+  $HYBRID_ENSEMBLE
+/
+&RAPIDREFRESH_CLDSURF
+  dfi_radar_latent_heat_time_period=30.0,
+  $RAPIDREFRESH_CLDSURF
+/
+&CHEM
+  $CHEM
+/
+&SINGLEOB_TEST
+  maginnov=0.1,magoberr=0.1,oneob_type='t',
+  oblat=45.,oblon=180.,obpres=1000.,obdattim=$CDATE,
+  obhourset=0.,
+  $SINGLEOB
+/
+&NST
+  nst_gsi=$NST_GSI,
+  $NST
+/
+EOF
+
+##############################################################
+#  Make atmospheric analysis
+$NCP $GSIEXEC $DATA/gsi.x
+export OMP_NUM_THREADS=$NTHREADS_GSI
+$APRUN_GSI ${DATA}/gsi.x 1>&1 2>&2
+
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit 2
+
+##############################################################
+# Calculate analysis increment here before releasing FV3 forecast
+if [ $DO_CALC_INCREMENT = "YES" ]; then
+  if [ $DOIAU = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+     ncmd=7
+     $NLN sigf03 atmges_mem001 ; $NLN siga03 atmanl_mem001 ; $NLN ${COMOUT}/${APREFIX}atmi003.nc atminc_mem001
+     $NLN sigf04 atmges_mem002 ; $NLN siga04 atmanl_mem002 ; $NLN ${COMOUT}/${APREFIX}atmi004.nc atminc_mem002
+     $NLN sigf05 atmges_mem003 ; $NLN siga05 atmanl_mem003 ; $NLN ${COMOUT}/${APREFIX}atmi005.nc atminc_mem003
+     $NLN sigf06 atmges_mem004 ; $NLN siganl atmanl_mem004 ; $NLN ${COMOUT}/${APREFIX}atminc.nc  atminc_mem004
+     $NLN sigf07 atmges_mem005 ; $NLN siga07 atmanl_mem005 ; $NLN ${COMOUT}/${APREFIX}atmi007.nc atminc_mem005
+     $NLN sigf08 atmges_mem006 ; $NLN siga08 atmanl_mem006 ; $NLN ${COMOUT}/${APREFIX}atmi008.nc atminc_mem006
+     $NLN sigf09 atmges_mem007 ; $NLN siga09 atmanl_mem007 ; $NLN ${COMOUT}/${APREFIX}atmi009.nc atminc_mem007
+  else
+     ncmd=1
+     $NLN sigf06 atmges_mem001 ; $NLN siganl atmanl_mem001 ; $NLN ${COMOUT}/${APREFIX}atminc.nc  atminc_mem001
+  fi
+
+  export OMP_NUM_THREADS=$NTHREADS_CALCINC
+  $NCP $CALCINCEXEC $DATA
+
+  APRUN=$(eval echo $APRUN_CALCINC)
+  DATAPATH="./"
+  ATMANLFNAME="atmanl"
+  ATMGESFNAME="atmges"
+  ATMINCFNAME="atminc"
+  DEBUG_CALCINC=".false."
+  $APRUN $DATA/$(basename $CALCINCEXEC) $DATAPATH $ATMANLFNAME $ATMGESFNAME $ATMINCFNAME $DEBUG_CALCINC $ncmd
+  rc=$?
+
+  export ERR=$rc
+  export err=$ERR
+  $ERRSCRIPT || exit 3
+fi
+
+##############################################################
+# For eupd
+if [ -s satbias_out.int ]; then
+   $NCP satbias_out.int $ABIASe
+else
+   $NCP satbias_in $ABIASe
+fi
+
+##############################################################
+# Add this statement to release the forecast job once the GSI
+# step is completed.  Do not release forecast when RUN=enkf
+##############################################################
+if [ $SENDECF = "YES" -a "$RUN" != "enkf" ]; then
+   ecflow_client --event release_fcst
+fi
+
+# We should already be in $DATA, but extra cd to be sure.
+cd $DATA
+
+# Cat runtime output files.
+cat fort.2* > $GSISTAT
+
+# If requested, create obs_input tarball
+if [ $RUN_SELECT = "YES" ]; then
+  echo $(date) START tar obs_input >&2
+  rm obs_input.tar
+  $NLN $SELECT_OBS obs_input.tar
+  tar -cvf obs_input.tar obs_input*
+  chmod 750 $SELECT_OBS
+  ${CHGRP_CMD} $SELECT_OBS
+  echo $(date) END tar obs_input >&2
+fi
+
+# Set up lists and variables for various types of diagnostic files.
+ntype=3
+
+diagtype[0]="conv"
+diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
+diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
+diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp atms_npp hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
+
+diaglist[0]=listcnv
+diaglist[1]=listpcp
+diaglist[2]=listozn
+diaglist[3]=listrad
+
+diagfile[0]=$CNVSTAT
+diagfile[1]=$PCPSTAT
+diagfile[2]=$OZNSTAT
+diagfile[3]=$RADSTAT
+
+numfile[0]=0
+numfile[1]=0
+numfile[2]=0
+numfile[3]=0
+
+# Set diagnostic file prefix based on lrun_subdirs variable
+if [ $lrun_subdirs = ".true." ]; then
+   prefix=" dir.*/"
+else
+   prefix="pe*"
+fi
+
+if [ $USE_CFP = "YES" ]; then
+   rm $DATA/diag.sh $DATA/mp_diag.sh
+   cat > $DATA/diag.sh << EOFdiag
+#!/bin/sh
+lrun_subdirs=\$1
+type=\$2
+loop=\$3
+string=\$4
+CDATE=\$5
+DIAG_COMPRESS=\$6
+DIAG_SUFFIX=\$7
+if [ \$lrun_subdirs = ".true." ]; then
+   prefix=" dir.*/"
+else
+   prefix="pe*"
+fi
+file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
+cat \${prefix}\${type}_\${loop}* > \$file
+if [ \$DIAG_COMPRESS = "YES" ]; then
+   $COMPRESS \$file
+fi
+EOFdiag
+   chmod 755 $DATA/diag.sh
+fi
+
+# Collect diagnostic files as a function of loop and type.
+# Loop over first and last outer loops to generate innovation
+# diagnostic files for indicated observation types (groups)
+#
+# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+#        loop 03 will contain innovations with respect to
+#        the analysis.  Creation of o-a innovation files
+#        is triggered by write_diag(3)=.true.  The setting
+#        write_diag(1)=.true. turns on creation of o-g
+#        innovation files.
+
+loops="01 03"
+for loop in $loops; do
+   case $loop in
+      01) string=ges;;
+      03) string=anl;;
+       *) string=$loop;;
+   esac
+   echo $(date) START loop $string >&2
+   n=-1
+   while [ $((n+=1)) -le $ntype ] ;do
+      for type in `echo ${diagtype[n]}`; do
+         count=`ls ${prefix}${type}_${loop}* | wc -l`
+         if [ $count -gt 0 ]; then
+            if [ $USE_CFP = "YES" ]; then
+               echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+            else
+               cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+            fi
+            echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
+            numfile[n]=`expr ${numfile[n]} + 1`
+         fi
+      done
+   done
+   echo $(date) END loop $string >&2
+done
+
+# We should already be in $DATA, but extra cd to be sure.
+cd $DATA
+
+# If requested, compress diagnostic files
+if [ $DIAG_COMPRESS = "YES" -a $USE_CFP = "NO" ]; then
+   echo $(date) START $COMPRESS diagnostic files >&2
+   for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
+      $COMPRESS $file
+   done
+   echo $(date) END $COMPRESS diagnostic files >&2
+fi
+
+if [ $USE_CFP = "YES" ] ; then
+   chmod 755 $DATA/mp_diag.sh
+   ncmd=`cat $DATA/mp_diag.sh | wc -l`
+   if [ $ncmd -gt 0 ]; then
+      APRUNCFP_DIAG=$(eval echo $APRUNCFP)
+      $APRUNCFP_DIAG $DATA/mp_diag.sh
+   fi
+fi
+
+# If requested, create diagnostic file tarballs
+if [ $DIAG_TARBALL = "YES" ]; then
+   echo $(date) START tar diagnostic files >&2
+   n=-1
+   while [ $((n+=1)) -le $ntype ] ;do
+      TAROPTS="-uvf"
+      if [ ! -s ${diagfile[n]} ]; then
+         TAROPTS="-cvf"
+      fi
+      if [ ${numfile[n]} -gt 0 ]; then
+         tar $TAROPTS ${diagfile[n]} `cat ${diaglist[n]}`
+      fi
+   done
+
+   # Restrict CNVSTAT
+   chmod 750 $CNVSTAT
+   ${CHGRP_CMD} $CNVSTAT
+
+   # Restrict RADSTAT
+   chmod 750 $RADSTAT
+   ${CHGRP_CMD} $RADSTAT
+
+   echo $(date) END tar diagnostic files >&2
+fi
+
+################################################################################
+# Send alerts
+if [ $SENDDBN = "YES" ]; then
+    if [ $RUN = "gdas" ]; then
+       $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
+    fi
+    if [ $RUN = "gfs" ]; then
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${APREFIX}abias
+    fi
+fi
+
+################################################################################
+# Postprocessing
+cd $pwd
+[[ ${KEEPDATA:-"NO"} = "NO" ]]&&rm -rf $DATA
+
+set +x
+if [ $VERBOSE = "YES" ]; then
+   echo $(date) EXITING $0 with return code $err >&2
+fi
+exit $err

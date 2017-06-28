@@ -322,6 +322,17 @@ $ncp $global_4denvar_T670_datobs/esamub.gdas.$global_4denvar_T670_adate         
 $ncp $global_4denvar_T670_datobs/eshrs3.gdas.$global_4denvar_T670_adate                 ./hirs3bufrears
 $ncp $global_4denvar_T670_datobs/avcsam.gdas.$global_4denvar_T670_adate                 ./avhambufr
 $ncp $global_4denvar_T670_datobs/avcspm.gdas.$global_4denvar_T670_adate                 ./avhpmbufr
+$ncp $global_4denvar_T670_datobs/esiasi.gdas.$global_4denvar_T670_adate                 ./iasibufrears
+$ncp $global_4denvar_T670_datobs/iasidb.gdas.$global_4denvar_T670_adate                 ./iasibufr_db
+$ncp $global_4denvar_T670_datobs/gmi1cr.gdas.$global_4denvar_T670_adate                 ./gmibufr
+$ncp $global_4denvar_T670_datobs/saphir.gdas.$global_4denvar_T670_adate                 ./saphirbufr
+$ncp $global_4denvar_T670_datobs/cris.gdas.$global_4denvar_T670_adate                   ./crisbufr
+$ncp $global_4denvar_T670_datobs/crisdb.gdas.$global_4denvar_T670_adate                 ./crisbufr_db
+$ncp $global_4denvar_T670_datobs/sevcsr.gdas.$global_4denvar_T670_adate                 ./seviribufr
+$ncp $global_4denvar_T670_datobs/atms.gdas.$global_4denvar_T670_adate                   ./atmsbufr
+$ncp $global_4denvar_T670_datobs/atmsdb.gdas.$global_4denvar_T670_adate                 ./atmsbufr_db
+$ncp $global_4denvar_T670_datobs/ssmisu.gdas.$global_4denvar_T670_adate                 ./ssmisbufr
+
 
 # Copy bias correction, atmospheric and surface files
 $ncp $global_4denvar_T670_datges/biascr.gdas.$gdate                             ./satbias_in
@@ -363,13 +374,19 @@ $ncp $global_4denvar_T670_datges/gfngp1.gdas.$global_4denvar_T670_adate  ./sigf0
 $ncp $global_4denvar_T670_datges/gfngp2.gdas.$global_4denvar_T670_adate  ./sigf08
 $ncp $global_4denvar_T670_datges/gfngp3.gdas.$global_4denvar_T670_adate  ./sigf09
 
+$ncp $global_4denvar_T670_datges/sfcgcy.gdas.$global_4denvar_T670_adate  ./sfcgcy
+
 list="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020"
 
 for file in $list; do
 ## ln -s $global_4denvar_T670_datges=/sigf06s_${gdate}_mem${file}_t${JCAP_EN} ./sigf06_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr03s_mem${file} ./sigf03_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr04s_mem${file} ./sigf04_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr05s_mem${file} ./sigf05_ens_mem${file}
    ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr06s_mem${file} ./sigf06_ens_mem${file}
-   ln -s $global_4denvar_T670_datges/bfg_${gdate}_fhr06_mem${file} ./sfcf06_ens_mem${file}
-   ln -s $global_4denvar_T670_datges/nfg_${gdate}_fhr06_mem${file} ./nstf06_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr07s_mem${file} ./sigf07_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr08s_mem${file} ./sigf08_ens_mem${file}
+   ln -s $global_4denvar_T670_datges/sfg_${gdate}_fhr09s_mem${file} ./sigf09_ens_mem${file}
 done
 
 # Run GSI
