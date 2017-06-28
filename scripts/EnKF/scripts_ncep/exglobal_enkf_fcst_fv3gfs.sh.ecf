@@ -166,7 +166,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
    if [ $skip_mem = "NO" ]; then
 
       ra=0
-      
+
       export MEMBER=$imem
       export DATA=$DATATOP/$memchar
       if [ -d $DATA ]; then rm -rf $DATA; fi
