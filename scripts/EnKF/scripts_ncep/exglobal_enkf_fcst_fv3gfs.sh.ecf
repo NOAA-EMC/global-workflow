@@ -114,7 +114,6 @@ export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
-export fdiag=${fdiag_ENKF:-${fdiag:-6}}     # write output at hour 6
 export FHOUT=${FHOUT_ENKF:-${FHOUT:-6}}
 
 # model_configure
@@ -167,7 +166,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
    if [ $skip_mem = "NO" ]; then
 
       ra=0
-      
+
       export MEMBER=$imem
       export DATA=$DATATOP/$memchar
       if [ -d $DATA ]; then rm -rf $DATA; fi
