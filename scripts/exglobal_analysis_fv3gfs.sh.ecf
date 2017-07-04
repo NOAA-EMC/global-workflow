@@ -254,7 +254,8 @@ RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
 CHEM=${CHEM:-""}
 NST=${NST:-""}
 
-# GSI Namelist parameters
+#uGSI Namelist parameters
+lrun_subdirs=${lrun_subdirs:-".true."}
 if [ $DOHYBVAR = "YES" ]; then
    l_hyb_ens=.true.
    l4densvar=${l4densvar:-".false."}
@@ -605,7 +606,7 @@ cat > gsiparm.anl << EOF
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
   use_gfs_nemsio=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
-  lrun_subdirs=${lrun_subdirs:-".true."},
+  lrun_subdirs=$lrun_subdirs,
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
