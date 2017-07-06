@@ -2,6 +2,8 @@
 
 if ( -d /da ) then
     set target = wcoss
+else if ( -d /gpfs/hps ) then
+    set target = cray
 else if ( -d /scratch1 ) then
     set host = `hostname`
     if ( `expr substr $host 1 1` == 'f' ) then

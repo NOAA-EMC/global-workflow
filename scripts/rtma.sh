@@ -111,6 +111,8 @@ EOF
 
 anavinfo=$fixgsi/anavinfo_rtma
 berror=$fixgsi/$endianness/rtma_regional_nmm_berror.f77.gcv
+howvvar_berr=$fixgsi/urma2p5_howv_var_lat.bin                #ww3
+howvlng_berr=$fixgsi/urma2p5_howv_lng_lat.bin                #ww3
 errtable=$fixgsi/rtma_errtable.r3dv
 convinfo=$fixgsi/rtma_convinfo.txt
 mesonetuselist=$fixgsi/rtma_mesonet_uselist.txt
@@ -170,6 +172,10 @@ flt_pmsl=$fixgsi/$endianness/rtma_fltnorm.dat_pmsl
 flt_howv=$fixgsi/$endianness/rtma_fltnorm.dat_howv
 flt_tcamt=$fixgsi/$endianness/rtma_fltnorm.dat_tcamt
 flt_cldch=$fixgsi/$endianness/rtma_fltnorm.dat_cldch
+flt_uwnd10m=$fixgsi/$endianness/rtma_fltnorm.dat_uwnd10m
+flt_vwnd10m=$fixgsi/$endianness/rtma_fltnorm.dat_vwnd10m
+flt_uwnd10mwter=$fixgsi/$endianness/rtma_fltnorm.dat_uwnd10mwter
+flt_vwnd10mwter=$fixgsi/$endianness/rtma_fltnorm.dat_vwnd10mwter
 
 prmcard=$fixgsi/rtma_parmcard_input
 
@@ -240,9 +246,18 @@ $ncp $flt_mxtmwter       ./fltnorm.dat_mxtmwter
 $ncp $flt_pmsl           ./fltnorm.dat_pmsl
 $ncp $flt_howv           ./fltnorm.dat_howv
 $ncp $flt_tcamt          ./fltnorm.dat_tcamt
+#ADD four flt_norm
+$ncp $flt_uwnd10m         ./fltnorm.dat_uwnd10m
+$ncp $flt_vwnd10m         ./fltnorm.dat_vwnd10m
+$ncp $flt_uwnd10mwter      ./fltnorm.dat_uwnd10mwter
+$ncp $flt_vwnd10mwter     ./fltnorm.dat_vwnd10mwter
+
+# ADD two files of howv error stats in last two lines above
+$ncp $howvvar_berr         ./howv_var_berr.bin             
+$ncp $howvlng_berr         ./howv_lng_berr.bin           
+
 
 $ncp $prmcard            ./parmcard_input
-
 # Copy CRTM coefficient files based on entries in satinfo file
 #RY:  we do not need satinfo
 #for file in `awk '{if($1!~"!"){print $1}}' ./satinfo | sort | uniq` ;do
@@ -251,19 +266,18 @@ $ncp $prmcard            ./parmcard_input
 #done
 
 # Copy observational data to $tmpdir
-##
-###
 $ncp ${rtma_obs}/urma.t${cya}z.prepbufr.tm00  ./prepbufr
 $ncp ${rtma_obs}/urma.t${cya}z.satwnd.tm00.bufr_d  ./satwndbufr
 $ncp ${rtma_obs}/urma.t${cya}z.goessky.bufr_d  ./goessky
 
 echo "NEW MAX/MIN DATA $rtma_obs/rtma.maxt/mintobs.dat "
 ls -lt  $rtma_obs/*tobs.dat
-
 echo "$rtma_obs/urma*tobs.dat"
+$ncp ${rtma_obs}/urma.20170312.mintobs.dat ./mitmdat
+$ncp ${rtma_obs}/urma.20170312.maxtobs.dat ./mxtmdat 
+echo "observation data: satmar for howv "
+$ncp ${rtma_obs}/satmar ./satmar
 
-$ncp ${rtma_obs}/urma.20160210.mintobs.dat ./mitmdat
-$ncp ${rtma_obs}/urma.20160209.maxtobs.dat ./mxtmdat 
 
 
 # Copy first guess
@@ -286,9 +300,10 @@ cat stdout fort.2* >         $savdir/stdout.anl.${rtma_adate}
 $ncp wrf_inout               $savdir/wrfanl.${rtma_adate}
 $ncp siganl                  $savdir/siganl.${rtma_adate}
 $ncp sigf06                  $savdir/sigf06.${rtma_adate}
+
 $ncp bckg_dxdy.dat           $savdir/bckg_dxdy.${rtma_adate}.dat
-$ncp bckg_qsat.dat           $savdir/bckg_qsat.${rtma_adate}.dat
 $ncp bckg_psfc.dat           $savdir/bckg_psfc.${rtma_adate}.dat
+$ncp bckg_qsat.dat           $savdir/bckg_qsat.${rtma_adate}.dat
 $ncp bckgvar.dat_psi         $savdir/bckgvar_psi.${rtma_adate}.dat
 $ncp bckgvar.dat_chi         $savdir/bckgvar_chi.${rtma_adate}.dat
 $ncp bckgvar.dat_ps          $savdir/bckgvar_ps.${rtma_adate}.dat
@@ -298,7 +313,6 @@ $ncp bckgvar.dat_gust        $savdir/bckgvar.dat_gust.${rtma_adate}.dat
 $ncp bckgvar.dat_vis         $savdir/bckgvar.dat_vis.${rtma_adate}.dat
 $ncp bckgvar.dat_td2m        $savdir/bckgvar.dat_td2m.${rtma_adate}.dat
 $ncp bckgvar.dat_wspd10m     $savdir/bckgvar.dat_wspd10m.${rtma_adate}.dat
-
 $ncp bckgvar.dat_mitm        $savdir/bckgvar.dat_mitm.${rtma_adate}.dat
 $ncp bckgvar.dat_mxtm        $savdir/bckgvar.dat_mxtm.${rtma_adate}.dat
 $ncp bckgvar.dat_pmsl        $savdir/bckgvar.dat_pmsl.${rtma_adate}.dat
@@ -313,10 +327,13 @@ $ncp bckgvar.dat_pswter      $savdir/bckgvar.dat_pswter.${rtma_adate}.dat
 $ncp bckgvar.dat_mitmwter    $savdir/bckgvar.dat_mitmwter.${rtma_adate}.dat
 $ncp bckgvar.dat_mxtmwter    $savdir/bckgvar.dat_mxtmwter.${rtma_adate}.dat
 $ncp bckgvar.dat_wspd10mwter $savdir/bckgvar.dat_wspd10mwter.${rtma_adate}.dat
-$ncp bckgvar.dat_wspd10m     $savdir/bckgvar.dat_wspd10m.${rtma_adate}.dat
-#new one
-$ncp bckgvar.dat_cldch     $savdir/bckgvar.dat_cldch.${rtma_adate}.dat
+$ncp bckgvar.dat_cldch       $savdir/bckgvar.dat_cldch.${rtma_adate}.dat
 $ncp bckgvar.dat_td2mwter    $savdir/bckgvar.dat_td2mwter.${rtma_adate}.dat
+$ncp bckgvar.dat_uwnd10m     $savdir/bckgvar.dat_uwnd10m.${rtma_adate}.dat
+$ncp bckgvar.dat_uwnd10mwter $savdir/bckgvar.dat_uwnd10mwter.${rtma_adate}.dat
+$ncp bckgvar.dat_vwnd10m     $savdir/bckgvar.dat_vwnd10m.${rtma_adate}.dat
+$ncp bckgvar.dat_vwnd10mwter $savdir/bckgvar.dat_vwnd10mwter.${rtma_adate}.dat
+
 $ncp tobs_allcv_groups       $savdir/tobs_allcv_groups
 $ncp qobs_allcv_groups       $savdir/qobs_allcv_groups
 $ncp psobs_allcv_groups      $savdir/psobs_allcv_groups
@@ -330,6 +347,11 @@ $ncp mxtmobs_allcv_groups    $savdir/mxtmobs_allcv_groups
 $ncp pmslobs_allcv_groups    $savdir/pmslobs_allcv_groups
 $ncp howvobs_allcv_groups    $savdir/howvobs_allcv_groups
 $ncp tcamtobs_allcv_groups   $savdir/tcamtobs_allcv_groups
+$ncp cldchobs_allcv_groups   $savdir/cldchobs_allcv_groups
+$ncp uwnd10mobs_allcv_groups $savdir/uwnd10mobs_allcv_groups
+$ncp vwnd10mobs_allcv_groups $savdir/vwnd10mobs_allcv_groups
+
+
 
 # Loop over first and last outer loops to generate innovation
 # diagnostic files for indicated observation types (groups)

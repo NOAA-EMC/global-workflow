@@ -125,6 +125,7 @@ EOF
 #   aerocoef = CRTM coefficients for aerosol effects
 #   cldcoef  = CRTM coefficients for cloud effects
 #   satinfo  = text file with information about assimilation of brightness temperatures
+#   cloudyinfo  = text file with information about assimilation of cloudy radiance
 #   satangl  = angle dependent bias correction file (fixed in time)
 #   atmsbeamdat  =  data required for atms spatial averaging
 #   pcpinfo  = text file with information about assimilation of prepcipitation rates
@@ -152,6 +153,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/nam_regional_satinfo.txt
+cloudyinfo=$fixgsi/cloudy_radiance_info.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satangl=$fixgsi/nam_global_satangbias.txt
 atmsbeamdat=$fixgsi/atms_beamwidth.txt
@@ -201,6 +203,7 @@ $ncp $cldcoef  ./CloudCoeff.bin
 $ncp $satangl  ./satbias_angle
 $ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $satinfo  ./satinfo
+$ncp $cloudyinfo  ./cloudy_radiance_info.txt
 $ncp $scaninfo ./scaninfo
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo

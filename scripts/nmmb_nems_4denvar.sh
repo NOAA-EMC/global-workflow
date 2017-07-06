@@ -85,6 +85,7 @@ emiscoef_MWwater=$fixcrtm/FASTEM6.MWwater.EmisCoeff.bin
 aercoef=$fixcrtm/AerosolCoeff.bin
 cldcoef=$fixcrtm/CloudCoeff.bin
 satinfo=$fixgsi/nam_regional_satinfo.txt
+cloudyinfo=$fixgsi/cloudy_radiance_info.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 pcpinfo=$fixgsi/nam_global_pcpinfo.txt
 ozinfo=$fixgsi/nam_global_ozinfo.txt
@@ -109,6 +110,9 @@ btable_t=$fixgsi/nqc_b_t.global_nqcf
 btable_q=$fixgsi/nqc_b_q.global_nqcf
 btable_uv=$fixgsi/nqc_b_uv.global_nqcf
 
+# add vertical profile of localization and beta_s,beta_e weights for hybrid ensemble runs
+hybens_info=$fixgsi/nam_hybens_d01_info
+
 
 # Copy executable and fixed files to $tmpdir
 if [[ $exp == *"updat"* ]]; then
@@ -132,6 +136,7 @@ cp $emiscoef_MWwater ./FASTEM6.MWwater.EmisCoeff.bin
 cp $aercoef  ./AerosolCoeff.bin
 cp $cldcoef  ./CloudCoeff.bin
 cp $satinfo  ./satinfo
+cp $cloudyinfo  ./cloudy_radiance_info.txt
 cp $scaninfo ./scaninfo
 cp $pcpinfo  ./pcpinfo
 cp $ozinfo   ./ozinfo
@@ -143,7 +148,7 @@ cp $qnightlist ./q_night_rejectlist
 cp $tdaylist ./t_day_rejectlist
 cp $tnightlist ./t_night_rejectlist
 cp $wbinuselist ./wbinuselist
-#cp $locinfo ./hybens_locinfo
+#cp $locinfo ./hybens_info
 #add 9 tables for new varqc
 $ncp $errtable_pw           ./errtable_pw
 $ncp $errtable_ps           ./errtable_ps
@@ -155,6 +160,7 @@ $ncp $btable_t           ./btable_t
 $ncp $btable_q           ./btable_q
 $ncp $btable_uv           ./btable_uv
 
+$ncp $hybens_info ./hybens_info
 
 
 ###### crtm coeff's #######################

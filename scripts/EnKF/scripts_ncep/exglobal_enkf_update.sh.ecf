@@ -311,7 +311,7 @@ export pgm=$PGM
 $LOGSCRIPT
 
 rm convinfo satinfo ozinfo satbias_angle satbias_in enkf.nml
-rm hybens_locinfo
+rm hybens_info
 rm sanl*
 
 if [[ $USE_CFP = YES ]]; then
@@ -343,7 +343,7 @@ then
    $NCP $SCANINFO scaninfo
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
-   $NCP $HYBENSINFO hybens_locinfo
+   $NCP $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
    if [[ $USE_CFP = YES ]]; then
@@ -389,7 +389,7 @@ else
    ln -fs $SCANINFO scaninfo
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
-   ln -fs $HYBENSINFO hybens_locinfo
+   ln -fs $HYBENSINFO hybens_info
 
    # Ensemble observational and guess data
    if [[ $USE_CFP = YES ]]; then
