@@ -10,18 +10,10 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
    elif [[ `expr substr $exp 8 7` = "lanczos" ]]; then
       export SETUP_update=""
       export SETUP_enkf=""
-   elif [[ `expr substr $exp 12 6` = "ozonly" ]]; then
+   else
       export SETUP_update="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.0e-3,emiss_bc=.true.,"
       export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
-   else
-      export SETUP_update="newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,diag_precon=.true.,step_start=1.0e-3,emiss_bc=.true.,cwoption=3,"
-      export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
    fi
-fi
-if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
-   export OBSQC_update="closest_obs=.false."
-else
-   export OBSQC_update=""
 fi
 export GRIDOPTS_update=""
 export BKGVERR_update=""
@@ -34,7 +26,7 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
       export STRONGOPTS_update=""
    fi
 fi
+export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
-
