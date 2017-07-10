@@ -30,12 +30,8 @@ import glob
 from distutils.spawn import find_executable
 from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+import shellvars
 import rocoto
-
-from utils import script_config_parser as config_parser
-from utils import get_scheduler, find_config, get_configs
-
-WORKFLOW_FOOTER='\n</workflow>\n'
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -55,6 +51,30 @@ def main():
     return
 
 
+def get_configs(expdir):
+    '''
+        Given an experiment directory containing config files,
+        return a list of configs minus the ones ending with ".default"
+    '''
+
+    configs = glob.glob('%s/config.*' % expdir)
+
+    # remove any defaults from the list
+    for c, config in enumerate(configs):
+        if config.endswith('.default'):
+            configs.pop(c)
+
+    return configs
+
+
+def find_config(config_name, configs):
+
+    for config in configs:
+        if config_name == os.path.basename(config):
+            return config
+
+    # no match found
+    raise IOError("%s does not exist, ABORT!" % config_name)
 
 
 def source_configs(expdir, configs):
@@ -70,10 +90,10 @@ def source_configs(expdir, configs):
     dict_configs['base'] = config_parser(find_config('config.base', configs))
     base = dict_configs['base']
 
-    if not os.path.samefile(expdir,base['EXPDIR']):
+    if expdir != base['EXPDIR']:
         print 'MISMATCH in experiment directories!'
-        print 'config.base: EXPDIR = %s' % repr(base['EXPDIR'])
-        print 'input arg:     --expdir = %s' % repr(expdir)
+        print 'config.base: EXPDIR = %s' % base['EXPDIR']
+        print 'input arg:     --expdir = %s' % expdir
         sys.exit(1)
 
     # GDAS/GFS tasks
@@ -114,6 +134,50 @@ def source_configs(expdir, configs):
     return dict_configs
 
 
+def config_parser(files):
+    """
+    Given the name of config file, key-value pair of all variables in the config file is returned as a dictionary
+    :param files: config file or list of config files
+    :type files: list or str or unicode
+    :return: Key value pairs representing the environment variables defined
+            in the script.
+    :rtype: dict
+    """
+    sv = shellvars.ShellVars(files)
+    varbles = sv.get_vars()
+    for key,value in varbles.iteritems():
+        if any(x in key for x in ['CDATE','SDATE','EDATE']): # likely a date, convert to datetime
+            varbles[key] = datetime.strptime(value,'%Y%m%d%H')
+            continue
+        if '.' in value: # Likely a number and that too a float
+            try:
+                varbles[key] = float(value)
+            except ValueError:
+                varbles[key] = value
+        else: # Still could be a number, may be an integer
+            try:
+                varbles[key] = int(value)
+            except ValueError:
+                varbles[key] = value
+
+    return varbles
+
+
+def get_scheduler(machine):
+    '''
+        Determine the scheduler
+    '''
+
+    if machine in ['ZEUS', 'THEIA']:
+        return 'moabtorque'
+    elif machine in ['WCOSS']:
+        return 'lsf'
+    elif machine in ['WCOSS_C']:
+        return 'lsfcray'
+    else:
+        msg = 'Unknown machine: %s, ABORT!' % machine
+        Exception.__init__(self,msg)
+
 
 def get_gfs_cyc_dates(base):
     '''
@@ -146,7 +210,7 @@ def get_gfs_cyc_dates(base):
         hrinc = 6
     sdate_gfs = sdate + timedelta(hours=hrinc)
     edate_gfs = edate - timedelta(hours=hrdet)
-    if sdate_gfs > edate + timedelta(seconds=30):
+    if sdate_gfs > edate:
         print 'W A R N I N G!'
         print 'Starting date for GFS cycles is after Ending date of experiment'
         print 'SDATE = %s,     EDATE = %s' % (sdate.strftime('%Y%m%d%H'), edate.strftime('%Y%m%d%H'))
@@ -171,22 +235,26 @@ def get_preamble():
     '''
         Generate preamble for XML
     '''
-    return '''<?xml version="1.0"?>
-<!DOCTYPE workflow
-[
-\t<!--
-\tPROGRAM
-\t\tMain workflow manager for FV3 Cycled Global Forecast System
 
-\tAUTHOR:
-\t\tRahul Mahajan
-\t\trahul.mahajan@noaa.gov
+    strings = []
 
-\tNOTES:
-\t\tThis workflow was automatically generated at %s
+    strings.append('<?xml version="1.0"?>\n')
+    strings.append('<!DOCTYPE workflow\n')
+    strings.append('[\n')
+    strings.append('\t<!--\n')
+    strings.append('\tPROGRAM\n')
+    strings.append('\t\tMain workflow manager for cycling Global Forecast System\n')
+    strings.append('\n')
+    strings.append('\tAUTHOR:\n')
+    strings.append('\t\tRahul Mahajan\n')
+    strings.append('\t\trahul.mahajan@noaa.gov\n')
+    strings.append('\n')
+    strings.append('\tNOTES:\n')
+    strings.append('\t\tThis workflow was automatically generated at %s\n' % datetime.now())
+    strings.append('\t-->\n')
 
-\t-->
-''' % datetime.now()
+    return ''.join(strings)
+
 
 def get_definitions(base):
     '''
@@ -667,24 +735,36 @@ def get_workflow_header(base):
         Create the workflow header block
     '''
 
-    cycledef_gfs=''
+    strings = []
+
+    strings.append('\n')
+    strings.append(']>\n')
+    strings.append('\n')
+    strings.append('<workflow realtime="&REALTIME;" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
+    strings.append('\n')
+    strings.append('\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>\n')
+    strings.append('\n')
+    strings.append('\t<!-- Define the cycles -->\n')
+    strings.append('\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>\n')
+    strings.append('\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>\n')
     if base['gfs_cyc'] != 0:
-        cycledef_gfs='\t<cycledef group="gfs"  >&SDATE_GFS; ' \
-            '&EDATE_GFS; &INTERVAL_GFS;</cycledef>\n'
+        strings.append('\t<cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>\n')
 
-    return '''
-]>
+    strings.append('\n')
 
-<workflow realtime="&REALTIME;" scheduler="&SCHEDULER;" 
-          cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">
+    return ''.join(strings)
 
-\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>
 
-\t<!-- Define the cycles -->
-\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>
-\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>
-%s
-'''%(cycledef_gfs,)
+def get_workflow_footer():
+    '''
+        Generate workflow footer
+    '''
+
+    strings = []
+    strings.append('\n</workflow>\n')
+
+    return ''.join(strings)
+
 
 def create_crontab(base, cronint=5):
     '''
@@ -742,7 +822,7 @@ def create_xml(dict_configs):
     preamble = get_preamble()
     definitions = get_definitions(base)
     workflow_header = get_workflow_header(base)
-    workflow_footer = WORKFLOW_FOOTER
+    workflow_footer = get_workflow_footer()
 
     # Get GDAS related entities, resources, workflow
     gdas_resources = get_gdasgfs_resources(dict_configs)
