@@ -61,38 +61,36 @@ def create_COMROT(comrot, icsdir, idate, cdump='gdas'):
     return
 
 
-def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate):
-
-    base_config = '%s/config.base' % expdir
+def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate, edate):
+    assert(idate != edate)
+    base_config = os.path.join(expdir,'config.base')
 
     # make a copy of the default before editing
     shutil.copy(base_config, base_config+'.default')
-
-    fh = open(base_config,'r')
-    lines = fh.readlines()
-    fh.close()
-    lines = [l.replace('@MACHINE@', machine.upper()) for l in lines]
-    lines = [l.replace('@PSLOT@', pslot) for l in lines]
-    lines = [l.replace('@SDATE@', idate.strftime('%Y%m%d%H')) for l in lines]
-    if expdir is not None:
-        lines = [l.replace('@EXPDIR@', os.path.dirname(expdir)) for l in lines]
-    if comrot is not None:
-        lines = [l.replace('@ROTDIR@', os.path.dirname(comrot)) for l in lines]
-    lines = [l.replace('@CASECTL@', 'C%d'%resdet) for l in lines]
-    lines = [l.replace('@CASEENS@', 'C%d'%resens) for l in lines]
-    lines = [l.replace('@NMEM_ENKF@', '%d'%nens) for l in lines]
-    fh = open(base_config,'w')
-    fh.writelines(lines)
-    fh.close()
+    print '\nSDATE = %s\nEDATE = %s'%(idate,edate)
+    with open(base_config+'.default','rt') as fi:
+        with open(base_config+'.new','wt') as fo:
+            for line in fi:
+                line=line.replace('@MACHINE@', machine.upper()) \
+                         .replace('@PSLOT@', pslot) \
+                         .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                         .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
+                         .replace('@CASEENS@', 'C%d'%resens) \
+                         .replace('@CASECTL@', 'C%d'%resdet) \
+                         .replace('@NMEM_ENKF@', '%d'%nens)
+                if expdir is not None:
+                    line=line.replace('@EXPDIR@', os.path.dirname(expdir))
+                if comrot is not None:
+                    line=line.replace('@ROTDIR@', os.path.dirname(comrot))
+                fo.write(line)
+    os.unlink(base_config)
+    os.rename(base_config+'.new',base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
     print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
     print 'Please verify and delete the default file before proceeding.'
     print ''
-
-    return
-
 
 if __name__ == '__main__':
 
@@ -106,6 +104,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=True)
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--idate', help='date of initial conditions', type=str, required=False, default='2016100100')
+    parser.add_argument('--edate', help='last cycle', type=str, required=False, default='2016100200')
     parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False,default='/scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS')
     parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
     parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
@@ -127,7 +126,8 @@ link initial condition files from $ICSDIR to $COMROT'''
     expdir = args.expdir if args.expdir is None else os.path.join(args.expdir,pslot)
     nens = args.nens
     cdump = args.cdump
-
+    edate = datetime.strptime(args.edate,'%Y%m%d%H')
+    assert(idate!=edate)
     if not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir
         raise IOError(msg)
@@ -155,5 +155,5 @@ link initial condition files from $ICSDIR to $COMROT'''
     # Create EXP directory, copy config and edit config.base
     if create_expdir:
         create_EXPDIR(expdir, configdir)
-        edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate)
+        edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate, edate)
     sys.exit(0)
