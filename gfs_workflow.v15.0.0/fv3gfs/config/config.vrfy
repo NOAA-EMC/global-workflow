@@ -52,7 +52,7 @@ elif [ $machine = "THEIA" ]; then
 fi
 
 # Fit to Observations
-if [ $VRFYFITS = "YES" ]; then
+if [[ "$VRFYFITS" = "YES" ]] ; then
     if [ $machine = "WCOSS" ]; then
         export fitdir=$BASE_VERIF/global/parafits.nems/batrun
         export PREPQFITSH="$fitdir/subfits_wcoss"
@@ -67,7 +67,7 @@ fi
 
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
 # All these call $VSDBSH
-if [ $CDUMP = "gfs" ]; then
+if [[ "$CDUMP" = "gfs" ]] ; then
     if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
         export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
