@@ -530,7 +530,7 @@ OBS_INPUT::
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=.true.,n_ens=20,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
-   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
+   nlat_ens=96,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
  /
@@ -705,8 +705,8 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
-   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
+   l_hyb_ens=.true.,n_ens=20,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   nlat_ens=96,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
  /

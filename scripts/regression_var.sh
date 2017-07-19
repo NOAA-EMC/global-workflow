@@ -21,11 +21,11 @@ if [ "$#" = 8 ] ; then
   echo $ptmpName
 else
 # Name of the branch being tested
-  updat="XXXXXXXX"
-  contrl="XXXXXXXX"
+  updat=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gsi/branches/tic608_nsst_rt
+  contrl=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gsi/trunk
   export cmaketest="false"
   export clean="false"
-  export ptmpName=""
+  export ptmpName=regtest
 fi
 
 # First determine what machine are we on:
@@ -43,13 +43,17 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    elif [ -d /scratch4/NCEPDEV/global/noscrub/$LOGNAME ]; then 
      export noscrub="/scratch4/NCEPDEV/global/noscrub/$LOGNAME"
    fi
-elif [ -d /gpfs/tp1/ptmp ]; then # LUNA or SURGE
-   export machine="LUNA"
-   export noscrub="/gpfs/tp1/ptmp/$LOGNAME"
+elif [ -d /gpfs/hps/ptmp ]; then # LUNA or SURGE
+   export machine="WCOSS_C"
+   export noscrub="/gpfs/hps/emc/global/noscrub/$LOGNAME"
 elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
 fi
+
+# Name of the branch being tested
+updat="branches/tic608_nsst_rt"
+contrl="trunk"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -94,19 +98,27 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export accnt=""
 
-elif [[ "$machine" = "LUNA" ]]; then
+elif [[ "$machine" = "WCOSS_C" ]]; then
 
    if [[ "$cmaketest" = "false" ]]; then
-     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/gsi"
+     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gsi"
    fi 
    export group="dev"
-   export queue="dev"
+   export queue="devonprod"
 
-   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
+export gsisrc="$basedir/$updat/src"
+export gsiexec_updat="$basedir/$updat/src/global_gsi"
+export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
 
-   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.3/fix"
-   export casesdir="/gpfs/hps/emc/global/noscrub/Mark.Potts/CASES"
-   export ndate="/gpfs/hps/emc/global/noscrub/Mallory.Row/VRFY/vsdb_old/nwprod/util/exec/ndate"
+export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
+export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
+export fixgsi="$basedir/$updat/fix"
+export scripts="$basedir/$updat/scripts"
+   export ptmp="/gpfs/hps/ptmp/$LOGNAME/$ptmpName"
+
+   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.4/fix"
+   export casesdir="/gpfs/hps/emc/global/noscrub/emc.glopara/CASES"
+   export ndate=$NDATE
 
    export check_resource="no"
 

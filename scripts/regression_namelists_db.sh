@@ -470,7 +470,7 @@ OBS_INPUT::
  /
  &HYBRID_ENSEMBLE
    l_hyb_ens=.true.,n_ens=20,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
-   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
+   nlat_ens=96,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
  /
@@ -498,8 +498,8 @@ OBS_INPUT::
 export gsi_namelist="
 
  &SETUP
-   miter=1,niter(1)=5,niter(2)=150,
-   niter_no_qc(1)=50,niter_no_qc(2)=0,
+   miter=1,niter(1)=2,niter(2)=1,
+   niter_no_qc(1)=1,niter_no_qc(2)=0,
    use_gfs_nemsio=.true.,
    l4densvar=.true.,ens_nstarthr=3,nhr_obsbin=1,lwrite4danl=.true.,
    tzr_qc=1,
@@ -545,7 +545,7 @@ export gsi_namelist="
    $OBSQC
  /
  &OBS_INPUT
-   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,time_window_max=3.0,
+   dmesh(1)=1450.0,dmesh(2)=1500.0,dmesh(3)=1000.0,time_window_max=0.5,
    $OBSINPUT
  /
 OBS_INPUT::
@@ -645,8 +645,8 @@ OBS_INPUT::
    $LAGDATA
  /
  &HYBRID_ENSEMBLE
-   l_hyb_ens=.true.,n_ens=20,beta1_inv=0.125,s_ens_h=800.,s_ens_v=-0.8,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
-   nlat_ens=94,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
+   l_hyb_ens=.true.,n_ens=10,beta_s0=0.25,readin_beta=.false.,s_ens_h=800,s_ens_v=-0.7,generate_ens=.false.,uv_hyb_ens=.true.,jcap_ens=62,
+   nlat_ens=96,nlon_ens=192,ANISO_A_EN=.false.,jcap_ens_test=62,oz_univ_static=.true.,readin_localization=.true.,
    write_ens_sprd=.false.,
    $HYBRID_ENSEMBLE
  /
@@ -676,15 +676,15 @@ RTMA)
 export gsi_namelist="
 
  &SETUP
-   miter=2,niter(1)=1,niter(2)=2,
+   miter=2,niter(1)=2,niter(2)=1,
    write_diag(1)=.true.,write_diag(2)=.true.,write_diag(3)=.true.,
    gencode=78,qoption=1,tsensible=.true.
-   factqmin=1.0,factqmax=1.0,factv=0.1,deltim=$DELTIM,
+   factqmin=1.0,factqmax=1.0,factv=0.1,factcldch=0.1,factw10m=1.0,deltim=$DELTIM,
    iguess=-1,
    oneobtest=.false.,retrieval=.false.,
    diag_rad=.false.,diag_pcp=.false.,diag_ozone=.false.,diag_aero=.false.,
    nhr_assimilation=6,min_offset=180,use_compress=.false.,lrun_subdirs=.true.,
-   use_prepb_satwnd=.false.
+   use_prepb_satwnd=.false.,
    $SETUP
  /
  &GRIDOPTS
@@ -701,7 +701,7 @@ export gsi_namelist="
    anisotropic=.true.,an_vs=0.5,ngauss=1,
    an_flen_u=-5.,an_flen_t=3.,an_flen_z=-200.,
    ifilt_ord=2,npass=3,normal=-200,grid_ratio=1.,nord_f2a=4,
-   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.
+   rtma_subdomain_option=.true.,triad4=.true.,nsmooth=0,nsmooth_shapiro=0,lreadnorm=.true.,
  /
  &JCOPTS
  /
