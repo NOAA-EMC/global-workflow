@@ -2,8 +2,8 @@
 
 target=$1
 if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
+    echo "Usage: $0 wcoss or wcoss_c/cray or theia"
+    exit
 fi
 
 set -x -e
@@ -12,17 +12,17 @@ cd ..
 dir_root=$(pwd)
 dir_util=$dir_root/util
 dir_scripts=$dir_root/scripts
-[ -d $dir_root/exec] || mkdir -p $dir_root/exec
+[ -d $dir_root/exec ] || mkdir -p $dir_root/exec
 
 if [ $target = wcoss ]; then
     . /usrx/local/Modules/3.2.10/init/sh
-conf_target=nco
-elif [ $target = cray ]; then
+    conf_target=nco
+elif [ $target = cray -o $target = wcoss_c ]; then
     . $MODULESHOME/init/sh
-conf_target=nco
+    conf_target=nco
 elif [ $target = theia ]; then
     . /apps/lmod/lmod/init/sh
-conf_target=theia
+    conf_target=theia
 else
     echo "unknown target = $target"
     exit 9
