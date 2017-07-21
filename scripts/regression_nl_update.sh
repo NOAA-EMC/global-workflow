@@ -18,6 +18,11 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
       export SETUP_enkf="univaroz=.true.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,"
    fi
 fi
+if [[ `expr substr $exp $((${#exp}-4)) ${#exp}` = "updat" ]]; then
+   export OBSQC_update="closest_obs=.false."
+else
+   export OBSQC_update=""
+fi
 export GRIDOPTS_update=""
 export BKGVERR_update=""
 export ANBKGERR_update=""
@@ -29,7 +34,6 @@ if [[ `expr substr $exp 1 6` = "global" ]]; then
       export STRONGOPTS_update=""
    fi
 fi
-export OBSQC_update=""
 export OBSINPUT_update=""
 export SUPERRAD_update=""
 export SINGLEOB_update=""
