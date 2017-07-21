@@ -125,8 +125,8 @@ case $regtest in
     global_4denvar_T126)
 
         if [[ "$machine" = "Theia" ]]; then
-           topts[1]="0:15:00" ; popts[1]="12/3/" ; ropts[1]="/1"
-           topts[2]="0:15:00" ; popts[2]="12/5/" ; ropts[2]="/2"
+           topts[1]="0:15:00" ; popts[1]="6/8/" ; ropts[1]="/1"
+           topts[2]="0:15:00" ; popts[2]="6/10/" ; ropts[2]="/2"
            sub_cmd="sub_zeus"
         elif [[ "$machine" = "WCOSS" ]]; then
            topts[1]="0:35:00" ; popts[1]="16/2/" ; ropts[1]="/1"
@@ -139,7 +139,7 @@ case $regtest in
         fi
 
         if [ "$debug" = ".true." ] ; then
-           topts[1]="0:45:00"
+           topts[1]="1:30:00"
         fi
 
         scaling[1]=10; scaling[2]=8; scaling[3]=4
@@ -335,7 +335,10 @@ case $regtest in
         fi
 
         if [ "$debug" = ".true." ] ; then
-           topts[1]="3:00:00" ; popts[1]="64/8/"
+           topts[1]="3:00:00"
+           if [[ "$machine" = "WCOSS_C" ]]; then
+               popts[1]="64/8/"
+           fi
         fi
 
         scaling[1]=10; scaling[2]=10; scaling[3]=2
@@ -428,6 +431,7 @@ export result
 export scaling
 
 if [[ "$machine" = "Theia" ]]; then
+   export OMP_STACKSIZE=1024M
    export MPI_BUFS_PER_PROC=256
    export MPI_BUFS_PER_HOST=256
    export MPI_GROUP_MAX=256

@@ -21,8 +21,8 @@ if [ "$#" = 8 ] ; then
   echo $ptmpName
 else
 # Name of the branch being tested
-  updat=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gsi/branches/tic608_nsst_rt
-  contrl=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gsi/trunk
+  updat="XXXXXXXX"
+  contrl="XXXXXXXX"
   export cmaketest="false"
   export clean="false"
   export ptmpName=regtest
@@ -50,10 +50,6 @@ elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
 fi
-
-# Name of the branch being tested
-updat="branches/tic608_nsst_rt"
-contrl="trunk"
 
 #  Handle machine specific paths for:
 #  experiment and control executables, fix, ptmp, and CRTM coefficient files.
@@ -106,14 +102,6 @@ elif [[ "$machine" = "WCOSS_C" ]]; then
    export group="dev"
    export queue="devonprod"
 
-export gsisrc="$basedir/$updat/src"
-export gsiexec_updat="$basedir/$updat/src/global_gsi"
-export gsiexec_contrl="$basedir/$contrl/src/global_gsi"
-
-export enkfexec_updat="$basedir/$updat/src/enkf/global_enkf"
-export enkfexec_contrl="$basedir/$contrl/src/enkf/global_enkf"
-export fixgsi="$basedir/$updat/fix"
-export scripts="$basedir/$updat/scripts"
    export ptmp="/gpfs/hps/ptmp/$LOGNAME/$ptmpName"
 
    export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.4/fix"
