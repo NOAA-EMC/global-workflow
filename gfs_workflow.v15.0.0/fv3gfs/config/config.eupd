@@ -16,7 +16,6 @@ echo "BEGIN: config.eupd"
 . $EXPDIR/config.resources eupd
 
 export ENKFUPDSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_update_fv3gfs.sh.ecf"
-export ENKFEXEC="$BASE_GSI/src/enkf/global_enkf"
 export npe_enkf=$npe_eupd
 export nth_enkf=4
 

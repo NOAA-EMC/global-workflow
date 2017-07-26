@@ -16,6 +16,9 @@ from datetime import datetime
 from argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 
 
+machines = ['THEIA', 'WCOSS_C']
+
+
 def create_EXPDIR(expdir, configdir):
 
     if configdir is None:
@@ -71,7 +74,18 @@ def edit_baseconfig(expdir, comrot, machine, pslot, resdet, resens, nens, idate)
     fh = open(base_config,'r')
     lines = fh.readlines()
     fh.close()
+
     lines = [l.replace('@MACHINE@', machine.upper()) for l in lines]
+
+    # Only keep current machine information, remove others
+    # A better way would be to cat from another machine specific file
+    for m in machines:
+        if m in [machine.upper()]:
+            continue
+        ind_begin = lines.index('# BEGIN: %s\n' % m)
+        ind_end = lines.index('# END: %s\n' % m)
+        lines = lines[:ind_begin] + lines[ind_end+1:]
+
     lines = [l.replace('@PSLOT@', pslot) for l in lines]
     lines = [l.replace('@SDATE@', idate.strftime('%Y%m%d%H')) for l in lines]
     if expdir is not None:
@@ -102,7 +116,7 @@ Create COMROT experiment directory structure,
 link initial condition files from $ICSDIR to $COMROT'''
 
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--machine', help='machine name', type=str, choices=['THEIA', 'WCOSS_C'], default='WCOSS_C', required=False)
+    parser.add_argument('--machine', help='machine name', type=str, choices=machines, default='WCOSS_C', required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=True)
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--idate', help='date of initial conditions', type=str, required=False, default='2016100100')

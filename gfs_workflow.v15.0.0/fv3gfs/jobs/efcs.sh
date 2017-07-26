@@ -62,14 +62,6 @@ if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/RESTART/${cymd}.${chh}0000.cou
     fi
 fi
 
-# Since we do not update SST, SNOW or ICE via global_cycle;
-# Pass these to the model; it calls surface cycle internally
-if [ $warm_start = ".true." ]; then
-    export FNTSFA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.sstgrb"
-    export FNACNA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.engicegrb"
-    export FNSNOA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.snogrb"
-fi
-
 # Forecast length for EnKF forecast
 export FHMIN=$FHMIN_ENKF
 export FHOUT=$FHOUT_ENKF
@@ -80,6 +72,21 @@ export FHMAX=$FHMAX_ENKF
 $ENKFFCSTSH
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+###############################################################
+# Double check the status of members in ENSGRP
+EFCSGRP=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/efcs.grp${ENSGRP}
+if [ -f $EFCSGRP ]; then
+    npass=$(grep "PASS" $EFCSGRP | wc -l)
+else
+    npass=0
+fi
+echo "$npass/$NMEM_EFCSGRP members successfull in efcs.grp$ENSGRP"
+if [ $npass -ne $NMEM_EFCSGRP ]; then
+    echo "ABORT!"
+    cat $EFCSGRP
+    exit 99
+fi
 
 ###############################################################
 # Exit out cleanly

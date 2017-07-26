@@ -62,14 +62,6 @@ if [ -f $ROTDIR/${rCDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; t
     fi
 fi
 
-# Since we do not update SST, SNOW or ICE via global_cycle;
-# Pass these to the model; it calls surface cycle internally
-if [ $warm_start = ".true." ]; then
-    export FNTSFA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.sstgrb"
-    export FNACNA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.engicegrb"
-    export FNSNOA="$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.snogrb"
-fi
-
 # Forecast length for GFS forecast
 if [ $CDUMP = "gfs" ]; then
     export FHMIN=$FHMIN_GFS

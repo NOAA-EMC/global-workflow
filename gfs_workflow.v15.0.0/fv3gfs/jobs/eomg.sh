@@ -89,5 +89,20 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
+# Double check the status of members in ENSGRP
+EOMGGRP=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/eomg.grp${ENSGRP}
+if [ -f $EOMGGRP ]; then
+    npass=$(grep "PASS" $EOMGGRP | wc -l)
+else
+    npass=0
+fi
+echo "$npass/$NMEM_EOMGGRP members successfull in eomg.grp$ENSGRP"
+if [ $npass -ne $NMEM_EOMGGRP ]; then
+    echo "ABORT!"
+    cat $EOMGGRP
+    exit 99
+fi
+
+###############################################################
 # Exit out cleanly
 exit 0

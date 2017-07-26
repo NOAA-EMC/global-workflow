@@ -15,119 +15,94 @@ echo "BEGIN: config.base"
 # Machine environment
 export machine="@MACHINE@"
 
+# BEGIN: THEIA
 # Account, queue, etc.
-if [ $machine = "THEIA" ]; then
-
-    export ACCOUNT="da-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export ACCOUNT="FV3GFS-T2O"
-    export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
-
-fi
-
-# Load modules specific on WCOSS and WCOSS-Cray
-if [ $machine = "WCOSS" ]; then
-
-    . /usrx/local/Modules/3.2.10/init/ksh
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    . $MODULESHOME/init/ksh >> /dev/null 2>&1
-    module load PrgEnv-intel >> /dev/null 2>&1
-    module load cray-mpich >> /dev/null 2>&1
-    module load hpss >> /dev/null 2>&1
-    module load g2tmpl-intel/1.4.0 >> /dev/null 2>&1
-
-fi
+export ACCOUNT="da-cpu"
+export QUEUE="batch"
+export QUEUE_ARCH="service"
 
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
-
-    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="LUNA"
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="SURGE"
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    module load crtm-intel/2.2.4 >> /dev/null 2>&1
-    export RTMFIX=$CRTM_FIX
-
-fi
+export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
+export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
+export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
 # Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
+# USER specific paths
+export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
+export STMP="/scratch3/NCEPDEV/stmp1/$USER"
+export PTMP="/scratch3/NCEPDEV/stmp2/$USER"
+export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 
-    # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
-    export STMP="/scratch3/NCEPDEV/stmp1/$USER"
-    export PTMP="/scratch3/NCEPDEV/stmp2/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-    export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
-    export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps/stmp/$USER"
-    export PTMP="/gpfs/hps/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
-    export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
-    export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
-
-fi
+# Base directories for various builds
+export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
+export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
 
 # Utilities needed in the scripts (mostly post)
-if [ $machine = "THEIA" ]; then
-
-    export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="$NWPROD/util/exec/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NEMSIOGET="/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get"
-    module load grib_util/1.0.3 >> /dev/null 2>&1
-    module load prod_util/1.0.7 >> /dev/null 2>&1
-
-    export USE_CFP="YES"
-    module load cfp-intel-sandybridge/1.1.0 >> /dev/null 2>&1
-
-fi
+export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
+export NDATE="$NWPROD/util/exec/ndate"
+export NHOUR="$NWPROD/util/exec/nhour"
+export WGRIB="$NWPROD/util/exec/wgrib"
+export WGRIB2="$NWPROD/util/exec/wgrib2"
+export COPYGB="$NWPROD/util/exec/copygb"
+export COPYGB2="$NWPROD/util/exec/copygb2"
+export GRBINDEX="$NWPROD/util/exec/grbindex"
+export GRB2INDEX="$NWPROD/util/exec/grb2index"
+export GRBINDEX2="$NWPROD/util/exec/grb2index"
+export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
 
 # Post requires grib2 table
-if [ $machine = "WCOSS_C" ]; then
-    export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
-elif [ $machine = "THEIA" ]; then
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+# END: THEIA
+
+# BEGIN: WCOSS_C
+# Account, queue, etc.
+export ACCOUNT="FV3GFS-T2O"
+export QUEUE="dev"
+export QUEUE_ARCH="dev_transfer"
+
+# Load specific modules
+. $MODULESHOME/init/ksh >> /dev/null 2>&1
+module load PrgEnv-intel >> /dev/null 2>&1
+module load cray-mpich >> /dev/null 2>&1
+module load hpss >> /dev/null 2>&1
+module load g2tmpl-intel/1.4.0 >> /dev/null 2>&1
+
+# GLOBAL static environment parameters
+export NWPROD="/gpfs/hps/nco/ops/nwprod"
+if [ -d /gpfs/tp1 ]; then
+    export SITE="LUNA"
+    export DMPDIR="/gpfs/tp1/emc/globaldump"
+elif [ -d /gpfs/gp1 ]; then
+    export SITE="SURGE"
+    export DMPDIR="/gpfs/gp1/emc/globaldump"
 fi
+module load crtm-intel/2.2.4 >> /dev/null 2>&1
+export RTMFIX=$CRTM_FIX
+
+# Machine specific paths used everywhere
+# USER specific paths
+export HOMEDIR="/gpfs/hps/emc/global/noscrub/$USER"
+export STMP="/gpfs/hps/stmp/$USER"
+export PTMP="/gpfs/hps/ptmp/$USER"
+export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
+
+# Base directories for various builds
+export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
+export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
+export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
+
+# Utilities needed in the scripts (mostly post)
+export NEMSIOGET="/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get"
+module load grib_util/1.0.3 >> /dev/null 2>&1
+module load prod_util/1.0.7 >> /dev/null 2>&1
+
+export USE_CFP="YES"
+module load cfp-intel-sandybridge/1.1.0 >> /dev/null 2>&1
+
+# Post requires grib2 table
+export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
+# END: WCOSS_C
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -151,7 +126,7 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="YES"
+export KEEPDATA="NO"
 export NCO_NAMING_CONV="YES"
 
 # Machine environment, jobs, and other utility scripts
@@ -184,7 +159,7 @@ export FHMAX=9
 export FHOUT=3
 
 # GFS cycle info
-export gfs_cyc=1 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export gfs_cyc=0 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0
@@ -212,7 +187,6 @@ if [ $DOHYBVAR = "YES" ]; then
 fi
 
 # Shared scripts
-export REGRID_NEMSIO_SH="$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh"
 
 # Shared tables
 export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
