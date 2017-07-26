@@ -29,8 +29,8 @@ export nth_fv3=2
 # Otherwise, the ensemble forecast will inherit from config.fcst
 
 # Model configuration
-export TYPE="hydro"
-export MONO="mono"
+export TYPE="nh"
+export MONO="non-mono"
 
 export do_vort_damp=".true."    # vorticity and divergence damping
 export consv_te="0."            # conserve total energy

@@ -16,12 +16,7 @@ echo "BEGIN: config.anal"
 . $EXPDIR/config.resources anal
 
 export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
-export GSIEXEC="$BASE_GSI/src/global_gsi"
 export npe_gsi=$npe_anal
 export nth_gsi=4
-
-#export BERROR="$EXPDIR/global_berror.l63y386.f77"
-#export ANAVINFO="$EXPDIR/global_anavinfo.l63.txt"
-#export HYBENSINFO="$EXPDIR/global_hybens_info.l63.txt"
 
 echo "END: config.anal"

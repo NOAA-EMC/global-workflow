@@ -15,6 +15,7 @@
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## ENSGRP : ensemble sub-group to archive (0, 1, 2, ...)
 ###############################################################
 
 ###############################################################
@@ -37,138 +38,148 @@ ASUFFIX=".nemsio"
 
 COMIN_ENS="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
 
-DATA="$RUNDIR/$CDATE/$CDUMP/earc"
+DATA="$RUNDIR/$CDATE/$CDUMP/earc$ENSGRP"
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
 ###############################################################
-# Archive what is needed to restart the experiment
-mkdir -p $DATA/enkf.${CDUMP}restart
-cd $DATA/enkf.${CDUMP}restart
+# ENSGRP -gt 0 archives ensemble member restarts
+if [ $ENSGRP -gt 0 ]; then
 
-for imem in `seq 1 $NMEM_ENKF`; do
-
-    memchar="mem"`printf %03i $imem`
-
-    memdir="$COMIN_ENS/$memchar"
-    tmpmemdir="$DATA/enkf.${CDUMP}restart/$memchar"
-
-    mkdir -p $tmpmemdir
-    cd $tmpmemdir
-
-    restart_dir="$memdir/RESTART"
-    if [ -d $restart_dir ]; then
-        mkdir -p RESTART
-        files=`ls -1 $restart_dir`
-        for file in $files; do
-            $NCP $restart_dir/$file RESTART/$file
-        done
-    fi
-
-    increment_file="$memdir/${APREFIX}atminc.nc"
-    [[ -f $increment_file ]] && $NCP $increment_file .
-
+    mkdir -p $DATA/enkf.${CDUMP}restart
     cd $DATA/enkf.${CDUMP}restart
 
-    htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar $memchar
-    status=$?
-    if [ $status -ne 0 ]; then
-        echo "HTAR $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
-        exit $status
-    fi
+    # Get ENSBEG/ENSEND from ENSGRP and NMEM_EARCGRP
+    ENSEND=$(echo "$NMEM_EARCGRP * $ENSGRP" | bc)
+    ENSBEG=$(echo "$ENSEND - $NMEM_EARCGRP + 1" | bc)
 
-    hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar
-    status=$?
-    if [ $status -ne 0 ]; then
-        echo "HSI $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
-        exit $status
-    fi
+    for imem in `seq $ENSBEG $ENSEND`; do
 
-    rm -rf $tmpmemdir
+        memchar="mem"`printf %03i $imem`
 
-done
+        memdir="$COMIN_ENS/$memchar"
+        tmpmemdir="$DATA/enkf.${CDUMP}restart/$memchar"
 
-cd $DATA
+        mkdir -p $tmpmemdir
+        cd $tmpmemdir
 
-rm -rf enkf.${CDUMP}restart
+        restart_dir="$memdir/RESTART"
+        if [ -d $restart_dir ]; then
+            mkdir -p RESTART
+            files=`ls -1 $restart_dir`
+            for file in $files; do
+                $NCP $restart_dir/$file RESTART/$file
+            done
+        fi
 
-###############################################################
-# Archive extra information that is good to have
-mkdir -p $DATA/enkf.$CDUMP
-cd $DATA/enkf.$CDUMP
+        increment_file="$memdir/${APREFIX}atminc.nc"
+        [[ -f $increment_file ]] && $NCP $increment_file .
 
-# Ensemble mean related files
-files="gsistat.ensmean cnvstat.ensmean enkfstat atmf006.ensmean.nc4 atmf006.ensspread.nc4"
-for file in $files; do
-    $NCP $COMIN_ENS/${APREFIX}$file .
-done
+        cd $DATA/enkf.${CDUMP}restart
 
-# Ensemble member related files
-files="gsistat cnvstat"
-for imem in `seq 1 $NMEM_ENKF`; do
+        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar $memchar
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HTAR $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
+            exit $status
+        fi
 
-    memchar="mem"`printf %03i $imem`
+        hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HSI $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
+            exit $status
+        fi
 
-    memdir="$COMIN_ENS/$memchar"
-    tmpmemdir="$DATA/enkf.${CDUMP}/$memchar"
+        rm -rf $tmpmemdir
 
-    mkdir -p $tmpmemdir
-
-    for file in $files; do
-        $NCP $memdir/${APREFIX}$file $tmpmemdir/.
     done
 
+    cd $DATA
+
+    rm -rf enkf.${CDUMP}restart
+
+else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and cleans up
+
+    ###############################################################
+    # Archive extra information that is good to have
+    mkdir -p $DATA/enkf.$CDUMP
     cd $DATA/enkf.$CDUMP
 
-done
+    # Ensemble mean related files
+    files="gsistat.ensmean cnvstat.ensmean enkfstat atmf006.ensmean.nc4 atmf006.ensspread.nc4"
+    for file in $files; do
+        $NCP $COMIN_ENS/${APREFIX}$file .
+    done
 
-cd $DATA
+    # Ensemble member related files
+    files="gsistat cnvstat"
+    for imem in `seq 1 $NMEM_ENKF`; do
 
-htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar enkf.$CDUMP
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
-    exit $status
+        memchar="mem"`printf %03i $imem`
+
+        memdir="$COMIN_ENS/$memchar"
+        tmpmemdir="$DATA/enkf.${CDUMP}/$memchar"
+
+        mkdir -p $tmpmemdir
+
+        for file in $files; do
+            $NCP $memdir/${APREFIX}$file $tmpmemdir/.
+        done
+
+        cd $DATA/enkf.$CDUMP
+
+    done
+
+    cd $DATA
+
+    htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar enkf.$CDUMP
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
+        exit $status
+    fi
+
+    hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}.tar
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "HSI $CDATE enkf.${CDUMP}.tar failed"
+        exit $status
+    fi
+
+    rm -rf enkf.$CDUMP
+
+    ###############################################################
+    # Archive online for verification and diagnostics
+    [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+    cd $ARCDIR
+
+    $NCP $COMIN_ENS/${APREFIX}enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $COMIN_ENS/${APREFIX}gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+
+    ###############################################################
+    # Clean up previous cycles; various depths
+    # PRIOR CYCLE: Leave the prior cycle alone
+    GDATE=`$NDATE -$assim_freq $CDATE`
+
+    # PREVIOUS to the PRIOR CYCLE
+    # Now go 2 cycles back and remove the directory
+    GDATE=`$NDATE -$assim_freq $GDATE`
+    gymd=`echo $GDATE | cut -c1-8`
+    ghh=`echo  $GDATE | cut -c9-10`
+
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
+    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+
+    # PREVIOUS day 00Z remove the whole day
+    GDATE=`$NDATE -48 $CDATE`
+    gymd=`echo $GDATE | cut -c1-8`
+    ghh=`echo  $GDATE | cut -c9-10`
+
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
+    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+
 fi
-
-hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}.tar
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HSI $CDATE enkf.${CDUMP}.tar failed"
-    exit $status
-fi
-
-rm -rf enkf.$CDUMP
-
-###############################################################
-# Archive online for verification and diagnostics
-[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-cd $ARCDIR
-
-$NCP $COMIN_ENS/${APREFIX}enkfstat         enkfstat.${CDUMP}.$CDATE
-$NCP $COMIN_ENS/${APREFIX}gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
-
-###############################################################
-# Clean up previous cycles; various depths
-# PRIOR CYCLE: Leave the prior cycle alone
-GDATE=`$NDATE -$assim_freq $CDATE`
-
-# PREVIOUS to the PRIOR CYCLE
-# Now go 2 cycles back and remove the directory
-GDATE=`$NDATE -$assim_freq $GDATE`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
-
-COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
-[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-
-# PREVIOUS day 00Z remove the whole day
-GDATE=`$NDATE -48 $CDATE`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
-
-COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
-[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 exit 0

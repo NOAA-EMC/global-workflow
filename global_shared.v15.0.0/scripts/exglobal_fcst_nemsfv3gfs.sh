@@ -62,7 +62,6 @@ FHCYC=${FHCYC:-24}
 # Directories.
 pwd=$(pwd)
 NWPROD=${NWPROD:-${NWROOT:-$pwd}}
-BASE_NEMSfv3gfs=${BASE_NEMSfv3gfs:-$NWPROD}
 BASE_GSM=${BASE_GSM:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
@@ -70,6 +69,7 @@ FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
 DATA=${DATA:-$pwd/fv3tmp$$}    #temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         #rotating archive directory
 IC_DIR=${IC_DIR:-$pwd}         #cold start initial conditions
+DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
 # Model resolution specific parameters
 DELTIM=${DELTIM:-225}
@@ -143,7 +143,7 @@ if [ $warm_start = ".false." ]; then
     done
   fi
 else
-  if [ ${restart_test:-"NO"} = "YES" ]; then 
+  if [ ${restart_test:-"NO"} = "YES" ]; then
     # start from the end of last forecast run
     $NLN $memdir/RESTART/* $DATA/INPUT/.
   else
@@ -232,13 +232,29 @@ FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t1534.3072.1536.rg.grb"}
 FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t1534.3072.1536.rg.grb"}
 FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t1534.3072.1536.grb"}
 FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
-FNTSFA=${FNTSFA:-""}
-FNACNA=${FNACNA:-""}
-FNSNOA=${FNSNOA:-""}
 FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
 FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"}
+
+# Warm start and read increment, update surface variables
+# since we do not have SST, SNOW or ICE via global_cycle
+if [ $warm_start = ".true." -a $read_increment = ".true." ]; then
+  FNTSFA=${FNTSFA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.rtgssthr.grb"}
+  FNACNA=${FNACNA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.seaice.5min.blend.grb"}
+  FNSNOA=${FNSNOA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.snogrb_t1534.3072.1536"}
+  FSMCL2=${FSMCL2:-60}
+  FSMCL3=${FSMCL3:-60}
+  FSMCL4=${FSMCL4:-60}
+  [[ $CDUMP = "gdas" ]] && FTSFS=${FTSFS:-0}
+  FAISS=${FAISS:-0}
+  FAISL=${FAISL:-0}
+  [[ $chh = 18 ]] && FSNOL=${FSNOL:-"-2"}
+else
+  FNTSFA=${FNTSFA:-""}
+  FNACNA=${FNACNA:-""}
+  FNSNOA=${FNSNOA:-""}
+fi
 
 # NSST Options
 # nstf_name contains the NSST related parameters
@@ -597,6 +613,9 @@ cat > input.nml <<EOF
   debug       = ${gfs_phys_debug:-".false."}
   nstf_name   = $nstf_name
   nst_anl     = $nst_anl
+  do_skeb     = ${DO_SKEB:-".false."}
+  do_shum     = ${DO_SHUM:-".false."}
+  do_sppt     = ${DO_SPPT:-".false."}
   $gfs_physics_nml
 /
 
@@ -632,24 +651,24 @@ cat > input.nml <<EOF
   FNVMXC   = '${FNVMXC}'
   FNSLPC   = '${FNSLPC}'
   FNABSC   = '${FNABSC}'
-  LDEBUG = .false.
-  FSMCL(2) = 99999
-  FSMCL(3) = 99999
-  FSMCL(4) = 99999
-  FTSFS = 90
-  FAISS = 99999
-  FSNOL = 99999
+  LDEBUG = ${LDEBUG:-".false."}
+  FSMCL(2) = ${FSMCL2:-99999}
+  FSMCL(3) = ${FSMCL3:-99999}
+  FSMCL(4) = ${FSMCL4:-99999}
+  FTSFS = ${FTSFS:-90}
+  FAISL = ${FAISL:-99999}
+  FAISS = ${FAISS:-99999}
+  FSNOL = ${FSNOL:-99999}
+  FSNOS = ${FSNOS:-99999}
   FSICL = 99999
+  FSICS = 99999
   FTSFL = 99999
-  FAISL = 99999
   FVETL = 99999
   FSOTL = 99999
   FvmnL = 99999
   FvmxL = 99999
   FSLPL = 99999
   FABSL = 99999
-  FSNOS = 99999
-  FSICS = 99999
   $namsfc_nml
 /
 
@@ -659,48 +678,62 @@ cat > input.nml <<EOF
 /
 EOF
 
-# Add namelist for stochastic physics options for ensemble member forecast
+# Add namelist for stochastic physics options
 echo "" >> input.nml
-if [ $MEMBER -gt 0 -a ${USE_STOCH_PHYS:-"YES"} = "YES" ]; then
-  if [ "${SET_STP_SEED:-"NO"}" = "YES" ] ; then
-    ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
-    ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
-    ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
-    ISEED_VC=$((CDATE*1000   + MEMBER*10 + 4))
-  fi
-  cat >> input.nml << EOF
+if [ $MEMBER -gt 0 ]; then
+
+    cat >> input.nml << EOF
 &nam_stochy
   ntrunc = ${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
-  lon_s = ${LONB:-$((`echo $CASE | cut -c 2-`*4))}
-  lat_s = ${LATB:-$((`echo $CASE | cut -c 2-`*2))}
-  skeb = ${SKEB:-"-999."}
-  shum = ${SHUM:-"-999."}
-  sppt = ${SPPT:-"-999."}
-  vcamp = ${VCAMP:-"-999."}
+  lon_s = ${LONB:-$((`echo  $CASE | cut -c 2-`*4))}
+  lat_s = ${LATB:-$((`echo  $CASE | cut -c 2-`*2))}
+EOF
+
+  if [ ${DO_SKEB:-".false."} = ".true." ]; then
+    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
+    cat >> input.nml << EOF
+  skeb = $SKEB
   iseed_skeb = ${ISEED_SKEB:-${ISEED:-"0"}}
-  iseed_shum = ${ISEED_SHUM:-${ISEED:-"0"}}
-  iseed_sppt = ${ISEED_SPPT:-${ISEED:-"0"}}
-  iseed_vc = ${ISEED_VC:-${ISEED:-"0"}}
   skeb_tau = ${SKEB_TAU:-"-999."}
-  shum_tau = ${SHUM_TAU:-"-999."}
-  sppt_tau = ${SPPT_TAU:-"-999."}
-  vc_tau = ${VC_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
+  skebnorm = ${SKEBNORM:-"1"}
+EOF
+  fi
+
+  if [ ${DO_SHUM:-".false."} = ".true." ]; then
+    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
+    cat >> input.nml << EOF
+  shum = $SHUM
+  iseed_shum = ${ISEED_SHUM:-${ISEED:-"0"}}
+  shum_tau = ${SHUM_TAU:-"-999."}
   shum_lscale = ${SHUM_LSCALE:-"-999."}
+EOF
+  fi
+
+  if [ ${DO_SPPT:-".false."} = ".true." ]; then
+    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+    cat >> input.nml << EOF
+  sppt = $SPPT
+  iseed_sppt = ${ISEED_SPPT:-${ISEED:-"0"}}
+  sppt_tau = ${SPPT_TAU:-"-999."}
   sppt_lscale = ${SPPT_LSCALE:-"-999."}
-  vc_lscale = ${VC_LSCALE:-"-999."}
   sppt_logit = ${SPPT_LOGIT:-".true."}
   sppt_sfclimit = ${SPPT_SFCLIMIT:-".true."}
-  vc = ${VC:-"0."}
+EOF
+  fi
+
+  cat >> input.nml << EOF
   $nam_stochy_nml
 /
 EOF
+
 else
+
   cat >> input.nml << EOF
 &nam_stochy
-  $nam_stochy_nml
 /
 EOF
+
 fi
 
 #------------------------------------------------------------------

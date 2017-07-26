@@ -273,8 +273,7 @@ def get_definitions(base):
     strings.append('\t<!ENTITY EDATE "%s">\n' % base['EDATE'].strftime('%Y%m%d%H%M'))
     strings.append('\n')
     strings.append('\t<!ENTITY REALTIME "%s">\n' % base['REALTIME'])
-    if base['REALTIME'] in ['T']:
-        strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
+    strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
     strings.append('\n')
     strings.append('\t<!-- Experiment and Rotation directory -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
@@ -508,7 +507,7 @@ def create_firstcyc_task():
     return ''.join(task)
 
 
-def get_gdasgfs_tasks(realtime='F', cdump='gdas', dohybvar='NO'):
+def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
     '''
         Create GDAS or GFS tasks
     '''
@@ -525,13 +524,10 @@ def get_gdasgfs_tasks(realtime='F', cdump='gdas', dohybvar='NO'):
     deps = []
     dep_dict = {'name':'post', 'type':'task', 'offset':'-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
-    if realtime in ['T']:
-        data = '&DMPDIR;/@Y@m@d@H/%s/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, cdump)
-        dep_dict = {'type':'data', 'data':data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    else:
-        dependencies = rocoto.create_dependency(dep=deps)
+    data = '&DMPDIR;/@Y@m@d@H/%s/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, cdump)
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
 
     tasks.append(task)
@@ -620,7 +616,7 @@ def get_gdasgfs_tasks(realtime='F', cdump='gdas', dohybvar='NO'):
     return ''.join(tasks)
 
 
-def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, cdump='gdas'):
+def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
     '''
         Create Hybrid tasks
     '''
@@ -716,13 +712,18 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, cdump='gdas'):
     tasks.append(task)
     tasks.append('\n')
 
-    # earc
+    # eamn
+    metataskname = 'eamn'
+    varname = 'grp'
+    varval = EARCGROUPS
     taskname = 'earc'
     deps = []
     dep_dict = {'name':'epos', 'type':'task'}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
-    task = create_wf_task(taskname, cdump=cdump, envar=envars, dependency=dependencies)
+    earcenvars = envars + [ensgrp]
+    task = create_wf_task(taskname, cdump=cdump, envar=earcenvars, dependency=dependencies, \
+           metatask=metataskname, varname=varname, varval=varval)
 
     tasks.append(task)
     tasks.append('\n')
@@ -826,7 +827,7 @@ def create_xml(dict_configs):
 
     # Get GDAS related entities, resources, workflow
     gdas_resources = get_gdasgfs_resources(dict_configs)
-    gdas_tasks = get_gdasgfs_tasks(dohybvar=base['DOHYBVAR'], realtime=base['REALTIME'])
+    gdas_tasks = get_gdasgfs_tasks(dohybvar=base['DOHYBVAR'])
 
     # Get hybrid related entities, resources, workflow
     if base['DOHYBVAR'] == "YES":
@@ -835,21 +836,25 @@ def create_xml(dict_configs):
         nens = base['NMEM_ENKF']
         eobs = dict_configs['eobs']
         efcs = dict_configs['efcs']
+        earc = dict_configs['earc']
         nens_eomg = eobs['NMEM_EOMGGRP']
         nens_efcs = efcs['NMEM_EFCSGRP']
+        nens_earc = earc['NMEM_EARCGRP']
         neomg_grps = nens / nens_eomg
         nefcs_grps = nens / nens_efcs
+        nearc_grps = nens / nens_earc
         EOMGGROUPS = ' '.join(['%02d' % x for x in range(1, neomg_grps+1)])
         EFCSGROUPS = ' '.join(['%02d' % x for x in range(1, nefcs_grps+1)])
+        EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps+1)])
 
         hyb_resources = get_hyb_resources(dict_configs)
-        hyb_tasks = get_hyb_tasks(EOMGGROUPS, EFCSGROUPS)
+        hyb_tasks = get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS )
 
     # Get GFS cycle related entities, resources, workflow
     if base['gfs_cyc'] != 0:
         gfs_dates = get_gfs_dates(base)
         gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
-        gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'], realtime=base['REALTIME'])
+        gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'])
 
     xmlfile = []
     xmlfile.append(preamble)
