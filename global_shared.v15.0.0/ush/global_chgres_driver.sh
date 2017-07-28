@@ -27,7 +27,7 @@ export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
 export LEVS=${LEVS:-65}
 export LSOIL=${LSOIL:-4}
 export ictype=${ictype:-nemsgfs}             # nemsgfs for q3fy17 gfs with new land datasets; opsgfs for q2fy16 gfs.
-export nst_anl=${nst_anl:-".false."}         # to include NST analysis
+export nst_anl=${nst_anl:-".false."}         # false means to do sst orographic adjustment for lakes
 
 export VERBOSE=YES
 pwd=$(pwd)
@@ -198,7 +198,6 @@ while [ $tile -le $ntiles ]; do
    exit $rc
  fi
  mv ${DATA}/out.sfc.tile${tile}.nc $OUTDIR/sfc_data.tile${tile}.nc
- [[ $nst_anl = ".true." ]] && mv ${DATA}/out.nst.tile${tile}.nemsio $OUTDIR/nst_data.tile${tile}.nemsio
 tile=`expr $tile + 1 `
 done
 
