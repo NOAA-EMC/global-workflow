@@ -51,10 +51,10 @@ LEVS=${LEVS:-64}
 HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
-GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getnstensmeanp.x}
-GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensstatp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/exec/getsfcensmeanp.x}
+GETNSTENSMEANEXEC=${GETNSTENSMEANEXEC:-$BASE_GSI/exec/getnstensmeanp.x}
+GETATMENSSTATEXEC=${GETATMENSSTATEXEC:-$BASE_GSI/exec/getsigensstatp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}

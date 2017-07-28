@@ -54,7 +54,7 @@ NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
-CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/exec/calc_increment_ens.x}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -254,7 +254,7 @@ RAPIDREFRESH_CLDSURF=${RAPIDREFRESH_CLDSURF:-""}
 CHEM=${CHEM:-""}
 NST=${NST:-""}
 
-# GSI Namelist parameters
+#uGSI Namelist parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
 if [ $DOHYBVAR = "YES" ]; then
    l_hyb_ens=.true.
@@ -267,7 +267,7 @@ else
 fi
 
 # Set 4D-EnVar specific variables
-if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
    ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
    ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
    ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
@@ -420,23 +420,45 @@ $NLN $GRADSTAT radstat.gdas
 
 ##############################################################
 # Required model guess files
-$NLN $ATMG03   sigf03
-$NLN $ATMGES   sigf06
-$NLN $ATMG09   sigf09
+$NLN $ATMG03 sigf03
+$NLN $ATMGES sigf06
+$NLN $ATMG09 sigf09
 
-$NLN $SFCG03   sfcf03
-$NLN $SFCGES   sfcf06
-$NLN $SFCG09   sfcf09
+$NLN $SFCG03 sfcf03
+$NLN $SFCGES sfcf06
+$NLN $SFCG09 sfcf09
 
 if [ $NST_GSI -gt 0 ]; then
-   $NLN $NSTG03   nstf03
-   $NLN $NSTGES   nstf06
-   $NLN $NSTG09   nstf09
+   $NLN $NSTG03 nstf03
+   $NLN $NSTGES nstf06
+   $NLN $NSTG09 nstf09
    if [ $NST_GSI -eq 3 ]; then
-      $NLN $SFCGCY  sfcgcy
+      $NLN $SFCGCY sfcgcy
    else
-      $NLN $SFCANL  sfcgcy # $SFCANL is no longer created before GSI is executed!
+      $NLN $SFCANL sfcgcy # $SFCANL is no longer created before GSI is executed!
    fi
+fi
+
+# Link hourly backgrounds (if present)
+if [ -f $ATMG04 -a -f $ATMG05 -a -f $ATMG07 -a -f $ATMG08 ]; then
+   nhr_obsbin=1
+fi
+
+[[ -f $ATMG04 ]] && $NLN $ATMG04 sigf04
+[[ -f $ATMG05 ]] && $NLN $ATMG05 sigf05
+[[ -f $ATMG07 ]] && $NLN $ATMG07 sigf07
+[[ -f $ATMG08 ]] && $NLN $ATMG08 sigf08
+
+[[ -f $SFCG04 ]] && $NLN $SFCG04 sfcf04
+[[ -f $SFCG05 ]] && $NLN $SFCG05 sfcf05
+[[ -f $SFCG07 ]] && $NLN $SFCG07 sfcf07
+[[ -f $SFCG08 ]] && $NLN $SFCG08 sfcf08
+
+if [ $NST_GSI -gt 0 ]; then
+   [[ -f $NSTG04 ]] && $NLN $NSTG04 nstf04
+   [[ -f $NSTG05 ]] && $NLN $NSTG05 nstf05
+   [[ -f $NSTG07 ]] && $NLN $NSTG07 nstf07
+   [[ -f $NSTG08 ]] && $NLN $NSTG08 nstf08
 fi
 
 if [ $DOHYBVAR = "YES" ]; then
@@ -461,32 +483,12 @@ if [ $DOHYBVAR = "YES" ]; then
       done
    done
 
-   # Link hourly backgrounds for 4DHybrid
-   if [ $l4densvar = ".true." ]; then
-      $NLN $ATMG04   sigf04
-      $NLN $ATMG05   sigf05
-      $NLN $ATMG07   sigf07
-      $NLN $ATMG08   sigf08
-
-      $NLN $SFCG04   sfcf04
-      $NLN $SFCG05   sfcf05
-      $NLN $SFCG07   sfcf07
-      $NLN $SFCG08   sfcf08
-
-      if [ $NST_GSI -gt 0 ]; then
-         $NLN $NSTG04   nstf04
-         $NLN $NSTG05   nstf05
-         $NLN $NSTG07   nstf07
-         $NLN $NSTG08   nstf08
-      fi
-   fi
-
 fi
 
 ##############################################################
 # Handle inconsistent surface mask between background, ensemble and analysis grids
-if [ $JCAP != $JCAP_A ]; then
-   if [ $DOHYBVAR = "YES" && $JCAP_A = $JCAP_ENKF ]; then
+if [ $JCAP -ne $JCAP_A ]; then
+   if [ $DOHYBVAR = "YES" -a $JCAP_A = $JCAP_ENKF ]; then
       if [ -e $SFCGES_ENSMEAN ]; then
          USE_READIN_ANL_SFCMASK=.true.
          $NLN $SFCGES_ENSMEAN sfcf06_anlgrid
@@ -502,7 +504,7 @@ fi
 # Output files
 # $SFCANL is no longer created here since global_cycle is not called
 $NLN $ATMANL siganl
-if [ $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
    $NLN $ATMA03   siga03
    $NLN $ATMA04   siga04
    $NLN $ATMA05   siga05
@@ -576,7 +578,7 @@ fi
 if [ $DOHYBVAR = "YES" ]; then
    HYBRID_ENSEMBLE="n_ens=$NMEM_ENKF,jcap_ens=$JCAP_ENKF,nlat_ens=$NLAT_ENKF,nlon_ens=$NLON_ENKF,jcap_ens_test=$JCAP_ENKF,$HYBRID_ENSEMBLE"
    if [ $l4densvar = ".true." ]; then
-      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,nhr_obsbin=1,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
       JCOPTS="ljc4tlevs=.true.,$JCOPTS"
       STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
       OBSQC="c_varqc=0.04,$OBSQC"
@@ -589,7 +591,7 @@ fi
 
 ##############################################################
 # Create global_gsi namelist
-cat <<EOF > gsiparm.anl
+cat > gsiparm.anl << EOF
 &SETUP
   miter=2,
   niter(1)=100,niter(2)=100,
@@ -604,10 +606,10 @@ cat <<EOF > gsiparm.anl
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
   use_gfs_nemsio=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
-  lrun_subdirs=${lrun_subdirs},
+  lrun_subdirs=$lrun_subdirs,
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
-  diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=3,
+  diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
   cwoption=3,
   $SETUP
 /
@@ -1001,7 +1003,7 @@ fi
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&&rm -rf $DATA
+[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
 
 set +x
 if [ $VERBOSE = "YES" ]; then
