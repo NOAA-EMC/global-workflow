@@ -239,21 +239,17 @@ FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"}
 
 # Warm start and read increment, update surface variables
 # since we do not have SST, SNOW or ICE via global_cycle
-if [ $warm_start = ".true." -a $read_increment = ".true." ]; then
+if [ $CDUMP = "gdas" -a $warm_start = ".true." -a $read_increment = ".true." ]; then
   FNTSFA=${FNTSFA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.rtgssthr.grb"}
   FNACNA=${FNACNA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.seaice.5min.blend.grb"}
   FNSNOA=${FNSNOA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.snogrb_t1534.3072.1536"}
+  FTSFS=${FTSFS:-0}
+  FAISS=${FAISS:-0}
+  FAISL=${FAISL:-0}
   FSMCL2=${FSMCL2:-60}
   FSMCL3=${FSMCL3:-60}
   FSMCL4=${FSMCL4:-60}
-  [[ $CDUMP = "gdas" ]] && FTSFS=${FTSFS:-0}
-  FAISS=${FAISS:-0}
-  FAISL=${FAISL:-0}
   [[ $chh = 18 ]] && FSNOL=${FSNOL:-"-2"}
-else
-  FNTSFA=${FNTSFA:-""}
-  FNACNA=${FNACNA:-""}
-  FNSNOA=${FNSNOA:-""}
 fi
 
 # NSST Options
@@ -613,9 +609,6 @@ cat > input.nml <<EOF
   debug       = ${gfs_phys_debug:-".false."}
   nstf_name   = $nstf_name
   nst_anl     = $nst_anl
-  do_skeb     = ${DO_SKEB:-".false."}
-  do_shum     = ${DO_SHUM:-".false."}
-  do_sppt     = ${DO_SPPT:-".false."}
   $gfs_physics_nml
 /
 
