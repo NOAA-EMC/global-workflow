@@ -170,7 +170,7 @@ COMIN="$ROTDIR/$CDUMP.$gymd"
 # Remove archived quarter degree GRIB1 files that are (48+$FHMAX_GFS) hrs behind
 if [ $CDUMP = "gfs" ]; then
     GDATE=$($NDATE -$FHMAX_GFS $GDATE)
-    $RM $VFYARC/pgbq*.${CDUMP}.${GDATE}
+    rm -f $VFYARC/pgbq*.${CDUMP}.${GDATE}
 fi
 
 ###############################################################
