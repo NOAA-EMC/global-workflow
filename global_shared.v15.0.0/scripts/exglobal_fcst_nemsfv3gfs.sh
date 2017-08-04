@@ -66,9 +66,9 @@ BASE_GSM=${BASE_GSM:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
-DATA=${DATA:-$pwd/fv3tmp$$}    #temporary running directory
-ROTDIR=${ROTDIR:-$pwd}         #rotating archive directory
-IC_DIR=${IC_DIR:-$pwd}         #cold start initial conditions
+DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
+ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
+ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
 # Model resolution specific parameters
@@ -131,8 +131,8 @@ increment_file=${increment_file:-$memdir/${CDUMP}.t${chh}z.atminc.nc}
 restart_interval=${restart_interval:-0}
 
 if [ $warm_start = ".false." ]; then
-  if [ -d $IC_DIR/${CASE}_$CDATE ]; then
-    $NCP $IC_DIR/${CASE}_$CDATE/* $DATA/INPUT/.
+  if [ -d $ICSDIR/$CDATE/$CDUMP/$CASE/INPUT ]; then
+    $NCP $ICSDIR/$CDATE/$CDUMP/$CASE/INPUT/* $DATA/INPUT/.
   else
     for file in $memdir/INPUT/*.nc; do
       file2=$(echo $(basename $file))
@@ -237,7 +237,7 @@ FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
 FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"}
 
-# Warm start and read increment, update surface variables
+# Warm start and read increment, update surface variables for GDAS cycle only
 # since we do not have SST, SNOW or ICE via global_cycle
 if [ $CDUMP = "gdas" -a $warm_start = ".true." -a $read_increment = ".true." ]; then
   FNTSFA=${FNTSFA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.rtgssthr.grb"}

@@ -114,7 +114,7 @@ export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_
 # Build paths relative to $BASE_SVN
 export BASE_WORKFLOW="$BASE_SVN/fv3gfs/trunk/gfs_workflow.v15.0.0"
 export BASE_GSM="$BASE_SVN/fv3gfs/trunk/global_shared.v15.0.0"
-export BASE_GSI="$BASE_SVN/gsi/branches/EXP-fv3gsi"
+export BASE_GSI="$BASE_SVN/gsi/trunk"
 export BASE_NEMSfv3gfs="$BASE_SVN/nems/apps/NEMSfv3gfs/trunk"
 export BASE_POST="$BASE_SVN/fv3gfs/tags/post4fv3"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
@@ -136,13 +136,14 @@ export BASE_JOB="$BASE_WORKFLOW/fv3gfs/jobs"
 # EXPERIMENT specific environment parameters
 export REALTIME="NO"
 export SDATE=@SDATE@
-export EDATE=@SDATE@
+export EDATE=@EDATE@
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
+export ICSDIR="$PTMP/FV3ICS"
 export ATARDIR="/NCEPDEV/emc-global/1year/$USER/$machine/scratch/$PSLOT"
 
 # Resolution specific parameters
@@ -150,8 +151,8 @@ export LEVS=65
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
-# Surface cycle update frequence
-export FHCYC=6
+# Surface cycle update frequency
+export FHCYC=24
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -159,7 +160,7 @@ export FHMAX=9
 export FHOUT=3
 
 # GFS cycle info
-export gfs_cyc=0 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0

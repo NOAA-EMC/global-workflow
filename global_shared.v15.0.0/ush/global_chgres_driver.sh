@@ -26,7 +26,6 @@ export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ...
 export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
 export LEVS=${LEVS:-65}
 export LSOIL=${LSOIL:-4}
-export ictype=${ictype:-nemsgfs}             # nemsgfs for q3fy17 gfs with new land datasets; opsgfs for q2fy16 gfs.
 export nst_anl=${nst_anl:-".false."}         # false means to do sst orographic adjustment for lakes
 
 export VERBOSE=YES
@@ -100,7 +99,22 @@ export FNMSKH=${FIXgsm}/seaice_newland.grb
 export ymd=`echo $CDATE | cut -c 1-8`
 export cyc=`echo $CDATE | cut -c 9-10`
 
-if [ $ictype = opsgfs ]; then
+# Determine if we are current operations with NSST or the one before that
+if [ ${ATMANL:-"NULL"} = "NULL" ]; then
+ if [ -s ${INIDIR}/nsnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.nstanl.nemsio ]; then
+  ictype='opsgfs'
+ else
+  ictype='oldgfs'
+ fi
+else
+ if [ ${NSTANL:-"NULL"} = "NULL" ]; then
+  ictype='oldgfs'
+ else
+  ictype='opsgfs'
+ fi
+fi
+
+if [ $ictype = oldgfs ]; then
  nst_anl=".false."
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
@@ -111,6 +125,7 @@ if [ $ictype = opsgfs ]; then
    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl
   fi
  fi
+ export NSTANL="NULL"
  export SOILTYPE_INP=zobler
  export SOILTYPE_OUT=zobler
  export VEGTYPE_INP=sib
@@ -128,7 +143,7 @@ if [ $ictype = opsgfs ]; then
   export LATB_ATM=1536
  fi
 
-elif [ $ictype = nemsgfs ]; then
+elif [ $ictype = opsgfs ]; then
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
@@ -171,8 +186,8 @@ export LONB=$LONB_ATM
 $CHGRESSH
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-  echo "***ERROR*** rc= $rc"
-  exit $rc
+ echo "***ERROR*** rc= $rc"
+ exit $rc
 fi
 
 mv ${DATA}/gfs_data.tile*.nc  $OUTDIR/.
@@ -194,12 +209,11 @@ while [ $tile -le $ntiles ]; do
  $CHGRESSH
  rc=$?
  if [[ $rc -ne 0 ]] ; then
-   echo "***ERROR*** rc= $rc"
-   exit $rc
+  echo "***ERROR*** rc= $rc"
+  exit $rc
  fi
  mv ${DATA}/out.sfc.tile${tile}.nc $OUTDIR/sfc_data.tile${tile}.nc
-tile=`expr $tile + 1 `
+ tile=`expr $tile + 1 `
 done
 
 exit 0
-
