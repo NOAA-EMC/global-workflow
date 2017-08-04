@@ -27,9 +27,9 @@ echo "BEGIN: config.resources"
 
 if [ $step = "prep" -o $step = "prepbufr" ]; then
 
-    export wtime_prep="00:10:00"
-    export npe_prep=12
-    export npe_node_prep=12
+    eval "export wtime_$step='00:10:00'"
+    eval "export npe_$step=12"
+    eval "export npe_node_$step=12"
 
 elif [ $step = "anal" ]; then
 
@@ -42,7 +42,7 @@ elif [ $step = "fcst" ]; then
 
     export wtime_fcst="00:10:00"
     export wtime_fcst_gfs="03:00:00"
-    export npe_fcst=`echo "$layout_x * $layout_y * 6" | bc`
+    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_fcst=12
     export memory_fcst="1024M"
 
@@ -62,11 +62,11 @@ elif [ $step = "vrfy" ]; then
     export npe_node_vrfy=1
     export memory_vrfy="3072M"
 
-elif [ $step = "arch" ]; then
+elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
-    export wtime_arch="01:00:00"
-    export npe_arch=1
-    export npe_node_arch=1
+    eval "export wtime_$step='06:00:00'"
+    eval "export npe_$step=1"
+    eval "export npe_node_$step=1"
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
@@ -93,7 +93,7 @@ elif [ $step = "ecen" ]; then
 elif [ $step = "efcs" ]; then
 
     export wtime_efcs="01:00:00"
-    export npe_efcs=`echo "$layout_x * $layout_y * 6" | bc`
+    export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_efcs=24
     export memory_efcs="254M"
 
@@ -104,11 +104,10 @@ elif [ $step = "epos" ]; then
     export npe_node_epos=12
     export memory_epos="254M"
 
-elif [ $step = "earc" ]; then
+else
 
-    export wtime_earc="06:00:00"
-    export npe_earc=1
-    export npe_node_earc=1
+    echo "Invalid step = $step, ABORT!"
+    exit 2
 
 fi
 
