@@ -252,9 +252,6 @@ export SFCHDR=${SFCHDR:-$EXECgsm/global_sfchdr$XC}
 export CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
 export nemsioget=${nemsioget:-$NWPROD/ngac.v1.0.0/exec/nemsio_get}
 export NEMSIO_IN=${NEMSIO_IN:-.true.}
-export OUTTYP=${OUTTYP:-1}
-if [ ${NEMSIO_OUT:-".true."} = .true. ]; then export OUTTYP=1 ; fi
-if [ ${SIGIO_OUT:-".false."} = .true. ]; then export OUTTYP=2 ; fi
 
 if [[ $KEEPFH = YES ]];then
   if [[ $NEMSIO_IN = .true. ]] ; then
@@ -386,10 +383,10 @@ EOF
 
 eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
  &NAMCYC 
-  idim=$LONB, jdim=$LATB, lsoil=$LSOIL,
+  idim=$CRES, jdim=$CRES, lsoil=$LSOIL,
   iy=$iy, im=$im, id=$id, ih=$ih, fh=$FHOUR,
   DELTSFC=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,NST_ANL=$NST_ANL,
-  OUTTYP=$OUTTYP,isot=$ISOT,ivegsrc=$IVEGSRC
+  isot=$ISOT,ivegsrc=$IVEGSRC
  /
  &NAMSFCD
   FNBGSI="$SFCGES",
