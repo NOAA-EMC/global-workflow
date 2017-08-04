@@ -23,29 +23,28 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-com/gfs/_ENVIR_/gfs._PDY_/
-- /gfs*.t??z.*pgrb2.*
-- /gfs*.t??z.*pgrb2b.*
-- /gfs.t??z.atmf*
-- /gfs.t??z.*flx*
-- /gfs.t??z.*atmfc*
-- /gfs_grb211.t??z.pgrsfnf*
-- /wafsgfs??.t??z.grisfnf*
-- /gfs.t??z.master.*
-- /gfs*sfcf*
+com/gfs/_ENVIR_/sdm_rtdm/
++ /avgdata/
++ /avgdata/obcount_30davg.gfs._MONPREV_
++ /avgdata/obcount_30davg.gfs.current
+- *
+B 256000
  
-B 45000000
 
-com/gfs/_ENVIR_/gfs._PDYm1_/
-- /gfs*.t??z.*pgrb2.*
-- /gfs*.t??z.*pgrb2b.*
-- /gfs.t??z.atmf*
-- /gfs.t??z.*flx*
-- /gfs.t??z.*atmfc*
-- /gfs_grb211.t??z.pgrsfnf*
-- /wafsgfs??.t??z.grisfnf*
-- /gfs.t??z.master.*
-- /gfs*sfcf*
+com/gfs/_ENVIR_/sdm_rtdm/
++ /obcount_30day/
++ /obcount_30day/gfs/
++ /obcount_30day/gfs/gfs._PDYm1_/***
++ /obcount_30day/gfs/gfs._PDY_/***
+- *
+B 2000000
  
-B 45000000
+
+com/realtime/_ENVIR_/gfs._PDY_/
+B 10000000
+ 
+
+com/realtime/_ENVIR_/gfs._PDYm1_/
+B 10000000
+ 
 
