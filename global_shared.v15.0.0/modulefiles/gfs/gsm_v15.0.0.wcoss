@@ -2,7 +2,7 @@
 #############################################################
 ## Fanglin.Yang@noaa.gov
 ## NOAA/NWS/NCEP/EMC
-## gfs gsm_v14.1.0  
+## gfs gsm_v15.0.0  
 #############################################################
 proc ModulesHelp { } {
 puts stderr "Set environment veriables for gfs gsm component"
@@ -11,7 +11,7 @@ puts stderr "to build the gsm for WCOSS production.\n"
 }
 module-whatis "gfs_gsm"
 
-set ver gsm_v14.1.0
+set ver gsm_v15.0.0
 
 # Loading Intel Compiler Suite
 module load ics/14.0.1
