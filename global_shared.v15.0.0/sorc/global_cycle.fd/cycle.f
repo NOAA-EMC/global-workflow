@@ -450,7 +450,11 @@
 !
       CALL WRITE_DATA(SLIFCS,TSFFCS,SNOFCS,TG3FCS,ZORFCS,
      &                ALBFCS,ALFFCS,VEGFCS,CNPFCS,F10M,
-     &                T2M,Q2M,VETFCS,SOTFCS,
+     &                T2M,Q2M,VETFCS,SOTFCS,USTAR,FMM,FHH,
+     &                SICFCS,SIHFCS,SITFCS,
+     &                TPRCP,SRFLAG,SWDFCS,
+     &                VMNFCS,VMXFCS,SLPFCS,ABSFCS,
+     &                SLCFCS,SMCFCS,STCFCS,
      &                IDIM,JDIM,LENSFC,LSOIL)
 
       RETURN

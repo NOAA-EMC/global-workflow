@@ -10,7 +10,18 @@
 
  subroutine write_data(slifcs,tsffcs,snofcs,tg3fcs,zorfcs, &
                        albfcs,alffcs,vegfcs,cnpfcs,f10m, &
-                       t2m,q2m,vetfcs,sotfcs,idim,jdim,lensfc,lsoil)
+                       t2m,q2m,vetfcs,sotfcs,ustar,fmm,fhh, &
+                       sicfcs,sihfcs,sitfcs,tprcp,srflag, &
+                       swdfcs,vmnfcs,vmxfcs,slpfcs, &
+                       absfcs,slcfcs,smcfcs,stcfcs,&
+                       idim,jdim,lensfc,lsoil)
+
+! Note: the model restart files contain an additional snow field -
+! snow cover (snocvr).  That field is required for bit identical
+! reproducability.  If that record does not exist, the model
+! will compute it as an initialization step.  Because this
+! program will update snow, it let the model update snow
+! cover by not outputting this field.
 
  use netcdf
 
@@ -25,12 +36,21 @@
  real, intent(in)            :: f10m(lensfc), alffcs(lensfc,2)
  real, intent(in)            :: t2m(lensfc), q2m(lensfc)
  real, intent(in)            :: vetfcs(lensfc), sotfcs(lensfc)
+ real, intent(in)            :: ustar(lensfc), fmm(lensfc)
+ real, intent(in)            :: fhh(lensfc), sicfcs(lensfc)
+ real, intent(in)            :: sihfcs(lensfc), sitfcs(lensfc)
+ real, intent(in)            :: tprcp(lensfc), srflag(lensfc)
+ real, intent(in)            :: swdfcs(lensfc), vmnfcs(lensfc)
+ real, intent(in)            :: vmxfcs(lensfc), slpfcs(lensfc)
+ real, intent(in)            :: absfcs(lensfc), slcfcs(lensfc,lsoil)
+ real, intent(in)            :: smcfcs(lensfc,lsoil), stcfcs(lensfc,lsoil)
 
  character(len=300)          :: outfile
 
  integer                     :: fsize=65536, inital=0
  integer                     :: header_buffer_val = 16384
  integer                     :: dims_3d(3), dims_strt(3), dims_end(3)
+ integer                     :: dims_4d(4), dims4_strt(4), dims4_end(4)
  integer                     :: error, i, ncid
  integer                     :: dim_x, dim_y, dim_lsoil, dim_time
  integer                     :: id_x, id_y, id_lsoil, id_time
@@ -38,11 +58,16 @@
  integer                     :: id_alnwf, id_alvwf, id_alnsf, id_alvsf
  integer                     :: id_tg3, id_zorl, id_facsf, id_facwf
  integer                     :: id_vfrac, id_canopy, id_f10m, id_t2m
- integer                     :: id_q2m, id_stype, id_vtype
+ integer                     :: id_q2m, id_stype, id_vtype, id_uustar
+ integer                     :: id_ffmm, id_ffhh, id_fice, id_hice
+ integer                     :: id_tisfc, id_tprcp, id_srflag
+ integer                     :: id_snwdph, id_shdmin, id_shdmax
+ integer                     :: id_slope, id_snoalb
+ integer                     :: id_stc, id_smc, id_slc
 
- real(kind=4), allocatable   :: lsoil_data(:), x_data(:), y_data(:)
  real(kind=4)                :: times
- real(kind=8), allocatable   :: dum2d(:,:)
+ real(kind=4), allocatable   :: lsoil_data(:), x_data(:), y_data(:)
+ real(kind=8), allocatable   :: dum2d(:,:), dum3d(:,:,:)
 
  include "netcdf.inc"
 
@@ -231,6 +256,123 @@
      error = nf_put_att_text(ncid, id_stype, "units", 4, "none")
      call netcdf_err(error, 'DEFINING STYPE UNITS' )
 
+     error = nf_def_var(ncid, 'uustar', NF_DOUBLE, 3, dims_3d, id_uustar)
+     call netcdf_err(error, 'DEFINING UUSTAR' )
+     error = nf_put_att_text(ncid, id_uustar, "long_name", 6, "uustar")
+     call netcdf_err(error, 'DEFINING UUSTAR LONG NAME' )
+     error = nf_put_att_text(ncid, id_uustar, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING UUSTAR UNITS' )
+
+     error = nf_def_var(ncid, 'ffmm', NF_DOUBLE, 3, dims_3d, id_ffmm)
+     call netcdf_err(error, 'DEFINING FFMM' )
+     error = nf_put_att_text(ncid, id_ffmm, "long_name", 4, "ffmm")
+     call netcdf_err(error, 'DEFINING FFMM LONG NAME' )
+     error = nf_put_att_text(ncid, id_ffmm, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING FFMM UNITS' )
+
+     error = nf_def_var(ncid, 'ffhh', NF_DOUBLE, 3, dims_3d, id_ffhh)
+     call netcdf_err(error, 'DEFINING FFHH' )
+     error = nf_put_att_text(ncid, id_ffhh, "long_name", 4, "ffhh")
+     call netcdf_err(error, 'DEFINING FFHH LONG NAME' )
+     error = nf_put_att_text(ncid, id_ffhh, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING FFHH UNITS' )
+
+     error = nf_def_var(ncid, 'hice', NF_DOUBLE, 3, dims_3d, id_hice)
+     call netcdf_err(error, 'DEFINING HICE' )
+     error = nf_put_att_text(ncid, id_hice, "long_name", 4, "hice")
+     call netcdf_err(error, 'DEFINING HICE LONG NAME' )
+     error = nf_put_att_text(ncid, id_hice, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING HICE UNITS' )
+
+     error = nf_def_var(ncid, 'fice', NF_DOUBLE, 3, dims_3d, id_fice)
+     call netcdf_err(error, 'DEFINING FICE' )
+     error = nf_put_att_text(ncid, id_fice, "long_name", 4, "fice")
+     call netcdf_err(error, 'DEFINING FICE LONG NAME' )
+     error = nf_put_att_text(ncid, id_fice, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING FICE UNITS' )
+
+     error = nf_def_var(ncid, 'tisfc', NF_DOUBLE, 3, dims_3d, id_tisfc)
+     call netcdf_err(error, 'DEFINING TISFC' )
+     error = nf_put_att_text(ncid, id_tisfc, "long_name", 5, "tisfc")
+     call netcdf_err(error, 'DEFINING TISFC LONG NAME' )
+     error = nf_put_att_text(ncid, id_tisfc, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING TISFC UNITS' )
+
+     error = nf_def_var(ncid, 'tprcp', NF_DOUBLE, 3, dims_3d, id_tprcp)
+     call netcdf_err(error, 'DEFINING TPRCP' )
+     error = nf_put_att_text(ncid, id_tprcp, "long_name", 5, "tprcp")
+     call netcdf_err(error, 'DEFINING TPRCP LONG NAME' )
+     error = nf_put_att_text(ncid, id_tprcp, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING TPRCP UNITS' )
+
+     error = nf_def_var(ncid, 'srflag', NF_DOUBLE, 3, dims_3d, id_srflag)
+     call netcdf_err(error, 'DEFINING SRFLAG' )
+     error = nf_put_att_text(ncid, id_srflag, "long_name", 6, "srflag")
+     call netcdf_err(error, 'DEFINING SRFLAG LONG NAME' )
+     error = nf_put_att_text(ncid, id_srflag, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SRFLAG UNITS' )
+
+     error = nf_def_var(ncid, 'snwdph', NF_DOUBLE, 3, dims_3d, id_snwdph)
+     call netcdf_err(error, 'DEFINING SNWDPH' )
+     error = nf_put_att_text(ncid, id_snwdph, "long_name", 6, "snwdph")
+     call netcdf_err(error, 'DEFINING SNWDPH LONG NAME' )
+     error = nf_put_att_text(ncid, id_snwdph, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SNWDPH UNITS' )
+
+     error = nf_def_var(ncid, 'shdmin', NF_DOUBLE, 3, dims_3d, id_shdmin)
+     call netcdf_err(error, 'DEFINING SHDMIN' )
+     error = nf_put_att_text(ncid, id_shdmin, "long_name", 6, "shdmin")
+     call netcdf_err(error, 'DEFINING SHDMIN LONG NAME' )
+     error = nf_put_att_text(ncid, id_shdmin, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SHDMIN UNITS' )
+
+     error = nf_def_var(ncid, 'shdmax', NF_DOUBLE, 3, dims_3d, id_shdmax)
+     call netcdf_err(error, 'DEFINING SHDMAX' )
+     error = nf_put_att_text(ncid, id_shdmax, "long_name", 6, "shdmax")
+     call netcdf_err(error, 'DEFINING SHDMAX LONG NAME' )
+     error = nf_put_att_text(ncid, id_shdmax, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SHDMAX UNITS' )
+
+     error = nf_def_var(ncid, 'slope', NF_DOUBLE, 3, dims_3d, id_slope)
+     call netcdf_err(error, 'DEFINING SLOPE' )
+     error = nf_put_att_text(ncid, id_slope, "long_name", 5, "slope")
+     call netcdf_err(error, 'DEFINING SLOPE LONG NAME' )
+     error = nf_put_att_text(ncid, id_slope, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SLOPE UNITS' )
+
+     error = nf_def_var(ncid, 'snoalb', NF_DOUBLE, 3, dims_3d, id_snoalb)
+     call netcdf_err(error, 'DEFINING SNOALB' )
+     error = nf_put_att_text(ncid, id_snoalb, "long_name", 6, "snoalb")
+     call netcdf_err(error, 'DEFINING SNOALB LONG NAME' )
+     error = nf_put_att_text(ncid, id_snoalb, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SNOALB UNITS' )
+
+     dims_4d(1) = dim_x
+     dims_4d(2) = dim_y
+     dims_4d(3) = dim_lsoil
+     dims_4d(4) = dim_time
+
+     error = nf_def_var(ncid, 'stc', NF_DOUBLE, 4, dims_4d, id_stc)
+     call netcdf_err(error, 'DEFINING STC' )
+     error = nf_put_att_text(ncid, id_stc, "long_name", 3, "stc")
+     call netcdf_err(error, 'DEFINING STC LONG NAME' )
+     error = nf_put_att_text(ncid, id_stc, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING STC UNITS' )
+
+     error = nf_def_var(ncid, 'smc', NF_DOUBLE, 4, dims_4d, id_smc)
+     call netcdf_err(error, 'DEFINING SMC' )
+     error = nf_put_att_text(ncid, id_smc, "long_name", 3, "smc")
+     call netcdf_err(error, 'DEFINING SMC LONG NAME' )
+     error = nf_put_att_text(ncid, id_smc, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SMC UNITS' )
+
+     error = nf_def_var(ncid, 'slc', NF_DOUBLE, 4, dims_4d, id_slc)
+     call netcdf_err(error, 'DEFINING SLC' )
+     error = nf_put_att_text(ncid, id_slc, "long_name", 3, "slc")
+     call netcdf_err(error, 'DEFINING SLC LONG NAME' )
+     error = nf_put_att_text(ncid, id_slc, "units", 4, "none")
+     call netcdf_err(error, 'DEFINING SLC UNITS' )
+
      error = nf__enddef(ncid, header_buffer_val,4,0,4)
      call netcdf_err(error, 'DEFINING HEADER' )
 
@@ -341,6 +483,82 @@
      error = nf_put_vara_double( ncid, id_stype, dims_strt, dims_end, dum2d)
      call netcdf_err(error, 'WRITING STYPE RECORD' )
 
+     dum2d = reshape(ustar, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_uustar, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING UUSTAR RECORD' )
+
+     dum2d = reshape(fmm, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_ffmm, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING FFMM RECORD' )
+
+     dum2d = reshape(fhh, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_ffhh, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING FFHH RECORD' )
+
+     dum2d = reshape(sihfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_hice, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING HICE RECORD' )
+
+     dum2d = reshape(sicfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_fice, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING FICE RECORD' )
+
+     dum2d = reshape(sitfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_tisfc, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING TISFC RECORD' )
+
+     dum2d = reshape(tprcp, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_tprcp, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING TPRCP RECORD' )
+
+     dum2d = reshape(srflag, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_srflag, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SRFLAG RECORD' )
+
+     dum2d = reshape(swdfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_snwdph, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SNWDPH RECORD' )
+
+     dum2d = reshape(vmnfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_shdmin, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SHDMIN RECORD' )
+
+     dum2d = reshape(vmxfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_shdmax, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SHDMAX RECORD' )
+
+     dum2d = reshape(slpfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_slope, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SLOPE RECORD' )
+
+     dum2d = reshape(absfcs, (/idim,jdim/))
+     error = nf_put_vara_double( ncid, id_snoalb, dims_strt, dims_end, dum2d)
+     call netcdf_err(error, 'WRITING SNOALB RECORD' )
+
+     deallocate(dum2d)
+
+     dims4_strt(1:4) = 1
+     dims4_end(1) = idim
+     dims4_end(2) = jdim
+     dims4_end(3) = lsoil
+     dims4_end(4) = 1
+
+     allocate(dum3d(idim,jdim,lsoil))
+
+     dum3d = reshape(slcfcs, (/idim,jdim,lsoil/))
+     error = nf_put_vara_double( ncid, id_slc, dims4_strt, dims4_end, dum3d)
+     call netcdf_err(error, 'WRITING SLC RECORD' )
+
+     dum3d = reshape(smcfcs, (/idim,jdim,lsoil/))
+     error = nf_put_vara_double( ncid, id_smc, dims4_strt, dims4_end, dum3d)
+     call netcdf_err(error, 'WRITING SMC RECORD' )
+
+     dum3d = reshape(stcfcs, (/idim,jdim,lsoil/))
+     error = nf_put_vara_double( ncid, id_stc, dims4_strt, dims4_end, dum3d)
+     call netcdf_err(error, 'WRITING STC RECORD' )
+
+     deallocate(dum3d)
+
    error = nf_close(ncid)
 
  end subroutine write_data
@@ -367,7 +585,8 @@
  REAL, ALLOCATABLE      :: DUMMY(:,:), GEOLAT(:,:), GEOLON(:,:)
  REAL(KIND=4), ALLOCATABLE :: DUMMY4(:,:)
 
- TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_grid.tile1.nc'
+! phase 2 TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_grid.tile1.nc'
+ TILEFILE='/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C384/C384_grid.tile1.nc'
 
  PRINT*, "READ FV3 GRID INFO FROM: "//TRIM(TILEFILE)
 
@@ -433,7 +652,8 @@
 
  DEALLOCATE(GEOLAT, DUMMY)
 
- TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_oro_data.tile1.nc'
+! phase 2  TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_oro_data.tile1.nc'
+ TILEFILE='/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C384/C384_oro_data.tile1.nc'
 
  PRINT*, "READ FV3 OROG INFO FROM: "//TRIM(TILEFILE)
 
@@ -529,7 +749,8 @@
 
  REAL(KIND=8), ALLOCATABLE :: DUMMY(:,:), DUMMY3D(:,:,:)
 
- TILEFILE='/ptmpp1/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc'
+!phase 2 TILEFILE='/ptmpp1/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc'
+ TILEFILE='/gpfs/hps/ptmp/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc'
 
  PRINT*, "READ INPUT SFC DATA FROM: "//TRIM(TILEFILE)
 
