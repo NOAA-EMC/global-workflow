@@ -78,6 +78,7 @@
  call netcdf_err(error, 'CREATING FILE='//trim(outfile) )
 
  print*,'top of write ',idim,jdim,lsoil
+ print*,'stcfcs ',maxval(stcfcs),minval(stcfcs)
 
 !--- define dimensions
  error = nf_def_dim(ncid, 'xaxis_1', idim, dim_x)
@@ -563,7 +564,8 @@
 
  end subroutine write_data
 
- SUBROUTINE READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,IDIM,JDIM,IJDIM)
+ SUBROUTINE READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,FNOROG,FNGRID,&
+                              IDIM,JDIM,IJDIM)
 
  use netcdf
 
@@ -571,12 +573,12 @@
 
  include "netcdf.inc"
 
+ CHARACTER(LEN=*), INTENT(IN) :: FNOROG, FNGRID
+
  INTEGER, INTENT(IN)    :: IDIM, JDIM, IJDIM
 
  REAL, INTENT(OUT)      :: RLA(IJDIM),RLO(IJDIM)
  REAL, INTENT(OUT)      :: OROG(IJDIM),OROG_UF(IJDIM)
-
- CHARACTER(LEN=300)     :: TILEFILE
 
  INTEGER                :: ERROR, NCID, NCID_OROG
  INTEGER                :: I, II, J, JJ
@@ -585,13 +587,10 @@
  REAL, ALLOCATABLE      :: DUMMY(:,:), GEOLAT(:,:), GEOLON(:,:)
  REAL(KIND=4), ALLOCATABLE :: DUMMY4(:,:)
 
-! phase 2 TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_grid.tile1.nc'
- TILEFILE='/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C384/C384_grid.tile1.nc'
+ PRINT*, "READ FV3 GRID INFO FROM: "//TRIM(FNGRID)
 
- PRINT*, "READ FV3 GRID INFO FROM: "//TRIM(TILEFILE)
-
- ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ ERROR=NF90_OPEN(TRIM(FNGRID),NF_NOWRITE,NCID)
+ CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(FNGRID) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'nx', ID_DIM)
  CALL NETCDF_ERR(ERROR, 'ERROR READING NX ID' )
@@ -652,13 +651,10 @@
 
  DEALLOCATE(GEOLAT, DUMMY)
 
-! phase 2  TILEFILE='/ptmpp1/George.Gayno/control/C384/fix/C384_oro_data.tile1.nc'
- TILEFILE='/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C384/C384_oro_data.tile1.nc'
+ PRINT*, "READ FV3 OROG INFO FROM: "//TRIM(FNOROG)
 
- PRINT*, "READ FV3 OROG INFO FROM: "//TRIM(TILEFILE)
-
- ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID_OROG)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ ERROR=NF90_OPEN(TRIM(FNOROG),NF_NOWRITE,NCID_OROG)
+ CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(FNOROG) )
 
  ALLOCATE(DUMMY4(IDIM,JDIM))
 
@@ -711,13 +707,15 @@
                             TPRCP,SRFLAG,SWDFCS,  &
                             VMNFCS,VMXFCS,SLCFCS, &
                             SLPFCS,ABSFCS,T2M,Q2M,SLMASK, &
-                            ZSOIL,LSOIL,LENSFC)
+                            ZSOIL,LSOIL,LENSFC,FNBGSI)
 
  use netcdf
 
  IMPLICIT NONE
 
  include "netcdf.inc"
+
+ CHARACTER(LEN=*), INTENT(IN) :: FNBGSI
 
  INTEGER, INTENT(IN)       :: LSOIL, LENSFC
 
@@ -741,21 +739,16 @@
  REAL, INTENT(OUT)         :: STCFCS(LENSFC,LSOIL)
  REAL(KIND=4), INTENT(OUT) :: ZSOIL(LSOIL)
 
- CHARACTER(LEN=300)        :: TILEFILE
-
  INTEGER                   :: ERROR, NCID
  INTEGER                   :: IDIM, JDIM, ID_DIM
  INTEGER                   :: ID_VAR
 
  REAL(KIND=8), ALLOCATABLE :: DUMMY(:,:), DUMMY3D(:,:,:)
 
-!phase 2 TILEFILE='/ptmpp1/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc'
- TILEFILE='/gpfs/hps/ptmp/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc'
+ PRINT*, "READ INPUT SFC DATA FROM: "//TRIM(FNBGSI)
 
- PRINT*, "READ INPUT SFC DATA FROM: "//TRIM(TILEFILE)
-
- ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ ERROR=NF90_OPEN(TRIM(FNBGSI),NF_NOWRITE,NCID)
+ CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(FNBGSI) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'xaxis_1', ID_DIM)
  CALL NETCDF_ERR(ERROR, 'READING xaxis_1' )

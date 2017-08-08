@@ -48,8 +48,6 @@
 #                   defaults to none
 #     NCP           Copy command
 #                   defaults to cp
-#     SFCHDR        Command to read surface header
-#                   defaults to ${EXECgsm}/global_sfchdr$XC
 #     CYCLEXEC      Surface cycle executable
 #                   defaults to ${EXECgsm}/global_cycle$XC
 #     FNGLAC        Input glacier climatology GRIB file
@@ -91,11 +89,6 @@
 #                   defaults to ${FIXgsm}/seaice_newland.grb
 #     FNOROG        Input orography GRIB file (horiz resolution dependent)
 #                   defaults to ${FIXgsm}/global_orography.t$JCAP.grb
-#     FNOROG_UF     Input unfiltered orography GRIB file
-#                   (horiz resolution dependent)
-#                   defaults to ${FIXgsm}/global_orography_uf.t$JCAP.grb
-#     FNMASK        Input land mask GRIB file (horiz resolution dependent)
-#                   defaults to ${FIXgsm}/global_slmask.t$JCAP.grb
 #     FNTSFA        Input SST analysis GRIB file
 #                   defaults to ${COMIN}/${PREINP}sstgrb${SUFINP}
 #     FNACNA        Input sea ice analysis GRIB file
@@ -110,8 +103,6 @@
 #                   defaults to 'eval [[ $err = 0 ]]'
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
-#     KEEPFH        Flag to keep fhour the same (YES or NO)
-#                   defaults to NO
 #     JCAP          Spectral truncation
 #                   defaults to 382
 #     CDATE         Output analysis date in yyyymmddhh format
@@ -127,11 +118,13 @@
 #     FSMCL2        Scale in days to relax to soil moisture climatology
 #                   defaults to 60
 #     DELTSFC       Cycling frequency in hours
-#                   defaults to forecast hour of $SFCGES
+#                   defaults to 0
 #     IALB          Integer flag for Albedo - 0 for Brigleb and 1 for Modis
-#                   based albedo - defaults to 0
+#                   based albedo - defaults to 1
 #     ISOT          Integer flag for soil type - 0 for zobler, 1 for statsgo
+#                   Defaults to 1.
 #     IVEGSRC       Integer flag for veg type - 1 for igbp, 2 for sib
+#                   Defaults to 1.
 #     CYCLVARS      Other namelist inputs to the cycle executable
 #                   defaults to none set
 #     NTHREADS      Number of threads
@@ -188,8 +181,6 @@
 #                  $FNABSC
 #                  $FNMSKH
 #                  $FNOROG
-#                  $FNOROG_UF
-#                  $FNMASK
 #
 #     input data : $SFCGES
 #                  $FNTSFA
@@ -230,14 +221,17 @@ export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 export SFCGES=${1:-${SFCGES:?}}
 export SFCANL=${2:-${SFCANL}}
 
+export CRES=${CRES:-768}
+
 #  Directories.
-export global_shared_ver=${global_shared_ver:-v13.0.0}
+export global_shared_ver=${global_shared_ver:-v15.0.0}
 export BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
 export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
 export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
 export USHgsm=${USHgsm:-$HOMEglobal/ush}
+export FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/C${CRES}}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
@@ -246,39 +240,20 @@ export COMOUT=${COMOUT:-$(pwd)}
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export KEEPFH=${KEEPFH:-NO}
 export JCAP=${JCAP:-1534}
-export SFCHDR=${SFCHDR:-$EXECgsm/global_sfchdr$XC}
 export CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
-export nemsioget=${nemsioget:-$NWPROD/ngac.v1.0.0/exec/nemsio_get}
-export NEMSIO_IN=${NEMSIO_IN:-.true.}
 
-if [[ $KEEPFH = YES ]];then
-  if [[ $NEMSIO_IN = .true. ]] ; then
-    export CDATE=$($nemsioget $SFCGES idate | grep -i "idate" |awk -F= '{print $2}')
-    export FHOUR=$($nemsioget $SFCGES nfhour |awk -F"= " '{print $2}' |awk -F" " '{print $1}')
-  else
-    export CDATE=$($SFCHDR $SFCGES IDATE||echo 0)
-    export FHOUR=$($SFCHDR $SFCGES FHOUR||echo 0)
-  fi
-else
-  export CDATE=${CDATE}
-  export FHOUR=${FHOUR:-00}
-fi
-if [[ $NEMSIO_IN = .true. ]] ; then
-  export LATB=${LATB:-$($nemsioget $SFCGES LATR |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export LONB=${LONB:-$($nemsioget $SFCGES LONR |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-  export DELTSFC=${DELTSFC:-$($nemsioget $SFCGES nfhour |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
-else
-  export LATB=${LATB:-$($SFCHDR $SFCGES LATB||echo 0)}
-  export LONB=${LONB:-$($SFCHDR $SFCGES LONB||echo 0)}
-  export DELTSFC=${DELTSFC:-$($SFCHDR $SFCGES FHOUR||echo 0)}
-fi
+export CDATE=${CDATE:?}
+export FHOUR=${FHOUR:-00}
+export LONB=${LONB:-3072}
+export LATB=${LATB:-1536}
+export DELTSFC=${DELTSFC:-0}
+
 export LSOIL=${LSOIL:-4}
 export FSMCL2=${FSMCL2:-60}
-export IALB=${IALB:-0}
-export ISOT=${ISOT:-0}
-export IVEGSRC=${IVEGSRC:-2}
+export IALB=${IALB:-1}
+export ISOT=${ISOT:-1}
+export IVEGSRC=${IVEGSRC:-1}
 export CYCLVARS=${CYCLVARS}
 export NTHREADS=${NTHREADS:-4}
 export NTHSTACK=${NTHSTACK:-4096000000}
@@ -287,25 +262,24 @@ export NST_ANL=${NST_ANL:-.false.}
 
 export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
 export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
-export FNTSFC=${FNTSFC:-${FIXgsm}/cfs_oi2sst1x1monclim19822001.grb}
+export FNTSFC=${FNTSFC:-${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb}
 export FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
-export FNZORC=${FNZORC:-sib}
-export FNALBC=${FNALBC:-${FIXgsm}/global_albedo4.1x1.grb}
+export FNZORC=${FNZORC:-igbp}
+export FNALBC=${FNALBC:-${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb}
 export FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
-export FNAISC=${FNAISC:-${FIXgsm}/cfs_ice1x1monclim19822001.grb}
+export FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
 export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
-export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
-export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
+export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb}
+export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb}
 export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
 export FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
 export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
-export FNABSC=${FNABSC:-${FIXgsm}/global_snoalb.1x1.grb}
+export FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
 export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-export FNOROG=${FNOROG:-${FIXgsm}/global_orography.t$JCAP.$LONB.$LATB.grb}
-export FNOROG_UF=${FNOROG_UF:-${FIXgsm}/global_orography_uf.t$JCAP.$LONB.$LATB.grb}
-export FNMASK=${FNMASK:-${FIXgsm}/global_slmask.t$JCAP.$LONB.$LATB.grb}
+export FNOROG=${FNOROG:-${FIXfv3}/C${CRES}_oro_data.tile1.nc}
+export FNGRID=${FNGRID:-${FIXfv3}/C${CRES}_grid.tile1.nc}
 export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
 export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
 export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb${SUFINP}}
@@ -392,9 +366,7 @@ eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
   FNBGSI="$SFCGES",
   FNBGSO="$SFCANL",
   FNOROG="$FNOROG",
-  FNOROG_UF="$FNOROG_UF",
-  FNMASK="$FNMASK",
-  LDEBUG=.false.,
+  FNGRID="$FNGRID",
  /
 EOF
 
