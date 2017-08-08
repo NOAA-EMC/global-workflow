@@ -9,7 +9,7 @@
 !  2015-05-26:  Hang Lei  Added NEMSIO read/write function in the code
 !  2017-08-08:  Gayno     Modify to work on cubed-sphere grid
 !
-!  LUGB         Unit number used in the subprogram
+!  LUGB         Unit number used in the sfccycle subprogram
 !  IDIM,JDIM    i/j dimension of a cubed-sphere tile.
 !  IY,IM,ID,IH  Year, month, day, and hour of initial state.
 !  FH           Forecast hour
@@ -57,7 +57,7 @@
       END PROGRAM SFC_DRV
 !
       SUBROUTINE MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC
-     &,                  ialb,use_ufo,nst_anl,isot,ivegsrc)
+     &,                  IALB,USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
       IMPLICIT NONE
 !
@@ -67,73 +67,81 @@
       LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
 
       REAL,    INTENT(IN) :: FH, DELTSFC
-
-      INTEGER  LENSFC
-!
-      REAL TSFFCS(IDIM*JDIM), SNOFCS(IDIM*JDIM),
-     1     ZORFCS(IDIM*JDIM), ALBFCS(IDIM*JDIM,4), AISFCS(IDIM*JDIM),
-     2     TG3FCS(IDIM*JDIM), ALFFCS(IDIM*JDIM,2),
-     3     CVFCS (IDIM*JDIM), CVBFCS(IDIM*JDIM),   CVTFCS(IDIM*JDIM),
-     4     CNPFCS(IDIM*JDIM),
-     5     SMCFCS(IDIM*JDIM,LSOIL), STCFCS(IDIM*JDIM,LSOIL),
-     6     SLIFCS(IDIM*JDIM),       VEGFCS(IDIM*JDIM),
-     7     SLMASK(IDIM*JDIM),       OROG(IDIM*JDIM),
-     &     vetfcs(idim*jdim),       sotfcs(idim*jdim)
-     &,    SIHFCS(IDIM*JDIM),       SICFCS(IDIM*JDIM)
-     &,    SITFCS(IDIM*JDIM)
-     &,    T2M(IDIM*JDIM),          Q2M(IDIM*JDIM)
-     &,    SLCFCS(IDIM*JDIM,LSOIL), SWDFCS(IDIM*JDIM)
-     &,    VMNFCS(IDIM*JDIM),       VMXFCS(IDIM*JDIM)
-     &,    SLPFCS(IDIM*JDIM),       ABSFCS(IDIM*JDIM)
-     &,    orog_uf(idim*jdim)
-
-      REAL F10M  (IDIM*JDIM), SIG1T(IDIM*JDIM)
-     &,    TPRCP(IDIM*JDIM),  SRFLAG(IDIM*JDIM)
+ 
+      REAL                :: SIG1T(IDIM*JDIM)
 !
       SIG1T = 0.0            ! Not a dead start!
 !
       PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ",
      &        LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH
 
-      CALL SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,LENSFC,
+      CALL SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,
      1            IY,IM,ID,IH,FH,IALB,
-     2            SLMASK,  OROG,SIHFCS,SICFCS,SITFCS,
-     *            TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,
-     4            CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M,
-     *            VEGFCS,VETFCS,SOTFCS,ALFFCS,
-     5            CVFCS,CVBFCS,CVTFCS,
-     +            TPRCP,SRFLAG,SWDFCS,SLCFCS,
-     +            VMNFCS,VMXFCS,SLPFCS,ABSFCS,T2M,Q2M,OROG_UF,
      &            USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
       RETURN
       END SUBROUTINE MAINSFC
 
-      SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,LENSFC
-     *,                 IY,IM,ID,IH,FH,IALB
-     *,                 SLMASK,OROG,  SIHFCS,SICFCS,SITFCS
-     *,                 TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS
-     *,                 CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M
-     *,                 VEGFCS,VETFCS,SOTFCS,ALFFCS
-     *,                 CVFCS,CVBFCS,CVTFCS
-     +,                 TPRCP,SRFLAG,SWDFCS,SLCFCS
-     +,                 VMNFCS,VMXFCS,SLPFCS,ABSFCS,T2M,Q2M,orog_uf,
-     &                  use_ufo,nst_anl,isot,ivegsrc)
+      SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,
+     &                  IY,IM,ID,IH,FH,IALB,
+     &                  USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
-      use read_write_data
-      use machine, kind_io => kind_io8
+      USE READ_WRITE_DATA
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IDIM, JDIM, LSOIL
+      INTEGER, INTENT(IN) :: IDIM, JDIM, LSOIL, IALB
       INTEGER, INTENT(IN) :: LUGB, IY, IM, ID, IH
+      INTEGER, INTENT(IN) :: ISOT, IVEGSRC
 
+      LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
+ 
       REAL, INTENT(IN)    :: FH, DELTSFC, SIG1T(IDIM*JDIM)
 
-      INTEGER             :: IALB,ISOT,IVEGSRC
-      INTEGER, PARAMETEr  :: NLUNIT=35, ME=0
+      INTEGER, PARAMETER  :: NLUNIT=35, ME=0
 
-      LOGICAL             :: USE_UFO, NST_ANL
+      CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO
+
+      INTEGER             :: IFP, LENSFC, I, II, K
+
+      REAL                :: SLMASK(IDIM*JDIM), OROG(IDIM*JDIM)
+      REAL                :: SIHFCS(IDIM*JDIM), SICFCS(IDIM*JDIM)
+      REAL                :: SITFCS(IDIM*JDIM), TSFFCS(IDIM*JDIM)
+      REAL                :: SNOFCS(IDIM*JDIM), ZORFCS(IDIM*JDIM)
+      REAL                :: ALBFCS(IDIM*JDIM,4), TG3FCS(IDIM*JDIM)
+      REAL                :: CNPFCS(IDIM*JDIM), SMCFCS(IDIM*JDIM,LSOIL)
+      REAL                :: STCFCS(IDIM*JDIM,LSOIL), SLIFCS(IDIM*JDIM)
+      REAL                :: AISFCS(IDIM*JDIM), F10M(IDIM*JDIM)
+      REAL                :: VEGFCS(IDIM*JDIM), VETFCS(IDIM*JDIM)
+      REAL                :: SOTFCS(IDIM*JDIM), ALFFCS(IDIM*JDIM,2)
+      REAL                :: CVFCS(IDIM*JDIM), CVTFCS(IDIM*JDIM)
+      REAL                :: CVBFCS(IDIM*JDIM), TPRCP(IDIM*JDIM)
+      REAL                :: SRFLAG(IDIM*JDIM), SWDFCS(IDIM*JDIM)
+      REAL                :: SLCFCS(IDIM*JDIM,LSOIL), VMXFCS(IDIM*JDIM)
+      REAL                :: VMNFCS(IDIM*JDIM), T2M(IDIM*JDIM)
+      REAL                :: Q2M(IDIM*JDIM), SLPFCS(IDIM*JDIM)
+      REAL                :: ABSFCS(IDIM*JDIM), OROG_UF(IDIM*JDIM)
+      REAL                :: ALBFC(IDIM*JDIM*4), SMCFC(IDIM*JDIM*LSOIL)
+      REAL                :: STCFC(IDIM*JDIM*LSOIL), ALFFC(IDIM*JDIM*2)
+      REAL                :: SLCFC(IDIM*JDIM*LSOIL), USTAR(IDIM*JDIM)
+      REAL                :: FMM(IDIM*JDIM), FHH(IDIM*JDIM)
+      REAL                :: RLA(IDIM*JDIM), RLO(IDIM*JDIM)
+      REAL(KIND=4)        :: ZSOIL(LSOIL)
+
+!  Defaults file names
+!
+      DATA FNOROG/'        '/
+      DATA FNGRID/'        '/
+      DATA FNBGSI/'        '/
+      DATA FNBGSO/'        '/
+!
+      DATA IFP/0/
+!
+      SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO
+
+      NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO
+
+!--------------------------------------------------------------------------------
 !
 !  THIS IS A DRIVER FOR VERSION II SURFACE PROGRAM.
 !
@@ -142,7 +150,7 @@
 !  1.  Analysis mode (FH=0.)
 !
 !      This program merges climatology, analysis and forecast guess to create
-!      new surface fields (BGES).  If analysis file is given, the program 
+!      new surface fields.  If analysis file is given, the program 
 !      uses it if date of the analysis matches with IY,IM,ID,IH (see Note
 !      below).
 !
@@ -157,7 +165,7 @@
 !      If the date of the analysis does not match given IY,IM,ID,IH, (and FH),
 !      the program searches an old analysis by going back 6 hours, then 12 hours,
 !      then one day upto NREPMX days (parameter statement in the SUBROTINE FIXRD. 
-!      Now defined as 8).  This allows the user to provide non-daily analysis to 
+!      Now defined as 15).  This allows the user to provide non-daily analysis to 
 !      be used.  If matching field is not found, the forecast guess will be used.
 !
 !      Use of a combined earlier surface analyses and current analysis is 
@@ -169,44 +177,33 @@
 !      If you want to do complex merging of past and present surface field analysis,
 !      YOU NEED TO CREATE a separate file that contains DAILY SURFACE FIELD.
 !
-!      For a dead start, do not supply FNBGSI or set FNBGSI='        ' 
-!
-!  LUGB is the unit number used in this subprogram
-!  IDIM,JDIM ... grid dimension in x and y direction, respectively of a tile
+!      LUGB is the unit number used in sfccycle subprogram
+!      IDIM,JDIM is thegrid dimension in x and y direction, respectively of a tile
 !                of the cubed-sphere grid.
-!  LSOIL .. Number of soil layers 
-!  IY,IM,ID,IH .. Year, month, day, and hour of initial state.
-!  FH .. Forecast hour
-!  SIG1T .. Sigma level 1 temperature for dead start.  Should be on Gaussian
-!           grid.  If not dead start, no need for dimension but set to zero
-!           as in the example below.
+!      LSOIL is the number of soil layers 
+!      IY,IM,ID,IH is the Year, month, day, and hour of initial state.
+!      FH is the forecast hour
+!      SIG1T is the sigma level 1 temperature for dead start.  
 !
 !  Variable naming conventions:
 !
 !     OROG .. Orography
-!     ALB  .. Albedo
-!     WET  .. Soil wetness as defined for bucket model
-!     SNO  .. Snow DEPTH
+!     ALB  .. Snow-free albedo
+!     SNO  .. Liquid-equivalent snow depth
 !     ZOR  .. Surface roughness length
 !     VET  .. Vegetation type
-!     PLR  .. Plant evaporation resistance
 !     TSF  .. Surface skin temperature.  Sea surface temp. over ocean.
 !     TG3  .. Deep soil temperature (at 500cm)
 !     STC  .. Soil temperature (LSOIL layrs)
-!     SMC  .. Soil moisture (LSOIL layrs)
-!     SCV  .. Snow cover (not snow depth)
+!     SMC  .. Total soil moisture (LSOIL layrs)
 !     AIS  .. Sea ice mask (0 or 1)
-!     ACN  .. Sea ice concentration (fraction)
-!     GLA  .. Glacier (permanent snow) mask (0 or 1)
-!     MXI  .. Maximum sea ice extent (0 or 1)
-!     MSK  .. Land ocean mask (0=ocean 1=land)
 !     CNP  .. Canopy water content
 !     CV   .. Convective cloud cover
 !     CVB  .. Convective cloud base
 !     CVT  .. Convective cloud top
 !     SLI  .. LAND/SEA/SEA-ICE mask. (1/0/2 respectively)
-!     cover .. Vegetation cover
-!     SOI  .. Soil type
+!     VEG  .. Vegetation cover
+!     SOT  .. Soil type
 !     SIH  .. Sea ice thickness
 !     SIC  .. Sea ice concentration
 !     SWD  .. Actual snow depth
@@ -218,14 +215,14 @@
 !     T2M  .. 2m Temperature
 !     Q2M  .. 2m Specific Humidity
 !     TICE .. Ice Temperature
-!     OROG_uf  .. Orography unfiltered
+!     OROG_UF .. Orography unfiltered
 !
 !  COEEFICIENTS OF BLENDING FORECAST AND INTERPOLATED CLIM
 !  (OR ANALYZED) FIELDS OVER SEA OR LAND(L) (NOT FOR CLOUDS)
 !  1.0 = USE OF FORECAST
 !  0.0 = REPLACE WITH INTERPOLATED ANALYSIS
 !
-!    These values are set for analysis mode.
+!   These values are set for analysis mode.
 !
 !   Variables                  Land                 Sea
 !   ---------------------------------------------------------
@@ -245,111 +242,15 @@
 !   vegetation type            Analysis             Analysis
 !   soil type                  Analysis             Analysis
 !
-!  MASK OROGRAPHY AND VARIANCE ON GAUSSIAN GRID
-!
-      CHARACTER*500 FNOROG, FNGRID
-!
-      REAL SLMASK(IDIM*JDIM), OROG(IDIM*JDIM),  orog_uf(idim*jdim)
-!
-!  PREDICTED SURFACE FIELDS (Last characters 'FCS' indicates FORECAST)
-!
-      REAL TSFFCS(IDIM*JDIM), SNOFCS(IDIM*JDIM),
-     1     ZORFCS(IDIM*JDIM), ALBFCS(IDIM*JDIM,4),AISFCS(IDIM*JDIM),
-     2     TG3FCS(IDIM*JDIM), 
-     3     CVFCS (IDIM*JDIM), CVBFCS(IDIM*JDIM),  CVTFCS(IDIM*JDIM),
-     4     CNPFCS(IDIM*JDIM),
-     5     SMCFCS(IDIM*JDIM,LSOIL), STCFCS(IDIM*JDIM,LSOIL),
-     6     SLIFCS(IDIM*JDIM),   VEGFCS(IDIM*JDIM),
-     &     vetfcs(idim*jdim),   sotfcs(idim*jdim),
-     &     alffcs(idim*jdim,2)
-      REAL SIHFCS(IDIM*JDIM),   SICFCS(IDIM*JDIM)
-      REAL SITFCS(IDIM*JDIM)
-      REAL T2M(IDIM*JDIM),      Q2M(IDIM*JDIM)
-     &,    SWDFCS(IDIM*JDIM),   SLCFCS(IDIM*JDIM,LSOIL)
-     &,    VMNFCS(IDIM*JDIM),   VMXFCS(IDIM*JDIM)
-     &,    SLPFCS(IDIM*JDIM),   ABSFCS(IDIM*JDIM)
-!
-      REAL ALBFC(IDIM*JDIM*4),     SMCFC(IDIM*JDIM*LSOIL)
-     &,    STCFC(IDIM*JDIM*LSOIL), ALFFC(IDIM*JDIM*2)
-     &,    SLCFC(IDIM*JDIM*LSOIL)
-!
-      real ustar(idim*jdim),fmm(idim*jdim),fhh(idim*jdim)
-     +,   TPRCP(IDIM*JDIM),    SRFLAG(IDIM*JDIM)
-      real(kind=4) zsoil(lsoil)
-!
-! Ratio of sigma level 1 wind and 10m wind (diagnozed by model and not touched
-! in this program).
-!
-      REAL :: F10M(IDIM*JDIM)
-!
-!  Input and output SURFACE FIELDS (BGES) file names
-!
-      CHARACTER*500 FNBGSI,FNBGSO
-!
-!     OUTPUT FILE  ... PRIMARY SURFACE FILE FOR RADIATION AND FORECAST
-!
-!       REC.  1    LABEL
-!       REC.  2    DATE RECORD
-!       REC.  3    TSF
-!       REC.  4    SOILM(TWO LAYERS)
-!       REC.  5    SNOW
-!       REC.  6    SOILT(TWO LAYERS)
-!       REC.  7    TG3
-!       REC.  8    ZOR
-!       REC.  9    CV
-!       REC. 10    CVB
-!       REC. 11    CVT
-!       REC. 12    ALBEDO (four types)
-!       REC. 13    SLIMSK
-!       REC. 14    vegetation cover
-!       REC. 14    PLANTR
-!       REC. 15    F10M
-!       REC. 16    CANOPY WATER CONTENT (CNPANL)
-!       REC. 17    vegetation type
-!       REC. 18    soil type
-!       REC. 19    zeneith angle dependent vegetation fraction (two types)
-!       REC. 20    UUSTAR
-!       REC. 21    FFMM
-!       REC. 22    FFHH
-!Cwu add SIH & SIC
-!       REC. 23    SIH(one category only)
-!       REC. 24    SIC
-!Clu [+8L] add PRCP, FLAG, SWD, SLC, VMN, VMX, SLP, ABS
-!       REC. 25    TPRCP
-!       REC. 26    SRFLAG
-!       REC. 27    SWD
-!       REC. 28    SLC (4 LAYERS)
-!       REC. 29    VMN
-!       REC. 30    VMX
-!       REC. 31    SLP
-!       REC. 32    ABS
-!
-!  LAT/LON PHYSICS GRID FOR MONITORING
-!
-      REAL :: RLA(IDIM*JDIM),RLO(IDIM*JDIM)
- 
-      INTEGER :: IFP, LENSFC, I, II, K
+!--------------------------------------------------------------------------------
 
-      NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO
-!
-!  Defaults file names
-!
-      DATA FNOROG/'        '/
-      DATA FNGRID/'        '/
-      DATA FNBGSI/'        '/
-      DATA FNBGSO/'        '/
-!
-      DATA IFP/0/
-!
-      SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO
-!
       IF(IFP.EQ.0) THEN
         IFP = 1
         READ (5,NAMSFCD)
         WRITE(6,NAMSFCD)
       ENDIF
 
-      PRINT*,'in sfcdrv,idim=',idim,'jdim=',jdim,'FH=',FH
+      PRINT*,'IN ROUTINE SFCDRV,IDIM=',IDIM,'JDIM=',JDIM,'FH=',FH
 
       LENSFC = IDIM * JDIM
 
@@ -449,7 +350,6 @@
 
       SUBROUTINE QCMASK(SLMASK,SLLND,SLSEA,IDIM,JDIM,RLA,RLO)
 !
-CFPP$ NOCONCUR R
       DIMENSION SLMASK(IDIM,JDIM),RLA(IDIM,JDIM),RLO(IDIM,JDIM)
 !
       WRITE(6,*) ' QCMASK'
