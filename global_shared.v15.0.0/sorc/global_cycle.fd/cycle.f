@@ -1,46 +1,59 @@
        PROGRAM SFC_DRV
+
+!----------------------------------------------------------------------
 !
-!  Stand alone  surface cycle driver for reduced grid
+!  Stand alone surface cycle driver for the cubed-sphere grid.
 !
 !  2005-02-03:  Iredell   for global_analysis
 !  2014-11-30:  xuli      add nst_anl
 !  2015-05-26:  Hang Lei  Added NEMSIO read/write function in the code
+!  2017-08-08:  Gayno     Modify to work on cubed-sphere grid
 !
-!  LUGB is the unit number used in the subprogram
-!  IDIM,JDIM ... Maximum Longitudinal and Latitudinal grid dimensions
-!  IY,IM,ID,IH .. Year, month, day, and hour of initial state.
-!  FH .. Forecast hour
-!
-!  SIG1T .. Sigma level 1 temperature for dead start.
-!           If not dead start, no need for dimension but set to zero
-!           as in the example below.
-!
+!  LUGB         Unit number used in the subprogram
+!  IDIM,JDIM    i/j dimension of a cubed-sphere tile.
+!  IY,IM,ID,IH  Year, month, day, and hour of initial state.
+!  FH           Forecast hour
+!  IALB         Use modis albedo when '1'. Use brigleb when '0'.
+!  ISOT         Use statsgo soil type when '1'. Use zobler when '0'.
+!  IVEGSRC      Use igbp veg type when '1'.  Use sib when '2'.
+!  SIG1T        Sigma level 1 temperature for dead start.
+!               If not dead start, no need for dimension but set to
+!               zero as in the example below.
+!----------------------------------------------------------------------
+
       IMPLICIT NONE
 !
-      integer idim, jdim, lsoil, lugb, iy, im, id, ih, ialb
-      integer isot, ivegsrc
-      real    fh,   deltsfc
-      logical use_ufo
-      logical nst_anl
+      INTEGER :: IDIM, JDIM, LSOIL, LUGB, IY, IM, ID, IH, IALB
+      INTEGER :: ISOT, IVEGSRC
+      REAL    :: FH, DELTSFC
+      LOGICAL :: USE_UFO, NST_ANL
 !
       NAMELIST/NAMCYC/ IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH
-     &,                DELTSFC,ialb,use_ufo,nst_anl
-     &,                isot,ivegsrc
+     &,                DELTSFC,IALB,USE_UFO,NST_ANL
+     &,                ISOT,IVEGSRC
 !
-      DATA IDIM,JDIM,LSOIL/192,94,4/
+      DATA IDIM,JDIM,LSOIL/96,96,4/
       DATA IY,IM,ID,IH,FH/1997,8,2,0,0./
-      DATA LUGB/51/, DELTSFC/0.0/, ialb/1/
-      DATA ISOT/0/, IVEGSRC/2/
+      DATA LUGB/51/, DELTSFC/0.0/, IALB/1/
+      DATA ISOT/1/, IVEGSRC/2/
 !
-      use_ufo = .false.
-      nst_anl = .false.
+      PRINT*,"STARTING CYCLE PROGRAM."
+
+      USE_UFO = .FALSE.
+      NST_ANL = .FALSE.
+
+      PRINT*,"READ NAMCYC NAMELIST."
+
       READ(5,NAMCYC)
       WRITE(6,NAMCYC)
 !
-      CALL MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC,ialb,
-     &             use_ufo,nst_anl,isot,ivegsrc)
+      CALL MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC,IALB,
+     &             USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
+      PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY.'
+
       STOP
+
       END PROGRAM SFC_DRV
 !
       SUBROUTINE MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC
@@ -48,9 +61,14 @@
 !
       IMPLICIT NONE
 !
-      integer idim, jdim, lsoil, lugb, iy, im, id, ih, lensfc, ialb
-      integer isot, ivegsrc
-      real    fh,   deltsfc
+      INTEGER, INTENT(IN) :: IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH
+      INTEGER, INTENT(IN) :: IALB,ISOT,IVEGSRC
+
+      LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
+
+      REAL,    INTENT(IN) :: FH, DELTSFC
+
+      INTEGER  LENSFC
 !
       REAL TSFFCS(IDIM*JDIM), SNOFCS(IDIM*JDIM),
      1     ZORFCS(IDIM*JDIM), ALBFCS(IDIM*JDIM,4), AISFCS(IDIM*JDIM),
@@ -68,25 +86,25 @@
      &,    VMNFCS(IDIM*JDIM),       VMXFCS(IDIM*JDIM)
      &,    SLPFCS(IDIM*JDIM),       ABSFCS(IDIM*JDIM)
      &,    orog_uf(idim*jdim)
-      logical use_ufo, nst_anl
 
-      REAL F10M  (IDIM*JDIM), sig1t(idim*jdim)
-     &,    TPRCP(IDIM*JDIM),        SRFLAG(IDIM*JDIM)
+      REAL F10M  (IDIM*JDIM), SIG1T(IDIM*JDIM)
+     &,    TPRCP(IDIM*JDIM),  SRFLAG(IDIM*JDIM)
 !
-      sig1t = 0.0                 ! Not a dead start!
+      SIG1T = 0.0            ! Not a dead start!
 !
-      print *, LUGB,IDIM,JDIM,LSOIL,DELTSFC,
-     1            IY,IM,ID,IH,FH
+      PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ",
+     &        LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH
+
       CALL SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,LENSFC,
-     1            IY,IM,ID,IH,FH,ialb,
+     1            IY,IM,ID,IH,FH,IALB,
      2            SLMASK,  OROG,SIHFCS,SICFCS,SITFCS,
      *            TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,
      4            CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M,
      *            VEGFCS,VETFCS,SOTFCS,ALFFCS,
      5            CVFCS,CVBFCS,CVTFCS,
      +            TPRCP,SRFLAG,SWDFCS,SLCFCS,
-     +            VMNFCS,VMXFCS,SLPFCS,ABSFCS,T2M,Q2M,orog_uf,
-     &            use_ufo,nst_anl,isot,ivegsrc)
+     +            VMNFCS,VMXFCS,SLPFCS,ABSFCS,T2M,Q2M,OROG_UF,
+     &            USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
       RETURN
       END SUBROUTINE MAINSFC
@@ -110,13 +128,12 @@
       INTEGER, INTENT(IN) :: IDIM, JDIM, LSOIL
       INTEGER, INTENT(IN) :: LUGB, IY, IM, ID, IH
 
-      REAL, INTENT(IN) :: FH, DELTSFC, SIG1T(IDIM*JDIM)
+      REAL, INTENT(IN)    :: FH, DELTSFC, SIG1T(IDIM*JDIM)
 
-      LOGICAL GAUS,   DEADS, QCMSK, ZNLST, 
-     1        GRBORO, GRBMSK,
-     2        use_ufo, nst_anl
-      integer ialb,isot,ivegsrc
-      integer, parameter :: nlunit=35, me=0
+      INTEGER             :: IALB,ISOT,IVEGSRC
+      INTEGER, PARAMETEr  :: NLUNIT=35, ME=0
+
+      LOGICAL             :: USE_UFO, NST_ANL
 !
 !  THIS IS A DRIVER FOR VERSION II SURFACE PROGRAM.
 !
@@ -155,8 +172,9 @@
 !      For a dead start, do not supply FNBGSI or set FNBGSI='        ' 
 !
 !  LUGB is the unit number used in this subprogram
-!  IDIM,JDIM ... Gaussian grid dimension in x and y direction, respectovely
-!  LSOIL .. Number of soil layers (2 as of April, 1994)
+!  IDIM,JDIM ... grid dimension in x and y direction, respectively of a tile
+!                of the cubed-sphere grid.
+!  LSOIL .. Number of soil layers 
 !  IY,IM,ID,IH .. Year, month, day, and hour of initial state.
 !  FH .. Forecast hour
 !  SIG1T .. Sigma level 1 temperature for dead start.  Should be on Gaussian
@@ -229,13 +247,13 @@
 !
 !  MASK OROGRAPHY AND VARIANCE ON GAUSSIAN GRID
 !
-      CHARACTER*500 FNOROG,FNMASK,fnorog_uf
+      CHARACTER*500 FNOROG, FNGRID
 !
       REAL SLMASK(IDIM*JDIM), OROG(IDIM*JDIM),  orog_uf(idim*jdim)
 !
 !  PREDICTED SURFACE FIELDS (Last characters 'FCS' indicates FORECAST)
 !
-      REAL TSFFCS(IDIM*JDIM), WETFCS(IDIM*JDIM),  SNOFCS(IDIM*JDIM),
+      REAL TSFFCS(IDIM*JDIM), SNOFCS(IDIM*JDIM),
      1     ZORFCS(IDIM*JDIM), ALBFCS(IDIM*JDIM,4),AISFCS(IDIM*JDIM),
      2     TG3FCS(IDIM*JDIM), 
      3     CVFCS (IDIM*JDIM), CVBFCS(IDIM*JDIM),  CVTFCS(IDIM*JDIM),
@@ -254,7 +272,6 @@
       REAL ALBFC(IDIM*JDIM*4),     SMCFC(IDIM*JDIM*LSOIL)
      &,    STCFC(IDIM*JDIM*LSOIL), ALFFC(IDIM*JDIM*2)
      &,    SLCFC(IDIM*JDIM*LSOIL)
-      REAL SLICLM(IDIM*JDIM), SNOCLM(IDIM*JDIM)
 !
       real ustar(idim*jdim),fmm(idim*jdim),fhh(idim*jdim)
      +,   TPRCP(IDIM*JDIM),    SRFLAG(IDIM*JDIM)
@@ -310,61 +327,34 @@
 !  LAT/LON PHYSICS GRID FOR MONITORING
 !
       REAL :: RLA(IDIM*JDIM),RLO(IDIM*JDIM)
-!
-!  Debug only
-!   LDEBUG=.TRUE. creates BGES files for climatology and analysis
-!
-      LOGICAL LDEBUG
-!
+ 
       INTEGER :: IFP, LENSFC, I, II, K
 
-      REAL :: BLNOUT, BLTOUT
-
-      NAMELIST/NAMSFCD/FNOROG,FNMASK,fnorog_uf,
-     B                 FNBGSI,FNBGSO,
-     C                 LDEBUG,
-     J                 GAUS,   BLNOUT, BLTOUT, DEADS, QCMSK, ZNLST,
-     L                 GRBORO, GRBMSK
-!
-      DATA GAUS/.TRUE./, BLNOUT/0.0/, BLTOUT/90.0/, DEADS/.FALSE./
-     1,    QCMSK/.FALSE./, ZNLST/.FALSE./
-     3,    GRBORO/.TRUE./
-     4,    GRBMSK/.TRUE./
+      NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO
 !
 !  Defaults file names
 !
       DATA FNOROG/'        '/
-      DATA FNMASK/'        '/
-      DATA FNOROG_uf/'        '/
-!
+      DATA FNGRID/'        '/
       DATA FNBGSI/'        '/
       DATA FNBGSO/'        '/
 !
-      DATA LDEBUG/.FALSE./
-!
       DATA IFP/0/
 !
-      SAVE IFP,    FNOROG, FNMASK, FNOROG_UF, FNBGSI, FNBGSO,
-     C     LDEBUG, GAUS,   BLNOUT, BLTOUT, DEADS, QCMSK,
-     K     GRBORO, GRBMSK
+      SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO
 !
       IF(IFP.EQ.0) THEN
         IFP = 1
         READ (5,NAMSFCD)
         WRITE(6,NAMSFCD)
       ENDIF
-      if (.not. use_ufo) then
-        print *,' FNOROG_UF=',FNOROG_UF, ' but use_ufo=',use_ufo
-        print *,' Resetting FNOROG_UF to blank'
-        FNOROG_uf = '        '
-        print *,' FNOROG_UF=',FNOROG_UF, ' use_ufo=',use_ufo
-      endif
-!
-      print *,'in sfcdrv,idim=',idim,'jdim=',jdim,'FH=',FH
+
+      PRINT*,'in sfcdrv,idim=',idim,'jdim=',jdim,'FH=',FH
 
       LENSFC = IDIM * JDIM
 
-      CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,IDIM,JDIM,LENSFC)
+      CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,FNOROG,FNGRID,
+     &                       IDIM,JDIM,LENSFC)
 
       CALL READ_SFC_NETCDF(TSFFCS,SMCFCS,SNOFCS,STCFCS,TG3FCS,ZORFCS,
      &                     CVFCS,CVBFCS,CVTFCS,ALBFCS,SLIFCS,
@@ -374,24 +364,19 @@
      &                     TPRCP,SRFLAG,SWDFCS,
      &                     VMNFCS,VMXFCS,SLCFCS,
      &                     SLPFCS,ABSFCS,T2M,Q2M,SLMASK,
-     &                     ZSOIL,LSOIL,LENSFC)
+     &                     ZSOIL,LSOIL,LENSFC,FNBGSI)
 
+      IF (USE_UFO) THEN
+        PRINT*,'USE UNFILTERED OROGRAPHY.'
+      ELSE
+        OROG_UF = 0.0
+      ENDIF
+ 
       DO I=1,LENSFC
-        SLICLM(I) = 1.
-        SNOCLM(I) = 0.
-      ENDDO
-!
-        if (use_ufo) then
-          print*,'use unfiltered orography.'
-        else
-          orog_uf = 0.0
-        endif
-!
-      DO I=1,LENSFC
-        WETFCS(I) = 0.
         AISFCS(I) = 0.
-        IF(SLIFCS(I).EQ.2) AISFCS(I) = 1.
+        IF(NINT(SLIFCS(I)).EQ.2) AISFCS(I) = 1.
       ENDDO
+
       DO K=1,LSOIL
         II = (K-1)*LENSFC
         DO I=1,LENSFC
@@ -400,31 +385,31 @@
           SLCFC(II+I) = SLCFCS(I,K)
         ENDDO
       ENDDO
+
       DO K=1,4
         II = (K-1)*LENSFC
         DO I=1,LENSFC
           ALBFC(II+I) = ALBFCS(I,K)
         ENDDO
       ENDDO
+
       DO K=1,2
         II = (K-1)*LENSFC
         DO I=1,LENSFC
           ALFFC(II+I) = ALFFCS(I,K)
         ENDDO
       ENDDO
-!
+ 
         CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC
-     &,               IY,IM,ID,IH,FH
-     &,               RLA, RLO
-     &,               SLMASK,OROG, orog_uf, use_ufo, nst_anl
-     &,               SIHFCS,SICFCS, SITFCS
+     &,               IY,IM,ID,IH,FH,RLA,RLO
+     &,               SLMASK,OROG, OROG_UF, USE_UFO, NST_ANL
+     &,               SIHFCS,SICFCS,SITFCS
      &,               SWDFCS,SLCFC
      &,               VMNFCS,VMXFCS,SLPFCS,ABSFCS
      &,               TSFFCS,SNOFCS,ZORFCS,ALBFC,TG3FCS
-     &,               CNPFCS,SMCFC,STCFC,SLIFCS,AISFCS
-     &,               F10M
+     &,               CNPFCS,SMCFC,STCFC,SLIFCS,AISFCS,F10M
      &,               VEGFCS,VETFCS,SOTFCS,ALFFC
-     &,               CVFCS,CVBFCS,CVTFCS,me,nlunit,IALB,isot,ivegsrc)
+     &,               CVFCS,CVBFCS,CVTFCS,ME,NLUNIT,IALB,ISOT,IVEGSRC)
 
       DO K=1,LSOIL
         II = (K-1)*LENSFC
@@ -441,13 +426,14 @@
           ALBFCS(I,K) = ALBFC(II+I)
         ENDDO
       ENDDO
+
       DO K=1,2
         II = (K-1)*LENSFC
         DO I=1,LENSFC
           ALFFCS(I,K) = ALFFC(II+I)
         ENDDO
       ENDDO
-!
+ 
       CALL WRITE_DATA(SLIFCS,TSFFCS,SNOFCS,TG3FCS,ZORFCS,
      &                ALBFCS,ALFFCS,VEGFCS,CNPFCS,F10M,
      &                T2M,Q2M,VETFCS,SOTFCS,USTAR,FMM,FHH,
@@ -458,6 +444,7 @@
      &                IDIM,JDIM,LENSFC,LSOIL)
 
       RETURN
+
       END SUBROUTINE SFCDRV
 
       SUBROUTINE QCMASK(SLMASK,SLLND,SLSEA,IDIM,JDIM,RLA,RLO)

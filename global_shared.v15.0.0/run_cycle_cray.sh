@@ -27,7 +27,7 @@ export CYCLEXEC=$HOMEglobal/exec/global_cycle
 export CDATE=2016092900
 export FHOUR=00
 
-export SFCGES=/global/noscrub/George.Gayno/gfs_soil_veg_alb_fy17/sfnanl.gfs.${CDATE}.new.alb
+export SFCGES=/gpfs/hps/ptmp/George.Gayno/control/C384/gfs.20160929/00/RESTART/sfc_data.tile1.nc
 export SFCANL="./gdas1.t00z.sfcanl"
 
 export FNTSFA=/gpfs/gp1/emc/globaldump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
@@ -39,6 +39,8 @@ export JCAP=1534
 LONB=3072
 LATB=1536
 export CRES=384
+export FNGRID=/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C${CRES}/C${CRES}_grid.tile1.nc
+export FNOROG=/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_fv3/C${CRES}/C${CRES}_oro_data.tile1.nc
 
 export FIXgsm=/gpfs/hps/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/global_shared.v15.0.0/fix/fix_am
 export FNABSC=$FIXgsm/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb
@@ -47,9 +49,6 @@ export FNVETC=$FIXgsm/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
 export FNSOTC=$FIXgsm/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb
 export FNZORC="igbp"
 export FNALBC2=$FIXgsm/global_albedo4.1x1.grb
-export FNMASK=$FIXgsm/global_slmask.t$JCAP.$LONB.$LATB.rg.grb
-export FNOROG=$FIXgsm/global_orography.t$JCAP.$LONB.$LATB.rg.grb
-export FNOROG_UF=$FIXgsm/global_orography_uf.t$JCAP.$LONB.$LATB.rg.grb
 export FNTSFC=$FIXgsm/RTGSST.1982.2012.monthly.clim.grb
 export FNAISC=$FIXgsm/CFSR.SEAICE.1982.2012.monthly.clim.grb
 export FNSMCC=$FIXgsm/global_soilmgldas.t$JCAP.$LONB.$LATB.grb
