@@ -342,7 +342,7 @@
      &                TPRCP,SRFLAG,SWDFCS,
      &                VMNFCS,VMXFCS,SLPFCS,ABSFCS,
      &                SLCFCS,SMCFCS,STCFCS,
-     &                IDIM,JDIM,LENSFC,LSOIL)
+     &                IDIM,JDIM,LENSFC,LSOIL,FNBGSO)
 
       RETURN
 
