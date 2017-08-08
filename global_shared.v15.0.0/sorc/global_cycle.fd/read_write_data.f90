@@ -14,7 +14,7 @@
                        sicfcs,sihfcs,sitfcs,tprcp,srflag, &
                        swdfcs,vmnfcs,vmxfcs,slpfcs, &
                        absfcs,slcfcs,smcfcs,stcfcs,&
-                       idim,jdim,lensfc,lsoil)
+                       idim,jdim,lensfc,lsoil,fnbgso)
 
 ! Note: the model restart files contain an additional snow field -
 ! snow cover (snocvr).  That field is required for bit identical
@@ -26,6 +26,8 @@
  use netcdf
 
  implicit none
+
+ character(len=*), intent(in) :: fnbgso
 
  integer, intent(in)         :: idim, jdim, lensfc, lsoil
 
@@ -44,8 +46,6 @@
  real, intent(in)            :: vmxfcs(lensfc), slpfcs(lensfc)
  real, intent(in)            :: absfcs(lensfc), slcfcs(lensfc,lsoil)
  real, intent(in)            :: smcfcs(lensfc,lsoil), stcfcs(lensfc,lsoil)
-
- character(len=300)          :: outfile
 
  integer                     :: fsize=65536, inital=0
  integer                     :: header_buffer_val = 16384
@@ -71,11 +71,9 @@
 
  include "netcdf.inc"
 
- outfile="./sfc.tile.data.nc"
-
 !--- open the file
- error = NF__CREATE(outfile, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
- call netcdf_err(error, 'CREATING FILE='//trim(outfile) )
+ error = NF__CREATE(fnbgso, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
+ call netcdf_err(error, 'CREATING FILE='//trim(fnbgso) )
 
  print*,'top of write ',idim,jdim,lsoil
  print*,'stcfcs ',maxval(stcfcs),minval(stcfcs)

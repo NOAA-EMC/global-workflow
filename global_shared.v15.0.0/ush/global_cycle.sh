@@ -316,7 +316,7 @@ export PGM=$CYCLEXEC
 export pgm=$PGM
 $LOGSCRIPT
 
-rm $SFCANL
+rm -f $SFCANL
 iy=$(echo $CDATE|cut -c1-4)
 im=$(echo $CDATE|cut -c5-6)
 id=$(echo $CDATE|cut -c7-8)
