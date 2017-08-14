@@ -9,6 +9,8 @@
 #             1st argument - Forecast Hour - format of 3I (3 digits)
 #
 #####################################################################
+name=`basename $0`
+export PS4='$name:$SECONDS + '
 echo "------------------------------------------------"
 echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
 echo "------------------------------------------------"
@@ -20,6 +22,8 @@ fcsthrs="$1"
 typeset -Z3 fcsthrs
 num=$#
 job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
+
+export PS4='gfs_grib_awips_g2:f$fcsthrs:$SECONDS + '
 
 # Set type of Interpolation
 export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -107,9 +111,10 @@ do
      161)
         #  Grid 161 - 0.5 degree Lat/Lon grid for Puerto Rico
         # export g161="0 6 0 0 0 0 0 0 137 102 0 0 50750000 271750000 8 -250000 340250000 65535000 65535000 0"
+        # NEW export g161="0 6 0 0 0 0 0 0 137 103 0 0 50750000 271750000 8 -250000 340250000 65535000 65535000 0"
         # $COPYGB2 -g "${g161}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
 
-        export grid161="latlon 271.75:137:0.5 50.75:102:-0.5"
+        export grid161="latlon 271.75:137:0.5 50.75:103:-0.5"
         $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 -new_grid $grid161 awps_file_f${fcsthrs}_${GRID}
         ;;
      201)
@@ -149,8 +154,8 @@ do
 
 # Processing AWIPS GRIB2 grids with WMO headers
 
-   pgm=tocgrib2
-   export pgm; prep_step
+   export pgm=tocgrib2
+   prep_step
    startmsg
 
    export FORT11=awps_file_f${fcsthrs}_${GRID}
@@ -212,12 +217,12 @@ then
        #################################################################
 
 cat << EOF > wgrib2_parmlist_grb211
-APCP:surface
-RH:2 m above ground
-TCDC:entire atmosphere
-TMP:2 m above ground
-UGRD:10 m above ground
-VGRD:10 m above ground
+:APCP:surface:
+:RH:2 m above ground:
+:TCDC:entire atmosphere:
+:TMP:2 m above ground:
+:UGRD:10 m above ground:
+:VGRD:10 m above ground:
 EOF
 
       $WGRIB2 tmpfile | grep  -F -f wgrib2_parmlist_grb211  | $WGRIB2 -i -grib tmpfile_211 tmpfile
@@ -234,7 +239,7 @@ EOF
       # Convert to grib1 format
       ##############################
 
-      $CNVGRIB -g21 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2  gfs_grb211.${cycle}.pgrbf${fcsthrs}
+      $EXECgfs/cnvgrib21_gfs -g21 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2  gfs_grb211.${cycle}.pgrbf${fcsthrs}
       $GRBINDEX gfs_grb211.${cycle}.pgrbf${fcsthrs}   gfs_grb211.${cycle}.pgrbif${fcsthrs}
 
       ##############################

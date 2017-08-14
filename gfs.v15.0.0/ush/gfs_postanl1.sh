@@ -109,7 +109,7 @@ FAXOUT=trpismer.${cyc}
 
 cp ${COMIN}/gfs.$cycle.pgrb2.1p00.anl .
 err1=$?
-$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.pgrbanl 
+$EXECgfs/cnvgrib21_gfs -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.pgrbanl 
 err2=$?
 $GRBINDEX gfs.$cycle.pgrbanl gfs.$cycle.pgrbianl
 err3=$?

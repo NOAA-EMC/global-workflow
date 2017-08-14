@@ -68,23 +68,7 @@ set -x
 export FORM=$PDY$cyc
 export TIME=$PDY
 
-#  NOTE:
-# These two dumpjb file wil NOT work on CRAY
-# - old dumpjb file in 06/17/2014
-# DUMP=${NWROOTp1}/ush/dumpjb --- version 06/17/2014
-# - version v3.2.1 08/10/2015
-#  DUMP=${NWROOTp1}/obsproc_dump.v3.2.1/ush/dumpjb
-
-#
-#  NOTE TO SPA:
-#  When SPA have installed obsproc_dump.v4.0.0
-#  The following lines need to modify: 
-#
-export HOMEobsproc_shared_bufr_dumplist=$NWROOTp2/obsproc_shared/bufr_dumplist.v1.3.0
-export HOMEobsproc_dump=/u/Diane.Stokes/noscrub/workspace/obsproc_dump.tkt-351.crayport
-export TMPDIR=$DATA
-
-$HOMEobsproc_dump/ush/dumpjb $PDY$cyc 1.5 synop
+${DUMPJB} $PDY$cyc 1.5 synop
 export err=$?
 if [ "$err" -ne 0 ]
 then
@@ -95,12 +79,7 @@ fi
 
 for TYPE in metar ships lcman mbuoy dbuoy
 do
-#   if [ ! -f ${COMINhourly}/$TYPE.$PDY$cyc.bufr ]
-#   then
-      $HOMEobsproc_dump/ush/dumpjb $PDY$cyc 0.5 $TYPE
-#   else
-#      cp ${COMINhourly}/$TYPE.$PDY$cyc.bufr $DATA/$TYPE.$PDY$cyc 
-#   fi
+  $HOMEobsproc_dump/ush/dumpjb $PDY$cyc 0.5 $TYPE
 done
 
 export pgm=gendata
@@ -141,7 +120,7 @@ ${REDSAT}  >> $pgmout 2> errfile
 export err=$?;err_chk
 
 cp ${COMIN}/gfs.$cycle.pgrb2.1p00.anl .
-$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
+$EXECgfs/cnvgrib21_gfs -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
 $COPYGB -xg3 gfs.$cycle.tmppgrbanl gfs.$cycle.pgrbanl
 ${GRBINDEX} gfs.$cycle.pgrbanl gfs.$cycle.pgrbianl
 if [ -f $COMIN/gfs.$cycle.syndata.tcvitals.tm00 ] ; then
@@ -294,6 +273,8 @@ export FORT55="putlab.55"
 #output file(s)
 ################
 export FORT81="tropc${cycle}"."${cyc}"
+
+rm fort.80
 
 startmsg
 ${SIXBITB2} >> $pgmout 2>errfile

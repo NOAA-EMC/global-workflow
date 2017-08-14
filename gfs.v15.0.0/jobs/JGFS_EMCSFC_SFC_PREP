@@ -113,7 +113,8 @@ msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
 
 if [[ ${KEEPDATA} != YES ]]; then
-  cd /tmpnwprd2
+####  cd /tmpnwprd2
+  cd ${DATAROOT}
   rm -fr $DATA
 fi
 

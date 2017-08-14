@@ -1,0 +1,18 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.arch ##########
+# Archive specific
+
+echo "BEGIN: config.arch"
+
+# Get task specific resources
+. $EXPDIR/config.resources arch
+
+echo "END: config.arch"

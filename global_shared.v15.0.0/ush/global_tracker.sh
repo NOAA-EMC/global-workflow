@@ -22,7 +22,7 @@ if [ $machine = WCOSS ]; then
  export APRUNTRACK=""
 elif [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh      2>>/dev/null
- module load prod_util/1.0.4 2>>/dev/null
+ module load prod_util       2>>/dev/null
  module load iobuf/2.0.5     2>>/dev/null
  export IOBUF_PARAMS="*:size=32M:count=4:verbose"
  export APRUNTRACK="aprun -j1 -n1 -N1 -d1"

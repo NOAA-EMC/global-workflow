@@ -9,21 +9,16 @@
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]'
 #BSUB -W 01:00
-#BSUB -cwd /gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/work/gfs.v14.1.0/driver
+#BSUB -cwd /gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/gfs.v14.1.0/driver
 
 set -x
-
-##export NODES=60
-##export ntasks=360
-##export ptile=6
-##export threads=4
 
 export NODES=240
 export ntasks=480
 export ptile=2
 export threads=12
 
-export CDATE=2017030812
+export CDATE=2017040700
 
 
 #############################################################
@@ -47,7 +42,7 @@ export global_shared_ver=v14.1.0
 export crtm_ver=2.2.4
 export prod_envir_ver=1.0.1
 export grib_util_ver=1.0.3
-export prod_util_ver=1.0.6
+export prod_util_ver=1.0.8
 export util_shared_ver=1.0.3
 
 
@@ -82,7 +77,7 @@ export NTHSTACK=1024000000
 #############################################################
 # Set user specific variables
 #############################################################
-export NWTEST=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/work
+export NWTEST=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final
 export PARA_CONFIG=$NWTEST/gfs.${gfs_ver}/driver/para_config.gfs_analysis
 export JOBGLOBAL=$NWTEST/gfs.${gfs_ver}/jobs
 

@@ -1,0 +1,199 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.base ##########
+# Common to all steps
+
+echo "BEGIN: config.base"
+
+# Machine environment
+export machine="@MACHINE@"
+
+# BEGIN: THEIA
+# Account, queue, etc.
+export ACCOUNT="da-cpu"
+export QUEUE="batch"
+export QUEUE_ARCH="service"
+
+# GLOBAL static environment parameters
+export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
+export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
+export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+
+# Machine specific paths used everywhere
+# USER specific paths
+export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
+export STMP="/scratch3/NCEPDEV/stmp1/$USER"
+export PTMP="/scratch3/NCEPDEV/stmp2/$USER"
+export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
+
+# Base directories for various builds
+export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
+export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
+
+# Utilities needed in the scripts (mostly post)
+export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
+export NDATE="$NWPROD/util/exec/ndate"
+export NHOUR="$NWPROD/util/exec/nhour"
+export WGRIB="$NWPROD/util/exec/wgrib"
+export WGRIB2="$NWPROD/util/exec/wgrib2"
+export COPYGB="$NWPROD/util/exec/copygb"
+export COPYGB2="$NWPROD/util/exec/copygb2"
+export GRBINDEX="$NWPROD/util/exec/grbindex"
+export GRB2INDEX="$NWPROD/util/exec/grb2index"
+export GRBINDEX2="$NWPROD/util/exec/grb2index"
+export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+
+# Post requires grib2 table
+export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+# END: THEIA
+
+# BEGIN: WCOSS_C
+# Account, queue, etc.
+export ACCOUNT="FV3GFS-T2O"
+export QUEUE="dev"
+export QUEUE_ARCH="dev_transfer"
+
+# Load specific modules
+. $MODULESHOME/init/ksh >> /dev/null 2>&1
+module load PrgEnv-intel >> /dev/null 2>&1
+module load cray-mpich >> /dev/null 2>&1
+module load hpss >> /dev/null 2>&1
+module load g2tmpl-intel/1.4.0 >> /dev/null 2>&1
+
+# GLOBAL static environment parameters
+export NWPROD="/gpfs/hps/nco/ops/nwprod"
+if [ -d /gpfs/tp1 ]; then
+    export SITE="LUNA"
+    export DMPDIR="/gpfs/tp1/emc/globaldump"
+elif [ -d /gpfs/gp1 ]; then
+    export SITE="SURGE"
+    export DMPDIR="/gpfs/gp1/emc/globaldump"
+fi
+module load crtm-intel/2.2.4 >> /dev/null 2>&1
+export RTMFIX=$CRTM_FIX
+
+# Machine specific paths used everywhere
+# USER specific paths
+export HOMEDIR="/gpfs/hps/emc/global/noscrub/$USER"
+export STMP="/gpfs/hps/stmp/$USER"
+export PTMP="/gpfs/hps/ptmp/$USER"
+export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
+
+# Base directories for various builds
+export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
+export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
+export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
+
+# Utilities needed in the scripts (mostly post)
+export NEMSIOGET="/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get"
+module load grib_util/1.0.3 >> /dev/null 2>&1
+module load prod_util/1.0.7 >> /dev/null 2>&1
+
+export USE_CFP="YES"
+module load cfp-intel-sandybridge/1.1.0 >> /dev/null 2>&1
+
+# Post requires grib2 table
+export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
+# END: WCOSS_C
+
+####################################################
+# DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
+# IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
+# FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
+# CLEAR
+####################################################
+
+# Build paths relative to $BASE_SVN
+export BASE_WORKFLOW="$BASE_SVN/fv3gfs/trunk/gfs_workflow.v15.0.0"
+export BASE_GSM="$BASE_SVN/fv3gfs/trunk/global_shared.v15.0.0"
+export BASE_GSI="$BASE_SVN/gsi/trunk"
+export BASE_NEMSfv3gfs="$BASE_SVN/nems/apps/NEMSfv3gfs/trunk"
+export BASE_POST="$BASE_SVN/fv3gfs/tags/post4fv3"
+export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
+export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
+export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
+
+# CONVENIENT utility scripts and other environment parameters
+export NCP="/bin/cp -p"
+export NMV="/bin/mv"
+export NLN="/bin/ln -sf"
+export VERBOSE="YES"
+export KEEPDATA="NO"
+export NCO_NAMING_CONV="YES"
+
+# Machine environment, jobs, and other utility scripts
+export BASE_ENV="$BASE_WORKFLOW/fv3gfs/env"
+export BASE_JOB="$BASE_WORKFLOW/fv3gfs/jobs"
+
+# EXPERIMENT specific environment parameters
+export REALTIME="NO"
+export SDATE=@SDATE@
+export EDATE=@EDATE@
+export assim_freq=6
+export PSLOT="@PSLOT@"
+export EXPDIR="@EXPDIR@/$PSLOT"
+export ROTDIR="@ROTDIR@/$PSLOT"
+export RUNDIR="$STMP/RUNDIRS/$PSLOT"
+export ARCDIR="$NOSCRUB/archive/$PSLOT"
+export ICSDIR="$PTMP/FV3ICS"
+export ATARDIR="/NCEPDEV/emc-global/1year/$USER/$machine/scratch/$PSLOT"
+
+# Resolution specific parameters
+export LEVS=65
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+
+# Surface cycle update frequency
+export FHCYC=24
+
+# Output frequency of the forecast model (for cycling)
+export FHMIN=0
+export FHMAX=9
+export FHOUT=3
+
+# GFS cycle info
+export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+
+# GFS output and frequency
+export FHMIN_GFS=0
+export FHMAX_GFS=120
+export FHOUT_GFS=6
+
+# Shared parameters
+# Hybrid related
+export DOHYBVAR="YES"
+export NMEM_ENKF=@NMEM_ENKF@
+export RECENTER_ENKF="YES"
+export l4densvar=".false."
+export lwrite4danl=".false."
+
+# EnKF output and frequency [needed in epos as well]
+if [ $DOHYBVAR = "YES" ]; then
+    export FHMIN_ENKF=0
+    export FHMAX_ENKF=9
+    if [ $l4densvar = ".true." ]; then
+        export FHOUT=1
+        export FHOUT_ENKF=1
+    else
+        export FHOUT_ENKF=3
+    fi
+fi
+
+# Shared scripts
+
+# Shared tables
+export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
+
+# Shared executables
+
+# Shared fix files
+
+echo "END: config.base"

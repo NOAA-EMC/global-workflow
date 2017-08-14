@@ -43,15 +43,6 @@ export MINMON_SUFFIX=${MINMON_SUFFIX:-GFS}
 export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
 
 
-####################################
-# File To Log Msgs
-####################################
-export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${m_job}.${pid}}
-if [[ -e $jlogfile ]]; then
-  rm -f $jlogfile
-fi
-
-
 ##################################################
 # SENDECF  - Flag Events on ECF
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT

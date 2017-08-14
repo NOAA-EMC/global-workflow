@@ -319,6 +319,8 @@
 #"gfs_sfc",   "facwf"      "facwf"      "gfs_surface",   "all",  .false.,  "none",  2
 #"gfs_sfc",   "ffhh"       "ffhh"       "gfs_surface",   "all",  .false.,  "none",  2
 #"gfs_sfc",   "ffmm"       "ffmm"       "gfs_surface",   "all",  .false.,  "none",  2
+#"gfs_sfc",   "uustar"     "uustar"     "gfs_surface",   "all",  .false.,  "none",  2
+#"gfs_sfc",   "slope"      "slope"     "gfs_surface",   "all",  .false.,  "none",  2
 #"gfs_sfc",   "fice"       "fice"       "gfs_surface",   "all",  .false.,  "none",  2
 #"gfs_sfc",   "hice"       "hice"       "gfs_surface",   "all",  .false.,  "none",  2
 #"gfs_sfc",   "snoalb"     "snoalb"     "gfs_surface",   "all",  .false.,  "none",  2

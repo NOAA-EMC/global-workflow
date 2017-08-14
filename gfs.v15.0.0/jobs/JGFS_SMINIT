@@ -55,20 +55,6 @@ export RUN=${RUN:-gfs}
 export GUESS=${GUESS:-GFS}  
 export mdl=${mdl:-gfs}  
 
-###############################################################
-# This block can be modified for different Production test
-# environment. This is used for development testings
-###############################################################
-if [ "$RUN_ENVIR" = prod ];then
- if [ "$envir" != prod ]; then
-  export DBNROOT=/nwprod/spa_util/fakedbn
-  export jlogfile=/com/logs/${envir}/jlogfile
-  export pcom=${pcom:-/pcom/${envir}/gfs}
- fi
-else
- dng_para_config${RUNTYP}   #EMC User set
-fi
-
 ####################################
 # obtain unique process id (pid) and make temp directory
 ####################################
@@ -134,6 +120,25 @@ export utilexec=${utilexec:-$HOMEutil/exec}
 export utilparm=${utilparm:-$HOMEutil/parm}
 export gespath=${gespath:-${GESROOT}/${envir}}
 
+###########################################
+# initialize run variables
+###########################################
+export nemsioget=${nemsioget:-$EXECglobal/nemsio_get}
+
+export APRUNP="time aprun -n 60 -N 12 -d 2 -cc depth"
+export APRUN_SMARTPRECIP="aprun -q -j1 -n1 -N1 -d1 -cc depth"
+export APRUN_SMARTINIT="aprun -q -j1 -n1 -N1 -d1 -cc depth"
+
+export GFS_SMINIT_SH=${GFS_SMINIT_SH:-$HOMEdng/ush/gfs_smartinit.sh}
+
+export VERBOSE=YES
+export OUTTYP=4
+export IDRT=4  #output gaussian grib if 4 and lat/lon grid if 0
+export MODEL_OUT_FORM=binarynemsiompiio
+export NTHREADS=4
+export NTHSTACK=1024000000
+export LONB=3072
+export LATB=1536
 
 ###########################################
 # Run setpdy and initialize PDY variables

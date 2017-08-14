@@ -1,0 +1,140 @@
+# This file specifies the directories to be tranatmfered and, optionally, the files within
+# those directories to include or exclude.  If one directory is specified per line, it
+# will be used as both the source and destination.  If two directories are specified per
+# line, separated by one or more spaces, the first will be used as the source and the
+# second the destination.  Directories that begin with "com/" will be resolved using
+# the compath.py utility.  Rules may be placed below each directory or directory pair
+# and must begin with one of the following characters:
+#  -  exclude, specifies an exclude pattern
+#  +  include, specifies an include pattern
+#  .  merge, specifies a merge-file to read for more rules
+#  :  dir-merge, specifies a per-directory merge-file
+#  H  hide, specifies a pattern for hiding files from the tranatmfer
+#  S  show, files that match the pattern are not hidden
+#  P  protect, specifies a pattern for protecting files from deletion
+#  R  risk, files that match the pattern are not protected
+#  !  clear, clears the current include/exclude list (takes no arg)
+#  B  bytes, relative size of the path in relation to the other paths in the list
+#  D  delete, delete extraneous files from destination directories (takes no arg)
+#  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  T  two-way syncronization will update both sides with latest changes (takes no arg)
+#  Z  compress data as it is sent, accepts optional compression level argument (1-9)
+# Rules higher in the list take precedence over lower ones.  By default, all files in a
+# directory are included, so if no exclude patterns match that file, it will be
+# tranatmferred.
+
+com/gfs/_ENVIR_/gfs._PDY_/
++ /gfs.t??z.atmf002*
++ /gfs.t??z.atmf006*
++ /gfs.t??z.atmf010*
++ /gfs.t??z.atmf014*
++ /gfs.t??z.atmf018*
++ /gfs.t??z.atmf022*
++ /gfs.t??z.atmf026*
++ /gfs.t??z.atmf030*
+#+ /gfs.t??z.atmf034*
++ /gfs.t??z.atmf038*
++ /gfs.t??z.atmf042*
++ /gfs.t??z.atmf046*
++ /gfs.t??z.atmf049*
+#+ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf055*
++ /gfs.t??z.atmf058*
++ /gfs.t??z.atmf061*
+#+ /gfs.t??z.atmf064*
++ /gfs.t??z.atmf067*
++ /gfs.t??z.atmf070*
++ /gfs.t??z.atmf073*
+#+ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf079*
++ /gfs.t??z.atmf082*
++ /gfs.t??z.atmf085*
+#+ /gfs.t??z.atmf088*
++ /gfs.t??z.atmf091*
++ /gfs.t??z.atmf094*
++ /gfs.t??z.atmf097*
+#+ /gfs.t??z.atmf100*
++ /gfs.t??z.atmf103*
++ /gfs.t??z.atmf106*
++ /gfs.t??z.atmf109*
+#+ /gfs.t??z.atmf112*
++ /gfs.t??z.atmf115*
++ /gfs.t??z.atmf118*
++ /gfs.t??z.atmf123*
++ /gfs.t??z.atmf132*
+#+ /gfs.t??z.atmf141*
++ /gfs.t??z.atmf150*
++ /gfs.t??z.atmf159*
++ /gfs.t??z.atmf168*
++ /gfs.t??z.atmf177*
+#+ /gfs.t??z.atmf186*
++ /gfs.t??z.atmf195*
++ /gfs.t??z.atmf204*
++ /gfs.t??z.atmf213*
++ /gfs.t??z.atmf222*
++ /gfs.t??z.atmf231*
++ /gfs.t??z.atmf252*
+#+ /gfs.t??z.atmf288*
++ /gfs.t??z.atmf324*
++ /gfs.t??z.atmf360*
+- *
+B 722000
+ 
+
+com/gfs/_ENVIR_/gfs._PDYm1_/
++ /gfs.t??z.atmf002*
++ /gfs.t??z.atmf006*
++ /gfs.t??z.atmf010*
++ /gfs.t??z.atmf014*
++ /gfs.t??z.atmf018*
++ /gfs.t??z.atmf022*
++ /gfs.t??z.atmf026*
++ /gfs.t??z.atmf030*
+#+ /gfs.t??z.atmf034*
++ /gfs.t??z.atmf038*
++ /gfs.t??z.atmf042*
++ /gfs.t??z.atmf046*
++ /gfs.t??z.atmf049*
+#+ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf055*
++ /gfs.t??z.atmf058*
++ /gfs.t??z.atmf061*
+#+ /gfs.t??z.atmf064*
++ /gfs.t??z.atmf067*
++ /gfs.t??z.atmf070*
++ /gfs.t??z.atmf073*
+#+ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf079*
++ /gfs.t??z.atmf082*
++ /gfs.t??z.atmf085*
+#+ /gfs.t??z.atmf088*
++ /gfs.t??z.atmf091*
++ /gfs.t??z.atmf094*
++ /gfs.t??z.atmf097*
+#+ /gfs.t??z.atmf100*
++ /gfs.t??z.atmf103*
++ /gfs.t??z.atmf106*
++ /gfs.t??z.atmf109*
+#+ /gfs.t??z.atmf112*
++ /gfs.t??z.atmf115*
++ /gfs.t??z.atmf118*
++ /gfs.t??z.atmf123*
++ /gfs.t??z.atmf132*
+#+ /gfs.t??z.atmf141*
++ /gfs.t??z.atmf150*
++ /gfs.t??z.atmf159*
++ /gfs.t??z.atmf168*
++ /gfs.t??z.atmf177*
+#+ /gfs.t??z.atmf186*
++ /gfs.t??z.atmf195*
++ /gfs.t??z.atmf204*
++ /gfs.t??z.atmf213*
++ /gfs.t??z.atmf222*
++ /gfs.t??z.atmf231*
++ /gfs.t??z.atmf252*
+#+ /gfs.t??z.atmf288*
++ /gfs.t??z.atmf324*
++ /gfs.t??z.atmf360*
+- *
+B 722000
+ 

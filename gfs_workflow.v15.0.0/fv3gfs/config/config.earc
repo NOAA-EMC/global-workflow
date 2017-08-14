@@ -1,0 +1,20 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.earc ##########
+# Ensemble archive specific
+
+echo "BEGIN: config.earc"
+
+# Get task specific resources
+. $EXPDIR/config.resources earc
+
+export NMEM_EARCGRP=10
+
+echo "END: config.earc"

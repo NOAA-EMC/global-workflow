@@ -23,7 +23,6 @@ set -x
 hour_list="$1"
 sets_key=$2
 num=$#
-job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
 if test $num -ge 2
 then
@@ -58,18 +57,24 @@ do
 
    if test ! -f pgrbf${hour}
    then
-       cpfs $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
+#       cp $COMIN/${RUN}.${cycle}.pgrbf${hour} pgrbf${hour}
 
 #      file name and forecast hour of GFS model data in Grib2 are 3 digits
-#      hour000="$(printf "%03d" $hour)"
 #      export fhr3=$hour
 #      if test $fhr3 -lt 100
 #      then
 #         export fhr3="0$fhr3"
 #      fi
-#
-#      $CNVGRIB -g21 $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrbf${hour}
+       fhr3="$(printf "%03d" $hour)"
 
+#      To solve Bugzilla #408: remove the dependency of grib1 files in gfs wafs job in next GFS upgrade
+#      Reason: It's not efficent if simply converting from grib2 to grib1 (costs 6 seconds with 415 records)
+#      Solution: Need to grep 'selected fields on selected levels' before CNVGRIB (costs 1 second with 92 records)
+       ln -s $COMIN/${RUN}.${cycle}.pgrb2.1p00.f$fhr3  pgrb2f${hour}
+       $WGRIB2 pgrb2f${hour} | grep -F -f $PARMgfs/grib_wafs.grb2to1.list | $WGRIB2 -i pgrb2f${hour} -grib pgrb2f${hour}.tmp
+       export IOBUF_PARAMS='*:size=32M:count=4:verbose'
+       $CNVGRIB -g21 pgrb2f${hour}.tmp  pgrbf${hour}
+       unset IOBUF_PARAMS
    fi
 
    #
@@ -115,17 +120,17 @@ do
 
    if test "$SENDCOM" = 'YES'
    then
-      cpfs xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job_name
-      cpfs com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$job_name
+      cp xtrn.wfs${NET}${hour}${sets} $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
+      cp com.wafs${hour}${sets} $PCOM/com.wafs${cyc}${hour}${sets}.$job
 
       if test "$SENDDBN_NTC" = 'YES'
       then
          if test "$NET" = 'gfs'
          then
                $DBNROOT/bin/dbn_alert MODEL GFS_WAFS $job \
-                         $PCOM/com.wafs${cyc}${hour}${sets}.$job_name
+                         $PCOM/com.wafs${cyc}${hour}${sets}.$job
                $DBNROOT/bin/dbn_alert MODEL GFS_XWAFS $job \
-                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job_name
+                         $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
          fi
       fi
    fi
@@ -135,7 +140,7 @@ do
    ##############################
 
    if [ "$SENDDBN_NTC" = 'YES' ] ; then
-      $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job_name
+      $DBNROOT/bin/dbn_alert GRIB_LOW $NET $job $PCOM/xtrn.wfs${NET}${cyc}${hour}${sets}.$job
    else
       msg="xtrn.wfs${NET}${cyc}${hour}${sets}.$job file not posted to db_net."
       postmsg "$jlogfile" "$msg"

@@ -172,8 +172,7 @@ fi
               FHHH=$fhr 
               if [ $fhr -lt 100 ];then FHHH="0"${fhr};fi
               export GRIBVERSION=grib1
-              export OUTTYP=${OUTTYP:-3}
-              export SIGINP=${SIGINP:-$COMIN/$mdl.t${cyc}z.atmf$FHHH}
+              export OUTTYP=${OUTTYP:-4}
  	      export NEMSINP=${NEMSINP:-$COMIN/${mdl}.t${cyc}z.atmf$FHHH.nemsio}
 	      export SFCINP=${SFCINP:-$COMIN/${mdl}.t${cyc}z.sfcf$FHHH.nemsio}
               export FLXINP=${FLXINP:-$COMIN/$mdl.t${cyc}z.flxf$FHHH.nemsio}
@@ -182,9 +181,9 @@ fi
               export PGBOUT=tmpfile4
               export FILTER=0
               export IGEN=${IGEN:-96}
-              export IDRT=${IDRT:-0}
-              export LONB=${LONB:-1440}
-              export LATB=${LATB:-721}
+              export IDRT=${IDRT:-4}
+              export LONB=${LONB:-3072}
+              export LATB=${LATB:-1536}
 
             export POSTGPEXEC=${POSTGPEXEC:-$EXECPOST/ncep_post}
 	    export POSTGPSH=${POSTGPSH:-$USHPOST/global_nceppost.sh}

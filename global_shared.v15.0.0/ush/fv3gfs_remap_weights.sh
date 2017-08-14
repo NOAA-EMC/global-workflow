@@ -1,14 +1,12 @@
 #!/bin/sh 
 #BSUB -L /bin/sh
-#BSUB -P GFS-T2O
-#BSUB -oo /gpfs/hps/ptmp/Fanglin.Yang/log.weights
-#BSUB -eo /gpfs/hps/ptmp/Fanglin.Yang/log.weights
+#BSUB -P FV3GFS-T2O
+#BSUB -oo log.weights
+#BSUB -eo log.weights
 #BSUB -J weights_fv3
 #BSUB -q dev
-#BSUB -M 128 
-#BSUB -x
+#BSUB -M 1024
 #BSUB -W 10:00
-#BSUB -cwd /gpfs/hps/ptmp/Fanglin.Yang
 #BSUB -extsched 'CRAYLINUX[]'
 set -ax
 
@@ -39,7 +37,7 @@ for CASE in C48  C96  C192  C384  C768  C1152  C3072; do
 #----------------------------------------------------------
 max_core=24
 export NODES=3; export thread=1
-if [ $CASE = C3072 ]; then export NODES=21; export thread=4; fi
+##if [ $CASE = C3072 ]; then exportNODES=21; export thread=4; fi
 export npes=$(((NODES-1)*max_core/thread))
  
 export workdir=$TMPDIR/${CASE}_${GG}

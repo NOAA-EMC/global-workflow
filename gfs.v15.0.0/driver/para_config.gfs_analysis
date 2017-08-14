@@ -5,10 +5,8 @@ export COM_OUT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/test
 export SENDDBN=YES
 export SAVEGES=YES
 export SENDCOM=YES
-export GETGES_NWG=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
 export gesenvir=para
-export GETGES_COM=/gpfs/hps/ptmp/emc.glopara/com2
-export GESROOT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/nwges2
+export GESROOT=/gpfs/hps/ptmp/emc.glopara/com2/gfs/test
 export KEEPDATA=NO
 
 
@@ -20,6 +18,7 @@ export HOMEgsm=$NWTEST/global_shared.${global_shared_ver}
 if [ $CDATE -ge 2017030800 -a $CDATE -lt 2017031312 ] ; then
    SATINFO=/gpfs/hps/emc/global/noscrub/emc.glopara/para_gfs/prnemsrn/global_satinfo.txt
 fi
+
 
 # Set scripts
 GETGESSH=$HOMEgsm/ush/getges.sh

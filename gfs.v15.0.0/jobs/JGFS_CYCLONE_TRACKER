@@ -85,6 +85,14 @@ export HOMERELO=${HOMERELO:-$HOMEglobal}
 export USHRELO=${USHtropcy:-$HOMERELO/ush}
 
 ###################################
+# Set up the UTILITIES
+###################################
+export machine=${machine:-WCOSS_C}
+if [ $machine = WCOSS_C ] ; then
+   export APRNGETTX="aprun -j1 -n1 -N1 -d1"
+fi
+
+###################################
 # Run the setpdy script
 ###################################
 # Run setpdy and initialize PDY variables
@@ -102,9 +110,9 @@ export COMINgfs=${COMINgfs:-${COMROOT}/gfs/${envir}/gfs.${PDY}}
 export COMINgdas=${COMINgdas:-${COMROOT}/gfs/${envir}/gdas.${PDY}}
 export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export ATCFdir=${ATCFdir:-$COMOUT}
+export ATCFdir=${ATCFdir:-${COMROOTp1}/nhc/${envir}/atcf}
 
-export APRUNTRACK="aprun -j1 -n1 -N1 -d1"
+export APRUNTRACK=${APRUNTRACK:-""}
 
 echo $COMINgfs
 
@@ -127,8 +135,9 @@ if [[ $cmodel = gdas ]]; then
 #    cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gdas.$cycle.cyclone.trackatcfunix
 else
     # Run first tracker for 180 hours for NHC/JTWC operational forecast:
-    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh} --gfs-last-hour $gfstrackhour1 --wait-for-data 900
-    cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gfso.$cycle.cyclone.trackatcfunix
+    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh}
+#    ${APRUNTRACK} ${PARATRKR:-$USHRELO/global_extrkr.sh} --gfs-last-hour $gfstrackhour1 --wait-for-data 900
+#    cp $DATA/trak.gfso.atcfunix.$CDATE $COMOUT/gfso.$cycle.cyclone.trackatcfunix
     # Run a second tracker for 252 hours for experimental ten day forecasts:
 #    if [ $gfstrackhour2 -gt $gfstrackhour1 ]; then
 #     export SENDNHC=NO
