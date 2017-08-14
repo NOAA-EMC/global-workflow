@@ -44,10 +44,10 @@ NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/util/EnKF/gfs/exec/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/util/EnKF/gfs/exec/recentersigp.x}
-CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/util/EnKF/gfs/exec/calc_increment_ens.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$BASE_GSI/exec/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-$BASE_GSI/exec/recentersigp.x}
+CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/exec/calc_increment_ens.x}
 
 # Files.
 APREFIX=${APREFIX:-""}
