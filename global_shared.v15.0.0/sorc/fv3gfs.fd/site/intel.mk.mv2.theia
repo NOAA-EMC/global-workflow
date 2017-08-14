@@ -100,7 +100,6 @@ CFLAGS += $(CFLAGS_OPENMP)
 FFLAGS += $(FFLAGS_OPENMP)
 LDFLAGS += $(LDFLAGS_OPENMP)
 # to correct a loader bug on gaea: envars below set by module load intel
-LIBS += -L$(INTEL_PATH)/$(INTEL_MAJOR_VERSION)/$(INTEL_MINOR_VERSION)/lib/intel64 -lifcoremt
 endif
 
 ifneq ($(VERBOSE),)

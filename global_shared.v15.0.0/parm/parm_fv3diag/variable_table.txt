@@ -11,6 +11,7 @@ t2m                  tmp                  2 m above gnd        1 bilinear       
 tsfc                 tmp                  sfc                  1 bilinear             F 2
 vtype                vtype                sfc                  1 nrstnghbr            F 2
 stype                sotyp                sfc                  1 nrstnghbr            F 2
+slope                slope                sfc                  1 nrstnghbr            F 2
 slmsk                land                 sfc                  1 nrstnghbr            F 2
 vfrac                veg                  sfc                  1 bilinear             T 2
 zorl                 sfcr                 sfc                  1 bilinear             T 2
@@ -35,6 +36,7 @@ facsf                facsf                sfc                  1 bilinear       
 facwf                facwf                sfc                  1 bilinear             F 2
 ffhh                 ffhh                 sfc                  1 bilinear             F 2
 ffmm                 ffmm                 sfc                  1 bilinear             F 2
+uustar               uustar               sfc                  1 bilinear             F 2
 fice                 icec                 sfc                  1 nrstnghbr            T 2
 hice                 icetk                sfc                  1 nrstnghbr            T 2
 snoalb               snoalb               sfc                  1 nrstnghbr            F 2

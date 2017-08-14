@@ -84,7 +84,11 @@ export MP_CMDFILE=$DATA/poescript
 # mpirun.lsf
 
 export NODES=1
-aprun -n 1 -d 12 cfp $DATA/poescript
+export APRUN=${APRUN:-"aprun -n 4 -N 4 -d2 -cc depth cfp"}
+#aprun -n 1 -d 12 cfp $DATA/poescript
+#aprun -n 34 -N 17 cfp $DATA/poescript
+#aprun -n 4 -N 4 -d 2 cfp $DATA/poescript
+$APRUN $DATA/poescript
 export err=$?;err_chk
 
 export err=$?;err_chk

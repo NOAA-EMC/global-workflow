@@ -23,6 +23,9 @@ module load prod_util
 module load prod_util/1.0.4
 module load grib_util/1.0.3
 
+module use /gpfs/hps/nco/ops/nwtest/modulefiles
+module load dumpjb/4.0.0
+
 set -xa
 
 export OMP_NUM_THREADS=1
@@ -41,7 +44,7 @@ export MP_STDOUTMODE=ordered
 # required exports!
 ############################################
 ### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
-export envir=para
+export envir=test
 
 export cyc=${cyc:-00}
 
@@ -60,15 +63,15 @@ export RUN=gfs
 # Specify versions
 ############################################
 export gfs_ver=v4.0.0
-export obsproc_dump_ver=v3.2.1
-export obsproc_bufr_dumplist_ver=v1.2.0
+export obsproc_dump_ver=v4.0.0
+export obsproc_bufr_dumplist_ver=v1.3.0
 
-
+export NWROOT=/gpfs/hps/nco/ops/nwtest
 # define the correct location of dump tools, do not mix with NWROOT of parallel GFS
-export obsproc_dump_ver=${obsproc_dump_ver:-v3.2.1}
-export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOT/hwrf_dump.${obsproc_dump_ver}}
-export obsproc_bufr_dumplist_ver=${obsproc_bufr_dumplist_ver:-v1.2.0}
-export HOMEobsproc_bufr_dumplist=${HOMEobsproc_bufr_dumplist:-$NWROOT/obsproc_bufr_dumplist.${obsproc_bufr_dumplist_ver}}
+export obsproc_dump_ver=${obsproc_dump_ver:-v4.0.0}
+export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOT/obsproc_dump.${obsproc_dump_ver}}
+export obsproc_shared_bufr_dumplist_ver=${obsproc_shared_bufr_dumplist_ver:-v1.3.0}
+export HOMEobsproc_shared_bufr_dumplist=${HOMEobsproc_shared_bufr_dumplist:-$NWROOT/obsproc_shared/bufr_dumplist.${obsproc_shared_bufr_dumplist_ver}}
 
 ############################################
 # user defined
@@ -79,7 +82,7 @@ export jobid=${job}.${pid}
 #needs to be the current date to make sure comparison is good at $PCOM
 #export PDY=`$NDATE -24 | cut -c 1-8`
 export PDY=`cut -c 7-14 $COMROOT/date/t00z`
-export PDY=20161101
+export PDY=20170329
 
 USER=`whoami`
 
@@ -99,6 +102,7 @@ export KEEPDATA=YES
 # Define ROOT directories
 ############################################
 export COMROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com2
+export COMROOT=/gpfs/hps/ptmp/Yali.Mao/com2
 #export NWROOTp1=/nwprod
 export PCOMROOT=/gpfs/hps/ptmp/${USER}/pcom
 export NWROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/project
@@ -115,8 +119,8 @@ else                               ! SURGE/GYRE
   export COMROOTp1=/gpfs/gp1/nco/ops/com
 fi
 # For canned data:
-export DCOMROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/dcom
-export COMROOTp1=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com
+#export DCOMROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/dcom
+#export COMROOTp1=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com
 
 ############################################
 # Define DATA PCOM, COMOUT and COMIN
@@ -135,7 +139,7 @@ export jlogfile=/$DATA/jlogfile.${jobid}
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_cray.${gfs_ver}}
-
+export HOMEgfs=/gpfs/hps/emc/global/noscrub/Yali.Mao/project/wafs_trunk
 
 ############################################
 # run the job

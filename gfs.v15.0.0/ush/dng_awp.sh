@@ -57,7 +57,10 @@ if [ -s "$awpparm" ];then
   err=$?
   echo " error from tocgrib="  $err
 else 
+  if [ $fhr -ne 1 -a $fhr -ne 2 -a $fhr -ne 4 -a $fhr -ne 5 -a $fhr -ne 7 \
+       -a $fhr -ne 8 -a $fhr -ne 10 -a $fhr -ne 11 ];then
   echo AWP PARM FILE not found: $awpparm
+  fi
 fi
 
 mv MESO${RGIN}${fhr}.tm00 $COMOUT/${mdl}.t${cyc}z.smart${outreg}${fhr}.tm00
@@ -71,7 +74,10 @@ fi
 if [ $outreg = ak3 ];then
   mv grib2.t${cyc}z.smart${outreg}f${fhr} $pcom/grib2.awp${mdl}smart3.ak${fhr}_awips_f${fhr}_${cyc}
 else
+  if [ $fhr -ne 1 -a $fhr -ne 2 -a $fhr -ne 4 -a $fhr -ne 5 -a $fhr -ne 7 \
+       -a $fhr -ne 8 -a $fhr -ne 10 -a $fhr -ne 11 ];then
   mv grib2.t${cyc}z.smart${outreg}f${fhr} $pcom/grib2.awp${mdl}smart.${outreg}${fhr}_awips_f${fhr}_${cyc}
+  fi
 fi
 
 if [ -s "$awpparm" ];then

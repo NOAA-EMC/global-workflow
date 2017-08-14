@@ -1,3 +1,4 @@
+#!/bin/ksh
 #####################################################################
 echo "-----------------------------------------------------"
 echo " exglobal_npoess_halfdeg_gfs_g2.sh.ecf" 
@@ -47,7 +48,8 @@ do
     ic=1
     while [ $ic -le $SLEEP_LOOP_MAX ]
     do
-       if test -f $restart_file$fhr
+#      if test -f $restart_file$fhr
+       if test -f $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}.idx
        then
           break
        else
@@ -84,11 +86,13 @@ do
 
     if test $SENDCOM = "YES"
     then
-       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
+       export fhr2=$fhr
+       typeset -Z2 fhr2
+       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr2}.npoess
 
        if test $SENDDBN = "YES"
        then
-          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f$fhr.npoess
+          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f${fhr2}.npoess
        fi
 
 #       if test $fhr -lt 100

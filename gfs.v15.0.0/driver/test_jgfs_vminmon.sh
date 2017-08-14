@@ -13,7 +13,7 @@
 
 set -x
 
-export PDATE=2016030106
+export PDATE=${PDATE:-2016030706}
 
 #############################################################
 # Specify whether the run is production or development
@@ -24,20 +24,17 @@ export job=gfs_vminmon.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=para
-export DATAROOT=/gpfs/td2/emc/da/noscrub/Edward.Safford/test_data
-export COMROOT=/ptmpp1/$LOGNAME/com
+export Z=${Z:-gz}
+me=`hostname | cut -c1`
+export DATAROOT=${DATAROOT:-/gpfs/${me}d2/emc/da/noscrub/Edward.Safford/test_data}
+export COMROOT=${COMROOT:-/ptmpp1/$LOGNAME/com}
 
 
 #############################################################
 # Specify versions
 #############################################################
-export gfs_ver=v13.0.0
-export global_shared_ver=v13.0.0
-export grib_util_ver=v1.0.1
-export prod_util_ver=v1.0.2
-export util_shared_ver=v1.0.2
-export gfs_minmon_ver=v1.0.0
-export minmon_shared_ver=v1.0.0
+export gfs_ver=v14.1.0
+export global_shared_ver=v14.1.0
 
 
 #############################################################
@@ -45,12 +42,9 @@ export minmon_shared_ver=v1.0.0
 #############################################################
 . /usrx/local/Modules/3.2.9/init/ksh
 module use /nwprod2/modulefiles
-module load grib_util/$grib_util_ver
-module load prod_util/$prod_util_ver
-module load util_shared/$util_shared_ver
-
-module unload ics/12.1
-module load ics/15.0.3
+module load grib_util
+module load prod_util
+module load util_shared
 
 module list
 
@@ -64,13 +58,14 @@ export POE=YES
 #############################################################
 # Set user specific variables
 #############################################################
-export SUFFIX=testminmon
-export NWTEST=/da/noscrub/${LOGNAME}/MinMon_546/util/Minimization_Monitor/nwprod
-export HOMEgfs=${NWTEST}/gfs_minmon.${gfs_minmon_ver}
-export JOBGLOBAL=${HOMEgfs}/jobs
-export HOMEminmon=${NWTEST}/minmon_shared.${minmon_shared_ver}
-export COM_IN=${DATAROOT}
-export M_TANKverf=${COMROOT}/${SUFFIX}
+export MINMON_SUFFIX=testminmon
+export NWTEST=${NWTEST:-/gpfs/${me}d2/emc/da/noscrub/${LOGNAME}/gfs_q3fy17}
+export HOMEgfs=${HOMEgfs:-${NWTEST}/gfs.${gfs_ver}}
+export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
+export HOMEminmon=${HOMEminmon:-${NWTEST}/global_shared.${global_shared_ver}}
+
+export COM_IN=${COM_IN:-${DATAROOT}}
+export M_TANKverf=${M_TANKverf:-${COMROOT}/${MINMON_SUFFIX}}
 
 
 #############################################################

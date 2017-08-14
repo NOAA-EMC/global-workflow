@@ -35,12 +35,16 @@ outfilbase=gfs_${PDY}${cyc}
 
 #  Get the list of individual station files.
 
-filelist=`/bin/ls -1 $BPATH | grep bufr`
-for file in $filelist; do
-cwordsh block $BPATH/$file $BPATH/$file.block
-mv $BPATH/$file.block $BPATH/$file
-    namsnd << EOF > /dev/null
-SNBUFR   = \$BPATH/$file
+date
+##filelist=`/bin/ls -1 $BPATH | grep bufr`
+##rm -f bufr.combined
+##for file in $filelist; do
+##  cat $BPATH/$file >> bufr.combined
+##done
+  cat $BPATH/bufr.*.${PDY}${cyc} > bufr.combined
+date
+namsnd << EOF > /dev/null
+SNBUFR   = bufr.combined
 SNOUTF   = ${outfilbase}.snd
 SFOUTF   = ${outfilbase}.sfc
 SNPRMF   = sngfs.prm
@@ -50,7 +54,7 @@ r
 
 ex
 EOF
-done
+date
 
 /bin/rm *.nts
 

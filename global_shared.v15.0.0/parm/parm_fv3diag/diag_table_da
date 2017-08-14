@@ -12,13 +12,13 @@
 "gfs_dyn",     "pfhy",        "hypres",    "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "pfnh",        "nhpres",    "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "w",           "vvel",      "fv3_history",    "all",  .false.,  "none",  2
-               
+
 "gfs_phys",    "psurf",       "pressfc",   "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "u10m",        "u10m",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "v10m",        "v10m",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "soilm",       "soilm",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "cnvprcp",     "cnvprcp",   "fv3_history2d",  "all",  .false.,  "none",  2
-                                                                                        
+
 "gfs_sfc",     "hgtsfc",      "hgtsfc",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "tprcp",       "tprcp",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "weasd",       "weasd",     "fv3_history2d",  "all",  .false.,  "none",  2

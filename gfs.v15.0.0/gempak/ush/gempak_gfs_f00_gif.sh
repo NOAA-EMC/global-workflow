@@ -592,7 +592,7 @@ if [ $SENDCOM = YES ]; then
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso250dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp250dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso200dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp200dev}
+# $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp200dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso100dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp100dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcdev}

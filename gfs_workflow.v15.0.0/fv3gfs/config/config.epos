@@ -1,0 +1,21 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.epos ##########
+# Ensemble post processing specific
+
+echo "BEGIN: config.epos"
+
+# Get task specific resources
+. $EXPDIR/config.resources epos
+
+export ENKFPOSTSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_post_fv3gfs.sh.ecf"
+export nth_epos=2
+
+echo "END: config.epos"

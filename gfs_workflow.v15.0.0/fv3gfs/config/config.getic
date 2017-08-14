@@ -1,0 +1,28 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.getic ##########
+# Fetching GFS initial conditions specific
+
+echo "BEGIN: config.getic"
+
+# Get task specific resources
+. $EXPDIR/config.resources getic
+
+# This is messy business, and logic needs cleanup.
+# We should just be supporting the NEMSGFS only
+export ictype="opsgfs" # initial conditions from opsgfs or nemsgfs
+
+# Provide a parallel experiment name and path to HPSS archive
+if [ $ictype = "nemsgfs" ]; then
+    export parexp="prnemsrn"
+    export HPSS_PAR_PATH="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$parexp"
+fi
+
+echo "END: config.getic"

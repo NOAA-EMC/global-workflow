@@ -99,9 +99,9 @@ do
     $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 -new_grid $gridconus pgb2file2
 
     $WGRIB2 pgb2file -s > pgb2ifile
-    $CNVGRIB21_GFS -g21 pgb2file pgbfile
+    $EXECgfs/cnvgrib21_gfs -g21 pgb2file pgbfile
     $GRBINDEX pgbfile pgifile
-    $CNVGRIB21_GFS -g21 pgb2file2 pgbfile2
+    $EXECgfs/cnvgrib21_gfs -g21 pgb2file2 pgbfile2
     $GRBINDEX pgbfile2 pgifile2
 
     export fhr3=$fhr

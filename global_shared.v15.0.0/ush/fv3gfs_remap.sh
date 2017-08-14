@@ -14,8 +14,10 @@ pwd=$(pwd)
 export DATA=${DATA:-$pwd}
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
+export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
+export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
 export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
-export IPD4=${IPD4:-NO}
+export IPD4=${IPD4:-"YES"}
 
 cycn=`echo $CDATE | cut -c 9-10`
 export TCYC=${TCYC:-".t${cycn}z."}
@@ -23,8 +25,8 @@ export CDUMP=${CDUMP:-gfs}
 export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 
 #--------------------------------------------------
-export grid_loc=${FIX_FV3:-$BASE_GSM/fix/fix_fv3}/$CASE/${CASE}_mosaic.nc
-export weight_file=${FIX_FV3:-$BASE_GSM/fix/fix_fv3}/$CASE/remap_weights_${CASE}_${GG}.nc
+export grid_loc=$FIX_FV3/$CASE/${CASE}_mosaic.nc
+export weight_file=$FIX_FV3/$CASE/remap_weights_${CASE}_${GG}.nc
 
 export APRUN_REMAP=${APRUN_REMAP:-${APRUN:-""}}
 export NTHREADS_REMAP=${NTHREADS_REMAP:-${NTHREADS:-1}}
@@ -78,8 +80,7 @@ export nggps3d_hy="ucomp, vcomp, temp, delp, sphum, o3mr, clwmr, hypres"        
 #--------------------------------------------------
 cd $DATA || exit 8
 
-testfile=${CDATE}0000.nggps3d.tile4.nc
-if [ ! -s $testfile ]; then testfile=nggps3d.tile4.nc ; fi
+testfile=nggps3d.tile4.nc
 nhrun=$(ncdump -c $testfile | grep nhpres)
 nhrun=$?
 
@@ -89,8 +90,7 @@ export OMP_NUM_THREADS=$NTHREADS_REMAP
 err=0
 for type in atmos_4xdaily nggps2d nggps3d ; do
 
-  export in_file="${CDATE}0000.${type}"
-  if [ ! -s $in_file ]; then export in_file="${type}"; fi
+  export in_file="$type"
   export out_file=${PREFIX}${type}.${GG}.nc
   [[ -s $DATA/$out_file ]] && rm -f $DATA/$out_file
   if [ $nhrun -eq 0 ]; then

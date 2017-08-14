@@ -78,14 +78,14 @@ export SCRIPTSgfs=$HOMEgfs/scripts
 ################################################
 # Set up the input/output directory
 ################################################
-if [ $envir = "prod" ] || [ $envir = "para" ] ; then
-  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
-else
-  export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
-fi
+#### if [ $envir = "prod" ] || [ $envir = "para" ] ; then
+####  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+#### else
+####   export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
+#### fi
 
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
 export PCOM=${PCOM:-$PCOMROOT/wafs}
-
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
 
 if [ $SENDCOM = YES ] ; then

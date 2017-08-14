@@ -1,29 +1,7 @@
-SHELL=/bin/sh
-
 #==============================================================================
 #
 # REGRID_NEMSIO Makefile
 #
-# <Usage>
-#   0) Export this makefile name to a variable 'MAKE_FILE' as 
-#      export MAKE_FILE = makefile
-#      If this file is named neither 'makefile' nor 'Makefile' but 
-#      'makeairs' for instance, then call this makefile by typing
-#      'make -f makeairs' instead of 'make'.
-#
-#   1) To make a REGRID_NEMSIO executable file, type
-#         > make  or  > make all
-#
-#   2) To copy the REGRID_NEMSIO load module to installing directory,
-#      type 
-#         > make install 
-#      Specify the directory to a variable 'INSTALL_DIR' below.
-#
-#   3) To clean up files created by make, type
-#         > make clean
-#
-# Created by Y.Tahara in May,2002
-# Edited by H. R. Winterbottom August, 2015
 #==============================================================================
 
 #-----------------------------------------------------------------------------
@@ -34,6 +12,8 @@ SHELL=/bin/sh
 # General Rules
 # -------------
 
+SHELL=/bin/sh
+
 RM              = /bin/rm -f
 MKDIR           = /bin/mkdir -p
 
@@ -41,32 +21,32 @@ MKDIR           = /bin/mkdir -p
 # Include machine dependent compile & load options
 #------------
 
-  MAKE_CONF = Makefile.conf
+MAKE_CONF =
 include $(MAKE_CONF)
 
 # -------------
 # This makefile
 # -------------
 
-  MAKE_FILE = Makefile
+MAKE_FILE = Makefile
 
 # -----------
 # Load module
 # -----------
 
-  EXE_FILE = regrid_nemsio
+EXE_FILE = regrid_nemsio
 
 # --------------------
 # Installing directory
 # --------------------
 
-  INSTALL_DIR = ../../exec/
+INSTALL_DIR = ../../exec/
 
 # --------
 # Log file
 # --------
 
-  LOG_FILE = log.make.$(EXE_FILE)
+LOG_FILE = log.make.$(EXE_FILE)
 
 # ---------------
 # Call child make
@@ -102,7 +82,7 @@ install:
 clean:
 	@echo
 	@echo '==== CLEAN ==================================================='
-	- $(RM) $(EXE_FILE) *.o *.mod 
+	- $(RM) $(EXE_FILE) *.o *.mod
 	- $(RM) log.make.$(EXE_FILE)
 
 #-----------------------------------------------------------------------------
@@ -113,37 +93,37 @@ clean:
 # Libraries
 # ---------
 
-  INCS = $(INCnetcdf) $(INCnemsio)
-  LIBS = $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIBd) $(LIBnetcdf) $(SP_LIB4)
+INCS = $(NETCDF_INCLUDE) -I$(NEMSIO_INC)
+LIBS = $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIBd) $(SP_LIB4) $(NETCDF_LDFLAGS)
 
 # ------------
 # Source files
 # ------------
 
-  SRCSF90 =                                          \
-       kinds.f90                                     \
-       constants.f90                                 \
-       physcons.f90                                  \
-       mpi_interface.f90                             \
-       namelist_def.f90                              \
-       variable_interface.f90                        \
-       netcdfio_interface.f90                        \
-       interpolation_interface.f90                   \
-       gfs_nems_interface.f90                        \
-       fv3_interface.f90                             
+SRCSF90 =                                          \
+     kinds.f90                                     \
+     constants.f90                                 \
+     physcons.f90                                  \
+     mpi_interface.f90                             \
+     namelist_def.f90                              \
+     variable_interface.f90                        \
+     netcdfio_interface.f90                        \
+     interpolation_interface.f90                   \
+     gfs_nems_interface.f90                        \
+     fv3_interface.f90
 
-  SRCS =  $(SRCSF77) $(SRCSF90)
+SRCS =  $(SRCSF77) $(SRCSF90)
 
 # ------------
 # Object files
 # ------------
 
-  OBJS = ${SRCSF90:.f90=.o} ${SRCSF77:.f=.o}
+OBJS = ${SRCSF90:.f90=.o} ${SRCSF77:.f=.o}
 
 # ------------
 # Dependencies
 # ------------
-  MAKE_DEPEND = Makefile.dependency
+MAKE_DEPEND = Makefile.dependency
 include $(MAKE_DEPEND)
 
 # -----------------------
@@ -174,6 +154,6 @@ REGRID_NEMSIO: $(OBJS)
 
 help:
 	@ echo "Available targets:"
-	@ echo "NCEP:  make             creates executable"
-	@ echo "NCEP:  make install     creates exec & places it in bin"
-	@ echo "       make clean       cleans objects, exec, and alien files"
+	@ echo "  make             creates executable"
+	@ echo "  make install     creates exec & places it in bin"
+	@ echo "  make clean       cleans objects, exec, and alien files"

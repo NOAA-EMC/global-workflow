@@ -7,7 +7,7 @@ mkdir -p ${root}/exec
 if ( ${2} == "clean" ) then
   echo " cleaning build directory in 4 seconds "
   sleep 4
-  rm ${root}/exec/*
+  \rm -f ${root}/exec/*
 endif
 
 cd ${root}/exec/

@@ -377,7 +377,7 @@ while [ $fhcnt -le $fend ] ; do
        fcsthr=${fhr}
     fi
     cp $COMIN/${model}.${cycle}.pgrb2.1p00.f${fcsthr} .
-    $CNVGRIB -g21 ${model}.${cycle}.pgrb2.1p00.f${fcsthr} ${model}.${cycle}.${GRIB}${fhr}
+    $EXECgfs/cnvgrib21_gfs -g21 ${model}.${cycle}.pgrb2.1p00.f${fcsthr} ${model}.${cycle}.${GRIB}${fhr}
     GRIBIN=${model}.${cycle}.${GRIB}${fhr}
     $GRBINDEX ${model}.${cycle}.${GRIB}${fhr} ${model}.${cycle}.pgrbif${fhr}
     GRIBIN_chk=${model}.${cycle}.pgrbif${fhr}

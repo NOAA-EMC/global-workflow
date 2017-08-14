@@ -65,7 +65,7 @@ export model=${model:-gfs}
 # Define COM directories
 ##############################################
 export COMIN=${COMIN:-${COMROOT}/${RUN}/${envir}/${RUN}.${PDY}}
-export MAGDIR=${MAGDIR:-${COMROOTp1}/mag/${envir}/mag.${PDY}}
+export MAGDIR=${MAGDIR:-${COMROOT}/mag/${envir}/mag.${PDY}}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $MAGDIR

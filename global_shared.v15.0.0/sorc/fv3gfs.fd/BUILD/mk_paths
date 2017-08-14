@@ -2,7 +2,7 @@
 
 cd ${FV3_GFS_SRC}
 
-rm pathnames_gfs pathnames_fv3 *.html
+\rm -f pathnames_gfs pathnames_fv3 *.html
 
 ../site/list_paths -o pathnames_gfs \
     gfs_physics/physics/ \
