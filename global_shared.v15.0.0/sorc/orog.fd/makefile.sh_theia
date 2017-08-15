@@ -15,7 +15,8 @@ export LDFLAGSM="-qopenmp -auto"
 export OMPFLAGM="-qopenmp -auto"
 
 
-export LIBSM="${W3NCO_LIBd} \
+export LIBSM="${BACIO_LIB4} \
+              ${W3NCO_LIBd} \
               ${IP_LIBd} \
               ${SP_LIBd} \
               -L${NETCDF}/lib -lnetcdff -lnetcdf"

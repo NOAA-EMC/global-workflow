@@ -14,9 +14,10 @@ export OMPFLAGM="-qopenmp -auto"
 
 export INCS=""
 
-export LIBSM="${W3NCO_LIB8} \
-              ${IP_LIB8} \
-              ${SP_LIB8} "
+export LIBSM="${BACIO_LIB4} \
+              ${IP_LIBd} \
+              ${W3NCO_LIBd} \
+              ${SP_LIBd} "
 
 
 make -f Makefile clobber
