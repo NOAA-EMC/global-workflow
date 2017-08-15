@@ -41,4 +41,3 @@ curdir=$(pwd)
 
 cd ${curdir}/orog.fd
 ./makefile.sh_$target
-
