@@ -17,7 +17,7 @@ export INCS=""
 export LIBSM="${BACIO_LIB4} \
               ${IP_LIBd} \
               ${W3NCO_LIBd} \
-              ${SP_LIBd} "
+              ${SP_LIBd}"
 
 
 make -f Makefile clobber
