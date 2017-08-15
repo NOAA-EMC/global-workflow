@@ -14,9 +14,9 @@ export FFLAGSM="-O3 -g -traceback -r8  -convert big_endian -fp-model precise  -a
 export LDFLAGSM="-qopenmp -auto"
 export OMPFLAGM="-qopenmp -auto"
 
-export LIBSM="${BACIO_LIB4} \ 
+export LIBSM="${BACIO_LIB4} \
               ${W3NCO_LIBd} \
-              ${IP_LIBd \
+              ${IP_LIBd} \
               ${SP_LIBd} \
               ${NETCDF_LDFLAGS}"
 
