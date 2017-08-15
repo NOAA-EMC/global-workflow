@@ -11,14 +11,11 @@ export FCMP95=$FCMP
 export INCS="-I${NETCDF}/include"
 
 export FFLAGSM="-O3 -g -traceback -r8  -convert big_endian -fp-model precise  -assume byterecl ${INCS}"
-export RECURS=
 export LDFLAGSM="-qopenmp -auto"
 export OMPFLAGM="-qopenmp -auto"
 
 
-export LIBSM="${BACIO_LIB4} \
-              ${W3NCO_LIBd} \
-              ${W3EMC_LIBd} \
+export LIBSM="${W3NCO_LIBd} \
               ${IP_LIBd} \
               ${SP_LIBd} \
               -L${NETCDF}/lib -lnetcdff -lnetcdf"
