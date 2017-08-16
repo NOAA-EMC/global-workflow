@@ -45,7 +45,11 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    fi
 elif [ -d /gpfs/hps/ptmp ]; then # LUNA or SURGE
    export machine="WCOSS_C"
-   export noscrub="/gpfs/hps/emc/global/noscrub/$LOGNAME"
+   if [ -d /gpfs/hps/emc/global/noscrub/$LOGNAME ]; then
+      export noscrub="/gpfs/hps/emc/global/noscrub/$LOGNAME"
+   elif [ -d /gpfs/hps/emc/da/noscrub/$LOGNAME ]; then
+      export noscrub="/gpfs/hps/emc/da/noscrub/$LOGNAME"
+   fi
 elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
@@ -100,12 +104,12 @@ elif [[ "$machine" = "WCOSS_C" ]]; then
      export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gsi"
    fi 
    export group="dev"
-   export queue="devonprod"
+   export queue="dev"
 
    export ptmp="/gpfs/hps/ptmp/$LOGNAME/$ptmpName"
 
    export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.4/fix"
-   export casesdir="/gpfs/hps/emc/global/noscrub/emc.glopara/CASES"
+   export casesdir="/gpfs/hps/emc/da/noscrub/Michael.Lueken/CASES"
    export ndate=$NDATE
 
    export check_resource="no"
