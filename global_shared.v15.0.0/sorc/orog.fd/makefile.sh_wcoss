@@ -2,24 +2,23 @@
 set -x
 
 #-----------------------------------------------------
-#-use standard modules.
+#-use standard modules. 
 #-----------------------------------------------------
 
 export FCMP=${FCMP:-ifort}
 export FCMP95=$FCMP
 
-export INCS="-I${NETCDF}/include"
+export INCS="${NETCDF_INCLUDE}"
 
 export FFLAGSM="-O3 -g -traceback -r8  -convert big_endian -fp-model precise  -assume byterecl ${INCS}"
 export LDFLAGSM="-qopenmp -auto"
 export OMPFLAGM="-qopenmp -auto"
 
-
 export LIBSM="${BACIO_LIB4} \
               ${W3NCO_LIBd} \
               ${IP_LIBd} \
               ${SP_LIBd} \
-              -L${NETCDF}/lib -lnetcdff -lnetcdf"
+              ${NETCDF_LDFLAGS}"
 
 
 make -f Makefile clobber
