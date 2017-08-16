@@ -71,6 +71,7 @@ export SLMASK=${SLMASK:-${FIXgsm}/global_slmask.t${JCAP}.$LONB.$LATB.grb}
 export BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT}.f77}
 export SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 export SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+export CLOUDYINFO={$CLOUDYINFO:-${FIXgsi}/cloudy_radiance_info.txt}
 export ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
 export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
 export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
