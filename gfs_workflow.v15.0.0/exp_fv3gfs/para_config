@@ -12,7 +12,7 @@ machine=WCOSS_C
 NEMS=YES
 
 PSLOT=fv3test                  # Experiment ID
-EDATE=2017071600            # Analysis/forecast cycle ending date 
+EDATE=2018071600            # Analysis/forecast cycle ending date 
 EDUMP=gdas                  # cycle ending dump
 ESTEP=prep                  # cycle ending step
 
@@ -54,13 +54,13 @@ if [ $machine = WCOSS ]; then
  . /usrx/local/Modules/3.2.10/init/ksh
  module unload ics/12.1
  module load ics/15.0.3
- CUE2RUN=devhigh2
- CUE2RUN1=devhigh2
+ CUE2RUN=devonprod
+ CUE2RUN1=devonprod
  CUE2RUNA=transfer
  RUN_ENVIR=para
  ACCOUNT=FV3GFS-T2O
  group_name=rstprod
- GROUP=dev
+ GROUP=devonprod
  max_core=24
  pe_node=24
  memory_node=3072
@@ -70,13 +70,13 @@ elif [ $machine = WCOSS_C ]; then
  module load PrgEnv-intel cray-mpich crtm-intel/2.2.4 cfp-intel-sandybridge 2>>/dev/null
  module load prod_envir prod_util grib_util/1.0.3 hpss g2tmpl-intel/1.4.0 2>>/dev/null
  module load nco-gnu-sandybridge/4.4.4 cray-netcdf 2>>/dev/null
- CUE2RUN=dev
- CUE2RUN1=dev
+ CUE2RUN=devonprod
+ CUE2RUN1=devonprod
  CUE2RUNA=dev_transfer
  RUN_ENVIR=para
  ACCOUNT=FV3GFS-T2O
  group_name=rstprod
- GROUP=dev
+ GROUP=devonprod
  max_core=24
  pe_node=24
  memory_node=3072
@@ -130,22 +130,23 @@ if [ $machine = WCOSS ]; then
  NWPARA=/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
  BASE_SVN=/global/save/$LOGNAME/svn/fv3gfs
- tags=trunk
+ tags=trunk_r88010
  nemsioget=/global/save/emc.glopara/bin/nemsio_get
  archsyndir=/com/arch/prod/syndat
 elif [ $machine = WCOSS_C ]; then
  TOPDIR=/gpfs/hps/emc/global                                       # DO NOT CHANGE
  DISK_GLOB=$TOPDIR/noscrub              
  NOSCRUB=/gpfs/hps/emc/global/noscrub
- STMP=/gpfs/hps/stmp
- PTMP=/gpfs/hps/ptmp
+ STMP=/gpfs/hps3/stmp
+ PTMP=/gpfs/hps3/ptmp
  DMPROOT=`echo $NWROOTp1 | cut -d"/" -f1-3`
  DMPDIR=$DMPROOT/emc/globaldump
  NWPROD=/gpfs/hps/nco/ops/nwprod
  NWPARA=/gpfs/hps/emc/global/save/emc.glopara/nwpara
  PERTURBDIR=$NWPROD/fix/enkf_gfs
- BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
- tags=trunk
+ #BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
+ BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
+ tags=trunk_r93576
  nemsioget=/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
  archsyndir=$COMROOTp1/arch/prod/syndat
  FIX_FV3=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix_fv3
@@ -164,7 +165,7 @@ elif [ $machine = THEIA ]; then
  utilscript=/scratch4/NCEPDEV/rstprod/nwprod/util/ush
  pe_node=24
  nemsioget=/home/glopara/bin/nemsio_util/nemsio_get
- tags=trunk
+ tags=trunk_r88010
  FIX_FV3=/scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix_fv3   
 else
  echo '$machine is not supported, exit'
@@ -174,8 +175,6 @@ fi
 
 envir=para
 NET=gfs
-#COMROUT=$PTMP/$LOGNAME/pr${PSLOT}/com2
-#ROTDIR=$COMROUT/$NET/$envir
 
 ROTDIR=$PTMP/$LOGNAME/pr${PSLOT}
 COMROT=$ROTDIR/${CDUMP}.$ymd/$cycn
