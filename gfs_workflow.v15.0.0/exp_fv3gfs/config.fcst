@@ -1,7 +1,7 @@
 #FORECASTSH=$SCRDIR/exglobal_fcst_fv3gfs.sh.ecf
 FORECASTSH=$SCRDIR/exglobal_fcst_nemsfv3gfs.sh         
 EXECDIR=$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin
-IC_DIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC/ICs
+IC_DIR=/gpfs/hps3/ptmp/$LOGNAME/FV3IC/ICs
 if [ $REMAP_GRID = latlon ]; then
  DIAG_TABLE=$BASE_GSM/parm/parm_fv3diag/diag_table
 else

@@ -5,7 +5,7 @@ ATARFILE=$ATARDIR/\$ADAY.tar
 #---------------------------------------
 # file retention hours in ROTDIR  
 #---------------------------------------
-HRKROT=168                         # Hours to keep rotating archive
+HRKROT=48                          # Hours to keep rotating archive
 HRKTMP=12                          # Hours to keep tmpdir 
 HRKTMPGDAS=06                      # Hours to keep GDAS tmpdir
 HRKTMPGFS=12                       # Hours to keep GFS tmpdir 
