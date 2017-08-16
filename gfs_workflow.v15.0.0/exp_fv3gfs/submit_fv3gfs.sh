@@ -25,7 +25,7 @@ export NODES=1
 export workflow_ver=v15.0.0
 export global_shared_ver=v15.0.0
 export tags=trunk
-export PTMP=/gpfs/hps/ptmp
+export PTMP=/gpfs/hps3/ptmp
 #export BASE_SVN=/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/fv3gfs
 export BASE_SVN=/gpfs/hps/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs
 export BASEDIR=$BASE_SVN/$tags/gfs_workflow.$workflow_ver
@@ -65,8 +65,8 @@ export nemsgfs_exp=prnemsrn            #real-time nems gfs parallel
 
 envir=para
 NET=gfs
-ROTDIR=/gpfs/hps/ptmp/$LOGNAME/pr${PSLOT}
-export FV3ICDIR=/gpfs/hps/ptmp/$LOGNAME/FV3IC
+ROTDIR=/gpfs/hps3/ptmp/$LOGNAME/pr${PSLOT}
+export FV3ICDIR=/gpfs/hps3/ptmp/$LOGNAME/FV3IC
 mkdir -p $ROTDIR $FV3ICDIR
 
 CDUMP=gfs
@@ -138,7 +138,7 @@ done
 elif [ $ictype = nemsgfs ]; then
 #********************************
 
-expdir=/gpfs/hps/ptmp/emc.glopara/$nemsgfs_exp
+expdir=/gpfs/hps3/ptmp/emc.glopara/$nemsgfs_exp
 arcdir=/gpfs/hps/emc/global/noscrub/emc.glopara/archive/$nemsgfs_exp
 
 cp $arcdir/pgbanl.gfs.$cdate $COMROT/gfs.t${cyc}z.pgrbanl

@@ -509,9 +509,9 @@ cat > input.nml <<EOF
   d2_bg_k1 = ${d2_bg_k1:-"0.15"}
   d2_bg_k2 = ${d2_bg_k2:-"0.02"}
   kord_tm = ${kord_tm:-"-9"}
-  kord_mt = ${kord_tm:-"9"}
-  kord_wz = ${kord_tm:-"9"}
-  kord_tr = ${kord_tm:-"9"}
+  kord_mt = ${kord_mt:-"9"}
+  kord_wz = ${kord_wz:-"9"}
+  kord_tr = ${kord_tr:-"9"}
   hydrostatic = $hydrostatic
   phys_hydrostatic = $phys_hydrostatic
   use_hydro_pressure = $use_hydro_pressure
