@@ -18,8 +18,8 @@ echo "BEGIN: config.ecen"
 export ENKFRECENSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_recenter_fv3gfs.sh.ecf"
 export nth_ecen=2
 
-export CHGRESSH="$BASE_GFS/ush/global_chgres.sh"
-export CHGRESEXEC="$BASE_GFS/exec/global_chgres"
+export CHGRESSH="$BASE_GSM/ush/global_chgres_GSM.sh"
+export CHGRESEXEC="$BASE_GSM/exec/global_chgres_GSM"
 export CHGRESVARS_ENKF="use_ufo=.true.,nopdpvv=.true."
 export CHGRESTHREAD=12
 

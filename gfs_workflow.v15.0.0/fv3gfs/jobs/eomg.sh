@@ -35,12 +35,12 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export GDATE=`$NDATE -$assim_freq $CDATE`
+export GDATE=$($NDATE -$assim_freq $CDATE)
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 export OPREFIX="${CDUMP}.t${chh}z."
 export APREFIX="${CDUMP}.t${chh}z."
@@ -61,7 +61,7 @@ if [ ! -f $ATMGES_ENSMEAN ]; then
     exit 1
 fi
 
-export LEVS=`$NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}'`
+export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -78,8 +78,8 @@ export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
 
 ###############################################################
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EOMGGRP
-ENSEND=`echo "$NMEM_EOMGGRP * $ENSGRP" | bc`
-ENSBEG=`echo "$ENSEND - $NMEM_EOMGGRP + 1" | bc`
+ENSEND=$(echo "$NMEM_EOMGGRP * $ENSGRP" | bc)
+ENSBEG=$(echo "$ENSEND - $NMEM_EOMGGRP + 1" | bc)
 export ENSBEG=$ENSBEG
 export ENSEND=$ENSEND
 
