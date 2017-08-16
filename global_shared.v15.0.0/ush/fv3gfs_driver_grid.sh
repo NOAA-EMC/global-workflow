@@ -11,7 +11,7 @@
 #BSUB -extsched 'CRAYLINUX[]'
 #----THEIA JOBCARD
 #PBS -N fv3_grid_driver
-#PBS -A glbss
+#PBS -A fv3-cpu
 #PBS -o log.grid
 #PBS -e log.grid
 #PBS -l nodes=1:ppn=24
