@@ -46,7 +46,7 @@ def main():
     if args.expdir != _base['EXPDIR']:
         print 'MISMATCH in experiment directories!'
         print 'config.base: EXPDIR = %s' % _base['EXPDIR']
-        print 'input arg: --expdir = %s' % expdir
+        print 'input arg: --expdir = %s' % args.expdir
         sys.exit(1)
 
     tasks = gfs_tasks + hyb_tasks if _base['DOHYBVAR'] == 'YES' else gfs_tasks
@@ -275,7 +275,7 @@ def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
 
     # prep
     deps = []
-    dep_dict = {'type':'task', 'name':'%spost' % cdump, 'offset':'-06:00:00'}
+    dep_dict = {'type':'task', 'name':'%spost' % 'gdas', 'offset':'-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     data = '&DMPDIR;/@Y@m@d@H/%s/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, cdump)
     dep_dict = {'type':'data', 'data':data}
@@ -291,7 +291,7 @@ def get_gdasgfs_tasks(cdump='gdas', dohybvar='NO'):
     dep_dict = {'type':'task', 'name':'%sprep' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     if dohybvar in ['y', 'Y', 'yes', 'YES']:
-        dep_dict = {'type':'task', 'name':'%sepos' % cdump, 'offset':'-06:00:00'}
+        dep_dict = {'type':'task', 'name':'%sepos' % 'gdas', 'offset':'-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:

@@ -36,7 +36,6 @@ export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 # Base directories for various builds
 export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
 export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
-export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
 
 # Utilities needed in the scripts (mostly post)
 export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
@@ -90,7 +89,6 @@ export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
 # Base directories for various builds
 export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
 export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
-export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
 
 # Utilities needed in the scripts (mostly post)
 export NEMSIOGET="/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get"
@@ -190,7 +188,6 @@ fi
 # Shared scripts
 
 # Shared tables
-export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
 
 # Shared executables
 

@@ -40,8 +40,8 @@ export DATA=$RUNDIR/$CDATE/$CDUMP/efcs.grp$ENSGRP
 [[ -d $DATA ]] && rm -rf $DATA
 
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
-ENSEND=`echo "$NMEM_EFCSGRP * $ENSGRP" | bc`
-ENSBEG=`echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc`
+ENSEND=$(echo "$NMEM_EFCSGRP * $ENSGRP" | bc)
+ENSBEG=$(echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc)
 export ENSBEG=$ENSBEG
 export ENSEND=$ENSEND
 

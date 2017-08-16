@@ -33,8 +33,8 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 
 ###############################################################
 # Verify Fits

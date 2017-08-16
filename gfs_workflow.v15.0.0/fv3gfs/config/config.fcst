@@ -57,6 +57,10 @@ elif [ $CDUMP = "gfs" ]; then # GFS cycle specific parameters
 
 fi
 
+# Regrid tiles to global Gaussian grid in NEMSIO
+export REGRID_NEMSIO_SH="$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh"
+export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
+
 # Remap tiles to global latlon grid in NetCDF
 export REMAPSH="$BASE_GSM/ush/fv3gfs_remap.sh"
 export master_grid="0p5deg" # 1deg 0p5deg 0p25deg 0p125deg etc
