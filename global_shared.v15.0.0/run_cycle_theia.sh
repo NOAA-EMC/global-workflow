@@ -30,10 +30,6 @@ export DELTSFC=6
 
 export CRES=384
 
-the_tile=tile3
-export SFCGES=/scratch4/NCEPDEV/nems/noscrub/emc.nemspara/FV3GFS_V0_RELEASE/baseline/fv3gfs_nh_32bit/C${CRES}/gfs.20160929/00/RESTART/sfc_data.${the_tile}.nc
-export SFCANL="./gdas1.t00z.sfcanl"
-
 export FNTSFA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
 export FNSNOA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/snogrb_t1534.3072.1536.gdas.$CDATE
 export FNACNA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/seaice.5min.blend.grb.gdas.$CDATE
@@ -41,9 +37,6 @@ export FNACNA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/seaice.5min.blen
 export JCAP=1534
 export LONB=3072
 export LATB=1536
-
-export FNGRID=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_grid.${the_tile}.nc
-export FNOROG=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_oro_data.${the_tile}.nc
 
 export FIXgsm=$HOMEglobal/fix/fix_am
 
@@ -56,6 +49,14 @@ export CYCLVARS=FSNOL=-2.,FSNOS=99999.,FSLPL=99999.,FVETL=99999.,FSOTL=99999.,
 export DATA=/scratch3/NCEPDEV/stmp1/George.Gayno/cycle
 rm -fr $DATA
 
-$HOMEglobal/ush/global_cycle.sh $SFCGES $SFCANL
+for the_tile in "tile1" "tile2" "tile3" "tile4" "tile5" "tile6"
+do
+  export SFCGES=/scratch4/NCEPDEV/nems/noscrub/emc.nemspara/FV3GFS_V0_RELEASE/baseline/fv3gfs_nh_32bit/C${CRES}/gfs.20160929/00/RESTART/sfc_data.${the_tile}.nc
+  export SFCANL="./sfcanl.${the_tile}.nc"
+  export FNGRID=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_grid.${the_tile}.nc
+  export FNOROG=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_oro_data.${the_tile}.nc
+
+  $HOMEglobal/ush/global_cycle.sh $SFCGES $SFCANL
+done
 
 exit
