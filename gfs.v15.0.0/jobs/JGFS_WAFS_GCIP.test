@@ -1,0 +1,189 @@
+#!/bin/sh
+
+############################################
+# GFS GCIP PRODUCT GENERATION
+############################################
+
+date
+export PS4='$SECONDS + ' 
+set -xa
+
+############################################
+# Override some ecFlow environment variables
+############################################
+export NWROOT=${NWROOT:-/gpfs/hps/nco/ops/nwprod}
+# for satellite data
+export DCOMROOT=${DCOMROOT:-/gpfs/gp1/nco/ops/dcom}
+# for radar data
+export COMROOTp1=${COMROOTp1:-/gpfs/gp1/nco/ops/com}
+
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
+
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
+[ -d $DATA ] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+
+############################################
+# Run setpdy and initialize PDY variables
+############################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-NO}
+export SENDDBN=${SENDDBN:-NO}
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+############################################
+# Specify HOME Directory
+############################################
+#export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export gfs_ver=${gfs_ver:-v14.1.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix
+export PARMgfs=$HOMEgfs/parm
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+# Set up BUFR dump and dumplist home directory
+# TMPDIR must be defined
+export TMPDIR=$DATA
+# obsproc_dump
+export obsproc_dump_ver=${obsproc_dump_ver:-v4.0.0}
+export HOMEobsproc_dump=${HOMEobsproc_dump:-$NWROOT/obsproc_dump.${obsproc_dump_ver}}
+export USHobsproc_dump=${USHobsproc_dump:-$HOMEobsproc_dump/ush}
+#obsproc_bufr_dumplist
+export obsproc_shared_bufr_dumplist_ver=${obsproc_shared_bufr_dumplist_ver:-v1.3.0}
+export HOMEobsproc_shared_bufr_dumplist=${HOMEobsproc_shared_bufr_dumplist:-$NWROOT/obsproc_shared/bufr_dumplist.${obsproc_shared_bufr_dumplist_ver}}
+############################################
+# Set up the input/output directory
+############################################
+
+#============  INPUT  ==================
+# model data
+if [ $envir = "prod" ] || [ $envir = "para" ] ; then
+  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+  export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+else
+# export COMIN=${COMIN:-$COMROOT/${NET}/prod/$RUN.$PDY}
+# export COMINgfs=${COMINgfs:-$COMROOT/${NET}/prod/$RUN.$PDY}
+  export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+  export COMINgfs=${COMINgfs:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+fi
+
+# satellite data
+#ftp://satepsanone.nesdis.noaa.gov/2day/gmosaic/
+# Have to change IP address to digital ones, which BSUB can identify
+#export COMINsat=${COMINsat:-ftp://140.90.213.161/2day/gmosaic}
+export COMINsat=${COMINsat:-$DCOMROOT/us007003/test/$PDY/mcidas}
+
+#  radar data
+export COMINradar=${COMINradar:-$COMROOTp1/hourly/prod/radar.$PDY}
+
+# metar/ships/lightning/pireps
+# data are dumped by $USHobsproc_dump/dumpjb
+#
+
+#============  OUTPUT  ================
+export PCOM=${PCOM:-$PCOMROOT/wafs}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/$RUN.$PDY}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+############################################
+# print current environment
+############################################
+env
+
+##############################################
+# Set up the forecast hours
+##############################################
+# GCIP runs f00 f03 for each cycle, 4 times/day,
+# to make the output valid every 3 hours 
+
+#start forecast hour
+export SHOUR=${SHOUR:-00}
+#end forecast hour, either 00/03
+export EHOUR=${EHOUR:-03}
+# forecast hour increasement/interval
+export FHINC=${FHINC:-03}
+
+##############################################
+# Grib version: 1/2
+##############################################
+export IGRIB=${IGRIB:-2}
+
+###############################################
+# Specify Timeout Behavior of WAFS GCIP
+#
+# SLEEP_TIME - how long to wait for inputs before exiting
+# SLEEP_INT  - time interval for checking for inputs
+###############################################
+# JY export SLEEP_TIME=300
+export SLEEP_TIME=60
+export SLEEP_INT=10
+
+############################################
+# Execute the script.
+############################################
+export APRUN="aprun -n 1 -N 1 -j 1 -d 1"
+${SCRIPTSgfs}/exgfs_wafs_gcip.sh.ecf
+export err=$?
+if [ $err -eq 0 ] ; then
+  msg="JOB $job HAS COMPLETED NORMALLY!"
+elif [ $err -eq 1 ] ; then
+  msg="WARNING!!! JOB $job incomplete.  Missing satellite data."
+else
+  msg="JOB $job FAILED!!!!"
+fi
+postmsg $jlogfile "$msg"
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date

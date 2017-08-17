@@ -31,8 +31,8 @@ done
 # Run relevant tasks
 
 # CURRENT CYCLE
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=".nemsio"
 
@@ -67,7 +67,7 @@ if [ $ENSGRP -gt 0 ]; then
         restart_dir="$memdir/RESTART"
         if [ -d $restart_dir ]; then
             mkdir -p RESTART
-            files=`ls -1 $restart_dir`
+            files=$(ls -1 $restart_dir)
             for file in $files; do
                 $NCP $restart_dir/$file RESTART/$file
             done
@@ -161,21 +161,21 @@ else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and clean
     ###############################################################
     # Clean up previous cycles; various depths
     # PRIOR CYCLE: Leave the prior cycle alone
-    GDATE=`$NDATE -$assim_freq $CDATE`
+    GDATE=$($NDATE -$assim_freq $CDATE)
 
     # PREVIOUS to the PRIOR CYCLE
     # Now go 2 cycles back and remove the directory
-    GDATE=`$NDATE -$assim_freq $GDATE`
-    gymd=`echo $GDATE | cut -c1-8`
-    ghh=`echo  $GDATE | cut -c9-10`
+    GDATE=$($NDATE -$assim_freq $GDATE)
+    gymd=$(echo $GDATE | cut -c1-8)
+    ghh=$(echo  $GDATE | cut -c9-10)
 
     COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
     # PREVIOUS day 00Z remove the whole day
-    GDATE=`$NDATE -48 $CDATE`
-    gymd=`echo $GDATE | cut -c1-8`
-    ghh=`echo  $GDATE | cut -c9-10`
+    GDATE=$($NDATE -48 $CDATE)
+    gymd=$(echo $GDATE | cut -c1-8)
+    ghh=$(echo  $GDATE | cut -c9-10)
 
     COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS

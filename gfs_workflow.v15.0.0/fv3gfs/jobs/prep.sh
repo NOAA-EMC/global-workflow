@@ -35,8 +35,8 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 
 export OPREFIX="${CDUMP}.t${chh}z."
 

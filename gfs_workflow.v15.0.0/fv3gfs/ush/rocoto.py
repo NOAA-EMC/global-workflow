@@ -65,7 +65,7 @@ def create_task(task_dict):
     taskname = task_dict['taskname'] if 'taskname' in task_dict else 'demotask'
     cycledef = task_dict['cycledef'] if 'cycledef' in task_dict else 'democycle'
     maxtries = task_dict['maxtries'] if 'maxtries' in task_dict else 3
-    final = task_dict['final'] if 'final' in task_dict else None
+    final = task_dict['final'] if 'final' in task_dict else False
     command = task_dict['command'] if 'command' in task_dict else 'sleep 10'
     jobname = task_dict['jobname'] if 'jobname' in task_dict else 'demojob'
     account = task_dict['account'] if 'account' in task_dict else 'batch'
@@ -78,7 +78,7 @@ def create_task(task_dict):
     dependency = task_dict['dependency'] if 'dependency' in task_dict else None
 
     str_maxtries = str(maxtries)
-    str_final = '' if final is None else ' final="%s"' % final
+    str_final = ' final="true"' if final else ''
     envar = envar if isinstance(envar, list) else [envar]
 
     strings = []
@@ -126,48 +126,142 @@ def add_dependency(dep_dict):
     :rtype: str
     '''
 
-    dep_condition= dep_dict['condition'] if 'condition' in dep_dict else None
-    dep_name = dep_dict['name'] if 'name' in dep_dict else None
-    dep_type = dep_dict['type'] if 'type' in dep_dict else None
-    dep_offset = dep_dict['offset'] if 'offset' in dep_dict else None
-    dep_data = dep_dict['data'] if 'data' in dep_dict else None
+    dep_condition = dep_dict.get('condition', None)
+    dep_type = dep_dict.get('type', None)
 
-    if dep_type in [None]:
-        string = '<'
-    elif dep_type in ['task']:
-        string = '<taskdep task="%s"' % dep_name
-    elif dep_type in ['metatask']:
-        string = '<metataskdep metatask="%s"' % dep_name
-    elif dep_type in ['cycleexist']:
-        if dep_offset is None:
-            msg = 'dep_offset cannot be None if dep_type is cycleexist'
-            raise msg
-        string = '<cycleexistdep'
+    if dep_type in ['task', 'metatask']:
+
+        string = add_task_tag(dep_dict)
+
     elif dep_type in ['data']:
-        if dep_data is None:
-            msg = 'dep_data cannot be None if dep_type is data'
-            raise msg
-        string = '<datadep>'
-    else:
-        msg = 'unknown dependency type = %s' % dep_type
-        raise msg
 
-    if dep_type in ['data']:
-        if dep_offset is not None:
-            string += '<cyclestr offset="%s">%s</cyclestr>' % (dep_offset, dep_data)
-        else:
-            if '@' in dep_data:
-                string += '<cyclestr>%s</cyclestr>' % dep_data
-            else:
-                string += '%s' % (dep_data)
+        string = add_data_tag(dep_dict)
 
-    if dep_type in ['data']:
-        string += '</datadep>'
+    elif dep_type in ['cycleexist']:
+
+        string = add_cycle_tag(dep_dict)
+
+    elif dep_type in ['streq', 'strneq']:
+
+        string = add_streq_tag(dep_dict)
+
     else:
-        string += '/>' if dep_offset is None else ' cycle_offset="%s"/>' % dep_offset
+
+        msg = 'Unknown dependency type %s' % dep_dict['type']
+        raise KeyError(msg)
 
     if dep_condition is not None:
         string = '<%s>%s</%s>' % (dep_condition, string, dep_condition)
+
+    return string
+
+
+def add_task_tag(dep_dict):
+    '''
+    create a simple task or metatask tag
+    :param dep_dict: dependency key-value parameters
+    :type dep_dict: dict
+    :return: Rocoto simple task or metatask dependency
+    :rtype: str
+    '''
+
+    dep_type = dep_dict.get('type', None)
+    dep_name = dep_dict.get('name', None)
+    dep_offset = dep_dict.get('offset', None)
+
+    if dep_name is None:
+        msg = 'a %s name is necessary for %s dependency' % (dep_type, dep_type)
+        raise KeyError(msg)
+
+    string = '<'
+    string += '%sdep %s="%s"' % (dep_type, dep_type, dep_name)
+    if dep_offset is not None:
+        string += ' cycle_offset="%s"' % dep_offset
+    string += '/>'
+
+    return string
+
+def add_data_tag(dep_dict):
+    '''
+    create a simple data tag
+    :param dep_dict: dependency key-value parameters
+    :type dep_dict: dict
+    :return: Rocoto simple task or metatask dependency
+    :rtype: str
+    '''
+
+    dep_type = dep_dict.get('type', None)
+    dep_data = dep_dict.get('data', None)
+    dep_offset = dep_dict.get('offset', None)
+
+    if dep_data is None:
+        msg = 'a data value is necessary for %s dependency' % dep_type
+        raise KeyError(msg)
+
+    if dep_offset is None:
+        if '@' in dep_data:
+            offset_string_b = '<cyclestr>'
+            offset_string_e = '</cyclestr>'
+        else:
+            offset_string_b = ''
+            offset_string_e = ''
+    else:
+        offset_string_b = '<cyclestr offset="%s">' % dep_offset
+        offset_string_e = '</cyclestr>'
+
+    string = '<datadep>'
+    string += '%s%s%s' % (offset_string_b, dep_data, offset_string_e)
+    string += '</datadep>'
+
+    return string
+
+def add_cycle_tag(dep_dict):
+    '''
+    create a simple cycle exist tag
+    :param dep_dict: dependency key-value parameters
+    :type dep_dict: dict
+    :return: Rocoto simple task or metatask dependency
+    :rtype: str
+    '''
+
+    dep_type = dep_dict.get('type', None)
+    dep_offset = dep_dict.get('offset', None)
+
+    if dep_offset is None:
+        msg = 'an offset value is necessary for %s dependency' % dep_type
+        raise KeyError(msg)
+
+    string = '<cycleexistdep cycle_offset="%s"/>' % dep_offset
+
+    return string
+
+def add_streq_tag(dep_dict):
+    '''
+    create a simple string comparison tag
+    :param dep_dict: dependency key-value parameters
+    :type dep_dict: dict
+    :return: Rocoto simple task or metatask dependency
+    :rtype: str
+    '''
+
+    dep_type = dep_dict.get('type', None)
+    dep_left = dep_dict.get('left', None)
+    dep_right = dep_dict.get('right', None)
+
+    fail = False
+    msg = ''
+    if dep_left is None:
+        msg += 'a left value is necessary for %s dependency' % dep_type
+        fail = True
+    if dep_right is None:
+        if fail:
+            msg += '\n'
+        msg += 'a right value is necessary for %s dependency' % dep_type
+        fail = True
+    if fail:
+        raise KeyError(msg)
+
+    string = '<%s><left>%s</left><right>%s</right></%s>' % (dep_type, dep_left, dep_right, dep_type)
 
     return string
 

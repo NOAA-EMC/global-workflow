@@ -78,6 +78,7 @@ set -x
 
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
+export opt1ak=' -set_grib_type same -new_grid_winds grid '
 export opt21='  -new_grid_interpolation bilinear -if '
 export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
@@ -123,7 +124,7 @@ do
         # $COPYGB2 -g "$grid_20km_ak" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridak="nps:210.0:60.0 170.0:277:22500 35.0:225:22500"
-        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23  -new_grid $gridak awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1ak $opt21 $opt22 $opt23  -new_grid $gridak awps_file_f${fcsthrs}_${GRID}
         ;;
     prico)
         #  Grid 20km_prico - 0.25 degree Lat/Lon grid for Puerto Rico (20km)

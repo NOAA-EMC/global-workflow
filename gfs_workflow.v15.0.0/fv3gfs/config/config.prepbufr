@@ -47,7 +47,8 @@ export NSPLIT=4  # execute in parallel
 
 # These variable largely eliminate the need for explicitly setting
 # USH directories, FIX files, PARM files, EXECutables below
-# The USER can overwrite components that why wish
+# The USER can overwrite components that they wish
+# e.g. PRVT is used from the GSI
 export HOMEobsproc_prep=$BASE_PREP
 export EXECPREP="$BASE_PREP/exec"
 export FIXPREP="$BASE_PREP/fix"

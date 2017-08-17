@@ -34,12 +34,12 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export GDATE=`$NDATE -$assim_freq $CDATE`
+export GDATE=$($NDATE -$assim_freq $CDATE)
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 export OPREFIX="${CDUMP}.t${chh}z."
 export GPREFIX="gdas.t${ghh}z."
@@ -68,28 +68,28 @@ if [ $DOHYBVAR = "YES" ]; then
 fi
 
 # Background resolution
-export JCAP=`$NEMSIOGET $ATMGES jcap | awk '{print $2}'`
+export JCAP=$($NEMSIOGET $ATMGES jcap | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
-export LONB=`$NEMSIOGET $ATMGES dimx | awk '{print $2}'`
+export LONB=$($NEMSIOGET $ATMGES dimx | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
-export LATB=`$NEMSIOGET $ATMGES dimy | awk '{print $2}'`
+export LATB=$($NEMSIOGET $ATMGES dimy | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
-export LEVS=`$NEMSIOGET $ATMGES dimz | awk '{print $2}'`
+export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
 if [ $DOHYBVAR = "YES" ]; then
     # Ensemble resolution
-    export JCAP_ENKF=`$NEMSIOGET $ATMGES_ENSMEAN jcap | awk '{print $2}'`
+    export JCAP_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN jcap | awk '{print $2}')
     status=$?
     [[ $status -ne 0 ]] && exit $status
-    export LONB_ENKF=`$NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}'`
+    export LONB_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')
     status=$?
     [[ $status -ne 0 ]] && exit $status
-    export LATB_ENKF=`$NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}'`
+    export LATB_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')
     status=$?
     [[ $status -ne 0 ]] && exit $status
 fi

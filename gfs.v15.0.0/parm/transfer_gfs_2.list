@@ -39,7 +39,50 @@ com/gfs/_ENVIR_/gfs._PDY_/
 + /gfs.t??z.atmf040*
 + /gfs.t??z.atmf044*
 + /gfs.t??z.atmf048*
++ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf054*
++ /gfs.t??z.atmf066*
++ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf081*
++ /gfs.t??z.atmf093*
++ /gfs.t??z.atmf105*
++ /gfs.t??z.atmf117*
++ /gfs.t??z.atmf156*
++ /gfs.t??z.atmf219*
++ /gfs.t??z.atmf288*
 + /gfs.t??z.atmf384*
 - *
-B 538000
+B 738000
+ 
 
+com/gfs/_ENVIR_/gfs._PDYm1_/
++ /gfs.t??z.pgrb2.*
++ /gfs.t??z.pgrb2b.*
++ /gfs.t??z.atmf000*
++ /gfs.t??z.atmf004*
++ /gfs.t??z.atmf008*
++ /gfs.t??z.atmf012*
++ /gfs.t??z.atmf016*
++ /gfs.t??z.atmf020*
++ /gfs.t??z.atmf024*
++ /gfs.t??z.atmf028*
++ /gfs.t??z.atmf032*
++ /gfs.t??z.atmf036*
++ /gfs.t??z.atmf040*
++ /gfs.t??z.atmf044*
++ /gfs.t??z.atmf048*
++ /gfs.t??z.atmf052*
++ /gfs.t??z.atmf054*
++ /gfs.t??z.atmf066*
++ /gfs.t??z.atmf076*
++ /gfs.t??z.atmf081*
++ /gfs.t??z.atmf093*
++ /gfs.t??z.atmf105*
++ /gfs.t??z.atmf117*
++ /gfs.t??z.atmf156*
++ /gfs.t??z.atmf219*
++ /gfs.t??z.atmf288*
++ /gfs.t??z.atmf384*
+- *
+B 738000
+ 
