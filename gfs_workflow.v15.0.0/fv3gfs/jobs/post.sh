@@ -34,12 +34,12 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 
 export COMROT=$ROTDIR/$CDUMP.$cymd/$chh
 
-res=`echo $CASE | cut -c2-`
+res=$(echo $CASE | cut -c2-)
 export JCAP=$((res*2-2))
 export LONB=$((4*res))
 export LATB=$((2*res))

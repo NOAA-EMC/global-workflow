@@ -31,6 +31,21 @@ com/gfs/_ENVIR_/gfs._PDY_/
 - /gfs.t??z.*atmfc*
 - /gfs_grb211.t??z.pgrsfnf*
 - /wafsgfs??.t??z.grisfnf*
-E
-B 430000
+- /gfs.t??z.master.*
+- /gfs*sfcf*
+ 
+B 45000000
+
+com/gfs/_ENVIR_/gfs._PDYm1_/
+- /gfs*.t??z.*pgrb2.*
+- /gfs*.t??z.*pgrb2b.*
+- /gfs.t??z.atmf*
+- /gfs.t??z.*flx*
+- /gfs.t??z.*atmfc*
+- /gfs_grb211.t??z.pgrsfnf*
+- /wafsgfs??.t??z.grisfnf*
+- /gfs.t??z.master.*
+- /gfs*sfcf*
+ 
+B 45000000
 

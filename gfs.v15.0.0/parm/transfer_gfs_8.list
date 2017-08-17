@@ -23,28 +23,14 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-#com/gfs/_ENVIR_/satcounts/
-#B 5
-#Z
+com/gfs/_ENVIR_/gfs._PDY_/
++ /gfs.t??z.master.*
+- *
+B 24440000
+ 
 
-#com/gfs/_ENVIR_/satcounts_archive/
-#+ /_YEARPREV_/***
-#- *
-#B 6
-#Z
-
-#com/arch/_ENVIR_/obcount_30day/
-#+ /gfs/
-#+ /gfs/gfs._PDYm1_/***
-#+ /gfs/gfs._PDY_/***
-#- *
-#B 1
-#Z
-
-com/nawips/_ENVIR_/gfs._PDY_/
-B 560000
-
-#com/realtime/_ENVIR_/gfs._PDY_/
-#B 6
-#Z
-
+com/gfs/_ENVIR_/gfs._PDYm1_/
++ /gfs.t??z.master.*
+- *
+B 24440000
+ 

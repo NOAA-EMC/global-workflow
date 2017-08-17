@@ -30,8 +30,8 @@ done
 # Run relevant tasks
 
 # CURRENT CYCLE
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=".nemsio"
 
@@ -50,7 +50,7 @@ cd $DATA/${CDUMP}restart
 restart_dir="$COMIN/RESTART"
 if [ -d $restart_dir ]; then
     mkdir -p RESTART
-    files=`ls -1 $restart_dir`
+    files=$(ls -1 $restart_dir)
     for file in $files; do
         $NCP $restart_dir/$file RESTART/$file
     done
@@ -144,12 +144,12 @@ fi
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
-GDATE=`$NDATE -$assim_freq $CDATE`
+GDATE=$($NDATE -$assim_freq $CDATE)
 
 # PREVIOUS to the PRIOR CYCLE
-GDATE=`$NDATE -$assim_freq $GDATE`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+GDATE=$($NDATE -$assim_freq $GDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 # Remove the TMPDIR directory
 COMIN="$RUNDIR/$GDATE"
@@ -160,12 +160,18 @@ COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 # PREVIOUS 00Z day; remove the whole day
-GDATE=`$NDATE -48 $CDATE`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+GDATE=$($NDATE -48 $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 COMIN="$ROTDIR/$CDUMP.$gymd"
 [[ -d $COMIN ]] && rm -rf $COMIN
+
+# Remove archived quarter degree GRIB1 files that are (48+$FHMAX_GFS) hrs behind
+if [ $CDUMP = "gfs" ]; then
+    GDATE=$($NDATE -$FHMAX_GFS $GDATE)
+    rm -f $VFYARC/pgbq*.${CDUMP}.${GDATE}
+fi
 
 ###############################################################
 # Exit out cleanly

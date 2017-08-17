@@ -34,12 +34,12 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export GDATE=`$NDATE -$assim_freq $CDATE`
+export GDATE=$($NDATE -$assim_freq $CDATE)
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 export APREFIX="${CDUMP}.t${chh}z."
 export ASUFFIX=".nemsio"

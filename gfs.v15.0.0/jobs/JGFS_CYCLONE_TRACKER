@@ -110,7 +110,7 @@ export COMINgfs=${COMINgfs:-${COMROOT}/gfs/${envir}/gfs.${PDY}}
 export COMINgdas=${COMINgdas:-${COMROOT}/gfs/${envir}/gdas.${PDY}}
 export COMIN=${COMIN:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-export ATCFdir=${ATCFdir:-$COMOUT}
+export ATCFdir=${ATCFdir:-${COMROOTp1}/nhc/${envir}/atcf}
 
 export APRUNTRACK=${APRUNTRACK:-""}
 

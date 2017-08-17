@@ -1,5 +1,4 @@
 SHELL	=/bin/ksh
-INCMOD	=$(INCS)             
 LIBS    =$(LIBSM)
 
 SRCM	=mtnlm7_oclsm.f
