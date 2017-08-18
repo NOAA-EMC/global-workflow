@@ -12,6 +12,7 @@
 # Script history log:
 # 2005-02-03  Iredell  extracted from global_analysis.sh
 # 2014-11-30  xuli  add NST_ANL
+# 2017-08-19  Gayno  updates for FV3GFS.
 #
 # Usage:  global_cycle.sh SFCGES SFCANL
 #
@@ -22,103 +23,107 @@
 #                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
 #
 #   Imported Shell Variables:
-#     SFCGES        Input surface guess
+#     SFCGES        Input surface guess file
 #                   overridden by $1; required
-#     SFCANL        Output surface analysis
-#                   overridden by $5; defaults to ${COMOUT}/sfcanl
-#     FIXgsm        Directory for global fixed files
-#                   defaults to $HOMEglobal/fix
-#     EXECgsm       Directory for global executables
-#                   defaults to $HOMEglobal/exec
-#     USHgsm        Directory for global scripts
-#                   defaults to $HOMEglobal/ush
-#     DATA          working directory
+#     SFCANL        Output surface analysis file
+#                   overridden by $2; defaults to ${COMOUT}/sfcanl
+#     CRES          Model resolution.  Defaults to 768.
+#     JCAP          Spectral truncation of the global fixed climatology files
+#                   (such as albedo), which are on the old GFS gaussian grid.
+#                   Defaults to 1534
+#     LATB          i-dimension of the global climatology files.  NOT the
+#                   i-dimension of the model grid. Defaults to 1536.
+#     LONB          j-dimension of the global climatology files. NOT the
+#                   j-dimension of the model grid. Defaults to 3072.
+#     FIXgsm        Directory for the global fixed climatology files.
+#                   Defaults to $HOMEglobal/fix
+#     FIXfv3        Directory for the model grid and orography netcdf
+#                   files.  Defaults to $HOMEglobal/fix/fix_fv3/C${CRES}
+#     EXECgsm       Directory of the program executable.  Defaults to
+#                   $HOMEglobal/exec
+#     DATA          Working directory
 #                   (if nonexistent will be made, used and deleted)
-#                   defaults to current working directory
-#     COMIN         input directory
-#                   defaults to current working directory
-#     COMOUT        output directory
+#                   Defaults to current working directory
+#     COMIN         Directory containing the input analysis data
+#                   (such as sea ice).  Defaults to current
+#                   working directory.
+#     COMOUT        Output directory
 #                   (if nonexistent will be made)
 #                   defaults to current working directory
-#     XC            Suffix to add to executables
-#                   defaults to none
-#     PREINP        Prefix to add to input observation files
-#                   defaults to none
-#     SUFINP        Suffix to add to input observation files
-#                   defaults to none
-#     NCP           Copy command
-#                   defaults to cp
-#     CYCLEXEC      Surface cycle executable
-#                   defaults to ${EXECgsm}/global_cycle$XC
-#     FNGLAC        Input glacier climatology GRIB file
-#                   defaults to ${FIXgsm}/global_glacier.2x2.grb
-#     FNMXIC        Input maximum sea ice climatology GRIB file
-#                   defaults to ${FIXgsm}/global_maxice.2x2.grb
-#     FNTSFC        Input SST climatology GRIB file
-#                   defaults to ${FIXgsm}/global_sstclim.2x2.grb
-#     FNSNOC        Input snow climatology GRIB file
-#                   defaults to ${FIXgsm}/global_snoclim.1.875.grb
-#     FNZORC        Input roughness climatology 
-#                   defaults to sib vegetation type-based lookup table
-#                   FNVETC must be set to sib file: ${FIXgsm}/global_vegtype.1x1.grb
-#     FNALBC        Input 4-component albedo climatology GRIB file
-#                   defaults to ${FIXgsm}/global_albedo4.1x1.grb
-#     FNALBC2       Input 'facsf' and 'facwf' albedo climatology GRIB file
-#                   defaults to ${FIXgsm}/global_albedo4.1x1.grb
-#     FNAISC        Input sea ice climatology GRIB file
-#                   defaults to ${FIXgsm}/global_iceclim.2x2.grb
-#     FNTG3C        Input deep soil temperature climatology GRIB file
-#                   defaults to ${FIXgsm}/global_tg3clim.2.6x1.5.grb
-#     FNVEGC        Input vegetation fraction climatology GRIB file
-#                   defaults to ${FIXgsm}/global_vegfrac.1x1.grb
-#     FNVETC        Input vegetation type climatology GRIB file
-#                   defaults to ${FIXgsm}/global_vegtype.1x1.grb
-#     FNSOTC        Input soil type climatology GRIB file
-#                   defaults to ${FIXgsm}/global_soiltype.1x1.grb
-#     FNSMCC        Input soil moisture climatology GRIB file
-#                   defaults to ${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb
-#     FNVMNC        Input min veg frac climatology GRIB file
-#                   defaults to ${FIXgsm}/global_shdmin.0.144x0.144.grb
-#     FNVMXC        Input max veg frac climatology GRIB file
-#                   defaults to ${FIXgsm}/global_shdmax.0.144x0.144.grb
-#     FNSLPC        Input slope type climatology GRIB file
-#                   defaults to ${FIXgsm}/global_slope.1x1.grb
-#     FNABSC        Input max snow albedo climatology GRIB file
-#                   defaults to ${FIXgsm}/global_snoalb.1x1.grb
-#     FNMSKH        Input high resolution land mask GRIB file
-#                   defaults to ${FIXgsm}/seaice_newland.grb
-#     FNOROG        Input orography GRIB file (horiz resolution dependent)
-#                   defaults to ${FIXgsm}/global_orography.t$JCAP.grb
-#     FNTSFA        Input SST analysis GRIB file
-#                   defaults to ${COMIN}/${PREINP}sstgrb${SUFINP}
-#     FNACNA        Input sea ice analysis GRIB file
-#                   defaults to ${COMIN}/${PREINP}engicegrb${SUFINP}
-#     FNSNOA        Input snow analysis GRIB file
-#                   defaults to ${COMIN}/${PREINP}snogrb${SUFINP}
-#     INISCRIPT     Preprocessing script
-#                   defaults to none
-#     LOGSCRIPT     Log posting script
-#                   defaults to none
+#     XC            Suffix to add to executables. Defaults to none.
+#     PREINP        Prefix to add to input analysis files.
+#                   Defaults to none.
+#     SUFINP        Suffix to add to input analysis files.
+#                   Defaults to none.
+#     CYCLEXEC      Program executable.  
+#                   Defaults to ${EXECgsm}/global_cycle$XC
+#     FNGLAC        Input glacier climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_glacier.2x2.grb
+#     FNMXIC        Input maximum sea ice climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_maxice.2x2.grb
+#     FNTSFC        Input SST climatology GRIB file.
+#                   Defaults to ${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb
+#     FNSNOC        Input snow climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_snoclim.1.875.grb
+#     FNZORC        Input roughness climatology.
+#                   Defaults to igbp vegetation type-based lookup table
+#                   FNVETC must be set to igbp file: 
+#                   ${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
+#     FNALBC        Input 4-component albedo climatology GRIB file.
+#                   defaults to ${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb
+#     FNALBC2       Input 'facsf' and 'facwf' albedo climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_albedo4.1x1.grb
+#     FNAISC        Input sea ice climatology GRIB file.
+#                   Defaults to ${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb
+#     FNTG3C        Input deep soil temperature climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_tg3clim.2.6x1.5.grb
+#     FNVEGC        Input vegetation fraction climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_vegfrac.0.144.decpercent.grb
+#     FNVETC        Input vegetation type climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
+#     FNSOTC        Input soil type climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb
+#     FNSMCC        Input soil moisture climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb
+#     FNVMNC        Input min veg frac climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_shdmin.0.144x0.144.grb
+#     FNVMXC        Input max veg frac climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_shdmax.0.144x0.144.grb
+#     FNSLPC        Input slope type climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_slope.1x1.grb
+#     FNABSC        Input max snow albedo climatology GRIB file.
+#                   Defaults to ${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb
+#     FNMSKH        Input high resolution land mask GRIB file.  Use to set mask for
+#                   some of the input climatology fields.  This is NOT the model mask.
+#                   Defaults to ${FIXgsm}/seaice_newland.grb
+#     FNOROG        Model orography file (netcdf format)
+#                   Defaults to {FIXfv3}/C${CRES}_oro_data.tile1.nc
+#     FNGRID        Model grid file (netcdf format)
+#                   Defaults to ${FIXfv3}/C${CRES}_grid.tile1.nc
+#     FNTSFA        Input SST analysis GRIB file.
+#                   Defaults to ${COMIN}/${PREINP}sstgrb${SUFINP}
+#     FNACNA        Input sea ice analysis GRIB file.
+#                   Defaults to ${COMIN}/${PREINP}engicegrb${SUFINP}
+#     FNSNOA        Input snow analysis GRIB file.
+#                   Defaults to ${COMIN}/${PREINP}snogrb${SUFINP}
+#     INISCRIPT     Preprocessing script.  Defaults to none.
+#     LOGSCRIPT     Log posting script.  Defaults to none.
 #     ERRSCRIPT     Error processing script
 #                   defaults to 'eval [[ $err = 0 ]]'
 #     ENDSCRIPT     Postprocessing script
 #                   defaults to none
-#     JCAP          Spectral truncation
-#                   defaults to 382
-#     CDATE         Output analysis date in yyyymmddhh format
-#                   defaults to the value in the input surface file header
-#     FHOUR         Output forecast hour
-#                   defaults to the value in the input surface file header
-#     LATB          Number of latitudes in surface cycling
-#                   defaults to the value in the input surface file header
-#     LONB          Number of longitudes in surface cycling
-#                   defaults to the value in the input surface file header
-#     LSOIL         Number of soil layers
-#                   defaults to 4
-#     FSMCL2        Scale in days to relax to soil moisture climatology
-#                   defaults to 60
-#     DELTSFC       Cycling frequency in hours
-#                   defaults to 0
+#     CDATE         Output analysis date in yyyymmddhh format. Required.
+#     FHOUR         Output forecast hour.  Defaults to 00hr.
+#     LSOIL         Number of soil layers. Defaults to 4.
+#     FSMCL2        Scale in days to relax to soil moisture climatology.
+#                   Defaults to 60.
+#     FSLPL         Scale in days to relax to slope type climatology.
+#                   Defaults to 99999 (use first guess)
+#     FSOTL         Scale in days to relax to soil type climatology.
+#                   Defaults to 99999 (use first guess)
+#     FVETL         Scale in days to relax to veg type climatology.
+#                   Defaults to 99999 (use first guess)
+#     DELTSFC       Cycling frequency in hours. Defaults to 0.
 #     IALB          Integer flag for Albedo - 0 for Brigleb and 1 for Modis
 #                   based albedo - defaults to 1
 #     ISOT          Integer flag for soil type - 0 for zobler, 1 for statsgo
@@ -127,14 +132,6 @@
 #                   Defaults to 1.
 #     CYCLVARS      Other namelist inputs to the cycle executable
 #                   defaults to none set
-#     NTHREADS      Number of threads
-#                   defaults to 1
-#     NTHSTACK      Size of stack per thread
-#                   defaults to 64000000
-#     FILESTYLE     File management style flag
-#                   ('C' to copy to/from $DATA, 'L' for symbolic links in $DATA,
-#                    'X' to use XLFUNIT or symbolic links where appropriate)
-#                   defaults to 'X'
 #     PGMOUT        Executable standard output
 #                   defaults to $pgmout, then to '&1'
 #     PGMERR        Executable standard error
@@ -147,6 +144,10 @@
 #                   defaults to '2>', or to '2>>' to append if $PGMERR is a file
 #     VERBOSE       Verbose flag (YES or NO)
 #                   defaults to NO
+#     use_ufo       Adjust sst and soil substrate temperature for differences
+#                   between the filtered and unfiltered terrain.  Default is true.
+#     NST_ANL       SST terrain adjustments required when using NST model.  
+#                   Default is false.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -214,8 +215,6 @@ if [[ "$VERBOSE" = "YES" ]] ; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
-export machine=${machine:-WCOSS}
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 
 #  Command line arguments.
 export SFCGES=${1:-${SFCGES:?}}
@@ -230,7 +229,6 @@ export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
 export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
-export USHgsm=${USHgsm:-$HOMEglobal/ush}
 export FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/C${CRES}}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
@@ -251,12 +249,13 @@ export DELTSFC=${DELTSFC:-0}
 
 export LSOIL=${LSOIL:-4}
 export FSMCL2=${FSMCL2:-60}
+export FSLPL=${FSLPL:-99999.}
+export FSOTL=${FSOTL:-99999.}
+export FVETL=${FVETL:-99999.}
 export IALB=${IALB:-1}
 export ISOT=${ISOT:-1}
 export IVEGSRC=${IVEGSRC:-1}
 export CYCLVARS=${CYCLVARS}
-export NTHREADS=${NTHREADS:-4}
-export NTHSTACK=${NTHSTACK:-4096000000}
 export use_ufo=${use_ufo:-.true.}
 export NST_ANL=${NST_ANL:-.false.}
 
@@ -289,7 +288,6 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export FILESTYLE=${FILESTYLE:-'X'}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
 export REDOUT=${REDOUT:-'1>'}
@@ -311,7 +309,6 @@ cd $DATA||exit 99
 
 ################################################################################
 #  Make surface analysis
-export XLSMPOPTS="parthds=$NTHREADS:stack=$NTHSTACK"
 export PGM=$CYCLEXEC
 export pgm=$PGM
 $LOGSCRIPT
@@ -348,6 +345,9 @@ cat << EOF > fort.35
   FNACNA="$FNACNA",
   FNSNOA="$FNSNOA",
   LDEBUG=.false.,
+  FSLPL=$FSLPL,
+  FSOTL=$FSOTL,
+  FVETL=$FVETL,
   FSMCL(2)=$FSMCL2,
   FSMCL(3)=$FSMCL2,
   FSMCL(4)=$FSMCL2,

@@ -44,7 +44,7 @@ export NWPROD=/nwprod
 
 export FILESTYLE=L
 export VERBOSE=YES
-export CYCLVARS=FSNOL=-2.,FSNOS=99999.,FSLPL=99999.,FVETL=99999.,FSOTL=99999.,
+export CYCLVARS=FSNOL=-2.,FSNOS=99999.,
 
 export DATA=/scratch3/NCEPDEV/stmp1/George.Gayno/cycle
 rm -fr $DATA
