@@ -27,7 +27,7 @@ fi
 # Directories.
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
-export BASE_GFS=${BASE_GFS:-$NWPROD}
+export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export DATA=${DATA:-$pwd}
 COMIN=${COMIN:-$pwd}
@@ -59,8 +59,8 @@ GSUFFIX=${GSUFFIX:-""}
 NMEM_ENKF=${NMEM_ENKF:-80}
 
 # global_chgres stuff
-CHGRESSH=${CHGRESSH:-$BASE_GFS/ush/global_chgres.sh}
-export CHGRESEXEC=${CHGRESEXEC-$BASE_GFS/exec/global_chgres}
+CHGRESSH=${CHGRESSH:-$BASE_GSM/ush/global_chgres_GSM.sh}
+export CHGRESEXEC=${CHGRESEXEC-$BASE_GSM/exec/global_chgres_GSM}
 export CHGRESTHREAD=${CHGRESTHREAD:-24}
 CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
@@ -140,7 +140,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export SIGLEVEL="NULL"
    export CHGRESVARS=$CHGRESVARS_ENKF
    export LANDICE_OPT=${LANDICE_OPT:-1}
-   export FIXgsm=${FIXgsm:-$BASE_GFS/fix/fix_am}
+   export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
 
    export APRUNC=$APRUN_CHGRES
 

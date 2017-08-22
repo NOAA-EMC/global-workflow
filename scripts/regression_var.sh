@@ -43,9 +43,13 @@ elif [ -d /scratch4/NCEPDEV/da ]; then # Theia
    elif [ -d /scratch4/NCEPDEV/global/noscrub/$LOGNAME ]; then 
      export noscrub="/scratch4/NCEPDEV/global/noscrub/$LOGNAME"
    fi
-elif [ -d /gpfs/tp1/ptmp ]; then # LUNA or SURGE
-   export machine="LUNA"
-   export noscrub="/gpfs/tp1/ptmp/$LOGNAME"
+elif [ -d /gpfs/hps/ptmp ]; then # LUNA or SURGE
+   export machine="WCOSS_C"
+   if [ -d /gpfs/hps/emc/global/noscrub/$LOGNAME ]; then
+      export noscrub="/gpfs/hps/emc/global/noscrub/$LOGNAME"
+   elif [ -d /gpfs/hps/emc/da/noscrub/$LOGNAME ]; then
+      export noscrub="/gpfs/hps/emc/da/noscrub/$LOGNAME"
+   fi
 elif [ -d /data/users ]; then # S4
    export machine="s4"
    export noscrub="/data/users/$LOGNAME"
@@ -94,19 +98,19 @@ elif [[ "$machine" = "WCOSS" ]]; then
 
    export accnt=""
 
-elif [[ "$machine" = "LUNA" ]]; then
+elif [[ "$machine" = "WCOSS_C" ]]; then
 
    if [[ "$cmaketest" = "false" ]]; then
-     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/gsi"
+     export basedir="/gpfs/hps/emc/global/noscrub/$LOGNAME/svn/gsi"
    fi 
    export group="dev"
    export queue="dev"
 
-   export ptmp="/ptmpp1/$LOGNAME/$ptmpName"
+   export ptmp="/gpfs/hps/ptmp/$LOGNAME/$ptmpName"
 
-   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.3/fix"
-   export casesdir="/gpfs/hps/emc/global/noscrub/Mark.Potts/CASES"
-   export ndate="/gpfs/hps/emc/global/noscrub/Mallory.Row/VRFY/vsdb_old/nwprod/util/exec/ndate"
+   export fixcrtm="/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.4/fix"
+   export casesdir="/gpfs/hps/emc/da/noscrub/Michael.Lueken/CASES"
+   export ndate=$NDATE
 
    export check_resource="no"
 
@@ -158,6 +162,7 @@ export JCAP="62"
 export global_T62_adate="2014080400"
 export global_4dvar_T62_adate="2014080400"
 export global_hybrid_T126_adate="2014092912"
+export global_4denvar_T126_adate="2016120300"
 export global_enkf_T62_adate="2014092912"
 export global_lanczos_T62_adate="2014080400"
 export global_nemsio_T62_adate="2013011400"
@@ -175,6 +180,8 @@ export global_T62_ges="$casesdir/global/sigmap/$global_T62_adate"
 export global_4dvar_T62_obs="$casesdir/global/sigmap/$global_4dvar_T62_adate"
 export global_4dvar_T62_ges="$casesdir/global/sigmap/$global_4dvar_T62_adate"
 export global_hybrid_T126_datobs="$casesdir/global/sigmap/$global_hybrid_T126_adate/obs"
+export global_4denvar_T126_datges="$casesdir/global/sigmap/$global_4denvar_T126_adate"
+export global_4denvar_T126_datobs="$casesdir/global/sigmap/$global_4denvar_T126_adate"
 export global_hybrid_T126_datges="$casesdir/global/sigmap/$global_hybrid_T126_adate/ges"
 export global_enkf_T62_datobs="$casesdir/global/sigmap/$global_enkf_T62_adate/obs"
 export global_enkf_T62_datges="$casesdir/global/sigmap/$global_enkf_T62_adate/ges"

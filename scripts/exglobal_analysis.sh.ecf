@@ -838,6 +838,10 @@ else
    mkdir -p $DATA
    mkdata=YES
 fi
+if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1;
+then 
+   $NCP ${FIXgsi}/Rcov* $DATA 
+fi
 cd $DATA||exit 99
 
 ################################################################################

@@ -28,8 +28,8 @@ if [[ "$machine" = "Zeus" ]]; then
    ndate=/scratch1/portfolios/NCEPDEV/da/save/Michael.Lueken/nwprod/util/exec/ndate 
 elif [[ "$machine" = "WCOSS" ]]; then
    nwprod=/nwprod
-   ptmp=/ptmpd3
-   stmp=/stmpd3
+   ptmp=/ptmpp1
+   stmp=/stmpp1
    ndate=$nwprod/util/exec/ndate 
 fi
 
@@ -49,13 +49,13 @@ tmpdir=$stmp/${uname}/get_initial_files.${adate}
 savdir=$ptmp/${USER}/data_sigmap/${exp}
 
 # Specify name of files to retrieve from this cycle
-DFILESA="$DFILESA sgm3prep sgesprep sgp3prep prepbufr"
-DFILESA="$DFILESA 1bamua.tm00.bufr_d "
-DFILESA="$DFILESA 1bhrs4.tm00.bufr_d 1bmhs.tm00.bufr_d esamua.tm00.bufr_d"
+DFILESA="$DFILESA sgm3prep sgesprep sgp3prep prepbufr prepbufr.acft_profiles"
+DFILESA="$DFILESA 1bamua.tm00.bufr_d 1bamub.tm00.bufr_d"
+DFILESA="$DFILESA 1bhrs3.tm00.bufr_d 1bhrs4.tm00.bufr_d 1bmhs.tm00.bufr_d esamua.tm00.bufr_d"
 DFILESA="$DFILESA esamub.tm00.bufr_d airsev.tm00.bufr_d mtiasi.tm00.bufr_d"
 DFILESA="$DFILESA goesfv.tm00.bufr_d gpsro.tm00.bufr_d osbuv8.tm00.bufr_d  sptrmm.tm00.bufr_d"
 #DFILESA="$DFILESA ssmit.tm00.bufr_d  spssmi.tm00.bufr_d ssmis.tm00.bufr_d amsre.tm00.bufr_d"
-DFILESA="spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
+DFILESA="$DFILESA spssmi.tm00.bufr_d ssmisu.tm00.bufr_d amsre.tm00.bufr_d"
 DFILESA="$DFILESA gome.tm00.bufr_d omi.tm00.bufr_d syndata.tcvitals.tm00"
 DFILESA="$DFILESA atms.tm00.bufr_d cris.tm00.bufr_d"
 DFILESA="$DFILESA satwnd.tm00.bufr_d"
@@ -107,8 +107,8 @@ fi
 tag=gdas
 prefixa=./gdas1.t${hha}z
 prefixg=./gdas1.t${hhg}z
-tarfilea=com_gfs_prod_gdas.${adate}.tar
-tarfileg=com_gfs_prod_gdas.${gdate}.tar
+tarfilea=com2_gfs_prod_gdas.${adate}.tar
+tarfileg=com2_gfs_prod_gdas.${gdate}.tar
 
 set +x
 for file in $DFILESA; do DFA="$DFA ${prefixa}.$file" ; done
