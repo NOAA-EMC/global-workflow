@@ -84,7 +84,7 @@ export FIXminmon=${FIXminmon:-${HOMEminmon/fix}}
 #############################################
 # Run setpdy and initialize PDY variables
 #############################################
-if [[ $MY_MACHINE != "theia" ]]; then
+if [[ $MY_MACHINE != "THEIA" ]]; then
    export cycle=t${cyc}z
    setpdy.sh
    . ./PDY

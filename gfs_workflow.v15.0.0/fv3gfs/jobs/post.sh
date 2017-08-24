@@ -60,14 +60,14 @@ if [ -f $ATMANL ]; then
     [[ $status -ne 0 ]] && exit $status
 fi
 
-# Run post job to create forecast grib files (GFS cycle only)
+# Run post job to create forecast grib files
+# Only for GFS cycles.
+# We no longer do relocation, and thus GDAS cycle does not need forecast grib files
 if [ $CDUMP = "gfs" ]; then
-
     export ANALYSIS_POST="NO"
     $POSTJJOBSH
     status=$?
     [[ $status -ne 0 ]] && exit $status
-
 fi
 
 ###############################################################

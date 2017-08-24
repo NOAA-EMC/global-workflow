@@ -91,7 +91,7 @@ export USHradmon=${USHradmon:-$HOMEradmon/ush}
 #############################################
 # Run setpdy and initialize PDY variables
 #############################################
-if [[ $MY_MACHINE != "theia" ]]; then
+if [[ $MY_MACHINE != "THEIA" ]]; then
    setpdy.sh
    . ./PDY
 fi   
@@ -115,8 +115,8 @@ env
 ########################################
 export RAD_AREA=${RAD_AREA:-glb}
 
-export biascr=${biascr:-$COMIN/gdas1.t${cyc}z.abias}
-export radstat=${radstat:-$COMIN/gdas1.t${cyc}z.radstat}
+export biascr=${biascr:-$COMIN/gdas.t${cyc}z.abias}
+export radstat=${radstat:-$COMIN/gdas.t${cyc}z.radstat}
 
 msg="JOB HAS STARTED"
 postmsg "$jlogfile" "$msg"
