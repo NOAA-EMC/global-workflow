@@ -94,7 +94,7 @@ done
 
 $NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
 $NCP $COMIN/${APREFIX}pgrb2.*.fanl* .
-[[ $CDUMP = "gfs" ]] && $NCP $COMIN/${APREFIX}pgrb2.*.f* .
+$NCP $COMIN/${APREFIX}pgrb2.*.f* .
 
 cd $DATA
 
@@ -129,8 +129,16 @@ if [ $CDUMP = "gfs" ]; then
         $NCP $fname $ARCDIR/pgbf${fhr}.${CDUMP}.${CDATE}
     done
 fi
+if [ $CDUMP = "gdas" ]; then
+    flist="00 03 06 09"
+    for fhr in $flist; do
+        fname=${APREFIX}pgrbf${fhr}
+        $NCP $fname $ARCDIR/pgbf${fhr}.${CDUMP}.${CDATE}
+    done
+fi
 
 # Temporary archive quarter degree GRIB1 files for precip verification
+# and atmospheric nemsio gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" ]; then
@@ -139,6 +147,19 @@ if [ $CDUMP = "gfs" ]; then
         fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
         $NCP $fname $VFYARC/pgbq${fhr}.${CDUMP}.${CDATE}
     done
+
+    mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
+    fhmax=$FHMAX_GFS
+    fhr=0
+    while [[ $fhr -le $fhmax ]]; do
+      fhr3=$(printf %03i $fhr)
+      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}.nemsio
+      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}.nemsio
+      $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+      $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+      (( fhr = $fhr + 6 ))
+   done
+
 fi
 
 ###############################################################

@@ -15,8 +15,10 @@ import shutil
 from datetime import datetime
 from argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 
+
 global machines
 global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
+
 
 machines = ['THEIA', 'WCOSS_C']
 
@@ -121,7 +123,7 @@ Create COMROT experiment directory structure,
 link initial condition files from $ICSDIR to $COMROT'''
 
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--machine', help='machine name', type=str, choices=machines, default='WCOSS_C', required=False)
+    parser.add_argument('--machine', help='machine name', type=str.upper, choices=machines, default='WCOSS_C', required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
     parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
     parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)

@@ -37,12 +37,13 @@ case $case_in in
         export DELTIM=900
         export layout_x=4
         export layout_y=8
+        export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
         ;;
     "C192")
         export DELTIM=450
         export layout_x=4
         export layout_y=8
-        export cdmbgwd="0.8,1.5"  # mountain blocking and gravity wave drag
+        export cdmbgwd="0.2,2.5"  # mountain blocking and gravity wave drag
         ;;
     "C384")
         export DELTIM=225

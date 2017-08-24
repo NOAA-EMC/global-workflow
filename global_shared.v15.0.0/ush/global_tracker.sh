@@ -32,7 +32,7 @@ export HOMEDIR=${HOMEDIR:-${BASE_TROPCY:-/gpfs/hps/emc/global/noscrub/Qingfu.Liu
 export NWPROD=${NWPROD:-/nwprod}
 export NWPROD=${NWPROD:-$HOMEDIR}
 export USHDIR=${USHDIR:-$HOMEDIR/ush}
-export archsyndir=${archsyndir:-/com/arch/prod/syndat}
+export archsyndir=${archsyndir:-$COMROOTp1/arch/prod/syndat}
 export HOMERELO=${HOMERELO:-$HOMEDIR}
 FIXRELO=${FIXRELO:-${HOMERELO}/fix}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
@@ -41,7 +41,7 @@ GRIBVERSION=${GRIBVERSION:-"grib2"}
 #export DISK_TRAK=${DISK_TRAK:-$DISK_GLOB}
 export GETTRKEXEC=${GETTRKEXEC:-$HOMEDIR/exec/gettrk}
 export inpdate=$CDATE
-export paradir=$COMOUT
+export paradir=$COMIN
 export prxtrak=$DATA
 export vdir=$DATA
 

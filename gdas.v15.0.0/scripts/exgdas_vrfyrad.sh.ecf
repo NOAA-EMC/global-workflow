@@ -110,8 +110,8 @@ export USHradmon=${USHradmon:-$HOMEradmon/ush}
 
 
 #  Filenames
-export biascr=${biascr:-$COMIN/gdas1.t${cyc}z.abias}
-export radstat=${radstat:-$COMIN/gdas1.t${cyc}z.radstat}
+export biascr=${biascr:-$COMIN/gdas.t${cyc}z.abias}
+export radstat=${radstat:-$COMIN/gdas.t${cyc}z.radstat}
 export satype_file=${satype_file:-gdas_radmon_satype.txt}
 
 #  Other variables
@@ -184,13 +184,13 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  the previous cycle will get us the previous day's directory if 
    #  the cycle being processed is 00z.
    #------------------------------------------------------------------
-   if [[ $CYC = "00" ]]; then
-      pday=${PDYm1}
+   if [[ $cyc = "00" ]]; then
+      use_tankdir=${TANKverf_radM1}
    else
-      pday=${PDY}
+      use_tankdir=${TANKverf_rad}
    fi
 
-   if [[ ! -e ${TANKverf}/radmon.${pday}/${satype_file} ]]; then
+   if [[ ! -e ${use_tankdir}/${satype_file} ]]; then
       if [[ ! -e ${FIXgdas}/${satype_file} ]]; then 
          export SATYPE=$radstat_satype
          if [[ "$VERBOSE" = "YES" ]]; then
@@ -200,7 +200,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
          export SATYPE=`cat ${FIXgdas}/${satype_file}`
       fi
    else
-      export SATYPE=`cat ${TANKverf}/radmon.${pday}/${satype_file}`
+      export SATYPE=`cat ${use_tankdir}/${satype_file}`
    fi
 
 
@@ -228,14 +228,14 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  directory or if changes have occurred in the SATYPE list, then 
    #  add/update the satype_file.
    #------------------------------------------------------------------
-   if [[ ! -s ${TANKverf}/radmon.${PDY}/${satype_file} || $satype_changes -eq 1 ]]; then
-      if [[ ! -d ${TANKverf}/radmon.${PDY} ]]; then
-         mkdir -p ${TANKverf}/radmon.${PDY}
+   if [[ ! -s ${TANKverf_rad}/${satype_file} || $satype_changes -eq 1 ]]; then
+      if [[ ! -d ${TANKverf_rad} ]]; then
+         mkdir -f ${TANKverf_rad}
       fi
-      if [[ -e ${TANKverf}/radmon.${PDY}/${satype_file} ]]; then
-         rm -f ${TANKverf}/radmon.${PDY}/${satype_file}
+      if [[ -e ${TANKverf_rad}/${satype_file} ]]; then
+         rm -f ${TANKverf_rad}/${satype_file}
       fi
-      echo $new_satype > ${TANKverf}/radmon.${PDY}/${satype_file}
+      echo $new_satype > ${TANKverf_rad}/${satype_file}
    fi
    
    #------------------------------------------------------------------
