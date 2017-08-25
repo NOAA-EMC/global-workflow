@@ -11,13 +11,10 @@ EXECdir=../exec
 
 if [ $target = wcoss ]; then
 . /usrx/local/Modules/3.2.10/init/sh
-conf_target=nco
 elif [ $target = cray ]; then
 . $MODULESHOME/init/sh
-conf_target=nco
 elif [ $target = theia ]; then
 . /apps/lmod/lmod/init/sh
-conf_target=theia
 else
  exit
 fi

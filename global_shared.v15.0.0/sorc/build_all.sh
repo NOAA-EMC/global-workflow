@@ -16,13 +16,12 @@ fi
 
 pwd=`pwd`
 #for script in build_gsi.sh build_gsm.sh build_radmon.sh build_nems_util.sh build_chgres.sh build_orog.sh; do
-for script in  build_nems_util.sh build_chgres.sh build_chgres_GSM.sh build_orog.sh; do
+for script in build_nems_util.sh build_chgres.sh build_chgres_GSM.sh build_orog.sh build_radmon.sh build_tropcy_NEMS.sh; do
  cd $pwd
  sh $script $target
 done
 
 #sh build_emcsfc.sh
-#sh build_tropcy_NEMS_$target.sh
 #sh build_ncep_post.sh
 
 cd $pwd/fre-nctools.fd

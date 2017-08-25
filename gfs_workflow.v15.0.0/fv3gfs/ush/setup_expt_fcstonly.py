@@ -19,6 +19,7 @@ from argparse import ArgumentParser,ArgumentDefaultsHelpFormatter
 global machines
 global machine, pslot, sdate, edate, expdir, comrot, res, configdir, gfs_cyc
 
+
 machines = ['THEIA', 'WCOSS_C']
 
 
@@ -76,7 +77,7 @@ Create EXPDIR, copy config files and edit config.base
 Create empty COMROT experiment directory'''
 
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--machine', help='machine name', type=str, choices=machines, default='WCOSS_C', required=False)
+    parser.add_argument('--machine', help='machine name', type=str.upper, choices=machines, default='WCOSS_C', required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=True)
     parser.add_argument('--sdate', help='starting date of experiment', type=str, required=False, default='2016100100')
