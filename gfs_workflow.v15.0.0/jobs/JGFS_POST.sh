@@ -162,6 +162,9 @@ fi
 # Parameters dependent on REMAP_GRID
 if [ $REMAP_GRID = "latlon" ]; then
    export IDRT=0
+   if [ $CDUMP = "gdas" ]; then
+      export IDRT=4
+   fi
 else
    export IDRT=4
 fi

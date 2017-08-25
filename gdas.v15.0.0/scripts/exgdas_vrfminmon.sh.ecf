@@ -45,7 +45,7 @@
 #
 #     programs   : $NDATE
 #
-#     input data : $gsistat=${COMIN}/gdas1.t${cyc}z.gsistat
+#     input data : $gsistat=${COMIN}/gdas.t${cyc}z.gsistat
 #
 #     output data:  
 #
@@ -93,7 +93,7 @@ export DATA=${DATA:-$(pwd)}
 ########################################
 #  Filenames
 ########################################
-gsistat=${gsistat:-$COMIN/gdas1.t${cyc}z.gsistat}
+gsistat=${gsistat:-$COMIN/gdas.t${cyc}z.gsistat}
 export mm_gnormfile=${gnormfile:-${FIXgdas}/gdas_minmon_gnorm.txt}
 export mm_costfile=${costfile:-${FIXgdas}/gdas_minmon_cost.txt}
 

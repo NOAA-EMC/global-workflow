@@ -93,7 +93,7 @@ export FIXminmon=${FIXminmon:-${HOMEminmon/fix}}
 #############################################
 # Run setpdy and initialize PDY variables
 #############################################
-if [[ $MY_MACHINE != "theia" ]]; then
+if [[ $MY_MACHINE != "THEIA" ]]; then
    export cycle=t${cyc}z
    setpdy.sh
    . ./PDY
@@ -116,7 +116,7 @@ mkdir -p -m 775 $M_TANKverf
 ########################################
 # Set necessary environment variables
 ########################################
-export gsistat=${gsistat:-${COMIN}/gdas1.t${cyc}z.gsistat}
+export gsistat=${gsistat:-${COMIN}/gdas.t${cyc}z.gsistat}
 
 msg="JOB HAS STARTED"
 postmsg "$jlogfile" "$msg"

@@ -202,7 +202,7 @@ export DISK_TRAK=${DISK_TRAK:-/global/save}
 export DATA=${DATA:-$DATAROOT/${userid}/trakout}
 export TRKDATA=${TRKDATA:-$DATA}
 export COMDIR=${COMDIR:-""}
-export ATCFdir=${ATCFdir:-/com/nhc/${envir}/atcf}
+export ATCFdir=${ATCFdir:-$COMROOTp1/nhc/${envir}/atcf}
 #export PHASEFLAG=y
 export PHASEFLAG=n
 export WCORE_DEPTH=1.0
@@ -278,7 +278,7 @@ symd=`echo ${PDY} | cut -c3-8`
 syyyy=`echo ${PDY} | cut -c1-4`
 symdh=${PDY}${CYL}
 
-export gfsvitdir=${gfsvitdir:-${COMDIR}${COMROOTp1}/gfs/prod/gfs.$PDY}
+export gfsvitdir=${gfsvitdir:-${COMDIR}${COMROOThps}/gfs/prod/gfs.$PDY}
 export namvitdir=${namvitdir:-${COMDIR}${COMROOTp1}/nam/prod/nam.$PDY}
 export gltrkdir=${gltrkdir:-${COMDIR}${COMROOTp1}/hur/${envir}/global}
 export TPCATdir=/tpcprd/atcf
@@ -425,7 +425,7 @@ fi
 if [ ${cmodel} = 'gdas' ]; then
   if [ ${gribver} -eq 1 ]; then
      gfsdir=${paradir:-$COMINgdas}
-#     gfsgfile=gdas1.t${CYL}z.master.grbf
+#     gfsgfile=gdas.t${CYL}z.master.grbf
   else
      gfsdir=${paradir:-$COMINgdas}
 #     gfsgfile=gfs.t${CYL}z.pgrb2.0p25.f
@@ -524,11 +524,11 @@ future_str="${future_ymd} ${future_hh}00"
 
 # NOTE: Change synvitdir to point to /com/nam for regional models.
 
-synvitdir=${synvitdir:-${COMDIR}${COMROOTp1}/gfs/prod/gfs.${PDY}}
+synvitdir=${synvitdir:-${COMDIR}${COMROOThps}/gfs/prod/gfs.${PDY}}
 synvitfile=${synvitfile:-gfs.t${CYL}z.syndata.tcvitals.tm00}
-synvitold_dir=${synvitold_dir:-${COMDIR}${COMROOTp1}/gfs/prod/gfs.${old_4ymd}}
+synvitold_dir=${synvitold_dir:-${COMDIR}${COMROOThps}/gfs/prod/gfs.${old_4ymd}}
 synvitold_file=${synvitold_file:-gfs.t${old_hh}z.syndata.tcvitals.tm00}
-synvitfuture_dir=${synvitfuture_dir:-${COMDIR}${COMROOTp1}/gfs/prod/gfs.${future_4ymd}}
+synvitfuture_dir=${synvitfuture_dir:-${COMDIR}${COMROOThps}/gfs/prod/gfs.${future_4ymd}}
 synvitfuture_file=${synvitfuture_file:-gfs.t${future_hh}z.syndata.tcvitals.tm00}
 
 set +x
@@ -1037,7 +1037,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
 
   if [[ "$model" -eq 8 ]] ; then
       name=gdas
-      name1=gdas1
+      name1=gdas
       nicename=GDAS
   else  # not model 8, so assume GFS
       name=gfs
