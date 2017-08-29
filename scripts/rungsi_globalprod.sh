@@ -356,7 +356,7 @@ HYBRID_ENSEMBLE=""
 RAPIDREFRESH_CLDSURF=""
 CHEM=""
 SINGLEOB=""
-
+NST=""
 
 cat << EOF > gsiparm.anl
  &SETUP
@@ -501,6 +501,9 @@ OBS_INPUT::
    obhourset=0.,
    $SINGLEOB
  /
+ &NST
+ $NST
+ /
 EOF
 
 # Set fixed files
@@ -624,6 +627,10 @@ $ncp $datobs/${prefix_obs}atms.${suffix}     ./atmsbufr
 $ncp $datobs/${prefix_obs}cris.${suffix}     ./crisbufr
 $ncp $datobs/${prefix_obs}crisfs.${suffix}   ./crisfsbufr
 $ncp $datobs/${prefix_obs}syndata.tcvitals.tm00 ./tcvitl
+if ls ${fixgsi}/Rcov* 1> /dev/null 2>&1;
+then
+   $ncp ${fixgsi}/Rcov* $tmpdir
+fi
 
 
 #  # For data before Feb 2015 
