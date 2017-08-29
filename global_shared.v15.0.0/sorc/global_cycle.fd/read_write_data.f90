@@ -2,6 +2,27 @@
 
  PRIVATE
 
+ TYPE, PUBLIC :: NSST_DATA
+   REAL, ALLOCATABLE :: C_0(:)
+   REAL, ALLOCATABLE :: C_D(:)
+   REAL, ALLOCATABLE :: D_CONV(:)
+   REAL, ALLOCATABLE :: DT_COOL(:)
+   REAL, ALLOCATABLE :: IFD(:)
+   REAL, ALLOCATABLE :: QRAIN(:)
+   REAL, ALLOCATABLE :: TREF(:)
+   REAL, ALLOCATABLE :: W_0(:)
+   REAL, ALLOCATABLE :: W_D(:)
+   REAL, ALLOCATABLE :: XS(:)
+   REAL, ALLOCATABLE :: XT(:)
+   REAL, ALLOCATABLE :: XTTS(:)
+   REAL, ALLOCATABLE :: XU(:)
+   REAL, ALLOCATABLE :: XV(:)
+   REAL, ALLOCATABLE :: XZ(:)
+   REAL, ALLOCATABLE :: XZTS(:)
+   REAL, ALLOCATABLE :: Z_C(:)
+   REAL, ALLOCATABLE :: ZM(:)
+ END TYPE NSST_DATA
+
  PUBLIC :: READ_SFC_NETCDF
  PUBLIC :: READ_LAT_LON_OROG
  PUBLIC :: WRITE_DATA
@@ -14,7 +35,7 @@
                        sicfcs,sihfcs,sitfcs,tprcp,srflag, &
                        swdfcs,vmnfcs,vmxfcs,slpfcs, &
                        absfcs,slcfcs,smcfcs,stcfcs,&
-                       idim,jdim,lensfc,lsoil,fnbgso)
+                       idim,jdim,lensfc,lsoil,fnbgso,do_nsst,nsst)
 
 ! Note: the model restart files contain an additional snow field -
 ! snow cover (snocvr).  That field is required for bit identical
@@ -30,6 +51,8 @@
  character(len=*), intent(in) :: fnbgso
 
  integer, intent(in)         :: idim, jdim, lensfc, lsoil
+
+ logical, intent(in)         :: do_nsst
 
  real, intent(in)            :: slifcs(lensfc), tsffcs(lensfc)
  real, intent(in)            :: snofcs(lensfc), tg3fcs(lensfc)
@@ -47,7 +70,7 @@
  real, intent(in)            :: absfcs(lensfc), slcfcs(lensfc,lsoil)
  real, intent(in)            :: smcfcs(lensfc,lsoil), stcfcs(lensfc,lsoil)
 
- logical :: do_nsst
+ type(nsst_data)             :: nsst
 
  integer                     :: fsize=65536, inital=0
  integer                     :: header_buffer_val = 16384
@@ -77,8 +100,6 @@
  real(kind=8), allocatable   :: dum2d(:,:), dum3d(:,:,:)
 
  include "netcdf.inc"
-
- do_nsst = .true.
 
 !--- open the file
  error = NF__CREATE(fnbgso, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
@@ -356,6 +377,8 @@
  call netcdf_err(error, 'DEFINING SNOALB UNITS' )
 
  NSST_HEADER : if (do_nsst) then
+
+   print*,"WRITE NSST RECORDS."
 
    error = nf_def_var(ncid, 'tref', NF_DOUBLE, 3, dims_3d, id_tref)
    call netcdf_err(error, 'DEFINING TREF' )
@@ -672,33 +695,113 @@
      error = nf_put_vara_double( ncid, id_slope, dims_strt, dims_end, dum2d)
      call netcdf_err(error, 'WRITING SLOPE RECORD' )
 
-     dum2d = reshape(absfcs, (/idim,jdim/))
-     error = nf_put_vara_double( ncid, id_snoalb, dims_strt, dims_end, dum2d)
-     call netcdf_err(error, 'WRITING SNOALB RECORD' )
+ dum2d = reshape(absfcs, (/idim,jdim/))
+ error = nf_put_vara_double( ncid, id_snoalb, dims_strt, dims_end, dum2d)
+ call netcdf_err(error, 'WRITING SNOALB RECORD' )
 
-     deallocate(dum2d)
+ NSST_WRITE : if (do_nsst) then
 
-     dims4_strt(1:4) = 1
-     dims4_end(1) = idim
-     dims4_end(2) = jdim
-     dims4_end(3) = lsoil
-     dims4_end(4) = 1
+   dum2d = reshape(nsst%tref, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_tref, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING TREF RECORD' )
 
-     allocate(dum3d(idim,jdim,lsoil))
+   dum2d = reshape(nsst%z_c, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_z_c, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING Z_C RECORD' )
 
-     dum3d = reshape(slcfcs, (/idim,jdim,lsoil/))
-     error = nf_put_vara_double( ncid, id_slc, dims4_strt, dims4_end, dum3d)
-     call netcdf_err(error, 'WRITING SLC RECORD' )
+   dum2d = reshape(nsst%c_0, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_c_0, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING C_0 RECORD' )
 
-     dum3d = reshape(smcfcs, (/idim,jdim,lsoil/))
-     error = nf_put_vara_double( ncid, id_smc, dims4_strt, dims4_end, dum3d)
-     call netcdf_err(error, 'WRITING SMC RECORD' )
+   dum2d = reshape(nsst%c_d, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_c_d, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING C_D RECORD' )
 
-     dum3d = reshape(stcfcs, (/idim,jdim,lsoil/))
-     error = nf_put_vara_double( ncid, id_stc, dims4_strt, dims4_end, dum3d)
-     call netcdf_err(error, 'WRITING STC RECORD' )
+   dum2d = reshape(nsst%w_0, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_w_0, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING W_0 RECORD' )
 
-     deallocate(dum3d)
+   dum2d = reshape(nsst%w_d, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_w_d, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING W_D RECORD' )
+
+   dum2d = reshape(nsst%xt, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xt, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XT RECORD' )
+
+   dum2d = reshape(nsst%xs, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xs, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XS RECORD' )
+
+   dum2d = reshape(nsst%xu, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xu, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XU RECORD' )
+
+   dum2d = reshape(nsst%xv, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xv, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XV RECORD' )
+
+   dum2d = reshape(nsst%xz, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xz, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XZ RECORD' )
+
+   dum2d = reshape(nsst%zm, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_zm, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING ZM RECORD' )
+
+   dum2d = reshape(nsst%zm, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_zm, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING ZM RECORD' )
+
+   dum2d = reshape(nsst%xtts, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xtts, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XTTS RECORD' )
+
+   dum2d = reshape(nsst%xzts, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_xzts, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING XZTS RECORD' )
+
+   dum2d = reshape(nsst%d_conv, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_d_conv, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING D_CONV RECORD' )
+
+   dum2d = reshape(nsst%ifd, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_ifd, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING IFD RECORD' )
+
+   dum2d = reshape(nsst%dt_cool, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_dt_cool, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING DT_COOL RECORD' )
+
+   dum2d = reshape(nsst%qrain, (/idim,jdim/))
+   error = nf_put_vara_double( ncid, id_qrain, dims_strt, dims_end, dum2d)
+   call netcdf_err(error, 'WRITING QRAIN RECORD' )
+
+ endif NSST_WRITE
+
+ deallocate(dum2d)
+
+ dims4_strt(1:4) = 1
+ dims4_end(1) = idim
+ dims4_end(2) = jdim
+ dims4_end(3) = lsoil
+ dims4_end(4) = 1
+
+ allocate(dum3d(idim,jdim,lsoil))
+
+ dum3d = reshape(slcfcs, (/idim,jdim,lsoil/))
+ error = nf_put_vara_double( ncid, id_slc, dims4_strt, dims4_end, dum3d)
+ call netcdf_err(error, 'WRITING SLC RECORD' )
+
+ dum3d = reshape(smcfcs, (/idim,jdim,lsoil/))
+ error = nf_put_vara_double( ncid, id_smc, dims4_strt, dims4_end, dum3d)
+ call netcdf_err(error, 'WRITING SMC RECORD' )
+
+ dum3d = reshape(stcfcs, (/idim,jdim,lsoil/))
+ error = nf_put_vara_double( ncid, id_stc, dims4_strt, dims4_end, dum3d)
+ call netcdf_err(error, 'WRITING STC RECORD' )
+
+ deallocate(dum3d)
 
  error = nf_close(ncid)
 
@@ -847,7 +950,7 @@
                             TPRCP,SRFLAG,SWDFCS,  &
                             VMNFCS,VMXFCS,SLCFCS, &
                             SLPFCS,ABSFCS,T2M,Q2M,SLMASK, &
-                            ZSOIL,LSOIL,LENSFC,FNBGSI)
+                            ZSOIL,LSOIL,LENSFC,FNBGSI,DO_NSST,NSST)
 
  use netcdf
 
@@ -858,6 +961,8 @@
  CHARACTER(LEN=*), INTENT(IN) :: FNBGSI
 
  INTEGER, INTENT(IN)       :: LSOIL, LENSFC
+
+ LOGICAL, INTENT(IN)       :: DO_NSST
 
  REAL, INTENT(OUT)         :: CVFCS(LENSFC), CVBFCS(LENSFC)
  REAL, INTENT(OUT)         :: CVTFCS(LENSFC), ALBFCS(LENSFC,4)
@@ -878,6 +983,8 @@
  REAL, INTENT(OUT)         :: SMCFCS(LENSFC,LSOIL)
  REAL, INTENT(OUT)         :: STCFCS(LENSFC,LSOIL)
  REAL(KIND=4), INTENT(OUT) :: ZSOIL(LSOIL)
+
+ TYPE(NSST_DATA)           :: NSST
 
  INTEGER                   :: ERROR, NCID
  INTEGER                   :: IDIM, JDIM, ID_DIM
@@ -1127,6 +1234,138 @@
  Q2M = RESHAPE(DUMMY, (/LENSFC/))
  print*,'q2m ',maxval(q2m),minval(q2m)
   
+ NSST_READ : IF(DO_NSST) THEN
+
+   print*,"WILL READ NSST RECORDS."
+
+   ERROR=NF90_INQ_VARID(NCID, "c_0", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING c_0 ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING c_0' )
+   NSST%C_0 = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'c_0 ',maxval(nsst%c_0),minval(nsst%c_0)
+
+   ERROR=NF90_INQ_VARID(NCID, "c_d", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING c_d ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING c_d' )
+   NSST%C_D = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'c_d ',maxval(nsst%c_d),minval(nsst%c_d)
+
+   ERROR=NF90_INQ_VARID(NCID, "d_conv", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING d_conv ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING d_conv' )
+   NSST%D_CONV = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'d_conv ',maxval(nsst%d_conv),minval(nsst%d_conv)
+
+   ERROR=NF90_INQ_VARID(NCID, "dt_cool", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING dt_cool ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING dt_cool' )
+   NSST%DT_COOL = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'dt_cool ',maxval(nsst%dt_cool),minval(nsst%dt_cool)
+
+   ERROR=NF90_INQ_VARID(NCID, "ifd", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING ifd ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING ifd' )
+   NSST%IFD = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'ifd ',maxval(nsst%ifd),minval(nsst%ifd)
+
+   ERROR=NF90_INQ_VARID(NCID, "qrain", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING qrain ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING qrain' )
+   NSST%QRAIN = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'qrain ',maxval(nsst%qrain),minval(nsst%qrain)
+
+   ERROR=NF90_INQ_VARID(NCID, "tref", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING tref ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING tref' )
+   NSST%TREF = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'tref ',maxval(nsst%tref),minval(nsst%tref)
+
+   ERROR=NF90_INQ_VARID(NCID, "w_0", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING w_0 ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING w_0' )
+   NSST%W_0 = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'w_0 ',maxval(nsst%w_0),minval(nsst%w_0)
+
+   ERROR=NF90_INQ_VARID(NCID, "w_d", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING w_d ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING w_d' )
+   NSST%W_D = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'w_d ',maxval(nsst%w_d),minval(nsst%w_d)
+
+   ERROR=NF90_INQ_VARID(NCID, "xs", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xs ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xs' )
+   NSST%XS = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xs ',maxval(nsst%xs),minval(nsst%xs)
+
+   ERROR=NF90_INQ_VARID(NCID, "xt", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xt ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xt' )
+   NSST%XT = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xt ',maxval(nsst%xt),minval(nsst%xt)
+
+   ERROR=NF90_INQ_VARID(NCID, "xtts", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xtts ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xtts' )
+   NSST%XTTS = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xtts ',maxval(nsst%xtts),minval(nsst%xtts)
+
+   ERROR=NF90_INQ_VARID(NCID, "xu", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xu ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xu' )
+   NSST%XU = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xu ',maxval(nsst%xu),minval(nsst%xu)
+
+   ERROR=NF90_INQ_VARID(NCID, "xv", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xv ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xv' )
+   NSST%XV = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xv ',maxval(nsst%xv),minval(nsst%xv)
+
+   ERROR=NF90_INQ_VARID(NCID, "xz", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xz ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xz' )
+   NSST%XZ = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xz ',maxval(nsst%xz),minval(nsst%xz)
+
+   ERROR=NF90_INQ_VARID(NCID, "xzts", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING xzts ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING xzts' )
+   NSST%XZTS = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'xzts ',maxval(nsst%xzts),minval(nsst%xzts)
+
+   ERROR=NF90_INQ_VARID(NCID, "z_c", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING z_c ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING z_c' )
+   NSST%Z_C = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'z_c ',maxval(nsst%z_c),minval(nsst%z_c)
+
+   ERROR=NF90_INQ_VARID(NCID, "zm", ID_VAR)
+   CALL NETCDF_ERR(ERROR, 'READING zm ID' )
+   ERROR=NF90_GET_VAR(NCID, ID_VAR, dummy)
+   CALL NETCDF_ERR(ERROR, 'READING zm' )
+   NSST%ZM = RESHAPE(DUMMY, (/LENSFC/))
+   print*,'zm ',maxval(nsst%zm),minval(nsst%zm)
+
+ END IF NSST_READ
+
  DEALLOCATE(DUMMY)
 
  ALLOCATE(DUMMY3D(IDIM,JDIM,LSOIL))

@@ -16,7 +16,7 @@ machine.o:	machine.f
 read_write_data.o:	read_write_data.f90
 	${FC} $(FFLAGS) -c read_write_data.f90
 
-sfcsub.o:	sfcsub.f
+sfcsub.o: machine.o sfcsub.f
 	$(FC)  $(FFLAGS) $(OMPFLAG) -c sfcsub.f
 
 cycle.o: read_write_data.o cycle.f

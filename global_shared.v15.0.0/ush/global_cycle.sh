@@ -146,8 +146,8 @@
 #                   defaults to NO
 #     use_ufo       Adjust sst and soil substrate temperature for differences
 #                   between the filtered and unfiltered terrain.  Default is true.
-#     NST_ANL       SST terrain adjustments required when using NST model.  
-#                   Default is false.
+#     NST_ANL       Process NST records and perform SST terrain adjustments required 
+#                   when using NST model.  Default is false.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
