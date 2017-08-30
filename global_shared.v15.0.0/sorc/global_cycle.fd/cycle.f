@@ -24,7 +24,7 @@
       IMPLICIT NONE
 !
       INTEGER :: IDIM, JDIM, LSOIL, LUGB, IY, IM, ID, IH, IALB
-      INTEGER :: ISOT, IVEGSRC
+      INTEGER :: ISOT, IVEGSRC, LENSFC
       REAL    :: FH, DELTSFC
       LOGICAL :: USE_UFO, NST_ANL
 !
@@ -47,8 +47,14 @@
       READ(5,NAMCYC)
       WRITE(6,NAMCYC)
 !
-      CALL MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC,IALB,
-     &             USE_UFO,NST_ANL,ISOT,IVEGSRC)
+      LENSFC = IDIM*JDIM ! TOTAL NUMBER OF POINTS FOR THE CUBED-SPHERE TILE
+
+      PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ",
+     &        LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH
+
+      CALL SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,
+     &            IY,IM,ID,IH,FH,IALB,
+     &            USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
       PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY.'
 
@@ -56,33 +62,7 @@
 
       END PROGRAM SFC_DRV
 !
-      SUBROUTINE MAINSFC(IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,DELTSFC
-     &,                  IALB,USE_UFO,NST_ANL,ISOT,IVEGSRC)
-!
-      IMPLICIT NONE
-!
-      INTEGER, INTENT(IN) :: IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH
-      INTEGER, INTENT(IN) :: IALB,ISOT,IVEGSRC
-
-      LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
-
-      REAL,    INTENT(IN) :: FH, DELTSFC
- 
-      REAL                :: SIG1T(IDIM*JDIM)
-!
-      SIG1T = 0.0            ! Not a dead start!
-!
-      PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ",
-     &        LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH
-
-      CALL SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,
-     1            IY,IM,ID,IH,FH,IALB,
-     &            USE_UFO,NST_ANL,ISOT,IVEGSRC)
-!
-      RETURN
-      END SUBROUTINE MAINSFC
-
-      SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LSOIL,SIG1T,DELTSFC,
+      SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,
      &                  IY,IM,ID,IH,FH,IALB,
      &                  USE_UFO,NST_ANL,ISOT,IVEGSRC)
 !
@@ -90,44 +70,44 @@
 
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN) :: IDIM, JDIM, LSOIL, IALB
+      INTEGER, INTENT(IN) :: IDIM, JDIM, LENSFC, LSOIL, IALB
       INTEGER, INTENT(IN) :: LUGB, IY, IM, ID, IH
       INTEGER, INTENT(IN) :: ISOT, IVEGSRC
 
       LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
  
-      REAL, INTENT(IN)    :: FH, DELTSFC, SIG1T(IDIM*JDIM)
+      REAL, INTENT(IN)    :: FH, DELTSFC
 
       INTEGER, PARAMETER  :: NLUNIT=35, ME=0
 
       CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO
 
-      INTEGER             :: IFP, LENSFC, I, II, K
+      INTEGER             :: IFP, I, II, K
 
-      REAL                :: SLMASK(IDIM*JDIM), OROG(IDIM*JDIM)
-      REAL                :: SIHFCS(IDIM*JDIM), SICFCS(IDIM*JDIM)
-      REAL                :: SITFCS(IDIM*JDIM), TSFFCS(IDIM*JDIM)
-      REAL                :: SNOFCS(IDIM*JDIM), ZORFCS(IDIM*JDIM)
-      REAL                :: ALBFCS(IDIM*JDIM,4), TG3FCS(IDIM*JDIM)
-      REAL                :: CNPFCS(IDIM*JDIM), SMCFCS(IDIM*JDIM,LSOIL)
-      REAL                :: STCFCS(IDIM*JDIM,LSOIL), SLIFCS(IDIM*JDIM)
-      REAL                :: AISFCS(IDIM*JDIM), F10M(IDIM*JDIM)
-      REAL                :: VEGFCS(IDIM*JDIM), VETFCS(IDIM*JDIM)
-      REAL                :: SOTFCS(IDIM*JDIM), ALFFCS(IDIM*JDIM,2)
-      REAL                :: CVFCS(IDIM*JDIM), CVTFCS(IDIM*JDIM)
-      REAL                :: CVBFCS(IDIM*JDIM), TPRCP(IDIM*JDIM)
-      REAL                :: SRFLAG(IDIM*JDIM), SWDFCS(IDIM*JDIM)
-      REAL                :: SLCFCS(IDIM*JDIM,LSOIL), VMXFCS(IDIM*JDIM)
-      REAL                :: VMNFCS(IDIM*JDIM), T2M(IDIM*JDIM)
-      REAL                :: Q2M(IDIM*JDIM), SLPFCS(IDIM*JDIM)
-      REAL                :: ABSFCS(IDIM*JDIM), OROG_UF(IDIM*JDIM)
-      REAL                :: ALBFC(IDIM*JDIM*4), SMCFC(IDIM*JDIM*LSOIL)
-      REAL                :: STCFC(IDIM*JDIM*LSOIL), ALFFC(IDIM*JDIM*2)
-      REAL                :: SLCFC(IDIM*JDIM*LSOIL), USTAR(IDIM*JDIM)
-      REAL                :: FMM(IDIM*JDIM), FHH(IDIM*JDIM)
-      REAL                :: RLA(IDIM*JDIM), RLO(IDIM*JDIM)
+      REAL                :: SLMASK(LENSFC), OROG(LENSFC)
+      REAL                :: SIHFCS(LENSFC), SICFCS(LENSFC)
+      REAL                :: SITFCS(LENSFC), TSFFCS(LENSFC)
+      REAL                :: SNOFCS(LENSFC), ZORFCS(LENSFC)
+      REAL                :: ALBFCS(LENSFC,4), TG3FCS(LENSFC)
+      REAL                :: CNPFCS(LENSFC), SMCFCS(LENSFC,LSOIL)
+      REAL                :: STCFCS(LENSFC,LSOIL), SLIFCS(LENSFC)
+      REAL                :: AISFCS(LENSFC), F10M(LENSFC)
+      REAL                :: VEGFCS(LENSFC), VETFCS(LENSFC)
+      REAL                :: SOTFCS(LENSFC), ALFFCS(LENSFC,2)
+      REAL                :: CVFCS(LENSFC), CVTFCS(LENSFC)
+      REAL                :: CVBFCS(LENSFC), TPRCP(LENSFC)
+      REAL                :: SRFLAG(LENSFC), SWDFCS(LENSFC)
+      REAL                :: SLCFCS(LENSFC,LSOIL), VMXFCS(LENSFC)
+      REAL                :: VMNFCS(LENSFC), T2M(LENSFC)
+      REAL                :: Q2M(LENSFC), SLPFCS(LENSFC)
+      REAL                :: ABSFCS(LENSFC), OROG_UF(LENSFC)
+      REAL                :: ALBFC(LENSFC*4), SMCFC(LENSFC*LSOIL)
+      REAL                :: STCFC(LENSFC*LSOIL), ALFFC(LENSFC*2)
+      REAL                :: SLCFC(LENSFC*LSOIL), USTAR(LENSFC)
+      REAL                :: FMM(LENSFC), FHH(LENSFC)
+      REAL                :: RLA(LENSFC), RLO(LENSFC)
       REAL(KIND=4)        :: ZSOIL(LSOIL)
-
+      REAL                :: SIG1T(LENSFC)
       TYPE(NSST_DATA)     :: NSST
 
 !  Defaults file names
@@ -246,6 +226,8 @@
 !
 !--------------------------------------------------------------------------------
 
+      SIG1T = 0.0            ! Not a dead start!
+
       IF(IFP.EQ.0) THEN
         IFP = 1
         READ (5,NAMSFCD)
@@ -253,8 +235,6 @@
       ENDIF
 
       PRINT*,'IN ROUTINE SFCDRV,IDIM=',IDIM,'JDIM=',JDIM,'FH=',FH
-
-      LENSFC = IDIM * JDIM
 
       CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,FNOROG,FNGRID,
      &                       IDIM,JDIM,LENSFC)
@@ -392,76 +372,3 @@
       RETURN
 
       END SUBROUTINE SFCDRV
-
-      SUBROUTINE QCMASK(SLMASK,SLLND,SLSEA,IDIM,JDIM,RLA,RLO)
-!
-      DIMENSION SLMASK(IDIM,JDIM),RLA(IDIM,JDIM),RLO(IDIM,JDIM)
-!
-      WRITE(6,*) ' QCMASK'
-!
-!  CHECK LAND-SEA MASK
-!
-      DO J=1,JDIM
-      DO I=1,IDIM
-        IF(SLMASK(I,J).NE.SLLND.AND.SLMASK(I,J).NE.SLSEA) THEN
-          PRINT *,'*** LAND-SEA MASK NOT ',SLLND,' OR ',SLSEA,
-     1          ' AT LAT=',RLA(I,J),' LON=',RLO(I,J),' IT IS ',
-     2          SLMASK(I,J)
-          CALL ABORT
-        ENDIF
-      ENDDO
-      ENDDO
-!
-!  Remove isolated sea point
-!
-      DO J=1,JDIM
-        DO I=1,IDIM
-          IP = I + 1
-          IM = I - 1
-          JP = J + 1
-          JM = J - 1
-          IF(JP.GT.JDIM) JP = JDIM - 1
-          IF(JM.LT.1)    JM = 2
-          IF(IP.GT.IDIM) IP = 1
-          IF(IM.LT.1   ) IM = IDIM
-          IF(SLMASK(I,J).EQ.0.) THEN
-            IF(SLMASK(IP,JP).EQ.1..AND.SLMASK(I ,JP).EQ.1..AND.
-     1         SLMASK(IM,JP).EQ.1..AND.
-     2         SLMASK(IP,J ).EQ.1..AND.SLMASK(IM,J ).EQ.1..AND.
-     3         SLMASK(IP,JM).EQ.1..AND.SLMASK(I ,JM).EQ.1..AND.
-     4         SLMASK(IM,JM).EQ.1) THEN
-              SLMASK(I,J)=1.
-              WRITE(6,*) ' Isolated open sea point modified to land',
-     1                   ' at LAT=',RLA(I,J),' LON=',RLO(I,J)
-            ENDIF
-          ENDIF
-        ENDDO
-      ENDDO
-!
-!  Remove isolated land point
-!
-      DO J=1,JDIM
-        DO I=1,IDIM
-          IP = I + 1
-          IM = I - 1
-          JP = J + 1
-          JM = J - 1
-          IF(JP.GT.JDIM) JP = JDIM - 1
-          IF(JM.LT.1)    JM = 2
-          IF(IP.GT.IDIM) IP = 1
-          IF(IM.LT.1)    IM = IDIM
-          IF(SLMASK(I,J).EQ.1.) THEN
-            IF(SLMASK(IP,JP).EQ.0..AND.SLMASK(I ,JP).EQ.0..AND.
-     1         SLMASK(IM,JP).EQ.0..AND.
-     2         SLMASK(IP,J ).EQ.0..AND.SLMASK(IM,J ).EQ.0..AND.
-     3         SLMASK(IP,JM).EQ.0..AND.SLMASK(I ,JM).EQ.0..AND.
-     4         SLMASK(IM,JM).EQ.0) THEN
-              SLMASK(I,J)=0.
-              WRITE(6,*) ' Isolated land point modified to sea',
-     1                   ' at LAT=',RLA(I,J),' LON=',RLO(I,J)
-            ENDIF
-          ENDIF
-        ENDDO
-      ENDDO
-      RETURN
-      END SUBROUTINE QCMASK
