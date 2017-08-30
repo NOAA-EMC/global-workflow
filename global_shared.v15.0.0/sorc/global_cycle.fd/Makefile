@@ -7,11 +7,11 @@ CMD     =global_cycle
 $(CMD):	$(OBJS)
 	${FC} ${DEBUG} $(FFLAGS) $(LDFLG) $(OBJS) $(LIBS) -o $(CMD)
 
-num_parthds.o:	num_parthds.f
-	$(FC) $(FFLAGS) $(OMPFLAG) -c num_parthds.f
+num_parthds.o:	num_parthds.f90
+	$(FC) $(FFLAGS) $(OMPFLAG) -c num_parthds.f90
 
-machine.o:	machine.f
-	${FC} $(FFLAGS) -c machine.f
+machine.o:	machine.f90
+	${FC} $(FFLAGS) -c machine.f90
 
 read_write_data.o:	read_write_data.f90
 	${FC} $(FFLAGS) -c read_write_data.f90
@@ -19,8 +19,8 @@ read_write_data.o:	read_write_data.f90
 sfcsub.o: machine.o sfcsub.f
 	$(FC)  $(FFLAGS) $(OMPFLAG) -c sfcsub.f
 
-cycle.o: read_write_data.o cycle.f
-	$(FC)  $(FFLAGS) -c cycle.f
+cycle.o: read_write_data.o cycle.f90
+	$(FC)  $(FFLAGS) -c cycle.f90
 
 install:
 	-cp -p $(CMD) ../../exec/.
