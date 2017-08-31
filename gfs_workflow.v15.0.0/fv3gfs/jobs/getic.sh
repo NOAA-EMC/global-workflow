@@ -55,7 +55,7 @@ ftanal[3]="nstanl.${CDUMP}.$CDATE"
 # Initialize return code to 0
 rc=0
 
-if [ $ictype = "opsgfs" ]; then
+if [ $ics_from = "opsgfs" ]; then
 
     # Handle nemsio and pre-nemsio GFS filenames
     if [ $CDATE -gt "2017072000" ]; then
@@ -128,7 +128,7 @@ if [ $ictype = "opsgfs" ]; then
         exit 1
     fi
 
-elif [ $ictype = "nemsgfs" ]; then
+elif [ $ics_from = "pargfs" ]; then
 
     # Filenames in parallel
     nfanal=3
@@ -168,7 +168,7 @@ elif [ $ictype = "nemsgfs" ]; then
 
 else
 
-    echo "ictype = $ictype, is not supported, ABORT!"
+    echo "ics_from = $ics_from is not supported, ABORT!"
     exit 1
 
 fi
