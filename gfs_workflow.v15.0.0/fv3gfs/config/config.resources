@@ -60,7 +60,7 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy_gfs="01:00:00"
     export npe_vrfy=1
     export npe_node_vrfy=1
-    export memory_vrfy="16384M"
+    #export memory_vrfy="16384M"
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 

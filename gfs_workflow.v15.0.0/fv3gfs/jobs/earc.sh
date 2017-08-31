@@ -31,12 +31,12 @@ done
 # Run relevant tasks
 
 # CURRENT CYCLE
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
-APREFIX="${CDUMP}.t${chh}z."
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
+APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
-COMIN_ENS="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
+COMIN_ENS="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
 
 DATA="$RUNDIR/$CDATE/$CDUMP/earc$ENSGRP"
 [[ -d $DATA ]] && rm -rf $DATA
