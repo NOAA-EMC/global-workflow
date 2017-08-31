@@ -57,6 +57,7 @@ do
   export SFCANL="./sfcanl.${the_tile}.nc"
   export FNGRID=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_grid.${the_tile}.nc
   export FNOROG=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_oro_data.${the_tile}.nc
+  export GSI_FILE=/scratch4/NCEPDEV/da/noscrub/George.Gayno/cycle_fv3/sfc.${CDATE}.fhr000
 
   $HOMEglobal/ush/global_cycle.sh $SFCGES $SFCANL
 done

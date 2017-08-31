@@ -100,6 +100,8 @@
 #                   Defaults to {FIXfv3}/C${CRES}_oro_data.tile1.nc
 #     FNGRID        Model grid file (netcdf format)
 #                   Defaults to ${FIXfv3}/C${CRES}_grid.tile1.nc
+#     GSI_FILE      GSI file on the gaussian grid containing NST increments.
+#                   Defaults to empty string.
 #     FNTSFA        Input SST analysis GRIB file.
 #                   Defaults to ${COMIN}/${PREINP}sstgrb${SUFINP}
 #     FNACNA        Input sea ice analysis GRIB file.
@@ -279,6 +281,7 @@ export FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.gr
 export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
 export FNOROG=${FNOROG:-${FIXfv3}/C${CRES}_oro_data.tile1.nc}
 export FNGRID=${FNGRID:-${FIXfv3}/C${CRES}_grid.tile1.nc}
+export GSI_FILE=${GSI_FILE:-" "}
 export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
 export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
 export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb${SUFINP}}
@@ -367,6 +370,7 @@ eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
   FNBGSO="$SFCANL",
   FNOROG="$FNOROG",
   FNGRID="$FNGRID",
+  GSI_FILE="$GSI_FILE",
  /
 EOF
 

@@ -23,7 +23,14 @@
    REAL, ALLOCATABLE :: ZM(:)
  END TYPE NSST_DATA
 
- PUBLIC :: READ_SFC_NETCDF
+ INTEGER, PUBLIC           :: IDIM_GAUS, JDIM_GAUS
+
+ REAL, ALLOCATABLE, PUBLIC :: TREF_GAUS(:,:)
+ REAL, ALLOCATABLE, PUBLIC :: SLMSK_GAUS(:,:)
+ REAL, ALLOCATABLE, PUBLIC :: FICE_GAUS(:,:)
+
+ PUBLIC :: READ_DATA
+ PUBLIC :: READ_GSI_DATA
  PUBLIC :: READ_LAT_LON_OROG
  PUBLIC :: WRITE_DATA
 
@@ -940,17 +947,94 @@
  RETURN
  END SUBROUTINE NETCDF_ERR
 
- SUBROUTINE READ_SFC_NETCDF(TSFFCS,SMCFCS,SNOFCS,STCFCS, &
-                            TG3FCS,ZORFCS, &
-                            CVFCS,CVBFCS,CVTFCS,ALBFCS, &
-                            SLIFCS,VEGFCS,CNPFCS,F10M, &
-                            VETFCS,SOTFCS,ALFFCS, &
-                            USTAR,FMM,FHH, &
-                            SIHFCS,SICFCS,SITFCS, &
-                            TPRCP,SRFLAG,SWDFCS,  &
-                            VMNFCS,VMXFCS,SLCFCS, &
-                            SLPFCS,ABSFCS,T2M,Q2M,SLMASK, &
-                            ZSOIL,LSOIL,LENSFC,FNBGSI,DO_NSST,NSST)
+ SUBROUTINE READ_GSI_DATA(GSI_FILE)
+
+ USE NEMSIO_MODULE
+
+ IMPLICIT NONE
+
+ CHARACTER(LEN=*), INTENT(IN)     :: GSI_FILE
+
+ TYPE(NEMSIO_GFILE)               :: GFILE
+
+ CHARACTER(LEN=20)          :: VNAME, VLEVTYP
+
+ INTEGER(NEMSIO_INTKIND)    :: IRET, VLEV
+
+ REAL, ALLOCATABLE          :: DUMMY(:)
+
+ CALL NEMSIO_INIT(IRET=IRET)
+ IF(IRET/=0) THEN
+   PRINT *,'ERROR: nemsio_init '
+   STOP 9
+ ENDIF
+
+ PRINT*,'OPEN GSI FILE ',GSI_FILE
+
+ CALL NEMSIO_OPEN(GFILE,GSI_FILE,'READ',IRET=IRET)
+ IF(IRET/=0) THEN
+   PRINT *,'ERROR: Opening file,',gsi_file,' iret=',iret
+   STOP
+ ENDIF
+
+ CALL NEMSIO_GETFILEHEAD(GFILE,IRET,DIMX=IDIM_GAUS,DIMY=JDIM_GAUS)
+
+ ALLOCATE(DUMMY(IDIM_GAUS*JDIM_GAUS))
+ ALLOCATE(TREF_GAUS(IDIM_GAUS,JDIM_GAUS))
+ VNAME="tref"
+ VLEVTYP="sfc"
+ VLEV=1
+ CALL NEMSIO_READRECV(GFILE,VNAME,VLEVTYP,VLEV,DUMMY,IRET=IRET)
+ IF (IRET/=0) THEN
+   print*,'bad read'
+   stop
+ endif
+ TREF_GAUS = RESHAPE(DUMMY, (/IDIM_GAUS,JDIM_GAUS/))
+ print*,'tref gaus ',maxval(tref_gaus),minval(tref_gaus)
+
+ ALLOCATE(FICE_GAUS(IDIM_GAUS,JDIM_GAUS))
+ VNAME="icec"
+ VLEVTYP="sfc"
+ VLEV=1
+ CALL NEMSIO_READRECV(GFILE,VNAME,VLEVTYP,VLEV,DUMMY,IRET=IRET)
+ IF (IRET/=0) THEN
+   print*,'bad read'
+   stop
+ endif
+ FICE_GAUS = RESHAPE(DUMMY, (/IDIM_GAUS,JDIM_GAUS/))
+ print*,'fice gaus ',iret,maxval(fice_gaus),minval(fice_gaus)
+
+ ALLOCATE(SLMSK_GAUS(IDIM_GAUS,JDIM_GAUS))
+ VNAME="land"
+ VLEVTYP="sfc"
+ VLEV=1
+ CALL NEMSIO_READRECV(GFILE,VNAME,VLEVTYP,VLEV,DUMMY,IRET=IRET)
+ IF (IRET/=0) THEN
+   print*,'bad read'
+   stop
+ endif
+ SLMSK_GAUS = RESHAPE(DUMMY, (/IDIM_GAUS,JDIM_GAUS/))
+ print*,'slmsk gaus ',iret,maxval(slmsk_gaus),minval(slmsk_gaus)
+! remove sea ice?
+ WHERE(SLMSK_GAUS > 1.99) SLMSK_GAUS = 0.0
+
+ CALL NEMSIO_CLOSE(GFILE,IRET=IRET)
+
+ CALL NEMSIO_FINALIZE()
+
+ END SUBROUTINE READ_GSI_DATA
+
+ SUBROUTINE READ_DATA(TSFFCS,SMCFCS,SNOFCS,STCFCS, &
+                      TG3FCS,ZORFCS, &
+                      CVFCS,CVBFCS,CVTFCS,ALBFCS, &
+                      SLIFCS,VEGFCS,CNPFCS,F10M, &
+                      VETFCS,SOTFCS,ALFFCS, &
+                      USTAR,FMM,FHH, &
+                      SIHFCS,SICFCS,SITFCS, &
+                      TPRCP,SRFLAG,SWDFCS,  &
+                      VMNFCS,VMXFCS,SLCFCS, &
+                      SLPFCS,ABSFCS,T2M,Q2M,SLMASK, &
+                      ZSOIL,LSOIL,LENSFC,FNBGSI,DO_NSST,NSST)
 
  use netcdf
 
@@ -1409,6 +1493,6 @@
 
  ERROR = NF_CLOSE(NCID)
 
- END SUBROUTINE READ_SFC_NETCDF
+ END SUBROUTINE READ_DATA
  
  END MODULE READ_WRITE_DATA
