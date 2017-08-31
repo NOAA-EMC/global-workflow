@@ -80,7 +80,7 @@
 
  INTEGER, PARAMETER  :: NLUNIT=35, ME=0
 
- CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO
+ CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO, GSI_FILE
 
  INTEGER             :: IFP, I, II, K
 
@@ -117,12 +117,13 @@
  DATA FNGRID/'        '/
  DATA FNBGSI/'        '/
  DATA FNBGSO/'        '/
+ DATA GSI_FILE/'        '/
 !
  DATA IFP/0/
 !
- SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO
+ SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO, GSI_FILE
 
- NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO
+ NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO,GSI_FILE
 
 !--------------------------------------------------------------------------------
 !
@@ -237,6 +238,10 @@
 
  PRINT*,'IN ROUTINE SFCDRV,IDIM=',IDIM,'JDIM=',JDIM,'FH=',FH
 
+!--------------------------------------------------------------------------------
+! READ THE OROGRAPHY AND GRID POINT LAT/LONS FOR THE CUBED-SPHERE TILE.
+!--------------------------------------------------------------------------------
+
  CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,FNOROG,FNGRID,  &
                         IDIM,JDIM,LENSFC)
 
@@ -262,13 +267,17 @@
    ALLOCATE(NSST%ZM(LENSFC))
  ENDIF
 
- CALL READ_SFC_NETCDF(TSFFCS,SMCFCS,SNOFCS,STCFCS,TG3FCS,ZORFCS,  &
-                      CVFCS,CVBFCS,CVTFCS,ALBFCS,SLIFCS,          &
-                      VEGFCS,CNPFCS,F10M,VETFCS,SOTFCS,           &
-                      ALFFCS,USTAR,FMM,FHH,SIHFCS,SICFCS,         &
-                      SITFCS,TPRCP,SRFLAG,SWDFCS,VMNFCS,          &
-                      VMXFCS,SLCFCS,SLPFCS,ABSFCS,T2M,Q2M,        &
-                      SLMASK,ZSOIL,LSOIL,LENSFC,FNBGSI,NST_ANL,NSST)
+!--------------------------------------------------------------------------------
+! READ THE INPUT SURFACE DATA ON THE CUBED-SPHERE TILE.
+!--------------------------------------------------------------------------------
+
+ CALL READ_DATA(TSFFCS,SMCFCS,SNOFCS,STCFCS,TG3FCS,ZORFCS,  &
+                CVFCS,CVBFCS,CVTFCS,ALBFCS,SLIFCS,          &
+                VEGFCS,CNPFCS,F10M,VETFCS,SOTFCS,           &
+                ALFFCS,USTAR,FMM,FHH,SIHFCS,SICFCS,         &
+                SITFCS,TPRCP,SRFLAG,SWDFCS,VMNFCS,          &
+                VMXFCS,SLCFCS,SLPFCS,ABSFCS,T2M,Q2M,        &
+                SLMASK,ZSOIL,LSOIL,LENSFC,FNBGSI,NST_ANL,NSST)
 
  IF (USE_UFO) THEN
    PRINT*,'USE UNFILTERED OROGRAPHY.'
@@ -304,6 +313,10 @@
    ENDDO
  ENDDO
  
+!--------------------------------------------------------------------------------
+! UPDATE SURFACE FIELDS.
+!--------------------------------------------------------------------------------
+
  CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC,        &
                IY,IM,ID,IH,FH,RLA,RLO,                 &
                SLMASK,OROG, OROG_UF, USE_UFO, NST_ANL, &
@@ -337,6 +350,22 @@
    ENDDO
  ENDDO
  
+!--------------------------------------------------------------------------------
+! IF RUNNING WITH NSST, READ IN GSI FILE WITH THE UPDATED INCREMENTS (ON THE
+! GAUSSIAN GRID), INTERPOLATE INCREMENTS TO THE CUBED-SPHERE TILE, AND PERFORM
+! REQUIRED ADJUSTMENTS AND QC.
+!--------------------------------------------------------------------------------
+
+ IF (NST_ANL) THEN
+   CALL READ_GSI_DATA(GSI_FILE)
+   CALL ADJUST_NSST(RLA,RLO,SLIFCS,LENSFC)
+   STOP
+ ENDIF
+
+!--------------------------------------------------------------------------------
+! WRITE OUT UPDATED SURFACE DATA ON THE CUBED-SPHERE TILE.
+!--------------------------------------------------------------------------------
+
  CALL WRITE_DATA(SLIFCS,TSFFCS,SNOFCS,TG3FCS,ZORFCS,         &
                  ALBFCS,ALFFCS,VEGFCS,CNPFCS,F10M,           &
                  T2M,Q2M,VETFCS,SOTFCS,USTAR,FMM,FHH,        &
@@ -370,3 +399,138 @@
  RETURN
 
  END SUBROUTINE SFCDRV
+ 
+ SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,LENSFC)
+
+ USE GDSWZD_MOD
+ USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
+                             SLMSK_GAUS
+
+ IMPLICIT NONE
+
+ INTEGER, INTENT(IN)      :: LENSFC
+
+ REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC)
+ REAL, INTENT(INOUT)      :: RLA(LENSFC), RLO(LENSFC)
+
+ INTEGER                  :: IOPT, NRET, KGDS_GAUS(200)
+ INTEGER                  :: I, J, IJ, II, JJ, III, JJJ, KRAD
+ INTEGER                  :: ISTART, IEND, JSTART, JEND
+ INTEGER                  :: MASK_TILE, MASK_GAUS
+
+ REAL                     :: FILL
+ REAL, ALLOCATABLE        :: XPTS(:), YPTS(:)
+
+ KGDS_GAUS     = 0
+ KGDS_GAUS(1)  = 4          ! OCT 6 - TYPE OF GRID (GAUSSIAN)
+ KGDS_GAUS(2)  = IDIM_GAUS  ! OCT 7-8 - # PTS ON LATITUDE CIRCLE
+ KGDS_GAUS(3)  = JDIM_GAUS
+ KGDS_GAUS(4)  = 90000      ! OCT 11-13 - LAT OF ORIGIN
+ KGDS_GAUS(5)  = 0          ! OCT 14-16 - LON OF ORIGIN
+ KGDS_GAUS(6)  = 128        ! OCT 17 - RESOLUTION FLAG
+ KGDS_GAUS(7)  = -90000     ! OCT 18-20 - LAT OF EXTREME POINT
+ KGDS_GAUS(8)  = NINT(-360000./FLOAT(IDIM_GAUS))  ! OCT 21-23 - LON OF EXTREME POINT
+ KGDS_GAUS(9)  = NINT((360.0 / FLOAT(IDIM_GAUS))*1000.0)
+                            ! OCT 24-25 - LONGITUDE DIRECTION INCR.
+ KGDS_GAUS(10) = JDIM_GAUS/2     ! OCT 26-27 - NUMBER OF CIRCLES POLE TO EQUATOR
+ KGDS_GAUS(12) = 255        ! OCT 29 - RESERVED
+ KGDS_GAUS(20) = 255        ! OCT 5  - NOT USED, SET TO 255
+
+ PRINT*,'ADJUST NSST'
+
+ IOPT = -1
+ FILL = -9999.
+ ALLOCATE(XPTS(LENSFC))
+ ALLOCATE(YPTS(LENSFC))
+ XPTS = FILL
+ YPTS = FILL
+
+! CALL TO GDSWZD DETERMINES THE NEAREST GAUSSIAN POINT TO EACH
+! CUBED-SPHERE TILE POINT.
+
+ CALL GDSWZD(KGDS_GAUS,IOPT,LENSFC,FILL,XPTS,YPTS,RLO,RLA,NRET)
+
+ IF (NRET /= LENSFC) THEN
+   PRINT*,'PROBLEM IN GDSWZD'
+   STOP 12
+ ENDIF
+
+! INTERPOLATE NSST INCREMENTS FROM THE GAUSSIAN GRID TO THE CUBED-SPHERE
+! TILE USING NEAREST NEIGHBOR.
+
+ IJ_LOOP : DO IJ = 1, LENSFC
+
+   I = NINT(XPTS(IJ))
+   J = NINT(YPTS(IJ))
+
+   MASK_TILE = NINT(SLMSK_TILE(IJ))
+   IF (MASK_TILE == 1) CYCLE IJ_LOOP  ! NSST NOT APPLIED AT LAND POINTS.
+   IF (MASK_TILE == 2) MASK_TILE = 0  ! WHAT ABOUT SEA ICE??
+
+   MASK_GAUS = NINT(SLMSK_GAUS(I,J))
+
+! IF TILE MASK AND NEAREST GSI POINT MASK ARE BOTH NON-LAND, APPLY 
+! NSST INCREMENT (HOW WILL THIS BE DONE?)
+
+   IF (MASK_TILE == MASK_GAUS) THEN
+
+! ADD CODE TO UPDATE NSST.
+
+! IF MASK IS NOT THE SAME, PERFORM A SPIRAL SEARCH TO FIND NEAREST NON-LAND
+! POINT ON GAUSSIAN GRID.
+
+   ELSE  
+
+     DO KRAD = 1, 500
+       ISTART = I - KRAD
+       IEND   = I + KRAD
+       JSTART = J - KRAD
+       JEND   = J + KRAD
+       DO JJ = JSTART, JEND
+       DO II = ISTART, IEND
+
+         IF((JJ == JSTART) .OR. (JJ == JEND) .OR.   &
+            (II == ISTART) .OR. (II == IEND))  THEN
+
+           IF ((JJ >= 1) .AND. (JJ <= JDIM_GAUS)) THEN
+
+             JJJ = JJ
+             IF (II <= 0) THEN
+               III = IDIM_GAUS + II
+             ELSE IF (II >= (IDIM_GAUS+1)) THEN
+               III = II - IDIM_GAUS
+             ELSE
+               III = II
+             END IF
+
+             IF (MASK_TILE == NINT(SLMSK_GAUS(III,JJJ))) THEN
+
+!              ADD CODE TO UPDATE NSST.
+
+               print*,'mismatch at    ',i,j
+               PRINT*,'found match at ',iii,jjj,krad
+               CYCLE IJ_LOOP
+             ENDIF
+
+           ENDIF
+
+         ENDIF
+
+       ENDDO
+       ENDDO
+
+     ENDDO
+
+! THE SEARCH SHOULD NEVER FAIL UNLESS THE TILE MASK AND THE
+! GAUSSIAN MASK ARE VERY DIFFERENT.  WHAT SHOULD HAPPEN
+! IF THIS OCCURS?
+
+     print*,'search failed '
+     stop 4
+
+   ENDIF
+ ENDDO IJ_LOOP
+
+ DEALLOCATE (XPTS, YPTS)
+
+ END SUBROUTINE ADJUST_NSST
