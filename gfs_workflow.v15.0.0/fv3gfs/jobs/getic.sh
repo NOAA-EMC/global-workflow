@@ -48,9 +48,10 @@ mkdir -p $target_dir
 cd $target_dir
 
 # Save the files as legacy EMC filenames
-ftanal[1]="siganl.${CDUMP}.$CDATE"
-ftanal[2]="sfcanl.${CDUMP}.$CDATE"
-ftanal[3]="nstanl.${CDUMP}.$CDATE"
+ftanal[1]="pgbanl.${CDUMP}.$CDATE"
+ftanal[2]="siganl.${CDUMP}.$CDATE"
+ftanal[3]="sfcanl.${CDUMP}.$CDATE"
+ftanal[4]="nstanl.${CDUMP}.$CDATE"
 
 # Initialize return code to 0
 rc=0
@@ -59,18 +60,20 @@ if [ $ics_from = "opsgfs" ]; then
 
     # Handle nemsio and pre-nemsio GFS filenames
     if [ $CDATE -gt "2017072000" ]; then
-        nfanal=3
-        fanal[1]="./${CDUMP}.t${hh}z.atmanl.nemsio"
-        fanal[2]="./${CDUMP}.t${hh}z.sfcanl.nemsio"
-        fanal[3]="./${CDUMP}.t${hh}z.nstanl.nemsio"
-        flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
+        nfanal=4
+        fanal[1]="./${CDUMP}.t${hh}z.pgrbanl"
+        fanal[2]="./${CDUMP}.t${hh}z.atmanl.nemsio"
+        fanal[3]="./${CDUMP}.t${hh}z.sfcanl.nemsio"
+        fanal[4]="./${CDUMP}.t${hh}z.nstanl.nemsio"
+        flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
         tarpref="gpfs_hps_nco_ops_com"
     else
-        nfanal=2
+        nfanal=3
         [[ $CDUMP = "gdas" ]] && str1=1
-        fanal[1]="./${CDUMP}${str1}.t${hh}z.sanl"
-        fanal[2]="./${CDUMP}${str1}.t${hh}z.sfcanl"
-        flanal="${fanal[1]} ${fanal[2]}"
+        fanal[1]="./${CDUMP}${str1}.t${hh}z.pgrbanl"
+        fanal[2]="./${CDUMP}${str1}.t${hh}z.sanl"
+        fanal[3]="./${CDUMP}${str1}.t${hh}z.sfcanl"
+        flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
         tarpref="com2"
     fi
 
@@ -131,10 +134,11 @@ if [ $ics_from = "opsgfs" ]; then
 elif [ $ics_from = "pargfs" ]; then
 
     # Filenames in parallel
-    nfanal=3
-    fanal[1]="gfnanl.${CDUMP}.$CDATE"
-    fanal[2]="sfnanl.${CDUMP}.$CDATE"
-    fanal[3]="nsnanl.${CDUMP}.$CDATE"
+    nfanal=4
+    fanal[1]="pgbanl.${CDUMP}.$CDATE"
+    fanal[2]="gfnanl.${CDUMP}.$CDATE"
+    fanal[3]="sfnanl.${CDUMP}.$CDATE"
+    fanal[4]="nsnanl.${CDUMP}.$CDATE"
     flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
 
     # Get initial conditions from HPSS from retrospective parallel
@@ -172,6 +176,12 @@ else
     exit 1
 
 fi
+###############################################################
+
+# Copy pgbanl file to COMROT for verification
+COMROT=$ROTDIR/${CDUMP}.$cymd/$hh
+[[ ! -d $COMROT ]] && mkdir -p $COMROT
+$NCP ${ftanal[1]} $COMROT/${CDUMP}.t${hh}z.pgrbanl
 
 ###############################################################
 # Exit out cleanly
