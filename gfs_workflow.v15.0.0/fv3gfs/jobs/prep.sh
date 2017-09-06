@@ -35,13 +35,13 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
 
-export OPREFIX="${CDUMP}.t${chh}z."
+export OPREFIX="${CDUMP}.t${cyc}z."
 
 export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
-export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 # Do relocation
