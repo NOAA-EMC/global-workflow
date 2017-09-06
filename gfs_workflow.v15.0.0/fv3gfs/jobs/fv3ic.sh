@@ -43,15 +43,8 @@ export DATA="$RUNDIR/$CDATE/$CDUMP/fv3ic$$"
 export INIDIR="$ICSDIR/$CDATE/$CDUMP"
 export ATMANL="$ICSDIR/$CDATE/$CDUMP/siganl.${CDUMP}.$CDATE"
 export SFCANL="$ICSDIR/$CDATE/$CDUMP/sfcanl.${CDUMP}.$CDATE"
-# global_chgres_driver.sh defines opsgfs as before the NEMSGFS was implemented.
-# this bit is necessary, even though the NEMSGFS is operational, until
-# Fanglin agrees to the updates for global_chgres_driver.sh and global_chgres.sh
-# Till then, leave this hack of exporting icytype as opsgfs as default
-# and if NSST file is found, call it nemsgfs
-export ictype="opsgfs"
 if [ -f $ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE ]; then
     export NSTANL="$ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE"
-    export ictype="nemsgfs"
 fi
 
 # Output FV3 initial condition files

@@ -21,6 +21,10 @@ echo "BEGIN: config.post"
 # Post driver job that calls global_nceppost.sh and downstream jobs
 export POSTJJOBSH="$BASE_WORKFLOW/jobs/JGFS_POST.sh"
 
+# GDAS cycling no longer requires grib files
+# Set option to enable/disable this feature
+export DO_GDAS_FCST_POST="YES"
+
 export POSTGPSH="$BASE_POST/ush/global_nceppost.sh"
 export POSTGPEXEC="$BASE_POST/exec/ncep_post"
 export npe_postgp=$npe_post

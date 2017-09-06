@@ -34,10 +34,10 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
 
-export COMROT=$ROTDIR/$CDUMP.$cymd/$chh
+export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
 
 res=$(echo $CASE | cut -c2-)
 export JCAP=$((res*2-2))
@@ -45,14 +45,14 @@ export LONB=$((4*res))
 export LATB=$((2*res))
 
 export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
-export PREFIX="$CDUMP.t${chh}z."
+export PREFIX="$CDUMP.t${cyc}z."
 export SUFFIX=".nemsio"
 
 export DATA=$RUNDIR/$CDATE/$CDUMP/post
 [[ -d $DATA ]] && rm -rf $DATA
 
 # Run post job to create analysis grib files
-export ATMANL=$ROTDIR/$CDUMP.$cymd/$chh/${PREFIX}atmanl$SUFFIX
+export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
 if [ -f $ATMANL ]; then
     export ANALYSIS_POST="YES"
     $POSTJJOBSH
@@ -61,9 +61,16 @@ if [ -f $ATMANL ]; then
 fi
 
 # Run post job to create forecast grib files
-# Only for GFS cycles.
 # We no longer do relocation, and thus GDAS cycle does not need forecast grib files
-if [ $CDUMP = "gfs" ]; then
+# if you do not, set DO_GDAS_FCST_POST = "NO" in config.post (Default: YES)
+DO_FCST_POST="YES"
+if [ $CDUMP = "gdas" ]; then
+    if [ ${DO_GDAS_FCST_POST:-"YES"} = "NO" ]; then
+        DO_FCST_POST="NO"
+    fi
+fi
+
+if [ $DO_FCST_POST = "YES" ]; then
     export ANALYSIS_POST="NO"
     $POSTJJOBSH
     status=$?
