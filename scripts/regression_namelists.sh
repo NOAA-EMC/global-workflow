@@ -1742,7 +1742,7 @@ export gsi_namelist="
  &GRIDOPTS
    JCAP=$JCAP,NLAT=$NLAT,NLON=$LONA,nsig=$LEVS,
    wrf_nmm_regional=.false.,wrf_mass_regional=.false.,
-   cmaq_regional=.true.,diagnostic_reg=.true.,
+   cmaq_regional=.true.,diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=.false.,
  /
  &BKGERR
@@ -1829,7 +1829,7 @@ export gsi_namelist="
  &GRIDOPTS
    JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$NLON,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,
-   diagnostic_reg=.true.,
+   diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
@@ -1991,7 +1991,7 @@ export gsi_namelist="
  &GRIDOPTS
    JCAP=$JCAP,JCAP_B=$JCAP_B,NLAT=$NLAT,NLON=$NLON,nsig=$LEVS,
    wrf_nmm_regional=.true.,wrf_mass_regional=.false.,
-   diagnostic_reg=.true.,
+   diagnostic_reg=.false.,
    filled_grid=.false.,half_grid=.true.,netcdf=$NETCDF,
  /
  &BKGERR
