@@ -58,12 +58,17 @@ RERUN_EOMGGRP=${RERUN_EOMGGRP:-"YES"}
 # Ops related stuff
 SENDECF=${SENDECF:-"NO"}
 
+export SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
+
 ################################################################################
 # Preprocessing
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA || exit 99
 DATATOP=$DATA
+
+ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
 ################################################################################
 # Set output data
@@ -111,6 +116,14 @@ for imem in `seq $ENSBEG $ENSEND`; do
       export DIAG_SUFFIX="_$memchar"
       export COMIN_GES=$COMIN_GES_ENS/$memchar
       export COMOUT=$COMOUT_SAVE/$memchar
+
+      export ATMG03="$COMIN_GES/${GPREFIX}atmf003${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMG04="$COMIN_GES/${GPREFIX}atmf004${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMG05="$COMIN_GES/${GPREFIX}atmf005${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMGES="$COMIN_GES/${GPREFIX}atmf006${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMG07="$COMIN_GES/${GPREFIX}atmf007${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMG08="$COMIN_GES/${GPREFIX}atmf008${ENKF_SUFFIX}${GSUFFIX}"
+      export ATMG09="$COMIN_GES/${GPREFIX}atmf009${ENKF_SUFFIX}${GSUFFIX}"
 
       # Ensure clean tarballs for ensemble member
       for ftype in cnvstat oznstat radstat; do

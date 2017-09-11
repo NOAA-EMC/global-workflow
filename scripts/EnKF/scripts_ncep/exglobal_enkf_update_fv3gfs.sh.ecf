@@ -51,18 +51,13 @@ ENKFEXEC=${ENKFEXEC:-$BASE_GSI/exec/global_enkf}
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
 
-SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
-CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
-OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
-SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
-
 # Filenames.
 GPREFIX=${GPREFIX:-""}
 GSUFFIX=${GSUFFIX:-""}
 APREFIX=${APREFIX:-""}
 ASUFFIX=${ASUFFIX:-""}
+
+SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
@@ -76,6 +71,24 @@ NVARS_ENKF=${NVARS_ENKF:-5}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
+
+################################################################################
+ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
+LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
+LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
+LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
+LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
+
+SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
+CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
+OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
+SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS_ENKF}.txt}
+
+ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
 ################################################################################
 # Preprocessing
@@ -145,14 +158,11 @@ for imem in `seq 1 $NMEM_ENKF`; do
          tar -xvf $fname
       done
    fi
-   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
-   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}  sanl_${CDATE}_${memchar}
-   # recommend JSW to remove the "datestring" from the guess filename
-   # e.g. sfg_${DATE}_fhrHH_memXXX to atm_fHH_memXXX, similar for ensemble mean and sanl
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
+   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}                sanl_${CDATE}_${memchar}
 done
 
 # Ensemble mean guess
-ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
 $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
 
 if [ $USE_CFP = "YES" ]; then
@@ -163,13 +173,6 @@ if [ $USE_CFP = "YES" ]; then
       $APRUNCFP $DATA/mp_untar.sh
    fi
 fi
-
-################################################################################
-LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
-LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
-LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
-LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
-LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
 
 ################################################################################
 # Create global_enkf namelist

@@ -66,6 +66,7 @@ CHGRESVARS_ENKF=${CHGRESVARS_ENKF:-""}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
 RECENTER_ENKF=${RECENTER_ENKF:-"YES"}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 APRUN_ECEN=${APRUN_ECEN:-${APRUN:-""}}
 NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
@@ -75,11 +76,14 @@ NTHREADS_ECEN=${NTHREADS_ECEN:-${NTHREADS:-1}}
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
 
+ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
+
 ################################################################################
 # Link ensemble member guess, analysis and increment files
 for imem in `seq 1 $NMEM_ENKF`; do
    memchar="mem"`printf %03i $imem`
-   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006$GSUFFIX ./atmf006_$memchar
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${ENKF_SUFFIX}$GSUFFIX ./atmf006_$memchar
    $NLN $COMIN_ENS/$memchar/${APREFIX}atmanl$ASUFFIX ./atmanl_$memchar
    $NLN $COMIN_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
    [[ $RECENTER_ENKF = "YES" ]] && $NLN $COMIN_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar

@@ -184,7 +184,7 @@ FAC_DTL=${FAC_DTL:-0}
 FAC_TSL=${FAC_TSL:-0}
 TZR_QC=${TZR_QC:-0}
 USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
-SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 DOIAU=${DOIAU:-"NO"}
 DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
 
@@ -466,10 +466,8 @@ if [ $DOHYBVAR = "YES" ]; then
    # Link ensemble members
    mkdir -p ensemble_data
 
-   ENKF_SUFFIX=""
-   if [ $SMOOTH_ENKF = "YES" ]; then
-      ENKF_SUFFIX="s"
-   fi
+   ENKF_SUFFIX="s"
+   [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
    fhrs="06"
    if [ $l4densvar = ".true." ]; then

@@ -62,16 +62,17 @@ SUFFIX=${SUFFIX:-""}
 FHMIN=${FHMIN_ENKF:-${FHMIN:-3}}
 FHMAX=${FHMAX_ENKF:-${FHMAX:-9}}
 FHOUT=${FHOUT_ENKF:-${FHOUT:-1}}
-SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-80}
+SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 NST_GSI=${NST_GSI:-0}
-ENKF_SUFFIX=""
-[[ $SMOOTH_ENKF = "YES" ]] && ENKF_SUFFIX="s"
 
 ################################################################################
 #  Preprocessing
 if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 99
+
+ENKF_SUFFIX="s"
+[[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
 ################################################################################
 # Copy executables to working directory
