@@ -8,9 +8,10 @@ set -x -e
 ######################################################################
 ######################################################################
 
-. /apps/lmod/lmod/init/sh
-module purge
-source ../modulefiles/gfs_wintemv.theia
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_wintemv.theia
 
 cd wintemv.fd
 make

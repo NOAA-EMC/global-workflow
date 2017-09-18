@@ -19,16 +19,16 @@ set ver v14.1.0
 #
 #  Loading required Cray system modules
 #
-   module unload craype-haswell
+   module load modules
+
    module load craype-sandybridge
    module load jasper-gnu-sandybridge/1.900.1
    module load png-intel-sandybridge/1.2.49
    module load zlib-intel-sandybridge/1.2.7
 
 # Loading Intel-Compiled NCEP Libraries
-   module unload PrgEnv-cray
    module load PrgEnv-intel/5.2.56
-   module switch intel/15.0.6.233
+   module switch intel intel/15.0.6.233
    module load bacio-intel/2.0.1
    module load w3emc-intel/2.2.0
    module load w3nco-intel/2.0.6

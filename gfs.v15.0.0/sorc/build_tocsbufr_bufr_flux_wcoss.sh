@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+#! /bin/sh
 
 ####################################################################################################
 #
@@ -8,9 +8,10 @@ SHELL=/bin/sh
 
 export  curdir=`pwd`
 
-module purge
-
-module load ../modulefiles/gfs_bufr.wcoss
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_bufr.wcoss
 
 cd gfs_bufr.fd
 make -f makefile_wcoss_module clean

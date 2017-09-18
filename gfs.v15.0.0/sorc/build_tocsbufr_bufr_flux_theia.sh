@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+#! /bin/sh
 
 ####################################################################################################
 #
@@ -8,9 +8,10 @@ SHELL=/bin/sh
 
 export  curdir=`pwd`
 
-. /apps/lmod/lmod/init/sh
-module purge
-source ../modulefiles/gfs_bufr.theia
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_bufr.theia
 
 cd gfs_bufr.fd
 make -f makefile_theia_module clean
