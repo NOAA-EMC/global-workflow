@@ -1,0 +1,47 @@
+#%Module######################################################################
+##
+##      FV3GFS prerequisites
+##      Installed by:  Samuel Trahan (Samuel.Trahan@noaa.gov)
+##	Installed on:  2017-July-31
+
+# From default environment
+
+module load modules
+
+module load xt-lsfhpc
+module load ncep
+module load alps
+module load dvs
+module load xpmem
+module load ugni
+module load craype-network-aries
+module load switch
+#module load eswrap
+module load PrgEnv-intel
+module load craype
+#module switch craype-haswell
+
+# Is this needed?
+module load subversion
+
+## WCOSS Cray execution prereqs:
+module load rca
+module load alps
+module load xpmem
+module load gni-headers
+module load udreg
+module load ugni
+module load hpss
+
+module load grib_util/1.0.3
+module load prod_util
+module load g2tmpl-intel/1.4.0
+module load crtm-intel/2.2.4
+
+module load nco-gnu-sandybridge/4.4.4
+module load NetCDF-intel-sandybridge/4.2
+module load cfp-intel-sandybridge/1.1.0
+setenv USE_CFP YES
+
+# Bad hard-coded path.  Should replace with nwprod, /usrx/local/, or remove:
+setenv NEMSIOGET /gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get
