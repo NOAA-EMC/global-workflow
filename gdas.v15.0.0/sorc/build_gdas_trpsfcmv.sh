@@ -10,16 +10,9 @@ fi
 EXECdir=../exec
 [ -d $EXECdir ] || mkdir $EXECdir
 
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
-else
- exit
-fi
-module purge
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+
 if [ $target = wcoss -o $target = cray ]; then
  module load ../modulefiles/Module_gdas_trpsfcmv.$target
 else

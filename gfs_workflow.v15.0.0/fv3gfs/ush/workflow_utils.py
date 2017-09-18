@@ -10,31 +10,74 @@
 '''
     Module containing functions all workflow setups require
 '''
-
+import random
 import os
 import sys
 import glob
+import subprocess
 from distutils.spawn import find_executable
 from datetime import datetime, timedelta
-import shellvars
 import rocoto
 
+DATE_ENV_VARS=['CDATE','SDATE','EDATE']
+SCHEDULER_MAP={'ZEUS':'moabtorque',
+               'THEIA':'moabtorque',
+               'WCOSS':'lsf',
+               'WCOSS_C':'lsfcray'}
+
+class UnknownMachineError(Exception): pass
+class UnknownConfigError(Exception): pass
+class ShellScriptException(Exception):
+    def __init__(self,scripts,errors):
+        self.scripts = scripts
+        self.errors = errors
+        super(ShellScriptException,self).__init__(
+            str(errors)+
+            ': error processing'+
+            (' '.join(scripts)))
+
+def get_shell_env(scripts):
+    vars=dict()
+    runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
+    magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
+    runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    with open('/dev/null','wb+') as null:
+        env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
+                       stdout=subprocess.PIPE)
+        (out,err)=env.communicate()
+    begin=out.find(magic)
+    if begin<0:
+        raise ShellScriptException(scripts,'Cannot find magic string; '
+                                   'at least one script failed: '+repr(out))
+    for entry in out[begin+len(magic):].split('\x00'):
+        iequal=entry.find('=')
+        vars[entry[0:iequal]] = entry[iequal+1:]
+    return vars
+
+def get_script_env(scripts):
+    default_env=get_shell_env([])
+    and_script_env=get_shell_env(scripts)
+    vars_just_in_script=set(and_script_env)-set(default_env)
+    union_env=dict(default_env)
+    union_env.update(and_script_env)
+    return dict([ (v,union_env[v]) for v in vars_just_in_script ])
+
+def cast_or_not(type,value):
+    try:
+        return type(value)
+    except ValueError:
+        return value
 
 def get_configs(expdir):
-    '''
+    """
         Given an experiment directory containing config files,
         return a list of configs minus the ones ending with ".default"
-    '''
-
-    configs = glob.glob('%s/config.*' % expdir)
-
-    # remove any defaults from the list
-    for c, config in enumerate(configs):
-        if config.endswith('.default'):
-            configs.pop(c)
-
-    return configs
-
+    """
+    result=list()
+    for config in glob.glob('%s/config.*' % expdir):
+        if not config.endswith('.default'):
+            result.append(config)
+    return result
 
 def find_config(config_name, configs):
 
@@ -42,9 +85,8 @@ def find_config(config_name, configs):
         if config_name == os.path.basename(config):
             return config
 
-    # no match found
-    raise IOError("%s does not exist, ABORT!" % config_name)
-
+    raise UnknownConfigError("%s does not exist (known: %s), ABORT!" % (
+        config_name,repr(config_name)))
 
 def source_configs(configs, tasks):
     '''
@@ -92,40 +134,25 @@ def config_parser(files):
             in the script.
     :rtype: dict
     """
-    sv = shellvars.ShellVars(files)
-    varbles = sv.get_vars()
-    for key,value in varbles.iteritems():
-        if any(x in key for x in ['CDATE','SDATE','EDATE']): # likely a date, convert to datetime
+    if isinstance(files,basestring):
+        files=[files]
+    varbles=dict()
+    for key,value in get_script_env(files).iteritems():
+        if key in DATE_ENV_VARS: # likely a date, convert to datetime
             varbles[key] = datetime.strptime(value,'%Y%m%d%H')
-            continue
-        if '.' in value: # Likely a number and that too a float
-            try:
-                varbles[key] = float(value)
-            except ValueError:
-                varbles[key] = value
+        elif '.' in value: # Likely a number and that too a float
+            varbles[key] = cast_or_not(float,value)
         else: # Still could be a number, may be an integer
-            try:
-                varbles[key] = int(value)
-            except ValueError:
-                varbles[key] = value
+            varbles[key] = cast_or_not(int,value)
 
     return varbles
 
-
 def get_scheduler(machine):
-    '''
-        Determine the scheduler
-    '''
-
-    if machine in ['ZEUS', 'THEIA']:
-        return 'moabtorque'
-    elif machine in ['WCOSS']:
-        return 'lsf'
-    elif machine in ['WCOSS_C']:
-        return 'lsfcray'
-    else:
-        msg = 'Unknown machine: %s, ABORT!' % machine
-        Exception.__init__(self, msg)
+    """Determine the scheduler"""
+    try:
+        return SCHEDULER_MAP[machine]
+    except KeyError:
+        raise UnknownMachineError('Unknown machine: %s'%(machine,))
 
 
 def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \

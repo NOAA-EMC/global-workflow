@@ -23,9 +23,13 @@ global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, eda
 machines = ['THEIA', 'WCOSS_C']
 
 
+def makedirs_if_missing(d):
+    if not os.path.exists(d):
+        os.makedirs(d)
+
 def create_EXPDIR():
 
-    os.makedirs(expdir)
+    makedirs_if_missing(expdir)
     configs = glob.glob('%s/config.*' % configdir)
     if len(configs) == 0:
         msg = 'no config files found in %s' % configdir
@@ -42,19 +46,19 @@ def create_COMROT():
     cymd = idate.strftime('%Y%m%d')
     chh = idate.strftime('%H')
 
-    os.makedirs(comrot)
+    makedirs_if_missing(comrot)
 
     # Link ensemble member initial conditions
     enkfdir = 'enkf.%s.%s/%s' % (cdump, cymd, chh)
-    os.makedirs(os.path.join(comrot, enkfdir))
+    makedirs_if_missing(os.path.join(comrot, enkfdir))
     for i in range(1, nens+1):
-        os.makedirs(os.path.join(comrot, enkfdir, 'mem%03d'%i))
+        makedirs_if_missing(os.path.join(comrot, enkfdir, 'mem%03d'%i))
         os.symlink(os.path.join(icsdir, idatestr, 'C%d'%resens, 'mem%03d'%i, 'INPUT'),
                    os.path.join(comrot, enkfdir, 'mem%03d'%i, 'INPUT'))
 
     # Link deterministic initial conditions
     detdir = '%s.%s/%s' % (cdump, cymd, chh)
-    os.makedirs(os.path.join(comrot, detdir))
+    makedirs_if_missing(os.path.join(comrot, detdir))
     os.symlink(os.path.join(icsdir, idatestr, 'C%d'%resdet, 'control', 'INPUT'),
                os.path.join(comrot,detdir,'INPUT'))
 
@@ -70,41 +74,35 @@ def edit_baseconfig():
 
     base_config = '%s/config.base' % expdir
 
+    here=os.path.dirname(__file__)
+    top=os.path.abspath(os.path.join(
+        os.path.abspath(here),'../../..'))
+
     # make a copy of the default before editing
     shutil.copy(base_config, base_config+'.default')
 
-    fh = open(base_config,'r')
-    lines = fh.readlines()
-    fh.close()
-
-    lines = [l.replace('@MACHINE@', machine.upper()) for l in lines]
-
-    # Only keep current machine information, remove others
-    # A better way would be to cat from another machine specific file
-    for m in machines:
-        if m in [machine.upper()]:
-            continue
-        ind_begin = lines.index('# BEGIN: %s\n' % m)
-        ind_end = lines.index('# END: %s\n' % m)
-        lines = lines[:ind_begin] + lines[ind_end+1:]
-
-    lines = [l.replace('@PSLOT@', pslot) for l in lines]
-    lines = [l.replace('@SDATE@', idate.strftime('%Y%m%d%H')) for l in lines]
-    lines = [l.replace('@EDATE@', edate.strftime('%Y%m%d%H')) for l in lines]
-    if expdir is not None:
-        lines = [l.replace('@EXPDIR@', os.path.dirname(expdir)) for l in lines]
-    if comrot is not None:
-        lines = [l.replace('@ROTDIR@', os.path.dirname(comrot)) for l in lines]
-    lines = [l.replace('@CASECTL@', 'C%d'%resdet) for l in lines]
-    lines = [l.replace('@CASEENS@', 'C%d'%resens) for l in lines]
-    lines = [l.replace('@NMEM_ENKF@', '%d'%nens) for l in lines]
-    lines = [l.replace('@gfs_cyc@', '%d'%gfs_cyc) for l in lines]
-    lines_to_remove = ['ICSDIR']
-    for l in lines_to_remove:
-        lines = [ x for x in lines if "%s" % l not in x ]
-    fh = open(base_config,'w')
-    fh.writelines(lines)
-    fh.close()
+    print '\nSDATE = %s\nEDATE = %s'%(idate,edate)
+    with open(base_config+'.default','rt') as fi:
+        with open(base_config+'.new','wt') as fo:
+            for line in fi:
+                line=line.replace('@MACHINE@', machine.upper()) \
+                         .replace('@PSLOT@', pslot) \
+                         .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                         .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
+                         .replace('@CASEENS@', 'C%d'%resens) \
+                         .replace('@CASECTL@', 'C%d'%resdet) \
+                         .replace('@NMEM_ENKF@', '%d'%nens) \
+                         .replace('@BASE_FV3GFS@', top) \
+                         .replace('@gfs_cyc@', '%d'%gfs_cyc)
+                if expdir is not None:
+                    line=line.replace('@EXPDIR@', os.path.dirname(expdir))
+                if comrot is not None:
+                    line=line.replace('@ROTDIR@', os.path.dirname(comrot))
+                if 'ICSDIR' in line:
+                    continue
+                fo.write(line)
+    os.unlink(base_config)
+    os.rename(base_config+'.new',base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
@@ -123,7 +121,7 @@ Create COMROT experiment directory structure,
 link initial condition files from $ICSDIR to $COMROT'''
 
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--machine', help='machine name', type=str.upper, choices=machines, default='WCOSS_C', required=False)
+    parser.add_argument('--machine', help='machine name', type=str.upper, choices=machines, default=None, required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
     parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
     parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
@@ -132,16 +130,29 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
     parser.add_argument('--edate', help='end date experiment', type=str, required=True)
     parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=True)
-    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=True)
+    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=80)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
-    parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
+    parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=4, required=False)
 
     args = parser.parse_args()
 
     machine = args.machine
+
+    if not machine:
+        if os.path.exists('/scratch3'):
+            machine='THEIA'
+        elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
+            machine='WCOSS_C'
+        else:
+            raise Exception('Cannot auto-detect platform.  Please specify --machine')
+
     pslot = args.pslot
     configdir = args.configdir
+    if not configdir:
+        configdir=os.path.abspath(os.path.dirname(__file__) + '/../config')
+
+    pslot = args.pslot
     idate = datetime.strptime(args.idate,'%Y%m%d%H')
     edate = datetime.strptime(args.edate,'%Y%m%d%H')
     icsdir = args.icsdir

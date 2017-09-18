@@ -5,24 +5,24 @@ SHELL=/bin/sh
 # 11/2016 H Chuang: Generalized build script to meet NCO standard
 #-------------------------------------------------------
 
-module purge
 set -x -e
 pwd=`pwd`
 
 mac=`hostname |cut -c1`
 if [ $mac = g -o $mac = t ] ; then
 export  machine=wcoss
- . /usrx/local/Modules/default/init/bash
 elif [ $mac = l -o $mac = s ] ; then
 export  machine=cray
 fi
+
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
 
 #moduledir=`dirname $(readlink -f ../modulefiles)`
 moduledir=$pwd/../modulefiles
 module use ${moduledir}
 module load gfs_bufr.${machine}
 module list
-module load iobuf/2.0.7
 
 # Compile codes under /sorc
 compile1='gfs_bufr tocsbufr'

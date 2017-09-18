@@ -20,17 +20,21 @@ export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
 
 # What we want turned ON/OFF
-export VSDB_STEP1="YES"      # populate VSDB database
+GRIB1_WORKS=YES
+if [[ "$machine" == THEIA ]] ; then
+    GRIB1_WORKS=NO
+fi
+export VSDB_STEP1="YES"           # populate VSDB database
 export VSDB_STEP2="NO"
-export VRFYG2OBS="NO"        # Grid to observations, see note below if turning ON
-export VRFYFITS="NO"         # Fit to observations
-export VRFYPRCP="YES"        # Precip threat scores
-export VRFYMINMON="NO"       # GSI minimization monitoring
-export VRFYRAD="NO"          # Radiance data assimilation monitoring
-export VRFYOZN="NO"          # Ozone data assimilation monitoring
-export VRFYTRAK="NO"         # Hurricane track forecasts
-export VRFYGENESIS="NO"      # Cyclone genesis
-export VRFYGMPK="NO"         # Gempak verification
+export VRFYG2OBS="$GRIB1_WORKS"   # Grid to observations, see note below if turning ON
+export VRFYFITS="$GRIB1_WORKS"    # Fit to observations
+export VRFYPRCP="YES"             # Precip threat scores
+export VRFYMINMON="$GRIB1_WORKS"  # GSI minimization monitoring
+export VRFYRAD="$GRIB1_WORKS"     # Radiance data assimilation monitoring
+export VRFYOZN="NO"               # Ozone data assimilation monitoring
+export VRFYTRAK="$GRIB1_WORKS"    # Hurricane track forecasts
+export VRFYGENESIS="$GRIB1_WORKS" # Cyclone genesis
+export VRFYGMPK="NO"              # Gempak verification
 
 # Fit to Observations
 if [ $VRFYFITS = "YES" ]; then
@@ -46,10 +50,8 @@ if [ $VRFYFITS = "YES" ]; then
 fi
 
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
-# All these call $VSDBSHi
-# VRFYG2OBS requires higher memory on Theia, but the higher memory specification fails on Cray
-# Let the CROW's figure this out. For now keep default VRFYG2OBS OFF
-if [ $CDUMP = "gfs" ]; then
+# All these call $VSDBSH
+if [[ "$CDUMP" = "gfs" ]] ; then
 
     if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
         export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
@@ -71,7 +73,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     export envir="para"
 
     # Radiance Monitoring
-    if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL ]; then
+    if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
 
         export HOMEradmon="$BASE_GSM"
         export RADMON_SUFFIX=$PSLOT
@@ -86,16 +88,16 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     fi
 
     # Minimization Monitoring
-    if [ $VRFYMINMON = "YES" ]; then
+    if [[ "$VRFYMINMON" = "YES" ]] ; then
 
         export HOMEgfs="$BASE_SVN/fv3gfs/trunk/gfs.v15.0.0"
         export HOMEminmon=$BASE_GSM
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/minmon"
-        if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
-            if [ $CDUMP = "gdas" ]; then
+        if [[ "$machine" == "WCOSS_C" || "$machine" == "THEIA" ]] ; then
+            if [[ "$CDUMP" = "gdas" ]] ; then
                 export VRFYMINSH="$HOMEgdas/jobs/JGDAS_VMINMON"
-            elif [ $CDUMP = "gfs" ]; then
+            elif [[ "$CDUMP" = "gfs" ]] ; then
                 export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
             fi
         else
@@ -127,7 +129,7 @@ if [ $VRFYTRAK = "YES" ]; then
     export HOMERELO=$BASE_GSM
     export homesyndir=$BASE_GSM
     export prep_step="$NWPROD/prod_util.v1.0.15/ush/prep_step"
-    if [ $CDUMP = "gfs" ]; then
+    if [[ "$CDUMP" = "gfs" ]] ; then
         export FHOUT=$FHOUT_GFS
         export FHMAX=$FHMAX_GFS
         export FHMAX2=${FHMAX2_GFS:-$FHMAX_GFS} # We don't run FCST2

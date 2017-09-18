@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+#! /bin/sh
 
 ######################################################################
 #
@@ -6,10 +6,11 @@ SHELL=/bin/sh
 #
 ######################################################################
 ######################################################################
-
-. /apps/lmod/lmod/init/sh
-module purge
-source ../modulefiles/gfs_overpdtg2.theia
+set -x
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_overpdtg2.theia
 
 cd overpdtg2.fd
 make

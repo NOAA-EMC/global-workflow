@@ -21,7 +21,7 @@ export ics_from="opsgfs" # initial conditions from opsgfs or pargfs
 # Provide a parallel experiment name and path to HPSS archive
 if [ $ics_from = "pargfs" ]; then
     export parexp="prnemsrn"
-    export HPSS_PAR_PATH="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$parexp"
+    export HPSS_PAR_PATH="/5year/NCEPDEV/$HPSS_PROJECT/emc.glopara/WCOSS_C/$parexp"
 fi
 
 echo "END: config.getic"

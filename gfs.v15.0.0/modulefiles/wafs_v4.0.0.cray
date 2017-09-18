@@ -13,9 +13,10 @@ set ver v4.0.0
 
 
 # Loading Intel Compiler Suite
+module load modules
 module load PrgEnv-intel
 module load craype-sandybridge
-module switch intel intel/15.0.3.187
+module load intel/15.0.3.187
 
 
 # Loading nceplibs modules

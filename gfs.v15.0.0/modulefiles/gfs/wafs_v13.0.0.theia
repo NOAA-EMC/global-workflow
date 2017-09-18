@@ -5,6 +5,7 @@
 ##____________________________________________________
 #set ver v13.0.0
  
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
       module load intel
       module load png/v1.2.44
       module load w3emc/v2.0.5
