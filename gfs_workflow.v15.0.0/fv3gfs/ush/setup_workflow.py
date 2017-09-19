@@ -43,10 +43,10 @@ def main():
 
     _base = wfu.config_parser([wfu.find_config('config.base', configs)])
 
-    if args.expdir != _base['EXPDIR']:
+    if not os.path.samefile(args.expdir,_base['EXPDIR']):
         print 'MISMATCH in experiment directories!'
-        print 'config.base: EXPDIR = %s' % _base['EXPDIR']
-        print 'input arg: --expdir = %s' % args.expdir
+        print 'config.base: EXPDIR = %s' % repr(_base['EXPDIR'])
+        print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
     tasks = gfs_tasks + hyb_tasks if _base['DOHYBVAR'] == 'YES' else gfs_tasks

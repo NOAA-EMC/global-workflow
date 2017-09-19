@@ -16,12 +16,22 @@ module-whatis "navybull"
 
 set ver v14.1.0
 
+# From default environment
+module load modules
+module load xt-lsfhpc
+module load ncep
+module load alps
+module load dvs
+module load xpmem
+module load ugni
+module load craype-network-aries
+module load switch
+
 # Loading Intel Compiler Suite
 module unload PrgEnv-cray
 module load PrgEnv-intel/5.2.56
-module switch intel/15.0.6.233
+module switch intel intel/15.0.6.233
 
-module swap craype-haswell craype-sandybridge
 module load craype-sandybridge
 
 # Loading IOBUF

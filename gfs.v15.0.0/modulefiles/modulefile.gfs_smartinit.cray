@@ -11,7 +11,7 @@ puts stderr "for the Intel Compiler Suite $version\n"
 module-whatis " SMARINIT"
 
 set ver v7.0.0
-
+module load modules
 module load PrgEnv-intel/5.2.56
 module load cray-mpich/7.2.0
 module load craype-haswell

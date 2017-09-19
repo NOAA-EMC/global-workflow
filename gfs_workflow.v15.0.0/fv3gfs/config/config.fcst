@@ -42,7 +42,7 @@ export agrid_vel_rst=".true."   # write velocity restarts on agrid?
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 
-if [ $CDUMP = "gdas" ]; then # GDAS cycle specific parameters
+if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
@@ -50,7 +50,7 @@ if [ $CDUMP = "gdas" ]; then # GDAS cycle specific parameters
     # Write restart files at next assimilation time
     export restart_interval=6
 
-elif [ $CDUMP = "gfs" ]; then # GFS cycle specific parameters
+elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table"

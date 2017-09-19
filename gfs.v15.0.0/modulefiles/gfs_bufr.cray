@@ -19,6 +19,7 @@ setenv F_COMP_MPI ftn
 setenv C_COMP cc
 setenv C_COMP_MP cc
 
+module load modules
 
 # Loading ncep environment
 module load ncep/1.0
@@ -30,7 +31,7 @@ module load PrgEnv-intel
 #module load cray-mpich/7.2.0
 #module load craype-haswell
 module load craype-sandybridge
-module switch intel intel/15.0.3.187
+module load intel intel/15.0.3.187
 
 
 
@@ -43,7 +44,7 @@ module load sp-intel/2.0.2
 module load w3emc-intel/2.2.0
 module load w3nco-intel/2.0.6
 module load bufr-intel/11.0.1
-module load iobuf
+module load iobuf/2.0.7
 
 setenv myFC ftn
 setenv myFCFLAGS "-O3 -convert big_endian -traceback -g -fp-model source -openmp"

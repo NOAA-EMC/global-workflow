@@ -1,11 +1,24 @@
-SHELL=/bin/sh
-set -x
+#! /bin/sh
+set -xue
 
-target=${1:-cray}  ;#wcoss, cray or theia
+target=$1  ;#wcoss, cray or theia
+
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+
+# Initialize environment for module command and purge modules:
+setup=$mod/module-setup.sh.inc
+test -s $setup
+source $setup
+
+# Add our modulefiles:
+module use $mod
+module load module_base.$target
 
 if [ ! -d ../exec ]; then
   mkdir ../exec
 fi
+
+export PATH=$PATH:.
 
 if [ $target = theia ]; then
  for script in build_smartinit_theia.sh build_tocsbufr_bufr_flux_theia.sh build_wafs_theia.sh build_gfs_cnvgrib21_gfs.sh_theia; do
