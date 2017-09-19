@@ -1,3 +1,0 @@
-kinds.o : kinds.F90
-specmod.o : specmod.f90
-getsigensstatp.o : getsigensstatp.f90

@@ -30,11 +30,11 @@ if [ $# -ne 1 ]; then
 fi
 
 if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
+:
 elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
+:
 elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
+:
 else
  echo "  "
  echo "           $0   wcoss      "
@@ -45,15 +45,13 @@ else
  echo "  "
  exit
 fi
+set -x
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_wintemv.$target
 
 module list
-
-# module purge
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/gfs_wintemv.$target
-else
- source ../modulefiles/gfs_wintemv.$target
-fi
 
 cd wintemv.fd
 make -f makefile.$target

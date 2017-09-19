@@ -1,2 +1,0 @@
-getsfcnstensupdp.o : getsfcnstensupdp.f90 nstio_module.o
-nstio_module.o   : nstio_module.f90 

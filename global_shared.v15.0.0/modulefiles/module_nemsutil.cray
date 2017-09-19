@@ -12,6 +12,7 @@ module-whatis "nems_util"
 
 # Load Intel environment
 module purge
+module load modules
 module load PrgEnv-intel
 module load cray-mpich
 module load craype-sandybridge

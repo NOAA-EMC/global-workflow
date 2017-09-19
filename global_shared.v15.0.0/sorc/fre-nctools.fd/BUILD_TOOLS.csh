@@ -39,11 +39,16 @@ if ( "$system_site" == "" ) then
   exit 1
 else
 
-source $MODULESHOME/init/tcsh
-#source ${PWD}/../../../IC_scripts/ENV.GAEA
-#setenv FRE_SYSTEM_SITE gaea
-source ${PWD}/../../../modulefiles/fv3gfs/fre-nctools.${system_site}
+source $home_dir/modulefiles/module-setup.csh.inc
+module list
+module use $home_dir/modulefiles/fv3gfs
+module load fre-nctools.${system_site}
+module list
 setenv FRE_SYSTEM_SITE ${system_site}
+if ( ${system_site} == theia ) then
+  setenv HDF5_DIR $HDF5
+  setenv NETCDF_DIR $NETCDF
+endif
 
 setenv MPICH_UNEX_BUFFER_SIZE 256m
 setenv MPICH_MAX_SHORT_MSG_SIZE 64000
