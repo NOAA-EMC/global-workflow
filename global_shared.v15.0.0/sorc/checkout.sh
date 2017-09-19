@@ -16,10 +16,6 @@ if [[ ! -d gsi.fd ]] ; then
     svn co -r96892 --ignore-externals \
         https://svnemc.ncep.noaa.gov/projects/gsi/trunk \
         gsi.fd > checkout-gsi.log 2>&1
-    cd gsi.fd
-    patch -p0 < ../gsi-patch.diff
-    cd ..
 else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
-
