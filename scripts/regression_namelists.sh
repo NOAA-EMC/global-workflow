@@ -65,7 +65,8 @@ OBS_INPUT::
    prepbufr       uv          null      uv                   0.0     0     0
    prepbufr       spd         null      spd                  0.0     0     0
    prepbufr       dw          null      dw                   0.0     0     0
-   radarbufr      rw          null      rw                   0.0     0     0
+   radarbufr      rw          null      l3rw                 0.0     0     0
+   l2rwbufr       rw          null      l2rw                 0.0     0     0
    prepbufr       sst         null      sst                  0.0     0     0
    gpsrobufr      $gps_dtype  null      gps                  0.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp      pcp_ssmi             0.0    -1     0
@@ -303,7 +304,8 @@ OBS_INPUT::
    prepbufr       uv          null      uv                    1.0     0     0
    prepbufr       spd         null      spd                   1.0     0     0
    prepbufr       dw          null      dw                    1.0     0     0
-   radarbufr      rw          null      rw                    1.0     0     0
+   radarbufr      rw          null      l3rw                  1.0     0     0
+   l2rwbufr       rw          null      l2rw                  1.0     0     0
    prepbufr       sst         null      sst                   1.0     0     0
    gpsrobufr      $gps_dtype  null      gps                   1.0     0     0
    ssmirrbufr     pcp_ssmi    dmsp      pcp_ssmi              1.0    -1     0
@@ -455,7 +457,8 @@ OBS_INPUT::
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0
-   radarbufr      rw          null      rw                  0.0      0     0
+   radarbufr      rw          null      l3rw                0.0      0     0
+   l2rwbufr       rw          null      l2rw                0.0      0     0
    prepbufr       sst         null      sst                 0.0      0     0
    gpsrobufr      gps_bnd     null      gps                 0.0      0     0
    ssmirrbufr     pcp_ssmi    dmsp      pcp_ssmi            0.0     -1     0
@@ -878,7 +881,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    1.0      0       0
    satwndbufr     uv          null        uv                    1.0      0       0
    prepbufr       spd         null        spd                   1.0      0       0
-   radarbufr      rw          null        rw                    1.0      0       0
+   radarbufr      rw          null        l3rw                  1.0      0       0
+   l2rwbufr       rw          null        l2rw                  1.0      0       0
    prepbufr       dw          null        dw                    1.0      0       0
    prepbufr       sst         null        sst                   1.0      0       0
    prepbufr       pw          null        pw                    1.0      0       0
@@ -1022,7 +1026,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    1.0     0       0
    satwndbufr     uv          null        uv                    1.0     0       0
    prepbufr       spd         null        spd                   1.0     0       0
-   radarbufr      rw          null        rw                    1.0     0       0
+   radarbufr      rw          null        l3rw                  1.0     0       0
+   l2rwbufr       rw          null        l2rw                  1.0     0       0
    prepbufr       dw          null        dw                    1.0     0       0
    prepbufr       sst         null        sst                   1.0     0       0
    prepbufr       pw          null        pw                    1.0     0       0
@@ -1166,7 +1171,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    1.0      0       0
    satwndbufr     uv          null        uv                    1.0      0       0
    prepbufr       spd         null        spd                   1.0      0       0
-   radarbufr      rw          null        rw                    1.0      0       0
+   radarbufr      rw          null        l3rw                  1.0      0       0
+   l2rwbufr       rw          null        l2rw                  1.0      0       0
    prepbufr       dw          null        dw                    1.0      0       0
    prepbufr       sst         null        sst                   1.0      0       0
    prepbufr       pw          null        pw                    1.0      0       0
@@ -1310,7 +1316,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    1.0      0       0
    satwndbufr     uv          null        uv                    1.0      0       0
    prepbufr       spd         null        spd                   1.0      0       0
-   radarbufr      rw          null        rw                    1.0      0       0
+   radarbufr      rw          null        l3rw                  1.0      0       0
+   l2rwbufr       rw          null        l2rw                  1.0      0       0
    prepbufr       dw          null        dw                    1.0      0       0
    prepbufr       sst         null        sst                   1.0      0       0
    prepbufr       pw          null        pw                    1.0      0       0
@@ -1457,7 +1464,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    1.0      0      0
    prepbufr       spd         null        spd                   1.0      0      0
    prepbufr       dw          null        dw                    1.0      0      0
-   radarbufr      rw          null        rw                    1.0      0      0
+   radarbufr      rw          null        l3rw                  1.0      0      0
+   l2rwbufr       rw          null        l2rw                  1.0      0      0
    prepbufr       sst         null        sst                   1.0      0      0
    gpsrobufr      $gps_dtype  null        gps                   1.0      0      0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi              1.0     -1      0
@@ -1616,7 +1624,8 @@ OBS_INPUT::
    prepbufr       uv          null        uv                    0.0      0      0
    prepbufr       spd         null        spd                   0.0      0      0
    prepbufr       dw          null        dw                    0.0      0      0
-   radarbufr      rw          null        rw                    0.0      0      0
+   radarbufr      rw          null        l3rw                  0.0      0      0
+   l2rwbufr       rw          null        l2rw                  0.0      0      0
    prepbufr       sst         null        sst                   0.0      0      0
    gpsrobufr      gps_bnd     null        gps_bnd               0.0      0      0
    ssmirrbufr     pcp_ssmi    dmsp        pcp_ssmi              0.0     -1      0
@@ -1864,7 +1873,8 @@ OBS_INPUT::
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0
-   radarbufr      rw          null      rw                  0.0      0     0
+   radarbufr      rw          null      l3rw                0.0      0     0
+   l2rwbufr       rw          null      l2rw                0.0      0     0
    prepbufr       sst         null      sst                 0.0      0     0
    tcvitl         tcp         null      tcp                 0.0      0     0
    tldplrbufr     rw          null      rw                  0.0      0     0
@@ -2026,7 +2036,8 @@ OBS_INPUT::
    satwndbufr     uv          null      uv                  0.0      0     0
    prepbufr       spd         null      spd                 0.0      0     0
    prepbufr       dw          null      dw                  0.0      0     0
-   radarbufr      rw          null      rw                  0.0      0     0
+   radarbufr      rw          null      l3rw                0.0      0     0
+   l2rwbufr       rw          null      l2rw                0.0      0     0
    prepbufr       sst         null      sst                 0.0      0     0
    tcvitl         tcp         null      tcp                 0.0      0     0
    tldplrbufr     rw          null      rw                  0.0      0     0
