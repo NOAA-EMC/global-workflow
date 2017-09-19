@@ -102,7 +102,6 @@ if [ $machine = "THEIA" ]; then
     # Base directories for various builds
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
     export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
-    export BASE_GFS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/global_shared.v14.1.0"
 
 elif [ $machine = "WCOSS_C" ]; then
 
@@ -115,7 +114,6 @@ elif [ $machine = "WCOSS_C" ]; then
     # Base directories for various builds
     export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
     export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
-    export BASE_GFS="/gpfs/hps/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17_final/global_shared.v14.1.0"
 
 fi
 
