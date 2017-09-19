@@ -163,7 +163,7 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="YES"
+export KEEPDATA="NO"
 export NCO_NAMING_CONV="YES"
 
 # Machine environment, jobs, and other utility scripts
