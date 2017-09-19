@@ -30,21 +30,10 @@ if [ $# -ne 1 ]; then
  exit
 fi
 
-if [ $target = wcoss ]; then
-/usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
-else
- exit
-fi
-
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/gdas_gridbull.$target
-else
- source ../modulefiles/gdas_gridbull.$target
-fi
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gdas_gridbull.$target
 
 module list
 

@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+#! /bin/sh
 set -x
 
 ##################################################################
@@ -6,8 +6,10 @@ set -x
 # 02/01/2016 yali.ma@noaa.gov:    Create module load version
 ##################################################################
 
-module purge
-module load ../modulefiles/wafs_v4.0.0.cray
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load wafs_v4.0.0.cray
 module list
 
  curdir=`pwd`

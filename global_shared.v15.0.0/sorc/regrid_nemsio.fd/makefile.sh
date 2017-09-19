@@ -1,44 +1,22 @@
 #!/bin/ksh --login
-set -x
+set -xue
 
-machine=${1:-"cray"}
+machine=${1:-missing}
 
 if [ $machine = "cray" ]; then
-
-    . $MODULESHOME/init/sh
-    module unload NetCDF-intel-haswell/3.6.3
-    module load NetCDF-intel-haswell/4.2	
-    module load HDF5-serial-intel-haswell/1.8.9
-    module load bacio-intel/2.0.1
-    module load nemsio-intel/2.2.2
-    module load w3emc-intel/2.2.0
-    module load w3nco-intel/2.0.6
-    module load sp-intel/2.0.2
-
-    export FCMP="ftn"
-
+:
 elif [ $machine = "theia" ]; then
-
-    . $MODULESHOME/init/sh
-    module load intel/14.0.2
-    module load impi/4.1.3.048
-    module load netcdf/4.3.0
-    module load hdf5/1.8.14
-    module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
-    module load bacio/v2.0.1
-    module load nemsio/v2.2.2
-    module load w3emc/v2.2.0
-    module load w3nco/v2.0.6
-    module load sp/v2.0.2
-
-    export FCMP="mpif90 -f90=ifort"
-
+:
 else
 
     echo "machine $machine is unsupported, ABORT!"
     exit 1
 
 fi
+
+source ../../modulefiles/module-setup.sh.inc
+module use ../../modulefiles
+module load modulefile.regrid_nemsio.$machine
 
 export F90=${FCMP}
 export LD=${FCMP}

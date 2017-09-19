@@ -4,6 +4,7 @@
 ##
 ##_____________________________________________________
 
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
       module load intel
       module load impi
       module load hdf5/1.8.14

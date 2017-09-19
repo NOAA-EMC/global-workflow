@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+#! /bin/sh
 set -x
 
 ##################################################################
@@ -6,9 +6,10 @@ set -x
 # 02/01/2016 yali.ma@noaa.gov:    Create module load version
 ##################################################################
 
-. /apps/lmod/lmod/init/sh
-module purge
-source ../modulefiles/gfs/wafs_v13.0.0.theia
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load wafs_v13.0.0.theia
 module list
 
  curdir=`pwd`
