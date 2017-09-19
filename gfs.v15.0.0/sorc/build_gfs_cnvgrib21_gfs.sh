@@ -30,11 +30,11 @@ if [ $# -ne 1 ]; then
 fi
 
 if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
+ :
 elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
+ :
 elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
+ :
 else
  set +x
  echo " "
@@ -56,11 +56,10 @@ else
  exit
 fi
 
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/gfs_cnvgrib21_gfs.$target
-else
- source ../modulefiles/gfs_cnvgrib21_gfs.$target
-fi
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
+module use ../modulefiles
+module load gfs_cnvgrib21_gfs.$target
 
 module list
 

@@ -15,92 +15,133 @@ echo "BEGIN: config.base"
 # Machine environment
 export machine="@MACHINE@"
 
-# BEGIN: THEIA
 # Account, queue, etc.
-export ACCOUNT="da-cpu"
-export QUEUE="batch"
-export QUEUE_ARCH="service"
+if [ $machine = "THEIA" ]; then
 
-# GLOBAL static environment parameters
-export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+    export ACCOUNT="fv3-cpu"
+    export QUEUE="batch"
+    export QUEUE_ARCH="service"
 
-# Machine specific paths used everywhere
-# USER specific paths
-export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
-export STMP="/scratch3/NCEPDEV/stmp1/$USER"
-export PTMP="/scratch3/NCEPDEV/stmp2/$USER"
-export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
+elif [ $machine = "WCOSS_C" ]; then
 
-# Base directories for various builds
-export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
+    export ACCOUNT="FV3GFS-T2O"
+    export QUEUE="dev"
+    export QUEUE_ARCH="dev_transfer"
 
-# Utilities needed in the scripts (mostly post)
-export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
-export NDATE="$NWPROD/util/exec/ndate"
-export NHOUR="$NWPROD/util/exec/nhour"
-export WGRIB="$NWPROD/util/exec/wgrib"
-export WGRIB2="$NWPROD/util/exec/wgrib2"
-export COPYGB="$NWPROD/util/exec/copygb"
-export COPYGB2="$NWPROD/util/exec/copygb2"
-export GRBINDEX="$NWPROD/util/exec/grbindex"
-export GRB2INDEX="$NWPROD/util/exec/grb2index"
-export GRBINDEX2="$NWPROD/util/exec/grb2index"
-export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-
-# Post requires grib2 table
-export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
-# END: THEIA
-
-# BEGIN: WCOSS_C
-# Account, queue, etc.
-export ACCOUNT="FV3GFS-T2O"
-export QUEUE="dev"
-export QUEUE_ARCH="dev_transfer"
-
-# Load specific modules
-. $MODULESHOME/init/ksh >> /dev/null 2>&1
-module load PrgEnv-intel >> /dev/null 2>&1
-module load cray-mpich >> /dev/null 2>&1
-module load hpss >> /dev/null 2>&1
-module load g2tmpl-intel/1.4.0 >> /dev/null 2>&1
-
-# GLOBAL static environment parameters
-export NWPROD="/gpfs/hps/nco/ops/nwprod"
-if [ -d /gpfs/tp1 ]; then
-    export SITE="LUNA"
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
-elif [ -d /gpfs/gp1 ]; then
-    export SITE="SURGE"
-    export DMPDIR="/gpfs/gp1/emc/globaldump"
 fi
-module load crtm-intel/2.2.4 >> /dev/null 2>&1
-export RTMFIX=$CRTM_FIX
+
+# Project to use in mass store:
+HPSS_PROJECT=emc-global
+
+# Directories relative to installation areas:
+BASE_FV3GFS=@BASE_FV3GFS@
+export BASE_WORKFLOW="$BASE_FV3GFS/gfs_workflow.v15.0.0"
+export BASE_GSM="$BASE_FV3GFS/global_shared.v15.0.0"
+export BASE_MODULES="$BASE_FV3GFS/global_shared.v15.0.0/modulefiles"
+
+########################################################################
+
+# --- Load modules ---
+
+# Theia workaround.  Reduce stack soft limit while running "module" to
+# avoid runaway memory allocation:
+ulimit_s=$( ulimit -S -s )
+ulimit -S -s 10000
+
+# Find module command and purge:
+source "$BASE_MODULES/module-setup.sh.inc"
+
+# Load our module:
+module use "$BASE_MODULES"
+module load module_base.$( echo $machine | tr A-Z a-z )
+
+# Restore stack soft limit:
+ulimit -S -s "$ulimit_s"
+unset ulimit_s
+
+for exetest in hsi htar ; do
+    if ( ! which $exetest ) ; then
+        echo "$exetest: executable missing after \"module load\"" 1>&2
+        exit 2
+    fi
+done
+
+########################################################################
+
+# GLOBAL static environment parameters
+if [ $machine = "THEIA" ]; then
+
+    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
+    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
+    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+
+elif [ $machine = "WCOSS_C" ]; then
+
+    export NWPROD="/gpfs/hps/nco/ops/nwprod"
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="LUNA"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="SURGE"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
+    fi
+    export RTMFIX=$CRTM_FIX
+
+fi
+
 
 # Machine specific paths used everywhere
-# USER specific paths
-export HOMEDIR="/gpfs/hps/emc/global/noscrub/$USER"
-export STMP="/gpfs/hps/stmp/$USER"
-export PTMP="/gpfs/hps/ptmp/$USER"
-export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
+if [ $machine = "THEIA" ]; then
 
-# Base directories for various builds
-export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
-export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
+    # USER specific paths
+    export HOMEDIR="/scratch4/NCEPDEV/ocean/save/$USER"
+    export STMP="/scratch4/NCEPDEV/ocean/scrub/$USER"
+    export PTMP="/scratch4/NCEPDEV/ocean/scrub/$USER"
+    export NOSCRUB="/scratch4/NCEPDEV/ocean/noscrub/$USER"
+
+    # Base directories for various builds
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+    export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
+
+elif [ $machine = "WCOSS_C" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/gpfs/hps/emc/global/noscrub/$USER"
+    export STMP="/gpfs/hps2/stmp/$USER"
+    export PTMP="/gpfs/hps2/ptmp/$USER"
+    export NOSCRUB="/gpfs/hps/emc/global/noscrub/$USER"
+
+    # Base directories for various builds
+    export BASE_SVN="/gpfs/hps/emc/global/noscrub/emc.glopara/svn"
+    export MYBASE_SVN="/gpfs/hps/emc/global/noscrub/$USER/svn"
+
+fi
 
 # Utilities needed in the scripts (mostly post)
-export NEMSIOGET="/gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get"
-module load grib_util/1.0.3 >> /dev/null 2>&1
-module load prod_util/1.0.7 >> /dev/null 2>&1
+if [ $machine = "THEIA" ]; then
 
-export USE_CFP="YES"
-module load cfp-intel-sandybridge/1.1.0 >> /dev/null 2>&1
+    export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+
+fi
 
 # Post requires grib2 table
-export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
-# END: WCOSS_C
+if [ $machine = "WCOSS_C" ]; then
+    export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_tbl_new"
+elif [ $machine = "THEIA" ]; then
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+fi
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -110,10 +151,8 @@ export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.3.0/src/params_grib2_
 ####################################################
 
 # Build paths relative to $BASE_SVN
-export BASE_WORKFLOW="$BASE_SVN/fv3gfs/trunk/gfs_workflow.v15.0.0"
-export BASE_GSM="$BASE_SVN/fv3gfs/trunk/global_shared.v15.0.0"
-export BASE_GSI="$BASE_SVN/gsi/trunk"
-export BASE_NEMSfv3gfs="$BASE_SVN/nems/apps/NEMSfv3gfs/trunk"
+export BASE_GSI="$BASE_GSM/sorc/gsi.fd"
+export BASE_NEMSfv3gfs="$BASE_GSM/sorc/fv3gfs.fd"
 export BASE_POST="$BASE_SVN/fv3gfs/tags/post4fv3"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
 export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
@@ -141,8 +180,8 @@ export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
-export ICSDIR="$PTMP/FV3ICS"
-export ATARDIR="/NCEPDEV/emc-global/1year/$USER/$machine/scratch/$PSLOT"
+export ICSDIR="@ICSDIR@"
+export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Resolution specific parameters
 export LEVS=65

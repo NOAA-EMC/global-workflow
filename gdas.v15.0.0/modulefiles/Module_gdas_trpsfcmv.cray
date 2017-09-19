@@ -9,6 +9,8 @@ puts stderr "This module initializes the environment\n"
 }
 module-whatis " trpsfcmv whatis description"
 
+module load modules
+
 # Loading ncep environment
 module load ncep/1.0
 

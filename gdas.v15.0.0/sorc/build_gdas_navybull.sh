@@ -30,15 +30,8 @@ if [ $# -ne 1 ]; then
  exit
 fi
 
-if [ $target = wcoss ]; then
-/usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
-else
- exit
-fi
+mod=$( cd ../../global_shared.v15.0.0/modulefiles/ ; pwd -P )
+source "$mod/module-setup.sh.inc"
 
 if [ $target = wcoss -o $target = cray ]; then
  module load ../modulefiles/gdas_navybull.$target
