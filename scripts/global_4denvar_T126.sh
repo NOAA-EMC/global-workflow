@@ -332,6 +332,8 @@ $ncp $global_4denvar_T126_datobs/gmi1cr.gdas.$global_4denvar_T126_adate         
 $ncp $global_4denvar_T126_datobs/saphir.gdas.$global_4denvar_T126_adate                 ./saphirbufr
 $ncp $global_4denvar_T126_datobs/cris.gdas.$global_4denvar_T126_adate                   ./crisbufr
 $ncp $global_4denvar_T126_datobs/crisdb.gdas.$global_4denvar_T126_adate                 ./crisbufr_db
+$ncp $global_4denvar_T126_datobs/crisf4.gdas.$global_4denvar_T126_adate                 ./crisfsbufr
+$ncp $global_4denvar_T126_datobs/crisf4db.gdas.$global_4denvar_T126_adate               ./crisfsbufr_db
 $ncp $global_4denvar_T126_datobs/sevcsr.gdas.$global_4denvar_T126_adate                 ./seviribufr
 $ncp $global_4denvar_T126_datobs/atms.gdas.$global_4denvar_T126_adate                   ./atmsbufr
 $ncp $global_4denvar_T126_datobs/atmsdb.gdas.$global_4denvar_T126_adate                 ./atmsbufr_db

@@ -158,6 +158,7 @@
 #
 #     output data:
 #                  $SIGANLENS
+#                  $OSENSE
 #                  $ENKFSTAT
 #                  $PGMOUT
 #                  $PGMERR
@@ -210,6 +211,7 @@ export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
 #  Set script / EnKF update control parameters
 export use_gfs_nemsio=${use_gfs_nemsio:-".false."}   # run EnKF update with NEMSIO input/output
+export fso_cycling=${fso_cycling:-".false."}   # write additional files needed for EFSOI calculations     
 #  Filenames.
 export XC=${XC}
 export PREINP=${PREINP}
@@ -238,6 +240,9 @@ export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
 export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
+if [ $fso_cycling = .true. ]; then
+  export OSENSE=${OSENSE:-${COMOUT}/osense_}
+fi
 export SIGANLENS=${SIGANLENS:-${COMOUT}/sanl}
 export USE_NEWRADBC=${USE_NEWRADBC:-"NO"}
 export NMEM_ENKF=${NMEM_ENKF:-0}
@@ -431,8 +436,16 @@ else
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
       ln -fs ${SIGANLENS}${member} sanl_${CDATE}${member}
+      if [ $fso_cycling = .true. ]; then
+        memberni="_nimem"`printf %03i $imem`
+        ln -fs ${SIGANLENS}${memberni} sanl_${CDATE}${memberni}
+      fi
       (( imem = $imem + 1 ))
    done
+  
+   if [ $fso_cycling = .true. ]; then
+     ln -fs ${OSENSE}${CDATE}.dat osense_${CDATE}.dat
+   fi
 
 fi
 
@@ -463,6 +476,7 @@ cat <<EOF > enkf.nml
   reducedgrid=.true.,readin_localization=.true.,
   use_gfs_nemsio=${use_gfs_nemsio},
   univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
+  fso_cycling=${fso_cycling},
   $NAM_ENKF
  /
  &END
@@ -525,10 +539,12 @@ cat <<EOF > enkf.nml
   sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi_metop-b',
   sattypes_rad(57)= 'avhrr_metop-b', dsis(57)= 'avhrr3_metop-b',
   sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
-  sattypes_rad(59)= 'cris_npp',      dsis(59)= 'cris_npp',
-  sattypes_rad(60)= 'cris-fsr_npp',  dsis(60)= 'cris-fsr_npp',
-  sattypes_rad(61)= 'gmi_gpm',       dsis(61)= 'gmi_gpm',
-  sattypes_rad(62)= 'saphir_meghat', dsis(62)= 'saphir_meghat',
+  sattypes_rad(59)= 'atms_n20',      dsis(59)= 'atms_n20',
+  sattypes_rad(60)= 'cris_npp',      dsis(60)= 'cris_npp',
+  sattypes_rad(61)= 'cris-fsr_npp',  dsis(61)= 'cris-fsr_npp',
+  sattypes_rad(62)= 'cris-fsr_n20',  dsis(62)= 'cris-fsr_n20',
+  sattypes_rad(63)= 'gmi_gpm',       dsis(63)= 'gmi_gpm',
+  sattypes_rad(64)= 'saphir_meghat', dsis(64)= 'saphir_meghat',
   $SATOBS_ENKF
  /
  &END
@@ -560,8 +576,15 @@ then
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
       $NCP sanl_${CDATE}${member} ${SIGANLENS}${member}
+      if [ $fso_cycling = .true. ]; then
+        memberni="_nimem"`printf %03i $imem`
+        $NCP sanl_${CDATE}${memberni} ${SIGANLENS}${memberni}
+      fi
       (( imem = $imem + 1 ))
    done
+   if [ $fso_cycling = .true. ]; then
+     $NCP osense_${CDATE}.dat ${OSENSE}${CDATE}.dat
+   fi
 fi
 
 # Cat runtime output files.

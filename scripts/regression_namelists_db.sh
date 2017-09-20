@@ -123,8 +123,10 @@ OBS_INPUT::
    iasibufr         iasi        metop-b   iasi_metop-b        0.0     1     0
    gomebufr         gome        metop-b   gome_metop-b        0.0     2     0
    atmsbufr         atms        npp       atms_npp            0.0     1     0
+   atmsbufr         atms        n20       atms_n20            0.0     1     0
    crisbufr         cris        npp       cris_npp            0.0     1     0
    crisfsbufr       cris-fsr    npp       cris-fsr_npp        0.0     1     0
+   crisfsbufr       cris-fsr    n20       cris-fsr_n20        0.0     1     0
 ::
  /
   &SUPEROB_RADAR
@@ -451,8 +453,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      1     0
+   atmsbufr       atms        n20       atms_n20            0.0      1     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
    crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      1     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      1     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      1     0
@@ -1849,8 +1853,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      2     0
+   atmsbufr       atms        n20       atms_n20            0.0      2     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
    crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      5     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      5     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      5     0

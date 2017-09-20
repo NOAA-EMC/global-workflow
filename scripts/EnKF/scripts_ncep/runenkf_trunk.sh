@@ -166,8 +166,10 @@ cat << EOF > enkf.nml
   sattypes_rad(48)= 'sndrd4_g15',    dsis(48)= 'sndrD4_g15',
   sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi_metop-a',
   sattypes_rad(50)= 'atms_npp',      dsis(50)= 'atms_npp',
-  sattypes_rad(51)= 'cris_npp',      dsis(51)= 'cris_npp',
-  sattypes_rad(52)= 'cris-fsr_npp',  dsis(52)= 'cris-fsr_npp',
+  sattypes_rad(51)= 'atms_n20',      dsis(51)= 'atms_n20',
+  sattypes_rad(52)= 'cris_npp',      dsis(52)= 'cris_npp',
+  sattypes_rad(53)= 'cris-fsr_npp',  dsis(53)= 'cris-fsr_npp',
+  sattypes_rad(54)= 'cris-fsr_n20',  dsis(54)= 'cris-fsr_n20',
  /
  &END
  &ozobs_enkf

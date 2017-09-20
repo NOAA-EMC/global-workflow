@@ -123,7 +123,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b         0.0     1     0
    gomebufr       gome        metop-b   gome_metop-b         0.0     2     0
    atmsbufr       atms        npp       atms_npp             0.0     1     0
+   atmsbufr       atms        n20       atms_n20             0.0     1     0
    crisbufr       cris        npp       cris_npp             0.0     1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp         0.0     1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20         0.0     1     0
    mlsbufr        mls30       aura      mls30_aura           0.0     0     0
    oscatbufr      uv          null      uv                   0.0     0     0
 ::
@@ -515,7 +518,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      1     0
+   atmsbufr       atms        n20       atms_n20            0.0      1     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      1     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      1     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      1     0
@@ -1936,7 +1942,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      2     0
+   atmsbufr       atms        n20       atms_n20            0.0      2     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      5     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      5     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      5     0
@@ -2099,7 +2108,10 @@ OBS_INPUT::
    iasibufr       iasi        metop-b   iasi_metop-b        0.0      1     0
    gomebufr       gome        metop-b   gome_metop-b        0.0      2     0
    atmsbufr       atms        npp       atms_npp            0.0      2     0
+   atmsbufr       atms        n20       atms_n20            0.0      2     0
    crisbufr       cris        npp       cris_npp            0.0      1     0
+   crisfsbufr     cris-fsr    npp       cris-fsr_npp        0.0      1     0
+   crisfsbufr     cris-fsr    n20       cris-fsr_n20        0.0      1     0
    gsnd1bufr      sndrd1      g14       sndrD1_g14          0.0      5     0
    gsnd1bufr      sndrd2      g14       sndrD2_g14          0.0      5     0
    gsnd1bufr      sndrd3      g14       sndrD3_g14          0.0      5     0
@@ -2220,7 +2232,10 @@ export gsi_namelist="
   sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi_metop-b',
   sattypes_rad(57)= 'avhrr3_metop-b',dsis(57)= 'avhrr3_metop-b',
   sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
-  sattypes_rad(59)= 'cris_npp',      dsis(59)= 'cris_npp',
+  sattypes_rad(59)= 'atms_n20',      dsis(59)= 'atms_n20',
+  sattypes_rad(60)= 'cris_npp',      dsis(60)= 'cris_npp',
+  sattypes_rad(61)= 'cris-fsr_npp',  dsis(61)= 'cris-fsr_npp',
+  sattypes_rad(62)= 'cris-fsr_n20',  dsis(62)= 'cris-fsr_n20',
   $SATOBS_ENKF
  /
  &ozobs_enkf

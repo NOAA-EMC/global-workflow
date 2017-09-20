@@ -133,6 +133,7 @@ export SEVIRIBF=${SEVIRIBF:-${COMINGDAS}/${PREINPGDAS}sevcsr.tm00.bufr_d}
 export ATMSBF=${ATMSBF:-${COMINGDAS}/${PREINPGDAS}atms.tm00.bufr_d}
 export SSMISBF=${SSMISBF:-${COMINGDAS}/${PREINPGDAS}ssmisu.tm00.bufr_d}
 export CRISBF=${CRISBF:-${COMINGDAS}/${PREINPGDAS}cris.tm00.bufr_d}
+export CRISFSBF=${CRISFSBF:-${COMINGDAS}/${PREINPGDAS}crisf4.tm00.bufr_d}
 export SBUVBF=${SBUVBF:-${COMINGDAS}/${PREINPGDAS}osbuv8.tm00.bufr_d}
 export GOMEBF=${GOMEBF:-${COMINGDAS}/${PREINPGDAS}gome.tm00.bufr_d}
 export OMIBF=${OMIBF:-${COMINGDAS}/${PREINPGDAS}omi.tm00.bufr_d}
