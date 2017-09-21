@@ -105,4 +105,5 @@ $NCP $DATA/prepbufr.acft_profiles $COMOUT/${APREFIX}prepbufr.acft_profiles
 
 ###############################################################
 # Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 exit 0
