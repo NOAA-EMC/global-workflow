@@ -40,17 +40,15 @@ export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-export DATAROOT="$STMP/RUNDIRS/$PSLOT/$CDATE/$CDUMP"
-[[ -d $DATAROOT/vrfy ]] && rm -rf $DATAROOT/vrfy
-mkdir -p $DATAROOT/vrfy
-cd $DATAROOT/vrfy
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
+[[ -d $DATAROOT ]] && rm -rf $DATAROOT
 
 ###############################################################
 # Verify Fits
 if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
 
     export CDUMPFCST=$VDUMP
-    export TMPDIR="$RUNDIR/$CDUMP/$CDATE/vrfy/fit2obs/tmpdir"
+    export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
     $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
@@ -94,7 +92,6 @@ fi
 if [ $VRFYMINMON = "YES" ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
-    export DATA_IN="$DATAROOT/minmon.$CDATE"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}minmon.log"
     export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
     export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
@@ -129,4 +126,5 @@ fi
 
 ###############################################################
 # Force Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
 exit 0

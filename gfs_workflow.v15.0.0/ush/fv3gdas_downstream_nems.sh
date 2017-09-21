@@ -139,11 +139,10 @@ date
   chmod 775 $DATA/poescript
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
+  launcher=$APRUN_DWN
   if [ $machine = WCOSS_C ] ; then
-     launcher=${launcher:-$APRUN_DWN}
      $launcher $MP_CMDFILE
   else
-     launcher=${launcher:-mpirun.lsf}
      $launcher
   fi
   export err=$?

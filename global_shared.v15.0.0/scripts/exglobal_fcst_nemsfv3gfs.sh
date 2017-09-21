@@ -504,7 +504,7 @@ cat > input.nml <<EOF
   reset_eta = .false.
   n_sponge = ${n_sponge:-"24"}
   nudge_qv = ${nudge_qv:-".true."}
-  tau = 5.
+  tau = ${tau:-"5."}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
   d2_bg_k1 = ${d2_bg_k1:-"0.15"}
   d2_bg_k2 = ${d2_bg_k2:-"0.02"}
@@ -526,9 +526,9 @@ cat > input.nml <<EOF
   dnats = 0
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
-  nord = 2
-  dddmp = 0.1
-  d4_bg = 0.12
+  nord = ${nord:-"2"}
+  dddmp = ${dddmp:-"0.1"}
+  d4_bg = ${d4_bg:-"0.12"}
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
   ke_bg = 0.
@@ -544,7 +544,7 @@ cat > input.nml <<EOF
   hord_mt = $hord_mt
   hord_vt = $hord_xx
   hord_tm = $hord_xx
-  hord_dp = $hord_xx
+  hord_dp = -$hord_xx
   hord_tr = ${hord_tr:-"8"}
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
   consv_te = $consv_te
