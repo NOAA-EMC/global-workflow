@@ -182,4 +182,7 @@ else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and clean
 
 fi
 
+###############################################################
+# Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 exit 0

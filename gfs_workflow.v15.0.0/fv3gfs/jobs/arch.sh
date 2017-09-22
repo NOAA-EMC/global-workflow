@@ -188,12 +188,19 @@ ghh=$(echo  $GDATE | cut -c9-10)
 COMIN="$ROTDIR/$CDUMP.$gymd"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
-# Remove archived quarter degree GRIB1 files that are (48+$FHMAX_GFS) hrs behind
+# Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
+# 1. quarter degree GRIB1 files for precip verification and
+# 2. atmospheric nemsio files used for fit2obs
+GDATE=$($NDATE -$FHMAX_GFS $GDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 if [ $CDUMP = "gfs" ]; then
-    GDATE=$($NDATE -$FHMAX_GFS $GDATE)
     rm -f $VFYARC/pgbq*.${CDUMP}.${GDATE}
+    COMIN="$VFYARC/$CDUMP.$gymd"
+    [[ -d $COMIN ]] && rm -rf $COMIN
 fi
 
 ###############################################################
 # Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 exit 0

@@ -45,6 +45,8 @@ export COMOUT="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
 export DATA="$RUNDIR/$CDATE/$CDUMP/epos"
 [[ -d $DATA ]] && rm -rf $DATA
 
+export LEVS=$((LEVS-1))
+
 ###############################################################
 # Run relevant exglobal script
 $ENKFPOSTSH
