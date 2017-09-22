@@ -25,17 +25,17 @@
 !
  INTEGER :: IDIM, JDIM, LSOIL, LUGB, IY, IM, ID, IH, IALB
  INTEGER :: ISOT, IVEGSRC, LENSFC
- REAL    :: FH, DELTSFC
+ REAL    :: FH, DELTSFC, Z1, Z2
  LOGICAL :: USE_UFO, NST_ANL
 !
  NAMELIST/NAMCYC/ IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,    &
                   DELTSFC,IALB,USE_UFO,NST_ANL,           &
-                  ISOT,IVEGSRC
+                  ISOT,IVEGSRC,Z1,Z2
 !
  DATA IDIM,JDIM,LSOIL/96,96,4/
  DATA IY,IM,ID,IH,FH/1997,8,2,0,0./
  DATA LUGB/51/, DELTSFC/0.0/, IALB/1/
- DATA ISOT/1/, IVEGSRC/2/ 
+ DATA ISOT/1/, IVEGSRC/2/, Z1/0.0/, Z2/0.0/
 !
  PRINT*,"STARTING CYCLE PROGRAM."
 
@@ -54,7 +54,7 @@
 
  CALL SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
              IY,IM,ID,IH,FH,IALB,                  &
-             USE_UFO,NST_ANL,ISOT,IVEGSRC)
+             USE_UFO,NST_ANL,Z1,Z2,ISOT,IVEGSRC)
 !
  PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY.'
 
@@ -64,7 +64,7 @@
 !
  SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
                    IY,IM,ID,IH,FH,IALB,                  &
-                   USE_UFO,NST_ANL,ISOT,IVEGSRC)
+                   USE_UFO,NST_ANL,Z1,Z2,ISOT,IVEGSRC)
 !
  USE READ_WRITE_DATA
 
@@ -76,13 +76,13 @@
 
  LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
  
- REAL, INTENT(IN)    :: FH, DELTSFC
+ REAL, INTENT(IN)    :: FH, DELTSFC, Z1, Z2
 
  INTEGER, PARAMETER  :: NLUNIT=35, ME=0
 
  CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO, GSI_FILE
 
- INTEGER             :: IFP, I, II, K
+ INTEGER             :: IFP, I
 
  REAL                :: SLMASK(LENSFC), OROG(LENSFC)
  REAL                :: SIHFCS(LENSFC), SICFCS(LENSFC)
@@ -101,13 +101,12 @@
  REAL                :: VMNFCS(LENSFC), T2M(LENSFC)
  REAL                :: Q2M(LENSFC), SLPFCS(LENSFC)
  REAL                :: ABSFCS(LENSFC), OROG_UF(LENSFC)
- REAL                :: ALBFC(LENSFC*4), SMCFC(LENSFC*LSOIL)
- REAL                :: STCFC(LENSFC*LSOIL), ALFFC(LENSFC*2)
- REAL                :: SLCFC(LENSFC*LSOIL), USTAR(LENSFC)
+ REAL                :: USTAR(LENSFC)
  REAL                :: FMM(LENSFC), FHH(LENSFC)
  REAL                :: RLA(LENSFC), RLO(LENSFC)
  REAL(KIND=4)        :: ZSOIL(LSOIL)
  REAL                :: SIG1T(LENSFC)
+ REAL, ALLOCATABLE   :: SLIFCS_FG(:)
 
  TYPE(NSST_DATA)     :: NSST
 
@@ -265,6 +264,7 @@
    ALLOCATE(NSST%XZTS(LENSFC))
    ALLOCATE(NSST%Z_C(LENSFC))
    ALLOCATE(NSST%ZM(LENSFC))
+   ALLOCATE(SLIFCS_FG(LENSFC))
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -290,66 +290,28 @@
    IF(NINT(SLIFCS(I)).EQ.2) AISFCS(I) = 1.
  ENDDO
 
- DO K=1,LSOIL
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     SMCFC(II+I) = SMCFCS(I,K)
-     STCFC(II+I) = STCFCS(I,K)
-     SLCFC(II+I) = SLCFCS(I,K)
-   ENDDO
- ENDDO
+ IF (NST_ANL) SLIFCS_FG = SLIFCS
 
- DO K=1,4
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     ALBFC(II+I) = ALBFCS(I,K)
-   ENDDO
- ENDDO
+ do i = 1, lensfc
+   if (nint(slifcs(i)) == 0 .and. nsst%tref(i) < 271.2) then
+     print*,'warning, backgnd tref below freez: ',i,nsst%tref(i)
+   endif
+ enddo
 
- DO K=1,2
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     ALFFC(II+I) = ALFFCS(I,K)
-   ENDDO
- ENDDO
- 
 !--------------------------------------------------------------------------------
 ! UPDATE SURFACE FIELDS.
 !--------------------------------------------------------------------------------
 
- CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC,        &
-               IY,IM,ID,IH,FH,RLA,RLO,                 &
-               SLMASK,OROG, OROG_UF, USE_UFO, NST_ANL, &
-               SIHFCS,SICFCS,SITFCS,SWDFCS,SLCFC,      &
-               VMNFCS,VMXFCS,SLPFCS,ABSFCS,            &
-               TSFFCS,SNOFCS,ZORFCS,ALBFC,TG3FCS,      &
-               CNPFCS,SMCFC,STCFC,SLIFCS,AISFCS,F10M,  &
-               VEGFCS,VETFCS,SOTFCS,ALFFC,             &
+ CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC,          &
+               IY,IM,ID,IH,FH,RLA,RLO,                   &
+               SLMASK,OROG, OROG_UF, USE_UFO, NST_ANL,   &
+               SIHFCS,SICFCS,SITFCS,SWDFCS,SLCFCS,       &
+               VMNFCS,VMXFCS,SLPFCS,ABSFCS,              &
+               TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,       &
+               CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M,  &
+               VEGFCS,VETFCS,SOTFCS,ALFFCS,              &
                CVFCS,CVBFCS,CVTFCS,ME,NLUNIT,IALB,ISOT,IVEGSRC)
 
- DO K=1,LSOIL
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     SMCFCS(I,K) = SMCFC(II+I)
-     STCFCS(I,K) = STCFC(II+I)
-     SLCFCS(I,K) = SLCFC(II+I)
-   ENDDO
- ENDDO
-
- DO K=1,4
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     ALBFCS(I,K) = ALBFC(II+I)
-   ENDDO
- ENDDO
-
- DO K=1,2
-   II = (K-1)*LENSFC
-   DO I=1,LENSFC
-     ALFFCS(I,K) = ALFFC(II+I)
-   ENDDO
- ENDDO
- 
 !--------------------------------------------------------------------------------
 ! IF RUNNING WITH NSST, READ IN GSI FILE WITH THE UPDATED INCREMENTS (ON THE
 ! GAUSSIAN GRID), INTERPOLATE INCREMENTS TO THE CUBED-SPHERE TILE, AND PERFORM
@@ -358,8 +320,8 @@
 
  IF (NST_ANL) THEN
    CALL READ_GSI_DATA(GSI_FILE)
-   CALL ADJUST_NSST(RLA,RLO,SLIFCS,LENSFC)
-   STOP
+   CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
+                    NSST,LENSFC,LSOIL,IDIM,Z1,Z2)
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -394,31 +356,42 @@
    DEALLOCATE(NSST%XZTS)
    DEALLOCATE(NSST%Z_C)
    DEALLOCATE(NSST%ZM)
+   DEALLOCATE(SLIFCS_FG)
  ENDIF
 
  RETURN
 
  END SUBROUTINE SFCDRV
  
- SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,LENSFC)
+ SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,SLMSK_FG_TILE,SKINT_TILE,&
+                        SICET_TILE,SOILT_TILE,NSST,LENSFC,LSOIL,    &
+                        IDIM,Z1,Z2)
 
  USE GDSWZD_MOD
  USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
-                             SLMSK_GAUS
+                             SLMSK_GAUS, DTREF_GAUS, &
+                             NSST_DATA
 
  IMPLICIT NONE
 
- INTEGER, INTENT(IN)      :: LENSFC
+ INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM
 
- REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC)
- REAL, INTENT(INOUT)      :: RLA(LENSFC), RLO(LENSFC)
+ REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC), SLMSK_FG_TILE(LENSFC)
+ REAL, INTENT(IN)         :: Z1, Z2
+ REAL, INTENT(INOUT)      :: RLA(LENSFC), RLO(LENSFC), SKINT_TILE(LENSFC)
+ REAL, INTENT(INOUT)      :: SICET_TILE(LENSFC), SOILT_TILE(LENSFC,LSOIL)
+
+ TYPE(NSST_DATA)          :: NSST
+
+ REAL, PARAMETER          :: TFREEZ=271.21
 
  INTEGER                  :: IOPT, NRET, KGDS_GAUS(200)
- INTEGER                  :: I, J, IJ, II, JJ, III, JJJ, KRAD
+ INTEGER                  :: IGAUS, JGAUS, IJ, II, JJ, III, JJJ, KRAD
  INTEGER                  :: ISTART, IEND, JSTART, JEND
- INTEGER                  :: MASK_TILE, MASK_GAUS
+ INTEGER                  :: MASK_TILE, MASK_FG_TILE
+ INTEGER                  :: ITILE, JTILE
 
- REAL                     :: FILL
+ REAL                     :: FILL, DTZM
  REAL, ALLOCATABLE        :: XPTS(:), YPTS(:)
 
  KGDS_GAUS     = 0
@@ -438,15 +411,17 @@
 
  PRINT*,'ADJUST NSST'
 
+!----------------------------------------------------------------------
+! CALL TO GDSWZD DETERMINES THE NEAREST GAUSSIAN POINT TO EACH
+! CUBED-SPHERE TILE POINT.
+!----------------------------------------------------------------------
+
  IOPT = -1
  FILL = -9999.
  ALLOCATE(XPTS(LENSFC))
  ALLOCATE(YPTS(LENSFC))
  XPTS = FILL
  YPTS = FILL
-
-! CALL TO GDSWZD DETERMINES THE NEAREST GAUSSIAN POINT TO EACH
-! CUBED-SPHERE TILE POINT.
 
  CALL GDSWZD(KGDS_GAUS,IOPT,LENSFC,FILL,XPTS,YPTS,RLO,RLA,NRET)
 
@@ -455,37 +430,100 @@
    STOP 12
  ENDIF
 
-! INTERPOLATE NSST INCREMENTS FROM THE GAUSSIAN GRID TO THE CUBED-SPHERE
-! TILE USING NEAREST NEIGHBOR.
-
  IJ_LOOP : DO IJ = 1, LENSFC
 
-   I = NINT(XPTS(IJ))
-   J = NINT(YPTS(IJ))
+   MASK_TILE    = NINT(SLMSK_TILE(IJ))
+   MASK_FG_TILE = NINT(SLMSK_FG_TILE(IJ))
 
-   MASK_TILE = NINT(SLMSK_TILE(IJ))
-   IF (MASK_TILE == 1) CYCLE IJ_LOOP  ! NSST NOT APPLIED AT LAND POINTS.
-   IF (MASK_TILE == 2) MASK_TILE = 0  ! WHAT ABOUT SEA ICE??
+!----------------------------------------------------------------------
+! THESE ARE ICE POINTS.  SET TREF TO FREEZING.
+!----------------------------------------------------------------------
 
-   MASK_GAUS = NINT(SLMSK_GAUS(I,J))
+   IF (MASK_TILE == 2) THEN
+     NSST%TREF(IJ) = TFREEZ
+     CYCLE IJ_LOOP
+   ENDIF
 
-! IF TILE MASK AND NEAREST GSI POINT MASK ARE BOTH NON-LAND, APPLY 
-! NSST INCREMENT (HOW WILL THIS BE DONE?)
+!----------------------------------------------------------------------
+! IF THE MODEL POINT WAS ICE COVERED, BUT IS NOW OPEN WATER, SET
+! TREF TO FREEZING, XZ TO '30' AND ALL OTHER FIELDS TO ZERO.
+!----------------------------------------------------------------------
 
-   IF (MASK_TILE == MASK_GAUS) THEN
+   IF (MASK_FG_TILE == 2 .AND. MASK_TILE == 0) THEN
+     CALL NSST_WATER_RESET(NSST,IJ,TFREEZ)
+     CYCLE IJ_LOOP
+   ENDIF
 
-! ADD CODE TO UPDATE NSST.
+!----------------------------------------------------------------------
+! SKIP LAND POINTS.  NSST NOT APPLIED AT LAND.
+!----------------------------------------------------------------------
 
-! IF MASK IS NOT THE SAME, PERFORM A SPIRAL SEARCH TO FIND NEAREST NON-LAND
-! POINT ON GAUSSIAN GRID.
+   IF (MASK_TILE == 1) THEN
+     CYCLE IJ_LOOP  
+   ENDIF
+
+!----------------------------------------------------------------------
+! THESE ARE POINTS THAT ARE OPEN WATER AND WERE OPEN WATER PRIOR
+! TO ANY ICE UPDATE BY SFCCYCLE.
+!
+! SEARCH FOR THE NEAREST GAUSSIAN OPEN WATER POINT.
+!
+! AT OPEN WATER POINTS, THE SEA ICE TEMPERATURE (SICET_TILE) AND
+! SOIL COLUMN TEMPERATURE (SOILT_TILE) ARE SET TO THE SKIN TEMP.
+! IT IS SIMPLY A FILLER VALUE.  THESE FIELDS ARE NOT USED AT
+! OPEN WATER POINTS.
+!----------------------------------------------------------------------
+
+   JTILE = (IJ-1) / IDIM + 1
+   ITILE = MOD(IJ,IDIM)
+   IF (ITILE==0) ITILE = IDIM
+
+   IGAUS = NINT(XPTS(IJ))
+   IF (IGAUS > IDIM_GAUS) IGAUS = IGAUS - IDIM_GAUS
+   IF (IGAUS < 1)         IGAUS = IDIM_GAUS + IGAUS
+   JGAUS = NINT(YPTS(IJ))
+   IF (JGAUS > JDIM_GAUS) JGAUS = JDIM_GAUS
+   IF (JGAUS < 1)         JGAUS = 1
+
+!----------------------------------------------------------------------
+! AT THIS POINT, THE TILE POINT SHOULD BE OPEN WATER ("0").  SEE
+! IF THE NEAREST GSI POINT MASK IS ALSO OPEN WATER.  IF SO, APPLY 
+! NSST INCREMENT.
+!----------------------------------------------------------------------
+
+   IF (SLMSK_GAUS(IGAUS,JGAUS) == 0) THEN
+
+     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(IGAUS,JGAUS) ! range check?
+     if (nsst%tref(IJ) < TFREEZ) then
+       print*,'reset freezing tref at ',itile,jtile,nsst%tref(IJ),DTREF_GAUS(IGAUS,JGAUS) 
+     endif
+     NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
+
+     CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
+                     NSST%Z_C(IJ),Z1,Z2,DTZM)
+
+     SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
+     if (SKINT_TILE(IJ) < TFREEZ) then
+       print*,'reset freezing skin t at ',itile,jtile,skint_tile(IJ),dtzm
+     endif
+     SKINT_TILE(IJ) = MAX(SKINT_TILE(IJ), TFREEZ)
+
+     SICET_TILE(IJ) = SKINT_TILE(IJ)
+     SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
+
+!----------------------------------------------------------------------
+! IF MASK IS NOT THE SAME, PERFORM A SPIRAL SEARCH TO FIND NEAREST 
+! NON-LAND POINT ON GAUSSIAN GRID.
+!----------------------------------------------------------------------
 
    ELSE  
 
      DO KRAD = 1, 500
-       ISTART = I - KRAD
-       IEND   = I + KRAD
-       JSTART = J - KRAD
-       JEND   = J + KRAD
+
+       ISTART = IGAUS - KRAD
+       IEND   = IGAUS + KRAD
+       JSTART = JGAUS - KRAD
+       JEND   = JGAUS + KRAD
        DO JJ = JSTART, JEND
        DO II = ISTART, IEND
 
@@ -503,14 +541,43 @@
                III = II
              END IF
 
-             IF (MASK_TILE == NINT(SLMSK_GAUS(III,JJJ))) THEN
+             IF (SLMSK_GAUS(III,JJJ) == 0) THEN
 
-!              ADD CODE TO UPDATE NSST.
+               print*,'mismatch at tile point  ',itile,jtile
+               PRINT*,'found match at gaussian pt ',iii,jjj,' after ',krad, ' iterations.'
+           
+!----------------------------------------------------------------------
+!  IF THE SEARCH TO FIND AN OPEN WATER POINT ON THE GAUSSIAN GRID WAS
+!  VERY DISTANT, SEE IF THE NEAREST GAUSSIAN POINT IS SEA ICE. IF SO,
+!  IT IS POSSIBLE THE TILE POINT IS SURROUNDED BY A SEA ICE FIELD.
+!  IN THIS CASE, SET TREF TO FREEZING.
+!----------------------------------------------------------------------
 
-               print*,'mismatch at    ',i,j
-               PRINT*,'found match at ',iii,jjj,krad
+               IF(KRAD > 9 .AND. SLMSK_GAUS(IGAUS,JGAUS) == 2) THEN
+                 NSST%TREF(IJ) = TFREEZ
+               ELSE
+                 NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
+               END IF
+
+         if (nsst%tref(IJ) < TFREEZ) then
+           print*,'reset freezing tref at ',itile,jtile,nsst%tref(IJ),DTREF_GAUS(III,JJJ)
+         endif
+
+               NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
+               CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
+                     NSST%Z_C(IJ),Z1,Z2,DTZM)
+               SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
+
+       if (SKINT_TILE(IJ) < TFREEZ) then
+         print*,'reset freezing skin t at ',itile,jtile,skint_tile(IJ),DTZM
+       endif
+
+               SKINT_TILE(IJ) = MAX(SKINT_TILE(IJ), TFREEZ)
+               SICET_TILE(IJ) = SKINT_TILE(IJ)
+               SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
                CYCLE IJ_LOOP
-             ENDIF
+
+             ENDIF ! Gaussian mask is open water
 
            ENDIF
 
@@ -519,18 +586,135 @@
        ENDDO
        ENDDO
 
-     ENDDO
+     ENDDO ! KRAD LOOP
 
 ! THE SEARCH SHOULD NEVER FAIL UNLESS THE TILE MASK AND THE
 ! GAUSSIAN MASK ARE VERY DIFFERENT.  WHAT SHOULD HAPPEN
 ! IF THIS OCCURS?
 
-     print*,'search failed '
+     print*,'search failed, abort. '
      stop 4
 
-   ENDIF
+   ENDIF  ! IS NEAREST GAUSSIAN POINT OPEN WATER?
+
  ENDDO IJ_LOOP
 
  DEALLOCATE (XPTS, YPTS)
 
  END SUBROUTINE ADJUST_NSST
+
+ SUBROUTINE DTZM_POINT(XT,XZ,DT_COOL,ZC,Z1,Z2,DTZM)
+! ===================================================================== !
+!                                                                       !
+!  description:  get dtzm = mean of dT(z) (z1 - z2) with NSST dT(z)     !
+!                dT(z) = (1-z/xz)*dt_warm - (1-z/zc)*dt_cool            !
+!                                                                       !
+!  usage:                                                               !
+!                                                                       !
+!    call dtzm_point                                                    !
+!                                                                       !
+!       inputs:                                                         !
+!          (xt,xz,dt_cool,zc,z1,z2,                                     !
+!       outputs:                                                        !
+!          dtzm)                                                        !
+!                                                                       !
+!  program history log:                                                 !
+!                                                                       !
+!         2015  -- xu li       createad original code                   !
+!  inputs:                                                              !
+!     xt      - real, heat content in dtl                            1  !
+!     xz      - real, dtl thickness                                  1  !
+!     dt_cool - real, sub-layer cooling amount                       1  !
+!     zc      - sub-layer cooling thickness                          1  !
+!     z1      - lower bound of depth of sea temperature              1  !
+!     z2      - upper bound of depth of sea temperature              1  !
+!  outputs:                                                             !
+!     dtzm   - mean of dT(z)  (z1 to z2)                             1  !
+!
+  implicit none
+
+  real, intent(in)  :: xt,xz,dt_cool,zc,z1,z2
+  real, intent(out) :: dtzm
+
+  real, parameter   :: zero = 0.0
+  real, parameter   :: one  = 1.0
+  real, parameter   :: half = 0.5
+  real              :: dt_warm,dtw,dtc
+!
+! get the mean warming in the range of z=z1 to z=z2
+!
+  dtw = zero
+  if ( xt > zero ) then
+    dt_warm = (xt+xt)/xz      ! Tw(0)
+    if ( z1 < z2) then
+      if ( z2 < xz ) then
+        dtw = dt_warm*(one-(z1+z2)/(xz+xz))
+      elseif ( z1 < xz .and. z2 >= xz ) then
+        dtw = half*(one-z1/xz)*dt_warm*(xz-z1)/(z2-z1)
+      endif
+    elseif ( z1 == z2 ) then
+      if ( z1 < xz ) then
+        dtw = dt_warm*(one-z1/xz)
+      endif
+    endif
+  endif
+!
+! get the mean cooling in the range of z=z1 to z=z2
+!
+  dtc = zero
+  if ( zc > zero ) then
+    if ( z1 < z2) then
+      if ( z2 < zc ) then
+        dtc = dt_cool*(one-(z1+z2)/(zc+zc))
+      elseif ( z1 < zc .and. z2 >= zc ) then
+        dtc = half*(one-z1/zc)*dt_cool*(zc-z1)/(z2-z1)
+      endif
+    elseif ( z1 == z2 ) then
+      if ( z1 < zc ) then
+        dtc = dt_cool*(one-z1/zc)
+      endif
+    endif
+  endif
+
+!
+! get the mean T departure from Tf in the range of z=z1 to z=z2
+!
+  dtzm = dtw - dtc
+
+ END SUBROUTINE DTZM_POINT
+
+ SUBROUTINE NSST_WATER_RESET(NSST,IJ,TFREEZ)
+
+! IF THE FIRST GUESS WAS SEA ICE, BUT THE ANALYSIS IS OPEN WATER,
+! RESET ALL NSST VARIABLES.
+
+ USE READ_WRITE_DATA, ONLY : NSST_DATA
+
+ IMPLICIT NONE
+
+ INTEGER, INTENT(IN)  :: IJ
+
+ REAL, INTENT(IN)     :: TFREEZ
+
+ TYPE(NSST_DATA), INTENT(INOUT)      :: NSST
+
+ NSST%C_0(IJ)     = 0.0
+ NSST%C_D(IJ)     = 0.0
+ NSST%D_CONV(IJ)  = 0.0
+ NSST%DT_COOL(IJ) = 0.0
+ NSST%IFD(IJ)     = 0.0
+ NSST%QRAIN(IJ)   = 0.0
+ NSST%TREF(IJ)    = TFREEZ
+ NSST%W_0(IJ)     = 0.0
+ NSST%W_D(IJ)     = 0.0
+ NSST%XS(IJ)      = 0.0
+ NSST%XT(IJ)      = 0.0
+ NSST%XTTS(IJ)    = 0.0
+ NSST%XU(IJ)      = 0.0
+ NSST%XV(IJ)      = 0.0
+ NSST%XZ(IJ)      = 30.0
+ NSST%XZTS(IJ)    = 0.0
+ NSST%Z_C(IJ)     = 0.0
+ NSST%ZM(IJ)      = 0.0
+
+ END SUBROUTINE NSST_WATER_RESET
