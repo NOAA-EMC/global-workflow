@@ -51,16 +51,6 @@ export COMOUT_ANL_ENS="$ROTDIR/enkf.$CDUMP.$cymd/$chh"
 export DATA="$RUNDIR/$CDATE/$CDUMP/eupd"
 [[ -d $DATA ]] && rm -rf $DATA
 
-export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
-if [ ! -f $ATMGES_ENSMEAN ]; then
-    echo "FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
-    exit 1
-fi
-
-export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
 ###############################################################
 # Run relevant exglobal script
 $ENKFUPDSH

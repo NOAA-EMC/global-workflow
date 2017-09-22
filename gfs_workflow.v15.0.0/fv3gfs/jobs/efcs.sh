@@ -63,7 +63,6 @@ if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/RESTART/${cymd}.${chh}0000.cou
 fi
 
 # Forecast length for EnKF forecast
-export FHMIN=$FHMIN_ENKF
 export FHOUT=$FHOUT_ENKF
 export FHMAX=$FHMAX_ENKF
 

@@ -49,11 +49,11 @@ ulimit_s=$( ulimit -S -s )
 ulimit -S -s 10000
 
 # Find module command and purge:
-source "$BASE_MODULES/module-setup.sh.inc"
+source "$BASE_MODULES/module-setup.sh.inc" 2> /dev/null
 
 # Load our module:
-module use "$BASE_MODULES"
-module load module_base.$( echo $machine | tr A-Z a-z )
+module use "$BASE_MODULES" 2> /dev/null
+module load module_base.$( echo $machine | tr A-Z a-z ) 2> /dev/null
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
@@ -209,12 +209,13 @@ export FHOUT_GFS=6
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
 export RECENTER_ENKF="YES"
+export SMOOTH_ENKF="YES"
 export l4densvar=".false."
 export lwrite4danl=".false."
 
-# EnKF output and frequency [needed in epos as well]
+# EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
-    export FHMIN_ENKF=0
+    export FHMIN_ENKF=3
     export FHMAX_ENKF=9
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
