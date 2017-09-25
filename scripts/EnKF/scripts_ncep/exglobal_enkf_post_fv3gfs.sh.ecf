@@ -42,6 +42,7 @@ NLN=${NLN:-"/bin/ln -sf"}
 export MPMD=${MPMD:-"NO"}
 export MPMD_OPTS=${MPMD_OPTS:-"-pgmmodel mpmd -ilevel 2 -labelio yes  -stdoutmode ordered"}
 APRUN_EPOS=${APRUN_EPOS:-${APRUN:-""}}
+NTHREADS_EPOS=${NTHREADS_EPOS:-1}
 
 # Ops stuff
 SENDDBN=${SENDDBN:-"NO"}
@@ -82,6 +83,8 @@ $NCP $GETATMENSSTATEXEC $DATA
 if [ $NST_GSI -gt 0 ]; then
    $NCP $GETNSTENSMEANEXEC $DATA
 fi
+
+export OMP_NUM_THREADS=$NTHREADS_EPOS
 
 ################################################################################
 # Forecast ensemble member files
