@@ -123,8 +123,8 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser = ArgumentParser(description=description,formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--machine', help='machine name', type=str.upper, choices=machines, default=None, required=False)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
-    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
-    parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
+    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=192)
+    parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=96)
     parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
     parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
     parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
@@ -133,7 +133,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=80)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
-    parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=4, required=False)
+    parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
 
     args = parser.parse_args()
 
