@@ -137,26 +137,22 @@ if [ $CDUMP = "gdas" ]; then
     done
 fi
 
-# Temporary archive quarter degree GRIB1 files for precip verification
-# and atmospheric nemsio gfs forecast files for fit2obs
+# Archive
+# 1. quarter degree GRIB2 files for precip verification after extracting PRATE and TMP2m
+# 2. atmospheric nemsio gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" ]; then
-    $NCP ${APREFIX}pgrbqnl $VFYARC/pgbqnl.${CDUMP}.${CDATE}
-    for fname in ${APREFIX}pgrbq*; do
-       fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
-       $NCP $fname $VFYARC/pgbq${fhr}.${CDUMP}.${CDATE}
-    done
 
     for fname in ${APREFIX}sfluxgrbf*grib2; do
        fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
        fhr=$fhr3
-       [ $fhr3 -lt 100 ] && fhr=`echo $fhr3 | cut -c2-3`
+       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
        rm -f $DATA/outtmp
        $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $DATA/outtmp
        fileout=$DATA/pgbq${fhr}.${CDUMP}.${CDATE}
        $CNVGRIB21_GFS -g21 $DATA/outtmp $fileout
-       $NCP $fileout $ARCDIR/
+       $NCP $fileout $ARCDIR/$fileout
     done
 
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
@@ -200,11 +196,10 @@ COMIN="$ROTDIR/$CDUMP.$gymd"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 # Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
-# 1. quarter degree GRIB1 files for precip verification and
-# 2. atmospheric nemsio files used for fit2obs
+# 1. atmospheric nemsio files used for fit2obs
 if [ $CDUMP = "gfs" ]; then
+    GDATE=$($NDATE -$FHMAX_GFS $GDATE)
     gymd=$(echo $GDATE | cut -c1-8)
-    rm -f $VFYARC/pgbq*.${CDUMP}.${GDATE}
     COMIN="$VFYARC/$CDUMP.$gymd"
     [[ -d $COMIN ]] && rm -rf $COMIN
 fi

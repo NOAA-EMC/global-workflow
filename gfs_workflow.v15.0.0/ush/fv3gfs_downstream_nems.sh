@@ -143,7 +143,6 @@ date
   export MP_CMDFILE=$DATA/poescript
   launcher=$APRUN_DWN
   if [ $machine = WCOSS_C ] ; then
-     launcher=$APRUN_DWN
      $launcher $MP_CMDFILE
   else
      $launcher

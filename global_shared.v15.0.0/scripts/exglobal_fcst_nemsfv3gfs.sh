@@ -95,8 +95,8 @@ PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
 
 # Model config options
 APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nthreads:-${nth_f:-1}}}}
-cores_per_node=${cores_per_node:-${npe_node_f:-24}}
+NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nthreads:-${nth_fv3:-1}}}}
+cores_per_node=${cores_per_node:-${npe_node_fv3:-${npe_node_max:-24}}}
 ntiles=${ntiles:-6}
 NTASKS_FV3=${NTASKS_FV3:-${tasks:-$((ntiles*layout_x*layout_y))}}
 
@@ -118,12 +118,12 @@ else
   prefix=enkf.$CDUMP
   memchar=mem`printf %03i $MEMBER`
 fi
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
 memdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
-export GDATE=$($NDATE -$assim_freq $CDATE)
+GDATE=$($NDATE -$assim_freq $CDATE)
 gymd=$(echo $GDATE | cut -c1-8)
 ghh=$(echo  $GDATE | cut -c9-10)
 gmemdir=$ROTDIR/${prefix}.$gymd/$ghh/$memchar
@@ -438,7 +438,7 @@ calendar:                ${calendar:-'julian'}
 memuse_verbose:          ${memuse_verbose:-".false."}
 atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
-ncores_per_node:         $npe_node_max
+ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
 EOF
 
@@ -756,31 +756,28 @@ if [ $SEND = "YES" ]; then
   done
 
   # Copy model restart files
-  # if restart_interval = 6
-  #     Only save the first time in the interval (6) at the restart time directory
-  #     This is a DA requirement
-  #     If other restart times are needed, logic will be added later
-  # else
-  #     Save the all other restart times in the initial restart directory
-  #     This logic was introduced by Fanglin
   cd $DATA/RESTART
-  if [ $restart_interval -ne 0 -a $restart_interval -eq 6 ]; then
-    # Only save the restart files at 6 hours in relevant directory as needed for DA
-    RDATE=`$NDATE +$restart_interval $CDATE`
-    rymd=`echo $RDATE | cut -c1-8`
-    rhh=`echo  $RDATE | cut -c9-10`
-    rmemdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
-    mkdir -p $rmemdir/RESTART
+  mkdir -p $memdir/RESTART
+
+  # Add time-stamp to restart files at FHMAX
+  RDATE=$($NDATE +$FHMAX $CDATE)
+  rymd=$(echo $RDATE | cut -c1-8)
+  rhh=$(echo  $RDATE | cut -c9-10)
+  for file in `ls * | grep -v 0000` ; do
+    $NCP $file $memdir/RESTART/${rymd}.${rhh}0000.$file
+  done
+
+  # Currently can only handle a single restart_interval -ne 0
+  # Required for DA
+  if [ $restart_interval -ne 0 ]; then
+    RDATE=$($NDATE +$restart_interval $CDATE)
+    rymd=$(echo $RDATE | cut -c1-8)
+    rhh=$(echo  $RDATE | cut -c9-10)
     for file in ${rymd}.${rhh}0000.* ; do
-      $NCP $file $rmemdir/RESTART/$file
-    done
-  else
-    # Save restart files at the end of the forecast in ROTDIR/RESTART directory
-    mkdir -p $memdir/RESTART
-    for file in `ls * |grep -v 0000`  ; do
       $NCP $file $memdir/RESTART/$file
     done
   fi
+
 fi
 
 #------------------------------------------------------------------
