@@ -40,6 +40,10 @@ export DATA=$RUNDIR/$CDATE/$CDUMP/fcst
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
 
+export GDATE=$($NDATE -$assim_freq $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
+
 # Default warm_start is OFF
 export warm_start=".false."
 
@@ -48,12 +52,12 @@ export warm_start=".false."
 rCDUMP=$CDUMP
 [[ $CDUMP = "gfs" ]] && rCDUMP="gdas"
 
-if [ -f $ROTDIR/${rCDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
+if [ -f $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
     if [ $CDUMP = "gfs" ]; then
-        mkdir -p $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
-        cd $ROTDIR/${CDUMP}.$cymd/$chh/RESTART
-        $NCP $ROTDIR/${rCDUMP}.$cymd/$chh/RESTART/${cymd}.${chh}0000.* .
+        mkdir -p $ROTDIR/${CDUMP}.$gymd/$ghh/RESTART
+        cd $ROTDIR/${CDUMP}.$gymd/$ghh/RESTART
+        $NCP $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${cymd}.${chh}0000.* .
     fi
     if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
         export read_increment=".true."

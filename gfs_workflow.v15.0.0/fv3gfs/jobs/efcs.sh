@@ -48,12 +48,16 @@ export ENSEND=$ENSEND
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
 
+export GDATE=$($NDATE -$assim_freq $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
+
 # Default warm_start is OFF
 export warm_start=".false."
 
 # If RESTART conditions exist; warm start the model
 memchar="mem"`printf %03i $ENSBEG`
-if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/RESTART/${cymd}.${chh}0000.coupler.res ]; then
+if [ -f $ROTDIR/enkf.${CDUMP}.$gymd/$ghh/$memchar/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
     if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${CDUMP}.t${chh}z.atminc.nc ]; then
         export read_increment=".true."

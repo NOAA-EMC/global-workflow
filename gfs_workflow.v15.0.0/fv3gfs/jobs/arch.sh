@@ -144,8 +144,19 @@ VFYARC=$ROTDIR/vrfyarch
 if [ $CDUMP = "gfs" ]; then
     $NCP ${APREFIX}pgrbqnl $VFYARC/pgbqnl.${CDUMP}.${CDATE}
     for fname in ${APREFIX}pgrbq*; do
-        fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
-        $NCP $fname $VFYARC/pgbq${fhr}.${CDUMP}.${CDATE}
+       fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
+       $NCP $fname $VFYARC/pgbq${fhr}.${CDUMP}.${CDATE}
+    done
+
+    for fname in ${APREFIX}sfluxgrbf*grib2; do
+       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
+       fhr=$fhr3
+       [ $fhr3 -lt 100 ] && fhr=`echo $fhr3 | cut -c2-3`
+       rm -f $DATA/outtmp
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $DATA/outtmp
+       fileout=$DATA/pgbq${fhr}.${CDUMP}.${CDATE}
+       $CNVGRIB21_GFS -g21 $DATA/outtmp $fileout
+       $NCP $fileout $ARCDIR/
     done
 
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
@@ -191,10 +202,8 @@ COMIN="$ROTDIR/$CDUMP.$gymd"
 # Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
 # 1. quarter degree GRIB1 files for precip verification and
 # 2. atmospheric nemsio files used for fit2obs
-GDATE=$($NDATE -$FHMAX_GFS $GDATE)
-gymd=$(echo $GDATE | cut -c1-8)
-ghh=$(echo  $GDATE | cut -c9-10)
 if [ $CDUMP = "gfs" ]; then
+    gymd=$(echo $GDATE | cut -c1-8)
     rm -f $VFYARC/pgbq*.${CDUMP}.${GDATE}
     COMIN="$VFYARC/$CDUMP.$gymd"
     [[ -d $COMIN ]] && rm -rf $COMIN

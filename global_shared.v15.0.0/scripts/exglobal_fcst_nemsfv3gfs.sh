@@ -123,6 +123,11 @@ chh=`echo  $CDATE | cut -c9-10`
 memdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
+export GDATE=$($NDATE -$assim_freq $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
+gmemdir=$ROTDIR/${prefix}.$gymd/$ghh/$memchar
+
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
@@ -145,10 +150,10 @@ if [ $warm_start = ".false." ]; then
 else
   if [ ${restart_test:-"NO"} = "YES" ]; then
     # start from the end of last forecast run
-    $NLN $memdir/RESTART/* $DATA/INPUT/.
+    $NLN $gmemdir/RESTART/* $DATA/INPUT/.
   else
     # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
-    for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
+    for file in $gmemdir/RESTART/${cymd}.${chh}0000.*.nc; do
       file2=$(echo $(basename $file))
       file2=`echo $file2 | cut -d. -f3-` # remove the date from file
       fres=`echo $file2 | cut -d. -f2`
@@ -163,7 +168,7 @@ else
       # and the model start time is the analysis time
       # The alternative is to replace
       # model start time with current model time in coupler.res
-      file=$memdir/RESTART/${cymd}.${chh}0000.coupler.res
+      file=$gmemdir/RESTART/${cymd}.${chh}0000.coupler.res
       file2=$(echo $(basename $file))
       file2=`echo $file2 | cut -d. -f3-` # remove the date from file
       $NLN $file $DATA/INPUT/$file2
@@ -433,7 +438,7 @@ calendar:                ${calendar:-'julian'}
 memuse_verbose:          ${memuse_verbose:-".false."}
 atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
-ncores_per_node:         $cores_per_node
+ncores_per_node:         $npe_node_max
 restart_interval:        $restart_interval
 EOF
 
@@ -764,7 +769,7 @@ if [ $SEND = "YES" ]; then
     RDATE=`$NDATE +$restart_interval $CDATE`
     rymd=`echo $RDATE | cut -c1-8`
     rhh=`echo  $RDATE | cut -c9-10`
-    rmemdir=$ROTDIR/${prefix}.$rymd/$rhh/$memchar
+    rmemdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
     mkdir -p $rmemdir/RESTART
     for file in ${rymd}.${rhh}0000.* ; do
       $NCP $file $rmemdir/RESTART/$file

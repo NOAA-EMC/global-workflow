@@ -2,6 +2,12 @@
 
 set -xue
 
+USERNAME=${1:-""}    # gerrit username
+if [[ "$USERNAME" = "" ]] ; then
+   echo specify valid gerrit username for gsi checkout
+   exit 
+fi
+
 echo fv3gfs checkout...
 if [[ ! -d fv3gfs.fd ]] ; then
     svn co -r96963 \
@@ -11,11 +17,14 @@ else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
 fi
 
-echo gsi checkout...
+echo gsi checkout using $USERNAME ...
 if [[ ! -d gsi.fd ]] ; then
-    svn co -r96892 --ignore-externals \
-        https://svnemc.ncep.noaa.gov/projects/gsi/trunk \
-        gsi.fd > checkout-gsi.log 2>&1
+    set +e
+    git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd
+    cd gsi.fd
+    git clone ${USERNAME}@gerrit:GSI-fix fix
+    cd fix
+    git checkout rev2
 else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi

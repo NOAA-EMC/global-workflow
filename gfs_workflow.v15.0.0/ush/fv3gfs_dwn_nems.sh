@@ -5,6 +5,7 @@ set -x
 # Hui-Ya Chuang 01/2014: First Version
 # Fanglin Yang  09/2015: Modified to use WGRIB2 instead of COPYGB2 for interpolation
 # Fanglin Yang  02/2016: remove 0.5-deg and 2.5deg output to speed up post            
+# Fanglin Yang  09/11/2017: add option opt24 to turn on bitmap (from Wen Meng) 
 
 export tmpfile=$1
 export fhr3=$2
@@ -19,19 +20,20 @@ export opt1=' -set_grib_type same -new_grid_winds earth '
 export opt21=' -new_grid_interpolation bilinear  -if '
 export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
+export opt24=' -set_bitmap 1 '
 export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
 export grid0p5="latlon 0:720:0.5 90:361:-0.5"
 export grid1p0="latlon 0:360:1.0 90:181:-1.0"
 export grid2p5="latlon 0:144:2.5 90:73:-2.5"
 
 if [ $nset = 1 ]; then
- $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 \
+ $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $grid0p25 pgb2file_${fhr3}_${iproc}_0p25 \
                                     -new_grid $grid1p0  pgb2file_${fhr3}_${iproc}_1p0  \
                                     -new_grid $grid0p5  pgb2file_${fhr3}_${iproc}_0p5   
  $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_0p25 pgbfile_${fhr3}_${iproc}_0p25          
  $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_1p0 pgbfile_${fhr3}_${iproc}_1p0          
 elif [ $nset = 2 ]; then
- $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25 \
+ $WGRIB2 $tmpfile $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $grid0p25 pgb2bfile_${fhr3}_${iproc}_0p25 \
                                     -new_grid $grid1p0  pgb2bfile_${fhr3}_${iproc}_1p0  \
                                     -new_grid $grid0p5  pgb2bfile_${fhr3}_${iproc}_0p5  
 fi

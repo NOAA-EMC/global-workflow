@@ -21,6 +21,7 @@ set -x
 #  1. For NEMSIO, gfspost1 exceends 6-hour CPU limits on WCOSS. Remove pgrbh and pgrbl
 #-Fanglin Yang, March 2017
 #  1. Modified for FV3GFS, using NCEP-NCO standard output name convention
+#  2. Add option24 to turn on bitmap in grib2 file (from Wen Meng)
 #-----------------------------------------------------------------------
 
 
@@ -48,6 +49,7 @@ export option1=' -set_grib_type same -new_grid_winds earth '
 export option21=' -new_grid_interpolation bilinear  -if '
 export option22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export option23=' -new_grid_interpolation neighbor -fi '
+export option24=' -set_bitmap 1 '
 export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
 export grid0p5="latlon 0:720:0.5 90:361:-0.5"
 export grid1p0="latlon 0:360:1.0 90:181:-1.0"
@@ -141,6 +143,7 @@ date
   export MP_CMDFILE=$DATA/poescript
   launcher=$APRUN_DWN
   if [ $machine = WCOSS_C ] ; then
+     launcher=$APRUN_DWN
      $launcher $MP_CMDFILE
   else
      $launcher
@@ -207,7 +210,7 @@ date
 else
 #---------------------------------------------------------------
 #---------------------------------------------------------------
-  $WGRIB2 tmpfile1_$fhr3  $option1 $option21 $option22 $option23 \
+  $WGRIB2 tmpfile1_$fhr3  $option1 $option21 $option22 $option23 $option24\
                                            -new_grid $grid0p25 pgb2file_${fhr3}_0p25 \
                                            -new_grid $grid0p5  pgb2file_${fhr3}_0p5 \
                                            -new_grid $grid1p0  pgb2file_${fhr3}_1p0
