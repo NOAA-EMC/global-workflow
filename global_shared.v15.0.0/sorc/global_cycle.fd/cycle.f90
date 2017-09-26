@@ -25,17 +25,17 @@
 !
  INTEGER :: IDIM, JDIM, LSOIL, LUGB, IY, IM, ID, IH, IALB
  INTEGER :: ISOT, IVEGSRC, LENSFC
- REAL    :: FH, DELTSFC, Z1, Z2
+ REAL    :: FH, DELTSFC, ZSEA1, ZSEA2
  LOGICAL :: USE_UFO, NST_ANL
 !
  NAMELIST/NAMCYC/ IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,    &
                   DELTSFC,IALB,USE_UFO,NST_ANL,           &
-                  ISOT,IVEGSRC,Z1,Z2
+                  ISOT,IVEGSRC,ZSEA1,ZSEA2
 !
  DATA IDIM,JDIM,LSOIL/96,96,4/
  DATA IY,IM,ID,IH,FH/1997,8,2,0,0./
  DATA LUGB/51/, DELTSFC/0.0/, IALB/1/
- DATA ISOT/1/, IVEGSRC/2/, Z1/0.0/, Z2/0.0/
+ DATA ISOT/1/, IVEGSRC/2/, ZSEA1/0.0/, ZSEA2/0.0/
 !
  PRINT*,"STARTING CYCLE PROGRAM."
 
@@ -54,7 +54,7 @@
 
  CALL SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
              IY,IM,ID,IH,FH,IALB,                  &
-             USE_UFO,NST_ANL,Z1,Z2,ISOT,IVEGSRC)
+             USE_UFO,NST_ANL,ZSEA1,ZSEA2,ISOT,IVEGSRC)
 !
  PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY.'
 
@@ -64,7 +64,7 @@
 !
  SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
                    IY,IM,ID,IH,FH,IALB,                  &
-                   USE_UFO,NST_ANL,Z1,Z2,ISOT,IVEGSRC)
+                   USE_UFO,NST_ANL,ZSEA1,ZSEA2,ISOT,IVEGSRC)
 !
  USE READ_WRITE_DATA
 
@@ -76,7 +76,7 @@
 
  LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
  
- REAL, INTENT(IN)    :: FH, DELTSFC, Z1, Z2
+ REAL, INTENT(IN)    :: FH, DELTSFC, ZSEA1, ZSEA2
 
  INTEGER, PARAMETER  :: NLUNIT=35, ME=0
 
@@ -321,7 +321,7 @@
  IF (NST_ANL) THEN
    CALL READ_GSI_DATA(GSI_FILE)
    CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
-                    NSST,LENSFC,LSOIL,IDIM,Z1,Z2)
+                    NSST,LENSFC,LSOIL,IDIM,ZSEA1,ZSEA2)
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -365,7 +365,7 @@
  
  SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,SLMSK_FG_TILE,SKINT_TILE,&
                         SICET_TILE,SOILT_TILE,NSST,LENSFC,LSOIL,    &
-                        IDIM,Z1,Z2)
+                        IDIM,ZSEA1,ZSEA2)
 
  USE GDSWZD_MOD
  USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
@@ -377,7 +377,7 @@
  INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM
 
  REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC), SLMSK_FG_TILE(LENSFC)
- REAL, INTENT(IN)         :: Z1, Z2
+ REAL, INTENT(IN)         :: ZSEA1, ZSEA2
  REAL, INTENT(INOUT)      :: RLA(LENSFC), RLO(LENSFC), SKINT_TILE(LENSFC)
  REAL, INTENT(INOUT)      :: SICET_TILE(LENSFC), SOILT_TILE(LENSFC,LSOIL)
 
@@ -500,7 +500,7 @@
      NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
 
      CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
-                     NSST%Z_C(IJ),Z1,Z2,DTZM)
+                     NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
 
      SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
      if (SKINT_TILE(IJ) < TFREEZ) then
@@ -559,14 +559,22 @@
                  NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
                END IF
 
+         if (itile == 271 .and. jtile == 354) then
+           print*,'check point tref ',NSST%TREF(IJ),DTREF_GAUS(III,JJJ)
+         endif
+
          if (nsst%tref(IJ) < TFREEZ) then
            print*,'reset freezing tref at ',itile,jtile,nsst%tref(IJ),DTREF_GAUS(III,JJJ)
          endif
 
                NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
                CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
-                     NSST%Z_C(IJ),Z1,Z2,DTZM)
+                     NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
                SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
+
+         if (itile == 271 .and. jtile == 354) then
+           print*,'check point skin t ',skint_tile(ij),NSST%TREF(IJ),dtzm
+         endif
 
        if (SKINT_TILE(IJ) < TFREEZ) then
          print*,'reset freezing skin t at ',itile,jtile,skint_tile(IJ),DTZM

@@ -150,7 +150,7 @@
 #                   between the filtered and unfiltered terrain.  Default is true.
 #     NST_ANL       Process NST records and perform SST terrain adjustments required 
 #                   when using NST model.  Default is false.
-#     Z1/Z2         When running with NST model, this is the lower/upper bound
+#     zsea1/zsea2   When running with NST model, this is the lower/upper bound
 #                   of depth of sea temperature.
 #
 #   Exported Shell Variables:
@@ -262,8 +262,8 @@ export IVEGSRC=${IVEGSRC:-1}
 export CYCLVARS=${CYCLVARS}
 export use_ufo=${use_ufo:-.true.}
 export NST_ANL=${NST_ANL:-.false.}
-export Z1=${Z1:-0}
-export Z2=${Z2:-0}
+export zsea1=${zsea1:-0}
+export zsea2=${zsea2:-0}
 
 export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
 export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
@@ -367,7 +367,7 @@ eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
   idim=$CRES, jdim=$CRES, lsoil=$LSOIL,
   iy=$iy, im=$im, id=$id, ih=$ih, fh=$FHOUR,
   DELTSFC=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,NST_ANL=$NST_ANL,
-  isot=$ISOT,ivegsrc=$IVEGSRC,z1=$Z1,z2=$Z2
+  isot=$ISOT,ivegsrc=$IVEGSRC,zsea1=$zsea1,zsea2=$zsea2
  /
  &NAMSFCD
   FNBGSI="$SFCGES",
