@@ -72,6 +72,8 @@ CHEM_INVOBS=${CHEM_INVOBS:-""}
 mkdir -p $DATA
 cd $DATA || exit 8
 
+[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+
 ################################################################################
 # ObsInput file from ensemble mean
 rm -f obs_input*

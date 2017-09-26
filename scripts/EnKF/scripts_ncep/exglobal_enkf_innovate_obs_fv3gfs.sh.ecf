@@ -116,6 +116,7 @@ for imem in `seq $ENSBEG $ENSEND`; do
       export DIAG_SUFFIX="_$memchar"
       export COMIN_GES=$COMIN_GES_ENS/$memchar
       export COMOUT=$COMOUT_SAVE/$memchar
+      [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
       export ATMG03="$COMIN_GES/${GPREFIX}atmf003${ENKF_SUFFIX}${GSUFFIX}"
       export ATMG04="$COMIN_GES/${GPREFIX}atmf004${ENKF_SUFFIX}${GSUFFIX}"
