@@ -321,7 +321,7 @@
  IF (NST_ANL) THEN
    CALL READ_GSI_DATA(GSI_FILE)
    CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
-                    NSST,LENSFC,LSOIL,IDIM,ZSEA1,ZSEA2)
+                    NSST,LENSFC,LSOIL,IDIM,ZSEA1,ZSEA2,IM,ID)
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -365,7 +365,7 @@
  
  SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,SLMSK_FG_TILE,SKINT_TILE,&
                         SICET_TILE,SOILT_TILE,NSST,LENSFC,LSOIL,    &
-                        IDIM,ZSEA1,ZSEA2)
+                        IDIM,ZSEA1,ZSEA2,MON,DAY)
 
  USE GDSWZD_MOD
  USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
@@ -374,7 +374,7 @@
 
  IMPLICIT NONE
 
- INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM
+ INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM, MON, DAY
 
  REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC), SLMSK_FG_TILE(LENSFC)
  REAL, INTENT(IN)         :: ZSEA1, ZSEA2
@@ -384,14 +384,18 @@
  TYPE(NSST_DATA)          :: NSST
 
  REAL, PARAMETER          :: TFREEZ=271.21
+ REAL, PARAMETER          :: TMAX=313.0
 
  INTEGER                  :: IOPT, NRET, KGDS_GAUS(200)
  INTEGER                  :: IGAUS, JGAUS, IJ, II, JJ, III, JJJ, KRAD
  INTEGER                  :: ISTART, IEND, JSTART, JEND
  INTEGER                  :: MASK_TILE, MASK_FG_TILE
  INTEGER                  :: ITILE, JTILE
+ INTEGER                  :: MAX_SEARCH
 
- REAL                     :: FILL, DTZM
+ LOGICAL                  :: IS_ICE
+
+ REAL                     :: FILL, DTZM, GAUS_RES_KM, DTREF
  REAL, ALLOCATABLE        :: XPTS(:), YPTS(:)
 
  KGDS_GAUS     = 0
@@ -409,10 +413,10 @@
  KGDS_GAUS(12) = 255        ! OCT 29 - RESERVED
  KGDS_GAUS(20) = 255        ! OCT 5  - NOT USED, SET TO 255
 
- PRINT*,'ADJUST NSST'
+ PRINT*,'ADJUST NSST USING GSI INCREMENTS ON GAUSSIAN GRID'
 
 !----------------------------------------------------------------------
-! CALL TO GDSWZD DETERMINES THE NEAREST GAUSSIAN POINT TO EACH
+! CALL TO GDSWZD DETERMINES THE NEAREST GSI/GAUSSIAN POINT TO EACH
 ! CUBED-SPHERE TILE POINT.
 !----------------------------------------------------------------------
 
@@ -429,6 +433,16 @@
    PRINT*,'PROBLEM IN GDSWZD'
    STOP 12
  ENDIF
+
+!----------------------------------------------------------------------
+! THE MAXIMUM DISTANCE TO SEARCH IS 500 KM. HOW MANY GAUSSIAN
+! GRID LENGTHS IS THAT?
+!----------------------------------------------------------------------
+
+ GAUS_RES_KM = 360.0 / IDIM_GAUS * 111.0
+ MAX_SEARCH  = CEILING(500.0/GAUS_RES_KM)
+
+ print*,'MAXIMUM SEARCH IS ',MAX_SEARCH, ' GAUSSIAN POINTS.'
 
  IJ_LOOP : DO IJ = 1, LENSFC
 
@@ -493,37 +507,36 @@
 
    IF (SLMSK_GAUS(IGAUS,JGAUS) == 0) THEN
 
-     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(IGAUS,JGAUS) ! range check?
-     if (nsst%tref(IJ) < TFREEZ) then
-       print*,'reset freezing tref at ',itile,jtile,nsst%tref(IJ),DTREF_GAUS(IGAUS,JGAUS) 
-     endif
+     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(IGAUS,JGAUS)
      NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
+     NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
 
      CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
                      NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
 
      SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
-     if (SKINT_TILE(IJ) < TFREEZ) then
-       print*,'reset freezing skin t at ',itile,jtile,skint_tile(IJ),dtzm
-     endif
      SKINT_TILE(IJ) = MAX(SKINT_TILE(IJ), TFREEZ)
+     SKINT_TILE(IJ) = MIN(SKINT_TILE(IJ), TMAX)
 
-     SICET_TILE(IJ) = SKINT_TILE(IJ)
+     SICET_TILE(IJ)   = SKINT_TILE(IJ)
      SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
 
 !----------------------------------------------------------------------
 ! IF MASK IS NOT THE SAME, PERFORM A SPIRAL SEARCH TO FIND NEAREST 
-! NON-LAND POINT ON GAUSSIAN GRID.
+! NON-LAND POINT ON GSI/GAUSSIAN GRID.
 !----------------------------------------------------------------------
 
    ELSE  
 
-     DO KRAD = 1, 500
+     IS_ICE = .FALSE.
+
+     DO KRAD = 1, MAX_SEARCH
 
        ISTART = IGAUS - KRAD
        IEND   = IGAUS + KRAD
        JSTART = JGAUS - KRAD
        JEND   = JGAUS + KRAD
+
        DO JJ = JSTART, JEND
        DO II = ISTART, IEND
 
@@ -541,47 +554,31 @@
                III = II
              END IF
 
+!----------------------------------------------------------------------
+! SEE IF NEARBY POINTS ARE SEA ICE.  IF THEY ARE, AND THE SEARCH FOR
+! A GAUSSIAN GRID OPEN WATER POINT FAILS, THEN TREF WILL BE SET TO
+! FREEZING BELOW.
+!----------------------------------------------------------------------
+
+             IF (KRAD <= 2 .AND. SLMSK_GAUS(III,JJJ) == 2) IS_ICE = .TRUE.
+
              IF (SLMSK_GAUS(III,JJJ) == 0) THEN
 
-               print*,'mismatch at tile point  ',itile,jtile
-               PRINT*,'found match at gaussian pt ',iii,jjj,' after ',krad, ' iterations.'
-           
-!----------------------------------------------------------------------
-!  IF THE SEARCH TO FIND AN OPEN WATER POINT ON THE GAUSSIAN GRID WAS
-!  VERY DISTANT, SEE IF THE NEAREST GAUSSIAN POINT IS SEA ICE. IF SO,
-!  IT IS POSSIBLE THE TILE POINT IS SURROUNDED BY A SEA ICE FIELD.
-!  IN THIS CASE, SET TREF TO FREEZING.
-!----------------------------------------------------------------------
+               print*,'MISMATCH AT TILE POINT  ',itile,jtile
+               print*,'UPDATE TREF USING GSI INCREMENT AT ',iii,jjj,dtref_gaus(iii,jjj)
 
-               IF(KRAD > 9 .AND. SLMSK_GAUS(IGAUS,JGAUS) == 2) THEN
-                 NSST%TREF(IJ) = TFREEZ
-               ELSE
-                 NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
-               END IF
-
-         if (itile == 271 .and. jtile == 354) then
-           print*,'check point tref ',NSST%TREF(IJ),DTREF_GAUS(III,JJJ)
-         endif
-
-         if (nsst%tref(IJ) < TFREEZ) then
-           print*,'reset freezing tref at ',itile,jtile,nsst%tref(IJ),DTREF_GAUS(III,JJJ)
-         endif
-
+               NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
                NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
+               NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
+
                CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
                      NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
+
                SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
-
-         if (itile == 271 .and. jtile == 354) then
-           print*,'check point skin t ',skint_tile(ij),NSST%TREF(IJ),dtzm
-         endif
-
-       if (SKINT_TILE(IJ) < TFREEZ) then
-         print*,'reset freezing skin t at ',itile,jtile,skint_tile(IJ),DTZM
-       endif
-
                SKINT_TILE(IJ) = MAX(SKINT_TILE(IJ), TFREEZ)
-               SICET_TILE(IJ) = SKINT_TILE(IJ)
+               SKINT_TILE(IJ) = MIN(SKINT_TILE(IJ), TMAX)
+
+               SICET_TILE(IJ)   = SKINT_TILE(IJ)
                SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
                CYCLE IJ_LOOP
 
@@ -596,12 +593,33 @@
 
      ENDDO ! KRAD LOOP
 
-! THE SEARCH SHOULD NEVER FAIL UNLESS THE TILE MASK AND THE
-! GAUSSIAN MASK ARE VERY DIFFERENT.  WHAT SHOULD HAPPEN
-! IF THIS OCCURS?
+!----------------------------------------------------------------------
+! THE SEARCH FAILED.  IF THERE IS NEARBY ICE, SET TREF TO FREEZING.
+! ELSE UPDATE TREF BASED ON THE ANNUAL SST CYCLE.
+!----------------------------------------------------------------------
 
-     print*,'search failed, abort. '
-     stop 4
+     print*,'WARNING !!!!!! SEARCH FAILED AT TILE POINT ',itile,jtile
+
+     IF (IS_ICE) THEN
+       NSST%TREF(IJ) = TFREEZ
+       print*,"NEARBY ICE.  SET TREF TO FREEZING"
+     ELSE
+       CALL CLIMO_TREND(RLA(IJ),MON,DAY,DTREF)
+       NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF
+       NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
+       NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
+       print*,'UPDATE TREF FROM SST CLIMO ',dtref
+     ENDIF
+
+     CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
+                     NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
+
+     SKINT_TILE(IJ) = NSST%TREF(IJ) + DTZM
+     SKINT_TILE(IJ) = MAX(SKINT_TILE(IJ), TFREEZ)
+     SKINT_TILE(IJ) = MIN(SKINT_TILE(IJ), TMAX)
+
+     SICET_TILE(IJ)   = SKINT_TILE(IJ)
+     SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
 
    ENDIF  ! IS NEAREST GAUSSIAN POINT OPEN WATER?
 
@@ -610,6 +628,149 @@
  DEALLOCATE (XPTS, YPTS)
 
  END SUBROUTINE ADJUST_NSST
+
+ SUBROUTINE CLIMO_TREND(LATITUDE, MON, DAY, DTREF)
+
+! SST VALUES BASED ON RTG CLIMO FILE IN FIXED DIRECTORY.
+
+ IMPLICIT NONE
+
+ INTEGER, INTENT(IN)    :: MON, DAY
+
+ REAL, INTENT(IN)       :: LATITUDE
+ REAL, INTENT(OUT)      :: DTREF
+
+ INTEGER                :: NUM_DAYS(12), MON2, MON1
+
+ REAL, TARGET           :: SST_80_90(12)
+ REAL, TARGET           :: SST_70_80(12)
+ REAL, TARGET           :: SST_60_70(12)
+ REAL, TARGET           :: SST_50_60(12)
+ REAL, TARGET           :: SST_40_50(12)
+ REAL, TARGET           :: SST_30_40(12)
+ REAL, TARGET           :: SST_20_30(12)
+ REAL, TARGET           :: SST_10_20(12)
+ REAL, TARGET           :: SST_00_10(12)
+ REAL, TARGET           :: SST_M10_00(12)
+ REAL, TARGET           :: SST_M20_M10(12)
+ REAL, TARGET           :: SST_M30_M20(12)
+ REAL, TARGET           :: SST_M40_M30(12)
+ REAL, TARGET           :: SST_M50_M40(12)
+ REAL, TARGET           :: SST_M60_M50(12)
+ REAL, TARGET           :: SST_M70_M60(12)
+ REAL, TARGET           :: SST_M80_M70(12)
+ REAL, TARGET           :: SST_M90_M80(12)
+
+ REAL, POINTER          :: SST(:)
+
+ DATA NUM_DAYS  /31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/
+
+ DATA SST_80_90 /271.466, 271.458, 271.448, 271.445, 271.519, 271.636, & 
+                 272.023, 272.066, 272.001, 271.698, 271.510, 271.472/
+
+ DATA SST_70_80 /272.149, 272.103, 272.095, 272.126, 272.360, 272.988, &
+                 274.061, 274.868, 274.415, 273.201, 272.468, 272.268/
+
+ DATA SST_60_70 /274.240, 274.019, 273.988, 274.185, 275.104, 276.875, &
+                 279.005, 280.172, 279.396, 277.586, 275.818, 274.803/
+
+ DATA SST_50_60 /277.277, 276.935, 277.021, 277.531, 279.100, 281.357, &
+                 283.735, 285.171, 284.399, 282.328, 279.918, 278.199/
+
+ DATA SST_40_50 /281.321, 280.721, 280.850, 281.820, 283.958, 286.588, &
+                 289.195, 290.873, 290.014, 287.652, 284.898, 282.735/
+
+ DATA SST_30_40 /289.189, 288.519, 288.687, 289.648, 291.547, 293.904, &
+                 296.110, 297.319, 296.816, 295.225, 292.908, 290.743/
+
+ DATA SST_20_30 /294.807, 294.348, 294.710, 295.714, 297.224, 298.703, &
+                 299.682, 300.127, 300.099, 299.455, 297.953, 296.177/
+
+ DATA SST_10_20 /298.878, 298.720, 299.033, 299.707, 300.431, 300.709, &
+                 300.814, 300.976, 301.174, 301.145, 300.587, 299.694/
+
+ DATA SST_00_10 /300.415, 300.548, 300.939, 301.365, 301.505, 301.141, &
+                 300.779, 300.660, 300.818, 300.994, 300.941, 300.675/
+
+ DATA SST_M10_00 /300.226, 300.558, 300.914, 301.047, 300.645, 299.870, &
+                  299.114, 298.751, 298.875, 299.294, 299.721, 299.989/
+
+ DATA SST_M20_M10 /299.547, 299.985, 300.056, 299.676, 298.841, 297.788, &
+                   296.893, 296.491, 296.687, 297.355, 298.220, 298.964/
+
+ DATA SST_M30_M20 /297.524, 298.073, 297.897, 297.088, 295.846, 294.520, &
+                   293.525, 293.087, 293.217, 293.951, 295.047, 296.363/
+
+ DATA SST_M40_M30 /293.054, 293.765, 293.468, 292.447, 291.128, 289.781, &
+                   288.773, 288.239, 288.203, 288.794, 289.947, 291.553/
+
+ DATA SST_M50_M40 /285.052, 285.599, 285.426, 284.681, 283.761, 282.826, &
+                   282.138, 281.730, 281.659, 281.965, 282.768, 283.961/
+
+ DATA SST_M60_M50 /277.818, 278.174, 277.991, 277.455, 276.824, 276.229, &
+                   275.817, 275.585, 275.560, 275.687, 276.142, 276.968/
+
+ DATA SST_M70_M60 /273.436, 273.793, 273.451, 272.813, 272.349, 272.048, &
+                   271.901, 271.838, 271.845, 271.889, 272.080, 272.607/
+
+ DATA SST_M80_M70 /271.579, 271.578, 271.471, 271.407, 271.392, 271.391, &
+                   271.390, 271.391, 271.394, 271.401, 271.422, 271.486/
+
+ DATA SST_M90_M80 /271.350, 271.350, 271.350, 271.350, 271.350, 271.350, &
+                   271.350, 271.350, 271.350, 271.350, 271.350, 271.350/
+
+ NULLIFY(SST)
+ IF (LATITUDE > 80.0) THEN
+   SST => SST_80_90
+ ELSEIF (LATITUDE > 70.0) THEN
+   SST => SST_70_80
+ ELSEIF (LATITUDE > 60.0) THEN
+   SST => SST_60_70
+ ELSEIF (LATITUDE > 50.0) THEN
+   SST => SST_50_60
+ ELSEIF (LATITUDE > 40.0) THEN
+   SST => SST_40_50
+ ELSEIF (LATITUDE > 30.0) THEN
+   SST => SST_30_40
+ ELSEIF (LATITUDE > 20.0) THEN
+   SST => SST_20_30
+ ELSEIF (LATITUDE > 10.0) THEN
+   SST => SST_10_20
+ ELSEIF (LATITUDE > 0.0) THEN
+   SST => SST_00_10
+ ELSEIF (LATITUDE > -10.0) THEN
+   SST => SST_M10_00
+ ELSEIF (LATITUDE > -20.0) THEN
+   SST => SST_M20_M10
+ ELSEIF (LATITUDE > -30.0) THEN
+   SST => SST_M30_M20
+ ELSEIF (LATITUDE > -40.0) THEN
+   SST => SST_M40_M30
+ ELSEIF (LATITUDE > -50.0) THEN
+   SST => SST_M50_M40
+ ELSEIF (LATITUDE > -60.0) THEN
+   SST => SST_M60_M50
+ ELSEIF (LATITUDE > -70.0) THEN
+   SST => SST_M70_M60
+ ELSEIF (LATITUDE > -80.0) THEN
+   SST => SST_M80_M70
+ ELSE
+   SST => SST_M90_M80
+ END IF
+
+ IF (DAY >= 15) THEN
+   MON2 = MON+1
+   IF(MON2 == 13) MON2 = 1
+   MON1 = MON
+   DTREF = (SST(MON2) - SST(MON1)) / NUM_DAYS(MON1)
+ ELSE
+   MON1 = MON - 1
+   IF (MON1 == 0) MON1=12
+   MON2 = MON
+   DTREF = (SST(MON2) - SST(MON1)) / NUM_DAYS(MON1)
+ ENDIF
+
+ END SUBROUTINE CLIMO_TREND
 
  SUBROUTINE DTZM_POINT(XT,XZ,DT_COOL,ZC,Z1,Z2,DTZM)
 ! ===================================================================== !
