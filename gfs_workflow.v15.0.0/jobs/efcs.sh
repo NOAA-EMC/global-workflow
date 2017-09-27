@@ -1,138 +1,102 @@
-#!/bin/ksh
-################################################################################
-# This script runs ensemble member forecasts for enkf GDAS
-# Usage: efcs.sh
-# Imported variables:
-#   CONFIG
-#   CDATE
-#   CDUMP
-#   CSTEP
-# Configuration variables:
-#   INFOLEVELFCS
-#   PMDLOGANAL
-#   FNTSFATMP
-#   SMIPCPTMP
-#   TMIPCPTMP
-#   DATATMP
-#   COMIN
-#   COMRS
-#   COMROT
-#   NCP
-#   FORECASTSH
-#   PBEG
-#   PERR
-#   PEND
-################################################################################
-set -ux
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
 
-################################################################################
-# Go configure
+###############################################################
+## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
-set -a;. $CONFIG;set +a
-export CKSH=$(echo $CSTEP|cut -c-4)
-export CKND=$(echo $CSTEP|cut -c5-)
-export machine=${machine:-WCOSS}
-machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-export CSTEPCOP=efcs
-eval export DATA=$DATATMP
-cd;rm -rf $DATA||exit 1;mkdir -p $DATA||exit 1;cd $DATA||exit 1
-#chgrp ${group_name:-rstprod} $DATA
-chmod ${permission:-755} $DATA
-#
-export BASEDIR=${BASEDIR:-/nwprod}
-export EXECDIR=${EXECDIR:-$BASEDIR/exec}
-export FIXDIR=${FIXDIR:-$BASEDIR/fix/fix_am}
-export FIXgsm=${FIXgsm:-$FIXDIR}
-export SCRDIR=${SCRDIR:-$BASEDIR/scripts}
-export SHDIR=${SHDIR:-$BASEDIR/bin}
-export NWPROD=${NWPROD:-$BASEDIR}
-#
-export PBEG=${PBEG:-$SHDIR/pbeg}
-export PEND=${PEND:-$SHDIR/pend}
-export PERR=${PERR:-$SHDIR/perr}
+## Abstract:
+## Ensemble forecast driver script
+## EXPDIR : /full/path/to/config/files
+## CDATE  : current analysis date (YYYYMMDDHH)
+## CDUMP  : cycle name (gdas / gfs)
+## ENSGRP : ensemble sub-group to make forecasts (1, 2, ...)
+###############################################################
 
-export FILESTYLE=${FILESTYLEEFCS:-'L'}
-
-$PBEG
-
-################################################################################
-# Set other variables
-
-export PCOP=${PCOP:-$SHDIR/pcop}
-export ENKFFCSTSH=${ENKFFCSTSH:-$SCRDIR/exglobal_enkf_fcst.sh.sms}
-export FORECASTSH=${FORECASTSH:-$SCRDIR/exglobal_fcst.sh.sms}
-export VERBOSE=YES
-export CDFNL=${CDFNL:-gdas}
-
-export COMIN=${COMIN:-$COMROT}
-export COMOUT=${COMOUT:-$COMROT}
-
-#
-export NTHREADS=${NTHREADS_EFCS:-2}
-export NTHSTACK=${NTHSTACK_EFCS:-1024000000}
-export tasks=$(eval echo \${NUMPROCEFCS$CDUMP:-${NUMPROCEFCS:-"$(($JCAP/2+3))"}})
-export NUMTHRD=${NTHREADS_EFCS:-1}
-export ENS_NUM=${ENS_NUM:-1}
-
-
-[[ -n ${AMEXECTMP:-""} ]]&&eval export AM_EXEC=$AMEXECTMP
-export FCSTEXEC=$AM_EXEC
-
-############################################################################
-# Set NEMS settings
-
-export GEFS_ENSEMBLE=${GEFS_ENSEMBLE:-0}
-echo "GEFS_ENSEMBLE=" $GEFS_ENSEMBLE
-
-export NPROCS_a=$tasks
-task_mem=$((NPROCS_a/ENS_NUM))
-c=1
-while [ $c -le $ENS_NUM ] ; do
- export PE$c=$task_mem
- c=$((c+1))
+###############################################################
+# Source relevant configs
+configs="base fcst efcs"
+for config in $configs; do
+    . $EXPDIR/config.${config}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 done
-export PE1=${PE1:-$tasks}
-export nodes=$((tasks*NUMTHRD/npe_node_efcs))
-#
-export chgres_only=${chgres_only:-NO}
-if [ $chgres_only = YES ] ; then
- tasks=1  ; export PE1=1 ; export nodes=1 ; export pe_node=1
- rcpu=$rcpu_chgres
-#class=debug
+
+###############################################################
+# Source machine runtime environment
+. $BASE_ENV/${machine}.env efcs
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+###############################################################
+# Set script and dependency variables
+export CASE=$CASE_ENKF
+export DATA=$RUNDIR/$CDATE/$CDUMP/efcs.grp$ENSGRP
+[[ -d $DATA ]] && rm -rf $DATA
+
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+ENSEND=$(echo "$NMEM_EFCSGRP * $ENSGRP" | bc)
+ENSBEG=$(echo "$ENSEND - $NMEM_EFCSGRP + 1" | bc)
+export ENSBEG=$ENSBEG
+export ENSEND=$ENSEND
+
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
+
+export GDATE=$($NDATE -$assim_freq $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
+
+# Default warm_start is OFF
+export warm_start=".false."
+
+# If RESTART conditions exist; warm start the model
+memchar="mem"`printf %03i $ENSBEG`
+if [ -f $ROTDIR/enkf.${CDUMP}.$gymd/$ghh/$memchar/RESTART/${cymd}.${chh}0000.coupler.res ]; then
+    export warm_start=".true."
+    if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${CDUMP}.t${chh}z.atminc.nc ]; then
+        export read_increment=".true."
+    else
+        echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
+    fi
 fi
 
-if [ $nodes = 0 ] ; then export nodes=1 ; fi
-if [ $((nodes*npe_node_efcs/NUMTHRD)) -lt $tasks ] ; then
-  export nodes=$((nodes+1))
-elif [ $((nodes*pe_node)) -lt $tasks ] ; then
-  export nodes=$((nodes+1))
-fi
-if [ $((tasks/ENS_NUM)) -gt $JCAP ] ; then tasks=$((JCAP-1)) ; PE1=$tasks ; fi
-export mpi_tasks=$tasks
-export size=$((nodes*npe_node_efcs))
+# Forecast length for EnKF forecast
+export FHMIN=$FHMIN_ENKF
+export FHOUT=$FHOUT_ENKF
+export FHMAX=$FHMAX_ENKF
 
+res=$(echo $CASE | cut -c2-)
+export JCAP=$((res*2-2))
+export LONB=$((4*res))
+export LATB=$((2*res))
 
-################################################################################
-# Copy in restart and input files
-
-##$PCOP $CDATE/$CDUMP/$CSTEPCOP/ROTI $COMROT $DATA <$RLIST
-##rc=$?
-##if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
-
-##$PCOP $CDATE/$CDUMP/$CSTEPCOP/OPTI $COMROT $DATA <$RLIST
-
-
-################################################################################
-# Run ensemble forecasts
-
+###############################################################
+# Run relevant exglobal script
 $ENKFFCSTSH
-rc=$?
-if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
+###############################################################
+# Double check the status of members in ENSGRP
+EFCSGRP=$ROTDIR/enkf.${CDUMP}.$cymd/$chh/efcs.grp${ENSGRP}
+if [ -f $EFCSGRP ]; then
+    npass=$(grep "PASS" $EFCSGRP | wc -l)
+else
+    npass=0
+fi
+echo "$npass/$NMEM_EFCSGRP members successfull in efcs.grp$ENSGRP"
+if [ $npass -ne $NMEM_EFCSGRP ]; then
+    echo "ABORT!"
+    cat $EFCSGRP
+    exit 99
+fi
 
-################################################################################
-# Exit gracefully
-
-if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
-$PEND
+###############################################################
+# Exit out cleanly
+exit 0

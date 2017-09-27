@@ -15,6 +15,7 @@
 # 2017-03-10  Fanglin Yang   Updated for running forecast on Cray.
 # 2017-03-24  Fanglin Yang   Updated to use NEMS FV3GFS with IPD4
 # 2017-05-24  Rahul Mahajan  Updated for cycling with NEMS FV3GFS
+# 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
 #
 # $Id$
 #
@@ -39,14 +40,16 @@ if [ $machine = "WCOSS_C" ] ; then
   HUGEPAGES=${HUGEPAGES:-hugepages4M}
   module  unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
   module  load   prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
+  module load intel/16.3.210 2>/dev/null
   module  use /usrx/local/dev/modulefiles
-  module  load ESMF-intel-haswell/7_0_0 2>/dev/null
   export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
   export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
   export MKL_CBWR=AVX2
+  module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles 2>/dev/null
+  module load esmf/7.1.0bs34 2>/dev/null
 elif [ $machine = "THEIA" ]; then
   . $MODULESHOME/init/sh 2>/dev/null
-  module load esmf/7.0.0 2>/dev/null
+  module load esmf/7.1.0bs34 2>/dev/null
 fi
 
 # Cycling and forecast hour specific parameters
@@ -58,6 +61,9 @@ FHMAX=${FHMAX:-9}
 FHOUT=${FHOUT:-3}
 FHZER=${FHZER:-6}
 FHCYC=${FHCYC:-24}
+FHMAX_HF=${FHMAX_HF:-0}
+FHOUT_HF=${FHOUT_HF:-1}
+NSOUT=${NSOUT:-"-1"}
 
 # Directories.
 pwd=$(pwd)
@@ -94,11 +100,11 @@ FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
 
 # Model config options
-APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nthreads:-${nth_fv3:-1}}}}
-cores_per_node=${cores_per_node:-${npe_node_fv3:-${npe_node_max:-24}}}
+APRUN_FV3=${APRUN_FV3:-""}
+NTHREADS_FV3=${NTHREADS_FV3:-1}
+cores_per_node=${cores_per_node:-${npe_node_max:-24}}
 ntiles=${ntiles:-6}
-NTASKS_FV3=${NTASKS_FV3:-${tasks:-$((ntiles*layout_x*layout_y))}}
+NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
@@ -294,7 +300,6 @@ na_init=${na_init:-1}
 
 # variables for controlling initialization of NCEP/NGGPS ICs
 filtered_terrain=${filtered_terrain:-".true."}
-ncep_plevels=${ncep_plevels:-".true."}
 gfs_dwinds=${gfs_dwinds:-".true."}
 
 # various debug options
@@ -333,7 +338,7 @@ n_split=${n_split:-6}
 if [ `echo ${MONO} | cut -c-4` = "mono" ];  then # monotonic options
 
   d_con=${d_con:-"0."}
-  do_vort_damp=${do_vort_damp:-".false."}
+  do_vort_damp=".false."
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
     hord_mt=${hord_mt:-"10"}
     hord_xx=${hord_xx:-"10"}
@@ -357,7 +362,7 @@ else # non-monotonic options
 fi
 
 if [ `echo ${MONO} | cut -c-4` != "mono" -a ${TYPE} = "nh" ]; then
-  vtdm4=${vtdm4:-"0.03"}
+  vtdm4=${vtdm4:-"0.06"}
 else
   vtdm4=${vtdm4:-"0.05"}
 fi
@@ -422,6 +427,7 @@ EOF
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
+print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_FV3
 start_year:              $SYEAR
 start_month:             $SMONTH
@@ -440,6 +446,22 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
+
+quilting:                ${QUILTING:-".false."}
+write_groups:            ${WRITE_GROUP:-1}
+write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+num_files:               ${NUM_FILES:-2} 
+filename_base:           '${CDUMP}.t${chh}z.atm' '${CDUMP}.t${chh}z.sfc'
+output_grid:             ${OUTPUT_GRID:-"gaussian_grid"}
+write_nemsiofile:        ${WRITE_NEMSIOFILE:-".true."}
+write_nemsioflip:        ${WRITE_NEMSIOFLIP:-".true."}
+imo:                     $LONB
+jmo:                     $LATB
+
+nfhout:                  $FHOUT
+nfhmax_hf:               $FHMAX_HF
+nfhout_hf:               $FHOUT_HF
+nsout:                   $NSOUT
 EOF
 
 #&coupler_nml
@@ -490,7 +512,7 @@ cat > input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
-  domains_stack_size = ${domains_stack_size:-115200}
+  domains_stack_size = ${domains_stack_size:-3000000}
   print_memory_usage = ${print_memory_usage:-".false."}
   $fms_nml
 /
@@ -507,9 +529,10 @@ cat > input.nml <<EOF
   fv_debug = ${fv_debug:-".false."}
   range_warn = ${range_warn:-".false."}
   reset_eta = .false.
-  n_sponge = ${n_sponge:-"24"}
+  n_sponge = ${n_sponge:-"10"}
   nudge_qv = ${nudge_qv:-".true."}
-  tau = ${tau:-"5."}
+  nudge_dz = ${nudge_dz:-".false."}
+  tau = ${tau:-10.}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
   d2_bg_k1 = ${d2_bg_k1:-"0.15"}
   d2_bg_k2 = ${d2_bg_k2:-"0.02"}
@@ -525,22 +548,21 @@ cat > input.nml <<EOF
   p_fac = 0.1
   k_split = $k_split
   n_split = $n_split
-  nwat = 2
+  nwat = ${nwat:-2}
   na_init = $na_init
   d_ext = 0.
   dnats = 0
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
-  nord = ${nord:-"2"}
-  dddmp = ${dddmp:-"0.1"}
-  d4_bg = ${d4_bg:-"0.12"}
+  nord = ${nord:-3}
+  dddmp = ${dddmp:-0.2}
+  d4_bg = ${d4_bg:-0.15}
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
   ke_bg = 0.
   do_vort_damp = $do_vort_damp
   external_ic = $external_ic
-  read_increment = $read_increment
-  res_latlon_dynamics = $res_latlon_dynamics
+  external_eta = ${external_eta:-.true.}
   gfs_phil = ${gfs_phil:-".false."}
   nggps_ic = $nggps_ic
   mountain = $mountain
@@ -561,12 +583,13 @@ cat > input.nml <<EOF
   no_dycore = $no_dycore
   z_tracer = .true.
   agrid_vel_rst = ${agrid_vel_rst:-".true."}
+  read_increment = $read_increment
+  res_latlon_dynamics = $res_latlon_dynamics
   $fv_core_nml
 /
 
 &external_ic_nml
   filtered_terrain = $filtered_terrain
-  ncep_plevels = $ncep_plevels
   levp = $LEVS
   gfs_dwinds = $gfs_dwinds
   checker_tr = .false.
@@ -574,8 +597,6 @@ cat > input.nml <<EOF
   $external_ic_nml
 /
 
-##  ntoz        = ${ntoz:-2}
-##  ntcw        = ${ntcw:-3}
 &gfs_physics_nml
   fhzero      = $FHZER
   ldiag3d     = ${ldiag3d:-".false."}
@@ -614,7 +635,59 @@ cat > input.nml <<EOF
   debug       = ${gfs_phys_debug:-".false."}
   nstf_name   = $nstf_name
   nst_anl     = $nst_anl
+  psautco     = ${psautco:-"0.0006,0.0003"}
+  prautco     = ${prautco:-"0.0001,0.0001"}
   $gfs_physics_nml
+/
+
+ &gfdl_cloud_microphysics_nml
+       sedi_transport = .true.
+       do_sedi_heat = .false.
+       rad_snow = .true.
+       rad_graupel = .true.
+       rad_rain = .true.
+       const_vi = .F.
+       const_vs = .F.
+       const_vg = .F.
+       const_vr = .F.
+       vi_max = 1.
+       vs_max = 2.
+       vg_max = 12.
+       vr_max = 12.
+       qi_lim = 1.
+       prog_ccn = .false.
+       do_qa = .true.
+       fast_sat_adj = .true.
+       tau_l2v = 300.
+       tau_l2v = 225.
+       tau_v2l = 150.
+       tau_g2v = 900.
+       rthresh = 10.e-6  ! This is a key parameter for cloud water
+       dw_land  = 0.16
+       dw_ocean = 0.10
+       ql_gen = 1.0e-3
+       ql_mlt = 1.0e-3
+       qi0_crt = 8.0E-5
+       qs0_crt = 1.0e-3
+       tau_i2s = 1000.
+       c_psaci = 0.05
+       c_pgacs = 0.01
+       rh_inc = 0.30
+       rh_inr = 0.30
+       rh_ins = 0.30
+       ccn_l = 300.
+       ccn_o = 100.
+       c_paut = 0.5
+       c_cracw = 0.8
+       use_ppm = .false.
+       use_ccn = .true.
+       mono_prof = .true.
+       z_slope_liq  = .true.
+       z_slope_ice  = .true.
+       de_ice = .false.
+       fix_negative = .true.
+       icloud_f = 1
+       mp_time = 150.
 /
 
 &nggps_diag_nml
@@ -749,11 +822,16 @@ $ERRSCRIPT || exit 2
 if [ $SEND = "YES" ]; then
   # Copy model output files
   cd $DATA
-  for n in `seq 1 $ntiles`; do
-    for file in *.tile${n}.nc; do
-      $NCP $file $memdir/.
-    done
-  done
+  if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+   $NCP *atm*.nemsio $memdir/.
+   $NCP *sfc*.nemsio $memdir/.
+  else
+   for n in `seq 1 $ntiles`; do
+     for file in *.tile${n}.nc; do
+       $NCP $file $memdir/.
+     done
+   done
+  fi
 
   # Copy model restart files
   cd $DATA/RESTART
