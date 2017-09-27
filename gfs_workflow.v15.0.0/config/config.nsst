@@ -1,0 +1,39 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date: 2017-09-23 02:48:49 +0000 (Sat, 23 Sep 2017) $
+# $Revision: 97753 $
+# $Author: fanglin.yang@noaa.gov $
+# $Id: config.nsst 97753 2017-09-23 02:48:49Z fanglin.yang@noaa.gov $
+###############################################################
+
+########## config.nsst ##########
+# NSST specific
+
+echo "BEGIN: config.nsst"
+
+export NST_SPINUP=0   
+if [ ${CDATE:-0} -eq 2016100100 ] ; then export NST_SPINUP=1; fi
+
+# NSST parameters: the two depths to apply vertical average (bias correction)
+export zsea1=0
+export zsea2=0
+
+export nstf_name="2,$NST_SPINUP,0,$zsea1,$zsea2"
+ #  nstf_name(1) : 0 (default) = No NSSTM; 1 = uncoupled; 2 = coupled (nstf_name(1) = NST_FCST)
+ #  nstf_name(2) : 0 (default) = NSST Spinup off; 1 = NSST Spinup on
+ #  nstf_name(3) : Reserved
+ #  nstf_name(4) : 0 (default) = the upper depth (in mm) to do vertical mean of T-Profile
+ #  nstf_name(5) : 0 (default) = the lower depth (in mm) to do vertical mean of T-Profile
+
+
+export NST_GSI=3          # default 0: No NST info at all;
+                          #         1: Input NST info but not used in GSI;
+                          #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                          #         3: Input NST info, used in both CRTM simulation and Tr analysis
+export NSTINFO=0          # number of elements added in obs. data array (default = 0)
+if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
+
+
+
+echo "END: config.nsst"

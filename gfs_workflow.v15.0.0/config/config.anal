@@ -1,0 +1,27 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.anal ##########
+# Analysis specific
+
+echo "BEGIN: config.anal"
+
+# Get task specific resources
+. $EXPDIR/config.resources anal
+
+if [ $DONST = "YES" ]; then
+. $EXPDIR/config.nsst
+fi
+
+
+export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
+export npe_gsi=$npe_anal
+export nth_gsi=4
+
+echo "END: config.anal"

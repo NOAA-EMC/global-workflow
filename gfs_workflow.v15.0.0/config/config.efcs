@@ -1,0 +1,59 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE_ENKF
+
+# Get task specific resources
+. $EXPDIR/config.resources efcs
+
+export npe_fv3=$npe_efcs
+export nth_fv3=1
+
+if [ $QUILTING = ".true." ]; then
+ export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" |bc)
+ export npe_efcs=$npe_fv3
+fi
+
+export ENKFFCSTSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_fcst_fv3gfs.sh.ecf"
+export NMEM_EFCSGRP=10
+export RERUN_EFCSGRP="NO"
+
+# Stochastic physics parameters (only for ensemble forecasts)
+export SET_STP_SEED="YES"
+export DO_SKEB=".false."
+export SKEB=0.8
+export SKEB_TAU=21600.
+export SKEB_LSCALE=500000.
+export SKEBNORM=1
+export DO_SHUM=".false."
+export SHUM=0.006
+export SHUM_TAU=21600.
+export SHUM_LSCALE=250000.
+export DO_SPPT=".false."
+export SPPT=0.8
+export SPPT_TAU=21600.
+export SPPT_LSCALE=500000.
+
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+ export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table2_da"
+else
+ export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
+fi
+
+
+# FV3 model namelist parameters to over-ride
+export restart_interval=6
+
+echo "END: config.efcs"

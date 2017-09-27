@@ -13,7 +13,7 @@ export CDUMP=${CDUMP:-gfs}
 
 # Forecast specific variables
 export GG=${master_grid:-"0p25deg"}         # 1deg 0p5deg 0p25deg 0p125deg
-export OUTPUT_GRID=${OUTPUT_GRID:-"latlon"} # input grid type, lat-lon or gaussian_grid
+export REMAP_GRID=${REMAP_GRID:-"latlon"}   # input grid type, lat-lon or gaussian; relevant to forecast
 
 # Process analysis file only
 export ANALYSIS_POST=${ANALYSIS_POST:-"NO"}
@@ -106,6 +106,12 @@ export GRIBVERSION=grib2
 export SLEEP_TIME=900
 export SLEEP_INT=5
 
+# Add a return error code to track success
+# Note: This script will always return with 0 status because
+# exgfs_nceppost.sh always returns with non-zero (Genius!).
+# I won't go fix exgfs_nceppost.sh
+err=0
+
 #---------------------------------------------------
 # work on analysis file
 if [ $ANALYSIS_POST = "YES" ]; then
@@ -123,11 +129,10 @@ if [ $ANALYSIS_POST = "YES" ]; then
   
   export NEMSINP=$COMIN/${PREFIX}atmanl${SUFFIX}
   export FLXINP=$COMIN/${PREFIX}flxanl${SUFFIX}
-  export SFCINP=$COMIN/${PREFIX}sfcanl${SUFFIX}
   
   $HOMEglobal/scripts/exgfs_nceppost.sh.ecf
-  rc1=$?
-  echo $rc1
+  rc=$?
+  echo $rc
   
   #--rename master grib2 following parallel convention
   export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2anl
@@ -141,12 +146,11 @@ if [ $ANALYSIS_POST = "YES" ]; then
   if [ $GFS_DOWNSTREAM = "YES" ]; then
     export FH=-1
     $GFSDOWNSH
-    rc2=$?
-    echo $rc2
+    rc=$?
+    echo $rc
   fi
 
-  [[ ${KEEPDATA:-NO} != YES ]] && rm -rf $DATA
-  err=$rc2
+  [[ ${KEEPDATA:-"YES"} = "YES" ]] && rm -rf $DATA
   exit $err
 
 fi
@@ -155,8 +159,8 @@ fi
 #---------------------------------------------------
 # Now work on forecast files
 
-# Parameters dependent on OUTPUT_GRID
-if [ $OUTPUT_GRID = "latlon" ]; then
+# Parameters dependent on REMAP_GRID
+if [ $REMAP_GRID = "latlon" ]; then
    export IDRT=0
    if [ $CDUMP = "gdas" ]; then
       export IDRT=4
@@ -187,31 +191,42 @@ fi
 
 #---------------------------------------------------
 # Get a list of forecast files that are to be worked on
-  export flist=`ls -1 $COMROT/${PREFIX}atmf???${SUFFIX}`
+if [ $REMAP_GRID = "latlon" ]; then
+   export flist=`ls -1 $COMROT/${PREFIX}atmf???${SUFFIX}`
+else
+   export flist=`ls -1 $COMROT/gfn${PDY}${cyc}.${RUN}.fhr???`
+fi
 
 #---------------------------------------------------
 # Loop over files
 for fname in $flist; do
 
-   fname=`basename $fname`
-   export post_times=`echo $fname | cut -d. -f3 | cut -c5-`
-
-   export restart_file=$COMROT/${PREFIX}atmf
-   ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
-   if [ $CDUMP = "gfs" ] ; then
-      ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
-   elif [ $CDUMP = "gdas" ] ; then
-      ln -fs $COMROT/${PREFIX}sfcf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+   if [ $REMAP_GRID = "latlon" ]; then
+      fname=`basename $fname`
+      export post_times=`echo $fname | cut -d. -f3 | cut -c5-`
+   else
+      export post_times=`echo $fname | rev | cut -c-3 | rev`
    fi
-   ln -fs $COMROT/${PREFIX}sfcf${post_times}${SUFFIX} $COMIN/${PREFIX}sfcf${post_times}${SUFFIX}
 
+   if [ $REMAP_GRID = "latlon" ]; then
+      export restart_file=$COMROT/${PREFIX}atmf
+      ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
+      if [ $CDUMP = "gfs" ] ; then
+         ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+      elif [ $CDUMP = "gdas" ] ; then
+         ln -fs $COMROT/${PREFIX}sfcf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+      fi
+   else
+      export restart_file=$COMROT/gfn${PDY}${cyc}.${RUN}.fhr
+      ln -fs $COMROT/gfn${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
+      ln -fs $COMROT/fln${PDY}${cyc}.${RUN}.fhr${post_times}  $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
+   fi
    export NEMSINP=$COMIN/${PREFIX}atmf${post_times}${SUFFIX}
    export FLXINP=$COMIN/${PREFIX}flxf${post_times}${SUFFIX}
-   export SFCINP=$COMIN/${PREFIX}sfcf${post_times}${SUFFIX}
 
    $HOMEglobal/scripts/exgfs_nceppost.sh.ecf
-   rc1=$?
-   echo $rc1
+   rc=$?
+   echo $rc
 
    #--rename master grib2 following parallel convention
    export PGBOUT2_ops=$COMOUT/${PREFIX}master.grb2f${post_times}
@@ -227,16 +242,15 @@ for fname in $flist; do
    # call down-stream jobs
    if [ $GFS_DOWNSTREAM = "YES" ]; then
       $GFSDOWNSH
-      rc2=$?
-      echo $rc2
+      rc=$?
+      echo $rc
    fi
 
    sleep 10
-   #rm -f ${DATA}/*
+   rm -f ${DATA}/*
 
 done
 #----------------
 
 [[ ${KEEPDATA:-NO} != YES ]] && rm -rf $DATA
-err=$rc2
 exit $err

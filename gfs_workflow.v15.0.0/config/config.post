@@ -1,0 +1,45 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.post ##########
+# Post specific
+
+echo "BEGIN: config.post"
+
+# Get task specific resources
+. $EXPDIR/config.resources post
+
+# Convert nemsio files to grib files using post job
+#-------------------------------------------
+
+# Post driver job that calls global_nceppost.sh and downstream jobs
+export POSTJJOBSH="$BASE_JOB/JGFS_POST.sh"
+
+# GDAS cycling no longer requires grib files
+# Set option to enable/disable this feature
+export DO_GDAS_FCST_POST="YES"
+
+export POSTGPSH="$BASE_POST/ush/global_nceppost.sh"
+export POSTGPEXEC="$BASE_POST/exec/ncep_post"
+export GOESF=NO                               #goes image
+export GTGF=NO                                #gtg icing product
+export FLXF=YES                               #grib2 flux file written by post
+export GPOST=YES                              #to run post on gdas forecast files 
+
+export npe_postgp=$npe_post
+export nth_postgp=1
+
+export GFS_DOWNSTREAM="YES"
+export GFSDOWNSH="$BASE_WORKFLOW/ush/fv3gfs_downstream_nems.sh"
+export GFSDWNSH="$BASE_WORKFLOW/ush/fv3gfs_dwn_nems.sh"
+export downset=1
+export npe_dwn=$npe_post
+export nth_dwn=2
+
+echo "END: config.post"

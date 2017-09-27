@@ -1,438 +1,188 @@
-#!/bin/ksh
-################################################################################
-# This script runs the enkf archive and cleanup.
-# Usage: earc.sh
-# Imported variables:
-#   CONFIG
-#   CDATE
-#   CDUMP
-#   CSTEP
-# Configuration variables:
-#   DATATMP
-#   COMROT
-#   COMDAY
-#   HRKTMP
-#   HRKROT
-#   HRKSIG
-#   HRKSIGG
-#   HRKPGBM
-#   HRKVFY
-#   HRKDAY
-#   HRKOCN_NC
-#   HRKOCN_ANL
-#   HRKOCN_GRB
-#   ALIST
-#   PBEG
-#   PERR
-#   PEND
-################################################################################
-set -ux
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
 
-################################################################################
-# Go configure
+###############################################################
+## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
-set -a;. $CONFIG;set +a  
-export CKSH=$(echo $CSTEP|cut -c-4)
-export CKND=$(echo $CSTEP|cut -c5-)
-export machine=${machine:-WCOSS}
-machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-eval export DATA=$DATATMP
-export COMROTTMP=${COMROTTMP:-$COMROT}
-eval export COMROT=$COMROTTMP
-eval export COMDAY=${COMDAY:-$COMROT}
-export RESDIR=${RESDIR:-$COMROT/RESTART}
-export ARCH_TO_HPSS=${ARCH_TO_HPSS:-YES}
-export ARCH_TO_DISK=${ARCH_TO_DISK:-NO}
-cd;rm -rf $DATA||exit 1;mkdir -p $DATA||exit 1;cd $DATA||exit 1
-#chgrp ${group_name:-rstprod} $DATA
-chmod ${permission:-755} $DATA
-#
-export BASEDIR=${BASEDIR:-..}
-export SHDIR=${SHDIR:-$BASEDIR/bin}
-export USHDIR=${USHDIR:-$BASEDIR/ush}
-export NWPROD=${NWPROD:-$BASEDIR}
-#
-PBEG=${PBEG:-$SHDIR/pbeg}
-PEND=${PEND:-$SHDIR/pend}
-PERR=${PERR:-$SHDIR/perr}
-ARCHCFSRRSH=${ARCHCFSRRSH:-$BASEDIR/ush/cfsrr/hpss.cfsrr.daily.qsub}
-CFSRR_ARCH=${CFSRR_ARCH:-YES}
-HRKTMP=${HRKTMP:-24}
-HRKRES=${HRKRES:-24}
-HRKSIG=${HRKSIG:-120}
-HRKSIGG=${HRKSIGG:-120}
-HRKPGBM=${HRKPGBM:-48}
-HRKROT=${HRKROT:-120}
-HRKDAY=${HRKDAY:-${HRKROT:-120}}
-HRKVFY=${HRKVFY:-${HRKROT:-120}}
-HRKOCN_NC=${HRKOCN_NC:-$HRKSIG}
-HRKOCN_ANL=${HRKOCN_ANL:-$HRKROT}
-HRKOCN_GRB=${HRKOCN_GRB:-$HRKROT}
-HRKETMP=${HRKETMP:-24}
-HRKENKF=${HRKENKF:-72}
+## Abstract:
+## Ensemble archive driver script
+## EXPDIR : /full/path/to/config/files
+## CDATE  : current analysis date (YYYYMMDDHH)
+## CDUMP  : cycle name (gdas / gfs)
+## ENSGRP : ensemble sub-group to archive (0, 1, 2, ...)
+###############################################################
 
-ARCHCOPY=${ARCHCOPY:-NO}
-ARCHDAY=${ARCHDAY:-2}       # impacts delay for online archive only
-BACKDATE=$((ARCHDAY*24))    # impacts delay for online archive only
+###############################################################
+# Source relevant configs
+configs="base earc"
+for config in $configs; do
+    . $EXPDIR/config.${config}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
-ATARDIR=${ATARDIR:-null}
-ATARFILE=${ATARFILE:-$CDATE$CDUMP.tar}
-ATARDIR_DISK=${ATARDIR_DISK:-/gpfs/hps/nco/storage/gfs_retro}
+###############################################################
+# Run relevant tasks
 
-#RSTPRODSH=${RSTPRODSH-$NWPROD/runhistory.v2.1.26/ush/rhist_restrict.sh}
-RSTPRODSH=${RSTPRODSH-$USHDIR/rhist_restrict.sh}
-TSM_FLAG=${TSM_FLAG:-NO}
+# CURRENT CYCLE
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
+APREFIX="${CDUMP}.t${cyc}z."
+ASUFFIX=".nemsio"
 
-$PBEG
-################################################################################
-# Set other variables
+COMIN_ENS="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
 
-export PCOP=${PCOP:-$SHDIR/pcop}
-export NCP=${NCP:-cp}
-export SCP=${SCP:-/usr/bin/scp}
-export NDATE=${NDATE:-${NWPROD}/util/exec/ndate}
-export COPYGB=${COPYGB:-${NWPROD}/util/exec/copygb}
-export NCEPPOST=${NCEPPOST:-NO}
-export CYINC=${CYINC:-06}
-export CDFNL=${CDFNL:-gdas}
-export GDUMP=${GDUMP:-$CDFNL}
-export GDATE=$($NDATE -$CYINC $CDATE)
-export HPSSTAR=${HPSSTAR:-$BASEDIR/ush/hpsstar}
-export SUB=${SUB:-$BASEDIR/bin/sub}
-export HTAR=${HTAR:-/apps/hpss/htar}
-export HSI=${HSI:-/apps/hpss/hsi}
-
-export fhmax_1=${fmax1:-192}
-export fhmax_2=${fmax2:-384}
-export FHOUT=${FHOUT_ENKF:-3}
-export FHMAX=${FHMAX_ENKF:-9}
-export pgbf_gfs=${pgbf_gfs:-3}     #resolution of gfs pgbf files saved in HPSS archive, 3-1x1,4-0.5x0.5
-export pgbf_gdas=${pgbf_gdas:-4}   #resolution of gdas pgbf files saved in HPSS archive
-export pgbf_grid=$(eval echo \$pgbf_$CDUMP)
-if [ $pgbf_grid -eq 4 ] ; then
- export flag_pgb=h
-elif [ $pgbf_grid -eq 3 ] ; then
- export flag_pgb=f
-elif [ $pgbf_grid -eq 2 ] ; then
- export flag_pgb=l
-fi
-export flag_pgb=${flag_pgb:-q}
-
-export CDUMPE=enkf
-
-SDATE=$CDATE
-BDATE=$($NDATE -$BACKDATE $CDATE)    # online archive date only
-
-
-################################################################################# Copy files to online archive
-if [[ $ARCHCOPY = YES ]];then
- if [[ ! -s $ARCDIR ]]; then
-    mkdir -p $ARCDIR
- fi
-
- SPECIALARCHSH=${SPECIALARCHSH:-""}
- if [ ! -z $SPECIALARCHSH ]; then
-   if [ -s $SPECIALARCHSH ] ; then
-     $SPECIALARCHSH
-   fi
-   rc=$?
-   if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
-   $PEND
- fi
-
- export CDATE=$BDATE
-
-# be sure we are in working directory $DATA
- cd $DATA
-# rm *
-
-# return code gets checked for any required files (ARCR)
- $PCOP $CDATE/$CDUMPE/arch/ARCR $COMROT   $DATA <$RLIST
- rc=$?
-
-# dayfiles may not be stored in COMROT...
-#    need to work on this to avoid unnecessary errors
- [ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMPE/arch/ARCR $COMDAY   $DATA <$RLIST
-
- ((rc+=$?))
-
-# optional files
- $PCOP $CDATE/$CDUMPE/arch/ARCO $COMROT $DATA <$RLIST
- [ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMPE/arch/ARCO $COMDAY   $DATA <$RLIST
-
-  $NCP *${CDATE}* $ARCDIR/
-
-fi
-
-export CDATE=$SDATE
-
-
-################################################################################
-# Archive to tape.
-
-# export CDATE=$BDATE    # commented out because short hrksigg is sometimes required
-export CDATE=$SDATE      # so, instead, archive to tape asap
-rc=0
-
-SGDATE=$GDATE
-if [ $ARCH_TO_HPSS = YES -o $ARCH_TO_DISK = YES ] ; then
- cycle=$(echo $CDATE|cut -c9-10)
- cdump=$(echo $CDUMP|tr '[a-z]' '[A-Z]')
-
-# GDATE and GDATE00 for SCORES and rain files
- export GDATE=$($NDATE -6 $CDATE)
- export CDATE00=$(echo $CDATE|cut -c1-8)
- export GDATE00=$(echo $GDATE|cut -c1-8)
-# cd $DATA
-
- for a in EARCA EARCB EARCC EARC06;do
-   eval eval afile=\${$a$cycle$cdump:-null}
-   if [[ $afile != null ]];then
-     afiletmp=$afile
-     adir=$ATARDIR
-     if [ $ARCH_TO_HPSS = YES ]; then
-      afile=$ATARDIR/$afiletmp
-     elif [ $ARCH_TO_DISK = YES ]; then
-      adir=${ATARDIR_DISK}${ATARDIR}
-     fi
-     if [ $ARCH_HWRF = YES ]; then
-       for list in $ARCH_HWRF_LIST ;do
-         if [ "$a" == "$list" ]; then
-           if [ $ARCH_TO_HPSS = YES ]; then
-             afile=$ATARDIR_HWRF/$afiletmp
-           elif [ $ARCH_TO_DISK = YES ]; then
-             adir=${ATARDIR_DISK}${ATARDIR_HWRF}
-           fi
-           break 1
-         fi
-       done
-     fi
-     if [ $ARCH_TO_HPSS = YES ]; then
-       $HSI mkdir -p $adir
-     elif [ $ARCH_TO_DISK = YES ]; then
-       if [ ! -d $adir ]; then mkdir -p $adir; fi
-     fi
-     NDATA=$STMP/$LOGNAME/HPSS_${PSLOT}$CDATE$CDUMP${a}
-     if [ $ARCH_TO_HPSS = YES ]; then $HSI mkdir -p ${ATARDIR}; fi
-     if [ $machine = THEIA -o $machine = WCOSS -o $machine = WCOSS_C ] ; then
-       np='1/1/S'
-       mem='1024/1'
-       tl=${TIMELIMEARC:-'3:00:00'}
-       qq=${CUE2RUNA:-transfer}
-       jn=${PSLOT}${CDATE}${CDUMP}${a}
-       out=$COMROT/$jn.dayfile
-       trans_local=$COMROT/transfer_${a}_${CDATE}${CDUMP}${CSTEP}
-       > $trans_local
-       echo "#!/bin/ksh"                >> $trans_local
-       echo "set -ax"                   >> $trans_local
-       echo "export NDATA=$NDATA"       >> $trans_local
-       echo "export HTAR=$HTAR"         >> $trans_local
-       echo "export HSI=$HSI"           >> $trans_local
-       echo "export PCOP=$PCOP"         >> $trans_local
-       echo "export NCP='$NCP'"         >> $trans_local
-       echo "export PSLOT=$PSLOT"       >> $trans_local
-       echo "export BASEDIR=$BASEDIR"   >> $trans_local
-       echo "export CDATE=$CDATE"       >> $trans_local
-       echo "export CDUMP=$CDUMP"       >> $trans_local
-       echo "export GDATE=$GDATE"       >> $trans_local
-       echo "export GDUMP=$GDUMP"       >> $trans_local
-       echo "export COMROT=$COMROT"     >> $trans_local
-       echo "export RLIST=$RLIST"       >> $trans_local
-       echo "export COMDAY=$COMDAY"     >> $trans_local
-       echo "export a=$a"               >> $trans_local
-       echo "export afile=$afile"       >> $trans_local
-       echo "export KEEPDATA=$KEEPDATA" >> $trans_local
-       echo "export ARCH_TO_HPSS=$ARCH_TO_HPSS" >> $trans_local
-       echo "export ARCH_TO_DISK=$ARCH_TO_DISK" >> $trans_local
-       echo ""                          >> $trans_local
-       echo "mkdir -p $NDATA||exit 1;cd $NDATA||exit 1" >> $trans_local
-       echo "rm *"                      >> $trans_local
-       echo "$PCOP $CDATE/$CDUMP/arch/$a $COMROT $NDATA <$RLIST" >> $trans_local
-       echo "[ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMP/arch/$a $COMDAY $NDATA <$RLIST" >> $trans_local
-       echo "sleep 30" >> $trans_local
-       echo ""                          >> $trans_local
-       if [ $ARCH_TO_HPSS = YES ]; then
-         echo "$HTAR -Hcrc -Hverify=1 -V -cvf $afile *" >> $trans_local
-       elif [ $ARCH_TO_DISK = YES ]; then
-         #echo 'crc32 `find . -maxdepth 1 -type f | sort -n `> ${afile}.idx' >> $trans_local
-         echo "tar -W -cvf $afile *" >> $trans_local
-       fi
-       echo "rc=\$?"                    >> $trans_local
-       echo "if [[ \$rc -ne 0 ]]; then exit 1 ; fi"   >> $trans_local
-       echo "export TSM_FLAG=$TSM_FLAG" >> $trans_local
-       echo "$RSTPRODSH $afile $ARCH_TO_HPSS $ARCH_TO_DISK" >> $trans_local
-       if [ $ARCH_TO_DISK = YES ]; then
-         echo "$NCP ${afile}* $adir/" >> $trans_local
-         echo "rc=\$?"                    >> $trans_local
-       fi
-       echo "if [[ \$rc -ne 0 ]]; then exit 1 ; fi"   >> $trans_local
-       echo "if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $NDATA ; fi" >> $trans_local
-       chmod 755 $trans_local
-       en=CONFIG="$trans_local"
-       $SUB -e $en -q $qq -a $ACCOUNT -g $GROUP -p $np -r $mem -t $tl -j $jn -o $out $trans_local
-       ((rc+=$?))
-     fi
-   fi
- done
-
-# Archive EnKF forecast hours other than FH=6
- export FH=0
- while [ $FH -le $FHMAX ]; do
-   if [ $FH -ne 6 ] ; then
-     FHR=$FH
-     if [ $FH -lt 10 ]; then
-       export FHR=0$FH
-     fi
-     a=EARC${FHR}
-     eval eval afile=\${$a$cycle$cdump:-null}
-     if [[ $afile != null ]];then
-       afiletmp=$afile
-       adir=$ATARDIR
-       if [ $ARCH_TO_HPSS = YES ]; then
-        afile=$ATARDIR/$afiletmp
-       elif [ $ARCH_TO_DISK = YES ]; then
-        adir=${ATARDIR_DISK}${ATARDIR}
-       fi
-       if [ $ARCH_HWRF = YES ]; then
-         for list in $ARCH_HWRF_LIST ;do
-           if [ "$a" == "$list" ]; then
-             if [ $ARCH_TO_HPSS = YES ]; then
-               afile=$ATARDIR_HWRF/$afiletmp
-             elif [ $ARCH_TO_DISK = YES ]; then
-               adir=${ATARDIR_DISK}${ATARDIR_HWRF}
-             fi
-             break 1
-           fi
-         done
-       fi
-       if [ $ARCH_TO_HPSS = YES ]; then
-         $HSI mkdir -p $adir
-       elif [ $ARCH_TO_DISK = YES ]; then
-         if [ ! -d $adir ]; then mkdir -p $adir; fi
-       fi
-       NDATA=$STMP/$LOGNAME/HPSS_${PSLOT}$CDATE$CDUMP${a}
-       if [ $ARCH_TO_HPSS = YES ]; then $HSI mkdir -p ${ATARDIR}; fi
-       if [ $machine = THEIA -o $machine = WCOSS -o $machine = WCOSS_C ] ; then
-         np='1/1/S'
-         mem='1024/1'
-         tl=${TIMELIMEARC:-'3:00:00'}
-         qq=${CUE2RUNA:-transfer}
-         jn=${PSLOT}${CDATE}${CDUMP}${a}
-         out=$COMROT/$jn.dayfile
-         trans_local=$COMROT/transfer_${a}_${CDATE}${CDUMP}${CSTEP}
-         > $trans_local
-         echo "#!/bin/ksh"                >> $trans_local
-         echo "set -ax"                   >> $trans_local
-         echo "export NDATA=$NDATA"       >> $trans_local
-         echo "export HTAR=$HTAR"         >> $trans_local
-         echo "export HSI=$HSI"           >> $trans_local
-         echo "export PCOP=$PCOP"         >> $trans_local
-         echo "export NCP='$NCP'"         >> $trans_local
-         echo "export PSLOT=$PSLOT"       >> $trans_local
-         echo "export BASEDIR=$BASEDIR"   >> $trans_local
-         echo "export CDATE=$CDATE"       >> $trans_local
-         echo "export CDUMP=$CDUMP"       >> $trans_local
-         echo "export GDATE=$GDATE"       >> $trans_local
-         echo "export GDUMP=$GDUMP"       >> $trans_local
-         echo "export COMROT=$COMROT"     >> $trans_local
-         echo "export RLIST=$RLIST"       >> $trans_local
-         echo "export COMDAY=$COMDAY"     >> $trans_local
-         echo "export a=$a"               >> $trans_local
-         echo "export afile=$afile"       >> $trans_local
-         echo "export KEEPDATA=$KEEPDATA" >> $trans_local
-         echo "export ARCH_TO_HPSS=$ARCH_TO_HPSS" >> $trans_local
-         echo "export ARCH_TO_DISK=$ARCH_TO_DISK" >> $trans_local
-         echo ""                          >> $trans_local
-         echo "mkdir -p $NDATA||exit 1;cd $NDATA||exit 1" >> $trans_local
-         echo "rm *"                      >> $trans_local
-         echo "$PCOP $CDATE/$CDUMP/arch/$a $COMROT $NDATA <$RLIST" >> $trans_local
-         echo "[ $COMDAY != $COMROT ] && $PCOP $CDATE/$CDUMP/arch/$a $COMDAY $NDATA <$RLIST" >> $trans_local
-         echo "sleep 30" >> $trans_local
-         echo ""                          >> $trans_local
-         if [ $ARCH_TO_HPSS = YES ]; then
-           echo "$HTAR -Hcrc -Hverify=1 -V -cvf $afile *" >> $trans_local
-         elif [ $ARCH_TO_DISK = YES ]; then
-           #echo 'crc32 `find . -maxdepth 1 -type f | sort -n `> ${afile}.idx' >> $trans_local
-           echo "tar -W -cvf $afile *" >> $trans_local
-         fi
-         echo "rc=\$?"                    >> $trans_local
-         echo "if [[ \$rc -ne 0 ]]; then exit 1 ; fi"   >> $trans_local
-         echo "export TSM_FLAG=$TSM_FLAG" >> $trans_local
-         echo "$RSTPRODSH $afile $ARCH_TO_HPSS $ARCH_TO_DISK"         >> $trans_local
-         if [ $ARCH_TO_DISK = YES ]; then
-           echo "$NCP ${afile}* $adir/" >> $trans_local
-           echo "rc=\$?"                    >> $trans_local
-         fi
-         echo "if [[ \$rc -ne 0 ]]; then exit 1 ; fi"   >> $trans_local
-         echo "if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $NDATA ; fi" >> $trans_local
-         chmod 755 $trans_local
-         en=CONFIG="$trans_local"
-         $SUB -e $en -q $qq -a $ACCOUNT -g $GROUP -p $np -r $mem -t $tl -j $jn -o $out $trans_local
-         ((rc+=$?))
-       fi
-     fi
-   fi
-   FH=`expr $FH + $FHOUT`
- done
-fi
-
-export CDATE=$SDATE
-export GDATE=$SGDATE
-
-################################################################################
-# Clean up.
-
-# rm old work directories
-rdate=$($NDATE -$HRKETMP $CDATE)
-rm -rf $(CDATE=$rdate CDUMP=${CDUMP}e CSTEP='*' eval ls -d $DATATMP) 2>/dev/null
-
-# define function to check that verifications files are archived online before clean up.
-chkarc ()
-{
-  set -x
-    ARCDIR=$1
-    for verif_file in `ls $rmfiles 2>/dev/null`
-    do
-      if [ ! -s $ARCDIR/$verif_file ]; then
-        set +x
-        echo "****  VERIFICATION FILE $verif_file MISSING FROM $ARCDIR"
-        echo "****  WILL ATTEMPT TO MOVE $verif_file TO $ARCDIR NOW"
-        echo "****  TAPE ARCHIVE SHOULD BE CHECKED"
-        set -x
-        mv $verif_file $ARCDIR
-      fi
-    done
-}
-
-## for dayfiles, cd to COMDAY to avoid hitting unix line length limit ("Arg list too long.")
-cd $COMDAY
-rdate=$($NDATE -$HRKDAY $CDATE)
-rm $PSLOT$rdate*dayfile* 2>/dev/null
-
-## for other files, cd to COMROT to avoid hitting unix line length limit ("Arg list too long.")
-
-cd $COMROT
-
-# remove enkf files
-if [ $DOENKF = YES ] ; then
- rdate=$($NDATE -$HRKENKF $CDATE)
- rm *${rdate}_ensmean 2>/dev/null
- rm *${rdate}_mem*    2>/dev/null
- rm *${rdate}_all     2>/dev/null
- rm *${rdate}_grp*    2>/dev/null
- rm *${rdate}_fhr*    2>/dev/null
- rm enkfstat_${rdate} 2>/dev/null
- rm sigpairs_${rdate} 2>/dev/null
- rm pertdates_${rdate} 2>/dev/null
-fi
-
-
+DATA="$RUNDIR/$CDATE/$CDUMP/earc$ENSGRP"
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
 cd $DATA
 
+###############################################################
+# ENSGRP -gt 0 archives ensemble member restarts
+if [ $ENSGRP -gt 0 ]; then
 
-################################################################################
-# Exit gracefully
+    mkdir -p $DATA/enkf.${CDUMP}restart
+    cd $DATA/enkf.${CDUMP}restart
 
-if [[ $rc -ne 0 ]];then $PERR;exit 1;fi
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
-$PEND
+    # Get ENSBEG/ENSEND from ENSGRP and NMEM_EARCGRP
+    ENSEND=$(echo "$NMEM_EARCGRP * $ENSGRP" | bc)
+    ENSBEG=$(echo "$ENSEND - $NMEM_EARCGRP + 1" | bc)
+
+    for imem in `seq $ENSBEG $ENSEND`; do
+
+        memchar="mem"`printf %03i $imem`
+
+        memdir="$COMIN_ENS/$memchar"
+        tmpmemdir="$DATA/enkf.${CDUMP}restart/$memchar"
+
+        mkdir -p $tmpmemdir
+        cd $tmpmemdir
+
+        restart_dir="$memdir/RESTART"
+        if [ -d $restart_dir ]; then
+            mkdir -p RESTART
+            files=$(ls -1 $restart_dir)
+            for file in $files; do
+                $NCP $restart_dir/$file RESTART/$file
+            done
+        fi
+
+        increment_file="$memdir/${APREFIX}atminc.nc"
+        [[ -f $increment_file ]] && $NCP $increment_file .
+
+        cd $DATA/enkf.${CDUMP}restart
+
+        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar $memchar
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HTAR $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
+            exit $status
+        fi
+
+        hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}restart.$memchar.tar
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HSI $CDATE enkf.${CDUMP}restart.$memchar.tar failed"
+            exit $status
+        fi
+
+        rm -rf $tmpmemdir
+
+    done
+
+    cd $DATA
+
+    rm -rf enkf.${CDUMP}restart
+
+else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and cleans up
+
+    ###############################################################
+    # Archive extra information that is good to have
+    mkdir -p $DATA/enkf.$CDUMP
+    cd $DATA/enkf.$CDUMP
+
+    # Ensemble mean related files
+    files="gsistat.ensmean cnvstat.ensmean enkfstat atmf006.ensmean.nc4 atmf006.ensspread.nc4"
+    for file in $files; do
+        $NCP $COMIN_ENS/${APREFIX}$file .
+    done
+
+    # Ensemble member related files
+    files="gsistat cnvstat"
+    for imem in `seq 1 $NMEM_ENKF`; do
+
+        memchar="mem"`printf %03i $imem`
+
+        memdir="$COMIN_ENS/$memchar"
+        tmpmemdir="$DATA/enkf.${CDUMP}/$memchar"
+
+        mkdir -p $tmpmemdir
+
+        for file in $files; do
+            $NCP $memdir/${APREFIX}$file $tmpmemdir/.
+        done
+
+        cd $DATA/enkf.$CDUMP
+
+    done
+
+    cd $DATA
+
+    htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar enkf.$CDUMP
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
+        exit $status
+    fi
+
+    hsi ls -l $ATARDIR/$CDATE/enkf.${CDUMP}.tar
+    status=$?
+    if [ $status -ne 0 ]; then
+        echo "HSI $CDATE enkf.${CDUMP}.tar failed"
+        exit $status
+    fi
+
+    rm -rf enkf.$CDUMP
+
+    ###############################################################
+    # Archive online for verification and diagnostics
+    [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+    cd $ARCDIR
+
+    $NCP $COMIN_ENS/${APREFIX}enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $COMIN_ENS/${APREFIX}gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+
+    ###############################################################
+    # Clean up previous cycles; various depths
+    # PRIOR CYCLE: Leave the prior cycle alone
+    GDATE=$($NDATE -$assim_freq $CDATE)
+
+    # PREVIOUS to the PRIOR CYCLE
+    # Now go 2 cycles back and remove the directory
+    GDATE=$($NDATE -$assim_freq $GDATE)
+    gymd=$(echo $GDATE | cut -c1-8)
+    ghh=$(echo  $GDATE | cut -c9-10)
+
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
+    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+
+    # PREVIOUS day 00Z remove the whole day
+    GDATE=$($NDATE -48 $CDATE)
+    gymd=$(echo $GDATE | cut -c1-8)
+    ghh=$(echo  $GDATE | cut -c9-10)
+
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
+    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+
+fi
+
+###############################################################
+# Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
+exit 0
