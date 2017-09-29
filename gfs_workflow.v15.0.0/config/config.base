@@ -36,6 +36,8 @@ HPSS_PROJECT=emc-global
 # Directories relative to installation areas:
 BASE_FV3GFS=@BASE_FV3GFS@
 export BASE_WORKFLOW="$BASE_FV3GFS/gfs_workflow.v15.0.0"
+export BASE_GDAS="$BASE_FV3GFS/gdas.v15.0.0"
+export BASE_GFS="$BASE_FV3GFS/gfs.v15.0.0"
 export BASE_GSM="$BASE_FV3GFS/global_shared.v15.0.0"
 export BASE_MODULES="$BASE_FV3GFS/global_shared.v15.0.0/modulefiles"
 
@@ -153,7 +155,7 @@ fi
 # Build paths relative to $BASE_SVN
 export BASE_GSI="$BASE_GSM/sorc/gsi.fd"
 export BASE_NEMSfv3gfs="$BASE_GSM/sorc/fv3gfs.fd"
-export BASE_POST="$BASE_SVN/fv3gfs/tags/post_script_unify"
+export BASE_POST="$BASE_SVN/post/tags/ncep_post.v7.7.2"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
 export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
