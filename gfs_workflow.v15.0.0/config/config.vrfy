@@ -69,7 +69,7 @@ fi
 # Minimization, Radiance and Ozone Monitoring
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
-    export HOMEgdas=$BASE_GDAS
+    export HOMEgdas="$BASE_GDAS"
     export envir="para"
 
     # Radiance Monitoring
@@ -90,7 +90,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     # Minimization Monitoring
     if [[ "$VRFYMINMON" = "YES" ]] ; then
 
-        export HOMEgfs="$BASE_SVN/fv3gfs/trunk/gfs.v15.0.0"
+        export HOMEgfs="$BASE_GFS"
         export HOMEminmon=$BASE_GSM
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/minmon"
