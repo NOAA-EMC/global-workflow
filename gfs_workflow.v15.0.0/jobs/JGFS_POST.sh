@@ -232,27 +232,9 @@ for fname in $flist; do
    fi
 
    sleep 10
-   rm -f ${DATA}/*
+   #rm -f ${DATA}/*
 
 done
-
-#---------------------------------------------------
-# Extract select records from GFS sfluxgrb files and
-# convert to grib1 for archive and verfication use
-if [ $CDUMP = "gfs" ]; then
-    cd $COMOUT
-    for fname in ${PREFIX}sfluxgrbf*grib2; do
-       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
-       fhr=$fhr3
-       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
-       rm -f $DATA/outtmp
-       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $DATA/outtmp
-       fileout=pgbq${fhr}.${CDUMP}.${CDATE}.grib1
-       $CNVGRIB21_GFS -g21 $DATA/outtmp $DATA/$fileout
-       $NCP $DATA/$fileout $COMOUT/$fileout
-    done
-fi
-
 #----------------
 
 [[ ${KEEPDATA:-NO} != YES ]] && rm -rf $DATA

@@ -66,7 +66,7 @@ if [ $CDUMP = "gfs" ]; then
         xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
         export ARCDIR1="$NOSCRUB/archive"
         export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
-        export COMROT="$ARCDIR1/dummy"
+        export COMROT="$ROTDIR/vrfyarch/dummy" # vrfyarch/dummy is required because of clumsiness in mkup_rain_stat.sh
 
         $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc
 
