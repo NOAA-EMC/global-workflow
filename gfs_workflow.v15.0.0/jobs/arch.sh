@@ -138,15 +138,21 @@ if [ $CDUMP = "gdas" ]; then
 fi
 
 # Archive
-# 1. quarter degree GRIB1 files for precip verification
+# 1. quarter degree GRIB2 files for precip verification after extracting PRATE and TMP2m
 # 2. atmospheric nemsio gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" ]; then
 
-    for fname in pgbq*${CDUMP}.${CDATE}.grib1; do
-       fileout=$(echo $fname | cut -d. -f1-3)  # strip off ".grib1" suffix
-       $NCP $fname $ARCDIR/$fileout
+    for fname in ${APREFIX}sfluxgrbf*grib2; do
+       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
+       fhr=$fhr3
+       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
+       rm -f $DATA/outtmp
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $DATA/outtmp
+       fileout=$DATA/pgbq${fhr}.${CDUMP}.${CDATE}
+       $CNVGRIB21_GFS -g21 $DATA/outtmp $fileout
+       $NCP $fileout $ARCDIR/$fileout
     done
 
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
