@@ -76,7 +76,7 @@ def edit_baseconfig():
 
     here=os.path.dirname(__file__)
     top=os.path.abspath(os.path.join(
-        os.path.abspath(here),'../../..'))
+        os.path.abspath(here),'../..'))
 
     # make a copy of the default before editing
     shutil.copy(base_config, base_config+'.default')
