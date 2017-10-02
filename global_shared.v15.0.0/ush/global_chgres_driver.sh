@@ -26,7 +26,6 @@ export CDATE=${CDATE:-${cdate:-2017031900}}  # format yyyymmddhh yyyymmddhh ...
 export CDUMP=${CDUMP:-gfs}                   # gfs or gdas
 export LEVS=${LEVS:-65}
 export LSOIL=${LSOIL:-4}
-export nst_anl=${nst_anl:-".false."}         # false means to do sst orographic adjustment for lakes
 
 export VERBOSE=YES
 pwd=$(pwd)
@@ -115,7 +114,6 @@ else
 fi
 
 if [ $ictype = oldgfs ]; then
- nst_anl=".false."
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/siganl.${CDUMP}.$CDATE
@@ -176,7 +174,7 @@ fi
 #------------------------------------------------
 # Convert atmospheric file.
 #------------------------------------------------
-export CHGRESVARS="use_ufo=.false.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+export CHGRESVARS="use_ufo=.false.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
 export SIGINP=$ATMANL
 export SFCINP=NULL
 export NSTINP=NULL
@@ -196,7 +194,7 @@ mv ${DATA}/gfs_ctrl.nc        $OUTDIR/.
 #---------------------------------------------------
 # Convert surface and nst files one tile at a time.
 #---------------------------------------------------
-export CHGRESVARS="use_ufo=.true.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+export CHGRESVARS="use_ufo=.true.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
 export SIGINP=NULL
 export SFCINP=$SFCANL
 export NSTINP=$NSTANL
