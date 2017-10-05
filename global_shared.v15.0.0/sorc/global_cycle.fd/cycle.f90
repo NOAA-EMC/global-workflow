@@ -292,11 +292,11 @@
 
  IF (NST_ANL) SLIFCS_FG = SLIFCS
 
- do i = 1, lensfc
-   if (nint(slifcs(i)) == 0 .and. nsst%tref(i) < 271.2) then
-     print*,'warning, backgnd tref below freez: ',i,nsst%tref(i)
-   endif
- enddo
+!do i = 1, lensfc
+!  if (nint(slifcs(i)) == 0 .and. nsst%tref(i) < 271.2) then
+!    print*,'warning, backgnd tref below freez: ',i,nsst%tref(i)
+!  endif
+!enddo
 
 !--------------------------------------------------------------------------------
 ! UPDATE SURFACE FIELDS.

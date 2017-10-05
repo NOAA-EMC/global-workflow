@@ -28,15 +28,20 @@ export CDATE=2016100118
 export FHOUR=00
 
 TILE=tile6
-export SFCGES=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/RESTART/20161001.180000.sfc_data.${TILE}.nc
+#export SFCGES=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/RESTART/20161001.180000.sfc_data.${TILE}.nc
+export SFCGES=/gpfs/hps3/stmp/George.Gayno/RESTART/20161001.180000.sfc_data.${TILE}.nc
 export SFCANL="./sfcanl.$TILE"
 
-export NST_ANL=.true.
-export GSI_FILE=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/gdas.t18z.dtfanl
+# run without nsst
+export NST_ANL=.false.
+# run with nsst
+#export NST_ANL=.true.
+#export GSI_FILE=/gpfs/hps3/stmp/George.Gayno/RESTART/gdas.t18z.dtfanl
+#export GSI_FILE=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/gdas.t18z.dtfanl
 
-export FNTSFA=/gpfs/gp1/emc/globaldump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
+export FNTSFA=/gpfs/tp1/emc/globaldump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
 export FNSNOA=' '
-export FNACNA=/gpfs/gp1/emc//globaldump/$CDATE/gdas/seaice.5min.blend.grb.gdas.$CDATE
+export FNACNA=/gpfs/tp1/emc/globaldump/$CDATE/gdas/seaice.5min.blend.grb.gdas.$CDATE
 
 export IALB=1
 export JCAP=1534
@@ -68,7 +73,7 @@ export ISOT=1
 export IVEGSRC=1
 export JCAP=1534
 
-export DATA=/gpfs/hps/stmp/George.Gayno/global_cycle
+export DATA=/gpfs/hps3/stmp/George.Gayno/global_cycle
 rm -fr $DATA
 
 $HOMEglobal/ush/global_cycle.sh $SFCGES $SFCANL
