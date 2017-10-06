@@ -1,0 +1,122 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.resources ##########
+# Set resource information for job tasks
+# e.g. walltime, node, cores per node, memory etc.
+
+if [ $# -ne 1 ]; then
+
+    echo "Must specify an input task argument to set resource variables!"
+    echo "argument can be any one of the following:"
+    echo "anal fcst post vrfy arch"
+    echo "eobs eomg eupd ecen efcs epos earc"
+    exit 1
+
+fi
+
+step=$1
+
+echo "BEGIN: config.resources"
+
+if [ $step = "prep" -o $step = "prepbufr" ]; then
+
+    eval "export wtime_$step='01:00:00'"
+    eval "export npe_$step=12"
+    eval "export npe_node_$step=12"
+
+elif [ $step = "anal" ]; then
+
+    export wtime_anal="02:00:00"
+    export npe_anal=144
+    export npe_node_anal=6
+    export memory_anal="3072M"
+
+elif [ $step = "fcst" ]; then
+
+    export wtime_fcst="03:00:00"
+    export wtime_fcst_gfs="06:00:00"
+    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_node_fcst=12
+    export memory_fcst="1024M"
+
+elif [ $step = "post" ]; then
+
+    export wtime_post="03:00:00"
+    export wtime_post_gfs="06:00:00"
+    export npe_post=72
+    export npe_node_post=12
+    export memory_post="3072M"
+
+elif [ $step = "vrfy" ]; then
+
+    export wtime_vrfy="03:00:00"
+    export wtime_vrfy_gfs="06:00:00"
+    export npe_vrfy=1
+    export npe_node_vrfy=1
+    if [[ "$machine" == THEIA ]] ; then
+	export memory_vrfy="16384M"
+    else
+	export memory_vrfy="3072M"
+	# Memory on cray is for the batch node, not the compute node.
+	# Tasks on the compute node have no memory limit.  16GB is
+	# unneeded, and is beyond the queue maximum anyway (the job is
+	# rejected).
+    fi
+
+elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
+
+    eval "export wtime_$step='03:00:00'"
+    eval "export npe_$step=1"
+    eval "export npe_node_$step=1"
+
+elif [ $step = "eobs" -o $step = "eomg" ]; then
+
+    export wtime_eobs="01:00:00"
+    export wtime_eomg="02:30:00"
+    export npe_eobs=144
+    export npe_node_eobs=6
+    export memory_eobs="3072M"
+
+elif [ $step = "eupd" ]; then
+
+    export wtime_eupd="01:40:00"
+    export npe_eupd=120
+    export npe_node_eupd=12
+    export memory_eupd="3072M"
+
+elif [ $step = "ecen" ]; then
+
+    export wtime_ecen="00:40:00"
+    export npe_ecen=84
+    export npe_node_ecen=12
+    export memory_ecen="3072M"
+
+elif [ $step = "efcs" ]; then
+
+    export wtime_efcs="02:00:00"
+    export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_node_efcs=24
+    export memory_efcs="254M"
+
+elif [ $step = "epos" ]; then
+
+    export wtime_epos="01:25:00"
+    export npe_epos=84
+    export npe_node_epos=12
+    export memory_epos="254M"
+
+else
+
+    echo "Invalid step = $step, ABORT!"
+    exit 2
+
+fi
+
+echo "END: config.resources"

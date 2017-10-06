@@ -99,6 +99,23 @@ echo $(date) EXITING $MAKEPREPBUFRSH with return code $status >&2
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
+# Create nsstbufr file
+if [ ${MAKE_NSSTBUFR:-"YES"} = "YES" ]; then
+   SFCSHPBF=${SFCSHPBF:-$COMIN_OBS/sfcshp.$CDUMP.$CDATE}
+   TESACBF=${TESACBF:-$COMIN_OBS/tesac.$CDUMP.$CDATE}
+   BATHYBF=${BATHYBF:-$COMIN_OBS/bathy.$CDUMP.$CDATE}
+   TRKOBBF=${TRKOBBF:-$COMIN_OBS/trkob.$CDUMP.$CDATE}
+   NSSTBF=${COMOUT}/${APREFIX}nsstbufr
+
+   cat $SFCSHPBF $TESACBF $BATHYBF $TRKOBBF > $NSSTBF
+   status=$?
+   echo $(date) CREATE $NSSTBF with return code $status >&2
+
+#  NSST bufr file must be restricted since it contains unmasked ship ids
+   chmod 640  $NSSTBF
+   $CHGRP_CMD $NSSTBF
+fi
+###############################################################
 # Copy prepbufr and prepbufr.acft_profiles to COMOUT
 $NCP $DATA/prepda.t${chh}z        $COMOUT/${APREFIX}prepbufr
 $NCP $DATA/prepbufr.acft_profiles $COMOUT/${APREFIX}prepbufr.acft_profiles
