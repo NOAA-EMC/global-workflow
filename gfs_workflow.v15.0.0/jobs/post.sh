@@ -1,56 +1,75 @@
-#!/bin/ksh
-################################################################################
-# This script runs the post processor.
-# Usage: post.sh
-# Imported variables:
-#   CONFIG
-#   CDATE
-#   CDUMP
-#   CSTEP
-################################################################################
-set -ux
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
 
-set -a;. $CONFIG;set +a
-echo "-----end of $CONFIG ------------"
-echo 
+###############################################################
+## Author: Fanglin Yang   Org: NCEP/EMC  Date: October 2016
+##         Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
-export CKSH=$(echo $CSTEP|cut -c-4)
-export CKND=$(echo $CSTEP|cut -c5-)
-export machine=${machine:-WCOSS}
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
-#
-export PBEG=${PBEG:-$SHDIR/pbeg}
-export PEND=${PEND:-$SHDIR/pend}
-export PERR=${PERR:-$SHDIR/perr}
-$PBEG
-################################################################################
+## Abstract:
+## NCEP post driver script
+## EXPDIR : /full/path/to/config/files
+## CDATE  : current analysis date (YYYYMMDDHH)
+## CDUMP  : cycle name (gdas / gfs)
+###############################################################
 
-eval export DATA=$COMROT
-cd $DATA||exit 1
-if [ ${REMAP_GRID:-latlon} = latlon ]; then
- echo
- $REMAPSH                                         #remap 6-tile output to global array in netcdf
- if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+###############################################################
+# Source relevant configs
+configs="base post"
+for config in $configs; do
+    . $EXPDIR/config.${config}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
- echo
- $NC2NEMSIOSH                                     #convert netcdf to nemsio
- if [[ $? -ne 0 ]];then $PERR;exit 1;fi
-else
- echo
- $REGRIDNEMSIOSH
- if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+###############################################################
+# Source machine runtime environment
+. $BASE_ENV/${machine}.env post
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+###############################################################
+# Set script and dependency variables
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
+
+export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
+
+res=$(echo $CASE | cut -c2-)
+export JCAP=$((res*2-2))
+export LONB=$((4*res))
+export LATB=$((2*res))
+
+export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
+export PREFIX="$CDUMP.t${cyc}z."
+export SUFFIX=".nemsio"
+
+export DATA=$RUNDIR/$CDATE/$CDUMP/post
+[[ -d $DATA ]] && rm -rf $DATA
+
+# Run post job to create analysis grib files
+export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
+if [ -f $ATMANL ]; then
+    export ANALYSIS_POST="YES"
+    $POSTJJOBSH
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 fi
 
-echo
-eval export DATA=$DATATMP
-rm -rf $DATA||exit 1;mkdir -p $DATA||exit 1; cd $DATA||exit 1
-chmod ${permission:-755} $DATA
-$POSTJJOB                                        #converts nemsio to grib2 and run down-stream jobs
-if [[ $? -ne 0 ]];then $PERR;exit 1;fi
+# Run post job to create forecast grib files
+# We no longer do relocation, and thus GDAS cycle does not need forecast grib files
+if [ $CDUMP = "gfs" -o ${GPOST:-"NO"} = "YES" ]; then
+    export ANALYSIS_POST="NO"
+    $POSTJJOBSH
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+fi
 
-
-################################################################################
-# Exit gracefully
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
-$PEND
-
+###############################################################
+# Exit out cleanly
+exit 0
