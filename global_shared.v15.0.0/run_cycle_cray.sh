@@ -28,16 +28,14 @@ export CDATE=2016100118
 export FHOUR=00
 
 TILE=tile6
-#export SFCGES=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/RESTART/20161001.180000.sfc_data.${TILE}.nc
-export SFCGES=/gpfs/hps3/stmp/George.Gayno/RESTART/20161001.180000.sfc_data.${TILE}.nc
+export SFCGES=/gpfs/hps3/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/RESTART/20161001.180000.sfc_data.${TILE}.nc
 export SFCANL="./sfcanl.$TILE"
 
 # run without nsst
-export NST_ANL=.false.
+#export NST_ANL=.false.
 # run with nsst
-#export NST_ANL=.true.
-#export GSI_FILE=/gpfs/hps3/stmp/George.Gayno/RESTART/gdas.t18z.dtfanl
-#export GSI_FILE=/gpfs/hps3/emc/da/noscrub/Xu.Li/data/fv3test/gdas.20161001/18/gdas.t18z.dtfanl
+export NST_ANL=.true.
+export GSI_FILE=/gpfs/hps3/emc/global/noscrub/George.Gayno/fv3gfs/branches/cycle_fv3/RESTART/gdas.t18z.dtfanl
 
 export FNTSFA=/gpfs/tp1/emc/globaldump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
 export FNSNOA=' '

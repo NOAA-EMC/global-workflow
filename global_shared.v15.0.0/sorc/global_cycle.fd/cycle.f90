@@ -321,7 +321,7 @@
  IF (NST_ANL) THEN
    CALL READ_GSI_DATA(GSI_FILE)
    CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
-                    NSST,LENSFC,LSOIL,IDIM,ZSEA1,ZSEA2,IM,ID)
+                    NSST,LENSFC,LSOIL,IDIM,JDIM,ZSEA1,ZSEA2,IM,ID)
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -365,7 +365,7 @@
  
  SUBROUTINE ADJUST_NSST(RLA,RLO,SLMSK_TILE,SLMSK_FG_TILE,SKINT_TILE,&
                         SICET_TILE,SOILT_TILE,NSST,LENSFC,LSOIL,    &
-                        IDIM,ZSEA1,ZSEA2,MON,DAY)
+                        IDIM,JDIM,ZSEA1,ZSEA2,MON,DAY)
 
  USE GDSWZD_MOD
  USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
@@ -374,7 +374,7 @@
 
  IMPLICIT NONE
 
- INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM, MON, DAY
+ INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM, JDIM, MON, DAY
 
  REAL, INTENT(IN)         :: SLMSK_TILE(LENSFC), SLMSK_FG_TILE(LENSFC)
  REAL, INTENT(IN)         :: ZSEA1, ZSEA2
@@ -391,12 +391,17 @@
  INTEGER                  :: ISTART, IEND, JSTART, JEND
  INTEGER                  :: MASK_TILE, MASK_FG_TILE
  INTEGER                  :: ITILE, JTILE
- INTEGER                  :: MAX_SEARCH
+ INTEGER                  :: MAX_SEARCH, I, J
+ INTEGER                  :: IGAUSP1, JGAUSP1
+ INTEGER, ALLOCATABLE     :: ID1(:,:), ID2(:,:), JDC(:,:)
 
  LOGICAL                  :: IS_ICE
-
+ 
+ REAL                     :: WSUM
  REAL                     :: FILL, DTZM, GAUS_RES_KM, DTREF
- REAL, ALLOCATABLE        :: XPTS(:), YPTS(:)
+ REAL, ALLOCATABLE        :: XPTS(:), YPTS(:), LATS(:), LONS(:)
+ REAL, ALLOCATABLE        :: DUM2D(:,:), LATS_RAD(:), LONS_RAD(:)
+ REAL, ALLOCATABLE        :: AGRID(:,:,:), S2C(:,:,:)
 
  KGDS_GAUS     = 0
  KGDS_GAUS(1)  = 4          ! OCT 6 - TYPE OF GRID (GAUSSIAN)
@@ -416,23 +421,65 @@
  PRINT*,'ADJUST NSST USING GSI INCREMENTS ON GAUSSIAN GRID'
 
 !----------------------------------------------------------------------
-! CALL TO GDSWZD DETERMINES THE NEAREST GSI/GAUSSIAN POINT TO EACH
-! CUBED-SPHERE TILE POINT.
+! CALL GDSWZD TO COMPUTE THE LAT/LON OF EACH GSI GAUSSIAN GRID POINT.
 !----------------------------------------------------------------------
 
- IOPT = -1
+ IOPT = 0
  FILL = -9999.
- ALLOCATE(XPTS(LENSFC))
- ALLOCATE(YPTS(LENSFC))
+ ALLOCATE(XPTS(IDIM_GAUS*JDIM_GAUS))
+ ALLOCATE(YPTS(IDIM_GAUS*JDIM_GAUS))
+ ALLOCATE(LATS(IDIM_GAUS*JDIM_GAUS))
+ ALLOCATE(LONS(IDIM_GAUS*JDIM_GAUS))
  XPTS = FILL
  YPTS = FILL
+ LATS = FILL
+ LONS = FILL
 
- CALL GDSWZD(KGDS_GAUS,IOPT,LENSFC,FILL,XPTS,YPTS,RLO,RLA,NRET)
+ CALL GDSWZD(KGDS_GAUS,IOPT,(IDIM_GAUS*JDIM_GAUS),FILL,XPTS,YPTS,LONS,LATS,NRET)
 
- IF (NRET /= LENSFC) THEN
+ IF (NRET /= (IDIM_GAUS*JDIM_GAUS)) THEN
    PRINT*,'PROBLEM IN GDSWZD'
    STOP 12
  ENDIF
+
+ DEALLOCATE (XPTS, YPTS)
+
+ ALLOCATE(DUM2D(IDIM_GAUS,JDIM_GAUS))
+ DUM2D = RESHAPE(LATS, (/IDIM_GAUS,JDIM_GAUS/) )
+ DEALLOCATE(LATS)
+
+ ALLOCATE(LATS_RAD(JDIM_GAUS))
+ DO J = 1, JDIM_GAUS
+   LATS_RAD(J) = DUM2D(1,JDIM_GAUS-J+1) * 3.1415926 / 180.0
+ ENDDO
+
+ DUM2D = RESHAPE(LONS, (/IDIM_GAUS,JDIM_GAUS/) )
+ DEALLOCATE(LONS)
+ ALLOCATE(LONS_RAD(IDIM_GAUS))
+ LONS_RAD = DUM2D(:,1) * 3.1415926 / 180.0
+
+ DEALLOCATE(DUM2D)
+
+ ALLOCATE(AGRID(IDIM,JDIM,2))
+ AGRID(:,:,1) = RESHAPE (RLO, (/IDIM,JDIM/) )
+ AGRID(:,:,2) = RESHAPE (RLA, (/IDIM,JDIM/) )
+ AGRID        = AGRID * 3.1415926 / 180.0
+
+ ALLOCATE(ID1(IDIM,JDIM))
+ ALLOCATE(ID2(IDIM,JDIM))
+ ALLOCATE(JDC(IDIM,JDIM))
+ ALLOCATE(S2C(IDIM,JDIM,4))
+
+!----------------------------------------------------------------------
+! COMPUTE BILINEAR WEIGHTS FOR EACH MODEL POINT FROM THE NEAREST
+! FOUR GSI/GAUSSIAN POINTS.  DOES NOT ACCOUNT FOR MASK.  THAT
+! HAPPENS LATER.
+!----------------------------------------------------------------------
+
+ CALL REMAP_COEF( 1, IDIM, 1, JDIM, IDIM_GAUS, JDIM_GAUS, &
+                  LONS_RAD, LATS_RAD, ID1, ID2, JDC, S2C, AGRID )
+
+ DEALLOCATE(LONS_RAD, LATS_RAD, AGRID)
 
 !----------------------------------------------------------------------
 ! THE MAXIMUM DISTANCE TO SEARCH IS 500 KM. HOW MANY GAUSSIAN
@@ -442,7 +489,7 @@
  GAUS_RES_KM = 360.0 / IDIM_GAUS * 111.0
  MAX_SEARCH  = CEILING(500.0/GAUS_RES_KM)
 
- print*,'MAXIMUM SEARCH IS ',MAX_SEARCH, ' GAUSSIAN POINTS.'
+ PRINT*,'MAXIMUM SEARCH IS ',MAX_SEARCH, ' GAUSSIAN POINTS.'
 
  IJ_LOOP : DO IJ = 1, LENSFC
 
@@ -478,10 +525,7 @@
 
 !----------------------------------------------------------------------
 ! THESE ARE POINTS THAT ARE OPEN WATER AND WERE OPEN WATER PRIOR
-! TO ANY ICE UPDATE BY SFCCYCLE.
-!
-! SEARCH FOR THE NEAREST GAUSSIAN OPEN WATER POINT.
-!
+! TO ANY ICE UPDATE BY SFCCYCLE. UPDATE TREF AND SKIN TEMP.
 ! AT OPEN WATER POINTS, THE SEA ICE TEMPERATURE (SICET_TILE) AND
 ! SOIL COLUMN TEMPERATURE (SOILT_TILE) ARE SET TO THE SKIN TEMP.
 ! IT IS SIMPLY A FILLER VALUE.  THESE FIELDS ARE NOT USED AT
@@ -492,22 +536,47 @@
    ITILE = MOD(IJ,IDIM)
    IF (ITILE==0) ITILE = IDIM
 
-   IGAUS = NINT(XPTS(IJ))
-   IF (IGAUS > IDIM_GAUS) IGAUS = IGAUS - IDIM_GAUS
-   IF (IGAUS < 1)         IGAUS = IDIM_GAUS + IGAUS
-   JGAUS = NINT(YPTS(IJ))
-   IF (JGAUS > JDIM_GAUS) JGAUS = JDIM_GAUS
-   IF (JGAUS < 1)         JGAUS = 1
-
 !----------------------------------------------------------------------
-! AT THIS POINT, THE TILE POINT SHOULD BE OPEN WATER ("0").  SEE
-! IF THE NEAREST GSI POINT MASK IS ALSO OPEN WATER.  IF SO, APPLY 
-! NSST INCREMENT.
+! SEE IF ANY OF THE NEAREST GSI POINTS MASK AREA OPEN WATER.  
+! IF SO, APPLY NSST INCREMENT USING BILINEAR INTERPOLATION.
 !----------------------------------------------------------------------
 
-   IF (SLMSK_GAUS(IGAUS,JGAUS) == 0) THEN
+   IGAUS   = ID1(ITILE,JTILE)
+   JGAUS   = JDC(ITILE,JTILE)
+   IGAUSP1 = ID2(ITILE,JTILE)
+   JGAUSP1 = JDC(ITILE,JTILE)+1
 
-     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(IGAUS,JGAUS)
+   IF (SLMSK_GAUS(IGAUS,JGAUS)     == 0 .OR. &
+       SLMSK_GAUS(IGAUSP1,JGAUS)   == 0 .OR. &
+       SLMSK_GAUS(IGAUSP1,JGAUSP1) == 0 .OR. &
+       SLMSK_GAUS(IGAUS,JGAUSP1)   == 0) THEN
+
+     DTREF = 0.0
+     WSUM  = 0.0
+
+     IF (SLMSK_GAUS(IGAUS,JGAUS) == 0) THEN
+       DTREF = DTREF + (s2c(itile,jtile,1) * DTREF_GAUS(IGAUS,JGAUS))
+       WSUM  = WSUM + s2c(itile,jtile,1)
+     ENDIF
+
+     IF (SLMSK_GAUS(IGAUSP1,JGAUS) == 0) THEN
+       DTREF = DTREF + (s2c(itile,jtile,2) * DTREF_GAUS(IGAUSP1,JGAUS))
+       WSUM  = WSUM + s2c(itile,jtile,2)
+     ENDIF
+
+     IF (SLMSK_GAUS(IGAUSP1,JGAUSP1) == 0) THEN
+       DTREF = DTREF + (s2c(itile,jtile,3) * DTREF_GAUS(IGAUSP1,JGAUSP1))
+       WSUM  = WSUM + s2c(itile,jtile,3)
+     ENDIF
+
+     IF (SLMSK_GAUS(IGAUS,JGAUSP1) == 0) THEN
+       DTREF = DTREF + (s2c(itile,jtile,4) * DTREF_GAUS(IGAUS,JGAUSP1))
+       WSUM  = WSUM + s2c(itile,jtile,4)
+     ENDIF
+
+     DTREF = DTREF / WSUM
+
+     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF
      NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
      NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
 
@@ -522,8 +591,8 @@
      SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
 
 !----------------------------------------------------------------------
-! IF MASK IS NOT THE SAME, PERFORM A SPIRAL SEARCH TO FIND NEAREST 
-! NON-LAND POINT ON GSI/GAUSSIAN GRID.
+! NO NEARBY GSI/GAUSSIAN OPEN WATER POINTS. PERFORM A SPIRAL SEARCH TO
+! FIND NEAREST NON-LAND POINT ON GSI/GAUSSIAN GRID.
 !----------------------------------------------------------------------
 
    ELSE  
@@ -564,8 +633,8 @@
 
              IF (SLMSK_GAUS(III,JJJ) == 0) THEN
 
-               print*,'MISMATCH AT TILE POINT  ',itile,jtile
-               print*,'UPDATE TREF USING GSI INCREMENT AT ',iii,jjj,dtref_gaus(iii,jjj)
+               PRINT*,'MISMATCH AT TILE POINT  ',ITILE,JTILE
+               PRINT*,'UPDATE TREF USING GSI INCREMENT AT ',III,JJJ,DTREF_GAUS(III,JJJ)
 
                NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
                NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
@@ -582,7 +651,7 @@
                SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
                CYCLE IJ_LOOP
 
-             ENDIF ! Gaussian mask is open water
+             ENDIF ! GSI/Gaussian mask is open water
 
            ENDIF
 
@@ -598,17 +667,17 @@
 ! ELSE UPDATE TREF BASED ON THE ANNUAL SST CYCLE.
 !----------------------------------------------------------------------
 
-     print*,'WARNING !!!!!! SEARCH FAILED AT TILE POINT ',itile,jtile
+     PRINT*,'WARNING !!!!!! SEARCH FAILED AT TILE POINT ',ITILE,JTILE
 
      IF (IS_ICE) THEN
        NSST%TREF(IJ) = TFREEZ
-       print*,"NEARBY ICE.  SET TREF TO FREEZING"
+       PRINT*,"NEARBY ICE.  SET TREF TO FREEZING"
      ELSE
        CALL CLIMO_TREND(RLA(IJ),MON,DAY,DTREF)
        NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF
        NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
        NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
-       print*,'UPDATE TREF FROM SST CLIMO ',dtref
+       PRINT*,'UPDATE TREF FROM SST CLIMO ',DTREF
      ENDIF
 
      CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
@@ -621,11 +690,11 @@
      SICET_TILE(IJ)   = SKINT_TILE(IJ)
      SOILT_TILE(IJ,:) = SKINT_TILE(IJ)
 
-   ENDIF  ! IS NEAREST GAUSSIAN POINT OPEN WATER?
+   ENDIF  ! NEARBY GAUSSIAN POINTS ARE OPEN WATER?
 
  ENDDO IJ_LOOP
 
- DEALLOCATE (XPTS, YPTS)
+ DEALLOCATE(ID1, ID2, JDC, S2C)
 
  END SUBROUTINE ADJUST_NSST
 
@@ -887,3 +956,86 @@
  NSST%ZM(IJ)      = 0.0
 
  END SUBROUTINE NSST_WATER_RESET
+
+! THIS ROUTINE WAS TAKEN FROM THE FORECAST MODEL -
+! ./ATMOS_CUBED_SPHERE/TOOLS/FV_TREAT_DA_INC.F90.
+
+ SUBROUTINE REMAP_COEF( is, ie, js, je,&
+      im, jm, lon, lat, id1, id2, jdc, s2c, agrid )
+
+    implicit none
+    integer, intent(in):: is, ie, js, je
+    integer, intent(in):: im, jm
+    real,    intent(in):: lon(im), lat(jm)
+    real,    intent(out):: s2c(is:ie,js:je,4)
+    integer, intent(out), dimension(is:ie,js:je):: id1, id2, jdc
+    real,    intent(in):: agrid(is:ie,js:je,2)
+    ! local:
+    real :: rdlon(im)
+    real :: rdlat(jm)
+    real:: a1, b1
+    real, parameter :: pi = 3.1415926
+    integer i,j, i1, i2, jc, i0, j0
+    do i=1,im-1
+      rdlon(i) = 1. / (lon(i+1) - lon(i))
+    enddo
+    rdlon(im) = 1. / (lon(1) + 2.*pi - lon(im))
+
+    do j=1,jm-1
+      rdlat(j) = 1. / (lat(j+1) - lat(j))
+    enddo
+
+    ! * Interpolate to cubed sphere cell center
+    do 5000 j=js,je
+
+      do i=is,ie
+
+        if ( agrid(i,j,1)>lon(im) ) then
+          i1 = im;     i2 = 1
+          a1 = (agrid(i,j,1)-lon(im)) * rdlon(im)
+        elseif ( agrid(i,j,1)<lon(1) ) then
+          i1 = im;     i2 = 1
+          a1 = (agrid(i,j,1)+2.*pi-lon(im)) * rdlon(im)
+        else
+          do i0=1,im-1
+            if ( agrid(i,j,1)>=lon(i0) .and. agrid(i,j,1)<=lon(i0+1) ) then
+              i1 = i0;  i2 = i0+1
+              a1 = (agrid(i,j,1)-lon(i1)) * rdlon(i0)
+              go to 111
+            endif
+          enddo
+        endif
+111     continue
+
+        if ( agrid(i,j,2)<lat(1) ) then
+          jc = 1
+          b1 = 0.
+        elseif ( agrid(i,j,2)>lat(jm) ) then
+          jc = jm-1
+          b1 = 1.
+        else
+          do j0=1,jm-1
+            if ( agrid(i,j,2)>=lat(j0) .and. agrid(i,j,2)<=lat(j0+1) ) then
+              jc = j0
+              b1 = (agrid(i,j,2)-lat(jc)) * rdlat(jc)
+              go to 222
+            endif
+          enddo
+        endif
+222     continue
+
+        if ( a1<0.0 .or. a1>1.0 .or.  b1<0.0 .or. b1>1.0 ) then
+             write(*,*) 'gid=', i,j,a1, b1
+        endif
+
+        s2c(i,j,1) = (1.-a1) * (1.-b1)
+        s2c(i,j,2) =     a1  * (1.-b1)
+        s2c(i,j,3) =     a1  *     b1
+        s2c(i,j,4) = (1.-a1) *     b1
+        id1(i,j) = i1
+        id2(i,j) = i2
+        jdc(i,j) = jc
+      enddo   !i-loop
+5000 continue   ! j-loop
+
+ END SUBROUTINE REMAP_COEF
