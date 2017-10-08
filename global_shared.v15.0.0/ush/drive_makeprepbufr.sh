@@ -33,13 +33,18 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-# Set script and dependency variables
-GDATE=`$NDATE -$assim_freq $CDATE`
+KEEPDATA=${KEEPDATA:-"NO"}
+DO_RELOCATE=${DO_RELOCATE:-"NO"}
+DONST=${DONST:-"NO"}
 
-cymd=`echo $CDATE | cut -c1-8`
-chh=`echo  $CDATE | cut -c9-10`
-gymd=`echo $GDATE | cut -c1-8`
-ghh=`echo  $GDATE | cut -c9-10`
+###############################################################
+# Set script and dependency variables
+GDATE=$($NDATE -$assim_freq $CDATE)
+
+cymd=$(echo $CDATE | cut -c1-8)
+chh=$(echo  $CDATE | cut -c9-10)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
 
 OPREFIX="${CDUMP}.t${chh}z."
 OSUFFIX=".bufr_d"
@@ -74,8 +79,13 @@ $NLN $COMIN_GES/${GPREFIX}atmf003${GSUFFIX} ./atmgm3$GSUFFIX
 $NLN $COMIN_GES/${GPREFIX}atmf006${GSUFFIX} ./atmges$GSUFFIX
 $NLN $COMIN_GES/${GPREFIX}atmf009${GSUFFIX} ./atmgp3$GSUFFIX
 
+[[ -f $COMIN_GES/${GPREFIX}atmf004${GSUFFIX} ]] && $NLN $COMIN_GES/${GPREFIX}atmf004${GSUFFIX} ./atmgm2$GSUFFIX
+[[ -f $COMIN_GES/${GPREFIX}atmf005${GSUFFIX} ]] && $NLN $COMIN_GES/${GPREFIX}atmf005${GSUFFIX} ./atmgm1$GSUFFIX
+[[ -f $COMIN_GES/${GPREFIX}atmf007${GSUFFIX} ]] && $NLN $COMIN_GES/${GPREFIX}atmf007${GSUFFIX} ./atmgp1$GSUFFIX
+[[ -f $COMIN_GES/${GPREFIX}atmf008${GSUFFIX} ]] && $NLN $COMIN_GES/${GPREFIX}atmf008${GSUFFIX} ./atmgp2$GSUFFIX
+
 # If relocation is turned off: these files don't exist, touch them
-if [ ${DO_RELOCATE:-"NO"} = "NO" ]; then
+if [ $DO_RELOCATE = "NO" ]; then
     touch $DATA/tcvitals.relocate.tm00
     touch $DATA/tropcy_relocation_status.tm00
     echo "RECORDS PROCESSED" >> $DATA/tropcy_relocation_status.tm00
@@ -100,20 +110,20 @@ echo $(date) EXITING $MAKEPREPBUFRSH with return code $status >&2
 
 ###############################################################
 # Create nsstbufr file
-if [ ${MAKE_NSSTBUFR:-"YES"} = "YES" ]; then
-   SFCSHPBF=${SFCSHPBF:-$COMIN_OBS/sfcshp.$CDUMP.$CDATE}
-   TESACBF=${TESACBF:-$COMIN_OBS/tesac.$CDUMP.$CDATE}
-   BATHYBF=${BATHYBF:-$COMIN_OBS/bathy.$CDUMP.$CDATE}
-   TRKOBBF=${TRKOBBF:-$COMIN_OBS/trkob.$CDUMP.$CDATE}
-   NSSTBF=${COMOUT}/${APREFIX}nsstbufr
+if [ $DONST = "YES" ]; then
+    SFCSHPBF=${SFCSHPBF:-$COMIN_OBS/sfcshp.$CDUMP.$CDATE}
+    TESACBF=${TESACBF:-$COMIN_OBS/tesac.$CDUMP.$CDATE}
+    BATHYBF=${BATHYBF:-$COMIN_OBS/bathy.$CDUMP.$CDATE}
+    TRKOBBF=${TRKOBBF:-$COMIN_OBS/trkob.$CDUMP.$CDATE}
+    NSSTBF=${NSSTBF:-$COMOUT/${APREFIX}nsstbufr}
 
-   cat $SFCSHPBF $TESACBF $BATHYBF $TRKOBBF > $NSSTBF
-   status=$?
-   echo $(date) CREATE $NSSTBF with return code $status >&2
+    cat $SFCSHPBF $TESACBF $BATHYBF $TRKOBBF > $NSSTBF
+    status=$?
+    echo $(date) CREATE $NSSTBF with return code $status >&2
 
-#  NSST bufr file must be restricted since it contains unmasked ship ids
-   chmod 640  $NSSTBF
-   $CHGRP_CMD $NSSTBF
+    # NSST bufr file must be restricted since it contains unmasked ship ids
+    chmod 640  $NSSTBF
+    $CHGRP_CMD $NSSTBF
 fi
 ###############################################################
 # Copy prepbufr and prepbufr.acft_profiles to COMOUT
@@ -122,5 +132,5 @@ $NCP $DATA/prepbufr.acft_profiles $COMOUT/${APREFIX}prepbufr.acft_profiles
 
 ###############################################################
 # Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
+if [ $KEEPDATA = "NO" ] ; then rm -rf $DATA ; fi
 exit 0

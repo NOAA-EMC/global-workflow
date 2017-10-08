@@ -96,10 +96,10 @@ fi
 if [ $machine = "THEIA" ]; then
 
     # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/ocean/save/$USER"
-    export STMP="/scratch4/NCEPDEV/ocean/scrub/$USER"
-    export PTMP="/scratch4/NCEPDEV/ocean/scrub/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/ocean/noscrub/$USER"
+    export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
+    export STMP="/scratch4/NCEPDEV/stmp3/$USER"
+    export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
+    export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 
     # Base directories for various builds
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
@@ -122,7 +122,6 @@ fi
 # Utilities needed in the scripts (mostly post)
 if [ $machine = "THEIA" ]; then
 
-    export NEMSIOGET="$NWPROD/util/exec/nemsio_get"
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
     export WGRIB="$NWPROD/util/exec/wgrib"
@@ -168,13 +167,13 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export NCO_NAMING_CONV="YES"
 export CHGRP_CMD="chgrp rstprod"
+export NEMSIOGET="$BASE_GSM/exec/nemsio_get"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="$BASE_WORKFLOW/env"
 export BASE_JOB="$BASE_WORKFLOW/jobs"
 
 # EXPERIMENT specific environment parameters
-export REALTIME="NO"
 export SDATE=@SDATE@
 export EDATE=@EDATE@
 export assim_freq=6
@@ -204,7 +203,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=240
+export FHMAX_GFS=120
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
@@ -212,7 +211,7 @@ export FHOUT_HF_GFS=1
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, chose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set WRITE_NEMSIOFILE for nemsio or netcdf
-export QUILTING=".true."
+export QUILTING=".false."
 export OUTPUT_GRID="gaussian_grid"
 export WRITE_NEMSIOFILE=".true."
 
@@ -238,7 +237,10 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# If YES, NSST is turned on in anal and/or fcst stes
+# Relocation related
+export DO_RELOCATE="NO"
+
+# If YES, NSST is turned on in anal and/or fcst steps
 export DONST="NO"
 
 # The switch to apply SST elevation correction or not

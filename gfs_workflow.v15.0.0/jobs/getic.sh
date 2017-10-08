@@ -54,7 +54,7 @@ ftanal[3]="sfcanl.${CDUMP}.$CDATE"
 ftanal[4]="nstanl.${CDUMP}.$CDATE"
 
 # Initialize return code to 0
-rc=0
+rc=1
 
 if [ $ics_from = "opsgfs" ]; then
 
@@ -84,6 +84,7 @@ if [ $ics_from = "opsgfs" ]; then
         module load prod_envir >> /dev/null 2>&1
 
         comdir="$COMROOT/$CDUMP/prod/$CDUMP.$cymd"
+        rc=0
         for i in `seq 1 $nfanal`; do
             if [ -f $comdir/${fanal[i]} ]; then
                 $NCP $comdir/${fanal[i]} ${ftanal[i]}
@@ -92,38 +93,39 @@ if [ $ics_from = "opsgfs" ]; then
             fi
         done
 
-        # If found, exit out
-        [[ $rc -eq 0 ]] && exit 0
-
     fi
 
     # Get initial conditions from HPSS
-    hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$cymd"
-    if [ $CDUMP = "gdas" ]; then
-        tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
-    elif [ $CDUMP = "gfs" ]; then
-        tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.anl.tar"
-    fi
-
-    # check if the tarball exists
-    hsi ls -l $tarball
-    rc=$?
     if [ $rc -ne 0 ]; then
-        echo "$tarball does not exist and should, ABORT!"
-        exit $rc
-    fi
-    # get the tarball
-    htar -xvf $tarball $flanal
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        echo "untarring $tarball failed, ABORT!"
-        exit $rc
-    fi
 
-    # Move the files to legacy EMC filenames
-    for i in `seq 1 $nfanal`; do
-        $NMV ${fanal[i]} ${ftanal[i]}
-    done
+        hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$cymd"
+        if [ $CDUMP = "gdas" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
+        elif [ $CDUMP = "gfs" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.anl.tar"
+        fi
+
+        # check if the tarball exists
+        hsi ls -l $tarball
+        rc=$?
+        if [ $rc -ne 0 ]; then
+            echo "$tarball does not exist and should, ABORT!"
+            exit $rc
+        fi
+        # get the tarball
+        htar -xvf $tarball $flanal
+        rc=$?
+        if [ $rc -ne 0 ]; then
+            echo "untarring $tarball failed, ABORT!"
+            exit $rc
+        fi
+
+        # Move the files to legacy EMC filenames
+        for i in `seq 1 $nfanal`; do
+            $NMV ${fanal[i]} ${ftanal[i]}
+        done
+
+    fi
 
     # If found, exit out
     if [ $rc -ne 0 ]; then
