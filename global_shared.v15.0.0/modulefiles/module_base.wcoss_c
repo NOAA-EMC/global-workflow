@@ -46,6 +46,3 @@ setenv USE_CFP YES
 # modules used by vrfy
 module load pm5
 module load prod_envir
-
-# Bad hard-coded path.  Should replace with nwprod, /usrx/local/, or remove:
-setenv NEMSIOGET /gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get

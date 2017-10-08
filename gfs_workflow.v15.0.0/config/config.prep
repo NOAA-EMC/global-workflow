@@ -15,8 +15,6 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 . $EXPDIR/config.resources prep
 
-export DO_RELOCATE="NO"
-
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 export DRIVE_MAKEPREPBUFRSH="$BASE_GSM/ush/drive_makeprepbufr.sh"
 

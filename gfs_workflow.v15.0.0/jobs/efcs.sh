@@ -56,7 +56,7 @@ ghh=$(echo  $GDATE | cut -c9-10)
 export warm_start=".false."
 
 # If RESTART conditions exist; warm start the model
-memchar="mem"`printf %03i $ENSBEG`
+memchar="mem"$(printf %03i $ENSBEG)
 if [ -f $ROTDIR/enkf.${CDUMP}.$gymd/$ghh/$memchar/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
     if [ -f $ROTDIR/enkf.${CDUMP}.$cymd/$chh/$memchar/${CDUMP}.t${chh}z.atminc.nc ]; then
@@ -70,11 +70,6 @@ fi
 export FHMIN=$FHMIN_ENKF
 export FHOUT=$FHOUT_ENKF
 export FHMAX=$FHMAX_ENKF
-
-res=$(echo $CASE | cut -c2-)
-export JCAP=$((res*2-2))
-export LONB=$((4*res))
-export LATB=$((2*res))
 
 ###############################################################
 # Run relevant exglobal script
