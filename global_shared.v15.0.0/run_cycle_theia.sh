@@ -24,11 +24,11 @@ export HOMEglobal=$BASEDIR/global_shared.${global_shared_ver}
 
 export CYCLEXEC=$HOMEglobal/exec/global_cycle
 
-export CDATE=2017082600
+export CDATE=2016100118
 export FHOUR=00
 export DELTSFC=6
 
-export CRES=768
+export CRES=384
 
 export FNTSFA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/rtgssthr.grb.gdas.$CDATE
 export FNSNOA=/scratch4/NCEPDEV/global/noscrub/dump/$CDATE/gdas/snogrb_t1534.3072.1536.gdas.$CDATE
@@ -52,12 +52,11 @@ rm -fr $DATA
 
 for the_tile in "tile1" "tile2" "tile3" "tile4" "tile5" "tile6"
 do
-#  export SFCGES=/scratch4/NCEPDEV/nems/noscrub/emc.nemspara/FV3GFS_V0_RELEASE/baseline/fv3gfs_nh_32bit/C${CRES}/gfs.20160929/00/RESTART/sfc_data.${the_tile}.nc
-  export SFCGES=/scratch4/NCEPDEV/da/noscrub/George.Gayno/cycle_fv3/sfc_data.${the_tile}.nc
+  export SFCGES=/scratch4/NCEPDEV/da/noscrub/George.Gayno/cycle_fv3/C384/20161001.180000.sfc_data.${the_tile}.nc
   export SFCANL="./sfcanl.${the_tile}.nc"
   export FNGRID=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_grid.${the_tile}.nc
   export FNOROG=$HOMEglobal/fix/fix_fv3/C${CRES}/C${CRES}_oro_data.${the_tile}.nc
-  export GSI_FILE=/scratch4/NCEPDEV/da/noscrub/George.Gayno/cycle_fv3/sfc.${CDATE}.fhr000
+  export GSI_FILE=/scratch4/NCEPDEV/da/noscrub/George.Gayno/cycle_fv3/C384/gdas.t18z.dtfanl
 
   $HOMEglobal/ush/global_cycle.sh $SFCGES $SFCANL
 done
