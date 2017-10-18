@@ -6,12 +6,16 @@
 "gfs_dyn",     "sphum",       "spfh",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "temp",        "tmp",          "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "liq_wat",     "clwmr",        "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "ice_wat",     "ice_wat",      "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "snowwat",     "snowwat",      "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "rainwat",     "rainwat",      "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "graupel",     "graupel",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "o3mr",        "o3mr",         "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "delp",        "dpres",        "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "delz",        "delz",         "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "pfhy",        "preshy",       "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "pfnh",        "presnh",       "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "w",           "vvel",         "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "delp",        "dpres",        "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "delz",        "delz",         "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "pfhy",        "preshy",       "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "pfnh",        "presnh",       "fv3_history",    "all",  .false.,  "none",  2
+#"gfs_dyn",     "w",           "vvel",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "ps",          "pressfc",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",       "fv3_history",    "all",  .false.,  "none",  2
 

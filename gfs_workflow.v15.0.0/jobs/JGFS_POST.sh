@@ -198,9 +198,9 @@ for fname in $flist; do
 
    export restart_file=$COMROT/${PREFIX}atmf
    ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}atmf${post_times}${SUFFIX}
-   if [ $CDUMP = "gfs" ] ; then
+   if [ $CDUMP = "gfs" -a $QUILTING = ".false." ] ; then
       ln -fs $COMROT/${PREFIX}atmf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
-   elif [ $CDUMP = "gdas" ] ; then
+   else 
       ln -fs $COMROT/${PREFIX}sfcf${post_times}${SUFFIX} $COMIN/${PREFIX}flxf${post_times}${SUFFIX}
    fi
    ln -fs $COMROT/${PREFIX}sfcf${post_times}${SUFFIX} $COMIN/${PREFIX}sfcf${post_times}${SUFFIX}
