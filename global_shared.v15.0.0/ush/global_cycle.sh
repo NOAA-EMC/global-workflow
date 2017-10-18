@@ -38,7 +38,7 @@
 #     FIXgsm        Directory for the global fixed climatology files.
 #                   Defaults to $HOMEglobal/fix
 #     FIXfv3        Directory for the model grid and orography netcdf
-#                   files.  Defaults to $HOMEglobal/fix/fix_fv3/C${CRES}
+#                   files.  Defaults to $HOMEglobal/fix/fix_fv3/${CASE}
 #     EXECgsm       Directory of the program executable.  Defaults to
 #                   $HOMEglobal/exec
 #     DATA          Working directory
@@ -55,7 +55,7 @@
 #                   Defaults to none.
 #     SUFINP        Suffix to add to input analysis files.
 #                   Defaults to none.
-#     CYCLEXEC      Program executable.  
+#     CYCLEXEC      Program executable.
 #                   Defaults to ${EXECgsm}/global_cycle$XC
 #     FNGLAC        Input glacier climatology GRIB file.
 #                   Defaults to ${FIXgsm}/global_glacier.2x2.grb
@@ -67,7 +67,7 @@
 #                   Defaults to ${FIXgsm}/global_snoclim.1.875.grb
 #     FNZORC        Input roughness climatology.
 #                   Defaults to igbp vegetation type-based lookup table
-#                   FNVETC must be set to igbp file: 
+#                   FNVETC must be set to igbp file:
 #                   ${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
 #     FNALBC        Input 4-component albedo climatology GRIB file.
 #                   defaults to ${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb
@@ -97,9 +97,9 @@
 #                   some of the input climatology fields.  This is NOT the model mask.
 #                   Defaults to ${FIXgsm}/seaice_newland.grb
 #     FNOROG        Model orography file (netcdf format)
-#                   Defaults to {FIXfv3}/C${CRES}_oro_data.tile1.nc
+#                   Defaults to {FIXfv3}/${CASE}_oro_data.tile${tilenum}.nc
 #     FNGRID        Model grid file (netcdf format)
-#                   Defaults to ${FIXfv3}/C${CRES}_grid.tile1.nc
+#                   Defaults to ${FIXfv3}/${CASE}_grid.tile${tilenum}.nc
 #     GSI_FILE      GSI file on the gaussian grid containing NST increments.
 #                   Defaults to empty string.
 #     FNTSFA        Input SST analysis GRIB file.
@@ -148,7 +148,7 @@
 #                   defaults to NO
 #     use_ufo       Adjust sst and soil substrate temperature for differences
 #                   between the filtered and unfiltered terrain.  Default is true.
-#     NST_ANL       Process NST records and perform SST terrain adjustments required 
+#     NST_ANL       Process NST records and perform SST terrain adjustments required
 #                   when using NST model.  Default is false.
 #     zsea1/zsea2   When running with NST model, this is the lower/upper bound
 #                   of depth of sea temperature.
@@ -224,7 +224,8 @@ fi
 export SFCGES=${1:-${SFCGES:?}}
 export SFCANL=${2:-${SFCANL}}
 
-export CRES=${CRES:-768}
+export CASE=${CASE:-C768}
+export tilenum=${tilenum:-1}
 
 #  Directories.
 export global_shared_ver=${global_shared_ver:-v15.0.0}
@@ -233,7 +234,7 @@ export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
 export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
 export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
-export FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/C${CRES}}
+export FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/$CASE}
 export DATA=${DATA:-$(pwd)}
 export COMIN=${COMIN:-$(pwd)}
 export COMOUT=${COMOUT:-$(pwd)}
@@ -242,11 +243,11 @@ export COMOUT=${COMOUT:-$(pwd)}
 export XC=${XC}
 export PREINP=${PREINP}
 export SUFINP=${SUFINP}
-export JCAP=${JCAP:-1534}
 export CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
 
 export CDATE=${CDATE:?}
 export FHOUR=${FHOUR:-00}
+export JCAP=${JCAP:-1534}
 export LONB=${LONB:-3072}
 export LATB=${LATB:-1536}
 export DELTSFC=${DELTSFC:-0}
@@ -259,7 +260,7 @@ export FVETL=${FVETL:-99999.}
 export IALB=${IALB:-1}
 export ISOT=${ISOT:-1}
 export IVEGSRC=${IVEGSRC:-1}
-export CYCLVARS=${CYCLVARS}
+export CYCLVARS=${CYCLVARS:-""}
 export use_ufo=${use_ufo:-.true.}
 export NST_ANL=${NST_ANL:-.false.}
 export zsea1=${zsea1:-0}
@@ -283,8 +284,8 @@ export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
 export FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
 export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-export FNOROG=${FNOROG:-${FIXfv3}/C${CRES}_oro_data.tile1.nc}
-export FNGRID=${FNGRID:-${FIXfv3}/C${CRES}_grid.tile1.nc}
+export FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tilenum}.nc}
+export FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${tilenum}.nc}
 export GSI_FILE=${GSI_FILE:-" "}
 export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
 export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
@@ -326,6 +327,8 @@ im=$(echo $CDATE|cut -c5-6)
 id=$(echo $CDATE|cut -c7-8)
 ih=$(echo $CDATE|cut -c9-10)
 
+CRES=$(echo $CASE | cut -c2-)
+
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CY:-${CYCLETHREAD:-1}}
 
 cat << EOF > fort.35
@@ -363,7 +366,7 @@ cat << EOF > fort.35
 EOF
 
 eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
- &NAMCYC 
+ &NAMCYC
   idim=$CRES, jdim=$CRES, lsoil=$LSOIL,
   iy=$iy, im=$im, id=$id, ih=$ih, fh=$FHOUR,
   DELTSFC=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,NST_ANL=$NST_ANL,
