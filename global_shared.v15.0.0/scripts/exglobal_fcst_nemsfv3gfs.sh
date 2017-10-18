@@ -582,7 +582,7 @@ cat > input.nml <<EOF
   nwat = ${nwat:-2}
   na_init = $na_init
   d_ext = 0.
-  dnats = 0
+  dnats = ${dnats:-0}
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}

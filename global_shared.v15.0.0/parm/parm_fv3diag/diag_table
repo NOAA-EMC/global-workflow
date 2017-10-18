@@ -145,23 +145,23 @@
 ###
 # GFS variabls needed for NGGPS evaluation
 ###
- "gfs_phys",  "ALBDOsfc"       "ALBDOsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "cnvprcp"        "CPRATsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "totprcp"        "PRATEsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "DLWRFsfc"       "DLWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "ULWRFsfc"       "ULWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "DSWRFsfc"       "DSWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "USWRFsfc"       "USWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "ALBDO_ave"      "ALBDOsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "cnvprcp_ave"    "CPRATsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "totprcp_ave"    "PRATEsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "DLWRF"          "DLWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "ULWRF"          "ULWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "DSWRF"          "DSWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "USWRF"          "USWRFsfc"   "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "DSWRFtoa"       "DSWRFtoa"   "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "USWRFtoa"       "USWRFtoa"   "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "ULWRFtoa"       "ULWRFtoa"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "gflux"          "GFLUXsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "gflux_ave"      "GFLUXsfc"   "nggps2d",         "all",  .false.,  "none",  2
  "gfs_sfc",   "HGTsfc"         "HGTsfc"     "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "hpbl"           "HPBLsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_sfc",   "fice"           "ICECsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_sfc",   "SLMSKsfc"       "SLMSKsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "dqsfc"          "LHTFLsfc"   "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "dtsfc"          "SHTFLsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "lhtfl_ave"      "LHTFLsfc"   "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "shtfl_ave"      "SHTFLsfc"   "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "psurf"          "PRESsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "pwat"           "PWATclm"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "soilm"          "SOILM"      "nggps2d",         "all",  .false.,  "none",  2
@@ -180,8 +180,8 @@
  "gfs_sfc",   "SOILT4"         "SOILT4"     "nggps2d",         "all",  .false.,  "none",  2
  "gfs_sfc",   "t2m"            "TMP2m"      "nggps2d",         "all",  .false.,  "none",  2
  "gfs_sfc",   "tsfc"           "TMPsfc"     "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "dugwd"          "UGWDsfc"    "nggps2d",         "all",  .false.,  "none",  2
- "gfs_phys",  "dvgwd"          "VGWDsfc"    "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "u-gwd_ave"      "UGWDsfc"    "nggps2d",         "all",  .false.,  "none",  2
+ "gfs_phys",  "v-gwd_ave"      "VGWDsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "dusfc"          "UFLXsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "dvsfc"          "VFLXsfc"    "nggps2d",         "all",  .false.,  "none",  2
  "gfs_phys",  "u10m"           "UGRD10m"    "nggps2d",         "all",  .false.,  "none",  2

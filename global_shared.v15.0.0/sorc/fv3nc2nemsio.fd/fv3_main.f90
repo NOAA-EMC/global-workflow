@@ -180,9 +180,6 @@ program fv3_main
         tmp2d(ii,j)=tmp2dx(ii,nlats-j+1)
       enddo
       enddo
-      IF (trim(name2d(i)).EQ.'HGTsfc') then 
-          tmp2d=tmp2d/9.81
-      ENDIF
       call nems_write(gfile,meta_nemsio%recname(i),meta_nemsio%reclevtyp(i),meta_nemsio%reclev(i), &
            nlons*nlats,tmp2d,stat)
    ENDDO
