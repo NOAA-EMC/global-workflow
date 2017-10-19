@@ -65,7 +65,7 @@ export DATA=${DATA:-$pwd/rundir$$}
 
 for n in $(seq 1 $ntiles); do
 
-    export tilenum=$n
+    export TILE_NUM=$n
 
     SFCGES_TMP=$COMIN/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc
     SFCANL_TMP=$COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc

@@ -27,7 +27,8 @@
 #                   overridden by $1; required
 #     SFCANL        Output surface analysis file
 #                   overridden by $2; defaults to ${COMOUT}/sfcanl
-#     CRES          Model resolution.  Defaults to 768.
+#     CASE          Model resolution.  Defaults to C768.
+#     TILE_NUM      The number of the cubed-sphere tile to convert surface
 #     JCAP          Spectral truncation of the global fixed climatology files
 #                   (such as albedo), which are on the old GFS gaussian grid.
 #                   Defaults to 1534
@@ -97,9 +98,9 @@
 #                   some of the input climatology fields.  This is NOT the model mask.
 #                   Defaults to ${FIXgsm}/seaice_newland.grb
 #     FNOROG        Model orography file (netcdf format)
-#                   Defaults to {FIXfv3}/${CASE}_oro_data.tile${tilenum}.nc
+#                   Defaults to {FIXfv3}/${CASE}_oro_data.tile${TILE_NUM}.nc
 #     FNGRID        Model grid file (netcdf format)
-#                   Defaults to ${FIXfv3}/${CASE}_grid.tile${tilenum}.nc
+#                   Defaults to ${FIXfv3}/${CASE}_grid.tile${TILE_NUM}.nc
 #     GSI_FILE      GSI file on the gaussian grid containing NST increments.
 #                   Defaults to empty string.
 #     FNTSFA        Input SST analysis GRIB file.
@@ -225,7 +226,7 @@ export SFCGES=${1:-${SFCGES:?}}
 export SFCANL=${2:-${SFCANL}}
 
 export CASE=${CASE:-C768}
-export tilenum=${tilenum:-1}
+export TILE_NUM=${TILE_NUM:-1}
 
 #  Directories.
 export global_shared_ver=${global_shared_ver:-v15.0.0}
@@ -247,9 +248,14 @@ export CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
 
 export CDATE=${CDATE:?}
 export FHOUR=${FHOUR:-00}
-export JCAP=${JCAP:-1534}
-export LONB=${LONB:-3072}
-export LATB=${LATB:-1536}
+
+CRES=$(echo $CASE | cut -c2-)
+JCAP_CASE=$((2*CRES-2))
+LONB_CASE=$((4*CRES))
+LATB_CASE=$((2*CRES))
+export JCAP=${JCAP:-$JCAP_CASE}
+export LONB=${LONB:-$LONB_CASE}
+export LATB=${LATB:-$LATB_CASE}
 export DELTSFC=${DELTSFC:-0}
 
 export LSOIL=${LSOIL:-4}
@@ -284,8 +290,8 @@ export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
 export FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
 export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-export FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tilenum}.nc}
-export FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${tilenum}.nc}
+export FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${TILE_NUM}.nc}
+export FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${TILE_NUM}.nc}
 export GSI_FILE=${GSI_FILE:-" "}
 export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
 export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
@@ -326,8 +332,6 @@ iy=$(echo $CDATE|cut -c1-4)
 im=$(echo $CDATE|cut -c5-6)
 id=$(echo $CDATE|cut -c7-8)
 ih=$(echo $CDATE|cut -c9-10)
-
-CRES=$(echo $CASE | cut -c2-)
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS_CY:-${CYCLETHREAD:-1}}
 
