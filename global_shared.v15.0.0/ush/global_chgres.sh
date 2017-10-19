@@ -12,7 +12,7 @@
 #   converting an nst file, you must also convert a surface file. 
 #   All input files are specified by the first three arguments.
 #   The horizontal/vertical resolution of the output files is given by 
-#   the CRES/LEVS arguments.  When the input sigma file is sigio format,
+#   the CASE/LEVS arguments.  When the input sigma file is sigio format,
 #   the conversion is done in two steps.  First, the spectral coefficients
 #   are converted to grid point space.  By default, this intermediate
 #   data are on a gaussian grid with i/j dimension as described by the
@@ -31,13 +31,13 @@
 # 2017-04-12  Remove references to output nsst file.  nsst data
 #             now written to surface restart file.
 #
-# Usage:  global_chgres.sh SIGINP SFCINP NSTINP CRES LEVS
+# Usage:  global_chgres.sh SIGINP SFCINP NSTINP CASE LEVS
 #
 #   Input script positional parameters:
 #     1             Input sigma file (SIGINP) 
 #     2             Input surface file (SFCINP)
 #     3             Input nst file (NSTINP)
-#     4             Output cubed-sphere resolution (CRES)
+#     4             Output cubed-sphere resolution (CASE)
 #     5             New number of vertical sigma levels (LEVS)
 #
 #   Imported Shell Variables:
@@ -47,7 +47,7 @@
 #                   overridden by $2; skip surface conversion if missing
 #     NSTINP        Input nst file
 #                   overridden by $3; skip surface conversion if missing
-#     CRES          Output cubed-sphere resolution.  
+#     CASE          Output cubed-sphere resolution.  
 #                   overridden by $4.
 #     LEVS          New number of sigma levels
 #                   overridden by $5; one or the other is required
@@ -107,7 +107,7 @@
 #     FNSOTC        Input soil type climatology GRIB file
 #                   defaults to ${FIXgsm}/global_soiltype.1x1.grb
 #     FNSMCC        Input soil moisture climatology GRIB file
-#                   defaults to ${FIXgsm}/global_soilmgldas.t$CRES.grb
+#                   defaults to ${FIXgsm}/global_soilmgldas.t$JCAP.$LONB.$LATB.grb
 #     FNVMNC        Input min veg frac climatology GRIB file
 #                   defaults to ${FIXgsm}/global_shdmin.0.144x0.144.grb
 #     FNVMXC        Input max veg frac climatology GRIB file
@@ -241,7 +241,7 @@ export APRUNC=${APRUNC:-""}
 export SIGINP=${1:-${SIGINP:-NULL}}
 export SFCINP=${2:-${SFCINP:-NULL}}
 export NSTINP=${3:-${NSTINP:-NULL}}
-export CRES=${4:-${CRES:?}}
+export CASE=${4:-${CASE:?}}
 export LEVS=${5:-${LEVS:?}}
 #  Directories.
 export global_shared_ver=${global_shared_ver:-v14.0.0}
@@ -255,6 +255,16 @@ export DATA=${DATA:-$(pwd)}
 #  Filenames.
 export CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
 #
+
+CRES=$(echo $CASE | cut -c2-)
+JCAP_CASE=$((CRES*2-2))
+LATB_CASE=$((CRES*2))
+LONB_CASE=$((CRES*4))
+
+export JCAP=${JCAP:-$JCAP_CASE}
+export LONB=${LONB:-$LONB_CASE}
+export LATB=${LATB:-$LATB_CASE}
+
 export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 if [ $LEVS = 128 ]; then
   export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}B.txt}
@@ -271,7 +281,7 @@ export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
 export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
 export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
 export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
-export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.c${CRES}.grb}
+export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
 export FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
 export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
@@ -290,8 +300,6 @@ export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
 export TILE_NUM=${TILE_NUM:-1}
-export LONB=${LONB:-0}
-export LATB=${LATB:-0}
 export IDRT=${IDRT:-4}
 export OUTTYP=${OUTTYP:-999}
 export NTRAC=${NTRAC:-3}
@@ -349,8 +357,8 @@ ln -sf $LONSPERLAT    chgres.inp.lpl3
 
 tile=1
 while [ $tile -le $ntiles ]; do
- ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
- ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+ ln -sf ${FIXfv3}/${CASE}/${CASE}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+ ln -sf ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
  tile=`expr $tile + 1 `
 done
 
