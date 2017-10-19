@@ -62,7 +62,6 @@ if [ -f $ATMANL ]; then
 fi
 
 # Run post job to create forecast grib files
-# We no longer do relocation, and thus GDAS cycle does not need forecast grib files
 if [ $CDUMP = "gfs" -o ${GPOST:-"NO"} = "YES" ]; then
     export ANALYSIS_POST="NO"
     $POSTJJOBSH

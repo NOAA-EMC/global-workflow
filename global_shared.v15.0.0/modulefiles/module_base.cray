@@ -42,6 +42,3 @@ module load nco-gnu-sandybridge/4.4.4
 module load NetCDF-intel-sandybridge/4.2
 module load cfp-intel-sandybridge/1.1.0
 setenv USE_CFP YES
-
-# Bad hard-coded path.  Should replace with nwprod, /usrx/local/, or remove:
-setenv NEMSIOGET /gpfs/hps/emc/global/noscrub/emc.glopara/bin/nemsio_get

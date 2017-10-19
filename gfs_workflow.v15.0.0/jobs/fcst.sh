@@ -51,15 +51,10 @@ export warm_start=".false."
 # If RESTART conditions exist; warm start the model
 # Restart conditions for GFS cycle come from GDAS
 rCDUMP=$CDUMP
-[[ $CDUMP = "gfs" ]] && rCDUMP="gdas"
+[[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
 
 if [ -f $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${cymd}.${chh}0000.coupler.res ]; then
     export warm_start=".true."
-    if [ $CDUMP = "gfs" ]; then
-        mkdir -p $ROTDIR/${CDUMP}.$gymd/$ghh/RESTART
-        cd $ROTDIR/${CDUMP}.$gymd/$ghh/RESTART
-        $NCP $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${cymd}.${chh}0000.* .
-    fi
     if [ -f $ROTDIR/${CDUMP}.$cymd/$chh/${CDUMP}.t${chh}z.atminc.nc ]; then
         export read_increment=".true."
     else
@@ -76,11 +71,6 @@ if [ $CDUMP = "gfs" ]; then
     export FHOUT_HF=$FHOUT_HF_GFS
 fi
 
-res=$(echo $CASE | cut -c2-)
-export JCAP=$((res*2-2))
-export LONB=$((4*res))
-export LATB=$((2*res))
-
 ###############################################################
 # Run relevant exglobal script
 $FORECASTSH
@@ -95,26 +85,26 @@ export DATA=$ROTDIR/${CDUMP}.$cymd/$chh
 if [ $CDUMP = "gdas" ]; then
 
    if [ $OUTPUT_GRID = 'cubed_sphere_grid' -o $QUILTING = ".false." ]; then
-    # Regrid 6-tile output to global array in NEMSIO gaussian grid for DA
-    $REGRID_NEMSIO_SH
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+       # Regrid 6-tile output to global array in NEMSIO gaussian grid for DA
+       $REGRID_NEMSIO_SH
+       status=$?
+       [[ $status -ne 0 ]] && exit $status
    fi
 
 elif [ $CDUMP = "gfs" ]; then
 
    if [ $OUTPUT_GRID = 'cubed_sphere_grid' -o $QUILTING = ".false." ]; then
-    # Remap 6-tile output to global array in NetCDF latlon
-    $REMAPSH
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+       # Remap 6-tile output to global array in NetCDF latlon
+       $REMAPSH
+       status=$?
+       [[ $status -ne 0 ]] && exit $status
    fi
 
    if [ $WRITE_NEMSIOFILE = ".false." -o $QUILTING = ".false." ]; then
-    # Convert NetCDF to nemsio
-    $NC2NEMSIOSH
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+       # Convert NetCDF to nemsio
+       $NC2NEMSIOSH
+       status=$?
+       [[ $status -ne 0 ]] && exit $status
    fi
 
 fi

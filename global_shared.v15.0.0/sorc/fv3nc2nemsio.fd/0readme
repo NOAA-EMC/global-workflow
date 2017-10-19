@@ -17,3 +17,7 @@ updated to handle output of any frequency and any accumulation bucket
 
 01/10/2017 Fanglin Yang
 updated to handle both hydrostatic and nonhydrostatic cases. They have different output numbers and variable names.
+
+10/07/2017 Fanglin Yang
+In FV3 tic26 branch which includes the lastest Write Component, hgtsfc has been defined as [m] instead of [gpm].  
+The scaling by 1/grav in fv3nc2nemsio.fd needs to be removed.

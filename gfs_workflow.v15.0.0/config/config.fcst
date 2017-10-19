@@ -19,7 +19,7 @@ echo "BEGIN: config.fcst"
 . $EXPDIR/config.resources fcst
 
 if [ $DONST = "YES" ]; then
-. $EXPDIR/config.nsst            
+    . $EXPDIR/config.nsst
 fi
 
 export FORECASTSH="$BASE_GSM/scripts/exglobal_fcst_nemsfv3gfs.sh"
@@ -29,24 +29,27 @@ export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 export nth_fv3=2
 
 if [ $QUILTING = ".true." ]; then
- export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" |bc) 
- export npe_fcst=$npe_fv3
+    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_fcst=$npe_fv3
 fi
 
 # Model configuration
 export TYPE="nh"
 export MONO="non-mono"
 
-# microphysics scheme option: 1--ZhaoCarr, 2--MG; 5-GFDL_MP
-export ncld=1
+export ncld=5 # microphysics scheme option - 1:ZhaoCarr, 2:MG, 5:GFDL MP
 export FIELD_TABLE=$BASE_GSM/parm/parm_fv3diag/field_table_ncld${ncld}
 export nwat=2
-export zhao_mic=".true." 
-if [ $ncld -eq 5 ]; then 
- export nwat=6 
- export zhao_mic=".false." 
+export zhao_mic=".true."
+export dnats=0          
+export cal_pre=".true."
+if [ $ncld -eq 5 ]; then # If GFDL MP then turn off Zhao option
+    export nwat=6
+    export zhao_mic=".false."
+    export dnats=1          
+    export cal_pre=".false."
 fi
- 
+
 
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
@@ -54,10 +57,10 @@ export USE_COUPLER_RES="NO"
 if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then 
-     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table2_da"
+    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+        export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table2_da"
     else
-     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
+        export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
     fi
 
     # Write restart files at next assimilation time
@@ -66,10 +69,10 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then 
-     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table2"     
+    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+        export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table2"
     else
-     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table"
+        export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table"
     fi
 
 fi
@@ -77,15 +80,15 @@ fi
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$BASE_GSM/ush/fv3gfs_regrid_nemsio.sh"
 if [ $DONST = YES ]; then
- export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
+    export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da.txt"
 else
- export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da_nonsst.txt"
+    export REGRID_NEMSIO_TBL="$BASE_GSM/parm/parm_fv3diag/variable_table_da_nonsst.txt"
 fi
 
 # Remap tiles to global latlon grid in NetCDF
 export REMAPSH="$BASE_GSM/ush/fv3gfs_remap.sh"
 export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
-export npe_remap=$npe_fcst
+export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
 export nth_remap=2
 
 # Global latlon NetCDF to nemsio utility parameters

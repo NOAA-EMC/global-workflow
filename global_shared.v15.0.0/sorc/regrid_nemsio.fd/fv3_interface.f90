@@ -404,8 +404,6 @@ contains
                    ! (surface height called 'orog' in nemsio bin4, 'hgt' in
                    ! grib)
                    if (trim(var_info(k2)%nems_name) == 'orog') then
-                      if (trim(var_info(k2)%var_name) == 'hgtsfc') &
-                         outvar%var = outvar%var / grav
                       call gfs_nems_write('3d',real(outvar%var),                     &
                       'hgt                 ',var_info(k2)%nems_levtyp,1)
                    else

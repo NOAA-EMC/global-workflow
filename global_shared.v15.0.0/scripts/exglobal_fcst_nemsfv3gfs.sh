@@ -49,6 +49,7 @@ if [ $machine = "WCOSS_C" ] ; then
   module load esmf/7.1.0bs34 2>/dev/null
 elif [ $machine = "THEIA" ]; then
   . $MODULESHOME/init/sh 2>/dev/null
+  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles 2>/dev/null
   module load esmf/7.1.0bs34 2>/dev/null
 fi
 
@@ -86,9 +87,11 @@ LEVS=${LEVS:-65}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
+NMV=${NMV:-"/bin/mv"}
 SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NDATE=${NDATE:-$NWPROD/util/exec/ndate}
+KEEPDATA=${KEEPDATA:-"NO"}
 
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -100,14 +103,21 @@ FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
 
 # Model config options
-APRUN_FV3=${APRUN_FV3:-""}
-NTHREADS_FV3=${NTHREADS_FV3:-1}
+APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
+NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
 cores_per_node=${cores_per_node:-${npe_node_max:-24}}
 ntiles=${ntiles:-6}
 NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
+
+QUILTING=${QUILTING:-".true."}
+OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
+WRITE_NEMSIOFILE=${WRITE_NEMSIOFILE:-".true."}
+WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
+
+rCDUMP=${rCDUMP:-$CDUMP}
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
@@ -119,10 +129,12 @@ cd $DATA || exit 8
 # member directory
 if [ $MEMBER -lt 0 ]; then
   prefix=$CDUMP
+  rprefix=$rCDUMP
   memchar=""
 else
   prefix=enkf.$CDUMP
-  memchar=mem`printf %03i $MEMBER`
+  rprefix=enkf.$rCDUMP
+  memchar=mem$(printf %03i $MEMBER)
 fi
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
@@ -132,7 +144,7 @@ if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 GDATE=$($NDATE -$assim_freq $CDATE)
 gymd=$(echo $GDATE | cut -c1-8)
 ghh=$(echo  $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${prefix}.$gymd/$ghh/$memchar
+gmemdir=$ROTDIR/${rprefix}.$gymd/$ghh/$memchar
 
 #-------------------------------------------------------
 # initial conditions
@@ -147,7 +159,7 @@ if [ $warm_start = ".false." ]; then
   else
     for file in $memdir/INPUT/*.nc; do
       file2=$(echo $(basename $file))
-      fsuf=`echo $file2 | cut -c1-3`
+      fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
         $NLN $file $DATA/INPUT/$file2
       fi
@@ -161,9 +173,9 @@ else
     # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
     for file in $gmemdir/RESTART/${cymd}.${chh}0000.*.nc; do
       file2=$(echo $(basename $file))
-      file2=`echo $file2 | cut -d. -f3-` # remove the date from file
-      fres=`echo $file2 | cut -d. -f2`
-      fsuf=`echo $file2 | cut -d. -f1 | cut -c1-3`
+      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+      fres=$(echo $file2 | cut -d. -f2)
+      fsuf=$(echo $file2 | cut -d. -f1 | cut -c1-3)
       if [ $fres = "res" -o $fsuf = "sfc" ]; then
         $NLN $file $DATA/INPUT/$file2
       fi
@@ -176,7 +188,7 @@ else
       # model start time with current model time in coupler.res
       file=$gmemdir/RESTART/${cymd}.${chh}0000.coupler.res
       file2=$(echo $(basename $file))
-      file2=`echo $file2 | cut -d. -f3-` # remove the date from file
+      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
       $NLN $file $DATA/INPUT/$file2
     fi
     if [ $read_increment = ".true." ]; then
@@ -188,7 +200,7 @@ else
     fi
   fi
 fi
-nfiles=`ls -1 $DATA/INPUT/* | wc -l`
+nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
   exit 1
@@ -196,7 +208,7 @@ fi
 
 #--------------------------------------------------------------------------
 # Grid and orography data
-for n in `seq 1 $ntiles`; do
+for n in $(seq 1 $ntiles); do
   $NLN $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
   $NLN $FIX_FV3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 done
@@ -217,14 +229,14 @@ $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
 $NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt
 if [ $ICO2 -gt 0 ]; then
-  for file in `ls $FIX_AM/fix_co2_proj/global_co2historicaldata* ` ; do
+  for file in $(ls $FIX_AM/fix_co2_proj/global_co2historicaldata*) ; do
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
   done
 fi
 
 $NLN $FIX_AM/global_climaeropac_global.txt     $DATA/aerosol.dat
 if [ $IAER -gt 0 ] ; then
-  for file in `ls $FIX_AM/global_volcanic_aerosols* ` ; do
+  for file in $(ls $FIX_AM/global_volcanic_aerosols*) ; do
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
   done
 fi
@@ -277,13 +289,22 @@ nst_anl=${nst_anl:-".false."}
 #------------------------------------------------------------------
 # changeable parameters
 # dycore definitions
-res=`echo $CASE |cut -c2-5`
-resp=`expr $res + 1 `
+res=$(echo $CASE |cut -c2-5)
+resp=$((res+1))
 npx=$resp
 npy=$resp
-npz=`expr $LEVS - 1 `
+npz=$((LEVS-1))
 io_layout="1,1"
 #ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
+
+# spectral truncation and regular grid resolution based on FV3 resolution
+JCAP_CASE=$((2*res-2))
+LONB_CASE=$((4*res))
+LATB_CASE=$((2*res))
+
+JCAP=${JCAP:-$JCAP_CASE}
+LONB=${LONB:-$LONB_CASE}
+LATB=${LATB:-$LATB_CASE}
 
 # blocking factor used for threading and general physics performance
 #nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
@@ -335,7 +356,7 @@ consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. bef
 k_split=${k_split:-2}
 n_split=${n_split:-6}
 
-if [ `echo ${MONO} | cut -c-4` = "mono" ];  then # monotonic options
+if [ $(echo $MONO | cut -c-4) = "mono" ];  then # monotonic options
 
   d_con=${d_con:-"0."}
   do_vort_damp=".false."
@@ -361,7 +382,7 @@ else # non-monotonic options
 
 fi
 
-if [ `echo ${MONO} | cut -c-4` != "mono" -a ${TYPE} = "nh" ]; then
+if [ $(echo $MONO | cut -c-4) != "mono" -a $TYPE = "nh" ]; then
   vtdm4=${vtdm4:-"0.06"}
 else
   vtdm4=${vtdm4:-"0.05"}
@@ -390,11 +411,21 @@ else # CHGRES'd GFS analyses
 
 fi
 
+# Stochastic Physics Options
+SET_STP_SEED=${SET_STP_SEED:-"YES"}
+ISEED=${ISEED:-0}
+DO_SKEB=${DO_SKEB:-".false."}
+DO_SPPT=${DO_SPPT:-".false."}
+DO_SHUM=${DO_SHUM:-".false."}
+JCAP_STP=${JCAP_STP:-$JCAP_CASE}
+LONB_STP=${LONB_STP:-$LONB_CASE}
+LATB_STP=${LATB_STP:-$LATB_CASE}
+
 # build the date for curr_date and diag_table from CDATE
-SYEAR=`echo $CDATE | cut -c1-4`
-SMONTH=`echo $CDATE | cut -c5-6`
-SDAY=`echo $CDATE | cut -c7-8`
-SHOUR=`echo $CDATE | cut -c9-10`
+SYEAR=$(echo $CDATE | cut -c1-4)
+SMONTH=$(echo $CDATE | cut -c5-6)
+SDAY=$(echo $CDATE | cut -c7-8)
+SHOUR=$(echo $CDATE | cut -c9-10)
 curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
 rsecs=$((restart_interval*3600))
 restart_secs=${rsecs:-0}
@@ -447,14 +478,14 @@ use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
 
-quilting:                ${QUILTING:-".false."}
+quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
-num_files:               ${NUM_FILES:-2} 
+num_files:               ${NUM_FILES:-2}
 filename_base:           '${CDUMP}.t${chh}z.atm' '${CDUMP}.t${chh}z.sfc'
-output_grid:             ${OUTPUT_GRID:-"gaussian_grid"}
-write_nemsiofile:        ${WRITE_NEMSIOFILE:-".true."}
-write_nemsioflip:        ${WRITE_NEMSIOFLIP:-".true."}
+output_grid:             $OUTPUT_GRID
+write_nemsiofile:        $WRITE_NEMSIOFILE
+write_nemsioflip:        $WRITE_NEMSIOFLIP
 imo:                     $LONB
 jmo:                     $LATB
 
@@ -551,7 +582,7 @@ cat > input.nml <<EOF
   nwat = ${nwat:-2}
   na_init = $na_init
   d_ext = 0.
-  dnats = 0
+  dnats = ${dnats:-0}
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}
@@ -640,54 +671,54 @@ cat > input.nml <<EOF
   $gfs_physics_nml
 /
 
- &gfdl_cloud_microphysics_nml
-       sedi_transport = .true.
-       do_sedi_heat = .false.
-       rad_snow = .true.
-       rad_graupel = .true.
-       rad_rain = .true.
-       const_vi = .F.
-       const_vs = .F.
-       const_vg = .F.
-       const_vr = .F.
-       vi_max = 1.
-       vs_max = 2.
-       vg_max = 12.
-       vr_max = 12.
-       qi_lim = 1.
-       prog_ccn = .false.
-       do_qa = .true.
-       fast_sat_adj = .true.
-       tau_l2v = 300.
-       tau_l2v = 225.
-       tau_v2l = 150.
-       tau_g2v = 900.
-       rthresh = 10.e-6  ! This is a key parameter for cloud water
-       dw_land  = 0.16
-       dw_ocean = 0.10
-       ql_gen = 1.0e-3
-       ql_mlt = 1.0e-3
-       qi0_crt = 8.0E-5
-       qs0_crt = 1.0e-3
-       tau_i2s = 1000.
-       c_psaci = 0.05
-       c_pgacs = 0.01
-       rh_inc = 0.30
-       rh_inr = 0.30
-       rh_ins = 0.30
-       ccn_l = 300.
-       ccn_o = 100.
-       c_paut = 0.5
-       c_cracw = 0.8
-       use_ppm = .false.
-       use_ccn = .true.
-       mono_prof = .true.
-       z_slope_liq  = .true.
-       z_slope_ice  = .true.
-       de_ice = .false.
-       fix_negative = .true.
-       icloud_f = 1
-       mp_time = 150.
+&gfdl_cloud_microphysics_nml
+  sedi_transport = .true.
+  do_sedi_heat = .false.
+  rad_snow = .true.
+  rad_graupel = .true.
+  rad_rain = .true.
+  const_vi = .F.
+  const_vs = .F.
+  const_vg = .F.
+  const_vr = .F.
+  vi_max = 1.
+  vs_max = 2.
+  vg_max = 12.
+  vr_max = 12.
+  qi_lim = 1.
+  prog_ccn = .false.
+  do_qa = .true.
+  fast_sat_adj = .true.
+  tau_l2v = 300.
+  tau_l2v = 225.
+  tau_v2l = 150.
+  tau_g2v = 900.
+  rthresh = 10.e-6  ! This is a key parameter for cloud water
+  dw_land  = 0.16
+  dw_ocean = 0.10
+  ql_gen = 1.0e-3
+  ql_mlt = 1.0e-3
+  qi0_crt = 8.0E-5
+  qs0_crt = 1.0e-3
+  tau_i2s = 1000.
+  c_psaci = 0.05
+  c_pgacs = 0.01
+  rh_inc = 0.30
+  rh_inr = 0.30
+  rh_ins = 0.30
+  ccn_l = 300.
+  ccn_o = 100.
+  c_paut = 0.5
+  c_cracw = 0.8
+  use_ppm = .false.
+  use_ccn = .true.
+  mono_prof = .true.
+  z_slope_liq  = .true.
+  z_slope_ice  = .true.
+  de_ice = .false.
+  fix_negative = .true.
+  icloud_f = 1
+  mp_time = 150.
 /
 
 &nggps_diag_nml
@@ -755,37 +786,37 @@ if [ $MEMBER -gt 0 ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
-  ntrunc = ${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
-  lon_s = ${LONB:-$((`echo  $CASE | cut -c 2-`*4))}
-  lat_s = ${LATB:-$((`echo  $CASE | cut -c 2-`*2))}
+  ntrunc = $JCAP_STP
+  lon_s = $LONB_STP
+  lat_s = $LATB_STP
 EOF
 
-  if [ ${DO_SKEB:-".false."} = ".true." ]; then
-    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
+  if [ $DO_SKEB = ".true." ]; then
+    [[ $SET_STP_SEED = "YES" ]] && ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
     cat >> input.nml << EOF
   skeb = $SKEB
-  iseed_skeb = ${ISEED_SKEB:-${ISEED:-"0"}}
+  iseed_skeb = ${ISEED_SKEB:-$ISEED}
   skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
   skebnorm = ${SKEBNORM:-"1"}
 EOF
   fi
 
-  if [ ${DO_SHUM:-".false."} = ".true." ]; then
-    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
+  if [ $DO_SHUM = ".true." ]; then
+    [[ $SET_STP_SEED = "YES" ]] && ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
     cat >> input.nml << EOF
   shum = $SHUM
-  iseed_shum = ${ISEED_SHUM:-${ISEED:-"0"}}
+  iseed_shum = ${ISEED_SHUM:-$ISEED}
   shum_tau = ${SHUM_TAU:-"-999."}
   shum_lscale = ${SHUM_LSCALE:-"-999."}
 EOF
   fi
 
-  if [ ${DO_SPPT:-".false."} = ".true." ]; then
-    [[ ${SET_STP_SEED:-"NO"} = "YES" ]] && ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+  if [ $DO_SPPT = ".true." ]; then
+    [[ $SET_STP_SEED = "YES" ]] && ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
     cat >> input.nml << EOF
   sppt = $SPPT
-  iseed_sppt = ${ISEED_SPPT:-${ISEED:-"0"}}
+  iseed_sppt = ${ISEED_SPPT:-$ISEED}
   sppt_tau = ${SPPT_TAU:-"-999."}
   sppt_lscale = ${SPPT_LSCALE:-"-999."}
   sppt_logit = ${SPPT_LOGIT:-".true."}
@@ -813,24 +844,23 @@ cd $DATA
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
 $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
-
 export ERR=$?
 export err=$ERR
-$ERRSCRIPT || exit 2
+$ERRSCRIPT || exit $err
 
 #------------------------------------------------------------------
 if [ $SEND = "YES" ]; then
   # Copy model output files
   cd $DATA
   if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-   $NCP *atm*.nemsio $memdir/.
-   $NCP *sfc*.nemsio $memdir/.
+    $NCP ${CDUMP}.t${chh}z.atm*.nemsio $memdir/.
+    $NCP ${CDUMP}.t${chh}z.sfc*.nemsio $memdir/.
   else
-   for n in `seq 1 $ntiles`; do
-     for file in *.tile${n}.nc; do
-       $NCP $file $memdir/.
-     done
-   done
+    for n in $(seq 1 $ntiles); do
+      for file in *.tile${n}.nc; do
+        $NCP $file $memdir/.
+      done
+    done
   fi
 
   # Copy model restart files
@@ -841,30 +871,32 @@ if [ $SEND = "YES" ]; then
   RDATE=$($NDATE +$FHMAX $CDATE)
   rymd=$(echo $RDATE | cut -c1-8)
   rhh=$(echo  $RDATE | cut -c9-10)
-  for file in `ls * | grep -v 0000` ; do
-    $NCP $file $memdir/RESTART/${rymd}.${rhh}0000.$file
+  for file in $(ls * | grep -v 0000); do
+    $NMV $file ${rymd}.${rhh}0000.$file
   done
 
-  # Currently can only handle a single restart_interval -ne 0
-  # Required for DA
-  if [ $restart_interval -ne 0 ]; then
+  # Only save restarts at single time in RESTART directory
+  # Either at FHMAX or at first time in restart_interval
+  if [ $restart_interval -eq 0 ]; then
+    RDATE=$($NDATE +$FHMAX $CDATE)
+  else
     RDATE=$($NDATE +$restart_interval $CDATE)
-    rymd=$(echo $RDATE | cut -c1-8)
-    rhh=$(echo  $RDATE | cut -c9-10)
-    for file in ${rymd}.${rhh}0000.* ; do
-      $NCP $file $memdir/RESTART/$file
-    done
   fi
+  rymd=$(echo $RDATE | cut -c1-8)
+  rhh=$(echo  $RDATE | cut -c9-10)
+  for file in ${rymd}.${rhh}0000.* ; do
+    $NCP $file $memdir/RESTART/$file
+  done
 
 fi
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ ${KEEPDATA:-"NO"} = "NO" ]; then rm -rf $DATA; fi
+if [ $KEEPDATA = "NO" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
 set +x
-if [ "$VERBOSE" = "YES" ] ; then
+if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXITING $0 with return code $err >&2
 fi
-exit $err
+exit 0
