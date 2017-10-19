@@ -60,7 +60,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
 else
     $NCP $COMIN_OBS/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
     $NCP $COMIN_OBS/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-    $NCP $COMIN_OBS/${OPREFIX}nsstbufr               $COMOUT/${OPREFIX}nsstbufr
+    [[ $DONST = "YES" ]] && $NCP $COMIN_OBS/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
 fi
 
 ################################################################################

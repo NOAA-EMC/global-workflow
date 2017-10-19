@@ -193,7 +193,7 @@ def load_produtil_pythonpath():
 
     PRODUTIL = collections.defaultdict(list) 
     PRODUTIL['theia'] = '/scratch4/NCEPDEV/global/save/glopara/svn/nceplibs/produtil/trunk/ush'
-    PRODUTIL['luna']  = '/gpfs/hps/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
+    PRODUTIL['luna']  = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['tide']  = '/global/save/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     try_clusters = ('theia','luna','tide')
 

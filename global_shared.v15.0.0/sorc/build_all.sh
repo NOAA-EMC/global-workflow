@@ -12,7 +12,7 @@ set -eux
 #--link large fixed fields for respective machines
 if [ -d ../fix ]; then rm -f ../fix; fi
 if [ $target = cray -o $target = wcoss ]; then
- ln -fs /gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix ../fix
+ ln -fs /gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix ../fix
 elif [ $target = theia ]; then
  ln -fs /scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix    ../fix
 else

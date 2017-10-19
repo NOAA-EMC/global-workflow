@@ -16,9 +16,8 @@ echo "BEGIN: config.anal"
 . $EXPDIR/config.resources anal
 
 if [ $DONST = "YES" ]; then
-. $EXPDIR/config.nsst
+    . $EXPDIR/config.nsst
 fi
-
 
 export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
