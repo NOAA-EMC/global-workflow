@@ -144,8 +144,7 @@ fi
 if [ $VRFYGENESIS = "YES" ]; then
 
     if [ $machine = "WCOSS_C" ] ; then
-        #export NWROOTGENESIS="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17"
-        export NWROOTGENESIS="/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/svn/fv3gfs"     
+        export NWROOTGENESIS="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17"
     elif [ $machine = "THEIA" ] ; then
         export NWROOTGENESIS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17"
         export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"

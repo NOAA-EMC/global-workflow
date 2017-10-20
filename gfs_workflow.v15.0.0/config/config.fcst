@@ -37,17 +37,30 @@ fi
 export TYPE="nh"
 export MONO="non-mono"
 
-export ncld=5 # microphysics scheme option - 1:ZhaoCarr, 2:MG, 5:GFDL MP
+export ncld=1 # microphysics scheme option - 1:ZhaoCarr, 2:MG, 5:GFDL MP
 export FIELD_TABLE=$BASE_GSM/parm/parm_fv3diag/field_table_ncld${ncld}
 export nwat=2
 export zhao_mic=".true."
 export dnats=0          
 export cal_pre=".true."
+export do_sat_adj=".false."
+export random_clds=".true."
+export cnvcld=".true."
 if [ $ncld -eq 5 ]; then # If GFDL MP then turn off Zhao option
     export nwat=6
     export zhao_mic=".false."
     export dnats=1          
     export cal_pre=".false."
+    export do_sat_adj=".true."
+    export random_clds=".false."
+    export cnvcld=".false."
+
+    export hord_mt_nh_nonmono=6
+    export hord_xx_nh_nonmono=6
+    epxort vtdm4_nh_nonmono=0.02
+    export nord=2
+    export dddmp=0.1
+    export d4_bg=0.12
 fi
 
 
