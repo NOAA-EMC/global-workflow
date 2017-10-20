@@ -6506,8 +6506,6 @@
         allocate (gaul(jmxin))
         jmxsav = jmxin
         if (gaus) then
-cjfe      call gaulat(gaul,jmxin)
-cjfe
 !
           kspla=4
           call splat(kspla, jmxin, a, w)
@@ -6725,29 +6723,6 @@ cjfe
       enddo
       return
       end subroutine landtyp
-      subroutine gaulat(gaul,k)
-!
-      use machine , only : kind_io8,kind_io4
-      implicit none
-      integer n,k
-      real (kind=kind_io8) radi
-      real (kind=kind_io8) a(k), w(k), gaul(k)
-!
-      call splat(4, k, a, w)
-!
-      radi = 180.0 / (4.*atan(1.))
-      do  n=1,k
-        gaul(n) = acos(a(n)) * radi
-      enddo
-!
-!     print *,'gaussian lat (deg) for jmax=',k
-!     print *,(gaul(n),n=1,k)
-!
-      return
-   70 write(6,6000)
- 6000 format(//5x,'error in gauaw'//)
-      stop
-      end
 !-----------------------------------------------------------------------
       subroutine anomint(tsfan0,tsfclm,tsfcl0,tsfanl,len)
 !
