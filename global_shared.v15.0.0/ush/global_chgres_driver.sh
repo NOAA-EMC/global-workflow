@@ -113,7 +113,8 @@ else
  fi
 fi
 
-if [ $ictype = oldgfs ]; then
+if [ $ictype = oldgfs ]; then   # input data is old spectral sigio format.
+
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/siganl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/siganl.${CDUMP}.$CDATE
@@ -123,6 +124,7 @@ if [ $ictype = oldgfs ]; then
    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl
   fi
  fi
+
  export NSTANL="NULL"
  export SOILTYPE_INP=zobler
  export SOILTYPE_OUT=zobler
@@ -132,16 +134,21 @@ if [ $ictype = oldgfs ]; then
  export nopdpvv=.false.
 
  #--sigio to user defined lat-lon gaussian grid
- export LONB_SFC=$CRES
- export LATB_SFC=$CRES
- export LONB_ATM=$((CRES*4))
- export LATB_ATM=$((CRES*2))
+ JCAP_CASE=$((CRES*2-2))
+ LONB_ATM=$((CRES*4))
+ LATB_ATM=$((CRES*2))
+ LONB_SFC=$((CRES*4))
+ LATB_SFC=$((CRES*2))
  if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
-  export LONB_ATM=3072
-  export LATB_ATM=1536
+   JCAP_CASE=1534
+   LONB_ATM=3072
+   LATB_ATM=1536
+   LONB_SFC=3072
+   LATB_SFC=1536
  fi
 
-elif [ $ictype = opsgfs ]; then
+elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
+
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
@@ -153,23 +160,35 @@ elif [ $ictype = opsgfs ]; then
    export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
   fi
  fi
+
+ LONB_ATM=0   # not used for
+ LATB_ATM=0   # ops files
+ JCAP_CASE=$((CRES*2-2))
+ LONB_SFC=$((CRES*4))
+ LATB_SFC=$((CRES*2))
+ if [ $CRES -gt 768 -o $gtype = stretch -o $gtype = nest ]; then
+   JCAP_CASE=1534
+   LONB_SFC=3072
+   LATB_SFC=1536
+ fi
+
  # to use new albedo, soil/veg type
  export IALB=1
- export FNSMCC=$FIXgsm/global_soilmgldas.t1534.3072.1536.grb
- export FNSOTC=$FIXgsm/global_soiltype.statsgo.t1534.3072.1536.rg.grb
+ export FNSMCC=$FIXgsm/global_soilmgldas.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.grb
+ export FNSOTC=$FIXgsm/global_soiltype.statsgo.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
  export SOILTYPE_INP=statsgo
  export SOILTYPE_OUT=statsgo
- export FNVETC=$FIXgsm/global_vegtype.igbp.t1534.3072.1536.rg.grb
+ export FNVETC=$FIXgsm/global_vegtype.igbp.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
  export VEGTYPE_INP=igbp
  export VEGTYPE_OUT=igbp
- export FNABSC=$FIXgsm/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb
- export FNALBC=$FIXgsm/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb
+ export FNABSC=$FIXgsm/global_mxsnoalb.uariz.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
+ export FNALBC=$FIXgsm/global_snowfree_albedo.bosu.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
  # needed for facsf and facwf
  export FNALBC2=$FIXgsm/global_albedo4.1x1.grb
  export FNZORC=igbp
  export nopdpvv=.true.
-fi
 
+fi  # is input data old or new format?
 
 #------------------------------------------------
 # Convert atmospheric file.
@@ -178,6 +197,7 @@ export CHGRESVARS="use_ufo=.false.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv
 export SIGINP=$ATMANL
 export SFCINP=NULL
 export NSTINP=NULL
+export JCAP=$JCAP_CASE
 export LATB=$LATB_ATM
 export LONB=$LONB_ATM
 
@@ -198,6 +218,7 @@ export CHGRESVARS="use_ufo=.true.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
 export SIGINP=NULL
 export SFCINP=$SFCANL
 export NSTINP=$NSTANL
+export JCAP=$JCAP_CASE
 export LATB=$LATB_SFC
 export LONB=$LONB_SFC
 

@@ -53,12 +53,19 @@
 #                   overridden by $5; one or the other is required
 #     OUTTYP        Output file type.  Not used yet.  The sigma/atms and
 #                   surface/nsst files are output in netcdf. 
-#     IDRT          Intermediate grid type output from spectral conversion
+#     IDRT          When converting an atmospheric file in sigio format,
+#                   this is the grid type after spectral conversion.
 #                   4: guassian(default); 0: lat-lon                            
-#     LONB          Number of longitudes of intermediate grid type output
-#                   from spectral conversion
-#     LATB          Number of latitudes of intermediate grid type output
-#                   from spectral conversion
+#     LONB          When converting an atmospheric file in sigio format, 
+#                   this is the number of longitudes of the intermediate grid
+#                   after spectral conversion.  When converting a surface
+#                   file, this is the number of longitudes of the input
+#                   climatological soil moisture data file.
+#     LATB          When converting an atmospheric file in sigio format, 
+#                   this is the number of latitudes of the intermediate grid
+#                   after spectral conversion.  When converting a surface
+#                   file, this is the number of latitudes of the input
+#                   climatological soil moisture data file.
 #     NTRAC         New number of tracers
 #                   defaults to input sigma file value
 #     IDVC          New vertical coordinate id (1 for sigma, 2 for hybrid)
