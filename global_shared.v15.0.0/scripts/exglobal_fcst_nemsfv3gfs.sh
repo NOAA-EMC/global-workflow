@@ -358,32 +358,32 @@ n_split=${n_split:-6}
 
 if [ $(echo $MONO | cut -c-4) = "mono" ];  then # monotonic options
 
-  d_con=${d_con:-"0."}
+  d_con=${d_con_mono:-"0."}
   do_vort_damp=".false."
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-    hord_mt=${hord_mt:-"10"}
-    hord_xx=${hord_xx:-"10"}
+    hord_mt=${hord_mt_nh_mono:-"10"}
+    hord_xx=${hord_xx_nh_mono:-"10"}
   else # hydrostatic
-    hord_mt=${hord_mt:-"10"}
-    hord_xx=${hord_xx:-"10"}
+    hord_mt=${hord_mt_hydro_mono:-"10"}
+    hord_xx=${hord_xx_hydro_mono:-"10"}
   fi
 
 else # non-monotonic options
 
-  d_con=${d_con:-"1."}
+  d_con=${d_con_nonmono:-"1."}
   do_vort_damp=".true."
   if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-    hord_mt=${hord_mt:-"5"}
-    hord_xx=${hord_xx:-"5"}
+    hord_mt=${hord_mt_nh_nonmono:-"5"}
+    hord_xx=${hord_xx_nh_nonmono:-"5"}
   else # hydrostatic
-    hord_mt=${hord_mt:-"10"}
-    hord_xx=${hord_xx:-"10"}
+    hord_mt=${hord_mt_hydro_nonmono:-"10"}
+    hord_xx=${hord_xx_hydro_nonmono:-"10"}
   fi
 
 fi
 
 if [ $(echo $MONO | cut -c-4) != "mono" -a $TYPE = "nh" ]; then
-  vtdm4=${vtdm4:-"0.06"}
+  vtdm4=${vtdm4_nh_nonmono:-"0.06"}
 else
   vtdm4=${vtdm4:-"0.05"}
 fi
@@ -606,6 +606,7 @@ cat > input.nml <<EOF
   hord_tr = ${hord_tr:-"8"}
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
   consv_te = $consv_te
+  do_sat_adj = ${do_sat_adj:-".false."}
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
