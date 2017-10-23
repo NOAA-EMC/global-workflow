@@ -36,14 +36,9 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo  $CDATE | cut -c9-10)
+cyc=$(echo $CDATE | cut -c9-10)
 
 export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
-
-res=$(echo $CASE | cut -c2-)
-export JCAP=$((res*2-2))
-export LONB=$((4*res))
-export LATB=$((2*res))
 
 export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
 export PREFIX="$CDUMP.t${cyc}z."
@@ -51,6 +46,22 @@ export SUFFIX=".nemsio"
 
 export DATA=$RUNDIR/$CDATE/$CDUMP/post
 [[ -d $DATA ]] && rm -rf $DATA
+
+# Get JCAP, LONB, LATB from ATMF00
+ATMF00=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmf000$SUFFIX
+if [ ! -f $ATMF00 ]; then
+    echo "$ATMF00 does not exist and should, ABORT!"
+    exit 99
+fi
+export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
+status=$?
+[[ $status -ne 0 ]] && exit $status
+export LONB=$($NEMSIOGET $ATMF00 dimx | awk '{print $2}')
+status=$?
+[[ $status -ne 0 ]] && exit $status
+export LATB=$($NEMSIOGET $ATMF00 dimy | awk '{print $2}')
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 # Run post job to create analysis grib files
 export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
@@ -62,12 +73,10 @@ if [ -f $ATMANL ]; then
 fi
 
 # Run post job to create forecast grib files
-if [ $CDUMP = "gfs" -o ${GPOST:-"NO"} = "YES" ]; then
-    export ANALYSIS_POST="NO"
-    $POSTJJOBSH
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-fi
+export ANALYSIS_POST="NO"
+$POSTJJOBSH
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Exit out cleanly

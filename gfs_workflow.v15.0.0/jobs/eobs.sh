@@ -103,6 +103,9 @@ GSUFFIX_SAVE=$GSUFFIX
 export COMIN_GES=$COMIN_GES_ENS
 export GSUFFIX=".ensmean$GSUFFIX"
 
+# Do not run global_cycle for ensemble mean
+export DOGCYCLE="NO"
+
 ###############################################################
 # Ensure clean stat tarballs for ensemble mean
 for fstat in $CNVSTAT $OZNSTAT $RADSTAT; do

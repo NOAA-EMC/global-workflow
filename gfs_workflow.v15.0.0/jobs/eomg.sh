@@ -35,6 +35,7 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
+export CASE=$CASE_ENKF
 export GDATE=$($NDATE -$assim_freq $CDATE)
 
 cymd=$(echo $CDATE | cut -c1-8)
@@ -78,8 +79,8 @@ export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
 
 ###############################################################
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EOMGGRP
-ENSEND=$(echo "$NMEM_EOMGGRP * $ENSGRP" | bc)
-ENSBEG=$(echo "$ENSEND - $NMEM_EOMGGRP + 1" | bc)
+ENSEND=$((NMEM_EOMGGRP * ENSGRP))
+ENSBEG=$((ENSEND - NMEM_EOMGGRP + 1))
 export ENSBEG=$ENSBEG
 export ENSEND=$ENSEND
 

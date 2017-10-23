@@ -31,7 +31,7 @@ done
 
 # CURRENT CYCLE
 PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo  $CDATE | cut -c9-10)
+cyc=$(echo $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 

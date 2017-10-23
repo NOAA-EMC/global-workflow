@@ -95,7 +95,7 @@ if [ $DOHYBVAR = "YES" ]; then
 fi
 
 # Analysis resolution
-if [ $DOHYBVAR == "YES" ]; then
+if [ $DOHYBVAR = "YES" ]; then
     export JCAP_A=$JCAP_ENKF
     export LONA=$LONB_ENKF
     export LATA=$LATB_ENKF
@@ -106,9 +106,9 @@ else
 fi
 
 # Link observational data
-export PREPQC=${COMOUT}/${OPREFIX}prepbufr
-export NSSTBF=${COMOUT}/${OPREFIX}nsstbufr
-export PREPQCPF=${COMOUT}/${OPREFIX}prepbufr.acft_profiles
+export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
+export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
+[[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
 
 ###############################################################
 # Run relevant exglobal script

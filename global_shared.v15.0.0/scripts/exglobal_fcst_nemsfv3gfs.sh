@@ -170,16 +170,28 @@ else
     # start from the end of last forecast run
     $NLN $gmemdir/RESTART/* $DATA/INPUT/.
   else
-    # Handle .res.tile?.nc and .suf.tile?.nc files for DA cycling
+
+    # Link all (except sfc_data) restart files from $gmemdir
     for file in $gmemdir/RESTART/${cymd}.${chh}0000.*.nc; do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-      fres=$(echo $file2 | cut -d. -f2)
-      fsuf=$(echo $file2 | cut -d. -f1 | cut -c1-3)
-      if [ $fres = "res" -o $fsuf = "sfc" ]; then
+      fsuf=$(echo $file2 | cut -d. -f1)
+      if [ $fsuf != "sfc_data" ]; then
+         $NLN $file $DATA/INPUT/$file2
+      fi
+    done
+
+    # Link sfcanl_data restart files from $memdir
+    for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
+      file2=$(echo $(basename $file))
+      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+      fsufanl=$(echo $file2 | cut -d. -f1)
+      if [ $fsufanl = "sfcanl_data" ]; then
+        file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
         $NLN $file $DATA/INPUT/$file2
       fi
     done
+
     # Handle coupler.res file for DA cycling
     if [ ${USE_COUPLER_RES:-"YES"} = "YES" ]; then
       # In DA, this is not really a "true restart",
@@ -191,6 +203,7 @@ else
       file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
       $NLN $file $DATA/INPUT/$file2
     fi
+
     if [ $read_increment = ".true." ]; then
       if [ -f $increment_file ]; then
         $NLN $increment_file $DATA/INPUT/fv3_increment.nc
@@ -240,52 +253,6 @@ if [ $IAER -gt 0 ] ; then
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
   done
 fi
-
-FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
-FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
-FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
-FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
-FNZORC=${FNZORC:-"igbp"}
-FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"}
-FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
-FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
-FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t1534.3072.1536.rg.grb"}
-FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t1534.3072.1536.rg.grb"}
-FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t1534.3072.1536.grb"}
-FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
-FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"}
-
-# Warm start and read increment, update surface variables for GDAS cycle only
-# since we do not have SST, SNOW or ICE via global_cycle
-if [ $CDUMP = "gdas" -a $warm_start = ".true." -a $read_increment = ".true." ]; then
-  FNTSFA=${FNTSFA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.rtgssthr.grb"}
-  FNACNA=${FNACNA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.seaice.5min.blend.grb"}
-  FNSNOA=${FNSNOA:-"$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${chh}z.snogrb_t1534.3072.1536"}
-  FTSFS=${FTSFS:-0}
-  FAISS=${FAISS:-0}
-  FAISL=${FAISL:-0}
-  FSMCL2=${FSMCL2:-60}
-  FSMCL3=${FSMCL3:-60}
-  FSMCL4=${FSMCL4:-60}
-  [[ $chh = 18 ]] && FSNOL=${FSNOL:-"-2"}
-fi
-
-# NSST Options
-# nstf_name contains the NSST related parameters
-# nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
-# nstf_name(2) : 0 = NSSTM spin up off, 1 = NSSTM spin up on,
-# nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
-# nstf_name(4) : zsea1 in mm
-# nstf_name(5) : zsea2 in mm
-# nst_anl      : .true. or .false., NSST analysis over lake
-nstf_name=${nstf_name:-"0,0,0,0,0"}
-nst_anl=${nst_anl:-".false."}
-
 #------------------------------------------------------------------
 # changeable parameters
 # dycore definitions
@@ -305,6 +272,38 @@ LATB_CASE=$((2*res))
 JCAP=${JCAP:-$JCAP_CASE}
 LONB=${LONB:-$LONB_CASE}
 LATB=${LATB:-$LATB_CASE}
+
+# Fix files
+FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
+FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
+FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
+FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
+FNZORC=${FNZORC:-"igbp"}
+FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
+FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
+FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
+FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
+FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
+FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
+FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
+FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb"}
+
+# NSST Options
+# nstf_name contains the NSST related parameters
+# nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
+# nstf_name(2) : 0 = NSSTM spin up off, 1 = NSSTM spin up on,
+# nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
+# nstf_name(4) : zsea1 in mm
+# nstf_name(5) : zsea2 in mm
+# nst_anl      : .true. or .false., NSST analysis over lake
+nstf_name=${nstf_name:-"0,0,0,0,0"}
+nst_anl=${nst_anl:-".false."}
+
 
 # blocking factor used for threading and general physics performance
 #nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
@@ -412,20 +411,25 @@ else # CHGRES'd GFS analyses
 fi
 
 # Stochastic Physics Options
-SET_STP_SEED=${SET_STP_SEED:-"YES"}
-ISEED=${ISEED:-0}
-DO_SKEB=${DO_SKEB:-".false."}
-DO_SPPT=${DO_SPPT:-".false."}
-DO_SHUM=${DO_SHUM:-".false."}
+if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
+  ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
+  ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
+  ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+else
+  ISEED=${ISEED:-0}
+fi
+DO_SKEB=${DO_SKEB:-"NO"}
+DO_SPPT=${DO_SPPT:-"NO"}
+DO_SHUM=${DO_SHUM:-"NO"}
 JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 LONB_STP=${LONB_STP:-$LONB_CASE}
 LATB_STP=${LATB_STP:-$LATB_CASE}
 
 # build the date for curr_date and diag_table from CDATE
-SYEAR=$(echo $CDATE | cut -c1-4)
+SYEAR=$(echo  $CDATE | cut -c1-4)
 SMONTH=$(echo $CDATE | cut -c5-6)
-SDAY=$(echo $CDATE | cut -c7-8)
-SHOUR=$(echo $CDATE | cut -c9-10)
+SDAY=$(echo   $CDATE | cut -c7-8)
+SHOUR=$(echo  $CDATE | cut -c9-10)
 curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
 rsecs=$((restart_interval*3600))
 restart_secs=${rsecs:-0}
@@ -792,8 +796,7 @@ if [ $MEMBER -gt 0 ]; then
   lat_s = $LATB_STP
 EOF
 
-  if [ $DO_SKEB = ".true." ]; then
-    [[ $SET_STP_SEED = "YES" ]] && ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
+  if [ $DO_SKEB = "YES" ]; then
     cat >> input.nml << EOF
   skeb = $SKEB
   iseed_skeb = ${ISEED_SKEB:-$ISEED}
@@ -803,8 +806,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SHUM = ".true." ]; then
-    [[ $SET_STP_SEED = "YES" ]] && ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
+  if [ $DO_SHUM = "YES" ]; then
     cat >> input.nml << EOF
   shum = $SHUM
   iseed_shum = ${ISEED_SHUM:-$ISEED}
@@ -813,8 +815,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SPPT = ".true." ]; then
-    [[ $SET_STP_SEED = "YES" ]] && ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+  if [ $DO_SPPT = "YES" ]; then
     cat >> input.nml << EOF
   sppt = $SPPT
   iseed_sppt = ${ISEED_SPPT:-$ISEED}
@@ -868,7 +869,7 @@ if [ $SEND = "YES" ]; then
   cd $DATA/RESTART
   mkdir -p $memdir/RESTART
 
-  # Add time-stamp to restart files at FHMAX
+  # Add time-stamp to restart files at FHMAX (this should be done inside the model)
   RDATE=$($NDATE +$FHMAX $CDATE)
   rymd=$(echo $RDATE | cut -c1-8)
   rhh=$(echo  $RDATE | cut -c9-10)
