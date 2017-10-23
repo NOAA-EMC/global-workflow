@@ -31,17 +31,16 @@ export NMEM_EFCSGRP=10
 export RERUN_EFCSGRP="NO"
 
 # Stochastic physics parameters (only for ensemble forecasts)
-export SET_STP_SEED="YES"
-export DO_SKEB=".false."
+export DO_SKEB="NO"
 export SKEB=-999.
 export SKEB_TAU=21600.
 export SKEB_LSCALE=500000.
 export SKEBNORM=1
-export DO_SHUM=".false."
+export DO_SHUM="YES"
 export SHUM=0.006
 export SHUM_TAU=21600.
 export SHUM_LSCALE=500000.
-export DO_SPPT=".false."
+export DO_SPPT="YES"
 export SPPT=0.5
 export SPPT_TAU=21600.
 export SPPT_LSCALE=500000.
@@ -54,9 +53,9 @@ else
     export DIAG_TABLE="$BASE_GSM/parm/parm_fv3diag/diag_table_da"
 fi
 
-
 # FV3 model namelist parameters to over-ride
 export restart_interval=6
-#export k_split=1 # model is unstable with k_split=2 and stochastic physics
+export k_split=1  # model is unstable with k_split=2, n_split=6 and stochastic physics
+export n_split=12 # make the model stable with k_split=1, n_split=12
 
 echo "END: config.efcs"

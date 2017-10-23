@@ -40,7 +40,7 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    export wtime_fcst="01:15:00"
+    export wtime_fcst="00:15:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_fcst=12
@@ -61,13 +61,13 @@ elif [ $step = "vrfy" ]; then
     export npe_vrfy=1
     export npe_node_vrfy=1
     if [[ "$machine" == THEIA ]] ; then
-	export memory_vrfy="16384M"
+	    export memory_vrfy="16384M"
     else
-	export memory_vrfy="3072M"
-	# Memory on cray is for the batch node, not the compute node.
-	# Tasks on the compute node have no memory limit.  16GB is
-	# unneeded, and is beyond the queue maximum anyway (the job is
-	# rejected).
+	    export memory_vrfy="3072M"
+        # Memory on cray is for the batch node, not the compute node.
+        # Tasks on the compute node have no memory limit.  16GB is
+        # unneeded, and is beyond the queue maximum anyway (the job is
+        # rejected).
     fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
@@ -78,10 +78,10 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
-    export wtime_eobs="00:45:00"
+    export wtime_eobs="00:15:00"
     export wtime_eomg="01:30:00"
     export npe_eobs=72
-    export npe_node_eobs=12
+    export npe_node_eobs=6
     export memory_eobs="3072M"
 
 elif [ $step = "eupd" ]; then

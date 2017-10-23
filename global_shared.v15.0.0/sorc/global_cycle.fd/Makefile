@@ -25,4 +25,4 @@ cycle.o: read_write_data.o cycle.f90
 install:
 	-cp -p $(CMD) ../../exec/.
 clean:
-	-rm -f $(OBJS) *.mod
+	-rm -f $(OBJS) *.mod $(CMD)

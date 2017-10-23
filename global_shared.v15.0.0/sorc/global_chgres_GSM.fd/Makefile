@@ -44,7 +44,7 @@ surface_chgres.o: sfcsub.o
 chgres.o: chgres.f
 	$(FC) $(FFLAGS) $(OMPFLAG) $(INCMOD) -c chgres.f
 clean:
-	-rm -f $(OBJS) *.mod
+	-rm -f $(OBJS) *.mod $(CMD)
 install:
 	-cp $(CMD) ../../exec/.
 clobber:        clean

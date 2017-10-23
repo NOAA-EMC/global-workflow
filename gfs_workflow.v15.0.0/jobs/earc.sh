@@ -32,10 +32,29 @@ done
 
 # CURRENT CYCLE
 PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo  $CDATE | cut -c9-10)
+cyc=$(echo $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
+###############################################################
+# Determine if this cycle is going to save ensemble restarts
+EARC_CYC=${EARC_CYC:-"00"}
+if [ $ENSGRP -gt 0 ]; then
+
+    arch_ens_rst="NO"
+    for ens_cyc in $EARC_CYC; do
+        [[ "$ens_cyc" = $cyc ]] && arch_ens_rst="YES"
+    done
+
+    if [ $arch_ens_rst = "NO" ]; then
+        echo "Nothing to archive for ENSGRP = $ENSGRP and cyc = $cyc, EXITING!"
+        exit 0
+    fi
+
+fi
+
+###############################################################
+# Create temporary DATA directory
 COMIN_ENS="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
 
 DATA="$RUNDIR/$CDATE/$CDUMP/earc$ENSGRP"
@@ -51,12 +70,12 @@ if [ $ENSGRP -gt 0 ]; then
     cd $DATA/enkf.${CDUMP}restart
 
     # Get ENSBEG/ENSEND from ENSGRP and NMEM_EARCGRP
-    ENSEND=$(echo "$NMEM_EARCGRP * $ENSGRP" | bc)
-    ENSBEG=$(echo "$ENSEND - $NMEM_EARCGRP + 1" | bc)
+    ENSEND=$((NMEM_EARCGRP * ENSGRP))
+    ENSBEG=$((ENSEND - NMEM_EARCGRP + 1))
 
-    for imem in `seq $ENSBEG $ENSEND`; do
+    for imem in $(seq $ENSBEG $ENSEND); do
 
-        memchar="mem"`printf %03i $imem`
+        memchar="mem"$(printf %03i $imem)
 
         memdir="$COMIN_ENS/$memchar"
         tmpmemdir="$DATA/enkf.${CDUMP}restart/$memchar"
@@ -100,7 +119,11 @@ if [ $ENSGRP -gt 0 ]; then
 
     rm -rf enkf.${CDUMP}restart
 
-else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and cleans up
+fi
+
+###############################################################
+# ENSGRP 0 archives extra info, ensemble mean, verification stuff
+if [ $ENSGRP -eq 0 ]; then
 
     ###############################################################
     # Archive extra information that is good to have
@@ -108,23 +131,25 @@ else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and clean
     cd $DATA/enkf.$CDUMP
 
     # Ensemble mean related files
-    files="gsistat.ensmean cnvstat.ensmean enkfstat atmf006.ensmean.nc4 atmf006.ensspread.nc4"
-    for file in $files; do
+    ENSMEAN_STATS="gsistat.ensmean cnvstat.ensmean enkfstat atmf006.ensmean.nc4 atmf006.ensspread.nc4"
+    for file in $ENSMEAN_STATS; do
         $NCP $COMIN_ENS/${APREFIX}$file .
     done
 
     # Ensemble member related files
-    files="gsistat cnvstat"
-    for imem in `seq 1 $NMEM_ENKF`; do
+    # Only archive gsistat and cnvstat files, user can provide other to ENKF_STAT
+    # in config.earc if desired
+    ENKF_STATS=${ENKF_STATS:-"gsistat cnvstat"}
+    for imem in $(seq 1 $NMEM_ENKF); do
 
-        memchar="mem"`printf %03i $imem`
+        memchar="mem"$(printf %03i $imem)
 
         memdir="$COMIN_ENS/$memchar"
         tmpmemdir="$DATA/enkf.${CDUMP}/$memchar"
 
         mkdir -p $tmpmemdir
 
-        for file in $files; do
+        for file in $ENKF_STATS; do
             $NCP $memdir/${APREFIX}$file $tmpmemdir/.
         done
 
@@ -158,6 +183,11 @@ else # ENSGRP 0 archives extra info, ensemble mean, verification stuff and clean
     $NCP $COMIN_ENS/${APREFIX}enkfstat         enkfstat.${CDUMP}.$CDATE
     $NCP $COMIN_ENS/${APREFIX}gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
+fi
+
+###############################################################
+# ENSGRP 0 also does clean-up
+if [ $ENSGRP -eq 0 ]; then
     ###############################################################
     # Clean up previous cycles; various depths
     # PRIOR CYCLE: Leave the prior cycle alone
