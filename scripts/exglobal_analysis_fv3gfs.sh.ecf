@@ -958,6 +958,9 @@ if [ $USE_CFP = "YES" ] ; then
    ncmd=`cat $DATA/mp_diag.sh | wc -l`
    if [ $ncmd -gt 0 ]; then
       APRUNCFP_DIAG=$(eval echo $APRUNCFP)
+      if [ $ncmd -lt $npe_node_cfp ] && [ $machine = WCOSS_C ] ; then
+         export APRUNCFP_DIAG=$(eval echo 'aprun -q -j1 -n$ncmd -N$ncmd -d1 cfp')
+      fi
       $APRUNCFP_DIAG $DATA/mp_diag.sh
    fi
 fi
