@@ -47,14 +47,23 @@ export SUFFIX=".nemsio"
 export DATA=$RUNDIR/$CDATE/$CDUMP/post
 [[ -d $DATA ]] && rm -rf $DATA
 
-# Get JCAP, LONB, LATB from ATMF00
+# Get metadata JCAP, LONB, LATB from ATMF00
 ATMF00=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmf000$SUFFIX
 if [ ! -f $ATMF00 ]; then
     echo "$ATMF00 does not exist and should, ABORT!"
     exit 99
 fi
-export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
-status=$?
+
+if [ $QUILTING = ".false." ]; then
+    export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+else
+    # write component does not add JCAP anymore
+    res=$(echo $CASE | cut -c2-)
+    export JCAP=$((res*2-2))
+fi
+
 [[ $status -ne 0 ]] && exit $status
 export LONB=$($NEMSIOGET $ATMF00 dimx | awk '{print $2}')
 status=$?

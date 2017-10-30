@@ -47,7 +47,6 @@ export GSUFFIX=".nemsio"
 export APREFIX="${CDUMP}.t${chh}z."
 export ASUFFIX=".nemsio"
 
-export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
 export COMIN_GES="$ROTDIR/gdas.$gymd/$ghh"
 export COMIN_GES_ENS="$ROTDIR/enkf.gdas.$gymd/$ghh"
 export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"

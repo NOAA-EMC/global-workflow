@@ -15,4 +15,6 @@ setenv FC $FCOMP
 setenv FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl"
 setenv D_FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
 
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+
 module load w3nco/v2.0.6

@@ -9,29 +9,23 @@ fv3target="$target"
 
 set -eux
 
+pwd=$(pwd -P)
+
 #--link large fixed fields for respective machines
-if [ -d ../fix ]; then rm -f ../fix; fi
-if [ $target = cray ]; then
- ln -fs /gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix ../fix
-elif [ $target = theia ]; then
- ln -fs /scratch4/NCEPDEV/global/save/glopara/svn/fv3gfs/fix ../fix
-else
- echo " machine $target is not supported. exit"
- exit
-fi
+$pwd/../ush/link_fv3gfs_fix.sh $target $pwd/../
+rc=$?
+[[ $rc != 0 ]] && exit $rc
 
 [[ "$target" == cray ]] && fv3target=wcoss_cray
 
 # Initialize environment for module command and purge modules:
-setup=$( pwd -P )/../modulefiles/module-setup.sh.inc
+setup=$pwd/../modulefiles/module-setup.sh.inc
 test -s $setup
 source $setup
 
 # Add our modulefiles:
 module use $( pwd -P )/../modulefiles
 module load module_base.$target
-
-pwd=$(pwd)
 
 for script in build_nems_util.sh build_cycle.sh build_chgres.sh build_chgres_GSM.sh build_orog.sh build_radmon.sh; do
  cd $pwd
@@ -48,6 +42,8 @@ for util in fv3nc2nemsio.fd regrid_nemsio.fd; do
  cd $pwd/$util
  ./makefile.sh $target
 done
+
+cd $pwd
 
 rc=0
 for x in fv3gfs.fd gsi.fd ; do

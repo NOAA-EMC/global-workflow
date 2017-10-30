@@ -2,16 +2,16 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         global_chgres.sh           
+# Script name:         global_chgres.sh
 # Script description:  Convert GFS restart files to the FV3 cubed-sphere grid.
 #
 # Author:        Mark Iredell       Org: NP23         Date: 1999-03-01
 #
 # Abstract: This script converts the GFS restart files, namely the sigma
-#   file, surface file, nst file or all 3, to the cubed-sphere grid.  When 
-#   converting an nst file, you must also convert a surface file. 
+#   file, surface file, nst file or all 3, to the cubed-sphere grid.  When
+#   converting an nst file, you must also convert a surface file.
 #   All input files are specified by the first three arguments.
-#   The horizontal/vertical resolution of the output files is given by 
+#   The horizontal/vertical resolution of the output files is given by
 #   the CASE/LEVS arguments.  When the input sigma file is sigio format,
 #   the conversion is done in two steps.  First, the spectral coefficients
 #   are converted to grid point space.  By default, this intermediate
@@ -34,7 +34,7 @@
 # Usage:  global_chgres.sh SIGINP SFCINP NSTINP CASE LEVS
 #
 #   Input script positional parameters:
-#     1             Input sigma file (SIGINP) 
+#     1             Input sigma file (SIGINP)
 #     2             Input surface file (SFCINP)
 #     3             Input nst file (NSTINP)
 #     4             Output cubed-sphere resolution (CASE)
@@ -47,21 +47,21 @@
 #                   overridden by $2; skip surface conversion if missing
 #     NSTINP        Input nst file
 #                   overridden by $3; skip surface conversion if missing
-#     CASE          Output cubed-sphere resolution.  
+#     CASE          Output cubed-sphere resolution.
 #                   overridden by $4.
 #     LEVS          New number of sigma levels
 #                   overridden by $5; one or the other is required
 #     OUTTYP        Output file type.  Not used yet.  The sigma/atms and
-#                   surface/nsst files are output in netcdf. 
+#                   surface/nsst files are output in netcdf.
 #     IDRT          When converting an atmospheric file in sigio format,
 #                   this is the grid type after spectral conversion.
-#                   4: guassian(default); 0: lat-lon                            
-#     LONB          When converting an atmospheric file in sigio format, 
+#                   4: guassian(default); 0: lat-lon
+#     LONB          When converting an atmospheric file in sigio format,
 #                   this is the number of longitudes of the intermediate grid
 #                   after spectral conversion.  When converting a surface
 #                   file, this is the number of longitudes of the input
 #                   climatological soil moisture data file.
-#     LATB          When converting an atmospheric file in sigio format, 
+#     LATB          When converting an atmospheric file in sigio format,
 #                   this is the number of latitudes of the intermediate grid
 #                   after spectral conversion.  When converting a surface
 #                   file, this is the number of latitudes of the input
@@ -96,7 +96,7 @@
 #                   defaults to ${FIXgsm}/global_sstclim.2x2.grb
 #     FNSNOC        Input snow climatology GRIB file
 #                   defaults to ${FIXgsm}/global_snoclim.1.875.grb
-#     FNZORC        Input roughness climatology 
+#     FNZORC        Input roughness climatology
 #                   defaults to sib vegtetation type-based lookup table
 #                   FNVETC must be set to ${FIXgsm}/global_vegtype.1x1.grb
 #     FNALBC        Input 4-component albedo climatology GRIB file
@@ -135,8 +135,8 @@
 #     LANDICE_OPT   1-Input no landice => output landice
 #                   2-Input landice => output landice.
 #                   3-Input no landice => output no landice
-#                   4-Input landice => output no landice  
-#                   5-Output landice regardless of input  
+#                   4-Input landice => output no landice
+#                   5-Output landice regardless of input
 #     LSOIL         2-Output file with 2 soil layers
 #                   4-Output file with 4 soil layers
 #                   0-Default, number of soil layers same as input file
@@ -144,7 +144,7 @@
 #                   0-Default, same as input file.
 #     LONSPERLAT    New lonsperlat ("NULL" to use from input surface file)
 #     CHGRESEXEC    Change resolution executable
-#                   defaults to ${EXECgsm}/global_chgres   
+#                   defaults to ${EXECgsm}/global_chgres
 #     INISCRIPT     Preprocessing script
 #                   defaults to none
 #     LOGSCRIPT     Log posting script
@@ -198,7 +198,7 @@
 #                  $FVGRID_TILE[1-6]
 #                  $FVOROG_TILE[1-6]
 #
-#     output data: 
+#     output data:
 #                  $PGMOUT
 #                  $PGMERR
 #
@@ -231,36 +231,36 @@
 ####
 ################################################################################
 #  Set environment.
-export VERBOSE=${VERBOSE:-"NO"}
+VERBOSE=${VERBOSE:-"NO"}
 if [[ "$VERBOSE" = "YES" ]] ; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
-export machine=${machine:-WCOSS}
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')
+machine=${machine:-WCOSS}
+machine=$(echo $machine|tr '[a-z]' '[A-Z]')
 #if [ $machine = WCOSS_C ]; then
 #  . $MODULESHOME/init/sh
 #  module load PrgEnv-intel intel cray-mpich
 #  module load prod_envir prod_util grib_util
 #fi
 #  Command line arguments.
-export APRUNC=${APRUNC:-""}
-export SIGINP=${1:-${SIGINP:-NULL}}
-export SFCINP=${2:-${SFCINP:-NULL}}
-export NSTINP=${3:-${NSTINP:-NULL}}
-export CASE=${4:-${CASE:?}}
-export LEVS=${5:-${LEVS:?}}
+APRUNC=${APRUNC:-""}
+SIGINP=${1:-${SIGINP:-NULL}}
+SFCINP=${2:-${SFCINP:-NULL}}
+NSTINP=${3:-${NSTINP:-NULL}}
+CASE=${4:-${CASE:?}}
+LEVS=${5:-${LEVS:?}}
 #  Directories.
-export global_shared_ver=${global_shared_ver:-v14.0.0}
-export BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
-export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
-export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
-export FIXfv3=${FIXfv3:-$HOMEglobal//fix/fix_fv3}
-export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
-export DATA=${DATA:-$(pwd)}
+global_shared_ver=${global_shared_ver:-v14.0.0}
+BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
+HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
+FIXSUBDA=${FIXSUBDA:-fix/fix_am}
+FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
+FIXfv3=${FIXfv3:-$HOMEglobal//fix/fix_fv3}
+EXECgsm=${EXECgsm:-$HOMEglobal/exec}
+DATA=${DATA:-$(pwd)}
 #  Filenames.
-export CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
+CHGRESEXEC=${CHGRESEXEC:-${EXECgsm}/global_chgres$XC}
 #
 
 CRES=$(echo $CASE | cut -c2-)
@@ -268,60 +268,60 @@ JCAP_CASE=$((CRES*2-2))
 LATB_CASE=$((CRES*2))
 LONB_CASE=$((CRES*4))
 
-export JCAP=${JCAP:-$JCAP_CASE}
-export LONB=${LONB:-$LONB_CASE}
-export LATB=${LATB:-$LATB_CASE}
+JCAP=${JCAP:-$JCAP_CASE}
+LONB=${LONB:-$LONB_CASE}
+LATB=${LATB:-$LATB_CASE}
 
-export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
+SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 if [ $LEVS = 128 ]; then
-  export SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}B.txt}
+  SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}B.txt}
 fi
-export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
-export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
-export FNTSFC=${FNTSFC:-${FIXgsm}/cfs_oi2sst1x1monclim19822001.grb}
-export FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
-export FNZORC=${FNZORC:-sib}
-export FNALBC=${FNALBC:-${FIXgsm}/global_albedo4.1x1.grb}
-export FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
-export FNAISC=${FNAISC:-${FIXgsm}/cfs_ice1x1monclim19822001.grb}
-export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
-export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
-export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
-export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
-export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
-export FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
-export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
-export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
-export FNABSC=${FNABSC:-${FIXgsm}/global_snoalb.1x1.grb}
-export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-export LANDICE_OPT=${LANDICE_OPT:-2}
-export CLIMO_FIELDS_OPT=${CLIMO_FIELDS_OPT:-3}
-export SOILTYPE_INP=${SOILTYPE_INP:-"zobler"}
-export SOILTYPE_OUT=${SOILTYPE_OUT:-"zobler"}
-export VEGTYPE_INP=${VEGTYPE_INP:-"sib"}
-export VEGTYPE_OUT=${VEGTYPE_OUT:-"sib"}
-export LONSPERLAT=${LONSPERLAT:-NULL}
+FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
+FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
+FNTSFC=${FNTSFC:-${FIXgsm}/cfs_oi2sst1x1monclim19822001.grb}
+FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
+FNZORC=${FNZORC:-sib}
+FNALBC=${FNALBC:-${FIXgsm}/global_albedo4.1x1.grb}
+FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
+FNAISC=${FNAISC:-${FIXgsm}/cfs_ice1x1monclim19822001.grb}
+FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
+FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
+FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.1x1.grb}
+FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.1x1.grb}
+FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
+FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
+FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
+FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
+FNABSC=${FNABSC:-${FIXgsm}/global_snoalb.1x1.grb}
+FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
+LANDICE_OPT=${LANDICE_OPT:-2}
+CLIMO_FIELDS_OPT=${CLIMO_FIELDS_OPT:-3}
+SOILTYPE_INP=${SOILTYPE_INP:-"zobler"}
+SOILTYPE_OUT=${SOILTYPE_OUT:-"zobler"}
+VEGTYPE_INP=${VEGTYPE_INP:-"sib"}
+VEGTYPE_OUT=${VEGTYPE_OUT:-"sib"}
+LONSPERLAT=${LONSPERLAT:-NULL}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 #  Other variables.
-export TILE_NUM=${TILE_NUM:-1}
-export IDRT=${IDRT:-4}
-export OUTTYP=${OUTTYP:-999}
-export NTRAC=${NTRAC:-3}
-export IALB=${IALB:-0}
-export IDVC=${IDVC:-2}
-export IDVT=${IDVT:-21}
-export IDVM=${IDVM:-0}
-export IDSL=${IDSL:-1}
-export LSOIL=${LSOIL:-0}
-export IVSSFC=${IVSSFC:-0}
-export use_ufo=${use_ufo:-.true.}
-export rdgrid=${rdgrid:-.false.}
-export NTHREADS=${NTHREADS:-1}
-export NTHSTACK=${NTHSTACK:-1024000000}
-export XLSMPOPTS=${XLSMPOPTS:-"parthds=$NTHREADS:stack=$NTHSTACK"}
+TILE_NUM=${TILE_NUM:-1}
+IDRT=${IDRT:-4}
+OUTTYP=${OUTTYP:-999}
+NTRAC=${NTRAC:-3}
+IALB=${IALB:-0}
+IDVC=${IDVC:-2}
+IDVT=${IDVT:-21}
+IDVM=${IDVM:-0}
+IDSL=${IDSL:-1}
+LSOIL=${LSOIL:-0}
+IVSSFC=${IVSSFC:-0}
+use_ufo=${use_ufo:-.true.}
+rdgrid=${rdgrid:-.false.}
+NTHREADS=${NTHREADS:-1}
+NTHSTACK=${NTHSTACK:-1024000000}
+XLSMPOPTS=${XLSMPOPTS:-"parthds=$NTHREADS:stack=$NTHSTACK"}
 export KMP_STACKSIZE=${KMP_STACKSIZE:-$NTHSTACK}
 export PGMOUT=${PGMOUT:-${pgmout:-'&1'}}
 export PGMERR=${PGMERR:-${pgmerr:-'&2'}}
@@ -336,7 +336,7 @@ else
   export REDOUT=${REDOUT:-'1>'}
   export REDERR=${REDERR:-'2>'}
 fi
-export CHGRESVARS=${CHGRESVARS}
+CHGRESVARS=${CHGRESVARS}
 ################################################################################
 #  Preprocessing
 $INISCRIPT
@@ -387,6 +387,9 @@ if [[ $SOILTYPE_OUT = "zobler" ]]; then
 elif [[ $SOILTYPE_OUT = "statsgo" ]]; then
  ISOT=1
 fi
+
+# If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIXgsm/global_soilmgldas.t1534.3072.1536.grb"
 
 cat << EOF > fort.35
  &NAMSFC
@@ -440,7 +443,7 @@ cat << EOF > fort.81
   smcmax_input= 0.395, 0.421, 0.434, 0.476, 0.476, 0.439,
                 0.404, 0.464, 0.465, 0.406, 0.468, 0.457,
                 0.464, -9.99, 0.200, 0.421
-  beta_input  = 4.05, 4.26, 4.74, 5.33, 5.33, 5.25, 
+  beta_input  = 4.05, 4.26, 4.74, 5.33, 5.33, 5.25,
                 6.77, 8.72, 8.17, 10.73, 10.39, 11.55,
                 5.25, -9.99, 4.05, 4.26
   psis_input  = 0.0350, 0.0363, 0.1413, 0.7586, 0.7586, 0.3548,
@@ -476,7 +479,7 @@ cat << EOF >> fort.81
   smcmax_output= 0.395, 0.421, 0.434, 0.476, 0.476, 0.439,
                  0.404, 0.464, 0.465, 0.406, 0.468, 0.457,
                  0.464, -9.99, 0.200, 0.421
-  beta_output  = 4.05, 4.26, 4.74, 5.33, 5.33, 5.25, 
+  beta_output  = 4.05, 4.26, 4.74, 5.33, 5.33, 5.25,
                  6.77, 8.72, 8.17, 10.73, 10.39, 11.55,
                  5.25, -9.99, 4.05, 4.26
   psis_output  = 0.0350, 0.0363, 0.1413, 0.7586, 0.7586, 0.3548,

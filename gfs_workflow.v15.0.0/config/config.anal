@@ -23,4 +23,6 @@ export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
 export nth_gsi=4
 
+export nth_cycle=12
+
 echo "END: config.anal"

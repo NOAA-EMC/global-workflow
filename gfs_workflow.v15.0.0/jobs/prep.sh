@@ -41,7 +41,6 @@ chh=$(echo  $CDATE | cut -c9-10)
 
 export OPREFIX="${CDUMP}.t${chh}z."
 
-export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
 export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
@@ -58,9 +57,9 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     $DRIVE_MAKEPREPBUFRSH
     [[ $status -ne 0 ]] && exit $status
 else
-    $NCP $COMIN_OBS/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-    $NCP $COMIN_OBS/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-    [[ $DONST = "YES" ]] && $NCP $COMIN_OBS/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+    $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+    $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+    [[ $DONST = "YES" ]] && $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
 fi
 
 ################################################################################

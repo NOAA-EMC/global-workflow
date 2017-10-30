@@ -215,88 +215,88 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"NO"}
+VERBOSE=${VERBOSE:-"NO"}
 if [[ "$VERBOSE" = "YES" ]] ; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
 
 #  Command line arguments.
-export SFCGES=${1:-${SFCGES:?}}
-export SFCANL=${2:-${SFCANL}}
+SFCGES=${1:-${SFCGES:?}}
+SFCANL=${2:-${SFCANL}}
 
-export CASE=${CASE:-C768}
-export TILE_NUM=${TILE_NUM:-1}
+CASE=${CASE:-C768}
+TILE_NUM=${TILE_NUM:-1}
 
 #  Directories.
-export global_shared_ver=${global_shared_ver:-v15.0.0}
-export BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
-export HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
-export EXECgsm=${EXECgsm:-$HOMEglobal/exec}
-export FIXSUBDA=${FIXSUBDA:-fix/fix_am}
-export FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
-export FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/$CASE}
-export DATA=${DATA:-$(pwd)}
-export COMIN=${COMIN:-$(pwd)}
-export COMOUT=${COMOUT:-$(pwd)}
+global_shared_ver=${global_shared_ver:-v15.0.0}
+BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
+HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
+EXECgsm=${EXECgsm:-$HOMEglobal/exec}
+FIXSUBDA=${FIXSUBDA:-fix/fix_am}
+FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
+FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3/$CASE}
+DATA=${DATA:-$(pwd)}
+COMIN=${COMIN:-$(pwd)}
+COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
-export XC=${XC}
-export PREINP=${PREINP}
-export SUFINP=${SUFINP}
-export CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
+XC=${XC}
+PREINP=${PREINP}
+SUFINP=${SUFINP}
+CYCLEXEC=${CYCLEXEC:-$EXECgsm/global_cycle$XC}
 
-export CDATE=${CDATE:?}
-export FHOUR=${FHOUR:-00}
+CDATE=${CDATE:?}
+FHOUR=${FHOUR:-00}
 
 CRES=$(echo $CASE | cut -c2-)
 JCAP_CASE=$((2*CRES-2))
 LONB_CASE=$((4*CRES))
 LATB_CASE=$((2*CRES))
-export JCAP=${JCAP:-$JCAP_CASE}
-export LONB=${LONB:-$LONB_CASE}
-export LATB=${LATB:-$LATB_CASE}
-export DELTSFC=${DELTSFC:-0}
+JCAP=${JCAP:-$JCAP_CASE}
+LONB=${LONB:-$LONB_CASE}
+LATB=${LATB:-$LATB_CASE}
+DELTSFC=${DELTSFC:-0}
 
-export LSOIL=${LSOIL:-4}
-export FSMCL2=${FSMCL2:-60}
-export FSLPL=${FSLPL:-99999.}
-export FSOTL=${FSOTL:-99999.}
-export FVETL=${FVETL:-99999.}
-export IALB=${IALB:-1}
-export ISOT=${ISOT:-1}
-export IVEGSRC=${IVEGSRC:-1}
-export CYCLVARS=${CYCLVARS:-""}
-export use_ufo=${use_ufo:-.true.}
-export NST_ANL=${NST_ANL:-.false.}
-export zsea1=${zsea1:-0}
-export zsea2=${zsea2:-0}
+LSOIL=${LSOIL:-4}
+FSMCL2=${FSMCL2:-60}
+FSLPL=${FSLPL:-99999.}
+FSOTL=${FSOTL:-99999.}
+FVETL=${FVETL:-99999.}
+IALB=${IALB:-1}
+ISOT=${ISOT:-1}
+IVEGSRC=${IVEGSRC:-1}
+CYCLVARS=${CYCLVARS:-""}
+use_ufo=${use_ufo:-.true.}
+NST_ANL=${NST_ANL:-.false.}
+zsea1=${zsea1:-0}
+zsea2=${zsea2:-0}
 
-export FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
-export FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
-export FNTSFC=${FNTSFC:-${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb}
-export FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
-export FNZORC=${FNZORC:-igbp}
-export FNALBC=${FNALBC:-${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb}
-export FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
-export FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
-export FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
-export FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
-export FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb}
-export FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb}
-export FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
-export FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
-export FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
-export FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
-export FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
-export FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-export FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${TILE_NUM}.nc}
-export FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${TILE_NUM}.nc}
-export GSI_FILE=${GSI_FILE:-" "}
-export FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
-export FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
-export FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb${SUFINP}}
-export SFCANL=${SFCANL:-${COMIN}/${PREINP}sfcanl}
+FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
+FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
+FNTSFC=${FNTSFC:-${FIXgsm}/RTGSST.1982.2012.monthly.clim.grb}
+FNSNOC=${FNSNOC:-${FIXgsm}/global_snoclim.1.875.grb}
+FNZORC=${FNZORC:-igbp}
+FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
+FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
+FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
+FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
+FNALBC=${FNALBC:-${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb}
+FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb}
+FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb}
+FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
+FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
+FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
+FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
+FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
+FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
+FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${TILE_NUM}.nc}
+FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${TILE_NUM}.nc}
+GSI_FILE=${GSI_FILE:-" "}
+FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
+FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
+FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb${SUFINP}}
+SFCANL=${SFCANL:-${COMIN}/${PREINP}sfcanl}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -320,6 +320,13 @@ else
 fi
 cd $DATA||exit 99
 [[ -d $COMOUT ]]||mkdir -p $COMOUT
+
+# If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
+[[ ! -f $FNALBC ]] && FNALBC="$FIXgsm/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"
+[[ ! -f $FNVETC ]] && FNVETC="$FIXgsm/global_vegtype.igbp.t1534.3072.1536.rg.grb"
+[[ ! -f $FNSOTC ]] && FNSOTC="$FIXgsm/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
+[[ ! -f $FNABSC ]] && FNABSC="$FIXgsm/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIXgsm/global_soilmgldas.t1534.3072.1536.grb"
 
 ################################################################################
 #  Make surface analysis

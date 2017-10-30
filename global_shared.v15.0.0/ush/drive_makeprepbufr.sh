@@ -53,9 +53,9 @@ GSUFFIX=".nemsio"
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=".nemsio"
 
-COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
-COMIN_GES="$ROTDIR/gdas.$gymd/$ghh"
-COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
+COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP"}
+COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh"}
+COMOUT=${COMOUT:-"$ROTDIR/$CDUMP.$cymd/$chh"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 export DATA="$RUNDIR/$CDATE/$CDUMP/prepbufr"
 [[ -d $DATA ]] && rm -rf $DATA

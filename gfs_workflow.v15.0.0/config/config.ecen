@@ -21,6 +21,6 @@ export nth_ecen=2
 export CHGRESSH="$BASE_GSM/ush/global_chgres_GSM.sh"
 export CHGRESEXEC="$BASE_GSM/exec/global_chgres_GSM"
 export CHGRESVARS_ENKF="use_ufo=.true.,nopdpvv=.true."
-export CHGRESTHREAD=12
+export nthreads_chgres=12
 
 echo "END: config.ecen"

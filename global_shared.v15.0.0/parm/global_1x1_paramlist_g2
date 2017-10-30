@@ -222,9 +222,40 @@ SOILW:0-0.1 m below ground
 SOILW:0.1-0.4 m below ground
 SOILW:0.4-1 m below ground
 SOILW:1-2 m below ground
+SPFH:1000 mb
+SPFH:100 mb
+SPFH:10 mb
+SPFH:150 mb
+SPFH:20 mb
+SPFH:200 mb
+SPFH:250 mb
 SPFH:2 m above ground
+SPFH:300 mb
 SPFH:30-0 mb above ground
+SPFH:30 mb
+SPFH:350 mb
+SPFH:400 mb
+SPFH:450 mb
+SPFH:500 mb
+SPFH:50 mb
+SPFH:550 mb
+SPFH:600 mb
+SPFH:650 mb
+SPFH:700 mb
+SPFH:70 mb
+SPFH:750 mb
+SPFH:800 mb
 SPFH:80 m above ground
+SPFH:850 mb
+SPFH:900 mb
+SPFH:925 mb
+SPFH:950 mb
+SPFH:975 mb
+SPFH:1 mb
+SPFH:2 mb
+SPFH:3 mb
+SPFH:5 mb
+SPFH:7 mb
 SUNSD:surface
 TCDC:boundary layer cloud layer
 TCDC:convective cloud layer

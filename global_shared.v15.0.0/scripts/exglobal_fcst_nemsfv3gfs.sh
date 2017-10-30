@@ -293,6 +293,13 @@ FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.gr
 FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
 FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb"}
 
+# If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
+[[ ! -f $FNALBC ]] && FNALBC="$FIX_AM/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"
+[[ ! -f $FNVETC ]] && FNVETC="$FIX_AM/global_vegtype.igbp.t1534.3072.1536.rg.grb"
+[[ ! -f $FNSOTC ]] && FNSOTC="$FIX_AM/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
+[[ ! -f $FNABSC ]] && FNABSC="$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIX_AM/global_soilmgldas.t1534.3072.1536.grb"
+
 # NSST Options
 # nstf_name contains the NSST related parameters
 # nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
@@ -671,8 +678,8 @@ cat > input.nml <<EOF
   debug       = ${gfs_phys_debug:-".false."}
   nstf_name   = $nstf_name
   nst_anl     = $nst_anl
-  psautco     = ${psautco:-"0.0006,0.0003"}
-  prautco     = ${prautco:-"0.0001,0.0001"}
+  psautco     = ${psautco:-"0.0008,0.0005"}
+  prautco     = ${prautco:-"0.00015,0.00015"}
   $gfs_physics_nml
 /
 

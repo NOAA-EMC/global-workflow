@@ -17,6 +17,4 @@ export wtime_fv3ic="00:30:00"
 export npe_fv3ic=24
 export npe_node_fv3ic=24
 
-export CHGRESTHREAD=$npe_node_fv3ic
-
 echo "END: config.fv3ic"
