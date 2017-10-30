@@ -141,7 +141,7 @@ elif [ $ics_from = "pargfs" ]; then
     fanal[2]="gfnanl.${CDUMP}.$CDATE"
     fanal[3]="sfnanl.${CDUMP}.$CDATE"
     fanal[4]="nsnanl.${CDUMP}.$CDATE"
-    flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
+    flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
 
     # Get initial conditions from HPSS from retrospective parallel
     tarball="$HPSS_PAR_PATH/${CDATE}${CDUMP}.tar"

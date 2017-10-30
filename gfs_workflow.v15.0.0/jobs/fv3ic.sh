@@ -50,7 +50,7 @@ fi
 # Output FV3 initial condition files
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
-export OMP_NUM_THREADS_CH=$CHGRESTHREAD
+export OMP_NUM_THREADS_CH=$NTHREADS_CHGRES
 export APRUNC=$APRUN_CHGRES
 
 # Call global_chgres_driver.sh

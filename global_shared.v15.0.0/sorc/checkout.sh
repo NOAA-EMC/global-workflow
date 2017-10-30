@@ -1,30 +1,29 @@
-#! /bin/sh
+#!/bin/sh
 
 set -xue
 
-USERNAME=${1:-""}    # gerrit username
-if [[ "$USERNAME" = "" ]] ; then
-   echo specify valid gerrit username for gsi checkout
-   exit 
-fi
+USERNAME=${1:-$USER} # gerrit username
 
-echo fv3gfs checkout...
+set +e
+
+echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
-    svn co -r96963 \
-        https://svnemc.ncep.noaa.gov/projects/nems/apps/NEMSfv3gfs/branches/russ-old-fv3gfs \
+    rm -f checkout-fv3gfs.log
+    git clone --recursive \
+        ssh://${USERNAME}@vlab.ncep.noaa.gov:29418/NEMSfv3gfs.git \
         fv3gfs.fd > checkout-fv3gfs.log 2>&1
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
 fi
 
-echo gsi checkout using $USERNAME ...
+echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
-    set +e
-    git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd
-    cd gsi.fd
-    git clone ${USERNAME}@gerrit:GSI-fix fix
-    cd fix
-    git checkout rev2
+    rm -f checkout-gsi.log
+    git clone --recursive \
+        ssh://${USERNAME}@vlab.ncep.noaa.gov:29418/ProdGSI.git \
+        gsi.fd > checkout-gsi.fd.log 2>&1
 else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
+
+exit 0

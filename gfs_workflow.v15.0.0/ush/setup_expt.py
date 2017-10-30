@@ -123,7 +123,7 @@ link initial condition files from $ICSDIR to $COMROT'''
 
     parser = ArgumentParser(description=description, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
-    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=192)
+    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
     parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
     parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
     parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)

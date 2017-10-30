@@ -31,7 +31,7 @@ done
 
 # CURRENT CYCLE
 PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
+cyc=$(echo  $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
@@ -64,9 +64,9 @@ for file in $files; do
     $NCP $COMIN/${APREFIX}$file .
 done
 
-cd $DATA
+cd $DATA/${CDUMP}restart
 
-htar -P -cvf $ATARDIR/$CDATE/${CDUMP}restart.tar ${CDUMP}restart
+htar -P -cvf $ATARDIR/$CDATE/${CDUMP}restart.tar .
 status=$?
 if [ $status -ne 0 ]; then
     echo "HTAR $CDATE ${CDUMP}restart.tar failed"
@@ -80,6 +80,7 @@ if [ $status -ne 0 ]; then
     exit $status
 fi
 
+cd $DATA
 rm -rf ${CDUMP}restart
 
 ###############################################################
@@ -181,13 +182,28 @@ COMIN="$RUNDIR/$GDATE"
 COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
-# PREVIOUS 00Z day; remove the whole day
-GDATE=$($NDATE -48 $CDATE)
-gymd=$(echo $GDATE | cut -c1-8)
-ghh=$(echo  $GDATE | cut -c9-10)
-
-COMIN="$ROTDIR/$CDUMP.$gymd"
-[[ -d $COMIN ]] && rm -rf $COMIN
+# Step back every assim_freq hours
+# and remove old rotating directories for successfull cycles
+# defaults from 24h to 120h
+GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
+GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
+while [ $GDATE -le $GDATEEND ]; do
+    gymd=$(echo $GDATE | cut -c1-8)
+    ghh=$(echo  $GDATE | cut -c9-10)
+    COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
+    if [ -d $COMIN ]; then
+        rocotolog="$EXPDIR/logs/${GDATE}.log"
+        testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success" | wc -l)
+        rc=$?
+        [[ $rc -eq 0 ]] && rm -rf $COMIN
+    fi
+    # Remove any empty directories
+    COMIN="$ROTDIR/$CDUMP.$gymd"
+    if [ -d $COMIN ]; then
+        [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
+    fi
+    GDATE=$($NDATE +$assim_freq $GDATE)
+done
 
 # Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
 # 1. atmospheric nemsio files used for fit2obs
