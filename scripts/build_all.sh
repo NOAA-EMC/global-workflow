@@ -12,6 +12,7 @@ cd ..
 dir_root=$(pwd)
 dir_util=$dir_root/util
 dir_scripts=$dir_root/scripts
+dir_modules=$dir_root/modulefiles
 [ -d $dir_root/exec ] || mkdir -p $dir_root/exec
 
 if [ $target = wcoss ]; then
@@ -31,9 +32,9 @@ fi
 # First build GSI
 module purge
 if [ $target = wcoss -o $target = cray ]; then
-    module load $dir_root/scripts/modulefile.global_gsi.$target
+    module load $dir_modules/modulefile.global_gsi.$target
 else
-    source $dir_root/scripts/modulefile.global_gsi.$target
+    source $dir_modules/modulefile.global_gsi.$target
 fi
 module list
 
@@ -50,9 +51,9 @@ cp -p global_gsi $dir_root/exec
 # Next build EnKF
 module purge
 if [ $target = wcoss -o $target = cray ]; then
-    module load $dir_root/scripts/modulefile.gdas_enkf.$target
+    module load $dir_modules/modulefile.gdas_enkf.$target
 else
-    source $dir_root/scripts/modulefile.gdas_enkf.$target
+    source $dir_modules/modulefile.gdas_enkf.$target
 fi
 module list
 
@@ -72,9 +73,9 @@ make -f Makefile clean
 # Then build EnKF utilities
 module purge
 if [ $target = wcoss -o $target = cray ]; then
-    module load $dir_root/scripts/modulefile.gdas_enkf.$target
+    module load $dir_modules/modulefile.gdas_enkf.$target
 else
-    source $dir_root/scripts/modulefile.gdas_enkf.$target
+    source $dir_modules/modulefile.gdas_enkf.$target
 fi
 module list
 

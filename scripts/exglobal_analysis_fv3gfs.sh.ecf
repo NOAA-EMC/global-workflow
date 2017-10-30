@@ -29,14 +29,21 @@ pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+export FIXgsi=${FIXgsi:-$BASE_GSI/fix}
 export GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
 export DATA=${DATA:-$pwd/analysis.$$}
+export DMPDIR=${DMPDIR:-$NWPROD}
 export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
+export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
+export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3}
+
+# Base variables
+CDATE=${CDATE:-"2001010100"}
+CDUMP=${CDUMP:-"gdas"}
+GDUMP=${GDUMP:-"gdas"}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -51,6 +58,21 @@ APRUNCFP=${APRUNCFP:-""}
 APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
 NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
+# Surface cycle related parameters
+DOGCYCLE=${DOGCYCLE:-"YES"}
+CYCLESH=${CYCLESH:-$BASE_GSM/ush/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-$BASE_GSM/exec/global_cycle}
+NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
+APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
+export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
+export CYCLVARS=${CYCLVARS:-""}
+export FHOUR=${FHOUR:-0}
+export DELTSFC=${DELTSFC:-6}
+
+# FV3 specific info
+export CASE=${CASE:-"C192"}
+ntiles=${ntiles:-6}
+
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
@@ -60,10 +82,14 @@ CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/exec/calc_increment_ens.x}
 RUN=${RUN:-""}
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
+RUN_GETGES=${RUN_GETGES:-"NO"}
+GETGESSH=${GETGESSH:-"getges.sh"}
+export gesenvir=${gesenvir:-$envir}
 
 # Observations
 OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
+COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP"}
 PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
 PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
 SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
@@ -136,13 +162,6 @@ ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
 ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
 ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
 ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
-NSTG03=${NSTG03:-${COMIN_GES}/${GPREFIX}nstf003${GSUFFIX}}
-NSTG04=${NSTG04:-${COMIN_GES}/${GPREFIX}nstf004${GSUFFIX}}
-NSTG05=${NSTG05:-${COMIN_GES}/${GPREFIX}nstf005${GSUFFIX}}
-NSTGES=${NSTGES:-${COMIN_GES}/${GPREFIX}nstf006${GSUFFIX}}
-NSTG07=${NSTG07:-${COMIN_GES}/${GPREFIX}nstf007${GSUFFIX}}
-NSTG08=${NSTG08:-${COMIN_GES}/${GPREFIX}nstf008${GSUFFIX}}
-NSTG09=${NSTG09:-${COMIN_GES}/${GPREFIX}nstf009${GSUFFIX}}
 GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
 GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
 GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
@@ -153,7 +172,6 @@ APREFIX=${APREFIX:-""}
 ASUFFIX=${ASUFFIX:-""}
 SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
 ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
-NSTANL=${NSTANL:-${COMOUT}/${APREFIX}nstanl${ASUFFIX}}
 ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
 ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
 ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
@@ -176,6 +194,7 @@ USE_CFP=${USE_CFP:-"NO"}
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-0}
+DONST=${DONST:-"NO"}
 NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
 ZSEA1=${ZSEA1:-0}
@@ -193,6 +212,71 @@ JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}
 LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
 LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
 LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+
+#CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+
+# Update surface fields in the FV3 restart's using global_cycle
+if [ $DOGCYCLE = "YES" ]; then
+
+    # Global cycle requires these files
+    export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
+    export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
+    export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP}.${LONB}.${LATB}}
+    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
+    FNSNOG=${FNSNOG:-$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t${JCAP}.${LONB}.${LATB}}
+    [[ ! -f $FNSNOG ]] && FNSNOG="$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t1534.3072.1536"
+
+    # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+    if [ $RUN_GETGES = "YES" ]; then
+       snoprv=$($GETGESSH -q -t snogrb_$JCAP -e $gesenvir -n $GDUMP -v $GDATE)
+    else
+       snoprv=${snoprv:-$FNSNOG}
+    fi
+
+    if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
+         $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
+       export FNSNOA=" "
+       export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+    else
+       export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+       export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+    fi
+
+    if [ $DONST = "YES" ]; then
+        export NST_ANL=".true."
+        export GSI_FILE=$COMOUT/${APREFIX}dtfanl.nc
+    else
+        export NST_ANL=".false."
+    fi
+
+    mkdir -p $COMOUT/RESTART
+
+    export APRUNCY=$APRUN_CYCLE
+    export OMP_NUM_THREADS_CY=$NTHREADS_CYCLE
+
+    rc=0
+    for n in $(seq 1 $ntiles); do
+
+        export TILE_NUM=$n
+
+        SFCGES_TMP=$COMIN_GES/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc
+        SFCANL_TMP=$COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc
+
+        $CYCLESH $SFCGES_TMP $SFCANL_TMP
+        ra=$?
+        ((rc+=ra))
+
+    done
+    export ERR=$rc
+    export err=$ERR
+    $ERRSCRIPT || exit 11
+
+fi
 
 # Get header information from Ensemble Guess files
 if [ $DOHYBVAR = "YES" ]; then
@@ -219,23 +303,22 @@ NLON_A=${NLON_A:-$LONA}
 NLAT_A=${NLAT_A:-$(($LATA+2))}
 
 DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
-CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
 
 # GSI Fix files
 RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
-BERROR=${BERROR:-${FIX_GSI}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
-SATANGL=${SATANGL:-${FIX_GSI}/global_satangbias.txt}
-SATINFO=${SATINFO:-${FIX_GSI}/global_satinfo.txt}
-ATMSFILTER=${ATMSFILTER:-${FIX_GSI}/atms_beamwidth.txt}
-ANAVINFO=${ANAVINFO:-${FIX_GSI}/global_anavinfo.l${LEVS}.txt}
-CONVINFO=${CONVINFO:-${FIX_GSI}/global_convinfo.txt}
-INSITUINFO=${INSITUINFO:-${FIX_GSI}/global_insituinfo.txt}
-OZINFO=${OZINFO:-${FIX_GSI}/global_ozinfo.txt}
-PCPINFO=${PCPINFO:-${FIX_GSI}/global_pcpinfo.txt}
-AEROINFO=${AEROINFO:-${FIX_GSI}/global_aeroinfo.txt}
-SCANINFO=${SCANINFO:-${FIX_GSI}/global_scaninfo.txt}
-HYBENSINFO=${HYBENSINFO:-${FIX_GSI}/global_hybens_info.l${LEVS}.txt}
-OBERROR=${OBERROR:-${FIX_GSI}/prepobs_errtable.global}
+BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
+SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
+SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
+ATMSFILTER=${ATMSFILTER:-${FIXgsi}/atms_beamwidth.txt}
+ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
+CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
+INSITUINFO=${INSITUINFO:-${FIXgsi}/global_insituinfo.txt}
+OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
+PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
+AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
+SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
+HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS}.txt}
+OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
 
 # GSI namelist
 SETUP=${SETUP:-""}
@@ -337,7 +420,7 @@ $NLN $OBERROR      errtable
 ##############################################################
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
-for file in `awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq` ;do
+for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
    $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/
    $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/
 done
@@ -429,9 +512,6 @@ $NLN $SFCGES sfcf06
 $NLN $SFCG09 sfcf09
 
 if [ $NST_GSI -gt 0 ]; then
-   $NLN $NSTG03 nstf03
-   $NLN $NSTGES nstf06
-   $NLN $NSTG09 nstf09
    if [ $NST_GSI -eq 3 ]; then
       $NLN $SFCGCY sfcgcy
    else
@@ -454,13 +534,6 @@ fi
 [[ -f $SFCG07 ]] && $NLN $SFCG07 sfcf07
 [[ -f $SFCG08 ]] && $NLN $SFCG08 sfcf08
 
-if [ $NST_GSI -gt 0 ]; then
-   [[ -f $NSTG04 ]] && $NLN $NSTG04 nstf04
-   [[ -f $NSTG05 ]] && $NLN $NSTG05 nstf05
-   [[ -f $NSTG07 ]] && $NLN $NSTG07 nstf07
-   [[ -f $NSTG08 ]] && $NLN $NSTG08 nstf08
-fi
-
 if [ $DOHYBVAR = "YES" ]; then
 
    # Link ensemble members
@@ -474,8 +547,8 @@ if [ $DOHYBVAR = "YES" ]; then
       fhrs="03 04 05 06 07 08 09"
    fi
 
-   for imem in `seq 1 $NMEM_ENKF`; do
-      memchar="mem"`printf %03i $imem`
+   for imem in $(seq 1 $NMEM_ENKF); do
+      memchar="mem"$(printf %03i $imem)
       for fhr in $fhrs; do
          $NLN ${COMIN_GES_ENS}/$memchar/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_$memchar
       done
@@ -515,7 +588,6 @@ $NLN $ABIASPC  satbias_pc.out
 $NLN $ABIASAIR aircftbias_out
 
 if [ $NST_GSI -gt 0 ] ; then
-   $NLN $NSTANL nstanl
    $NLN $SFCTSK sfctsk
    if [ $DOHYBVAR = "YES" ]; then
       $NLN $DTFANL dtfanl
@@ -548,14 +620,14 @@ EOFunzip
    chmod 755 $DATA/unzip.sh
 fi
 
-listdiag=`tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges`
+listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
 for type in $listdiag; do
-   diag_file=`echo $type | cut -d',' -f1`
+   diag_file=$(echo $type | cut -d',' -f1)
    if [ $USE_CFP = "YES" ] ; then
       echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
    else
-      fname=`echo $diag_file | cut -d'.' -f1`
-      date=`echo $diag_file | cut -d'.' -f2`
+      fname=$(echo $diag_file | cut -d'.' -f1)
+      date=$(echo $diag_file | cut -d'.' -f2)
       $UNCOMPRESS $diag_file
       fnameges=$(echo $fname|sed 's/_ges//g')
       $NMV $fname.$date $fnameges
@@ -564,8 +636,9 @@ done
 
 if [ $USE_CFP = "YES" ] ; then
    chmod 755 $DATA/mp_unzip.sh
-   ncmd=`cat $DATA/mp_unzip.sh | wc -l`
+   ncmd=$(cat $DATA/mp_unzip.sh | wc -l)
    if [ $ncmd -gt 0 ]; then
+      ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
       $APRUNCFP_UNZIP $DATA/mp_unzip.sh
    fi
@@ -925,8 +998,8 @@ for loop in $loops; do
    echo $(date) START loop $string >&2
    n=-1
    while [ $((n+=1)) -le $ntype ] ;do
-      for type in `echo ${diagtype[n]}`; do
-         count=`ls ${prefix}${type}_${loop}* | wc -l`
+      for type in $(echo ${diagtype[n]}); do
+         count=$(ls ${prefix}${type}_${loop}* | wc -l)
          if [ $count -gt 0 ]; then
             if [ $USE_CFP = "YES" ]; then
                echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
@@ -934,7 +1007,7 @@ for loop in $loops; do
                cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
             fi
             echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
-            numfile[n]=`expr ${numfile[n]} + 1`
+            numfile[n]=$(expr ${numfile[n]} + 1)
          fi
       done
    done
@@ -947,7 +1020,7 @@ cd $DATA
 # If requested, compress diagnostic files
 if [ $DIAG_COMPRESS = "YES" -a $USE_CFP = "NO" ]; then
    echo $(date) START $COMPRESS diagnostic files >&2
-   for file in `ls diag_*${CDATE}${DIAG_SUFFIX}`; do
+   for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
       $COMPRESS $file
    done
    echo $(date) END $COMPRESS diagnostic files >&2
@@ -955,8 +1028,9 @@ fi
 
 if [ $USE_CFP = "YES" ] ; then
    chmod 755 $DATA/mp_diag.sh
-   ncmd=`cat $DATA/mp_diag.sh | wc -l`
+   ncmd=$(cat $DATA/mp_diag.sh | wc -l)
    if [ $ncmd -gt 0 ]; then
+      ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP_DIAG=$(eval echo $APRUNCFP)
       $APRUNCFP_DIAG $DATA/mp_diag.sh
    fi
@@ -972,7 +1046,7 @@ if [ $DIAG_TARBALL = "YES" ]; then
          TAROPTS="-cvf"
       fi
       if [ ${numfile[n]} -gt 0 ]; then
-         tar $TAROPTS ${diagfile[n]} `cat ${diaglist[n]}`
+         tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
       fi
    done
 

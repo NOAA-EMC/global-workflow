@@ -30,7 +30,6 @@ export NWPROD=${NWPROD:-$pwd}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
 export DATA=${DATA:-$pwd/innovate_obs.$$}
 export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
 
