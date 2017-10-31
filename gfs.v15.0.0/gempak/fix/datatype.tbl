@@ -1,0 +1,217 @@
+!************************************************************************
+!* DATATYPE.TBL								*
+!*									*
+!* This table contains characteristics of the N-AWIPS data sets. These	*
+!* characteristics are the directory path to the data, the template	*
+!* used to generate the output filenames, the category and subcategory	*
+!* of the data, and the default number of frames, time line range and	*
+!* time interval for NMAP.						*
+!*									*
+!* Within templates, the following character combinations are reserved:	*
+!* comb - meaning		'metacharacters'	   example(s)	*
+!* YYYY - 4-digit year		'[0-9][0-9][0-9][0-9]'	   1999,2000,...*
+!* YY   - 2-digit year		'[0-9][0-9]'		   98,99,00,...	*
+!* MMM  - 3-char  month 	'[A-Za-z][A-Za-z][A-Za-z]' jan,...,dec	*
+!* MM   - 2-digit month 	'[0-9][0-9]'	   	   01,02,...,12	*
+!* DD   - 2-digit day 		'[0-9][0-9]'	   	   01,02,...	*
+!* HH   - 2-digit hour 		'[0-9][0-9]'	   	   00,01,...	*
+!* NN   - 2-digit minute	'[0-9][0-9]'	   	   00,01,...,59	*
+!* DWK  - 3-char  day of week  	'[A-Za-z][A-Za-z][A-Za-z]' sun,...,sat	*
+!* FFF  - 3-digit forecast hour	'[0-9][0-9][0-9]'	   000,...	*
+!* FF   - 2-digit forecast hour	'[0-9][0-9]'	   	   00,...	*
+!*									*
+!* The categories are used by NMAP to construct the user interface	*
+!* for data selection. They are defined as follows:			*
+!*	CAT_NIL		None						*
+!*	CAT_IMG		Imagery						*
+!*	CAT_SFC		Surface observations				*
+!*	CAT_SFF		Surface forecast				*
+!*	CAT_SND		Upper air observations				*
+!*	CAT_SNF		Upper air forecast				*
+!*	CAT_GRD		Gridded data					*
+!*	CAT_VGF		Vector graphics file				*
+!*	CAT_MSC		Miscellaneous					*
+!*									*
+!* The subcategories are used to identify how the data is stored in	*
+!* the files. They are defined as follows:				*
+!*	SCAT_NIL	None						*
+!*	SCAT_SFC	Surface obs in daily files			*
+!*	SCAT_SHP	Surface obs in hourly files			*
+!*	SCAT_SFF	Surface forecast				*
+!*	SCAT_FFG	Flash flood guidance (data at one time per day)	*
+!*	SCAT_SND	Upper air obs in daily files			*
+!*	SCAT_SNF	Upper air forecast				*
+!*	SCAT_FCT	Grid forecast					*
+!*	SCAT_ANL	Grid analysis					*
+!*									*
+!* The time information is used by NMAP for constucting the default	*
+!* time line for a particular type of data.				*
+!*									*
+!**									*
+!* Log:									*
+!* S.Maxwell	 	 1/97	Changed table name.			*
+!* D.W.Plummer	 	 2/97	Added several model names.		*
+!* D.Kidwell		10/97	Added SHIP and ACFT observations        *
+!* T. Lee/GSC	 	 1/98	Added METAR				*
+!* D.W.Plummer/NCEP	 1/98	Added ETAF and NGMF for testing purposes*
+!* D.Kidwell		 2/98	Added SYNOP and SCD observations        *
+!* D.W.Plummer/NCEP	 2/98	Added RUC2				*
+!* D.W.Plummer/NCEP	 3/98	Added FCST columns			*
+!* J.W.Carr/HPC          4/98   Added RUC2                              *
+!* J.W.Carr/HPC		 6/98	Added etasaudi and NOGAPS		*
+!* D.W.Plummer/NCEP	 8/98	Removed FCST columns			*
+!* S. Jacobs/NCEP	 9/98	Changed the path length			*
+!* J.L.Partain/MPC	 9/98	Added Newwave model			*
+!* J. Carr/HPC          10/98   Added ukmet2 and mrf_tdl model          *
+!* D.W.Plummer/NCEP	 2/99	Added template metacharacter doc	*
+!* J.L.Partain/MPC       2/99   Added NWW3 wave model                   *
+!* D. Kidwell/NCEP       3/99   Changed $OBS templates to 4-digit year  *
+!* S. Jacobs/NCEP	 5/99	Added WTCH and WARN			*
+!* D. Kidwell/NCEP       6/99   Removed WATCH                           *
+!* J. Carr/HPC		 7/99	Inserted ensembles			*
+!* S. Jacobs/NCEP	 8/99	Changed the contents and format		*
+!* A. Hardy/GSC		 9/99	Added HRCN				*
+!* D. Kidwell/NCEP      10/99   Added ISIG                              *
+!* S. Jacobs/NCEP	11/99	Added MM5				*
+!* S. Law/GSC		11/99	Changed CAT_MISC -> CAT_MSC		*
+!* D. Kidwell/NCEP      12/99   Added LTNG                              *
+!************************************************************************
+!
+!           |                         |                         |        |        |DEF |DEF   |DEF
+!FILE TYPE  |PATH                     |FILE TEMPLATE            |CATEGORY|SUBCAT  |#FRM|RANGE |INTRVL
+!(12)       |(25)                     |(25)                     |(8)     |(8)     |(4) |(6)   |(6)
+!           |                         |                         |        |        |    |
+METAR        $OBS/hrly                 YYYYMMDD.hrly             CAT_SFC  SCAT_SFC   10   2880     60
+SYNOP        $OBS/syn                  YYYYMMDD.syn              CAT_SFC  SCAT_SFC    8   2880    180
+SHIP         $OBS/ship                 YYYYMMDDHH.ship           CAT_SFC  SCAT_SHP   10   2880     60
+SCD          $OBS/scd                  YYYYMMDD.scd              CAT_SFC  SCAT_SFC   10   2880     60
+FFG          $OBS/ffg                  YYYYMMDD.ffg              CAT_SFC  SCAT_FFG    1   2880   1440
+!
+UAIR         $OBS/uair                 YYYYMMDD.snd              CAT_SND  SCAT_SND    4   2880    180
+ACFT         $OBS/acft                 YYYYMMDDHH.acf            CAT_SND  SCAT_SHP   10   2880     60
+!
+NGMMOS       $OBS/ngmmos               YYYYMMDDHH.nmos           CAT_SFF  SCAT_SFF   -1     -1     -1
+MRFMOS       $OBS/mrfmos               YYYYMMDDHH.mmos           CAT_SFF  SCAT_SFF   -1     -1     -1
+GFSMOS       $OBS/gfsmos               YYYYMMDDHH.gmos           CAT_SFF  SCAT_SFF   -1     -1     -1
+!
+WTCH         $OBS/watch                YYYYMMDDHH.wtch           CAT_MSC  SCAT_NIL   -1    360     10
+WARN         $OBS/warn                 YYYYMMDDHH.warn           CAT_MSC  SCAT_NIL   -1    360     10
+HRCN         $OBS/hrcn                 YYYYMMDDHH.hrcn           CAT_MSC  SCAT_NIL   -1    360     10
+ISIG         $OBS/isig                 YYYYMMDDHH.isig           CAT_MSC  SCAT_NIL   -1    360     10
+LTNG         $OBS/ltng                 YYYYMMDDHH.ltng           CAT_MSC  SCAT_NIL   -1    360     10
+!
+CLIMO        $GEMPAK/climo             climate_MM.mos            CAT_NIL  SCAT_NIL    1     -1     -1
+!
+GFS          $MODEL/gfs                gfs_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFS        $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFSP       $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFSHPC     $HPCGFS                   gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+GFSEXT       $MODEL/ens                gfs.YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+GFS1         $MODEL/ens                gfs1.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+GFS2         $MODEL/ens                gfs2.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+AVP1         $MODEL/ens                avp1.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+AVP2         $MODEL/ens                avp2.YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+CNT          $MODEL/ens                cnt.YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+!-----------------------------------------------------------------------------------------------------
+F-GEFSC00    $COMIN                    gec00_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP01    $COMIN                    gep01_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP02    $COMIN                    gep02_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP03    $COMIN                    gep03_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP04    $COMIN                    gep04_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP05    $COMIN                    gep05_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP06    $COMIN                    gep06_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP07    $COMIN                    gep07_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP08    $COMIN                    gep08_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP09    $COMIN                    gep09_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP10    $COMIN                    gep10_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP11    $COMIN                    gep11_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP12    $COMIN                    gep12_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP13    $COMIN                    gep13_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP14    $COMIN                    gep14_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP15    $COMIN                    gep15_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP16    $COMIN                    gep16_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP17    $COMIN                    gep17_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP18    $COMIN                    gep18_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP19    $COMIN                    gep19_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSP20    $COMIN                    gep20_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSGFS    $COMIN                    gegfs_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSAVG    $COMIN                    geavg_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GEFSSPR    $COMIN                    gespr_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+!-----------------------------------------------------------------------------------------------------
+ECMWFG       $MODEL/ecmwf              ecmwf_YYMMDDHH_global     CAT_GRD  SCAT_FCT   -1     -1     -1
+ECMWFT       $MODEL/ecmwf              ecmwf_YYMMDDHH_tropical   CAT_GRD  SCAT_FCT   -1     -1     -1
+F-ECMWFG     $COMIN                    ecmwf_glob_YYMMDDHH       CAT_GRD  SCAT_FCT   -1     -1     -1
+F-ECMWFT     $COMIN                    ecmwf_trop_YYMMDDHH       CAT_GRD  SCAT_FCT   -1     -1     -1
+NAM          $MODEL/nam                nam_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+NAMP         $MODEL/nam                nam_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+NAMSAUDI     $MODEL/namsaudi           namsaudi_YYMMDDHH         CAT_GRD  SCAT_FCT   -1     -1     -1
+F-DGEX       $COMIN                    dgex_YYYYMMDDHHfFFF       CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAM        $COMIN                    nam_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAM12      $COMIN                    nam12_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1
+ -1     -1
+F-NAM20      $COMIN                    nam20_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAM44      $COMIN                    nam44_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAMP       $COMIN                    nam_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAMP20     $COMIN                    nam20_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAMP44     $COMIN                    nam44_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-THREATS    $COMIN                    ${NEST}_YYYYMMDDHHfFFF    CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NAMHPC     $HPCNAM                   nam_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+GDAS         $MODEL/gdas               gdas_YYMMDDHH             CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GDAS       $COMIN                    gdas_YYYYMMDDHHfFFF       CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GFS        $COMIN                    gfs_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-HWRF       $COMIN                    hwrfp_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
+F-HWRFN       $COMIN                   hwrfn_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GHM        $COMIN                    ghmg_YYYYMMDDHHfFFF_*     CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GHMN       $COMIN                    ghmn_YYYYMMDDHHfFFF_*     CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GHMC       $COMIN                    ghmcg_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
+F-GHMCN      $COMIN                    ghmcn_YYYYMMDDHHfFFF_*    CAT_GRD  SCAT_FCT   -1     -1     -1
+ICE          $MODEL/ice                ice_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+MM5          $MODEL/mm5                mm5_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+MRF1         $MODEL/mrf                mrf_YYMMDDHH_g1x1         CAT_GRD  SCAT_FCT   -1     -1     -1
+MRF2         $MODEL/mrf                mrf_YYMMDDHH_g2.5x2.5     CAT_GRD  SCAT_FCT   -1     -1     -1
+F-MRF        $COMIN                    mrf_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-MRFHPC     $HPCMRF                   mrf_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+MRFARCH      $MODEL/mrfarchive         mrf_YYMMDDHH_g1x1         CAT_GRD  SCAT_FCT   -1     -1     -1
+MRFENS       $MODEL/ens                mrf.YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+MRFX         $MODEL/mrfx               mrfx_YYMMDDHH_g1x1        CAT_GRD  SCAT_FCT   -1     -1     -1
+P1           $MODEL/ens                p1.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+P2           $MODEL/ens                p2.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+P3           $MODEL/ens                p3.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+P4           $MODEL/ens                p4.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+P5           $MODEL/ens                p5.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+N1           $MODEL/ens                n1.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+N2           $MODEL/ens                n2.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+N3           $MODEL/ens                n3.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+N4           $MODEL/ens                n4.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+N5           $MODEL/ens                n5.YYMMDDHH               CAT_GRD  SCAT_FCT   -1     -1     -1
+NEWWAVE      $MODEL/NEWwave            new_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+NGM          $MODEL/ngm                ngm_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NGM        $COMIN                    ngm_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NGMHPC     $HPCNGM                   ngm_YYYYMMDDHHfFFF        CAT_GRD  SCAT_FCT   -1     -1     -1
+NOGAPS       $MODEL/nogaps             nogaps_YYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+NWW3         $MODEL/nww3               nww3_YYMMDDHH             CAT_GRD  SCAT_FCT   -1     -1     -1
+F-NWW3       $COMIN                    nww3_YYYYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1 
+F-NAH        $COMIN                    nah_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+F-WNA        $COMIN                    wna_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+F-AKW        $COMIN                    akw_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+RFC          $MODEL/rfc                rfc_YYMMDDHH              CAT_GRD  SCAT_ANL    1   2880   1440
+RUC          $MODEL/ruc                ruc_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+RUC2         $MODEL/ruc2               ruc2_YYMMDDHH             CAT_GRD  SCAT_FCT   -1     -1     -1
+RUCS         $MODEL/rucs               rucs_YYMMDDHH             CAT_GRD  SCAT_ANL    4    720     60
+F-RUCS       $COMIN                    rucs_YYYYMMDDHH           CAT_GRD  SCAT_ANL    4    720     60
+F-RUC2       $COMIN                    ruc2_YYYYMMDDHHfFFF       CAT_GRD  SCAT_ANL    4    720     60
+SST          $MODEL/sst                sst_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+MDL_GFS      $MODEL/mdl                gfs_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+TDL_MRF      $MODEL/tdl                mrf_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+TDL_NGM      $MODEL/tdl                ngm_YYYYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+TDL_NGMFL    $MODEL/tdl                ngmfltwx_YYMMDDHH         CAT_GRD  SCAT_FCT   -1     -1     -1
+TDL_NGMSV    $MODEL/tdl                ngmsvr_YYYYMMDDHH         CAT_GRD  SCAT_FCT   -1     -1     -1
+UKMET        $MODEL/ukmet              ukmet_YYMMDDHH            CAT_GRD  SCAT_FCT   -1     -1     -1
+UKMET2       $MODEL/ukmet2             ukmet2_YYMMDDHH           CAT_GRD  SCAT_FCT   -1     -1     -1
+F-UKMET      $COMIN                    ukmet_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+F-UKMETHPC   $HPCUKMET                 ukmet_YYYYMMDDHHfFFF      CAT_GRD  SCAT_FCT   -1     -1     -1
+WAM          $MODEL/wam                wam_YYMMDDHH              CAT_GRD  SCAT_FCT   -1     -1     -1
+!
+SAT          $SAT                      -                         CAT_IMG  SCAT_NIL   10   2280     -1
+RAD          $RAD                      -                         CAT_IMG  SCAT_NIL   10    180     -1
+VGF          -                         -                         CAT_VGF  SCAT_NIL   -1     -1     -1

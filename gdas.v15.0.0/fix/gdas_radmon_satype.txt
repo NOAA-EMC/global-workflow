@@ -1,0 +1,1 @@
+airs_aqua amsua_aqua amsua_metop-a amsua_metop-b amsua_n15 amsua_n18 amsua_n19 hirs4_metop-a hirs4_metop-b hirs4_n19 iasi_metop-a iasi_metop-b mhs_metop-a mhs_metop-b mhs_n18 mhs_n19 atms_npp cris_npp seviri_m10 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 ssmis_f17 ssmis_f18 avhrr_metop-a avhrr_n18

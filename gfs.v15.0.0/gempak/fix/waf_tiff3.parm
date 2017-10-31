@@ -1,0 +1,5043 @@
+
+!  <<<<<  A_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ85.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ70.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ50.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ40.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ30.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ25.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  A_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -57;-126;69;-21
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWNQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-51.5;-120.5/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/53.0;-25.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-85.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #68.48;-38.93
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.50;-39.35
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWNQ20.wmo
+  TXTLOC  = #68.27;-119.57
+  r 
+
+
+!  <<<<<  B_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ85.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ70.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ50.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ40.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ30.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ25.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ20.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ15.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  B_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -44;-126;53;37
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWSQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-41.0;-118.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/52.5;37.0/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;32.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = #-31.05;-107.20
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-41.20;-108.22
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWSQ07.wmo
+  TXTLOC  = #51.80;-119.35
+  r 
+
+
+!  <<<<<  C_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ85.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ70.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ50.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ40.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ30.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ25.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ20.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ15.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  C_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -39;-28;69;63
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWRQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-37.0;-23.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;60.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/24.0;19.4/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = #68.55;47.95
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #63.9;47.53
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWRQ07.wmo
+  TXTLOC  = #68.40;-22.55
+  r 
+
+
+!  <<<<<  D_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_85.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ85.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_70.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ70.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_50.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ50.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_40.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ40.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_30.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ30.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_25.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ25.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_20.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ20.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_15.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ15.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  D_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -30;-25;63;133
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWZQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-26.7;-16.0/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/62.5;129.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/34.0;145.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_07.t
+  TXTLOC  = #-14.60;-11.90
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = #-27.86;-11.90
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWZQ07.wmo
+  TXTLOC  = #62.01;-18.30
+  r 
+
+
+!  <<<<<  E_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ85.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ70.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ50.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ40.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ30.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ25.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ20.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ15.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  E_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;21;49;180
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWGQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;29.8/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;178.2/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;-30.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = #-36.90;40.10
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;38.75
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWGQ07.wmo
+  TXTLOC  = #47.67;173.42
+  r 
+
+
+!  <<<<<  F_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ85.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ70.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ50.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ40.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ30.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ25.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ20.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ15.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  F_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -49;103;49;264
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWFQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-46.5;111.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/90/1/1/10;10/48.5;264.5/2
+  r 
+
+  LATLON  = 1/90/1/1/10;10/-1.5;182.0/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = #-36.90;245.13
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-46.50;244.85
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWFQ07.wmo
+  TXTLOC  = #47.60;109.75
+  r 
+
+
+!  <<<<<  G_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_85.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ85.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_70.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ70.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+!  <<<<<  G_600  >>>>>
+
+  restore ./waf1
+
+  CLEAR   = yes
+  GLEVEL  = 600
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ60
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r
+
+  restore ./waf2
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =
+  r
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_60.t
+  TXTLOC  = 0.101;0.182
+  r
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ60.wmo
+  TXTLOC  = 0.059;0.990
+  r
+
+
+!  <<<<<  G_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_50.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ50.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_40.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ40.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_30.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ30.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_25.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ25.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_20.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ20.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_15.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ15.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  G_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -1.5;33;23;151
+  PROJ    = str/90;65;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWCQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = tall_stamp_07.t
+  TXTLOC  = 0.101;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = tall_ur_perm.t
+  TXTLOC  = 0.103;0.056
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWCQ07.wmo
+  TXTLOC  = 0.059;0.990
+  r 
+
+
+!  <<<<<  H_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ85.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;9
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ70.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+!  <<<<<  H_600  >>>>>
+
+  restore ./waf1
+
+  CLEAR   = yes
+  GLEVEL  = 600
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ60
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r
+
+  restore ./waf2
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =
+  r
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_60.t
+  TXTLOC  = 0.854;0.182
+  r
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ60.wmo
+  TXTLOC  = 0.046;0.990
+  r
+
+
+!  <<<<<  H_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ50.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ40.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ30.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ25.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ20.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ15.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  H_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = 4.5;-85;27;53.5
+  PROJ    = str/90;-45;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWAQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/19;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = 0.854;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.858;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWAQ07.wmo
+  TXTLOC  = 0.046;0.990
+  r 
+
+
+!  <<<<<  I_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ85.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ70.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+ 
+
+!  <<<<<  I_600  >>>>>
+
+  restore ./waf1
+
+  CLEAR   = yes
+  GLEVEL  = 600
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ60
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r
+
+  restore ./waf2
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =
+  r
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_60.t
+  TXTLOC  = 0.838;0.182
+  r
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ60.wmo
+  TXTLOC  = 0.062;0.990
+  r
+
+
+!  <<<<<  I_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ50.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ40.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ30.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ25.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ20.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ15.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  I_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -4.0;164.0;33.0;-60
+  PROJ    = str/90;-155;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sle(mul(latr,rtd),45)) ! vmsk(kntv(wnd),sle(mul(latr,rtd),45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWYQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),45,75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),45,75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),75,85)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),75,85))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10//2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = 0.838;0.182
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.842;0.066
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWYQ07.wmo
+  TXTLOC  = 0.062;0.990
+  r 
+
+
+!  <<<<<  J_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ85.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ70.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_600  >>>>>
+
+  restore ./waf1
+
+  CLEAR   = yes
+  GLEVEL  = 600
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ60
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r
+
+  restore ./waf2
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =
+  r
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_60.t
+  TXTLOC  = 0.860;0.985
+  r
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ60.wmo
+  TXTLOC  = 0.039;0.990
+  r
+
+
+!  <<<<<  J_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ50.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ40.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ30.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ25.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ20.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ15.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  J_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10.0;115.0;-5.0;260.0
+  PROJ    = str/-90;-140;0/2;2;2;2
+  GDPFUN  = mask(tmpc,sgt(mul(latr,rtd),-45)) ! vmsk(kntv(wnd),sgt(mul(latr,rtd),-45))
+  SKIP    = 0/4;4
+  DEVICE  = tiff | PWJQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-45,-75)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-45,-75))
+  SKIP    = 0/9;4
+  r 
+
+  GDPFUN  = mask(tmpc,sbtw(mul(latr,rtd),-75,-88)) ! vmsk(kntv(wnd),sbtw(mul(latr,rtd),-75,-88))
+  SKIP    = 0/29;4
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-33;-144/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = 0.860;0.985
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = 0.864;0.869
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWJQ07.wmo
+  TXTLOC  = 0.039;0.990
+  r 
+
+
+!  <<<<<  M_850  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 850
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ85
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_85.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ85.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_700  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 700
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ70
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_70.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ70.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_500  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 500
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ50
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_50.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ50.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_400  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 400
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ40
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_40.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ40.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_300  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 300
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ30
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_30.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ30.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_250  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 250
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ25
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_25.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ25.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_200  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 200
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ20
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_20.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ20.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_150  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 150
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ15
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_15.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ15.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+
+!  <<<<<  M_70  >>>>>
+
+  restore ./waf1 
+
+  CLEAR   = yes
+  GLEVEL  = 70
+  GDFILE  = gem_grids.gem
+  GDATTIM = SUBDATE
+  GAREA   = -10;100;70;250
+  PROJ    = mer//2;2;2;2
+  GDPFUN  =  tmpc   ! kntv(wnd)
+  SKIP    =  0/4;4
+  DEVICE  = tiff | PWMQ07
+  TEXT    = 1.0/21/sw
+  LATLON  = 0
+  r 
+
+  restore ./waf2 
+
+  GDPFUN  = 
+  SKIP    = 
+  r 
+
+  LATLON  = 1/22/1/1/10;10/-7.5;106.2/2
+  TEXT    = 1.5/21/sw
+  GDPFUN  =  
+  r 
+
+  LATLON  = 1/22/1/1/10;10/68.10;247.5/2
+  r 
+
+  LATLON  = 0
+  TXTYPE  = 1.3/21//221//c/sw
+  TXTFIL  = stamp_07.t
+  TXTLOC  = #6.00;231.70
+  r 
+
+  TXTYPE  = 0.8/21//111//c/sw
+  TXTFIL  = ur_perm.t
+  TXTLOC  = #-7.16;231.20
+  r 
+
+  TXTYPE  = 2/21//221//c/sw
+  TXTFIL  = PWMQ07.wmo
+  TXTLOC  = #69.33;106.50
+  r 
+
+  exit
