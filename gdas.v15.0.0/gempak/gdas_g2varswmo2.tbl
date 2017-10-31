@@ -1,0 +1,442 @@
+! GRIB2  - WMO Parameter Table
+!
+!D#  = Discipline number
+!CT# = Category number (Octet 10, Code Table 4.2)
+!ID# = Parameter number (Octet 11)
+!PD# = Product Definition Template number (Octet 8-9, Code Table 4.0)
+!
+! temperature
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 000 000 000 Temperature                      K                    TMPK             0  -9999.00
+000 000 000 001 Ensemble Temperature             K                    TMPK             0  -9999.00
+000 000 000 002 Ensemble Temperature             K                    TMPK             0  -9999.00
+000 000 000 005 Temperature Prob                 K                    TMPK             0  -9999.00
+000 000 000 011 Temperature                      K                    TMPK             0  -9999.00
+000 000 000 008 Temperature                      K                    TMPK             0  -9999.00
+000 000 000 019 Temperature Below Normal         %                    PTBN             0  -9999.00
+000 000 000 029 Temperature Near Normal          %                    PTNN             0  -9999.00
+000 000 000 039 Temperature Above Normal         %                    PTAN             0  -9999.00
+000 000 001 000 Virtual Temperature              K                    TVRK             0  -9999.00
+000 000 002 000 Potential Temperature            K                    THTA             0  -9999.00
+000 000 002 001 Potential Temperature            K                    THTA             0  -9999.00
+000 000 002 011 Potential Temperature            K                    THTA             0  -9999.00
+000 000 003 000 Equivalent Potential Temp        K                    THTE             0  -9999.00
+000 000 004 000 Maximum Temperature              K                    TMXK             0  -9999.00
+000 000 004 001 Maximum Temperature              K                    TMXK             0  -9999.00
+000 000 004 008 Maximum Temperature              K                    TMXK             0  -9999.00
+000 000 004 011 Ensemble Maximum Temperature     K                    TMXK             0  -9999.00
+000 000 004 012 Ensemble Maximum Temperature     K                    TMXK             0  -9999.00
+000 000 005 000 Minimum Temperature              K                    TMNK             0  -9999.00
+000 000 005 001 Minimum Temperature              K                    TMNK             0  -9999.00
+000 000 005 008 Minimum Temperature              K                    TMNK             0  -9999.00
+000 000 005 011 Ensemble Minimum Temperature     K                    TMNK             0  -9999.00
+000 000 005 012 Ensemble Minimum Temperature     K                    TMNK             0  -9999.00
+000 000 006 000 Dew Point Temperature            K                    DWPK             0  -9999.00
+000 000 006 001 Dew Point Temperature            K                    DWPK             0  -9999.00
+000 000 006 002 Dew Point Temperature            K                    DWPK             0  -9999.00
+000 000 006 011 Dew Point Temperature            K                    DWPK             0  -9999.00
+000 000 007 000 Dew Point Depression             K                    DPDK             0  -9999.00
+000 000 008 000 Lapse Rate                       K m**-1              LAPS             0  -9999.00
+000 000 009 000 Temperature Anomaly              K                    TMPKA            0  -9999.00
+000 000 010 000 Latent Heat Net Flux             W m**-2              FXLH             0  -9999.00
+000 000 010 001 Latent Heat Net Flux             W m**-2              FXLH             0  -9999.00
+000 000 010 008 Latent Heat Net Flux             W m**-2              FXLH             0  -9999.00
+000 000 010 011 Latent Heat Net Flux             W m**-2              FXLH             0  -9999.00
+000 000 010 012 Latent Heat Net Flux             W m**-2              FXLH             0  -9999.00
+000 000 011 000 Sensible Heat Net Flux           W m**-2              FXSH             0  -9999.00
+000 000 011 001 Sensible Heat Net Flux           W m**-2              FXSH             0  -9999.00
+000 000 011 008 Sensible Heat Net Flux           W m**-2              FXSH             0  -9999.00
+000 000 011 011 Sensible Heat Net Flux           W m**-2              FXSH             0  -9999.00
+000 000 011 012 Sensible Heat Net Flux           W m**-2              FXSH             0  -9999.00
+000 000 012 000 Heat Index                       K                    HEAT             0  -9999.00
+!000 000 013 000 Wind Chill Factor                K                    ????             0  -9999.00
+!000 000 014 000 Minimum Dew Point Depression     K                    ????             0  -9999.00
+000 000 015 000 Virtual Potential Temperature    K                    THTV             0  -9999.00
+000 000 017 000 Skin Temperature                 K                    SKTMP            0  -9999.00
+000 000 017 001 Skin Temperature                 K                    SKTMP            0  -9999.00
+000 000 017 011 Skin Temperature                 K                    SKTMP            0  -9999.00
+000 000 021 000 Apparent Temperature             K                    APTMP            0  -9999.00
+000 000 102 000 Snow Phase Change Heat Flux      K                    SNOHF            0  -9999.00
+!
+! moisture
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 001 000 000 Specific Humidity                kg kg**-1            SPFH             0  -9999.00
+000 001 000 001 Specific Humidity                kg kg**-1            SPFH             0  -9999.00
+000 001 000 011 Specific Humidity                kg kg**-1            SPFH             0  -9999.00
+000 001 001 000 Relative Humidity                %                    RELH             0  -9999.00
+000 001 001 001 Relative Humidity                %                    RELH             0  -9999.00
+000 001 001 002 Relative Humidity                %                    RELH             0  -9999.00
+000 001 001 011 Relative Humidity                %                    RELH             0  -9999.00
+000 001 002 000 Humidity Mixing Ratio            kg kg**-1            MIXR             3  -9999.00
+000 001 003 000 Precipitable water               kg m**-2             PWTR             0  -9999.00
+000 001 003 001 Precipitable water               kg m**-2             PWTR             0  -9999.00
+000 001 003 002 Precipitable water               kg m**-2             PWTR             0  -9999.00
+000 001 003 011 Precipitable water               kg m**-2             PWTR             0  -9999.00
+000 001 004 000 Vapour pressure                  Pa                   VAPR            -2  -9999.00
+000 001 005 000 Saturation deficit               Pa                   SATD            -2  -9999.00
+000 001 006 000 Evaporation                      kg m**-2             EVAP             0  -9999.00
+000 001 006 008 Evaporation                      kg m**-2             EVAP             0  -9999.00
+000 001 007 000 Precipitation rate               kg m**-2 s**-1       PR--             0  -9999.00
+000 001 007 008 Precipitation rate               kg m**-2 s**-1       PR--             0  -9999.00
+000 001 008 008 Total precipitation              kg m**-2             P--M             0     -0.01
+000 001 008 009 Precipitation Probability        %                    PP--             0  -9999.00
+000 001 008 011 Total precipitation              kg m**-2             P--M             0     -0.01
+000 001 008 012 Total precipitation              kg m**-2             P--M             0     -0.01
+000 001 008 019 Precipitation Below Normal       %                    PPBN             0  -9999.00
+000 001 008 029 Precipitation Near Normal        %                    PPNN             0  -9999.00
+000 001 008 039 Precipitation Above Normal       %                    PPAN             0  -9999.00
+000 001 009 008 Large scale precipitation        kg m**-2             S--M             0     -0.01
+000 001 010 008 Convective precipitation         kg m**-2             C--M             0     -0.01
+000 001 011 000 Snow depth                       m                    SNDM             0  -9999.00
+000 001 011 001 Snow depth                       m                    SNDM             0  -9999.00
+000 001 011 002 Snow depth                       m                    SNDM             0  -9999.00
+000 001 012 008 Snowfall rate water equiv        kg m**-2 s**-1       SR--             0  -9999.00
+000 001 013 000 Wat equiv of accum snow dep      kg m**-2             SWEM             0  -9999.00
+000 001 013 001 Wat equiv of accum snow dep      kg m**-2             SWEM             0  -9999.00
+000 001 013 002 Wat equiv of accum snow dep      kg m**-2             SWEM             0  -9999.00
+000 001 013 008 Wat equiv of accum snow dep      kg m**-2             SWEM             0  -9999.00
+000 001 014 000 Convective snow                  kg m**-2             CSNO             0  -9999.00
+000 001 015 000 Large scale snow                 kg m**-2             LSNO             0  -9999.00
+000 001 015 009 Large scale snow                 kg m**-2             LSNO             0  -9999.00
+000 001 015 012 Large scale snow                 kg m**-2             LSNO             0  -9999.00
+000 001 016 008 Snow melt                        kg m**-2             N--M             0  -9999.00
+!000 001 017 000 Snow age                         day                  ????             ?  -9999.00
+!000 001 018 000 Absolute Humidity                kg m**-3             ????             ?  -9999.00
+!000 001 019 000 Precipitation Type               code table           ????             ?  -9999.00
+!000 001 020 000 Integrated Liquid Water          kg m**-2             ????             ?  -9999.00
+!000 001 021 000 Condensate                       kg kg**-1            ????             ?  -9999.00
+000 001 022 000 Cloud Mixing Ratio               kg kg**-1            CWTR             0  -9999.00
+000 001 023 000 Ice water Mixing Ratio           kg kg**-1            ICMR             0  -9999.00
+000 001 024 000 Rain Mixing Ratio                kg kg**-1            RNMX             0  -9999.00
+000 001 025 000 Snow Mixing Ratio                kg kg**-1            SNMR             0  -9999.00
+!000 001 026 000 Horizon Moisture Converg         kg kg**-1 s**-1      ????             ?  -9999.00
+!000 001 027 000 Maximum Relative Humidity        %                    ????             ?  -9999.00
+!000 001 028 000 Maximum Absolute Humidity        kg m**-3             ????             ?  -9999.00
+000 001 029 008 Total Snowfall                   m                    SNOW             3     -0.01
+000 001 029 009 P of Snow Exceeding Amount       %                    SN               0   -9999.00
+000 001 029 010 Total Snowfall @ % likelhiood    m                    SN               3     -0.01
+!000 001 030 000 Precipitable water Category      code table           ????             ?  -9999.00
+000 001 031 000 Hail                             m                    H--M             3     -0.01
+000 001 032 000 Graupel (snow pellets)           kg kg**-1            GRMR             0  -9999.00
+000 001 039 000 Percent frozen precipitation     %                    CPOFP            0  -9999.00
+000 001 051 000 Total Column Water               kg m**-2             TCWTR            0  -9999.00
+000 001 051 001 Total Column Water               kg m**-2             TCWTR            0  -9999.00
+000 001 051 011 Total Column Water               kg m**-2             TCWTR            0  -9999.00
+000 001 052 000 Total Precipitation              kg m**-2             PRCP             0  -9999.00
+000 001 052 001 Total Precipitation              kg m**-2             PRCP             0  -9999.00
+000 001 052 011 Total Precipitation              kg m**-2             PRCP             0  -9999.00
+000 001 053 000 Water Equiv of snow fall         kg m**-2             SWEM             0  -9999.00
+000 001 053 001 Water Equiv of snow fall         kg m**-2             SWEM             0  -9999.00
+000 001 053 011 Water Equiv of snow fall         kg m**-2             SWEM             0  -9999.00
+000 001 060 000 Water equiv of accum snow depth  kg m**-2             WEASD            0  -9999.00
+000 001 060 001 Water equiv of accum snow depth  kg m**-2             WEASD            0  -9999.00
+000 001 060 011 Water equiv of accum snow depth  kg m**-2             WEASD            0  -9999.00
+000 001 192 000 Weather                          NA                   WTHR             0  -9999.00
+000 001 192 001 Weather                          NA                   WX               0  -9999.00
+000 001 192 011 Weather                          NA                   WX               0  -9999.00
+000 001 083 000 Albedo                           %                    ALBD             0  -9999.00
+000 001 084 000 Surface Roughness                m                    SRLM             0  -9999.00
+!
+! momentum
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 002 000 000 Wind Direction                   Degree true          DRCT             0  -9999.00
+000 002 001 000 Wind Speed                       m s**-1              SPED             0  -9999.00
+000 002 001 002 Wind Speed                       m s**-1              SPED             0  -9999.00
+000 002 001 005 Wind Speed                       m s**-1              SPED             0  -9999.00
+000 002 001 009 Wind Speed                       m s**-1              SPED             0  -9999.00
+000 002 002 000 u-component of wind              m s**-1              UREL             0  -9999.00
+000 002 002 001 Ensemble u-component of wind     m s**-1              UREL             0  -9999.00
+000 002 002 002 Ensemble u-component of wind     m s**-1              UREL             0  -9999.00
+000 002 002 011 u-component of wind              m s**-1              UREL             0  -9999.00
+000 002 003 000 v-component of wind              m s**-1              VREL             0  -9999.00
+000 002 003 001 Ensemble v-component of wind     m s**-1              VREL             0  -9999.00
+000 002 003 002 Ensemble v-component of wind     m s**-1              VREL             0  -9999.00
+000 002 003 011 v-component of wind              m s**-1              VREL             0  -9999.00
+000 002 004 000 Stream Function                  m**2 s**-1           STRM             0  -9999.00
+000 002 005 000 Velocity Potential               m**2 s**-1           VPOT             0  -9999.00
+000 002 006 000 Montgomery Streamfunction        m**2 s**-2           PSYM            -2  -9999.00
+000 002 007 000 Sigma co-ordinate vert vel       s**-1                SGCVV            0  -9999.00
+000 002 008 000 Vertical Velocity (Pressure)     Pa s**-1             OMEG            -2  -9999.00
+000 002 008 001 Vertical Velocity (Pressure)     Pa s**-1             OMEG            -2  -9999.00
+000 002 008 002 Vertical Velocity (Pressure)     Pa s**-1             OMEG            -2  -9999.00
+000 002 009 000 Vertical Velocity (Geometric)    m s**-1              VVEL             0  -9999.00
+000 002 010 000 Absolute Vorticity               s**-1                AVOR             0  -9999.00
+000 002 011 000 Absolute Divergence              s**-1                DIV              0  -9999.00
+000 002 012 000 Relative Vorticity               s**-1                VOR              0  -9999.00
+000 002 013 000 Relative Divergence              s**-1                RDIV             0  -9999.00
+000 002 014 000 Potential Vorticity              K m**2 (kg s)**-1    PVOR             0  -9999.00
+000 002 014 001 Potential Vorticity              K m**2 (kg s)**-1    PVOR             0  -9999.00
+000 002 014 011 Potential Vorticity              K m**2 (kg s)**-1    PVOR             0  -9999.00
+000 002 015 000 Vertical u-component shear       s**-1                USHR             0  -9999.00
+000 002 016 000 Vertical v-component shear       s**-1                VSHR             0  -9999.00
+000 002 017 000 Momentum Flux, u-component       N m**-2              URELFX           0  -9999.00
+000 002 017 008 Momentum Flux, u-component       N m**-2              URELFX           0  -9999.00
+000 002 018 000 Momentum Flux, v-component       N m**-2              VRELFX           0  -9999.00
+000 002 018 008 Momentum Flux, v-component       N m**-2              VRELFX           0  -9999.00
+000 002 019 000 Wind Mixing Energy               J                    ENRG             0  -9999.00
+000 002 020 000 Boundary Layer Dissipation       W m**-2              BLDIS            0  -9999.00
+000 002 021 000 Maximum Wind Speed               m s**-1              MAXWSPD          0  -9999.00
+000 002 021 008 Maximum Wind Speed               m s**-1              MAXWSPD--        0  -9999.00
+000 002 022 000 Wind Speed (gust)                m s**-1              GUST             0  -9999.00
+000 002 023 000 u-component of wind (gust)       m s**-1              UGST             0  -9999.00
+000 002 024 000 v-component of wind (gust)       m s**-1              VGST             0  -9999.00
+!
+! mass
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 003 000 000 Pressure                         Pa                   PRES            -2  -9999.00
+000 003 000 001 Ensemble Pressure                Pa                   PRES            -2  -9999.00
+000 003 000 002 Ensemble Pressure                Pa                   PRES            -2  -9999.00
+000 003 000 008 Pressure                         Pa                   PRES            -2  -9999.00
+000 003 000 011 Pressure                         Pa                   PRES            -2  -9999.00
+000 003 001 000 Pressure Reduced to MSL          Pa                   PMSL            -2  -9999.00
+000 003 001 001 Pressure Reduced to MSL          Pa                   PMSL            -2  -9999.00
+000 003 001 002 Ensemble Pressure Reduced to MSL Pa                   PMSL            -2  -9999.00
+000 003 001 011 Pressure Reduced to MSL          Pa                   PMSL            -2  -9999.00
+000 003 002 000 Pressure Tendency                Pa s**-1             PTND            -2  -9999.00
+000 003 003 000 ICAO Standard Atm Ref Height     m                    ICAHT            0  -9999.00
+000 003 004 000 Geopotential                     m**2 s**-2           GP               0  -9999.00
+000 003 005 000 Geopotential Height              gpm                  HGHT             0  -9999.00
+000 003 005 001 Ensemble Geopotential Height     gpm                  HGHT             0  -9999.00
+000 003 005 002 Ensemble Geopotential Height     gpm                  HGHT             0  -9999.00
+000 003 005 005 Geopotential Height              gpm                  HGHT             0  -9999.00
+000 003 005 011 Geopotential Height              gpm                  HGHT             0  -9999.00
+000 003 006 000 Geometrical Height               m                    DIST             0  -9999.00
+000 003 007 000 Standard Deviation of Height     m                    HGHTSD           0  -9999.00
+000 003 008 000 Pressure Anomaly                 Pa                   PRESA           -2  -9999.00
+000 003 009 000 Geopotential Height Anomaly      gpm                  HGHTA            0  -9999.00
+000 003 010 000 Density                          kg m**-3             DNTY             0  -9999.00
+!000 003 011 000 Altimeter Setting                ????                 ????             ?  -9999.00
+!000 003 012 000 Thickness                        ????                 ????             ?  -9999.00
+!000 003 013 000 Pressure Altitude                ????                 ????             ?  -9999.00
+!000 003 014 000 Density Altitude                 ????                 ????             ?  -9999.00
+!
+! short-wave radiation
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 004 000 000 Net Short-Wave Rad (sfc)         W m**-2              SNIR             0  -9999.00
+000 004 001 000 Net Short-Wave Rad (toa)         W m**-2              SWRT             0  -9999.00
+000 004 002 000 Short-Wave Radiation Flux        W m**-2              SWAVR            0  -9999.00
+000 004 003 000 Global radiation Flux            W m**-2              GRAD             0  -9999.00
+000 004 004 000 Brightness Temperature           K                    BRTMP            0  -9999.00
+000 004 005 000 Radiance (w/r to wave nmber)     W m**-1 sr**-1       LWRAD            0  -9999.00
+000 004 006 000 Radiance (w/r to wave length)    W m**-3 sr**-1       SWRAD            0  -9999.00
+000 004 007 000 Downward Short-Wave Rad. Flux    W m**-2              DSWRF            0  -9999.00
+000 004 008 000 Upward Short-Wave Rad. Flux      W m**-2              USWRF
+000 004 009 000 Net Solar Rad                    W m**-2 s            SRAD             0  -9999.00
+000 004 009 001 Net Solar Rad                    W m**-2 s            SRAD             0  -9999.00
+000 004 009 011 Net Solar Rad                    W m**-2 s            SRAD             0  -9999.00
+!
+! long-wave radiation
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 005 000 000 Net Long-Wave Rad (sfc)          W m**-2              SNOR             0  -9999.00
+000 005 001 000 Net Long-Wave Rad (toa)          W m**-2              LWRT             0  -9999.00
+!000 005 002 000 Long-Wave Radiation Flux         W m**-2              ????             0  -9999.00
+000 005 005 000 Outgoing Long-Wave Rad Flux      W m**-2              LWRU             0  -9999.00
+000 005 005 001 Outgoing Long-Wave Rad Flux      W m**-2              LWRU             0  -9999.00
+000 005 005 011 Outgoing Long-Wave Rad Flux      W m**-2              LWRU             0  -9999.00
+!
+! cloud
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 006 000 000 Cloud Ice                        kg m**-2             CICE             0  -9999.00
+000 006 001 000 Total Cloud Cover                %                    TCLD              0  -9999.00
+000 006 001 001 Total Cloud Cover                %                    TCLD              0  -9999.00
+000 006 001 008 Total Cloud Cover                %                    TCLD              0  -9999.00
+000 006 001 011 Total Cloud Cover                %                    TCLD              0  -9999.00
+000 006 001 012 Total Cloud Cover                %                    TCLD              0  -9999.00
+000 006 002 000 Convective Cloud Cover           %                    CCLD             0  -9999.00
+000 006 002 008 Convective Cloud Cover           %                    CCLD             0  -9999.00
+000 006 003 000 Low Cloud Cover                  %                    CLDL             0  -9999.00
+000 006 004 000 Medium Cloud Cover               %                    CLDM             0  -9999.00
+000 006 005 000 High Cloud Cover                 %                    CLDH             0  -9999.00
+000 006 006 000 Cloud Water                      kg m**-2             CWTR             0  -9999.00
+!000 006 007 000 Cloud Amount                     %                    ????             ?  -9999.00
+!000 006 008 000 Cloud Type                       code table           ????             ?  -9999.00
+!000 006 009 000 Thunderstorm Maximum Tops        m                    ????             ?  -9999.00
+!000 006 010 000 Thunderstorm Coverage            code table           ????             ?  -9999.00
+!000 006 011 000 Cloud Base                       m                    ????             ?  -9999.00
+!000 006 012 000 Cloud Top                        m                    ????             ?  -9999.00
+!000 006 013 000 Ceiling                          m                    ????             ?  -9999.00
+000 006 024 000 Sunshine duration                s                    SUND             0  -9999.00
+000 006 024 001 Sunshine duration                s                    SUND             0  -9999.00
+000 006 024 011 Sunshine duration                s                    SUND             0  -9999.00
+000 006 025 000 Horizontal Extent of CB          %                    CBHE             0  -9999.00
+!
+! thermodynamic stability indices 
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 007 000 000 Parcel Lifted Index (500hPa)     K                    LIFT             0  -9999.00
+000 007 000 005 Parcel Lifted Index (500hPa)     K                    LIFT             0  -9999.00
+000 007 001 000 Best Lifted Index (500hPa)       K                    LFT4             0  -9999.00
+!000 007 002 000 K Index                          K                    ????             ?  -9999.00
+!000 007 003 000 KO Index                         K                    ????             ?  -9999.00
+!000 007 004 000 Total Totals Index               K                    ????             ?  -9999.00
+!000 007 005 000 Sweat Index                      K                    ????             ?  -9999.00
+000 007 006 000 Conv Available Pot Energy        J K**-1              CAPE             0  -9999.00
+000 007 006 001 Conv Available Pot Energy        J K**-1              CAPE             0  -9999.00
+000 007 006 002 Conv Available Pot Energy        J K**-1              CAPE             0  -9999.00
+000 007 006 005 Conv Available Pot Energy        J K**-1              CAPE             0  -9999.00
+000 007 006 011 Conv Available Pot Energy        J K**-1              CAPE             0  -9999.00
+000 007 007 000 Convective Inhibition            J K**-1              CINS             0  -9999.00
+000 007 007 001 Convective Inhibition            J K**-1              CINS             0  -9999.00
+000 007 007 002 Convective Inhibition            J K**-1              CINS             0  -9999.00
+000 007 007 005 Convective Inhibition            J K**-1              CINS             0  -9999.00
+000 007 007 011 Convective Inhibition            J K**-1              CINS             0  -9999.00
+000 007 008 000 Storm Relative Helicity          J K**-1              HLCY             0  -9999.00
+000 007 008 005 Storm Relative Helicity          J K**-1              HLCY             0  -9999.00
+!000 007 009 000 Energy Helicity Index            J K**-1              ????             ?  -9999.00
+!
+! aerosols 
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+!000 013 000 000 Aerosol Type                     code table           ????            ?  -9999.00
+!
+! trace gases
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 014 000 000 Total ozone                      Dobson units         TOZO             0  -9999.00
+!
+! radar
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+!000 015 000 000 Base Spectrum Width              m s**-1              ????             ?  -9999.00
+000 015 001 000 Base Reflectivity                dB                   N0R              0  -9999.00
+!000 015 002 000 Base Radial Velocity             m s**-1              ????             ?  -9999.00
+!000 015 003 000 Vertically-Integrated Liquid     kg m**-1             ????             ?  -9999.00
+!000 015 004 000 Layer-Max Base Reflectivity      dB                   ????             ?  -9999.00
+000 015 005 000 Precipitation                    kg m**-2             L--M             0     -0.01
+!000 015 006 000 Radar Spectra (1)                -                    ????             ?  -9999.00
+!000 015 007 000 Radar Spectra (2)                -                    ????             ?  -9999.00
+!000 015 008 000 Radar Spectra (3)                -                    ????             ?  -9999.00
+!
+! electrodynamics
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 017 000 000 Lightning Strike Density         m**-2 s**-1          LTNGSD          11  -9999.00
+!
+! nuclear/radiology
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+!000 018 000 000 Air Concentration Caesium137     Bq m**-3             ????             ?  ?????.??
+!000 018 001 000 Air Concentration Iodine131      Bq m**-3             ????             ?  ?????.??
+!000 018 002 000 Air Concentr Rad Act Polluts     Bq m**-3             ????             ?  ?????.??
+!000 018 003 000 Ground Deposition Caesium137     Bq m**-3             ????             ?  ?????.??
+!000 018 004 000 Ground Deposition Iodine131      Bq m**-3             ????             ?  ?????.??
+!000 018 005 000 Grn Depositn Rad Act Polluts     Bq m**-3             ????             ?  ?????.??
+!
+! physical atmospheric properties
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89
+000 019 000 000 Visibility                       m                    VSBY             0  -9999.00
+000 019 000 005 Visibility                       m                    VSBY             0  -9999.00
+000 019 001 000 Albedo                           %                    ALBD             0  -9999.00
+000 019 001 008 Albedo                           %                    ALBD             0  -9999.00
+000 019 002 000 Thunderstorm probability         %                    TSTM             0  -9999.00
+000 019 002 008 Thunderstorm probability         %                    TSTM             0  -9999.00
+000 019 003 000 Mixed layer depth                m                    MIXL             0  -9999.00
+!000 019 004 000 Volcanic Ash                     code table           ????             ?  ?????.??
+!000 019 005 000 Icing Top                        m                    ????             ?  ?????.??
+!000 019 006 000 Icing Base                       m                    ????             ?  ?????.??
+!000 019 007 000 Icing                            code table           ????             ?  ?????.??
+!000 019 008 000 Turbulence Top                   m                    ????             ?  ?????.??
+!000 019 009 000 Turbulence Base                  m                    ????             ?  ?????.??
+!000 019 010 000 Turbulence                       code table           ????             ?  ?????.??
+000 019 011 000 Turbulent Kinetic Energy         J kg**-1             TRKE             0  -9999.00
+!000 019 012 000 Planet Boundary Layer Regime     code table           ????             ?  ?????.??
+!000 019 013 000 Contrails Intencity              code table           ????             ?  ?????.??
+!000 019 014 000 Contrails Engine Type            code table           ????             ?  ?????.??
+!000 019 015 000 Contrails Top                    m                    ????             ?  ?????.??
+!000 019 016 000 Contrails Base                   m                    ????             ?  ?????.??
+000 019 020 015 Icing                             %                   ICIP             0  -9999.00
+000 019 021 015 In-Cloud Turbulence               %                   TURB             0  -9999.00
+000 019 022 015 Clear Air Turbulence              %                   CATRB            0  -9999.00
+!
+! Unidata Addition - Hydrology
+001 001 002 008 Prob of 0.01 inch of precip POP  %                    POP              0  -9999.00
+!
+! Product Discipline 2 - Land Surface Products
+! CATEGORY 0 - Vegetation/Biomass
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+002 000 000 000 Land cover (1=land, 2=sea)       Proportion           LAND             0  -9999.00
+002 000 000 001 Land cover (1=land, 2=sea)       Proportion           LAND             0  -9999.00
+002 000 000 011 Land cover (1=land, 2=sea)       Proportion           LAND             0  -9999.00
+002 000 001 000 Surface roughness                m                    SRLM             0  -9999.00
+002 000 002 000 Soil temperature                 K                    TMPK             0  -9999.00
+002 000 002 001 Soil temperature                 K                    TMPK             0  -9999.00
+002 000 002 011 Soil temperature                 K                    TMPK             0  -9999.00
+002 000 003 000 Soil moisture content            kg m-2               SLMM             0  -9999.00
+002 000 004 000 Vegetation                       %                    VEG              0  -9999.00
+002 000 005 000 Water runoff                     kg/m-2               RNOF             0  -9999.00
+002 000 005 008 Water runoff                     kg/m-2               RNOF             0  -9999.00
+002 000 006 000 Evapotranspiration               kg 2 s-1             EVAPT            0  -9999.00
+002 000 007 000 Model terrain height             m                    SFCHT            0  -9999.00
+002 000 008 000 Land use                         code table (4.212)   LANDUSE          0  -9999.00
+002 000 022 000 Soil moisture top 20cm           kg m**-3             SOILMV           0  -9999.00
+002 000 022 001 Soil moisture top 20cm           kg m**-3             SOILMV           0  -9999.00
+002 000 022 011 Soil moisture top 20cm           kg m**-3             SOILMV           0  -9999.00
+!
+! CATEGORY 1 - Agricultural/Aquacultural Special Products
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+!
+! CATEGORY 2 - Transportation-related
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+!
+! CATEGORY 3 - Soil
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+002 003 000 000 Soil Type (as in Zobler)         -                    SOTYP            0  -9999.00
+!
+! CATEGORY 3 - Fire Weather
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+002 004 002 000 Haines Index                     -                    HAINES           0  -9999.00
+!
+! Product Discipline 10 - Oceanographic Products
+! CATEGORY 0 - Waves category
+!D# CT# ID# PD# NAME                             UNITS                GNAM         SCALE   MISSING  HZREMAP  DIRECTION
+!23|123|123|123|12345678901234567890123456789012|12345678901234567890|123456789012|12345|123456.89|12345678|1234567890
+010 000 000 000 Wave Spectra (1)                 -                    WVSP1            0  -9999.00
+010 000 001 000 Wave Spectra (2)                 -                    WVSP2            0  -9999.00
+010 000 002 000 Wave Spectra (3)                 -                    WVSP3            0  -9999.00
+010 000 003 000 Sig Hght Comb Wind Waves + Swell m                    HTSGW            0  -9999.00
+010 000 004 000 Direction of Wind Waves          Degree True          WVDIR            0  -9999.00
+010 000 005 000 Significant Height of Wind Waves m                    WVHGT            0  -9999.00
+010 000 006 000 Mean Period of Wind Waves        s                    WVPER            0  -9999.00
+010 000 007 000 Direction of Swell Waves         Degree True          SWDIR            0  -9999.00
+010 000 008 000 Significant Hght of Swell Waves  m                    SWELL            0  -9999.00
+010 000 009 000 Mean Period of Swell Waves       s                    SWPER            0  -9999.00
+010 000 010 000 Primary Wave Direction           Degree True          DIRPW            0  -9999.00
+010 000 011 000 Primary Wave Mean Period         s                    PERPW            0  -9999.00
+010 000 012 000 Secondary Wave Direction         Degree True          DIRSW            0  -9999.00
+010 000 013 000 Secondary Wave Mean Period       s                    PERSW            0  -9999.00
+010 000 192 000 Wave Steepness                   -                    WSTP             0  -9999.00
+!
+010 001 000 000 Current direction                Degree true          DRCTC            0  -9999.00
+010 001 001 000 Current speed                    m s-1                SPEDC            0  -9999.00
+010 001 002 000 u-component of current           m s-1                URELC            0  -9999.00
+010 001 003 000 v-component of current           m s-1                VRELC            0  -9999.00
+!
+010 002 000 000 Ice cover                        Proportion           ICE              0  -9999.00
+010 002 001 000 Ice thickness                    m                    ICET             0  -9999.00
+010 002 002 000 Direction of ice drift           Degree true          DRCTI            0  -9999.00
+010 002 003 000 Speed of ice drift               m s-1                SPEDI            0  -9999.00
+010 002 004 000 u-component of ice drift         m s-1                URELI            0  -9999.00
+010 002 005 000 v-component of ice drift         m s-1                VRELI            0  -9999.00
+010 002 006 000 Ice growth rate                  m s-1                IGRO             0  -9999.00
+010 002 007 000 Ice divergence                   s-1                  IDIV             0  -9999.00
+!
+010 003 000 000 Water Temperature                K                    WTMP             0  -9999.00
+010 003 001 000 Deviation of Sea Level from Mean m                    DSLM             0  -9999.00
+!
+010 004 000 000 Main Thermocline Depth           m                    MTHDP            0  -9999.00            
+010 004 001 000 Main Thermocline Anomaly         m                    MTHAN            0  -9999.00            
+010 004 002 000 Transient Thermocline Depth      m                    TTHDP            0  -9999.00            
+010 004 003 000 Salinity                         kg kg**-1            SLTY             0  -9999.00            
