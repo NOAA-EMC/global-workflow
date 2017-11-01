@@ -223,6 +223,7 @@ cldcoef=$fixcrtm/CloudCoeff.bin
 satangl=$fixgsi/global_satangbias.txt
 scaninfo=$fixgsi/global_scaninfo.txt
 satinfo=$fixgsi/global_satinfo.txt
+cloudyinfo=$fixgsi/cloudy_radiance_info.txt
 convinfo=$fixgsi/global_convinfo_reg_test.txt
 insituinfo=$fixgsi/global_insituinfo.txt
 ### add 9 tables
@@ -272,6 +273,7 @@ $ncp $satangl  ./satbias_angle
 $ncp $atmsbeamdat  ./atms_beamwidth.txt
 $ncp $scaninfo ./scaninfo
 $ncp $satinfo  ./satinfo
+$ncp $cloudyinfo  ./cloudy_radiance_info.txt
 $ncp $pcpinfo  ./pcpinfo
 $ncp $ozinfo   ./ozinfo
 $ncp $convinfo ./convinfo
