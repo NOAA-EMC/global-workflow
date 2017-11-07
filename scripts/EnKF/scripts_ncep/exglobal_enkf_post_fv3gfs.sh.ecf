@@ -28,7 +28,7 @@ fi
 pwd=$(pwd)
 NWPROD=${NWPROD:-$pwd}
 BASE_GSI=${BASE_GSI:-$NWPROD}
-FIX_GSI=${FIX_GSI:-$BASE_GSI/fix}
+FIXgsi=${FIXgsi:-$BASE_GSI/fix}
 DATA=${DATA:-$pwd}
 COMIN=${COMIN:-$pwd}
 COMOUT=${COMOUT:-$COMIN}
@@ -46,7 +46,7 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Fix files
 LEVS=${LEVS:-64}
-HYBENSMOOTH=${HYBENSMOOTH:-$FIX_GSI/global_hybens_smoothinfo.l${LEVS}.txt}
+HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
 GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$BASE_GSI/exec/getsigensmeanp_smooth.x}
