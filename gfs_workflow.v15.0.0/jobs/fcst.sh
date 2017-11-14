@@ -100,7 +100,7 @@ elif [ $CDUMP = "gfs" ]; then
        [[ $status -ne 0 ]] && exit $status
    fi
 
-   if [ $WRITE_NEMSIOFILE = ".false." -o $QUILTING = ".false." ]; then
+   if [ $OUTPUT_FILE != "nemsio" -o $QUILTING = ".false." ]; then
        # Convert NetCDF to nemsio
        $NC2NEMSIOSH
        status=$?

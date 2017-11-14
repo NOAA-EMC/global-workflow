@@ -31,27 +31,8 @@ if [ $VERBOSE = "YES" ] ; then
   set -x
 fi
 
-# This should be in the script that calls this script, not here
 machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
-if [ $machine = "WCOSS_C" ] ; then
-  . $MODULESHOME/init/sh 2>/dev/null
-  PRGENV=${PRGENV:-intel}
-  HUGEPAGES=${HUGEPAGES:-hugepages4M}
-  module  unload prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
-  module  load   prod_util iobuf PrgEnv-$PRGENV craype-$HUGEPAGES 2>/dev/null
-  module load intel/16.3.210 2>/dev/null
-  module  use /usrx/local/dev/modulefiles
-  export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
-  export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-  export MKL_CBWR=AVX2
-  module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles 2>/dev/null
-  module load esmf/7.1.0bs34 2>/dev/null
-elif [ $machine = "THEIA" ]; then
-  . $MODULESHOME/init/sh 2>/dev/null
-  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles 2>/dev/null
-  module load esmf/7.1.0bs34 2>/dev/null
-fi
 
 # Cycling and forecast hour specific parameters
 CASE=${CASE:-C768}
@@ -98,7 +79,8 @@ MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEM
 ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 
 # Model specific stuff
-FCSTEXECDIR=${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/BUILD/bin}
+FCSTMODSDIR=${FCSTMODSDIR:-$BASE_GSM/sorc/fv3gfs.fd/modulefiles}
+FCSTEXECDIR=${FCSTEXECDIR:-$BASE_GSM/sorc/fv3gfs.fd/NEMS/exe}
 FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$BASE_GSM/parm/parm_fv3diag}
 
@@ -114,7 +96,7 @@ MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
 
 QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-WRITE_NEMSIOFILE=${WRITE_NEMSIOFILE:-".true."}
+OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 
 rCDUMP=${rCDUMP:-$CDUMP}
@@ -495,7 +477,7 @@ write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
 num_files:               ${NUM_FILES:-2}
 filename_base:           '${CDUMP}.t${chh}z.atm' '${CDUMP}.t${chh}z.sfc'
 output_grid:             $OUTPUT_GRID
-write_nemsiofile:        $WRITE_NEMSIOFILE
+output_file:             $OUTPUT_FILE
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 imo:                     $LONB
 jmo:                     $LATB
@@ -847,8 +829,30 @@ EOF
 
 fi
 
+# echo out the final namelists
+cat nems.configure
+cat model_configure
+cat input.nml
+
 #------------------------------------------------------------------
 # setup the runtime environment and run the executable
+if [ $machine = "WCOSS_C" ] ; then
+  HUGEPAGES=${HUGEPAGES:-hugepages4M}
+  . $MODULESHOME/init/sh 2>/dev/null
+  module purge 2>/dev/null
+  module use $FCSTMODSDIR/wcoss_cray 2>/dev/null
+  module load fv3 2>/dev/null
+  module load prod_util iobuf craype-$HUGEPAGES 2>/dev/null
+  export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
+  export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
+  export MKL_CBWR=AVX2
+elif [ $machine = "THEIA" ]; then
+  . $MODULESHOME/init/sh 2>/dev/null
+  module purge 2>/dev/null
+  module use $FCSTMODSDIR/theia 2>/dev/null
+  module load fv3 2>/dev/null
+fi
+
 cd $DATA
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
