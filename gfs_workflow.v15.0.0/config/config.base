@@ -210,10 +210,10 @@ export FHOUT_HF_GFS=1
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, chose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
-# if gaussian_grid, set WRITE_NEMSIOFILE for nemsio or netcdf
+# if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 export QUILTING=".false."
 export OUTPUT_GRID="gaussian_grid"
-export WRITE_NEMSIOFILE=".true."
+export OUTPUT_FILE="nemsio"
 
 
 # Shared parameters

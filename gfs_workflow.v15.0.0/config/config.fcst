@@ -23,6 +23,7 @@ if [ $DONST = "YES" ]; then
 fi
 
 export FORECASTSH="$BASE_GSM/scripts/exglobal_fcst_nemsfv3gfs.sh"
+export FCSTMODSDIR="$BASE_NEMSfv3gfs/modulefiles"
 export FCSTEXECDIR="$BASE_NEMSfv3gfs/NEMS/exe"
 export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
