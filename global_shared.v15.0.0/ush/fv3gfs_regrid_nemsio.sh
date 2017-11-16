@@ -44,9 +44,10 @@ CDUMP=${CDUMP:-"gdas"}
 CASE=${CASE:-C768}
 LEVS=${LEVS:-65}
 GG=${GG:-gaussian}              # gaussian or regular lat-lon
-JCAP=${JCAP:-$((`echo $CASE | cut -c 2-`*2-2))}
-NLAT=${NLAT:-$((`echo $CASE | cut -c 2-`*2))}
-NLON=${NLON:-$((`echo $CASE | cut -c 2-`*4))}
+res=$(echo $CASE | cut -c2-)
+JCAP=${JCAP:-$((res*2-2))}
+LATB=${LATB:-$((res*2))}
+LONB=${LONB:-$((res*4))}
 
 NEMSIO_OUT2DNAME=${NEMSIO_OUT2DNAME:-sfc.$CDATE}
 NEMSIO_OUT3DNAME=${NEMSIO_OUT3DNAME:-atm.$CDATE}
@@ -64,8 +65,8 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 #--------------------------------------------------
 # ESMF regrid weights and output variable table
-weight_bilinear=${weight_bilinear:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.bilinear.nc}
-weight_neareststod=${weight_neareststod:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${NLON}_lat${NLAT}.${GG}.neareststod.nc}
+weight_bilinear=${weight_bilinear:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.bilinear.nc}
+weight_neareststod=${weight_neareststod:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.neareststod.nc}
 
 #-------------------------------------------------------
 # Go to the directory where the history files are
@@ -85,8 +86,8 @@ cat > regrid-nemsio.input << EOF
 &share
   debug=$DEBUG,
   ntrunc=$JCAP,
-  nlons=$NLON,
-  nlats=$NLAT,
+  nlons=$LONB,
+  nlats=$LATB,
   datapathout2d='$NEMSIO_OUT2DNAME',
   datapathout3d='$NEMSIO_OUT3DNAME',
   analysis_filename='fv3_history.tile1.nc','fv3_history.tile2.nc','fv3_history.tile3.nc','fv3_history.tile4.nc','fv3_history.tile5.nc','fv3_history.tile6.nc',

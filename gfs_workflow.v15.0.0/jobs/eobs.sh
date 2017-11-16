@@ -34,6 +34,7 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
+export CASE=$CASE_ENKF
 export GDATE=$($NDATE -$assim_freq $CDATE)
 
 cymd=$(echo $CDATE | cut -c1-8)
@@ -57,7 +58,7 @@ export DATA="$RUNDIR/$CDATE/$CDUMP/eobs"
 export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
 if [ ! -f $ATMGES_ENSMEAN ]; then
     echo "FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
-    exit 2
+    exit 1
 fi
 
 export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')

@@ -8,38 +8,6 @@
 ###############################################################
 
 
-'''
-This script expects the following directory structure:
-
-ICSDIR/
-    - CDATE/ (YYYYMMDDHH)
-        - gdas.tHHz.abias
-        - gdas.tHHz.abias_pc
-        - gdas.tHHz.abias_air
-        - gdas.tHHz.radstat
-        - T1534/ (JCAP_det, typically from operations)
-            - gdas.tHHz.atmanl.nemsio
-            - gdas.tHHz.sfcanl.nemsio
-            - gdas.tHHz.nstanl.nemsio (optional)
-        - T574/ (JCAP_ens, typically from operations)
-            - gdas.tHHz.atmanl.memXXX.nemsio
-            - gdas.tHHz.sfcanl.memXXX.nemsio
-            - gdas.tHHz.nstanl.memXXX.nemsio (optional)
-        - C96/ (CASE_det, CASE_ens)
-            - control
-                - fv3ics.log (chgres log going to C96 for control)
-                - INPUT/
-                    - gfs_data.nc
-                    - ...
-            - mem001
-                - fv3ics.log (chgres log going to C96 for member 001)
-                - INPUT/
-                    - gfs_data.nc
-                    - ...
-            ...
-'''
-
-
 import os
 import sys
 import glob
@@ -133,6 +101,7 @@ def get_jobtemplate():
     strings += '''
 set -x
 export machine={machine}
+target=$(echo $machine | tr '[A-Z]' '[a-z]')
 
 export BASE_GSM={base_gsm}
 export STMP={stmp}
@@ -157,12 +126,19 @@ export SFCANL=$INIDIR/<TEMPLATE_SFC>
     if machine in ['WCOSS_C']:
         strings += '''
 export APRUNC="aprun -j 1 -n 1 -N 1 -d $OMP_NUM_THREADS_CH -cc depth"
+target="cray"
 '''
 
     strings += '''
 [[ -d $DATA ]] && rm -rf $DATA
 [[ -d $OUTDIR ]] && rm -rf $OUTDIR
 mkdir -p $OUTDIR
+
+# Load appropriate modulefiles for global_chgres
+source $BASE_GSM/modulefiles/module-setup.sh.inc
+module use $BASE_GSM/modulefiles/fv3gfs
+module load global_chgres.$target
+module list
 
 $BASE_GSM/ush/global_chgres_driver.sh
 status=$?
@@ -196,7 +172,7 @@ def get_submitcmd():
     return cmd
 
 
-def submit_jobs(jobs, cleanup=True):
+def submit_jobs(jobs):
 
     def _random_id(length=8):
         return ''.join(random.sample(string.ascii_letters + string.digits, length))
@@ -214,7 +190,7 @@ def submit_jobs(jobs, cleanup=True):
         except subprocess.CalledProcessError as e:
             print e.output
         finally:
-            if cleanup:
+            if not debug:
                 os.remove(script)
 
     return
@@ -226,10 +202,40 @@ def main():
     global date, icsdir
     global nsst
     global CASE_det, CASE_ens, JCAP_det, JCAP_ens
+    global debug
 
-    description = '''Convert GFS files into FV3 files'''
+    icsdirdoc = []
+    icsdirdoc.append('Convert GFS files into FV3 files\n')
+    icsdirdoc.append('\n')
+    icsdirdoc.append('This script expects the following directory structure:\n')
+    icsdirdoc.append('\n')
+    icsdirdoc.append('ICSDIR/ [--icsdir]\n')
+    icsdirdoc.append('\tYYYYMMDDHH/ [--date]\n')
+    icsdirdoc.append('\t\tgdas.tHHz.abias\n')
+    icsdirdoc.append('\t\tgdas.tHHz.abias_pc\n')
+    icsdirdoc.append('\t\tgdas.tHHz.abias_air\n')
+    icsdirdoc.append('\t\tgdas.tHHz.radstat\n')
+    icsdirdoc.append('\t\tT1534/ [--JCAP_det]\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.atmanl.nemsio\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.sfcanl.nemsio\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.nstanl.nemsio (optional)\n')
+    icsdirdoc.append('\t\tT574/ [--JCAP_ens]\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.ratmanl.memXXX.nemsio\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.sfcanl.memXXX.nemsio\n')
+    icsdirdoc.append('\t\t\tgdas.tHHz.nstanl.memXXX.nemsio (optional)\n')
+    icsdirdoc.append('\t\tC96/ [--CASE_det] [--CASE_ens]\n')
+    icsdirdoc.append('\t\t\tcontrol/\n')
+    icsdirdoc.append('\t\t\t\tfv3ics.log\n')
+    icsdirdoc.append('\t\t\t\tINPUT/\n')
+    icsdirdoc.append('\t\t\t\t\tgfs_data.nc\n')
+    icsdirdoc.append('\t\t\t\t\t...\n')
+    icsdirdoc.append('\t\t\tmem001/\n')
+    icsdirdoc.append('\t\t\t\tfv3ics.log\n')
+    icsdirdoc.append('\t\t\t\tINPUT/\n')
+    icsdirdoc.append('\t\t\t\t\tgfs_data.nc\n')
+    icsdirdoc.append('\t\t\t\t\t...\n')
 
-    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(usage=''.join(icsdirdoc), formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--date', help='date of initial conditions to convert from GFS to FV3', type=str, metavar='YYYYMMDDHH', required=True)
     parser.add_argument('--icsdir', help='full path to initial conditions directory', type=str, required=True)
     parser.add_argument('--cdump', help='cycle', type=str, required=False, default='gdas')
@@ -238,6 +244,7 @@ def main():
     parser.add_argument('--JCAP_det', help='resolution of the deterministic GFS initial conditions', type=int, required=False, default=1534)
     parser.add_argument('--JCAP_ens', help='resolution of the ensemble GFS initial conditions', type=int, required=False, default=574)
     parser.add_argument('--nthreads', help='how many threads to use', type=int, required=False, default=24)
+    parser.add_argument('--debug', help='aid in debugging', action='store_true',required=False)
 
     input_args = parser.parse_args()
 
@@ -255,6 +262,7 @@ def main():
     JCAP_ens = input_args.JCAP_ens
     nthreads = input_args.nthreads
     cdump = input_args.cdump
+    debug = input_args.debug
 
     PDY = date[:8]
     cyc = date[8:]
@@ -305,7 +313,7 @@ def main():
             job_script = get_jobscript('mem%03d' % i, files, 'T%d' % JCAP_ens, 'C%d' % CASE_ens, job_template)
             jobs.append(job_script)
 
-    submit_jobs(jobs, cleanup=True)
+    submit_jobs(jobs)
 
 if __name__ == '__main__':
     main()

@@ -41,12 +41,9 @@ export DATA=$RUNDIR/$CDATE/$CDUMP/fcst
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
 
-export GDATE=$($NDATE -$assim_freq $CDATE)
+GDATE=$($NDATE -$assim_freq $CDATE)
 gymd=$(echo $GDATE | cut -c1-8)
 ghh=$(echo  $GDATE | cut -c9-10)
-
-# Default warm_start is OFF
-export warm_start=".false."
 
 # If RESTART conditions exist; warm start the model
 # Restart conditions for GFS cycle come from GDAS
@@ -71,6 +68,16 @@ if [ $CDUMP = "gfs" ]; then
     export FHOUT_HF=$FHOUT_HF_GFS
 fi
 
+# Set output resolution to ensemble resolution,
+# if using the write grid component and doing hybrid DA
+if [ $CDUMP = "gdas" -a ${DOHYBVAR:-"NO"} = "YES" ]; then
+    if [ $OUTPUT_GRID = "gaussian_grid" -a $QUILTING = ".true." ]; then
+        res=$(echo $CASE_ENKF | cut -c2-)
+        export LONB_IMO=$((res*4))
+        export LATB_JMO=$((res*2))
+    fi
+fi
+
 ###############################################################
 # Run relevant exglobal script
 $FORECASTSH
@@ -84,7 +91,7 @@ export DATA=$ROTDIR/${CDUMP}.$cymd/$chh
 
 if [ $CDUMP = "gdas" ]; then
 
-   if [ $OUTPUT_GRID = 'cubed_sphere_grid' -o $QUILTING = ".false." ]; then
+   if [ $OUTPUT_GRID = "cubed_sphere_grid" -o $QUILTING = ".false." ]; then
        # Regrid 6-tile output to global array in NEMSIO gaussian grid for DA
        $REGRID_NEMSIO_SH
        status=$?
@@ -93,7 +100,7 @@ if [ $CDUMP = "gdas" ]; then
 
 elif [ $CDUMP = "gfs" ]; then
 
-   if [ $OUTPUT_GRID = 'cubed_sphere_grid' -o $QUILTING = ".false." ]; then
+   if [ $OUTPUT_GRID = "cubed_sphere_grid" -o $QUILTING = ".false." ]; then
        # Remap 6-tile output to global array in NetCDF latlon
        $REMAPSH
        status=$?

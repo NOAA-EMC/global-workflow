@@ -16,7 +16,6 @@ set -ax
 #  Switch to use ush/global_chgres.sh.
 #-------------------------------------------------------------------------------------------------
 
-export machine=${machine:-WCOSS_C}
 export OMP_NUM_THREADS_CH=${OMP_NUM_THREADS_CH:-24}
 export APRUNC=${APRUNC:-"time"}
 

@@ -75,7 +75,7 @@ case $case_in in
         export WRTTASK_PER_GROUP=120
         ;;
     "C3072")
-        export DELTIM=90  
+        export DELTIM=90
         export layout_x=16
         export layout_y=32
         export WRITE_GROUP=4
