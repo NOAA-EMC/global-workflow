@@ -209,9 +209,9 @@ export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
-# if quilting=true, chose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
+# if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-export QUILTING=".false."
+export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
 
@@ -220,7 +220,6 @@ export OUTPUT_FILE="nemsio"
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
-export RECENTER_ENKF="YES"
 export SMOOTH_ENKF="YES"
 export l4densvar=".false."
 export lwrite4danl=".false."

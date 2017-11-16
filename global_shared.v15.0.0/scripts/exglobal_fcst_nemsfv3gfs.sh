@@ -255,6 +255,9 @@ JCAP=${JCAP:-$JCAP_CASE}
 LONB=${LONB:-$LONB_CASE}
 LATB=${LATB:-$LATB_CASE}
 
+LONB_IMO=${LONB_IMO:-$LONB_CASE}
+LATB_JMO=${LATB_JMO:-$LATB_CASE}
+
 # Fix files
 FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
 FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
@@ -479,8 +482,8 @@ filename_base:           '${CDUMP}.t${chh}z.atm' '${CDUMP}.t${chh}z.sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
 write_nemsioflip:        $WRITE_NEMSIOFLIP
-imo:                     $LONB
-jmo:                     $LATB
+imo:                     $LONB_IMO
+jmo:                     $LATB_JMO
 
 nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
@@ -829,7 +832,7 @@ EOF
 
 fi
 
-# echo out the final namelists
+# Echo out namelists for ease of debugging
 cat nems.configure
 cat model_configure
 cat input.nml

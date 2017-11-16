@@ -58,6 +58,7 @@ if [ ! -f $ATMGES ]; then
     echo "FILE MISSING: ATMGES = $ATMGES"
     exit 1
 fi
+
 if [ $DOHYBVAR = "YES" ]; then
     export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
     if [ ! -f $ATMGES_ENSMEAN ]; then
@@ -66,43 +67,9 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# Background resolution
-export JCAP=$($NEMSIOGET $ATMGES jcap | awk '{print $2}')
-status=$?
-[[ $status -ne 0 ]] && exit $status
-export LONB=$($NEMSIOGET $ATMGES dimx | awk '{print $2}')
-status=$?
-[[ $status -ne 0 ]] && exit $status
-export LATB=$($NEMSIOGET $ATMGES dimy | awk '{print $2}')
-status=$?
-[[ $status -ne 0 ]] && exit $status
 export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-if [ $DOHYBVAR = "YES" ]; then
-    # Ensemble resolution
-    export JCAP_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN jcap | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-    export LONB_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-    export LATB_ENKF=$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-fi
-
-# Analysis resolution
-if [ $DOHYBVAR = "YES" ]; then
-    export JCAP_A=$JCAP_ENKF
-    export LONA=$LONB_ENKF
-    export LATA=$LATB_ENKF
-else
-    export JCAP_A=$JCAP
-    export LONA=$LONB
-    export LATA=$LATB
-fi
 
 # Link observational data
 export PREPQC="${COMOUT}/${OPREFIX}prepbufr"

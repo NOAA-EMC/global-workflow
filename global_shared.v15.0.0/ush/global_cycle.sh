@@ -29,13 +29,6 @@
 #                   overridden by $2; defaults to ${COMOUT}/sfcanl
 #     CASE          Model resolution.  Defaults to C768.
 #     TILE_NUM      The number of the cubed-sphere tile to convert surface
-#     JCAP          Spectral truncation of the global fixed climatology files
-#                   (such as albedo), which are on the old GFS gaussian grid.
-#                   Defaults to 1534
-#     LATB          i-dimension of the global climatology files.  NOT the
-#                   i-dimension of the model grid. Defaults to 1536.
-#     LONB          j-dimension of the global climatology files. NOT the
-#                   j-dimension of the model grid. Defaults to 3072.
 #     FIXgsm        Directory for the global fixed climatology files.
 #                   Defaults to $HOMEglobal/fix
 #     FIXfv3        Directory for the model grid and orography netcdf
@@ -69,9 +62,9 @@
 #     FNZORC        Input roughness climatology.
 #                   Defaults to igbp vegetation type-based lookup table
 #                   FNVETC must be set to igbp file:
-#                   ${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
+#                   ${FIXgsm}/global_vegtype.igbp.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNALBC        Input 4-component albedo climatology GRIB file.
-#                   defaults to ${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb
+#                   defaults to ${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNALBC2       Input 'facsf' and 'facwf' albedo climatology GRIB file.
 #                   Defaults to ${FIXgsm}/global_albedo4.1x1.grb
 #     FNAISC        Input sea ice climatology GRIB file.
@@ -81,11 +74,11 @@
 #     FNVEGC        Input vegetation fraction climatology GRIB file.
 #                   Defaults to ${FIXgsm}/global_vegfrac.0.144.decpercent.grb
 #     FNVETC        Input vegetation type climatology GRIB file.
-#                   Defaults to ${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb
+#                   Defaults to ${FIXgsm}/global_vegtype.igbp.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNSOTC        Input soil type climatology GRIB file.
-#                   Defaults to ${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb
+#                   Defaults to ${FIXgsm}/global_soiltype.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNSMCC        Input soil moisture climatology GRIB file.
-#                   Defaults to ${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb
+#                   Defaults to ${FIXgsm}/global_soilmgldas.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb
 #     FNVMNC        Input min veg frac climatology GRIB file.
 #                   Defaults to ${FIXgsm}/global_shdmin.0.144x0.144.grb
 #     FNVMXC        Input max veg frac climatology GRIB file.
@@ -93,7 +86,7 @@
 #     FNSLPC        Input slope type climatology GRIB file.
 #                   Defaults to ${FIXgsm}/global_slope.1x1.grb
 #     FNABSC        Input max snow albedo climatology GRIB file.
-#                   Defaults to ${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb
+#                   Defaults to ${FIXgsm}/global_mxsnoalb.uariz.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNMSKH        Input high resolution land mask GRIB file.  Use to set mask for
 #                   some of the input climatology fields.  This is NOT the model mask.
 #                   Defaults to ${FIXgsm}/seaice_newland.grb
@@ -223,10 +216,10 @@ fi
 
 #  Command line arguments.
 SFCGES=${1:-${SFCGES:?}}
-SFCANL=${2:-${SFCANL}}
+SFCANL=${2:-${SFCANL:?}}
+TILE_NUM=${3:-${TILE_NUM:-?}}
 
 CASE=${CASE:-C768}
-TILE_NUM=${TILE_NUM:-1}
 
 #  Directories.
 global_shared_ver=${global_shared_ver:-v15.0.0}
@@ -253,9 +246,6 @@ CRES=$(echo $CASE | cut -c2-)
 JCAP_CASE=$((2*CRES-2))
 LONB_CASE=$((4*CRES))
 LATB_CASE=$((2*CRES))
-JCAP=${JCAP:-$JCAP_CASE}
-LONB=${LONB:-$LONB_CASE}
-LATB=${LATB:-$LATB_CASE}
 DELTSFC=${DELTSFC:-0}
 
 LSOIL=${LSOIL:-4}
@@ -281,11 +271,11 @@ FNALBC2=${FNALBC2:-${FIXgsm}/global_albedo4.1x1.grb}
 FNAISC=${FNAISC:-${FIXgsm}/CFSR.SEAICE.1982.2012.monthly.clim.grb}
 FNTG3C=${FNTG3C:-${FIXgsm}/global_tg3clim.2.6x1.5.grb}
 FNVEGC=${FNVEGC:-${FIXgsm}/global_vegfrac.0.144.decpercent.grb}
-FNALBC=${FNALBC:-${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP.$LONB.$LATB.rg.grb}
-FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.igbp.t$JCAP.$LONB.$LATB.rg.grb}
-FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.statsgo.t$JCAP.$LONB.$LATB.rg.grb}
-FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
-FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP.$LONB.$LATB.rg.grb}
+FNALBC=${FNALBC:-${FIXgsm}/global_snowfree_albedo.bosu.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
+FNVETC=${FNVETC:-${FIXgsm}/global_vegtype.igbp.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
+FNSOTC=${FNSOTC:-${FIXgsm}/global_soiltype.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
+FNSMCC=${FNSMCC:-${FIXgsm}/global_soilmgldas.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb}
+FNABSC=${FNABSC:-${FIXgsm}/global_mxsnoalb.uariz.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
 FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
 FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}

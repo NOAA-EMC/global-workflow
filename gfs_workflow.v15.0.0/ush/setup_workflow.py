@@ -144,15 +144,18 @@ def get_definitions(base):
     strings.append('\t<!ENTITY PSLOT "%s">\n' % base['PSLOT'])
     strings.append('\t<!ENTITY SDATE "%s">\n' % base['SDATE'].strftime('%Y%m%d%H%M'))
     strings.append('\t<!ENTITY EDATE "%s">\n' % base['EDATE'].strftime('%Y%m%d%H%M'))
-    strings.append('\n')
-    strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
-    strings.append('\n')
+
+    if base['gfs_cyc'] != 0:
+        strings.append(get_gfs_dates(base))
+        strings.append('\n')
+
     strings.append('\t<!-- Experiment and Rotation directory -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
     strings.append('\t<!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
     strings.append('\n')
     strings.append('\t<!-- Directories for driving the workflow -->\n')
     strings.append('\t<!ENTITY JOBS_DIR "%s/jobs">\n' % base['BASE_WORKFLOW'])
+    strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
     strings.append('\n')
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
@@ -167,7 +170,6 @@ def get_definitions(base):
     strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
     strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
-    strings.append('\n')
 
     return ''.join(strings)
 
@@ -528,15 +530,12 @@ def create_xml(dict_configs):
 
     # Get GFS cycle related entities, resources, workflow
     if base['gfs_cyc'] != 0:
-        gfs_dates = get_gfs_dates(base)
         gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
         gfs_tasks = get_gdasgfs_tasks(cdump='gfs', dohybvar=base['DOHYBVAR'])
 
     xmlfile = []
     xmlfile.append(preamble)
     xmlfile.append(definitions)
-    if base['gfs_cyc'] != 0:
-        xmlfile.append(gfs_dates)
     xmlfile.append(gdas_resources)
     if base['DOHYBVAR'] == "YES":
         xmlfile.append(hyb_resources)

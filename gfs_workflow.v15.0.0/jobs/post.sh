@@ -47,21 +47,40 @@ export SUFFIX=".nemsio"
 export DATA=$RUNDIR/$CDATE/$CDUMP/post
 [[ -d $DATA ]] && rm -rf $DATA
 
-# Get metadata JCAP, LONB, LATB from ATMF00
+# First deal with post-processing analysis
+export ANALYSIS_POST="YES"
+export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
+if [ -f $ATMANL ]; then
+
+    [[ $status -ne 0 ]] && exit $status
+    export LONB=$($NEMSIOGET $ATMANL dimx | awk '{print $2}')
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+    export LATB=$($NEMSIOGET $ATMANL dimy | awk '{print $2}')
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+    if [ $QUILTING = ".false." ]; then
+        export JCAP=$($NEMSIOGET $ATMANL jcap | awk '{print $2}')
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+    else
+        # write component does not add JCAP anymore
+        export JCAP=$((LATB-2))
+    fi
+
+    $POSTJJOBSH
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+fi
+
+# Now post process the forecast hours
+export ANALYSIS_POST="NO"
 ATMF00=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmf000$SUFFIX
 if [ ! -f $ATMF00 ]; then
     echo "$ATMF00 does not exist and should, ABORT!"
     exit 99
-fi
-
-if [ $QUILTING = ".false." ]; then
-    export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-else
-    # write component does not add JCAP anymore
-    res=$(echo $CASE | cut -c2-)
-    export JCAP=$((res*2-2))
 fi
 
 [[ $status -ne 0 ]] && exit $status
@@ -72,17 +91,15 @@ export LATB=$($NEMSIOGET $ATMF00 dimy | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-# Run post job to create analysis grib files
-export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
-if [ -f $ATMANL ]; then
-    export ANALYSIS_POST="YES"
-    $POSTJJOBSH
+if [ $QUILTING = ".false." ]; then
+    export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
     status=$?
     [[ $status -ne 0 ]] && exit $status
+else
+    # write component does not add JCAP anymore
+    export JCAP=$((LATB-2))
 fi
 
-# Run post job to create forecast grib files
-export ANALYSIS_POST="NO"
 $POSTJJOBSH
 status=$?
 [[ $status -ne 0 ]] && exit $status
