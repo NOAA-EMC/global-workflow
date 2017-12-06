@@ -14,23 +14,25 @@
 # 2014-11-30  xuli  add NST_ANL
 # 2017-08-19  Gayno  updates for FV3GFS.
 #
-# Usage:  global_cycle.sh SFCGES SFCANL
-#
-#   Input script positional parameters:
-#     1             Input surface guess
-#                   defaults to $SFCGES; required
-#     2             Output surface analysis
-#                   defaults to $SFCANL, then to ${COMOUT}/sfcanl
+# Usage:  global_cycle.sh 
 #
 #   Imported Shell Variables:
-#     SFCGES        Input surface guess file
-#                   overridden by $1; required
-#     SFCANL        Output surface analysis file
-#                   overridden by $2; defaults to ${COMOUT}/sfcanl
 #     CASE          Model resolution.  Defaults to C768.
-#     TILE_NUM      The number of the cubed-sphere tile to convert surface
+#     JCAP          Spectral truncation of the global fixed climatology files
+#                   (such as albedo), which are on the old GFS gaussian grid.
+#                   Computed from CASE by default.
+#     LATB          i-dimension of the global climatology files.  NOT the
+#                   i-dimension of the model grid. Computed from CASE by default.
+#     LONB          j-dimension of the global climatology files. NOT the
+#                   j-dimension of the model grid. Computed from CASE by default.
+#     BASEDIR       Root directory where all scripts and fixed files reside.
+#                   Default is /nwprod2.
+#     HOMEglobal    Directory for global_shared.  Default is 
+#                   $BASEDIR/global_shared.v15.0.0.
+#     FIXSUBDA      Sub-directory where fixed climatology files reside.
+#                   Defaults to fix/fix_am.
 #     FIXgsm        Directory for the global fixed climatology files.
-#                   Defaults to $HOMEglobal/fix
+#                   Defaults to $HOMEglobal/fix/fix_am
 #     FIXfv3        Directory for the model grid and orography netcdf
 #                   files.  Defaults to $HOMEglobal/fix/fix_fv3/${CASE}
 #     EXECgsm       Directory of the program executable.  Defaults to
@@ -90,12 +92,8 @@
 #     FNMSKH        Input high resolution land mask GRIB file.  Use to set mask for
 #                   some of the input climatology fields.  This is NOT the model mask.
 #                   Defaults to ${FIXgsm}/seaice_newland.grb
-#     FNOROG        Model orography file (netcdf format)
-#                   Defaults to {FIXfv3}/${CASE}_oro_data.tile${TILE_NUM}.nc
-#     FNGRID        Model grid file (netcdf format)
-#                   Defaults to ${FIXfv3}/${CASE}_grid.tile${TILE_NUM}.nc
 #     GSI_FILE      GSI file on the gaussian grid containing NST increments.
-#                   Defaults to empty string.
+#                   Defaults to NULL (no file).
 #     FNTSFA        Input SST analysis GRIB file.
 #                   Defaults to ${COMIN}/${PREINP}sstgrb${SUFINP}
 #     FNACNA        Input sea ice analysis GRIB file.
@@ -142,10 +140,26 @@
 #                   defaults to NO
 #     use_ufo       Adjust sst and soil substrate temperature for differences
 #                   between the filtered and unfiltered terrain.  Default is true.
-#     NST_ANL       Process NST records and perform SST terrain adjustments required
-#                   when using NST model.  Default is false.
+#     DONST         Process NST records when using NST model.  Default is 'no'.
+#     ADJT_NSST_
+#     ONLY          When .true. only do the NSST update (don't call the sfcsub
+#                   component).  Default is .false. - call sfcsub and update
+#                   NSST.
 #     zsea1/zsea2   When running with NST model, this is the lower/upper bound
-#                   of depth of sea temperature.
+#                   of depth of sea temperature.  In whole mm.
+#     MAX_TASKS_CY  Normally, program should be run with a number of mpi tasks
+#                   equal to the number of cubed-sphere tiles being processed. 
+#                   However, the current parallel scripts may over-specify the
+#                   number of tasks.  Set this variable to not process
+#                   any ranks greater than max_tasks-1.  Default is '99999',
+#                   which means to process using all tasks.
+#     global_
+#     shared_ver    Version number of global shared directory.  Default is
+#                   v15.0.0.
+#     OMP_NUM_
+#     THREADS_CY    Number of omp threads to use.  Default is 1.
+#     APRUNC        Machine specific command to invoke the executable.
+#                   Default is none.
 #
 #   Exported Shell Variables:
 #     PGM           Current program name
@@ -179,15 +193,12 @@
 #                  $FNSLPC
 #                  $FNABSC
 #                  $FNMSKH
-#                  $FNOROG
 #
-#     input data : $SFCGES
-#                  $FNTSFA
+#     input data : $FNTSFA
 #                  $FNACNA
 #                  $FNSNOA
 #
-#     output data: $SFCANL
-#                  $PGMOUT
+#     output data: $PGMOUT
 #                  $PGMERR
 #
 # Remarks:
@@ -213,11 +224,6 @@ if [[ "$VERBOSE" = "YES" ]] ; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
-
-#  Command line arguments.
-SFCGES=${1:-${SFCGES:?}}
-SFCANL=${2:-${SFCANL:?}}
-TILE_NUM=${3:-${TILE_NUM:-?}}
 
 CASE=${CASE:-C768}
 
@@ -258,9 +264,11 @@ ISOT=${ISOT:-1}
 IVEGSRC=${IVEGSRC:-1}
 CYCLVARS=${CYCLVARS:-""}
 use_ufo=${use_ufo:-.true.}
-NST_ANL=${NST_ANL:-.false.}
+DONST=${DONST:-"NO"}
+ADJT_NST_ONLY=${ADJT_NST_ONLY:-.false.}
 zsea1=${zsea1:-0}
 zsea2=${zsea2:-0}
+MAX_TASKS_CY=${MAX_TASKS_CY:-99999}
 
 FNGLAC=${FNGLAC:-${FIXgsm}/global_glacier.2x2.grb}
 FNMXIC=${FNMXIC:-${FIXgsm}/global_maxice.2x2.grb}
@@ -280,13 +288,10 @@ FNVMNC=${FNVMNC:-${FIXgsm}/global_shdmin.0.144x0.144.grb}
 FNVMXC=${FNVMXC:-${FIXgsm}/global_shdmax.0.144x0.144.grb}
 FNSLPC=${FNSLPC:-${FIXgsm}/global_slope.1x1.grb}
 FNMSKH=${FNMSKH:-${FIXgsm}/seaice_newland.grb}
-FNOROG=${FNOROG:-${FIXfv3}/${CASE}/${CASE}_oro_data.tile${TILE_NUM}.nc}
-FNGRID=${FNGRID:-${FIXfv3}/${CASE}/${CASE}_grid.tile${TILE_NUM}.nc}
-GSI_FILE=${GSI_FILE:-" "}
+GSI_FILE=${GSI_FILE:-"NULL"}
 FNTSFA=${FNTSFA:-${COMIN}/${PREINP}sstgrb${SUFINP}}
 FNACNA=${FNACNA:-${COMIN}/${PREINP}engicegrb${SUFINP}}
 FNSNOA=${FNSNOA:-${COMIN}/${PREINP}snogrb${SUFINP}}
-SFCANL=${SFCANL:-${COMIN}/${PREINP}sfcanl}
 export INISCRIPT=${INISCRIPT}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
@@ -324,7 +329,6 @@ export PGM=$CYCLEXEC
 export pgm=$PGM
 $LOGSCRIPT
 
-rm -f $SFCANL
 iy=$(echo $CDATE|cut -c1-4)
 im=$(echo $CDATE|cut -c5-6)
 id=$(echo $CDATE|cut -c7-8)
@@ -366,21 +370,23 @@ cat << EOF > fort.35
  /
 EOF
 
-eval $APRUNCY $CYCLEXEC <<EOF $REDOUT$PGMOUT $REDERR$PGMERR
+cat << EOF > fort.36
  &NAMCYC
   idim=$CRES, jdim=$CRES, lsoil=$LSOIL,
   iy=$iy, im=$im, id=$id, ih=$ih, fh=$FHOUR,
-  DELTSFC=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,NST_ANL=$NST_ANL,
-  isot=$ISOT,ivegsrc=$IVEGSRC,zsea1=$zsea1,zsea2=$zsea2
+  deltsfc=$DELTSFC,ialb=$IALB,use_ufo=$use_ufo,donst=$DONST,
+  adjt_nst_only=$ADJT_NST_ONLY,isot=$ISOT,ivegsrc=$IVEGSRC,
+  zsea1_mm=$zsea1,zsea2_mm=$zsea2,MAX_TASKS=$MAX_TASKS_CY
  /
+EOF
+
+cat << EOF > fort.37
  &NAMSFCD
-  FNBGSI="$SFCGES",
-  FNBGSO="$SFCANL",
-  FNOROG="$FNOROG",
-  FNGRID="$FNGRID",
   GSI_FILE="$GSI_FILE",
  /
 EOF
+
+$APRUNCY $CYCLEXEC $REDOUT$PGMOUT $REDERR$PGMERR
 
 export ERR=$?
 export err=$ERR

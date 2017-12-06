@@ -45,10 +45,11 @@ export FNACNA=${FNACNA:-$DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${cyc}z.seaice.5min.blen
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 
 if [ $DONST = "YES" ]; then
-    export NST_ANL=".true."
     export GSI_FILE=${GSI_FILE:-$COMOUT/dtfanl.nc}
+    export ADJT_NST_ONLY=${ADJT_NST_ONLY:-".false."}
 else
-    export NST_ANL=".false."
+    export GSI_FILE="NULL"
+    export ADJT_NST_ONLY=".false."
 fi
 
 CRES=$(echo $CASE | cut -c 2-)
@@ -60,23 +61,25 @@ export JCAP=${JCAP:-$JCAP_CASE}
 export LONB=${LONB:-$LONB_CASE}
 export LATB=${LATB:-$LATB_CASE}
 
+export MAX_TASKS_CY=${MAX_TASKS_CY:-99999}
+
 # Temporary rundirectory
 export DATA=${DATA:-$pwd/rundir$$}
+rm -fr $DATA
+mkdir -p $DATA
 
 for n in $(seq 1 $ntiles); do
-
-    export TILE_NUM=$n
-
-    SFCGES_TMP=$COMIN/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc
-    SFCANL_TMP=$COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc
-
-    $CYCLESH $SFCGES_TMP $SFCANL_TMP
-    rc=$?
-    if [[ $rc -ne 0 ]] ; then
-        echo "***ERROR*** rc= $rc"
-        exit $rc
-    fi
-
+  ln -fs $COMIN/$PDY.${cyc}0000.sfc_data.tile${n}.nc      $DATA/fnbgsi.00$n
+  ln -fs $COMOUT/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc  $DATA/fnbgso.00$n
+  ln -fs $FIXfv3/C${CRES}/C${CRES}_grid.tile${n}.nc       $DATA/fngrid.00$n
+  ln -fs $FIXfv3/C${CRES}/C${CRES}_oro_data.tile${n}.nc   $DATA/fnorog.00$n
 done
+
+$CYCLESH
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "***ERROR*** rc= $rc"
+    exit $rc
+fi
 
 exit 0

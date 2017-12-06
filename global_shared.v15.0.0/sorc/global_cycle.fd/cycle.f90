@@ -2,61 +2,169 @@
 
 !----------------------------------------------------------------------
 !
-!  Stand alone surface cycle driver for the cubed-sphere grid.
+!  Stand alone surface/NSST cycle driver for the cubed-sphere grid.
+!  Each cubed-sphere tile runs independently on its own mpi task.  
+!  The surface update component runs with threads.  The NSST
+!  update component in not threaded.
+!
+!  The program can be run in the following ways:
+
+!  1) Update the surface fields only.  NSST fields are not
+!     processed.  Invoke this option by setting namelist
+!     variable DONST=.false.  Output files only contain
+!     surface fields.
+!
+!  2) Update the surface fields and NSST TREF field using
+!     GSI increments on the Gaussian grid.  All other NSST
+!     fields are cycled.  Invoke this option by setting
+!     namelist variable DONST=.true. and GSI_FILE to 
+!     the name of the GSI increment file.
+!  
+!  3) Update surface and run with NSST, but postpone the TREF update.  
+!     Here all NSST fields are cycled.  But the NSST IFD field is
+!     used to flag points that flipped from ice to open water.
+!     To invoke this option, set DONST=.true. and GSI_FILE="NULL".
+!
+!  4) Perform the NSST TREF adjustment only.  Surface fields are
+!     only cycled.  To run with this option, set DONST=.true.,
+!     GSI_FILE to the GSI increment file, and ADJT_NST_ONLY=.true.
+!     The input cubed-sphere restart files must be those from
+!     option (3).
+!
+!  NOTE: running (3) then (4) is equivalent to running (2).
+!  
+!  INPUT FILES:
+!  -----------
+!  fngrid.$NNN        The cubed-sphere grid file (contains
+!                     grid point latitude and longitdue).
+!  fnorog.$NNN        The cubed-sphere orography file (contains
+!                     land mask and orography).
+!  fnbgsi.$NNN        The cubed-sphere input sfc/nsst restart
+!                     file.
+!  $GSI_FILE          Gaussian GSI file which contains NSST
+!                     TREF increments
+!  
+!  OUTPUT FILES:
+!  ------------
+!  fnbgso.$NNN        The updated sfc/nsst restart file.
+!
+!  NOTE: $NNN corresponds to (mpi rank + 1)
+
+!  NAMELIST VARIABLE DEFINITIONS:
+!
+!  IDIM,JDIM      i/j dimension of a cubed-sphere tile.
+!  LUGB           Unit number used in the sfccycle subprogram
+!                 to read input datasets.
+!  LSOIL          Number of soil layers.
+!  IY,IM,ID,IH    Year, month, day, and hour of initial state.
+!  FH             Forecast hour
+!  DELTSFC        Cycling frequency in hours.
+!  IALB           Use modis albedo when '1'. Use brigleb when '0'.
+!  USE_UFO        Adjust sst and soil substrate temperature for
+!                 differences between the filtered and unfiltered
+!                 terrain.
+!  DONST          Process NSST records.
+!  ADJT_NST_ONLY  When true, only do the NSST update (don't call
+!                 sfcsub component).
+!  ISOT           Use statsgo soil type when '1'. Use zobler when '0'.
+!  IVEGSRC        Use igbp veg type when '1'.  Use sib when '2'.
+!  ZSEA1/2_MM     When running with NSST model, this is the lower/
+!                 upper bound of depth of sea temperature.  In
+!                 whole mm.
+!  MAX_TASKS      Normally, program should be run with a number of mpi 
+!                 tasks equal to the number of cubed-sphere tiles 
+!                 being processed. However, the current parallel 
+!                 scripts may over-specify the number of tasks.
+!                 Set this variable to not process any ranks >
+!                 (max_tasks-1).
+!  GSI_FILE       path/name of the gaussian GSI file which contains NSST
+!                 TREF increments.
 !
 !  2005-02-03:  Iredell   for global_analysis
 !  2014-11-30:  xuli      add nst_anl
 !  2015-05-26:  Hang Lei  Added NEMSIO read/write function in the code
-!  2017-08-08:  Gayno     Modify to work on cubed-sphere grid
-!
-!  LUGB         Unit number used in the sfccycle subprogram
-!  IDIM,JDIM    i/j dimension of a cubed-sphere tile.
-!  IY,IM,ID,IH  Year, month, day, and hour of initial state.
-!  FH           Forecast hour
-!  IALB         Use modis albedo when '1'. Use brigleb when '0'.
-!  ISOT         Use statsgo soil type when '1'. Use zobler when '0'.
-!  IVEGSRC      Use igbp veg type when '1'.  Use sib when '2'.
-!  SIG1T        Sigma level 1 temperature for dead start.
-!               If not dead start, no need for dimension but set to
-!               zero as in the example below.
+!  2017-08-08:  Gayno     Modify to work on cubed-sphere grid.
+!                         Added processing of NSST and TREF update.
+!                         Added mpi directives.
 !----------------------------------------------------------------------
 
  IMPLICIT NONE
 !
+ include 'mpif.h'
+
+ CHARACTER(LEN=3) :: DONST
  INTEGER :: IDIM, JDIM, LSOIL, LUGB, IY, IM, ID, IH, IALB
- INTEGER :: ISOT, IVEGSRC, LENSFC
+ INTEGER :: ISOT, IVEGSRC, LENSFC, ZSEA1_MM, ZSEA2_MM, IERR
+ INTEGER :: NPROCS, MYRANK, NUM_THREADS, NUM_PARTHDS, MAX_TASKS
  REAL    :: FH, DELTSFC, ZSEA1, ZSEA2
- LOGICAL :: USE_UFO, NST_ANL
+ LOGICAL :: USE_UFO, DO_NSST, ADJT_NST_ONLY
 !
  NAMELIST/NAMCYC/ IDIM,JDIM,LSOIL,LUGB,IY,IM,ID,IH,FH,    &
-                  DELTSFC,IALB,USE_UFO,NST_ANL,           &
-                  ISOT,IVEGSRC,ZSEA1,ZSEA2
+                  DELTSFC,IALB,USE_UFO,DONST,             &
+                  ADJT_NST_ONLY,ISOT,IVEGSRC,ZSEA1_MM,    &
+                  ZSEA2_MM, MAX_TASKS
 !
  DATA IDIM,JDIM,LSOIL/96,96,4/
  DATA IY,IM,ID,IH,FH/1997,8,2,0,0./
- DATA LUGB/51/, DELTSFC/0.0/, IALB/1/
- DATA ISOT/1/, IVEGSRC/2/, ZSEA1/0.0/, ZSEA2/0.0/
+ DATA LUGB/51/, DELTSFC/0.0/, IALB/1/, MAX_TASKS/99999/
+ DATA ISOT/1/, IVEGSRC/2/, ZSEA1_MM/0/, ZSEA2_MM/0/
 !
- PRINT*,"STARTING CYCLE PROGRAM."
+ CALL MPI_INIT(IERR)
+ CALL MPI_COMM_SIZE(MPI_COMM_WORLD, NPROCS, IERR)
+ CALL MPI_COMM_RANK(MPI_COMM_WORLD, MYRANK, IERR)
+
+ NUM_THREADS = NUM_PARTHDS()
+
+ PRINT*
+ PRINT*,"STARTING CYCLE PROGRAM ON RANK ", MYRANK
+ PRINT*,"RUNNING WITH ", NPROCS, "TASKS"
+ PRINT*,"AND WITH ", NUM_THREADS, " THREADS."
 
  USE_UFO = .FALSE.
- NST_ANL = .FALSE.
+ DONST   = "NO"
+ ADJT_NST_ONLY = .FALSE.
 
+ PRINT*
  PRINT*,"READ NAMCYC NAMELIST."
 
- READ(5,NAMCYC)
- WRITE(6,NAMCYC)
+ CALL BAOPENR(36, "fort.36", IERR)
+ READ(36, NML=NAMCYC)
+ IF (MYRANK==0) WRITE(6,NAMCYC)
+
+ IF (MAX_TASKS < 99999 .AND. MYRANK > (MAX_TASKS - 1)) THEN
+   PRINT*,"USER SPECIFIED MAX NUMBER OF TASKS: ", MAX_TASKS
+   PRINT*,"WILL NOT RUN CYCLE PROGRAM ON RANK: ", MYRANK
+   GOTO 333
+ ENDIF
 
  LENSFC = IDIM*JDIM ! TOTAL NUMBER OF POINTS FOR THE CUBED-SPHERE TILE
 
- PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ", &
+ ZSEA1 = FLOAT(ZSEA1_MM) / 1000.0  ! CONVERT FROM MM TO METERS
+ ZSEA2 = FLOAT(ZSEA2_MM) / 1000.0
+
+ IF (DONST == "YES") THEN
+   DO_NSST=.TRUE.
+ ELSE
+   DO_NSST=.FALSE.
+ ENDIF
+
+ PRINT*
+ IF (MYRANK==0) PRINT*,"LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH: ", &
               LUGB,IDIM,JDIM,LSOIL,DELTSFC,IY,IM,ID,IH,FH
 
  CALL SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
              IY,IM,ID,IH,FH,IALB,                  &
-             USE_UFO,NST_ANL,ZSEA1,ZSEA2,ISOT,IVEGSRC)
-!
- PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY.'
+             USE_UFO,DO_NSST,ADJT_NST_ONLY,        &
+             ZSEA1,ZSEA2,ISOT,IVEGSRC,MYRANK)
+ 
+ PRINT*
+ PRINT*,'CYCLE PROGRAM COMPLETED NORMALLY ON RANK: ', MYRANK
+
+ 333 CONTINUE
+
+ CALL MPI_BARRIER(MPI_COMM_WORLD, IERR)
+
+ CALL MPI_FINALIZE(IERR)
 
  STOP
 
@@ -64,7 +172,8 @@
 !
  SUBROUTINE SFCDRV(LUGB,IDIM,JDIM,LENSFC,LSOIL,DELTSFC,  &
                    IY,IM,ID,IH,FH,IALB,                  &
-                   USE_UFO,NST_ANL,ZSEA1,ZSEA2,ISOT,IVEGSRC)
+                   USE_UFO,DO_NSST,ADJT_NST_ONLY,        &
+                   ZSEA1,ZSEA2,ISOT,IVEGSRC,MYRANK)
 !
  USE READ_WRITE_DATA
 
@@ -72,17 +181,17 @@
 
  INTEGER, INTENT(IN) :: IDIM, JDIM, LENSFC, LSOIL, IALB
  INTEGER, INTENT(IN) :: LUGB, IY, IM, ID, IH
- INTEGER, INTENT(IN) :: ISOT, IVEGSRC
+ INTEGER, INTENT(IN) :: ISOT, IVEGSRC, MYRANK
 
- LOGICAL, INTENT(IN) :: USE_UFO, NST_ANL
+ LOGICAL, INTENT(IN) :: USE_UFO, DO_NSST, ADJT_NST_ONLY
  
  REAL, INTENT(IN)    :: FH, DELTSFC, ZSEA1, ZSEA2
 
- INTEGER, PARAMETER  :: NLUNIT=35, ME=0
+ INTEGER, PARAMETER  :: NLUNIT=35
 
- CHARACTER*500       :: FNOROG, FNGRID, FNBGSI, FNBGSO, GSI_FILE
+ CHARACTER*500       :: GSI_FILE
 
- INTEGER             :: IFP, I
+ INTEGER             :: I, IERR
 
  REAL                :: SLMASK(LENSFC), OROG(LENSFC)
  REAL                :: SIHFCS(LENSFC), SICFCS(LENSFC)
@@ -110,23 +219,16 @@
 
  TYPE(NSST_DATA)     :: NSST
 
-!  Defaults file names
-!
- DATA FNOROG/'        '/
- DATA FNGRID/'        '/
- DATA FNBGSI/'        '/
- DATA FNBGSO/'        '/
- DATA GSI_FILE/'        '/
-!
- DATA IFP/0/
-!
- SAVE IFP, FNGRID, FNOROG, FNBGSI, FNBGSO, GSI_FILE
-
- NAMELIST/NAMSFCD/FNOROG,FNGRID,FNBGSI,FNBGSO,GSI_FILE
+!--------------------------------------------------------------------------------
+! GSI_FILE is the path/name of the gaussian GSI file which contains NSST
+! increments.
+!--------------------------------------------------------------------------------
+ 
+ DATA GSI_FILE/'NULL'/
+ 
+ NAMELIST/NAMSFCD/ GSI_FILE
 
 !--------------------------------------------------------------------------------
-!
-!  THIS IS A DRIVER FOR VERSION II SURFACE PROGRAM.
 !
 !  This program runs in two different modes:
 !
@@ -151,15 +253,6 @@
 !      Now defined as 15).  This allows the user to provide non-daily analysis to 
 !      be used.  If matching field is not found, the forecast guess will be used.
 !
-!      Use of a combined earlier surface analyses and current analysis is 
-!      NOT allowed (as was done in the old version for snow analysis in which
-!      old snow analysis is used in combination with initial guess), except
-!      for sea surface temperature.  For sst anolmaly interpolation, you need to
-!      set LANOM=.TRUE. and must provide sst analysis at initial time.  
-!
-!      If you want to do complex merging of past and present surface field analysis,
-!      YOU NEED TO CREATE a separate file that contains DAILY SURFACE FIELD.
-!
 !      LUGB is the unit number used in sfccycle subprogram
 !      IDIM,JDIM is thegrid dimension in x and y direction, respectively of a tile
 !                of the cubed-sphere grid.
@@ -167,6 +260,8 @@
 !      IY,IM,ID,IH is the Year, month, day, and hour of initial state.
 !      FH is the forecast hour
 !      SIG1T is the sigma level 1 temperature for dead start.  
+!      SIG1T is the sigma level 1 temperature for dead start.
+!            If not dead start, no need for dimension but set to zero.
 !
 !  Variable naming conventions:
 !
@@ -229,22 +324,21 @@
 
  SIG1T = 0.0            ! Not a dead start!
 
- IF(IFP.EQ.0) THEN
-   IFP = 1
-   READ (5,NAMSFCD)
-   WRITE(6,NAMSFCD)
- ENDIF
+ CALL BAOPENR(37, "fort.37", IERR)
+ READ (37, NML=NAMSFCD)
+ WRITE(6,NAMSFCD)
 
+ PRINT*
  PRINT*,'IN ROUTINE SFCDRV,IDIM=',IDIM,'JDIM=',JDIM,'FH=',FH
 
 !--------------------------------------------------------------------------------
 ! READ THE OROGRAPHY AND GRID POINT LAT/LONS FOR THE CUBED-SPHERE TILE.
 !--------------------------------------------------------------------------------
 
- CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,FNOROG,FNGRID,  &
-                        IDIM,JDIM,LENSFC)
+ CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,IDIM,JDIM,LENSFC)
 
- IF (NST_ANL) THEN
+ IF (DO_NSST) THEN
+   PRINT*
    PRINT*,"WILL PROCESS NSST RECORDS."
    ALLOCATE(NSST%C_0(LENSFC))
    ALLOCATE(NSST%C_D(LENSFC))
@@ -253,6 +347,7 @@
    ALLOCATE(NSST%IFD(LENSFC))
    ALLOCATE(NSST%QRAIN(LENSFC))
    ALLOCATE(NSST%TREF(LENSFC))
+   ALLOCATE(NSST%TFINC(LENSFC))
    ALLOCATE(NSST%W_0(LENSFC))
    ALLOCATE(NSST%W_D(LENSFC))
    ALLOCATE(NSST%XS(LENSFC))
@@ -277,9 +372,10 @@
                 ALFFCS,USTAR,FMM,FHH,SIHFCS,SICFCS,         &
                 SITFCS,TPRCP,SRFLAG,SWDFCS,VMNFCS,          &
                 VMXFCS,SLCFCS,SLPFCS,ABSFCS,T2M,Q2M,        &
-                SLMASK,ZSOIL,LSOIL,LENSFC,FNBGSI,NST_ANL,NSST)
+                SLMASK,ZSOIL,LSOIL,LENSFC,DO_NSST,NSST)
 
  IF (USE_UFO) THEN
+   PRINT*
    PRINT*,'USE UNFILTERED OROGRAPHY.'
  ELSE
    OROG_UF = 0.0
@@ -290,27 +386,37 @@
    IF(NINT(SLIFCS(I)).EQ.2) AISFCS(I) = 1.
  ENDDO
 
- IF (NST_ANL) SLIFCS_FG = SLIFCS
-
-!do i = 1, lensfc
-!  if (nint(slifcs(i)) == 0 .and. nsst%tref(i) < 271.2) then
-!    print*,'warning, backgnd tref below freez: ',i,nsst%tref(i)
-!  endif
-!enddo
+ IF (DO_NSST) THEN
+   IF (ADJT_NST_ONLY) THEN
+     PRINT*
+     PRINT*,"FIRST GUESS MASK ADJUSTED BY IFD RECORD"
+     SLIFCS_FG = SLIFCS
+     WHERE(NINT(NSST%IFD) == 3) SLIFCS_FG = 2.0
+   ELSE
+     PRINT*
+     PRINT*,"SAVE FIRST GUESS MASK"
+     SLIFCS_FG = SLIFCS
+   ENDIF
+ ENDIF
 
 !--------------------------------------------------------------------------------
 ! UPDATE SURFACE FIELDS.
 !--------------------------------------------------------------------------------
 
- CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC,          &
+ IF (.NOT. ADJT_NST_ONLY) THEN
+   PRINT*
+   PRINT*,"CALL SFCCYCLE TO UPDATE SURFACE FIELDS."
+   CALL SFCCYCLE(LUGB,LENSFC,LSOIL,SIG1T,DELTSFC,          &
                IY,IM,ID,IH,FH,RLA,RLO,                   &
-               SLMASK,OROG, OROG_UF, USE_UFO, NST_ANL,   &
+               SLMASK,OROG, OROG_UF, USE_UFO, DO_NSST,   &
                SIHFCS,SICFCS,SITFCS,SWDFCS,SLCFCS,       &
                VMNFCS,VMXFCS,SLPFCS,ABSFCS,              &
                TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,       &
                CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M,  &
                VEGFCS,VETFCS,SOTFCS,ALFFCS,              &
-               CVFCS,CVBFCS,CVTFCS,ME,NLUNIT,IALB,ISOT,IVEGSRC)
+               CVFCS,CVBFCS,CVTFCS,MYRANK,NLUNIT,IALB,   &
+               ISOT,IVEGSRC)
+ ENDIF
 
 !--------------------------------------------------------------------------------
 ! IF RUNNING WITH NSST, READ IN GSI FILE WITH THE UPDATED INCREMENTS (ON THE
@@ -318,10 +424,23 @@
 ! REQUIRED ADJUSTMENTS AND QC.
 !--------------------------------------------------------------------------------
 
- IF (NST_ANL) THEN
-   CALL READ_GSI_DATA(GSI_FILE)
-   CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
+ IF (DO_NSST) THEN
+   IF (GSI_FILE == "NULL") THEN
+     PRINT*
+     PRINT*,"NO GSI FILE.  ADJUST IFD FOR FORMER ICE POINTS."
+     DO I = 1, LENSFC
+       IF (NINT(SLIFCS_FG(I)) == 2 .AND. NINT(SLIFCS(I)) == 0) THEN
+         NSST%IFD(I) = 3.0
+       ENDIF
+     ENDDO
+     NSST%TFINC = 0.0
+   ELSE
+     PRINT*
+     PRINT*,"ADJUST TREF FROM GSI INCREMENT"
+     CALL READ_GSI_DATA(GSI_FILE)
+     CALL ADJUST_NSST(RLA,RLO,SLIFCS,SLIFCS_FG,TSFFCS,SITFCS,STCFCS, &
                     NSST,LENSFC,LSOIL,IDIM,JDIM,ZSEA1,ZSEA2,IM,ID)
+   ENDIF
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -335,9 +454,9 @@
                  TPRCP,SRFLAG,SWDFCS,                        &
                  VMNFCS,VMXFCS,SLPFCS,ABSFCS,                &
                  SLCFCS,SMCFCS,STCFCS,                       &
-                 IDIM,JDIM,LENSFC,LSOIL,FNBGSO,NST_ANL,NSST)
+                 IDIM,JDIM,LENSFC,LSOIL,DO_NSST,NSST)
 
- IF (NST_ANL) THEN
+ IF (DO_NSST) THEN
    DEALLOCATE(NSST%C_0)
    DEALLOCATE(NSST%C_D)
    DEALLOCATE(NSST%D_CONV)
@@ -345,6 +464,7 @@
    DEALLOCATE(NSST%IFD)
    DEALLOCATE(NSST%QRAIN)
    DEALLOCATE(NSST%TREF)
+   DEALLOCATE(NSST%TFINC)
    DEALLOCATE(NSST%W_0)
    DEALLOCATE(NSST%W_D)
    DEALLOCATE(NSST%XS)
@@ -367,12 +487,20 @@
                         SICET_TILE,SOILT_TILE,NSST,LENSFC,LSOIL,    &
                         IDIM,JDIM,ZSEA1,ZSEA2,MON,DAY)
 
+!--------------------------------------------------------------------------------
+! READ IN GSI FILE WITH THE UPDATED TREF INCREMENTS (ON THE GAUSSIAN
+! GRID), INTERPOLATE INCREMENTS TO THE CUBED-SPHERE TILE, AND PERFORM
+! REQUIRED NSST ADJUSTMENTS AND QC.
+!--------------------------------------------------------------------------------
+
  USE GDSWZD_MOD
  USE READ_WRITE_DATA, ONLY : IDIM_GAUS, JDIM_GAUS, &
                              SLMSK_GAUS, DTREF_GAUS, &
                              NSST_DATA
 
  IMPLICIT NONE
+
+ include 'mpif.h'
 
  INTEGER, INTENT(IN)      :: LENSFC, LSOIL, IDIM, JDIM, MON, DAY
 
@@ -397,7 +525,7 @@
 
  LOGICAL                  :: IS_ICE
  
- REAL                     :: WSUM
+ REAL                     :: TREF_SAVE, WSUM
  REAL                     :: FILL, DTZM, GAUS_RES_KM, DTREF
  REAL, ALLOCATABLE        :: XPTS(:), YPTS(:), LATS(:), LONS(:)
  REAL, ALLOCATABLE        :: DUM2D(:,:), LATS_RAD(:), LONS_RAD(:)
@@ -418,6 +546,7 @@
  KGDS_GAUS(12) = 255        ! OCT 29 - RESERVED
  KGDS_GAUS(20) = 255        ! OCT 5  - NOT USED, SET TO 255
 
+ PRINT*
  PRINT*,'ADJUST NSST USING GSI INCREMENTS ON GAUSSIAN GRID'
 
 !----------------------------------------------------------------------
@@ -438,8 +567,8 @@
  CALL GDSWZD(KGDS_GAUS,IOPT,(IDIM_GAUS*JDIM_GAUS),FILL,XPTS,YPTS,LONS,LATS,NRET)
 
  IF (NRET /= (IDIM_GAUS*JDIM_GAUS)) THEN
-   PRINT*,'PROBLEM IN GDSWZD'
-   STOP 12
+   PRINT*,'FATAL ERROR: PROBLEM IN GDSWZD. STOP.'
+   CALL MPI_ABORT(MPI_COMM_WORLD, 12)
  ENDIF
 
  DEALLOCATE (XPTS, YPTS)
@@ -489,7 +618,15 @@
  GAUS_RES_KM = 360.0 / IDIM_GAUS * 111.0
  MAX_SEARCH  = CEILING(500.0/GAUS_RES_KM)
 
+ PRINT*
  PRINT*,'MAXIMUM SEARCH IS ',MAX_SEARCH, ' GAUSSIAN POINTS.'
+ PRINT*
+
+!----------------------------------------------------------------------
+! TREF INCREMENT WILL BE OUTPUT.  INITIALIZE TO ZERO.
+!----------------------------------------------------------------------
+
+ NSST%TFINC = 0.0
 
  IJ_LOOP : DO IJ = 1, LENSFC
 
@@ -555,30 +692,32 @@
      WSUM  = 0.0
 
      IF (SLMSK_GAUS(IGAUS,JGAUS) == 0) THEN
-       DTREF = DTREF + (s2c(itile,jtile,1) * DTREF_GAUS(IGAUS,JGAUS))
-       WSUM  = WSUM + s2c(itile,jtile,1)
+       DTREF = DTREF + (S2C(ITILE,JTILE,1) * DTREF_GAUS(IGAUS,JGAUS))
+       WSUM  = WSUM + S2C(ITILE,JTILE,1)
      ENDIF
 
      IF (SLMSK_GAUS(IGAUSP1,JGAUS) == 0) THEN
-       DTREF = DTREF + (s2c(itile,jtile,2) * DTREF_GAUS(IGAUSP1,JGAUS))
-       WSUM  = WSUM + s2c(itile,jtile,2)
+       DTREF = DTREF + (S2C(ITILE,JTILE,2) * DTREF_GAUS(IGAUSP1,JGAUS))
+       WSUM  = WSUM + S2C(ITILE,JTILE,2)
      ENDIF
 
      IF (SLMSK_GAUS(IGAUSP1,JGAUSP1) == 0) THEN
-       DTREF = DTREF + (s2c(itile,jtile,3) * DTREF_GAUS(IGAUSP1,JGAUSP1))
-       WSUM  = WSUM + s2c(itile,jtile,3)
+       DTREF = DTREF + (S2C(ITILE,JTILE,3) * DTREF_GAUS(IGAUSP1,JGAUSP1))
+       WSUM  = WSUM + S2C(ITILE,JTILE,3)
      ENDIF
 
      IF (SLMSK_GAUS(IGAUS,JGAUSP1) == 0) THEN
-       DTREF = DTREF + (s2c(itile,jtile,4) * DTREF_GAUS(IGAUS,JGAUSP1))
-       WSUM  = WSUM + s2c(itile,jtile,4)
+       DTREF = DTREF + (S2C(ITILE,JTILE,4) * DTREF_GAUS(IGAUS,JGAUSP1))
+       WSUM  = WSUM + S2C(ITILE,JTILE,4)
      ENDIF
 
      DTREF = DTREF / WSUM
 
-     NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF
-     NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
-     NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
+     TREF_SAVE      = NSST%TREF(IJ)
+     NSST%TREF(IJ)  = NSST%TREF(IJ) + DTREF
+     NSST%TREF(IJ)  = MAX(NSST%TREF(IJ), TFREEZ)
+     NSST%TREF(IJ)  = MIN(NSST%TREF(IJ), TMAX)
+     NSST%TFINC(IJ) = NSST%TREF(IJ) - TREF_SAVE
 
      CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
                      NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
@@ -636,9 +775,11 @@
                PRINT*,'MISMATCH AT TILE POINT  ',ITILE,JTILE
                PRINT*,'UPDATE TREF USING GSI INCREMENT AT ',III,JJJ,DTREF_GAUS(III,JJJ)
 
-               NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
-               NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
-               NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
+               TREF_SAVE      = NSST%TREF(IJ)
+               NSST%TREF(IJ ) = NSST%TREF(IJ) + DTREF_GAUS(III,JJJ)
+               NSST%TREF(IJ)  = MAX(NSST%TREF(IJ), TFREEZ)
+               NSST%TREF(IJ)  = MIN(NSST%TREF(IJ), TMAX)
+               NSST%TFINC(IJ) = NSST%TREF(IJ) - TREF_SAVE
 
                CALL DTZM_POINT(NSST%XT(IJ),NSST%XZ(IJ),NSST%DT_COOL(IJ),  &
                      NSST%Z_C(IJ),ZSEA1,ZSEA2,DTZM)
@@ -674,9 +815,11 @@
        PRINT*,"NEARBY ICE.  SET TREF TO FREEZING"
      ELSE
        CALL CLIMO_TREND(RLA(IJ),MON,DAY,DTREF)
-       NSST%TREF(IJ) = NSST%TREF(IJ) + DTREF
-       NSST%TREF(IJ) = MAX(NSST%TREF(IJ), TFREEZ)
-       NSST%TREF(IJ) = MIN(NSST%TREF(IJ), TMAX)
+       TREF_SAVE      = NSST%TREF(IJ)
+       NSST%TREF(IJ)  = NSST%TREF(IJ) + DTREF
+       NSST%TREF(IJ)  = MAX(NSST%TREF(IJ), TFREEZ)
+       NSST%TREF(IJ)  = MIN(NSST%TREF(IJ), TMAX)
+       NSST%TFINC(IJ) = NSST%TREF(IJ) - TREF_SAVE
        PRINT*,'UPDATE TREF FROM SST CLIMO ',DTREF
      ENDIF
 
@@ -700,7 +843,12 @@
 
  SUBROUTINE CLIMO_TREND(LATITUDE, MON, DAY, DTREF)
 
-! SST VALUES BASED ON RTG CLIMO FILE IN FIXED DIRECTORY.
+!----------------------------------------------------------------
+! IF THE TILE POINT IS AN ISOLATED WATER POINT THAT HAS NO
+! CORRESPONDING GSI WATER POINT, THEN TREF IS UPDATED USING
+! THE RTG SST CLIMO TREND.  THIS MONTHLY TREND IS SORTED BY
+! LATITUDE BAND.
+!----------------------------------------------------------------
 
  IMPLICIT NONE
 
@@ -923,8 +1071,10 @@
 
  SUBROUTINE NSST_WATER_RESET(NSST,IJ,TFREEZ)
 
+!-------------------------------------------------------------------
 ! IF THE FIRST GUESS WAS SEA ICE, BUT THE ANALYSIS IS OPEN WATER,
 ! RESET ALL NSST VARIABLES.
+!-------------------------------------------------------------------
 
  USE READ_WRITE_DATA, ONLY : NSST_DATA
 
@@ -957,11 +1107,13 @@
 
  END SUBROUTINE NSST_WATER_RESET
 
-! THIS ROUTINE WAS TAKEN FROM THE FORECAST MODEL -
-! ./ATMOS_CUBED_SPHERE/TOOLS/FV_TREAT_DA_INC.F90.
-
  SUBROUTINE REMAP_COEF( is, ie, js, je,&
       im, jm, lon, lat, id1, id2, jdc, s2c, agrid )
+
+!----------------------------------------------------------------------
+! THIS ROUTINE WAS TAKEN FROM THE FORECAST MODEL -
+! ./ATMOS_CUBED_SPHERE/TOOLS/FV_TREAT_DA_INC.F90.
+!----------------------------------------------------------------------
 
     implicit none
     integer, intent(in):: is, ie, js, je
