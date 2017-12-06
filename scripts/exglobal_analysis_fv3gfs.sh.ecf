@@ -855,6 +855,7 @@ OBS_INPUT::
   s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
   aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
   ensemble_path='./ensemble_data/',
+  ens_fast_read=.true.,
   $HYBRID_ENSEMBLE
 /
 &RAPIDREFRESH_CLDSURF
