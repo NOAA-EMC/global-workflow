@@ -1,6 +1,6 @@
 #!/bin/sh
 # It is now possible to run all regression tests (except RTMA) using the hybrid ensemble option with
-#  internally generated random ensemble perturbations.  No script changes are required.
+# internally generated random ensemble perturbations.  No script changes are required.
 #  To run with hybrid ensemble option on, change HYBENS_GLOBAL and/or HYBENS_REGIONAL from "false" to "true".
 #  These are located at the end of this script.
 
