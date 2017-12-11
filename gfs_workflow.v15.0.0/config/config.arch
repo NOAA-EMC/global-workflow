@@ -15,4 +15,8 @@ echo "BEGIN: config.arch"
 # Get task specific resources
 . $EXPDIR/config.resources arch
 
+#--starting and ending hours of previous cycles to be removed from rotating directory
+RMOLDSTD=144
+RMOLDEND=24
+
 echo "END: config.arch"

@@ -45,7 +45,7 @@ export APRUN=${APRUN_NP:-${APRUN:-""}}
 
 export GFSDOWNSH=${GFSDOWNSH:-$BASEDIR/ush/gfs_downstream_nems.sh}
 export GFSDWNSH=${GFSDWNSH:-$BASEDIR/ush/gfs_dwn_nems.sh}
-export PARM_SIB=${PARM_SIB:-$BASE_GSM/parm}
+export PARM_SIB=${PARM_SIB:-$BASE_POST/parm}
 export APRUN_DWN=${APRUN_DWN:-${APRUN:-""}}
 
 ####################################

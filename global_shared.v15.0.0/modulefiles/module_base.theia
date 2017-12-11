@@ -4,29 +4,11 @@
 ##      Installed by:  Samuel Trahan (Samuel.Trahan@noaa.gov)
 ##	Installed on:  2017-July-11
 ##
-##      Module commands from rahul's .cshrc on Theia.
-##      Some of these can probably be removed.
 
 module load intel/16.1.150
 module load impi/5.1.2.150
-module load udunits
-module load ncl/6.3.0-gcc
 module load wgrib2
-module load xxdiff
-module load imagemagick
 module load hpss
-module load rocoto
-module load contrib
-module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
-#module load bufr g2 g2c gfsio nemsio sigio w3emc w3nco
-module use -a /scratch4/NCEPDEV/global/noscrub/Terry.McGuinness/eclipse_workspace_GFS/GFS_Workflow_v3.0.0/para/exp/conf/modulefiles/theia
-module load pyprodutil
-# Python; Anaconda installed under pythonextras module; load it
-module load anaconda/anaconda2
-# NetCDF, NCO, CDO, ncview modules
 module load netcdf
 module load nco
-module load cdo/1.6.7
-module load ncview
 module load hdf5/1.8.14
-module load grads

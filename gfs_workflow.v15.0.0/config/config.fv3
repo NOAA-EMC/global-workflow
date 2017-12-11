@@ -29,57 +29,79 @@ echo "BEGIN: config.fv3"
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=3600
-        export layout_x=4
-        export layout_y=8
-        export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=12
-        ;;
-    "C96")
-        export DELTIM=1800
-        export layout_x=4
-        export layout_y=8
-        export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
-        export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=12
-        ;;
-    "C192")
-        export DELTIM=900
-        export layout_x=4
-        export layout_y=8
-        export cdmbgwd="0.2,2.5"  # mountain blocking and gravity wave drag
+        export DELTIM=450
+        export layout_x=2
+        export layout_y=4
+        export npe_node_fcst=24
+        export nth_fv3=1
+        export cdmbgwd="0.062,3.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
+        export WRTIOBUF="4M"
         ;;
-    "C384")
+    "C96")
         export DELTIM=450
         export layout_x=4
-        export layout_y=8
-        export cdmbgwd="1.0,1.2"  # mountain blocking and gravity wave drag
+        export layout_y=4
+        export npe_node_fcst=24
+        export nth_fv3=1
+        export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=24
+        export WRTIOBUF="4M"
+        ;;
+    "C192")
+        export DELTIM=450
+        export layout_x=4
+        export layout_y=6
+        export npe_node_fcst=12
+        export nth_fv3=2
+        export cdmbgwd="0.2,2.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=48
+        export WRTTASK_PER_GROUP=24
+        export WRTIOBUF="8M"
+        ;;
+    "C384")
+        export DELTIM=300
+        export layout_x=4
+        export layout_y=8
+        export npe_node_fcst=12
+        export nth_fv3=2
+        export cdmbgwd="1.0,1.2"  # mountain blocking and gravity wave drag
+        export WRITE_GROUP=3
+        export WRTTASK_PER_GROUP=24
+        export WRTIOBUF="16M"
         ;;
     "C768")
         export DELTIM=225
         export layout_x=8
         export layout_y=16
+        export npe_node_fcst=12
+        export nth_fv3=2
         export cdmbgwd="3.5,0.25" # mountain blocking and gravity wave drag
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=96
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP=60
+        export WRTIOBUF="32M"
         ;;
     "C1152")
         export DELTIM=150
         export layout_x=8
         export layout_y=16
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=120
+        export npe_node_fcst=6
+        export nth_fv3=4
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP=84
+        export WRTIOBUF="48M"
         ;;
     "C3072")
         export DELTIM=90
         export layout_x=16
         export layout_y=32
+        export npe_node_fcst=6
+        export nth_fv3=4
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=120
+        export WRTIOBUF="64M"
         ;;
     *)
         echo "grid $case_in not supported, ABORT!"

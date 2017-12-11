@@ -98,6 +98,7 @@ QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
 OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
+WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
 rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -478,10 +479,11 @@ quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
 num_files:               ${NUM_FILES:-2}
-filename_base:           '${CDUMP}.t${chh}z.atm' '${CDUMP}.t${chh}z.sfc'
+filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
 write_nemsioflip:        $WRITE_NEMSIOFLIP
+write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
 
@@ -632,7 +634,7 @@ cat > input.nml <<EOF
   use_ufo     = ${use_ufo:-".true."}
   pre_rad     = ${pre_rad:-".false."}
   ncld        = ${ncld:-1}
-  zhao_mic    = ${zhao_mic:-".true."}
+  imp_physics = ${imp_physics:-99}
   pdfcld      = ${pdfcld:-".false."}
   fhswr       = ${FHSWR:-"3600."}
   fhlwr       = ${FHLWR:-"3600."}
@@ -832,10 +834,38 @@ EOF
 
 fi
 
-# Echo out namelists for ease of debugging
-cat nems.configure
-cat model_configure
-cat input.nml
+
+#------------------------------------------------------------------
+# make symbolic links to write forecast files directly in memdir
+cd $DATA
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+  FH3=`expr $FHMIN + 0 `
+  while [ $FH3 -le $FHMAX ]; do
+    FH3=$(printf %03i $FH3)
+    atmi=atmf${FH3}.$OUTPUT_FILE
+    sfci=sfcf${FH3}.$OUTPUT_FILE
+    logi=logf${FH3}
+    atmo=$memdir/${CDUMP}.t${chh}z.atmf${FH3}.$OUTPUT_FILE
+    sfco=$memdir/${CDUMP}.t${chh}z.sfcf${FH3}.$OUTPUT_FILE
+    logo=$memdir/${CDUMP}.t${chh}z.logf${FH3}.$OUTPUT_FILE
+    eval $NLN $atmo $atmi
+    eval $NLN $sfco $sfci
+    eval $NLN $logo $logi
+    FHINC=$FHOUT
+    if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $FH3 -lt $FHMAX_HF ]; then
+     FHINC=$FHOUT_HF
+    fi
+    FH3=`expr $FH3 + $FHINC `
+  done
+else
+  for n in $(seq 1 $ntiles); do
+    eval $NLN nggps2d.tile${n}.nc       $memdir/nggps2d.tile${n}.nc
+    eval $NLN nggps3d.tile${n}.nc       $memdir/nggps3d.tile${n}.nc
+    eval $NLN grid_spec.tile${n}.nc     $memdir/grid_spec.tile${n}.nc
+    eval $NLN atmos_static.tile${n}.nc  $memdir/atmos_static.tile${n}.nc
+    eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
+  done
+fi
 
 #------------------------------------------------------------------
 # setup the runtime environment and run the executable
@@ -846,9 +876,11 @@ if [ $machine = "WCOSS_C" ] ; then
   module use $FCSTMODSDIR/wcoss_cray 2>/dev/null
   module load fv3 2>/dev/null
   module load prod_util iobuf craype-$HUGEPAGES 2>/dev/null
-  export IOBUF_PARAMS=${IOBUF_PARAMS:-'*:size=8M:verbose'}
   export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
   export MKL_CBWR=AVX2
+  export WRTIOBUF=${WRTIOBUF:-"4M"}
+  export NC_BLKSZ=${NC_BLKSZ:-"4M"}
+  export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
 elif [ $machine = "THEIA" ]; then
   . $MODULESHOME/init/sh 2>/dev/null
   module purge 2>/dev/null
@@ -856,7 +888,6 @@ elif [ $machine = "THEIA" ]; then
   module load fv3 2>/dev/null
 fi
 
-cd $DATA
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
 $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
@@ -866,24 +897,11 @@ $ERRSCRIPT || exit $err
 
 #------------------------------------------------------------------
 if [ $SEND = "YES" ]; then
-  # Copy model output files
-  cd $DATA
-  if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-    $NCP ${CDUMP}.t${chh}z.atm*.nemsio $memdir/.
-    $NCP ${CDUMP}.t${chh}z.sfc*.nemsio $memdir/.
-  else
-    for n in $(seq 1 $ntiles); do
-      for file in *.tile${n}.nc; do
-        $NCP $file $memdir/.
-      done
-    done
-  fi
-
   # Copy model restart files
   cd $DATA/RESTART
   mkdir -p $memdir/RESTART
 
-  # Add time-stamp to restart files at FHMAX (this should be done inside the model)
+  # Add time-stamp to restart files at FHMAX
   RDATE=$($NDATE +$FHMAX $CDATE)
   rymd=$(echo $RDATE | cut -c1-8)
   rhh=$(echo  $RDATE | cut -c9-10)
@@ -903,7 +921,6 @@ if [ $SEND = "YES" ]; then
   for file in ${rymd}.${rhh}0000.* ; do
     $NCP $file $memdir/RESTART/$file
   done
-
 fi
 
 #------------------------------------------------------------------
