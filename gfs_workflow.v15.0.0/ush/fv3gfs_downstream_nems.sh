@@ -98,7 +98,7 @@ while [ $nset -le $totalset ]; do
 # split of Grib files to run downstream jobs using MPMD
   export ncount=`$WGRIB2 $tmpfile |wc -l`
 # export tasks_post=$(eval echo \$tasksp_$nknd)
-  export nproc=${nproc:-${npe_dwn:-32}}
+  export nproc=${nproc:-${npe_dwn:-24}}
   export inv=`expr $ncount / $nproc`
   rm -f $DATA/poescript
   export iproc=1
@@ -113,7 +113,8 @@ while [ $nset -le $totalset ]; do
 
     # if final record of each piece is ugrd, add vgrd
     # copygb will only interpolate u and v together
-    $WGRIB2 -d $end $tmpfile |grep -i ugrd
+    #$WGRIB2 -d $end $tmpfile |grep -i ugrd
+    $WGRIB2 -d $end $tmpfile |egrep -i "ugrd|ustm"
     export rc=$?
     if [[ $rc -eq 0 ]] ; then
       export end=`expr ${end} + 1`
@@ -168,6 +169,25 @@ date
     export iproc=`expr $iproc + 1`
   done
 date
+
+#Chuang: generate second land mask using bi-linear interpolation and append to the end
+      rm -f land.grb newland.grb newnewland.grb
+      $WGRIB2 tmpfile -match "LAND:surface" -grib land.grb
+#0p25 degree
+      $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid_winds earth -new_grid $grid0p25 newland.grb
+      $WGRIB2 newland.grb -set_byte 4 11 218 -grib newnewland.grb
+      cat ./newnewland.grb >> pgb2file_${fhr3}_0p25
+#0p5 degree
+      rm -f newland.grb newnewland.grb
+      $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid_winds earth -new_grid $grid0p5 newland.grb
+      $WGRIB2 newland.grb -set_byte 4 11 218 -grib newnewland.grb
+      cat ./newnewland.grb >> pgb2file_${fhr3}_0p5
+#1p0
+      rm -f newland.grb newnewland.grb
+      $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid_winds earth -new_grid $grid1p0 newland.grb
+      $WGRIB2 newland.grb -set_byte 4 11 218 -grib newnewland.grb
+      cat ./newnewland.grb >> pgb2file_${fhr3}_1p0
+
 
   if [ $nset = 1 ]; then
    $WGRIB2 -s pgb2file_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}.idx

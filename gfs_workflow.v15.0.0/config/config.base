@@ -103,19 +103,19 @@ if [ $machine = "THEIA" ]; then
 
     # Base directories for various builds
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-    export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/svn"
+    export MYBASE_SVN="/scratch4/NCEPDEV/global/save/$USER/git"
 
 elif [ $machine = "WCOSS_C" ]; then
 
     # USER specific paths
     export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps3/stmp/$USER"
-    export PTMP="/gpfs/hps3/ptmp/$USER"
+    export STMP="/gpfs/hps2/stmp/$USER"
+    export PTMP="/gpfs/hps2/ptmp/$USER"
     export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
 
     # Base directories for various builds
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-    export MYBASE_SVN="/gpfs/hps3/emc/global/noscrub/$USER/svn"
+    export MYBASE_SVN="/gpfs/hps3/emc/global/noscrub/$USER/git"
 
 fi
 
@@ -132,6 +132,7 @@ if [ $machine = "THEIA" ]; then
     export GRB2INDEX="$NWPROD/util/exec/grb2index"
     export GRBINDEX2="$NWPROD/util/exec/grb2index"
     export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS=/apps/cnvgrib/1.4.0/bin/cnvgrib
 
 fi
 
@@ -203,7 +204,7 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=120
+export FHMAX_GFS=24
 export FHOUT_GFS=6
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1

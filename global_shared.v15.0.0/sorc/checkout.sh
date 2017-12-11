@@ -14,8 +14,9 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive ${USERNAME}@gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git clone --recursive ${USERNAME}@gerrit:FV3  FV3  >> ${topdir}/checkout-fv3gfs.log 2>&1    
-    git clone --recursive ${USERNAME}@gerrit:NEMS NEMS >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git submodule update --init --recursive
+    #git clone --recursive ${USERNAME}@gerrit:FV3  FV3  >> ${topdir}/checkout-fv3gfs.log 2>&1    
+    #git clone --recursive ${USERNAME}@gerrit:NEMS NEMS >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
