@@ -1,5 +1,5 @@
  subroutine nsst_chgres(im_input, jm_input,  &
-                        mask_output, tskin_output, ij_output, kgds_input, &
+                        mask_output, tskin_output, imo, ij_output, kgds_input, &
                         data_input, mask_input, data_output, num_nsst_fields, &
                         kgds_output, rlat_output, rlon_output)
 !----------------------------------------------------------------
@@ -20,10 +20,15 @@
 !   program history:
 !   ===============
 !   2011-aug-05       initial version   gayno
+!   2017-dec-19       add bilinear option. ensure mask
+!                     consistency between skin t and tref.
 !----------------------------------------------------------------
 
  implicit none
 
+ integer, intent(in)          :: imo
+                                 ! number of grid points on the
+                                 ! cubed-sphere side
  integer, intent(in)          :: ij_output
                                  ! number of grid points - output grid.
  integer, intent(in)          :: kgds_input(200), kgds_output(200)
@@ -32,7 +37,8 @@
                                  ! number of grid points in i/j direction - 
                                  ! input grid.
  integer, intent(in)          :: num_nsst_fields
- 
+                                 ! number of nsst fields
+
  real, intent(in)             :: mask_output(ij_output)
                                  ! land mask - output grid 
  real, intent(in)             :: tskin_output(ij_output)
@@ -41,9 +47,10 @@
                                  ! latitudes on output grid
  real, intent(in)             :: rlon_output(ij_output)
                                  ! longitudes on output grid
-
  real, intent(in)             :: data_input(im_input,jm_input,num_nsst_fields)
+                                 ! nsst data on input grid
  real, intent(in)             :: mask_input(im_input,jm_input)
+                                 ! mask on input grid
 
  integer                      :: count_water
                                  ! number of output grid points that are open water.
@@ -61,9 +68,10 @@
  real                         :: data_output(ij_output,num_nsst_fields)
  real, allocatable            :: data_water(:,:)
  real, allocatable            :: rlat_water(:), rlon_water(:)
+ real                         :: mdl_res_input, mdl_res_output
 
 !----------------------------------------------------------------
-! bitmap flag for input data.  all input fields will be
+! Bitmap flag for input data.  All input fields will be
 ! interpolated using the same bitmap.
 !----------------------------------------------------------------
 
@@ -71,7 +79,15 @@
       
 !----------------------------------------------------------------
 ! mask is: 0-open water, 1-land, 2-sea ice.  nsst model
-! only operates at open water points.
+! only operates at open water points.  Mask out these points.
+! The one exception is TREF.  Here include the TREF
+! values at ice points.  This is done for consistency with
+! the how skin temperature is interpolated in surface_chgres.f90.
+! At non-land points, skin temperture is a blend of the ice 
+! skin temp and the SST.  So non-land skin temp is interpolated
+! to non-land points.  If TREF values at ice points are
+! ignored, very large differences between skin/sst and TREF
+! can happen near ice edges.
 !----------------------------------------------------------------
 
  allocate(bitmap_input(im_input,jm_input,num_nsst_fields))
@@ -79,14 +95,24 @@
  do j=1,jm_input
  do i=1,im_input
    if (mask_input(i,j) < 0.5) then
-     bitmap_input(i,j,:)=.true.
+     bitmap_input(i,j,1:16)=.true.
+     bitmap_input(i,j,18:num_nsst_fields)=.true.
+   endif
+ enddo
+ enddo
+
+ bitmap_input(:,:,17) = .false.   ! TREF
+ do j=1,jm_input
+ do i=1,im_input
+   if (mask_input(i,j) < 0.5 .or. mask_input(i,j) > 1.5) then
+     bitmap_input(i,j,17)=.true.
    endif
  enddo
  enddo
 
 !----------------------------------------------------------------
-! only interpolate to output points that are open water.
-! mask values are: 0-open water, 1-land, 2-sea ice.
+! Only interpolate to output points that are open water.
+! Mask values are: 0-open water, 1-land, 2-sea ice.
 !----------------------------------------------------------------
 
  count_water=0
@@ -115,14 +141,26 @@
  bitmap_water=.false.
 
 !----------------------------------------------------------------
-! ipolates options.
+! ipolates options.  Must ensure these are the same
+! values used in surface_chgres.f90.
 !----------------------------------------------------------------
 
- ip=2               ! use nearest neighbor interpolation as
-                    ! some nsst fields are not continuous.
+ mdl_res_input = 360.0 / float(kgds_input(2))
+ mdl_res_output = 360.0 / (float(imo) * 4.0)
+
  ipopt=0
-                    ! width of square for spiral search, use 5 deg.
- ipopt(1)= 5.0 / (float(kgds_input(9))*.001) 
+
+ if (mdl_res_input <= (0.75*mdl_res_output)) then
+   print*,"- INTERPOLATE NSST DATA FIELDS USING BILINEAR METHOD."
+   ip = 0
+   ipopt(1)=1
+   ipopt(2) = nint(1.0 / mdl_res_input) + 1   ! search box width of 1 deg.
+ else
+   print*,"- INTERPOLATE NSST DATA FIELDS USING NEIGHBOR METHOD."
+   ipopt(1) = nint(1.0 / mdl_res_input) + 1   ! search box width of 1 deg.
+   ip = 2
+ end if
+
  kgds=kgds_output
  kgds(1)=-1         ! tell ipolates to interpolate to just water points.
                     ! default is to interpolate to all grid points.
@@ -135,7 +173,7 @@
                data_water,iret) 
 
  if (iret /=0) then
-   print*,'error in ipolates interpolating nsst data ',iret
+   print*,'fatal error in ipolates interpolating nsst data ',iret
    stop 445
  endif
 
@@ -143,8 +181,8 @@
 
 !----------------------------------------------------------------
 ! ipolates may not find data at every output grid point.
-! this can happen with isolated lakes, for example.
-! need to fill these points with default values.
+! This can happen with isolated lakes, for example.
+! Need to fill these points with default values.
 !----------------------------------------------------------------
 
  do k = 1, num_nsst_fields
@@ -153,21 +191,20 @@
        data_water(ij,k)=0.0  ! default value for most fields
        if (k==5) data_water(ij,k)=30.0  ! default value for xz
        if (k==16) data_water(ij,k)=1.0  ! default value for ifd
-!      don't know of a good way to set a default value of tref.
-!      this is my simple minded attempt.
-       if (k==17) then 
-         if(abs(rlat_water(ij))>=60.0)then
-           data_water(ij,k)=273.16 ! default value for tref
-         elseif(abs(rlat_water(ij))<=30.0) then
-           data_water(ij,k)=300.0 ! default value for tref
-         else
-           data_water(ij,k)= (-.8947)*(abs(rlat_water(ij))) + 326.84
-         endif
+       if (k==17) then   ! default for tref is skin t (sst)
+         data_water(ij,k)=tskin_output(ijsav_water(ij))
          write(6,50) rlat_water(ij), rlon_water(ij), data_water(ij,k)
        endif
      endif
    enddo
  enddo
+
+!----------------------------------------------------------------
+! IFD is a flag, but is stored as a float.  Remove and
+! fractional values.
+!----------------------------------------------------------------
+
+ data_water(:,16) = float(nint(data_water(:,16)))
 
  deallocate(rlat_water,rlon_water,bitmap_water)
 
@@ -175,7 +212,7 @@
            ' LON: ',f7.2,' IS ',f5.1)
 
 !----------------------------------------------------------------
-! now put the water points back into the array that holds
+! Now put the water points back into the array that holds
 ! all output grid points.
 !----------------------------------------------------------------
 
