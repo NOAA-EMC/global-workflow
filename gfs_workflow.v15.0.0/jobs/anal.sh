@@ -76,6 +76,9 @@ export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
 export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
 [[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
 
+# Update surface fields with global_cycle
+export DOGCYCLE="YES"
+
 ###############################################################
 # Run relevant exglobal script
 $ANALYSISSH
