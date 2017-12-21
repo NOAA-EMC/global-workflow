@@ -59,6 +59,9 @@ fi
 increment_file="$COMIN/${APREFIX}atminc.nc"
 [[ -f $increment_file ]] && $NCP $increment_file .
 
+dtfanl_file="$COMIN/${APREFIX}dtfanl.nc"
+[[ -f $dtfanl_file ]] && $NCP $dtfanl_file .
+
 files="abias abias_pc abias_air radstat"
 for file in $files; do
     $NCP $COMIN/${APREFIX}$file .
@@ -92,6 +95,7 @@ files="gsistat cnvstat prepbufr prepbufr.acft_profiles"
 for file in $files; do
     $NCP $COMIN/${APREFIX}$file .
 done
+[[ $DONST = "YES" ]] && $NCP $COMIN/${APREFIX}nsstbufr .
 
 $NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
 $NCP $COMIN/${APREFIX}pgrb2.*.fanl* .

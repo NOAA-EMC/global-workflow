@@ -34,6 +34,7 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
+export CASE=$CASE_ENKF
 export GDATE=$($NDATE -$assim_freq $CDATE)
 
 cymd=$(echo $CDATE | cut -c1-8)
@@ -41,6 +42,7 @@ chh=$(echo  $CDATE | cut -c9-10)
 gymd=$(echo $GDATE | cut -c1-8)
 ghh=$(echo  $GDATE | cut -c9-10)
 
+export OPREFIX="${CDUMP}.t${chh}z."
 export APREFIX="${CDUMP}.t${chh}z."
 export ASUFFIX=".nemsio"
 export GPREFIX="${CDUMP}.t${ghh}z."
