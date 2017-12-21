@@ -561,6 +561,7 @@
    kgdso1 = -1  ! for subsection of model grid.
    int_opt = 0
    ipopt(1)=1
+   ipopt(2) = nint(1.0 / mdl_res_input) + 1   ! search box width of 1 deg.
    int_opt_snow = 2    ! use neighbor method instead for snow.
    ipopt_snow = 0
    ipopt_snow(1) = nint(1.0 / mdl_res_input) + 1   ! search box width of 1 deg.
@@ -1147,7 +1148,13 @@
    if (bitmap_nonland_output(ij)) then
      output%skin_temp(ijsav_nonland_output(ij))=output_data_nonland(ij)
    else
-     output%skin_temp(ijsav_nonland_output(ij)) = 280.0 ! default value
+     if(abs(lats_nonland_output(ij)) >= 60.0) then
+       output%skin_temp(ijsav_nonland_output(ij)) = 273.16
+     elseif(abs(lats_nonland_output(ij)) <= 30.0) then
+       output%skin_temp(ijsav_nonland_output(ij)) = 300.0
+     else
+       output%skin_temp(ijsav_nonland_output(ij)) = (-.8947)*(abs(lats_nonland_output(ij))) + 326.84
+     endif
    endif
  enddo
 
