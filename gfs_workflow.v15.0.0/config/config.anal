@@ -19,6 +19,11 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
+if [[ "$CDUMP" = "gfs" ]] ; then
+    #export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
+    export GENDIAG="NO"
+fi
+
 export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
 export nth_gsi=4

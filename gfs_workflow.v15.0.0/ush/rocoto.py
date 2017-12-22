@@ -34,14 +34,17 @@ def create_metatask(task_dict, metatask_dict):
     metataskname = metatask_dict['metataskname'] if 'metataskname' in metatask_dict else 'demometatask'
     varname = metatask_dict['varname'] if 'varname' in metatask_dict else 'demovar'
     varval = metatask_dict['varval'] if 'varval' in metatask_dict else 1
-
-    str_varval= str(varval)
+    vardict = metatask_dict['vardict'] if 'vardict' in metatask_dict else None
 
     strings = []
 
     strings.append('<metatask name="%s">\n' % metataskname)
     strings.append('\n')
-    strings.append('\t<var name="%s">%s</var>\n' % (varname, str_varval))
+    strings.append('\t<var name="%s">%s</var>\n' % (varname, str(varval)))
+    if vardict is not None:
+        for key in vardict.keys():
+            value = str(vardict[key])
+            strings.append('\t<var name="%s">%s</var>\n' % (key, value))
     strings.append('\n')
     tasklines = create_task(task_dict)
     for tl in tasklines:

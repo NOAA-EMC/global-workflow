@@ -48,13 +48,13 @@ elif [ $step = "fcst" ]; then
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="01:00:00"
-    export wtime_post_gfs="06:00:00"
+    export wtime_post="00:30:00"
+    export wtime_post_gfs="01:00:00"
     export npe_post=72
     export npe_node_post=12
     export npe_node_dwn=24
-    if [[ "$machine" == THEIA ]] ; then
-	export memory_vrfy="16384M"
+    if [[ "$machine" == THEIA ]]; then
+	    export memory_post="16384M"
     else
         export memory_post="3072M"
     fi
@@ -65,8 +65,8 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=1
     export npe_node_vrfy=1
-    if [[ "$machine" == THEIA ]] ; then
-	export memory_vrfy="16384M"
+    if [[ "$machine" == THEIA ]]; then
+	    export memory_vrfy="16384M"
     else
 	    export memory_vrfy="3072M"
         # Memory on cray is for the batch node, not the compute node.
@@ -84,7 +84,7 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
     export wtime_eobs="00:15:00"
-    export wtime_eomg="01:30:00"
+    export wtime_eomg="00:45:00"
     export npe_eobs=72
     export npe_node_eobs=6
     export memory_eobs="3072M"
@@ -105,9 +105,9 @@ elif [ $step = "ecen" ]; then
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="01:30:00"
+    export wtime_efcs="01:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_node_efcs=${npe_node_fcst:-24}
+    export npe_node_efcs=${npe_node_fcst:-12}
     export memory_efcs="254M"
 
 elif [ $step = "epos" ]; then

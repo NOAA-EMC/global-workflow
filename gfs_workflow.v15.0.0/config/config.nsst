@@ -12,20 +12,23 @@
 
 echo "BEGIN: config.nsst"
 
-export NST_SPINUP=0   
-if [ ${CDATE:-0} -eq 2016100100 ] ; then export NST_SPINUP=1; fi
+# NSST parameters contained within nstf_name
 
-# NSST parameters: the two depths to apply vertical average (bias correction)
+# nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 1 = ON but uncoupled, 2 = ON and coupled
+export NST_MODEL=2
+
+# nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
+export NST_SPINUP=0
+if [[ "$CDATE" = $SDATE ]]; then
+    export NST_SPINUP=1
+fi
+
+# nstf_name(3) : NST_RESV (Reserved, NSST Analysis) : 0 = OFF, 1 = ON
+export NST_RESV=0
+
+# nstf_name(4,5) : ZSEA1, ZSEA2 the two depths to apply vertical average (bias correction)
 export ZSEA1=0
 export ZSEA2=0
-
-export nstf_name="2,$NST_SPINUP,0,$ZSEA1,$ZSEA2"
- #  nstf_name(1) : 0 (default) = No NSSTM; 1 = uncoupled; 2 = coupled (nstf_name(1) = NST_FCST)
- #  nstf_name(2) : 0 (default) = NSST Spinup off; 1 = NSST Spinup on
- #  nstf_name(3) : Reserved
- #  nstf_name(4) : 0 (default) = the upper depth (in mm) to do vertical mean of T-Profile
- #  nstf_name(5) : 0 (default) = the lower depth (in mm) to do vertical mean of T-Profile
-
 
 export NST_GSI=3          # default 0: No NST info at all;
                           #         1: Input NST info but not used in GSI;
@@ -33,7 +36,5 @@ export NST_GSI=3          # default 0: No NST info at all;
                           #         3: Input NST info, used in both CRTM simulation and Tr analysis
 export NSTINFO=0          # number of elements added in obs. data array (default = 0)
 if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
-
-
 
 echo "END: config.nsst"

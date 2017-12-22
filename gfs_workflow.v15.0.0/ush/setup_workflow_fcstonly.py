@@ -169,6 +169,37 @@ def get_resources(dict_configs, cdump='gdas'):
     return ''.join(strings)
 
 
+def get_postgroups(post, cdump='gdas'):
+
+    fhmin = post['FHMIN']
+    fhmax = post['FHMAX']
+    fhout = post['FHOUT']
+
+    # Get a list of all forecast hours
+    if cdump in ['gdas']:
+        fhrs = range(fhmin, fhmax+fhout, fhout)
+    elif cdump in ['gfs']:
+        fhmax = post['FHMAX_GFS']
+        fhout = post['FHOUT_GFS']
+        fhmax_hf = post['FHMAX_HF_GFS']
+        fhout_hf = post['FHOUT_HF_GFS']
+        fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
+        fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+
+    npostgrp = post['NPOSTGRP']
+    ngrps = npostgrp if len(fhrs) > npostgrp else len(fhrs)
+
+    fhrs = ['f%03d' % f for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
+
+    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps+1)])
+    fhrdep = ' '.join(['f000'] + [f[-1] for f in fhrs])
+    fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
+
+    return fhrgrp, fhrdep, fhrlst
+
+
 def get_workflow(cdump='gdas'):
     '''
         Create tasks for forecast only workflow
@@ -207,6 +238,22 @@ def get_workflow(cdump='gdas'):
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    deps = []
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/sfc_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    deps = rocoto.create_dependency(dep_condition='and', dep=deps)
+    dependencies2 = rocoto.create_dependency(dep_condition='not', dep=deps)
+
+    deps = []
+    dep.append(dependencies)
+    dep.append(dependencies2)
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
     task = wfu.create_wf_task('fv3ic', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)
     tasks.append('\n')
@@ -226,10 +273,18 @@ def get_workflow(cdump='gdas'):
 
     # post
     deps = []
-    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.nemsio' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
-    task = wfu.create_wf_task('post', cdump=cdump, envar=envars, dependency=dependencies)
+    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+    postenvars = envars + [fhrgrp] + [fhrlst]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_postgroups(dict_configs['post'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
+    task = wfu.create_wf_task('post', cdump=cdump, envar=postenvars, dependency=dependencies,
+                              metatask='post', varname=varname1, varval=varval1, vardict=vardict)
     tasks.append(task)
     tasks.append('\n')
 

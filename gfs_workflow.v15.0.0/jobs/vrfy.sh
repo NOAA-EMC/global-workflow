@@ -89,6 +89,21 @@ if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL ]; then
 fi
 
 ###############################################################
+# Run OzMon data extraction
+if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL ]; then
+
+    export EXP=$PSLOT
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}oznmon.log"
+    export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY"
+    export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1"
+    export MY_MACHINE=$machine
+
+    $VRFYOZNSH
+
+fi
+
+###############################################################
 # Run MinMon
 if [ $VRFYMINMON = "YES" ]; then
 

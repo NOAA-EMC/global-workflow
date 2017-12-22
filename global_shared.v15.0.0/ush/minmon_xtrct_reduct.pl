@@ -34,11 +34,16 @@ system( @msgcmd ) == 0
 
 my $rc    = 0;
 my $cdate = sprintf '%s%s', $pdy, $cyc;
+my $initial_gradient = -999.0;
+my $iter_gradient;
 
 if( (-e $infile) ) {
 
-   my $reduct_target = "penalty and grad reduction";
-   my $reduct_num = 12;
+#   my $reduct_target = "penalty and grad reduction";
+   my $reduct_target = "cost,grad,step,b,step?";
+#   my $reduct_num = 12;
+   my $gradient_num = 5;
+   my $reduct;
 
    open( INFILE, "<${infile}" ) or die "Can't open ${infile}: $!\n";
 
@@ -47,7 +52,15 @@ if( (-e $infile) ) {
    while( my $line = <INFILE> ) {
       if( $line =~ /$reduct_target/ ) {
          my @reduct_ln  = split( / +/, $line ); 
-         push( @reduct_array, $reduct_ln[$reduct_num] );
+         $iter_gradient = $reduct_ln[$gradient_num];
+         if( $initial_gradient == -999.0 ){
+            $initial_gradient = $iter_gradient;
+         }
+        
+         $reduct = $iter_gradient / $initial_gradient;          
+
+#         push( @reduct_array, $reduct_ln[$reduct_num] );
+         push( @reduct_array, $reduct );
       }
    }
 

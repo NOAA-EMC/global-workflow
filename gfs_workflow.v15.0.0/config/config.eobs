@@ -19,6 +19,7 @@ export INVOBSSH="$BASE_GSI/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
 export ENKFINVOBSSH="$BASE_GSI/scripts/EnKF/scripts_ncep/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
 export NMEM_EOMGGRP=10
 export RERUN_EOMGGRP="YES"
+#export USE_RADSTAT="NO" # This can be only used when bias correction is non-zero.
 export npe_gsi=$npe_eobs
 export nth_gsi=4
 
