@@ -18,6 +18,9 @@ echo "BEGIN: config.post"
 # Convert nemsio files to grib files using post job
 #-------------------------------------------
 
+# No. of concurrent post jobs [0 implies sequential]
+export NPOSTGRP=5
+
 # Post driver job that calls global_nceppost.sh and downstream jobs
 export POSTJJOBSH="$BASE_JOB/JGFS_POST.sh"
 

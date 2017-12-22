@@ -1,0 +1,20 @@
+#%Module#################################################################
+proc ModulesHelp { } {
+  puts stderr "Set environment variables for THEIA OzoMon build"
+}
+
+module-whatis "Set environment variables for THEIA OzoMon build"
+
+set ver 2.0.2
+
+module load intel
+
+set FCOMP ifort
+
+setenv CF $FCOMP
+setenv FC $FCOMP
+setenv FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl"
+setenv D_FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
+
+setenv W3NCO_LIB4 "-L/scratch3/NCEPDEV/nwprod/lib -lw3nco_4"
+

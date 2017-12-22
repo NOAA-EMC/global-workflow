@@ -156,7 +156,8 @@ def get_scheduler(machine):
 
 
 def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
-                   metatask=None, varname=None, varval=None, final=False):
+                   metatask=None, varname=None, varval=None, vardict=None, \
+                   final=False):
 
     if metatask is None:
         taskstr = '%s' % task
@@ -165,7 +166,8 @@ def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
         metataskstr = '%s%s' % (cdump, metatask)
         metatask_dict = {'metataskname': metataskstr, \
                          'varname': '%s' % varname, \
-                         'varval': '%s' % varval}
+                         'varval': '%s' % varval, \
+                         'vardict': vardict}
 
     taskstr = '%s%s' % (cdump, taskstr)
 

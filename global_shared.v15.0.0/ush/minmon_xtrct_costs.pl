@@ -33,6 +33,9 @@ my $cyc      = $ARGV[2];
 my $infile   = $ARGV[3];
 my $jlogfile = $ARGV[4];
 
+my $use_costterms = 0;
+my $no_data       = 0.00;
+
 #--------------------------------------------------
 my $scr = "minmon_xtrct_costs.pl";
 my $msg = $scr . " HAS STARTED";
@@ -102,12 +105,14 @@ if( (-e $infile) ) {
       my $term_ctr=0;
 
       while( $line = <INFILE> ) {
+
          if( $line =~ /$costterms_target/ ) {
             my @termsline = split( / +/, $line );
             push( @jb_array, $termsline[$jb_number] );
             push( @jo_array, $termsline[$jo_number] );
             push( @jc_array, $termsline[$jc_number] );
             push( @jl_array, $termsline[$jl_number] );
+            $use_costterms = 1;
          }
 
          if( $line =~ /$cost_target/ ) {   
@@ -146,9 +151,17 @@ if( (-e $infile) ) {
       #----------------------------------------------
       my @all_costs;
       for my $i (0 .. $#cost_array) {
-         my $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s', 
+         my $iterline;
+         if( $use_costterms == 1 ){
+            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s', 
                        $i, $cost_array[$i], $jb_array[$i], $jo_array[$i], 
                        $jc_array[$i], $jl_array[$i], "\n";
+         }
+         else {
+            $iterline = sprintf ' %d,%e,%e,%e,%e,%e%s', 
+                       $i, $cost_array[$i], $no_data, $no_data, 
+                       $no_data, $no_data, "\n";
+         }
 
          push( @all_costs, $iterline );
       }

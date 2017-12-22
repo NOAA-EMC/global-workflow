@@ -119,21 +119,21 @@ else
   rprefix=enkf.$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
-memdir=$ROTDIR/${prefix}.$cymd/$chh/$memchar
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
+memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 GDATE=$($NDATE -$assim_freq $CDATE)
-gymd=$(echo $GDATE | cut -c1-8)
-ghh=$(echo  $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${rprefix}.$gymd/$ghh/$memchar
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
 read_increment=${read_increment:-".false."}
-increment_file=${increment_file:-$memdir/${CDUMP}.t${chh}z.atminc.nc}
+increment_file=${increment_file:-$memdir/${CDUMP}.t${cyc}z.atminc.nc}
 restart_interval=${restart_interval:-0}
 
 if [ $warm_start = ".false." ]; then
@@ -155,7 +155,7 @@ else
   else
 
     # Link all (except sfc_data) restart files from $gmemdir
-    for file in $gmemdir/RESTART/${cymd}.${chh}0000.*.nc; do
+    for file in $gmemdir/RESTART/${PDY}.${cyc}0000.*.nc; do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
       fsuf=$(echo $file2 | cut -d. -f1)
@@ -165,7 +165,7 @@ else
     done
 
     # Link sfcanl_data restart files from $memdir
-    for file in $memdir/RESTART/${cymd}.${chh}0000.*.nc; do
+    for file in $memdir/RESTART/${PDY}.${cyc}0000.*.nc; do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
       fsufanl=$(echo $file2 | cut -d. -f1)
@@ -181,7 +181,7 @@ else
       # and the model start time is the analysis time
       # The alternative is to replace
       # model start time with current model time in coupler.res
-      file=$gmemdir/RESTART/${cymd}.${chh}0000.coupler.res
+      file=$gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
       $NLN $file $DATA/INPUT/$file2
@@ -288,13 +288,18 @@ FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb"}
 
 # NSST Options
 # nstf_name contains the NSST related parameters
-# nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
-# nstf_name(2) : 0 = NSSTM spin up off, 1 = NSSTM spin up on,
-# nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
-# nstf_name(4) : zsea1 in mm
-# nstf_name(5) : zsea2 in mm
+# nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 1 = ON but uncoupled, 2 = ON and coupled
+# nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
+# nstf_name(3) : NST_RESV (Reserved, NSST Analysis) : 0 = OFF, 1 = ON
+# nstf_name(4) : ZSEA1 (in mm) : 0
+# nstf_name(5) : ZSEA2 (in mm) : 0
 # nst_anl      : .true. or .false., NSST analysis over lake
-nstf_name=${nstf_name:-"0,0,0,0,0"}
+NST_MODEL=${NST_MODEL:-0}
+NST_SPINUP=${NST_SPINUP:-0}
+NST_RESV=${NST_RESV-0}
+ZSEA1=${ZSEA1:-0}
+ZSEA2=${ZSEA2:-0}
+nstf_name=${nstf_name:-"$NST_MODEL,$NST_SPINUP,$NST_RESV,$ZSEA1,$ZSEA2"}
 nst_anl=${nst_anl:-".false."}
 
 
@@ -524,6 +529,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
+  fdiag = ${fdiag:-$FHOUT}
   $atmos_model_nml
 /
 
@@ -634,7 +640,7 @@ cat > input.nml <<EOF
   use_ufo     = ${use_ufo:-".true."}
   pre_rad     = ${pre_rad:-".false."}
   ncld        = ${ncld:-1}
-  imp_physics = ${imp_physics:-99}
+  imp_physics = ${imp_physics:-"99"}
   pdfcld      = ${pdfcld:-".false."}
   fhswr       = ${FHSWR:-"3600."}
   fhlwr       = ${FHLWR:-"3600."}
@@ -718,11 +724,7 @@ cat > input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
-/
-
-&nggps_diag_nml
-  fdiag = ${fdiag:-$FHOUT}
-  $nggps_diag_nml
+  $gfdl_cloud_microphysics_nml
 /
 
 &interpolator_nml
@@ -839,23 +841,23 @@ fi
 # make symbolic links to write forecast files directly in memdir
 cd $DATA
 if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-  FH3=`expr $FHMIN + 0 `
-  while [ $FH3 -le $FHMAX ]; do
-    FH3=$(printf %03i $FH3)
+  fhr=$FHMIN
+  while [ $fhr -le $FHMAX ]; do
+    FH3=$(printf %03i $fhr)
     atmi=atmf${FH3}.$OUTPUT_FILE
     sfci=sfcf${FH3}.$OUTPUT_FILE
     logi=logf${FH3}
-    atmo=$memdir/${CDUMP}.t${chh}z.atmf${FH3}.$OUTPUT_FILE
-    sfco=$memdir/${CDUMP}.t${chh}z.sfcf${FH3}.$OUTPUT_FILE
-    logo=$memdir/${CDUMP}.t${chh}z.logf${FH3}.$OUTPUT_FILE
+    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
+    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
+    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
     FHINC=$FHOUT
-    if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $FH3 -lt $FHMAX_HF ]; then
-     FHINC=$FHOUT_HF
+    if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
+      FHINC=$FHOUT_HF
     fi
-    FH3=`expr $FH3 + $FHINC `
+    fhr=$((fhr+FHINC))
   done
 else
   for n in $(seq 1 $ntiles); do
@@ -903,10 +905,10 @@ if [ $SEND = "YES" ]; then
 
   # Add time-stamp to restart files at FHMAX
   RDATE=$($NDATE +$FHMAX $CDATE)
-  rymd=$(echo $RDATE | cut -c1-8)
-  rhh=$(echo  $RDATE | cut -c9-10)
+  rPDY=$(echo $RDATE | cut -c1-8)
+  rcyc=$(echo $RDATE | cut -c9-10)
   for file in $(ls * | grep -v 0000); do
-    $NMV $file ${rymd}.${rhh}0000.$file
+    $NMV $file ${rPDY}.${rcyc}0000.$file
   done
 
   # Only save restarts at single time in RESTART directory
@@ -916,9 +918,9 @@ if [ $SEND = "YES" ]; then
   else
     RDATE=$($NDATE +$restart_interval $CDATE)
   fi
-  rymd=$(echo $RDATE | cut -c1-8)
-  rhh=$(echo  $RDATE | cut -c9-10)
-  for file in ${rymd}.${rhh}0000.* ; do
+  rPDY=$(echo $RDATE | cut -c1-8)
+  rcyc=$(echo $RDATE | cut -c9-10)
+  for file in ${rPDY}.${rcyc}0000.* ; do
     $NCP $file $memdir/RESTART/$file
   done
 fi

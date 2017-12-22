@@ -47,9 +47,6 @@ export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
 # File To Log Msgs
 ####################################
 export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${m_job}.${pid}}
-if [[ -e $jlogfile ]]; then
-  rm -f $jlogfile
-fi
 
 
 ##################################################
@@ -74,12 +71,13 @@ export utilexec=${utilexec:-${UTILROOT}/exec}
 ##############################################
 # Specify Package Areas
 ##############################################
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
+# JY export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
+export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas_minmon.${gdas_minmon_ver}}
 export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
 export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
 export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
 
-export HOMEminmon=${HOMEminmon:-${NWROOT}/global_shared.${global_shared_ver}}
+export HOMEminmon=${HOMEminmon:-${NWROOT}/minmon_shared.${minmon_shared_ver}}
 export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
 export USHminmon=${USHminmon:-$HOMEminmon/ush}
 export FIXminmon=${FIXminmon:-${HOMEminmon/fix}}
@@ -93,7 +91,7 @@ export FIXminmon=${FIXminmon:-${HOMEminmon/fix}}
 #############################################
 # Run setpdy and initialize PDY variables
 #############################################
-if [[ $MY_MACHINE != "THEIA" ]]; then
+if [[ $MY_MACHINE != "theia" ]]; then
    export cycle=t${cyc}z
    setpdy.sh
    . ./PDY
@@ -102,9 +100,21 @@ fi
 #############################################
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
-M_TANKverf=${M_TANKverf:-${COMROOT}/${NET}/${envir}}
-M_TANKverfM0=${M_TANKverfM0:-${M_TANKverf}/${RUN}.${PDY}/minmon}
-export M_TANKverfM1=${M_TANKverfM1:-${M_TANKverf}/${RUN}.${PDYm1}/minmon}
+M_TANKverf=${M_TANKverf:-${COMROOT}/verf/${envir}}
+
+echo "M_TANKverf   = $M_TANKverf"
+echo "TANK_USE_RUN = $TANK_USE_RUN"
+echo "M_TANKverfM0 = $M_TANKverfM0"
+echo "M_TANKverfM1 = $M_TANKverfM1"
+
+if [[ ${TANK_USE_RUN} -ne 1 ]]; then
+   M_TANKverfM0=${M_TANKverfM0:-${M_TANKverf}/minmon_${MINMON_SUFFIX}.${PDY}}
+   export M_TANKverfM1=${M_TANKverfM1:-${M_TANKverf}/minmon_${MINMON_SUFFIX}.${PDYm1}}
+else
+   M_TANKverfM0=${M_TANKverfM0:-${M_TANKverf}/${RUN}.${PDY}/minmon}
+   export M_TANKverfM1=${M_TANKverfM1:-${M_TANKverf}/${RUN}.${PDYm1}/minmon}
+fi
+
 export M_TANKverf=$M_TANKverfM0
 
 export COM_IN=${COM_IN:-${COMROOT}/${NET}/${envir}}
@@ -117,6 +127,9 @@ mkdir -p -m 775 $M_TANKverf
 # Set necessary environment variables
 ########################################
 export gsistat=${gsistat:-${COMIN}/gdas.t${cyc}z.gsistat}
+if [[ ! -e ${gsistat} ]]; then
+   export gsistat=${COMIN}/gsistat.gdas.${PDATE}
+fi
 
 msg="JOB HAS STARTED"
 postmsg "$jlogfile" "$msg"
@@ -124,9 +137,17 @@ postmsg "$jlogfile" "$msg"
 ########################################################
 # Execute the script.
 ${GMONSH:-$SCRgdas/exgdas_vrfminmon.sh.ecf} ${PDY} ${cyc}
+#${GMONSH:-$SCRgdas/exgdas_vrfminmon.sh.ecf}
+
+err=$?
+
 ########################################################
 
-msg="JOB COMPLETED NORMALLY"
+if [[ ${err} -ne 0 ]]; then
+   msg="WARNING:  JOB DID NOT COMPLETE NORMALLY, error code $err"
+else
+   msg="JOB COMPLETED NORMALLY"
+fi
 postmsg "$jlogfile" "$msg"
 
 ################################

@@ -27,7 +27,7 @@ source $setup
 module use $( pwd -P )/../modulefiles
 module load module_base.$target
 
-for script in build_nems_util.sh build_cycle.sh build_chgres.sh build_chgres_GSM.sh build_orog.sh build_radmon.sh; do
+for script in build_nems_util.sh build_cycle.sh build_chgres.sh build_chgres_GSM.sh build_enkf_chgres_recenter.sh build_orog.sh build_radmon.sh; do
  cd $pwd
  sh $script $target
 done

@@ -61,11 +61,13 @@ fi
 
 # Forecast length for GFS forecast
 if [ $CDUMP = "gfs" ]; then
-    export FHMIN=$FHMIN_GFS
-    export FHOUT=$FHOUT_GFS
     export FHMAX=$FHMAX_GFS
+    export FHOUT=$FHOUT_GFS
     export FHMAX_HF=$FHMAX_HF_GFS
     export FHOUT_HF=$FHOUT_HF_GFS
+else
+    export FHMAX_HF=0
+    export FHOUT_HF=0
 fi
 
 # Set output resolution to ensemble resolution,

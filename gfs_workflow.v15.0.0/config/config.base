@@ -216,6 +216,8 @@ export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
 
+# Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
+export imp_physics=99
 
 # Shared parameters
 # Hybrid related

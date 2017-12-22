@@ -110,6 +110,7 @@ Create COMROT experiment directory structure'''
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'
     else:
+        print 'workflow is currently only supported on: %s' % ' '.join(machines)
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
 
     configdir = args.configdir

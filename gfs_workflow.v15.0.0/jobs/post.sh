@@ -16,6 +16,8 @@
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## FHRGRP : forecast hour group to post-process (e.g. 0, 1, 2 ...)
+## FHRLST : forecast hourlist to be post-process (e.g. anl, f000, f000_f001_f002, ...)
 ###############################################################
 
 ###############################################################
@@ -35,8 +37,8 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export PDY=$(echo $CDATE | cut -c1-8)
-export cyc=$(echo $CDATE | cut -c9-10)
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
 
 export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
 
@@ -44,61 +46,58 @@ export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
 export PREFIX="$CDUMP.t${cyc}z."
 export SUFFIX=".nemsio"
 
-export DATA=$RUNDIR/$CDATE/$CDUMP/post
+export DATA=$RUNDIR/$CDATE/$CDUMP/post$FHRGRP
 [[ -d $DATA ]] && rm -rf $DATA
 
-# First deal with post-processing analysis
-export ANALYSIS_POST="YES"
-export ATMANL=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmanl$SUFFIX
-if [ -f $ATMANL ]; then
+# Get the first hour in FHRLST to get dimensions etc.
+fhr=$(echo $FHRLST | cut -d "_" -f1)
+ATMFNAME=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atm$fhr$SUFFIX
 
-    [[ $status -ne 0 ]] && exit $status
-    export LONB=$($NEMSIOGET $ATMANL dimx | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-    export LATB=$($NEMSIOGET $ATMANL dimy | awk '{print $2}')
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+# Analysis post is always a separate job
+if [ $FHRGRP -eq 0 ]; then
 
-    if [ $QUILTING = ".false." ]; then
-        export JCAP=$($NEMSIOGET $ATMANL jcap | awk '{print $2}')
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-    else
-        # write component does not add JCAP anymore
-        export JCAP=$((LATB-2))
+    export ANALYSIS_POST="YES"
+    if [ ! -f $ATMFNAME ]; then
+        echo "$ATMFNAME does not exist, EXITING!"
+        exit 0
+    fi
+    flist_tmp=$ATMFNAME
+
+else
+
+    export ANALYSIS_POST="NO"
+    if [ ! -f $ATMFNAME ]; then
+        echo "$ATMFNAME does not exist and should, ABORT!"
+        exit 99
     fi
 
-    $POSTJJOBSH
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+    # Convert all "_" into " " in FHRLST, and create list of files to process
+    fhrlst=$(echo $FHRLST | sed -e "s/_/ /g")
+    flist_tmp=""
+    for fhr in $fhrlst; do
+        flist_tmp="$flist_tmp $ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atm$fhr$SUFFIX"
+    done
 
 fi
 
-# Now post process the forecast hours
-export ANALYSIS_POST="NO"
-ATMF00=$ROTDIR/$CDUMP.$PDY/$cyc/${PREFIX}atmf000$SUFFIX
-if [ ! -f $ATMF00 ]; then
-    echo "$ATMF00 does not exist and should, ABORT!"
-    exit 99
-fi
-
-[[ $status -ne 0 ]] && exit $status
-export LONB=$($NEMSIOGET $ATMF00 dimx | awk '{print $2}')
+export LONB=$($NEMSIOGET $ATMFNAME dimx | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
-export LATB=$($NEMSIOGET $ATMF00 dimy | awk '{print $2}')
+export LATB=$($NEMSIOGET $ATMFNAME dimy | awk '{print $2}')
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
 if [ $QUILTING = ".false." ]; then
-    export JCAP=$($NEMSIOGET $ATMF00 jcap | awk '{print $2}')
+    export JCAP=$($NEMSIOGET $ATMFNAME jcap | awk '{print $2}')
     status=$?
     [[ $status -ne 0 ]] && exit $status
 else
     # write component does not add JCAP anymore
     export JCAP=$((LATB-2))
 fi
+
+# List of files to post-process in this job are in flist:
+export flist=$flist_tmp
 
 $POSTJJOBSH
 status=$?

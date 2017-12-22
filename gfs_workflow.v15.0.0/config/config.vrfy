@@ -31,7 +31,7 @@ export VRFYFITS="$GRIB1_WORKS"    # Fit to observations
 export VRFYPRCP="YES"             # Precip threat scores
 export VRFYMINMON="$GRIB1_WORKS"  # GSI minimization monitoring
 export VRFYRAD="$GRIB1_WORKS"     # Radiance data assimilation monitoring
-export VRFYOZN="NO"               # Ozone data assimilation monitoring
+export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYTRAK="$GRIB1_WORKS"    # Hurricane track forecasts
 export VRFYGENESIS="$GRIB1_WORKS" # Cyclone genesis
 export VRFYGMPK="NO"              # Gempak verification
@@ -108,12 +108,18 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     fi
 
     # Ozone Monitoring
-    if [ $VRFYOZN = "YES" ]; then
-        echo "WARNING: Ozone Monitoring is just a stub for now!"
-        export VRFYOZN="NO"
-        export OZNDIR="$NOSCRUB/$LOGNAME/ozone/stats/$PSLOT"
-        export VRFYOZNSH=""
-        export BASEDIR_OZNMON="$BASE_OZNMON/util/Ozone_Monitor"
+    if [[ "$VRFYOZN" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
+
+        export HOMEoznmon="$BASE_GSM"
+        export OZNMON_SUFFIX=$PSLOT
+        export TANKverf_ozn="$NOSCRUB/oznmon"
+        if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
+            export VRFYOZNSH="$HOMEgdas/jobs/JGDAS_VERFOZN"
+        else
+            echo "WARNING: Ozone monitoring is not enabled on $machine!"
+            export VRFYOZN="NO"
+        fi
+
     fi
 
 fi
