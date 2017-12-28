@@ -269,6 +269,26 @@ def add_streq_tag(dep_dict):
     return string
 
 
+def _traverse(o, tree_types=(list, tuple)):
+    '''
+    Traverse through a list of lists or tuples and yeild the value
+    Objective is to flatten a list of lists or tuples
+    :param o: list of lists or not
+    :type o: list, tuple, scalar
+    :param tree_types: trees to travers
+    :type tree_types: tuple
+    :return: value in the list or tuple
+    :rtype: scalar
+    '''
+
+    if isinstance(o, tree_types):
+        for value in o:
+            for subvalue in _traverse(value, tree_types):
+                yield subvalue
+    else:
+        yield o
+
+
 def create_dependency(dep_condition=None, dep=None):
     '''
     create a compound dependency given a list of dependendies, and compounding condition
@@ -293,7 +313,8 @@ def create_dependency(dep_condition=None, dep=None):
             if dep_condition is None:
                 strings.append('%s' % d)
             else:
-                strings.append('\t%s' % d)
+                for e in _traverse(d):
+                    strings.append('\t%s' % e)
 
     if dep_condition is not None:
         strings.append('</%s>' % dep_condition)

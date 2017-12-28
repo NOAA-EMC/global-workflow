@@ -27,6 +27,7 @@
 
 import os
 import sys
+import numpy as np
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import rocoto
@@ -193,14 +194,14 @@ def get_postgroups(post, cdump='gdas'):
     fhrs = np.array_split(fhrs, ngrps)
     fhrs = [f.tolist() for f in fhrs]
 
-    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps+1)])
-    fhrdep = ' '.join(['f000'] + [f[-1] for f in fhrs])
-    fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
+    fhrgrp = ' '.join(['%03d' % x for x in range(1, ngrps+1)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
 
 
-def get_workflow(cdump='gdas'):
+def get_workflow(dict_configs, cdump='gdas'):
     '''
         Create tasks for forecast only workflow
     '''
@@ -250,8 +251,8 @@ def get_workflow(cdump='gdas'):
     dependencies2 = rocoto.create_dependency(dep_condition='not', dep=deps)
 
     deps = []
-    dep.append(dependencies)
-    dep.append(dependencies2)
+    deps.append(dependencies)
+    deps.append(dependencies2)
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
     task = wfu.create_wf_task('fv3ic', cdump=cdump, envar=envars, dependency=dependencies)
@@ -311,7 +312,7 @@ def get_workflow(cdump='gdas'):
     return ''.join(tasks)
 
 
-def get_workflow_body(cdump='gdas'):
+def get_workflow_body(dict_configs, cdump='gdas'):
     '''
         Create the workflow body
     '''
@@ -328,7 +329,7 @@ def get_workflow_body(cdump='gdas'):
     strings.append('\t<!-- Define the cycles -->\n')
     strings.append('\t<cycledef group="%s">&SDATE; &EDATE; &INTERVAL;</cycledef>\n' % cdump)
     strings.append('\n')
-    strings.append(get_workflow(cdump=cdump))
+    strings.append(get_workflow(dict_configs, cdump=cdump))
     strings.append('\n')
     strings.append('</workflow>\n')
 
@@ -348,7 +349,7 @@ def create_xml(dict_configs):
     preamble = get_preamble()
     definitions = get_definitions(base)
     resources = get_resources(dict_configs, cdump=base['CDUMP'])
-    workflow = get_workflow_body(cdump=base['CDUMP'])
+    workflow = get_workflow_body(dict_configs, cdump=base['CDUMP'])
 
     # Start writing the XML file
     fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')
