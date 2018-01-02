@@ -46,6 +46,8 @@ FHCYC=${FHCYC:-24}
 FHMAX_HF=${FHMAX_HF:-0}
 FHOUT_HF=${FHOUT_HF:-1}
 NSOUT=${NSOUT:-"-1"}
+FDIAG=$FHOUT
+if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
 
 # Directories.
 pwd=$(pwd)
@@ -53,7 +55,7 @@ NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 BASE_GSM=${BASE_GSM:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
+FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
@@ -205,10 +207,10 @@ fi
 #--------------------------------------------------------------------------
 # Grid and orography data
 for n in $(seq 1 $ntiles); do
-  $NLN $FIX_FV3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-  $NLN $FIX_FV3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+  $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+  $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 done
-$NLN $FIX_FV3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+$NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 
 # GFS standard input data
 
@@ -529,7 +531,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  fdiag = ${fdiag:-$FHOUT}
+  fdiag = $FDIAG
   $atmos_model_nml
 /
 
@@ -694,7 +696,6 @@ cat > input.nml <<EOF
   prog_ccn = .false.
   do_qa = .true.
   fast_sat_adj = .true.
-  tau_l2v = 300.
   tau_l2v = 225.
   tau_v2l = 150.
   tau_g2v = 900.
@@ -903,26 +904,30 @@ if [ $SEND = "YES" ]; then
   cd $DATA/RESTART
   mkdir -p $memdir/RESTART
 
-  # Add time-stamp to restart files at FHMAX
-  RDATE=$($NDATE +$FHMAX $CDATE)
-  rPDY=$(echo $RDATE | cut -c1-8)
-  rcyc=$(echo $RDATE | cut -c9-10)
-  for file in $(ls * | grep -v 0000); do
-    $NMV $file ${rPDY}.${rcyc}0000.$file
-  done
-
   # Only save restarts at single time in RESTART directory
-  # Either at FHMAX or at first time in restart_interval
-  if [ $restart_interval -eq 0 ]; then
+  # Either at restart_interval or at end of the forecast
+  if [ $restart_interval -eq 0 -o $restart_interval -eq $FHMAX ]; then
+
+    # Add time-stamp to restart files at FHMAX
     RDATE=$($NDATE +$FHMAX $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    for file in $(ls * | grep -v 0000); do
+      $NMV $file ${rPDY}.${rcyc}0000.$file
+    done
+
   else
+
+    # time-stamp exists at restart_interval time, just copy
     RDATE=$($NDATE +$restart_interval $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    for file in ${rPDY}.${rcyc}0000.* ; do
+      $NCP $file $memdir/RESTART/$file
+    done
+
   fi
-  rPDY=$(echo $RDATE | cut -c1-8)
-  rcyc=$(echo $RDATE | cut -c9-10)
-  for file in ${rPDY}.${rcyc}0000.* ; do
-    $NCP $file $memdir/RESTART/$file
-  done
+
 fi
 
 #------------------------------------------------------------------

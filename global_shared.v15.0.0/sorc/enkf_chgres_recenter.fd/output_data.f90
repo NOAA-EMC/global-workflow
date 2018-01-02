@@ -29,8 +29,10 @@
  character(len=50), allocatable    :: recname(:)
  character(len=50), allocatable    :: reclevtyp(:)
 
- integer(nemsio_intkind)           :: nrec
+ integer(nemsio_intkind)              :: nrec
  integer(nemsio_intkind), allocatable :: reclev(:)
+
+ real(nemsio_realkind), allocatable :: vcoord_header(:,:,:)
 
  contains
 
@@ -46,66 +48,61 @@
 
  implicit none
 
- integer                        :: iret, lskip, lgrib, numbytes, numpts
- integer                        :: jgds(200), jpds(200), kgds(200), kpds(200)
+ character(len=20)                    :: vlevtyp, vname
 
- logical*1, allocatable         :: bitmap(:)
+ integer(nemsio_intkind)              :: vlev
+ integer                              :: iret
+
+ real(nemsio_realkind), allocatable   :: dummy(:)
+
+ type(nemsio_gfile)                   :: gfile
 
  print*
  print*,"OUTPUT GRID I/J DIMENSIONS: ", i_output, j_output
-
- kgds_output = 0
 
 !-------------------------------------------------------------------
 ! Set the grib 1 grid description section, which is needed
 ! by the IPOLATES library.
 !-------------------------------------------------------------------
 
+ kgds_output = 0
+
  call calc_kgds(i_output, j_output, kgds_output)
 
 !-------------------------------------------------------------------
-! Read the terrain on the output grid.
+! Read the terrain on the output grid.  To ensure exact match,
+! read it from an existing enkf nemsio restart file.
 !-------------------------------------------------------------------
 
+ print*
  print*,"OPEN OUTPUT GRID TERRAIN FILE: ", trim(terrain_file)
- call baopenr(17, terrain_file, iret)
+ call nemsio_open(gfile, terrain_file, "read", iret=iret)
  if (iret /= 0) then
-   print*,"FATAL ERROR OPENING FILE. IRET IS: ", iret
+   print*,"FATAL ERROR OPENING FILE: ",trim(terrain_file)
+   print*,"IRET IS: ", iret
    call errexit(50)
  endif
 
- lskip    = -1
- jpds     = -1
- jgds     = -1
- jpds(5)  = 8
- kpds     = jpds
- kgds     = jgds
+ allocate(dummy(ij_output))
+ allocate(hgt_external_output(ij_output))
 
- print*,"READ GRID HEADER"
- call getgbh(17, 0, lskip, jpds, jgds, lgrib, numbytes, numpts, &
-             kpds, kgds, iret)
+ print*
+ print*,"READ SURFACE HEIGHT"
+ vlev    = 1
+ vlevtyp = "sfc"
+ vname   = "hgt"
+ call nemsio_readrecv(gfile, vname, vlevtyp, vlev, dummy, 0, iret)
  if (iret /= 0) then
-   print*,"FATAL ERROR READING GRID HEADER. IRET IS: ", iret
+   print*,"FATAL ERROR READING FILE: ",trim(terrain_file)
+   print*,"IRET IS: ", iret
    call errexit(51)
  endif
 
- print*,"PDS OF DATA: ", kpds(1:23)
- print*,"GDS OF DATA: ", kgds(1:15)
+ hgt_external_output = dummy
 
- allocate(hgt_external_output(ij_output))
- allocate(bitmap(ij_output))
+ deallocate(dummy)
 
- print*,"DEGRIB TERRAIN RECORD"
- call getgb(17, 0, ij_output, lskip, jpds, jgds, numpts, lskip, &
-            kpds, kgds, bitmap, hgt_external_output, iret)
- if (iret /= 0) then
-   print*,"FATAL ERROR DEGRIBBING TERRAIN RECORD. IRET IS: ", iret
-   call errexit(52)
- endif
-
- deallocate(bitmap)
-
- call baclose(17, iret)
+ call nemsio_close(gfile, iret=iret)
 
  end subroutine set_output_grid
 
@@ -142,17 +139,19 @@
 
  print*
  print*,'OPEN OUTPUT FILE: ',trim(output_file)
- call nemsio_open(gfile, output_file, gaction, iret=iret, gdatatype="bin4_be", &
+ call nemsio_open(gfile, output_file, gaction, iret=iret, gdatatype="bin4", &
                   nmeta=8, modelname="GFS", nrec=nrec, &
                   idate=idate, dimx=i_output, &
                   dimy=j_output, dimz=lev, ntrac=ntrac, & 
                   ncldt=ncldt, idvc=idvc, idsl=idsl, idvm=idvm, &
                   idrt=4, recname=recname, reclevtyp=reclevtyp, &
-                  reclev=reclev)
+                  reclev=reclev,vcoord=vcoord_header)
  if (iret/=0) then
    print*,"FATAL ERROR OPENING FILE. IRET IS: ", iret
    call errexit(9)
  endif
+
+ deallocate(recname, reclevtyp, reclev, vcoord_header)
 
  allocate(dummy(i_output*j_output))
 
@@ -326,6 +325,11 @@
  recname(nrec)   = "hgt"
  reclev(nrec)    = 1
  reclevtyp(nrec) = "sfc"
+
+ allocate(vcoord_header(lev+1,3,2))
+ vcoord_header = 0.0
+ vcoord_header(:,1,1) = vcoord(:,1)
+ vcoord_header(:,2,1) = vcoord(:,2)
 
  end subroutine header_set
 

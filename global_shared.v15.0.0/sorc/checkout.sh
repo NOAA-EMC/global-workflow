@@ -35,4 +35,15 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo EMC_post checkout ...
+if [[ ! -d upp.fd ]] ; then
+    rm -f ${topdir}/checkout-upp.log
+    git clone --recursive ${USERNAME}@gerrit:EMC_post upp.fd >> ${topdir}/checkout-upp.log 2>&1
+    cd upp.fd
+    git checkout post_fv3gfs
+    cd ${topdir}
+else
+    echo 'Skip.  Directory upp.fd already exists.'
+fi
+
 exit 0

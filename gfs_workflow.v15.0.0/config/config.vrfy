@@ -19,22 +19,17 @@ export VDUMP="gfs"       # verifying dump
 export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
 
-# What we want turned ON/OFF
-GRIB1_WORKS=YES
-if [[ "$machine" == THEIA ]] ; then
-    GRIB1_WORKS=NO
-fi
-export VSDB_STEP1="YES"           # populate VSDB database
+export VSDB_STEP1="YES"  # populate VSDB database
 export VSDB_STEP2="NO"
-export VRFYG2OBS="$GRIB1_WORKS"   # Grid to observations, see note below if turning ON
-export VRFYFITS="$GRIB1_WORKS"    # Fit to observations
-export VRFYPRCP="YES"             # Precip threat scores
-export VRFYMINMON="$GRIB1_WORKS"  # GSI minimization monitoring
-export VRFYRAD="$GRIB1_WORKS"     # Radiance data assimilation monitoring
-export VRFYOZN="YES"              # Ozone data assimilation monitoring
-export VRFYTRAK="$GRIB1_WORKS"    # Hurricane track forecasts
-export VRFYGENESIS="$GRIB1_WORKS" # Cyclone genesis
-export VRFYGMPK="NO"              # Gempak verification
+export VRFYG2OBS="YES"   # Grid to observations, see note below if turning ON
+export VRFYFITS="YES"    # Fit to observations
+export VRFYPRCP="YES"    # Precip threat scores
+export VRFYMINMON="YES"  # GSI minimization monitoring
+export VRFYRAD="YES"     # Radiance data assimilation monitoring
+export VRFYOZN="YES"     # Ozone data assimilation monitoring
+export VRFYTRAK="YES"    # Hurricane track forecasts
+export VRFYGENESIS="YES" # Cyclone genesis
+export VRFYGMPK="NO"     # Gempak verification
 
 # Fit to Observations
 if [ $VRFYFITS = "YES" ]; then
@@ -52,8 +47,10 @@ fi
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
 # All these call $VSDBSH
 if [[ "$CDUMP" = "gfs" ]] ; then
+    ddd=`echo $CDATE |cut -c 1-8`
+    #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
-    if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+    if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
         export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
         export VBACKUP_PRCP=24                          # back up for QPF verification data
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
@@ -62,9 +59,17 @@ if [[ "$CDUMP" = "gfs" ]] ; then
         export vlength=$FHMAX_GFS                       # verification length
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
-    fi
+        export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
 
+        export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
+        export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
+        export webhostid="$USER"                        # webhost(rzdm) user name
+        export SEND2WEB="NO"                            # whether or not to send maps to webhost
+        export WEBDIR="/home/people/emc/www/htdocs/gmb/${webhostid}/vsdb/$PSLOT"
+        export mdlist="gfs $PSLOT "                     # exps (up to 10) to compare in maps
+    fi
 fi
+
 
 # Minimization, Radiance and Ozone Monitoring
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then

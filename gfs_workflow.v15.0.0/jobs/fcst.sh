@@ -70,16 +70,6 @@ else
     export FHOUT_HF=0
 fi
 
-# Set output resolution to ensemble resolution,
-# if using the write grid component and doing hybrid DA
-if [ $CDUMP = "gdas" -a ${DOHYBVAR:-"NO"} = "YES" ]; then
-    if [ $OUTPUT_GRID = "gaussian_grid" -a $QUILTING = ".true." ]; then
-        res=$(echo $CASE_ENKF | cut -c2-)
-        export LONB_IMO=$((res*4))
-        export LATB_JMO=$((res*2))
-    fi
-fi
-
 ###############################################################
 # Run relevant exglobal script
 $FORECASTSH

@@ -249,7 +249,7 @@ BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
 HOMEglobal=${HOMEglobal:-$BASEDIR/global_shared.${global_shared_ver}}
 FIXSUBDA=${FIXSUBDA:-fix/fix_am}
 FIXgsm=${FIXgsm:-$HOMEglobal/$FIXSUBDA}
-FIXfv3=${FIXfv3:-$HOMEglobal//fix/fix_fv3}
+FIXfv3=${FIXfv3:-$HOMEglobal/fix/fix_fv3_gmted2010}
 EXECgsm=${EXECgsm:-$HOMEglobal/exec}
 DATA=${DATA:-$(pwd)}
 #  Filenames.

@@ -37,12 +37,13 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
+export PDY=$(echo $CDATE | cut -c1-8)
+export cyc=$(echo $CDATE | cut -c9-10)
 
 export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
 
 export pgmout="/dev/null" # exgfs_nceppost.sh.ecf will hang otherwise
+export jlogfile=$ROTDIR/logs/jlogfile.${CDUMP}post
 export PREFIX="$CDUMP.t${cyc}z."
 export SUFFIX=".nemsio"
 
@@ -99,9 +100,58 @@ fi
 # List of files to post-process in this job are in flist:
 export flist=$flist_tmp
 
-$POSTJJOBSH
-status=$?
-[[ $status -ne 0 ]] && exit $status
+
+#---------------------------------------------------------------
+####################################
+# Specify RUN Name and model
+####################################
+export NET=gfs
+export RUN=$CDUMP
+
+####################################
+# SENDSMS  - Flag Events on SMS
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+# RERUN    - Rerun posts from beginning (default no)
+# VERBOSE  - Specify Verbose Output in global_postgp.sh
+####################################
+export SAVEGES=NO
+export SENDSMS=NO
+export SENDCOM=YES
+export SENDDBN=NO
+export RERUN=NO
+export VERBOSE=YES
+
+export HOMEglobal=${BASE_POST}
+export HOMEgfs=${BASE_POST}
+export HOMEgdas=${BASE_POST}
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=$COMROT
+export COMOUT=$COMROT
+
+export APRUN=${APRUN_NP}
+export FIXglobal=$BASE_GSM/fix
+export KEEPDATA=${KEEPDATA:-"NO"}
+#---------------------------------------------------------------
+
+
+for fname in $flist; do
+
+    fname=`basename $fname`
+    if [ $fname = "${PREFIX}atmanl$SUFFIX" ]; then
+        export post_times="anl"
+    else
+        export post_times=`echo $fname | cut -d. -f3 | cut -c5-`
+    fi
+ 
+    $POSTJJOBSH
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+done
 
 ###############################################################
 # Exit out cleanly

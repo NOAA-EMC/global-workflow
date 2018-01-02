@@ -27,7 +27,7 @@ source $setup
 module use $( pwd -P )/../modulefiles
 module load module_base.$target
 
-for script in build_nems_util.sh build_cycle.sh build_chgres.sh build_chgres_GSM.sh build_enkf_chgres_recenter.sh build_orog.sh build_radmon.sh; do
+for script in build_nems_util.sh build_cycle.sh build_chgres.sh build_chgres_GSM.sh build_enkf_chgres_recenter.sh build_orog.sh build_radmon.sh build_oznmon.sh; do
  cd $pwd
  sh $script $target
 done
@@ -46,7 +46,7 @@ done
 cd $pwd
 
 rc=0
-for x in fv3gfs.fd gsi.fd ; do
+for x in fv3gfs.fd gsi.fd upp.fd; do
     if [[ ! -d $x ]] ; then
         echo "$x: missing.  Did you run checkout.sh?"
         rc=$((rc+1))
@@ -60,5 +60,8 @@ sh build_fv3.sh $fv3target
 
 cd $pwd
 sh build_gsi.sh $target
+
+cd $pwd/upp.fd/sorc
+sh build_ncep_post.sh
 
 exit 0

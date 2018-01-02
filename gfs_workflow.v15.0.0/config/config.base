@@ -15,6 +15,9 @@ echo "BEGIN: config.base"
 # Machine environment
 export machine="@MACHINE@"
 
+# EMC parallel or NCO production
+export EMCPARA="YES"
+
 # Account, queue, etc.
 if [ $machine = "THEIA" ]; then
 

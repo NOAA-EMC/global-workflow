@@ -129,30 +129,39 @@ $NCP ${APREFIX}pgrbanl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
 
 # Archive 1 degree forecast GRIB1 files for verification
 if [ $CDUMP = "gfs" ]; then
-    for fname in ${APREFIX}pgrbf*; do
-        fhr=$(echo $fname | cut -d. -f3 | cut -c 6-)
-        $NCP $fname $ARCDIR/pgbf${fhr}.${CDUMP}.${CDATE}
+    for fname in ${APREFIX}pgrb.1p00.f*; do
+        fhr=$(echo $fname | cut -d. -f5 | cut -c 2-)
+        fhr2=$(printf %02i $fhr)
+        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
     done
 fi
 if [ $CDUMP = "gdas" ]; then
-    flist="00 03 06 09"
+    flist="000 003 006 009"
     for fhr in $flist; do
-        fname=${APREFIX}pgrbf${fhr}
-        $NCP $fname $ARCDIR/pgbf${fhr}.${CDUMP}.${CDATE}
+        fname=${APREFIX}pgrb.1p00.f${fhr}
+        fhr2=$(printf %02i $fhr)
+        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
     done
 fi
 
-# Archive
-# 1. quarter degree GRIB1 files for precip verification
-# 2. atmospheric nemsio gfs forecast files for fit2obs
+# Archive quarter degree GRIB1 files for precip verification
+if [ $CDUMP = "gfs" ]; then
+    for fname in ${APREFIX}sfluxgrbf*grib2; do
+       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
+       fhr=$fhr3
+       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
+       rm -f sflux_outtmp
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
+       fileout=pgbq${fhr}.${CDUMP}.${CDATE}
+       $CNVGRIB21_GFS -g21 sflux_outtmp $ARCDIR/$fileout
+    done
+fi
+
+
+# Archive atmospheric nemsio gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
-if [ $CDUMP = "gfs" ]; then
-
-    for fname in pgbq*${CDUMP}.${CDATE}.grib1; do
-       fileout=$(echo $fname | cut -d. -f1-3)  # strip off ".grib1" suffix
-       $NCP $fname $ARCDIR/$fileout
-    done
+if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
     fhmax=$FHMAX_GFS

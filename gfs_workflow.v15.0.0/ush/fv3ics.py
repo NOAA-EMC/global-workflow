@@ -137,6 +137,7 @@ mkdir -p $OUTDIR
 # Load appropriate modulefiles for global_chgres
 source $BASE_GSM/modulefiles/module-setup.sh.inc
 module use $BASE_GSM/modulefiles/fv3gfs
+module load $BASE_GSM/modulefiles/module_base.wcoss_c
 module load global_chgres.$target
 module list
 

@@ -35,7 +35,7 @@ NWPROD=${NWPROD:-$pwd}
 BASE_GSM=${BASE_GSM:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
+FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$BASE_GSM/exec/regrid_nemsio}
 REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$BASE_GSM/parm/parm_fv3diag/variable_table.txt}
 
@@ -65,8 +65,8 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 #--------------------------------------------------
 # ESMF regrid weights and output variable table
-weight_bilinear=${weight_bilinear:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.bilinear.nc}
-weight_neareststod=${weight_neareststod:-$FIX_FV3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.neareststod.nc}
+weight_bilinear=${weight_bilinear:-$FIXfv3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.bilinear.nc}
+weight_neareststod=${weight_neareststod:-$FIXfv3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB}_lat${LATB}.${GG}.neareststod.nc}
 
 #-------------------------------------------------------
 # Go to the directory where the history files are
