@@ -291,7 +291,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # vrfy
     deps = []
-    dep_dict = {'type':'task', 'name':'%spost' % cdump}
+    dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
