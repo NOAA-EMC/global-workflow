@@ -33,8 +33,8 @@ ulimit -s unlimited
 #----------------------------------------------------------------
 
 export USER=$LOGNAME 
-export res=96	 	   # resolution of tile: 48, 96, 192, 384, 768, 1152, 3072
-export gtype=uniform   # grid type: uniform, stretch, or nest
+export res=96	 	   # resolution of tile: 48, 96, 128, 192, 384, 768, 1152, 3072
+export gtype=uniform       # grid type: uniform, stretch, or nest
 
 #----------------------------------------------------------------
 # The orography code runs with threads.  On Cray, the code is
@@ -54,8 +54,8 @@ if [ $machine = WCOSS_C ]; then
  export APRUN="aprun -n 1 -N 1 -j 1 -d 1 -cc depth"
  export KMP_AFFINITY=disabled
  export home_dir=$LS_SUBCWD/..
- export topo=/gpfs/hps/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
- export TMPDIR=/gpfs/hps/ptmp/$LOGNAME/fv3_grid.$gtype
+ export topo=/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/fv3gfs/fix/fix_orog
+ export TMPDIR=/gpfs/hps3/ptmp/$LOGNAME/fv3_grid.$gtype
 elif [ $machine = THEIA ]; then
  . /apps/lmod/lmod/init/sh
  set +x
@@ -76,7 +76,7 @@ export script_dir=$home_dir/ush
 export exec_dir=$home_dir/exec
 
 #export out_dir=$home_dir/fix/C${res}
-export out_dir=/gpfs/hps/ptmp/$LOGNAME/fv3_grid/fix/C${res}
+export out_dir=/gpfs/hps3/ptmp/$LOGNAME/fv3_grid/fix/C${res}
 mkdir -p $out_dir $TMPDIR
 cd $TMPDIR ||exit 8
 
@@ -111,6 +111,8 @@ if [ $res -eq 48 ]; then
  export cd4=0.12;  export max_slope=0.12; export n_del2_weak=4;   export peak_fac=1.1  
 elif [ $res -eq 96 ]; then 
  export cd4=0.12;  export max_slope=0.12; export n_del2_weak=8;   export peak_fac=1.1  
+elif [ $res -eq 128 ]; then
+ export cd4=0.13;  export max_slope=0.12; export n_del2_weak=8;   export peak_fac=1.1
 elif [ $res -eq 192 ]; then 
  export cd4=0.15;  export max_slope=0.12; export n_del2_weak=12;  export peak_fac=1.05  
 elif [ $res -eq 384 ]; then 

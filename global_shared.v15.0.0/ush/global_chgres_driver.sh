@@ -31,7 +31,7 @@ pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD/global_shared}
 export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
-export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3}
+export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3_gmted2010}
 export CHGRESEXEC=$BASE_GSM/exec/global_chgres
 export CHGRESSH=$BASE_GSM/ush/global_chgres.sh
 

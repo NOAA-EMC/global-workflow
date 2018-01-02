@@ -15,7 +15,7 @@ export DATA=${DATA:-$pwd}
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$BASE_GSM/fix}
-export FIX_FV3=${FIX_FV3:-$FIX_DIR/fix_fv3}
+export FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 export REMAPEXE=${REMAPEXE:-$BASE_GSM/exec/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
@@ -25,8 +25,8 @@ export CDUMP=${CDUMP:-gfs}
 export PREFIX=${PREFIX:-${CDUMP}${TCYC}}
 
 #--------------------------------------------------
-export grid_loc=$FIX_FV3/$CASE/${CASE}_mosaic.nc
-export weight_file=$FIX_FV3/$CASE/remap_weights_${CASE}_${GG}.nc
+export grid_loc=$FIXfv3/$CASE/${CASE}_mosaic.nc
+export weight_file=$FIXfv3/$CASE/remap_weights_${CASE}_${GG}.nc
 
 export APRUN_REMAP=${APRUN_REMAP:-${APRUN:-""}}
 export NTHREADS_REMAP=${NTHREADS_REMAP:-${NTHREADS:-1}}
