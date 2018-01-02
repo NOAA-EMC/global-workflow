@@ -903,26 +903,30 @@ if [ $SEND = "YES" ]; then
   cd $DATA/RESTART
   mkdir -p $memdir/RESTART
 
-  # Add time-stamp to restart files at FHMAX
-  RDATE=$($NDATE +$FHMAX $CDATE)
-  rPDY=$(echo $RDATE | cut -c1-8)
-  rcyc=$(echo $RDATE | cut -c9-10)
-  for file in $(ls * | grep -v 0000); do
-    $NMV $file ${rPDY}.${rcyc}0000.$file
-  done
-
   # Only save restarts at single time in RESTART directory
-  # Either at FHMAX or at first time in restart_interval
-  if [ $restart_interval -eq 0 ]; then
+  # Either at restart_interval or at end of the forecast
+  if [ $restart_interval -eq 0 -o $restart_interval -eq $FHMAX ]; then
+
+    # Add time-stamp to restart files at FHMAX
     RDATE=$($NDATE +$FHMAX $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    for file in $(ls * | grep -v 0000); do
+      $NMV $file ${rPDY}.${rcyc}0000.$file
+    done
+
   else
+
+    # time-stamp exists at restart_interval time, just copy
     RDATE=$($NDATE +$restart_interval $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    for file in ${rPDY}.${rcyc}0000.* ; do
+      $NCP $file $memdir/RESTART/$file
+    done
+
   fi
-  rPDY=$(echo $RDATE | cut -c1-8)
-  rcyc=$(echo $RDATE | cut -c9-10)
-  for file in ${rPDY}.${rcyc}0000.* ; do
-    $NCP $file $memdir/RESTART/$file
-  done
+
 fi
 
 #------------------------------------------------------------------
