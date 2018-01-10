@@ -37,8 +37,6 @@ export COMIN=${COMIN:-$pwd}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
 export COMOUT=${COMOUT:-$COMIN}
-export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
-export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -59,7 +57,7 @@ APRUN_GSI=${APRUN_GSI:-${APRUN:-""}}
 NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
 # Surface cycle related parameters
-DOGCYCLE=${DOGCYCLE:-"YES"}
+DOGCYCLE=${DOGCYCLE:-"NO"}
 CYCLESH=${CYCLESH:-$BASE_GSM/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$BASE_GSM/exec/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
@@ -68,6 +66,8 @@ export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
+export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
+export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3}
 
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}
@@ -95,6 +95,7 @@ OSUFFIX=${OSUFFIX:-""}
 COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP"}
 PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
 PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
+NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr${OSUFFIX}}
 SATWND=${SATWND:-${COMIN_OBS}/${OPREFIX}satwnd.tm00.bufr_d${OSUFFIX}}
 OSCATBF=${OSCATBF:-${COMIN_OBS}/${OPREFIX}oscatw.tm00.bufr_d${OSUFFIX}}
 RAPIDSCATBF=${RAPIDSCATBF:-${COMIN_OBS}/${OPREFIX}rapidscatw.tm00.bufr_d${OSUFFIX}}
@@ -144,7 +145,6 @@ SMIPCP=${SMIPCP:-${COMIN_OBS}/${OPREFIX}spssmi.tm00.bufr_d${OSUFFIX}}
 TMIPCP=${TMIPCP:-${COMIN_OBS}/${OPREFIX}sptrmm.tm00.bufr_d${OSUFFIX}}
 GPSROBF=${GPSROBF:-${COMIN_OBS}/${OPREFIX}gpsro.tm00.bufr_d${OSUFFIX}}
 TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
-NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr.tm00.bufr_d${OSUFFIX}}
 B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
 
@@ -174,6 +174,7 @@ GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 APREFIX=${APREFIX:-""}
 ASUFFIX=${ASUFFIX:-""}
 SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
 ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
 ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
 ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
@@ -202,9 +203,9 @@ NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
 ZSEA1=${ZSEA1:-0}
 ZSEA2=${ZSEA2:-0}
-FAC_DTL=${FAC_DTL:-0}
-FAC_TSL=${FAC_TSL:-0}
-TZR_QC=${TZR_QC:-0}
+FAC_DTL=${FAC_DTL:-1}
+FAC_TSL=${FAC_TSL:-1}
+TZR_QC=${TZR_QC:-1}
 USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 DOIAU=${DOIAU:-"NO"}
@@ -235,65 +236,6 @@ cyc=$(echo $CDATE | cut -c9-10)
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-
-# Update surface fields in the FV3 restart's using global_cycle
-if [ $DOGCYCLE = "YES" ]; then
-
-    # Get dimension information based on CASE
-    res=$(echo $CASE | cut -c2-)
-    JCAP_CASE=$((res*2-2))
-    LATB_CASE=$((res*2))
-    LONB_CASE=$((res*4))
-
-    # Global cycle requires these files
-    export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
-    export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
-    export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
-    FNSNOG=${FNSNOG:-$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOG ]] && FNSNOG="$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t1534.3072.1536"
-
-    # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-    if [ $RUN_GETGES = "YES" ]; then
-       snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
-    else
-       snoprv=${snoprv:-$FNSNOG}
-    fi
-
-    if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-         $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
-       export FNSNOA=" "
-       export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
-    else
-       export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
-       export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
-    fi
-
-    if [ $DONST = "YES" ]; then
-        export NST_ANL=".true."
-        export GSI_FILE=$COMOUT/${APREFIX}dtfanl.nc
-    else
-        export NST_ANL=".false."
-    fi
-
-    mkdir -p $COMOUT/RESTART
-
-    export APRUNCY=$APRUN_CYCLE
-    export OMP_NUM_THREADS_CY=$NTHREADS_CYCLE
-
-    for TILE_NUM in $(seq 1 $ntiles); do
-
-        SFCGES_TMP=$COMIN_GES/RESTART/$PDY.${cyc}0000.sfc_data.tile${TILE_NUM}.nc
-        SFCANL_TMP=$COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${TILE_NUM}.nc
-
-        $CYCLESH $SFCGES_TMP $SFCANL_TMP $TILE_NUM
-        export ERR=$?
-        export err=$ERR
-        $ERRSCRIPT || exit $err
-
-    done
-
-fi
 
 # Get header information from Ensemble Guess files
 if [ $DOHYBVAR = "YES" ]; then
@@ -539,14 +481,6 @@ $NLN $SFCG03 sfcf03
 $NLN $SFCGES sfcf06
 $NLN $SFCG09 sfcf09
 
-if [ $NST_GSI -gt 0 ]; then
-   if [ $NST_GSI -eq 3 ]; then
-      $NLN $SFCGCY sfcgcy
-   else
-      $NLN $SFCANL sfcgcy # $SFCANL is no longer created before GSI is executed!
-   fi
-fi
-
 # Link hourly backgrounds (if present)
 if [ -f $ATMG04 -a -f $ATMG05 -a -f $ATMG07 -a -f $ATMG08 ]; then
    nhr_obsbin=1
@@ -616,14 +550,8 @@ $NLN $ABIAS    satbias_out
 $NLN $ABIASPC  satbias_pc.out
 $NLN $ABIASAIR aircftbias_out
 
-if [ $NST_GSI -gt 0 ] ; then
-   $NLN $SFCTSK sfctsk
-   if [ $DOHYBVAR = "YES" ]; then
-      $NLN $DTFANL dtfanl
-   fi
-   if [ $NST_GSI -eq 3 ] ; then
-      $NLN $SFCANL sfcanl
-   fi
+if [ $DONST = "YES" ]; then
+   $NLN $DTFANL dtfanl
 fi
 
 # If requested, link and de-tar obs_input
@@ -704,7 +632,7 @@ cat > gsiparm.anl << EOF
   tzr_qc=$TZR_QC,
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
-  use_gfs_nemsio=.true.,
+  use_gfs_nemsio=.true.,sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
   lrun_subdirs=$lrun_subdirs,
   crtm_coeffs_path='./crtm_coeffs/',
@@ -920,6 +848,68 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
   export ERR=$rc
   export err=$ERR
   $ERRSCRIPT || exit 3
+fi
+
+# Update surface fields in the FV3 restart's using global_cycle
+if [ $DOGCYCLE = "YES" ]; then
+
+    mkdir -p $COMOUT/RESTART
+
+    # Get dimension information based on CASE
+    res=$(echo $CASE | cut -c2-)
+    JCAP_CASE=$((res*2-2))
+    LATB_CASE=$((res*2))
+    LONB_CASE=$((res*4))
+
+    # Global cycle requires these files
+    export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
+    export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
+    export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
+    FNSNOG=${FNSNOG:-$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+    [[ ! -f $FNSNOG ]] && FNSNOG="$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t1534.3072.1536"
+
+    # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+    if [ $RUN_GETGES = "YES" ]; then
+        snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
+    else
+        snoprv=${snoprv:-$FNSNOG}
+    fi
+
+    if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
+         $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
+        export FNSNOA=" "
+        export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+    else
+        export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+        export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+    fi
+
+    if [ $DONST = "YES" ]; then
+        export NST_ANL=".true."
+        export GSI_FILE=${GSI_FILE:-$COMOUT/${APREFIX}dtfanl.nc}
+    else
+        export NST_ANL=".false."
+        export GSI_FILE="NULL"
+    fi
+
+    for n in $(seq 1 $ntiles); do
+        $NLN $COMIN_GES/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.00$n
+        $NLN $COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.00$n
+        $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                  $DATA/fngrid.00$n
+        $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc              $DATA/fnorog.00$n
+    done
+
+    export APRUNCY=$APRUN_CYCLE
+    export OMP_NUM_THREADS_CY=$NTHREADS_CYCLE
+    export MAX_TASKS_CY=$ntiles
+
+    $CYCLESH
+    rc=$?
+    export ERR=$rc
+    export err=$ERR
+    $ERRSCRIPT || exit 11
+
 fi
 
 ##############################################################
