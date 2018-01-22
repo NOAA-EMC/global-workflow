@@ -53,6 +53,8 @@
 
  type(nemsio_gfile)                   :: gfile
 
+ call nemsio_init(iret)
+
  print*
  print*,"OPEN INPUT FILE: ",trim(input_file)
  call nemsio_open(gfile, input_file, "read", iret=iret)
@@ -262,6 +264,8 @@
 
  print*,"CLOSE FILE"
  call nemsio_close(gfile, iret=iret)
+
+ call nemsio_finalize()
 
 !---------------------------------------------------------------------------------------
 ! Set the grib 1 grid description array need by the NCEP IPOLATES library.

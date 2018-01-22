@@ -311,9 +311,9 @@
 !  BUT WITHIN THE TWO EDGE INTERVALS INTERPOLATE LINEARLY.              
 !  KEEP THE OUTPUT FIELDS CONSTANT OUTSIDE THE INPUT DOMAIN.            
                                                                         
-!$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(IM,IXZ1,IXQ1,IXZ2), &
-!$OMP& SHARED(IXQ2,NM,NXQ1,NXQ2,KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2), &
-!$OMP& SHARED(KXQ2,Z2,Q2,J2,K1S)
+!!$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(IM,IXZ1,IXQ1,IXZ2), &
+!!$OMP& SHARED(IXQ2,NM,NXQ1,NXQ2,KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2), &
+!!$OMP& SHARED(KXQ2,Z2,Q2,J2,K1S)
                                                                         
       DO K2=1,KM2 
         DO I=1,IM 
@@ -417,7 +417,7 @@
           ENDDO 
         ENDDO 
       ENDDO 
-!$OMP END PARALLEL DO                                                   
+!!$OMP END PARALLEL DO                                                   
 
  END SUBROUTINE TERP3 
 
@@ -655,8 +655,7 @@
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE LOG PRESSURE INTERPOLATING COORDINATE
 !  AND COPY INPUT WIND, TEMPERATURE, HUMIDITY AND OTHER TRACERS
-!$OMP PARALLEL DO DEFAULT(SHARED), &
-!$OMP& PRIVATE(K,I)
+!$OMP PARALLEL DO PRIVATE(K,I)
       DO K=1,KM1
         DO I=1,IM
           Z1(I,K)   = -LOG(P1(I,K))
@@ -675,8 +674,7 @@
           ENDDO
         ENDDO
       ENDDO
-!$OMP PARALLEL DO DEFAULT(SHARED), &
-!$OMP& PRIVATE(K,I)
+!$OMP PARALLEL DO PRIVATE(K,I)
       DO K=1,KM2
         DO I=1,IM
           Z2(I,K) = -LOG(P2(I,K))

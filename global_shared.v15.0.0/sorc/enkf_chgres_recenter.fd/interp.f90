@@ -112,7 +112,7 @@
 ! No vertical velocity.  Set dummy variables to zero.
 
  allocate(dum1(ij_output,lev))
- dum2 = 0.0
+ dum1 = 0.0
  allocate(dum2(ij_output,lev))
  dum2 = 0.0
 

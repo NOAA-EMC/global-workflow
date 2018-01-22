@@ -74,6 +74,8 @@
 ! read it from an existing enkf nemsio restart file.
 !-------------------------------------------------------------------
 
+ call nemsio_init(iret)
+
  print*
  print*,"OPEN OUTPUT GRID TERRAIN FILE: ", trim(terrain_file)
  call nemsio_open(gfile, terrain_file, "read", iret=iret)
@@ -103,6 +105,8 @@
  deallocate(dummy)
 
  call nemsio_close(gfile, iret=iret)
+
+ call nemsio_finalize()
 
  end subroutine set_output_grid
 
@@ -134,6 +138,8 @@
 !-------------------------------------------------------------------
 ! Open and write file.
 !-------------------------------------------------------------------
+
+ call nemsio_init(iret)
 
  gaction="write"
 
@@ -254,6 +260,8 @@
  deallocate(dummy)
 
  call nemsio_close(gfile, iret=iret)
+
+ call nemsio_finalize()
 
  return
 
