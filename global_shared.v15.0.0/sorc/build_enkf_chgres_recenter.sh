@@ -40,7 +40,7 @@ curdir=`pwd`
 
 cd ${curdir}/enkf_chgres_recenter.fd
 
-export FFLAGS="-O0 -r8 -i4 -qopenmp -warn unused -check bounds -traceback"
+export FFLAGS="-O0 -r8 -i4 -qopenmp -traceback"
 
 make clean
 make
