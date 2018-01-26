@@ -14,6 +14,9 @@
  real, allocatable, public         :: sfcp_output(:)
  real, allocatable, public         :: tmp_output(:,:)
  real, allocatable, public         :: clwmr_output(:,:)
+ real, allocatable, public         :: delz_output(:,:)
+ real, allocatable, public         :: dpres_output(:,:)
+ real, allocatable, public         :: dzdt_output(:,:)
  real, allocatable, public         :: o3mr_output(:,:)
  real, allocatable, public         :: spfh_output(:,:)
  real, allocatable, public         :: ugrd_output(:,:)
@@ -189,7 +192,7 @@
  enddo
  deallocate(clwmr_output)
 
- print*,"SPECIFIC HUMIDITY"
+ print*,"WRITE SPECIFIC HUMIDITY"
  do n = 1, lev
    dummy = spfh_output(:,n)
    call nemsio_writerecv(gfile, "spfh", "mid layer", n, dummy, iret=iret)
@@ -220,6 +223,30 @@
    if (iret/=0) goto 88
  enddo
  deallocate(vgrd_output)
+
+ print*,"WRITE DZDT"
+ do n = 1, lev
+   dummy = dzdt_output(:,n)
+   call nemsio_writerecv(gfile, "dzdt", "mid layer", n, dummy, iret=iret)
+   if (iret/=0) goto 88
+ enddo
+ deallocate(dzdt_output)
+
+ print*,"WRITE DPRES"
+ do n = 1, lev
+   dummy = dpres_output(:,n)
+   call nemsio_writerecv(gfile, "dpres", "mid layer", n, dummy, iret=iret)
+   if (iret/=0) goto 88
+ enddo
+ deallocate(dpres_output)
+
+ print*,"WRITE DELZ"
+ do n = 1, lev
+   dummy = delz_output(:,n)
+   call nemsio_writerecv(gfile, "delz", "mid layer", n, dummy, iret=iret)
+   if (iret/=0) goto 88
+ enddo
+ deallocate(delz_output)
 
  if (gfdl_mp) then
 
@@ -281,13 +308,14 @@
 
  implicit none
 
- character(len=8)           :: fields(6)
+ character(len=8)           :: fields(9)
  character(len=8)           :: fields_gfdl_mp(4)
 
  integer                    :: count, l, n
 
 ! Fields common to Zhao-Carr and GFDL microphysics
- data fields /'ugrd', 'vgrd', 'tmp', 'spfh', 'clwmr', 'o3mr'/
+ data fields /'ugrd', 'vgrd', 'dzdt', 'dpres', 'delz', &
+              'tmp', 'spfh', 'clwmr', 'o3mr'/
 
 ! Fields for GFDL microphysics
  data fields_gfdl_mp /'rwmr', 'icmr', 'snmr', 'grle'/
@@ -296,9 +324,9 @@
  print*,"SET HEADER INFO FOR OUTPUT FILE."
 
  if (gfdl_mp) then
-   nrec = (10 * lev) + 2
+   nrec = (13 * lev) + 2
  else
-   nrec = (6 * lev) + 2
+   nrec = (9 * lev) + 2
  endif
 
  allocate(recname(nrec))
@@ -306,7 +334,7 @@
  allocate(reclevtyp(nrec))
 
  count = 0
- do n = 1, 6
+ do n = 1, 9
    do l = 1, lev
      count = count + 1
      recname(count) = fields(n)

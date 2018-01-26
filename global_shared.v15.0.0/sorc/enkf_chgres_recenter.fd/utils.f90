@@ -6,8 +6,68 @@
  public :: newps
  public :: newpr1
  public :: vintg
+ public :: compute_delz
 
  contains
+
+ subroutine compute_delz(ijm, levp, ak_in, bk_in, ps, zs, t, sphum, delz)
+
+ implicit none
+ integer, intent(in):: levp, ijm
+ real,    intent(in), dimension(levp+1):: ak_in, bk_in
+ real,    intent(in), dimension(ijm):: ps, zs
+ real,    intent(in), dimension(ijm,levp):: t
+ real,    intent(in), dimension(ijm,levp):: sphum
+ real,    intent(out), dimension(ijm,levp):: delz
+! Local:
+ real, dimension(ijm,levp+1):: zh
+ real, dimension(ijm,levp+1):: pe0, pn0
+ real, dimension(levp+1) :: ak, bk
+ integer i,k
+ real, parameter :: GRAV   = 9.80665
+ real, parameter :: RDGAS  = 287.05
+ real, parameter :: RVGAS = 461.50
+ real  :: zvir
+ real:: grd
+
+ print*,"COMPUTE LAYER THICKNESS."
+
+ grd = grav/rdgas
+ zvir = rvgas/rdgas - 1.
+ ak = ak_in
+ bk = bk_in
+ ak(levp+1) = max(1.e-9, ak(levp+1))
+
+ do i=1, ijm
+   pe0(i,levp+1) = ak(levp+1)
+   pn0(i,levp+1) = log(pe0(i,levp+1))
+ enddo
+
+ do k=levp,1, -1
+   do i=1,ijm
+     pe0(i,k) = ak(k) + bk(k)*ps(i)
+     pn0(i,k) = log(pe0(i,k))
+   enddo
+ enddo
+
+ do i = 1, ijm
+   zh(i,1) = zs(i)
+ enddo
+
+ do k = 2, levp+1
+   do i = 1, ijm
+     zh(i,k) = zh(i,k-1)+t(i,k-1)*(1.+zvir*sphum(i,k-1))*     &
+            (pn0(i,k-1)-pn0(i,k))/grd
+   enddo
+ enddo
+
+ do k = 1, levp
+   do i = 1, ijm
+     delz(i,k) = zh(i,k+1) - zh(i,k)
+   enddo
+ enddo
+
+ end subroutine compute_delz
 
  subroutine calc_kgds(idim, jdim, kgds)
 
