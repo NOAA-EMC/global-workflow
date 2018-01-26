@@ -18,6 +18,7 @@
 
  real, allocatable, public                    :: vcoord(:,:)
  real, allocatable, public                    :: clwmr_input(:,:)
+ real, allocatable, public                    :: dzdt_input(:,:)
  real, allocatable, public                    :: grle_input(:,:)
  real, allocatable, public                    :: hgt_input(:)
  real, allocatable, public                    :: icmr_input(:,:)
@@ -206,6 +207,18 @@
    if (iret /= 0) goto 67
    o3mr_input(:,vlev) = dummy
    print*,'MAX/MIN OZONE AT LEVEL ', vlev, 'IS: ', maxval(o3mr_input(:,vlev)), minval(o3mr_input(:,vlev))
+ enddo
+
+ print*
+ print*,"READ DZDT"
+ vname   = "dzdt"
+ vlevtyp = "mid layer"
+ allocate(dzdt_input(ij_input,lev))
+ do vlev = 1, lev
+   call nemsio_readrecv(gfile, vname, vlevtyp, vlev, dummy, 0, iret)
+   if (iret /= 0) goto 67
+   dzdt_input(:,vlev) = dummy
+   print*,'MAX/MIN DZDT AT LEVEL ', vlev, 'IS: ', maxval(dzdt_input(:,vlev)), minval(dzdt_input(:,vlev))
  enddo
 
  if (gfdl_mp) then

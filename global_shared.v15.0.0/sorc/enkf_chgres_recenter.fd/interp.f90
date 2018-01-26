@@ -8,6 +8,7 @@
 
  real, allocatable      :: sfcp_b4_adj_output(:)
  real, allocatable      :: clwmr_b4_adj_output(:,:)
+ real, allocatable      :: dzdt_b4_adj_output(:,:)
  real, allocatable      :: grle_b4_adj_output(:,:)
  real, allocatable      :: icmr_b4_adj_output(:,:)
  real, allocatable      :: o3mr_b4_adj_output(:,:)
@@ -42,7 +43,6 @@
  real, allocatable     :: pres_b4_adj_output(:,:)
  real, allocatable     :: pres_output(:,:)
  real, allocatable     :: q_b4_adj_output(:,:,:), q_output(:,:,:)
- real, allocatable     :: dum1(:,:), dum2(:,:)
 
 !---------------------------------------------------------------------------------
 ! First, compute the mid-layer pressure using the interpolated surface pressure.
@@ -56,7 +56,7 @@
  call newpr1(ij_output, lev, idvc, idsl, nvcoord, vcoord, &
              sfcp_b4_adj_output, pres_b4_adj_output)
 
- print*,'after newpr1, pres b4 adj: ', pres_b4_adj_output(ij_output/2,:)
+!print*,'after newpr1, pres b4 adj: ', pres_b4_adj_output(ij_output/2,:)
 
 !---------------------------------------------------------------------------------
 ! Adjust surface pressure based on differences between interpolated and
@@ -71,9 +71,9 @@
             lev, pres_b4_adj_output, tmp_b4_adj_output, &
             spfh_b4_adj_output, hgt_external_output, sfcp_output)
  
- print*,'after newps ',sfcp_b4_adj_output(ij_output/2),sfcp_output(ij_output/2)
+!print*,'after newps ',sfcp_b4_adj_output(ij_output/2),sfcp_output(ij_output/2)
 
- deallocate(sfcp_b4_adj_output, hgt_output)
+ deallocate(sfcp_b4_adj_output)
 
 !---------------------------------------------------------------------------------
 ! Recompute mid-layer pressure based on the adjusted surface pressure.
@@ -82,13 +82,16 @@
  allocate(pres_output(ij_output, lev))
  pres_output = 0.0
 
+ allocate(dpres_output(ij_output, lev))
+ dpres_output = 0.0
+
  print*,"RECOMPUTE MID-LAYER PRESSURE."
  call newpr1(ij_output, lev, idvc, idsl, nvcoord, vcoord, &
-             sfcp_output, pres_output)
+             sfcp_output, pres_output, dpres_output)
 
- do k = 1, lev
-   print*,'after newpr1 ',pres_b4_adj_output(ij_output/2,k),pres_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!  print*,'after newpr1 ',pres_b4_adj_output(ij_output/2,k),pres_output(ij_output/2,k), dpres_output(ij_output/2,k)
+!enddo
 
 !---------------------------------------------------------------------------------
 ! Vertically interpolate from the pre-adjusted to the adjusted mid-layer 
@@ -109,12 +112,8 @@
  allocate(q_output(ij_output,lev,ntrac))
  q_output = 0.0
 
-! No vertical velocity.  Set dummy variables to zero.
-
- allocate(dum1(ij_output,lev))
- dum1 = 0.0
- allocate(dum2(ij_output,lev))
- dum2 = 0.0
+ allocate(dzdt_output(ij_output,lev))
+ dzdt_output = 0.0
 
  allocate(ugrd_output(ij_output,lev))
  ugrd_output=0.0
@@ -128,10 +127,10 @@
  print*,"VERTICALLY INTERPOLATE TO NEW PRESSURE LEVELS"
  call vintg(ij_output, lev, lev, ntrac, pres_b4_adj_output,  &
             ugrd_b4_adj_output, vgrd_b4_adj_output, tmp_b4_adj_output, q_b4_adj_output,  &
-            dum1, pres_output, ugrd_output, vgrd_output, tmp_output, &
-            q_output, dum2)
+            dzdt_b4_adj_output, pres_output, ugrd_output, vgrd_output, tmp_output, &
+            q_output, dzdt_output)
 
- deallocate (dum1, dum2, q_b4_adj_output)
+ deallocate (dzdt_b4_adj_output,  q_b4_adj_output)
  deallocate (pres_b4_adj_output, pres_output)
 
  allocate(spfh_output(ij_output,lev))
@@ -153,69 +152,77 @@
 
  deallocate(q_output)
 
- do k = 1, lev
- print*,'after vintg tmp ',tmp_b4_adj_output(ij_output/2,k),tmp_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg tmp ',tmp_b4_adj_output(ij_output/2,k),tmp_output(ij_output/2,k)
+!enddo
 
  deallocate(tmp_b4_adj_output)
 
- do k = 1, lev
- print*,'after vintg u ',ugrd_b4_adj_output(ij_output/2,k),ugrd_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg u ',ugrd_b4_adj_output(ij_output/2,k),ugrd_output(ij_output/2,k)
+!enddo
 
  deallocate(ugrd_b4_adj_output)
 
- do k = 1, lev
- print*,'after vintg v ',vgrd_b4_adj_output(ij_output/2,k),vgrd_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg v ',vgrd_b4_adj_output(ij_output/2,k),vgrd_output(ij_output/2,k)
+!enddo
 
  deallocate(vgrd_b4_adj_output)
 
- do k = 1, lev
- print*,'after vintg spfh ',spfh_b4_adj_output(ij_output/2,k),spfh_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg spfh ',spfh_b4_adj_output(ij_output/2,k),spfh_output(ij_output/2,k)
+!enddo
 
  deallocate(spfh_b4_adj_output)
 
- do k = 1, lev
- print*,'after vintg o3 ',o3mr_b4_adj_output(ij_output/2,k),o3mr_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg o3 ',o3mr_b4_adj_output(ij_output/2,k),o3mr_output(ij_output/2,k)
+!enddo
 
  deallocate(o3mr_b4_adj_output)
 
- do k = 1, lev
- print*,'after vintg clw ',clwmr_b4_adj_output(ij_output/2,k),clwmr_output(ij_output/2,k)
- enddo
+!do k = 1, lev
+!print*,'after vintg clw ',clwmr_b4_adj_output(ij_output/2,k),clwmr_output(ij_output/2,k)
+!enddo
 
  deallocate(clwmr_b4_adj_output)
 
  if (gfdl_mp) then
 
-   do k = 1, lev
-   print*,'after vintg rw ',rwmr_b4_adj_output(ij_output/2,k),rwmr_output(ij_output/2,k)
-   enddo
+!  do k = 1, lev
+!  print*,'after vintg rw ',rwmr_b4_adj_output(ij_output/2,k),rwmr_output(ij_output/2,k)
+!  enddo
 
    deallocate(rwmr_b4_adj_output)
 
-   do k = 1, lev
-   print*,'after vintg ic ',icmr_b4_adj_output(ij_output/2,k),icmr_output(ij_output/2,k)
-   enddo
+!  do k = 1, lev
+!  print*,'after vintg ic ',icmr_b4_adj_output(ij_output/2,k),icmr_output(ij_output/2,k)
+!  enddo
 
    deallocate(icmr_b4_adj_output)
 
-   do k = 1, lev
-   print*,'after vintg sn ',snmr_b4_adj_output(ij_output/2,k),snmr_output(ij_output/2,k)
-   enddo
+!  do k = 1, lev
+!  print*,'after vintg sn ',snmr_b4_adj_output(ij_output/2,k),snmr_output(ij_output/2,k)
+!  enddo
 
    deallocate(snmr_b4_adj_output)
 
-   do k = 1, lev
-   print*,'after vintg grle ',grle_b4_adj_output(ij_output/2,k),grle_output(ij_output/2,k)
-   enddo
+!  do k = 1, lev
+!  print*,'after vintg grle ',grle_b4_adj_output(ij_output/2,k),grle_output(ij_output/2,k)
+!  enddo
 
    deallocate(grle_b4_adj_output)
 
  endif
+
+ allocate(delz_output(ij_output, lev))
+ delz_output = 0.0
+
+ call compute_delz(ij_output, lev, vcoord(:,1), vcoord(:,2), sfcp_output, hgt_output, &
+                   tmp_output, spfh_output, delz_output)
+
+ deallocate(hgt_output)
 
  end subroutine adjust_for_terrain
 
@@ -387,6 +394,22 @@
  if (iret /= 0) goto 89
 
  deallocate(o3mr_input)
+
+!-----------
+! DZDT
+!-----------
+
+ allocate(dzdt_b4_adj_output(ij_output,num_fields))
+ dzdt_b4_adj_output = 0
+
+ print*,'INTERPOLATE DZDT'
+ call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
+               num_fields, ibi, bitmap_input, dzdt_input,  &
+               numpts, rlat, rlon, ibo, bitmap_output, &
+               dzdt_b4_adj_output, iret)
+ if (iret /= 0) goto 89
+
+ deallocate(dzdt_input)
 
 !----------------------------------------------------------------------------------
 ! Interpolate additional 3-d scalars for GFDL microphysics.
