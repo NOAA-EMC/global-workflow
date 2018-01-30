@@ -637,6 +637,7 @@ cat > input.nml <<EOF
 
 &gfs_physics_nml
   fhzero      = $FHZER
+  lprecip_accu = ${lprecip_accu:-".false."}
   ldiag3d     = ${ldiag3d:-".false."}
   fhcyc       = $FHCYC
   use_ufo     = ${use_ufo:-".true."}
