@@ -98,7 +98,7 @@ done
 [[ $DONST = "YES" ]] && $NCP $COMIN/${APREFIX}nsstbufr .
 
 $NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
-$NCP $COMIN/${APREFIX}pgrb2.*.fanl* .
+$NCP $COMIN/${APREFIX}pgrb2.*.anl* .
 $NCP $COMIN/${APREFIX}pgrb2.*.f* .
 
 cd $DATA
@@ -125,7 +125,7 @@ cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
 $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrbanl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
+$NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
 
 # Archive 1 degree forecast GRIB1 files for verification
 if [ $CDUMP = "gfs" ]; then
