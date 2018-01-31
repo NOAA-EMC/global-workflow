@@ -146,14 +146,9 @@ fi
 
 # Archive quarter degree GRIB1 files for precip verification
 if [ $CDUMP = "gfs" ]; then
-    for fname in ${APREFIX}sfluxgrbf*grib2; do
-       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
-       fhr=$fhr3
-       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
-       rm -f sflux_outtmp
-       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
-       fileout=pgbq${fhr}.${CDUMP}.${CDATE}
-       $CNVGRIB21_GFS -g21 sflux_outtmp $ARCDIR/$fileout
+    for fname in prcp_pgbq*.${CDUMP}.${CDATE}; do
+       fileout=$(echo $fname | cut -d_ -f2)
+       $NCP $fname $ARCDIR/$fileout
     done
 fi
 

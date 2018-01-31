@@ -158,7 +158,7 @@ fi
 # Build paths relative to $BASE_SVN
 export BASE_GSI="$BASE_GSM/sorc/gsi.fd"
 export BASE_NEMSfv3gfs="$BASE_GSM/sorc/fv3gfs.fd"
-export BASE_POST="$BASE_SVN/post/tags/ncep_post.v7.7.2"
+export BASE_POST="$BASE_GSM/sorc/upp.fd"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
 export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
