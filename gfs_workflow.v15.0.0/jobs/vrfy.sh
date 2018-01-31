@@ -34,7 +34,6 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-
 export PDY=$(echo $CDATE | cut -c1-8)
 export cyc=$(echo $CDATE | cut -c9-10)
 export CDATEm1=$($NDATE -24 $CDATE)
@@ -43,6 +42,28 @@ export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
+
+###############################################################
+# Generate quarter degree GRIB1 files for precip verification
+if [ $CDUMP = "gfs" ]; then
+    nthreads_env=$OMP_NUM_THREADS # get threads set in env
+    export OMP_NUM_THREADS=1
+    pwd=$(pwd)
+    cd $COMIN
+    sfluxfiles=$(ls -1 ${CDUMP}.t${cyc}z.sfluxgrbf*.grib2)
+    for fname in $sfluxfiles; do
+       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
+       fhr=$fhr3
+       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
+       rm -f sflux_outtmp
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
+       fileout=prcp_pgbq${fhr}.${CDUMP}.${CDATE}
+       $CNVGRIB21_GFS -g21 sflux_outtmp $fileout
+       rm -f sflux_outtmp
+    done
+    cd $pwd
+    export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
+fi
 
 ###############################################################
 # Verify Fits
