@@ -24,6 +24,10 @@ if [[ "$CDUMP" = "gfs" ]] ; then
     export GENDIAG="NO"
 fi
 
+if [ $imp_physics -eq 11 ]; then # GFDL
+    export lupp=".true."
+fi
+
 export ANALYSISSH="$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
 export nth_gsi=4
