@@ -41,8 +41,7 @@ export MONO="non-mono"
 export h2o_phys=".false."
 
 # Options of stratosphere O3 physics reaction coefficients 
-O3FORC=global_o3prdlos.f77
-#O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
+export new_o3forc=NO        
 
 # Microphysics configuration
 export dnats=0

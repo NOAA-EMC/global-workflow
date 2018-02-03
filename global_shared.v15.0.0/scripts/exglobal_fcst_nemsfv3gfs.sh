@@ -220,7 +220,11 @@ ISOL=${ISOL:-2}
 IAER=${IAER:-111}
 ICO2=${ICO2:-2}
 
-O3FORC=${O3FORC:-global_o3prdlos.f77}
+if [ ${new_o3forc:-NO} = YES ]; then
+    O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
+else
+    O3FORC=global_o3prdlos.f77
+fi
 $NLN $FIX_AM/${O3FORC}                         $DATA/INPUT/global_o3prdlos.f77
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
