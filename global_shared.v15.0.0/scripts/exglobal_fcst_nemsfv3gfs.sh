@@ -220,8 +220,9 @@ ISOL=${ISOL:-2}
 IAER=${IAER:-111}
 ICO2=${ICO2:-2}
 
+O3FORC=${O3FORC:-global_o3prdlos.f77}
+$NLN $FIX_AM/${O3FORC}                         $DATA/INPUT/global_o3prdlos.f77
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
-$NLN $FIX_AM/global_o3prdlos.f77               $DATA/INPUT/global_o3prdlos.f77
 $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
 $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
@@ -638,6 +639,7 @@ cat > input.nml <<EOF
 &gfs_physics_nml
   fhzero      = $FHZER
   lprecip_accu = ${lprecip_accu:-".false."}
+  h2o_phys    = ${h2o_phys:-".false."}
   ldiag3d     = ${ldiag3d:-".false."}
   fhcyc       = $FHCYC
   use_ufo     = ${use_ufo:-".true."}
