@@ -1,8 +1,0 @@
-#BSUB -W 4:00                    # wall clock time 
-#BSUB -o tarit.stdout          # stdout
-#BSUB -e tarit.stderr          # stderr
-#BSUB -J tarit                 # jobname
-#BSUB -q "dev_transfer"         # job queue 
-#BSUB -P GFS-T2O                 # project code 
-#BSUB -M 1000                    # Memory req's for serial portion
-export NODES=1

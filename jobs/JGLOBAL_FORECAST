@@ -1,0 +1,167 @@
+#!/bin/ksh 
+set -xa
+
+export RUN_ENVIR=${RUN_ENVIR:-emc}
+export PS4='$SECONDS + '
+date
+
+
+# #########################################
+# SETUP GFS/GDAS FCST PROCESSING VARIABLES
+# #########################################
+if [ $RUN_ENVIR = nco ]; then 
+    . $NWROOT/gfs.${gfs_ver}/parm/config/config.base.nco 
+else
+    . $EXPDIR/config.base 
+fi
+. $PARMgfs/config/config.fcst 
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+# #########################################
+# SOURCE MACHINE RUNTIME ENVIRONMENT
+# #########################################
+. $HOMEgfs/env/${machine}.env fcst
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+# #########################################
+# RUN TYPE - PRODUCTION OR DEVELOPMENT
+# #########################################
+export envir=${envir:-prod}
+
+
+# #########################################
+# SPECIFY NET AND RUN NAME AND MODEL
+# #########################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+
+# ######################################################
+# OBTAIN UNIQUE PROCESS ID (PID) AND MAKE TEMP DIRECTORY
+# ######################################################
+export pid=${pid:-$$}
+export DATAROOT=${DATAROOT:-/gpfs/hps2/nco/ops/tmpnwprd}
+if [ $RUN_ENVIR = nco ]; then 
+    export DATA=${DATA:-$DATAROOT/${job}.${pid}}    
+else
+    export DATA=$RUNDIR/$CDATE/$CDUMP/fcst
+fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+
+# #########################################
+# FILE To LOG MSGS
+# #########################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+
+# #########################################
+# DETERMINE JOB OUTPUT NAME ON SYSTEM
+# #########################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+export VERBOSE=${VERBOSE:-YES}
+export ERRSCRIPT=err_chk
+export LOGSCRIPT=startmsg
+
+
+# #########################################
+# SENDECF  - Flag EVENTS ON ECF
+# SENDCOM  - COPY FILES FROM TMPDIR TO $COMOUT
+# SENDDBN  - ISSUE DBNET CLIENT CALLS
+# #########################################
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+
+
+# #########################################
+# RUN SETPDY AND INITIALIZE PDY VARIABLES
+# #########################################
+if [ $RUN_ENVIR = nco ]; then 
+    setpdy.sh
+    . PDY
+else
+    PDY=$(echo $CDATE | cut -c1-8)
+    cyc=$(echo  $CDATE | cut -c9-10)
+fi
+GDATE=$($NDATE -$assim_freq $CDATE)
+gymd=$(echo $GDATE | cut -c1-8)
+ghh=$(echo  $GDATE | cut -c9-10)
+
+export cyc=${cyc:-00}
+export cycle=t${cyc}z
+
+
+# #########################################
+# DEFINE COM DIRECTORIES
+# #########################################
+if [ $RUN_ENVIR = nco ]; then 
+    export ROTDIR=${COMROOT:?}/${NET}/${envir}
+    export COMIN=${COMIN:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+    export COMOUT=${COMOUT:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+fi
+mkdir -m 775 -p $COMOUT 
+
+
+# ##################################################
+# DEFINE COLD OR WARM FORECAST
+# If RESTART CONDITIONS EXIST; WARM START THE MODEL
+# RESTART CONDITIONS FOR GFS CYCLE COME FROM GDAS
+# ##################################################
+rCDUMP=$CDUMP
+[[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
+
+if [ -f $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
+    export warm_start=".true."
+    if [ -f $ROTDIR/${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.atminc.nc ]; then
+        export read_increment=".true."
+    else
+        echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
+    fi
+fi
+
+# Forecast length for GFS forecast
+if [ $CDUMP = "gfs" ]; then
+    export FHMAX=$FHMAX_GFS
+    export FHOUT=$FHOUT_GFS
+    export FHMAX_HF=$FHMAX_HF_GFS
+    export FHOUT_HF=$FHOUT_HF_GFS
+else
+    export FHMAX_HF=0
+    export FHOUT_HF=0
+fi
+
+# #########################################
+# RUN RELEVANT EXGLOBAL SCRIPT
+# #########################################
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+$FORECASTSH
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+cat $pgmout
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+# #########################################
+# Remove the Temporary working directory
+# #########################################
+cd $DATAROOT
+if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+
+date
+exit 0

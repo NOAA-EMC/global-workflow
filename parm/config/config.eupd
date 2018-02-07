@@ -1,0 +1,22 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.eupd ##########
+# Ensemble update specific, dependency config.anal
+
+echo "BEGIN: config.eupd"
+
+# Get task specific resources
+. $EXPDIR/config.resources eupd
+
+export ENKFUPDSH="$HOMEgsi/scripts/EnKF/scripts_ncep/exglobal_enkf_update_fv3gfs.sh.ecf"
+export npe_enkf=$npe_eupd
+export nth_enkf=4
+
+echo "END: config.eupd"
