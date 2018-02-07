@@ -1,0 +1,216 @@
+#/bin/sh
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exgdas_vrfyozn.sh.ecf
+# Script description:  Runs data extract/validation for global ozone diag data
+#
+# Author:        Ed Safford       Org: NP23         Date: 2012-01-18
+#
+# Abstract: This script runs the data extract/validation portion of the 
+#           RadMon package.  
+#
+# Script history log:
+# 2012-01-18  Ed Safford
+#
+#   Input script positional parameters:
+#     1             Current analysis date in yyyymmddhh format
+#                   defaults to PDY; required
+#     2             cycle time in cc format
+#                   defaults to cyc; required
+#
+#   Imported Shell Variables:
+#     RAD_AREA      flag for global or regional
+#     TANKDIR       repository for oznmon data files
+#     FIXgdas       fixed file directory, gdas specific
+#     FIXoznmon     oznmon fixed file directory
+#     USHoznmon     oznmon scripts directory
+#     PDY           processing day; 
+#                   overridden by 1
+#     cyc	    processing cycle; 
+#                   overridden by 2
+#     LITTLE_ENDIAN Flag to indicate LE machine
+#                   defaults to 0 (big endian)
+#
+#   Exported Shell Variables:
+#     RAD_AREA      flag for global or regional
+#     PDATE	    Processing date
+#     MAKE_CTL      Signal to make ctl files, set to 1 (on)
+#     MAKE_DATA     Signal to make data files, set to 1 (on)
+#     USE_ANL       Signal to use analysis input files 
+#                     in addition to ges files, set to 0 (off)
+#     USE_MAIL      Signal to send error reports by mail, set to 0 (off)
+#     SATYPE        list of satellite/instrument sources to process
+#     err           last return code
+#     DO_DIAG_RPT   Signal to build the diag report, set to 1 (on)
+#     DO_DATA_RPT   Signal to build the data report, set to 1 (on)
+#     MAIL_TO       Mail recipients list, set to "" (no recipients)
+#     MAIL_CC       Mail cc recipients list, set to "" (no recipients)
+#
+#   Modules and files referenced:
+#     scripts    : 
+#
+#     programs   : $NDATE
+#
+#     fixed data : $SATANGL
+#
+#     input data : $oznstat
+#
+#     output data:  
+#
+#  Remarks:
+#
+#    Condition codes
+#       0 - no problem encountered
+#      >0 - some problem encountered
+#
+################################################################################
+export scr=exgdas_vrfyozn.sh.ecf
+
+msg="${scr} HAS STARTED"
+postmsg "$jlogfile" "$msg"
+err=0
+
+#-------------------------------------------------------------------------------
+#  Set environment
+#
+export VERBOSE=${VERBOSE:-"NO"} 
+if [[ "$VERBOSE" = "YES" ]]
+then
+   set -x
+fi
+
+
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+export NET=${NET:-gfs}
+export RUN=${RUN:-gdas}
+export envir=${envir:-prod}
+
+#  Command line arguments
+export PDY=${1:-${PDY:?}} 
+export cyc=${2:-${cyc:?}}
+
+#  Directories
+export OZN_WORK_DIR=${OZN_WORK_DIR:-$(pwd)}
+export COM_IN=${COMROOT}/${NET}/${envir}
+export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}}
+
+export HOMEgdas_ozn=${HOMEgdas_ozn:-${NWROOT}/gdas.${gdas_oznmon_ver}}
+export FIXgdas_ozn=${FIXgdas_ozn:-$HOMEgfs/fix}
+
+export HOMEoznmon=${HOMEoznmon:-/${NWROOT}/oznmon_shared.v${shared_oznmon_ver}}
+export EXECoznmon=${EXECoznmon:-$HOMEoznmon/exec}
+export FIXoznmon=${FIXoznmon:-${HOMEoznmon}/fix}
+export USHoznmon=${USHoznmon:-$HOMEoznmon/ush}
+
+
+#  Filenames
+export oznstat=${oznstat:-$COMIN/gdas.t${cyc}z.oznstat}
+
+#  Other variables
+#export RAD_AREA=${RAD_AREA:-glb}
+#export MAKE_CTL=${MAKE_CTL:-1}
+#export MAKE_DATA=${MAKE_DATA:-1}
+#export USE_ANL=${USE_ANL:-1}
+export PDATE=${PDY}${cyc}
+#export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
+#export DO_DATA_RPT=${DO_DATA_RPT:-1}
+#export USE_MAIL=${USE_MAIL:-0}
+#export MAIL_TO=${MAIL_TO:-" "}
+#export MAIL_CC=${MAIL_CC:-" "}
+export NCP=${NCP:-/bin/cp}
+export NDATE=${NDATE:-/nwprod/util/exec/ndate}
+
+##################################################################
+# ensure work and TANK dirs exist, verify oznstat is available
+if [[ ! -d ${OZN_WORK_DIR} ]]; then
+   mkdir $OZN_WORK_DIR
+fi
+cd $OZN_WORK_DIR
+
+if [[ ! -d ${TANKverf_ozn} ]]; then
+   mkdir -p $TANKverf_ozn
+fi
+
+if [[ -s ${oznstat} ]]; then
+   echo ${oznstat} is available
+fi
+
+#####################################################################
+
+data_available=0
+if [[ -s ${oznstat} ]]; then
+   data_available=1                                         
+
+   #------------------------------------------------------------------
+   #  Copy data files file to local data directory.  
+   #  Untar oznstat file.  
+   #------------------------------------------------------------------
+
+   $NCP $oznstat ./oznstat.$PDATE
+
+   tar -xvf oznstat.$PDATE
+   rm oznstat.$PDATE
+
+   #------------------------------------------------------------------
+   # Rename the diag files and uncompress
+   #------------------------------------------------------------------
+
+#   for type in ${SATYPE}; do
+#      mv diag_${type}_ges.${PDATE}.${Z} ${type}.${Z}
+#      ${UNCOMPRESS} ./${type}.${Z}
+#     
+#      if [[ $USE_ANL -eq 1 ]]; then
+#         mv diag_${type}_anl.${PDATE}.${Z} ${type}_anl.${Z}
+#         ${UNCOMPRESS} ./${type}_anl.${Z}
+#      fi
+#   done
+
+   #------------------------------------------------------------------
+   #   Run the child sccripts.
+   #------------------------------------------------------------------
+#    ${USHoznmon}/radmon_verf_angle.sh ${PDATE}
+#    rc_angle=$?
+#
+#    ${USHradmon}/radmon_verf_bcoef.sh ${PDATE}
+#    rc_bcoef=$?
+#
+#    ${USHradmon}/radmon_verf_bcor.sh ${PDATE}
+#    rc_bcor=$?
+#
+#    ${USHradmon}/radmon_verf_time.sh ${PDATE}
+#    rc_time=$?
+
+   ${HOMEoznmon}/ush/ozn_xtrct.sh
+   err=$?
+
+else
+   # oznstat file is not available
+   err=1
+fi
+
+
+
+#if [[ ${data_available} -ne 1 ]]; then
+#   err=1
+#elif [[ $rc_angle -ne 0 ]]; then
+#   err=$rc_angle
+#elif [[ $rc_bcoef -ne 0 ]]; then
+#   err=$rc_bcoef
+#elif [[ $rc_bcor -ne 0 ]]; then
+#   err=$rc_bcor
+#elif [[ $rc_time -ne 0 ]]; then
+#   err=$rc_time
+#fi
+
+
+if [[ "$VERBOSE" = "YES" ]]; then
+   echo "end exgdas_vrfyozn.sh.ecf, exit value = ${err}"
+fi
+
+msg="${scr} HAS ENDED"
+postmsg "$jlogfile" "$msg"
+
+set +x
+exit ${err}
+

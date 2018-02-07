@@ -1,0 +1,21 @@
+#!/bin/ksh -x
+###############################################################
+# < next few lines under version control, D O  N O T  E D I T >
+# $Date$
+# $Revision$
+# $Author$
+# $Id$
+###############################################################
+
+########## config.prep ##########
+# Prep step specific
+
+echo "BEGIN: config.prep"
+
+# Get task specific resources
+. $EXPDIR/config.resources prep
+
+export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export DRIVE_MAKEPREPBUFRSH="$HOMEgfs/ush/drive_makeprepbufr.sh"
+
+echo "END: config.prep"

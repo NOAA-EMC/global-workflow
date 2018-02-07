@@ -1,0 +1,22 @@
+export gfs_ver=v15.0.0
+
+export crtm_ver=2.3.0
+export hwrf_ver=v11.0.0
+export g2tmpl_ver=1.4.0
+
+export grib_util_ver=1.0.3
+export util_shared_ver=1.0.6
+export cfp_intel_sandybridge_ver=1.1.0
+export iobuf_ver=2.0.7
+export ESMF_intel_sandybridge_ver=3_1_0rp5
+export ESMF_intel_haswell_ver=3_1_0rp5
+export gempak_ver=7.3.0
+export old_gempak_ver=6.32.0
+export NCL_gnu_sandybridge_ver=6.3.0
+export ncarg_intel_sandybridge_ver=6.1.0 
+export dumpjb_ver=4.0.0
+
+## FOLLOWING are used by JGDAS_TROPC
+export obsproc_dump_ver=v4.0.0
+export obsproc_shared_bufr_dumplist_ver=v1.5.0
+
