@@ -38,7 +38,7 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGFS_POST_MANAGER         .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
 cd ${pwd}/../parm               ||exit 8
-    [[ -d gsi ]] && rm -rf post 
+    [[ -d post ]] && rm -rf post 
     $LINK ../sorc/gfs_post.fd/parm                           post
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
