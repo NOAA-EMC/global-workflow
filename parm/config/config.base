@@ -17,7 +17,7 @@ export machine="@MACHINE@"
 
 # EMC parallel or NCO production
 export RUN_ENVIR="emc"
-export NET=gfs    
+export NET=gfs
 export RUN=$CDUMP
 
 # Account, queue, etc.

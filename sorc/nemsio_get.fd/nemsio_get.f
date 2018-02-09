@@ -1,6 +1,10 @@
 !- - - - -- - -- - -- - -- - - -- - --  -- - -- - -- - - -- - - - -- - --
-! the program gives some examples of using nemsio modules
+! the program provide value for a variable/field in a nemsio file
+! revision history:
+!  Jan 2010:  Jun Wang  Initial code
 ! - - - - -- - -- - -- - -- - - -- - --  -- - -- - -- - - -- - - - -- - --
+!
+  program main
 !
   use nemsio_module
   implicit none
@@ -16,13 +20,13 @@
 !---------------------------------------------------------------------------
 !--- nemsio meta data
   integer nrec,im,jm,nframe,nmetaaryi,nmetaaryr,nmetaaryl,nmetaaryc,        &
-          nmetaaryr8,i,j,fieldsize,iret,idate(7),levs,ntrac
+          nmetaaryr8,i,j,fieldsize,iret,idate(7),levs,ntrac, tlmeta
   integer  ivar
   real(4)  rvar
   real(8)  r8var
   logical  lvar
   character(10)  odate
-  character(16)  cvar
+  character(16)  cvar, file_endian
   character(35) mystr,sweep_blanks
   character(4) gdatatype
   character(16),allocatable:: recname(:)
@@ -55,8 +59,8 @@
   endif
 !
   call nemsio_getfilehead(gfile,iret=iret,gdatatype=gdatatype,dimx=im,dimy=jm, &
-    nframe=nframe,dimz=levs,nrec=nrec,ntrac=ntrac,                             &
-    nmetaaryi=nmetaaryi,nmetaaryr=nmetaaryr,                                   &
+    nframe=nframe,dimz=levs,nrec=nrec,ntrac=ntrac,tlmeta=tlmeta,               &
+    file_endian=file_endian,nmetaaryi=nmetaaryi,nmetaaryr=nmetaaryr,           &
     nmetaaryl=nmetaaryl,nmetaaryc=nmetaaryc)
 !
    fieldsize=(im+2*nframe)*(jm+2*nframe)
@@ -233,7 +237,18 @@
      endif
      deallocate(ri)
     endif
-
+!
+!tlmeta
+    if(equal_str_nocase(trim(varname),'tlmeta')) then
+       print *,'tlmeta=',tlmeta
+       stop
+    endif
+!
+!file_endian
+    if(equal_str_nocase(trim(varname),'file_endian')) then
+       print *,'file_endian=',file_endian
+       stop
+    endif
 
 !int array
    if(nmetaaryi>0) then

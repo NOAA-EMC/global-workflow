@@ -76,6 +76,7 @@ def create_task(task_dict):
     walltime = task_dict['walltime'] if 'walltime' in task_dict else '00:01:00'
     log = task_dict['log'] if 'log' in task_dict else 'demo.log'
     native = task_dict['native'] if 'native' in task_dict else None
+    memory = task_dict['memory'] if 'memory' in task_dict else None
     resources = task_dict['resources'] if 'resources' in task_dict else None
     envar = task_dict['envar'] if 'envar' in task_dict else None
     dependency = task_dict['dependency'] if 'dependency' in task_dict else None
@@ -97,6 +98,8 @@ def create_task(task_dict):
     if resources is not None:
         strings.append('\t%s\n' % resources)
     strings.append('\t<walltime>%s</walltime>\n' % walltime)
+    if memory is not None:
+        strings.append('\t<memory>%s</memory>\n' % memory)
     if native is not None:
         strings.append('\t<native>%s</native>\n' % native)
     strings.append('\n')

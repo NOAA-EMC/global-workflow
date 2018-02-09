@@ -26,7 +26,6 @@ module load craype-haswell
 module use /usrx/local/prod/modulefiles
 module load NetCDF-intel-haswell/3.6.3
 module load HDF5-serial-intel-haswell/1.8.9
-module load ESMF-intel-haswell/6_3_0rp1     
 module load NCL-gnu-haswell/6.3.0
 module load ncarg-intel-sandybridge/6.1.0
 

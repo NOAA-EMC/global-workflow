@@ -142,7 +142,6 @@ do
         # $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:725:20000:65.7345"
-        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24  -new_grid $gridprico awps_file_f${fcsthrs}_${GRID}
         $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24  -new_grid $gridpac awps_file_f${fcsthrs}_${GRID}
         ;;
      003)
@@ -212,7 +211,7 @@ fi
       export err=$? ;err_chk
       echo " error from tocgrib2=",$err
 
-     if [ $SENDCOM = "YES" ] ; then
+      if [ $SENDCOM = "YES" ] ; then
 
       ##############################
       # Post Files to PCOM

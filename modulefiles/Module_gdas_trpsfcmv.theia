@@ -9,7 +9,6 @@ module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
       module load impi
       module load hdf5/1.8.14
       module load netcdf/3.6.3
-      module load esmf/6.3.0rp1
       module load ip/v2.0.0
       module load sp/v2.0.2
       module load bacio/v2.0.1
