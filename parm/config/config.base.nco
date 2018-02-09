@@ -1,8 +1,8 @@
-#!/bin/ksh 
+#!/bin/ksh
 set -x
 
 export RUN_ENVIR="nco"
-export machine="WCOSS_C"  
+export machine="WCOSS_C"
 
 export ACCOUNT="GFS-OPS"
 export QUEUE="prod"
@@ -102,7 +102,7 @@ export SDATE=2018020100
 export EDATE=2018020300
 
 export assim_freq=6
-export PSLOT="nco_prod"  
+export PSLOT="nco_prod"
 export EXPDIR="/gpfs/hps3/ptmp/$USER/$PSLOT"
 export ROTDIR="$COMROOT/gfs/prod"
 export RUNDIR="$STMP/$PSLOT"
@@ -112,8 +112,8 @@ export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Resolution specific parameters
 export LEVS=65
-export CASE=768          
-export CASE_ENKF=384           
+export CASE=C768
+export CASE_ENKF=C384
 
 # Surface cycle update frequency
 export FHCYC=24
@@ -141,12 +141,12 @@ export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11 
+export imp_physics=11
 
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=80             
+export NMEM_ENKF=80
 export SMOOTH_ENKF="YES"
 export l4densvar=".true."
 export lwrite4danl=".false."

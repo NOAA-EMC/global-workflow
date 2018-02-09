@@ -10,9 +10,9 @@ set -x
 mod=$( cd ../modulefiles/ ; pwd -P )
 source "$mod/module-setup.sh.inc"
 module use ../modulefiles/
-module load gfs_cnvgrib2_gfs.theia
+module load gfs_cnvgrib21_gfs.theia
 
-cd cnvgrib2_gfs.fd
+cd cnvgrib21_gfs.fd
 make
+mv cnvgrib21_gfs   ../../exec/
 make clean
-mv cnvgrib2_gfs   ../../exec/

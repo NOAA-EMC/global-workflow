@@ -36,7 +36,9 @@ elif [ $step = "anal" ]; then
     export wtime_anal="01:30:00"
     export npe_anal=144
     export npe_node_anal=6
-    export memory_anal="3072M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_anal="3072M"
+    fi
 
 elif [ $step = "fcst" ]; then
 
@@ -44,7 +46,9 @@ elif [ $step = "fcst" ]; then
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_fcst=${npe_node_fcst:-12}
-    export memory_fcst="1024M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_fcst="1024M"
+    fi
 
 elif [ $step = "post" ]; then
 
@@ -53,10 +57,10 @@ elif [ $step = "post" ]; then
     export npe_post=72
     export npe_node_post=12
     export npe_node_dwn=24
-    if [[ "$machine" == THEIA ]]; then
-	    export memory_post="16384M"
-    else
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_post="3072M"
+    elif [[ "$machine" == "THEIA" ]]; then
+	    export memory_post="16384M"
     fi
 
 elif [ $step = "vrfy" ]; then
@@ -65,14 +69,10 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=1
     export npe_node_vrfy=1
-    if [[ "$machine" == THEIA ]]; then
-	    export memory_vrfy="16384M"
-    else
+    if [[ "$machine" == "WCOSS_C" ]]; then
 	    export memory_vrfy="3072M"
-        # Memory on cray is for the batch node, not the compute node.
-        # Tasks on the compute node have no memory limit.  16GB is
-        # unneeded, and is beyond the queue maximum anyway (the job is
-        # rejected).
+    elif [[ "$machine" == "THEIA" ]]; then
+	    export memory_vrfy="16384M"
     fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
@@ -87,35 +87,45 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export wtime_eomg="01:00:00"
     export npe_eobs=72
     export npe_node_eobs=6
-    export memory_eobs="3072M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_eobs="3072M"
+    fi
 
 elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
     export npe_eupd=120
     export npe_node_eupd=12
-    export memory_eupd="3072M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_eupd="3072M"
+    fi
 
 elif [ $step = "ecen" ]; then
 
     export wtime_ecen="00:30:00"
     export npe_ecen=84
     export npe_node_ecen=12
-    export memory_ecen="3072M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_ecen="3072M"
+    fi
 
 elif [ $step = "efcs" ]; then
 
     export wtime_efcs="01:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_efcs=${npe_node_fcst:-12}
-    export memory_efcs="254M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_efcs="254M"
+    fi
 
 elif [ $step = "epos" ]; then
 
     export wtime_epos="00:30:00"
     export npe_epos=84
     export npe_node_epos=12
-    export memory_epos="254M"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_epos="254M"
+    fi
 
 else
 

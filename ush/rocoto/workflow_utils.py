@@ -180,6 +180,7 @@ def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
                  'queue': '&QUEUE_%s_%s;' % (task.upper(), cdump.upper()), \
                  'walltime': '&WALLTIME_%s_%s;' % (task.upper(), cdump.upper()), \
                  'native': '&NATIVE_%s_%s;' % (task.upper(), cdump.upper()), \
+                 'memory': '&MEMORY_%s_%s;' % (task.upper(), cdump.upper()), \
                  'resources': '&RESOURCES_%s_%s;' % (task.upper(), cdump.upper()), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'envar': envar, \
@@ -263,23 +264,20 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     nodes = tasks / ppn
 
-    if machine in ['ZEUS', 'THEIA']:
+    memstr = '' if memory is None else str(memory)
+
+    if machine in ['ZEUS', 'THEIA', 'WCOSS_C']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
-    elif machine in ['WCOSS_C']:
-        resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
-        if task in ['arch', 'earc', 'getic']:
+        if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
-        else:
-            if memory is not None:
-                resstr += '<memory>%s</memory>' % str(memory)
 
     elif machine in ['WCOSS']:
         resstr = '<cores>%d</cores>' % tasks
 
     queuestr = '&QUEUE_ARCH;' if task in ['arch', 'earc', 'getic'] else '&QUEUE;'
 
-    return wtimestr, resstr, queuestr
+    return wtimestr, resstr, queuestr, memstr
 
 
 def create_crontab(base, cronint=5):

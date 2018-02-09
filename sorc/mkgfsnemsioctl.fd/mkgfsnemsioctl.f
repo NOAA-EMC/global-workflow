@@ -44,7 +44,10 @@
     print *,'usage: mknemsioctl input_nemsio_file_name'
     stop
   endif
-  cindx=trim(cin)//'.ctl'
+  call getarg(2,cindx)
+  if(trim(cindx)=='') then
+    cindx=trim(cin)//'.ctl'
+  endif
   
   call nemsio_open(gfile,trim(cin),'READ',iret=iret)
   if(iret/=0) print *,'Error: open nemsio file,',trim(cin),' iret=',iret
@@ -141,7 +144,7 @@
    else
      write(io_unit,120)jm,lat_stt,lat_intl
    endif
-   write(io_unit,114)
+   write(io_unit,114)lm
    if(nfhour/=0) then
      write(io_unit,115)1,trim(ctldate),nfhour
    else
@@ -154,13 +157,13 @@
  107  FORMAT('options big_endian sequential yrev')
  1077 FORMAT('options big_endian sequential')
  108  FORMAT('fileheader',I12.0)
- 109  FORMAT('title gfs nemsioi sfc file')
+ 109  FORMAT('title gfs nemsioi file')
 
  111  FORMAT('xdef  ',I6,' linear  ',f9.6,' ',f9.6)
  112  FORMAT('ydef  ',I6,' levels')
  113  FORMAT(10f11.6)
 
- 114  FORMAT('zdef 1 linear 1 1 ')
+ 114  FORMAT('zdef ',I6,' linear 1 1')
  115  FORMAT('tdef ',I6,' linear ',A12,' ',I6,'hr')
  116  FORMAT('tdef ',I6,' linear ',A12,'  1yr')
 !

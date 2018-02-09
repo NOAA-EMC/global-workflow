@@ -1,18 +1,7 @@
 #!/bin/ksh --login
 set -xue
 
-machine=${1:-missing}
-
-if [ $machine = "cray" ]; then
-:
-elif [ $machine = "theia" ]; then
-:
-else
-
-    echo "machine $machine is unsupported, ABORT!"
-    exit 1
-
-fi
+machine=${1:-cray}
 
 source ../../modulefiles/module-setup.sh.inc
 module use ../../modulefiles

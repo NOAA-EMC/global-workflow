@@ -83,8 +83,12 @@
 ! print *,'latf=',latf
 !
   call nemsio_getfilehead(gfile,nmetavari=nmetavari,nmetavarr=nmetavarr,nmetavarl=nmetavarl, &
-       nmetaaryi=nmetaaryi,nmetaaryr=nmetaaryr)
-    print *,'nmetavari=',nmetavari,'nmetavarr=',nmetavarr,'nmetavarl=',nmetavarl
+       nmetavarc=nmetavarc,nmetavarr8=nmetavarr8,nmetaaryi=nmetaaryi,nmetaaryr=nmetaaryr,    &
+       nmetaaryr8=nmetaaryr8,nmetaaryl=nmetaaryl, nmetaaryc=nmetaaryc)
+  print *,'nmetavari=',nmetavari,'nmetavarr=',nmetavarr,'nmetavarl=',nmetavarl,            &
+          'nmetavarc=',nmetavarc,'nmetavarr8=',nmetavarr8
+  print *,'nmetaaryi=',nmetaaryi,'nmetaaryr=',nmetaaryr,'nmetaaryl=',nmetaaryl,            &
+          'nmetaaryc=',nmetaaryc,'nmetaaryr8=',nmetaaryr8
   if(nmetavari>0) then
     allocate(variname(nmetavari),varival(nmetavari))
     call nemsio_getfilehead(gfile,variname=variname,varival=varival)

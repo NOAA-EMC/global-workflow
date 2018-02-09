@@ -77,7 +77,7 @@ echo "                        directories.  These must now be passed in. "
 set -xua
 
 ARCHSYND=${ARCHSYND:-$COMROOTp1/arch/prod/syndat}
-HOMENHC=${HOMENHC:-/nhc/save/guidance/storm-data/ncep}
+HOMENHC=${HOMENHC:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 slmask=${slmask:-$FIXSYND/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
@@ -223,8 +223,15 @@ rm -f nhc fnoc gtsbtab gtsbufr human.btab lthistry
 #  All are input to program syndat_qctropcy
 #  ------------------------------------------------------------------
 
+if [ -s $HOMENHC/tcvitals ]; then
+   echo "tcvitals found" >> $pgmout
+   cp $HOMENHC/tcvitals nhc
+else
+   echo "WARNING: tcvitals not found, create empty tcvitals" >> $pgmout
+   > nhc
+fi
+
 # NHC ... copy into working directory as nhc; copy to archive
-cp $HOMENHC/tcvitals nhc
 touch nhc
 [ "$copy_back" = 'YES' ]  &&  cat nhc >> $ARCHSYND/syndat_tcvitals.$year
 

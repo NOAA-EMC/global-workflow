@@ -209,12 +209,13 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
+        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "">\n' % (taskstr))
 
         strings.append('\n')
@@ -242,12 +243,13 @@ def get_hyb_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
 
-        wtimestr, resstr, queuestr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
+        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "">\n' % (taskstr))
 
         strings.append('\n')

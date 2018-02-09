@@ -75,7 +75,8 @@ cp -p ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
 cd $pwd
 if [ $target = theia ]; then
- for script in build_tocsbufr_bufr_flux_theia.sh build_gfs_cnvgrib21_gfs.sh_theia; do
+ #for script in build_tocsbufr_bufr_flux_theia.sh build_gfs_cnvgrib21_gfs.sh_theia; do
+ for script in build_gfs_cnvgrib21_gfs.sh_theia; do
   sh $script
  done
  for script in build_gfs_fbwndgfs.sh build_gfs_overpdtg2.sh build_gfs_wintemv.sh; do

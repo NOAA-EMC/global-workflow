@@ -15,7 +15,6 @@ module-whatis " trpsfcmv whatis description"
       module load ics/14.0.1
       module load HDF5/1.8.9/serial
       module load NetCDF/4.2/serial
-      module load ESMF/630rp1
       module load ip/v2.0.0
       module load sp/v2.0.2
       module load bacio/v2.0.2

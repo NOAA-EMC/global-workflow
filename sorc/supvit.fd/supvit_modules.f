@@ -1,20 +1,21 @@
       module def_vitals
         type tcvcard         ! Define a new type for a TC Vitals card
           sequence
-          character*4   tcv_center      ! Hurricane Center Acronym
-          character*3   tcv_storm_id    ! Storm Identifier (03L, etc)
-          character*9   tcv_storm_name  ! Storm name
           integer       tcv_century     ! 2-digit century id (19 or 20)
           integer       tcv_yymmdd      ! Date of observation
           integer       tcv_hhmm        ! Time of observation (UTC)
           integer       tcv_lat         ! Storm Lat (*10), always >0
-          character*1   tcv_latns       ! 'N' or 'S'
           integer       tcv_lon         ! Storm Lon (*10), always >0
-          character*1   tcv_lonew       ! 'E' or 'W'
           integer       tcv_stdir       ! Storm motion vector (in degr)
           integer       tcv_stspd       ! Spd of storm movement (m/s*10)
+          character*4   tcv_center      ! Hurricane Center Acronym
           character*85  tcv_chunk       ! Remainder of vitals record;
-                                        ! will just be read & written
+          character*3   tcv_storm_id    ! Storm Identifier (03L, etc)
+          character*9   tcv_storm_name  ! Storm name
+          character*1   tcv_lonew       ! 'E' or 'W'
+          character*1   tcv_latns       ! 'N' or 'S'
+          character*5   tcv_dummy       ! 'N' or 'S'
+c                                       ! will just be read & written
         end type tcvcard
       end module def_vitals
 c
