@@ -133,8 +133,8 @@ fi
 
 #  Normally both PROCESS_TROPCY and DO_RELOCATE should be set to YES
 
-export PROCESS_TROPCY=YES  # Turn on tropical cyclone tcvitals QC proc. if YES
-export DO_RELOCATE=YES     # Turn on tropical cyclone relocation proc. if YES
+export PROCESS_TROPCY=${PROCESS_TROPCY:-YES}    # Turn on tropical cyclone tcvitals QC proc. if YES
+export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone relocation proc. if YES
 
 export LONB=3072 # sigma guess parm needed by tropical cyclone reloc. processing
 export LATB=1536  # sigma guess parm needed by tropical cyclone reloc. processing

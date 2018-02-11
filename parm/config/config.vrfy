@@ -60,6 +60,11 @@ if [[ "$CDUMP" = "gfs" ]] ; then
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
         export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
+        if [ ${lprecip_accu:-".false."} = ".true." ]; then
+            export rain_bucket=0
+        else 
+            export rain_bucket=${FHZER:-6}
+        fi
 
         export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
         export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer

@@ -250,4 +250,7 @@ export DONST="NO"
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
 
+# Precipitation accumulation, true--no bucket, false--bucket=FHZER
+export lprecip_accu=".true."
+
 echo "END: config.base"

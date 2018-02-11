@@ -220,7 +220,7 @@ ISOL=${ISOL:-2}
 IAER=${IAER:-111}
 ICO2=${ICO2:-2}
 
-if [ ${new_o3forc:-NO} = YES ]; then
+if [ ${new_o3forc:-YES} = YES ]; then
     O3FORC=ozprdlos_2015_new_sbuvO3_tclm15_nuchem.f77
 else
     O3FORC=global_o3prdlos.f77
@@ -644,8 +644,8 @@ cat > input.nml <<EOF
 
 &gfs_physics_nml
   fhzero      = $FHZER
-  lprecip_accu = ${lprecip_accu:-".false."}
-  h2o_phys    = ${h2o_phys:-".false."}
+  lprecip_accu = ${lprecip_accu:-".true."}
+  h2o_phys    = ${h2o_phys:-".true."}
   ldiag3d     = ${ldiag3d:-".false."}
   fhcyc       = $FHCYC
   use_ufo     = ${use_ufo:-".true."}
