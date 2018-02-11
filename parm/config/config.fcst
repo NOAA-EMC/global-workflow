@@ -39,10 +39,10 @@ export TYPE="nh"
 export MONO="non-mono"
 
 # Use stratosphere h2o physics
-export h2o_phys=".false."
+export h2o_phys=".true."
 
 # Options of stratosphere O3 physics reaction coefficients 
-export new_o3forc=NO        
+export new_o3forc=YES       
 
 # Microphysics configuration
 export dnats=0
