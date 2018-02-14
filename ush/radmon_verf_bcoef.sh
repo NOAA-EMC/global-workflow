@@ -81,7 +81,6 @@ if [[ "$VERBOSE" = "YES" ]]; then
 fi
 
 # Directories
-FIXgdas=${FIXgdas:-$(pwd)}
 EXECradmon=${EXECradmon:-$(pwd)}
 TANKverf_rad=${TANKverf_rad:-$(pwd)}
 

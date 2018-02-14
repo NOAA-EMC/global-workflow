@@ -61,31 +61,28 @@ export SENDDBN=${SENDDBN:-NO}
 export SENDECF=${SENDECF:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
-###################################
-# Set up the UTILITIES
-###################################
-export utilscript=${utilscript:-${UTILROOT}/ush}
-export utilexec=${utilexec:-${UTILROOT}/exec}
-
 
 ##############################################
 # Specify Execution Areas
 ##############################################
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.$gdas_ver}
-export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
-export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
-export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
+gfs_ver=${gfs_ver:-v15.0.0}
 
-export HOMEradmon=${HOMEradmon:-${NWROOT}/global_shared.${global_shared_ver}}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+
+export FIXgdas=${FIXgdas:-$HOMEgfs/fix/gdas}
+export PARMmon=${PARMmon:-$HOMEgfs/parm/mon}
+
+export HOMEradmon=${HOMEradmon:-${HOMEgfs}}
 export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
-export FIXradmon=${FIXradmon:-${HOMEradmon}/fix}
+export FIXradmon=${FIXradmon:-${FIXgfs}}
 export USHradmon=${USHradmon:-$HOMEradmon/ush}
 
 
 ###################################
 # source the parm file
 ###################################
-.  ${PARMgdas}/gdas_radmon.parm
+.  ${PARMmon}/da_mon.parm
 
 
 #############################################
@@ -123,10 +120,16 @@ postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
-${RADMONSH:-${SCRgdas}/exgdas_vrfyrad.sh.ecf} ${PDY} ${cyc}
+${RADMONSH:-${SCRgfs}/exgdas_vrfyrad.sh.ecf} ${PDY} ${cyc}
+
+err=$?
 ########################################################
 
-msg="JOB COMPLETED NORMALLY"
+if [[ ${err} -ne 0 ]]; then
+   msg="WARNING:  JOB DID NOT COMPLETE NORMALLY, error code $err"
+else
+   msg="JOB COMPLETED NORMALLY"
+fi
 postmsg "$jlogfile" "$msg"
 
 ################################

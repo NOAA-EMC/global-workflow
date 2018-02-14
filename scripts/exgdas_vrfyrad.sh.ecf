@@ -10,63 +10,7 @@
 # Abstract: This script runs the data extract/validation portion of the 
 #           RadMon package.  
 #
-# Script history log:
-# 2012-01-18  Ed Safford
-#
-#   Input script positional parameters:
-#     1             Current analysis date in yyyymmddhh format
-#                   defaults to PDY; required
-#     2             cycle time in cc format
-#                   defaults to cyc; required
-#
-#   Imported Shell Variables:
-#     RAD_AREA      flag for global or regional
-#     TANKDIR       repository for radmon data files
-#     DATA          data working space
-#     FIXgdas       fixed file directory, gdas specific
-#     FIXradmon     radmon fixed file directory
-#     USHradmon     radmon scripts directory
-#     PDY           processing day; 
-#                   overridden by 1
-#     cyc	    processing cycle; 
-#                   overridden by 2
-#     LITTLE_ENDIAN Flag to indicate LE machine
-#                   defaults to 0 (big endian)
-#
-#   Exported Shell Variables:
-#     RAD_AREA      flag for global or regional
-#     PDATE	    Processing date
-#     MAKE_CTL      Signal to make ctl files, set to 1 (on)
-#     MAKE_DATA     Signal to make data files, set to 1 (on)
-#     USE_ANL       Signal to use analysis input files 
-#                     in addition to ges files, set to 0 (off)
-#     USE_MAIL      Signal to send error reports by mail, set to 0 (off)
-#     SATYPE        list of satellite/instrument sources to process
-#     err           last return code
-#     DO_DIAG_RPT   Signal to build the diag report, set to 1 (on)
-#     DO_DATA_RPT   Signal to build the data report, set to 1 (on)
-#     MAIL_TO       Mail recipients list, set to "" (no recipients)
-#     MAIL_CC       Mail cc recipients list, set to "" (no recipients)
-#
-#   Modules and files referenced:
-#     scripts    : ${USHradmon}/radmon_verf_angle.sh
-#                  ${USHradmon}/radmon_verf_bcoef.sh
-#                  ${USHradmon}/radmon_verf_bcor.sh
-#                  ${USHradmon}/radmon_verf_time.sh
-#
-#     programs   : $NDATE
-#
-#     fixed data : $SATANGL
-#
-#     input data : $biascr
-#                  $radstat
-#                  $biascr
-#
-#     output data:  
-#
-#  Remarks:
-#
-#    Condition codes
+# Condition codes
 #       0 - no problem encountered
 #      >0 - some problem encountered
 #
@@ -99,14 +43,6 @@ export cyc=${2:-${cyc:?}}
 export DATA=${DATA:-$(pwd)}
 export COM_IN=${COMROOT}/${NET}/${envir}
 export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}}
-
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
-export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
-
-export HOMEradmon=${HOMEradmon:-/${NWROOT}/radmon_shared.v${radmon_shared_ver}}
-export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
-export FIXradmon=${FIXradmon:-${HOMEradmon}/fix}
-export USHradmon=${USHradmon:-$HOMEradmon/ush}
 
 
 #  Filenames

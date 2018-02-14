@@ -20,13 +20,14 @@ export PDATE=${PDATE:-2016030706}
 #############################################################
 export PDY=`echo $PDATE | cut -c1-8`
 export cyc=`echo $PDATE | cut -c9-10`
+me=`hostname | cut -c1`
+
 export job=gdas_vminmon.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=para
-export DATAROOT=/gpfs/td2/emc/da/noscrub/Edward.Safford/test_data
+export DATAROOT=/gpfs/${me}d2/emc/da/noscrub/Edward.Safford/test_data
 export COMROOT=/ptmpp1/$LOGNAME/com
-me=`hostname | cut -c1`
 
 #############################################################
 # Specify versions
@@ -54,13 +55,13 @@ export POE=YES
 #############################################################
 # Set user specific variables
 #############################################################
-export MINMON_SUFFIX=testminmon
+export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon}
 export NWTEST=${NWTEST:-/gpfs/${me}d2/emc/da/noscrub/Edward.Safford}
-export HOMEgdas=${HOMEgdas:-${NWTEST}/gfs.${gfs_ver}}
-export JOBGLOBAL=${JOBGLOBAL:-${HOMEgdas}/jobs}
+export HOMEgfs=${HOMEgfs:-${NWTEST}/gfs.${gfs_ver}}
+export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
 
-export COM_IN=${DATAROOT}
-export M_TANKverf=${COMROOT}/${MINMON_SUFFIX}
+export COM_IN=${COM_IN:-${DATAROOT}}
+export M_TANKverf=${M_TANKverf:-${COMROOT}/${MINMON_SUFFIX}}
 
 
 #############################################################

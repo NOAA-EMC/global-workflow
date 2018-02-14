@@ -9,7 +9,7 @@
 
 set -x
 
-export PDATE=${PDATE:-2017020600}
+export PDATE=${PDATE:-2017020606}
 
 #############################################################
 # Specify whether the run is production or development
@@ -27,8 +27,7 @@ export STMP_USER=${STMP_USER:-/scratch4/NCEPDEV/stmp3/$LOGNAME}
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v14.1.0
-export global_shared_ver=v14.1.0
+export gfs_ver=v15.0.0
 
 
 #############################################################
@@ -44,10 +43,10 @@ export PATH=${PATH}:${NWPRODush}:${NWPRODexec}
 #############################################################
 
 export RADMON_SUFFIX=${RADMON_SUFFIX:-testrad}
-export NWTEST=${NWTEST:-/scratch4/NCEPDEV/da/noscrub/${LOGNAME}/gfs_q3fy17}
-export HOMEgdas=${HOMEgdas:-${NWTEST}/gdas.${gdas_ver}}
-export JOBGLOBAL=${JOBGLOBAL:-${HOMEgdas}/jobs}
-export HOMEradmon=${HOMEradmon:-${NWTEST}/global_shared.${global_shared_ver}}
+export NWTEST=${NWTEST:-/scratch4/NCEPDEV/da/noscrub/${LOGNAME}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${NWTEST}}
+export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
+export HOMEradmon=${HOMEradmon:-${NWTEST}}
 export COM_IN=${COM_IN:-${DATAROOT}}
 export TANKverf=${TANKverf:-${COMROOT}/${RADMON_SUFFIX}}
 

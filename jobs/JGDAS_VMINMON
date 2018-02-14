@@ -55,22 +55,16 @@ export SENDECF=${SENDECF:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
 
-###################################
-# Set up the UTILITIES
-###################################
-export utilscript=${utilscript:-${UTILROOT}/ush}
-export utilexec=${utilexec:-${UTILROOT}/exec}
-
-
 ##############################################
 # Specify Package Areas
 ##############################################
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gfs.${gfs_ver}}
-export PARMgdas=${PARMgdas:-$HOMEgdas/parm/gdas}
-export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
-export FIXgdas=${FIXgdas:-$HOMEgdas/fix/gdas}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
 
-export HOMEminmon=${HOMEminmon:-${HOMEgdas}}
+export PARMmon=${PARMmon:-$HOMEgfs/parm/mon}
+export M_FIXgdas=${M_FIXgfs:-$HOMEgfs/fix/gdas}
+
+export HOMEminmon=${HOMEminmon:-${HOMEgfs}}
 export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
 export USHminmon=${USHminmon:-$HOMEminmon/ush}
 
@@ -78,7 +72,7 @@ export USHminmon=${USHminmon:-$HOMEminmon/ush}
 ###################################
 # source the parm file
 ###################################
-.  ${PARMgdas}/gdas_minmon.parm
+.  ${PARMmon}/da_mon.parm
 
 
 #############################################
@@ -117,7 +111,7 @@ postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
-${GMONSH:-$SCRgdas/exgdas_vrfminmon.sh.ecf} ${PDY} ${cyc}
+${GMONSH:-$SCRgfs/exgdas_vrfminmon.sh.ecf} ${PDY} ${cyc}
 
 err=$?
 

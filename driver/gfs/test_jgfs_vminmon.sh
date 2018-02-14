@@ -15,8 +15,7 @@ set -x
 
 export NET='gfs'
 export RUN='gfs'
-#export PDATE=${PDATE:-2016030706}
-export PDATE=${PDATE:-2018011106}
+export PDATE=${PDATE:-2016030206}
 
 export PDY=`echo $PDATE | cut -c1-8`
 export cyc=`echo $PDATE | cut -c9-10`

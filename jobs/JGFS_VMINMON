@@ -54,20 +54,13 @@ export SENDECF=${SENDECF:-NO}
 export VERBOSE=${VERBOSE:-YES}
 
 
-###################################
-# Set up the UTILITIES
-###################################
-export utilscript=${utilscript:-${UTILROOT}/ush}
-export utilexec=${utilexec:-${UTILROOT}/exec}
-
-
 ##############################################
 # Specify Package Areas
 ##############################################
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export PARMmon=${PARMmon:-$HOMEgfs/parm/mon}
 export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix/product}
+export M_FIXgfs=${M_FIXgfs:-$HOMEgfs/fix/product}
 
 export HOMEminmon=${HOMEminmon:-${HOMEgfs}}
 export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
@@ -76,7 +69,7 @@ export USHminmon=${USHminmon:-$HOMEminmon/ush}
 ###################################
 # source the parm file
 ###################################
-.  ${PARMgfs}/${NET}/gfs_minmon.parm
+.  ${PARMmon}/da_mon.parm
 
 
 #############################################

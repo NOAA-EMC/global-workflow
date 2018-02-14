@@ -68,9 +68,7 @@ if( (-e $infile) ) {
    my $jc_number = 7;
    my $jl_number = 8;
 
-#   my $FIXminmon = $ENV{"FIXminmon"};
    my $costfile = $ENV{"mm_costfile"};
-#   my $costfile = sprintf '%s', "./minmon_cost.txt";
    
    if( (-e $costfile) ) {
       open( COSTFILE, "<${costfile}" ) or die "Can't open ${costfile}: $!\n";

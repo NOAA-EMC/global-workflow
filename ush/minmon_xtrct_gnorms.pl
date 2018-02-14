@@ -232,9 +232,7 @@ my $gross_check_val;
 my $rc    = 0;
 my $cdate = sprintf '%s%s', $pdy, $cyc;
 
-#my $FIXminmon = $ENV{"FIXminmon"};
 my $gnormfile = $ENV{"mm_gnormfile"};
-#my $gnormfile = sprintf '%s', "./minmon_gnorm.txt";
 
 
 if( (-e $gnormfile) ) {

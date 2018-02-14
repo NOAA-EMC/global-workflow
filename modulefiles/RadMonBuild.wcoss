@@ -1,0 +1,18 @@
+#%Module#################################################################
+proc ModulesHelp { } {
+  puts stderr "Set environment variables for WCOSS radmon build"
+}
+
+module-whatis "Set environment variables for WCOSS radmon build"
+
+set ver 2.0.2
+set FCOMP ifort
+
+setenv CF $FCOMP
+setenv FC $FCOMP
+setenv FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl"
+setenv D_FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
+setenv CHECK_LIBS "/nwprod/spa_util/check_libs.bash"
+module load ics
+module load w3nco
+
