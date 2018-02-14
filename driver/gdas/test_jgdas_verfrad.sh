@@ -13,7 +13,7 @@
 
 set -x
 
-export PDATE=2016022500
+export PDATE=${PDATE:-2017020606}
 
 #############################################################
 # Specify whether the run is production or development
@@ -24,20 +24,15 @@ export job=gdas_verfrad.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=para
-export DATAROOT=/ptmpp1/$LOGNAME/test_data
-export COMROOT=/ptmpp1/$LOGNAME/com
+me=`hostname | cut -c1`
+export DATAROOT=${DATAROOT:-/gpfs/${me}d2/emc/da/noscrub/${LOGNAME}/test_data}
+export COMROOT=${COMROOT:-/ptmpp1/$LOGNAME/com}
 
 
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v13.0.0
-export global_shared_ver=v13.0.0
-export grib_util_ver=v1.0.1
-export prod_util_ver=v1.0.2
-export util_shared_ver=v1.0.2
-export gdas_radmon_ver=v2.0.0
-export radmon_shared_ver=v2.0.2
+export gfs_ver=v15.0.0
 
 
 #############################################################
@@ -45,12 +40,9 @@ export radmon_shared_ver=v2.0.2
 #############################################################
 . /usrx/local/Modules/3.2.9/init/ksh
 module use /nwprod2/modulefiles
-module load grib_util/$grib_util_ver
-module load prod_util/$prod_util_ver
-module load util_shared/$util_shared_ver
+module load prod_util
+module load util_shared
 
-module unload ics/12.1
-module load ics/15.0.3
 
 module list
 
@@ -64,13 +56,13 @@ export POE=YES
 #############################################################
 # Set user specific variables
 #############################################################
-export RADMON_SUFFIX=testrad
-export NWTEST=/da/noscrub/${LOGNAME}/RadMon_545/util/Radiance_Monitor/nwprod
-export HOMEgdas=${NWTEST}/gdas_radmon.${gdas_radmon_ver}
-export JOBGLOBAL=${HOMEgdas}/jobs
-export HOMEradmon=${NWTEST}/radmon_shared.${radmon_shared_ver}
-export COM_IN=${DATAROOT}
-export TANKverf=${COMROOT}/${RADMON_SUFFIX}
+export RADMON_SUFFIX=${RADMON_SUFFIX:-testrad}
+export NWTEST=${NWTEST:-/gpfs/${me}d2/emc/da/noscrub/Edward.Safford/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${NWTEST}}
+export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
+export HOMEradmon=${HOMEradmon:-${NWTEST}}
+export COM_IN=${COM_IN:-${DATAROOT}}
+export TANKverf=${TANKverf:-${COMROOT}/${RADMON_SUFFIX}}
 
 
 #############################################################

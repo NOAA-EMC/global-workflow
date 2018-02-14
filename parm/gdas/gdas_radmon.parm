@@ -1,7 +1,0 @@
-##################################
-# specify radmon utilities
-##################################
-export LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
-export COMPRESS=${COMPRESS:-gzip}
-export UNCOMPRESS=${UNCOMPRESS:-gunzip}
-export Z=${Z:-gz}

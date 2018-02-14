@@ -54,8 +54,8 @@ export POE=YES
 #############################################################
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon}
 export NWTEST=${NWTEST:-/gpfs/hps3/emc/da/noscrub/${LOGNAME}}
-export HOMEgdas=${HOMEgdas:-${NWTEST}/gfs.${gfs_ver}}
-export JOBGLOBAL=${JOBGLOBAL:-${HOMEgdas}/jobs}
+export HOMEgfs=${HOMEgfs:-${NWTEST}/gfs.${gfs_ver}}
+export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
 export COM_IN=${COM_IN:-${DATAROOT}}
 export M_TANKverf=${M_TANKverf:-${COMROOT}/${MINMON_SUFFIX}}
 

@@ -10,48 +10,7 @@
 # Abstract: This script runs the data extract/validation portion of the 
 #           MinMon package.  
 #
-# Script history log:
-# 2015-04-10  Ed Safford
-#
-#   Input script positional parameters:
-#     1             Current analysis date in yyyymmddhh format
-#                   defaults to PDY; required
-#     2             cycle time in cc format
-#                   defaults to cyc; required
-#
-#   Imported Shell Variables:
-#     M_TANKverf    repository for minmon data files
-#     DATA          data working space
-#     MINMON_SUFFIX data set identifier, defaults to GDAS
-#     FIXgdas       fixed file directory, gdas specific
-#     FIXminmon     fixed file directory
-#     USHminmon     scripts directory
-#     PDY           processing day; 
-#                   overridden by 1
-#     cyc	    processing cycle; 
-#                   overridden by 2
-#     
-#   Exported Shell Variables:
-#     PDATE	    Processing date
-#     err           last return code
-#     VERBOSE       switches on more/less log output
-#     mm_gnormfile  $GDASfix/gdas_minmon_gnorm.txt file
-#     mm_costfile   $GDASfix/gdas_minmon_cost.txt file
-#
-#   Modules and files referenced:
-#     scripts    : ${USHminmon}/minmon_xtrct_gnorms.pl
-#                  ${USHminmon}/minmon_xtrct_costs.pl
-#                  ${USHminmon}/minmon_xtrct_reduction.pl
-#
-#     programs   : $NDATE
-#
-#     input data : $gsistat=${COMIN}/gdas.t${cyc}z.gsistat
-#
-#     output data:  
-#
-#  Remarks:
-#
-#    Condition codes
+# Condition codes
 #       0 - no problem encountered
 #      >0 - some problem encountered
 #
@@ -93,8 +52,8 @@ export DATA=${DATA:-$(pwd)}
 #  Filenames
 ########################################
 gsistat=${gsistat:-$COMIN/gdas.t${cyc}z.gsistat}
-export mm_gnormfile=${gnormfile:-${FIXgdas}/gdas_minmon_gnorm.txt}
-export mm_costfile=${costfile:-${FIXgdas}/gdas_minmon_cost.txt}
+export mm_gnormfile=${gnormfile:-${M_FIXgdas}/gdas_minmon_gnorm.txt}
+export mm_costfile=${costfile:-${M_FIXgdas}/gdas_minmon_cost.txt}
 
 ########################################
 #  Other variables
