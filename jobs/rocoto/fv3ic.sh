@@ -1,23 +1,14 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Rahul Mahajan  Org: NCEP/EMC  Date: August 2017
-
 ## Abstract:
 ## Create FV3 initial conditions from GFS intitial conditions
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
-export EXPDIR=${1:-$EXPDIR}
-export CDATE=${2:-$CDATE}
-export CDUMP=${3:-$CDUMP}
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ###############################################################
 
 ###############################################################

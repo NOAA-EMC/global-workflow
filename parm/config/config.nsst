@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date: 2017-09-23 02:48:49 +0000 (Sat, 23 Sep 2017) $
-# $Revision: 97753 $
-# $Author: fanglin.yang@noaa.gov $
-# $Id: config.nsst 97753 2017-09-23 02:48:49Z fanglin.yang@noaa.gov $
-###############################################################
 
 ########## config.nsst ##########
 # NSST specific

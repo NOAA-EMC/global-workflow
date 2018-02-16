@@ -56,7 +56,6 @@ DEBUG=${REGRID_NEMSIO_DEBUG:-".true."}
 APRUN_REGRID_NEMSIO=${APRUN_REGRID_NEMSIO:-${APRUN:-""}}
 NTHREADS_REGRID_NEMSIO=${NTHREADS_REGRID_NEMSIO:-${NTHREADS:-1}}
 
-NCO_NAMING_CONV=${NCO_NAMING_CONV:-"NO"}
 NMV=${NMV:-"/bin/mv"}
 
 #-------------------------------------------------------
@@ -71,12 +70,6 @@ weight_neareststod=${weight_neareststod:-$FIXfv3/$CASE/fv3_SCRIP_${CASE}_GRIDSPE
 #-------------------------------------------------------
 # Go to the directory where the history files are
 cd $DATA || exit 8
-
-#-------------------------------------------------------
-if [ $NCO_NAMING_CONV = "YES" ]; then
-    NEMSIO_OUT2DNAME=sfc.$CDATE
-    NEMSIO_OUT3DNAME=atm.$CDATE
-fi
 
 #-------------------------------------------------------
 # Create namelist
@@ -116,18 +109,16 @@ $ERRSCRIPT || exit $err
 rm -f regrid-nemsio.input
 
 #------------------------------------------------------------------
-if [ $NCO_NAMING_CONV = "YES" ]; then
-    cymd=`echo $CDATE | cut -c1-8`
-    chh=`echo  $CDATE | cut -c9-10`
-    PREFIX=${PREFIX:-"${CDUMP}.t${chh}z."}
-    SUFFIX=${SUFFIX:-".nemsio"}
-    for ftype in atm sfc; do
-        for file in `ls -1 ${ftype}.${CDATE}.fhr*`; do
-            fhrchar=`echo $file | cut -d. -f3 | cut -c4-`
-            $NMV $file ${PREFIX}${ftype}f${fhrchar}${SUFFIX}
-        done
+PDY=`echo $CDATE | cut -c1-8`
+cyc=`echo  $CDATE | cut -c9-10`
+PREFIX=${PREFIX:-"${CDUMP}.t${cyc}z."}
+SUFFIX=${SUFFIX:-".nemsio"}
+for ftype in atm sfc; do
+    for file in `ls -1 ${ftype}.${CDATE}.fhr*`; do
+        fhrchar=`echo $file | cut -d. -f3 | cut -c4-`
+        $NMV $file ${PREFIX}${ftype}f${fhrchar}${SUFFIX}
     done
-fi
+done
 
 #------------------------------------------------------------------
 set +x

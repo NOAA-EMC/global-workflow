@@ -6,7 +6,7 @@ if [ $# -ne 1 ]; then
  exit
 fi
 
-cd gsi.fd/scripts/
+cd gsi.fd/ush/
 
 # Workarounds for bugs in gsi build scripts:
 export PATH=$PATH:.

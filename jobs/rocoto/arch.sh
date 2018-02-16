@@ -1,20 +1,14 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
-
 ## Abstract:
 ## Archive driver script
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ###############################################################
 
 ###############################################################
@@ -30,8 +24,6 @@ done
 # Run relevant tasks
 
 # CURRENT CYCLE
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo  $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
@@ -129,10 +121,13 @@ $NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
 
 # Archive 1 degree forecast GRIB1 files for verification
 if [ $CDUMP = "gfs" ]; then
-    for fname in ${APREFIX}pgrb.1p00.f*; do
-        fhr=$(echo $fname | cut -d. -f5 | cut -c 2-)
+    fhmax=$FHMAX_GFS
+    fhr=0
+    while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        fhr3=$(printf %03i $fhr)
+        $NCP ${APREFIX}pgrb.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        (( fhr = $fhr + 3 ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
@@ -144,22 +139,13 @@ if [ $CDUMP = "gdas" ]; then
     done
 fi
 
-# Archive quarter degree GRIB1 files for precip verification
-if [ $CDUMP = "gfs" ]; then
-    for fname in prcp_pgbq*.${CDUMP}.${CDATE}; do
-       fileout=$(echo $fname | cut -d_ -f2)
-       $NCP $fname $ARCDIR/$fileout
-    done
-fi
-
-
 # Archive atmospheric nemsio gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
-    fhmax=$FHMAX_GFS
+    fhmax=${FHMAX_FITS:-$FHMAX_GFS}
     fhr=0
     while [[ $fhr -le $fhmax ]]; do
       fhr3=$(printf %03i $fhr)
@@ -179,15 +165,15 @@ GDATE=$($NDATE -$assim_freq $CDATE)
 
 # PREVIOUS to the PRIOR CYCLE
 GDATE=$($NDATE -$assim_freq $GDATE)
-gymd=$(echo $GDATE | cut -c1-8)
-ghh=$(echo  $GDATE | cut -c9-10)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
 
 # Remove the TMPDIR directory
 COMIN="$RUNDIR/$GDATE"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 # Remove the hour directory
-COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
+COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
 # Step back every assim_freq hours
@@ -196,9 +182,9 @@ COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
-    gymd=$(echo $GDATE | cut -c1-8)
-    ghh=$(echo  $GDATE | cut -c9-10)
-    COMIN="$ROTDIR/$CDUMP.$gymd/$ghh"
+    gPDY=$(echo $GDATE | cut -c1-8)
+    gcyc=$(echo $GDATE | cut -c9-10)
+    COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
         testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
@@ -206,7 +192,7 @@ while [ $GDATE -le $GDATEEND ]; do
         [[ $rc -eq 0 ]] && rm -rf $COMIN
     fi
     # Remove any empty directories
-    COMIN="$ROTDIR/$CDUMP.$gymd"
+    COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
     fi
@@ -217,8 +203,8 @@ done
 # 1. atmospheric nemsio files used for fit2obs
 if [ $CDUMP = "gfs" ]; then
     GDATE=$($NDATE -$FHMAX_GFS $GDATE)
-    gymd=$(echo $GDATE | cut -c1-8)
-    COMIN="$VFYARC/$CDUMP.$gymd"
+    gPDY=$(echo $GDATE | cut -c1-8)
+    COMIN="$VFYARC/$CDUMP.$gPDY"
     [[ -d $COMIN ]] && rm -rf $COMIN
 fi
 

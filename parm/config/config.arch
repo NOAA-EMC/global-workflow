@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.arch ##########
 # Archive specific

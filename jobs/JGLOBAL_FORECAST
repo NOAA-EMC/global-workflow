@@ -1,134 +1,87 @@
-#!/bin/ksh 
-set -xa
+#!/bin/ksh
+set -x
 
-export RUN_ENVIR=${RUN_ENVIR:-emc}
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4='$SECONDS + '
 date
 
 
-# #########################################
-# SETUP GFS/GDAS FCST PROCESSING VARIABLES
-# #########################################
-if [ $RUN_ENVIR = nco ]; then 
-    . $NWROOT/gfs.${gfs_ver}/parm/config/config.base.nco 
-else
-    . $EXPDIR/config.base 
-fi
-. $PARMgfs/config/config.fcst 
-status=$?
-[[ $status -ne 0 ]] && exit $status
+#############################
+# Source relevant config files
+#############################
+configs="base fcst"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
 
-# #########################################
-# SOURCE MACHINE RUNTIME ENVIRONMENT
-# #########################################
+##########################################
+# Source machine runtime environment
+##########################################
 . $HOMEgfs/env/${machine}.env fcst
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
 
-# #########################################
-# RUN TYPE - PRODUCTION OR DEVELOPMENT
-# #########################################
-export envir=${envir:-prod}
-
-
-# #########################################
-# SPECIFY NET AND RUN NAME AND MODEL
-# #########################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-
-
-# ######################################################
-# OBTAIN UNIQUE PROCESS ID (PID) AND MAKE TEMP DIRECTORY
-# ######################################################
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export job=${job:-"fcst"}
 export pid=${pid:-$$}
-export DATAROOT=${DATAROOT:-/gpfs/hps2/nco/ops/tmpnwprd}
-if [ $RUN_ENVIR = nco ]; then 
-    export DATA=${DATA:-$DATAROOT/${job}.${pid}}    
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA="$DATAROOT/$jobid"
 else
-    export DATA=$RUNDIR/$CDATE/$CDUMP/fcst
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    export DATA="$DATAROOT/$job"
 fi
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
 
-# #########################################
-# FILE To LOG MSGS
-# #########################################
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Define the Log File directory
+##############################################
 export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
-# #########################################
-# DETERMINE JOB OUTPUT NAME ON SYSTEM
-# #########################################
-export outid="LL$job"
-export jobid="${outid}.o${pid}"
+##############################################
+# Determine Job Output Name on System
+##############################################
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
-export VERBOSE=${VERBOSE:-YES}
-export ERRSCRIPT=err_chk
-export LOGSCRIPT=startmsg
 
-
-# #########################################
-# SENDECF  - Flag EVENTS ON ECF
-# SENDCOM  - COPY FILES FROM TMPDIR TO $COMOUT
-# SENDDBN  - ISSUE DBNET CLIENT CALLS
-# #########################################
-export SENDECF=${SENDECF:-YES}
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-
-
-# #########################################
-# RUN SETPDY AND INITIALIZE PDY VARIABLES
-# #########################################
-if [ $RUN_ENVIR = nco ]; then 
-    setpdy.sh
-    . PDY
-else
-    PDY=$(echo $CDATE | cut -c1-8)
-    cyc=$(echo  $CDATE | cut -c9-10)
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-GDATE=$($NDATE -$assim_freq $CDATE)
-gymd=$(echo $GDATE | cut -c1-8)
-ghh=$(echo  $GDATE | cut -c9-10)
-
-export cyc=${cyc:-00}
-export cycle=t${cyc}z
 
 
-# #########################################
-# DEFINE COM DIRECTORIES
-# #########################################
-if [ $RUN_ENVIR = nco ]; then 
-    export ROTDIR=${COMROOT:?}/${NET}/${envir}
-    export COMIN=${COMIN:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-    export COMOUT=${COMOUT:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-fi
-mkdir -m 775 -p $COMOUT 
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
 
-
-# ##################################################
-# DEFINE COLD OR WARM FORECAST
-# If RESTART CONDITIONS EXIST; WARM START THE MODEL
-# RESTART CONDITIONS FOR GFS CYCLE COME FROM GDAS
-# ##################################################
+# Restart conditions for GFS cycle come from GDAS
 rCDUMP=$CDUMP
 [[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
-
-if [ -f $ROTDIR/${rCDUMP}.$gymd/$ghh/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
-    export warm_start=".true."
-    if [ -f $ROTDIR/${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.atminc.nc ]; then
-        export read_increment=".true."
-    else
-        echo "WARNING: WARM START $CDUMP $CDATE WITHOUT READING INCREMENT!"
-    fi
-fi
 
 # Forecast length for GFS forecast
 if [ $CDUMP = "gfs" ]; then
@@ -141,27 +94,39 @@ else
     export FHOUT_HF=0
 fi
 
-# #########################################
-# RUN RELEVANT EXGLOBAL SCRIPT
-# #########################################
+
+###############################################################
+# Run relevant exglobal script
 env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
-$FORECASTSH
+
+${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
 cat $pgmout
+
+
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
 
-# #########################################
+
+##########################################
 # Remove the Temporary working directory
-# #########################################
+##########################################
 cd $DATAROOT
-if [ ${KEEPDATA:-NO} != YES ] ; then rm -rf $DATA ; fi
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 date
 exit 0

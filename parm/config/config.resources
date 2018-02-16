@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.resources ##########
 # Set resource information for job tasks
@@ -59,8 +52,6 @@ elif [ $step = "post" ]; then
     export npe_node_dwn=24
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_post="3072M"
-    elif [[ "$machine" == "THEIA" ]]; then
-	    export memory_post="16384M"
     fi
 
 elif [ $step = "vrfy" ]; then

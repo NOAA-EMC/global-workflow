@@ -112,6 +112,9 @@ def get_definitions(base):
         sys.exit(1)
     strings.append('\t<!ENTITY INTERVAL "%s">\n' % base['INTERVAL'])
     strings.append('\n')
+    strings.append('\t<!-- Run Envrionment -->\n')
+    strings.append('\t<!ENTITY RUN_ENVIR "%s">\n' % base['RUN_ENVIR'])
+    strings.append('\n')
     strings.append('\t<!-- Experiment related directories -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
     strings.append('\t<!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
@@ -208,9 +211,12 @@ def get_workflow(dict_configs, cdump='gdas'):
     '''
 
     envars = []
+    envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
     envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
     envars.append(rocoto.create_envar(name='CDUMP', value='&CDUMP;'))
+    envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
+    envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     tasks = []
 

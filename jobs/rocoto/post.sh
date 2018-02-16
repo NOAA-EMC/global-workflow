@@ -1,21 +1,14 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Fanglin Yang   Org: NCEP/EMC  Date: October 2016
-##         Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
-
 ## Abstract:
 ## NCEP post driver script
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ## FHRGRP : forecast hour group to post-process (e.g. 0, 1, 2 ...)
 ## FHRLST : forecast hourlist to be post-process (e.g. anl, f000, f000_f001_f002, ...)
 ###############################################################
@@ -37,8 +30,6 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export PDY=$(echo $CDATE | cut -c1-8)
-export cyc=$(echo $CDATE | cut -c9-10)
 
 export COMROT=$ROTDIR/$CDUMP.$PDY/$cyc
 
@@ -105,7 +96,6 @@ export flist=$flist_tmp
 ####################################
 # Specify RUN Name and model
 ####################################
-export NET=gfs
 export RUN=$CDUMP
 
 ####################################
@@ -113,14 +103,12 @@ export RUN=$CDUMP
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
 # SENDDBN  - Issue DBNet Client Calls
 # RERUN    - Rerun posts from beginning (default no)
-# VERBOSE  - Specify Verbose Output in global_postgp.sh
 ####################################
 export SAVEGES=NO
 export SENDSMS=NO
 export SENDCOM=YES
 export SENDDBN=NO
 export RERUN=NO
-export VERBOSE=YES
 
 export HOMEglobal=${HOMEpost}
 export HOMEgfs=${HOMEpost}
@@ -134,7 +122,6 @@ export COMOUT=$COMROT
 
 export APRUN=${APRUN_NP}
 export FIXgfs=$HOMEgfs/fix
-export KEEPDATA=${KEEPDATA:-"NO"}
 #---------------------------------------------------------------
 
 
@@ -146,7 +133,7 @@ for fname in $flist; do
     else
         export post_times=`echo $fname | cut -d. -f3 | cut -c5-`
     fi
- 
+
     $POSTJJOBSH
     status=$?
     [[ $status -ne 0 ]] && exit $status
