@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.vrfy ##########
 # Verification step specific
@@ -62,7 +55,7 @@ if [[ "$CDUMP" = "gfs" ]] ; then
         export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
         if [ ${lprecip_accu:-".false."} = ".true." ]; then
             export rain_bucket=0
-        else 
+        else
             export rain_bucket=${FHZER:-6}
         fi
 
@@ -79,13 +72,11 @@ fi
 # Minimization, Radiance and Ozone Monitoring
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
-    export HOMEgfs="$HOMEgfs"
     export envir="para"
 
     # Radiance Monitoring
     if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
 
-        export HOMEradmon="$HOMEgfs"
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/radmon"
         if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
@@ -100,8 +91,6 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     # Minimization Monitoring
     if [[ "$VRFYMINMON" = "YES" ]] ; then
 
-        export HOMEgfs="$HOMEgfs"
-        export HOMEminmon=$HOMEgfs
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/minmon"
         if [[ "$machine" == "WCOSS_C" || "$machine" == "THEIA" ]] ; then
@@ -120,7 +109,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     # Ozone Monitoring
     if [[ "$VRFYOZN" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
 
-        export HOMEoznmon="$HOMEgfs"
+        export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/oznmon"
         if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
@@ -144,7 +133,6 @@ if [ $VRFYTRAK = "YES" ]; then
     export SUPVX="$HOMEgfs/exec/supvit"
     export HOMERELO=$HOMEgfs
     export homesyndir=$HOMEgfs
-    export prep_step="$NWPROD/prod_util.v1.0.15/ush/prep_step"
     if [[ "$CDUMP" = "gfs" ]] ; then
         export FHOUT=$FHOUT_GFS
         export FHMAX=$FHMAX_GFS
@@ -153,6 +141,7 @@ if [ $VRFYTRAK = "YES" ]; then
     if [ $machine = "THEIA" ]; then
        export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
        export archsyndir="$COMROOTp1/arch/prod/syndat"
+       export prep_step="$NWPROD/prod_util.v1.0.15/ush/prep_step"
     fi
 fi
 
@@ -160,21 +149,19 @@ fi
 if [ $VRFYGENESIS = "YES" ]; then
 
     if [ $machine = "WCOSS_C" ] ; then
-        export NWROOTGENESIS="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17"
+        export ens_tracker_ver=v1.1.12
+        export HOMEens_tracker=/gpfs/hps/nco/ops/nwpara/ens_tracker.${ens_tracker_ver}
+        export GENESISSH="$HOMEens_tracker/jobs/JGFS_TC_GENESIS"
     elif [ $machine = "THEIA" ] ; then
         export NWROOTGENESIS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17"
+        export GENESISSH="$NWROOTGENESIS/ens_tracker.v2.0.1/gfs_genesis_para_fv3gfs.sh"	
         export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
         export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
-    fi
-    if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
-        export GENESISSH="$NWROOTGENESIS/ens_tracker.v2.0.1/gfs_genesis_para_fv3gfs.sh"
     else
         echo "WARNING: Genesis verification is not enabled on $machine!"
         export VRFYGENESIS="NO"
         export GENESISSH=""
     fi
-
-    export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2"
 
 fi
 

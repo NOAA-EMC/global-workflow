@@ -150,12 +150,15 @@ def get_definitions(base):
         strings.append(get_gfs_dates(base))
         strings.append('\n')
 
+    strings.append('\t<!-- Run Envrionment -->\n')
+    strings.append('\t<!ENTITY RUN_ENVIR "%s">\n' % base['RUN_ENVIR'])
+    strings.append('\n')
     strings.append('\t<!-- Experiment and Rotation directory -->\n')
     strings.append('\t<!ENTITY EXPDIR "%s">\n' % base['EXPDIR'])
     strings.append('\t<!ENTITY ROTDIR "%s">\n' % base['ROTDIR'])
     strings.append('\n')
     strings.append('\t<!-- Directories for driving the workflow -->\n')
-    strings.append('\t<!ENTITY JOBS_DIR "%s/jobs/rocoto">\n' % base['HOMEgfs'])
+    strings.append('\t<!ENTITY JOBS_DIR "%s">\n' % base['BASE_JOB'])
     strings.append('\t<!ENTITY DMPDIR   "%s">\n' % base['DMPDIR'])
     strings.append('\n')
     strings.append('\t<!-- Machine related entities -->\n')
@@ -265,9 +268,12 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     '''
 
     envars = []
+    envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
     envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
     envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
+    envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
+    envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     tasks = []
 
@@ -366,9 +372,12 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
     '''
 
     envars = []
+    envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
     envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
     envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
+    envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
+    envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     ensgrp = rocoto.create_envar(name='ENSGRP', value='#grp#')
 

@@ -1,5 +1,9 @@
-#!/bin/ksh
-set -x
+#!/bin/ksh -x
+
+########## config.base ##########
+# Common to all steps
+
+echo "BEGIN: config.base"
 
 export RUN_ENVIR="nco"
 export machine="WCOSS_C"
@@ -13,29 +17,20 @@ HPSS_PROJECT=emc-global
 
 export gfs_ver=v15.0.0
 export HOMEgfs=$NWROOT/gfs.${gfs_ver}
-export BASE_MODULES="$HOMEgfs/modulefiles"
 export PARMgfs=$HOMEgfs/parm
 export FIXgfs=$HOMEgfs/fix
 export USHgfs=$HOMEgfs/ush
 export EXECgfs=$HOMEgfs/exec
+export SCRgfs=$HOMEgfs/scripts
 
 
 ########################################################################
-# Theia workaround.  Reduce stack soft limit while running "module" to
-# avoid runaway memory allocation:
-ulimit_s=$( ulimit -S -s )
-ulimit -S -s 10000
-
 # Find module command and purge:
-source "$BASE_MODULES/module-setup.sh.inc" 2> /dev/null
+source "$HOMEgfs/modulefiles/module-setup.sh.inc" 2> /dev/null
 
 # Load our module:
-module use "$BASE_MODULES" 2> /dev/null
+module use "$HOMEgfs/modulefiles" 2> /dev/null
 module load module_base.$( echo $machine | tr A-Z a-z ) 2> /dev/null
-
-# Restore stack soft limit:
-ulimit -S -s "$ulimit_s"
-unset ulimit_s
 
 for exetest in hsi htar ; do
     if ( ! which $exetest ) ; then
@@ -71,17 +66,13 @@ export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build paths relative to $HOMEgfs
-export HOMEgsi="$HOMEgfs/sorc/gsi.fd"
+export HOMEgsi="$HOMEgfs"
+export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
 export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
-
-#--will be removed after gsi reppo is updated
-export BASE_GSM=$HOMEgfs
-export BASE_GSI=$HOMEgsi
-
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -89,7 +80,6 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
-export NCO_NAMING_CONV="YES"
 export CHGRP_CMD="chgrp rstprod"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
@@ -109,6 +99,20 @@ export RUNDIR="$STMP/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="$ICSDIR"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+
+# Commonly defined parameters in JJOBS
+export envir=${envir:-"prod"}
+export NET="gfs"
+export RUN=${RUN:-"gfs"}
+export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
+export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
+export REDOUT="1>>"
+export REDERR="2>"
+
+export SENDECF=${SENDECF:-"YES"}
+export SENDCOM=${SENDCOM:-"YES"}
+export SENDDBN=${SENDDBN:-"YES"}
+
 
 # Resolution specific parameters
 export LEVS=65

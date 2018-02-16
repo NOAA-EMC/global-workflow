@@ -1,21 +1,14 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Fanglin Yang   Org: NCEP/EMC  Date: October 2016
-##         Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
-
 ## Abstract:
 ## Inline verification and diagnostics driver script
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ###############################################################
 
 ###############################################################
@@ -34,8 +27,6 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-export PDY=$(echo $CDATE | cut -c1-8)
-export cyc=$(echo $CDATE | cut -c9-10)
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
@@ -50,16 +41,18 @@ if [ $CDUMP = "gfs" ]; then
     export OMP_NUM_THREADS=1
     pwd=$(pwd)
     cd $COMIN
-    sfluxfiles=$(ls -1 ${CDUMP}.t${cyc}z.sfluxgrbf*.grib2)
-    for fname in $sfluxfiles; do
-       fhr3=$(echo $fname | cut -d. -f3 | cut -c 10-)
-       fhr=$fhr3
-       [ $fhr3 -lt 100 ] && fhr=$(echo $fhr3 | cut -c2-3)
+    fhmax=$vhr_rain
+    fhr=0
+    while [ $fhr -le $fhmax ]; do
+       fhr2=$(printf %02i $fhr)
+       fhr3=$(printf %03i $fhr)
+       fname=${CDUMP}.t${cyc}z.sfluxgrbf$fhr3.grib2
        rm -f sflux_outtmp
        $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
-       fileout=prcp_pgbq${fhr}.${CDUMP}.${CDATE}
+       fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}
        $CNVGRIB21_GFS -g21 sflux_outtmp $fileout
        rm -f sflux_outtmp
+       (( fhr = $fhr + 6 ))
     done
     cd $pwd
     export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
@@ -154,10 +147,14 @@ fi
 if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
 
    export DATA="${DATAROOT}/genesis_tracker"
+   export COMINgfs=$COMIN
+   export COMINgfs=$COMIN
+   export COMINgenvit=${COMIN}/genesis_vital_2018
+   export COMOUTgenvit=${COMIN}/genesis_vital_2018
    export COMOUT=$ARCDIR
-   export gfspara=$COMIN
+   export SENDDBN="NO"
 
-   $GENESISSH $CDATE $CDUMP $COMOUT $DATA
+   $GENESISSH
 
 fi
 

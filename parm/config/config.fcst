@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.fcst ##########
 # Forecast specific
@@ -41,8 +34,8 @@ export MONO="non-mono"
 # Use stratosphere h2o physics
 export h2o_phys=".true."
 
-# Options of stratosphere O3 physics reaction coefficients 
-export new_o3forc=YES       
+# Options of stratosphere O3 physics reaction coefficients
+export new_o3forc="YES"
 
 # Microphysics configuration
 export dnats=0

@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.post ##########
 # Post specific
@@ -26,8 +19,8 @@ export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
 export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
 export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 
-export POSTGPSH="$HOMEpost/ush/global_nceppost.sh"
-export POSTGPEXEC="$HOMEgfs/exec/gfs_ncep_post"
+export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 export GOESF=NO                               # goes image
 export GTGF=NO                                # gtg icing product
 export FLXF=YES                               # grib2 flux file written by post

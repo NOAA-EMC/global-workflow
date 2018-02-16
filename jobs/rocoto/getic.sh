@@ -1,20 +1,14 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Rahul Mahajan  Org: NCEP/EMC  Date: August 2017
-
 ## Abstract:
 ## Get GFS intitial conditions
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ###############################################################
 
 ###############################################################
@@ -38,8 +32,6 @@ status=$?
 yyyy=$(echo $CDATE | cut -c1-4)
 mm=$(echo $CDATE | cut -c5-6)
 dd=$(echo $CDATE | cut -c7-8)
-hh=$(echo $CDATE | cut -c9-10)
-cymd=$(echo $CDATE | cut -c1-8)
 
 ###############################################################
 
@@ -61,18 +53,18 @@ if [ $ics_from = "opsgfs" ]; then
     # Handle nemsio and pre-nemsio GFS filenames
     if [ $CDATE -gt "2017072000" ]; then
         nfanal=4
-        fanal[1]="./${CDUMP}.t${hh}z.pgrbanl"
-        fanal[2]="./${CDUMP}.t${hh}z.atmanl.nemsio"
-        fanal[3]="./${CDUMP}.t${hh}z.sfcanl.nemsio"
-        fanal[4]="./${CDUMP}.t${hh}z.nstanl.nemsio"
+        fanal[1]="./${CDUMP}.t${cyc}z.pgrbanl"
+        fanal[2]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
+        fanal[3]="./${CDUMP}.t${cyc}z.sfcanl.nemsio"
+        fanal[4]="./${CDUMP}.t${cyc}z.nstanl.nemsio"
         flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
         tarpref="gpfs_hps_nco_ops_com"
     else
         nfanal=3
         [[ $CDUMP = "gdas" ]] && str1=1
-        fanal[1]="./${CDUMP}${str1}.t${hh}z.pgrbanl"
-        fanal[2]="./${CDUMP}${str1}.t${hh}z.sanl"
-        fanal[3]="./${CDUMP}${str1}.t${hh}z.sfcanl"
+        fanal[1]="./${CDUMP}${str1}.t${cyc}z.pgrbanl"
+        fanal[2]="./${CDUMP}${str1}.t${cyc}z.sanl"
+        fanal[3]="./${CDUMP}${str1}.t${cyc}z.sfcanl"
         flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
         tarpref="com2"
     fi
@@ -83,7 +75,7 @@ if [ $ics_from = "opsgfs" ]; then
         # Need COMROOT
         module load prod_envir >> /dev/null 2>&1
 
-        comdir="$COMROOT/$CDUMP/prod/$CDUMP.$cymd"
+        comdir="$COMROOT/$CDUMP/prod/$CDUMP.$PDY"
         rc=0
         for i in `seq 1 $nfanal`; do
             if [ -f $comdir/${fanal[i]} ]; then
@@ -98,7 +90,7 @@ if [ $ics_from = "opsgfs" ]; then
     # Get initial conditions from HPSS
     if [ $rc -ne 0 ]; then
 
-        hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$cymd"
+        hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$PDY"
         if [ $CDUMP = "gdas" ]; then
             tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
         elif [ $CDUMP = "gfs" ]; then
@@ -162,7 +154,7 @@ elif [ $ics_from = "pargfs" ]; then
     fi
 
     # Move the files to legacy EMC filenames
-    for i in `seq 1 $nfanal`; do
+    for i in $(seq 1 $nfanal); do
         $NMV ${fanal[i]} ${ftanal[i]}
     done
 
@@ -181,9 +173,9 @@ fi
 ###############################################################
 
 # Copy pgbanl file to COMROT for verification
-COMROT=$ROTDIR/${CDUMP}.$cymd/$hh
+COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc
 [[ ! -d $COMROT ]] && mkdir -p $COMROT
-$NCP ${ftanal[1]} $COMROT/${CDUMP}.t${hh}z.pgrbanl
+$NCP ${ftanal[1]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
 
 ###############################################################
 # Exit out cleanly

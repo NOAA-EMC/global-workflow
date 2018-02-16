@@ -1,19 +1,13 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
-## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
-
 ## Abstract:
+## RUN_ENVIR : runtime environment (emc | nco)
 ## Ensemble archive driver script
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ## CDUMP  : cycle name (gdas / gfs)
 ## ENSGRP : ensemble sub-group to archive (0, 1, 2, ...)
 ###############################################################
@@ -31,8 +25,6 @@ done
 # Run relevant tasks
 
 # CURRENT CYCLE
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
@@ -196,18 +188,18 @@ if [ $ENSGRP -eq 0 ]; then
     # PREVIOUS to the PRIOR CYCLE
     # Now go 2 cycles back and remove the directory
     GDATE=$($NDATE -$assim_freq $GDATE)
-    gymd=$(echo $GDATE | cut -c1-8)
-    ghh=$(echo  $GDATE | cut -c9-10)
+    gPDY=$(echo $GDATE | cut -c1-8)
+    gcyc=$(echo $GDATE | cut -c9-10)
 
-    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd/$ghh"
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gPDY/$gcyc"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
     # PREVIOUS day 00Z remove the whole day
     GDATE=$($NDATE -48 $CDATE)
-    gymd=$(echo $GDATE | cut -c1-8)
-    ghh=$(echo  $GDATE | cut -c9-10)
+    gPDY=$(echo $GDATE | cut -c1-8)
+    gcyc=$(echo $GDATE | cut -c9-10)
 
-    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gymd"
+    COMIN_ENS="$ROTDIR/enkf.$CDUMP.$gPDY"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 fi

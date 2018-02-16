@@ -1,0 +1,22 @@
+#%Module#####################################################
+#############################################################
+## George.Gayno@noaa.gov
+## NOAA/NWS/NCEP/EMC
+## gaussian_sfcanl build module for Theia
+#############################################################
+
+# Loading Intel Compiler Suite
+module load intel/15.1.133
+
+# Loding nceplibs modules
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+module load w3nco/v2.0.6
+module load bacio/v2.0.2
+module load nemsio/v2.2.3
+module load sp/v2.0.2
+module load netcdf/4.3.0
+module load hdf5/1.8.14
+export NETCDF_INCLUDE="-I${NETCDF}/include"
+export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5}/lib -lhdf5 -lhdf5_fortran"
+
+export FCOMP=ifort

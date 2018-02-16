@@ -189,16 +189,16 @@ fi
         # Post Files to PCOM
         ##############################
 
-        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
+        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
 
         ##############################
         # Distribute Data
         ##############################
 
         if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
+           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
         else
-           msg="File grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
+           msg="File grib2.awpgfs${fcsthrs}.${GRID}.$job_name  not posted to db_net."
            postmsg "$jlogfile" "$msg"
         fi
       fi
@@ -224,10 +224,7 @@ fi
       ##############################
 
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-        # JY - turn back on the pac alert - 05/11/2016
-        # if [ $GRID = conus -o $GRID = prico -o $GRID = ak ]; then  ##XXW: Turn off pacific region alert for now
          $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
-        # fi
       else
          msg="File $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
          postmsg "$jlogfile" "$msg"
@@ -236,8 +233,6 @@ fi
    fi
    msg="Awip Processing ${fcsthrs} hour completed normally"
    postmsg "$jlogfile" "$msg"
-
-   rm awps_file_${fcsthrs}_${GRID} awps_file_fi${fcsthrs}_${GRID} gfs_pv_levels.grb temp_gfs*
 
 done
 

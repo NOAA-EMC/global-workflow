@@ -1,11 +1,4 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ########## config.ecen ##########
 # Ensemble recentering specific
@@ -15,7 +8,7 @@ echo "BEGIN: config.ecen"
 # Get task specific resources
 . $EXPDIR/config.resources ecen
 
-export ENKFRECENSH="$HOMEgsi/scripts/EnKF/scripts_ncep/exglobal_enkf_recenter_fv3gfs.sh.ecf"
+export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
 export nth_ecen=2
 
 export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"

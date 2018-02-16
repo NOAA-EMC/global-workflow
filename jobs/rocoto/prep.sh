@@ -1,20 +1,16 @@
 #!/bin/ksh -x
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 
 ###############################################################
 ## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
 
 ## Abstract:
 ## Do prepatory tasks
+## RUN_ENVIR : runtime environment (emc | nco)
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
 ###############################################################
 
 ###############################################################
@@ -36,12 +32,9 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
+export OPREFIX="${CDUMP}.t${cyc}z."
 
-export OPREFIX="${CDUMP}.t${chh}z."
-
-export COMOUT="$ROTDIR/$CDUMP.$cymd/$chh"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 # Do relocation

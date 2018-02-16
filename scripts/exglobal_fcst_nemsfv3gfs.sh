@@ -73,7 +73,6 @@ NLN=${NLN:-"/bin/ln -sf"}
 NMV=${NMV:-"/bin/mv"}
 SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-NDATE=${NDATE:-$NWPROD/util/exec/ndate}
 KEEPDATA=${KEEPDATA:-"NO"}
 
 # Other options
@@ -103,6 +102,29 @@ WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
 rCDUMP=${rCDUMP:-$CDUMP}
+
+#------------------------------------------------------------------
+# setup the runtime environment
+if [ $machine = "WCOSS_C" ] ; then
+  HUGEPAGES=${HUGEPAGES:-hugepages4M}
+  . $MODULESHOME/init/sh 2>/dev/null
+  module purge 2>/dev/null
+  module use $FCSTMODSDIR/wcoss_cray 2>/dev/null
+  module load fv3 2>/dev/null
+  module load prod_util iobuf craype-$HUGEPAGES 2>/dev/null
+  export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
+  export MKL_CBWR=AVX2
+  export WRTIOBUF=${WRTIOBUF:-"4M"}
+  export NC_BLKSZ=${NC_BLKSZ:-"4M"}
+  export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
+elif [ $machine = "THEIA" ]; then
+  . $MODULESHOME/init/sh 2>/dev/null
+  module purge 2>/dev/null
+  module use $FCSTMODSDIR/theia 2>/dev/null
+  module load fv3 2>/dev/null
+  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles 2> /dev/null
+  module load prod_util 2>/dev/null
+fi
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
@@ -135,69 +157,70 @@ gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 # initial conditions
 warm_start=${warm_start:-".false."}
 read_increment=${read_increment:-".false."}
-increment_file=${increment_file:-$memdir/${CDUMP}.t${cyc}z.atminc.nc}
 restart_interval=${restart_interval:-0}
 
-if [ $warm_start = ".false." ]; then
-  if [ -d $ICSDIR/$CDATE/$CDUMP/$CASE/INPUT ]; then
-    $NCP $ICSDIR/$CDATE/$CDUMP/$CASE/INPUT/* $DATA/INPUT/.
-  else
-    for file in $memdir/INPUT/*.nc; do
-      file2=$(echo $(basename $file))
-      fsuf=$(echo $file2 | cut -c1-3)
-      if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
-        $NLN $file $DATA/INPUT/$file2
-      fi
-    done
-  fi
-else
-  if [ ${restart_test:-"NO"} = "YES" ]; then
-    # start from the end of last forecast run
-    $NLN $gmemdir/RESTART/* $DATA/INPUT/.
-  else
+# Determine if this is a warm start or cold start
+if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
+  export warm_start=".true."
+fi
 
-    # Link all (except sfc_data) restart files from $gmemdir
-    for file in $gmemdir/RESTART/${PDY}.${cyc}0000.*.nc; do
-      file2=$(echo $(basename $file))
-      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-      fsuf=$(echo $file2 | cut -d. -f1)
-      if [ $fsuf != "sfc_data" ]; then
-         $NLN $file $DATA/INPUT/$file2
-      fi
-    done
+if [ $warm_start = ".true." ]; then
 
-    # Link sfcanl_data restart files from $memdir
-    for file in $memdir/RESTART/${PDY}.${cyc}0000.*.nc; do
-      file2=$(echo $(basename $file))
-      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-      fsufanl=$(echo $file2 | cut -d. -f1)
-      if [ $fsufanl = "sfcanl_data" ]; then
-        file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
-        $NLN $file $DATA/INPUT/$file2
-      fi
-    done
+  # Link all (except sfc_data) restart files from $gmemdir
+  for file in $gmemdir/RESTART/${PDY}.${cyc}0000.*.nc; do
+    file2=$(echo $(basename $file))
+    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+    fsuf=$(echo $file2 | cut -d. -f1)
+    if [ $fsuf != "sfc_data" ]; then
+       $NLN $file $DATA/INPUT/$file2
+    fi
+  done
 
-    # Handle coupler.res file for DA cycling
-    if [ ${USE_COUPLER_RES:-"YES"} = "YES" ]; then
-      # In DA, this is not really a "true restart",
-      # and the model start time is the analysis time
-      # The alternative is to replace
-      # model start time with current model time in coupler.res
-      file=$gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res
-      file2=$(echo $(basename $file))
-      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+  # Link sfcanl_data restart files from $memdir
+  for file in $memdir/RESTART/${PDY}.${cyc}0000.*.nc; do
+    file2=$(echo $(basename $file))
+    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+    fsufanl=$(echo $file2 | cut -d. -f1)
+    if [ $fsufanl = "sfcanl_data" ]; then
+      file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
       $NLN $file $DATA/INPUT/$file2
     fi
+  done
 
-    if [ $read_increment = ".true." ]; then
-      if [ -f $increment_file ]; then
-        $NLN $increment_file $DATA/INPUT/fv3_increment.nc
-      else
-        read_increment=".false."
-      fi
-    fi
+  # Handle coupler.res file for DA cycling
+  if [ ${USE_COUPLER_RES:-"NO"} = "YES" ]; then
+    # In DA, this is not really a "true restart",
+    # and the model start time is the analysis time
+    # The alternative is to replace
+    # model start time with current model time in coupler.res
+    file=$gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res
+    file2=$(echo $(basename $file))
+    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+    $NLN $file $DATA/INPUT/$file2
   fi
-fi
+
+  increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+  if [ -f $increment_file ]; then
+    $NLN $increment_file $DATA/INPUT/fv3_increment.nc
+    read_increment=".true."
+    res_latlon_dynamics="fv3_increment.nc"
+  else
+    read_increment=".false."
+    res_latlon_dynamics="''"
+  fi
+
+else # if [ $warm_start = ".true." ]; then
+
+  for file in $memdir/INPUT/*.nc; do
+    file2=$(echo $(basename $file))
+    fsuf=$(echo $file2 | cut -c1-3)
+    if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
+      $NLN $file $DATA/INPUT/$file2
+    fi
+  done
+
+fi # if [ $warm_start = ".true." ]; then
+
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
@@ -643,47 +666,47 @@ cat > input.nml <<EOF
 /
 
 &gfs_physics_nml
-  fhzero      = $FHZER
+  fhzero       = $FHZER
   lprecip_accu = ${lprecip_accu:-".true."}
-  h2o_phys    = ${h2o_phys:-".true."}
-  ldiag3d     = ${ldiag3d:-".false."}
-  fhcyc       = $FHCYC
-  use_ufo     = ${use_ufo:-".true."}
-  pre_rad     = ${pre_rad:-".false."}
-  ncld        = ${ncld:-1}
-  imp_physics = ${imp_physics:-"99"}
-  pdfcld      = ${pdfcld:-".false."}
-  fhswr       = ${FHSWR:-"3600."}
-  fhlwr       = ${FHLWR:-"3600."}
-  ialb        = $IALB
-  iems        = $IEMS
-  iaer        = $IAER
-  ico2        = $ICO2
-  isubc_sw    = ${isubc_sw:-"2"}
-  isubc_lw    = ${isubc_lw:-"2"}
-  isol        = $ISOL
-  lwhtr       = ${lwhtr:-".true."}
-  swhtr       = ${swhtr:-".true."}
-  cnvgwd      = ${cnvgwd:-".true."}
-  shal_cnv    = ${shal_cnv:-".true."}
-  cal_pre     = ${cal_pre:-".true."}
-  redrag      = ${redrag:-".true."}
-  dspheat     = ${dspheat:-".true."}
-  hybedmf     = ${hybedmf:-".true."}
-  random_clds = ${random_clds:-".true."}
-  trans_trac  = ${trans_trac:-".true."}
-  cnvcld      = ${cnvcld:-".true."}
-  imfshalcnv  = ${imfshalcnv:-"2"}
-  imfdeepcnv  = ${imfdeepcnv:-"2"}
-  cdmbgwd     = ${cdmbgwd:-"3.5,0.25"}
-  prslrd0     = ${prslrd0:-"0."}
-  ivegsrc     = ${ivegsrc:-"1"}
-  isot        = ${isot:-"1"}
-  debug       = ${gfs_phys_debug:-".false."}
-  nstf_name   = $nstf_name
-  nst_anl     = $nst_anl
-  psautco     = ${psautco:-"0.0008,0.0005"}
-  prautco     = ${prautco:-"0.00015,0.00015"}
+  h2o_phys     = ${h2o_phys:-".true."}
+  ldiag3d      = ${ldiag3d:-".false."}
+  fhcyc        = $FHCYC
+  use_ufo      = ${use_ufo:-".true."}
+  pre_rad      = ${pre_rad:-".false."}
+  ncld         = ${ncld:-1}
+  imp_physics  = ${imp_physics:-"99"}
+  pdfcld       = ${pdfcld:-".false."}
+  fhswr        = ${FHSWR:-"3600."}
+  fhlwr        = ${FHLWR:-"3600."}
+  ialb         = $IALB
+  iems         = $IEMS
+  iaer         = $IAER
+  ico2         = $ICO2
+  isubc_sw     = ${isubc_sw:-"2"}
+  isubc_lw     = ${isubc_lw:-"2"}
+  isol         = $ISOL
+  lwhtr        = ${lwhtr:-".true."}
+  swhtr        = ${swhtr:-".true."}
+  cnvgwd       = ${cnvgwd:-".true."}
+  shal_cnv     = ${shal_cnv:-".true."}
+  cal_pre      = ${cal_pre:-".true."}
+  redrag       = ${redrag:-".true."}
+  dspheat      = ${dspheat:-".true."}
+  hybedmf      = ${hybedmf:-".true."}
+  random_clds  = ${random_clds:-".true."}
+  trans_trac   = ${trans_trac:-".true."}
+  cnvcld       = ${cnvcld:-".true."}
+  imfshalcnv   = ${imfshalcnv:-"2"}
+  imfdeepcnv   = ${imfdeepcnv:-"2"}
+  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
+  prslrd0      = ${prslrd0:-"0."}
+  ivegsrc      = ${ivegsrc:-"1"}
+  isot         = ${isot:-"1"}
+  debug        = ${gfs_phys_debug:-".false."}
+  nstf_name    = $nstf_name
+  nst_anl      = $nst_anl
+  psautco      = ${psautco:-"0.0008,0.0005"}
+  prautco      = ${prautco:-"0.00015,0.00015"}
   $gfs_physics_nml
 /
 
@@ -829,6 +852,7 @@ EOF
   sppt_lscale = ${SPPT_LSCALE:-"-999."}
   sppt_logit = ${SPPT_LOGIT:-".true."}
   sppt_sfclimit = ${SPPT_SFCLIMIT:-".true."}
+  use_zmtnblck = ${use_zmtnblck:-".true."}
 EOF
   fi
 
@@ -880,25 +904,7 @@ else
 fi
 
 #------------------------------------------------------------------
-# setup the runtime environment and run the executable
-if [ $machine = "WCOSS_C" ] ; then
-  HUGEPAGES=${HUGEPAGES:-hugepages4M}
-  . $MODULESHOME/init/sh 2>/dev/null
-  module purge 2>/dev/null
-  module use $FCSTMODSDIR/wcoss_cray 2>/dev/null
-  module load fv3 2>/dev/null
-  module load prod_util iobuf craype-$HUGEPAGES 2>/dev/null
-  export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-  export MKL_CBWR=AVX2
-  export WRTIOBUF=${WRTIOBUF:-"4M"}
-  export NC_BLKSZ=${NC_BLKSZ:-"4M"}
-  export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-elif [ $machine = "THEIA" ]; then
-  . $MODULESHOME/init/sh 2>/dev/null
-  module purge 2>/dev/null
-  module use $FCSTMODSDIR/theia 2>/dev/null
-  module load fv3 2>/dev/null
-fi
+# run the executable
 
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
