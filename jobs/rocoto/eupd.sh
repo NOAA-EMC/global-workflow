@@ -1,9 +1,13 @@
 #!/bin/ksh -x
 
-. $EXPDIR/config.base
+###############################################################
+# Source FV3GFS workflow modules
+. $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-$HOMEgsi/jobs/JGDAS_ENKF_UPDATE
+###############################################################
+# Execute the JJOB
+$HOMEgfs/jobs/JGDAS_ENKF_UPDATE
 status=$?
 exit $status

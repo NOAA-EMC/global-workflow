@@ -2,8 +2,9 @@
 
 ###############################################################
 ## Abstract:
-## RUN_ENVIR : runtime environment (emc | nco)
 ## Ensemble archive driver script
+## RUN_ENVIR : runtime environment (emc | nco)
+## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## PDY    : current date (YYYYMMDD)
@@ -11,6 +12,12 @@
 ## CDUMP  : cycle name (gdas / gfs)
 ## ENSGRP : ensemble sub-group to archive (0, 1, 2, ...)
 ###############################################################
+
+###############################################################
+# Source FV3GFS workflow modules
+. $HOMEgfs/ush/load_fv3gfs_modules.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Source relevant configs

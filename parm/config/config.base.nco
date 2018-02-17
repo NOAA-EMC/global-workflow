@@ -25,12 +25,6 @@ export SCRgfs=$HOMEgfs/scripts
 
 
 ########################################################################
-# Find module command and purge:
-source "$HOMEgfs/modulefiles/module-setup.sh.inc" 2> /dev/null
-
-# Load our module:
-module use "$HOMEgfs/modulefiles" 2> /dev/null
-module load module_base.$( echo $machine | tr A-Z a-z ) 2> /dev/null
 
 for exetest in hsi htar ; do
     if ( ! which $exetest ) ; then
