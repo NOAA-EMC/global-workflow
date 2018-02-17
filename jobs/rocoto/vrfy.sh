@@ -152,7 +152,7 @@ if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
    export COMINgenvit=${COMIN}/genesis_vital_2018
    export COMOUTgenvit=${COMIN}/genesis_vital_2018
    export COMOUT=$ARCDIR
-   export SENDDBN="NO"
+   export SENDCOM="YES"
 
    $GENESISSH
 
