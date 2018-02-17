@@ -61,7 +61,7 @@ export PARMPREP="$BASE_PREP_GLOBAL/parm"
 #export CQCS="$BASE_PREP/fix/prepobs_cqc_statbge"
 #export LANDC="$BASE_PREP/fix/prepobs_landc"
 #export PRPT="$BASE_PREP/fix/prepobs_prep.bufrtable"
-export PRVT="$HOMEgsi/fix/prepobs_errtable.global"
+export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
 #export OIQCT="$BASE_PREP_GLOBAL/fix/prepobs_oiqc.oberrs"
 
 # parm files
