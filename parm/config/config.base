@@ -39,24 +39,6 @@ export SCRgfs=$HOMEgfs/scripts
 
 ########################################################################
 
-# --- Load modules ---
-
-# Theia workaround.  Reduce stack soft limit while running "module" to
-# avoid runaway memory allocation:
-ulimit_s=$( ulimit -S -s )
-ulimit -S -s 10000
-
-# Find module command and purge:
-source "$HOMEgfs/modulefiles/module-setup.sh.inc" 2> /dev/null
-
-# Load our module:
-module use "$HOMEgfs/modulefiles" 2> /dev/null
-module load module_base.$( echo $machine | tr A-Z a-z ) 2> /dev/null
-
-# Restore stack soft limit:
-ulimit -S -s "$ulimit_s"
-unset ulimit_s
-
 for exetest in hsi htar ; do
     if ( ! which $exetest ) ; then
         echo "$exetest: executable missing after \"module load\"" 1>&2

@@ -4,6 +4,7 @@
 ## Abstract:
 ## NCEP post driver script
 ## RUN_ENVIR : runtime environment (emc | nco)
+## HOMEgfs   : /full/path/to/workflow
 ## EXPDIR : /full/path/to/config/files
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
@@ -12,6 +13,12 @@
 ## FHRGRP : forecast hour group to post-process (e.g. 0, 1, 2 ...)
 ## FHRLST : forecast hourlist to be post-process (e.g. anl, f000, f000_f001_f002, ...)
 ###############################################################
+
+###############################################################
+# Source FV3GFS workflow modules
+. $HOMEgfs/ush/load_fv3gfs_modules.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Source relevant configs
