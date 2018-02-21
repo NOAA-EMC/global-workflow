@@ -34,7 +34,7 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export jobid=${jobid:-"${outid}.o${pid}"}
 if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/$jobid"
+    export DATA="$DATAROOT/${job}.${pid}"
 else
     export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
     export DATA="$DATAROOT/$job"

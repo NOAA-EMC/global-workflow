@@ -114,7 +114,7 @@
 #     FNSOTC        Input soil type climatology GRIB file
 #                   defaults to ${FIXam}/global_soiltype.1x1.grb
 #     FNSMCC        Input soil moisture climatology GRIB file
-#                   defaults to ${FIXam}/global_soilmgldas.t$JCAP.$LONB.$LATB.grb
+#                   defaults to ${FIXam}/global_soilmgldas.statsgo.t$JCAP.$LONB.$LATB.grb
 #     FNVMNC        Input min veg frac climatology GRIB file
 #                   defaults to ${FIXam}/global_shdmin.0.144x0.144.grb
 #     FNVMXC        Input max veg frac climatology GRIB file
@@ -281,7 +281,7 @@ FNTG3C=${FNTG3C:-${FIXam}/global_tg3clim.2.6x1.5.grb}
 FNVEGC=${FNVEGC:-${FIXam}/global_vegfrac.0.144.decpercent.grb}
 FNVETC=${FNVETC:-${FIXam}/global_vegtype.1x1.grb}
 FNSOTC=${FNSOTC:-${FIXam}/global_soiltype.1x1.grb}
-FNSMCC=${FNSMCC:-${FIXam}/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb}
+FNSMCC=${FNSMCC:-${FIXam}/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb}
 FNVMNC=${FNVMNC:-${FIXam}/global_shdmin.0.144x0.144.grb}
 FNVMXC=${FNVMXC:-${FIXam}/global_shdmax.0.144x0.144.grb}
 FNSLPC=${FNSLPC:-${FIXam}/global_slope.1x1.grb}
@@ -373,7 +373,7 @@ elif [[ $SOILTYPE_OUT = "statsgo" ]]; then
 fi
 
 # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-[[ ! -f $FNSMCC ]] && FNSMCC="$FIXam/global_soilmgldas.t1534.3072.1536.grb"
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIXam/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
 cat << EOF > fort.35
  &NAMSFC

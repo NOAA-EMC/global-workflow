@@ -80,7 +80,6 @@ MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEM
 ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 
 # Model specific stuff
-FCSTMODSDIR=${FCSTMODSDIR:-$HOMEgfs/sorc/fv3gfs.fd/modulefiles}
 FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
@@ -108,22 +107,12 @@ rCDUMP=${rCDUMP:-$CDUMP}
 if [ $machine = "WCOSS_C" ] ; then
   HUGEPAGES=${HUGEPAGES:-hugepages4M}
   . $MODULESHOME/init/sh 2>/dev/null
-  module purge 2>/dev/null
-  module use $FCSTMODSDIR/wcoss_cray 2>/dev/null
-  module load fv3 2>/dev/null
-  module load prod_util iobuf craype-$HUGEPAGES 2>/dev/null
+  module load iobuf craype-$HUGEPAGES 2>/dev/null
   export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
   export MKL_CBWR=AVX2
   export WRTIOBUF=${WRTIOBUF:-"4M"}
   export NC_BLKSZ=${NC_BLKSZ:-"4M"}
   export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-elif [ $machine = "THEIA" ]; then
-  . $MODULESHOME/init/sh 2>/dev/null
-  module purge 2>/dev/null
-  module use $FCSTMODSDIR/theia 2>/dev/null
-  module load fv3 2>/dev/null
-  module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles 2> /dev/null
-  module load prod_util 2>/dev/null
 fi
 
 #-------------------------------------------------------
@@ -209,7 +198,7 @@ if [ $warm_start = ".true." ]; then
     res_latlon_dynamics="''"
   fi
 
-else # if [ $warm_start = ".true." ]; then
+else ## cold start                            
 
   for file in $memdir/INPUT/*.nc; do
     file2=$(echo $(basename $file))
@@ -219,7 +208,7 @@ else # if [ $warm_start = ".true." ]; then
     fi
   done
 
-fi # if [ $warm_start = ".true." ]; then
+fi 
 
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
@@ -309,14 +298,14 @@ FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.r
 FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
 FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
 FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.t${JCAP}.${LONB}.${LATB}.grb"}
+FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
 # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
 [[ ! -f $FNALBC ]] && FNALBC="$FIX_AM/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"
 [[ ! -f $FNVETC ]] && FNVETC="$FIX_AM/global_vegtype.igbp.t1534.3072.1536.rg.grb"
 [[ ! -f $FNSOTC ]] && FNSOTC="$FIX_AM/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
 [[ ! -f $FNABSC ]] && FNABSC="$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
-[[ ! -f $FNSMCC ]] && FNSMCC="$FIX_AM/global_soilmgldas.t1534.3072.1536.grb"
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIX_AM/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
 # NSST Options
 # nstf_name contains the NSST related parameters

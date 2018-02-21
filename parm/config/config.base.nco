@@ -106,6 +106,7 @@ export REDERR="2>"
 export SENDECF=${SENDECF:-"YES"}
 export SENDCOM=${SENDCOM:-"YES"}
 export SENDDBN=${SENDDBN:-"YES"}
+export SENDSDM=${SENDSDM:-"YES"}
 
 
 # Resolution specific parameters
@@ -161,9 +162,6 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# Relocation related
-export DO_RELOCATE="NO"
-
 # If YES, NSST is turned on in anal and/or fcst steps
 export DONST="YES"
 
@@ -172,5 +170,8 @@ export nst_anl=.true.
 
 # Precipitation accumulation, true--no bucket, false--bucket=FHZER
 export lprecip_accu=".true."
+
+# Analysis increments to zero in CALCINCEXEC
+export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 echo "END: config.base"

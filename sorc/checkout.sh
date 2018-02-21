@@ -14,9 +14,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive ${USERNAME}@gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
+    git checkout nemsfv3gfs_beta_v1.0.0
     git submodule update --init --recursive
-    #git clone --recursive ${USERNAME}@gerrit:FV3  FV3  >> ${topdir}/checkout-fv3gfs.log 2>&1    
-    #git clone --recursive ${USERNAME}@gerrit:NEMS NEMS >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -27,6 +26,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
+    git checkout DA-FV3-IMPL-scripts
     git clone --recursive ${USERNAME}@gerrit:GSI-fix fix >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd fix
     git checkout rev2

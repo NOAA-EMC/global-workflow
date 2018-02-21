@@ -15,7 +15,6 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-export FCSTMODSDIR="$HOMEfv3gfs/modulefiles"
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"

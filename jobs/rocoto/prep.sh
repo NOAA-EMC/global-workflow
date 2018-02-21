@@ -1,20 +1,6 @@
 #!/bin/ksh -x
 
 ###############################################################
-## Author: Rahul Mahajan  Org: NCEP/EMC  Date: April 2017
-
-## Abstract:
-## Do prepatory tasks
-## RUN_ENVIR : runtime environment (emc | nco)
-## HOMEgfs   : /full/path/to/workflow
-## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
-## CDUMP  : cycle name (gdas / gfs)
-## PDY    : current date (YYYYMMDD)
-## cyc    : current cycle (HH)
-###############################################################
-
-###############################################################
 # Source FV3GFS workflow modules
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
@@ -38,20 +24,39 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-
 export OPREFIX="${CDUMP}.t${cyc}z."
-
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
-# Do relocation
-if [ $DO_RELOCATE = "YES" ]; then
-    $DRIVE_RELOCATESH
-    echo "RELOCATION IS TURNED OFF in FV3, DRIVE_RELOCATESH does not exist, ABORT!"
-    status=1
+
+###############################################################
+# For running real-time parallels on WCOSS_C, execute tropcy_qc and 
+# copy files from operational syndata directory to a local directory.
+# Otherwise, copy existing tcvital data from globaldump.
+
+if [ $PROCESS_TROPCY = "YES" ]; then
+
+    export ARCHSYNDNCO=$COMROOTp1/arch/prod/syndat
+    if [ $RUN_ENVIR != "nco" ]; then
+        export ARCHSYND=${ROTDIR}/syndat
+        if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
+        if [ ! -s $ARCHSYND/syndat_akavit ]; then 
+            for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
+                cp $ARCHSYNDNCO/$file $ARCHSYND/. 
+            done
+        fi
+    fi
+
+    $HOMEgfs/jobs/JGLOBAL_TROPCY_QC_RELOC
+    status=$?
     [[ $status -ne 0 ]] && exit $status
+
+else
+    cp $DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/.
 fi
 
+
+###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
     $DRIVE_MAKEPREPBUFRSH

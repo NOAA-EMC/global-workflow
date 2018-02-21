@@ -23,7 +23,7 @@ export COMSP=$COMOUT/${RUN}.${cycle}.
 tmhr=`echo $tmmark|cut -c3-4`
 cdate10=` ${NDATE:?} -$tmhr $PDY$cyc`
 
-NET_uc=$(echo $NET | tr [a-z] [A-Z])
+NET_uc=$(echo $RUN | tr [a-z] [A-Z])
 tmmark_uc=$(echo $tmmark | tr [a-z] [A-Z])
 
 msg="$NET_uc ANALYSIS TIME IS $PDY$cyc"
@@ -111,7 +111,7 @@ if [ "$DO_RELOCATE" = 'YES' ]; then
 #  relocation processing in COMSP path
    qual_last=".$tmmark"  # need this because gfs and gdas don't add $tmmark
                          #  qualifer to end of output sigma guess files
-   [ $NET = gfs -o $NET = gdas -o $NET = cfs ]  &&  qual_last=""
+   [ $RUN = gfs -o $RUN = gdas -o $NET = cfs ]  &&  qual_last=""
 
    if [ $BKGFREQ -eq 1 ]; then
       [ -s sgm3prep ]  &&  cp sgm3prep ${COMSP}sgm3prep${qual_last}

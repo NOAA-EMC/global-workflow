@@ -80,7 +80,7 @@
 #     FNSOTC        Input soil type climatology GRIB file.
 #                   Defaults to ${FIXam}/global_soiltype.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb
 #     FNSMCC        Input soil moisture climatology GRIB file.
-#                   Defaults to ${FIXam}/global_soilmgldas.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb
+#                   Defaults to ${FIXam}/global_soilmgldas.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb
 #     FNVMNC        Input min veg frac climatology GRIB file.
 #                   Defaults to ${FIXam}/global_shdmin.0.144x0.144.grb
 #     FNVMXC        Input max veg frac climatology GRIB file.
@@ -281,7 +281,7 @@ FNVEGC=${FNVEGC:-${FIXam}/global_vegfrac.0.144.decpercent.grb}
 FNALBC=${FNALBC:-${FIXam}/global_snowfree_albedo.bosu.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
 FNVETC=${FNVETC:-${FIXam}/global_vegtype.igbp.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
 FNSOTC=${FNSOTC:-${FIXam}/global_soiltype.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
-FNSMCC=${FNSMCC:-${FIXam}/global_soilmgldas.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb}
+FNSMCC=${FNSMCC:-${FIXam}/global_soilmgldas.statsgo.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.grb}
 FNABSC=${FNABSC:-${FIXam}/global_mxsnoalb.uariz.t$JCAP_CASE.$LONB_CASE.$LATB_CASE.rg.grb}
 FNVMNC=${FNVMNC:-${FIXam}/global_shdmin.0.144x0.144.grb}
 FNVMXC=${FNVMXC:-${FIXam}/global_shdmax.0.144x0.144.grb}
@@ -320,7 +320,7 @@ cd $DATA||exit 99
 [[ ! -f $FNVETC ]] && FNVETC="$FIXam/global_vegtype.igbp.t1534.3072.1536.rg.grb"
 [[ ! -f $FNSOTC ]] && FNSOTC="$FIXam/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
 [[ ! -f $FNABSC ]] && FNABSC="$FIXam/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
-[[ ! -f $FNSMCC ]] && FNSMCC="$FIXam/global_soilmgldas.t1534.3072.1536.grb"
+[[ ! -f $FNSMCC ]] && FNSMCC="$FIXam/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
 ################################################################################
 #  Make surface analysis

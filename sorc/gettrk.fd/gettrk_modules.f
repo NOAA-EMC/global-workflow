@@ -3,10 +3,13 @@
           sequence
           character*4   tcv_center      ! Hurricane Center Acronym
           character*4   tcv_storm_id    ! Storm Identifier (03L, etc)
+          character*9   tcv_storm_name  ! Storm name
           integer       tcv_ymd         ! Date of observation (yyyymmdd)
           integer       tcv_hhmm        ! Time of observation (UTC)
           integer       tcv_lat         ! Storm Lat (*10), always >0
+          character*1   tcv_latns       ! 'N' or 'S'
           integer       tcv_lon         ! Storm Lon (*10), always >0
+          character*1   tcv_lonew       ! 'E' or 'W'
           integer       tcv_stdir       ! Storm motion vector (in degr)
           integer       tcv_stspd       ! Spd of storm movement (m/s*10)
           integer       tcv_pcen        ! Min central pressure (mb)
@@ -18,9 +21,6 @@
           integer       tcv_r15se       ! SE rad of 15 m/s winds (km)
           integer       tcv_r15sw       ! SW rad of 15 m/s winds (km)
           integer       tcv_r15nw       ! NW rad of 15 m/s winds (km)
-          character*9   tcv_storm_name  ! Storm name
-          character*1   tcv_latns       ! 'N' or 'S'
-          character*1   tcv_lonew       ! 'E' or 'W'
           character*1   tcv_depth       ! Storm depth (S,M,D) X=missing
         end type tcvcard
         type (tcvcard), save, allocatable :: storm(:)
@@ -35,11 +35,16 @@ c
           integer       gv_gen_date    ! genesis date in yyyymmddhh
           integer       gv_gen_fhr     ! genesis fcst hour (usually 0)
           integer       gv_gen_lat     ! genesis lat (*10), always >0
+          character*1   gv_gen_latns   ! 'N' or 'S'
           integer       gv_gen_lon     ! genesis lon (*10), always >0
+          character*1   gv_gen_lonew   ! 'W' or 'E'
+          character*3   gv_gen_type    ! 'FOF'; or TC Vitals ATCF ID
           integer       gv_obs_ymd     ! Date of observation (yyyymmdd)
           integer       gv_obs_hhmm    ! Time of observation (UTC)
           integer       gv_obs_lat     ! Storm Lat (*10), always >0
+          character*1   gv_obs_latns   ! 'N' or 'S'
           integer       gv_obs_lon     ! Storm Lon (*10), always >0
+          character*1   gv_obs_lonew   ! 'E' or 'W'
           integer       gv_stdir       ! Storm motion vector (in degr)
           integer       gv_stspd       ! Spd of storm movement (m/s*10)
           integer       gv_pcen        ! Min central pressure (mb)
@@ -51,11 +56,6 @@ c
           integer       gv_r15se       ! SE rad of 15 m/s winds (km)
           integer       gv_r15sw       ! SW rad of 15 m/s winds (km)
           integer       gv_r15nw       ! NW rad of 15 m/s winds (km)
-          character*3   gv_gen_type    ! 'FOF'; or TC Vitals ATCF ID
-          character*1   gv_gen_latns   ! 'N' or 'S'
-          character*1   gv_gen_lonew   ! 'W' or 'E'
-          character*1   gv_obs_latns   ! 'N' or 'S'
-          character*1   gv_obs_lonew   ! 'E' or 'W'
           character*1   gv_depth       ! Storm depth (S,M,D) X=missing
         end type gencard
         type (gencard), save, allocatable :: gstorm(:)
@@ -71,13 +71,12 @@ c
           integer       bhh    ! Beginning hh of date to search for 
           integer       model  ! integer identifier for model data used
           character*8   modtyp ! 'global' or 'regional'
-          character*8   nesttyp ! Either "moveable" or "fixed"
           character*7   lt_units ! 'hours' or 'minutes' to indicate the
                                  ! units of lead times in grib files
           character*6   file_seq ! 'onebig' or 'multi' tells if grib
                                  ! data will be input as one big file or
                                  ! as individual files for each tau.
-          character*3   date_dummy ! 'onebig' or 'multi' tells if grib
+          character*8   nesttyp ! Either "moveable" or "fixed"
         end type datecard
       end module inparms
 c
@@ -88,21 +87,20 @@ c
           real          eastbd  ! Eastern boundary of search area
           real          northbd ! Northern boundary of search area
           real          southbd ! Southern boundary of search area
-          real          v850thresh ! min avg 850 Vt to be maintained
-          real          contint  ! Contour interval to be used for 
+          character*7   type    ! 'tracker', 'midlat' or 'tcgen'
           real          mslpthresh ! min mslp gradient to be maintained
+          real          v850thresh ! min avg 850 Vt to be maintained
+          character*8   gridtype ! 'global' or 'regional'
+          real          contint  ! Contour interval to be used for 
                                  ! "midlat" or "tcgen" cases.     
+          logical       want_oci ! Flag for whether to compute & write
+                                 ! out roci for a trkrtype=tracker run
+          character*1   out_vit  ! Flag for whether to write out vitals
           integer       gribver  ! Indicates whether input data is 
                                  ! GRIBv1 (1) or GRIBv2 (2)
           integer       g2_jpdtn ! Indicates GRIB2 template to use when
-          logical       want_oci ! Flag for whether to compute & write
-                                 ! out roci for a trkrtype=tracker run
-          character*8   gridtype ! 'global' or 'regional'
-          character*7   type    ! 'tracker', 'midlat' or 'tcgen'
-          character*1   out_vit  ! Flag for whether to write out vitals
                                  ! reading (0 = deterministic fcst, 
                                  ! 1 = ens fcst)
-          character*4   trackstuff_dummy    ! just a dummy for padding the structure
         end type trackstuff
       end module trkrparms
 c
@@ -114,7 +112,6 @@ c
           real    :: xmincont ! min contour level in a field
           real    :: contvals(maxconts) ! contour values in the field
           integer :: numcont  ! # of contour levels in a field
-          integer :: cint_dummy  ! for padding
         end type cint_stuff
       end module contours
 c     
