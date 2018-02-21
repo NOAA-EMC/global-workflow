@@ -49,7 +49,7 @@ export HOMEobsproc_network=$BASE_PREP_GLOBAL
 export PARMPREP="$BASE_PREP_GLOBAL/parm"
 
 # Directories
-#export USHSYND="$BASE_PREP/ush"
+export USHSYND="$BASE_PREP/ush"
 #export USHPREV="$BASE_PREP/ush"
 #export USHCQC="$BASE_PREP/ush"
 #export USHPQC="$BASE_PREP/ush"

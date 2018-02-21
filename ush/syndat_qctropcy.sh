@@ -37,10 +37,8 @@ echo "                        directories.  These must now be passed in. "
 #   envir  - processing environment (such as 'prod' or 'test')
 #   DATA   - path to working directory
 #   pgmout - string indicating path to for standard output file
-#   NET    - string indicating network ('nam', 'gfs', or 'gdas')
-#            NOTE: NET is changed to gdas in the parent Job script for
-#                  the gdas1 RUN (was gfs - NET remains gfs for gfs RUN)
-#   RUN    - string indicating run ('nam', 'ndas', 'gfs', or 'gdas1')
+#   NET    - string indicating network ('nam', 'gfs')
+#   RUN    - string indicating run ('nam', 'ndas', 'gfs', or 'gdas')
 #   cyc    - cycle hour (e.g., '00', '06', '12', or '18')
 #   tmmark - string indicating relative time of run to cycle time
 #             (e.g., 'tm00', 'tm03', 'tm06', 'tm09', or 'tm12')
@@ -185,7 +183,7 @@ net=$NET
 files=F,
 if [ "$RUN" = 'ndas' ]; then
    net=ndas
-elif [ "$NET" = 'gdas' ]; then
+elif [ "$RUN" = 'gdas' ]; then
    files=T,
 fi
 if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
@@ -206,7 +204,7 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
-cat $PARMSYND/syndat_qctropcy.${NET}.parm >> vitchk.inp
+cat $PARMSYND/syndat_qctropcy.${RUN}.parm >> vitchk.inp
  
 #  Copy the fixed fields from FIXSYND
  

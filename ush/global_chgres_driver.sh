@@ -173,7 +173,7 @@ elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
 
  # to use new albedo, soil/veg type
  export IALB=1
- export FNSMCC=$FIXam/global_soilmgldas.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.grb
+ export FNSMCC=$FIXam/global_soilmgldas.statsgo.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.grb
  export FNSOTC=$FIXam/global_soiltype.statsgo.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
  export SOILTYPE_INP=statsgo
  export SOILTYPE_OUT=statsgo

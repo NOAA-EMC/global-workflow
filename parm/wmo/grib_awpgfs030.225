@@ -204,7 +204,7 @@
     225  00  YUZF97   0                        EOM
   00001C02  0760FF80  22070000...0001001E       34            TRO V GRD         
     225  00  YVZF97   0                        EOM
-  00001C02  0760FF80  3D010000...0001181E       61            SFC A PCP         
+  00001C02  0760FF80  3D010000...0001001E       61            SFC A PCP         
     225  00  YEZF98   0                        EOM
   00001C02  0760FF80  83010000...0001001E      131            SFC LFT X         
     225  00  YXZF98   0                        EOM
@@ -224,7 +224,7 @@
     225  00  YWZF86   0                        EOM
   00001C02  0760FF80  9C74B400...0001001E      156   Y    0 SPDY  CIN           
     225  00  YYZF86   0                        EOM
-  00001C02  0760FF80  3F010000...0001181E       63   ACUM   SFC   ACPCP         
+  00001C02  0760FF80  3F010000...0001001E       63   ACUM   SFC   ACPCP         
     225  00  YGZF98   0                        EOM
   00001C02  0760FF80  0B741E00...0001001E       11        0 SPDY  TMP
     225  00  YTZF86   0                        EOM
