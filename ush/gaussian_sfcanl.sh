@@ -17,6 +17,7 @@
 #
 #   Imported Shell Variables:
 #     CASE          Model resolution.  Defaults to C768.
+#     DONST         Process NST fields when 'yes'.  Default is 'no'.
 #     BASEDIR       Root directory where all scripts and fixed files reside.
 #                   Default is /nwprod2.
 #     HOMEgfs       Directory for gfs version.  Default is
@@ -117,6 +118,7 @@ LONB_CASE=$((res*4))
 LATB_CASE=$((res*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
+DONST=${DONST:-"NO"}
 
 
 #  Directories.
@@ -206,7 +208,8 @@ cat <<EOF > fort.41
   dd=$id,
   hh=$ih,
   igaus=$LONB_SFC,
-  jgaus=$LATB_SFC
+  jgaus=$LATB_SFC,
+  donst=$DONST
  /
 EOF
 
