@@ -1,15 +1,16 @@
 !------------------------------------------------------------------
 ! 
-! Read in surface and nst data on the C768 cubed-sphere grid,
-! interpolate it to the T1534 gaussian grid, and output the result
+! Read in surface and nst data on the cubed-sphere grid,
+! interpolate it to the gaussian grid, and output the result
 ! to a nemsio file.  The output file mimics those produced by
-! the legacy spectral GFS system. 
+! the legacy spectral GFS system.  To not process nst
+! data, set flag 'donst' to 'no'.  To process nst, set to 'yes'.
 !
 ! Input files:
 ! ------------
 ! weights.nc              Interpolation weights.  netcdf format
-! anal.tile[1-6].nc       C768 fv3 surface restart files
-! orog.tile[1-6].nc       C768 fv3 orography files
+! anal.tile[1-6].nc       fv3 surface restart files
+! orog.tile[1-6].nc       fv3 orography files
 ! fort.41 namelist        Configuration namelist
 ! vcoord.txt              Vertical coordinate definition file
 !                         (ascii)
@@ -21,6 +22,9 @@
 ! Namelist variables:
 ! -------------------
 ! yy/mm/dd/hh             year/month/day/hour of data.
+! i/jgaus                 i/j dimension of gaussian grid.
+! donst                   When 'no' do not process nst data.
+!                         When 'yes' process nst data.
 !
 ! 2018-Jan-30 Gayno       Initial version
 !
@@ -31,6 +35,8 @@
  use nemsio_module
 
  implicit none
+
+ character(len=3)   :: donst
 
  integer, parameter :: num_tiles = 6
 
@@ -115,9 +121,11 @@
 
  real(kind=8), allocatable :: s(:)
 
- namelist /setup/ yy, mm, dd, hh, igaus, jgaus
+ namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst
 
  print*,"- BEGIN EXECUTION"
+
+ donst = 'no'
 
  print*
  print*,"- READ SETUP NAMELIST"
@@ -217,23 +225,25 @@
  allocate(gaussian_data%smc(igaus*jgaus,4))
  allocate(gaussian_data%stc(igaus*jgaus,4))
 
- allocate(gaussian_data%c0(igaus*jgaus))  ! nst
- allocate(gaussian_data%cd(igaus*jgaus))  
- allocate(gaussian_data%dconv(igaus*jgaus))  
- allocate(gaussian_data%dtcool(igaus*jgaus)) 
- allocate(gaussian_data%land(igaus*jgaus)) 
- allocate(gaussian_data%qrain(igaus*jgaus)) 
- allocate(gaussian_data%tref(igaus*jgaus)) 
- allocate(gaussian_data%w0(igaus*jgaus)) 
- allocate(gaussian_data%wd(igaus*jgaus)) 
- allocate(gaussian_data%xs(igaus*jgaus)) 
- allocate(gaussian_data%xt(igaus*jgaus)) 
- allocate(gaussian_data%xtts(igaus*jgaus)) 
- allocate(gaussian_data%xu(igaus*jgaus)) 
- allocate(gaussian_data%xv(igaus*jgaus)) 
- allocate(gaussian_data%xz(igaus*jgaus)) 
- allocate(gaussian_data%xzts(igaus*jgaus)) 
- allocate(gaussian_data%zc(igaus*jgaus)) 
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   allocate(gaussian_data%c0(igaus*jgaus))  ! nst
+   allocate(gaussian_data%cd(igaus*jgaus))  
+   allocate(gaussian_data%dconv(igaus*jgaus))  
+   allocate(gaussian_data%dtcool(igaus*jgaus)) 
+   allocate(gaussian_data%land(igaus*jgaus)) 
+   allocate(gaussian_data%qrain(igaus*jgaus)) 
+   allocate(gaussian_data%tref(igaus*jgaus)) 
+   allocate(gaussian_data%w0(igaus*jgaus)) 
+   allocate(gaussian_data%wd(igaus*jgaus)) 
+   allocate(gaussian_data%xs(igaus*jgaus)) 
+   allocate(gaussian_data%xt(igaus*jgaus)) 
+   allocate(gaussian_data%xtts(igaus*jgaus)) 
+   allocate(gaussian_data%xu(igaus*jgaus)) 
+   allocate(gaussian_data%xv(igaus*jgaus)) 
+   allocate(gaussian_data%xz(igaus*jgaus)) 
+   allocate(gaussian_data%xzts(igaus*jgaus)) 
+   allocate(gaussian_data%zc(igaus*jgaus)) 
+ endif
 
  do i = 1, n_s
    gaussian_data%orog(row(i))   = gaussian_data%orog(row(i)) + s(i)*tile_data%orog(col(i))
@@ -267,22 +277,24 @@
    gaussian_data%fice(row(i))   = gaussian_data%fice(row(i)) + s(i)*tile_data%fice(col(i))
    gaussian_data%hice(row(i))   = gaussian_data%hice(row(i)) + s(i)*tile_data%hice(col(i))
    gaussian_data%snoalb(row(i)) = gaussian_data%snoalb(row(i)) + s(i)*tile_data%snoalb(col(i))
-   gaussian_data%c0(row(i))     = gaussian_data%c0(row(i)) + s(i)*tile_data%c0(col(i))
-   gaussian_data%cd(row(i))     = gaussian_data%cd(row(i)) + s(i)*tile_data%cd(col(i))
-   gaussian_data%dconv(row(i))  = gaussian_data%dconv(row(i)) + s(i)*tile_data%dconv(col(i))
-   gaussian_data%dtcool(row(i)) = gaussian_data%dtcool(row(i)) + s(i)*tile_data%dtcool(col(i))
-   gaussian_data%qrain(row(i))  = gaussian_data%qrain(row(i)) + s(i)*tile_data%qrain(col(i))
-   gaussian_data%tref(row(i))   = gaussian_data%tref(row(i)) + s(i)*tile_data%tref(col(i))
-   gaussian_data%w0(row(i))     = gaussian_data%w0(row(i)) + s(i)*tile_data%w0(col(i))
-   gaussian_data%wd(row(i))     = gaussian_data%wd(row(i)) + s(i)*tile_data%wd(col(i))
-   gaussian_data%xs(row(i))     = gaussian_data%xs(row(i)) + s(i)*tile_data%xs(col(i))
-   gaussian_data%xt(row(i))     = gaussian_data%xt(row(i)) + s(i)*tile_data%xt(col(i))
-   gaussian_data%xtts(row(i))   = gaussian_data%xtts(row(i)) + s(i)*tile_data%xtts(col(i))
-   gaussian_data%xu(row(i))     = gaussian_data%xu(row(i)) + s(i)*tile_data%xu(col(i))
-   gaussian_data%xv(row(i))     = gaussian_data%xv(row(i)) + s(i)*tile_data%xv(col(i))
-   gaussian_data%xz(row(i))     = gaussian_data%xz(row(i)) + s(i)*tile_data%xz(col(i))
-   gaussian_data%xzts(row(i))   = gaussian_data%xzts(row(i)) + s(i)*tile_data%xzts(col(i))
-   gaussian_data%zc(row(i))     = gaussian_data%zc(row(i)) + s(i)*tile_data%zc(col(i))
+   if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+     gaussian_data%c0(row(i))     = gaussian_data%c0(row(i)) + s(i)*tile_data%c0(col(i))
+     gaussian_data%cd(row(i))     = gaussian_data%cd(row(i)) + s(i)*tile_data%cd(col(i))
+     gaussian_data%dconv(row(i))  = gaussian_data%dconv(row(i)) + s(i)*tile_data%dconv(col(i))
+     gaussian_data%dtcool(row(i)) = gaussian_data%dtcool(row(i)) + s(i)*tile_data%dtcool(col(i))
+     gaussian_data%qrain(row(i))  = gaussian_data%qrain(row(i)) + s(i)*tile_data%qrain(col(i))
+     gaussian_data%tref(row(i))   = gaussian_data%tref(row(i)) + s(i)*tile_data%tref(col(i))
+     gaussian_data%w0(row(i))     = gaussian_data%w0(row(i)) + s(i)*tile_data%w0(col(i))
+     gaussian_data%wd(row(i))     = gaussian_data%wd(row(i)) + s(i)*tile_data%wd(col(i))
+     gaussian_data%xs(row(i))     = gaussian_data%xs(row(i)) + s(i)*tile_data%xs(col(i))
+     gaussian_data%xt(row(i))     = gaussian_data%xt(row(i)) + s(i)*tile_data%xt(col(i))
+     gaussian_data%xtts(row(i))   = gaussian_data%xtts(row(i)) + s(i)*tile_data%xtts(col(i))
+     gaussian_data%xu(row(i))     = gaussian_data%xu(row(i)) + s(i)*tile_data%xu(col(i))
+     gaussian_data%xv(row(i))     = gaussian_data%xv(row(i)) + s(i)*tile_data%xv(col(i))
+     gaussian_data%xz(row(i))     = gaussian_data%xz(row(i)) + s(i)*tile_data%xz(col(i))
+     gaussian_data%xzts(row(i))   = gaussian_data%xzts(row(i)) + s(i)*tile_data%xzts(col(i))
+     gaussian_data%zc(row(i))     = gaussian_data%zc(row(i)) + s(i)*tile_data%zc(col(i))
+   endif
    do n = 1, 4
      gaussian_data%slc(row(i),n) = gaussian_data%slc(row(i),n) + s(i)*tile_data%slc(col(i),n)
      gaussian_data%smc(row(i),n) = gaussian_data%smc(row(i),n) + s(i)*tile_data%smc(col(i),n)
@@ -327,6 +339,25 @@
  deallocate(tile_data%smc)
  deallocate(tile_data%stc)
 
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   deallocate(tile_data%c0)
+   deallocate(tile_data%cd)
+   deallocate(tile_data%dconv)
+   deallocate(tile_data%dtcool)
+   deallocate(tile_data%qrain)
+   deallocate(tile_data%tref)
+   deallocate(tile_data%w0)
+   deallocate(tile_data%wd)
+   deallocate(tile_data%xs)
+   deallocate(tile_data%xt)
+   deallocate(tile_data%xtts)
+   deallocate(tile_data%xu)
+   deallocate(tile_data%xv)
+   deallocate(tile_data%xz)
+   deallocate(tile_data%xzts)
+   deallocate(tile_data%zc)
+ endif
+
 !------------------------------------------------------------------------------
 ! Write gaussian data to nemsio file.
 !------------------------------------------------------------------------------
@@ -367,23 +398,26 @@
  deallocate(gaussian_data%slc)
  deallocate(gaussian_data%smc)
  deallocate(gaussian_data%stc)
- deallocate(gaussian_data%c0)
- deallocate(gaussian_data%cd)
- deallocate(gaussian_data%dconv)
- deallocate(gaussian_data%dtcool)
- deallocate(gaussian_data%land)
- deallocate(gaussian_data%qrain)
- deallocate(gaussian_data%tref)
- deallocate(gaussian_data%w0)
- deallocate(gaussian_data%wd)
- deallocate(gaussian_data%xs)
- deallocate(gaussian_data%xt)
- deallocate(gaussian_data%xtts)
- deallocate(gaussian_data%xu)
- deallocate(gaussian_data%xv)
- deallocate(gaussian_data%xz)
- deallocate(gaussian_data%xzts)
- deallocate(gaussian_data%zc)
+
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   deallocate(gaussian_data%c0)
+   deallocate(gaussian_data%cd)
+   deallocate(gaussian_data%dconv)
+   deallocate(gaussian_data%dtcool)
+   deallocate(gaussian_data%land)
+   deallocate(gaussian_data%qrain)
+   deallocate(gaussian_data%tref)
+   deallocate(gaussian_data%w0)
+   deallocate(gaussian_data%wd)
+   deallocate(gaussian_data%xs)
+   deallocate(gaussian_data%xt)
+   deallocate(gaussian_data%xtts)
+   deallocate(gaussian_data%xu)
+   deallocate(gaussian_data%xv)
+   deallocate(gaussian_data%xz)
+   deallocate(gaussian_data%xzts)
+   deallocate(gaussian_data%zc)
+ endif
 
  print*
  print*,'- NORMAL INTERPOLATION'
@@ -401,25 +435,29 @@
 
  implicit none
 
- integer(nemsio_intkind), parameter :: nrec=59
+ integer(nemsio_intkind), parameter :: nrec_all=59
  integer(nemsio_intkind), parameter :: nmetaaryi=1
  integer(nemsio_intkind), parameter :: nmetavari=4
  integer(nemsio_intkind), parameter :: nmetavarr=1
  integer(nemsio_intkind), parameter :: nmetavarc=3
 
- character(nemsio_charkind)         :: recname(nrec), reclevtyp(nrec)
+ character(nemsio_charkind)         :: recname_all(nrec_all)
+ character(nemsio_charkind)         :: reclevtyp_all(nrec_all)
  character(nemsio_charkind)         :: aryiname(nmetaaryi)
  character(nemsio_charkind)         :: variname(nmetavari)
  character(nemsio_charkind)         :: varrname(nmetavarr)
  character(nemsio_charkind)         :: varcname(nmetavarc)
  character(nemsio_charkind)         :: varcval(nmetavarc)
+ character(nemsio_charkind), allocatable :: recname(:)
+ character(nemsio_charkind), allocatable :: reclevtyp(:)
 
- integer(nemsio_intkind)            :: iret, version
- integer(nemsio_intkind)            :: reclev(nrec)
+ integer(nemsio_intkind)            :: iret, version, nrec
+ integer(nemsio_intkind)            :: reclev_all(nrec_all)
  integer(nemsio_intkind)            :: aryival(jgaus,nmetaaryi)
  integer(nemsio_intkind)            :: aryilen(nmetaaryi)
  integer(nemsio_intkind)            :: varival(nmetavari)
  integer                            :: i, k, n, nvcoord, levs_vcoord
+ integer(nemsio_intkind), allocatable  :: reclev(:)
  
  real(nemsio_realkind), allocatable :: the_data(:)
  real(nemsio_realkind)              :: varrval(nmetavarr)
@@ -429,7 +467,7 @@
 
  type(nemsio_gfile)                 :: gfileo
 
- data recname /'alnsf', 'alnwf', 'alvsf', 'alvwf', &
+ data recname_all /'alnsf', 'alnwf', 'alvsf', 'alvwf', &
                'cnwat', 'f10m',  'facsf', &
                'facwf', 'ffhh',  'ffmm',  'fricv', &
                'icec',  'icetk', 'land',  'orog', &
@@ -446,7 +484,7 @@
                'xtts',  'xu', 'xv',  'xz', &
                'xzts', 'zc'/
 
- data reclevtyp /'sfc',   'sfc',   'sfc',   'sfc', &
+ data reclevtyp_all /'sfc',   'sfc',   'sfc',   'sfc', &
                  'sfc',   '10 m above gnd',   'sfc', &
                  'sfc',   'sfc',   'sfc',   'sfc', &
                  'sfc',   'sfc',   'sfc',   'sfc', &
@@ -463,7 +501,7 @@
                  'sfc',   'sfc',   'sfc',   'sfc', & 
                  'sfc'/
 
- data reclev /1, 1, 1, 1, 1, &
+ data reclev_all /1, 1, 1, 1, 1, &
               1, 1, 1, 1, 1, 1, &
               1, 1, 1, 1, 1, 1, &
               1, 1, 1, 1, 1, 1, &
@@ -538,6 +576,24 @@
 
  close (14)
 
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   nrec = nrec_all
+   allocate(recname(nrec))
+   recname = recname_all
+   allocate(reclevtyp(nrec))
+   reclevtyp = reclevtyp_all
+   allocate(reclev(nrec))
+   reclev = reclev_all
+ else
+   nrec = 43
+   allocate(recname(nrec))
+   recname = recname_all(1:nrec)
+   allocate(reclevtyp(nrec))
+   reclevtyp = reclevtyp_all(1:nrec)
+   allocate(reclev(nrec))
+   reclev = reclev_all(1:nrec)
+ endif
+
  call nemsio_init(iret=iret)
 
  print*
@@ -560,7 +616,7 @@
                   aryival=aryival, aryilen=aryilen, iret=iret)
  if (iret /= 0) goto 44
 
- deallocate (lat, lon, vcoord)
+ deallocate (lat, lon, vcoord, recname, reclevtyp, reclev)
 
  allocate(the_data(igaus*jgaus))
 
@@ -772,86 +828,90 @@
  call nemsio_writerec(gfileo, 43, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- print*,"- WRITE C0"
- the_data = gaussian_data%c0
- call nemsio_writerec(gfileo, 44, the_data, iret=iret)
- if (iret /= 0) goto 44
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+
+   print*,"- WRITE C0"
+   the_data = gaussian_data%c0
+   call nemsio_writerec(gfileo, 44, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE CD"
- the_data = gaussian_data%cd
- call nemsio_writerec(gfileo, 45, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE CD"
+   the_data = gaussian_data%cd
+   call nemsio_writerec(gfileo, 45, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE DCONV"
- the_data = gaussian_data%dconv
- call nemsio_writerec(gfileo, 46, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE DCONV"
+   the_data = gaussian_data%dconv
+   call nemsio_writerec(gfileo, 46, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE DTCOOL"
- the_data = gaussian_data%dtcool
- call nemsio_writerec(gfileo, 47, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE DTCOOL"
+   the_data = gaussian_data%dtcool
+   call nemsio_writerec(gfileo, 47, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE QRAIN"
- the_data = gaussian_data%qrain
- call nemsio_writerec(gfileo, 48, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE QRAIN"
+   the_data = gaussian_data%qrain
+   call nemsio_writerec(gfileo, 48, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE TREF"
- the_data = gaussian_data%tref
- call nemsio_writerec(gfileo, 49, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE TREF"
+   the_data = gaussian_data%tref
+   call nemsio_writerec(gfileo, 49, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE W0"
- the_data = gaussian_data%w0
- call nemsio_writerec(gfileo, 50, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE W0"
+   the_data = gaussian_data%w0
+   call nemsio_writerec(gfileo, 50, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE WD"
- the_data = gaussian_data%wd
- call nemsio_writerec(gfileo, 51, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE WD"
+   the_data = gaussian_data%wd
+   call nemsio_writerec(gfileo, 51, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XS"
- the_data = gaussian_data%xs
- call nemsio_writerec(gfileo, 52, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XS"
+   the_data = gaussian_data%xs
+   call nemsio_writerec(gfileo, 52, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XT"
- the_data = gaussian_data%xt
- call nemsio_writerec(gfileo, 53, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XT"
+   the_data = gaussian_data%xt
+   call nemsio_writerec(gfileo, 53, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XTTS"
- the_data = gaussian_data%xtts
- call nemsio_writerec(gfileo, 54, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XTTS"
+   the_data = gaussian_data%xtts
+   call nemsio_writerec(gfileo, 54, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XU"
- the_data = gaussian_data%xu
- call nemsio_writerec(gfileo, 55, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XU"
+   the_data = gaussian_data%xu
+   call nemsio_writerec(gfileo, 55, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XV"
- the_data = gaussian_data%xv
- call nemsio_writerec(gfileo, 56, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XV"
+   the_data = gaussian_data%xv
+   call nemsio_writerec(gfileo, 56, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XZ"
- the_data = gaussian_data%xz
- call nemsio_writerec(gfileo, 57, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XZ"
+   the_data = gaussian_data%xz
+   call nemsio_writerec(gfileo, 57, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE XZTS"
- the_data = gaussian_data%xzts
- call nemsio_writerec(gfileo, 58, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE XZTS"
+   the_data = gaussian_data%xzts
+   call nemsio_writerec(gfileo, 58, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
- print*,"- WRITE ZC"
- the_data = gaussian_data%zc
- call nemsio_writerec(gfileo, 59, the_data, iret=iret)
- if (iret /= 0) goto 44
+   print*,"- WRITE ZC"
+   the_data = gaussian_data%zc
+   call nemsio_writerec(gfileo, 59, the_data, iret=iret)
+   if (iret /= 0) goto 44
  
+ endif
+
  call nemsio_close(gfileo,iret=iret)
 
  call nemsio_finalize()
@@ -949,26 +1009,29 @@
  allocate(tile_data%smc(ijtile*num_tiles,4))
  allocate(tile_data%stc(ijtile*num_tiles,4))
 ! nst
- allocate(tile_data%c0(ijtile*num_tiles))
- allocate(tile_data%cd(ijtile*num_tiles))
- allocate(tile_data%dconv(ijtile*num_tiles))
- allocate(tile_data%dtcool(ijtile*num_tiles))
- allocate(tile_data%land(ijtile*num_tiles))
- allocate(tile_data%qrain(ijtile*num_tiles))
- allocate(tile_data%tref(ijtile*num_tiles))
- allocate(tile_data%w0(ijtile*num_tiles))
- allocate(tile_data%wd(ijtile*num_tiles))
- allocate(tile_data%xs(ijtile*num_tiles))
- allocate(tile_data%xt(ijtile*num_tiles))
- allocate(tile_data%xtts(ijtile*num_tiles))
- allocate(tile_data%xu(ijtile*num_tiles))
- allocate(tile_data%xv(ijtile*num_tiles))
- allocate(tile_data%xz(ijtile*num_tiles))
- allocate(tile_data%xzts(ijtile*num_tiles))
- allocate(tile_data%zc(ijtile*num_tiles))
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   allocate(tile_data%c0(ijtile*num_tiles))
+   allocate(tile_data%cd(ijtile*num_tiles))
+   allocate(tile_data%dconv(ijtile*num_tiles))
+   allocate(tile_data%dtcool(ijtile*num_tiles))
+   allocate(tile_data%land(ijtile*num_tiles))
+   allocate(tile_data%qrain(ijtile*num_tiles))
+   allocate(tile_data%tref(ijtile*num_tiles))
+   allocate(tile_data%w0(ijtile*num_tiles))
+   allocate(tile_data%wd(ijtile*num_tiles))
+   allocate(tile_data%xs(ijtile*num_tiles))
+   allocate(tile_data%xt(ijtile*num_tiles))
+   allocate(tile_data%xtts(ijtile*num_tiles))
+   allocate(tile_data%xu(ijtile*num_tiles))
+   allocate(tile_data%xv(ijtile*num_tiles))
+   allocate(tile_data%xz(ijtile*num_tiles))
+   allocate(tile_data%xzts(ijtile*num_tiles))
+   allocate(tile_data%zc(ijtile*num_tiles))
+ endif
 
  do tile = 1, 6
 
+   print*
    print*, "- READ INPUT SFC DATA FOR TILE: ", tile
 
    istart = (ijtile) * (tile-1) + 1
@@ -1200,117 +1263,121 @@
    print*,'- SNOALB: ',maxval(dummy),minval(dummy)
    tile_data%snoalb(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "c_0", id_var)
-   call netcdf_err(error, 'READING c_0 ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING c_0' )
-   print*,'- C_0: ',maxval(dummy),minval(dummy)
-   tile_data%c0(istart:iend) = reshape(dummy, (/ijtile/))
+   if (trim(donst) == "yes" .or. trim(donst) == "YES") then
 
-   error=nf90_inq_varid(ncid, "c_d", id_var)
-   call netcdf_err(error, 'READING c_d ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING c_d' )
-   print*,'- C_D: ',maxval(dummy),minval(dummy)
-   tile_data%cd(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "c_0", id_var)
+     call netcdf_err(error, 'READING c_0 ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING c_0' )
+     print*,'- C_0: ',maxval(dummy),minval(dummy)
+     tile_data%c0(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "d_conv", id_var)
-   call netcdf_err(error, 'READING d_conv ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING d_conv' )
-   print*,'- D_CONV: ',maxval(dummy),minval(dummy)
-   tile_data%dconv(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "c_d", id_var)
+     call netcdf_err(error, 'READING c_d ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING c_d' )
+     print*,'- C_D: ',maxval(dummy),minval(dummy)
+     tile_data%cd(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "dt_cool", id_var)
-   call netcdf_err(error, 'READING dt_cool ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING dt_cool' )
-   print*,'- DT_COOL: ',maxval(dummy),minval(dummy)
-   tile_data%dtcool(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "d_conv", id_var)
+     call netcdf_err(error, 'READING d_conv ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING d_conv' )
+     print*,'- D_CONV: ',maxval(dummy),minval(dummy)
+     tile_data%dconv(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "qrain", id_var)
-   call netcdf_err(error, 'READING qrain ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING qrain' )
-   print*,'- QRAIN: ',maxval(dummy),minval(dummy)
-   tile_data%qrain(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "dt_cool", id_var)
+     call netcdf_err(error, 'READING dt_cool ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING dt_cool' )
+     print*,'- DT_COOL: ',maxval(dummy),minval(dummy)
+     tile_data%dtcool(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "tref", id_var)
-   call netcdf_err(error, 'READING tref ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING tref' )
-   print*,'- TREF: ',maxval(dummy),minval(dummy)
-   tile_data%tref(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "qrain", id_var)
+     call netcdf_err(error, 'READING qrain ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING qrain' )
+     print*,'- QRAIN: ',maxval(dummy),minval(dummy)
+     tile_data%qrain(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "w_0", id_var)
-   call netcdf_err(error, 'READING w_0 ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING w_0' )
-   print*,'- W_0: ',maxval(dummy),minval(dummy)
-   tile_data%w0(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "tref", id_var)
+     call netcdf_err(error, 'READING tref ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING tref' )
+     print*,'- TREF: ',maxval(dummy),minval(dummy)
+     tile_data%tref(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "w_d", id_var)
-   call netcdf_err(error, 'READING w_d ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING w_d' )
-   print*,'- W_D: ',maxval(dummy),minval(dummy)
-   tile_data%wd(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "w_0", id_var)
+     call netcdf_err(error, 'READING w_0 ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING w_0' )
+     print*,'- W_0: ',maxval(dummy),minval(dummy)
+     tile_data%w0(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xs", id_var)
-   call netcdf_err(error, 'READING xs ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xs' )
-   print*,'- XS: ',maxval(dummy),minval(dummy)
-   tile_data%xs(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "w_d", id_var)
+     call netcdf_err(error, 'READING w_d ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING w_d' )
+     print*,'- W_D: ',maxval(dummy),minval(dummy)
+     tile_data%wd(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xt", id_var)
-   call netcdf_err(error, 'READING xt ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xt' )
-   print*,'- XT: ',maxval(dummy),minval(dummy)
-   tile_data%xt(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xs", id_var)
+     call netcdf_err(error, 'READING xs ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xs' )
+     print*,'- XS: ',maxval(dummy),minval(dummy)
+     tile_data%xs(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xtts", id_var)
-   call netcdf_err(error, 'READING xtts ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xtts' )
-   print*,'- XTTS: ',maxval(dummy),minval(dummy)
-   tile_data%xtts(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xt", id_var)
+     call netcdf_err(error, 'READING xt ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xt' )
+     print*,'- XT: ',maxval(dummy),minval(dummy)
+     tile_data%xt(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xzts", id_var)
-   call netcdf_err(error, 'READING xzts ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xzts' )
-   print*,'- XZTS: ',maxval(dummy),minval(dummy)
-   tile_data%xzts(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xtts", id_var)
+     call netcdf_err(error, 'READING xtts ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xtts' )
+     print*,'- XTTS: ',maxval(dummy),minval(dummy)
+     tile_data%xtts(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xu", id_var)
-   call netcdf_err(error, 'READING xu ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xu' )
-   print*,'- XU: ',maxval(dummy),minval(dummy)
-   tile_data%xu(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xzts", id_var)
+     call netcdf_err(error, 'READING xzts ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xzts' )
+     print*,'- XZTS: ',maxval(dummy),minval(dummy)
+     tile_data%xzts(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xv", id_var)
-   call netcdf_err(error, 'READING xv ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xv' )
-   print*,'- XV: ',maxval(dummy),minval(dummy)
-   tile_data%xv(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xu", id_var)
+     call netcdf_err(error, 'READING xu ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xu' )
+     print*,'- XU: ',maxval(dummy),minval(dummy)
+     tile_data%xu(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "xz", id_var)
-   call netcdf_err(error, 'READING xz ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING xz' )
-   print*,'- XZ: ',maxval(dummy),minval(dummy)
-   tile_data%xz(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xv", id_var)
+     call netcdf_err(error, 'READING xv ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xv' )
+     print*,'- XV: ',maxval(dummy),minval(dummy)
+     tile_data%xv(istart:iend) = reshape(dummy, (/ijtile/))
 
-   error=nf90_inq_varid(ncid, "z_c", id_var)
-   call netcdf_err(error, 'READING z_c ID' )
-   error=nf90_get_var(ncid, id_var, dummy)
-   call netcdf_err(error, 'READING z_c' )
-   print*,'- Z_C: ',maxval(dummy),minval(dummy)
-   tile_data%zc(istart:iend) = reshape(dummy, (/ijtile/))
+     error=nf90_inq_varid(ncid, "xz", id_var)
+     call netcdf_err(error, 'READING xz ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING xz' )
+     print*,'- XZ: ',maxval(dummy),minval(dummy)
+     tile_data%xz(istart:iend) = reshape(dummy, (/ijtile/))
+
+     error=nf90_inq_varid(ncid, "z_c", id_var)
+     call netcdf_err(error, 'READING z_c ID' )
+     error=nf90_get_var(ncid, id_var, dummy)
+     call netcdf_err(error, 'READING z_c' )
+     print*,'- Z_C: ',maxval(dummy),minval(dummy)
+     tile_data%zc(istart:iend) = reshape(dummy, (/ijtile/))
+
+   endif  ! nst fields
 
    error=nf90_inq_varid(ncid, "smc", id_var)
    call netcdf_err(error, 'READING smc ID' )
