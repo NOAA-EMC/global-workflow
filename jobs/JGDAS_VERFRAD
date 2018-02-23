@@ -26,6 +26,7 @@ export DATAROOT=${DATAROOT:-/tmpnwprod2}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 
 export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
+export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
 
 mkdir -p $DATA
 cd $DATA
