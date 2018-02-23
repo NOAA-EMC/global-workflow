@@ -127,11 +127,15 @@ RADMON_SUFFIX=${RADMON_SUFFIX:-opr}
 MAKE_CTL=${MAKE_CTL:-1}
 MAKE_DATA=${MAKE_DATA:-1}
 RAD_AREA=${RAD_AREA:-glb}
+REGIONAL_RR=${REGIONAL_RR:-0}
+rgnHH=${rgnHH:-}
+rgnTM=${rgnTM:-}
 SATYPE=${SATYPE:-}
 MAIL_TO=${MAIL_TO:-}
 MAIL_CC=${MAIL_CC:-}
 VERBOSE=${VERBOSE:-NO}
 LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
+USE_MAIL=${USE_MAIL:-0}
 
 time_exec=radmon_time
 USE_ANL=${USE_ANL:-0}
@@ -169,9 +173,8 @@ if [[ $DO_DATA_RPT -eq 1 ]]; then
       $NCP ${base_file}  ./${local_base}
    fi
 
-   if [[ ! -s ./${local_file} ]]; then
+   if [[ ! -s ./${local_base} ]]; then
       echo "RED LIGHT: local_base file not found"
-      err=9
    else
       echo "Confirming local_base file is good = ${local_base}"
       tar -xf ./${local_base}
@@ -188,6 +191,12 @@ if [[ $err -eq 0 ]]; then
 #   Loop over each entry in SATYPE
 #--------------------------------------------------------------------
    for type in ${SATYPE}; do
+
+      if [[ ! -s ${type} ]]; then
+         echo "ZERO SIZED:  ${type}"
+         continue
+      fi
+
       ctr=`expr $ctr + 1`
 
       for dtype in ${gesanl}; do
@@ -198,29 +207,24 @@ if [[ $err -eq 0 ]]; then
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
-            time_file=time.${data_file}
             ctl_file=${type}_anl.ctl
             time_ctl=time.${ctl_file}
-            stdout_file=stdout.${type}_anl
-            time_stdout=time.${stdout_file}
-            input_file=${type}_anl
          else
             data_file=${type}.${PDATE}.ieee_d
-            time_file=time.${data_file}
             ctl_file=${type}.ctl
             time_ctl=time.${ctl_file}
-            stdout_file=stdout.${type}
-            time_stdout=time.${stdout_file}
-            input_file=${type}
          fi
+
+         if [[ $REGIONAL_RR -eq 1 ]]; then
+            time_file=${rgnHH}.time.${data_file}.${rgnTM}
+         else
+            time_file=time.${data_file}
+         fi
+
 #--------------------------------------------------------------------
 #   Run program for given satellite/instrument
 #--------------------------------------------------------------------
-         # Check for 0 length input file here and avoid running 
-         # the executable if $input_file doesn't exist or is 0 bytes
-         #
-         if [[ -s $input_file ]]; then
-            nchanl=-999
+         nchanl=-999
 cat << EOF > input
  &INPUT
   satname='${type}',
@@ -228,8 +232,8 @@ cat << EOF > input
   imm=${imm},
   idd=${idd},
   ihh=${ihh},
-  idhh=-720
-  incr=6
+  idhh=-720,
+  incr=${CYCLE_INTERVAL},
   nchanl=${nchanl},
   suffix='${RADMON_SUFFIX}',
   imkctl=${MAKE_CTL},
@@ -239,46 +243,35 @@ cat << EOF > input
   rad_area='${RAD_AREA}',
  /
 EOF
-   	   startmsg
-           ./${time_exec} < input >>   ${pgmout} 2>>errfile
-           export err=$?; err_chk
+	startmsg
 
-           if [[ $? -ne 0 ]]; then
-               fail=`expr $fail + 1`
-           fi
+        ./${time_exec} < input >>   stdout.${type} 2>>errfile
+        export err=$?; err_chk
+
+        #
+        #  stdout.${type} is needed by radmon_ck_stdout.sh 
+        #  NCO requirement is executable output goes to jlogfile, so 
+        #  cat it there now:
+        cat stdout.${type} >> ${pgmout}
+
+        if [[ $err -ne 0 ]]; then
+            fail=`expr $fail + 1`
+        fi
 
 #-------------------------------------------------------------------
 #  move data, control, and stdout files to $TANKverf_rad and compress
 #-------------------------------------------------------------------
 
-            if [[ -s ${data_file} ]]; then
-               mv ${data_file} ${time_file}
-               mv ${time_file} $TANKverf_rad/.
-               ${COMPRESS} -f $TANKverf_rad/${time_file}
-            fi
+         if [[ -s ${data_file} ]]; then
+            mv ${data_file} ${time_file}
+            ${COMPRESS} -f  ${time_file}
+            mv ${time_file}* $TANKverf_rad/.
+         fi
 
-            if [[ -s ${ctl_file} ]]; then
-               $NCP ${ctl_file} ${time_ctl}
-               $NCP ${time_ctl}  ${TANKverf_rad}/.
-               ${COMPRESS} -f ${TANKverf_rad}/${time_ctl}
-            fi
-
-            if [[ -s ${stdout_file} ]]; then
-               $NCP ${stdout_file} ${time_stdout}
-               mv ${time_stdout}  ${TANKverf_rad}/.
-               ${COMPRESS} -f ${TANKverf_rad}/${time_stdout}
-            fi
-
-         else	# ! -s $data_file
-            # journal warning message to log file that an expected $data_file
-            # failed the -s test
-            diag_err_msg="***PROBLEM reading diagnostic file."
-            echo "${diag_err_msg}  diag_rad=${type}, ${dtype}" >> ${pgmout}
-            if [[ -e $diag ]]; then
-               echo "${type}  ${dtype}  ${diag_err_msg}" >> ${diag}
-            else
-               echo "${type}  ${dtype}  ${diag_err_msg}" > ${diag}
-            fi
+         if [[ -s ${ctl_file} ]]; then
+            $NCP ${ctl_file} ${time_ctl}
+            ${COMPRESS} -f   ${time_ctl}
+            $NCP ${time_ctl}*  ${TANKverf_rad}/.
          fi
 
       done
@@ -319,8 +312,10 @@ EOF
 
 
 #-------------------------------------------------------------------
-#  Check for any reported problem(s) reading the $diag file
+#  Check stdout file for any reported problem(s) reading the 
+#  diagnostic file by calling ck_stdout.sh
 #
+   ${USHradmon}/radmon_ck_stdout.sh  ${diag}
 
    if [[ -s ${diag} ]]; then
       cat << EOF > ${diag_hdr}
@@ -380,25 +375,28 @@ if [[ $DO_DATA_RPT -eq 1 ]]; then
    bad_pen=bad_pen.${PDATE}
    bad_chan=bad_chan.${PDATE}
 
-   qdate=`$NDATE -06 $PDATE`
+   qdate=`$NDATE -${CYCLE_INTERVAL} $PDATE`
    pday=`echo $qdate | cut -c1-8`
-   pcyc=`echo $qdate | cut -c9-10`
+   
+   prev_bad_pen=bad_pen.${qdate}
+   prev_bad_chan=bad_chan.${qdate}
 
-   if [[ $pcyc = "18" ]]; then 
-      prev_bad_pen=${TANKverf_radM1}/bad_pen.${qdate}
-      prev_bad_chan=${TANKverf_radM1}/bad_chan.${qdate}
+   if [[ $CYCLE == "00" ]]; then
+      prev_bad_pen=${TANKverf_radM1}/${prev_bad_pen}
+      prev_bad_chan=${TANKverf_radM1}/${prev_bad_chan}
    else
-      prev_bad_pen=${TANKverf_rad}/bad_pen.${qdate}
-      prev_bad_chan=${TANKverf_rad}/bad_chan.${qdate}
+      prev_bad_pen=${TANKverf_rad}/${prev_bad_pen}
+      prev_bad_chan=${TANKverf_rad}/${prev_bad_chan}
    fi
 
-   do_rpt=0
+   do_pen=0
+   do_chan=0
    if [[ -s $bad_pen && -s $prev_bad_pen ]]; then
-      do_rpt=1
+      do_pen=1
    fi
-#   if [[ -s $bad_chan && -s $prev_bad_chan ]]; then
-#      do_rpt=1
-#   fi
+   if [[ -s $bad_chan && -s $prev_bad_chan ]]; then
+      do_chan=1
+   fi
 
 #--------------------------------------------------------------------
 #  Remove extra spaces in new bad_pen file
@@ -407,19 +405,21 @@ if [[ $DO_DATA_RPT -eq 1 ]]; then
    mv -f tmp.bad_pen $bad_pen
 
 
-   if [[ $do_rpt -eq 1 ]]; then
-#-------------------------------------------------------------------
-#  copy previous cycle's bad_chan and bad_pen files
-#
-   $NCP ${prev_bad_pen} ./
-   $NCP ${prev_bad_chan} ./
+   if [[ $do_pen -eq 1 || $do_chan -eq 1 ]]; then
 
-#-------------------------------------------------------------------
-#  run radmon_err_rpt.sh for chan and pen to create the error files
-#
-#   ${USHradmon}/radmon_err_rpt.sh ${prev_bad_pen} ${bad_pen} pen ${qdate} ${PDATE} ${diag_report} ${pen_err}
-   ${radmon_err_rpt} ${prev_bad_pen} ${bad_pen} pen ${qdate} ${PDATE} ${diag_report} ${pen_err}
+      if [[ $do_pen -eq 1 ]]; then   
 
+         $NCP ${TANKverf_radM1}/${prev_bad_pen} ./
+         ${radmon_err_rpt} ${prev_bad_pen} ${bad_pen} pen ${qdate} \
+		${PDATE} ${diag_report} ${pen_err}
+      fi
+
+      if [[ $do_chan -eq 1 ]]; then   
+
+         $NCP ${TANKverf_radM1}/${prev_bad_chan} ./
+         ${radmon_err_rpt} ${prev_bad_chan} ${bad_chan} chan ${qdate} \
+		${PDATE} ${diag_report} ${chan_err}
+      fi
 
 #-------------------------------------------------------------------
 #  put together the unified error report with any obs, chan, and
@@ -471,7 +471,8 @@ EOF
 EOF
          cat ${pen_hdr} >> $report
          cat ${pen_err} >> $report
-         rm ${pen_hdr} ${pen_err}
+         rm -f ${pen_hdr} 
+         rm -f ${pen_err}
       fi 
 
       if [[ $USE_MAIL -eq 1 ]]; then
@@ -514,6 +515,10 @@ EOF
    fi
 
 fi
+
+for type in ${SATYPE}; do
+   rm -f stdout.${type}
+done
 
 ################################################################################
 #-------------------------------------------------------------------
