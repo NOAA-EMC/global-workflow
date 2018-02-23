@@ -1,6 +1,5 @@
       module def_vitals
         type tcvcard         ! Define a new type for a TC Vitals card
-          sequence
           character*4   tcv_center      ! Hurricane Center Acronym
           character*3   tcv_storm_id    ! Storm Identifier (03L, etc)
           character*9   tcv_storm_name  ! Storm name

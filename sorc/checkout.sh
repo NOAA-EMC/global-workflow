@@ -26,7 +26,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout DA-FV3-IMPL-scripts
+    git checkout DA-FV3-IMPL
     git clone --recursive ${USERNAME}@gerrit:GSI-fix fix >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd fix
     git checkout rev2

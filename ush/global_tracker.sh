@@ -15,30 +15,20 @@ user=$LOGNAME
 # Load production utility module.  Used by PARATRKR
 shell=${SHELL:-ksh}
 export machine=${machine:-WCOSS_C}
-if [ $machine = WCOSS ]; then
- . /usrx/local/Modules/default/init/ksh  2>>/dev/null
- module use /nwprod2/modulefiles         2>>/dev/null
- module load prod_util                   2>>/dev/null
- export APRUNTRACK=""
-elif [ $machine = WCOSS_C ]; then
- . $MODULESHOME/init/sh      2>>/dev/null
- module load prod_util       2>>/dev/null
- module load iobuf/2.0.5     2>>/dev/null
+if [ $machine = WCOSS_C ]; then
+# . $MODULESHOME/init/sh      2>>/dev/null
+# module load iobuf/2.0.5     2>>/dev/null
  export IOBUF_PARAMS="*:size=32M:count=4:verbose"
  export APRUNTRACK="aprun -j1 -n1 -N1 -d1"
 fi
 #
-export HOMEDIR=${HOMEDIR:-${BASE_TROPCY:-/gpfs/hps/emc/global/noscrub/Qingfu.Liu/gfs/gfs_q3fy17/tropcy_qc_reloc.v13.2.0_NEMS_Russ/}}
-export NWPROD=${NWPROD:-/nwprod}
-export NWPROD=${NWPROD:-$HOMEDIR}
+export HOMEDIR=$HOMEgfs
 export USHDIR=${USHDIR:-$HOMEDIR/ush}
 export archsyndir=${archsyndir:-$COMROOTp1/arch/prod/syndat}
 export HOMERELO=${HOMERELO:-$HOMEDIR}
 FIXRELO=${FIXRELO:-${HOMERELO}/fix}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
 #
-#export DISK_GLOB=${DISK_GLOB:-/global/save}
-#export DISK_TRAK=${DISK_TRAK:-$DISK_GLOB}
 export GETTRKEXEC=${GETTRKEXEC:-$HOMEDIR/exec/gettrk}
 export inpdate=$CDATE
 export paradir=$COMIN
@@ -80,7 +70,6 @@ export PDY=` echo ${YYYYMMDDHH} | cut -c1-8`
 export cyc=` echo ${YYYYMMDDHH} | cut -c9-10`
 if [[ -r tcvitl.$CDUMP.$CDATE ]]; then
   export AUXTCVIT=$DATA/auxtcvit.$CDATE
-  NDATE=${NDATE:-$NWPROD/util/exec/ndate}
   export GDATE=$($NDATE -06 $CDATE)
   cat tcvitl.gdas.$GDATE tcvitl.$CDUMP.$CDATE >$AUXTCVIT
 else

@@ -1,6 +1,5 @@
       module def_vitals
         type tcvcard         ! Define a new type for a TC Vitals card
-          sequence
           character*4   tcv_center      ! Hurricane Center Acronym
           character*4   tcv_storm_id    ! Storm Identifier (03L, etc)
           character*9   tcv_storm_name  ! Storm name
@@ -31,7 +30,6 @@
 c
       module gen_vitals
         type gencard     ! Define a new type for a genesis vitals card
-          sequence
           integer       gv_gen_date    ! genesis date in yyyymmddhh
           integer       gv_gen_fhr     ! genesis fcst hour (usually 0)
           integer       gv_gen_lat     ! genesis lat (*10), always >0
@@ -63,7 +61,6 @@ c
 c
       module inparms
         type datecard  ! Define a new type for the input namelist parms
-          sequence
           integer       bcc    ! First 2 chars of yy of date (century)
           integer       byy    ! Beginning yy of date to search for 
           integer       bmm    ! Beginning mm of date to search for 
@@ -82,7 +79,6 @@ c
 c
       module trkrparms
         type trackstuff  ! Define a new type for various tracker parms
-          sequence
           real          westbd  ! Western boundary of search area
           real          eastbd  ! Eastern boundary of search area
           real          northbd ! Northern boundary of search area
@@ -107,7 +103,6 @@ c
       module contours
         integer, parameter :: maxconts=100 ! max # of cont. intervals
         type cint_stuff  ! Define a new type for contour interval info
-          sequence
           real    :: xmaxcont ! max contour level in a field
           real    :: xmincont ! min contour level in a field
           real    :: contvals(maxconts) ! contour values in the field
