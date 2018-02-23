@@ -23,6 +23,7 @@ moduledir=$pwd/../modulefiles
 module use ${moduledir}
 module load gfs_bufr.${machine}
 module list
+module load iobuf/2.0.7
 
 # Compile codes under /sorc
 compile1='gfs_bufr tocsbufr'

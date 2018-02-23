@@ -8,7 +8,7 @@
 #BSUB -P GFS-T2O
 #BSUB -cwd /gpfs/hps/emc/meso/noscrub/Guang.Ping.Lou/bufr_fnl
 #BSUB -M 500
-#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} + 12*{select[craylinux && vnode]span[ptile=6] cu[type=cabinet]}'
+#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} + 12*{select[craylinux && vnode]span[ptile=3] cu[type=cabinet]}'
 
 export IOBUF_PARAMS='sigf*:size=128M:count=20:prefetch=0:verbose,gfs_collectiv*:size=128M:count=2:prefetch=0:verbose,*.snd:size=128M:count=20:prefetch=0:verbose'
 ############################################

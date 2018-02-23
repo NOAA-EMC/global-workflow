@@ -8,7 +8,6 @@
 
 set -x
 
-
   #  Create "collectives" consisting of groupings of the soundings
   #  into files designated by geographical region.   Each input
   #  file gfs_collective*.list (1-9) contains the list of stations to
@@ -18,9 +17,6 @@ mkdir $DATA/$m
 cd $DATA/$m
   cp $FIXbufrsnd/gfs_collective${m}.list $DATA/$m/. 
   CCCC=KWBC
-##  let "m=1"
-##  while [ $m -lt 10 ]
-##  do
     file_list=gfs_collective${m}.list
 
     if [ $m -le 2 ]
@@ -68,8 +64,8 @@ EOF
     then 
       cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
       if [ $SENDDBN = 'YES' ] ; then
-         cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.$job
-         $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.$job
+         cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.postsnd_$cyc
+         $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.postsnd_$cyc
       fi
     fi
 
