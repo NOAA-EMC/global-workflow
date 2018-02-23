@@ -29,10 +29,10 @@ pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
 export BASE_GSM=${BASE_GSM:-$NWPROD}
 export BASE_GSI=${BASE_GSI:-$NWPROD}
-export FIXgsi=${FIXgsi:-$BASE_GSI/fix}
-export GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
+FIXgsi=${FIXgsi:-$BASE_GSI/fix}
+GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
 export DATA=${DATA:-$pwd/analysis.$$}
-export DMPDIR=${DMPDIR:-$NWPROD}
+DMPDIR=${DMPDIR:-$NWPROD}
 export COMIN=${COMIN:-$pwd}
 export COMIN_GES=${COMIN_GES:-$COMIN}
 export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
@@ -67,7 +67,13 @@ export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
 export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
-export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3}
+export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3_gmted2010}
+
+DOGAUSFCANL=${DOGAUSFCANL-"NO"}
+GAUSFCANLSH=${GAUSFCANLSH:-$BASE_GSM/ush/gaussian_sfcanl.sh}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-$BASE_GSM/exec/gaussian_sfcanl.exe}
+NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
+APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}
@@ -75,6 +81,10 @@ ntiles=${ntiles:-6}
 
 # Write component specific
 QUILTING=${QUILTING:-".true."}
+
+# Microphysics in the model; 99:ZC, 11:GFDLMP
+imp_physics=${imp_physics:-99}
+lupp=${lupp:-".true."}
 
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
@@ -189,7 +199,9 @@ OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
 # Obs diag
 RUN_SELECT=${RUN_SELECT:-"NO"}
 USE_SELECT=${USE_SELECT:-"NO"}
+USE_RADSTAT=${USE_RADSTAT:-"YES"}
 SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
+GENDIAG=${GENDIAG:-"YES"}
 DIAG_SUFFIX=${DIAG_SUFFIX:-""}
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
@@ -210,6 +222,7 @@ USE_READIN_ANL_SFCMASK=${USE_READIN_ANL_SFCMASK:-.false.}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 DOIAU=${DOIAU:-"NO"}
 DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
+INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 # Get header information from Guess files
 LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
@@ -258,6 +271,12 @@ if [ $DOHYBVAR = "YES" ]; then
        JCAP_ENKF=${JCAP_ENKF:-$((LATB_ENKF-2))}
    fi
 fi
+
+# Get dimension information based on CASE
+res=$(echo $CASE | cut -c2-)
+JCAP_CASE=$((res*2-2))
+LATB_CASE=$((res*2))
+LONB_CASE=$((res*4))
 
 # Set analysis resolution information
 if [ $DOHYBVAR = "YES" ]; then
@@ -341,6 +360,7 @@ rm berror_stats hybens_info
 rm scaninfo satbias_angle satinfo
 rm anavinfo convinfo ozinfo pcpinfo aeroinfo
 rm errtable atms_beamwidth.txt
+rm cloudy_radiance_info.txt
 
 rm prepbufr prepbufr_profl
 rm gpsrobufr
@@ -461,10 +481,11 @@ $NLN $SSMITBF          ssmitbufr
 $NLN $SSMISBF          ssmisbufr
 $NLN $GPSROBF          gpsrobufr
 $NLN $TCVITL           tcvitl
-$NLN $NSSTBF           nsstbufr
 $NLN $B1AVHAM          avhambufr
 $NLN $B1AVHPM          avhpmbufr
 $NLN $AHIBF            ahibufr
+
+[[ $DONST = "YES" ]] && $NLN $NSSTBF nsstbufr
 
 ##############################################################
 # Required bias guess files
@@ -556,18 +577,29 @@ if [ $DONST = "YES" ]; then
    $NLN $DTFANL dtfanl
 fi
 
-# If requested, link and de-tar obs_input
+# If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
 if [ $USE_SELECT = "YES" ]; then
-  rm obs_input*
-  $NLN $SELECT_OBS obs_input.tar
-  tar -xvf obs_input.tar
+   rm obs_input.*
+   nl=$(file $SELECT_OBS | cut -d: -f2 | grep tar | wc -l)
+   if [ $nl -eq 1 ]; then
+      rm obsinput.tar
+      $NLN $SELECT_OBS obsinput.tar
+      tar -xvf obsinput.tar
+      rm obsinput.tar
+   else
+      for filetop in $(ls $SELECT_OBS/obs_input.*); do
+         fileloc=$(basename $filetop)
+         $NLN $filetop $fileloc
+      done
+   fi
 fi
 
 ##############################################################
 # If requested, copy and de-tar guess radstat file
-if [ $USE_CFP = "YES" ]; then
-   rm $DATA/unzip.sh $DATA/mp_unzip.sh
-cat > $DATA/unzip.sh << EOFunzip
+if [ $USE_RADSTAT = "YES" ]; then
+   if [ $USE_CFP = "YES" ]; then
+     rm $DATA/unzip.sh $DATA/mp_unzip.sh
+     cat > $DATA/unzip.sh << EOFunzip
 #!/bin/sh
    diag_file=\$1
    fname=\$(echo \$diag_file | cut -d'.' -f1)
@@ -576,32 +608,33 @@ cat > $DATA/unzip.sh << EOFunzip
    fnameges=\$(echo \$fname | sed 's/_ges//g')
    $NMV \$fname.\$fdate \$fnameges
 EOFunzip
-   chmod 755 $DATA/unzip.sh
-fi
+     chmod 755 $DATA/unzip.sh
+   fi
 
-listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
-for type in $listdiag; do
-   diag_file=$(echo $type | cut -d',' -f1)
+   listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
+   for type in $listdiag; do
+      diag_file=$(echo $type | cut -d',' -f1)
+      if [ $USE_CFP = "YES" ] ; then
+         echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
+      else
+         fname=$(echo $diag_file | cut -d'.' -f1)
+         date=$(echo $diag_file | cut -d'.' -f2)
+         $UNCOMPRESS $diag_file
+         fnameges=$(echo $fname|sed 's/_ges//g')
+         $NMV $fname.$date $fnameges
+      fi
+   done
+
    if [ $USE_CFP = "YES" ] ; then
-      echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
-   else
-      fname=$(echo $diag_file | cut -d'.' -f1)
-      date=$(echo $diag_file | cut -d'.' -f2)
-      $UNCOMPRESS $diag_file
-      fnameges=$(echo $fname|sed 's/_ges//g')
-      $NMV $fname.$date $fnameges
+      chmod 755 $DATA/mp_unzip.sh
+      ncmd=$(cat $DATA/mp_unzip.sh | wc -l)
+      if [ $ncmd -gt 0 ]; then
+         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
+         $APRUNCFP_UNZIP $DATA/mp_unzip.sh
+      fi
    fi
-done
-
-if [ $USE_CFP = "YES" ] ; then
-   chmod 755 $DATA/mp_unzip.sh
-   ncmd=$(cat $DATA/mp_unzip.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
-      ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-      APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
-      $APRUNCFP_UNZIP $DATA/mp_unzip.sh
-   fi
-fi
+fi # if [ $USE_RADSTAT = "YES" ]
 
 ##############################################################
 # GSI Namelist options
@@ -615,7 +648,7 @@ if [ $DOHYBVAR = "YES" ]; then
    fi
 fi
 
-if [ $NST_GSI -gt 0 ]; then
+if [ $DONST = "YES" ]; then
    NST="nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,zsea1=$ZSEA1,zsea2=$ZSEA2,$NST"
 fi
 
@@ -640,7 +673,7 @@ cat > gsiparm.anl << EOF
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
-  cwoption=3,
+  cwoption=3,imp_physics=$imp_physics,lupp=$lupp,
   $SETUP
 /
 &GRIDOPTS
@@ -838,13 +871,25 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
   export OMP_NUM_THREADS=$NTHREADS_CALCINC
   $NCP $CALCINCEXEC $DATA
 
+  rm calc_increment.nml
+  cat > calc_increment.nml << EOF
+&setup
+  datapath = './'
+  analysis_filename = 'atmanl'
+  firstguess_filename = 'atmges'
+  increment_filename = 'atminc'
+  debug = .false.
+  nens = $ncmd
+  imp_physics = $imp_physics
+/
+&zeroinc
+  incvars_to_zero = $INCREMENTS_TO_ZERO
+/
+EOF
+  cat calc_increment.nml
+
   APRUN=$(eval echo $APRUN_CALCINC)
-  DATAPATH="./"
-  ATMANLFNAME="atmanl"
-  ATMGESFNAME="atmges"
-  ATMINCFNAME="atminc"
-  DEBUG_CALCINC=".false."
-  $APRUN $DATA/$(basename $CALCINCEXEC) $DATAPATH $ATMANLFNAME $ATMGESFNAME $ATMINCFNAME $DEBUG_CALCINC $ncmd
+  $APRUN $DATA/$(basename $CALCINCEXEC)
   rc=$?
 
   export ERR=$rc
@@ -856,12 +901,6 @@ fi
 if [ $DOGCYCLE = "YES" ]; then
 
     mkdir -p $COMOUT/RESTART
-
-    # Get dimension information based on CASE
-    res=$(echo $CASE | cut -c2-)
-    JCAP_CASE=$((res*2-2))
-    LATB_CASE=$((res*2))
-    LONB_CASE=$((res*4))
 
     # Global cycle requires these files
     export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
@@ -912,6 +951,18 @@ if [ $DOGCYCLE = "YES" ]; then
     export err=$ERR
     $ERRSCRIPT || exit 11
 
+    # Create gaussian grid surface analysis file
+    if [ $DOGAUSFCANL = "YES" ]; then
+        export APRUNSFC=$APRUN_GAUSFCANL
+        export OMP_NUM_THREADS_SFC=$NTHREADS_GAUSFCANL
+
+        $GAUSFCANLSH
+        rc=$?
+        export ERR=$rc
+        export err=$ERR
+        $ERRSCRIPT || exit 12
+    fi
+
 fi
 
 ##############################################################
@@ -936,50 +987,54 @@ cd $DATA
 # Cat runtime output files.
 cat fort.2* > $GSISTAT
 
-# If requested, create obs_input tarball
+# If requested, create obsinput tarball from obs_input.* files
 if [ $RUN_SELECT = "YES" ]; then
   echo $(date) START tar obs_input >&2
-  rm obs_input.tar
-  $NLN $SELECT_OBS obs_input.tar
-  tar -cvf obs_input.tar obs_input*
+  rm obsinput.tar
+  $NLN $SELECT_OBS obsinput.tar
+  tar -cvf obsinput.tar obs_input.*
   chmod 750 $SELECT_OBS
   ${CHGRP_CMD} $SELECT_OBS
+  rm obsinput.tar
   echo $(date) END tar obs_input >&2
 fi
 
-# Set up lists and variables for various types of diagnostic files.
-ntype=3
+# If requested, generate diagnostic files
+if [ $GENDIAG = "YES" ] ; then
 
-diagtype[0]="conv"
-diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
-diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
-diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
+   # Set up lists and variables for various types of diagnostic files.
+   ntype=3
 
-diaglist[0]=listcnv
-diaglist[1]=listpcp
-diaglist[2]=listozn
-diaglist[3]=listrad
+   diagtype[0]="conv"
+   diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
+   diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
+   diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
 
-diagfile[0]=$CNVSTAT
-diagfile[1]=$PCPSTAT
-diagfile[2]=$OZNSTAT
-diagfile[3]=$RADSTAT
+   diaglist[0]=listcnv
+   diaglist[1]=listpcp
+   diaglist[2]=listozn
+   diaglist[3]=listrad
 
-numfile[0]=0
-numfile[1]=0
-numfile[2]=0
-numfile[3]=0
+   diagfile[0]=$CNVSTAT
+   diagfile[1]=$PCPSTAT
+   diagfile[2]=$OZNSTAT
+   diagfile[3]=$RADSTAT
 
-# Set diagnostic file prefix based on lrun_subdirs variable
-if [ $lrun_subdirs = ".true." ]; then
-   prefix=" dir.*/"
-else
-   prefix="pe*"
-fi
+   numfile[0]=0
+   numfile[1]=0
+   numfile[2]=0
+   numfile[3]=0
 
-if [ $USE_CFP = "YES" ]; then
-   rm $DATA/diag.sh $DATA/mp_diag.sh
-   cat > $DATA/diag.sh << EOFdiag
+   # Set diagnostic file prefix based on lrun_subdirs variable
+   if [ $lrun_subdirs = ".true." ]; then
+      prefix=" dir.*/"
+   else
+      prefix="pe*"
+   fi
+
+   if [ $USE_CFP = "YES" ]; then
+      rm $DATA/diag.sh $DATA/mp_diag.sh
+      cat > $DATA/diag.sh << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1
 type=\$2
@@ -999,92 +1054,95 @@ if [ \$DIAG_COMPRESS = "YES" ]; then
    $COMPRESS \$file
 fi
 EOFdiag
-   chmod 755 $DATA/diag.sh
-fi
+      chmod 755 $DATA/diag.sh
+   fi
 
-# Collect diagnostic files as a function of loop and type.
-# Loop over first and last outer loops to generate innovation
-# diagnostic files for indicated observation types (groups)
-#
-# NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
-#        loop 03 will contain innovations with respect to
-#        the analysis.  Creation of o-a innovation files
-#        is triggered by write_diag(3)=.true.  The setting
-#        write_diag(1)=.true. turns on creation of o-g
-#        innovation files.
+   # Collect diagnostic files as a function of loop and type.
+   # Loop over first and last outer loops to generate innovation
+   # diagnostic files for indicated observation types (groups)
+   #
+   # NOTE:  Since we set miter=2 in GSI namelist SETUP, outer
+   #        loop 03 will contain innovations with respect to
+   #        the analysis.  Creation of o-a innovation files
+   #        is triggered by write_diag(3)=.true.  The setting
+   #        write_diag(1)=.true. turns on creation of o-g
+   #        innovation files.
 
-loops="01 03"
-for loop in $loops; do
-   case $loop in
-      01) string=ges;;
-      03) string=anl;;
-       *) string=$loop;;
-   esac
-   echo $(date) START loop $string >&2
-   n=-1
-   while [ $((n+=1)) -le $ntype ] ;do
-      for type in $(echo ${diagtype[n]}); do
-         count=$(ls ${prefix}${type}_${loop}* | wc -l)
-         if [ $count -gt 0 ]; then
-            if [ $USE_CFP = "YES" ]; then
-               echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
-            else
-               cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+   loops="01 03"
+   for loop in $loops; do
+      case $loop in
+         01) string=ges;;
+         03) string=anl;;
+          *) string=$loop;;
+      esac
+      echo $(date) START loop $string >&2
+      n=-1
+      while [ $((n+=1)) -le $ntype ] ;do
+         for type in $(echo ${diagtype[n]}); do
+            count=$(ls ${prefix}${type}_${loop}* | wc -l)
+            if [ $count -gt 0 ]; then
+               if [ $USE_CFP = "YES" ]; then
+                  echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+               else
+                  cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+               fi
+               echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
+               numfile[n]=$(expr ${numfile[n]} + 1)
             fi
-            echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
-            numfile[n]=$(expr ${numfile[n]} + 1)
+         done
+      done
+      echo $(date) END loop $string >&2
+   done
+
+   # We should already be in $DATA, but extra cd to be sure.
+   cd $DATA
+
+   # If requested, compress diagnostic files
+   if [ $DIAG_COMPRESS = "YES" -a $USE_CFP = "NO" ]; then
+      echo $(date) START $COMPRESS diagnostic files >&2
+      for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
+         $COMPRESS $file
+      done
+      echo $(date) END $COMPRESS diagnostic files >&2
+   fi
+
+   if [ $USE_CFP = "YES" ] ; then
+      chmod 755 $DATA/mp_diag.sh
+      ncmd=$(cat $DATA/mp_diag.sh | wc -l)
+      if [ $ncmd -gt 0 ]; then
+         ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
+         APRUNCFP_DIAG=$(eval echo $APRUNCFP)
+         $APRUNCFP_DIAG $DATA/mp_diag.sh
+      fi
+   fi
+
+   # If requested, create diagnostic file tarballs
+   if [ $DIAG_TARBALL = "YES" ]; then
+      echo $(date) START tar diagnostic files >&2
+      n=-1
+      while [ $((n+=1)) -le $ntype ] ;do
+         TAROPTS="-uvf"
+         if [ ! -s ${diagfile[n]} ]; then
+            TAROPTS="-cvf"
+         fi
+         if [ ${numfile[n]} -gt 0 ]; then
+            tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
          fi
       done
-   done
-   echo $(date) END loop $string >&2
-done
 
-# We should already be in $DATA, but extra cd to be sure.
-cd $DATA
+      # Restrict CNVSTAT
+      chmod 750 $CNVSTAT
+      ${CHGRP_CMD} $CNVSTAT
 
-# If requested, compress diagnostic files
-if [ $DIAG_COMPRESS = "YES" -a $USE_CFP = "NO" ]; then
-   echo $(date) START $COMPRESS diagnostic files >&2
-   for file in $(ls diag_*${CDATE}${DIAG_SUFFIX}); do
-      $COMPRESS $file
-   done
-   echo $(date) END $COMPRESS diagnostic files >&2
-fi
+      # Restrict RADSTAT
+      chmod 750 $RADSTAT
+      ${CHGRP_CMD} $RADSTAT
 
-if [ $USE_CFP = "YES" ] ; then
-   chmod 755 $DATA/mp_diag.sh
-   ncmd=$(cat $DATA/mp_diag.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
-      ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-      APRUNCFP_DIAG=$(eval echo $APRUNCFP)
-      $APRUNCFP_DIAG $DATA/mp_diag.sh
+      echo $(date) END tar diagnostic files >&2
    fi
-fi
 
-# If requested, create diagnostic file tarballs
-if [ $DIAG_TARBALL = "YES" ]; then
-   echo $(date) START tar diagnostic files >&2
-   n=-1
-   while [ $((n+=1)) -le $ntype ] ;do
-      TAROPTS="-uvf"
-      if [ ! -s ${diagfile[n]} ]; then
-         TAROPTS="-cvf"
-      fi
-      if [ ${numfile[n]} -gt 0 ]; then
-         tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
-      fi
-   done
+fi # End diagnostic file generation block - if [ $GENDIAG = "YES" ]
 
-   # Restrict CNVSTAT
-   chmod 750 $CNVSTAT
-   ${CHGRP_CMD} $CNVSTAT
-
-   # Restrict RADSTAT
-   chmod 750 $RADSTAT
-   ${CHGRP_CMD} $RADSTAT
-
-   echo $(date) END tar diagnostic files >&2
-fi
 
 ################################################################################
 # Send alerts

@@ -435,10 +435,10 @@ else
    imem=1
    while [[ $imem -le $NMEM_ENKF ]]; do
       member="_mem"`printf %03i $imem`
-      ln -fs ${SIGANLENS}${member} sanl_${CDATE}${member}
+      ln -fs ${SIGANLENS}${member} sanl_${CDATE}_fhr06${member}
       if [ $fso_cycling = .true. ]; then
         memberni="_nimem"`printf %03i $imem`
-        ln -fs ${SIGANLENS}${memberni} sanl_${CDATE}${memberni}
+        ln -fs ${SIGANLENS}${memberni} sanl_${CDATE}_fhr06${memberni}
       fi
       (( imem = $imem + 1 ))
    done

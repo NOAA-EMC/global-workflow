@@ -71,6 +71,8 @@ NVARS_ENKF=${NVARS_ENKF:-5}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
+imp_physics=${imp_physics:-"99"}
+lupp=${lupp:-".true."}
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
@@ -148,8 +150,8 @@ else
       tar -xvf $fname
    done
 fi
-for imem in `seq 1 $NMEM_ENKF`; do
-   memchar="mem"`printf %03i $imem`
+for imem in $(seq 1 $NMEM_ENKF); do
+   memchar="mem"$(printf %03i $imem)
    if [ $USE_CFP = "YES" ]; then
       echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
    else
@@ -159,7 +161,7 @@ for imem in `seq 1 $NMEM_ENKF`; do
       done
    fi
    $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
-   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}                sanl_${CDATE}_${memchar}
+   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}               sanl_${CDATE}_fhr06_${memchar}
 done
 
 # Ensemble mean guess
@@ -192,7 +194,7 @@ cat > enkf.nml << EOFnml
    nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,nvars=$NVARS_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=.true.,readin_localization=.true.,
-   use_gfs_nemsio=.true.,
+   use_gfs_nemsio=.true.,imp_physics=$imp_physics,lupp=$lupp,
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    $NAM_ENKF
 /

@@ -47,7 +47,7 @@ for exp in $list; do
    imem=1
    while [[ $imem -le $nmem ]]; do
       member="_mem"`printf %03i $imem`
-      $ncp $savdir/$exp/sanl_${global_enkf_T62_adate}$member $tmpdir/sanl$member.$exp
+      $ncp $savdir/$exp/sanl_${global_enkf_T62_adate}_fhr06$member $tmpdir/sanl$member.$exp
       (( imem = $imem + 1 ))
    done
 done

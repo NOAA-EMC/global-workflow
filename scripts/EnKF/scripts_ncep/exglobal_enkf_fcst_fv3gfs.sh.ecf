@@ -114,11 +114,11 @@ export layout_y=${layout_y_ENKF:-${layout_y:-16}}
 export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
-export FHOUT=${FHOUT_ENKF:-${FHOUT:-6}}
+export FHOUT=${FHOUT_ENKF:-3}
 
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
-export FHMAX=${FHMAX_ENKF:-${FHMAX:-6}}
+export FHMAX=${FHMAX_ENKF:-9}
 export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
 
 # gfs_physics_nml
