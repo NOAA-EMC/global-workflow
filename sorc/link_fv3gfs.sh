@@ -69,6 +69,21 @@ cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 
 
+#--link executables 
+
+cd $pwd/../exec
+[[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
+$LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
+
+[[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
+$LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+
+for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
+
+
 exit 0
 
 

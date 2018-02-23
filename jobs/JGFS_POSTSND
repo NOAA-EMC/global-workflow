@@ -117,7 +117,7 @@ env
 
 ########################################################
 # Execute the script.
-export APRUN="aprun -n 12 -N 6 -j 1 -d 1"
+export APRUN="aprun -n 12 -N 3 -j 1 -d 1"
 $SCRbufrsnd/exgfs_postsnd.sh.ecf
 ########################################################
 

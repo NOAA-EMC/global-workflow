@@ -66,24 +66,11 @@ done
 cd $pwd
 sh build_fv3.sh $fv3target
 
-cd $pwd/../exec
-[[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
-cp -p ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
-
 cd $pwd/gfs_post.fd/sorc
 sh build_ncep_post.sh
-
-cd $pwd/../exec
-[[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-cp -p ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
 cd $pwd
 sh build_gsi.sh $target
 
-cd $pwd/../exec
-for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
-    [[ -s $gsiexe ]] && rm -f $gsiexe
-    cp -p ../sorc/gsi.fd/exec/$gsiexe .
-done
 
 exit 0

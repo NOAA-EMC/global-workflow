@@ -20,9 +20,12 @@
 !   2016-09-27  HUIYA CHUANG  MODIFY TO READ GFS NEMS OUTPUT ON GRID SPACE
 !   2017-02-27  GUANG PING LOU CHANGE OUTPUT PRECIPITATION TO HOURLY AMOUNT
 !                              TO 120 HOURS AND 3 HOURLY TO 180 HOURS.
-!   2018-02-08  GUANG PING LOU INGEST FV3GFS NEMSIO ACCUMULATED PRECIPITATION 
+!   2018-02-01  GUANG PING LOU INGEST FV3GFS NEMSIO ACCUMULATED PRECIPITATION 
 !                              AND RECALCULATE HOURLY AND 3 HOURLY OUTPUT DEPENDING
 !                               ON LOGICAL VALUE OF precip_accu. 
+!   2018-02-08  GUANG PING LOU ADDED READING IN AND USING DZDT AS VERTICAL VELOCITY
+!   2018-02-16  GUANG PING LOU ADDED READING IN AND USING MODEL DELP AND DELZ
+!   2018-02-21  GUANG PING LOU THIS VERSION IS BACKWARD COMPATIBLE TO GFS MODEL
 !
 ! USAGE:    CALL PROGRAM meteorg
 !   INPUT:
@@ -86,11 +89,13 @@
       real,dimension(im,jm) :: gdlat, hgt, gdlon
       real,dimension(im,jm,15) :: dum2d
       real,dimension(im,jm,levs) :: t3d, q3d, uh, vh,omega3d
-      real,dimension(im,jm,levs+1) :: pint
+      real,dimension(im,jm,levs) :: delp,delz
+      real,dimension(im,jm,levs+1) :: pint, zint
       real,dimension(npoint,levso) :: gridu,gridv,omega,qnew,zp
       real,dimension(npoint):: gradx, grady
       real,dimension(npoint,levs) :: griddiv,gridui,gridvi,omegai
       real,dimension(npoint,levso) :: p1,p2,p3,pd1,pd2,pd3,tt,ttnew
+      real,dimension(npoint,levso) :: z1
       real,dimension(npoint,levso+1) :: pi3
       real :: zp2(2)
       real,dimension(kdim,npoint) :: sfc
@@ -111,10 +116,15 @@
       integer :: nf1, fint
       character*150 :: fngrib2
       character(len=20)  :: VarName
+      integer recn_dpres,recn_delz,recn_dzdt
 
       nsig = 11
       nsfc = 12
       nflx = 6 * levso
+          recn_dpres = 0
+          recn_delz = 0
+          recn_dzdt = 0
+        lprecip_accu='yes'
 
 !      call sigio_sropen(nsig,trim(fnsig),iret)
 !      call sigio_srhead(nsig,sighead,iret1)
@@ -129,7 +139,7 @@
       call nemsio_getfilehead(gfile,iret=iret             
      +     ,idate=idate_nems(1:7),nfhour=nfhour                 
      +     ,idvc=idvc,idsl=idsl,lat=dum1d,lon=dum1d2
-     +     ,vcoord=vcoordnems)   
+     +     ,vcoord=vcoordnems)
      
       do k=1,levs+1 
         vcoord(k,1)=vcoordnems(k,1,1)
@@ -158,11 +168,6 @@
       if(debugprint)print*,'sample lon= ',gdlon(im/5,jm/4)
      +       ,gdlon(im/5,jm/3),gdlon(im/5,jm/2)
 
-! read sigio data
-!      call sigio_aldata(sighead,sigdata,iret)
-!      call sigio_srdata(nsig,sighead,sigdata,iret)
-! topography (m)
-!      scalar(:,1)=sigdata%hs
 ! read nemsio data
 ! topography
       call nemsio_readrecvw34(gfile,'hgt','sfc',1,data=dum1d,iret=iret)
@@ -195,20 +200,6 @@
         if(debugprint)print*,'sample sfc P= ',pint(im/2,jm/4,1),
      +          pint(im/2,jm/3,1),pint(im/2,jm/2,1)
       end if
-
-! virtual temperature (k)
-!      do k = 1, levs
-!        scalar(:,k+2)=sigdata%T(:,k)
-!      enddo
-! divergence and vorticity
-!      do k = 1, levs
-!        vector(:,k)=sigdata%d(:,k)
-!        vector(:,k+levs)=sigdata%z(:,k)
-!      enddo
-! specific humidity
-!      do k = 1, levs
-!        scalar(:,k+2+levs)=sigdata%q(:,k,1)
-!      enddo
 
 ! temperature using nemsio
       do k =1, levs
@@ -275,8 +266,61 @@
      +     print*,'sample V at lev ',k,' = ',vh(im/2,jm/4,k),
      +          vh(im/2,jm/3,k),vh(im/2,jm/2,k)
         end if
-      end do ! vertical loop
+! dzdt !added by Guang Ping Lou for FV3GFS
+        call nemsio_readrecvw34(gfile,'dzdt'
+     +       ,'mid layer',k,data=dum1d,iret=iret)
+        if (iret /= 0) then
+          recn_dzdt = -9999
+          print*,'dzdt not found at ',k
+        else
+          do j=1,jm
+            jj= (j-1)*im
+            do i=1,im
+              omega3d(i,j,k) = dum1d(jj+i) * 100.0 !convert from m/s to cm/s
+            end do
+          end do
+          if(debugprint)
+     +     print*,'sample dzdt at lev ',k,' = ',omega3d(im/2,jm/4,k),
+     +          omega3d(im/2,jm/3,k),omega3d(im/2,jm/2,k)
+        end if
+! dpres !added by Guang Ping Lou for FV3GFS (interface pressure delta)
+        call nemsio_readrecvw34(gfile,'dpres'
+     +       ,'mid layer',k,data=dum1d,iret=iret)
+        if (iret /= 0) then
+          recn_dpres = -9999
+          print*,'dpres not found at ',k
+        else
+          do j=1,jm
+            jj= (j-1)*im
+            do i=1,im
+              delp(i,j,k) = dum1d(jj+i)
+            end do
+          end do
+          if(debugprint)
+     +     print*,'sample dpres at lev ',k,' = ',delp(im/2,jm/4,k),
+     +          delp(im/2,jm/3,k),delp(im/2,jm/2,k)
+        end if
+! delz !added by Guang Ping Lou for FV3GFS ("height thickness" with unit "meters" bottom up)
+        call nemsio_readrecvw34(gfile,'delz'
+     +       ,'mid layer',k,data=dum1d,iret=iret)
+        if (iret /= 0) then
+          recn_delz = -9999
+          print*,'delz not found at ',k
+        else
+          do j=1,jm
+            jj= (j-1)*im
+            do i=1,im
+              delz(i,j,k) = dum1d(jj+i)
+            end do
+          end do
+          if(debugprint)
+     +     print*,'sample delz at lev ',k,' = ',delz(im/2,jm/4,k),
+     +          delz(im/2,jm/3,k),delz(im/2,jm/2,k)
+        end if
+      end do ! vertical loop k
+
 ! compute interface pressure
+      if(recn_dpres == -9999) then
       do k=2,levs+1
         do j=1,jm
           do i=1,im
@@ -284,7 +328,43 @@
      +           +vcoord(k,2)*pint(i,j,1) 
           end do
         end do
-      end do  
+       end do
+       else
+! compute pint using dpres from bot up if DZDT is used
+      do k=2,levs+1
+        do j=1,jm
+          do i=1,im
+            pint(i,j,k) = pint(i,j,k-1) - delp(i,j,k-1)
+          end do
+        end do
+          if(debugprint)
+     +     print*,'sample interface pressure pint at lev ',k,' = ',
+     +     pint(im/2,jm/4,k),
+     +          pint(im/2,jm/3,k),pint(im/2,jm/2,k)
+       end do
+       endif
+! compute interface height (meter)
+      if(recn_delz == -9999) then
+       print*, 'using calculated height'
+       else
+! compute pint using dpres from bot up if DZDT is used
+        do j=1,jm
+          do i=1,im
+            zint(i,j,1) = 0.0
+          end do
+        end do
+      do k=2,levs+1
+        do j=1,jm
+          do i=1,im
+            zint(i,j,k) = zint(i,j,k-1) + delz(i,j,k-1)
+          end do
+        end do
+          if(debugprint)
+     +     print*,'sample interface height pint at lev ',k,' = ',
+     +     zint(im/2,jm/4,k),
+     +          zint(im/2,jm/3,k),zint(im/2,jm/2,k)
+       end do
+       endif
 
 ! close up this nems file
       call nemsio_close(gfile,iret=iret)
@@ -332,9 +412,15 @@
         print*,"fail to open nems flux file";stop
       endif
 ! get hour when buket was last emptied
+        if(lprecip_accu == 'no') then
       call nemsio_getheadvar(ffile,'zhour',zhour,iret=iret)
       call nemsio_getheadvar(ffile2,'zhour',zhour2,iret=iret)
-CC      if(debugprint)print*,'sample zhour= ',zhour
+      if(debugprint)print*,'sample zhour,zhour2= ',zhour,zhour2
+        else
+         zhour=0.0
+         zhour2=0.0
+      if(debugprint)print*,'No bucket zhour,zhour2= ',zhour,zhour2
+       endif
 ! land water mask
       call nemsio_readrecvw34(ffile,'land','sfc',1,data=dum1d,iret=iret)
       if (iret /= 0) then
@@ -493,7 +579,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
         print*,'total precip not found'
       else
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,3= ', fhour, zhour, zhour2,
      & '1sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
        end if
@@ -503,7 +589,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
         print*,'prate_ave not found'
       else
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,4= ', fhour, zhour, zhour2,
      & '2sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
         do j=1,jm
@@ -516,7 +602,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
       end if
 
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,5= ', fhour, zhour, zhour2,
      & 'sample total precip= ',dum2d(im/2,jm/4,9),
      +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
 
@@ -551,7 +637,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
           end do
          end do
        print*, 'mod(nf1,6)= ', nf1
-      print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2
+      print*,'sample fhour zhour zhour2,6= ', fhour, zhour, zhour2
       else
       call nemsio_readrecvw34(ffile2,'prate_ave','sfc',
      & 1,data=dum1d,iret=iret)
@@ -559,7 +645,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
         print*,'total precip not found'
       else
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,7= ', fhour, zhour, zhour2,
      & '1sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
         do j=1,jm
@@ -576,7 +662,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
         print*,'prate_ave not found'
       else
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,8= ', fhour, zhour, zhour2,
      & '2sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
         do j=1,jm
@@ -588,7 +674,7 @@ CC      if(debugprint)print*,'sample zhour= ',zhour
         end do
       end if
         if(debugprint)
-     & print*,'sample fhour zhour zhour2= ', fhour, zhour, zhour2,
+     & print*,'sample fhour zhour zhour2,9= ', fhour, zhour, zhour2,
      & 'sample total precip= ',dum2d(im/2,jm/4,9),
      +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
 
@@ -883,36 +969,20 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           gridui(np,k)=uh(idum,jdum,k)
           gridvi(np,k)=vh(idum,jdum,k)
           p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
+          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
  
           griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
      +       (vh(idum,jn,k)*cos(gdlat(idum,jn)*dtr)-
      +       vh(idum,js,k)*cos(gdlat(idum,js)*dtr))/dy/
      +       cos(gdlat(idum,jdum)*dtr)
-!          griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
-!     +        (vh(idum,jn,k)-vh(idum,js,k))/dy 
-CC          if(np==1.or.np==100)print*,
-CC     +    'np,k,idum,jdum,uhe,uhw,vhn,vhs,dx,dy,gdlat'
-CC     +    ,np,k,idum,jdum,uh(ie,jdum,k),uh(iw,jdum,k),vh(idum,jn,k)
-CC     +    ,vh(idum,js,k),dx,dy,gdlat(idum,jdum),
-CC     +    cos(gdlat(idum,jdum)*dtr),griddiv(np,k) 
         end do
       end do 
       
       print*,'finish finding nearest neighbor for each station'
 
-!        call sptgpt(iromb,maxwv,2*levs+2,npoint,
-!     &       kwskip,npoint,1,1,rlat,rlon,scalar,gridsi)
-!        call sptgptsd(iromb,maxwv,2,npoint,
-!     &       kwskip,npoint,1,1,rlat,rlon,scalar,gridsi,gradx,grady)
-!        call sptgptv(iromb,maxwv,levs,npoint,
-!     &       kwskip,npoint,1,1,rlat,rlon,vector,vector(1,levs+1),
-!     &       gridui,gridvi)
-!        call sptgpt(iromb,maxwv,levs,npoint,
-!     &       kwskip,npoint,1,1,rlat,rlon,vector,griddiv)
         do np = 1, npoint
 !        !ps in kPa
-          !ps(np) = exp(gridsi(np,2))
-          ps(np) = gridsi(np,2)/1000.
+          ps(np) = gridsi(np,2)/1000.  !! surface pressure
         enddo
 
 !
@@ -924,19 +994,26 @@ CC     +    cos(gdlat(idum,jdum)*dtr),griddiv(np,k)
      &       gradx(np),grady(np),griddiv(np,1:levs),
      &       gridui(np,1:levs),gridvi(np,1:levs),
      &       pd1(np,1:levs),pd1(np,1:levs),omegai(np,1:levs))
-CC       if(np==1.or.mod(np,20)==0)print*,'griddiv after ca modstu'
-CC     &  ,griddiv(np,1:levs)
-CC       if(np==1.or.mod(np,20)==0)print*,'omegai after ca modstu'
-CC     &  ,omegai(np,1:levs)
       enddo
 !
 !  put omega (pa/s) in the tracer to prepare for interpolation
 !
+      if(recn_dzdt == -9999) then !!calculated omega
+        print*, 'using calculated omega '
         do k = 1, levs
           do np = 1, npoint
             gridsi(np,2+levs*2+k) = omegai(np,k)
           enddo
         enddo
+       else
+        print*, 'using model dzdt m/s'
+          if(debugprint) then
+        do k = 1, levs
+          print*,'sample gridsi(dzdt) at lev ',k,' = ',
+     +     gridsi(10,2+levs*2+k)
+        enddo
+       endif
+       endif
 !        print *, ' omegai ='
 !        print 6102, (omegai(1,k),k=1,levs)
 
@@ -945,19 +1022,10 @@ CC     &  ,omegai(np,1:levs)
 ! excuted so comment out sigma sction for now 
 !         sigheado=sighead
 !        -----------------
+        print*, 'levs,levso= ', levs, levso
         if(levs.ne.levso) then
           nsil = 13
           rewind nsil
-!          call newsig(nsil,sigheado%idvc,levso,
-!     &           sigheado%nvcoord,sigheado%vcoord,iossil)
-!          if(iossil.ne.0) print*, "fail to read new levels"
-
-!  obtain new interface-layer pressure for new levso
-          do np = 1, npoint
-!            call sigio_modpr(1,1,levso,sigheado%nvcoord,sigheado%idvc,
-!     &           sigheado%idsl,sigheado%vcoord,iret,
-!     &           ps=ps(np)*1000,pd=pd2(np,1:levso),pm=p2(np,1:levso))
-          enddo
           do np = 1, npoint
             grids(np,1) = gridsi(np,1)
             grids(np,2) = gridsi(np,2)
@@ -987,6 +1055,15 @@ CC     &  ,omegai(np,1:levs)
             enddo
           enddo
         endif  !END OF IF STATMENT LEVS .NE. LEVSO
+      if(recn_dzdt == 0 ) then !!DZDT
+          do k = 1, levs
+            do np = 1, npoint
+              omega(np,k) = gridsi(np,2+levs*2+k) 
+            enddo
+          enddo
+                 if(debugprint)
+     +     print*,'sample (omega) dzdt ', (omega(3,k),k=1,levs)
+      endif
 !
 !  move surface pressure to the station surface from the model surface
 !
@@ -1006,16 +1083,6 @@ CC     &  ,omegai(np,1:levs)
           if(np==1)print*,'station H,grud H,psn,ps,new pm',
      &     elevstn(np),grids(np,1),psn(np),ps(np),p3(np,1:levso)
         enddo
-!
-!  convert virtual temperature to temperature 
-!  Chuang Oct. 2016: removing conversion since nemsio outputs T instead
-!                    of Tv
-!        do k = 1, levso
-!          do np = 1, npoint
-!            tt(np,k) = grids(np,k+2) / (1. + .608 *
-!     &                 grids(np,k+levso+2))
-!          enddo
-!        enddo
 !
 !  move t to new levels conserving theta
 !  move q to new levels conserving RH
@@ -1054,7 +1121,19 @@ CC     &  ,omegai(np,1:levs)
      &      p3(np,1:levso),ttnew(np,1:levso),qnew(np,1:levso),
      &      pmsl(np),zp(np,1:levso),zp2(1:2))
         enddo
+      if(recn_delz == -9999) then 
+        print*, 'using calculated height '
+       else
+        print*, 'using model height m'
+        do  k = 1, levso
+          do np=1, npoint
+           zp(np,k) =  z1(np,k)
+          enddo
+        enddo
+       endif
        print*,'finish computing MSLP'
+       print*,'finish computing zp ', (zp(3,k),k=1,levso)
+       print*,'finish computing zp2(1-2) ', zp2(1),zp2(2)
 !
 !  prepare buffer data
 !
@@ -1087,7 +1166,7 @@ CC     &  ,omegai(np,1:levs)
             data((k-1)*6+8) = u                        ! U WIND (M/S)
             data((k-1)*6+9) = v                        ! V WIND (M/S)
             data((k-1)*6+10) = q                       ! HUMIDITY (KG/KG)
-            data((k-1)*6+11) = omega(np,k)             ! Omega (pa/sec)
+            data((k-1)*6+11) = omega(np,k)             ! Omega (pa/sec) !changed to dzdt(cm/s) if available
           enddo
 !
 !  process surface flux file fields

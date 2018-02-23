@@ -40,7 +40,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone --recursive ${USERNAME}@gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout post_fv3gfs_flat
+    git checkout ncep_post.v8.0.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'

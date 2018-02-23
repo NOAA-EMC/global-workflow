@@ -12,7 +12,6 @@ module load hpss
 module load netcdf
 module load nco
 module load hdf5/1.8.14
-module load iobuf/2.0.7
 
 module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
 module load prod_util

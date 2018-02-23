@@ -86,7 +86,8 @@ do
    fi
 
    ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nemsio sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.flxf${hh2}.nemsio flxf${hh}
+   ln -sf $COMIN/${RUN}.${cycle}.sfcf${hh2}.nemsio flxf${hh}
+##   ln -sf $COMIN/${RUN}.${cycle}.flxf${hh2}.nemsio flxf${hh}
 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10
