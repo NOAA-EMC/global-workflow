@@ -33,7 +33,8 @@ export INCREMENT=12
 export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
-export SIGLEVEL=${SIGLEVEL:-$FIXgfs/global_siglevel.l${LEVS}.txt}
+##export SIGLEVEL=${SIGLEVEL:-$FIXgfs/global_siglevel.l${LEVS}.txt}
+#export SIGLEVEL=/gpfs/hps/nco/ops/nwprod/global_shared.v14.0.1/fix/fix_am/global_siglevel.l64.txt
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir ${COMOUT}/bufr.${cycle}
 
