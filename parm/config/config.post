@@ -34,4 +34,7 @@ export downset=1
 export npe_dwn=24
 export nth_dwn=1
 
+export GRIBVERSION='grib2'
+export SENDCOM="YES"
+
 echo "END: config.post"

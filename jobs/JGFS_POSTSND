@@ -21,18 +21,7 @@ export MP_SHARED_MEMORY=yes
 export MP_MPILIB=mpich2
 export MP_LABELIO=yes
 ####################################
-# Specify version numbers
-####################################
-export bufrsnd_ver=${bufrsnd_ver:-v1.0.0}
-export gfs_ver=${gfs_ver:-v13.0.0}
-export global_shared_ver=${global_shared_ver:-v13.0.0}
-export util_ver=${util_ver:-v1.0.0}
-
 # obtain unique process id (pid) and make temp directories
-#
-#export pid=$$
-#export DATA_IN=${DATA_IN:-/tmpnwprd1}
-#export DATA=$DATA_IN/${job}.${pid}
 export DATA=${DATA:-$DATAROOT/${jobid}}
 mkdir $DATA
 cd $DATA 
@@ -41,12 +30,6 @@ cd $DATA
 # File To Log Msgs
 ####################################
 export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
-
-#if [ $envir != prod ]; then
-#  export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
-#  export DBNROOT=/nwprod/spa_util/para_dbn_ondev
-#  export pcom=${pcom:-/pcom/${envir}/gfs}
-#fi
 
 ####################################
 # Determine Job Output Name on System
@@ -61,9 +44,6 @@ export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-YES}
 export SENDDBN=${SENDDBN:-YES}
 
-#### export NET=gfs
-#### export RUN=gfs
-#### export model=gfs
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
@@ -71,36 +51,15 @@ export model=${model:-gfs}
 ###################################
 # Set up the UTILITIES
 ###################################
-#export HOMEutil=${HOMEutil:-${NWROOT}/util}
-#export EXECutil=${EXECutil:-$HOMEutil/exec}
-#export FIXutil=${FIXutil:-$HOMEutil/fix}
-#export PARMutil=${PARMutil:-$HOMEutil/parm}
-#export USHutil=${USHutil:-$HOMEutil/ush}
 
-#export utilities=${utilities:-$HOMEutil/ush}
-#export utilscript=${utilscript:-$HOMEutil/ush}
-#export utilexec=${utilexec:-$HOMEutil/exec}
-
-#### . $MODULESHOME/init/sh
-#### module load prod_envir
-#### module load prod_util/1.0.5
-#### module load grib_util/1.0.3
-#### module load util_shared/1.0.3
-#### module load gempak/7.3.0
-
-export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
-#export HOMEbufrsnd=${HOMEbufrsnd:-/nw${envir}/bufrsnd.$bufrsnd_ver}
+##export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
+export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
 export EXECbufrsnd=${EXECbufrsnd:-$HOMEbufrsnd/exec}
-export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix}
-export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm}
+export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix/product}
+export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm/product}
 export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
 export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
-export HOMEgsm=${HOMEgsm:-$NWROOT/global_shared.${global_shared_ver}}
-export FIXgsm=${FIXgsm:-$HOMEgsm/fix/fix_am}
-
-# Run setup to initialize working directory and utility scripts
-#$utilscript/setup.sh
 # Run setpdy and initialize PDY variables
 setpdy.sh
 . ./PDY

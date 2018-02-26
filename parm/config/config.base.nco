@@ -20,6 +20,7 @@ export HOMEgfs=$NWROOT/gfs.${gfs_ver}
 export PARMgfs=$HOMEgfs/parm
 export FIXgfs=$HOMEgfs/fix
 export USHgfs=$HOMEgfs/ush
+export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 

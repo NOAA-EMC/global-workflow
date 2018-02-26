@@ -44,14 +44,6 @@ do
    fi
 done
 
-##ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
-##ln -sf gfs12.dat fort.17
-##ln -sf metflxmrf fort.18
-
-#startmsg
-#${GFLUX:-$EXECbufrsnd/gfs_flux} < gfsflxparm >> $pgmout 2>>errfile
-##export err=$?
-
 export pgm=gfs_bufr
 #. prep_step
 
@@ -100,10 +92,10 @@ done
 ln -sf $PARMbufrsnd/bufr_gfs_class1.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 #ln -sf metflxmrf fort.12
-ln -sf $SIGLEVEL fort.13
+#ln -sf $SIGLEVEL fort.13
 
 #startmsg
-export APRUN=${APRUN:-'aprun -n 12 -N 6 -j 1'}
+export APRUN=${APRUN:-'aprun -n 12 -N 3 -j 1'}
 ${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 
