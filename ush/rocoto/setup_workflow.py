@@ -32,9 +32,6 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import rocoto
 import workflow_utils as wfu
 
-gfs_tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
-hyb_tasks = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
-
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -51,9 +48,12 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    tasks = gfs_tasks + hyb_tasks if _base['DOHYBVAR'] == 'YES' else gfs_tasks
+    gfs_steps = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
-    dict_configs = wfu.source_configs(configs, tasks)
+    steps = gfs_steps + hyb_steps if _base['DOHYBVAR'] == 'YES' else gfs_steps
+
+    dict_configs = wfu.source_configs(configs, steps)
 
     # First create workflow XML
     create_xml(dict_configs)
@@ -240,9 +240,13 @@ def get_hyb_resources(dict_configs, cdump='gdas'):
     strings.append('\t<!-- BEGIN: Resource requirements for hybrid part of the workflow -->\n')
     strings.append('\n')
 
-    machine = dict_configs['base']['machine']
+    base = dict_configs['base']
+    machine = base['machine']
+    lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
 
     tasks = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
+    if lobsdiag_forenkf in ['.T.', '.TRUE.']: tasks.remove('eomg')
+
     for task in tasks:
 
         cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
@@ -368,7 +372,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     return ''.join(tasks)
 
 
-def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
+def get_hyb_tasks(dict_configs, EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
     '''
         Create Hybrid tasks
     '''
@@ -383,6 +387,10 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     ensgrp = rocoto.create_envar(name='ENSGRP', value='#grp#')
+
+    base = dict_configs['base']
+    machine = base['machine']
+    lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
 
     tasks = []
 
@@ -399,20 +407,24 @@ def get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
     tasks.append('\n')
 
     # eomn, eomg
-    deps = []
-    dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
-    eomgenvars = envars + [ensgrp]
-    task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
-                              metatask='eomn', varname='grp', varval=EOMGGROUPS)
+    if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+        deps = []
+        dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        eomgenvars = envars + [ensgrp]
+        task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
+                                  metatask='eomn', varname='grp', varval=EOMGGROUPS)
 
-    tasks.append(task)
-    tasks.append('\n')
+        tasks.append(task)
+        tasks.append('\n')
 
     # eupd
     deps = []
-    dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
+    if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+        dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
+    else:
+        dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars, dependency=dependencies)
@@ -578,7 +590,7 @@ def create_xml(dict_configs):
         EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps + 1)])
 
         hyb_resources = get_hyb_resources(dict_configs)
-        hyb_tasks = get_hyb_tasks(EOMGGROUPS, EFCSGROUPS, EARCGROUPS)
+        hyb_tasks = get_hyb_tasks(dict_configs, EOMGGROUPS, EFCSGROUPS, EARCGROUPS)
 
     # Get GFS cycle related entities, resources, workflow
     if base['gfs_cyc'] != 0:
