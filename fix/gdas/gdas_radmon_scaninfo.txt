@@ -41,7 +41,9 @@
  mhs_metop-b             -49.44      1.10        90
  iasi_metop-b            -50.00      1.67        60
  cris_npp               -51.615      3.33        30 
+ cris-fsr_npp           -51.615      3.33        30 
  atms_npp               -52.725      1.11        96
- seviri_m09                0.00      1.00        90
+ seviri_m08                0.00      1.00        90
  seviri_m10                0.00      1.00        90
+ saphir_meghat          -42.960      0.67       130
 !sat_sis                  start      step       nstep
