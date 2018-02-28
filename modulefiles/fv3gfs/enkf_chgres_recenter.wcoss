@@ -1,8 +1,5 @@
 #%Module#####################################################
-#############################################################
-## Rahul.Mahajan@noaa.gov
-## NOAA/NWS/NCEP/EMC
-## enkf_chgres_recenter component of global_shared - wcoss
+## enkf_chgres_recenter component - wcoss
 #############################################################
 
 module unload ics

@@ -12,15 +12,30 @@
 # To run, type "build_emcsfc.sh" from the command line.
 #------------------------------------------------------------
 
-#set -x
+set -x
 
-for directory in emcsfc_ice_blend.fd emcsfc_snow2mdl.fd
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
+
+for prog in emcsfc_ice_blend emcsfc_snow2mdl
 do
-  cd $directory
+  USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+  if [ $USE_PREINST_LIBS = true ]; then
+    export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  else
+    export MOD_PATH=${cwd}/lib/modulefiles
+  fi
+
+  cd ${prog}.fd
   make clean
   sh make.sh
   module list
-  cd ..
+  cd $cwd
 done
 
 echo; echo DONE BUILDING EMCSFC PROGRAMS

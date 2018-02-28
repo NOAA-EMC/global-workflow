@@ -1,0 +1,8 @@
+#%Module######################################################################
+##
+module load intel/16.1.150
+module use -a $MOD_PATH
+module load w3nco/v2.0.6
+
+export FCMP=ifort
+export CCMP=icc

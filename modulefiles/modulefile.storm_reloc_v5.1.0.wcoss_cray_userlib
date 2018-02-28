@@ -1,0 +1,26 @@
+#%Module#####################################################
+## Module file for storm_reloc_v5.1.0
+#############################################################
+module load craype-network-aries
+module load craype-haswell
+module load craype/2.3.0
+module load PrgEnv-intel/5.2.56
+module load intel/15.0.3.187
+module load cray-mpich/7.2.0
+
+module unuse /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module use -a $MOD_PATH
+module load nemsiogfs/v2.0.1
+module load nemsio/v2.2.3
+module load sigio/v2.0.1
+module load g2/v3.1.0
+module load w3nco/v2.0.6
+module load w3emc/v2.2.0
+module load bacio/v2.0.2
+module load jasper/v1.900.1
+module load png/v1.2.44
+module load z/v1.2.6
+module load sp/v2.0.2
+
+
+export FC=ftn

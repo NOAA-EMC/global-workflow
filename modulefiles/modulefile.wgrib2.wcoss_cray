@@ -1,0 +1,13 @@
+#%Module######################################################################
+module load PrgEnv-gnu/5.2.56
+module load cray-netcdf/4.3.2
+module load craype/2.3.0
+module load craype-sandybridge
+module load /gpfs/hps/nco/ops/nwtest/lib/modulefiles/g2c-gnu/1.5.0
+
+module load jasper-gnu-sandybridge/1.900.1
+module load png-gnu-sandybridge/1.2.49
+module load zlib-gnu-sandybridge/1.2.7
+
+export FCMP=ftn
+export CCMP=cc

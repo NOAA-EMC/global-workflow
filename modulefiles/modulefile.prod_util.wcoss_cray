@@ -1,0 +1,11 @@
+#%Module#####################################################
+module purge
+module load modules
+module load PrgEnv-intel
+module load cray-mpich
+module load craype-sandybridge
+
+module load w3nco-intel/2.0.6
+
+export FCMP=ftn
+export CCMP=cc

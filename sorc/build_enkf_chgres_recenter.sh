@@ -1,44 +1,29 @@
 #!/bin/sh
 set -eux
 
-#####################################################################################
-# using module compile standard
-# 12/20/2017 Rahul.Mahajan@noaa.gov:    update for building on wcoss, theia and cray
-#####################################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
-fi
-
-target=$1
-
-EXECdir=../exec
-[ -d $EXECdir ] || mkdir $EXECdir
-
-set +x
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/fv3gfs/enkf_chgres_recenter.$target             > /dev/null 2>&1
 else
- exit
-fi
-
-module purge
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/fv3gfs/enkf_chgres_recenter.$target
-else
- source ../modulefiles/fv3gfs/enkf_chgres_recenter.$target
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/fv3gfs/enkf_chgres_recenter.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/fv3gfs/enkf_chgres_recenter.$target           > /dev/null 2>&1
+  fi
 fi
 module list
-set -x
 
-curdir=`pwd`
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
-cd ${curdir}/enkf_chgres_recenter.fd
+cd ${cwd}/enkf_chgres_recenter.fd
 
 export FFLAGS="-O0 -r8 -i4 -qopenmp -traceback"
 

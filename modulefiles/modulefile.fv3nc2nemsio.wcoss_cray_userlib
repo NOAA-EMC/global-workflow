@@ -1,0 +1,17 @@
+#%Module#####################################################
+## Module file for fv3nc2nemsio
+#############################################################
+
+module load ncep/1.0
+module load PrgEnv-intel
+module load craype
+module load NetCDF-intel-haswell/4.2
+module load HDF5-serial-intel-haswell/1.8.9
+module unuse /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module use -a $MOD_PATH
+module load bacio/v2.0.2
+module load nemsio/v2.2.3
+module load w3nco/v2.0.6
+
+export FCMP="ftn"
+export FFLAGS="-free -O3 -xHOST"

@@ -1,8 +1,5 @@
 #%Module#####################################################
-#############################################################
-## Fanglin.Yang@noaa.gov
-## NOAA/NWS/NCEP/EMC
-## global_cycle component of global_shared - wcoss
+## global_cycle component - wcoss
 #############################################################
 
 proc ModulesHelp { } {

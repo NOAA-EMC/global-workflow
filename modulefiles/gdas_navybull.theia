@@ -1,12 +1,6 @@
-#%Module##############################################################
-##                                             Boi.Vuong@noaa.gov
-##                                             NOAA/NWS/NCEP/EMC
-##  GFS v13.0.0
-##  Change Log
-##  02/22/2016:  Boi Vuong, initial setting
-##
-#####################################################################
-#set ver v13.0.0
+#%Module################################################
+# Modfule file for gdas_navybull
+########################################################
 
 # Loading Intel Compiler Suite
 module load intel

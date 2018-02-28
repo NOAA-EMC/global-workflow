@@ -1,0 +1,9 @@
+#%Module#####################################################
+## Module file for fre-nctools
+#############################################################
+module load PrgEnv-intel
+module rm intel
+module load intel/16.3.210
+module load craype-haswell
+module load cray-netcdf
+module load cray-hdf5

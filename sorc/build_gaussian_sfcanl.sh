@@ -1,41 +1,23 @@
 #! /usr/bin/env bash
 set -eux
 
-#####################################################################################
-# 01/30/2018 George.Gayno@noaa.gov:    Initial version
-#####################################################################################
-
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
-fi
-
-target=$1
-
-EXECdir=../exec
-[ -d $EXECdir ] || mkdir $EXECdir
-
-set +x
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
-else
- exit 2
-fi
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
 module purge
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/fv3gfs/gaussian_sfcanl.$target
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/fv3gfs/gaussian_sfcanl.$target             > /dev/null 2>&1
 else
- source ../modulefiles/fv3gfs/gaussian_sfcanl.$target
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/fv3gfs/gaussian_sfcanl.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/fv3gfs/gaussian_sfcanl.$target           > /dev/null 2>&1
+  fi
 fi
 module list
-set -x
 
-curdir=`pwd`
-
-cd ${curdir}/gaussian_sfcanl.fd
-makefile.sh
+cd ${cwd}/gaussian_sfcanl.fd
+./makefile.sh

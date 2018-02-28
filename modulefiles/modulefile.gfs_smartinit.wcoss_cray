@@ -1,0 +1,25 @@
+#%Module######################################################################
+module-whatis " SMARINIT"
+
+set ver v7.0.0
+module load modules
+module load PrgEnv-intel/5.2.56
+module load cray-mpich/7.2.0
+module load craype-haswell
+
+# Loading Intel Compiler Suite
+#module load ics/12.1
+
+# Loading nceplibs modules
+#module load bacio/v2.0.2
+#module load w3nco/v2.0.6
+#module load w3emc/v2.2.0
+#module load ip/v2.0.0
+
+module load w3nco-intel/2.0.6
+module load w3emc-intel/2.2.0
+module load ip-intel/2.0.0
+#module load bacio-intel/2.0.2 - This module is not on Luna
+module load bacio-intel/2.0.1
+
+setenv FCMP ftn

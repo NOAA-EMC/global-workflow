@@ -1,0 +1,26 @@
+#%Module#####################################################
+## Module file for storm_reloc_v6.0.0
+#############################################################
+
+module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
+
+module load intel
+module load impi
+module load nco
+
+module load sigio/v2.0.1
+module load sfcio/v1.0.0
+module load g2/v2.5.0
+module load w3nco/v2.0.6
+module load w3emc/v2.0.5
+module load bacio/v2.0.1
+module load jasper/v1.900.1
+module load png/v1.2.44
+module load z/v1.2.6
+module load sp/v2.0.2
+module load ip/v2.0.0
+module load bufr/v10.2.5
+module load nemsio/v2.2.2
+module load nemsiogfs/v2.0.1
+
+set FC mpiifort
