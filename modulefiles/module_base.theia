@@ -1,8 +1,6 @@
 #%Module######################################################################
 ##
 ##      FV3GFS prerequisites
-##      Installed by:  Samuel Trahan (Samuel.Trahan@noaa.gov)
-##	Installed on:  2017-July-11
 ##
 
 module load intel/16.1.150

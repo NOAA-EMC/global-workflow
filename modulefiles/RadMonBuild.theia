@@ -1,19 +1,15 @@
-#%Module#################################################################
-proc ModulesHelp { } {
-  puts stderr "Set environment variables for THEIA radmon build"
-}
-
-module-whatis "Set environment variables for THEIA radmon build"
-
+#%Module################################################
+# Modfule file for radmon
+########################################################
 set ver 2.0.2
 
 module load intel
-set FCOMP ifort
+export FCOMP=ifort
 
-setenv CF $FCOMP
-setenv FC $FCOMP
-setenv FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl"
-setenv D_FFLAGS "-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
+export CF=$FCOMP
+export FC=$FCOMP
+export FFLAGS="-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl"
+export D_FFLAGS="-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
 
 module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
 

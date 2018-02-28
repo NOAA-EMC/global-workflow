@@ -1,44 +1,30 @@
 #!/bin/sh
 set -eux
 
-#####################################################################################
-# 08/06/2016 Fanglin.Yang@noaa.gov:   to build nemsio_util on wcoss, theia and cray
-#####################################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
-fi
-target=$1
-
-EXECdir=../exec
-[ -d $EXECdir ] || mkdir $EXECdir
-
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-export FCMP=ftn
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
-export FCMP=ifort
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/module_nemsutil.$target             > /dev/null 2>&1
 else
- exit
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/module_nemsutil.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/module_nemsutil.$target           > /dev/null 2>&1
+  fi
 fi
 
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/module_nemsutil.$target
-else
- source ../modulefiles/module_nemsutil.$target
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
 fi
-module list
-
-curdir=`pwd`
 
 for prog in nemsio_get.fd  mkgfsnemsioctl.fd  nemsio_cvt.fd  nemsio_read.fd ;do
-
-cd ${curdir}/$prog
-make -f makefile
-
+ cd ${cwd}/${prog}
+ make -f makefile
 done
 
+exit

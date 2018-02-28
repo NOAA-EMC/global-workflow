@@ -1,0 +1,22 @@
+#%Module######################################################################
+module unload craype-haswell
+module load craype-sandybridge
+module unload PrgEnv-cray
+module load PrgEnv-intel/5.2.56
+module switch intel/15.0.6.233
+module load iobuf/2.0.7
+
+module load bacio-intel/2.0.1
+module load w3emc-intel/2.2.0
+module load w3nco-intel/2.0.6
+module load ip-intel/3.0.0
+module load sp-intel/2.0.2
+module load jasper-gnu-sandybridge/1.900.1
+module load png-intel-sandybridge/1.2.49
+module load zlib-intel-sandybridge/1.2.7
+
+module use /gpfs/hps/nco/ops/nwtest/lib/modulefiles
+module load g2-intel/3.1.0
+
+export FCMP=ftn
+export CCMP=cc

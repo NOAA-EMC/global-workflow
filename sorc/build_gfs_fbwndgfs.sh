@@ -1,50 +1,27 @@
-#!/bin/sh
+#! /usr/bin/env bash
+set -eux
 
-######################################################################
-#
-# Build executable utility: fbwndgfs using module compile standard
-#
-######################################################################
-######################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-target=$1
-if [ $# -ne 1 ]; then
- set +x
- echo " "
- echo "  #################################################"
- echo "  #                                               #"
- echo "  #   Usage:                                      #"
- echo "  #                                               #"
- echo "  #         $0   wcoss       #"
- echo "  #      or                                       #"
- echo "  #                                               #"
- echo "  #         $0   cray        #"
- echo "  #      or                                       #"
- echo "  #                                               #"
- echo "  #         $0   theia       #"
- echo "  #                                               #"
- echo "  #################################################"
- echo " "
- echo " "
- exit
-fi
-
-if [ $target = wcoss ]; then
-:
-elif [ $target = cray ]; then
-:
-elif [ $target = theia ]; then
-:
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/gfs_fbwndgfs.$target             > /dev/null 2>&1
 else
- exit 1
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/gfs_fbwndgfs.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/gfs_fbwndgfs.$target           > /dev/null 2>&1
+  fi
 fi
-set -x
-mod=$( cd ../modulefiles/ ; pwd -P )
-source "$mod/module-setup.sh.inc"
-module use ../modulefiles
-module load gfs_fbwndgfs.$target
-
 module list
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
 cd fbwndgfs.fd
 make -f makefile.$target

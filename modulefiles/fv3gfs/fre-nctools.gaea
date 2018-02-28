@@ -1,4 +1,6 @@
-#%Module
+#%Module#####################################################
+## Module file for fre-nctools
+#############################################################
    module rm PrgEnv-pgi PrgEnv-pathscale PrgEnv-intel PrgEnv-cray PrgEnv-gnu
    module load PrgEnv-intel
    module swap intel intel/15.0.2.164

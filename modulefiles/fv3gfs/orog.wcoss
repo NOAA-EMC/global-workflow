@@ -1,12 +1,6 @@
 #%Module#####################################################
+## Module file for orog
 #############################################################
-## Fanglin.Yang@noaa.gov
-## NOAA/NWS/NCEP/EMC
-#############################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for orog\n"
-}
-module-whatis "orog"
 
 # Loading Intel Compiler Suite
 module load ics/16.0.3
@@ -19,5 +13,5 @@ module load ip/v2.0.0
 module load bacio/v2.0.2
 module load NetCDF
 
-setenv FCMP ifort
-setenv CCMP icc
+export FCMP=ifort
+export CCMP=icc

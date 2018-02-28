@@ -1,28 +1,27 @@
-#!/bin/sh
-target=$1
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
-fi
+#! /usr/bin/env bash
+set -eux
 
-set -x -e
-EXECdir=../exec
-[ -d $EXECdir ] || mkdir $EXECdir
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/OznMonBuild.$target             > /dev/null 2>&1
 else
- exit
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/OznMonBuild.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/OznMonBuild.$target           > /dev/null 2>&1
+  fi
 fi
-
-module purge
-module use -a ../modulefiles
-module load OznMonBuild.$target
 module list
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
 dlist="oznmon_horiz.fd oznmon_time.fd"
 for dir in $dlist; do

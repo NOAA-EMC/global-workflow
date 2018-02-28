@@ -1,14 +1,6 @@
 #%Module#####################################################
+## Module file for nemsutil
 #############################################################
-## Fanglin.Yang@noaa.gov
-## NOAA/NWS/NCEP/EMC
-#############################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for nemsio_util component"
-puts stderr "This module initializes the users environment"
-puts stderr "to build the nemsio_util for WCOSS production.\n"
-}
-
 
 # Loading Intel Compiler Suite
 module load ics/14.0.1
@@ -18,7 +10,6 @@ module load sigio/v2.0.1
 module load w3nco/v2.0.6
 module load w3emc/v2.2.0
 module load sp/v2.0.2
-#module load bacio/v2.0.2
 module load bacio/v2.0.1
 module load nemsio/v2.2.1
 

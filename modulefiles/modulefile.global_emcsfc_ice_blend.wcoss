@@ -1,11 +1,8 @@
-#%Module#################################################################
-proc ModulesHelp { } {
-  puts stderr "Set environment variables for WCOSS-phase 1/2 global_emcsfc_ice_blend build"
-}
+#%Module#####################################################
+## Module file for emcsfc_ice_blend
+#############################################################
 
 module-whatis "Set environment variables for WCOSS-phase 1/2 global_emcsfc_ice_blend build"
-
-set ver 1.1.0
 
 module load ics/12.1
 setenv FCOMP ifort

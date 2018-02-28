@@ -1,19 +1,7 @@
-#%Module#########################################################
-##                                             Boi.Vuong@noaa.gov
-##                                             NOAA/NWS/NCEP/EMC
-##  GFS v13.0.0
-##  Change Log
-##  02/22/2016:  Boi Vuong, initial setting
-##
+#%Module#####################################################
+## Module file for overpdtg2
 #############################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for bufrsnd"
-puts stderr "This module initializes the users environment"
-puts stderr "to build the post for WCOSS production.\n"
-}
 module-whatis "overpdtg2"
-
-set ver v13.0.0
 
 #
 #  Loading required system modules

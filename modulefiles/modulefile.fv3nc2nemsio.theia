@@ -1,12 +1,14 @@
-#%Module
+#%Module#####################################################
+## Module file for fv3nc2nemsio
+#############################################################
 
-    module load intel/14.0.2
-    module load netcdf/4.3.0
-    module load hdf5/1.8.14
-    module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
-    module load bacio/v2.0.1
-    module load nemsio/v2.2.0
-    module load w3nco/v2.0.6
+module load intel/14.0.2
+module load netcdf/4.3.0
+module load hdf5/1.8.14
+module use -a $MOD_PATH
+module load bacio/v2.0.2
+module load nemsio/v2.2.3
+module load w3nco/v2.0.6
 
-setenv    FCMP "ifort"
-setenv    FFLAGS "-g -O2 -traceback"
+export FCMP="ifort"
+export FFLAGS="-g -O2 -traceback"

@@ -1,9 +1,22 @@
-#!/bin/sh
+#! /usr/bin/env bash
+set -eux
 
-target=$1
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
+
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+else
+  export MOD_PATH=${cwd}/lib/modulefiles
+fi
+
+gsitarget=$target
+[[ "$target" == wcoss_cray ]] && gsitarget=cray
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
 fi
 
 cd gsi.fd/ush/
@@ -11,8 +24,7 @@ cd gsi.fd/ush/
 # Workarounds for bugs in gsi build scripts:
 export PATH=$PATH:.
 
-if [[ "$target" == theia ]] ; then
-    module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
-fi
+./build_all.sh "$gsitarget"
 
-./build_all.sh "$target"
+exit
+

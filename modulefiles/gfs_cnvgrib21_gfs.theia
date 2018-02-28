@@ -1,12 +1,6 @@
-#%Module#########################################################
-##                                             Boi.Vuong@noaa.gov
-##                                             NOAA/NWS/NCEP/EMC
-##  GFS v14.1.0
-##  Change Log
-##  04/13/2017:  Boi Vuong, initial setting
-##
+#%Module#####################################################
+## Module file for cnvgrib21
 #############################################################
-#set ver v14.1.0
 
 # Loading Intel Compiler Suite
 module load intel
