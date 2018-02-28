@@ -1,29 +1,27 @@
-SHELL=/bin/sh
+#! /usr/bin/env bash
+set -eux
 
-#-------------------------------------------------------
-# Builds bufrsnd codes found under the /sorc directory
-# 11/2016 H Chuang: Generalized build script to meet NCO standard
-#-------------------------------------------------------
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-set -x -e
-pwd=`pwd`
-
-mac=`hostname |cut -c1`
-if [ $mac = g -o $mac = t ] ; then
-export  machine=wcoss
-elif [ $mac = l -o $mac = s ] ; then
-export  machine=cray
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/gfs_bufr.$target             > /dev/null 2>&1
+else
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/gfs_bufr.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/gfs_bufr.$target           > /dev/null 2>&1
+  fi
 fi
-
-mod=$( cd ../modulefiles/ ; pwd -P )
-source "$mod/module-setup.sh.inc"
-
-#moduledir=`dirname $(readlink -f ../modulefiles)`
-moduledir=$pwd/../modulefiles
-module use ${moduledir}
-module load gfs_bufr.${machine}
 module list
-module load iobuf/2.0.7
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
 # Compile codes under /sorc
 compile1='gfs_bufr tocsbufr'
@@ -31,7 +29,7 @@ compile1='gfs_bufr tocsbufr'
 for comp in $compile1
 do
   echo "Compiling ${comp}"
-  cd $pwd/${comp}.fd
+  cd $cwd/${comp}.fd
   make -f makefile_module clean
   make -f makefile_module 
 done

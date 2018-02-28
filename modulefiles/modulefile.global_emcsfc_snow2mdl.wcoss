@@ -1,11 +1,6 @@
-#%Module#################################################################
-proc ModulesHelp { } {
-  puts stderr "Set environment variables for WCOSS-phase 1/2 global_emcsfc_snow2mdl build"
-}
-
-module-whatis "Set environment variables for WCOSS-phase 1/2 global_emcsfc_snow2mdl build"
-
-set ver 1.1.0
+#%Module#####################################################
+## Module file for emcsfc_snow2mdl
+#############################################################
 
 module load ics/12.1
 setenv FCOMP ifort

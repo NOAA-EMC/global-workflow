@@ -48,7 +48,7 @@ llogin? | slogin?)
 
   module purge
   module load modules/3.2.6.7
-  module load ../../modulefiles/modulefile.global_emcsfc_ice_blend.cray
+  module load ../../modulefiles/modulefile.global_emcsfc_ice_blend.wcoss_cray
 
   make clean
   make

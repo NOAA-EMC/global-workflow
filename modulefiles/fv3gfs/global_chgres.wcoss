@@ -1,8 +1,5 @@
 #%Module#####################################################
-#############################################################
-## Fanglin.Yang@noaa.gov
-## NOAA/NWS/NCEP/EMC
-## global_chgres component of global_shared_v15.0.0 - wcoss
+## global_chgres component - wcoss
 #############################################################
 
 proc ModulesHelp { } {

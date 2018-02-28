@@ -1,8 +1,5 @@
 #%Module#####################################################
-#############################################################
-## Rahul.Mahajan@noaa.gov
-## NOAA/NWS/NCEP/EMC
-## enkf_chgres_recenter component of global_shared - theia
+## enkf_chgres_recenter component - theia
 #############################################################
 
 module load intel/16.1.150

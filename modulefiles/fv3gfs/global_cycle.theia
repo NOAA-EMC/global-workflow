@@ -1,8 +1,5 @@
 #%Module#####################################################
-#############################################################
-## Fanglin.Yang@noaa.gov
-## NOAA/NWS/NCEP/EMC
-## global_cycle component of global_shared - theia
+## global_cycle component - theia
 #############################################################
 
 # Loading Intel Compiler Suite

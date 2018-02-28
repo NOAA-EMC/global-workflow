@@ -1,12 +1,6 @@
-#%Module#########################################################
-##                                             Boi.Vuong@noaa.gov
-##                                             NOAA/NWS/NCEP/EMC
-##  GFS v13.0.0
-##  Change Log
-##  02/22/2016:  Boi Vuong, initial setting
-##
+#%Module#####################################################
+## Module file for overpdtg2
 #############################################################
-#set ver v13.0.0
 
 # Loading Intel Compiler Suite
 module load intel

@@ -1,45 +1,59 @@
 #! /usr/bin/env bash
 set -eux
 
-#####################################################################################
-# using module compile standard
-# 01/26/2016 Fanglin.Yang@noaa.gov:    Create module load version
-# 07/10/2016 Fanglin.Yang@noaa.gov:    update for building on wcoss, theia and cray
-#####################################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ $# -ne 1 ]; then
- echo "Usage: $0 wcoss or cray or theia"
- exit
-fi
-
-target=$1
-
-EXECdir=../exec
-[ -d $EXECdir ] || mkdir $EXECdir
-
-set +x
-if [ $target = wcoss ]; then
-. /usrx/local/Modules/3.2.10/init/sh
-elif [ $target = cray ]; then
-. $MODULESHOME/init/sh
-elif [ $target = theia ]; then
-. /apps/lmod/lmod/init/sh
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/fv3gfs/global_chgres.$target             > /dev/null 2>&1
 else
- exit
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/fv3gfs/global_chgres.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/fv3gfs/global_chgres.$target           > /dev/null 2>&1
+  fi
 fi
 
-module purge
-if [ $target = wcoss -o $target = cray ]; then
- module load ../modulefiles/fv3gfs/global_chgres.$target
-else
- source ../modulefiles/fv3gfs/global_chgres.$target
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
 fi
-module list
-set -x
 
-curdir=`pwd`
+#
+# --- Chgres part
+#
+cd global_chgres.fd
 
-cd ${curdir}/global_chgres.fd
-./makefile.sh
+export FCMP=${FCMP:-ifort}
+export FCMP95=$FCMP
 
+export FFLAGSM="-i4 -O3 -r8  -convert big_endian -fp-model precise"
+export RECURS=
+export LDFLAGSM="-openmp -auto"
+export OMPFLAGM="-openmp -auto"
 
+export INCS="-I${SIGIO_INC4} -I${SFCIO_INC4} -I${LANDSFCUTIL_INCd} \
+             -I${NEMSIO_INC} -I${NEMSIOGFS_INC} -I${GFSIO_INC4} -I${IP_INCd} ${NETCDF_INCLUDE}"
+
+export LIBSM="${GFSIO_LIB4} \
+              ${NEMSIOGFS_LIB} \
+              ${NEMSIO_LIB} \
+              ${SIGIO_LIB4} \
+              ${SFCIO_LIB4} \
+              ${LANDSFCUTIL_LIBd} \
+              ${IP_LIBd} \
+              ${SP_LIBd} \
+              ${W3EMC_LIBd} \
+              ${W3NCO_LIBd} \
+              ${BACIO_LIB4} \
+              ${NETCDF_LDFLAGS_F}"
+
+make -f Makefile clobber
+make -f Makefile
+make -f Makefile install
+make -f Makefile clobber
+
+exit
