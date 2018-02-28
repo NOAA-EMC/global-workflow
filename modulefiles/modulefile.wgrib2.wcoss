@@ -1,0 +1,24 @@
+#%Module######################################################################
+#############################################################
+##     Lin.Gan@noaa.gov
+##     EMC
+## wgrib2 v2.0.5
+#############################################################
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for wgrib2"
+puts stderr "This module initializes the users environment"
+puts stderr "to build the wgrib2 for WCOSS production.\n"
+}
+module-whatis "wgrib2"
+
+set ver v2.0.5
+
+module load ics/15.0.6
+module load NetCDF/4.2/serial
+module load jasper/v1.900.1
+module load png/v1.2.44
+module load z/v1.2.6
+module load ip/v3.0.0
+module load sp/v2.0.2
+module load g2c/v1.5.0
+

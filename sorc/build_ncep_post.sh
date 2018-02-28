@@ -1,41 +1,20 @@
-SHELL=/bin/sh
+#! /usr/bin/env bash
+set -eux
 
-####################################################################################################
-#
-# post using module compile standard
-#
-# 10/15 Lin Gan:        Create module load version
-# 01/16 Lin Gan:	Update to use GFS Vertical Structure
-# 07/16 J. Carley:      Generalize for other machines using modules
-#
-#####################################################################################################
-#####################################################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-
-# Lin Gan Module Load
-module purge
-set -x
-mac=$(hostname | cut -c1-1)
-mac2=$(hostname | cut -c1-2)
-if [ $mac2 = tf ] ; then                       # For Theia
- machine=theia
- . /etc/profile
- . /etc/profile.d/modules.sh
-elif [ $mac = t -o $mac = e -o $mac = g ] ; then # For WCOSS
- machine=wcoss
- . /usrx/local/Modules/default/init/bash
-elif [ $mac = l -o $mac = s ] ; then             #    wcoss_c (i.e. luna and surge)
- export machine=cray-intel
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+else
+  export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-# Lin Gan modifiy to use NCO vertical structure prefix for NCO deployment - 20160131
-moduledir=`dirname $(readlink -f ../modulefiles/post)`
-module use ${moduledir}
-module load post/v7.0.0-${machine}
-module list
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
-cd ncep_post.fd
-make -f makefile_module clean
-make -f makefile_module 
-
-cp ncep_post ../../exec/
+cd gfs_post.fd/sorc
+sh build_ncep_post.sh

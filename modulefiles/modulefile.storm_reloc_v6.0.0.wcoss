@@ -1,0 +1,18 @@
+#%Module#####################################################
+## Module file for storm_reloc_v6.0.0
+#############################################################
+      module load EnvVars/1.0.0
+      module load ics/12.1
+      module load lsf/9.1
+      module load ibmpe/1.3.0.10
+      module load png/v1.2.44
+      module load w3emc/v2.0.5
+      module load w3nco/v2.0.6
+      module load bacio/v2.0.1
+      module load g2/v2.5.0
+      module load z/v1.2.6
+      module load jasper/v1.900.1
+      module load sigio/v2.0.1
+      module load sp/v2.0.2
+
+setenv FC mpiifort

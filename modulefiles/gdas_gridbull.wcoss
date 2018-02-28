@@ -1,16 +1,6 @@
-#%Module##############################################################
-##                                             Boi.Vuong@noaa.gov
-##                                             NOAA/NWS/NCEP/EMC
-##  GFS v14.1.0
-##  Change Log
-##  02/22/2016:  Boi Vuong, initial setting
-##
-#####################################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for bufrsnd"
-puts stderr "This module initializes the users environment"
-puts stderr "to build the post for WCOSS production.\n"
-}
+#%Module################################################
+# Modfule file for gdas_gridbull
+########################################################
 module-whatis "gridbull"
 
 set ver v14.1.0

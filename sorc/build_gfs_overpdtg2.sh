@@ -1,57 +1,27 @@
-#!/bin/sh
+#! /usr/bin/env bash
+set -eux
 
-######################################################################
-#
-# Build executable utility: overpdtg2 using module compile standard
-#
-######################################################################
-######################################################################
+source ./machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-target=$1
-if [ $# -ne 1 ]; then
- set +x
- echo " "
- echo "  #################################################"
- echo "  #                                               #"
- echo "  #   Usage:                                      #"
- echo "  #                                               #"
- echo "  #         $0   wcoss      #"
- echo "  #      or                                       #"
- echo "  #                                               #"
- echo "  #         $0   cray       #"
- echo "  #      or                                       #"
- echo "  #                                               #"
- echo "  #         $0   theia      #"
- echo "  #                                               #"
- echo "  #################################################"
- echo " "
- echo " "
- exit
-fi
-
-if [ $target = wcoss ]; then
-:
-elif [ $target = cray ]; then
-:
-elif [ $target = theia ]; then
-:
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+if [ $USE_PREINST_LIBS = true ]; then
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/gfs_overpdtg2.$target             > /dev/null 2>&1
 else
- echo "  "
- echo "           $0   wcoss      "
- echo "  "
- echo "        or                 "
- echo "  "
- echo "           $0   cray       "
- echo "  "
- exit
+  export MOD_PATH=${cwd}/lib/modulefiles
+  if [ $target = wcoss_cray ]; then
+    source ../modulefiles/gfs_overpdtg2.${target}_userlib > /dev/null 2>&1
+  else
+    source ../modulefiles/gfs_overpdtg2.$target           > /dev/null 2>&1
+  fi
 fi
-set -x
-mod=$( cd ../modulefiles/ ; pwd -P )
-source "$mod/module-setup.sh.inc"
-module use ../modulefiles
-module load gfs_overpdtg2.$target
-
 module list
+
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
 
 cd overpdtg2.fd
 make -f makefile.$target

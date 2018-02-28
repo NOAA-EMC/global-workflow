@@ -1,8 +1,6 @@
-#%Module#################################################################
-proc ModulesHelp { } {
-  puts stderr "Set environment variables for WCOSS radmon build"
-}
-
+#%Module################################################
+# Modfule file for radmon
+########################################################
 module-whatis "Set environment variables for WCOSS radmon build"
 
 set ver 2.0.2

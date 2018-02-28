@@ -1,16 +1,7 @@
-#%Module######################################################################
-#############################################################
-## EMC
+#%Module#####################################################
 ## bufrsnd
 #############################################################
-proc ModulesHelp { } {
-puts stderr "Set environment veriables for bufrsnd"
-puts stderr "This module initializes the users environment"
-puts stderr "to build the post for WCOSS production.\n"
-}
 module-whatis "bufrsnd"
-
-set ver v13.0.0
 
 # Loading Intel Compiler Suite
 module load ics/12.1

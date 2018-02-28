@@ -1,0 +1,13 @@
+#%Module#####################################################
+module purge
+module load modules
+module load PrgEnv-intel
+module load cray-mpich
+module load craype-sandybridge
+
+module unuse /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module use -a $MOD_PATH
+module load w3nco/v2.0.6
+
+export FCMP=ftn
+export CCMP=cc
