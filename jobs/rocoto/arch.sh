@@ -179,6 +179,10 @@ gcyc=$(echo $GDATE | cut -c9-10)
 COMIN="$RUNDIR/$GDATE"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
+if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
+    exit 0
+fi
+
 # Remove the hour directory
 COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
 [[ -d $COMIN ]] && rm -rf $COMIN
