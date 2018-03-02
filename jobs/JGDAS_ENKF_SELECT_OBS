@@ -1,0 +1,194 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+configs="base anal eobs"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env eobs
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export job=${job:-"eobs"}
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA="$DATAROOT/$jobid"
+else
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    export DATA="$DATAROOT/$job"
+fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Define the Log File directory
+##############################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+
+
+export CASE=$CASE_ENKF
+
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export ASUFFIX=".nemsio"
+export GPREFIX="${CDUMP}.t${gcyc}z."
+export GSUFFIX=".ensmean.nemsio"
+
+
+# COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in exglobal script
+# TO DO: Map NCO's directory into these variables
+COMIN_GES_CTL="$ROTDIR/$CDUMP.$gPDY/$gcyc"
+export COMIN_ANL="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMIN_GES_ENS="$ROTDIR/enkf.$CDUMP.$gPDY/$gcyc"
+export COMIN_GES=$COMIN_GES_ENS
+export COMOUT="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
+
+
+export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006$GSUFFIX"
+if [ ! -f $ATMGES_ENSMEAN ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
+    exit 1
+fi
+
+export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+# Link observational data
+export PREPQC="$COMIN_ANL/${OPREFIX}prepbufr"
+export PREPQCPF="$COMIN_ANL/${OPREFIX}prepbufr.acft_profiles"
+
+# Guess Bias correction coefficients related to control
+export GBIAS=${COMIN_GES_CTL}/${GPREFIX}abias
+export GBIASPC=${COMIN_GES_CTL}/${GPREFIX}abias_pc
+export GBIASAIR=${COMIN_GES_CTL}/${GPREFIX}abias_air
+export GRADSTAT=${COMIN_GES_CTL}/${GPREFIX}radstat
+
+# Bias correction coefficients related to ensemble mean
+export ABIAS="$COMOUT/${APREFIX}abias.ensmean"
+export ABIASPC="$COMOUT/${APREFIX}abias_pc.ensmean"
+export ABIASAIR="$COMOUT/${APREFIX}abias_air.ensmean"
+export ABIASe="$COMOUT/${APREFIX}abias_int.ensmean"
+
+# Diagnostics related to ensemble mean
+export GSISTAT="$COMOUT/${APREFIX}gsistat.ensmean"
+export CNVSTAT="$COMOUT/${APREFIX}cnvstat.ensmean"
+export OZNSTAT="$COMOUT/${APREFIX}oznstat.ensmean"
+export RADSTAT="$COMOUT/${APREFIX}radstat.ensmean"
+
+# Select observations based on ensemble mean
+export RUN_SELECT="YES"
+export USE_SELECT="NO"
+export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
+
+export DIAG_SUFFIX="_ensmean"
+
+# GSI namelist options specific to eobs
+export SETUP_INVOBS="passive_bc=.false."
+
+# Ensure clean stat tarballs for ensemble mean
+for fstat in $CNVSTAT $OZNSTAT $RADSTAT; do
+    [[ -f $fstat ]] && rm -f $fstat
+done
+
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+
+${INVOBSSH:-$SCRgsi/exglobal_innovate_obs_fv3gfs.sh.ecf}
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+if [ $SENDDBN = YES ] ; then
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_gsistat $job $COMOUT/gsistat_${PDY}${cyc}_ensmean
+   $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+cat $pgmout
+
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

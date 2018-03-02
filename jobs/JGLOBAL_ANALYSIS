@@ -1,0 +1,186 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+configs="base anal"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env anal
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export job=${job:-"anal"}
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA="$DATAROOT/$jobid"
+else
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    export DATA="$DATAROOT/$job"
+fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Define the Log File directory
+##############################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="gdas.t${gcyc}z."
+export GSUFFIX=".nemsio"
+export APREFIX="${CDUMP}.t${cyc}z."
+export ASUFFIX=".nemsio"
+
+
+if [ $RUN_ENVIR = "nco" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+else
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+fi
+mkdir -m 775 -p $COMOUT
+# COMIN_GES and COMIN_GES_ENS are used in exglobal script
+# TO DO: Map NCO's directory into these variables
+export COMIN_GES="$ROTDIR/gdas.$gPDY/$gcyc"
+export COMIN_GES_ENS="$ROTDIR/enkf.gdas.$gPDY/$gcyc"
+
+
+export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
+if [ ! -f $ATMGES ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES = $ATMGES"
+    exit 1
+fi
+
+
+export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+if [ $DOHYBVAR = "YES" ]; then
+    export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
+    if [ ! -f $ATMGES_ENSMEAN ]; then
+        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
+        exit 2
+    fi
+fi
+
+
+# Link observational data
+export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
+export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
+[[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+
+
+# Update surface fields with global_cycle
+export DOGCYCLE=${DOGCYCLE:-"YES"}
+
+
+# Generate Gaussian surface analysis
+export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
+
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+
+${ANALYSISSH:-$SCRgsi/exglobal_analysis_fv3gfs.sh.ecf}
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES -a $RUN = gdas ] ; then
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias $job $COMOUT/${PREINP}abias
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_pc $job $COMOUT/${PREINP}abias_pc
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_air $job $COMOUT/${PREINP}abias_air
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+cat $pgmout
+
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

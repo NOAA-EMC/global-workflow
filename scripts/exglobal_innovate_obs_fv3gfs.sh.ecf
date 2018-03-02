@@ -27,7 +27,7 @@ fi
 # Directories.
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
-export BASE_GSI=${BASE_GSI:-$NWPROD}
+export HOMEgsi=${HOMEgsi:-$NWPROD}
 export DATA=${DATA:-$pwd/innovate_obs.$$}
 export COMIN=${COMIN:-$pwd}
 export COMIN_GES=${COMIN_GES:-$COMIN}
@@ -38,7 +38,7 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-ANALYSISSH=${ANALYSISSH:-$BASE_GSI/scripts/exglobal_analysis_fv3gfs.sh.ecf}
+ANALYSISSH=${ANALYSISSH:-$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf}
 
 # Prefix and Suffix Variables.
 export APREFIX=${APREFIX:-""}
@@ -67,8 +67,7 @@ CHEM_INVOBS=${CHEM_INVOBS:-""}
 
 ################################################################################
 #  Preprocessing
-[[ -d $DATA ]] && rm -rf $DATA
-mkdir -p $DATA
+if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 cd $DATA || exit 8
 
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT

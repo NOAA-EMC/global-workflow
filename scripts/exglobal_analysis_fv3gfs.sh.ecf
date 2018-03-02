@@ -27,10 +27,10 @@ fi
 #  Directories.
 pwd=$(pwd)
 export NWPROD=${NWPROD:-$pwd}
-export BASE_GSM=${BASE_GSM:-$NWPROD}
-export BASE_GSI=${BASE_GSI:-$NWPROD}
-FIXgsi=${FIXgsi:-$BASE_GSI/fix}
-GSIEXEC=${GSIEXEC:-$BASE_GSI/exec/global_gsi}
+export HOMEgfs=${HOMEgfs:-$NWPROD}
+export HOMEgsi=${HOMEgsi:-$NWPROD}
+FIXgsi=${FIXgsi:-$HOMEgsi/fix}
+GSIEXEC=${GSIEXEC:-$HOMEgsi/exec/global_gsi}
 export DATA=${DATA:-$pwd/analysis.$$}
 DMPDIR=${DMPDIR:-$NWPROD}
 export COMIN=${COMIN:-$pwd}
@@ -58,20 +58,20 @@ NTHREADS_GSI=${NTHREADS_GSI:-${NTHREADS:-1}}
 
 # Surface cycle related parameters
 DOGCYCLE=${DOGCYCLE:-"NO"}
-CYCLESH=${CYCLESH:-$BASE_GSM/ush/global_cycle.sh}
-export CYCLEXEC=${CYCLEXEC:-$BASE_GSM/exec/global_cycle}
+CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
+export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-export FIXgsm=${FIXgsm:-$BASE_GSM/fix/fix_am}
-export FIXfv3=${FIXfv3:-$BASE_GSM/fix/fix_fv3_gmted2010}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
 
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
-GAUSFCANLSH=${GAUSFCANLSH:-$BASE_GSM/ush/gaussian_sfcanl.sh}
-export GAUSFCANLEXE=${GAUSFCANLEXE:-$BASE_GSM/exec/gaussian_sfcanl.exe}
+GAUSFCANLSH=${GAUSFCANLSH:-$HOMEgfs/ush/gaussian_sfcanl.sh}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.exe}
 NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
 APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 
@@ -89,7 +89,7 @@ lupp=${lupp:-".true."}
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
-CALCINCEXEC=${CALCINCEXEC:-$BASE_GSI/exec/calc_increment_ens.x}
+CALCINCEXEC=${CALCINCEXEC:-$HOMEgsi/exec/calc_increment_ens.x}
 
 # OPS flags
 RUN=${RUN:-""}
