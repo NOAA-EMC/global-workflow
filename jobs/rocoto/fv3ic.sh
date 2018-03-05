@@ -59,6 +59,13 @@ if [ $status -ne 0 ]; then
     exit $status
 fi
 
+# Stage the FV3 initial conditions to ROTDIR
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+cd $COMOUT || exit 99
+rm -rf INPUT
+$NLN $OUTDIR .
+
 ###############################################################
 # Exit cleanly
 exit 0
