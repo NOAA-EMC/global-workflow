@@ -1,0 +1,23 @@
+Updating the grib table is automated   revised 2/2014
+
+./get_gribtab.sh
+	updates gribtab
+
+New:
+sort -t: -k7,7 -k1,6 gribtab >gribtab.sort
+   edit:
+     ***: -> :
+     **: -> :
+     *: -> :
+     (space): => :
+	remove Note
+	remove cloud type (duplicate name)
+	remove FRICV ocean (duplicate name)
+	MCONV ->  MDIV  (:Horizontal Moisture Divergence:kg/k)
+	TCOLI (remove 2 WMO defns)
+	TCOLW (remove 2 WMO defns)
+   ..176 -> deg
+
+./mk_gribtable_dat.pl
+	gribtab.sort -> gribtable.dat
+

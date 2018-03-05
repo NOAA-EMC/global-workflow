@@ -1,0 +1,20 @@
+################################################################################
+# This makefile was produced by fmjif at 17:21:11 on 97/02/24.
+SHELL=	/bin/sh
+CMD=	copygb2
+FOPTS=  -O3 -g -r8 -convert big_endian -auto -mkl
+LOPTS=  -static-intel -mkl
+INCS= -I${G2_INCd}
+OBJS=	copygb2.o
+LIBS=   ${G2_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${IP_LIBd} ${SP_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}
+################################################################################
+$(phony all):	$(CMD)
+$(CMD):	$(OBJS)
+	$(FCMP) $(LOPTS) $(OBJS) $(LIBS) -o $(CMD)
+copygb2.o:	copygb2.f
+	$(FCMP) -c $(INCS) $(FOPTS) $*.f
+install:
+	mkdir -p ../../exec
+	mv $(CMD) ../../exec
+clean:	
+	-rm -f $(OBJS)
