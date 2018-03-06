@@ -35,7 +35,6 @@ $LINK $FIX_DIR/* .
 
 #--add gfs_post file
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
@@ -43,9 +42,8 @@ cd ${pwd}/../parm               ||exit 8
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
 cd ${pwd}/../ush                ||exit 8
-    for file in gfs_nceppost.sh  gfs_transfer.sh; do
+    for file in gfs_nceppost.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
 
