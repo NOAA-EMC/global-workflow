@@ -35,7 +35,7 @@ cd $DATA/$m
        export pgm=tocsbufr
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
-       export FORT51=$DATA/${m}/bufrout
+       export FORT51=./bufrout
        # JY - Turn off the startmsg to reduce the update on jlogfile in this loop
        # startmsg
       $EXECbufrsnd/tocsbufr << EOF
@@ -62,11 +62,11 @@ EOF
 #    if test $SENDCOM = 'NO'
     if test $SENDCOM = 'YES'
     then 
-      cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
       if [ $SENDDBN = 'YES' ] ; then
          cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.postsnd_$cyc
          $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.postsnd_$cyc
       fi
+      cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
     fi
 
 ##    let "m=m+1"

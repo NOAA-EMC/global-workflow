@@ -95,7 +95,7 @@ ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 #ln -sf $SIGLEVEL fort.13
 
 #startmsg
-export APRUN=${APRUN:-'aprun -n 12 -N 3 -j 1'}
+export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
 ${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 

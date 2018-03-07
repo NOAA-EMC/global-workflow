@@ -80,10 +80,14 @@ set -x
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
 export opt1uv=' -set_grib_type same -new_grid_winds grid '
-export opt21='  -new_grid_interpolation bilinear -if '
+export opt21=' -new_grid_interpolation bilinear -if '
 export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
-export opt24=' -set_bitmap 1 '
+export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
+export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
+export opt26=' -set_grib_max_bits 25 -fi -if '
+export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
+export opt28=' -new_grid_interpolation budget -fi '
 
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
@@ -114,18 +118,16 @@ do
         # $COPYGB2 -g "$grid_20km_conus" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridconus="lambert:265.0:25.0:25.0 226.541:369:20318.0 12.19:257:20318.0"
-        $WGRIB2  tmp_masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid $gridconus awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $gridconus awps_file_f${fcsthrs}_${GRID}
         ;;
      ak)
         #  Grid 20km_ak - Alaska - Double Resolution (Polar Stereographic)
         #  Redefined grid 217 for Alaska region
-        #  export grid_20km_ak="20 6 0 0 0 0 0 0 277 225 35000000 170000000 8 60000000 210000000 22500000 22500000 0 64"
-
         # export grid_20km_ak="20 6 0 0 0 0 0 0 277 213 30000000 187000000 8 60000000 225000000 22500000 22500000 0 64"
         # $COPYGB2 -g "$grid_20km_ak" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridak="nps:210.0:60.0 170.0:277:22500 35.0:225:22500"
-        $WGRIB2  tmp_masterfile $opt1uv $opt21 $opt22 $opt23 $opt24  -new_grid $gridak awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $gridak awps_file_f${fcsthrs}_${GRID}
         ;;
     prico)
         #  Grid 20km_prico - 0.25 degree Lat/Lon grid for Puerto Rico (20km)
@@ -133,7 +135,7 @@ do
         # $COPYGB2 -g "$grid_20km_prico" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridprico="latlon 271.75:275:0.25 50.75:205:-0.25"
-        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24  -new_grid $gridprico awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $gridprico awps_file_f${fcsthrs}_${GRID}
         ;;
      pac)
         #  Grid 20km_pac - 20 km Mercator grid for Pacific Region
@@ -142,14 +144,14 @@ do
         # $COPYGB2 -g "$grid_20km_pac" -i0 -x tmp_masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export gridpac="mercator:20.0 110.0:837:20000:270.0 -45.0:725:20000:65.7345"
-        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24  -new_grid $gridpac awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $gridpac awps_file_f${fcsthrs}_${GRID}
         ;;
      003)
         ######################################################################
         #    Process GFS GRIB AWIP 1.0 DEGREE (GRID 003)  PRODUCTS IN GRIB2  #
         ######################################################################
         export grid003="latlon 0:360:1.0 90:181:-1.0"
-        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24  -new_grid $grid003 awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid003 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
@@ -189,16 +191,16 @@ fi
         # Post Files to PCOM
         ##############################
 
-        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
+        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
 
         ##############################
         # Distribute Data
         ##############################
 
         if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
+           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
         else
-           msg="File grib2.awpgfs${fcsthrs}.${GRID}.$job_name  not posted to db_net."
+           msg="File grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
            postmsg "$jlogfile" "$msg"
         fi
       fi

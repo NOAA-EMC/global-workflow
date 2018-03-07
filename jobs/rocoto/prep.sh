@@ -8,7 +8,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base prep"
+configs="base prep prepbufr"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -59,7 +59,8 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    $DRIVE_MAKEPREPBUFRSH
+    export USHSYND=""   # set blank so that prepobs_makeprepbufr defaults USHSYND to HOMEobsproc_prep}/ush
+    $HOMEgfs/jobs/JGLOBAL_PREP
     [[ $status -ne 0 ]] && exit $status
 else
     $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr

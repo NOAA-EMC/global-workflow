@@ -10,6 +10,7 @@ module load hpss
 module load netcdf
 module load nco
 module load hdf5/1.8.14
+module load gempak/6.7.0
 
 module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
 module load prod_util
