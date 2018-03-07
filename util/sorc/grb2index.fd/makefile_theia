@@ -1,0 +1,21 @@
+################################################################################
+# This makefile was produced by fmjif at 17:21:11 on 97/02/24.
+SHELL=	/bin/sh
+CMD=	grb2index
+FOPTS=  -g -O3 -convert big_endian
+LOPTS=	
+INCS=	
+OBJS=	grb2index.o
+LIBS=   ${G2_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4}
+################################################################################
+$(phony all):	$(CMD)
+$(CMD):	$(OBJS)
+	$(FCMP) $(LOPTS) $(OBJS) $(LIBS) -o $(CMD)
+$(OBJS):	$(INCS)
+grb2index.o:	grb2index.f
+	$(FCMP) -c $(FOPTS) $*.f
+install:
+	mkdir -p ../../exec
+	mv $(CMD) ../../exec
+clean:	
+	-rm -f $(OBJS)

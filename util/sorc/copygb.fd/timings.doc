@@ -1,0 +1,57 @@
+Copygb has the following approximate timings
+for copying scalar fields with no bitmaps from a 360x181 GRIB file.
+
+Cray C916:
+
+  General overhead for command invocation     0.030 seconds
+  Extra overhead when no index is provided    0.080 seconds
+  Reading and unpacking GRIB messages         0.003 seconds each
+  Packing and writing 360x181 GRIB messages   0.005 seconds each
+  Interpolating fields to a 144x73 grid       0.024 seconds each
+  Packing and writing 144x73 GRIB messages    0.001 seconds each
+
+Cray J916:
+
+  General overhead for command invocation     0.110 seconds
+  Extra overhead when no index is provided    0.250 seconds
+  Reading and unpacking GRIB messages         0.011 seconds each
+  Packing and writing 360x181 GRIB messages   0.022 seconds each
+  Interpolating fields to a 144x73 grid       0.110 seconds each
+  Packing and writing 144x73 GRIB messages    0.004 seconds each
+
+SGI Origin 2000:
+
+  General overhead for command invocation     0.050 seconds
+  Extra overhead when no index is provided    0.010 seconds
+  Reading and unpacking GRIB messages         0.008 seconds each
+  Packing and writing 360x181 GRIB messages   0.017 seconds each
+  Interpolating fields to a 144x73 grid       0.015 seconds each
+  Packing and writing 144x73 GRIB messages    0.003 seconds each
+
+IBM Silver node:
+
+  General overhead for command invocation     0.012 seconds
+  Extra overhead when no index is provided    1.120 seconds
+  Reading and unpacking GRIB messages         0.015 seconds each
+  Packing and writing 360x181 GRIB messages   0.046 seconds each
+  Interpolating fields to a 144x73 grid       0.030 seconds each
+  Packing and writing 144x73 GRIB messages    0.006 seconds each
+
+IBM Winterhawk node:
+
+  General overhead for command invocation     0.014 Seconds
+  Extra overhead when no index is provided    1.390 Seconds
+  Reading and unpacking GRIB messages         0.014 seconds each
+  Packing and writing 360x181 GRIB messages   0.030 seconds each
+  Interpolating fields to a 144x73 grid       0.022 seconds each
+  Packing and writing 144x73 GRIB messages    0.005 seconds each
+
+IBM Winterhawk 2 node:
+
+  General overhead for command invocation     0.070 Seconds
+  Extra overhead when no index is provided    0.170 Seconds
+  Reading and unpacking GRIB messages         0.007 seconds each
+  Packing and writing 360x181 GRIB messages   0.016 seconds each
+  Interpolating fields to a 144x73 grid       0.012 seconds each
+  Packing and writing 144x73 GRIB messages    0.003 seconds each
+

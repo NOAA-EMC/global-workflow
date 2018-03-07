@@ -1,9 +1,0 @@
-kinds.o: kinds.f90
-constants.o: constants.f90 kinds.o
-physcons.o: physcons.f90 kinds.o
-variable_interface.o: variable_interface.f90 namelist_def.o physcons.o constants.o kinds.o
-namelist_def.o: namelist_def.f90 mpi_interface.o kinds.o 
-netcdfio_interface.o: netcdfio_interface.f90 kinds.o
-interpolation_interface.o: interpolation_interface.f90 constants.o kinds.o namelist_def.o netcdfio_interface.o
-gfs_nems_interface.o: gfs_nems_interface.f90 variable_interface.o constants.o kinds.o mpi_interface.o namelist_def.o
-fv3_interface.o: fv3_interface.f90 variable_interface.o interpolation_interface.o constants.o kinds.o mpi_interface.o namelist_def.o netcdfio_interface.o gfs_nems_interface.o

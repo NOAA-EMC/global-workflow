@@ -21,18 +21,6 @@ else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
 fi
 
-echo gsi checkout ...
-if [[ ! -d gsi.fd ]] ; then
-    rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
-    cd gsi.fd
-    git checkout fv3da.v1.0.0
-    git submodule update
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gsi.fd already exists.'
-fi
-
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log

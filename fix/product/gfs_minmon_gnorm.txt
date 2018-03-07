@@ -1,6 +1,0 @@
-igrad_target:cost,grad,step,b,step?:
-igrad_number:5:
-gnorm_target:penalty and grad reduction WRT outer and initial iter:
-gnorm_number:14:
-expected_gnorms:202:
-gross_check_val:3.5E-4:

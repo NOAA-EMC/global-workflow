@@ -1,0 +1,22 @@
+################################################################################
+# This makefile was produced by Boi Vuong 2012/09/06.
+SHELL=	/bin/sh
+CMD=	copygb
+FOPTS=	-g  -O3 -r8 -auto -openmp -axCORE-AVX2
+LOPTS=  -openmp
+INCS=	
+OBJS=	copygb.o
+#LIBS= -L/nwprod/lib -lw3nco_d -lbacio_4 -lip_d -lsp_d	
+LIBS=   ${W3NCO_LIBd} ${BACIO_LIB4} ${IP_LIBd} ${SP_LIBd}
+################################################################################
+$(phony all):	$(CMD)
+$(CMD):	$(OBJS)
+	$(FCMP) $(LOPTS) $(OBJS) $(LIBS) -o $(CMD)
+$(OBJS):	$(INCS)
+copygb.o:	copygb.F
+	$(FCMP) -c $(FOPTS) $*.F
+install:
+	mkdir -p ../../exec
+	mv $(CMD) ../../exec
+clean:	
+	-rm -f $(OBJS)
