@@ -13,13 +13,16 @@
 ###############################################################
 
 ###############################################################
-# Source FV3GFS workflow modules
+echo
+echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+
 ###############################################################
-# Source relevant configs
+echo
+echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
 configs="base vrfy"
 for config in $configs; do
     . $EXPDIR/config.${config}
@@ -27,8 +30,10 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+
 ###############################################################
-# Source machine runtime environment
+echo
+echo "=============== START TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
 . $BASE_ENV/${machine}.env vrfy
 status=$?
 [[ $status -ne 0 ]] && exit $status
@@ -40,13 +45,15 @@ export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
+mkdir -p $DATAROOT
+
 
 ###############################################################
-# Generate quarter degree GRIB1 files for precip verification
-if [ $CDUMP = "gfs" ]; then
-    nthreads_env=$OMP_NUM_THREADS # get threads set in env
+echo
+echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
+if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
+    nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
-    pwd=$(pwd)
     cd $COMIN
     fhmax=$vhr_rain
     fhr=0
@@ -61,12 +68,14 @@ if [ $CDUMP = "gfs" ]; then
        rm -f sflux_outtmp
        (( fhr = $fhr + 6 ))
     done
-    cd $pwd
+    cd $DATAROOT
     export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
 fi
 
+
 ###############################################################
-# Verify Fits
+echo
+echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
 if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
 
     export CDUMPFCST=$VDUMP
@@ -77,9 +86,10 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
 
 fi
 
+
 ###############################################################
-# Run VSDB Step1, Verify precipitation and Grid2Obs
-# VSDB_STEP1 and VRFYPRCP works
+echo
+echo "=============== START TO RUN VSDB STEP1, VERIFY PRCIP AND GRID2OBS ==============="
 if [ $CDUMP = "gfs" ]; then
 
     if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
@@ -94,8 +104,10 @@ if [ $CDUMP = "gfs" ]; then
     fi
 fi
 
+
 ###############################################################
-# Run RadMon data extraction
+echo
+echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
 if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL ]; then
 
     export EXP=$PSLOT
@@ -109,8 +121,10 @@ if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL ]; then
 
 fi
 
+
 ###############################################################
-# Run OzMon data extraction
+echo
+echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
 if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL ]; then
 
     export EXP=$PSLOT
@@ -124,8 +138,10 @@ if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL ]; then
 
 fi
 
+
 ###############################################################
-# Run MinMon
+echo
+echo "=============== START TO RUN MINMON ==============="
 if [ $VRFYMINMON = "YES" ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
@@ -138,30 +154,106 @@ if [ $VRFYMINMON = "YES" ]; then
 
 fi
 
+
 ################################################################################
-# Verify tracks
+echo
+echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
 if [ $VRFYTRAK = "YES" ]; then
+    $TRACKERSH  
+fi
 
-   export DATA="${DATAROOT}/tracker"
-   export COMOUT=$ARCDIR
 
-   $TRACKERSH $CDATE $CDUMP $COMOUT $DATA
+################################################################################
+echo
+echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
+if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
+    $GENESISSH
+fi
+
+
+################################################################################
+echo
+echo "=============== START TO RUN GFS POSTSND ==============="
+if [ $RUN_POSTSND = "YES" -a $CDUMP = "gfs" ]; then
+
+    export job="jgfs_postsnd_${cyc}"
+    export jlogfile="$ROTDIR/logs/$CDATE/$job.log"
+    export DATA="${DATAROOT}/$job"
+    export SENDCOM="YES"
+    export SENDDBN="YES"
+    export HOMEbufrsnd=$HOMEgfs
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export pcom="$COMOUT/wmo"
+    export COMAWP="$COMOUT/nawips"
+
+    $POSTSNDSH
 
 fi
 
+
 ################################################################################
-# Verify genesis
-if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
+echo
+echo "=============== START TO RUN AWIPS ==============="
+if [ $RUN_AWIPS = "YES" -a $CDUMP = "gfs" ]; then
 
-   export DATA="${DATAROOT}/genesis_tracker"
-   export COMINgfs=$COMIN
-   export COMINgfs=$COMIN
-   export COMINgenvit=${COMIN}/genesis_vital_2018
-   export COMOUTgenvit=${COMIN}/genesis_vital_2018
-   export COMOUT=$ARCDIR
-   export SENDCOM="YES"
+    export SENDCOM="YES"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export PCOM="$COMOUT/wmo"
+    export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"    
+    
+    fhmax=84
+    fhr=0
+    while [ $fhr -le $fhmax ]; do
+       fhr3=$(printf %03i $fhr)
+       export fcsthrs=$fhr3
+       
+       export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+       export DATA="${DATAROOT}/$job"
+       $AWIPS20SH
+       
+       if [[ `expr $fhr % 6` -eq 0 ]]; then
+	   export job="jgfs_awips_f${fcsthrs}_${cyc}"
+           export DATA="${DATAROOT}/$job"
+           $AWIPSG2SH
+       fi
+       
+       (( fhr = $fhr + 3 ))
+    done
+    
+    fhmax=240
+    fhr=90
+    while [ $fhr -le $fhmax ]; do
+       fhr3=$(printf %03i $fhr)
+       export fcsthrs=$fhr3
 
-   $GENESISSH
+       export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+       export DATA="${DATAROOT}/$job"
+       $AWIPS20SH
+       
+       export job="jgfs_awips_f${fcsthrs}_${cyc}"
+       export DATA="${DATAROOT}/$job"
+       $AWIPSG2SH
+       
+       (( fhr = $fhr + 6 ))
+    done
+    
+fi
+    
+
+################################################################################
+echo
+echo "=============== START TO RUN GFS GEMPAK ==============="
+if [ $RUN_GEMPAK = "YES" -a $CDUMP = "gfs" ]; then
+
+    export job="jgfs_gempak_${cyc}"
+    export jlogfile="$ROTDIR/logs/$CDATE/$job.log"    
+    export DATA="${DATAROOT}/$job"
+    export SENDCOM="YES"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/nawips"
+    export FIXgfs=""  # set blank so that GEMPAKSH defaults FIXgfs to HOMEgfs/gempak/fix
+    export USHgfs=""  # set blank so that GEMPAKSH defaults FIXgfs to HOMEgfs/gempak/ush
+
+    $GEMPAKSH
 
 fi
 

@@ -259,8 +259,16 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     ltask = 'eobs' if task in ['eomg'] else task
 
     memory = cfg.get('memory_%s' % ltask, None)
-    tasks = cfg['npe_%s' % ltask]
-    ppn = cfg['npe_node_%s' % ltask]
+
+    if cdump in ['gfs'] and 'npe_%s_gfs' % task in cfg.keys():
+        tasks = cfg['npe_%s_gfs' % ltask]
+    else:
+        tasks = cfg['npe_%s' % ltask]
+        
+    if cdump in ['gfs'] and 'npe_node_%s_gfs' % task in cfg.keys():
+        ppn = cfg['npe_node_%s_gfs' % ltask]
+    else:
+        ppn = cfg['npe_node_%s' % ltask]
 
     nodes = tasks / ppn
 

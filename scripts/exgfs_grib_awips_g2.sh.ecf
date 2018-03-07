@@ -25,13 +25,17 @@ job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
 export PS4='gfs_grib_awips_g2:f$fcsthrs:$SECONDS + '
 
-# Set type of Interpolation
+# Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
 export opt1uv=' -set_grib_type same -new_grid_winds grid '
-export opt21='  -new_grid_interpolation bilinear -if '
+export opt21=' -new_grid_interpolation bilinear -if '
 export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
-export opt24=' -set_bitmap 1 '
+export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
+export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
+export opt26=' -set_grib_max_bits 25 -fi -if '
+export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
+export opt28=' -new_grid_interpolation budget -fi '
 
 if test "$num" -ge 1
 then
@@ -108,7 +112,7 @@ do
         # $COPYGB2 -g "${g160}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export grid160="nps:210:60.0 174.163:180:47625 19.132:156:47625"
-        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid $grid160 awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid160 awps_file_f${fcsthrs}_${GRID}
         ;;
      161)
         #  Grid 161 - 0.5 degree Lat/Lon grid for Puerto Rico
@@ -117,23 +121,7 @@ do
         # $COPYGB2 -g "${g161}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export grid161="latlon 271.75:137:0.5 50.75:103:-0.5"
-        $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $grid161 awps_file_f${fcsthrs}_${GRID}
-        ;;
-     201)
-        #  Grid 201 - Northern Hemispheric (Polar Stereographic) 381km
-        # export g201="20 6 0 0 0 0 0 0 65 65 -20826000 210000000 8 60000000 255000000 381000000 381000000 0 64"
-        # $COPYGB2 -g "${g201}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
-
-        export gridi201="nps:255:60.0 210.0:65:381000 -20.826:65:381000"
-        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid $grid201 awps_file_f${fcsthrs}_${GRID}
-        ;;
-     212)
-        #  Grid 212 - 40 km over Regional - CONUS - Double Resolution (Lambert Conformal)
-        # export g212="30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0"
-        # $COPYGB2 -g "${g212}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
-
-        export grid212="lambert:265.0:25.0:25.0 226.541:185:40635 12.19:129:40635"
-        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid $grid212 awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid161 awps_file_f${fcsthrs}_${GRID}
         ;;
      213)
         #  Grid 213 - National - CONUS - Double Resolution (Polar Stereographic) 95km
@@ -141,7 +129,7 @@ do
         # $COPYGB2 -g "${g213}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export grid213="nps:255:60.0 218.972:129:95250  7.838:85:95250"
-        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid $grid213 awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  masterfile $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid213 awps_file_f${fcsthrs}_${GRID}
         ;;
      254)
         #  Grid 254 - 40 km Mercator grid for Pacific Region
@@ -149,7 +137,7 @@ do
         # $COPYGB2 -g "${g254}" -i0 -x masterfile  awps_file_f${fcsthrs}_${GRID}
 
         export grid254="mercator:20.0 110.0:369:40000:250.871 -35.0:300:40000:60.789"
-        $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $grid254 awps_file_f${fcsthrs}_${GRID}
+        $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid254 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
@@ -233,7 +221,7 @@ EOF
       # $COPYGB2 -g "${g211}" -i0 -x  tmpfile_211  gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
 
       export grid211="lambert:265.0:25.0:25.0 226.541:93:81271 12.19:65:81271"
-      $WGRIB2 tmpfile_211 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid $grid211 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
+      $WGRIB2 tmpfile_211 $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid211 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
 
       $WGRIB2 -s gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2 > gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2.idx
 
