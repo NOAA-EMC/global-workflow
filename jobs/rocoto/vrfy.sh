@@ -62,7 +62,7 @@ if [ $CDUMP = "gfs" ]; then
        (( fhr = $fhr + 6 ))
     done
     cd $pwd
-    export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
+    export OMP_NUM_THREADS=${nthreads_env:-1} # revert to threads set in env
 fi
 
 ###############################################################
