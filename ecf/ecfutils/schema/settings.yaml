@@ -1,0 +1,131 @@
+settings_validator: &settings_validator !Template
+
+  ENKF_INNOVATE_GROUPS:
+    description: ENKF innovate will be split into this many jobs
+    type: int
+
+  ENKF_FORECAST_GROUPS:
+    description: ENKF forecast will be split into this many jobs
+    type: int
+
+  ENKF_ARCHIVE_GROUPS:
+    description: ENKF archiving will be split into this many jobs
+    type: int
+
+  gfs_forecast_hours:
+    description: >-
+      Monotonically increasing list of lead times for which the GFS forecast outputs
+    type: int list
+
+  gdas_forecast_hours:
+    description: >-
+      Monotonically increasing list of lead times for which the GDAS forecast outputs
+    type: int list
+    
+  resource_file:
+    description: >-
+      Name of the file that will be copied to resources.yaml.  This
+      should contain the declaration of the "resources" map with
+      resources per-job referred to from suite_def.yaml.
+    type: string
+
+  DMPDIR:
+    description: Location of the global dump for gfs and gdas
+    type: string
+
+  max_job_tries:
+    description: Maximum number of times to try most jobs
+    type: int
+    default: 1
+
+  realtime:
+    description: Is this a real-time simulation (true), or retrospective (false)?
+    type: bool
+
+  archive_to_hpss:
+    description: Should the simulation outputs be archived to tape (HPSS)?
+    type: bool
+
+  four_cycle_mode:
+    description: >-
+      When ecFlow is used, should there be suites for only four cycles
+      in the workflow, as in NCEP Operations, or should there be one
+      suite per cycle.  This variable is ignored in Rocoto mode.
+    type: bool
+
+  experiment_name:
+    description: >-
+      An alphanumeric identifier for this workflow.  This is used to
+      decide output and scrub file locations, and the ecFlow suite
+      name.
+    type: string
+
+  start_date:
+    description: >-
+      Date and time of the first cycle of the workflow.  In most
+      cases, this cycle will be a half cycle.
+    type: datetime
+
+  end_date:
+    description: >-
+      Date and time of the last cycle of the workflow.  
+    type: datetime
+
+  start_date_gfs:
+    description: Date and time of the first GFS cycle in this workflow
+    type: datetime
+    default: !calc ( start_date+tools.to_timedelta('6:00:00') )
+
+  end_date_gfs:
+    description: Date and time of the last GFS cycle in this workflow
+    type: datetime
+    default: !calc end_date
+
+  interval_gfs:
+    description: >-
+      Time between cycles for which GFS is run.  Must be a multiple of six hours.
+    type: timedelta
+    default: !timedelta "6:00:00"
+
+  COM:
+    description: Location of the top-level output directory for this workflow
+    type: string
+
+  EXPDIR:
+    description: Location where config and yaml files reside for this workflow
+    type: string
+
+  DATAROOT:
+    description: Location where per-task scrub areas reside for this workflow
+    type: string
+
+  ECF_HOME:
+    description: >-
+      The $ECF_HOME setting for the ecFlow server.  Not used in Rocoto mode.
+    type: string
+    default: !calc ( tools.env('ECF_HOME','localhost') )
+
+  ROCOTO_HOME:
+    description: >-
+      Directory in which to write the Rocoto XML document.
+      Not used in ecFlow mode.  Default is to use EXPDIR.
+    type: string
+    default: !calc EXPDIR
+
+  QUEUE:
+    description: >-
+      Batch queue in which to run jobs that take more than one processor.
+    type: string
+
+  QUEUESERV:
+    description: >-
+      Batch queue in which to run jobs that have to transfer files to
+      or from some outside location such as a tape archiving system or website.
+    type: string
+
+  QUEUESHARED:
+    description: >-
+      Batch queue in which to run single processor jobs.  Default is to use
+      the same queue as multi-processor jobs.
+    type: string
+    default: !calc QUEUE

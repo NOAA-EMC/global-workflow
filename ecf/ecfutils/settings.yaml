@@ -1,0 +1,46 @@
+settings:
+  Template: *settings_validator
+
+  # Import certain variables from doc.config_files:
+  Inherit: !Inherit
+    - [ 'doc.config_files','FH.*|QUEUE|.*layout.*|.*WRITE_GROUP|.*WRT.*|HOME.*' ]
+
+  # NOTE: Additional files are set by the validator.  See validator.yaml.
+
+  resource_file: !expand >-
+    resources/{doc.config_files.CASE}_{doc.config_files.CASE_ENKF}.yaml
+
+  DMPDIR: !calc doc.config_files.DMPDIR
+  COM: !calc doc.config_files.ROTDIR
+  EXPDIR: !calc doc.config_files.EXPDIR
+  DATAROOT: !calc doc.config_files.RUNDIR
+  experiment_name: !calc doc.config_files.PSLOT
+
+  PROJECT: !calc ( doc.config_files.ACCOUNT )
+  QUEUESERV: !calc ( doc.config_files.QUEUE_ARCH )
+
+  ENKF_INNOVATE_GROUPS: !calc >-
+    doc.config_files.NMEM_ENKF // doc.config_files.NMEM_EOMGGRP
+
+  ENKF_FORECAST_GROUPS: !calc >-
+    doc.config_files.NMEM_ENKF // doc.config_files.NMEM_EFCSGRP
+
+  ENKF_ARCHIVE_GROUPS: !calc >-
+    doc.config_files.NMEM_ENKF // doc.config_files.NMEM_EARCGRP
+
+  start_date: !calc tools.strptime(doc.config_files.SDATE,"%Y%m%d%H")
+  end_date:  !calc tools.strptime(doc.config_files.EDATE,"%Y%m%d%H")
+
+  gfs_forecast_hours: !calc >-
+    tools.uniq(sorted(
+      tools.seq(FHMIN_GFS,FHMAX_HF_GFS,FHOUT_HF_GFS) +
+      tools.seq(FHMIN_GFS,FHMAX_GFS,   FHOUT_GFS)))
+  gdas_forecast_hours: !calc tools.seq(FHMIN,FHMAX,FHOUT)
+  wafs_last_hour: !calc 120
+
+  realtime: True
+  archive_to_hpss: True
+  four_cycle_mode: False
+  ecflow_machine: xc40-prod
+
+  fv3gfs_machine: !calc doc.config_files.machine

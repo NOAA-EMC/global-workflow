@@ -1,0 +1,161 @@
+task_template: &task_template
+
+  Template: *task_validator
+
+  rocoto_load_modules: !expand >-
+     source &HOMEgfs;/ush/load_fv3gfs_modules.sh ;
+     module list
+  rocoto_command: !expand >-
+     {rocoto_load_modules} ;
+     &HOMEgfs;/jobs/{J_JOB}
+  ecflow_command: !expand "${{HOMEgfs}}/jobs/{J_JOB}"
+
+  Rocoto: !expand |
+    <command>sh -c '{rocoto_command}'</command>
+    {sched.rocoto_accounting(accounting,jobname=task_path_var,
+        outerr="<cyclestr>&LOG_DIR;/@Y@m@d/@H/&PSLOT;_"+task_path_var+".log</cyclestr>")}
+    {sched.rocoto_resources(resources)}
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+    <envar><name>CDUMP</name><value>{CDUMP}</value></envar>
+    <envar><name>RUN_ENVIR</name><value>emc</value></envar>
+    <envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+    {rocoto_more_vars}
+
+  CDUMP: !calc task_path_list[0]
+
+  # Default resources for a job are serial
+  #resources: !calc doc.resources.run_nothing
+
+  ecf_dev_overrides: !expand |
+    # Set data and logs to locations specified in the suite definition.
+    # This is needed when running without write access to the NCO com areas.
+    export DATAROOT=%DATAROOT%
+    export jlogfile=%ECF_OUT%/jlogfile
+    export COMROOT=%COM%
+    export cycle=t%CYC%z
+    export CDATE=%PDY%%CYC%
+    export EXPDIR="{doc.settings.EXPDIR}"
+
+  ecf_more_exports: ""
+
+  more_vars: []
+
+  ecf_more_exports: !calc |
+    "\n".join([ tools.expand("export {VAR}=%{VAR}%\n",VAR=V) for V in more_vars ])
+
+  rocoto_more_vars: !calc |
+    "\n".join([ metasched.defenvar(VAR,this[VAR]) for VAR in more_vars ])
+
+  ecflow_def_more_vars: !calc |
+    "\n".join([ metasched.defenvar(VAR,this[VAR]) for VAR in more_vars ])
+
+  ecflow_def: !calc ecflow_def_more_vars
+
+  ecf_file: !expand |
+    #! /bin/sh
+    {ecf_batch_resources}
+    {ecf_dev_overrides}
+    %include <head.h>
+    %include <envir-xc40.h>
+
+    set -x
+
+    {ecf_resource_more}
+
+    # Workaround for vrfy bug
+    mkdir -p %COM%/logs/%PDY%%CYC%/
+    
+    export HOMEgfs=%HOMEgfs%
+    export CDUMP=%RUN%
+    {ecf_more_exports}
+    ## don't include <model_ver.h>
+
+    ############################################################
+    # Load modules
+    ############################################################
+    #. $MODULESHOME/init/sh
+    {ecf_module_commands}
+    module load ecflow
+    module list
+
+    #############################################################
+    # WCOSS environment settings
+    #############################################################
+
+    {ecf_environment_settings}
+
+    ###########################################################
+    export cyc=%CYC%
+
+    # CALL executable job script here
+    {ecflow_command}
+
+    %include <tail.h>
+    %manual
+    {ecf_manual}
+    %end
+
+  ecf_manual: |
+    # FIXME: Insert manual for this job.
+
+  ecf_module_commands: |-
+    source "$HOMEgfs/ush/load_fv3gfs_modules.sh"
+
+  ecf_environment_settings: |-
+    # Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
+
+  ecf_batch_resources: !expand |-
+    {sched.batch_accounting(accounting,jobname=task_path_var,outerr="%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")}
+    {sched.batch_resources(resources)}
+
+  ecf_resource_more: !expand |-
+    {ecf_maybe_ntasks}
+    {ecf_maybe_ptile}
+    {ecf_maybe_threads}
+
+  ecf_maybe_ntasks: !FirstTrue
+    - when: !calc resources.total_ranks()>0
+      do: !expand 'export ntasks={resources.total_ranks()}'
+    - otherwise: "# No MPI in use, so I am not setting $ntasks."
+
+  ecf_maybe_threads: !FirstTrue
+    - when: !calc resources.has_threads()
+      do: !expand 'export threads={resources[0]["OMP_NUM_THREADS"]}'
+    - otherwise: "# No OpenMP in use, so I am not setting $threads"
+
+  ecf_maybe_ptile: !FirstTrue
+    - when: !calc resources.has_threads() or resources.total_ranks()>0
+      do: !expand 'export ptile={sched.max_ranks_per_node(resources)}'
+    - otherwise: "# Neither OpenMP nor MPI are in use, so I am not setting $ptile"
+
+  
+
+shared_accounting: &shared_accounting
+  queue: !calc metasched.varref('QUEUESHARED')
+  project: !calc metasched.varref('PROJ')
+
+service_accounting: &service_accounting
+  queue: !calc metasched.varref('QUEUESERV')
+  project: !calc metasched.varref('PROJ')
+
+exclusive_accounting: &exclusive_accounting
+  queue: !calc metasched.varref('QUEUE')
+  project: !calc metasched.varref('PROJ')
+
+shared_task_template: &shared_task_template
+  <<: *task_template
+  accounting: *shared_accounting
+  J_JOB: !expand '{task_path_list[-1]}.sh'
+
+service_task_template: &service_task_template
+  <<: *task_template
+  accounting: *service_accounting
+  J_JOB: !expand '{task_path_list[-1]}.sh'
+
+exclusive_task_template: &exclusive_task_template
+  <<: *task_template
+  accounting: *exclusive_accounting
+  J_JOB: !expand '{task_path_list[-1]}.sh'

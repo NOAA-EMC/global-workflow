@@ -1,0 +1,75 @@
+task_validator: &task_validator !Template
+
+  Rocoto:
+    description: >-
+      XML to insert in the task definition, excluding the task tag
+      itself, and the dependencies.
+    type: string
+
+  ecf_file:
+    description: >-
+      Contents of the ecf file that will be run for this task
+    type: string
+
+  rocoto_more_vars:
+    description: >-
+      Additional text to include after other envar tags in Rocoto task
+      definition.  This is referenced by the Rocoto variable.
+    type: string
+    default: ""
+
+  ecflow_command:
+    description: >-
+      Command to execute for this task when run in ecflow.  This is
+      inserted into the ecf file.
+    type: string
+
+  rocoto_command:
+    description: >-
+      Command to execute for this task when run in rocoto.  This is
+      inserted into the rocoto command tag for the task.
+    type: string
+
+  more_vars:
+    description: >-
+      List of variables that should be added to Rocoto envar blocks,
+      ecflow suite definition edits, and ecf file exports.  Overriding
+      ecflow_def will prevent this from being passed through as edits
+      in the suite definition.
+    type: string list
+
+  ecf_environment_settings:
+    description: "Tuning variables like KMP_AFFINITY and OMP_STACKSIZE."
+    type: string
+    default: ""
+
+  ecf_module_commands:
+    description: >-
+      Any "module" commands: module load, module switch, etc.
+    type: string
+    default: ""
+
+  ecf_resource_more:
+    description: >-
+      Generates additional resource specification variables such as
+      ntasks, threads, and ptile.
+    type: string
+    default: ""
+
+  ecf_maybe_ntasks:
+    description: "Sets the $ntasks variable (number of MPI ranks) if needed"
+    type: string
+    default: ""
+
+  ecf_maybe_threads:
+    description: "Sets the $threads variable (number of OpenMP threads) if needed"
+    type: string
+    default: ""
+
+  ecf_maybe_ptile:
+    description: >-
+      Sets the $ptile variable (maximum number of MPI ranks per node) if needed
+    type: string
+    default: ""
+
+  

@@ -1,0 +1,7 @@
+include:
+  - schedulers.yaml
+  - rocoto.yaml
+  - task.yaml
+  - "*.yaml"
+  - suite_def.yaml
+  

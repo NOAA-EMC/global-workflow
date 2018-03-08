@@ -1,0 +1,7 @@
+## initial_directory: location from which the setup script was run.
+initial_directory: !Immediate [ !calc "tools.realpath(tools.abspath('.'))" ]
+
+# pyYAML cannot correctly write out a document unless it contains
+# at least one mapping
+locations_yaml_workaround_for_pyYAML_bug:
+  xyz: 123

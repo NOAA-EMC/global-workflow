@@ -1,0 +1,10 @@
+#NOTE: If you update this file, you must also update worktools.py
+# variables: YAML_DIRS_TO_COPY, YAML_FILES_TO_COPY, and
+# function make_yaml_files
+
+include:
+  - "config*.yaml"
+  - schema/
+  - workflow/
+  - "*.yaml"
+  - "settings.yaml"

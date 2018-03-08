@@ -1,0 +1,23 @@
+
+wcoss_cray_scheduler_settings: &wcoss_cray_scheduler_settings
+  name: LSFAlps
+  physical_cores_per_node: 24
+  logical_cpus_per_core: 2
+  hyperthreading_allowed: true
+
+theia_scheduler_settings: &theia_scheduler_settings
+  name: MoabTorque
+  physical_cores_per_node: 24
+  logical_cpus_per_core: 2
+  hyperthreading_allowed: true
+
+# Magic block to automatically detect your machine  
+automatic_scheduler_settings: &automatic_scheduler_settings !FirstTrue
+  - when: !calc tools.isdir("/gpfs") and tools.isdir("/usrx/local")
+    do:   *wcoss_cray_scheduler_settings
+  - when: !calc tools.isdir("/scratch4") and tools.isdir("/scratch3")
+    do:   *theia_scheduler_settings
+  - otherwise: !error "You are not on Theia or WCOSS"
+
+scheduler_settings: *automatic_scheduler_settings
+
