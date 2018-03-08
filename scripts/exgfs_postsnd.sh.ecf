@@ -38,6 +38,11 @@ export F00FLAG=YES
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir ${COMOUT}/bufr.${cycle}
 
+# Extract number of vertical levels from $STARTHOUR atmospheric file
+fhr3=$(printf %03i $STARTHOUR)
+ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
+export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
 #
@@ -123,7 +128,8 @@ export MP_LABELIO=YES
 export MP_INFOLEVEL=3
 export MP_STDOUTMODE=ordered
 
-aprun -j 1 -n 10 -N 5 -d 1 cfp cmdfile
+export APRUNCFP=${APRUN_POSTSNDCFP:-'aprun -j 1 -n 10 -N 3 -d 1 cfp'}
+$APRUNCFP cmdfile
 
 ################################################
 # Convert the bufr soundings into GEMPAK files

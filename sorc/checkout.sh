@@ -26,7 +26,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive ${USERNAME}@gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout fv3da.v1.0.0
+    git checkout fv3da.v1.0.3
     git submodule update
     cd ${topdir}
 else
@@ -38,7 +38,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone --recursive ${USERNAME}@gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ncep_post.v8.0.1
+    git checkout ncep_post.v8.0.2
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'

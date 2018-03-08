@@ -27,22 +27,81 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-###############################################################
-# Run relevant tasks
-
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
+
+###############################################################
+# Archive online for verification and diagnostics
+###############################################################
+
 COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+cd $COMIN
+
+[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+$NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
+
+# Archive 1 degree forecast GRIB1 files for verification
+if [ $CDUMP = "gfs" ]; then
+    fhmax=$FHMAX_GFS
+    fhr=0
+    while [ $fhr -le $fhmax ]; do
+        fhr2=$(printf %02i $fhr)
+        fhr3=$(printf %03i $fhr)
+        $NCP ${APREFIX}pgrb.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        (( fhr = $fhr + $FHOUT_GFS ))
+    done
+fi
+if [ $CDUMP = "gdas" ]; then
+    flist="000 003 006 009"
+    for fhr in $flist; do
+        fname=${APREFIX}pgrb.1p00.f${fhr}
+        fhr2=$(printf %02i $fhr)
+        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+    done
+fi
+
+if [ -s avn.t${cyc}z.cyclone.trackatcfunix ]; then
+    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    cat avn.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE          
+fi
+if [ $CDUMP = "gfs" ]; then
+    $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+    $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+    $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+    $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+fi
+
+# Archive atmospheric nemsio gfs forecast files for fit2obs
+VFYARC=$ROTDIR/vrfyarch
+[[ ! -d $VFYARC ]] && mkdir -p $VFYARC
+if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
+    mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
+    fhmax=${FHMAX_FITS:-$FHMAX_GFS}
+    fhr=0
+    while [[ $fhr -le $fhmax ]]; do
+      fhr3=$(printf %03i $fhr)
+      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}.nemsio
+      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}.nemsio
+      $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+      $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+      (( fhr = $fhr + 6 ))
+   done
+fi
+
+
+###############################################################
+# Archive what is needed to restart the experiment
+if [ HPSSARCH = "YES" ]; then
+###############################################################
 
 DATA="$RUNDIR/$CDATE/$CDUMP/arch"
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
-###############################################################
-# Archive what is needed to restart the experiment
 mkdir -p $DATA/${CDUMP}restart
 cd $DATA/${CDUMP}restart
 
@@ -85,7 +144,7 @@ fi
 cd $DATA
 rm -rf ${CDUMP}restart
 
-###############################################################
+#----------------------------------------------
 # Archive extra information that is good to have
 mkdir -p $DATA/$CDUMP
 cd $DATA/$CDUMP
@@ -96,6 +155,7 @@ for file in $files; do
 done
 [[ $DONST = "YES" ]] && $NCP $COMIN/${APREFIX}nsstbufr .
 
+$NCP $COMIN/${APREFIX}sfcanl${ASUFFIX} .
 $NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
 $NCP $COMIN/${APREFIX}pgrb2.*.anl* .
 $NCP $COMIN/${APREFIX}pgrb2.*.f* .
@@ -119,51 +179,9 @@ fi
 rm -rf $CDUMP
 
 ###############################################################
-# Archive online for verification and diagnostics
-cd $COMIN
+fi  ##end of HPSS archive
+###############################################################
 
-[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
-
-# Archive 1 degree forecast GRIB1 files for verification
-if [ $CDUMP = "gfs" ]; then
-    fhmax=$FHMAX_GFS
-    fhr=0
-    while [ $fhr -le $fhmax ]; do
-        fhr2=$(printf %02i $fhr)
-        fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
-        (( fhr = $fhr + 3 ))
-    done
-fi
-if [ $CDUMP = "gdas" ]; then
-    flist="000 003 006 009"
-    for fhr in $flist; do
-        fname=${APREFIX}pgrb.1p00.f${fhr}
-        fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
-    done
-fi
-
-# Archive atmospheric nemsio gfs forecast files for fit2obs
-VFYARC=$ROTDIR/vrfyarch
-[[ ! -d $VFYARC ]] && mkdir -p $VFYARC
-if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
-
-    mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
-    fhmax=${FHMAX_FITS:-$FHMAX_GFS}
-    fhr=0
-    while [[ $fhr -le $fhmax ]]; do
-      fhr3=$(printf %03i $fhr)
-      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}.nemsio
-      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}.nemsio
-      $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-      $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-      (( fhr = $fhr + 6 ))
-   done
-
-fi
 
 ###############################################################
 # Clean up previous cycles; various depths

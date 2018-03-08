@@ -69,10 +69,14 @@ if mkdir lock.$fhcnt  ; then
 # Set type of Interpolation for WGRIB2
   export opt1=' -set_grib_type same -new_grid_winds earth '
   export opt1uv=' -set_grib_type same -new_grid_winds grid '
-  export opt21='  -new_grid_interpolation bilinear -if '
+  export opt21=' -new_grid_interpolation bilinear -if '
   export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
   export opt23=' -new_grid_interpolation neighbor -fi '
-  export opt24=' -set_bitmap 1 '
+  export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
+  export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
+  export opt26=' -set_grib_max_bits 25 -fi -if '
+  export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
+  export opt28=' -new_grid_interpolation budget -fi '
 
   if [ $RUN = "gfs_0p50" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
@@ -108,21 +112,21 @@ case $RUN in
 #   $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 -1 75125000 130000000 48 17405000 259480000 312000 312000 0" -x $GRIBIN grib$fhr
 
     export gfs35_pac='latlon 130.0:416:0.312 75.125:186:-0.312'
-    $WGRIB2  $GRIBIN $opt1 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid ${gfs35_pac} grib$fhr
+    $WGRIB2  $GRIBIN $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs35_pac} grib$fhr
    ;;
  gfs35_atl)
 #    $COPYGB2 -g "0 6 0 0 0 0 0 0 480 242 0 0 75125000 230000000 48 -500000 20000000 312000 312000 0" -x $GRIBIN grib$fhr
 # NEW  define gfs35_atl="0 6 0 0 0 0 0 0 480 242 0 -1 75125000 230000000 48  -67000 19448000 312000 312000 0"
 #   $COPYGB2 -g "0 6 0 0 0 0 0 0 480 242 0 -1 75125000 230000000 48  -67000 19448000 312000 312000 0" -x $GRIBIN grib$fhr
 
-     export gfs35_atl='latlon 230.0:480:0.312 75.125:242:-0.312'
-     $WGRIB2  $GRIBIN $opt1 $opt1 $opt21 $opt22 $opt23 $opt24 -new_grid ${gfs35_atl} grib$fhr
+    export gfs35_atl='latlon 230.0:480:0.312 75.125:242:-0.312'
+    $WGRIB2  $GRIBIN $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs35_atl} grib$fhr
    ;;
  gfs40)
 #   $COPYGB2 -g "30 6 0 0 0 0 0 0 185 129 12190000 226541000 8 25000000 265000000 40635000 40635000 0 64 25000000 25000000 0 0" -x $GRIBIN grib$fhr
 
     export gfs40='lambert:265.0:25.0:25.0 226.541:185:40635.0 12.19:129:40635.0'
-    $WGRIB2  $GRIBIN $opt1uv $opt21 $opt22 $opt23 $opt24 -new_grid ${gfs40} grib$fhr
+    $WGRIB2  $GRIBIN $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid ${gfs40} grib$fhr
    ;;
  *)
      cp $GRIBIN grib$fhr

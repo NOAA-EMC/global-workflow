@@ -29,7 +29,7 @@ status=$?
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export job=${job:-"gfs_cyclone_tracker"}
+export job=${job:-"gfs_cyclone_genesis"}
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export jobid=${jobid:-"${outid}.o${pid}"}
@@ -70,7 +70,6 @@ export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
-
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
@@ -79,7 +78,6 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-
 
 ####################################
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
@@ -96,27 +94,22 @@ export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
-
+export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
 
 ##############################################
-# Define COM and Data directories
+# Define COM directories
 ##############################################
 export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export gfsdir=${COMIN}
 export COMINgfs=${COMIN}
-export gfsdir=${COMINgfs}
-export COMINgdas=${COMIN}
-export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
+
+export JYYYY=`echo ${PDY} | cut -c1-4`
+export COMINgenvit=${COMINgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
+export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
 export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
 
-if [ $RUN_ENVIR = "nco" ]; then
-    export COMOUThur=${COMROOTp1:?}/hur/${envir}/global
-    export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
-    mkdir -m 775 -p $COMOUThur $COMOUTatcf
-else
-    export COMOUThur=$COMOUT         
-    export COMOUTatcf=$COMOUT
-fi
+mkdir -m 775 -p $COMOUTgenvit
 
 ##############################################
 # Run relevant script
@@ -126,50 +119,17 @@ msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
-#############################################################
-# Execute the script
-export pert="p01"
-export cmodel=$CDUMP
-export loopnum=1
 
-#-----------input data checking -----------------
-${USHens_tracker}/data_check.sh
-# exit code 6 = missing data of opportunity
-if [ $? -eq 6 ]; then exit; fi
-#------------------------------------------------
-
-mac=`echo ${SITE}`
-if [ $mac = TIDE -o $mac = GYRE ] ; then # For WCOSS
-  machine=wcoss
-  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = LUNA -o $mac = SURGE ] ; then # For CRAY
-  machine=cray
-  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-fi
+${SCRIPTens_tracker}/exfv3gfs_tc_genesis.sh
 export err=$?; err_chk
-
-
-if [ "$SENDCOM" = 'YES' ]; then
-
-  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-      sed s:AVNX:GFSO:g \
-    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
-
-  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-      sed s:AVNX:AVNO:g \
-    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
-
-fi
 
 ##############################################
 # Final processing
 ##############################################
 cat $pgmout
 
-
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
-
 
 ##########################################
 # Remove the Temporary working directory

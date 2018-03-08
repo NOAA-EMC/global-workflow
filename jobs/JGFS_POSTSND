@@ -52,8 +52,7 @@ export model=${model:-gfs}
 # Set up the UTILITIES
 ###################################
 
-##export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
-export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
+export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
 export EXECbufrsnd=${EXECbufrsnd:-$HOMEbufrsnd/exec}
 export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix/product}
 export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm/product}
@@ -69,9 +68,9 @@ setpdy.sh
 ##############################
 export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
-export pcom=${pcom:-${PCOMROOT}/gfs}
+export pcom=${pcom:-${COMOUT}/${cyc}/wmo}
 mkdir -p $COMOUT $pcom
-export COMAWP=${COMAWP:-${COMROOT}/nawips/${envir}/${RUN}.${PDY}}
+export COMAWP=${COMAWP:-${COMOUT}/${cyc}/nawips}
 env
 
 ########################################################
@@ -82,7 +81,11 @@ $SCRbufrsnd/exgfs_postsnd.sh.ecf
 
 cat $pgmout
 
-#### cd /tmpnwprd1
-cd ${DATAROOT}
-rm -rf $DATA
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
 date
+exit 0

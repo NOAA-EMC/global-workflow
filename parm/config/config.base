@@ -154,7 +154,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
 #export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
-export REDOUT="1>>"
+export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF="NO"
