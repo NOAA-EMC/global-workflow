@@ -1,6 +1,6 @@
 task_template: &task_template
 
-  Template: *task_validator
+  Template: *task_schema
 
   rocoto_load_modules: !expand >-
      source &HOMEgfs;/ush/load_fv3gfs_modules.sh ;

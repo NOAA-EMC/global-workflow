@@ -1,4 +1,4 @@
-task_validator: &task_validator !Template
+task_schema: &task_schema !Template
 
   Rocoto:
     description: >-

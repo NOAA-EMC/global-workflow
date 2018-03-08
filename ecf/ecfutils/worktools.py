@@ -58,11 +58,11 @@ def make_yaml_files(srcdir,tgtdir):
 
     readme=[ os.path.join(srcdir,'schema/settings.yaml') ]
 
-    # Deal with the config files:
-    for srcfile in glob.glob(f'{srcdir}/config/*.yaml'):
+    # Deal with the static files:
+    for srcfile in glob.glob(f'{srcdir}/static/*.yaml'):
         logger.info(f'{srcfile}: read file')
         doc=from_file(srcfile)
-        tgtfile=os.path.join(tgtdir,"config_"+os.path.basename(srcfile))
+        tgtfile=os.path.join(tgtdir,"static_"+os.path.basename(srcfile))
         yaml=to_yaml(doc)
         logger.info(f'{tgtfile}: generate file')
         with open(tgtfile,'wt') as fd:

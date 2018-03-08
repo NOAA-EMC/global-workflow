@@ -1,4 +1,4 @@
-settings_validator: &settings_validator !Template
+settings_schema: &settings_schema !Template
 
   ENKF_INNOVATE_GROUPS:
     description: ENKF innovate will be split into this many jobs

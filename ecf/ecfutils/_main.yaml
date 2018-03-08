@@ -3,7 +3,7 @@
 # function make_yaml_files
 
 include:
-  - "config*.yaml"
+  - "static*.yaml"
   - schema/
   - workflow/
   - "*.yaml"

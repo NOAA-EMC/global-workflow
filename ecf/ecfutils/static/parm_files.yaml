@@ -1,5 +1,5 @@
 # Variables taken from config.* files:
-config_files:
+parm_files:
 
   # config.base:
   FHMAX_GFS:    !Immediate [ !calc ' int(tools.env("FHMAX_GFS"),10) ' ]
