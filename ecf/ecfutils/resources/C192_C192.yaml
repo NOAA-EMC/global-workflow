@@ -170,7 +170,7 @@ resources:
         - when: !calc doc.settings.fv3gfs_machine == 'THEIA'
           do: "16384M"
         - otherwise: "3072M"
-      mpi_ranks: 1
+      mpi_ranks: 5
       walltime: !timedelta "03:00:00"
       exe: placeholder
       max_ppn: 1

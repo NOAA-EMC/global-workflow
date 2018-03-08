@@ -155,7 +155,7 @@ resources:
 
   run_gfsvrfy: !JobRequest
     - memory: "3072M" 
-      mpi_ranks: 1
+      mpi_ranks: 5
       walltime: !timedelta "04:00:00"
       exe: placeholder
       max_ppn: 1
