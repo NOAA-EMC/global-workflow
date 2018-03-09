@@ -1,0 +1,17 @@
+post_schema: &post_schema !Template
+  GOESF:
+    type: bool
+    default: no
+    description: make synthetic goes imagery
+  GTGF:
+    type: bool
+    default: no
+    description: make gtg icing product
+  FLXF:
+    type: bool
+    default: yes
+    description: grib2 flux file written by post
+  PGB1F: { type: bool, default: yes }
+  GFS_DOWNSTREAM: { type: bool, default: yes }
+  downset: { type: int, default: 1 }
+  

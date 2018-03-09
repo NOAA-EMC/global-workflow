@@ -7,6 +7,11 @@ set -ue
 dir0=$( dirname "$0" )
 here=$( cd "$dir0" ; pwd -P )
 
+if [[ ! -s .in-the-ecfutils-dir ]] ; then
+    echo "This script must be within the ecf/ecfutils directory when running it." 1>&2
+    exit 2
+fi
+
 export WORKTOOLS_VERBOSE=NO
 
 crowdir=$( cd CROW ; pwd -P )

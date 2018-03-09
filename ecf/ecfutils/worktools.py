@@ -30,6 +30,75 @@ from crow.tools import Clock
 ECFNETS_INCLUDE = "/ecf/ecfnets/include"
 SIX_HOURS = datetime.timedelta(seconds=6*3600)
 
+def loudly_make_dir_if_missing(dirname):
+    if dirname and not os.path.exists(dirname):
+        logger.info(f'{dirname}: make directory')
+        os.makedirs(dirname)
+
+def loudly_make_symlink(src,tgt):
+    logger.debug(f'{src}: symlink {tgt}')
+    with suppress(FileNotFoundError): os.unlink(tgt)
+    if not os.path.exists(src):
+        logger.warning(f'{src}: link target does not exist')
+    os.symlink(src,tgt)
+
+def make_parent_dir(filename):
+    loudly_make_dir_if_missing(os.path.dirname(filename))
+
+def create_COMROT(conf):
+    cdump = conf.case.IC_CDUMP
+    icsdir = conf.case.IC_DIR
+    comrot = conf.places.ROTDIR
+    resens = conf.fv3_enkf_settings.CASE[1:]
+    resdet = conf.fv3_gfs_settings.CASE[1:]
+    idate = conf.case.SDATE
+    detdir = f'{cdump}.{idate:%Y%m%d}/{idate:%H}'
+    nens = conf.data_assimilation.NMEM_ENKF
+    enkfdir = f'enkf.{cdump}.{idate:%Y%m%d}/{idate:%H}'
+    idatestr = f'{idate:%Y%m%d%H}'
+
+    logger.info(f'Input conditions: {icsdir}')
+
+    loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
+    loudly_make_dir_if_missing(os.path.join(comrot, detdir))
+
+    logger.info(f'Workflow COM root: {comrot}')
+
+    # Link ensemble member initial conditions
+    for i in range(1, nens + 1):
+        memdir=os.path.join(comrot,enkfdir,f'mem{i:03d}')
+        loudly_make_dir_if_missing(memdir)
+        src=os.path.join(icsdir, idatestr, f'C{resens}',f'mem{i:03d}','INPUT')
+        tgt=os.path.join(comrot, enkfdir, f'mem{i:03d}', 'INPUT')
+        loudly_make_symlink(src,tgt)
+
+    # Link deterministic initial conditions
+    src=os.path.join(icsdir, idatestr, f'C{resdet}', 'control', 'INPUT')
+    tgt=os.path.join(comrot, detdir, 'INPUT')
+    loudly_make_symlink(src,tgt)
+
+    # Link bias correction and radiance diagnostics files
+    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+        file=f'{cdump}.t{idate:%H}z.{fname}'
+        src=os.path.join(icsdir, idatestr, file)
+        tgt=os.path.join(comrot, detdir, file)
+        loudly_make_symlink(src,tgt)
+
+def find_case_yaml_file_for(case_name):
+    for case_file in [ case_name,f"{case_name}.yaml",f"cases/{case_name}",
+                       f"cases/{case_name}.yaml","/" ]:
+        if os.path.exists(case_file) and case_file!='/':
+            logger.info(f"{case_file}: file for this case")
+            break
+    if case_file == "/":
+        epicfail(f"{case_name}: no such case; pick one from in cases/")
+    if not os.path.exists("user.yaml"):
+        epicfail("Please copy user.yaml.default to user.yaml and fill in values.")
+    with io.StringIO() as yfd:
+        follow_main(yfd,".",{ "case_yaml":case_file, "user_yaml":"user.yaml" })
+        yaml=yfd.getvalue()
+    return crow.config.from_string(yaml)
+
 def read_yaml_suite(dir):
     logger.info(f'{dir}: read yaml files specified in _main.yaml')
     conf=from_dir(dir)
@@ -37,7 +106,7 @@ def read_yaml_suite(dir):
     suite=Suite(conf.suite)
     return conf,suite
 
-def make_yaml_files(srcdir,tgtdir):
+def make_yaml_files_in_expdir(srcdir,tgtdir):
     if not os.path.exists(tgtdir):
         logger.info(f'{tgtdir}: make directory')
         os.makedirs(tgtdir)
@@ -85,14 +154,6 @@ def make_yaml_files(srcdir,tgtdir):
     logger.info(f'{resource_srcfile}: use this resource yaml file')
     shutil.copyfile(resource_srcfile,resource_tgtfile)
     logger.info(f'{tgtdir}: yaml files created here')
-
-def loudly_make_dir_if_missing(dirname):
-    if dirname and not os.path.exists(dirname):
-        logger.info(f'{dirname}: make directory')
-        os.makedirs(dirname)
-
-def make_parent_dir(filename):
-    loudly_make_dir_if_missing(os.path.dirname(filename))
 
 def make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles):
     suite_clock=copy(suite.Clock)

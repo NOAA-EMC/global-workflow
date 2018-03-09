@@ -1,0 +1,18 @@
+config_fv3ic:
+  filename: config.fv3ic
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.fv3ic ##########
+    # Convert GFS initial conditions into FV3 initial conditions
+    
+    echo "BEGIN: config.fv3ic"
+    
+    # Task and thread configuration
+    export wtime_fv3ic="00:30:00"
+    export npe_fv3ic={doc.resources.run_fv3ic.total_ranks()}
+    export npe_node_fv3ic={sched.nodes.omp_threads_for(
+            doc.resources.run_fv3ic[0])}
+    
+    echo "END: config.fv3ic"
+    

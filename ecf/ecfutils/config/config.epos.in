@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.epos ##########
+# Ensemble post processing specific
+
+echo "BEGIN: config.epos"
+
+# Get task specific resources
+. $EXPDIR/config.resources epos
+
+export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
+export nth_epos={doc.platform.nodes.mpi_ranks_for(doc.resources.run_epos[0])}
+
+echo "END: config.epos"

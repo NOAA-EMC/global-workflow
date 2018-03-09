@@ -1,0 +1,73 @@
+data_assimilation_template: !Template &data_assimilation_template
+  DOHYBVAR:
+    type: bool
+    default: YES
+    description: flag (YES or NO) for hybrid ensemble variational option
+  NMEM_ENKF:
+    type: int
+    default: 80
+    allowed: [ 10, 20, 30, 40, 50, 60, 70, 80 ]
+    description: Number of members of the GFS ENKF ensemble.
+  NMEM_EOMGGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
+  NMEM_EFMNGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
+  NMEM_EARCGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
+  RECENTER_ENKF:  { type: bool,     default: YES }
+  SMOOTH_ENKF:    { type: bool,     default: YES }
+  assim_freq:     { type: int,      default: 6 }
+  l4densvar:      { type: bool,     default: NO }
+  lwrite4danl:    { type: bool,     default: NO }
+
+  NSPLIT:
+    type: int
+    default: 4
+    description: "Execute prepbufr in parallel.  Operational GFS default is 3."
+
+  NAM_ENKF:
+    type: string
+    default: "analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
+
+  INCREMENTS_TO_ZERO:
+    type: string list
+    default: [ delz_inc, clwmr_inc, icmr_inc ]
+
+  PREP_REALTIME:
+    type: bool
+    default: no
+
+  PROCESS_TROPCY:
+    type: bool
+    default: no
+
+  DO_RELOCATE:
+    type: bool
+    default: no
+
+  DO_MAKEPREPBUFR:
+    type: bool
+    default: YES
+    description: If NO, will copy prepbufr from globaldump.  Otherwise, generates prepbufr file anew.
+
+  RERUN_EFCSGRP:
+    type: bool
+    default: NO
+    description: Rerun failed ensemble forecast group members automatically.
+
+  RERUN_EOMGGRP:
+    type: bool
+    default: NO
+
+  OBSINPUT_INVOBS: 
+    type: string
+    default: "dmesh(1)=225.0,dmesh(2)=225.0"
+  OBSQC_INVOBS:
+    type: string
+    default: "tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+  RERUN_EOMGGRP: 
+    type: bool
+    default: YES
+
+
+# These variable largely eliminate the need for explicitly setting
+# USH directories, FIX files, PARM files, EXECutables below
+# The USER can overwrite components that they wish
+# e.g. PRVT is used from the GSI

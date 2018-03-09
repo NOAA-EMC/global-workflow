@@ -1,0 +1,24 @@
+config_getic:
+  filename: config.getic
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.getic ##########
+    # Fetching GFS initial conditions specific
+    
+    echo "BEGIN: config.getic"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources getic
+    
+    # We should just be supporting the OPSGFS only
+    export ics_from="{doc.case.ics_from}" # initial conditions from opsgfs or pargfs
+    
+    # Provide a parallel experiment name and path to HPSS archive
+    if [ $ics_from = "pargfs" ]; then
+        export parexp="{doc.case.parexp}"
+        export HPSS_PAR_PATH="{doc.case.HPSS_PAR_PATH}"
+    fi
+    
+    echo "END: config.getic"
+    

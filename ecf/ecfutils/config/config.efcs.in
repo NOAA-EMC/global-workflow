@@ -1,0 +1,50 @@
+#!/bin/ksh -x
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE_ENKF
+
+# Get task specific resources
+. $EXPDIR/config.resources efcs
+
+export npe_fv3={doc.resources.run_efcs[0].mpi_ranks}
+export npe_efcs={doc.resources.run_efcs[0].mpi_ranks}
+export nth_fv3={sched.nodes.omp_threads_for(doc.resources.run_efcs[0])}
+
+export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf"
+export NMEM_EFCSGRP={doc.data_assimilation.NMEM_EFCSGRP}
+export RERUN_EFCSGRP={tools.YES_NO(doc.data_assimilation.RERUN_EFCSGRP)}
+
+# Stochastic physics parameters (only for ensemble forecasts)
+export DO_SKEB="{tools.YES_NO(doc.fv3_enkf_settings.DO_SKEB)}"
+export SKEB="{tools.fv3_enkf_settings.SKEB}"
+export SKEB_TAU="{tools.fv3_enkf_settings.SKEB_TAU}"
+export SKEB_LSCALE="{tools.fv3_enkf_settings.SKEB_LSCALE}"
+export SKEBNORM="{tools.fv3_enkf_settings.SKEBNORM}"
+export DO_SHUM="{tools.YES_NO(tools.fv3_enkf_settings.DO_SHUM)}"
+export SHUM="{tools.fv3_enkf_settings.SHUM}"
+export SHUM_TAU="{tools.fv3_enkf_settings.SHUM_TAU}"
+export SHUM_LSCALE="{tools.fv3_enkf_settings.SHUM_LSCALE}"
+export DO_SPPT="{tools.YES_NO(tools.fv3_enkf_settings.DO_SPPT)}"
+export SPPT="{tools.fv3_enkf_settings.SPPT}"
+export SPPT_TAU="{tools.fv3_enkf_settings.SPPT_TAU}"
+export SPPT_LSCALE="{tools.fv3_enkf_settings.SPPT_LSCALE}"
+export SPPT_LOGIT="{tools.fort(tools.fv3_enkf_settings.SPPT_LOGIT)}"
+export SPPT_SFCLIMIT="{tools.fort(tools.fv3_enkf_settings.SPPT_SFCLIMIT)}"
+
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+else
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+fi
+
+# FV3 model namelist parameters to over-ride
+export restart_interval="{tools.fv3_enkf_settings.restart_interval}"
+export k_split="{tools.fv3_enkf_settings.k_split}"
+export n_split="{tools.fv3_enkf_settings.n_split}"
+
+echo "END: config.efcs"

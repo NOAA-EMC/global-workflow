@@ -1,0 +1,28 @@
+config_prepbufr:
+  filename: config.prepbufr
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.prepbufr ##########
+    # PREPBUFR specific configuration
+    
+    echo "BEGIN: config.prepbufr"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources prepbufr
+    
+    # Set obsproc versions
+    . $NWROOThps/versions/obsproc_global.ver
+    
+    # Set job and DATAROOT
+    export job=${{CDUMP}}_prep_${{cyc}}
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    
+    # MAKEPREPBUFR script and options
+    export NSPLIT={doc.data_assimilation.NSPLIT}  # execute in parallel.  opr defaults to NSPLIT=3
+    
+    # Fix files
+    export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+    
+    echo "END: config.prepbufr"
+    

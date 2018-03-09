@@ -1,0 +1,30 @@
+known_workflows: !Template &known_workflows
+  workflow:
+    type: string
+    allowed: [ cycled_workflow, gfs_forecast_workflow, crow_sh_fcst_workflow,
+               crow_sh_df_fcst_workflow, crow_exe_fcst_workflow ]
+    if_present: !FirstTrue
+      - when: !calc workflow=="cycled_workflow"
+        do: !Template
+          IC_CDUMP:
+            type: string
+            allowed: [ gdas, gfs ]
+            description: Get initial conditions from 1st cycle from gfs or gdas
+            default: GDAS
+          IC_DIR:
+            type: string
+            description: Disk location of initial conditions for cycled workflow
+      - otherwise: !Template
+          ics_from:
+            type: string
+            allowed: [ opsgfs, pargfs ]
+            default: opsgfs
+            if_present: !Template
+              parexp:
+                default: prnemsrn
+                type: string
+                description: Name of a GFS parallel experiment to pull from tape
+              HPSS_PAR_PATH:
+                default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
+                type: string
+                description: Path to HPSS tapes with GFS parallel data

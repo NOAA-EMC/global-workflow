@@ -1,0 +1,48 @@
+config_post: 
+  filename: config.post
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.post ##########
+    # Post specific
+    
+    echo "BEGIN: config.post"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources post
+    
+    # Convert nemsio files to grib files using post job
+    #-------------------------------------------
+    
+    # No. of concurrent post jobs [0 implies sequential]
+    export NPOSTGRP=5
+    
+    # Post driver job that calls gfs_nceppost.sh and downstream jobs
+    export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+    export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
+    export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
+    
+    export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+    export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+    export GOESF={tools.YES_NO(doc.post.GOESF)}   # goes image
+    export GTGF={tools.YES_NO(doc.post.GTGF)}     # gtg icing product
+    export FLXF={tools.YES_NO(doc.post.FLXF)}     # grib2 flux file written by post
+    export PGB1F={tools.YES_NO(doc.post.PGB1F)}
+    
+    if [[ "$CDUMP" == gdas ]] ; then
+        export npe_postgp={doc.resources.run_gdaspost.total_ranks()}
+        export nth_postgp={sched.nodes.omp_threads_for(doc.resources.run_gdaspost[0])}
+    else
+        export npe_postgp={doc.resources.run_gfspost.total_ranks()}
+        export nth_postgp={sched.nodes.omp_threads_for(doc.resources.run_gfspost[0])}
+    fi
+    export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
+    export downset={doc.post.downset}
+    export npe_dwn={doc.resources.run_dwn.total_ranks()}
+    export nth_dwn={sched.nodes.omp_threads_for(doc.resources.run_dwn[0])}
+    
+    export GRIBVERSION='grib2'
+    export SENDCOM="YES"
+    
+    echo "END: config.post"
+    

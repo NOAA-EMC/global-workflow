@@ -51,7 +51,7 @@ find_python36() {
     fi
 }
 
-make_yaml_files() {
+make_yaml_files_in_expdir() {
     if [[ "${WORKTOOLS_VERBOSE:-NO}" == YES ]] ; then
 	set -x
     fi
@@ -90,5 +90,5 @@ make_yaml_files() {
 
     source "$tmpfile"
 
-    $python36 -c "import worktools ; worktools.make_yaml_files('$here','$EXPDIR')"
+    $python36 -c "import worktools ; worktools.make_yaml_files_in_expdir('$here','$EXPDIR')"
 }

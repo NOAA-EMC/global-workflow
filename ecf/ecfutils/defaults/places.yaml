@@ -1,0 +1,88 @@
+default_places: &default_places
+  PROJECT_DIR: !error Please select a project directory.
+
+  # Locations of CROW and this test suite.
+  HOMEcrow: !calc tools.crow_install_dir()
+
+  # NOTE: These two directories will need to be changed for the real
+  # fv3gfs workflow:
+  HOMEgfs: /scratch4/NCEPDEV/nems/noscrub/Samuel.Trahan/fv3gfs-fcst-post/EXP-cyc-try2/
+#!calc tools.crow_install_dir('model/fv3gfs')
+  HOMEgdas: !calc HOMEgfs
+
+  HOMEDIR: !expand "{PROJECT_DIR}/save/{tools.env('USER')}"
+  STMP: !calc PTMP
+  PTMP: !expand "{doc.platform.least_used_scrub}/{tools.env('USER')}"
+  NOSCRUB: !expand "{PROJECT_DIR}/noscrub/{tools.env('USER')}"
+
+  BASE_WORKFLOW: !expand "{HOMEgfs}/gfs_workflow.v15.0.0"
+  BASE_GSM: !expand "{HOMEgfs}/global_shared.v15.0.0"
+  BASE_MODULES: !expand "{HOMEgfs}/global_shared.v15.0.0/modulefiles"
+  BASE_ENV: !expand "{HOMEgfs}/gfs_workflow.v15.0.0/env"
+  BASE_JOB: !expand "{HOMEcrow}/model/fv3gfs/jobs"
+
+  # User paths
+  EXPDIR: !expand "{HOMEDIR}/{doc.case.experiment_name}"
+  ROTDIR: !expand "{PTMP}/{doc.case.experiment_name}"
+  ICSDIR: !expand "{ROTDIR}/FV3ICS"
+  RUNDIR: !expand "{STMP}/RUNDIRS/{doc.case.experiment_name}"
+  ARCDIR: !expand "{NOSCRUB}/archive/{doc.case.experiment_name}"
+  ATARDIR: !expand "/NCEPDEV/{doc.accounting.hpss_project}/1year/{tools.env('USER')}/{doc.platform.name}/scratch/{doc.case.experiment_name}"
+#  CDUMP: "gfs"
+
+  # Component paths
+  BASE_FV3GFS: !calc HOMEgfs
+  BASE_GDAS: !expand "{HOMEgfs}/gdas.v15.0.0"
+  BASE_GFS: !expand "{HOMEgfs}/gfs.v15.0.0"
+  BASE_SVN: !calc doc.platform.BASE_SVN
+  MYBASE_SVN: !expand "{NOSCRUB}/{tools.env('USER')}/svn"
+  BASE_GSM: !expand "{HOMEgfs}/global_shared.v15.0.0"
+  BASE_GSI: !expand "{BASE_GSM}/sorc/gsi.fd"
+  BASE_NEMSfv3gfs: !expand "{BASE_GSM}/sorc/fv3gfs.fd"
+  BASE_POST: !expand "{BASE_SVN}/post/tags/ncep_post.v7.7.2/"
+  BASE_PREP: !expand "{BASE_SVN}/obsproc/releases/obsproc_prep_RB-4.0.0"
+  BASE_PREP_GLOBAL: !expand "{BASE_SVN}/obsproc/releases/obsproc_global_RB-3.0.0"
+  BASE_VERIF: !expand "{BASE_SVN}/verif/global/tags/vsdb"
+  BASE_OZNMON: !calc BASE_GSI
+  GFSDOWNSH: !expand "{BASE_WORKFLOW}/ush/fv3gfs_downstream_nems.sh"
+  GFSDWNSH: !expand "{BASE_WORKFLOW}/ush/fv3gfs_dwn_nems.sh"
+  ENKFUPDSH: !expand "{BASE_GSI}/scripts/EnKF/scripts_ncep/exglobal_enkf_update_fv3gfs.sh.ecf"
+
+  FIX_DIR: !expand "{BASE_GSM}/fix"
+  FIX_AM: !expand "{FIX_DIR}/fix_am"
+  FIX_FV3: !expand "{FIX_DIR}/fix_fv3"
+
+  CHGRESSH: !expand "{BASE_POST}/ush/global_chgres_GSM.sh"
+  CHGRESSH_ECEN: !expand "{BASE_GSM}/ush/global_chgres_GSM.sh"
+
+  vsdbhome: !calc BASE_VERIF
+  vsdbsave: !expand "{PROJECT_DIR}/noscrub/{tools.env('USER')}/archive/vsdb_data"
+  VSDBSH: !expand "{vsdbhome}/vsdbjob.sh"            # VSDB job script
+
+#"/scratch4/NCEPDEV/global/save/glopara/svn/verif/global/tags/vsdb/vsdbjob.sh"
+
+  # Locations of specific scripts:
+
+  POSTJJOBSH: !expand "{BASE_WORKFLOW}/jobs/JGFS_POST.sh"
+  ENKFFCSTSH: !expand "{BASE_GSI}/scripts/EnKF/scripts_ncep/exglobal_enkf_fcst_fv3gfs.sh.ecf"
+  ENKFRECENSH: !expand "{BASE_GSI}/scripts/EnKF/scripts_ncep/exglobal_enkf_recenter_fv3gfs.sh.ecf"
+  CHGRESEXEC: !expand "{BASE_GSM}/exec/global_chgres_GSM"
+  ENKFINVOBSSH: !expand "{BASE_GSI}/scripts/EnKF/scripts_ncep/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
+  INVOBSSH: !expand "{BASE_GSI}/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
+  ENKFEXEC: !expand "{BASE_GSI}/exec/global_enkf"
+
+  FCSTEXECDIR: !expand "{BASE_GSM}/sorc/fv3gfs.fd/NEMS/exe"
+  FORECASTSH: !expand "{BASE_GSM}/scripts/exglobal_fcst_nemsfv3gfs.sh"
+  POSTGPSH: !expand "{BASE_POST}/ush/global_nceppost.sh"
+  POSTGPEXEC: !expand "{BASE_POST}/exec/ncep_post"
+  PARM_FV3DIAG: !expand "{BASE_GSM}/parm/parm_fv3diag"
+  FIELD_TABLE: !expand "{PARM_FV3DIAG}/field_table_ncld1"
+
+  REGRID_NEMSIO_SH: !expand "{BASE_GSM}/ush/fv3gfs_regrid_nemsio.sh"
+  REGRID_NEMSIO_TBL: !expand "{PARM_FV3DIAG}/variable_table_da_nonsst.txt"
+  NC2NEMSIOSH: !expand "{BASE_GSM}/ush/fv3gfs_nc2nemsio.sh"
+  REMAPSH: !expand "{BASE_GSM}/ush/fv3gfs_remap.sh"
+
+
+  DRIVE_MAKEPREPBUFRSH: !expand "{BASE_GSM}/ush/drive_makeprepbufr.sh"
+  MAKEPREPBUFRSH: !expand "{BASE_PREP}/ush/prepobs_makeprepbufr.sh"

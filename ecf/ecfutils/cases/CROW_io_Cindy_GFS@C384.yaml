@@ -1,0 +1,53 @@
+fv3_settings: &fv3_settings
+  LEVS: 65  # Number of vertical levels (mandatory)
+  CASE: C384 # FV3 horizontal resolution (mandatory)
+  QUILTING: NO
+
+fv3_gfs_settings: &fv3_gfs_settings
+  <<: *fv3_settings
+  Template: *fv3_settings_template
+  CDUMP: gfs
+
+fv3_enkf_settings: &fv3_enkf_settings
+  <<: *no_enkf
+
+fv3_gdas_settings: &fv3_gdas_settings
+  <<: *no_gdas
+
+########################################################################
+
+gfs_output_settings: &gfs_output_settings
+  Template: *gfs_output_settings_template
+
+  FHMAX_GFS: 120 # Last GFS forecast hour (mandatory)
+  FHOUT_GFS: 6 # GFS output frequency (optional)
+
+  OUTPUT_GRID: "gaussian_grid"
+
+########################################################################
+
+data_assimilation: &data_assimilation
+  <<: *no_data_assimilation
+
+prepbufr: &prepbufr
+  <<: *no_prepbufr
+
+########################################################################
+
+places: &places
+  <<: *user_places
+  FORECASTSH: !expand "{HOMEcrow}/model/fv3gfs/scripts/exglobal_fcst_crow_io.sh"
+  
+########################################################################
+
+case:
+  Template: [ *case_template, *known_workflows ]
+  SDATE: 2017-06-19t18:00:00
+  EDATE: 2017-06-22t12:00:00
+
+  workflow: crow_sh_df_fcst_workflow
+
+  ics_from: pargfs
+  parexp: prnemsrn
+
+#-END OF FILE-#

@@ -1,0 +1,353 @@
+
+CYC_TRACK_VARS: &CYC_TRACK_VARS !Template
+  TRACKERSH: 
+    type: string 
+    default: !expand "{BASE_GSM}/ush/global_tracker.sh"
+  PARATRKR: 
+    type: string
+    default: !expand "{BASE_GSM}/ush/global_extrkr.sh"
+  GETTRKEXEC:
+    type: string 
+    default: !expand "{BASE_GSM}/exec/gettrk"
+  GETTX: 
+    type: string
+    default: !calc GETTRKEXEC
+  SUPVX: 
+    type: string
+    default: !expand "{BASE_GSM}/exec/supvit"
+  HOMERELO: 
+    type: string
+    default: !calc BASE_GSM
+  homesyndir: 
+    type: string
+    default: !calc BASE_GSM
+  FHMIN: { type: int, default: 0 }
+  FHMIN_ENKF: { type: int, default: !calc doc.gfs_output_settings.FHMIN_ENKF }
+  FHMAX_ENKF: { type: int, default: !calc doc.gfs_output_settings.FHMAX_ENKF }
+  FHOUT_ENKF: { type: int, default: !calc doc.gfs_output_settings.FHOUT_ENKF }
+  FHMAX_GFS:  { type: int, default: !calc doc.gfs_output_settings.FHMAX_GFS  }
+  FHMAX2_GFS: { type: int, default: !calc FHMAX_GFS }
+  FHOUT: 
+    type: int
+    default: !FirstTrue
+      - when: !calc CDUMP=="gfs"
+        do: !calc FHOUT_GFS
+      - when: !calc CDUMP=="gdas"
+        do: !calc doc.gfs_output_settings.FHOUT_GDAS
+      - otherwise: !error "FHOUT undefined!"
+  FHMAX: 
+    type: int
+    default: !FirstTrue
+      - when: !calc CDUMP=="gfs"
+        do: !calc FHMAX2_GFS
+      - when: !calc CDUMP=="gdas"
+        do: !calc doc.gfs_output_settings.FHMAX_GDAS
+      - otherwise: !error "FHMAX undefined!"
+
+  FHMAX2: { type: int, default: !calc FHMAX2_GFS }
+
+  COMROOTp1: 
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="THEIA"
+        do: "/scratch4/NCEPDEV/rstprod/com"
+      - otherwise: !error "COMROOTp1 undefined!"
+  archsyndir:  
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="THEIA"
+        do: !expand "{COMROOTp1}/arch/prod/syndat"
+      - otherwise: !error "archsyndir undefined!"
+
+CYC_GEN_VARS: &CYC_GEN_VARS !Template
+  NWROOTGENESIS: 
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="WCOSS_C"
+        do: "/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/gfs/q3fy17"
+      - when: !calc doc.platform.name=="THEIA"
+        do: "/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17"
+      - otherwise: !error "doc.platform.name not supported!"
+  UTILROOT: 
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="THEIA"
+        do: "/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
+      - otherwise: null
+  GETTX_GEN: 
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="THEIA"
+        do: !expand "{NWROOTGENESIS}/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
+      - otherwise: null
+  GENESISSH: 
+    type: string
+    default: !FirstTrue
+      - when: !calc ( doc.platform.name=="WCOSS_C" or doc.platform.name=="THEIA" )
+        do: !expand "{NWROOTGENESIS}/ens_tracker.v2.0.1/gfs_genesis_para_fv3gfs.sh"
+      - when: !calc ( not doc.platform.name=="WCOSS_C" and not doc.platform.name=="THEIA" )
+        do: ""
+      - otherwise: null
+
+MIN_VARS: &MIN_VARS !Template
+  HOMEgfs: 
+    type: string
+    default: !expand "{BASE_SVN}/fv3gfs/trunk/gfs.v15.0.0"
+  HOMEminmon: 
+    type: string
+    default: !calc BASE_GSM
+  MINMON_SUFFIX: 
+    type: string
+    default: !calc doc.case.experiment_name
+  M_TANKverf: 
+    type: string
+    default: !expand "{NOSCRUB}/minmon"
+  VRFYMINSH: 
+    type: string
+    default: !FirstTrue
+      - when: !calc ( CDUMP=="gdas" and ( doc.platform.name=="WCOSS_C" or doc.platform.name=="THEIA" ) )
+        do: !expand "{HOMEgdas}/jobs/JGDAS_VMINMON"
+      - when: !calc ( CDUMP=="gfs" and ( doc.platform.name=="WCOSS_C" or doc.platform.name=="THEIA" ) )
+        do: !expand "{HOMEgfs}/jobs/JGDAS_VMINMON"
+      - otherwise : null
+        message: !expand "WARNING: Minimization monitoring is not enabled on {doc.platform.name}!"
+
+RAD_VARS: &RAD_VARS !Template
+  HOMEradmon: 
+    type: string
+    default: !calc BASE_GSM
+  RADMON_SUFFIX: 
+    type: string
+    default: !calc doc.case.experiment_name
+  TANKverf: 
+    type: string
+    default: !expand "{NOSCRUB}/radmon"
+  VRFYRADSH: 
+    type: string
+    default: !FirstTrue
+      - when: !calc ( doc.platform.name=="WCOSS_C" or doc.platform.name=="THEIA" )
+        do: !expand "{HOMEgdas}/jobs/JGDAS_VERFRAD"
+      - when: !calc ( not doc.platform.name=="WCOSS_C" and not doc.platform.name=="THEIA" )
+        message: !expand "WARNING: Radiance monitoring is not enabled on {doc.platform.name}!"
+        do: null
+      - otherwise: null
+
+OZN_VARS: &OZN_VARS !Template
+# echo "WARNING: Ozone Monitoring is just a stub for now!"
+  VRFYOZN: 
+    type: bool
+    default: NO
+  OZNDIR: 
+    type: string
+    stages: [ execution ]
+    default: !expand "{NOSCRUB}/{tools.env('LOGNAME')}/ozone/stats/{doc.case.experiment_name}"
+  VRFYOZNSH:
+    type: string
+    default:  ""
+  BASEDIR_OZNMON: 
+    type: string
+    default: !expand "{doc.places.BASE_OZNMON}/util/Ozone_Monitor"
+
+MIN_RAD_OZN_VARS: &MIN_RAD_OZN_VARS !Template
+  HOMEgdas: 
+    type: string
+    default: !calc BASE_GDAS
+  envir: 
+    type: string
+    default: "para"
+
+VRFY_CDUMP_GFS_VARS: &VRFY_CDUMP_GFS_VARS !Template
+  BACKDATEVSDB: 
+    type: int
+    default: 24
+  VBACKUP_PRCP: 
+    type: int
+    default: 24
+  vsdbsave: 
+    type: string
+    default: !expand "{NOSCRUB}/archive/vsdb_data"
+  vsdbhome: 
+    type: string
+    default: !calc BASE_VERIF
+  VSDBSH: 
+    type: string
+    default: !expand "{vsdbhome}/vsdbjob.sh"
+  vlength: 
+    type: int
+    default: !calc FHMAX_GFS
+  vhr_rain: 
+    type: int
+    default: !calc FHMAX_GFS
+  ftyplist: 
+    type: string
+    default: "pgbq"
+
+vrfy_template_gfs: &vrfy_template_gfs !Template # for "CDUMP = gfs"
+  VRFY_CDUMP_GFS:
+    type: bool
+    default: !FirstTrue
+      - when: !calc ( VSDB_STEP1 or VRFYPRCP or VRFYG2OBS )
+        do: YES
+      - otherwise: NO
+    if_present: !FirstTrue
+      - when: !calc ( VSDB_STEP1 or VRFYPRCP or VRFYG2OBS )
+        do: *VRFY_CDUMP_GFS_VARS
+        message: "VRFY_CDUMP_GFS_VARS loaded!"
+      - otherwise: null
+
+vrfy_template: &vrfy_template !Template
+  # verifying dump
+  VDUMP:
+    type: string
+    allowed: [ "gfs", "gdas" ]
+
+  CDUMPFCST:
+    description: Fit-to-obs with GDAS/GFS prepbufr
+    type: string
+    allowed: [ "gfs", "gdas" ]
+
+  CDFNL:
+    description: Scores verification against GDAS/GFS analysis
+    type: string
+    allowed: [ "gfs", "gdas" ]
+
+  VSDB_STEP1:
+    description: populate VSDB database
+    type: bool
+    default: NO
+
+  VSDB_STEP2:
+    type: bool
+    default: NO
+
+  VRFYG2OBS:
+    description: Grid to observations
+    type: bool
+    default: NO
+
+  VRFYFITS:
+    description: Fit to observations
+    type: bool
+    default: NO
+
+  VRFYPRCP:
+    description: Precip threat scores
+    type: bool
+    default: NO
+    
+  VRFYMINMON:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc VRFYMINMON
+        do: *MIN_VARS
+      - otherwise: null
+        message: !expand "WARNING: Minimization monitoring is turned off!"
+
+  VRFYRAD:
+    description: Radiance data assimilation monitoring
+    type: bool
+    default: NO
+
+  VRFYOZN:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc VRFYOZN
+        message: "WARNING: Ozone Monitoring is just a stub for now!"
+        do: *OZN_VARS
+      - otherwise: null
+
+  VRFYTRAK:
+    description: Hurricane track forecasts
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc VRFYTRAK
+        do: *CYC_TRACK_VARS
+      - otherwise: null
+
+  VRFYGENESIS:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc VRFYGENESIS
+        do: *CYC_GEN_VARS
+      - otherwise: null
+
+  VRFYGMPK:
+    description: Gempak verification
+    type: bool
+    default: NO
+
+  nth_vrfy:
+    type: int
+    default: 1
+
+# End of user speficied variables
+#
+  fitdir:
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.name=="WCOSS_C"
+        do: !expand "{BASE_SVN}/verif/global/parafits.fv3nems/batrun"
+      - when: !calc doc.platform.name=="THEIA"
+        do: !expand "{BASE_SVN}/verif/global/parafits.fv3nems/batrun"
+      - otherwise: !error "Do not know fitdir for this platform"
+
+  PREPQFITSH:
+    type: string
+    default: !FirstTrue
+      - when: !calc ( doc.platform.name=="WCOSS_C" and VRFYFITS )
+        do: !expand "{fitdir}/subfits_cray_nems"
+        message: WCOSS_C fits file
+      - when: !calc ( doc.platform.name=="THEIA" and VRFYFITS )
+        do: !expand "{fitdir}/subfits_theia_nems"
+        message: "THEIA fits file"
+      - when: !calc not VRFYFITS
+        do: "/dev/null"
+      - otherwise: !error "Do not know subfits file (PREPQFITSH) for {doc.platform.name}"
+
+#  VRFY_CDUMP_GFS:
+#    type: bool
+#    default: !FirstTrue
+#      - when: !calc ( CDUMP=="gfs" and ( VSDB_STEP1 or VRFYPRCP or VRFYG2OBS ) )
+#        do: YES
+#      - otherwise: NO
+#    if_present: !FirstTrue
+#      - when: !calc ( CDUMP=="gfs" and ( VSDB_STEP1 or VRFYPRCP or VRFYG2OBS ) )
+#        do: *VRFY_CDUMP_GFS_VARS
+#        message: "VRFY_CDUMP_GFS_VARS unavailable!"
+#      - otherwise: null
+
+  NO_VRFYMINSH:
+    type: bool
+    default: NO
+    override: !FirstTrue
+      - when: !calc ( not doc.platform.name=="THEIA" and not doc.platform.name=="WCOSS_C" )
+        do: YES
+        message: !expand "WARNING: Minimization monitoring is not enabled on {doc.platform.name}!"
+      - otherwise: null
+
+  MIN_RAD_OZN:
+    type: bool
+    default: !FirstTrue
+      - when: !calc ( VRFYRAD or VRFYMINMON or VRFYOZN )
+        do: YES
+      - otherwise: NO
+    if_present: !FirstTrue
+      - when: !calc ( VRFYRAD or VRFYMINMON or VRFYOZN )
+        do: *MIN_RAD_OZN_VARS
+      - otherwise: null
+
+  RAD:
+    type: bool
+    default: !FirstTrue
+      - when: !calc ( VRFYRAD and CDUMP==CDFNL )
+        do: YES
+      - otherwise: NO
+    if_present: !FirstTrue
+      - when: !calc ( VRFYRAD and CDUMP==CDFNL )
+        do: *RAD_VARS
+      - otherwise: null
+        message: !expand "WARNING: Radiance monitoring is turned off!"

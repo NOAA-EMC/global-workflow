@@ -1,0 +1,21 @@
+config_eupd:
+  filename: config.eupd
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.eupd ##########
+    # Ensemble update specific, dependency config.anal
+    
+    echo "BEGIN: config.eupd"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources eupd
+    
+    export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
+    export npe_enkf={doc.resources.run_eupd.total_ranks()}
+    export nth_enkf={doc.platform.nodes.omp_threads_for(doc.resources.run_eupd[0])}
+    
+    export NAM_ENKF="{doc.data_assimilation.NAM_ENKF}"
+    
+    echo "END: config.eupd"
+    

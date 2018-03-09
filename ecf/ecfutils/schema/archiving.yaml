@@ -1,0 +1,17 @@
+archive_settings_template: !Template &archive_settings_template
+  scrub_in_archive_start:
+    type: int
+    default: 144
+    description: "starting hour of previous cycles to be removed from rotating directory during archive job"
+
+  scrub_in_archive_start:
+    type: int
+    default: 24
+    description: "ending hour of previous cycles to be removed from rotating directory during archive job"
+
+  EARC_CYC:
+    type: string list
+    allowed: [ "00", "06", "12", "18" ]
+    default: "00"
+    description: |
+      Archive ensemble restarts at EARC_CYC only; can be "00 06 12 18"

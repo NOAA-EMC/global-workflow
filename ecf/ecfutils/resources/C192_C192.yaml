@@ -1,71 +1,24 @@
 resources:
-
-  memory_3072M_on_wcoss_cray: !FirstTrue
-    - when: !calc doc.settings.fv3gfs_machine != 'WCOSS_C'
-      do: null
-    - otherwise: "3072M"
-
-  memory_1024M_on_wcoss_cray: !FirstTrue
-    - when: !calc doc.settings.fv3gfs_machine != 'WCOSS_C'
-      do: null
-    - otherwise: "1024M"
-
-  memory_254M_on_wcoss_cray: !FirstTrue
-    - when: !calc doc.settings.fv3gfs_machine != 'WCOSS_C'
-      do: null
-    - otherwise: "254M"
+  <<: *default_resources
 
   # From if[[...ecen]] block in config.resources:
   run_ecen: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       walltime: !timedelta "00:10:00"
       mpi_ranks: 84
       exe: placeholder
       max_ppn: 12
       OMP_NUM_THREADS: 2
 
-  run_chgres: !JobRequest
-    - exe: time
-      OMP_NUM_THREADS: 12
-      args:
-        - placeholder
-
-  run_nothing: !JobRequest # Special placeholder for "do nothing"
-    - memory: "300M"
-      exe: placeholder
-      walltime: !timedelta "00:02:00"
-      exclusive: false
-
-  run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
-    - memory: "300M"
-      exe: placeholder
-      mpi_ranks: 0
-      walltime: !timedelta "00:02:00"
-      exclusive: true
-
-  run_dump_waiter: !JobRequest
-    - memory: "300M"
-      exe: placeholder
-      walltime: !FirstTrue
-        - when: !calc doc.settings.realtime
-          do: !timedelta "01:00:00"
-        - otherwise: !timedelta "00:05:00"
-
-  run_make_next_cycles: !JobRequest
-    - memory: "300M"
-      exe: placeholder
-      walltime: !timedelta "00:15:00"
-
   run_eobs: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       walltime: !timedelta "00:30:00"
-      mpi_ranks: !calc 10*max_ppn
+      mpi_ranks: !calc 72
       exe: placeholder
-      max_ppn: 12
-      OMP_NUM_THREADS: 2
+      OMP_NUM_THREADS: 4
 
   run_eomg: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       walltime: !timedelta "03:00:00"
       mpi_ranks: !calc 12*12
       exe: placeholder
@@ -73,84 +26,44 @@ resources:
       OMP_NUM_THREADS: 2
 
   run_eupd: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       walltime: !timedelta "00:30:00"
       mpi_ranks: !calc 40*6
       exe: placeholder
       max_ppn: 6
       OMP_NUM_THREADS: 4
 
-#  run_enkf: !JobRequest
-#    pi_ranks: !calc 10*12
-#    resources:  !JobRequest
-#      - exe: placeholder
-#        max_ppn: 12
-#        OMP_NUM_THREADS: 4
-
-  run_efcs: !JobRequest
-    - memory: !calc doc.resources.memory_254M_on_wcoss_cray
-      walltime: !timedelta "03:00:00"
-      mpi_ranks: !calc doc.settings.ENKF_layout_x*doc.settings.ENKF_layout_y*6
-      max_ppn: 12
-
   run_epos: !JobRequest
-    - memory: !calc doc.resources.memory_254M_on_wcoss_cray
+    - batch_memory: "254M"
       mpi_ranks: 84
       walltime: !timedelta "00:10:00"
       exe: placeholder
       max_ppn: 12
+      OMP_NUM_THREADS: 2
 
   run_prep: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:15:00"
+      max_ppn: 12
+      mpi_ranks: 12
+      exe: placeholder
+
+  run_prepbufr: !JobRequest
+    - batch_memory: "3072M"
       walltime: !timedelta "00:15:00"
       max_ppn: 12
       mpi_ranks: 12
       exe: placeholder
 
   run_anal: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       mpi_ranks: !calc 144
       walltime: !timedelta "1:30:00"
       exe: placeholder
       max_ppn: 6
 
-#  run_gsi: !JobRequest
-#    pi_ranks: !calc 24*6
-#    resources:  !JobRequest
-#      - exe: placeholder
-#        max_ppn: 6
-#        OMP_NUM_THREADS: 4
-
-  run_gdasfcst: !JobRequest
-    - memory: !calc doc.resources.memory_1024M_on_wcoss_cray
-      mpi_ranks: !calc >-
-         doc.settings.layout_x*doc.settings.layout_y*6
-         + doc.settings.WRITE_GROUP*doc.settings.WRTTASK_PER_GROUP
-      walltime: !timedelta "01:00:00"
-      max_ppn: 12
-
-  run_gdas_post_manager: !JobRequest
-    - memory: "300M"
-      exe: placeholder
-      walltime: !calc >-
-        doc.resources.run_gdasfcst[0].walltime + tools.to_timedelta('00:15:00')
-
-  run_gfsfcst: !JobRequest
-    - memory: !calc doc.resources.memory_1024M_on_wcoss_cray
-      mpi_ranks: !calc >-
-         doc.settings.layout_x*doc.settings.layout_y*6
-         + doc.settings.WRITE_GROUP*doc.settings.WRTTASK_PER_GROUP
-      walltime: !timedelta "06:00:00"
-      max_ppn: 12
-
-  run_gfs_post_manager: !JobRequest
-    - memory: "300M"
-      exe: placeholder
-      walltime: !calc >-
-        doc.resources.run_gfsfcst[0].walltime + tools.to_timedelta('00:15:00')
-
   run_gdaspost: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       mpi_ranks: !calc 6*max_ppn
       walltime: !timedelta "00:30:00"
       exe: placeholder
@@ -158,7 +71,7 @@ resources:
       OMP_NUM_THREADS: 1
 
   run_gfspost: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
+    - batch_memory: "3072M"
       mpi_ranks: !calc 6*max_ppn
       walltime: !timedelta "00:10:00"
       exe: placeholder
@@ -166,51 +79,17 @@ resources:
       OMP_NUM_THREADS: 1
 
   run_gfsvrfy: !JobRequest
-    - memory: !FirstTrue
-        - when: !calc doc.settings.fv3gfs_machine == 'THEIA'
-          do: "16384M"
-        - otherwise: "3072M"
+    - compute_memory: "16384M"
+      batch_memory: "3072M"
       mpi_ranks: 5
       walltime: !timedelta "03:00:00"
       exe: placeholder
       max_ppn: 1
 
   run_gdasvrfy: !JobRequest
-    - memory: !FirstTrue
-        - when: !calc doc.settings.fv3gfs_machine == 'THEIA'
-          do: "16384M"
-        - otherwise: "3072M"
+    - compute_memory: "16384M"
+      batch_memory: "3072M"
       mpi_ranks: 1
       walltime: !timedelta "01:30:00"
       exe: placeholder
       max_ppn: 1
-
-  run_arch: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
-      exclusive: false
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-      OMP_NUM_THREADS: 2
-
-  run_final: !JobRequest
-    - memory: "1024M"
-      mpi_ranks: 1
-      walltime: !timedelta "00:01:00"
-      exe: placeholder
-      max_ppn: 1
-      OMP_NUM_THREADS: 2
-
-  run_earc: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-      exclusive: false
-
-  run_fv3ic: !JobRequest
-    - memory: !calc doc.resources.memory_3072M_on_wcoss_cray
-      mpi_ranks: 24
-      exe: placeholder

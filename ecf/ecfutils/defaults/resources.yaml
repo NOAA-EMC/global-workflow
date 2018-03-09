@@ -1,0 +1,133 @@
+# Resources that are either automatically calculated or generally don't change.
+
+default_resources: &default_resources
+
+  run_dwn: !JobRequest
+    - mpi_ranks: 24
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+
+  run_fv3ic: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 24
+      walltime: !timedelta "00:30:00"
+      exe: placeholder
+
+  run_dump_waiter: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !FirstTrue
+        - when: !calc doc.settings.realtime
+          do: !timedelta "01:00:00"
+        - otherwise: !timedelta "00:05:00"
+
+  run_make_next_cycles: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !timedelta "00:15:00"
+
+  run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
+    - memory: "300M"
+      exe: placeholder
+      mpi_ranks: 2
+      walltime: !timedelta "00:02:00"
+      exclusive: true
+
+  run_chgres: !JobRequest
+    - exe: time
+      OMP_NUM_THREADS: 12
+      args:
+        - placeholder
+
+  run_nothing: !JobRequest # Special placeholder for "do nothing"
+    - memory: "300M"
+      exe: placeholder
+      walltime: !timedelta "00:02:00"
+      exclusive: false
+
+  run_gdasfcst: !JobRequest
+    - memory: !calc doc.resources.memory_1024M_on_wcoss_cray
+      mpi_ranks: !calc >-
+        doc.fv3_gdas_settings.layout_x *
+          doc.fv3_gdas_settings.layout_y * 6 + 
+          ( ( doc.fv3_gdas_settings.WRITE_GROUP * 
+              doc.fv3_gdas_settings.WRTTASK_PER_GROUP )
+            if doc.fv3_gdas_settings.QUILTING else 0 )
+      walltime: !timedelta "01:00:00"
+      OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
+
+  run_gdasremap: !JobRequest
+    - mpi_ranks: !calc >-
+        min(240,doc.resources.run_gdasfcst.total_ranks())
+      OMP_NUM_THREADS: 2
+      max_ppn: !calc >-
+        doc.nodes.max_ranks_per_node(
+          doc.resources.run_gdasfcst[0])
+
+  run_efcs: !JobRequest
+    - memory: !calc doc.resources.memory_254M_on_wcoss_cray
+      walltime: !timedelta "03:00:00"
+      mpi_ranks: !calc >-
+        doc.fv3_enkf_settings.layout_x *
+          doc.fv3_enkf_settings.layout_y * 6 + 
+          ( ( doc.fv3_enkf_settings.WRITE_GROUP * 
+              doc.fv3_enkf_settings.WRTTASK_PER_GROUP )
+            if doc.fv3_enkf_settings.QUILTING else 0 )
+      OMP_NUM_THREADS: !calc doc.fv3_enkf_settings.fv3_threads
+
+
+  run_gfsfcst: !JobRequest
+    - memory: !calc doc.resources.memory_1024M_on_wcoss_cray
+      mpi_ranks: !calc >-
+        doc.fv3_gfs_settings.layout_x *
+          doc.fv3_gfs_settings.layout_y * 6 + 
+          ( ( doc.fv3_gfs_settings.WRITE_GROUP * 
+              doc.fv3_gfs_settings.WRTTASK_PER_GROUP )
+            if doc.fv3_gfs_settings.QUILTING else 0 )
+      walltime: !timedelta "06:00:00"
+      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
+
+  run_gfsremap: !JobRequest
+    - mpi_ranks: !calc >-
+        min(240,doc.resources.run_gfsfcst.total_ranks())
+      OMP_NUM_THREADS: 2
+      max_ppn: !calc >-
+        doc.nodes.max_ranks_per_node(
+          doc.resources.run_gfsfcst[0])
+
+  run_gdas_post_manager: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !calc >-
+        doc.resources.run_gdasfcst[0].walltime + tools.to_timedelta('00:15:00')
+
+  run_gfs_post_manager: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !calc >-
+        doc.resources.run_gfsfcst[0].walltime + tools.to_timedelta('00:15:00')
+
+  run_arch: !JobRequest
+    - batch_memory: "3072M"
+      exclusive: false
+      mpi_ranks: 1
+      walltime: !timedelta "06:00:00"
+      exe: placeholder
+      max_ppn: 1
+      OMP_NUM_THREADS: 2
+
+  run_final: !JobRequest
+    - memory: "1024M"
+      mpi_ranks: 1
+      walltime: !timedelta "00:01:00"
+      exe: placeholder
+      max_ppn: 1
+      OMP_NUM_THREADS: 2
+
+  run_earc: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 1
+      walltime: !timedelta "06:00:00"
+      exe: placeholder
+      max_ppn: 1
+      exclusive: false

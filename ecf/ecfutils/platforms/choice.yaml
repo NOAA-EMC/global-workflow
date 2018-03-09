@@ -1,0 +1,11 @@
+platform: !Immediate
+  - !FirstTrue
+    - do:
+        <<: *wcoss_cray
+        Evaluate: true
+      when: !calc do.detect
+    - do: 
+        <<: *theia
+        Evaluate: true
+      when: !calc do.detect
+    - otherwise: null

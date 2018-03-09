@@ -1,0 +1,370 @@
+fv3_forecast_template: !Template &fv3_forecast_template
+  # Required variables with no defaults:
+  QUILTING: { type: bool }
+  cores_per_node: { type: int }
+  OUTPUT_GRID: { type: string }
+
+  FHZER: { type: int, default: 6  }
+  NSOUT: { type: int, default: -1 }
+  ENS_NUM: { type: int, default: 1 }
+  ntiles: { type: int, default: 6 }
+  NUM_FILES: { type: int, default: 2 }
+  hyperthread: { type: bool, default: false }
+
+  filename_base:
+    type: string
+    stages: [ execution ]
+    default: !expand |
+      '{CDUMP}.t{doc.clock.now:%H}z.atm' '{CDUMP}.t{doc.clock.now:%H}z.sfc'
+
+  rCDUMP:
+    type: string
+    allowed: [ gfs, gdas ]
+    default: !FirstTrue
+      - when:  !calc CDUMP=="gfs"
+        do:    gdas
+      - otherwise: !calc CDUMP
+
+  FIELD_TABLE: 
+    type: string
+    default: !expand "{doc.places.PARM_FV3DIAG}/field_table"
+
+  DIAG_TABLE: 
+    type: string
+    default: !expand "{doc.places.PARM_FV3DIAG}/diag_table"
+
+  DATA_TABLE: 
+    type: string
+    default: !expand "{doc.places.PARM_FV3DIAG}/data_table"
+
+  domains_stack_size: { type: int, default: 3000000 }
+  print_memory_usage:
+    type: bool
+    default: no
+
+  res: { type: int, default: !calc "int(CASE[1:])" }
+  JCAP_CASE: { type: int, default: !calc "2*res-2" }
+  LONB_CASE: { type: int, default: !calc "4*res" }
+  LATB_CASE: { type: int, default: !calc "2*res" }
+  JCAP:      { type: int, default: !calc JCAP_CASE }
+  LONB:      { type: int, default: !calc LONB_CASE }
+  LATB:      { type: int, default: !calc LATB_CASE }
+  JCAP_STP:  { type: int, default: !calc JCAP_CASE }
+  LONB_STP:  { type: int, default: !calc LONB_CASE }
+  LATB_STP:  { type: int, default: !calc LATB_CASE }
+  npx:       { type: int, default: !calc res+1 }
+  npy:       { type: int, default: !calc res+1 }
+  npz:       { type: int, default: !calc LEVS-1 }
+
+  FNGLAC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_glacier.2x2.grb" }
+  FNMXIC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_maxice.2x2.grb"}
+  FNTSFC:  { type: string, default: !expand "{doc.places.FIX_AM}/RTGSST.1982.2012.monthly.clim.grb"}
+  FNSNOC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_snoclim.1.875.grb"}
+  FNZORC:  { type: string, default: "igbp"}
+  FNALBC2: { type: string, default: !expand "{doc.places.FIX_AM}/global_albedo4.1x1.grb"}
+  FNAISC:  { type: string, default: !expand "{doc.places.FIX_AM}/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
+  FNTG3C:  { type: string, default: !expand "{doc.places.FIX_AM}/global_tg3clim.2.6x1.5.grb"}
+  FNVEGC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_vegfrac.0.144.decpercent.grb"}
+  FNMSKH:  { type: string, default: !expand "{doc.places.FIX_AM}/seaice_newland.grb"}
+  FNVMNC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_shdmin.0.144x0.144.grb"}
+  FNVMXC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_shdmax.0.144x0.144.grb"}
+  FNSLPC:  { type: string, default: !expand "{doc.places.FIX_AM}/global_slope.1x1.grb"}
+
+  FNALBC:
+    type: string
+    default: !expand "{doc.places.FIX_AM}/global_snowfree_albedo.bosu.t{JCAP}.{LONB}.{LATB}.rg.grb"
+    override: !FirstTrue
+      - when: !calc not tools.isfile(FNALBC)
+        do: "{doc.places.FIX_AM}/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"
+      - otherwise: null
+      
+  FNVETC:
+    type: string
+    default: !expand "{doc.places.FIX_AM}/global_vegtype.igbp.t{JCAP}.{LONB}.{LATB}.rg.grb"
+    override: !FirstTrue
+      - when: !calc not tools.isfile(FNVETC)
+        do: "{doc.places.FIX_AM}/global_vegtype.igbp.t1534.3072.1536.rg.grb"
+      - otherwise: null
+
+  FNSOTC:
+    type: string
+    default: !expand "{doc.places.FIX_AM}/global_soiltype.statsgo.t{JCAP}.{LONB}.{LATB}.rg.grb"
+    otherwise: !FirstTrue
+      - when: !calc tools.isfile(FNSOTC)
+        do: "{doc.places.FIX_AM}/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
+      - otherwise: null
+
+  FNABSC:
+    type: string
+    default: !expand "{doc.places.FIX_AM}/global_mxsnoalb.uariz.t{JCAP}.{LONB}.{LATB}.rg.grb"
+    otherwise: !FirstTrue
+      - when: !calc tools.isfile(FNABSC)
+        do: "{doc.places.FIX_AM}/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
+      - otherwise: null
+
+  FNTSFA: { type: string, default: "" }
+  FNACNA: { type: string, default: "" }
+  FNSNOA: { type: string, default: "" }
+
+  FNSMCC:
+    type: string
+    default: !expand "{doc.places.FIX_AM}/global_soilmgldas.t{JCAP}.{LONB}.{LATB}.grb"
+    otherwise: !FirstTrue
+      - when: !calc tools.isfile(FNSMCC)
+        do: "{doc.places.FIX_AM}/global_soilmgldas.t1534.3072.1536.grb"
+      - otherwise: null
+
+  nstf_name: 
+    type: string
+    default: "0,0,0,0,0"
+    description: |
+      nstf_name contains the NSST related parameters
+      nstf_name(1) : 0 = NSSTM off, 1 = NSSTM on but uncoupled, 2 = NSSTM on and coupled
+      nstf_name(2) : 0 = NSSTM spin up off, 1 = NSSTM spin up on,
+      nstf_name(3) : 0 = NSSTM analysis off, 1 = NSST analysis on
+      nstf_name(4) : zsea1 in mm
+      nstf_name(5) : zsea2 in mm
+
+  io_layout:
+    type: string
+    default: "1,1"
+
+  blocksize:
+    type: int
+    default: 32
+    description: |
+      Comment from exglobal_fcst_nemsfv3gfs.sh:
+      blocking factor used for threading and general physics performance
+
+          nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
+          nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
+          if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
+
+  warm_start:
+    type: bool
+    description: |
+      True = warm start from restart file
+      False = CHGRES GFS analyses
+    if_present: !FirstTrue
+      - when: !calc warm_start
+        do: !Template
+          na_init: { type: int, default: 0 }
+          nggps_ic: { type: bool, default: false }
+          ncep_ic: { type: bool, default: false}
+          external_ic: { type: bool, default: false }
+          mountain: { type: bool, default: true }
+
+          res_latlon_dynamics:
+            description: Add increment on the fly to the restarts
+            type: string
+            default: !FirstTrue
+              - when: !calc read_increment
+                do: "fv3_increment.nc"
+              - otherwise: ""
+      - otherwise: !Template
+          na_init: { type: int, default: 1 }
+
+          nggps_ic: { type: bool, default: yes }
+          ncep_ic:  { type: bool, default: no }
+          external_ic: { type: bool, default: yes }
+          mountain: { type: bool, default: no }
+          read_increment: { type: bool, default: no }
+          res_latlon_dynamics: { type: string, default: "" }
+
+  filtered_terrain: { type: bool, default: yes }
+  gfs_dwinds: { type: bool, default: yes }
+  no_dycore: { type: bool, default: false }
+  adiabatic: { type: bool, default: false }
+
+  dycore_only:
+    type: bool
+    default: !calc adiabatic
+
+  chksum_debug: { type: bool, default: false }
+  gfs_phys_debug: { type: bool, default: false }
+  print_esmf: { type: bool, default: true }
+  RUN_CONTINUE: { type: bool, default: false }
+  ENS_SPS: { type: bool, default: false }
+  calendar: { type: string, default: "julian" }
+  memuse_verbose: { type: bool, default: false }
+  
+
+  print_freq:
+    type: int
+    default: 6
+    
+
+  k_split: { type: int, default: 2 }
+  n_split: { type: int, default: 6 }
+
+  hord_mt_nh_mono: { type: int, default: 10 }
+  hord_xx_nh_mono: { type: int, default: 10 }
+  vtdm4_nh_mono:   { type: float, default: 0.05 }
+
+  hord_mt_hydro_mono: { type: int, default: 10 }
+  hord_xx_hydro_mono: { type: int, default: 10 }
+  vtdm4_hydro_mono:   { type: float, default: 0.05 }
+  
+  hord_mt_nh_nonmono: { type: int, default: 5 }
+  hord_xx_nh_nonmono: { type: int, default: 5 }
+  vtdm4_nh_nonmono:   { type: float, default: 0.06 }
+
+  hord_mt_hydro_nonmono: { type: int, default: 10 }
+  hord_xx_hydro_nonmono: { type: int, default: 10 }
+  vtdm4_hydro_nonmono:   { type: float, default: 0.05 }
+
+  nh_type: 
+    type: string
+    default: "nh"
+    if_present: !FirstTrue
+      - when: !calc nh_type == "nh"
+        do: !Template
+          hord_mt_mono: { type: int, default: !calc hord_mt_nh_mono }
+          hord_xx_mono: { type: int, default: !calc hord_xx_nh_mono }
+          vtdm4_mono: { type: float, default: !calc vtdm4_nh_mono }
+          hord_mt_nonmono: { type: int, default: !calc hord_mt_nh_nonmono }
+          hord_xx_nonmono: { type: int, default: !calc hord_xx_nh_nonmono }
+          vtdm4_nonmono: { type: float, default: !calc vtdm4_nh_nonmono }
+          hydrostatic: { type: bool, default: false }
+          phys_hydrostatic:
+            type: bool
+            default: false
+            description: enable heating in hydrostatic balance in non-hydrostatic simulation
+          use_hydro_pressure:
+            type: bool
+            default: false
+            description: use hydrostatic pressure for physics
+          make_nh:
+            type: bool
+            default: !calc ( not warm_start )
+      - otherwise: !Template
+          hord_mt_mono: { type: int, default: !calc hord_mt_hydro_mono }
+          hord_xx_mono: { type: int, default: !calc hord_xx_hydro_mono }
+          vtdm4_mono: { type: float, default: !calc vtdm4_hydro_mono }
+          hord_mt_nonmono: { type: int, default: !calc hord_mt_hydro_nonmono }
+          hord_xx_nonmono: { type: int, default: !calc hord_xx_hydro_nonmono }
+          vtdm4_nonmono: { type: float, default: !calc vtdm4_hydro_nonmono }
+          hydrostatic: { type: bool, default: true }
+          phys_hydrostatic:
+            type: bool
+            default: false
+            description: ignored when hydrostatic is true
+          use_hydro_pressure:
+            type: bool
+            default: false
+            description: ignored when hydrostatic is true
+          make_nh:
+            type: bool
+            default: false
+
+  MONO:
+    type: string
+    default: "non-mono"
+    allowed: [ mono, non-mono ]
+    if_present: !FirstTrue
+      - when: !calc MONO == "mono"
+        do: !Template
+          d_con_mono: { type: float, default: 0. }
+          d_con: { type: float, override: !calc d_con_mono }
+          do_vort_damp: { type: bool, override: false }
+          hord_mt: { type: int, override: !calc hord_mt_mono }
+          hord_xx: { type: int, override: !calc hord_xx_mono }
+          vtdm4: { type: float, override: !calc vtdm4_mono }
+      - otherwise: !Template
+          d_con_nonmono: { type: float, default: 1. }
+          d_con: { type: float, override: !calc d_con_nonmono }
+          do_vort_damp: { type: bool, override: true }
+          hord_mt: { type: int, override: !calc hord_mt_nonmono }
+          hord_xx: { type: int, override: !calc hord_xx_nonmono }
+          vtdm4: { type: float, override: !calc vtdm4_nonmono }
+
+  fv_debug: { type: bool, default: false }
+  
+  range_warn: { type: bool, default: false }
+  n_sponge:
+    type: int
+    default: 10
+  nudge_qv: { type: bool, default: true }
+  nudge_dz: { type: bool, default: false }
+
+  tau: { type: float, default: 10. }
+  rf_cutoff: { type: float, default: 7.5e+2 }
+  d2_bg_k1: { type: float, default: 0.15 }
+  d2_bg_k2: { type: float, default: 0.02 }
+  kord_tm: { type: int, default: -9 }
+  kord_mt: { type: int, default: 9 }
+  kord_wz: { type: int, default: 9 }
+  kord_tr: { type: int, default: 9 }
+  nwat: { type: int, default: 2 }
+  fv_sg_adj: { type: int, default: 450 }
+  nord: { type: int, default: 3 }
+  dddmp: { type: float, default: 0.2 }
+  d4_bg: { type: float, default: 0.15 }
+  delt_max: { type: float, default: 0.002 }
+  external_eta: { type: bool, default: true }
+  gfs_phil: { type: bool, default: false }
+  hord_tr: { type: int, default: 8 }
+  adjust_dry_mass: { type: bool, default: false }
+  hord_dp: { type: int, default: !calc -hord_xx }
+  agrid_vel_rst: { type: bool, default: true }
+
+  ldiag3d:     { type: bool,   default: false }
+  use_ufo:     { type: bool,   default: true }
+  pre_rad:     { type: bool,   default: false }
+  ncld:        { type: int,    default: 1  }
+  pdfcld:      { type: bool,   default: false }
+  FHSWR:       { type: float,  default: 3600. }
+  FHLWR:       { type: float,  default: 3600. }
+  isubc_sw:    { type: int,    default: 2 }
+  isubc_lw:    { type: int,    default: 2 }
+  lwhtr:       { type: bool,   default: yes }
+  swhtr:       { type: bool,   default: yes }
+  cnvgwd:      { type: bool,   default: yes }
+  shal_cnv:    { type: bool,   default: yes }
+  redrag:      { type: bool,   default: yes }
+  dspheat:     { type: bool,   default: yes }
+  hybedmf:     { type: bool,   default: yes }
+  random_clds: { type: bool,   default: yes }
+  trans_trac:  { type: bool,   default: yes }
+  cnvcld:      { type: bool,   default: yes }
+  imfshalcnv:  { type: int,    default: 2 }
+  imfdeepcnv:  { type: int,    default: 2 }
+  cdmbgwd:     { type: string, default: "3.5,0.25" }
+  prslrd0:     { type: float,  default: 0. }
+  ivegsrc:     { type: int,    default: 1 }
+  isot:        { type: int,    default: 1 }
+  psautco:     { type: string, default: "0.0008,0.0005" }
+  prautco:     { type: string, default: "0.00015,0.00015" }
+  fdiag:       { type: int,    default: !calc FHOUT }
+  LDEBUG:      { type: bool,   default: false }
+  FSMCL2:      { type: int,    default: 99999 }
+  FSMCL3:      { type: int,    default: 99999 }
+  FSMCL4:      { type: int,    default: 99999 }
+  FTSFS:       { type: int,    default: 90 }
+  FAISL:       { type: int,    default: 99999 }
+  FAISS:       { type: int,    default: 99999 }
+  FSNOL:       { type: int,    default: 99999 }
+  FSNOS:       { type: int,    default: 99999 }
+  SPPT_LOGIT:  { type: bool,   default: yes }
+
+  restart_dt:
+    type: timedelta
+    default: !FirstTrue
+      - when: !calc restart_interval > 0
+        do: !calc tools.to_timedelta(restart_interval*3600)
+      - otherwise: !calc tools.to_timedelta(FHMAX*3600)
+
+  amip_interp_nml:    { type: string, default: "" }
+  atmos_model_nml:    { type: string, default: "" }
+  diag_manager_nml:   { type: string, default: "" }
+  fms_io_nml:         { type: string, default: "" }
+  fms_nml:            { type: string, default: "" }
+  fv_core_nml:        { type: string, default: "" }
+  external_ic_nml:    { type: string, default: "" }
+  gfs_physics_nml:    { type: string, default: "" }
+  nggps_diag_nml:     { type: string, default: "" }
+  interpolator_nml:   { type: string, default: "" }
+  namsfc_nml:         { type: string, default: "" }
+  fv_grid_nml:        { type: string, default: "" }
+  nam_stochy_nml:     { type: string, default: "" }
+
