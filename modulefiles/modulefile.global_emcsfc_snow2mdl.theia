@@ -1,17 +1,22 @@
 #%Module#####################################################
-## Module file for emcsfc_snow2mdl
+## emcsfc_snow2mdl build module for Theia
 #############################################################
 
-module load ics/12.1
+# load intel compiler
+
+module load intel/14.0.2
 export FCOMP=ifort
 export FFLAGS="-O0 -r8 -i4 -FR -openmp -convert big_endian -assume byterecl"
 
+# load ncep library modules
+
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
 module load ip/v2.0.0
 module load sp/v2.0.2
 module load w3nco/v2.0.6
-module load bacio/v2.0.2
-module load jasper/v1.900.1
-module load z/v1.2.6
-module load png/v1.2.44
+module load bacio/v2.0.1
+module load jasper
+module load z
+module load png
 module load g2/v2.5.0
 module load landsfcutil/v2.0.0
