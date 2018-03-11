@@ -1,0 +1,53 @@
+fv3_settings: !calc >-
+  doc.case.get('fv3_settings',{})
+
+fv3_gfs_settings: !MergeMapping
+  - !calc doc.fv3_settings
+  - CDUMP: gfs
+    Template: *fv3_settings_template
+  - !calc doc.case.get('fv3_gfs_settings',{})
+
+fv3_enkf_settings: !MergeMapping
+  - !calc doc.fv3_enkf_defaults
+  - !calc doc.fv3_settings
+  - CDUMP: gdas
+    Template: *fv3_settings_template
+  - !calc doc.case.get('fv3_enkf_settings',{})
+
+fv3_gdas_settings: !MergeMapping
+  - !calc doc.fv3_gfs_settings
+  - CDUMP: gdas
+    Template: *fv3_settings_template
+  - !calc doc.case.get('fv3_gdas_settings',{})
+
+gfs_output_settings: !MergeMapping
+  - !calc doc.gfs_output_settings_defaults
+  - { Template: *gfs_output_settings_template }
+  - !calc doc.case.get('gfs_output_settings',{})
+
+data_assimilation: !MergeMapping
+  - !calc doc.data_assimilation_defaults
+  - { Template: *data_assimilation_template }
+  - !calc doc.case.get('data_assimilation',{})
+
+post: !MergeMapping
+  - { Template: *post_schema }
+  - !calc doc.case.get('post',{})
+
+downstream: !MergeMapping
+  - { Template: *downstream_schema }
+  - !calc doc.case.get('downstream',{})
+
+places: !MergeMapping
+  - Template: *places_schema
+  - !calc doc.default_places
+  - !calc doc.user_places
+  - !calc doc.case.get('places',{})
+
+resources: !MergeMapping
+  - !calc doc.resource_defaults
+  - !calc doc.case.get('resources',{})
+
+settings: !MergeMapping
+  - Template: *settings_schema
+  - !calc doc.case.settings

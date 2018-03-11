@@ -1,131 +1,44 @@
-settings_schema: &settings_schema !Template
+settings_schema: !Template &settings_schema
 
-  ENKF_INNOVATE_GROUPS:
-    description: ENKF innovate will be split into this many jobs
+  gfs_cyc:
     type: int
+    default: 2
+    allowed: [ 0, 1, 2, 4 ]
+    description: |
+      When to run GFS forecast.  Data assimilation is run for every
+      cycle regardless of these values
+        * 0: no GFS cycle
+        * 1: 00Z only
+        * 2: 00Z and 12Z only
+        * 4: all 4 cycles (0, 6, 12, 18 Z)
 
-  ENKF_FORECAST_GROUPS:
-    description: ENKF forecast will be split into this many jobs
-    type: int
-
-  ENKF_ARCHIVE_GROUPS:
-    description: ENKF archiving will be split into this many jobs
-    type: int
-
-  gfs_forecast_hours:
-    description: >-
-      Monotonically increasing list of lead times for which the GFS forecast outputs
-    type: int list
-
-  gdas_forecast_hours:
-    description: >-
-      Monotonically increasing list of lead times for which the GDAS forecast outputs
-    type: int list
-    
-  resource_file:
-    description: >-
-      Name of the file that will be copied to resources.yaml.  This
-      should contain the declaration of the "resources" map with
-      resources per-job referred to from suite_def.yaml.
-    type: string
-
-  DMPDIR:
-    description: Location of the global dump for gfs and gdas
-    type: string
-
-  max_job_tries:
-    description: Maximum number of times to try most jobs
-    type: int
-    default: 1
-
-  realtime:
-    description: Is this a real-time simulation (true), or retrospective (false)?
-    type: bool
-
-  archive_to_hpss:
-    description: Should the simulation outputs be archived to tape (HPSS)?
-    type: bool
-
-  four_cycle_mode:
-    description: >-
-      When ecFlow is used, should there be suites for only four cycles
-      in the workflow, as in NCEP Operations, or should there be one
-      suite per cycle.  This variable is ignored in Rocoto mode.
-    type: bool
-
-  experiment_name:
-    description: >-
-      An alphanumeric identifier for this workflow.  This is used to
-      decide output and scrub file locations, and the ecFlow suite
-      name.
-    type: string
-
-  start_date:
-    description: >-
-      Date and time of the first cycle of the workflow.  In most
-      cases, this cycle will be a half cycle.
+  SDATE:
     type: datetime
+    description: |
+      First cycle to run.  In the cycled workflow, this is a
+      "half-cycle" in that it only runs the parts of the workflow that
+      do not require a prior cycle.  The first "real" cycle is the
+      following cycle.
 
-  end_date:
-    description: >-
-      Date and time of the last cycle of the workflow.  
+  EDATE:
     type: datetime
-
-  start_date_gfs:
-    description: Date and time of the first GFS cycle in this workflow
-    type: datetime
-    default: !calc ( start_date+tools.to_timedelta('6:00:00') )
-
-  end_date_gfs:
-    description: Date and time of the last GFS cycle in this workflow
-    type: datetime
-    default: !calc end_date
-
-  interval_gfs:
-    description: >-
-      Time between cycles for which GFS is run.  Must be a multiple of six hours.
-    type: timedelta
-    default: !timedelta "6:00:00"
-
-  COM:
-    description: Location of the top-level output directory for this workflow
+    description: Last cycle to run GDAS.
+  
+  master_grid:
     type: string
+    default: "0p25deg"
+    allowed: [ "1deg", "0p5deg", "0p25deg", "0p125deg" ]
+    description: Original grid of the post
 
-  EXPDIR:
-    description: Location where config and yaml files reside for this workflow
+  ics_from:
     type: string
-
-  DATAROOT:
-    description: Location where per-task scrub areas reside for this workflow
-    type: string
-
-  ECF_HOME:
-    description: >-
-      The $ECF_HOME setting for the ecFlow server.  Not used in Rocoto mode.
-    type: string
-    default: !calc ( tools.env('ECF_HOME','localhost') )
-
-  ROCOTO_HOME:
-    description: >-
-      Directory in which to write the Rocoto XML document.
-      Not used in ecFlow mode.  Default is to use EXPDIR.
-    type: string
-    default: !calc EXPDIR
-
-  QUEUE:
-    description: >-
-      Batch queue in which to run jobs that take more than one processor.
-    type: string
-
-  QUEUESERV:
-    description: >-
-      Batch queue in which to run jobs that have to transfer files to
-      or from some outside location such as a tape archiving system or website.
-    type: string
-
-  QUEUESHARED:
-    description: >-
-      Batch queue in which to run single processor jobs.  Default is to use
-      the same queue as multi-processor jobs.
-    type: string
-    default: !calc QUEUE
+    default: opsgfs
+    allowed: [ opsgfs, pargfs ]
+    description: initial conditions from opsgfs or pargfs
+    if_present: !Template
+      parexpt: 
+        type: string
+        default: prnemsrn
+      HPSS_PAR_PATH:
+        type: string
+        default: !calc "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"

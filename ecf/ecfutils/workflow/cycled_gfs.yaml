@@ -22,15 +22,15 @@ suite: !Cycle
       step: !calc doc.settings.interval_gfs
 
   ecFlow:
-    suite_def_filename: !expand "{doc.settings.experiment_name}_%Y%m%d%H.def"
+    suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"
     suite_def_filename: !FirstTrue
       - when: !calc doc.settings.four_cycle_mode
-        do:   !expand "{doc.settings.experiment_name}%H.def"
-      - otherwise: !expand "{doc.settings.experiment_name}_%Y%m%d%H.def"
+        do:   !expand "{doc.names.experiment}%H.def"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H.def"
     suite_name: !FirstTrue
       - when: !calc doc.settings.four_cycle_mode
-        do:   !expand "{doc.settings.experiment_name}%H"
-      - otherwise: !expand "{doc.settings.experiment_name}_%Y%m%d%H"
+        do:   !expand "{doc.names.experiment}%H"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H"
     scheduler: !calc doc.scheduler
     dates_in_time_dependencies: true
 
@@ -69,7 +69,7 @@ suite: !Cycle
     edit MACHINE '{doc.settings.ecflow_machine}'
     edit ENVIR 'prod'
     edit E 'jecffv3'
-    edit EMCPEN '{doc.settings.experiment_name}'
+    edit EMCPEN '{doc.names.experiment}'
     edit DATAROOT '{doc.settings.DATAROOT}'
     edit ECF_OUT '{doc.settings.ECF_HOME}/output'
     edit ECF_LOG '{doc.settings.EXPDIR}/ecf.log'

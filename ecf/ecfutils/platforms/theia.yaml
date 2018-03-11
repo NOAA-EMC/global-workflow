@@ -1,61 +1,51 @@
-
-theia: &theia !Platform
-  <<: *resource_defaults
+platform: !Platform
   Evaluate: false
   name: THEIA
+
   detect: !calc tools.isdir("/scratch4") and tools.isdir("/scratch3")
 
   BASE_SVN: "/scratch4/NCEPDEV/global/save/glopara/svn"
 
-  # Environment variables to set in all jobs
-  general_env: 
-    POSTGRB2TBL: "/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
-    NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
-    RTMFIX: "/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-    NEMSIOGET: !expand "{doc.places.BASE_GSM}/exec/nemsio_get"
-    #NEMSIOGET: !expand "{NWPROD}/util/exec/nemsio_get"
-    NDATE: !expand "{NWPROD}/util/exec/ndate"
-    NHOUR: !expand "{NWPROD}/util/exec/nhour"
-    WGRIB: !expand "{NWPROD}/util/exec/wgrib"
-    WGRIB2: !expand "{NWPROD}/util/exec/wgrib2"
-    COPYGB: !expand "{NWPROD}/util/exec/copygb"
-    COPYGB2: !expand "{NWPROD}/util/exec/copygb2"
-    GRBINDEX: !expand "{NWPROD}/util/exec/grbindex"
-    GRB2INDEX: !expand "{NWPROD}/util/exec/grb2index"
-    GRBINDEX2: !expand "{NWPROD}/util/exec/grb2index"
-    CNVGRIB: "/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    WGRIB: !expand "{NWPROD}/util/exec/wgrib"
-    WGRIB2: "/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
 
-    prep_step: !expand "{NWPROD}/prod_util.v1.0.15/ush/prep_step"
+  config_base_extras: !expand |
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
 
-    NCP: "/bin/cp -p"
-    NLN: "/bin/ln -sf"
-    NMV: "/bin/mv"
+  shared_accounting:
+    queue: !calc metasched.varref('QUEUESHARED')
+    project: !calc metasched.varref('PROJ')
 
-    CHGRP_CMD: chgrp rstprod
+  service_accounting:
+    queue: !calc metasched.varref('QUEUESERV')
+    project: !calc metasched.varref('PROJ')
 
-  default_cpu_project: fv3-cpu
+  exclusive_accounting:
+    queue: !calc metasched.varref('QUEUE')
+    project: !calc metasched.varref('PROJ')
 
-  serial_accounting:
-    queue: debug
-    project: !calc doc.accounting.cpu_project
-  transfer_accounting:
-    queue: service
-    project: !calc doc.accounting.cpu_project
-  parallel_accounting:
-    queue: batch
-    project: !calc doc.accounting.cpu_project
-
-  scheduler_settings: &theia_scheduler
+  scheduler_settings: &scheduler_settings
     name: MoabTorque
     physical_cores_per_node: 24
     logical_cpus_per_core: 2
     hyperthreading_allowed: true
     indent_text: "  "
-  parallelism_settings: { <<: *theia_scheduler, name: HydraIMPI }
-  node_type_settings:   { <<: *theia_scheduler, node_type: generic }
+  parallelism_settings: &parallelism_settings
+    <<: *scheduler_settings
+    name: HydraIMPI
+  node_type_settings: &node_type_settings
+    <<: *scheduler_settings
+    node_type: generic
 
   mpi_tuning:
       MPI_BUFS_PER_HOST: 2048
@@ -75,13 +65,18 @@ theia: &theia !Platform
 
   # Path to pan_df, the program used to get Panasas disk usage information:
   pan_df: pan_df
-  least_used_scrub: !Immediate 
+  short_term_temp: !Immediate 
     - !FirstMax
       - do: /scratch3/NCEPDEV/stmp1
-        when: !calc tools.panasas_gb(do)
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
       - do: /scratch3/NCEPDEV/stmp2
-        when: !calc tools.panasas_gb(do)
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
       - do: /scratch4/NCEPDEV/stmp3
-        when: !calc tools.panasas_gb(do)
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
       - do: /scratch4/NCEPDEV/stmp4
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: !expand "{doc.user_places.PROJECT_DIR}/scrub"
         when: !calc tools.panasas_gb(do)
+        message: "{do}: use project directory as scrub space"
+  long_term_temp: !calc doc.platform.short_term_temp
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"

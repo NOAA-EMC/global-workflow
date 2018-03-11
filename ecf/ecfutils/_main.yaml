@@ -1,10 +1,9 @@
-#NOTE: If you update this file, you must also update worktools.py
-# variables: YAML_DIRS_TO_COPY, YAML_FILES_TO_COPY, and
-# function make_yaml_files
-
+# NOTE: This file is only used during setup_case.sh.  
+# The _expdir_main.yaml is the expdir _main.yaml
 include:
-  - "static*.yaml"
+  - 'static*yaml'
+  - user.yaml
   - schema/
-  - workflow/
-  - "*.yaml"
-  - "settings.yaml"
+  - defaults/
+  - runtime/
+

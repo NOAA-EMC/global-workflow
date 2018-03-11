@@ -12,7 +12,7 @@ config_epos:
     . $EXPDIR/config.resources epos
     
     export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
-    export nth_epos={doc.platform.nodes.mpi_ranks_for(doc.resources.run_epos[0])}
+    export nth_epos={sched.nodes.mpi_ranks_for(doc.resources.run_epos[0])}
     
     echo "END: config.epos"
     

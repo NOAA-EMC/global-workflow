@@ -1,4 +1,0 @@
-include:
-  - fv3.yaml
-  - "*.yaml"
-  - case.yaml

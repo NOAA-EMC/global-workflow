@@ -80,7 +80,7 @@ config_fcst:
         # Write restart files at next assimilation time
         export restart_interval=6
         export npe_remap={doc.resources.run_gdasremap.total_ranks()}
-        export nth_remap={doc.nodes.omp_threads_for(doc.resources.run_gdasremap[0])}
+        export nth_remap={sched.nodes.omp_threads_for(doc.resources.run_gdasremap[0])}
     elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     
         # Write more variables to output
@@ -90,7 +90,7 @@ config_fcst:
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
         fi
         export npe_remap={doc.resources.run_gfsremap.total_ranks()}
-        export nth_remap={doc.nodes.omp_threads_for(doc.resources.run_gfsremap[0])}
+        export nth_remap={sched.nodes.omp_threads_for(doc.resources.run_gfsremap[0])}
     fi
     
     # Regrid tiles to global Gaussian grid in NEMSIO

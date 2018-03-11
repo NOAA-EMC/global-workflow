@@ -131,19 +131,14 @@ task_template: &task_template
       do: !expand 'export ptile={sched.max_ranks_per_node(resources)}'
     - otherwise: "# Neither OpenMP nor MPI are in use, so I am not setting $ptile"
 
-  
+shared_accounting: &shared_accounting !calc >-
+  doc.platform.shared_accounting
 
-shared_accounting: &shared_accounting
-  queue: !calc metasched.varref('QUEUESHARED')
-  project: !calc metasched.varref('PROJ')
+service_accounting: &service_accounting !calc >-
+  doc.platform.shared_accounting
 
-service_accounting: &service_accounting
-  queue: !calc metasched.varref('QUEUESERV')
-  project: !calc metasched.varref('PROJ')
-
-exclusive_accounting: &exclusive_accounting
-  queue: !calc metasched.varref('QUEUE')
-  project: !calc metasched.varref('PROJ')
+exclusive_accounting: &exclusive_accounting !calc >-
+  doc.platform.shared_accounting
 
 shared_task_template: &shared_task_template
   <<: *task_template

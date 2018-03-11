@@ -196,16 +196,6 @@ fv3_settings_template: !Template &fv3_settings_template
   CDUMP:
     type: string
     allowed: [ gfs, gdas ]
-    if_present: !Template
-      DIAG_TABLE: 
-        type: string
-        stages: [ suite ]
-        default: !FirstTrue
-          - when: !calc CDUMP=="gdas"
-            do: !expand "{doc.places.BASE_GSM}/parm/parm_fv3diag/diag_table_da"
-          - when: !calc CDUMP=="gfs"
-            do: !expand "{doc.places.BASE_GSM}/parm/parm_fv3diag/diag_table"
-          - otherwise: !error "Do not know DIAG_TABLE for CDUMP={CDUMP}"
 
   CASE:
     type: string

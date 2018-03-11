@@ -46,8 +46,8 @@ config_base:
     export RTMFIX="{doc.places.RTMFIX}"
     
     export HOMEDIR="{doc.places.PROJECT_DIR}/save/$USER"
-    export STMP="{doc.platform.SHORT_TERM_TEMP}/$USER"
-    export PTMP="{doc.platform.LONG_TERM_TEMP}/$USER"
+    export STMP="{doc.places.SHORT_TERM_TEMP}/$USER"
+    export PTMP="{doc.places.LONG_TERM_TEMP}/$USER"
     export NOSCRUB="{doc.places.PROJECT_DIR}/noscrub/$USER"
     
     # Base directories for various builds
@@ -64,12 +64,19 @@ config_base:
     ####################################################
     # Build paths relative to $HOMEgfs
     export HOMEgsi="$HOMEgfs"
-    export FIXgsi="{doc.places.FIXgsi}"
-    export HOMEfv3gfs="{doc.places.HOMEfv3gfs}"
-    export HOMEpost="{doc.places.HOMEpost}"
-    export BASE_PREP="{doc.places.BASE_PREP}"
-    export BASE_PREP_GLOBAL="{doc.places.BASE_PREP_GLOBAL}"
-    export BASE_VERIF="{doc.places.BASE_VERIF}"
+    export FIXgsi="{doc.places.get('FIXgsi','$HOMEgfs/fix/fix_gsi')}"
+    export HOMEfv3gfs="{
+       doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
+    export HOMEpost="{doc.places.get('HOMEpost','$HOMEgfs')}"
+    export BASE_PREP="{
+       doc.places.get('BASE_PREP',
+          '$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0)}"
+    export BASE_PREP_GLOBAL="{
+       doc.places.get('BASE_PREP_GLOBAL',
+          '$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0')}"
+    export BASE_VERIF="{
+       doc.places.get('BASE_VERIF',
+          '$BASE_SVN/verif/global/tags/vsdb')}"
     
     # CONVENIENT utility scripts and other environment parameters
     export NCP="/bin/cp -p"
@@ -77,7 +84,7 @@ config_base:
     export NLN="/bin/ln -sf"
     export VERBOSE="YES"
     export KEEPDATA="NO"
-    export CHGRP_CMD="{CHGRP_RSTPROD}"
+    export CHGRP_CMD="{doc.platform.CHGRP_RSTPROD_COMMAND}"
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
     
     # Machine environment, jobs, and other utility scripts
@@ -88,7 +95,7 @@ config_base:
     export SDATE=@SDATE@
     export EDATE=@EDATE@
     export assim_freq={doc.data_assimilation.assim_freq}
-    export PSLOT="{doc.experiment_name}"
+    export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
     export RUNDIR="$STMP/RUNDIRS/$PSLOT"

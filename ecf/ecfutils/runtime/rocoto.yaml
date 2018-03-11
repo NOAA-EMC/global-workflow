@@ -13,7 +13,7 @@ Rocoto: &Rocoto
       <!ENTITY CYCLE_THROTTLE "2">
       <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
       <!ENTITY EXPDIR "{doc.settings.EXPDIR}">
-      <!ENTITY PSLOT "{doc.settings.experiment_name}">
+      <!ENTITY PSLOT "{doc.names.experiment}">
       {suite.common_metasched_vars}
     ]>
     <workflow realtime="F"

@@ -1,13 +1,17 @@
 #! /usr/bin/env python3
 f'This python module requires python 3.6 or newer'
 
-import logging, os, io, sys, datetime, glob, shutil, subprocess, re
+import logging, os, io, sys, datetime, glob, shutil, subprocess, re, itertools
 from collections import OrderedDict
 from copy import copy
+from getopt import getopt
 logger=logging.getLogger('crow.model.fv3gfs')
 
-YAML_DIRS_TO_COPY=[ 'schema', 'workflow' ] # important: no ending /
-YAML_FILES_TO_COPY=[ '_main.yaml', 'settings.yaml' ]
+YAML_DIRS_TO_COPY={ 'schema':'schema',
+                    'defaults':'defaults',
+                    'runtime':'runtime' } # important: no ending /
+YAML_FILES_TO_COPY={ '_expdir_main.yaml': '_main.yaml',
+                     'user.yaml': 'user.yaml' }
 
 try:
     import crow
@@ -44,6 +48,40 @@ def loudly_make_symlink(src,tgt):
 
 def make_parent_dir(filename):
     loudly_make_dir_if_missing(os.path.dirname(filename))
+
+def find_available_platforms(platdir):
+    available={}
+    for matching_file in glob.glob(f'{platdir}/*.yaml'):
+        logger.info(f'{matching_file}: check this platform...')
+        plat=from_file('user.yaml',matching_file)
+        if not 'platform' in plat or \
+           not 'detect' in plat.platform or \
+           not 'name' in plat.platform:
+            logger.warning(f'{matching_file}: does not contain a '
+                           '"platform" map with "detect" and "name"')
+        if plat.platform.detect:
+            logger.info(f'{matching_file}: platform {plat.platform.name} matches')
+            available[plat.platform.name]=plat
+    return available
+
+def select_platform(requested_platform,valid_platforms):
+    if not requested_platform and len(valid_platforms)>1:
+        logger.error('More than one platform is available: '
+                     +(', '.join(valid_platforms.keys())))
+        logger.error('Pick one with -p option')
+        exit(1)
+    elif requested_platform in valid_platforms:
+        platdoc=valid_platforms[requested_platform]
+    elif requested_platform:
+        logger.error(f'Invalid platform {requested_platform}.')
+        logger.error('Available platforms: '+
+                     ', '.join(valid_platforms.keys()))
+        exit(1)
+    else: # choose first platform
+        platdoc=next(iter(valid_platforms.values()))
+    platdoc.platform.Evaluate=True
+    crow.config.evaluate_immediates(platdoc.platform)
+    return platdoc
 
 def create_COMROT(conf):
     cdump = conf.case.IC_CDUMP
@@ -88,16 +126,10 @@ def find_case_yaml_file_for(case_name):
     for case_file in [ case_name,f"{case_name}.yaml",f"cases/{case_name}",
                        f"cases/{case_name}.yaml","/" ]:
         if os.path.exists(case_file) and case_file!='/':
-            logger.info(f"{case_file}: file for this case")
-            break
+            return case_file
     if case_file == "/":
-        epicfail(f"{case_name}: no such case; pick one from in cases/")
-    if not os.path.exists("user.yaml"):
-        epicfail("Please copy user.yaml.default to user.yaml and fill in values.")
-    with io.StringIO() as yfd:
-        follow_main(yfd,".",{ "case_yaml":case_file, "user_yaml":"user.yaml" })
-        yaml=yfd.getvalue()
-    return crow.config.from_string(yaml)
+        logger.error(f"{case_name}: no such case; pick one from in cases/")
+        exit(1)
 
 def read_yaml_suite(dir):
     logger.info(f'{dir}: read yaml files specified in _main.yaml')
@@ -106,26 +138,70 @@ def read_yaml_suite(dir):
     suite=Suite(conf.suite)
     return conf,suite
 
-def make_yaml_files_in_expdir(srcdir,tgtdir):
+def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
+    logger.info(f'{srcdir}: get yaml files from here')
+    logger.info(f'{case_name}: use this case')
+
+    case_file=find_case_yaml_file_for(case_name)
+    platform_yaml=to_yaml(platdoc)
+
+    names={ 'names': { 'experiment':experiment_name,
+                       'case':case_name } }
+    names_yaml=to_yaml(names)
+
+    # Get the configuration from the source directory:
+    with io.StringIO() as fd:
+        fd.write(platform_yaml)
+        fd.write('\n\n')
+        fd.write(names_yaml)
+        fd.write('\n\n')
+        crow.config.follow_main(fd,srcdir)
+        fd.write('\n\n')
+        with open(case_file,'rt') as cfd:
+            fd.write(cfd.read())
+        config_contents=fd.getvalue()
+    config=crow.config.from_string(config_contents)
+    print(repr(config.names))
+    print(repr(config.platform))
+    workflow_file=os.path.join(srcdir,config.places.workflow_file)
+    tgtdir=config.places.EXPDIR
+
+    logger.info(f'{tgtdir}: send yaml files to here')
+
+    del config
+
     if not os.path.exists(tgtdir):
         logger.info(f'{tgtdir}: make directory')
         os.makedirs(tgtdir)
-    logger.info(f'{tgtdir}: send yaml files to here')
-    logger.info(f'{srcdir}: get yaml files from here')
-    for srcfile in YAML_DIRS_TO_COPY + YAML_FILES_TO_COPY:
-        srcbase=os.path.basename(srcfile)
-        tgtfile=os.path.join(tgtdir,srcbase)
+
+    logger.info(f'{tgtdir}/names.yaml: write experiment name and case name')
+    with open(f'{tgtdir}/names.yaml','wt') as fd:
+        fd.write(names_yaml)
+
+    logger.info(f'{tgtdir}/platform.yaml: write platform logic')
+    with open(f'{tgtdir}/platform.yaml','wt') as fd:
+        fd.write(platform_yaml)
+
+    logger.info(f'{case_file}: use this case file')
+    shutil.copy2(case_file,os.path.join(tgtdir,'case.yaml'))
+
+    logger.info(f'{workflow_file}: use this workflow file')
+    shutil.copy2(workflow_file,os.path.join(tgtdir,'workflow.yaml'))
+
+    for srcfile,tgtbase in itertools.chain(
+            iter(YAML_DIRS_TO_COPY.items()),
+            iter(YAML_FILES_TO_COPY.items())):
+        tgtfile=os.path.join(tgtdir,tgtfile)
         if os.path.isdir(srcfile):
-            logger.info(f'{srcbase}: copy yaml directory tree')
+            logger.info(f'{srcfile}: copy yaml directory tree to {tgtfile}')
+            exit(2)
             if os.path.exists(tgtfile):
                 shutil.rmtree(tgtfile)
             shutil.copytree(srcfile,tgtfile)
         else:
-            logger.info(f'{srcbase}: copy yaml file')
+            logger.info(f'{srcfile}: copy yaml file to {tgtfile}')
             shutil.copyfile(srcfile,tgtfile)
         del srcbase,tgtfile
-
-    readme=[ os.path.join(srcdir,'schema/settings.yaml') ]
 
     # Deal with the static files:
     for srcfile in glob.glob(f'{srcdir}/static/*.yaml'):
@@ -142,17 +218,6 @@ def make_yaml_files_in_expdir(srcdir,tgtdir):
         readme.insert(0,tgtfile)
         del doc,tgtfile
 
-    # Read the settings file
-    readme.append('settings.yaml')
-    logger.info(f'Read files: {", ".join(readme)}')
-    doc=from_file(*readme)
-    
-    # Now the resources:
-    resource_basename=doc.settings.resource_file
-    resource_srcfile=os.path.join(srcdir,resource_basename)
-    resource_tgtfile=os.path.join(tgtdir,'resources.yaml')
-    logger.info(f'{resource_srcfile}: use this resource yaml file')
-    shutil.copyfile(resource_srcfile,resource_tgtfile)
     logger.info(f'{tgtdir}: yaml files created here')
 
 def make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles):
@@ -319,3 +384,38 @@ def make_rocoto_xml_for(yamldir):
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.settings.COM}/log')
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
+
+def setup_case_usage(why=None):
+    print('fixme: usage message here')
+    exit(1)
+
+def setup_case(command_line_arguments):
+    options,positionals=getopt(command_line_arguments,'vp:')
+    options=dict(options)
+
+    if '-v' in options:
+        logger.setLevel(logging.DEBUG)
+
+    if len(positionals)!=2:
+        setup_case_usage('expected two positional arguments')
+
+    case_name=positionals[0]
+    experiment_name=positionals[1]
+    if not re.match('^[A-Za-z][A-Za-z0-9_]*$',experiment_name):
+        logger.error('{experiment_name}: experiment names must be '
+                     'alphanumeric and start with a letter.')
+
+    if not os.path.exists('user.yaml'):
+        logger.error('You did not create user.yaml!')
+        logger.error('Copy user.yaml.default to user.yaml and edit.')
+        exit(1)
+
+    requested_platform=options.get('-p',None)
+    valid_platforms=find_available_platforms("platforms/")
+    platdoc=select_platform(requested_platform,valid_platforms)
+    logger.info(f'{platdoc.platform.name}: selected this platform.')
+    
+
+    make_yaml_files_in_expdir(os.path.abspath('.'),case_name,experiment_name,platdoc)
+
+    
