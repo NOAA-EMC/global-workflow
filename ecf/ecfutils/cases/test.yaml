@@ -10,7 +10,7 @@ case:
     workflow_file: workflow/cycled_gfs.yaml
 
   settings: 
-    SDATE: 2017-08-17t12:00:00
+    SDATE: 2017-07-31t18:00:00
     EDATE: 2017-08-31t00:00:00
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS

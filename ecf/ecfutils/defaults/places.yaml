@@ -6,8 +6,8 @@ default_places: &default_places
   DMPDIR:      !calc doc.platform.DMPDIR
   RTMFIX:      !calc doc.platform.RTMFIX
 
-  EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/{doc.names.experiment}"
-  ROTDIR: !expand "{LONG_TERM_TEMP}/{doc.names.experiment}"
+  EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/expdir/{doc.names.experiment}"
+  ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
   ICSDIR: !expand "{ROTDIR}/FV3ICS"
 
   SHORT_TERM_TEMP: !calc doc.platform.short_term_temp

@@ -5,6 +5,7 @@ import logging, os, io, sys, datetime, glob, shutil, subprocess, re, itertools, 
 from collections import OrderedDict
 from copy import copy
 from getopt import getopt
+from contextlib import suppress
 logger=logging.getLogger('crow.model.fv3gfs')
 
 YAML_DIRS_TO_COPY={ 'schema':'schema',
@@ -139,8 +140,7 @@ def read_yaml_suite(dir):
     suite=Suite(conf.suite)
     return conf,suite
 
-def make_config_files_in_expdir(expdir):
-    doc=from_dir(expdir,validation_stage='setup')
+def make_config_files_in_expdir(doc,expdir):
     for key in doc.keys():
         if not key.startswith('config_'): continue
         value=doc[key]
@@ -430,5 +430,11 @@ def setup_case(command_line_arguments):
 
     EXPDIR = make_yaml_files_in_expdir(
         os.path.abspath('.'),case_name,experiment_name,platdoc)
+    print(f'{EXPDIR}: yaml files made here')
 
-    make_config_files_in_expdir(EXPDIR)
+    doc=from_dir(EXPDIR,validation_stage='setup')
+    make_config_files_in_expdir(doc,EXPDIR)
+    print(f'{EXPDIR}: config files made here')
+
+    create_COMROT(doc)
+
