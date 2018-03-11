@@ -191,17 +191,17 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
     for srcfile,tgtbase in itertools.chain(
             iter(YAML_DIRS_TO_COPY.items()),
             iter(YAML_FILES_TO_COPY.items())):
-        tgtfile=os.path.join(tgtdir,tgtfile)
+        tgtfile=os.path.join(tgtdir,tgtbase)
         if os.path.isdir(srcfile):
             logger.info(f'{srcfile}: copy yaml directory tree to {tgtfile}')
-            exit(2)
             if os.path.exists(tgtfile):
+                logger.info(f'{tgtfile}: delete directory')
                 shutil.rmtree(tgtfile)
             shutil.copytree(srcfile,tgtfile)
         else:
             logger.info(f'{srcfile}: copy yaml file to {tgtfile}')
             shutil.copyfile(srcfile,tgtfile)
-        del srcbase,tgtfile
+        del tgtfile
 
     # Deal with the static files:
     for srcfile in glob.glob(f'{srcdir}/static/*.yaml'):
@@ -215,7 +215,6 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
             fd.write(f'#    {srcfile}')
             fd.write('# Changes to this file may be overwritten.\n\n')
             fd.write(yaml)
-        readme.insert(0,tgtfile)
         del doc,tgtfile
 
     logger.info(f'{tgtdir}: yaml files created here')
