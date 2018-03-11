@@ -11,7 +11,7 @@ config_prep:
     # Get task specific resources
     . $EXPDIR/config.resources prep
     
-    export DO_MAKEPREPBUFR="{tools.YES_NO(doc.data_assimilation.DO_MAKEPREPBUFR)}"   #  NO, will copy prepbufr from globaldump
+    export DO_MAKEPREPBUFR="{tools.YES_NO(doc.data_assimilation.DO_MAKEPREPBUFR)}"   # if NO, will copy prepbufr from globaldump
     
     
     # Relocation and syndata QC

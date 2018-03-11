@@ -25,17 +25,27 @@ platform: !Platform
     export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
     export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
 
-  shared_accounting:
+  shared_accounting_ref:
     queue: !calc metasched.varref('QUEUESHARED')
     project: !calc metasched.varref('CPU_PROJECT')
 
-  service_accounting:
+  service_accounting_ref:
     queue: !calc metasched.varref('QUEUESERV')
     project: !calc metasched.varref('CPU_PROJECT')
 
-  exclusive_accounting:
+  exclusive_accounting_ref:
     queue: !calc metasched.varref('QUEUE')
     project: !calc metasched.varref('CPU_PROJECT')
+
+  metasched_more: !expand |
+    {metasched.defvar("QUEUE", doc.platform.exclusive_queue)}
+    {metasched.defvar("QUEUESHARED", doc.platform.shared_queue)}
+    {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
+    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+
+  shared_queue: batch
+  service_queue: service
+  exclusive_queue: batch
 
   scheduler_settings: &scheduler_settings
     name: MoabTorque

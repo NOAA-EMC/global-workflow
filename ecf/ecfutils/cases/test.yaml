@@ -1,13 +1,13 @@
 case:
   fv3_settings:
-    CASE: C192
+    CASE: C384
     LEVS: 65
 
   fv3_enkf_settings:
     CASE: C192
 
   data_assimilation:
-    NMEM_ENKF: 80
+    NMEM_ENKF: 20
 
   gfs_output_settings:
     FHMAX_GFS: 120

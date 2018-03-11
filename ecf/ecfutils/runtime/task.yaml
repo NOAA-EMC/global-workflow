@@ -13,7 +13,7 @@ task_template: &task_template
   Rocoto: !expand |
     <command>sh -c '{rocoto_command}'</command>
     {sched.rocoto_accounting(accounting,jobname=task_path_var,
-        outerr="<cyclestr>&LOG_DIR;/@Y@m@d/@H/&PSLOT;_"+task_path_var+".log</cyclestr>")}
+        outerr="<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")}
     {sched.rocoto_resources(resources)}
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
@@ -132,13 +132,13 @@ task_template: &task_template
     - otherwise: "# Neither OpenMP nor MPI are in use, so I am not setting $ptile"
 
 shared_accounting: &shared_accounting !calc >-
-  doc.platform.shared_accounting
+  doc.platform.shared_accounting_ref
 
 service_accounting: &service_accounting !calc >-
-  doc.platform.shared_accounting
+  doc.platform.shared_accounting_ref
 
 exclusive_accounting: &exclusive_accounting !calc >-
-  doc.platform.shared_accounting
+  doc.platform.shared_accounting_ref
 
 shared_task_template: &shared_task_template
   <<: *task_template

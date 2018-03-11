@@ -79,7 +79,30 @@ suite_defaults: &suite_defaults
           autocancel 5
           edit PDY '{tools.strftime(suite.Clock.now,"%Y%m%d")}'
 
-  Rocoto: *Rocoto
+  Rocoto: &Rocoto
+    scheduler: !calc doc.scheduler
+    max_tries: 1
+
+    workflow_xml: !expand |
+      <?xml version="1.0"?>
+      <!DOCTYPE workflow [
+        <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
+        <!ENTITY TASK_THROTTLE "5">
+        <!ENTITY CYCLE_THROTTLE "2">
+        <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
+        <!ENTITY EXPDIR "{doc.places.EXPDIR}">
+        <!ENTITY PSLOT "{doc.names.experiment}">
+      {tools.indent(suite.common_metasched_vars,"  ")}
+      {tools.indent(doc.platform.metasched_more,"  ")}
+      ]>
+      <workflow realtime="F"
+                cyclethrottle="&CYCLE_THROTTLE;"
+                scheduler="{sched.rocoto_name.lower()}"
+                taskthrottle="&TASK_THROTTLE;" >
+        <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
+      {to_rocoto.make_time_xml(indent=1)}
+      {to_rocoto.make_task_xml(indent=1)}
+      </workflow>
           
   before_suite_def:
     extern /totality_limit:TOTALITY
@@ -102,11 +125,6 @@ suite_defaults: &suite_defaults
     inlimit /totality_limit:TOTALITY
 
   common_metasched_vars: !expand |
-    {metasched.defvar("QUEUE", doc.platform.exclusive_accounting.queue)}
     {metasched.defvar("HOMEgfs", doc.places.HOMEgfs)}
-    {metasched.defvar("QUEUESHARED", doc.platform.shared_accounting.queue)}
     {metasched.defvar("COM", doc.places.ROTDIR)}
-    {metasched.defvar("QUEUESERV", doc.platform.service_accounting.queue)}
-    {metasched.defvar("PROJENVIR", doc.platform.exclusive_accounting.project)}
-    {metasched.defvar("PROJ", doc.platform.exclusive_accounting.project)}
 
