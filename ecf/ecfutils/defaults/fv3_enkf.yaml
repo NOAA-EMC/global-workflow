@@ -5,8 +5,8 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   ISOL: 2
   IAER: 111
   ICO2: 2
-  dspheat: ".true."
-  shal_cnv: ".false."
+  dspheat: YES
+  shal_cnv: NO
   FHZER: 6
   FHCYC: 24
   restart_interval: 6
@@ -26,8 +26,8 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   SPPT: 0.5
   SPPT_TAU: 21600.
   SPPT_LSCALE: 500000.
-  SPPT_LOGIT: ".true."
-  SPPT_SFCLIMIT: ".true."
+  SPPT_LOGIT: YES
+  SPPT_SFCLIMIT: YES
 
   k_split: 1
   n_split: 12

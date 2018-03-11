@@ -1,6 +1,7 @@
 case:
-  fv3_gfs_settings:
+  fv3_settings:
     CASE: C384
+    LEVS: 65
 
   fv3_enkf_settings:
     CASE: C192

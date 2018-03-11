@@ -17,3 +17,19 @@ places_schema: &places_schema !Template
   BASE_PREP: { type: string, optional: true }
   BASE_PREP_GLOBAL: { type: string, optional: true }
   BASE_VERIF: { type: string, optional: true }
+  BASE_SVN:
+    type: string
+    default: !calc doc.platform.BASE_SVN
+
+  ics_from:
+    type: string
+    default: opsgfs
+    allowed: [ opsgfs, pargfs ]
+    description: initial conditions from opsgfs or pargfs
+    if_present: !Template
+      parexp: 
+        type: string
+        default: prnemsrn
+      HPSS_PAR_PATH:
+        type: string
+        default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"

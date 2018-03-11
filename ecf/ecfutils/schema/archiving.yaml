@@ -1,10 +1,19 @@
 archive_settings_template: !Template &archive_settings_template
+  archive_to_hpss: 
+    default: yes
+    description: save data to HPSS archive
+    type: bool
+  copy_fit2obs_files: 
+    default: no
+    description: online archive of nemsio files for fit2obs verification
+    type: bool
+
   scrub_in_archive_start:
     type: int
     default: 144
     description: "starting hour of previous cycles to be removed from rotating directory during archive job"
 
-  scrub_in_archive_start:
+  scrub_in_archive_end:
     type: int
     default: 24
     description: "ending hour of previous cycles to be removed from rotating directory during archive job"

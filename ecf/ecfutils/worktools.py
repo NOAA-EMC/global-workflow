@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 f'This python module requires python 3.6 or newer'
 
-import logging, os, io, sys, datetime, glob, shutil, subprocess, re, itertools
+import logging, os, io, sys, datetime, glob, shutil, subprocess, re, itertools, collections
 from collections import OrderedDict
 from copy import copy
 from getopt import getopt
@@ -9,6 +9,7 @@ logger=logging.getLogger('crow.model.fv3gfs')
 
 YAML_DIRS_TO_COPY={ 'schema':'schema',
                     'defaults':'defaults',
+                    'config':'config',
                     'runtime':'runtime' } # important: no ending /
 YAML_FILES_TO_COPY={ '_expdir_main.yaml': '_main.yaml',
                      'user.yaml': 'user.yaml' }
@@ -84,12 +85,12 @@ def select_platform(requested_platform,valid_platforms):
     return platdoc
 
 def create_COMROT(conf):
-    cdump = conf.case.IC_CDUMP
-    icsdir = conf.case.IC_DIR
+    cdump = conf.settings.IC_CDUMP
+    icsdir = conf.settings.IC_DIR
     comrot = conf.places.ROTDIR
     resens = conf.fv3_enkf_settings.CASE[1:]
     resdet = conf.fv3_gfs_settings.CASE[1:]
-    idate = conf.case.SDATE
+    idate = conf.settings.SDATE
     detdir = f'{cdump}.{idate:%Y%m%d}/{idate:%H}'
     nens = conf.data_assimilation.NMEM_ENKF
     enkfdir = f'enkf.{cdump}.{idate:%Y%m%d}/{idate:%H}'
@@ -138,6 +139,20 @@ def read_yaml_suite(dir):
     suite=Suite(conf.suite)
     return conf,suite
 
+def make_config_files_in_expdir(expdir):
+    doc=from_dir(expdir,validation_stage='setup')
+    for key in doc.keys():
+        if not key.startswith('config_'): continue
+        value=doc[key]
+        if not isinstance(value,collections.Mapping): continue
+        if not 'filename' in value or not 'content' in value:
+            logger.warning(f'{key}: config files require "filename" and "content" entries.')
+        filename=os.path.join(expdir,str(value.filename))
+        content=str(value.content)
+        logger.info(f'{filename}: write')
+        with open(filename,'wt') as fd:
+            fd.write(content)
+
 def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
     logger.info(f'{srcdir}: get yaml files from here')
     logger.info(f'{case_name}: use this case')
@@ -161,8 +176,6 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
             fd.write(cfd.read())
         config_contents=fd.getvalue()
     config=crow.config.from_string(config_contents)
-    print(repr(config.names))
-    print(repr(config.platform))
     workflow_file=os.path.join(srcdir,config.places.workflow_file)
     tgtdir=config.places.EXPDIR
 
@@ -218,6 +231,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
         del doc,tgtfile
 
     logger.info(f'{tgtdir}: yaml files created here')
+    return tgtdir
 
 def make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles):
     suite_clock=copy(suite.Clock)
@@ -393,7 +407,7 @@ def setup_case(command_line_arguments):
     options=dict(options)
 
     if '-v' in options:
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
 
     if len(positionals)!=2:
         setup_case_usage('expected two positional arguments')
@@ -413,8 +427,8 @@ def setup_case(command_line_arguments):
     valid_platforms=find_available_platforms("platforms/")
     platdoc=select_platform(requested_platform,valid_platforms)
     logger.info(f'{platdoc.platform.name}: selected this platform.')
-    
 
-    make_yaml_files_in_expdir(os.path.abspath('.'),case_name,experiment_name,platdoc)
+    EXPDIR = make_yaml_files_in_expdir(
+        os.path.abspath('.'),case_name,experiment_name,platdoc)
 
-    
+    make_config_files_in_expdir(EXPDIR)

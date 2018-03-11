@@ -5,11 +5,13 @@ task_schema: &task_schema !Template
       XML to insert in the task definition, excluding the task tag
       itself, and the dependencies.
     type: string
+    stages: [ suite ]
 
   ecf_file:
     description: >-
       Contents of the ecf file that will be run for this task
     type: string
+    stages: [ suite ]
 
   rocoto_more_vars:
     description: >-
@@ -17,18 +19,21 @@ task_schema: &task_schema !Template
       definition.  This is referenced by the Rocoto variable.
     type: string
     default: ""
+    stages: [ suite ]
 
   ecflow_command:
     description: >-
       Command to execute for this task when run in ecflow.  This is
       inserted into the ecf file.
     type: string
+    stages: [ suite ]
 
   rocoto_command:
     description: >-
       Command to execute for this task when run in rocoto.  This is
       inserted into the rocoto command tag for the task.
     type: string
+    stages: [ suite ]
 
   more_vars:
     description: >-
@@ -37,17 +42,20 @@ task_schema: &task_schema !Template
       ecflow_def will prevent this from being passed through as edits
       in the suite definition.
     type: string list
+    stages: [ suite ]
 
   ecf_environment_settings:
     description: "Tuning variables like KMP_AFFINITY and OMP_STACKSIZE."
     type: string
     default: ""
+    stages: [ suite ]
 
   ecf_module_commands:
     description: >-
       Any "module" commands: module load, module switch, etc.
     type: string
     default: ""
+    stages: [ suite ]
 
   ecf_resource_more:
     description: >-
@@ -55,21 +63,25 @@ task_schema: &task_schema !Template
       ntasks, threads, and ptile.
     type: string
     default: ""
+    stages: [ suite ]
 
   ecf_maybe_ntasks:
     description: "Sets the $ntasks variable (number of MPI ranks) if needed"
     type: string
     default: ""
+    stages: [ suite ]
 
   ecf_maybe_threads:
     description: "Sets the $threads variable (number of OpenMP threads) if needed"
     type: string
     default: ""
+    stages: [ suite ]
 
   ecf_maybe_ptile:
     description: >-
       Sets the $ptile variable (maximum number of MPI ranks per node) if needed
     type: string
     default: ""
+    stages: [ suite ]
 
   

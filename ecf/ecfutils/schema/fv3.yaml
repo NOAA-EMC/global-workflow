@@ -128,6 +128,7 @@ fv3_settings_template: !Template &fv3_settings_template
           nord: { type: int, default: 2 }
           dddmp: { type: float, default: 0.1 }
           d4_bg: { type: float, default: 0.12 }
+      - otherwise: !error "Unknown imp_physics value: {imp_physics}"
 
   d4_bg: { type: float, default: 0.15 }
   dddmp: { type: float, default: 0.2 }
@@ -290,3 +291,4 @@ fv3_settings_template: !Template &fv3_settings_template
           WRITE_GROUP: { type: int, default: 4 }
           WRTTASK_PER_GROUP: { type: int, default: 120 }
           WRTIOBUF: { type: string, default: "64M" }
+      - otherwise: !error "Unknown case: {CASE}"

@@ -13,7 +13,7 @@ config_earc:
     
     export NMEM_EARCGRP={doc.data_assimilation.NMEM_EARCGRP}
     
-    export EARC_CYC="{join(doc.archiving.EARC_CYC,' ')}" # Archive ensemble restarts at EARC_CYC only; can be "00 06 12 18"
+    export EARC_CYC="{tools.join(doc.archiving.EARC_CYC,' ')}" # Archive ensemble restarts at EARC_CYC only; can be "00 06 12 18"
     
     echo "END: config.earc"
     

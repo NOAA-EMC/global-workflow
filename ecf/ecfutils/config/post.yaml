@@ -31,15 +31,15 @@ config_post:
     
     if [[ "$CDUMP" == gdas ]] ; then
         export npe_postgp={doc.resources.run_gdaspost.total_ranks()}
-        export nth_postgp={sched.nodes.omp_threads_for(doc.resources.run_gdaspost[0])}
+        export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gdaspost[0])}
     else
         export npe_postgp={doc.resources.run_gfspost.total_ranks()}
-        export nth_postgp={sched.nodes.omp_threads_for(doc.resources.run_gfspost[0])}
+        export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gfspost[0])}
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
     export npe_dwn={doc.resources.run_dwn.total_ranks()}
-    export nth_dwn={sched.nodes.omp_threads_for(doc.resources.run_dwn[0])}
+    export nth_dwn={doc.nodes.omp_threads_for(doc.resources.run_dwn[0])}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"

@@ -22,10 +22,10 @@ config_anal:
     
     export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
     
-    export npe_gsi={doc.resources.run_gsi.total_ranks()}
-    export nth_gsi={sched.nodes.omp_threads_for(doc.resources.run_gsi[0])}
+    export npe_gsi={doc.resources.run_anal.total_ranks()}
+    export nth_gsi={doc.nodes.omp_threads_for(doc.resources.run_anal[0])}
     
     # This is inconsistent between config files and is never used:
-    #    export nth_cycle={sched.nodes.cores_per_node}
+    #    export nth_cycle={doc.nodes.cores_per_node}
     
     echo "END: config.anal"

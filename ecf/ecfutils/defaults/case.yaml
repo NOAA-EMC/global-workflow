@@ -1,15 +1,17 @@
-fv3_settings: !calc >-
-  doc.case.get('fv3_settings',{})
+fv3_settings: !MergeMapping
+  - !calc doc.case.fv3_settings
+  - CDUMP: gfs
+    Template: *fv3_settings_template
 
 fv3_gfs_settings: !MergeMapping
-  - !calc doc.fv3_settings
+  - !calc doc.case.fv3_settings
   - CDUMP: gfs
     Template: *fv3_settings_template
   - !calc doc.case.get('fv3_gfs_settings',{})
 
 fv3_enkf_settings: !MergeMapping
   - !calc doc.fv3_enkf_defaults
-  - !calc doc.fv3_settings
+  - !calc doc.case.fv3_settings
   - CDUMP: gdas
     Template: *fv3_settings_template
   - !calc doc.case.get('fv3_enkf_settings',{})
@@ -26,7 +28,6 @@ gfs_output_settings: !MergeMapping
   - !calc doc.case.get('gfs_output_settings',{})
 
 data_assimilation: !MergeMapping
-  - !calc doc.data_assimilation_defaults
   - { Template: *data_assimilation_template }
   - !calc doc.case.get('data_assimilation',{})
 
@@ -44,10 +45,22 @@ places: !MergeMapping
   - !calc doc.user_places
   - !calc doc.case.get('places',{})
 
+nsst: !MergeMapping
+  - Template: *nsst_schema
+  - !calc doc.case.get('nsst',{})
+
 resources: !MergeMapping
-  - !calc doc.resource_defaults
+  - !calc doc.default_resources
   - !calc doc.case.get('resources',{})
 
 settings: !MergeMapping
   - Template: *settings_schema
   - !calc doc.case.settings
+
+archiving: !MergeMapping
+  - Template: *archive_settings_template
+  - !calc doc.case.get('archiving',{})
+
+nodes: !calc doc.platform.nodes
+scheduler: !calc doc.platform.scheduler
+parallelism: !calc doc.platform.parallelism

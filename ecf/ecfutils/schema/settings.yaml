@@ -24,11 +24,6 @@ settings_schema: !Template &settings_schema
     type: datetime
     description: Last cycle to run GDAS.
   
-  master_grid:
-    type: string
-    default: "0p25deg"
-    allowed: [ "1deg", "0p5deg", "0p25deg", "0p125deg" ]
-    description: Original grid of the post
 
   ics_from:
     type: string
@@ -36,9 +31,9 @@ settings_schema: !Template &settings_schema
     allowed: [ opsgfs, pargfs ]
     description: initial conditions from opsgfs or pargfs
     if_present: !Template
-      parexpt: 
+      parexp: 
         type: string
         default: prnemsrn
       HPSS_PAR_PATH:
         type: string
-        default: !calc "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
+        default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"

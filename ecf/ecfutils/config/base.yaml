@@ -1,4 +1,5 @@
 config_base:
+  filename: config.base
   content: !expand |
     #!/bin/ksh -x
     
@@ -30,7 +31,7 @@ config_base:
     HPSS_PROJECT="{doc.accounting.hpss_project}"
     
     # Directories relative to installation areas:
-    export HOMEgfs="{doc.user_places.HOMEgfs}"
+    export HOMEgfs="{doc.places.HOMEgfs}"
     export PARMgfs=$HOMEgfs/parm
     export FIXgfs=$HOMEgfs/fix
     export USHgfs=$HOMEgfs/ush
@@ -68,12 +69,8 @@ config_base:
     export HOMEfv3gfs="{
        doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
     export HOMEpost="{doc.places.get('HOMEpost','$HOMEgfs')}"
-    export BASE_PREP="{
-       doc.places.get('BASE_PREP',
-          '$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0)}"
-    export BASE_PREP_GLOBAL="{
-       doc.places.get('BASE_PREP_GLOBAL',
-          '$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0')}"
+    export BASE_PREP="{doc.places.get('BASE_PREP','$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0')}"
+    export BASE_PREP_GLOBAL="{doc.places.get('BASE_PREP_GLOBAL','$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0')}"
     export BASE_VERIF="{
        doc.places.get('BASE_VERIF',
           '$BASE_SVN/verif/global/tags/vsdb')}"
@@ -183,9 +180,7 @@ config_base:
     export lprecip_accu=".true."
     
     # Analysis increments to zero in CALCINCEXEC
-    export INCREMENTS_TO_ZERO="{
-      tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')
-    }"
+    export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"
     
     echo "END: config.base"
     

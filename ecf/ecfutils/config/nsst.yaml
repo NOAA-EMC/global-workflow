@@ -30,7 +30,7 @@ config_nsst:
                               #         1: Input NST info but not used in GSI;
                               #         2: Input NST info, used in CRTM simulation, no Tr analysis
                               #         3: Input NST info, used in both CRTM simulation and Tr analysis
-    export NSTINFO={doc.nsst.NSSTINFO}          # number of elements added in obs. data array (default = 0)
+    export NSTINFO={doc.nsst.NSTINFO}          # number of elements added in obs. data array (default = 0)
     if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
     
     echo "END: config.nsst"

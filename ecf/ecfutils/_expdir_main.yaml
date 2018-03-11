@@ -3,11 +3,13 @@
 # function make_yaml_files
 
 include:
+  - names.yaml
   - platform.yaml
   - 'static*yaml'
   - schema/
   - defaults/
-  - resources.yaml
+  - case.yaml
   - runtime/
   - workflow.yaml
+  - config/
 
