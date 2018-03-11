@@ -36,7 +36,7 @@ config_fv3:
     echo "BEGIN: config.fv3 for $forecast_mode"
     
     case "$forecast_mode" in
-        EFCS)
+        ENKF)
             export DELTIM={doc.fv3_enkf_settings.DELTIM}
             export layout_x={doc.fv3_enkf_settings.layout_x}
             export layout_y={doc.fv3_enkf_settings.layout_y}
