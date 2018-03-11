@@ -196,13 +196,13 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     if not gud and not force:
         logger.error('Target directories already exist.')
         logger.error('I will not start a workflow unless you do -f.')
-        logger.critical('Use -f to force this workflow to start, but we aware that config, initial COM, and yaml files will be overwritten.  Other COM files will remain unmodified.')
+        logger.critical('Use -f to force this workflow to start, but we aware that config, initial COM, and yaml files will be overwritten.  Other files will remain unmodified.')
         exit(1)
     elif not gud:
         logger.warning('Target directories already exist.')
         logger.warning('Received -f, so I will start anyway.')
         logger.warning('Will overwrite config, initial COM, and yaml files.')
-        logger.warning('All other COM files will remain unmodified.')
+        logger.warning('All other files will remain unmodified.')
 
     del config
 
