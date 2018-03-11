@@ -30,10 +30,8 @@ config_post:
     export PGB1F={tools.YES_NO(doc.post.PGB1F)}
     
     if [[ "$CDUMP" == gdas ]] ; then
-        export npe_postgp={doc.resources.run_gdaspost.total_ranks()}
         export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gdaspost[0])}
     else
-        export npe_postgp={doc.resources.run_gfspost.total_ranks()}
         export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gfspost[0])}
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}

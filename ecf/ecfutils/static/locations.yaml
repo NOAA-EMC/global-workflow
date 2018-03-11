@@ -1,6 +1,6 @@
 ## initial_directory: location from which the setup script was run.
 static_locations:
   HOMEgfs: !Immediate
-    - !calc ( tools.realpath(tools.abspath("/../../")) )
+    - !calc ( tools.realpath(tools.abspath("../../")) )
   initial_directory: !Immediate
     - !calc ( tools.realpath(tools.abspath('.')) )

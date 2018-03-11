@@ -57,7 +57,7 @@ config_vrfy:
     #----------------------------------------------------------
     # All these call $VSDBSH
     
-    if [ $CDUMP = "gfs" ] ; then
+    if [[ "$CDUMP" = "gfs" ]] ; then
         ddd=`echo $CDATE |cut -c 1-8`
         #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
     

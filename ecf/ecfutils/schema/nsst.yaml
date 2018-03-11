@@ -19,7 +19,7 @@ nsst_schema: &nsst_schema !Template
   NST_GSI:
     type: int
     allowed: [ 0, 1, 2, 3, 4 ]
-    default: 0
+    default: 3
     description: |
        0: No NST info at all;
        1: Input NST info but not used in GSI;

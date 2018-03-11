@@ -9,7 +9,7 @@ config_base:
     echo "BEGIN: config.base"
     
     # Machine environment
-    export machine="@MACHINE@"
+    export machine="{doc.platform.name}"
     
     # EMC parallel or NCO production
     export RUN_ENVIR="emc"
@@ -28,7 +28,7 @@ config_base:
     fi
     
     # Project to use in mass store:
-    HPSS_PROJECT="{doc.accounting.hpss_project}"
+    HPSS_PROJECT={doc.accounting.hpss_project}
     
     # Directories relative to installation areas:
     export HOMEgfs="{doc.places.HOMEgfs}"
@@ -89,15 +89,15 @@ config_base:
     export BASE_JOB="$HOMEgfs/jobs/rocoto"
     
     # EXPERIMENT specific environment parameters
-    export SDATE=@SDATE@
-    export EDATE=@EDATE@
+    export SDATE={tools.to_YMDH(doc.settings.SDATE)}
+    export EDATE={tools.to_YMDH(doc.settings.EDATE)}
     export assim_freq={doc.data_assimilation.assim_freq}
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
     export RUNDIR="$STMP/RUNDIRS/$PSLOT"
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
-    export ICSDIR="@ICSDIR@"
+    export ICSDIR="{doc.places.ICSDIR}"
     export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
     
     # Commonly defined parameters in JJOBS
@@ -131,7 +131,7 @@ config_base:
     export FHOUT={doc.gfs_output_settings.FHOUT_GDAS}
     
     # GFS cycle info
-    export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
+    export gfs_cyc={doc.settings.gfs_cyc} # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
     
     # GFS output and frequency
     export FHMIN_GFS={doc.gfs_output_settings.FHMIN_GFS}
@@ -153,7 +153,7 @@ config_base:
     # Shared parameters
     # Hybrid related
     export DOHYBVAR="{tools.YES_NO(doc.data_assimilation.DOHYBVAR)}"
-    export NMEM_ENKF=@NMEM_ENKF@
+    export NMEM_ENKF={doc.data_assimilation.NMEM_ENKF}
     export SMOOTH_ENKF="{tools.YES_NO(doc.data_assimilation.SMOOTH_ENKF)}"
     export l4densvar="{tools.fort(doc.data_assimilation.l4densvar)}"
     export lwrite4danl=".false."
@@ -174,7 +174,7 @@ config_base:
     export DONST="{tools.YES_NO(doc.fv3_settings.DONST)}"
     
     # The switch to apply SST elevation correction or not
-    export nst_anl="{tools.fort(doc.fv3_settings.nst_anl)}"
+    export nst_anl={tools.fort(doc.fv3_settings.nst_anl)}
     
     # Precipitation accumulation, true--no bucket, false--bucket=FHZER
     export lprecip_accu=".true."

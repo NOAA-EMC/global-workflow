@@ -11,8 +11,6 @@ config_fv3ic:
     # Task and thread configuration
     export wtime_fv3ic="00:30:00"
     export npe_fv3ic={doc.resources.run_fv3ic.total_ranks()}
-    export npe_node_fv3ic={doc.nodes.omp_threads_for(
-            doc.resources.run_fv3ic[0])}
     
     echo "END: config.fv3ic"
     

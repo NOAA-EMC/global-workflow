@@ -2,7 +2,7 @@ settings_schema: !Template &settings_schema
 
   gfs_cyc:
     type: int
-    default: 2
+    default: 4
     allowed: [ 0, 1, 2, 4 ]
     description: |
       When to run GFS forecast.  Data assimilation is run for every

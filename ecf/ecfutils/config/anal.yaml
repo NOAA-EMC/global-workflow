@@ -22,7 +22,7 @@ config_anal:
     
     export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
     
-    export npe_gsi={doc.resources.run_anal.total_ranks()}
+    export npe_gsi=$npe_anal
     export nth_gsi={doc.nodes.omp_threads_for(doc.resources.run_anal[0])}
     
     # This is inconsistent between config files and is never used:

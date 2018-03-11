@@ -5,7 +5,7 @@ gfs_resource_table: !Select
     C192:
       #          ranks ppn  wallclock             threads
       prep:     [  12,   12, !timedelta "00:15:00", null ]
-      anal:     [ 144,    6, !timedelta "01:30:00", null ]
+      anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
       gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
@@ -15,7 +15,7 @@ gfs_resource_table: !Select
     C384:
       #          ranks ppn  wallclock             threads
       prep:     [  12,   12, !timedelta "00:15:00", null ]
-      anal:     [ 144,    6, !timedelta "01:30:00", null ]
+      anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
       gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
@@ -24,7 +24,7 @@ gfs_resource_table: !Select
       gdasfcst_wall:  !timedelta "01:00:00"
     C768:
       #          ranks ppn  wallclock             threads
-      prep:     [   2,    6, !timedelta "00:15:00", null ]
+      prep:     [   2,    6, !timedelta "00:15:00", max  ]
       anal:     [ 360,    6, !timedelta "01:30:00", null ]
       gdaspost: [  72,   12, !timedelta "00:45:00", null ]
       gfspost:  [  72,   12, !timedelta "00:30:00", null ]
@@ -39,11 +39,11 @@ enkf_resource_table: !Select
   cases:
     C192:
       #          ranks ppn  wallclock             threads
-      ecen:     [  84,   12, !timedelta "00:10:00", 2    ]
-      eobs:     [  72, null, !timedelta "00:30:00", 4    ]
-      eomg:     [ 144,   12, !timedelta "03:00:00", 2    ]
-      eupd:     [ 240,    6, !timedelta "00:30:00", 4    ]
-      epos:     [  84,   12, !timedelta "00:10:00", 2    ]
+      ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
+      eobs:     [  72,    6, !timedelta "00:45:00", 4    ]
+      eomg:     [  72,    6, !timedelta "01:00:00", 2    ]
+      eupd:     [ 120,    6, !timedelta "00:30:00", 4    ]
+      epos:     [  84,   12, !timedelta "00:30:00", 2    ]
       efcs_wall:  !timedelta "01:00:00"
     C384:
       #          ranks ppn  wallclock             threads
@@ -72,6 +72,7 @@ default_resources: &default_resources
   run_fv3ic: !JobRequest
     - batch_memory: "3072M"
       mpi_ranks: 24
+      max_ppn: 24
       walltime: !timedelta "00:30:00"
       exe: placeholder
   
