@@ -50,7 +50,10 @@ ecf_file_logic: &ecf_file_logic
     # Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
 
   ecf_batch_resources: !expand |-
-    {sched.batch_accounting(accounting,jobname=task_path_var,outerr="%ECF_OUT%/"+task_path_var+"_t"+"%CYC%"+"z.log")}
+    {sched.batch_accounting(
+      accounting,
+      jobname=task_path_var,
+      outerr="%COM%/logs/%PDY%%CYC%/"+task_path_var+".log")}
     {sched.batch_resources(resources)}
 
   ecf_resource_more: !expand |-

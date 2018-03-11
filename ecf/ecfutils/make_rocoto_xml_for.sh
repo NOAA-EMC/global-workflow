@@ -26,7 +26,7 @@ if [[ "$1" == "-v" ]] ; then
     export WORKTOOLS_VERBOSE=YES
     shift 1
 fi
-export CONFIGDIR="$1"
+export EXPDIR="$1"
 
 if [[ ! ( -d /scratch4 && -d /scratch3 || \
           -d /usrx/local && ! -e /etc/redhat-release ) \
@@ -38,16 +38,6 @@ fi
 set +e
 find_python36
 set -e
-
-tmpfile=${TMPDIR:-/tmp}/find-expdir.$RANDOM.$RANDOM.$$
-
-if ( ! ( make_yaml_files_in_expdir ) ) ; then
-    echo "Failed to make YAML files"
-    exit 1
-fi
-
-source "$tmpfile"
-rm -f "$tmpfile"
 
 if [[ "${WORKTOOLS_VERBOSE:-NO}" == YES ]] ; then
     echo "make_rocoto_xml_for.sh: EXPDIR=$EXPDIR"

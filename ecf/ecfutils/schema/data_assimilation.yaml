@@ -66,6 +66,18 @@ data_assimilation_template: !Template &data_assimilation_template
     default: YES
 
 
+  ENKF_INNOVATE_GROUPS: 
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EOMGGRP )
+
+  ENKF_FORECAST_GROUPS: 
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EFCSGRP )
+
+  ENKF_ARCHIVE_GROUPS:
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EARCGRP )
+
 # These variable largely eliminate the need for explicitly setting
 # USH directories, FIX files, PARM files, EXECutables below
 # The USER can overwrite components that they wish

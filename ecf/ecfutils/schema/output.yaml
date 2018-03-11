@@ -55,3 +55,19 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     type: string
     default: nemsio
     description: "Type of model output file"
+
+
+  gfs_forecast_hours: 
+    type: int list
+    default: !calc >-
+      tools.uniq(sorted(
+        tools.seq(FHMIN_GFS,FHMAX_HF_GFS,FHOUT_HF_GFS) +
+        tools.seq(FHMIN_GFS,FHMAX_GFS,   FHOUT_GFS)))
+
+  gdas_forecast_hours: 
+    type: int list
+    default: !calc "tools.seq(FHMIN_GDAS,FHMAX_GDAS,FHOUT_GDAS)"
+
+  wafs_last_hour:
+    type: int
+    default: !calc 120

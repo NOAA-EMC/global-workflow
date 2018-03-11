@@ -87,7 +87,7 @@ def select_platform(requested_platform,valid_platforms):
 
 def create_COMROT(conf):
     cdump = conf.settings.IC_CDUMP
-    icsdir = conf.settings.IC_DIR
+    icsdir = conf.places.ICSDIR
     comrot = conf.places.ROTDIR
     resens = conf.fv3_enkf_settings.CASE[1:]
     resdet = conf.fv3_gfs_settings.CASE[1:]
@@ -136,8 +136,11 @@ def find_case_yaml_file_for(case_name):
 def read_yaml_suite(dir):
     logger.info(f'{dir}: read yaml files specified in _main.yaml')
     conf=from_dir(dir)
-    crow.config.validate(conf.settings)
+    assert(conf.suite._path)
+    for scope_name in conf.validate_me:
+        crow.config.validate(conf[scope_name])
     suite=Suite(conf.suite)
+    assert(suite.viewed._path)
     return conf,suite
 
 def make_config_files_in_expdir(doc,expdir):
@@ -153,7 +156,7 @@ def make_config_files_in_expdir(doc,expdir):
         with open(filename,'wt') as fd:
             fd.write(content)
 
-def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
+def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     logger.info(f'{srcdir}: get yaml files from here')
     logger.info(f'{case_name}: use this case')
 
@@ -178,8 +181,28 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc):
     config=crow.config.from_string(config_contents)
     workflow_file=os.path.join(srcdir,config.places.workflow_file)
     tgtdir=config.places.EXPDIR
+    rotdir=config.places.ROTDIR
 
+    logger.info(f'{rotdir}: COM files will be here')
     logger.info(f'{tgtdir}: send yaml files to here')
+
+    gud=True
+    if os.path.exists(tgtdir):
+        gud=False
+        logger.warning(f'{tgtdir}: already exists!')
+    if os.path.exists(rotdir):
+        gud=False
+        logger.warning(f'{rotdir}: already exists!')
+    if not gud and not force:
+        logger.error('Target directories already exist.')
+        logger.error('I will not start a workflow unless you do -f.')
+        logger.critical('Use -f to force this workflow to start, but we aware that config, initial COM, and yaml files will be overwritten.  Other COM files will remain unmodified.')
+        exit(1)
+    elif not gud:
+        logger.warning('Target directories already exist.')
+        logger.warning('Received -f, so I will start anyway.')
+        logger.warning('Will overwrite config, initial COM, and yaml files.')
+        logger.warning('All other COM files will remain unmodified.')
 
     del config
 
@@ -349,7 +372,7 @@ def remake_ecflow_files_for_cycles(
         surrounding_cycles=1):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.settings.COM}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
 
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     first_cycle=max(suite.Clock.start,first_cycle)
@@ -373,7 +396,7 @@ If you want to update the suite (cycle) definitions, or add suites
 
 def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=1,begin=False):
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.settings.COM}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
         create_new_ecflow_workflow(suite,surrounding_cycles)
     if not ECF_HOME:
@@ -395,7 +418,8 @@ def add_cycles_to_running_ecflow_workflow_at(
 
 def make_rocoto_xml_for(yamldir):
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.settings.COM}/log')
+    assert(suite.viewed._path)
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
 
 def setup_case_usage(why=None):
@@ -403,8 +427,10 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'vp:')
+    options,positionals=getopt(command_line_arguments,'vfp:')
     options=dict(options)
+
+    force='-f' in options
 
     if '-v' in options:
         logger.setLevel(logging.INFO)
@@ -429,12 +455,22 @@ def setup_case(command_line_arguments):
     logger.info(f'{platdoc.platform.name}: selected this platform.')
 
     EXPDIR = make_yaml_files_in_expdir(
-        os.path.abspath('.'),case_name,experiment_name,platdoc)
-    print(f'{EXPDIR}: yaml files made here')
+        os.path.abspath('.'),case_name,experiment_name,platdoc,force)
 
     doc=from_dir(EXPDIR,validation_stage='setup')
     make_config_files_in_expdir(doc,EXPDIR)
-    print(f'{EXPDIR}: config files made here')
 
     create_COMROT(doc)
 
+    print()
+    print(f'Case "{case_name}" is set up under experiment name "{experiment_name}" with:')
+    print()
+    print(f'  YAML files:     {EXPDIR}')
+    print(f'  Config files:   {EXPDIR}')
+    print(f'  COM directory:  {doc.places.ROTDIR}')
+    print()
+    print('Now you should make a workflow:')
+    print()
+    print(f'  Rocoto: ./make_rocoto_xml_for.sh {EXPDIR}')
+    print(f'  ecFlow: ./load_ecflow_workflow.sh {EXPDIR}')
+    print()

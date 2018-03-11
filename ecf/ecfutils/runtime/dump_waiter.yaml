@@ -20,7 +20,7 @@ dump_waiter: &dump_waiter_task !Task
 
   updated_status: !DataEvent
      file: !expand >-
-       {doc.settings.DMPDIR}/@Y@m@d@H/{up.CDUMP}/{up.CDUMP}.t@Hz.updated.status.tm00.bufr_d
+       {doc.places.DMPDIR}/@Y@m@d@H/{up.CDUMP}/{up.CDUMP}.t@Hz.updated.status.tm00.bufr_d
 
   # The batch_job_command is dumped into the ecf file where the
   # J-Job would normally be called.  This job is never run by

@@ -7,11 +7,11 @@ gfs_resource_table: !Select
       prep:     [  12,   12, !timedelta "00:15:00", null ]
       anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
-      gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
-      gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
-      gdasvrfy: [   1,    1, !timedelta "01:30:00", null ]
+      gfspost:  [  72,   12, !timedelta "01:00:00", 1    ]
+      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null ]
+      gdasvrfy: [   1,    1, !timedelta "03:00:00", null ]
       gfsfcst_wall:  !timedelta "06:00:00"
-      gdasfcst_wall:  !timedelta "01:00:00"
+      gdasfcst_wall:  !timedelta "00:15:00"
     C384:
       #          ranks ppn  wallclock             threads
       prep:     [  12,   12, !timedelta "00:15:00", null ]
@@ -42,7 +42,7 @@ enkf_resource_table: !Select
       ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
       eobs:     [  72,    6, !timedelta "00:45:00", 4    ]
       eomg:     [  72,    6, !timedelta "01:00:00", 2    ]
-      eupd:     [ 120,    6, !timedelta "00:30:00", 4    ]
+      eupd:     [ 120,   12, !timedelta "00:30:00", 4    ]
       epos:     [  84,   12, !timedelta "00:30:00", 2    ]
       efcs_wall:  !timedelta "01:00:00"
     C384:

@@ -26,7 +26,7 @@ if [[ "$1" == "-v" ]] ; then
     export WORKTOOLS_VERBOSE=YES
     shift 1
 fi
-export CONFIGDIR="$1"
+export EXPDIR="$1"
 export FIRST_CYCLE="$2"
 export LAST_CYCLE="$3"
 
@@ -50,16 +50,6 @@ echo "   host: $ECF_HOST"
 set +e
 find_python36
 set -e
-
-tmpfile=${TMPDIR:-/tmp}/find-expdir.$RANDOM.$RANDOM.$$
-
-if ( ! ( make_yaml_files_in_expdir ) ) ; then
-    echo "Failed to make YAML files"
-    exit 1
-fi
-
-source "$tmpfile"
-rm -f "$tmpfile"
 
 if [[ "${WORKTOOLS_VERBOSE:-NO}" == YES ]] ; then
     echo "remake_ecflow_files_for.sh: EXPDIR=$EXPDIR"

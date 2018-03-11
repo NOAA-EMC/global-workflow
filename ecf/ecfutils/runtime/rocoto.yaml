@@ -5,14 +5,15 @@ Rocoto: &Rocoto
   workflow_xml: !expand |
     <?xml version="1.0"?>
     <!DOCTYPE workflow [
-      <!ENTITY LOG_DIR "{doc.settings.ROCOTO_HOME}/log">
+      <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
       <!ENTITY TASK_THROTTLE "5">
-      <!ENTITY QUEUE "{doc.settings.QUEUE}">
-      <!ENTITY QUEUESERV "{doc.settings.QUEUESERV}">
-      <!ENTITY PROJECT "{doc.settings.PROJECT}">
+      <!ENTITY QUEUE "{doc.platform.exclusive_accounting.queue}">
+      <!ENTITY QUEUESHARED "{doc.platform.shared_accounting.queue}">
+      <!ENTITY QUEUESERV "{doc.platform.service_accounting.queue}">
+      <!ENTITY CPU_PROJECT "{doc.accounting.cpu_project}">
       <!ENTITY CYCLE_THROTTLE "2">
       <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
-      <!ENTITY EXPDIR "{doc.settings.EXPDIR}">
+      <!ENTITY EXPDIR "{doc.places.EXPDIR}">
       <!ENTITY PSLOT "{doc.names.experiment}">
       {suite.common_metasched_vars}
     ]>
@@ -20,15 +21,15 @@ Rocoto: &Rocoto
               cyclethrottle="&CYCLE_THROTTLE;"
               scheduler="{sched.rocoto_name.lower()}"
               taskthrottle="&TASK_THROTTLE;" >
-      <log><cyclestr>&LOG_DIR;/rocoto_@Y@m@d@H.log</cyclestr></log>
+      <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
     {to_rocoto.make_time_xml(indent=1)}
     {to_rocoto.make_task_xml(indent=1)}
     </workflow>
 
 rocoto_task_template: &rocoto_task_template !expand |
-    <command>{doc.settings.ROCOTO_HOMEgfs}/jobs/{J_JOB}</command>
+    <command>{doc.places.HOMEgfs}/jobs/{J_JOB}</command>
     {sched.rocoto_accounting(accounting,
         jobname=task_path_var,
-        outerr="<cyclestr>&LOG_DIR;/"+task_path_var+"_t"+"@H"+"z.log</cyclestr>")}
+        outerr="<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")}
     {sched.rocoto_resources(resources)}
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>

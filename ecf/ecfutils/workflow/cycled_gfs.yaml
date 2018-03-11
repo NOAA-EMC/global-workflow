@@ -1,93 +1,10 @@
-scheduler: !calc |
-  tools.get_scheduler(doc.scheduler_settings.name,
-                      doc.scheduler_settings)
+scheduler: !calc doc.platform.scheduler
+
 suite: !Cycle
-  Clock: !Clock
-    start: !calc doc.settings.start_date
-    end: !calc doc.settings.end_date
-    step: !timedelta "6:00:00"
-
-  Alarms:
-    first: !Clock
-      start: !calc suite.Clock.start
-      end: !calc suite.Clock.start
-      step: !calc suite.Clock.step
-    gdas: !Clock
-      start: !calc suite.Clock.start
-      end: !calc suite.Clock.end
-      step: !calc suite.Clock.step
-    gfs: !Clock
-      start: !calc doc.settings.start_date_gfs
-      end: !calc doc.settings.end_date_gfs
-      step: !calc doc.settings.interval_gfs
-
-  ecFlow:
-    suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"
-    suite_def_filename: !FirstTrue
-      - when: !calc doc.settings.four_cycle_mode
-        do:   !expand "{doc.names.experiment}%H.def"
-      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H.def"
-    suite_name: !FirstTrue
-      - when: !calc doc.settings.four_cycle_mode
-        do:   !expand "{doc.names.experiment}%H"
-      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H"
-    scheduler: !calc doc.scheduler
-    dates_in_time_dependencies: true
-
-    # write_cycles/analyze_cycles: Use these to generate a subset of
-    # the cycles in ecFlow.  Make sure analyze_cycles starts at least
-    # one cycle before write_cycles so that dependencies are
-    # processed.  These are overridden by update_ecflow_workflow.py
-    # during its execution.
-
-    # write_cycles: !Clock
-    #   start: 2018-01-02T00:00:00
-    #   end: 2018-01-02T18:00:00
-    #   step: !timedelta "6:00:00"
-    # analyze_cycles: !Clock
-    #   start: 2018-01-02T00:00:00
-    #   end: 2018-01-02T18:00:00
-    #   step: !timedelta "6:00:00"
-
-  ecflow_cycling_logic: !FirstTrue
-      - when: !calc doc.settings.four_cycle_mode
-        do:   "repeat day 1"
-      - otherwise: !expand |
-          autocancel 5
-          edit PDY '{tools.strftime(suite.Clock.now,"%Y%m%d")}'
-
-  Rocoto: *Rocoto
-          
-  before_suite_def:
-    extern /totality_limit:TOTALITY
-
-  ecflow_def: !expand |
-    {ecflow_cycling_logic}
-    edit ECF_TRIES '{doc.settings.max_job_tries}'
-    edit ECF_HOME '{doc.settings.ECF_HOME}'
-    edit CYC '{tools.strftime(suite.Clock.now,"%H")}'
-    edit MACHINE '{doc.settings.ecflow_machine}'
-    edit ENVIR 'prod'
-    edit E 'jecffv3'
-    edit EMCPEN '{doc.names.experiment}'
-    edit DATAROOT '{doc.settings.DATAROOT}'
-    edit ECF_OUT '{doc.settings.ECF_HOME}/output'
-    edit ECF_LOG '{doc.settings.EXPDIR}/ecf.log'
-    edit RUN 'gfs'
-    edit NET 'gfs'
-    {common_metasched_vars}
-    inlimit /totality_limit:TOTALITY
-
-  common_metasched_vars: !expand |
-    {metasched.defvar("QUEUE", doc.settings.QUEUE)}
-    {metasched.defvar("HOMEgfs", doc.settings.HOMEgfs)}
-    {metasched.defvar("QUEUESHARED", doc.settings.QUEUESHARED)}
-    {metasched.defvar("COM", doc.settings.COM)}
-    {metasched.defvar("QUEUESERV", doc.settings.QUEUESERV)}
-    {metasched.defvar("PROJENVIR", doc.settings.PROJECT)}
-    {metasched.defvar("PROJ", doc.settings.PROJECT)}
+  <<: *suite_defaults
 
   gfs: !Family
+    Disable: !calc doc.settings.gfs_cyc==0
     Complete: !Depend ~ suite.has_cycle('-6:00:00')
     AlarmName: gfs
     RUN: 'gfs'
@@ -103,7 +20,7 @@ suite: !Cycle
         - otherwise: ""
       ecflow_def: !expand |
         {realtime_logic}
-        edit DUMPDIR '{doc.settings.DMPDIR}'
+        edit DUMPDIR '{doc.places.DMPDIR}'
       Trigger: !Depend  up.gdas.post.at('-6:00:00')
 
     dump: !Family
@@ -229,7 +146,7 @@ suite: !Cycle
 
       grib_wafs: !TaskArray
         Dimensions:
-          fhr: !calc tools.seq(0,doc.settings.wafs_last_hour,6)
+          fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
         jgfs_wafs: !TaskElement
           <<: *exclusive_task_template
           Name: !expand 'jgfs_wafs_f{dimval.fhr:02d}'
@@ -278,7 +195,7 @@ suite: !Cycle
 
       grib_awips: !TaskArray
         Dimensions:
-          fhr: !calc doc.settings.gfs_forecast_hours
+          fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         # tasks every 6 hours till f240
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
@@ -291,12 +208,12 @@ suite: !Cycle
 
       awips_1p0deg: !TaskArray
         Dimensions:
-          fhr: !calc doc.settings.gfs_forecast_hours
+          fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         ecflow_def: !expand |
           edit RES '1p0deg'
           edit RESC '1P0DEG'
           #edit ECF_FILES '/gpfs/hps3/emc/global/noscrub/emc.glopara/ecflow/fv3/scripts/gfs/post_processing/awips'
-          edit ECF_FILES '{doc.settings.ECF_HOME}/scripts'
+          edit ECF_FILES '{doc.places.ECF_HOME}/scripts'
 
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
@@ -309,12 +226,12 @@ suite: !Cycle
 
       awips_20km: !TaskArray
         Dimensions:
-          fhr: !calc doc.settings.gfs_forecast_hours
+          fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         ecflow_def: !expand |
           edit RES '20km'
           edit RESC '20KM'
           #edit ECF_FILES '/gpfs/hps3/emc/global/noscrub/emc.glopara/ecflow/fv3/scripts/gfs/post_processing/awips'
-          edit ECF_FILES '{doc.settings.ECF_HOME}/scripts'
+          edit ECF_FILES '{doc.places.ECF_HOME}/scripts'
         # tasks every 3 hours till f084, then every 6 hours till f240
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
@@ -330,7 +247,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.settings.gfs_forecast_hours
+        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -392,7 +309,7 @@ suite: !Cycle
           /usr/bin/env post_times={dimval.fhr:03d} &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_pgrb2_spec_post: !FirstTrue
-        - when: !calc max(doc.settings.gfs_forecast_hours)>=384
+        - when: !calc max(doc.gfs_output_settings.gfs_forecast_hours)>=384
           do:  !Task
             <<: *exclusive_task_template
             Dummy: true  ## <-- Node is not implemented yet
@@ -404,7 +321,7 @@ suite: !Cycle
     prdgen: !TaskArray
       Dummy: true  ## <-- Node is not implemented yet
       Dimensions:
-        fhr: !calc doc.settings.gfs_forecast_hours
+        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
 
       jgfs_pgrb2_manager_el: !TaskElement
         <<: *exclusive_task_template
@@ -515,7 +432,7 @@ suite: !Cycle
         - otherwise: ""
       ecflow_def: !expand |
         {realtime_logic}
-        edit DUMPDIR '{doc.settings.DMPDIR}'
+        edit DUMPDIR '{doc.places.DMPDIR}'
       Trigger: !Depend  post.at('-6:00:00')
 
     dump: !Family
@@ -639,7 +556,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.settings.gdas_forecast_hours
+        fhr: !calc doc.gfs_output_settings.gdas_forecast_hours
       post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -720,7 +637,7 @@ suite: !Cycle
         Trigger: !Depend jgdas_enkf_select_obs
         Complete: !Depend ~ suite.has_cycle('-6:00:00') 
         Dimensions:
-          groupid: !calc tools.seq(1,doc.settings.ENKF_INNOVATE_GROUPS,1)
+          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_INNOVATE_GROUPS,1)
         jgdas_enkf_innovate_obs_grp: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ groupid ]
@@ -750,7 +667,7 @@ suite: !Cycle
 
         Trigger: !Depend up.enkf.jgdas_enkf_inflate_recenter |  ~ suite.has_cycle('-6:00:00') 
         Dimensions:
-          groupid: !calc tools.seq(1,doc.settings.ENKF_FORECAST_GROUPS,1)
+          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_FORECAST_GROUPS,1)
         jgdas_enkf_fcst_grp: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ groupid ]
@@ -792,8 +709,8 @@ suite: !Cycle
       edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
       edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
       edit WORKFLOW_CYCLES_TO_GENERATE '5'
-      edit WORKFLOW_CROW_HOME '{doc.initial_directory}'
-      edit WORKFLOW_EXPDIR '{doc.settings.EXPDIR}'
+      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
+      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
 
   archive: !Family
     ecflow_def:
@@ -804,7 +721,7 @@ suite: !Cycle
       Trigger: !Depend up.gdas
       #Trigger: !Depend up.gdas.jgdas_emc_vrfy
       resources: !calc ( doc.resources.run_arch )
-      Disable: !calc not doc.settings.archive_to_hpss
+      Disable: !calc not doc.archiving.archive_to_hpss
       J_JOB: rocoto/arch.sh
       ecf_module_commands: "# arch.sh will load modules instead"
       RUN: gdas
@@ -815,7 +732,7 @@ suite: !Cycle
       AlarmName: gdas
       Trigger: !Depend up.gdas.enkf.jgdas_enkf_post
       Dimensions:
-        groupid: !calc tools.seq(0,doc.settings.ENKF_ARCHIVE_GROUPS-1,1)
+        groupid: !calc tools.seq(0,doc.data_assimilation.ENKF_ARCHIVE_GROUPS-1,1)
       grp: !TaskElement
         <<: *service_task_template
         resources: !calc ( doc.resources.run_arch )
@@ -830,11 +747,12 @@ suite: !Cycle
 
     jgfs_archive: !Task
       <<: *service_task_template
+      Disable: !calc doc.settings.gfs_cyc == 0
       Complete: !Depend ~ suite.has_cycle('-6:00:00')
       AlarmName: gfs
       Trigger: !Depend up.gfs.jgfs_emc_vrfy
       resources: !calc ( doc.resources.run_arch )
-      Disable: !calc not doc.settings.archive_to_hpss
+      Disable: !calc not doc.archiving.archive_to_hpss
       J_JOB: rocoto/arch.sh
       ecf_module_commands: "# arch.sh will load modules instead"
       RUN: gfs

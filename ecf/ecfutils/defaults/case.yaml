@@ -64,3 +64,19 @@ archiving: !MergeMapping
 nodes: !calc doc.platform.nodes
 scheduler: !calc doc.platform.scheduler
 parallelism: !calc doc.platform.parallelism
+
+validate_me: 
+  - fv3_settings
+  - fv3_gfs_settings
+  - fv3_enkf_settings
+  - fv3_gdas_settings
+  - gfs_output_settings
+  - data_assimilation
+  - post
+  - downstream
+  - places
+  - nsst
+  - resources
+  - settings
+  - archiving
+

@@ -1,5 +1,26 @@
 settings_schema: !Template &settings_schema
 
+  realtime:
+    type: bool
+    description: "Simulation of an event that is currently happening (ie.: a forecast)"
+    default: false
+
+  four_cycle_mode:
+    type: bool
+    description: "Enable NCO-like four cycle suite.  Not well tested.  Do not use unless you know what you're doing."
+    default: false
+
+  max_job_tries:
+    type: int
+    default: 1
+    description: "Number of times to try running a job.  Set to 1 for no retries."
+
+  IC_CDUMP:
+    type: string
+    allowed: [ gfs, gdas ]
+    description: Get initial conditions from gfs or gdas
+    default: gdas
+
   gfs_cyc:
     type: int
     default: 4

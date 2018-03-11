@@ -37,7 +37,7 @@ task_template: &task_template
     export COMROOT=%COM%
     export cycle=t%CYC%z
     export CDATE=%PDY%%CYC%
-    export EXPDIR="{doc.settings.EXPDIR}"
+    export EXPDIR="{doc.places.EXPDIR}"
 
   ecf_more_exports: ""
 

@@ -27,15 +27,15 @@ platform: !Platform
 
   shared_accounting:
     queue: !calc metasched.varref('QUEUESHARED')
-    project: !calc metasched.varref('PROJ')
+    project: !calc metasched.varref('CPU_PROJECT')
 
   service_accounting:
     queue: !calc metasched.varref('QUEUESERV')
-    project: !calc metasched.varref('PROJ')
+    project: !calc metasched.varref('CPU_PROJECT')
 
   exclusive_accounting:
     queue: !calc metasched.varref('QUEUE')
-    project: !calc metasched.varref('PROJ')
+    project: !calc metasched.varref('CPU_PROJECT')
 
   scheduler_settings: &scheduler_settings
     name: MoabTorque
@@ -79,7 +79,7 @@ platform: !Platform
       - do: /scratch4/NCEPDEV/stmp4
         when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
       - do: !expand "{doc.user_places.PROJECT_DIR}/scrub"
-        when: !calc tools.panasas_gb(do)
+        when: !calc tools.panasas_gb(do)/4
         message: "{do}: use project directory as scrub space"
   long_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
   short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"

@@ -95,7 +95,7 @@ config_base:
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
-    export RUNDIR="$STMP/RUNDIRS/$PSLOT"
+    export RUNDIR="{doc.places.DATAROOT}"
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
     export ICSDIR="{doc.places.ICSDIR}"
     export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
