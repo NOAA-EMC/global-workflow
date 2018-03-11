@@ -19,10 +19,10 @@ config_fcst:
     echo "BEGIN: config.fcst"
     
     # Source model specific information that is resolution dependent
-    . $EXPDIR/config.fv3 $CASE
+    . $EXPDIR/config.fv3 $CDUMP
     
     # Get task specific resources
-    . $EXPDIR/config.resources $CDUMP
+    . $EXPDIR/config.resources fcst
     
     if [ $DONST = "YES" ]; then
         . $EXPDIR/config.nsst
