@@ -76,14 +76,18 @@ platform: !Platform
   mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
   long_term_temp: !Immediate
     - !FirstMax
+      - do: /gpfs/hps/ptmp
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps-ptmp","hps",mmlsquota) )
       - do: /gpfs/hps2/ptmp
         when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps2-ptmp","hps2",mmlsquota) )
       - do: /gpfs/hps3/ptmp
         when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps3-ptmp","hps3",mmlsquota) )
   short_term_temp: !Immediate
     - !FirstMax
-      - do: /gpfs/hps2/ptmp
+      - do: /gpfs/hps/stmp
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps-stmp","hps",mmlsquota) )
+      - do: /gpfs/hps2/stmp
         when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps2-stmp","hps2",mmlsquota) )
-      - do: /gpfs/hps3/ptmp
+      - do: /gpfs/hps3/stmp
         when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps3-stmp","hps3",mmlsquota) )
   EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
