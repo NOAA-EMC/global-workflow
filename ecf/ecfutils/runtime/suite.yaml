@@ -114,11 +114,12 @@ suite_defaults: &suite_defaults
     edit E 'jecffv3'
     edit EMCPEN '{doc.names.experiment}'
     edit DATAROOT '{doc.places.DATAROOT}'
-    edit ECF_OUT '{doc.places.ECF_HOME}/output'
+    edit ECF_OUT '{doc.places.ECF_HOME}/submit'
     edit ECF_LOG '{doc.places.EXPDIR}/ecf.log'
     edit RUN 'gfs'
     edit NET 'gfs'
     {common_metasched_vars}
+    {doc.platform.metasched_more}
     inlimit /totality_limit:TOTALITY
 
   common_metasched_vars: !expand |
