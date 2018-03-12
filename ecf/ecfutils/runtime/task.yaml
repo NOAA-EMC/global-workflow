@@ -31,7 +31,7 @@ task_template: &task_template
     # Set data and logs to locations specified in the suite definition.
     # This is needed when running without write access to the NCO com areas.
     export DATAROOT=%DATAROOT%
-    export jlogfile=%COMROOT%/logs/jlogfile
+    export jlogfile=%COM%/logs/jlogfile
     export COMROOT=%COM%
     export cycle=t%CYC%z
     export CDATE=%PDY%%CYC%
