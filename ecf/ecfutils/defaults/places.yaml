@@ -12,5 +12,7 @@ default_places: &default_places
   DATAROOT: !expand "{SHORT_TERM_TEMP}/RUNDIRS/{doc.names.experiment}"
   SHORT_TERM_TEMP: !calc doc.platform.short_term_temp
   LONG_TERM_TEMP:  !calc doc.platform.long_term_temp
+#  SHORT_TERM_TEMP: !error GOT HERE
+#  LONG_TERM_TEMP:  !error GOT HERE TOO
 
   ECF_HOME: !calc tools.env("ECF_HOME","/dev/null")
