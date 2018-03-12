@@ -1,71 +1,31 @@
-fv3_settings: &fv3_settings
-  LEVS: 65  # Number of vertical levels (mandatory)
-  QUILTING: NO
-
-fv3_gfs_settings: &fv3_gfs_settings
-  <<: *fv3_settings
-  Template: *fv3_settings_template
-  CASE: C384 # FV3 horizontal resolution (mandatory)
-  CDUMP: gfs
-
-fv3_enkf_settings: &fv3_enkf_settings
-  <<: [ *fv3_enkf_defaults, *fv3_settings ]
-  Template: *fv3_settings_template
-  CASE: C192 # FV3 horizontal resolution for ensemble (mandatory)
-  CDUMP: gdas
-
-fv3_gdas_settings: &fv3_gdas_settings
-  <<: *fv3_gfs_settings
-  Template: *fv3_settings_template
-  CDUMP: gdas
-
-########################################################################
-
-gfs_output_settings: &gfs_output_settings
-  Template: *gfs_output_settings_template
-
-  FHMAX_GFS: 120 # Last GFS forecast hour (mandatory)
-  FHOUT_GFS: 6 # GFS output frequency (optional)
-
-  OUTPUT_GRID: "gaussian_grid"
-
-########################################################################
-
-data_assimilation: &data_assimilation
-  Template: *data_assimilation_template
-  # Shared parameters/switches for data assimilation
-  DOHYBVAR: YES           # optional
-  NMEM_ENKF: 20
-  NMEM_ENKF_GRP_EOMN: 10  # DO NOT CHANGE (yet)
-  NMEM_ENKF_GRP_EFMN: 10  # DO NOT CHANGE (yet)
-  RECENTER_ENKF: YES      # optional
-  l4densvar: ".false."    # optional
-  lwrite4danl: ".false."  # optional
-  DO_MAKEPREPBUFR: YES   # if NO, will copy prepbufr from globaldump
-
-prepbufr: &prepbufr
-  # Parameters and switches for propbufr creation.
-  Template: *obsproc_template
-  # See validation/obsproc.yaml for variables you can override
-
-########################################################################
-
-places: &places { <<: *user_places }
-
 case:
-  Template: [ *case_template, *known_workflows ]
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
 
-  SDATE: 2017-07-31t18:00:00
-  EDATE: 2017-08-05t00:00:00
+  fv3_enkf_settings:
+    CASE: C192
 
-  workflow: cycled_workflow
+  data_assimilation:
+    NMEM_ENKF: 20
 
-  IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-  IC_DIR: !FirstTrue
-    - when: !calc doc.platform.name == "THEIA"
-      do: "/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
-    - when: !calc doc.platform.name == "WCOSS_C"
-      do: "/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS"
-    - otherwise: !error "No ICs for platform {doc.platform.name}"
+  gfs_output_settings:
+    FHMAX_GFS: 120
+    FHOUT_GFS: 3
 
-#-END OF FILE-#
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+    ICSDIR: !FirstTrue
+      - when: !calc doc.platform.name == "THEIA"
+        do: "/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
+      - when: !calc doc.platform.name == "WCOSS_C"
+        do: "/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS"
+      - otherwise: !error "No ICs for platform {doc.platform.name}"
+
+  settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2017-07-31t18:00:00
+    EDATE: 2017-08-02t00:00:00
+
+    gfs_cyc: 2 # run gfs at 0z, 12z
+
