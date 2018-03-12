@@ -24,10 +24,11 @@ suite: !Cycle
       ecflow_def: !expand |
         {realtime_logic}
         edit DUMPDIR '{doc.places.DMPDIR}'
-      Trigger: !Depend  up.gdas.post.at('-6:00:00')
+      Trigger: !Depend  up.gdas.forecast.at('-6:00:00')
 
     dump: !Family
       Dummy: true  ## <-- Node is not implemented yet
+      Trigger: !Depend  up.gdas.forecast.at('-6:00:00')
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_tropcy_qc_reloc: !Task
         <<: *exclusive_task_template
@@ -47,13 +48,8 @@ suite: !Cycle
         resources: !calc ( doc.resources.run_one_hour_exclusive )
 
     prep: !Family
-      Trigger: !Depend >-
-        dump_waiter.updated_status &
-        (
-        post.at('-6:00:00')
-        |
-        ~ suite.has_cycle('-12:00:00')
-        )
+      Trigger: !Depend |
+        dump_waiter.updated_status & up.gdas.forecast.at('-6:00:00')
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_emcsfc_sfc_prep: !Task
         <<: *exclusive_task_template
@@ -442,10 +438,11 @@ suite: !Cycle
       ecflow_def: !expand |
         {realtime_logic}
         edit DUMPDIR '{doc.places.DMPDIR}'
-      Trigger: !Depend  post.at('-6:00:00')
+      Trigger: !Depend  forecast.at('-6:00:00')
 
     dump: !Family
       Dummy: true  ## <-- Node is not implemented yet
+      Trigger: !Depend  forecast.at('-6:00:00')
       jgdas_ics: !Task
         <<: *exclusive_task_template
         release_gdas00_ics: !DataEvent {file="/dev/null"}
@@ -482,7 +479,8 @@ suite: !Cycle
     #endfamily dump
 
     prep: !Family
-      Trigger: !Depend ( dump_waiter.updated_status & post.at('-6:00:00') )
+      Trigger: !Depend |
+        dump_waiter.updated_status & up.gdas.forecast.at('-6:00:00')
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_emcsfc_sfc_prep: !Task
         <<: *exclusive_task_template
