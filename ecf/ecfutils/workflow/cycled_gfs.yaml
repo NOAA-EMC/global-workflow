@@ -47,7 +47,13 @@ suite: !Cycle
         resources: !calc ( doc.resources.run_one_hour_exclusive )
 
     prep: !Family
-      Trigger: !Depend ( dump_waiter.updated_status & post.at('-6:00:00') )
+      Trigger: !Depend >-
+        dump_waiter.updated_status &
+        (
+        post.at('-6:00:00')
+        |
+        ~ suite.has_cycle('-12:00:00')
+        )
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_emcsfc_sfc_prep: !Task
         <<: *exclusive_task_template

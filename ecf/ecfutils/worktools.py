@@ -325,7 +325,7 @@ def get_target_dir_and_check_ecflow_env():
         
     return ECF_HOME
 
-def create_new_ecflow_workflow(suite,surrounding_cycles=1):
+def create_new_ecflow_workflow(suite,surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     if not ECF_HOME: return None,None,None,None
     first_cycle=suite.Clock.start
@@ -337,7 +337,7 @@ def create_new_ecflow_workflow(suite,surrounding_cycles=1):
     return ECF_HOME, suite_def_files, first_cycle, last_cycle
 
 def update_existing_ecflow_workflow(suite,first_cycle,last_cycle,
-                                    surrounding_cycles=1):
+                                    surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     suite_defs, ecf_files = generate_ecflow_suite_in_memory(
         suite,first_cycle,last_cycle,surrounding_cycles)
@@ -376,7 +376,7 @@ def make_rocoto_xml(suite,filename):
 
 def remake_ecflow_files_for_cycles(
         yamldir,first_cycle_str,last_cycle_str,
-        surrounding_cycles=1):
+        surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
@@ -401,7 +401,7 @@ If you want to update the suite (cycle) definitions, or add suites
 (cycles), you will need to call ecflow_client's --load, --begin,
 --replace, or --delete commands.''')
 
-def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=1,begin=False):
+def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
@@ -414,7 +414,7 @@ def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=1,begin=False):
         begin_ecflow_suites(ECF_HOME,suite_def_files)
         
 def add_cycles_to_running_ecflow_workflow_at(
-        yamldir,first_cycle_str,last_cycle_str,surrounding_cycles=1): 
+        yamldir,first_cycle_str,last_cycle_str,surrounding_cycles=2): 
     conf,suite=read_yaml_suite(yamldir)
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     last_cycle=datetime.datetime.strptime(last_cycle_str,'%Y%m%d%H')
