@@ -2,16 +2,22 @@
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
+. ./machine-setup.sh
+echo "target system (machine) set to $target"
 
-RUN_ENVIR=${1:-emc}
-machine=${2:-cray}
-
-if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
+if [ -z $target ]; then
+    echo 'target value not set (unknown system not supported)'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
+
+RUN_ENVIR=${1:-emc}
+
+if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
+    exit 1
+fi
+if [ $target != wcoss_cray -a $target != theia ]; then
+    echo '$target value set to unknown or unsupported system'
     exit 1
 fi
 
@@ -21,9 +27,9 @@ LINK="ln -fs"
 pwd=$(pwd -P)
 
 #--model fix fields
-if [ $machine == "cray" ]; then
+if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "theia" ]; then
+elif [ $target = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 fi
 if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
@@ -44,7 +50,7 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
 cd ${pwd}/../ush                ||exit 8
-    for file in gfs_nceppost.sh; do
+    for file in gfs_nceppost.sh gfs_transfer.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
 
@@ -58,6 +64,3 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
 exit 0
-
-
-

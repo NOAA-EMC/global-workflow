@@ -30,7 +30,7 @@ export npe_postgp=$npe_post
 export nth_postgp=1
 
 export GFS_DOWNSTREAM="YES"
-export downset=1
+export downset=2
 export npe_dwn=24
 export nth_dwn=1
 
