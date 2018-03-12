@@ -12,7 +12,7 @@ suite: !Cycle
       resources: !calc ( doc.resources.run_getic )
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
-      RUN: gfs # useless but required
+      RUN: gfs
 
     jgfs_emc_fv3ic: !Task
       <<: *exclusive_task_template
@@ -20,7 +20,7 @@ suite: !Cycle
       resources: !calc ( doc.resources.run_fv3ic )
       J_JOB: rocoto/fv3ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
-      RUN: gfs # useless but required
+      RUN: gfs
 
   gfs: !Family
     Trigger: !Depend ics

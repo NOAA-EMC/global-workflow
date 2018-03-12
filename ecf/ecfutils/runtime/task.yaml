@@ -24,10 +24,8 @@ task_template: &task_template
     <envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
     {rocoto_more_vars}
 
-  CDUMP: !calc task_path_list[0]
-
-  # Default resources for a job are serial
-  #resources: !calc doc.resources.run_nothing
+  RUN: !calc task_path_list[0]
+  CDUMP: !calc RUN
 
   ecf_dev_overrides: !expand |
     # Set data and logs to locations specified in the suite definition.
@@ -135,10 +133,10 @@ shared_accounting: &shared_accounting !calc >-
   doc.platform.shared_accounting_ref
 
 service_accounting: &service_accounting !calc >-
-  doc.platform.shared_accounting_ref
+  doc.platform.service_accounting_ref
 
 exclusive_accounting: &exclusive_accounting !calc >-
-  doc.platform.shared_accounting_ref
+  doc.platform.exclusive_accounting_ref
 
 shared_task_template: &shared_task_template
   <<: *task_template

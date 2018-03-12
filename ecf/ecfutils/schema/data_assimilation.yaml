@@ -43,8 +43,12 @@ data_assimilation_template: !Template &data_assimilation_template
 
   DO_MAKEPREPBUFR:
     type: bool
-    default: YES
+    default: NO
     description: If NO, will copy prepbufr from globaldump.  Otherwise, generates prepbufr file anew.
+    if_present: !FirstTrue
+      - when: !calc DO_MAKEPREPBUFR and doc.platform.name != 'WCOSS_C'
+        do: !error data_assimilation.DO_MAKEPREPBUFR must be NO except on WCOSS Cray
+      - otherwise: null
 
   RERUN_EFCSGRP:
     type: bool

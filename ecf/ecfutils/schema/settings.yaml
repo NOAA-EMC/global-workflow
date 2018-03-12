@@ -20,7 +20,6 @@ settings_schema: !Template &settings_schema
     allowed: [ gfs, gdas ]
     optional: true
     description: Get initial conditions from gfs or gdas
-    default: gdas
 
   gfs_cyc:
     type: int
