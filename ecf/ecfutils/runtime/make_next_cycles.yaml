@@ -62,7 +62,7 @@ make_next_cycles: &make_next_cycles_task !Task
 
     cd "$WORKFLOW_CROW_HOME"
     postmsg "Start cycles $first_cycle through $last_cycle."
-    ./update_ecflow_workflow.sh "$WORKFLOW_EXPDIR" "$first_cycle" "$last_cycle"
+    ./update_ecflow_workflow.sh -v  "$WORKFLOW_EXPDIR" "$first_cycle" "$last_cycle"
 
     
     cd /
