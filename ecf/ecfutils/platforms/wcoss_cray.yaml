@@ -17,7 +17,7 @@ platform: !Platform
   RTMFIX: "$CRTM_FIX"
   BASE_SVN: "/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
-  config_base_extras:
+  config_base_extras: |
     if [ -d /gpfs/tp1 ]; then
         export SITE="LUNA"
     elif [ -d /gpfs/gp1 ]; then
@@ -42,9 +42,15 @@ platform: !Platform
     {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
     {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
 
-  shared_queue: dev_shared
+  shared_queue: !FirstTrue
+    - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+      do: dev_shared
+    - otherwise: devonprod_shared
   service_queue: dev_transfer
-  exclusive_queue: dev
+  exclusive_queue: !FirstTrue
+    - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+      do: dev
+    - otherwise: devonprod
 
   scheduler_settings: &scheduler_settings
     name: LSFAlps
