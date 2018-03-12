@@ -1,0 +1,84 @@
+
+wcoss_cray: &wcoss_cray !Platform
+  Evaluate: false
+  name: WCOSS_C
+
+  detect: !calc |
+    tools.isdir("/gpfs/hps") and \
+    tools.isfile("/etc/SuSE-release")
+
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+  NWPROD: "/gpfs/hps/nco/ops/nwprod"
+  DMPDIR: !FirstTrue
+    - do: "/gpfs/gp1/emc/globaldump"
+      when: !calc tools.isdir(do)
+    - do: "/gpfs/tp1/emc/globaldump"
+      when: !calc tools.isdir(do)
+    - otherwise: !error "Cannot find globaldump directory."
+  RTMFIX: "$CRTM_FIX"
+  BASE_SVN: "/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+
+  config_base_extras:
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="LUNA"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="SURGE"
+    fi
+
+  shared_accounting_ref:
+    queue: !calc metasched.varref('QUEUESHARED')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  service_accounting_ref:
+    queue: !calc metasched.varref('QUEUESERV')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  exclusive_accounting_ref:
+    queue: !calc metasched.varref('QUEUE')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  metasched_more: !expand |
+    {metasched.defvar("QUEUE", doc.platform.exclusive_queue)}
+    {metasched.defvar("QUEUESHARED", doc.platform.shared_queue)}
+    {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
+    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+
+  shared_queue: dev_shared
+  service_queue: dev_transfer
+  exclusive_queue: dev
+
+  scheduler_settings: &wcoss_cray_scheduler
+    name: LSFAlps
+    physical_cores_per_node: 24
+    logical_cpus_per_core: 2
+    hyperthreading_allowed: true
+    indent_text: "  "
+  parallelism_settings: &parallelism_settings
+    <<: *scheduler_settings
+    name: LSFAlps
+  node_type_settings: &node_type_settings
+    <<: *scheduler_settings
+    node_type: generic
+
+  scheduler: !calc |
+    tools.get_scheduler(scheduler_settings.name, scheduler_settings)
+  parallelism: !calc |
+    tools.get_parallelism(parallelism_settings.name, parallelism_settings)
+  nodes: !calc |
+    tools.node_tool_for(node_type_settings.node_type, node_type_settings)
+
+  # Path to mmlsquota, the program used to get GPFS disk usage information:
+  mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
+  long_term_temp: !Immediate
+    - !FirstMax
+      - do: /gpfs/hps2/ptmp
+        when: !calc tools.gpfs_gb(do,"hps2-ptmp","hps2",mmlsquota)
+      - do: /gpfs/hps3/ptmp
+        when: !calc tools.gpfs_gb(do,"hps3-ptmp","hps3",mmlsquota)
+  short_term_temp: !Immediate
+    - !FirstMax
+      - do: /gpfs/hps2/ptmp
+        when: !calc tools.gpfs_gb(do,"hps2-stmp","hps2",mmlsquota)
+      - do: /gpfs/hps3/ptmp
+        when: !calc tools.gpfs_gb(do,"hps3-stmp","hps3",mmlsquota)
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
