@@ -3,6 +3,9 @@ scheduler: !calc doc.platform.scheduler
 suite: !Cycle
   <<: *suite_defaults
 
+  Alarms:
+    <<: *cycled_suite_alarms
+
   gfs: !Family
     Disable: !calc doc.settings.gfs_cyc==0
     Complete: !Depend ~ suite.has_cycle('-6:00:00')

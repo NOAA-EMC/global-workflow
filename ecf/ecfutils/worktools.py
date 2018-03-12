@@ -86,6 +86,10 @@ def select_platform(requested_platform,valid_platforms):
     return platdoc
 
 def create_COMROT(conf):
+    if not 'IC_CDUMP' in conf.settings:
+        logger.info('IC_CDUMP not specified; will assume scripts will provide their own ICs.')
+        print('conf.settings.IC_CDUMP: not set; will assume scripts will provide their own ICs.')
+        return
     cdump = conf.settings.IC_CDUMP
     icsdir = conf.places.ICSDIR
     comrot = conf.places.ROTDIR

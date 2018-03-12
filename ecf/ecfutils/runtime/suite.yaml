@@ -10,7 +10,7 @@ gfs_clock_4: !Clock
   start: !calc suite.Clock.start+suite.Clock.step
   step: !timedelta "06:00:00"
 
-suite_alarms: &suite_alarms
+cycled_suite_alarms: &cycled_suite_alarms
   first: !Clock
     start: !calc suite.Clock.start
     end: !calc suite.Clock.end
@@ -40,9 +40,6 @@ suite_defaults: &suite_defaults
     start: !calc doc.settings.SDATE
     end: !calc doc.settings.EDATE
     step: !timedelta "6:00:00"
-
-  Alarms:
-    <<: *suite_alarms
 
   ecFlow:
     suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"

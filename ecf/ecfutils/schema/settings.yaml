@@ -18,6 +18,7 @@ settings_schema: !Template &settings_schema
   IC_CDUMP:
     type: string
     allowed: [ gfs, gdas ]
+    optional: true
     description: Get initial conditions from gfs or gdas
     default: gdas
 
