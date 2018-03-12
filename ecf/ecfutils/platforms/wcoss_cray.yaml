@@ -1,5 +1,4 @@
-
-wcoss_cray: &wcoss_cray !Platform
+platform: !Platform
   Evaluate: false
   name: WCOSS_C
 
@@ -47,7 +46,7 @@ wcoss_cray: &wcoss_cray !Platform
   service_queue: dev_transfer
   exclusive_queue: dev
 
-  scheduler_settings: &wcoss_cray_scheduler
+  scheduler_settings: &scheduler_settings
     name: LSFAlps
     physical_cores_per_node: 24
     logical_cpus_per_core: 2

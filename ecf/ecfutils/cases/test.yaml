@@ -1,6 +1,6 @@
 case:
   fv3_settings:
-    CASE: C384
+    CASE: C192
     LEVS: 65
 
   fv3_enkf_settings:
@@ -15,7 +15,6 @@ case:
 
   places:
     workflow_file: workflow/cycled_gfs.yaml
-    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
     ICSDIR: !FirstTrue
       - when: !calc doc.platform.name == "THEIA"
         do: "/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
@@ -24,6 +23,7 @@ case:
       - otherwise: !error "No ICs for platform {doc.platform.name}"
 
   settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
     SDATE: 2017-07-31t18:00:00
     EDATE: 2017-08-02t00:00:00
 

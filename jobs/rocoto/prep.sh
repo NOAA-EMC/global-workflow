@@ -59,9 +59,17 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    export USHSYND=""   # set blank so that prepobs_makeprepbufr defaults USHSYND to HOMEobsproc_prep}/ush
-    $HOMEgfs/jobs/JGLOBAL_PREP
-    [[ $status -ne 0 ]] && exit $status
+    if [ $machine = "WCOSS_C" ]; then
+        export USHSYND=""   # set blank so that prepobs_makeprepbufr defaults USHSYND to HOMEobsproc_prep}/ush
+        $HOMEgfs/jobs/JGLOBAL_PREP
+        [[ $status -ne 0 ]] && exit $status
+    elif [ $machine = "THEIA" ]; then
+        $HOMEgfs/ush/drive_makeprepbufr.sh
+        [[ $status -ne 0 ]] && exit $status
+    else
+        echo "prep step is not supported on $machine, exit"
+        exit 1
+    fi
 else
     $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
     $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles

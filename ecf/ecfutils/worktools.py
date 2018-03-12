@@ -101,11 +101,14 @@ def create_COMROT(conf):
     enkfdir = f'enkf.{cdump}.{idate:%Y%m%d}/{idate:%H}'
     idatestr = f'{idate:%Y%m%d%H}'
 
+    print(f'Input conditions from model: {cdump.upper()}')
+    print(f'Copy input conditions from: {icsdir}')
     logger.info(f'Input conditions: {icsdir}')
 
     loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
     loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
+    print(f'Copy input conditions to: {comrot}')
     logger.info(f'Workflow COM root: {comrot}')
 
     # Link ensemble member initial conditions
