@@ -77,13 +77,13 @@ platform: !Platform
   long_term_temp: !Immediate
     - !FirstMax
       - do: /gpfs/hps2/ptmp
-        when: !calc tools.gpfs_gb(do,"hps2-ptmp","hps2",mmlsquota)
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps2-ptmp","hps2",mmlsquota) )
       - do: /gpfs/hps3/ptmp
-        when: !calc tools.gpfs_gb(do,"hps3-ptmp","hps3",mmlsquota)
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps3-ptmp","hps3",mmlsquota) )
   short_term_temp: !Immediate
     - !FirstMax
       - do: /gpfs/hps2/ptmp
-        when: !calc tools.gpfs_gb(do,"hps2-stmp","hps2",mmlsquota)
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps2-stmp","hps2",mmlsquota) )
       - do: /gpfs/hps3/ptmp
-        when: !calc tools.gpfs_gb(do,"hps3-stmp","hps3",mmlsquota)
+        when: !calc ( int(tools.can_write(do)) and tools.gpfs_gb(do,"hps3-stmp","hps3",mmlsquota) )
   EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
