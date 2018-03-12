@@ -1,6 +1,6 @@
 case:
   fv3_settings:
-    CASE: C384
+    CASE: C192
     LEVS: 65
 
   fv3_enkf_settings:
@@ -17,8 +17,8 @@ case:
     workflow_file: workflow/free_forecast_gfs.yaml
 
   settings: 
-    SDATE: !calc "{tools.from_YMDH('2018010500')}"
-    EDATE: !calc "{tools.from_YMDH('2018010512')}"
+    SDATE: 2017-08-17t12:00:00
+    EDATE: 2017-08-31t00:00:00
 
     gfs_cyc: 4 # run gfs every cycle
 
