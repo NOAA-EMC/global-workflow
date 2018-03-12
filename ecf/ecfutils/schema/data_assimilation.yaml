@@ -7,9 +7,9 @@ data_assimilation_template: !Template &data_assimilation_template
     type: int
     default: 80
     description: Number of members of the GFS ENKF ensemble.
-  NMEM_EOMGGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
-  NMEM_EFCSGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
-  NMEM_EARCGRP:   { type: int,      default: 10,   allowed: [ 10 ] }
+  NMEM_EOMGGRP:   { type: int,      default: 10 }
+  NMEM_EFCSGRP:   { type: int,      default: 10 }
+  NMEM_EARCGRP:   { type: int,      default: 10 }
   RECENTER_ENKF:  { type: bool,     default: YES }
   SMOOTH_ENKF:    { type: bool,     default: YES }
   assim_freq:     { type: int,      default: 6 }
