@@ -8,6 +8,11 @@ archive_settings_template: !Template &archive_settings_template
     description: online archive of nemsio files for fit2obs verification
     type: bool
 
+  scrub_in_archive:
+    type: bool
+    default: yes
+    description: "delete COM directories at the end of the archive job"
+
   scrub_in_archive_start:
     type: int
     default: 144
