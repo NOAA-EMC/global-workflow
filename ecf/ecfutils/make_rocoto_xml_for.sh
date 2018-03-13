@@ -29,9 +29,10 @@ fi
 export EXPDIR="$1"
 
 if [[ ! ( -d /scratch4 && -d /scratch3 || \
-          -d /usrx/local && ! -e /etc/redhat-release ) \
+          -d /usrx/local && ! -e /etc/redhat-release || \
+          -d /lfs3 ) \
     ]] ; then
-   echo "ERROR: This script only runs on WCOSS Cray and Theia" 1>&2
+   echo "ERROR: This script only runs on WCOSS Cray, Jet, and Theia" 1>&2
    exit 1
 fi
 

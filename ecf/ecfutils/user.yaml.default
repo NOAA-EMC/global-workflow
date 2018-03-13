@@ -2,6 +2,10 @@ user_places: &user_places
   PROJECT_DIR: !error Please select a project directory.
     # ie. /scratch4/NCEPDEV/ocean
 
+  # Override scrub areas here.  Mandatory on Jet.
+  # LONG_TERM_TEMP: /lfs3/projects/hfv3gfs/scrub
+  # SHORT_TERM_TEMP: /lfs3/projects/hfv3gfs/scrub
+
 accounting: &accounting
   # Project for CPU accounting.
   cpu_project: !error What accounting code do I use to submit jobs? # ie.: global

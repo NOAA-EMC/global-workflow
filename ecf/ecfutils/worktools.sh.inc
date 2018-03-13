@@ -42,8 +42,13 @@ find_python36() {
     if ( ! which python3 > /dev/null 2>&1 || \
 	     ! python3 -c 'import yaml ; f{"1+1"}' > /dev/null 2>&1 ) ; then
 	python36=/gpfs/hps3/emc/nems/noscrub/Samuel.Trahan/python/3.6.1-emc/bin/python3.6
-        if [[ ! -x "$python36" ]] ; then
+        if [[ ! -x "$python36" && -d /scratch4 ]] ; then
             module load intelpython
+            python36="$( which python3.6 )"
+        fi
+        if [[ ! -x "$python36" && -d /lfs3 ]] ; then
+            module use /lfs3/projects/hwrf-vd/soft/modulefiles/
+            module load python/intel-3.6.2-emc
             python36="$( which python3.6 )"
         fi
     else

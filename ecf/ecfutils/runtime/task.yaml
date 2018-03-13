@@ -3,6 +3,7 @@ task_template: &task_template
   Template: *task_schema
 
   rocoto_load_modules: !expand >-
+     {doc.platform.get("rocoto_load_modules_extra","")}
      source &HOMEgfs;/ush/load_fv3gfs_modules.sh ;
      module list
   rocoto_command: !expand >-
