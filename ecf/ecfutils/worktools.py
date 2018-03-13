@@ -189,6 +189,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     workflow_file=os.path.join(srcdir,config.places.workflow_file)
     tgtdir=config.places.EXPDIR
     rotdir=config.places.ROTDIR
+    redo=False
 
     logger.info(f'{rotdir}: COM files will be here')
     logger.info(f'{tgtdir}: send yaml files to here')
@@ -210,6 +211,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
         logger.warning('Received -f, so I will start anyway.')
         logger.warning('Will overwrite config, initial COM, and yaml files.')
         logger.warning('All other files will remain unmodified.')
+        redo=True
 
     del config
 
@@ -221,9 +223,14 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     with open(f'{tgtdir}/names.yaml','wt') as fd:
         fd.write(names_yaml)
 
-    logger.info(f'{tgtdir}/platform.yaml: write platform logic')
-    with open(f'{tgtdir}/platform.yaml','wt') as fd:
-        fd.write(platform_yaml)
+    if redo:
+        logger.warning('I am NOT replacing platform.yaml.  You must edit this manually.')
+        logger.warning('This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
+        logger.warning(f'{tgtdir}/platform.yaml: NOT replacing this file.')
+    else:
+        logger.info(f'{tgtdir}/platform.yaml: write platform logic')
+        with open(f'{tgtdir}/platform.yaml','wt') as fd:
+            fd.write(platform_yaml)
 
     logger.info(f'{case_file}: use this case file')
     shutil.copy2(case_file,os.path.join(tgtdir,'case.yaml'))
