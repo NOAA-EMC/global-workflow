@@ -16,7 +16,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $target != wcoss_cray -a $target != theia ]; then
+if [ $target != wcoss_cray -a $target != theia -a $target != gaea ]; then
     echo '$target value set to unknown or unsupported system'
     exit 1
 fi
@@ -31,13 +31,28 @@ if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $target = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+elif [ $target = "gaea" ]; then
+    FIX_DIR="/lustre/f1/pdata/ncep_shared/fv3/fix-fv3gfs"
+elif [ $target = "jet" ]; then
+    FIX_DIR="/lfs3/projects/hfv3gfs/Samuel.Trahan/fix-fv3gfs"
+else
+    echo 'CRITICAL: links to fix files not set'
+    exit 1
 fi
-if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
-cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-    [[ -d $dir ]] && rm -rf $dir
-done
-$LINK $FIX_DIR/* .
+
+if [ ! -r $FIX_DIR ]; then
+   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
+   exit -1
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
 
 
 #--add gfs_post file
