@@ -56,18 +56,19 @@ fi
 
 
 #--add gfs_post file
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
+#cd ${pwd}/../jobs               ||exit 8
+#    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/gfs_post.fd/parm                           post
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
+#cd ${pwd}/../scripts            ||exit 8
+#    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
+#    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
 cd ${pwd}/../ush                ||exit 8
-    for file in gfs_nceppost.sh gfs_transfer.sh; do
-        $LINK ../sorc/gfs_post.fd/ush/$file                  .
-    done
+    $LINK ../sorc/gfs_post.fd/ush/gfs_transfer.sh .
+#    for file in gfs_nceppost.sh gfs_transfer.sh; do
+#        $LINK ../sorc/gfs_post.fd/ush/$file                  .
+#    done
 
 #--link executables 
 

@@ -129,6 +129,7 @@ while [ $nset -le $totalset ]; do
     # if final record of each piece is ugrd, add vgrd
     # copygb will only interpolate u and v together
     #$WGRIB2 -d $end $tmpfile |grep -i ugrd
+
     $WGRIB2 -d $end $tmpfile |egrep -i "ugrd|ustm|uflx"
     export rc=$?
     if [[ $rc -eq 0 ]] ; then
@@ -137,9 +138,9 @@ while [ $nset -le $totalset ]; do
     if [ $iproc -eq $nproc ]; then
       export end=$ncount
     fi
-
     $WGRIB2 $tmpfile -for ${start}:${end} -grib ${tmpfile}_${iproc}
-    echo "${GFSDWNSH:-$USHgfs/fv3gfs_dwn_new.sh} ${tmpfile}_${iproc} $fhr3 $iproc $nset" >> $DATA/poescript
+
+    echo "${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh} ${tmpfile}_${iproc} $fhr3 $iproc $nset" >> $DATA/poescript
 
     # if at final record and have not reached the final processor then write echo's to
     # poescript for remaining processors
@@ -157,6 +158,7 @@ date
   chmod 775 $DATA/poescript
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
+
   launcher=${APRUN_DWN:-"aprun -j 1 -n 24 -N 24 -d 1 cfp"}
   if [ $machine = WCOSS_C ] ; then
      $launcher $MP_CMDFILE
@@ -185,12 +187,12 @@ date
   if [ $nset = 1 ]; then
    if [ $fhr3 = anl ]; then
     if [ "$PGBS" = "YES" ]; then
-      $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.anl.idx
+####      $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.anl.idx
       cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.anl
     fi
    else
     if [ "$PGBS" = "YES" ]; then
-      $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}.idx
+####      $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}.idx
       cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}
     fi
    fi
@@ -199,13 +201,13 @@ date
    
    if [ $fhr3 = anl ]; then
     if [ "$PGBS" = "YES" ]; then
-      $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.anl.idx
+####      $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.anl.idx
       cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.anl
     fi
 
    else
     if [ "$PGBS" = "YES" ]; then
-      $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}.idx
+####      $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}.idx
       cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}
     fi
    fi
@@ -225,8 +227,12 @@ else
 #---------------------------------------------------------------
   $WGRIB2 tmpfile1_$fhr3  $option1 $option21 $option22 $option23 $option24 \
                           $option25 $option26 $option27 $option28 \
-                                           -new_grid $grid0p5  pgb2file_${fhr3}_0p5
-
+                          -new_grid $grid0p5  pgb2file_${fhr3}_0p5
+  if [ $fhr3 = anl ]; then
+    cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.anl
+  else
+    cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}
+  fi
 #---------------------------------------------------------------
 fi
 echo "!!!!!!CREATION OF SELECT $RUN DOWNSTREAM PRODUCTS COMPLETED FOR FHR = $FH !!!!!!!"
