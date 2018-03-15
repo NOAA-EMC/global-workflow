@@ -31,10 +31,10 @@ def create_metatask(task_dict, metatask_dict):
     '''
 
     # Grab metatask info from the metatask_dict
-    metataskname = metatask_dict['metataskname'] if 'metataskname' in metatask_dict else 'demometatask'
-    varname = metatask_dict['varname'] if 'varname' in metatask_dict else 'demovar'
-    varval = metatask_dict['varval'] if 'varval' in metatask_dict else 1
-    vardict = metatask_dict['vardict'] if 'vardict' in metatask_dict else None
+    metataskname = metatask_dict.get('metataskname', 'demometatask')
+    varname = metatask_dict.get('varname', 'demovar')
+    varval = metatask_dict.get('varval', 1)
+    vardict = metatask_dict.get('vardict', None)
 
     strings = []
 
@@ -65,21 +65,21 @@ def create_task(task_dict):
     '''
 
     # Grab task info from the task_dict
-    taskname = task_dict['taskname'] if 'taskname' in task_dict else 'demotask'
-    cycledef = task_dict['cycledef'] if 'cycledef' in task_dict else 'democycle'
-    maxtries = task_dict['maxtries'] if 'maxtries' in task_dict else 3
-    final = task_dict['final'] if 'final' in task_dict else False
-    command = task_dict['command'] if 'command' in task_dict else 'sleep 10'
-    jobname = task_dict['jobname'] if 'jobname' in task_dict else 'demojob'
-    account = task_dict['account'] if 'account' in task_dict else 'batch'
-    queue = task_dict['queue'] if 'queue' in task_dict else 'debug'
-    walltime = task_dict['walltime'] if 'walltime' in task_dict else '00:01:00'
-    log = task_dict['log'] if 'log' in task_dict else 'demo.log'
-    native = task_dict['native'] if 'native' in task_dict else None
-    memory = task_dict['memory'] if 'memory' in task_dict else None
-    resources = task_dict['resources'] if 'resources' in task_dict else None
-    envar = task_dict['envar'] if 'envar' in task_dict else None
-    dependency = task_dict['dependency'] if 'dependency' in task_dict else None
+    taskname = task_dict.get('taskname', 'demotask')
+    cycledef = task_dict.get('cycledef', 'democycle')
+    maxtries = task_dict.get('maxtries', 3)
+    final = task_dict.get('final', False)
+    command = task_dict.get('command', 'sleep 10')
+    jobname = task_dict.get('jobname', 'demojob')
+    account = task_dict.get('account', 'batch')
+    queue = task_dict.get('queue', 'debug')
+    walltime = task_dict.get('walltime', '00:01:00')
+    log = task_dict.get('log', 'demo.log')
+    native = task_dict.get('native', None)
+    memory = task_dict.get('memory', None)
+    resources = task_dict.get('resources', None)
+    envar = task_dict.get('envar', None)
+    dependency = task_dict.get('dependency', None)
 
     str_maxtries = str(maxtries)
     str_final = ' final="true"' if final else ''

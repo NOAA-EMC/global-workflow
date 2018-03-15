@@ -155,7 +155,7 @@ def get_scheduler(machine):
         raise UnknownMachineError('Unknown machine: %s'%(machine,))
 
 
-def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
+def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
                    metatask=None, varname=None, varval=None, vardict=None, \
                    final=False):
 
@@ -170,9 +170,10 @@ def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
                          'vardict': vardict}
 
     taskstr = '%s%s' % (cdump, taskstr)
+    cycledefstr = cdump if cycledef is None else cycledef
 
     task_dict = {'taskname': '%s' % taskstr, \
-                 'cycledef': '%s' % cdump, \
+                 'cycledef': '%s' % cycledefstr, \
                  'maxtries': '&MAXTRIES;', \
                  'command': '&JOBS_DIR;/%s.sh' % task, \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
