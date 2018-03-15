@@ -16,7 +16,7 @@ fi
 
 # pargfs - Provide a parallel experiment name and path to HPSS archive
 if [ $ics_from = "pargfs" ]; then
-   if [ $CDATE -ge 2016110100 ]; the
+   if [ $CDATE -ge 2016110100 ]; then
      export parexp="prnemsrn"
    elif [ $CDATE -ge 2016050100 ]; then
      export parexp="pr4rn_1605"
@@ -26,7 +26,7 @@ if [ $ics_from = "pargfs" ]; then
      export parexp="pr4rn_1505"
    elif [ $CDATE -ge 2014073000 ]; then
      export parexp="pr4rn_1408"
-   elif [ $CDATE -ge 2014050100 ]; then
+   elif [ $CDATE -ge 2014051300 ]; then
      export parexp="pr4rn_1405"
    else
      echo "NEMS GSM retro ICs do not exit, exit"
