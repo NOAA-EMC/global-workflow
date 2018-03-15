@@ -60,8 +60,7 @@ setpdy.sh
 ##############################################
 # Define the Log File directory
 ##############################################
-#### export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
-export jlogfile="/gpfs/hps3/stmp/emc.glopara/ttt/simply_post/logs/${job}.${pid}"
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ##############################################
