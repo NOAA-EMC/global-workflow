@@ -8,13 +8,32 @@ echo "BEGIN: config.getic"
 # Get task specific resources
 . $EXPDIR/config.resources getic
 
-# We should just be supporting the OPSGFS only
-export ics_from="opsgfs" # initial conditions from opsgfs or pargfs
+# Set source for initial conditions (opsgfs or pargfs)
+export ics_from="opsgfs"
+if [ $CDATE -le 2017072012 ]; then
+  export ics_from="pargfs"
+fi
 
-# Provide a parallel experiment name and path to HPSS archive
+# pargfs - Provide a parallel experiment name and path to HPSS archive
 if [ $ics_from = "pargfs" ]; then
-    export parexp="prnemsrn"
-    export HPSS_PAR_PATH="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$parexp"
+   if [ $CDATE -ge 2016110100 ]; the
+     export parexp="prnemsrn"
+   elif [ $CDATE -ge 2016050100 ]; then
+     export parexp="pr4rn_1605"
+   elif [ $CDATE -ge 2015121500 ]; then
+     export parexp="pr4rn_1512"
+   elif [ $CDATE -ge 2015050200 ]; then
+     export parexp="pr4rn_1505"
+   elif [ $CDATE -ge 2014073000 ]; then
+     export parexp="pr4rn_1408"
+   elif [ $CDATE -ge 2014050100 ]; then
+     export parexp="pr4rn_1405"
+   else
+     echo "NEMS GSM retro ICs do not exit, exit"
+     exit 1
+   fi
+
+   export HPSS_PAR_PATH="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$parexp"
 fi
 
 echo "END: config.getic"
