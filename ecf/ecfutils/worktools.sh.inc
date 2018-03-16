@@ -51,6 +51,11 @@ find_python36() {
             module load python/intel-3.6.2-emc
             python36="$( which python3.6 )"
         fi
+        if [[ ! -x "$python36" && -d /lustre/f1 ]] ; then
+            module use /lustre/f1/unswept/ncep/Samuel.Trahan/python/modulefiles/
+            module load python/intel-3.6.2-emc
+            python36="$( which python3.6 )"
+        fi
     else
 	python36="$( which python3 )"
     fi
