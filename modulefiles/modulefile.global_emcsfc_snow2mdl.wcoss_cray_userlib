@@ -9,6 +9,9 @@ module load craype-haswell
 export FCOMP=ftn
 export FFLAGS="-O0 -r8 -i4 -FR -openmp -convert big_endian -assume byterecl -craype-verbose"
 
+module unuse /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module use -a $MOD_PATH
+
 module load ip-intel/2.0.0
 module load sp-intel/2.0.2
 module load w3nco-intel/2.0.6
