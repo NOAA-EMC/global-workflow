@@ -194,6 +194,7 @@ if [[ $err -eq 0 ]]; then
 
       if [[ ! -s ${type} ]]; then
          echo "ZERO SIZED:  ${type}"
+         echo ${type} >> ${diag}
          continue
       fi
 

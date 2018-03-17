@@ -126,19 +126,14 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       use_tankdir=${TANKverf_rad}
    fi
 
-   if [[ ! -e ${use_tankdir}/${satype_file} ]]; then
-      if [[ ! -e ${FIXgdas}/${satype_file} ]]; then 
-         export SATYPE=$radstat_satype
-         if [[ "$VERBOSE" = "YES" ]]; then
-            echo " ${satype_file} not found.  Adding it now using radstat file contents."
-         fi
-      else
-         export SATYPE=`cat ${FIXgdas}/${satype_file}`
-      fi
+   echo satype_file = $satype_file
+   if [[ -e ${FIXgdas}/${satype_file} ]]; then
+      echo "using SATYPE as cat ${FIXgdas}/${satype_file}"
+      export SATYPE=`cat ${FIXgdas}/${satype_file}`
    else
-      export SATYPE=`cat ${use_tankdir}/${satype_file}`
+      echo "using SATYPE as $radstat_satype"
+      export SATYPE=$radstat_satype
    fi
-
 
    #-------------------------------------------------------------
    #  Update the SATYPE if any new sat/instrument was 
@@ -160,11 +155,10 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    done
 
    #------------------------------------------------------------------
-   #  If there is no satype_file in the current day's radmon.${PDY} 
-   #  directory or if changes have occurred in the SATYPE list, then 
-   #  add/update the satype_file.
+   #  If changes have occurred in the SATYPE list, then 
+   #  update the satype_file and journal a copy to TANKverf_rad.
    #------------------------------------------------------------------
-   if [[ ! -s ${TANKverf_rad}/${satype_file} || $satype_changes -eq 1 ]]; then
+   if [[ $satype_changes -eq 1 ]]; then
       if [[ ! -d ${TANKverf_rad} ]]; then
          mkdir -f ${TANKverf_rad}
       fi
