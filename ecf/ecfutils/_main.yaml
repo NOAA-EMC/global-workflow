@@ -1,0 +1,9 @@
+# NOTE: This file is only used during setup_case.sh.  
+# The _expdir_main.yaml is the expdir _main.yaml
+include:
+  - 'static*yaml'
+  - user.yaml
+  - schema/
+  - defaults/
+  - runtime/
+

@@ -1,0 +1,29 @@
+case:
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C192
+
+  data_assimilation:
+    NMEM_ENKF: 20
+    NMEM_EOMGGRP: 4
+    NMEM_EFCSGRP: 4
+    NMEM_EARCGRP: 4
+
+  gfs_output_settings:
+    FHMAX_GFS: 240
+    FHOUT_GFS: 3
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+    ICSDIR: /gpfs/hps3/emc/nems/noscrub/Samuel.Trahan/FV3ICS
+
+  settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2018-03-11t00:00:00
+    EDATE: 2018-04-01t00:00:00
+    realtime: true
+    gfs_cyc: 4 # run gfs at 0z, 12z
+

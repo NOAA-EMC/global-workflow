@@ -1,0 +1,24 @@
+case:
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C192
+
+  data_assimilation:
+    NMEM_ENKF: 20
+
+  gfs_output_settings:
+    FHMAX_GFS: 120
+    FHOUT_GFS: 6
+
+  places:
+    workflow_file: workflow/free_forecast_gfs.yaml
+
+  settings: 
+    SDATE: 2017-08-17t12:00:00
+    EDATE: 2017-08-31t00:00:00
+
+    gfs_cyc: 4 # run gfs every cycle
+

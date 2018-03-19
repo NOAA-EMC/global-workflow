@@ -1,0 +1,86 @@
+platform: !Platform
+  Evaluate: false
+  name: THEIA
+
+  detect: !calc tools.isdir("/scratch4") and tools.isdir("/scratch3")
+
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+  NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
+  DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
+  RTMFIX: "/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  BASE_SVN: "/scratch4/NCEPDEV/global/save/glopara/svn"
+
+  config_base_extras: !expand |
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+
+  shared_accounting_ref:
+    queue: !calc metasched.varref('QUEUESHARED')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  service_accounting_ref:
+    queue: !calc metasched.varref('QUEUESERV')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  exclusive_accounting_ref:
+    queue: !calc metasched.varref('QUEUE')
+    project: !calc metasched.varref('CPU_PROJECT')
+
+  metasched_more: !expand |
+    {metasched.defvar("QUEUE", doc.platform.exclusive_queue)}
+    {metasched.defvar("QUEUESHARED", doc.platform.shared_queue)}
+    {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
+    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+
+  shared_queue: batch
+  service_queue: service
+  exclusive_queue: batch
+
+  scheduler_settings: &scheduler_settings
+    name: MoabTorque
+    physical_cores_per_node: 24
+    logical_cpus_per_core: 2
+    hyperthreading_allowed: true
+    indent_text: "  "
+  parallelism_settings: &parallelism_settings
+    <<: *scheduler_settings
+    name: HydraIMPI
+  node_type_settings: &node_type_settings
+    <<: *scheduler_settings
+    node_type: generic
+
+  scheduler: !calc |
+    tools.get_scheduler(scheduler_settings.name, scheduler_settings)
+  parallelism: !calc |
+    tools.get_parallelism(parallelism_settings.name, parallelism_settings)
+  nodes: !calc |
+    tools.node_tool_for(node_type_settings.node_type, node_type_settings)
+
+  # Path to pan_df, the program used to get Panasas disk usage information:
+  pan_df: pan_df
+  least_used_temp: !Immediate 
+    - !FirstMax
+      - do: /scratch3/NCEPDEV/stmp1
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch3/NCEPDEV/stmp2
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch4/NCEPDEV/stmp3
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch4/NCEPDEV/stmp4
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: !expand "{doc.user_places.PROJECT_DIR}/scrub"
+        when: !calc tools.panasas_gb(do)/4
+        message: "{do}: use project directory as scrub space"
+  long_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+  short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"

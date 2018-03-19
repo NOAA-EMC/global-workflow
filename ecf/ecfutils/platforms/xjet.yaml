@@ -1,0 +1,80 @@
+platform: !Platform
+  Evaluate: false
+  name: THEIA
+
+  detect: !calc tools.isdir("/lfs3")
+
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+  NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
+  DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
+  RTMFIX: "/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  BASE_SVN: "/scratch4/NCEPDEV/global/save/glopara/svn"
+
+  config_base_extras: !expand |
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
+    export POSTGRB2TBL="$NWPROD/util/exec/params_grib2_tbl_new"
+
+  shared_accounting_ref:
+    queue: !calc metasched.varref('QUEUESHARED')
+    project: !calc metasched.varref('CPU_PROJECT')
+    partition: !calc metasched.varref('PARTITION')
+
+  service_accounting_ref:
+    queue: !calc metasched.varref('QUEUESERV')
+    project: !calc metasched.varref('CPU_PROJECT')
+    partition: service
+
+  exclusive_accounting_ref:
+    queue: !calc metasched.varref('QUEUE')
+    project: !calc metasched.varref('CPU_PROJECT')
+    partition: !calc metasched.varref('PARTITION')
+
+  metasched_more: !expand |
+    {metasched.defvar("QUEUE", doc.platform.exclusive_queue)}
+    {metasched.defvar("QUEUESHARED", doc.platform.shared_queue)}
+    {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
+    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+    {metasched.defvar("PARTITION", "xjet")}
+
+  shared_queue: batch
+  service_queue: service
+  exclusive_queue: batch
+
+  scheduler_settings: &scheduler_settings
+    name: MoabTorque
+    physical_cores_per_node: 24
+    logical_cpus_per_core: 2
+    hyperthreading_allowed: true
+    indent_text: "  "
+  parallelism_settings: &parallelism_settings
+    <<: *scheduler_settings
+    name: HydraIMPI
+  node_type_settings: &node_type_settings
+    <<: *scheduler_settings
+    node_type: generic
+
+  scheduler: !calc |
+    tools.get_scheduler(scheduler_settings.name, scheduler_settings)
+  parallelism: !calc |
+    tools.get_parallelism(parallelism_settings.name, parallelism_settings)
+  nodes: !calc |
+    tools.node_tool_for(node_type_settings.node_type, node_type_settings)
+
+  long_term_temp: !error "Jet has no cluster-wide scrub area.  You must manually set it in the user_places map in user.yaml"
+  short_term_temp: !calc long_term_temp
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+
+  # Some special magic to cause jobs to do nothing on Jet:
+  rocoto_load_modules_extra: >-
+    echo "FV3 GFS scripts do not work on Jet yet." ;
+    exit 0 ;
