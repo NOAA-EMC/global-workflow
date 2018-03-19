@@ -116,6 +116,8 @@ status=$?
 # Link observational data
 export PREPQC="$COMIN_ANL/${OPREFIX}prepbufr"
 export PREPQCPF="$COMIN_ANL/${OPREFIX}prepbufr.acft_profiles"
+export TCVITL="$COMIN_ANL/${OPREFIX}syndata.tcvitals.tm00"
+[[ $DONST = "YES" ]] && export NSSTBF="$COMIN_ANL/${OPREFIX}nsstbufr"
 
 # Guess Bias correction coefficients related to control
 export GBIAS=${COMIN_GES_CTL}/${GPREFIX}abias

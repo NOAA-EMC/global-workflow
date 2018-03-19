@@ -210,7 +210,7 @@ USE_CFP=${USE_CFP:-"NO"}
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-0}
-DONST=${DONST:-"NO"}
+export DONST=${DONST:-"NO"}
 NST_GSI=${NST_GSI:-0}
 NSTINFO=${NSTINFO:-0}
 ZSEA1=${ZSEA1:-0}
@@ -706,7 +706,7 @@ cat > gsiparm.anl << EOF
 &OBSQC
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.true.,
-  aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,
+  aircraft_t_bc=.true.,biaspredt=1000.0,upd_aircraft=.true.,cleanup_tail=.true.,
   $OBSQC
 /
 &OBS_INPUT
