@@ -9,7 +9,6 @@ echo "BEGIN: config.prep"
 . $EXPDIR/config.resources prep
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
-export DRIVE_MAKEPREPBUFRSH="$HOMEgfs/ush/drive_makeprepbufr.sh"
 
 
 # Relocation and syndata QC
