@@ -26,4 +26,4 @@ case:
     EDATE: 2018-04-01t00:00:00
     realtime: true
     gfs_cyc: 4 # run gfs at 0z, 12z
-
+    run_gsi: Yes
