@@ -10,6 +10,15 @@ settings_schema: !Template &settings_schema
     description: "Enable NCO-like four cycle suite.  Not well tested.  Do not use unless you know what you're doing."
     default: false
 
+  run_gsi:
+    type: bool
+    description: "Run Gridpoint Statistical Interpolation"
+
+  run_enkf:
+    type: bool
+    description: "Enable Ensemble Kalman Filter"
+    default: !calc run_gsi
+
   max_job_tries:
     type: int
     default: 1

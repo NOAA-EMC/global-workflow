@@ -105,31 +105,34 @@ def create_COMROT(conf):
     print(f'Copy input conditions from: {icsdir}')
     logger.info(f'Input conditions: {icsdir}')
 
-    loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
-    loudly_make_dir_if_missing(os.path.join(comrot, detdir))
+    if conf.settings.run_enkf:
+        loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
+        loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
     print(f'Copy input conditions to: {comrot}')
     logger.info(f'Workflow COM root: {comrot}')
 
     # Link ensemble member initial conditions
-    for i in range(1, nens + 1):
-        memdir=os.path.join(comrot,enkfdir,f'mem{i:03d}')
-        loudly_make_dir_if_missing(memdir)
-        src=os.path.join(icsdir, idatestr, f'C{resens}',f'mem{i:03d}','INPUT')
-        tgt=os.path.join(comrot, enkfdir, f'mem{i:03d}', 'INPUT')
-        loudly_make_symlink(src,tgt)
+    if conf.settings.run_enkf:
+        for i in range(1, nens + 1):
+            memdir=os.path.join(comrot,enkfdir,f'mem{i:03d}')
+            loudly_make_dir_if_missing(memdir)
+            src=os.path.join(icsdir, idatestr, f'C{resens}',f'mem{i:03d}','INPUT')
+            tgt=os.path.join(comrot, enkfdir, f'mem{i:03d}', 'INPUT')
+            loudly_make_symlink(src,tgt)
 
     # Link deterministic initial conditions
     src=os.path.join(icsdir, idatestr, f'C{resdet}', 'control', 'INPUT')
     tgt=os.path.join(comrot, detdir, 'INPUT')
     loudly_make_symlink(src,tgt)
 
-    # Link bias correction and radiance diagnostics files
-    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        file=f'{cdump}.t{idate:%H}z.{fname}'
-        src=os.path.join(icsdir, idatestr, file)
-        tgt=os.path.join(comrot, detdir, file)
-        loudly_make_symlink(src,tgt)
+    if conf.settings.run_gsi:
+        # Link bias correction and radiance diagnostics files
+        for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+            file=f'{cdump}.t{idate:%H}z.{fname}'
+            src=os.path.join(icsdir, idatestr, file)
+            tgt=os.path.join(comrot, detdir, file)
+            loudly_make_symlink(src,tgt)
 
 def find_case_yaml_file_for(case_name):
     for case_file in [ case_name,f"{case_name}.yaml",f"cases/{case_name}",
