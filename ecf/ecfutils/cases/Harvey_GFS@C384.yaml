@@ -1,6 +1,6 @@
 case:
   fv3_settings:
-    CASE: C192
+    CASE: C384
     LEVS: 65
 
   fv3_enkf_settings:
@@ -10,8 +10,10 @@ case:
     NMEM_ENKF: 20
 
   gfs_output_settings:
-    FHMAX_GFS: 120
+    FHMAX_GFS: 168
     FHOUT_GFS: 6
+    FHMAX_HF_GFS: 48
+    FHOUT_HF_GFS: 3
 
   places:
     workflow_file: workflow/free_forecast_gfs.yaml
