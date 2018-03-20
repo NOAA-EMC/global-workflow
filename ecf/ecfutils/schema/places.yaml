@@ -8,8 +8,18 @@ places_schema: &places_schema !Template
   EXPDIR: { type: string }
   ROTDIR: { type: string }
   ICSDIR: { type: string }
+
   SHORT_TERM_TEMP: { type: string }
   LONG_TERM_TEMP: { type: string }
+
+  HOMEDIR:
+    type: string
+    default: !expand "{doc.places.PROJECT_DIR}/save/{tools.env('USER')}"
+
+  NOSCRUB:
+    type: string
+    default: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+    description: "Disk area used to store reduced output, verification statistics, and other small files that may be desired between runs.  The workflow will not scrub this."
 
   FIXgsi: { type: string, optional: true }
   HOMEfv3gfs: { type: string, optional: true }

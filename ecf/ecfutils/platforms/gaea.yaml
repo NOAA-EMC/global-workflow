@@ -4,6 +4,8 @@ platform: !Platform
 
   detect: !calc tools.isdir("/lustre/f1")
 
+  public_release_ics: /lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/ICs
+
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
   NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
   DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
@@ -101,11 +103,6 @@ platform: !Platform
     - do: /lustre/f1/oar.gfdl.ssam
       when: !calc tools.can_write(do)
     - otherwise: !error "Cannot find project area.  Please set manually."
-  long_term_temp: !calc user_scrub_area
-  short_term_temp: !calc user_scrub_area
+  long_term_temp: !expand "{user_scrub_area}/{tools.env('USER')}"
+  short_term_temp: !expand "{user_scrub_area}/{tools.env('USER')}"
   EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}"
-
-  # Some special magic to cause jobs to do nothing on GAEA:
-  rocoto_load_modules_extra: >-
-    echo "FV3 GFS scripts do not work on GAEA yet." ;
-    exit 0 ;
