@@ -6,6 +6,8 @@ platform: !Platform
     tools.isdir("/gpfs/hps") and \
     tools.isfile("/etc/SuSE-release")
 
+  public_release_ics: /gpfs/hps3/emc/global/noscrub/emc.glopara/FV3GFS_V1_RELEASE/ICs
+
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
   NWPROD: "/gpfs/hps/nco/ops/nwprod"
   DMPDIR: !FirstTrue

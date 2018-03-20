@@ -4,6 +4,8 @@ platform: !Platform
 
   detect: !calc tools.isdir("/scratch4") and tools.isdir("/scratch3")
 
+  public_release_ics: /scratch4/NCEPDEV/global/noscrub/glopara/FV3GFS_V1_RELEASE/ICs
+
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
   NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
   DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
