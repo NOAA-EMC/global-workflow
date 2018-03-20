@@ -36,5 +36,6 @@ fi
 # add temp fix to build post with Georeg's updtes
 cp post_add_temp/build_ncep_post.sh gfs_post.fd/sorc
 cp post_add_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
+cp post_add_temp/module-setup.sh.inc fv3gfs.fd/NEMS/src/conf
 
 exit 0
