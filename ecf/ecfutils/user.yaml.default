@@ -3,8 +3,12 @@ user_places: &user_places
     # ie. /scratch4/NCEPDEV/ocean
 
   # Override scrub areas here.  Mandatory on Jet.
-  # LONG_TERM_TEMP: /lfs3/projects/hfv3gfs/scrub
-  # SHORT_TERM_TEMP: /lfs3/projects/hfv3gfs/scrub
+  # LONG_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
+  # SHORT_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
+
+  # Override non-scrubbed areas if desired:
+  # HOMEDIR:  /lfs3/projects/hfv3gfs/Samuel.Trahan/homedir
+  # NOSCRUB:  /lfs3/projects/hfv3gfs/Samuel.Trahan/noscrub
 
 accounting: &accounting
   # Project for CPU accounting.

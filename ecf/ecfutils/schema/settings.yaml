@@ -19,6 +19,10 @@ settings_schema: !Template &settings_schema
     description: "Enable Ensemble Kalman Filter"
     default: !calc run_gsi
 
+  chgres_and_convert_ics: 
+    type: bool
+    description: "Run the fv3ic job, which changes restart file resolution and converts legacy GFS GSM restart files to FV3 restart files."
+
   max_job_tries:
     type: int
     default: 1

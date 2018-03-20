@@ -107,7 +107,7 @@ def create_COMROT(conf):
 
     if conf.settings.run_enkf:
         loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
-        loudly_make_dir_if_missing(os.path.join(comrot, detdir))
+    loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
     print(f'Copy input conditions to: {comrot}')
     logger.info(f'Workflow COM root: {comrot}')
@@ -123,6 +123,10 @@ def create_COMROT(conf):
 
     # Link deterministic initial conditions
     src=os.path.join(icsdir, idatestr, f'C{resdet}', 'control', 'INPUT')
+    if not os.path.exists(src):
+        src=os.path.join(icsdir, idatestr, cdump, f'C{resdet}', 'control', 'INPUT')
+    if not os.path.exists(src):
+        src=os.path.join(icsdir, idatestr, cdump, f'C{resdet}', 'INPUT')
     tgt=os.path.join(comrot, detdir, 'INPUT')
     loudly_make_symlink(src,tgt)
 
@@ -226,7 +230,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     with open(f'{tgtdir}/names.yaml','wt') as fd:
         fd.write(names_yaml)
 
-    if redo:
+    if redo and os.path.exists(f'{tgtdir}/platform.yaml'):
         logger.warning('I am NOT replacing platform.yaml.  You must edit this manually.')
         logger.warning('This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
         logger.warning(f'{tgtdir}/platform.yaml: NOT replacing this file.')

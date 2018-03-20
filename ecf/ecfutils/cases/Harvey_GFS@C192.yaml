@@ -15,10 +15,13 @@ case:
 
   places:
     workflow_file: workflow/free_forecast_gfs.yaml
+    ICSDIR: /lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/ICs
+    IC_CDUMP: gfs
 
   settings: 
     SDATE: 2017-08-17t12:00:00
-    EDATE: 2017-08-31t00:00:00
+    EDATE: !calc SDATE
+#2017-08-31t00:00:00
     run_gsi: No
 
     gfs_cyc: 4 # run gfs every cycle
