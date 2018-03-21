@@ -19,7 +19,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     git submodule update --init --recursive
     cd ${topdir}
 else
-    echo 'Skip.  Directory fv3gfs.fd already exists.'
+    echo 'Skip checout.  Directory fv3gfs.fd already exists.'
 fi
 
 echo EMC_post checkout ...
@@ -31,11 +31,23 @@ if [[ ! -d gfs_post.fd ]] ; then
     git checkout ncep_post.v8.0.2
     cd ${topdir}
 else
-    echo 'Skip.  Directory gfs_post.fd already exists.'
+    echo 'Skip checkout. Directory gfs_post.fd already exists.'
 fi
 
-# add temp fix to build post with Georeg's updtes
-cp post_add_temp/build_ncep_post.sh gfs_post.fd/sorc
-cp post_add_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
+# add temp fix to build post and fcst with Georeg's updtes
+if [[ -d  gfs_post.fd ]] ; then
+ cp add_post_temp/build_ncep_post.sh gfs_post.fd/sorc
+ cp add_post_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
+ cp add_post_temp/v7.0.0-jet  gfs_post.fd/modulefiles/post
+else
+ echo 'WARNING directory gfs_post.fd does not exsist so build updates where not moved from post_add_temp'
+fi
+
+if [[ -d  fv3gfs.fd ]] ; then
+ cp add_fv3gfs_temp/configure.fv3.jet fv3gfs.fd/conf
+ cp add_fv3gfs_temp/fv3 fv3gfs.fd/modulefiles/jet
+else
+ echo 'WARNING directory fv3gfs.fd does not exsist so build updates where not mved from fv3gfs_add_temp'
+fi
 
 exit 0
