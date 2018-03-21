@@ -53,6 +53,14 @@ enkf_resource_table: !Select
       eupd:     [ 120,   12, !timedelta "00:30:00", 4    ]
       epos:     [  84,   12, !timedelta "00:30:00", 2    ]
       efcs_wall:  !timedelta "03:00:00"
+    C768:
+      #          ranks ppn  wallclock             threads
+      ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
+      eobs:     [  72,    6, !timedelta "00:30:00", 4    ]
+      eomg:     [  72,    6, !timedelta "03:00:00", 2    ]
+      eupd:     [ 120,   12, !timedelta "00:30:00", 4    ]
+      epos:     [  84,   12, !timedelta "00:30:00", 2    ]
+      efcs_wall:  !timedelta "03:00:00"
 
 default_resources: &default_resources
 
