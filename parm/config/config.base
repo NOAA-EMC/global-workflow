@@ -81,6 +81,7 @@ if [ $machine = "THEIA" ]; then
     export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 
     # Base directories for various builds
+    export BASE_GIT="/scratch4/NCEPDEV/glboal/save/glopara/git"
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
@@ -92,6 +93,7 @@ elif [ $machine = "WCOSS_C" ]; then
     export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
 
     # Base directories for various builds
+    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
 fi
@@ -114,6 +116,15 @@ if [ $machine = "THEIA" ]; then
 
 fi
 
+# Toggle to turn on/off GFS downstream processing.
+export DO_DOWNSTREAM="NO"
+
+# Set REALTIME flag.
+#   Use NO for retrospective parallel
+#   Use YES for real-time parallel
+export REALTIME="NO"
+
+
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
 # IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
@@ -125,8 +136,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
-export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters

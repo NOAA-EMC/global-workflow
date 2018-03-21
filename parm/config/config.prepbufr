@@ -8,17 +8,14 @@ echo "BEGIN: config.prepbufr"
 # Get task specific resources
 . $EXPDIR/config.resources prepbufr
 
-# Set obsproc versions
-. $NWROOThps/versions/obsproc_global.ver
+# Set variables
 
-# Set job and DATAROOT
-export job=${CDUMP}_prep_${cyc}
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+#------------------------------
+if [ $machine = "THEIA" ]; then
+#------------------------------
 
-# MAKEPREPBUFR script and options
-export NSPLIT=4  # execute in parallel.  opr defaults to NSPLIT=3
+    export GESROOT=/scratch4/NCEPDEV/rstprod/nwges/prod   # set by module prod_envir on WCOSS_C
 
-# Fix files
-export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+fi
 
 echo "END: config.prepbufr"

@@ -12,11 +12,8 @@ export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
 
 # Relocation and syndata QC
-export REALTIME="NO"
 export PROCESS_TROPCY="NO"
-if [ $machine = "WCOSS_C" ]; then
-    [[ $REALTIME == "YES" || $RUN_ENVIR == "nco" ]] && export PROCESS_TROPCY="YES"
-fi
+[[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
 export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
 export SENDCOM=YES
@@ -25,12 +22,6 @@ export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
-
-export HOMESYND=$HOMEgfs
-export EXECSYND=${HOMESYND}/exec
-export USHSYND=${HOMESYND}/ush
-export PARMSYND=${HOMESYND}/parm/relo
-export FIXSYND=${HOMESYND}/fix/fix_am
 
 ###################################
 # Only used when DO_RELOCATE=YES

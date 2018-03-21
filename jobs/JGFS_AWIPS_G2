@@ -85,7 +85,9 @@ export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
 export NODES=1
-export APRUN=${APRUN:-"aprun -n 4 -N 4 -d2 -cc depth cfp"}
+export APRUN=${APRUN_AWIPSCFP:-"aprun -n 4 -N 4 -d2 -cc depth cfp"}
+
+echo " aprun is   $APRUN "
 $APRUN $DATA/poescript
 export err=$?;err_chk
 

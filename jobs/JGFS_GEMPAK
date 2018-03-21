@@ -135,11 +135,16 @@ cat poescript
 chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
-export OMP_NUM_THREADS=$NTHREADS_GEMPAK
-npe_gempak=$(cat $DATA/poescript | wc -l)
 
-APRUNCFP_GEMPAK=$(eval echo $APRUN_GEMPAK)
-$APRUNCFP_GEMPAK $DATA/poescript
+ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_GEMPAK:-4}
+threads=${NTHREADS_GEMPAK:-3}
+export OMP_NUM_THREADS=$threads
+
+APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
+
+APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
+$APRUNCFP $DATA/poescript
 
 cat $DATA/gfs*.$$.?
 
