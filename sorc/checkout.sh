@@ -27,7 +27,6 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone --recursive ${USERNAME}@gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    #git checkout ncep_post.v8.0.1
     git checkout ncep_post.v8.0.2
     cd ${topdir}
 else

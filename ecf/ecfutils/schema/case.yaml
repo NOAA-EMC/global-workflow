@@ -1,0 +1,31 @@
+case_template: !Template &case_template
+  gfs_cyc:
+    type: int
+    default: 2
+    allowed: [ 0, 1, 2, 4 ]
+    description: |
+      When to run GFS forecast.  Data assimilation is run for every
+      cycle regardless of these values
+        * 0: no GFS cycle
+        * 1: 00Z only
+        * 2: 00Z and 12Z only
+        * 4: all 4 cycles (0, 6, 12, 18 Z)
+
+  SDATE:
+    type: datetime
+    description: |
+      First cycle to run.  In the cycled workflow, this is a
+      "half-cycle" in that it only runs the parts of the workflow that
+      do not require a prior cycle.  The first "real" cycle is the
+      following cycle.
+
+  EDATE:
+    type: datetime
+    description: Last cycle to run GDAS.
+  
+  experiment_name:
+    type: string
+    default: !calc doc.experiment_name
+    description: |
+      User-defined experiment name; should be a-z followed by alphanumeric.
+      Formerly known as PSLOT.

@@ -28,11 +28,11 @@ pwd=$(pwd -P)
 
 #--model fix fields
 if [ $target == "wcoss_cray" ]; then
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
+    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/FV3GFS_V1_RELEASE/fix"
 elif [ $target = "theia" ]; then
-    FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+    FIX_DIR="/scratch4/NCEPDEV/global/noscrub/glopara/FV3GFS_V1_RELEASE/fix"
 elif [ $target = "gaea" ]; then
-    FIX_DIR="/lustre/f1/pdata/ncep_shared/fv3/fix-fv3gfs"
+    FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
 elif [ $target = "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/Samuel.Trahan/fix-fv3gfs"
 else

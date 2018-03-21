@@ -1,0 +1,17 @@
+user_places: &user_places
+  PROJECT_DIR: !error Please select a project directory.
+    # ie. /scratch4/NCEPDEV/ocean
+
+  # Override scrub areas here.  Mandatory on Jet.
+  # LONG_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
+  # SHORT_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
+
+  # Override non-scrubbed areas if desired:
+  # HOMEDIR:  /lfs3/projects/hfv3gfs/Samuel.Trahan/homedir
+  # NOSCRUB:  /lfs3/projects/hfv3gfs/Samuel.Trahan/noscrub
+
+accounting: &accounting
+  # Project for CPU accounting.
+  cpu_project: !error What accounting code do I use to submit jobs? # ie.: global
+  hpss_project: !error Where do I put data on HPSS?   # ie.: emc-global
+  ecflow_machine: xc40-dev   # only relevant on WCOSS using ecFlow

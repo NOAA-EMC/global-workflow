@@ -1,0 +1,26 @@
+config_arch:
+  filename: config.arch
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.arch ##########
+    # Archive specific
+    
+    echo "BEGIN: config.arch"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources arch
+    
+    #--save data to HPSS archive                               
+    export HPSSARCH={tools.YES_NO(doc.archiving.archive_to_hpss)}
+    
+    #--online archive of nemsio files for fit2obs verification
+    export FITSARC="{tools.YES_NO(doc.archiving.copy_fit2obs_files)}"
+    
+    #--starting and ending hours of previous cycles to be removed from rotating directory
+    export RMOLDSTD={doc.archiving.scrub_in_archive_start}
+    export RMOLDEND={doc.archiving.scrub_in_archive_end}
+
+    export DELETE_COM_IN_ARCHIVE_JOB={tools.YES_NO(doc.archiving.scrub_in_archive)}
+    
+    echo "END: config.arch"

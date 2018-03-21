@@ -1,0 +1,21 @@
+config_ecen:
+  filename: config.ecen
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.ecen ##########
+    # Ensemble recentering specific
+    
+    echo "BEGIN: config.ecen"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources ecen
+    
+    export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
+    export nth_ecen={doc.nodes.omp_threads_for(doc.resources.run_ecen[0])}
+    
+    export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
+    export nth_chgres={doc.nodes.omp_threads_for(doc.resources.run_chgres[0])}
+    
+    echo "END: config.ecen"
+    

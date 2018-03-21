@@ -1,0 +1,128 @@
+gfs_clock_1: !Clock
+  start: !calc tools.day_of(suite.Clock.start+suite.Clock.step)
+  step: !timedelta "24:00:00"
+
+gfs_clock_2: !Clock
+  start: !calc tools.day_of(suite.Clock.start+suite.Clock.step)
+  step: !timedelta "12:00:00"
+
+gfs_clock_4: !Clock
+  start: !calc suite.Clock.start+suite.Clock.step
+  step: !timedelta "06:00:00"
+
+cycled_suite_alarms: &cycled_suite_alarms
+  first: !Clock
+    start: !calc suite.Clock.start
+    end: !calc suite.Clock.end
+    step: !calc suite.Clock.step
+
+  gdas: !Clock
+    start: !calc suite.Clock.start
+    end: !calc suite.Clock.end
+    step: !calc suite.Clock.step
+
+  gfs: !FirstTrue
+    - when: !calc doc.settings.gfs_cyc == 0
+      do: !Clock  # required but ignored because gfs is disabled
+        start: !calc suite.Clock.start
+        end: !calc suite.Clock.end
+        step: !calc suite.Clock.step
+    - when: !calc doc.settings.gfs_cyc == 1
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_1)
+    - when: !calc doc.settings.gfs_cyc == 2
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
+    - when: !calc doc.settings.gfs_cyc == 4
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_4)
+    - otherwise: !error Unknown gfs clock settings {doc.settings.gfs_cyc}
+
+suite_defaults: &suite_defaults
+  Clock: !Clock
+    start: !calc doc.settings.SDATE
+    end: !calc doc.settings.EDATE
+    step: !timedelta "6:00:00"
+
+  ecFlow:
+    suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"
+    suite_def_filename: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   !expand "{doc.names.experiment}%H.def"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H.def"
+    suite_name: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   !expand "{doc.names.experiment}%H"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H"
+    scheduler: !calc doc.scheduler
+    dates_in_time_dependencies: true
+
+    # write_cycles/analyze_cycles: Use these to generate a subset of
+    # the cycles in ecFlow.  Make sure analyze_cycles starts at least
+    # one cycle before write_cycles so that dependencies are
+    # processed.  These are overridden by update_ecflow_workflow.py
+    # during its execution.
+
+    # write_cycles: !Clock
+    #   start: 2018-01-02T00:00:00
+    #   end: 2018-01-02T18:00:00
+    #   step: !timedelta "6:00:00"
+    # analyze_cycles: !Clock
+    #   start: 2018-01-02T00:00:00
+    #   end: 2018-01-02T18:00:00
+    #   step: !timedelta "6:00:00"
+
+  ecflow_cycling_logic: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   "repeat day 1"
+      - otherwise: !expand |
+          autocancel 5
+          edit PDY '{tools.strftime(suite.Clock.now,"%Y%m%d")}'
+
+  Rocoto: &Rocoto
+    scheduler: !calc doc.scheduler
+    max_tries: 1
+
+    workflow_xml: !expand |
+      <?xml version="1.0"?>
+      <!DOCTYPE workflow [
+        <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
+        <!ENTITY TASK_THROTTLE "5">
+        <!ENTITY CYCLE_THROTTLE "2">
+        <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
+        <!ENTITY EXPDIR "{doc.places.EXPDIR}">
+        <!ENTITY PSLOT "{doc.names.experiment}">
+      {tools.indent(suite.common_metasched_vars,"  ")}
+      {tools.indent(doc.platform.metasched_more,"  ")}
+      ]>
+      <workflow realtime="F"
+                cyclethrottle="&CYCLE_THROTTLE;"
+                scheduler="{sched.rocoto_name.lower()}"
+                taskthrottle="&TASK_THROTTLE;" >
+        <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
+      {to_rocoto.make_time_xml(indent=1)}
+      {to_rocoto.make_task_xml(indent=1)}
+      </workflow>
+          
+  before_suite_def:
+    extern /totality_limit:TOTALITY
+
+  ecflow_def: !expand |
+    {ecflow_cycling_logic}
+    edit ECF_TRIES '{doc.settings.max_job_tries}'
+    edit ECF_HOME '{doc.places.ECF_HOME}'
+    edit CYC '{tools.strftime(suite.Clock.now,"%H")}'
+    edit MACHINE '{doc.accounting.ecflow_machine}'
+    edit ENVIR 'prod'
+    edit E 'jecffv3'
+    edit EMCPEN '{doc.names.experiment}'
+    edit DATAROOT '{doc.places.DATAROOT}'
+    edit ECF_OUT '{doc.places.ECF_HOME}/submit'
+    edit ECF_LOG '{doc.places.EXPDIR}/ecf.log'
+    edit RUN 'gfs'
+    edit NET 'gfs'
+    {common_metasched_vars}
+    {doc.platform.metasched_more}
+    inlimit /totality_limit:TOTALITY
+
+  common_metasched_vars: !expand |
+    {metasched.defvar("HOMEgfs", doc.places.HOMEgfs)}
+    {metasched.defvar("COM", doc.places.ROTDIR)}
+

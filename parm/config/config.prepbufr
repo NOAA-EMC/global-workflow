@@ -8,6 +8,29 @@ echo "BEGIN: config.prepbufr"
 # Get task specific resources
 . $EXPDIR/config.resources prepbufr
 
+
+# Set prepbufr variables 
+#-----------------------------------------------------
+if [ $machine = "WCOSS_C" ]; then    #use JGLOBAL_PREP
+#-----------------------------------------------------
+
+# Set operational obsproc versions
+. $NWROOThps/versions/obsproc_global.ver
+
+# Set job and DATAROOT
+export job=${CDUMP}_prep_${cyc}
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+
+# MAKEPREPBUFR script and options
+export NSPLIT=4                  # execute in parallel.  opr defaults to NSPLIT=3
+
+# Fix files - use DA prepobs_errtable.global
+export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+
+#-----------------------------------------------------
+elif [ $machine = "THEIA" ]; then    # use ush/drive_makeprepbufr.sh 
+#-----------------------------------------------------
+
 # What to turn ON or OFF
 export SYNDATA="YES"            # Execute program SYNDAT_SYNDATA
 export PREPACQC="YES"           # Execute program PREPOBS_PREPACQC
@@ -30,7 +53,6 @@ export DO_QC="YES"              # IF NO, programs PREPOBS_PREPACQC, PREPOBS_ACAR
                                 # PREPOBS_OIQCBUFR will NEVER execute regardless of
                                 # switches above -
                                 # should be set to NO only as a last resort!!!
-
 # BUFR data types to process
 export BUFRLIST="adpupa proflr aircar aircft satwnd adpsfc sfcshp vadwnd wdsatr ascatw rassda gpsipw"
 
@@ -49,7 +71,7 @@ export HOMEobsproc_network=$BASE_PREP_GLOBAL
 export PARMPREP="$BASE_PREP_GLOBAL/parm"
 
 # Directories
-export USHSYND="$BASE_PREP/ush"
+#export USHSYND="$BASE_PREP/ush"
 #export USHPREV="$BASE_PREP/ush"
 #export USHCQC="$BASE_PREP/ush"
 #export USHPQC="$BASE_PREP/ush"
@@ -83,5 +105,11 @@ export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
 #export MONOBFRX="$BASE_PREP/exec/prepobs_monoprepbufr"
 #export VQCX="$BASE_PREP/exec/prepobs_cqcvad"
 #export OIQCX="$BASE_PREP/exec/prepobs_oiqcbufr"
+
+
+# PREPBUFR not yet supported on other machines
+else
+   echo "WARNING: PREPBUFR not enabled on $machine!"
+fi
 
 echo "END: config.prepbufr"

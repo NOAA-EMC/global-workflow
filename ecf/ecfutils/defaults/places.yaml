@@ -1,0 +1,18 @@
+default_places: &default_places
+  PROJECT_DIR: !error Please select a project directory.
+  HOMEgfs:     !calc doc.static_locations.HOMEgfs
+  HOMEcrow:    !calc tools.crow_install_dir()
+  NWPROD:      !calc doc.platform.NWPROD
+  DMPDIR:      !calc doc.platform.DMPDIR
+  RTMFIX:      !calc doc.platform.RTMFIX
+
+  EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/expdir/{doc.names.experiment}"
+  ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
+  ICSDIR: !expand "{ROTDIR}/FV3ICS"
+  DATAROOT: !expand "{SHORT_TERM_TEMP}/RUNDIRS/{doc.names.experiment}"
+  SHORT_TERM_TEMP: !calc doc.platform.short_term_temp
+  LONG_TERM_TEMP:  !calc doc.platform.long_term_temp
+#  SHORT_TERM_TEMP: !error GOT HERE
+#  LONG_TERM_TEMP:  !error GOT HERE TOO
+
+  ECF_HOME: !calc tools.env("ECF_HOME","/dev/null")

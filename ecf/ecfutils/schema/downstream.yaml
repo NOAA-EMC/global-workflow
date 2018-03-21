@@ -1,0 +1,76 @@
+downstream_schema: &downstream_schema !Template
+  VDUMP:
+    type: string
+    default: "gfs"
+    description: verifying dump
+  CDUMPFCST:
+    type: string
+    default: "gdas"
+    description: Fit-to-obs with GDAS/GFS prepbufr
+  CDFNL:
+    type: string
+    default: "gdas"
+    description: Scores verification against GDAS/GFS analysis
+
+  MKPGB4PRCP:
+    type: bool
+    default: yes
+    description: make 0.25-deg pgb files in ARCDIR for precip verification
+  VRFYFITS:
+    type: bool
+    default: YES
+    description: "Fit to observations"
+  VSDB_STEP1:
+    type: bool
+    default: YES
+    description: "populate VSDB database"
+  VSDB_STEP2:
+    type: bool
+    default: NO
+  VRFYG2OBS:
+    type: bool
+    default: YES
+    description: "Grid to observations, see note below if turning ON"
+  VRFYPRCP:
+    type: bool
+    default: YES
+    description: "Precip threat scores"
+  VRFYRAD:
+    type: bool
+    default: YES
+    description: "Radiance data assimilation monitoring"
+  VRFYOZN:
+    type: bool
+    default: YES
+    description: "Ozone data assimilation monitoring"
+  VRFYMINMON:
+    type: bool
+    default: YES
+    description: "GSI minimization monitoring"
+  VRFYTRAK:
+    type: bool
+    default: NO
+    description: "Hurricane track verification"
+  VRFYGENESIS:
+    type: bool
+    default: NO
+    description: "Cyclone genesis verification"
+  RUN_POSTSND:
+    type: bool
+    default: NO
+    description: "Run GFS_POSTSND"
+  RUN_AWIPS:
+    type: bool
+    default: NO
+    description: "Run GFS AWIPS"
+  RUN_GEMPAK:
+    type: bool
+    default: NO
+    description: "Run GFS GEMPAK"
+  
+  FHOUT_CYCLONE_GFS:
+    type: int
+    default: 6
+  FHOUT_CYCLONE_GDAS:
+    type: int
+    default: 3

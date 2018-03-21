@@ -2,10 +2,10 @@
 
 # LSBATCH: User input
 #BSUB -J jgfs_gempak_00
-#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
-#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
+#BSUB -oo gfs_gempak_00.o%J
+#BSUB -eo gfs_gempak_00.o%J
 #BSUB -L /bin/sh
-#BSUB -q dev
+#BSUB -q debug
 #BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
 #BSUB -W 03:00
 #BSUB -P GFS-T2O
@@ -15,7 +15,7 @@
 export KMP_AFFINITY=disabled
 
 # export PDY=`date -u +%Y%m%d`
-export PDY=20180121
+export PDY=20180226
 
 # export cyc=06
 export cyc=00

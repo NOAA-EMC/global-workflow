@@ -1,0 +1,31 @@
+config_anal:
+  filename: config.anal
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.anal ##########
+    # Analysis specific
+    
+    echo "BEGIN: config.anal"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources anal
+    
+    if [ $DONST = "YES" ]; then
+        . $EXPDIR/config.nsst
+    fi
+    
+    if [[ "$CDUMP" = "gfs" ]] ; then
+        #export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
+        export GENDIAG="NO"
+    fi
+    
+    export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
+    
+    export npe_gsi=$npe_anal
+    export nth_gsi={doc.nodes.omp_threads_for(doc.resources.run_anal[0])}
+    
+    # This is inconsistent between config files and is never used:
+    #    export nth_cycle={doc.nodes.cores_per_node}
+    
+    echo "END: config.anal"

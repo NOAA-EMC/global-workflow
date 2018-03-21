@@ -12,19 +12,26 @@ export VDUMP="gfs"       # verifying dump
 export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
 
+export MKPGB4PRCP="YES"  # make 0.25-deg pgb files in ARCDIR for precip verification
+export VRFYFITS="YES"    # Fit to observations
 export VSDB_STEP1="YES"  # populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"   # Grid to observations, see note below if turning ON
-export VRFYFITS="YES"    # Fit to observations
 export VRFYPRCP="YES"    # Precip threat scores
-export VRFYMINMON="YES"  # GSI minimization monitoring
 export VRFYRAD="YES"     # Radiance data assimilation monitoring
 export VRFYOZN="YES"     # Ozone data assimilation monitoring
-export VRFYTRAK="YES"    # Hurricane track forecasts
-export VRFYGENESIS="YES" # Cyclone genesis
-export VRFYGMPK="NO"     # Gempak verification
+export VRFYMINMON="YES"  # GSI minimization monitoring
+export VRFYTRAK="NO"    # Hurricane track verification
+export VRFYGENESIS="NO" # Cyclone genesis verification
+export RUN_POSTSND="NO" # Run GFS_POSTSND
+export RUN_AWIPS="NO"   # Run GFS AWIPS
+export RUN_GEMPAK="NO"  # Run GFS GEMPAK
 
+
+#-------------------------------------------------
 # Fit to Observations
+#-------------------------------------------------
+
 if [ $VRFYFITS = "YES" ]; then
 
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
@@ -41,9 +48,13 @@ if [ $VRFYFITS = "YES" ]; then
 
 fi
 
+
+#----------------------------------------------------------
 # VSDB STEP1, Verify Precipipation and Grid To Obs options
+#----------------------------------------------------------
 # All these call $VSDBSH
-if [[ "$CDUMP" = "gfs" ]] ; then
+
+if [ $CDUMP = "gfs" ] ; then
     ddd=`echo $CDATE |cut -c 1-8`
     #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
@@ -73,7 +84,10 @@ if [[ "$CDUMP" = "gfs" ]] ; then
 fi
 
 
+#----------------------------------------------------------
 # Minimization, Radiance and Ozone Monitoring
+#----------------------------------------------------------
+
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
     export envir="para"
@@ -127,38 +141,49 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
 fi
 
-# Cyclone track verification
-if [ $VRFYTRAK = "YES" ]; then
 
-    export TRACKERSH="$HOMEgfs/ush/global_tracker.sh"
-    export PARATRKR="$HOMEgfs/ush/global_extrkr.sh"
-    export GETTRKEXEC="$HOMEgfs/exec/gettrk"
-    export GETTX=$GETTRKEXEC
-    export SUPVX="$HOMEgfs/exec/supvit"
-    export HOMERELO=$HOMEgfs
-    export homesyndir=$HOMEgfs
-    if [[ "$CDUMP" = "gfs" ]] ; then
-        export FHOUT=$FHOUT_GFS
-        export FHMAX=$FHMAX_GFS
-        export FHMAX2=${FHMAX2_GFS:-$FHMAX_GFS} # We don't run FCST2
+#-------------------------------------------------
+# Cyclone genesis and cyclone track verification
+#-------------------------------------------------
+
+if [ $machine = "WCOSS_C" ] ; then
+    export ens_tracker_ver=v1.1.14
+    #export HOMEens_tracker=${NWROOT:?}/ens_tracker.${ens_tracker_ver}               
+    #export HOMEens_tracker=/gpfs/hps3/emc/ensemble/save/Jiayi.Peng/ens_tracker.${ens_tracker_ver}
+    export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
+elif [ $machine = "THEIA" ] ; then
+    export ens_tracker_ver=v2.0.1
+    export HOMEens_tracker=/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/ens_tracker.${ens_tracker_ver}
+else
+    echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
+    export VRFYGENESIS="NO"
+    export VRFYTRAK="NO"
+fi
+
+
+if [ "$VRFYTRAK" = "YES" ]; then
+
+    export TRACKERSH="$HOMEgfs/jobs/JGFS_CYCLONE_TRACKER"
+    if [ $CDUMP = "gdas" ]; then
+        export FHOUT_CYCLONE=3            
+        export FHMAX_CYCLONE=$FHMAX
+    else
+        export FHOUT_CYCLONE=6            
+        export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
     if [ $machine = "THEIA" ]; then
        export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export archsyndir="$COMROOTp1/arch/prod/syndat"
-       export prep_step="$NWPROD/prod_util.v1.0.15/ush/prep_step"
+       export COMINsyn="$COMROOTp1/arch/prod/syndat"
     fi
 fi
 
-# Cyclone genesis verification
-if [ $VRFYGENESIS = "YES" ]; then
+
+if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
     if [ $machine = "WCOSS_C" ] ; then
-        export ens_tracker_ver=v1.1.12
-        export HOMEens_tracker=/gpfs/hps/nco/ops/nwpara/ens_tracker.${ens_tracker_ver}
-        export GENESISSH="$HOMEens_tracker/jobs/JGFS_TC_GENESIS"
+        export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
     elif [ $machine = "THEIA" ] ; then
-        export NWROOTGENESIS="/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17"
-        export GENESISSH="$NWROOTGENESIS/ens_tracker.v2.0.1/gfs_genesis_para_fv3gfs.sh"	
+        export GENESISSH="$HOMEens_tracker/gfs_genesis_para_fv3gfs.sh"	
         export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
         export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
     else
@@ -166,7 +191,26 @@ if [ $VRFYGENESIS = "YES" ]; then
         export VRFYGENESIS="NO"
         export GENESISSH=""
     fi
+fi
 
+
+#----------------------------------------------------------
+# GFS POSTSND (temporarily add to vrfy, should be with post)
+#----------------------------------------------------------
+
+if [ $RUN_POSTSND = "YES" ]; then
+   export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
+fi
+
+# GFS AWIPS (temporarily add to vrfy, should be with post)
+if [ $RUN_AWIPS = "YES" ]; then
+    export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+    export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
+fi
+
+# GFS GEMPAK (temporarily add to vrfy, should be with post)
+if [ $RUN_GEMPAK = "YES" ]; then
+   export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
 fi
 
 echo "END: config.vrfy"

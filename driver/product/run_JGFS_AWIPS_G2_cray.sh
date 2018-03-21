@@ -1,11 +1,9 @@
 #!/bin/sh
 
-# LSBATCH: User input
 #BSUB -J jgfs_awips_f12_00
-#BSUB -o /gpfs/hps/ptmp/Boi.Vuong/output/gfs_awips_f12_00.o%J
-#BSUB -e /gpfs/hps/ptmp/Boi.Vuong/output/gfs_awips_f12_00.o%J
-#BSUB -L /bin/sh
-#BSUB -q dev
+#BSUB -oo gfs_awips_f12_00.o%J
+#BSUB -eo gfs_awips_f12_00.o%J
+#BSUB -q debug
 #BSUB -cwd /gpfs/hps/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
 #BSUB -P GFS-T2O
@@ -15,7 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180121
+export PDY=20180226
 
 export PDY1=`expr $PDY - 1`
 

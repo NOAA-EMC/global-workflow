@@ -1,0 +1,146 @@
+config_prepbufr:
+  filename: config.prepbufr
+
+  old_content_that_should_be_deleted: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.prepbufr ##########
+    # PREPBUFR specific configuration
+    
+    echo "BEGIN: config.prepbufr"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources prepbufr
+    
+    # Set obsproc versions
+    . $NWROOThps/versions/obsproc_global.ver
+    
+    # Set job and DATAROOT
+    export job=${{CDUMP}}_prep_${{cyc}}
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    
+    # MAKEPREPBUFR script and options
+    export NSPLIT={doc.data_assimilation.NSPLIT}  # execute in parallel.  opr defaults to NSPLIT=3
+    
+    # Fix files
+    export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+    
+    echo "END: config.prepbufr"
+
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.prepbufr ##########
+    # PREPBUFR specific configuration
+    
+    echo "BEGIN: config.prepbufr"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources prepbufr
+    
+    
+    # Set prepbufr variables 
+    #-----------------------------------------------------
+    if [ $machine = "WCOSS_C" ]; then    #use JGLOBAL_PREP
+    #-----------------------------------------------------
+    
+    # Set operational obsproc versions
+    . $NWROOThps/versions/obsproc_global.ver
+    
+    # Set job and DATAROOT
+    export job=${{CDUMP}}_prep_${{cyc}}
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    
+    # MAKEPREPBUFR script and options
+    export NSPLIT={doc.data_assimilation.NSPLIT}                  # execute in parallel.  opr defaults to NSPLIT=3
+    
+    # Fix files - use DA prepobs_errtable.global
+    export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+    
+    #-----------------------------------------------------
+    elif [ $machine = "THEIA" ]; then    # use ush/drive_makeprepbufr.sh 
+    #-----------------------------------------------------
+    
+    # What to turn ON or OFF
+    export SYNDATA="YES"            # Execute program SYNDAT_SYNDATA
+    export PREPACQC="YES"           # Execute program PREPOBS_PREPACQC
+    export PROCESS_ACQC="YES"       # Execute program PREPOBS_PREPACQC
+    export PROCESS_ACPF="NO"        # Execute program PREPOBS_PREPACPF
+    export PROFCQC="YES"            # Execute program PREPOBS_PROFCQC
+    export CQCVAD="YES"             # Execute program PREPOBS_CQCVAD
+    export CQCBUFR="YES"            # Execute program PREPOBS_CQCBUFR
+    export OIQCBUFR="NO"            # Execute program PREPOBS_OIQCBUFR
+    export PREPDATA="YES"           # Execute program PREPOBS_MPCOPYBUFR,
+                                    #                 PREPOBS_PREPDATA,
+                                    #                 PREPOBS_LISTHEADERS,
+                                    #                 PREPOBS_MONOPREPBUFR
+    export GETGUESS="YES"           # Encode first guess (background) values interpolated to
+                                    # observation locations in the PREPBUFR file for use by
+                                    # the q.c. programs.  This guess is always from a global
+                                    # guess file valid at the center PREPBUFR processing date/time.
+    export DO_QC="YES"              # IF NO, programs PREPOBS_PREPACQC, PREPOBS_ACARSQC,
+                                    # PREPOBS_PROFCQC, PREPOBS_CQCVAD, PREPOBS_CQCBUFR and
+                                    # PREPOBS_OIQCBUFR will NEVER execute regardless of
+                                    # switches above -
+                                    # should be set to NO only as a last resort!!!
+    # BUFR data types to process
+    export BUFRLIST="adpupa proflr aircar aircft satwnd adpsfc sfcshp vadwnd wdsatr ascatw rassda gpsipw"
+    
+    # MAKEPREPBUFR script and options
+    export MAKEPREPBUFRSH="$BASE_PREP/ush/prepobs_makeprepbufr.sh"
+    export NSPLIT={doc.data_assimilation.NSPLIT}  # execute in parallel
+    
+    # These variable largely eliminate the need for explicitly setting
+    # USH directories, FIX files, PARM files, EXECutables below
+    # The USER can overwrite components that they wish
+    # e.g. PRVT is used from the GSI
+    export HOMEobsproc_prep=$BASE_PREP
+    export EXECPREP="$BASE_PREP/exec"
+    export FIXPREP="$BASE_PREP/fix"
+    export HOMEobsproc_network=$BASE_PREP_GLOBAL
+    export PARMPREP="$BASE_PREP_GLOBAL/parm"
+    
+    # Directories
+    #export USHSYND="$BASE_PREP/ush"
+    #export USHPREV="$BASE_PREP/ush"
+    #export USHCQC="$BASE_PREP/ush"
+    #export USHPQC="$BASE_PREP/ush"
+    #export USHVQC="$BASE_PREP/ush"
+    #export USHAQC="$BASE_PREP/ush"
+    #export USHOIQC="$BASE_PREP/ush"
+    
+    # Fix files
+    #export CQCS="$BASE_PREP/fix/prepobs_cqc_statbge"
+    #export LANDC="$BASE_PREP/fix/prepobs_landc"
+    #export PRPT="$BASE_PREP/fix/prepobs_prep.bufrtable"
+    export PRVT="$HOMEgfs/fix/fix_gsi/prepobs_errtable.global"
+    #export OIQCT="$BASE_PREP_GLOBAL/fix/prepobs_oiqc.oberrs"
+    
+    # parm files
+    #export AQCC="$BASE_PREP_GLOBAL/parm/prepobs_prepacqc.${{CDUMP}}.parm"
+    #export CQCC="$BASE_PREP_GLOBAL/parm/prepobs_cqcbufr.gdas.parm"
+    #export PRPC="$BASE_PREP_GLOBAL/parm/prepobs_prepdata.${{CDUMP}}.parm"
+    #export PQCC="$BASE_PREP_GLOBAL/parm/prepobs_profcqc.gdas.parm"
+    #export SYNDC="$BASE_PREP_GLOBAL/parm/syndat_syndata.gdas.parm"
+    
+    # Executables
+    #export PRPX="$BASE_PREP/exec/prepobs_prepdata"
+    #export PREX="$BASE_PREP/exec/prepobs_prevents"
+    #export AQCX="$BASE_PREP/exec/prepobs_prepacqc"
+    #export PQCX="$BASE_PREP/exec/prepobs_profcqc"
+    #export CQCX="$BASE_PREP/exec/prepobs_cqcbufr"
+    #export SYNDX="$BASE_PREP/exec/syndat_syndata"
+    #export MPCOPYX="$BASE_PREP/exec/prepobs_mpcopybufr"
+    #export LISTHDX="$BASE_PREP/exec/prepobs_listheaders"
+    #export MONOBFRX="$BASE_PREP/exec/prepobs_monoprepbufr"
+    #export VQCX="$BASE_PREP/exec/prepobs_cqcvad"
+    #export OIQCX="$BASE_PREP/exec/prepobs_oiqcbufr"
+    
+    
+    # PREPBUFR not yet supported on other machines
+    else
+       echo "WARNING: PREPBUFR not enabled on $machine!"
+    fi
+    
+    echo "END: config.prepbufr"
+    
