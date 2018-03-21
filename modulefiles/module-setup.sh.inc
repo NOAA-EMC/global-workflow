@@ -59,14 +59,17 @@ elif [[ -d /glade ]] ; then
     module purge
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA. 
-#    if ( ! eval module help > /dev/null 2>&1 ) ; then
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
         # We cannot simply load the module command.  The GAEA
         # /etc/profile modifies a number of module-related variables
         # before loading the module command.  Without those variables,
         # the module command fails.  Hence we actually have to source
         # /etc/profile here.
         source /etc/profile
-#    fi
+        __ms_source_etc_profile=yes
+    else
+        __ms_source_etc_profile=no
+    fi
     echo GAEA
     module purge
 # clean up after purge 
@@ -82,7 +85,10 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
     export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
     echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc 
     module use $NCEPLIBS/modulefiles
-        source /etc/profile
+    if [[ "$__ms_source_etc_profile" == yes ]] ; then
+      source /etc/profile
+      unset __ms_source_etc_profile
+    fi
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
