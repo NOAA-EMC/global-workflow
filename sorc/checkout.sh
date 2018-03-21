@@ -35,8 +35,8 @@ fi
 
 # add temp fix to build post and fcst with George's updtes
 if [[ -d  gfs_post.fd ]] ; then
- cp post_add_temp/build_ncep_post.sh gfs_post.fd/sorc
- cp post_add_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
+ cp add_post_temp/build_ncep_post.sh gfs_post.fd/sorc
+ cp add_post_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
  cp ../modulefiles/module-setup.sh.inc fv3gfs.fd/NEMS/src/conf
 else
  echo 'WARNING directory gfs_post.fd does not exsist so build updates were not moved from post_add_temp'
