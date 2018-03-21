@@ -16,7 +16,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $target != wcoss_cray -a $target != theia -a $target != gaea ]; then
+if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet ]; then
     echo '$target value set to unknown or unsupported system'
     exit 1
 fi
@@ -70,13 +70,23 @@ cd ${pwd}/../ush                ||exit 8
 #        $LINK ../sorc/gfs_post.fd/ush/$file                  .
 #    done
 
+
 #--link executables 
 
 cd $pwd/../exec
-[[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
 
-[[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+if [[ -f ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x ]]; then
+ [[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
+ $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
+else
+  echo 'WARNING fv3_gfs_nh.prod.32bit.x executable file does not exsist, no link to fv3_gfs_nh.prod.32bit.x made'
+fi
 
+if [[ -f ../sorc/gfs_post.fd/exec/ncep_post ]]; then
+ [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
+ $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+else
+  echo 'WARNING ncep_post executable file does not exsist, no link to ncep_post made'
+fi
+ 
 exit 0
