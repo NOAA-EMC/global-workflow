@@ -37,7 +37,7 @@ fi
 if [[ -d  gfs_post.fd ]] ; then
  cp add_post_temp/build_ncep_post.sh gfs_post.fd/sorc
  cp add_post_temp/v7.0.0-gaea  gfs_post.fd/modulefiles/post
- cp ../modulefiles/module-setup.sh.inc fv3gfs.fd/NEMS/src/conf
+ cp add_post_temp/v7.0.0-jet  gfs_post.fd/modulefiles/post
 else
  echo 'WARNING directory gfs_post.fd does not exsist so build updates were not moved from post_add_temp'
 fi
@@ -45,6 +45,7 @@ fi
 if [[ -d  fv3gfs.fd ]] ; then
  cp add_fv3gfs_temp/configure.fv3.jet fv3gfs.fd/conf
  cp add_fv3gfs_temp/fv3 fv3gfs.fd/modulefiles/jet
+ cp ../modulefiles/module-setup.sh.inc fv3gfs.fd/NEMS/src/conf
 else
  echo 'WARNING directory fv3gfs.fd does not exsist so build updates were not mved from fv3gfs_add_temp'
 fi
