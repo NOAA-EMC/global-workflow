@@ -88,13 +88,13 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
       $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
       $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
       (( fhr = $fhr + 6 ))
-   done
+    done
 fi
 
 
 ###############################################################
 # Archive what is needed to restart the experiment
-if [ HPSSARCH = "YES" ]; then
+if [ $HPSSARCH = "YES" ]; then
 ###############################################################
 
 DATA="$RUNDIR/$CDATE/$CDUMP/arch"

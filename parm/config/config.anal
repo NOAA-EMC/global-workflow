@@ -24,4 +24,55 @@ export nth_gsi=4
 
 export nth_cycle=12
 
+# Set CONVINFO and SATINFO for retrospective parallels
+if [ $REALTIME = "NO" ]; then
+
+#   Set CONVINFO
+    if [[ "$CDATE" -ge "2018022818" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
+    elif [[ "$CDATE" -ge "2018010512" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
+    elif [[ "$CDATE" -ge "2017071912" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2017071912
+    elif [[ "$CDATE" -ge "2016031512" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2016031512
+    elif [[ "$CDATE" -ge "2014041400" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
+    else
+	echo "No CONVINFO for $CDATE, exit"
+	exit 1
+    fi
+
+#   Set SATINFO
+    if [[ "$CDATE" -ge "2018021212" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
+    elif [[ "$CDATE" -ge "2017103118" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
+    elif [[ "$CDATE" -ge "2017031612" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017031612
+    elif [[ "$CDATE" -ge "2017030812" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017030812
+    elif [[ "$CDATE" -ge "2016110812" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016110812
+    elif [[ "$CDATE" -ge "2016090912" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016090912
+    elif [[ "$CDATE" -ge "2016020312" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016020312
+    elif [[ "$CDATE" -ge "2016011912" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016011912
+    elif [[ "$CDATE" -ge "2015111012" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015111012
+    elif [[ "$CDATE" -ge "2015100118" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015100118
+    elif [[ "$CDATE" -ge "2015070218" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015070218
+    elif [[ "$CDATE" -ge "2015011412" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015011412
+    else
+	echo "No SATINFO for $CDATE, exit"
+	exit 1
+    fi
+fi
+
+
 echo "END: config.anal"

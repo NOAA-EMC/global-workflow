@@ -23,9 +23,6 @@ export VRFYOZN="YES"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
 export VRFYTRAK="NO"    # Hurricane track verification
 export VRFYGENESIS="NO" # Cyclone genesis verification
-export RUN_POSTSND="NO" # Run GFS_POSTSND
-export RUN_AWIPS="NO"   # Run GFS AWIPS
-export RUN_GEMPAK="NO"  # Run GFS GEMPAK
 
 
 #-------------------------------------------------
@@ -54,7 +51,7 @@ fi
 #----------------------------------------------------------
 # All these call $VSDBSH
 
-if [ $CDUMP = "gfs" ] ; then
+if [ "$CDUMP" = "gfs" ] ; then
     ddd=`echo $CDATE |cut -c 1-8`
     #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
@@ -96,7 +93,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
 
         export RADMON_SUFFIX=$PSLOT
-        export TANKverf="$NOSCRUB/radmon"
+        export TANKverf="$NOSCRUB/monitor/radmon"
         if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
             export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
         else
@@ -110,7 +107,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     if [[ "$VRFYMINMON" = "YES" ]] ; then
 
         export MINMON_SUFFIX=$PSLOT
-        export M_TANKverf="$NOSCRUB/minmon"
+        export M_TANKverf="$NOSCRUB/monitor/minmon"
         if [[ "$machine" == "WCOSS_C" || "$machine" == "THEIA" ]] ; then
             if [[ "$CDUMP" = "gdas" ]] ; then
                 export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
@@ -129,7 +126,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
-        export TANKverf_ozn="$NOSCRUB/oznmon"
+        export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
         if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
             export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
         else
@@ -164,7 +161,7 @@ fi
 if [ "$VRFYTRAK" = "YES" ]; then
 
     export TRACKERSH="$HOMEgfs/jobs/JGFS_CYCLONE_TRACKER"
-    if [ $CDUMP = "gdas" ]; then
+    if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3            
         export FHMAX_CYCLONE=$FHMAX
     else
@@ -194,23 +191,5 @@ if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 fi
 
 
-#----------------------------------------------------------
-# GFS POSTSND (temporarily add to vrfy, should be with post)
-#----------------------------------------------------------
-
-if [ $RUN_POSTSND = "YES" ]; then
-   export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
-fi
-
-# GFS AWIPS (temporarily add to vrfy, should be with post)
-if [ $RUN_AWIPS = "YES" ]; then
-    export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
-    export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
-fi
-
-# GFS GEMPAK (temporarily add to vrfy, should be with post)
-if [ $RUN_GEMPAK = "YES" ]; then
-   export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
-fi
 
 echo "END: config.vrfy"

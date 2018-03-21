@@ -114,8 +114,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
     mkdir -m 775 -p $COMOUThur $COMOUTatcf
 else
-    export COMOUThur=$COMOUT         
-    export COMOUTatcf=$COMOUT
+    export COMOUThur=$DATA         
+    export COMOUTatcf=$DATA
 fi
 
 ##############################################

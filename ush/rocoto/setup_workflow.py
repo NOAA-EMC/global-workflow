@@ -48,7 +48,7 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
@@ -205,9 +205,14 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         Create GDAS or GFS resource entities
     '''
 
-    machine = dict_configs['base']['machine']
+    base = dict_configs['base']
+    machine = base.get('machine', 'WCOSS_C')
+    do_downstream = base.get('DO_DOWNSTREAM', 'NO').upper()
 
     tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+
+    if cdump in ['gfs'] and do_downstream in ['Y', 'YES']:
+        tasks += ['postsnd', 'awips', 'gempak']
 
     dict_resources = {}
 
@@ -287,6 +292,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     gfs_cyc = base.get('gfs_cyc', 0)
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     cdump_enkf = base.get('CDUMP_ENKF', 'gdas')
+    do_downstream = base.get('DO_DOWNSTREAM', 'NO').upper()
 
     dict_tasks = {}
 
@@ -368,6 +374,35 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
 
     dict_tasks['%svrfy' % cdump] = task
+
+    if cdump in ['gfs'] and do_downstream in ['Y', 'YES']:
+
+        #postsnd
+        deps = []
+        dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('postsnd', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%spostsnd' % cdump] = task
+
+        # awips
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('awips', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sawips' % cdump] = task
+
+        # gempak
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('gempak', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sgempak' % cdump] = task
 
     # arch
     deps = []
