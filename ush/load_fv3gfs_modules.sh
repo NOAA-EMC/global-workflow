@@ -29,6 +29,7 @@ elif [[ -d /glade ]] ; then
 	module load module_base.cheyenne 
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA.
+        module load module-run.gaea
 	module load module_base.gaea 
 else
     echo WARNING: UNKNOWN PLATFORM 

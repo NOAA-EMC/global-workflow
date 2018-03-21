@@ -1,30 +1,18 @@
 platform: !Platform
   Evaluate: false
-  name: THEIA
+  name: GAEA
 
   detect: !calc tools.isdir("/lustre/f1")
 
   public_release_ics: /lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/ICs
 
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
-  NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
-  DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
-  RTMFIX: "/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-  BASE_SVN: "/scratch4/NCEPDEV/global/save/glopara/svn"
+  NWPROD: "//dev/null/global/save/glopara/nwpara"
+  DMPDIR: "/dev/null/global/noscrub/dump"
+  RTMFIX: "/dev/null/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  BASE_SVN: "/dev/null/global/save/glopara/svn"
 
-  config_base_extras: !expand |
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="$NWPROD/util/exec/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
-    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
-    export POSTGRB2TBL="$NWPROD/util/exec/params_grib2_tbl_new"
+  config_base_extras: ""
 
   shared_accounting_ref:
     queue: !calc metasched.varref('QUEUESHARED')
