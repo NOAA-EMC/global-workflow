@@ -70,9 +70,11 @@ platform: !Platform
   nodes: !calc |
     tools.node_tool_for(node_type_settings.node_type, node_type_settings)
 
-  long_term_temp: !error "Jet has no cluster-wide scrub area.  You must manually set it in the user_places map in user.yaml"
+  long_term_temp: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}/scrub"
   short_term_temp: !calc long_term_temp
-  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
+  NOSCRUB_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
+  SAVE_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/save"
 
   # Some special magic to cause jobs to do nothing on Jet:
   rocoto_load_modules_extra: >-
