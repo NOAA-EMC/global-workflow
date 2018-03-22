@@ -29,11 +29,11 @@ pwd=$(pwd -P)
 #--model fix fields
 if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/FV3GFS_V1_RELEASE/fix"
-elif [ $target = "theia" ]; then
+elif [ $target == "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/noscrub/glopara/FV3GFS_V1_RELEASE/fix"
-elif [ $target = "gaea" ]; then
+elif [ $target == "gaea" ]; then
     FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
-elif [ $target = "jet" ]; then
+elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/Samuel.Trahan/fix-fv3gfs"
 else
     echo 'CRITICAL: links to fix files not set'
@@ -74,6 +74,21 @@ cd ${pwd}/../ush                ||exit 8
 #--link executables 
 
 cd $pwd/../exec
+
+if [[ $target == "gaea" ]]; then
+  if [[ -f /lustre/f1/pdata/ncep_shared/exec/wgrib2 ]]; then
+   cp /lustre/f1/pdata/ncep_shared/exec/wgrib2 .
+  else
+   echo 'WARNING wgrib2 did not copy from /lustre/f1/pdata/ncep_shared/exec on Gaea'
+  fi
+fi
+if [[ $target == "jet" ]]; then
+  if [[ -f /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/wgrib2 ]]; then
+   cp /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/wgrib2 .
+  else
+   echo 'WARNING wgrib2 did not copy from /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec on Jet'
+  fi
+fi
 
 if [[ -f ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x ]]; then
  [[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x

@@ -87,13 +87,13 @@ suite: !Cycle
     forecast: !Family
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_forecast_high: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Trigger: !Depend up.jgfs_analysis
         resources: !calc ( doc.resources.run_gfsfcst )
         J_JOB: JGLOBAL_FORECAST
 
       jgfs_forecast_low: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Dummy: true  ## <-- Node is not implemented yet
         Trigger: !Depend jgfs_forecast_high
         resources: !calc ( doc.resources.run_gfsfcst )
@@ -515,14 +515,14 @@ suite: !Cycle
 
     forecast: !Family
       jgdas_forecast_high: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc ( doc.resources.run_gdasfcst )
         J_JOB: JGLOBAL_FORECAST
 
       jgdas_forecast: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
         #release_fcst: !DataEvent {file="/dev/null"}
         #resources: !calc ( doc.resources.run_gdasfcst )
@@ -676,7 +676,7 @@ suite: !Cycle
         Dimensions:
           groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_FORECAST_GROUPS,1)
         jgdas_enkf_fcst_grp: !TaskElement
-          <<: *exclusive_task_template
+          <<: *forecast_task_template
           Foreach: [ groupid ]
           Name: !expand "jgdas_enkf_fcst_grp{dimval.groupid}"
           resources: !calc ( doc.resources.run_efcs )

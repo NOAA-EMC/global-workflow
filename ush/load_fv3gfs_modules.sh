@@ -8,14 +8,6 @@ mode="${1:-exclusive}"
 ulimit_s=$( ulimit -S -s )
 ulimit -S -s 10000
 
-echo ========================================================================
-echo BEFORE PURGE
-echo MODE $mode
-module list
-which hsi
-which htar
-echo ========================================================================
-
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 
@@ -24,7 +16,11 @@ module use "$HOMEgfs/modulefiles"
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
+    if [[ "$mode" == forecast ]] ; then
+	module load module_fcst.jet 
+    else
 	module load module_base.jet 
+    fi
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
 	module load module_base.theia 
@@ -52,9 +48,3 @@ fi
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
-
-echo ========================================================================
-echo after loading modules
-which hsi
-which htar
-echo ========================================================================
