@@ -20,6 +20,6 @@ case:
     SDATE: 2016-02-10t00:00:00
     EDATE: 2016-02-22t18:00:00
     run_gsi: No
-
+    chgres_and_convert_ics: yes
     gfs_cyc: 4 # run gfs every cycle
 

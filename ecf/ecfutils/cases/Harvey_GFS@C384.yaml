@@ -25,6 +25,6 @@ case:
     EDATE: !calc SDATE
 #2017-08-31t00:00:00
     run_gsi: No
-
+    chgres_and_convert_ics: no
     gfs_cyc: 4 # run gfs every cycle
 
