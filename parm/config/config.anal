@@ -39,8 +39,7 @@ if [ $REALTIME = "NO" ]; then
     elif [[ "$CDATE" -ge "2014041400" ]]; then
 	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
     else
-	echo "No CONVINFO for $CDATE, exit"
-	exit 1
+	echo "WARNING: No CONVINFO for $CDATE"
     fi
 
 #   Set SATINFO
@@ -69,8 +68,7 @@ if [ $REALTIME = "NO" ]; then
     elif [[ "$CDATE" -ge "2015011412" ]]; then
 	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015011412
     else
-	echo "No SATINFO for $CDATE, exit"
-	exit 1
+	echo "WARNING: No SATINFO for $CDATE"
     fi
 fi
 
