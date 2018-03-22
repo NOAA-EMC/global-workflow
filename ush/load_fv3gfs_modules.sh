@@ -1,10 +1,20 @@
 #!/bin/sh
 #set -x
 
+mode="${1:-exclusive}"
+
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 ulimit -S -s 10000
+
+echo ========================================================================
+echo BEFORE PURGE
+echo MODE $mode
+module list
+which hsi
+which htar
+echo ========================================================================
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
@@ -29,8 +39,12 @@ elif [[ -d /glade ]] ; then
 	module load module_base.cheyenne 
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA.
+    if [[ "$mode" == service ]] ; then
+        module load module-service.gaea
+    else
         module load module-run.gaea
 	module load module_base.gaea 
+    fi
 else
     echo WARNING: UNKNOWN PLATFORM 
 fi
@@ -38,3 +52,9 @@ fi
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
+
+echo ========================================================================
+echo after loading modules
+which hsi
+which htar
+echo ========================================================================

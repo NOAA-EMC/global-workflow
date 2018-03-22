@@ -4,7 +4,7 @@ task_template: &task_template
 
   rocoto_load_modules: !expand >-
      {doc.platform.get("rocoto_load_modules_extra","")}
-     source &HOMEgfs;/ush/load_fv3gfs_modules.sh ;
+     source &HOMEgfs;/ush/load_fv3gfs_modules.sh {task_type} ;
      module list
   rocoto_command: !expand >-
      {rocoto_load_modules} ;
@@ -101,7 +101,7 @@ task_template: &task_template
     # FIXME: Insert manual for this job.
 
   ecf_module_commands: |-
-    source "$HOMEgfs/ush/load_fv3gfs_modules.sh"
+    source "$HOMEgfs/ush/load_fv3gfs_modules.sh" {task_type}
 
   ecf_environment_settings: |-
     # Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
@@ -143,13 +143,16 @@ shared_task_template: &shared_task_template
   <<: *task_template
   accounting: *shared_accounting
   J_JOB: !expand '{task_path_list[-1]}.sh'
+  task_type: shared
 
 service_task_template: &service_task_template
   <<: *task_template
   accounting: *service_accounting
   J_JOB: !expand '{task_path_list[-1]}.sh'
+  task_type: service
 
 exclusive_task_template: &exclusive_task_template
   <<: *task_template
   accounting: *exclusive_accounting
   J_JOB: !expand '{task_path_list[-1]}.sh'
+  task_type: exclusive
