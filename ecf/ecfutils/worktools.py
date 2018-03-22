@@ -86,13 +86,16 @@ def select_platform(requested_platform,valid_platforms):
     return platdoc
 
 def create_COMROT(conf):
+    comrot = conf.places.ROTDIR
+    logger.info(f'Workflow COM root: {comrot}')
+    loudly_make_dir_if_missing(comrot)
+
     if not 'IC_CDUMP' in conf.settings or not conf.settings.IC_CDUMP:
         logger.info('IC_CDUMP not specified; will assume scripts will provide their own ICs.')
         print('conf.settings.IC_CDUMP: not set; will assume scripts will provide their own ICs.')
         return
     cdump = conf.settings.IC_CDUMP
     icsdir = conf.places.ICSDIR
-    comrot = conf.places.ROTDIR
     resens = conf.fv3_enkf_settings.CASE[1:]
     resdet = conf.fv3_gfs_settings.CASE[1:]
     idate = conf.settings.SDATE
@@ -110,7 +113,6 @@ def create_COMROT(conf):
     loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
     print(f'Copy input conditions to: {comrot}')
-    logger.info(f'Workflow COM root: {comrot}')
 
     # Link ensemble member initial conditions
     if conf.settings.run_enkf:
