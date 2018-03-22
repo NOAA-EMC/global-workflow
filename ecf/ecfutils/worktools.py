@@ -393,7 +393,7 @@ def remake_ecflow_files_for_cycles(
         surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
 
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     first_cycle=max(suite.Clock.start,first_cycle)
@@ -417,7 +417,7 @@ If you want to update the suite (cycle) definitions, or add suites
 
 def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
         create_new_ecflow_workflow(suite,surrounding_cycles)
     if not ECF_HOME:
@@ -440,7 +440,7 @@ def add_cycles_to_running_ecflow_workflow_at(
 def make_rocoto_xml_for(yamldir):
     conf,suite=read_yaml_suite(yamldir)
     assert(suite.viewed._path)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
 
 def setup_case_usage(why=None):
