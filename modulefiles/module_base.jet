@@ -13,3 +13,6 @@ module load intel/14.0.3
 module load szip hdf5 netcdf4
 module load  mvapich2/1.8
 module load hsms
+
+module use /lfs3/projects/hwrf-vd/soft/modulefiles/
+module load prod_util
