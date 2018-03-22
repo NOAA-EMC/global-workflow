@@ -75,8 +75,3 @@ platform: !Platform
   EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
   NOSCRUB_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
   SAVE_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/save"
-
-  # Some special magic to cause jobs to do nothing on Jet:
-  rocoto_load_modules_extra: >-
-    echo "FV3 GFS scripts do not work on Jet yet." ;
-    exit 0 ;
