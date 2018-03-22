@@ -156,3 +156,7 @@ exclusive_task_template: &exclusive_task_template
   accounting: *exclusive_accounting
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: exclusive
+
+forecast_task_template: &forecast_task_template
+  <<: *exclusive_task_template
+  task_type: forecast

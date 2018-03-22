@@ -30,7 +30,7 @@ suite: !Cycle
 
     forecast: !Family
       jgfs_forecast_high: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         resources: !calc ( doc.resources.run_gfsfcst )
         J_JOB: JGLOBAL_FORECAST
 
