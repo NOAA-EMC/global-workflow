@@ -1,20 +1,18 @@
 case:
   fv3_settings:
-    CASE: C192
+    CASE: C384
     LEVS: 65
 
   gfs_output_settings:
-    FHMAX_GFS: 168
+    FHMAX_GFS: 240
     FHOUT_GFS: 6
-    FHMAX_HF_GFS: 48
-    FHOUT_HF_GFS: 3
 
   places:
     workflow_file: workflow/public_release_v1.yaml
     ICSDIR: !calc doc.platform.public_release_ics
 
   settings: 
-    SDATE: 2017-08-17t12:00:00
+    SDATE: 2018-02-28t00:00:00
     EDATE: !calc SDATE
     IC_CDUMP: gfs
     run_gsi: No
