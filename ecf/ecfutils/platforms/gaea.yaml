@@ -14,7 +14,7 @@ platform: !Platform
 
   config_base_extras: |
     export POSTGRB2TBL=$PARMgfs/g2tmpl-1.5.0/params_grib2_tbl_new
-    export WGRIB2=$EXECgfs/wgrib2
+    export WGRIB2="aprun -n 1 -j 1 -N 1 -d 1 -cc depth $EXECgfs/wgrib2"
 
   shared_accounting_ref:
     queue: !calc metasched.varref('QUEUESHARED')
