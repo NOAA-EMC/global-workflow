@@ -16,7 +16,7 @@ case:
     FHOUT_HF_GFS: 3
 
   places:
-    workflow_file: workflow/free_forecast_gfs.yaml
+    workflow_file: workflow/public_release_v1.yaml
 
   settings: 
     SDATE: 2017-08-17t12:00:00
