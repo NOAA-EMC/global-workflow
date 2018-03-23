@@ -1,4 +1,51 @@
 fv3_settings_template: !Template &fv3_settings_template
+  imp_physics:
+    type: int
+    allowed: [ 99, 8, 6, 10, 11 ]
+    default: 11
+    description: "Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL"
+    if_present: !FirstTrue
+      - when: !calc ( imp_physics==99 )
+        do: !Template
+          ncld: { type: int, override: 1 }
+          nwat: { type: int, override: 2 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+      - when: !calc ( imp_physics == 6 )
+        do: !Template
+          ncld: { type: int, override: 2 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+      - when: !calc ( imp_physics == 8 )
+        do: !Template
+          ncld: { type: int, override: 2 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+      - when: !calc ( imp_physics == 11 )
+        do: !Template
+          ncld: { type: int, override: 5 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+          dnats: { type: int, override: 1 }
+          cal_pre: { type: bool, default: false }
+          do_sat_adj: { type: bool, default: true }
+          random_clds: { type: bool, default: false }
+          cnvcld: { type: bool, default: false }
+          hord_mt_nh_nonmono: { type: int, default: 6 }
+          hord_xx_nh_nonmono: { type: int, default: 6 }
+          vtdm4_nh_nonmono:   { type: float, default: 0.02 }
+          nord: { type: int, default: 2 }
+          dddmp: { type: float, default: 0.1 }
+          d4_bg: { type: float, default: 0.12 }
+      - otherwise: !error "Unknown imp_physics value: {imp_physics}"
+
   new_o3force:
     type: bool
     default: yes
@@ -82,53 +129,6 @@ fv3_settings_template: !Template &fv3_settings_template
     stage: [ execution ]
     default: -1
     description: "-1: control, 0: ensemble mean, >0: ensemble member $MEMBER"
-
-  imp_physics:
-    type: int
-    allowed: [ 99, 8, 6, 10, 11 ]
-    default: 11
-    description: "Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL"
-    if_present: !FirstTrue
-      - when: !calc ( imp_physics==99 )
-        do: !Template
-          ncld: { type: int, override: 1 }
-          nwat: { type: int, override: 2 }
-          FIELD_TABLE:
-            type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
-      - when: !calc ( imp_physics == 6 )
-        do: !Template
-          ncld: { type: int, override: 2 }
-          nwat: { type: int, override: 6 }
-          FIELD_TABLE:
-            type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
-      - when: !calc ( imp_physics == 8 )
-        do: !Template
-          ncld: { type: int, override: 2 }
-          nwat: { type: int, override: 6 }
-          FIELD_TABLE:
-            type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
-      - when: !calc ( imp_physics == 11 )
-        do: !Template
-          ncld: { type: int, override: 5 }
-          nwat: { type: int, override: 6 }
-          FIELD_TABLE:
-            type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
-          dnats: { type: int, override: 1 }
-          cal_pre: { type: bool, default: false }
-          do_sat_adj: { type: bool, default: true }
-          random_clds: { type: bool, default: false }
-          cnvcld: { type: bool, default: false }
-          hord_mt_nh_nonmono: { type: int, default: 6 }
-          hord_xx_nh_nonmono: { type: int, default: 6 }
-          vtdm4_nh_nonmono:   { type: float, default: 0.02 }
-          nord: { type: int, default: 2 }
-          dddmp: { type: float, default: 0.1 }
-          d4_bg: { type: float, default: 0.12 }
-      - otherwise: !error "Unknown imp_physics value: {imp_physics}"
 
   d4_bg: { type: float, default: 0.15 }
   dddmp: { type: float, default: 0.2 }
