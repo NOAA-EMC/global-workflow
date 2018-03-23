@@ -1,6 +1,6 @@
 case:
   fv3_settings:
-    CASE: C384
+    CASE: C192
     LEVS: 65
 
   gfs_output_settings:
