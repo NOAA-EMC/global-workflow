@@ -93,94 +93,62 @@ fi
 
 
 ###############################################################
-# Archive what is needed to restart the experiment
+# Archive data to HPSS
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
+SAVEIC="NO"
+firstday=$($NDATE +24 $SDATE)
+weekday=$(date -d "$PDY" +%u)
+if [ $weekday -eq 7 -o $CDATE -eq $firstday ]; then SAVEIC="YES" ; fi
 
 DATA="$RUNDIR/$CDATE/$CDUMP/arch"
 [[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
-mkdir -p $DATA/${CDUMP}restart
-cd $DATA/${CDUMP}restart
+sh +x $HOMEgfs/ush/hpssarch_gen.sh $CDUMP
+cd $ROTDIR
 
-restart_dir="$COMIN/RESTART"
-if [ -d $restart_dir ]; then
-    mkdir -p RESTART
-    files=$(ls -1 $restart_dir)
-    for file in $files; do
-        $NCP $restart_dir/$file RESTART/$file
+if [ $CDUMP = "gfs" ]; then
+
+    #for targrp in gfs gfs_flux gfs_nemsio gfs_pgrb2b; do
+    for targrp in gfs gfs_flux gfs_nemsioa gfs_nemsiob; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
     done
 fi
 
-increment_file="$COMIN/${APREFIX}atminc.nc"
-[[ -f $increment_file ]] && $NCP $increment_file .
 
-dtfanl_file="$COMIN/${APREFIX}dtfanl.nc"
-[[ -f $dtfanl_file ]] && $NCP $dtfanl_file .
+if [ $CDUMP = "gdas" ]; then
 
-files="abias abias_pc abias_air radstat"
-for file in $files; do
-    $NCP $COMIN/${APREFIX}$file .
-done
+    htar -P -cvf $ATARDIR/$CDATE/gdas.tar `cat $DATA/gdas.txt`
+    status=$?
+    if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+        echo "HTAR $CDATE gdas.tar failed"
+        exit $status
+    fi
 
-cd $DATA/${CDUMP}restart
-
-htar -P -cvf $ATARDIR/$CDATE/${CDUMP}restart.tar .
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HTAR $CDATE ${CDUMP}restart.tar failed"
-    exit $status
+    if [ $SAVEIC = "YES" -a $cyc -eq $ARCHINC_CYC ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $DATA/gdas_restarta.txt`
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HTAR $CDATE gdas_restarta.tar failed"
+            exit $status
+        fi
+    fi
+    if [ $SAVEIC = "YES" -a $cyc -eq $ARCHICS_CYC ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $DATA/gdas_restartb.txt`
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "HTAR $CDATE gdas_restartb.tar failed"
+            exit $status
+        fi
+    fi
 fi
-
-hsi ls -l $ATARDIR/$CDATE/${CDUMP}restart.tar
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HSI $CDATE ${CDUMP}restart.tar failed"
-    exit $status
-fi
-
-cd $DATA
-rm -rf ${CDUMP}restart
-
-#----------------------------------------------
-# Archive extra information that is good to have
-mkdir -p $DATA/$CDUMP
-cd $DATA/$CDUMP
-
-files="gsistat cnvstat prepbufr prepbufr.acft_profiles"
-for file in $files; do
-    $NCP $COMIN/${APREFIX}$file .
-done
-[[ $DONST = "YES" ]] && $NCP $COMIN/${APREFIX}nsstbufr .
-
-$NCP $COMIN/${APREFIX}sfcanl${ASUFFIX} .
-$NCP $COMIN/${APREFIX}atmanl${ASUFFIX} .
-$NCP $COMIN/${APREFIX}pgrb2.*.anl* .
-$NCP $COMIN/${APREFIX}pgrb2.*.f* .
-
-cd $DATA
-
-htar -P -cvf $ATARDIR/$CDATE/${CDUMP}.tar $CDUMP
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HTAR $CDATE ${CDUMP}restart.tar failed"
-    exit $status
-fi
-
-hsi ls -l $ATARDIR/$CDATE/${CDUMP}.tar
-status=$?
-if [ $status -ne 0 ]; then
-    echo "HSI $CDATE ${CDUMP}.tar failed"
-    exit $status
-fi
-
-rm -rf $CDUMP
 
 ###############################################################
 fi  ##end of HPSS archive
 ###############################################################
+
 
 
 ###############################################################

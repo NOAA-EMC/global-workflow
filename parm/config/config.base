@@ -117,11 +117,11 @@ if [ $machine = "THEIA" ]; then
 fi
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_DOWNSTREAM="NO"
+export DO_BUFRSND="NO"
+export DO_GEMPAK="NO"
+export DO_AWIPS="NO"
 
-# Set REALTIME flag.
-#   Use NO for retrospective parallel
-#   Use YES for real-time parallel
+# NO for retrospective parallel; YES for real-time parallel
 export REALTIME="NO"
 
 
@@ -246,5 +246,9 @@ export lprecip_accu=".true."
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+
+#--save data to HPSS archive; save initial conditions from all cycles
+export HPSSARCH="YES"
+
 
 echo "END: config.base"

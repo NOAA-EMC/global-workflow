@@ -10,7 +10,6 @@ echo "BEGIN: config.eupd"
 
 export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
 export npe_enkf=$npe_eupd
-export nth_enkf=4
 
 export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
 
