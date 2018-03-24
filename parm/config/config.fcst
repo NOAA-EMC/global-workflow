@@ -120,7 +120,6 @@ fi
 export REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
 export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
 export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
-export nth_remap=2
 
 # Global latlon NetCDF to nemsio utility parameters
 export NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"

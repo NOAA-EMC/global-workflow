@@ -18,11 +18,7 @@ if [[ "$CDUMP" = "gfs" ]] ; then
 fi
 
 export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
-
 export npe_gsi=$npe_anal
-export nth_gsi=4
-
-export nth_cycle=12
 
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then

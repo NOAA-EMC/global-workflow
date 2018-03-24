@@ -9,6 +9,5 @@ echo "BEGIN: config.epos"
 . $EXPDIR/config.resources epos
 
 export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
-export nth_epos=2
 
 echo "END: config.epos"

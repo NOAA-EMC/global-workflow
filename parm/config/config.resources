@@ -107,7 +107,7 @@ elif [ $step = "efcs" ]; then
 
     export wtime_efcs="01:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_node_efcs=${npe_node_fcst:-12}
+    export npe_node_efcs=12
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_efcs="254M"
     fi

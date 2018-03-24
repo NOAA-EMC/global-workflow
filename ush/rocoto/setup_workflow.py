@@ -29,6 +29,7 @@ import sys
 import numpy as np
 from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from collections import OrderedDict
 import rocoto
 import workflow_utils as wfu
 
@@ -207,14 +208,20 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     machine = base.get('machine', 'WCOSS_C')
-    do_downstream = base.get('DO_DOWNSTREAM', 'NO').upper()
+    do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
+    do_gempak = base.get('DO_GEMPAK', 'NO').upper()
+    do_awips = base.get('DO_AWIPS', 'NO').upper()
 
     tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
 
-    if cdump in ['gfs'] and do_downstream in ['Y', 'YES']:
-        tasks += ['postsnd', 'awips', 'gempak']
+    if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
+        tasks += ['postsnd']
+    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
+        tasks += ['gempak']
+    if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
+        tasks += ['awips']
 
-    dict_resources = {}
+    dict_resources = OrderedDict()
 
     for task in tasks:
 
@@ -245,7 +252,7 @@ def get_hyb_resources(dict_configs, cdump='gdas'):
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
     cdump_enkf = base.get('CDUMP_ENKF', 'gdas')
 
-    dict_resources = {}
+    dict_resources = OrderedDict()
 
     tasks = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
@@ -292,9 +299,11 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     gfs_cyc = base.get('gfs_cyc', 0)
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     cdump_enkf = base.get('CDUMP_ENKF', 'gdas')
-    do_downstream = base.get('DO_DOWNSTREAM', 'NO').upper()
+    do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
+    do_gempak = base.get('DO_GEMPAK', 'NO').upper()
+    do_awips = base.get('DO_AWIPS', 'NO').upper()
 
-    dict_tasks = {}
+    dict_tasks = OrderedDict()
 
     # prep
     deps = []
@@ -375,8 +384,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%svrfy' % cdump] = task
 
-    if cdump in ['gfs'] and do_downstream in ['Y', 'YES']:
 
+    if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         #postsnd
         deps = []
         dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
@@ -386,6 +395,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
         dict_tasks['%spostsnd' % cdump] = task
 
+    if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         # awips
         deps = []
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
@@ -395,6 +405,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
         dict_tasks['%sawips' % cdump] = task
 
+    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
         # gempak
         deps = []
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
@@ -461,7 +472,7 @@ def get_hyb_tasks(dict_configs, cdump='gdas', cycledef='enkf'):
 
     ensgrp = rocoto.create_envar(name='ENSGRP', value='#grp#')
 
-    dict_tasks = {}
+    dict_tasks = OrderedDict()
 
     # eobs
     deps = []

@@ -12,7 +12,6 @@ echo "BEGIN: config.efcs"
 . $EXPDIR/config.resources efcs
 
 export npe_fv3=$npe_efcs
-export nth_fv3=1
 
 if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)

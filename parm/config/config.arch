@@ -8,11 +8,8 @@ echo "BEGIN: config.arch"
 # Get task specific resources
 . $EXPDIR/config.resources arch
 
-#--save data to HPSS archive
-export HPSSARCH="YES"
-
 #--online archive of nemsio files for fit2obs verification
-export FITSARC="NO"
+export FITSARC="YES"
 export FHMAX_FITS=132
 if [ $FHMAX_FITS -gt $FHMAX_GFS ]; then export FHMAX_FITS=$FHMAX_GFS; fi
 
@@ -20,5 +17,9 @@ if [ $FHMAX_FITS -gt $FHMAX_GFS ]; then export FHMAX_FITS=$FHMAX_GFS; fi
 export RMOLDSTD=144
 export RMOLDEND=24
 
+#--archive analysis increments from ARCHINC_CYC and ./RESTART from ARCHICS_CYC to warm start from gdas fcst step.
+#--ARCHINC_CYC must be 18, 12, 0r 6, and be the same as EARCINC_CYC in config.earc
+export ARCHINC_CYC="18"
+export ARCHICS_CYC="$((ARCHINC_CYC-6))"
 
 echo "END: config.arch"
