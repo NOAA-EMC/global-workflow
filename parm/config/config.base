@@ -81,7 +81,7 @@ if [ $machine = "THEIA" ]; then
     export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
 
     # Base directories for various builds
-    export BASE_GIT="/scratch4/NCEPDEV/glboal/save/glopara/git"
+    export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
