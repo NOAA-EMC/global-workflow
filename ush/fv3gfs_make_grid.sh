@@ -54,7 +54,11 @@ elif  [ $nargv -eq 12 ]; then
   export jend_nest=${10}
   export halo=${11}
   export script_dir=${12}
-  export ntiles=7
+  if  [ $gtype = regional ]; then
+   export ntiles=1
+  else
+   export ntiles=7
+  fi
   export executable=$exec_dir/make_hgrid
   if [ ! -s $executable ]; then
     echo "executable does not exist"
@@ -84,6 +88,11 @@ elif [ $ntiles -eq 7 ]; then
   $APRUN $executable --num_tiles $ntiles --dir $outdir --mosaic C${res}_mosaic --tile_file C${res}_grid.tile1.nc,C${res}_grid.tile2.nc,C${res}_grid.tile3.nc,C${res}_grid.tile4.nc,C${res}_grid.tile5.nc,C${res}_grid.tile6.nc,C${res}_grid.tile7.nc    
 
   $APRUN $executable --num_tiles 6 --dir $outdir --mosaic C${res}_coarse_mosaic --tile_file C${res}_grid.tile1.nc,C${res}_grid.tile2.nc,C${res}_grid.tile3.nc,C${res}_grid.tile4.nc,C${res}_grid.tile5.nc,C${res}_grid.tile6.nc  $executable --num_tiles 1 --dir $outdir --mosaic C${res}_nested_mosaic --tile_file C${res}_grid.tile7.nc 
+#
+#special case for the regional grid. For now we have only 1 tile and it is tile 7
+#
+elif [ $ntiles -eq 1 ];then
+  $APRUN $executable --num_tiles $ntiles --dir $outdir --mosaic C${res}_mosaic --tile_file C${res}_grid.tile7.nc
 fi
 
 exit
