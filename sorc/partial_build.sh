@@ -13,7 +13,8 @@
                        "Build_gfs_wintemv" "Build_gfs_cnvgrib21_gfs" \
                        "Build_gfs_bufrsnd" "Build_emcsfc" \
                        "Build_fv3nc2nemsio" "Build_regrid_nemsio" \
-                       "Build_prod_util" "Build_grib_util")
+                       "Build_prod_util" \
+                       "Build_grib_util")
 
 #
 # function parse_cfg: read config file and retrieve the values

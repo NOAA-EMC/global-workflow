@@ -1,11 +1,15 @@
 #!/bin/ksh
 set -ax
 
-if [ $# -ne 9 ]; then
-   echo "Usage: $0 resolution grid_dir orog_dir out_dir cd4 peak_fac max_slope n_del2_weak script_dir "
+if [ $# -ne 10 ]; then
+   echo "Usage: $0 resolution grid_dir orog_dir out_dir cd4 peak_fac max_slope n_del2_weak script_dir gtype "
    exit 1
 fi
-
+if [ $gtype = stretch ] || [ $gtype = regional ]; then
+stretch=$stetch_fac
+else
+stretch=1.0
+fi
 export res=$1 
 export griddir=$2
 export orodir=$3
@@ -28,6 +32,11 @@ cp $griddir/C${res}_grid.tile?.nc .
 cp $orodir/${topo_file}.tile?.nc .
 cp $executable .
 
+regional=.false.
+if [ $gtype = regional ]; then
+  regional=.true.
+fi
+
 cat > input.nml <<EOF
 &filter_topo_nml
   grid_file = $mosaic_grid
@@ -37,6 +46,9 @@ cat > input.nml <<EOF
   peak_fac =  $6              ! 1.0
   max_slope = $7              ! 0.12
   n_del2_weak = $8            ! 16
+  n_del2_weak = $8            ! 16
+  regional = $regional 
+  stretch_fac = $stretch
   /
 EOF
 

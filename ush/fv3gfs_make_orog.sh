@@ -109,7 +109,7 @@ cd $workdir
   echo $OUTGRID >> INPS
   echo $orogfile >> INPS
   cat INPS
-  $APRUN $executable < INPS
+  time $executable < INPS
 
   if [ $? -ne 0 ]; then
     echo "ERROR in running $executable "

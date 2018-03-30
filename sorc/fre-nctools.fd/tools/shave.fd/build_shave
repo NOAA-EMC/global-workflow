@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -x
+
+case $1 in
+  "cray" )
+     FCMP=ftn
+     FFLAGS="-O0" ;;
+  "wcoss" )
+     FCMP=ifort
+     FFLAGS="-O0 ${NETCDF_FFLAGS} ${NETCDF_LDFLAGS_F}" ;;
+  "theia" )
+     FCMP=ifort
+     FFLAGS="-O0 -I$NETCDF/include -L$NETCDF/lib -lnetcdff -lnetcdf" ;;
+  *)
+     echo "SHAVE UTILITY BUILD NOT TESTED ON MACHINE $1"
+     exit 1 ;;
+esac
+
+EXEC=../../../../exec/shave.x
+rm -f $EXEC
+$FCMP $FFLAGS -o $EXEC shave_nc.F90
+rc=$?
+
+if ((rc != 0)); then
+  echo "ERROR BUILDING SHAVE UTILITY"
+  exit $rc
+else
+  exit 0
+fi
