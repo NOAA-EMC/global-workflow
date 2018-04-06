@@ -10,10 +10,4 @@ echo "BEGIN: config.earc"
 
 export NMEM_EARCGRP=10
 
-#--archive analysis increments etc from EARCINC_CYC and ./RESTART from EARCICS_CYC to warm start from enkf efmn step.
-#--EARCINC_CYC must be 18, 12, 0r 6, and be the same as ARCHINC_CYC in config.arch
-export EARCINC_CYC="18"
-export EARCICS_CYC="$((EARCINC_CYC-6))"
-
-
 echo "END: config.earc"

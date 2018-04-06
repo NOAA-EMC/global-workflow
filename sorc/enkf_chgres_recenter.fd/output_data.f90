@@ -25,6 +25,8 @@
  real, allocatable, public         :: icmr_output(:,:)
  real, allocatable, public         :: snmr_output(:,:)
  real, allocatable, public         :: grle_output(:,:)
+ real, allocatable, public         :: rlat_output(:)
+ real, allocatable, public         :: rlon_output(:)
 
  public                            :: set_output_grid
  public                            :: write_output_data
@@ -36,6 +38,7 @@
  integer(nemsio_intkind), allocatable :: reclev(:)
 
  real(nemsio_realkind), allocatable :: vcoord_header(:,:,:)
+ real(nemsio_realkind), allocatable :: lat(:), lon(:)
 
  contains
 
@@ -149,18 +152,19 @@
  print*
  print*,'OPEN OUTPUT FILE: ',trim(output_file)
  call nemsio_open(gfile, output_file, gaction, iret=iret, gdatatype="bin4", &
-                  nmeta=8, modelname="GFS", nrec=nrec, &
+                  nmeta=8, modelname="FV3GFS", nrec=nrec, &
                   idate=idate, dimx=i_output, &
                   dimy=j_output, dimz=lev, ntrac=ntrac, & 
                   ncldt=ncldt, idvc=idvc, idsl=idsl, idvm=idvm, &
                   idrt=4, recname=recname, reclevtyp=reclevtyp, &
-                  reclev=reclev,vcoord=vcoord_header)
+                  reclev=reclev,vcoord=vcoord_header, &
+                  lat=lat, lon=lon)
  if (iret/=0) then
    print*,"FATAL ERROR OPENING FILE. IRET IS: ", iret
    call errexit(9)
  endif
 
- deallocate(recname, reclevtyp, reclev, vcoord_header)
+ deallocate(lon, lat, recname, reclevtyp, reclev, vcoord_header)
 
  allocate(dummy(i_output*j_output))
 
@@ -305,6 +309,7 @@
 !-------------------------------------------------------------------
 
  use input_data
+ use setup
 
  implicit none
 
@@ -366,6 +371,13 @@
  vcoord_header = 0.0
  vcoord_header(:,1,1) = vcoord(:,1)
  vcoord_header(:,2,1) = vcoord(:,2)
+
+ allocate(lat(ij_output), lon(ij_output))
+
+ lat = rlat_output
+ lon = rlon_output
+
+ deallocate(rlat_output, rlon_output)
 
  end subroutine header_set
 

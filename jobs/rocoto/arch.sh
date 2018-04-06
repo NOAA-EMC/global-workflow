@@ -27,6 +27,10 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+# ICS are restarts and always lag INC by $assim_freq hours
+ARCHINC_CYC=$ARCH_CYC
+ARCHICS_CYC=$($NDATE -$assim_freq $ARCH_CYC)
+
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
@@ -65,7 +69,7 @@ fi
 
 if [ -s avn.t${cyc}z.cyclone.trackatcfunix ]; then
     PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
-    cat avn.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE          
+    cat avn.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
 fi
 if [ $CDUMP = "gfs" ]; then
     $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
@@ -106,7 +110,13 @@ DATA="$RUNDIR/$CDATE/$CDUMP/arch"
 mkdir -p $DATA
 cd $DATA
 
-sh +x $HOMEgfs/ush/hpssarch_gen.sh $CDUMP
+$HOMEgfs/ush/hpssarch_gen.sh $CDUMP
+status=$?
+if [ $status -ne 0  ]; then
+    echo "$HOMEgfs/ush/hpssarch_gen.sh $CDUMP failed, ABORT!"
+    exit $status
+fi
+
 cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
