@@ -8,6 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_ENKF_INNOVATE_OBS
+$HOMEgfs/jobs/JGLOBAL_ENKF_INNOVATE_OBS
 status=$?
 exit $status

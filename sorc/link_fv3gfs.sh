@@ -52,13 +52,13 @@ cd ${pwd}/../ush                ||exit 8
 
 #--add GSI/EnKF file
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS    .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_INNOVATE_OBS  .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE        .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER      .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST          .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST          .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_UPDATE        .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER        .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
     $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .
