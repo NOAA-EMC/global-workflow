@@ -27,12 +27,24 @@ export LATB=${LATB:-1536}
 export LONB=${LONB:-3072}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
-export FINT=1
+export NEND1=120   ##first period length with time interval = NINT1
+export NINT1=3     ##first period time interval
+##export NINT1=1     ##first period time interval
+export NINT3=3     ##second period time interval
 export NZERO=6
 export INCREMENT=12
 export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
+
+if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
+  then
+    export NINT1=${FHOUT_HF_GFS:-1}
+    export NEND1=${FHMAX_HF_GFS:-120}
+  else
+    export NINT3=${FHOUT_GFS:-3}
+fi
+
 ##export SIGLEVEL=${SIGLEVEL:-$FIXgfs/global_siglevel.l${LEVS}.txt}
 #export SIGLEVEL=/gpfs/hps/nco/ops/nwprod/global_shared.v14.0.1/fix/fix_am/global_siglevel.l64.txt
 rm -f -r ${COMOUT}/bufr.${cycle}
@@ -48,6 +60,7 @@ export FSTART=$STARTHOUR
 #
 while [ $FSTART -lt $ENDHOUR ]
 do
+export FINT=$NINT1
    # Define the end hour for the input
    export FEND=`expr $FSTART + $INCREMENT` 
    if test $FEND -lt 100; then FEND=0$FEND; fi 
@@ -80,9 +93,9 @@ do
       fi
    done
 
-## 1-hourly output before 120, 3-hourly output after
-   if [ $FEND -gt 120 ]; then
-     export FINT=3
+## 1-hourly output before $NEND1, 3-hourly output after
+   if [ $FEND -gt $NEND1 ]; then
+     export FINT=$NINT3
    fi
    $USHbufrsnd/gfs_bufr.sh
   

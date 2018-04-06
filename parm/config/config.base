@@ -241,9 +241,6 @@ export DONST="YES"
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
 
-# Precipitation accumulation, true--no bucket, false--bucket=FHZER
-export lprecip_accu=".true."
-
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 

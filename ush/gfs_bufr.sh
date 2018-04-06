@@ -31,7 +31,9 @@ export pgm=gfs_flux
 cat << EOF > gfsflxparm
  &NAMKEN
   nout=$FINT,lonf=$LONB,latg=$LATB,nsfc=80,
-  nstart=$FSTART,nend=$FEND,nint=$FINT,nzero=$NZERO,f00=$f00flag,
+  nstart=$FSTART,nend=$FEND,nint=$FINT,
+  nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
+  nzero=$NZERO,f00=$f00flag,
 /
 EOF
 hh=$FSTART
@@ -58,7 +60,9 @@ cat << EOF > gfsparm
  &NAMMET
   iromb=0,maxwv=$JCAP,levs=$LEVS,makebufr=$bufrflag,
   dird="$COMOUT/bufr.${cycle}/bufr",
-  nstart=$FSTART,nend=$FEND,nint=$FINT,nsfc=80,f00=$f00flag,
+  nstart=$FSTART,nend=$FEND,nint=$FINT,
+  nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
+  nsfc=80,f00=$f00flag,
 /
 EOF
 
