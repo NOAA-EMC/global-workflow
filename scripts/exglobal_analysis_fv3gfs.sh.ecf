@@ -86,6 +86,11 @@ QUILTING=${QUILTING:-".true."}
 imp_physics=${imp_physics:-99}
 lupp=${lupp:-".true."}
 
+# Diagnostic files options
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+netcdf_diag=${netcdf_diag:-".false."}
+binary_diag=${binary_diag:-".true."}
+
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
@@ -674,6 +679,8 @@ cat > gsiparm.anl << EOF
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
   cwoption=3,imp_physics=$imp_physics,lupp=$lupp,
+  netcdf_diag=$netcdf_diag,binary_diag=$binary_diag,
+  lobsdiag_forenkf=$lobsdiag_forenkf,
   $SETUP
 /
 &GRIDOPTS

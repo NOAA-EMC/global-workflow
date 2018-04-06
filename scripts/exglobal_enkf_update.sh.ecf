@@ -71,6 +71,8 @@
 #                   defaults to ${FIXgsi}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
 #                   defaults to ${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt
+#     ANAVINFO      Input control vector information file
+#                   defaults to ${FIXgsi}/global_anavinfo.l64.txt
 #     TCVITL        Input tcvitals file
 #                   defaults to ${COMIN}/${PREINP}syndata.tcvitals.tm00
 #     INISCRIPT     Preprocessing script
@@ -139,13 +141,13 @@
 #                  $RTMEMIS
 #                  $RTMAERO
 #                  $RTMCLDS
-#                  $ANAVINFO
 #                  $CONVINFO
 #                  $OZINFO
 #                  $PCPINFO
 #                  $AEROINFO
 #                  $SCANINFO
 #                  $HYBENSINFO
+#                  $ANAVINFO
 #
 #     input data : $SFCGES
 #                  $SIGGES
@@ -239,6 +241,7 @@ export CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
 export OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
+export ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS}.txt}
 export SIGGESENS=${SIGGESENS:-${COMIN}/sigf06_ens}
 if [ $fso_cycling = .true. ]; then
   export OSENSE=${OSENSE:-${COMOUT}/osense_}
@@ -260,7 +263,6 @@ export GDATE=${GDATE:-($NDATE -06 $CDATE)}
 export NANALS=${NANALS:-80}
 export SMOOTHINF=${SMOOTHINF:-24}
 export NTRAC=${NTRAC:-3}
-export NVARS=${NVARS:-5}
 export NAM_ENKF=${NAM_ENKF:-""}
 export SATOBS_ENKF=${SATOBS_ENKF:-""}
 export OZOBS_ENKF=${OZOBS_ENKF:-""}
@@ -349,6 +351,7 @@ then
    $NCP $CONVINFO convinfo
    $NCP $OZINFO   ozinfo
    $NCP $HYBENSINFO hybens_info
+   $NCP $ANAVINFO anavinfo
 
    # Ensemble observational and guess data
    if [[ $USE_CFP = YES ]]; then
@@ -395,6 +398,7 @@ else
    ln -fs $CONVINFO convinfo
    ln -fs $OZINFO   ozinfo
    ln -fs $HYBENSINFO hybens_info
+   ln -fs $ANAVINFO anavinfo
 
    # Ensemble observational and guess data
    if [[ $USE_CFP = YES ]]; then
@@ -471,7 +475,7 @@ cat <<EOF > enkf.nml
   obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
   saterrfact=1.0,numiter=1,
   sprd_tol=1.e30,paoverpb_thresh=0.98,
-  nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,nvars=$NVARS,
+  nlons=$LONA,nlats=$LATA,nlevs=$LEVS,nanals=$NMEM_ENKF,
   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
   reducedgrid=.true.,readin_localization=.true.,
   use_gfs_nemsio=${use_gfs_nemsio},

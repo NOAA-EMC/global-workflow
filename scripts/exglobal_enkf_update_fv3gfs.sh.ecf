@@ -67,12 +67,14 @@ ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
 NMEM_ENKF=${NMEM_ENKF:-80}
-NVARS_ENKF=${NVARS_ENKF:-5}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
 imp_physics=${imp_physics:-"99"}
 lupp=${lupp:-".true."}
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false"}
+write_spread_diag=${write_spread_diag:-".false"}
+netcdf_diag=${netcdf_diag:-".false."}
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
@@ -88,6 +90,7 @@ CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
 OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS_ENKF}.txt}
+ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
 
 ENKF_SUFFIX="s"
 [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
@@ -99,7 +102,7 @@ cd $DATA || exit 99
 
 ################################################################################
 # Clean up the run directory
-rm convinfo satinfo ozinfo hybens_info
+rm convinfo satinfo ozinfo hybens_info anavinfo
 rm satbias_angle satbias_in
 rm enkf.nml
 rm sanl*
@@ -112,6 +115,7 @@ $NLN $SCANINFO   scaninfo
 $NLN $CONVINFO   convinfo
 $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
+$NLN $ANAVINFO   anavinfo
 
 # Bias correction coefficients based on the ensemble mean
 $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
@@ -191,11 +195,14 @@ cat > enkf.nml << EOFnml
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
    saterrfact=1.0,numiter=1,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
-   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,nvars=$NVARS_ENKF,
+   nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=.true.,readin_localization=.true.,
    use_gfs_nemsio=.true.,imp_physics=$imp_physics,lupp=$lupp,
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
+   lobsdiag_forenkf=$lobsdiag_forenkf,
+   write_spread_diag=$write_spread_diag,
+   netcdf_diag=$netcdf_diag,
    $NAM_ENKF
 /
 &satobs_enkf
