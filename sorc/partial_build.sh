@@ -5,7 +5,7 @@
                        "Build_gsi" "Build_ncep_post" \
                        "Build_gdas" "Build_nems_util" \
                        "Build_chgres" "Build_cycle" \
-                       "Build_gaussian_sfcanl" \
+                       "Build_sfcanl_nsttfchg" \
                        "Build_orog" "Build_tropcy" \
                        "Build_nctools" "Build_enkf_chgres_recenter" \
                        "Build_radmon" "Build_oznmon" \

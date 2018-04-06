@@ -23,7 +23,9 @@
 
 "gfs_phys",    "ALBDO_ave",     "albdo_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "cnvprcp_ave",   "cprat_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "cnvprcpb_ave",  "cpratb_ave",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "totprcp_ave",   "prate_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "totprcpb_ave",  "prateb_ave",    "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "DLWRF",         "dlwrf_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "DLWRFI",        "dlwrf",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "ULWRF",         "ulwrf_ave",     "fv3_history2d",  "all",  .false.,  "none",  2

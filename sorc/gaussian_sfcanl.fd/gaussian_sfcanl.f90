@@ -439,7 +439,7 @@
  integer(nemsio_intkind), parameter :: nmetaaryi=1
  integer(nemsio_intkind), parameter :: nmetavari=4
  integer(nemsio_intkind), parameter :: nmetavarr=1
- integer(nemsio_intkind), parameter :: nmetavarc=3
+ integer(nemsio_intkind), parameter :: nmetavarc=2
 
  character(nemsio_charkind)         :: recname_all(nrec_all)
  character(nemsio_charkind)         :: reclevtyp_all(nrec_all)
@@ -522,9 +522,9 @@
 
  data varrval /225.0/
 
- data varcname /"lprecip_accu", "y-direction", "z-direction"/
+ data varcname /"y-direction", "z-direction"/
 
- data varcval /"no", "north2south", "bottom2top"/
+ data varcval /"north2south", "bottom2top"/
 
  version  = 200809
 
