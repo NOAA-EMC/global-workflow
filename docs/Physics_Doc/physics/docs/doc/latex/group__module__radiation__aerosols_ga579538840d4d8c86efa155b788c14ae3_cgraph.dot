@@ -1,0 +1,15 @@
+digraph "module_radiation_aerosols::gocart_init"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node15 [label="module_radiation_aerosols\l::gocart_init",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid"];
+  Node16 [label="optavg_grt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga8d1f5010e8cbc6abda50b8fc233ad7e9",tooltip="This subroutine computes mean aerosols optical properties over each SW/LW radiation spectral band for..."];
+  Node15 -> Node17 [color="midnightblue",fontsize="10",style="solid"];
+  Node17 [label="rd_gocart_clim",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga15bad8499ffd17d967e5788cd6721c4d",tooltip="This subroutine: "];
+  Node15 -> Node18 [color="midnightblue",fontsize="10",style="solid"];
+  Node18 [label="rd_gocart_luts",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga8b6a882f91674d1c0f7f71f297a5f92e",tooltip="This subroutine reads input gocart aerosol optical data from Mie code calculations. "];
+  Node15 -> Node19 [color="midnightblue",fontsize="10",style="solid"];
+  Node19 [label="set_aerspc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#gafb13b833ac59cf949702bdbde93d2c44",tooltip="This subroutine determines merging coefficients ctaer; setup aerosol specification. "];
+}

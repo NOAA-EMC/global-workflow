@@ -1,0 +1,12 @@
+digraph "gfs_typedefs::gfs_radtend_type"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="gfs_typedefs::gfs_radtend_type",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" sfcflw" ];
+  Node2 [label="sfcflw_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" sfcfsw" ];
+  Node3 [label="sfcfsw_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" htrsw\ncoszdg\nlwhc\nlwhd\ncoszen\nhtrlw\ntsflw\nsemis\nsfalb\nswhc\n..." ];
+  Node4 [label="real(kind=kind_phys)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

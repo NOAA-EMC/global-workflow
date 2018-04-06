@@ -1,0 +1,37 @@
+\hypertarget{namespacemodule__radlw__kgb06}{}\section{module\+\_\+radlw\+\_\+kgb06 Module Reference}
+\label{namespacemodule__radlw__kgb06}\index{module\+\_\+radlw\+\_\+kgb06@{module\+\_\+radlw\+\_\+kgb06}}
+
+
+This module sets up absorption coefficients for band 06\+: 820-\/980 cm-\/1 (low -\/ h2o; high -\/ /)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__kgb06_add7b5d0d3ea44e1e677948c33e870333}\label{namespacemodule__radlw__kgb06_add7b5d0d3ea44e1e677948c33e870333}} 
+integer, public \hyperlink{namespacemodule__radlw__kgb06_add7b5d0d3ea44e1e677948c33e870333}{msa06}
+\begin{DoxyCompactList}\small\item\em msa06=65 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga65f808aeb87457d383dd7f9366878fb9}{msf06}
+\begin{DoxyCompactList}\small\item\em msf06=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gaaf1f13cdb5c2888b416a91e8b17e41d8}{mfr06}
+\begin{DoxyCompactList}\small\item\em mfr06=4 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gaf7a377cb66fd48348789c20f5a31dec6}{mmc06}
+\begin{DoxyCompactList}\small\item\em mmc06=19 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06, \hyperlink{group__module__radlw__kgbnn_gaaf1f13cdb5c2888b416a91e8b17e41d8}{mfr06}), public \hyperlink{group__module__radlw__kgbnn_ga6a0467b666bc75f90ae58fa4f58f07f0}{forref}
+\begin{DoxyCompactList}\small\item\em the array forref contains the coefficient of the water vapor foreign-\/continuum (including the energy term). the first index refers to reference temperature (296,260,224,260) and pressure (970,475,219,3 mbar) levels. the second index runs over the g-\/channel (1 to N\+G06=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06, \hyperlink{namespacemodule__radlw__kgb06_add7b5d0d3ea44e1e677948c33e870333}{msa06}), public \hyperlink{group__module__radlw__kgbnn_ga21bd40309855c89a64b88be171bfde59}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(\+N\+G06,65) = ka(\+N\+G06,5,13) contains absorption coefs at the N\+G06=8 g-\/intervals for a range of pressure levels $>$ $\sim$100mb, temperatures, and ratios of water vapor to co2. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the second index, jp, runs from 1 to 13 and refers to the corresponding pressure level in pref (e.\+g. jp = 1 is for a pressure of 1053.\+63 mb). the third index, ig, goes from 1 to N\+G06=8, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06), public \hyperlink{group__module__radlw__kgbnn_ga1354ecbc5f07cd763847333e680c686a}{fracrefa}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p = 473.\+4280 mb, t = 259.\+83 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06, \hyperlink{group__module__radlw__kgbnn_ga65f808aeb87457d383dd7f9366878fb9}{msf06}), public \hyperlink{group__module__radlw__kgbnn_ga98901725947a4477924a47af5e67277e}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to N\+G06=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06, \hyperlink{group__module__radlw__kgbnn_gaf7a377cb66fd48348789c20f5a31dec6}{mmc06}), public \hyperlink{group__module__radlw__kgbnn_gadb5dab732383b82e89f1048ab5150c23}{ka\+\_\+mco2}
+\begin{DoxyCompactList}\small\item\em the array kao\+\_\+mxx contains the absorption coefficient for a minor species at the N\+G06=8 chosen g-\/values for a reference pressure level below 100$\sim$ mb. the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 188.\+0, jt = 2 refers to 195.\+2, etc. the second index runs over the g-\/channel (1 to N\+G06=8). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ minor gas mapping level\+:}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(ng06), public \hyperlink{group__module__radlw__kgbnn_ga8b0813723ba69b1afbe2552f6b730267}{cfc11adj}
+\begin{DoxyCompactList}\small\item\em lower -\/ co2, p = 706.\+2720 mb, t = 294.\+2 k upper -\/ cfc11, cfc12 original cfc11 is multiplied by 1.\+385 to account for the 1060-\/1107 $cm^{-1}$ band. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng06), public {\bfseries cfc12}
+\end{DoxyCompactItemize}
+\end{Indent}

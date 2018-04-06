@@ -1,3 +1,7 @@
+# This file is used to generate config.anal, which would be used to
+# run the GFS analysis.  The scripts and code for the analysis are not
+# provided in this release, so this config file is ignored.
+
 config_anal:
   filename: config.anal
   content: !expand |

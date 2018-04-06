@@ -1,0 +1,25 @@
+digraph "ipd_typedefs::ipd_data_type"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="ipd_typedefs::ipd_data_type",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" grid" ,fontname="Helvetica"];
+  Node2 [label="grid_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" coupling" ,fontname="Helvetica"];
+  Node3 [label="coupling_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" sfcprop" ,fontname="Helvetica"];
+  Node4 [label="sfcprop_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" intdiag" ,fontname="Helvetica"];
+  Node5 [label="intdiag_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cldprop" ,fontname="Helvetica"];
+  Node6 [label="cldprop_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" stateout" ,fontname="Helvetica"];
+  Node7 [label="stateout_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" tbd" ,fontname="Helvetica"];
+  Node8 [label="tbd_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" radtend" ,fontname="Helvetica"];
+  Node9 [label="radtend_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node10 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" statein" ,fontname="Helvetica"];
+  Node10 [label="statein_type",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

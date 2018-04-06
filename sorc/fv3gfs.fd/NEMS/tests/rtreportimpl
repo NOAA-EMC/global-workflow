@@ -1,0 +1,239 @@
+#! /usr/bin/env python
+
+import re, os, sys, time
+
+# Find the produtil package and load produtil.setup:
+try:
+    import produtil.setup
+except ImportError as ie:
+    altpath=os.path.join(os.path.dirname(os.path.realpath(__file__)),'produtil/ush')
+    if not os.path.isdir(altpath):
+        fail('%s is missing and produtil is not in PYTHONPATH.  Is your produtil external missing?'%(altpath,))
+    sys.path.append(altpath)
+    import produtil.setup
+
+produtil.setup.setup(send_dbn=False,ologlevel=None)
+
+import produtil.cd
+from produtil.run import exe,runstr,run,alias,ExitStatusException
+
+########################################################################
+
+# Parse arguments
+comdir=sys.argv[1]
+logdir=os.path.abspath(os.path.join(os.path.dirname(comdir),'tmp/log'))
+stattxt=sys.argv[2]
+mode=sys.argv[3]
+timestamp=None
+just_status=False
+if len(sys.argv)>4:
+    timestamp=int(sys.argv[4])
+
+if mode=='status':
+    just_status=True
+elif mode!='txt':
+    sys.stderr.write('Warning: output mode %s is not supported.  I will '
+                     'assume you meant "txt"'%(mode,))
+    
+def rtreport(line=''):
+    if not just_status:
+        print line
+
+def rtstatus(line,also_report=True):
+    if also_report or just_status:
+        print line
+
+def get_md5(md5file):
+    with open(md5file,'rt') as f:
+        line=f.readline()
+        split=line.strip().split()
+        if not split: return (None,None)
+        if len(split)<2:
+            return (split[0],None)
+        else:
+            return (split[0],split[1])
+
+if timestamp is not None:
+    rtreport('WORKFLOW STARTED AT %s (+%d)'%(
+        time.ctime(timestamp),timestamp))
+
+checkout_top=os.path.dirname(os.path.dirname(os.path.dirname(
+            os.path.realpath(__file__))))
+
+rtreport( 'Repository information:')
+rtreport()
+rtreport()
+try:
+    with produtil.cd.NamedDir(checkout_top):
+        if os.path.exists(os.path.join(checkout_top,'.svn')):
+            rtreport( 'REPO TOP:')
+            svn=alias(exe('svn'))
+            info=alias(svn['info'])
+            rtreport(runstr(info['.']))
+            status=runstr(svn['status',checkout_top])
+            for line in status.splitlines():
+                m=re.match('X\s+(.*)',line)
+                if not m: 
+                    continue
+                rtreport('EXTERNAL %s:'%(m.group(1),))
+                rtreport(runstr(info[os.path.join(checkout_top,m.group(1))]))
+        else:
+            git_info=exe(os.path.abspath(os.path.join(
+                os.path.dirname(__file__),'git_info.sh')))
+            rtreport(runstr(git_info))
+except(ValueError,KeyError,ExitStatusException,EnvironmentError) as e:
+    print 'WARNING: Could not complete subversion checks: '+str(e)
+
+itest=0
+success=True
+finished=True
+build_count=0
+tests_passed=0
+tests_failed=0
+builds_failed=0
+builds_passed=0
+with open(stattxt,'rt') as f:
+    for line in f:
+        m=re.match(r'''(?isx)
+              (?P<cycle> \d+ )
+          \s+ (?P<name>  \S+ )
+          \s+ (?P<jobid> \S+ )
+          \s+ (?P<state> \S+ )
+          \s+ (?P<exit>  \S+ )
+          \s+ (?P<tries> \S+ )
+          \s+ (?P<time>  \S+ )
+          ''',line)
+
+        if not m: continue
+
+        name=m.group('name')
+        state=m.group('state')
+        if state in [ 'DEAD', 'LOST' ]:
+            success=False
+
+        if name.find('build_')==0:
+            build_count+=1
+            if state == '-':
+                state='UNSTARTED'
+            rtreport('BUILD %s: %s'%(name[6:],state))
+            if state not in [ 'SUCCEEDED', 'DEAD', 'LOST' ]:
+                finished=False
+            if state == 'SUCCEEDED':
+                builds_passed+=1
+            elif state in ['DEAD','LOST']:
+                builds_failed+=1
+                rtstatus('BUILD %s: %s: %s/build_%s.log'%(name[6:],state,logdir,name[6:]),False)
+            continue
+
+        if name.find('test_')!=0:
+            rtreport('UNKNOWN JOB %s: %s'%(name,state))
+
+        itest+=1
+        testname=name[5:] # part of name after "test_"
+
+        if state not in [ 'SUCCEEDED', 'DEAD', 'LOST' ]:
+            rtreport('TEST #%d %s: not yet complete...'%(itest,testname))
+            finished=False
+            continue
+
+        reportfile=os.path.join(comdir,testname,'report.txt')
+        if not os.path.isfile(reportfile):
+            rtstatus('TEST #%d %s: FAIL\n  No such file: %s'%(
+                itest,testname,reportfile))
+            tests_failed+=1
+            continue
+        test_passed=False
+        md5_passed=True
+        report=list()
+        pass_fail_lines=list()
+        md5local=None
+        md5ref=None
+        with open(reportfile,'rt') as f:
+            for reportline in f:
+                m=re.match(r'''(?x)
+                     \s* md5sum: .*
+                   | \s* md5sum \s+ local=(?P<md5local>.*)
+                   | \s* md5sum \s+ reference=(?P<md5ref>.*)
+                   ''',reportline)
+                if m:
+                    if m.group('md5local'):
+                        md5local=m.group('md5local')
+                    elif m.group('md5ref'):
+                        md5ref=m.group('md5ref')
+                elif reportline.find('TEST PASSED')!=-1:
+                    test_passed=True
+                    pass_fail_lines.append('  '+reportline.strip())
+                elif reportline.find('TEST FAIL')!=-1:
+                    pass_fail_lines.append('  '+reportline.strip())
+                else:
+                    if reportline.find('missing')>=0 or reportline.find('mismatch')>=0:
+                        rtstatus(name+': '+reportline.strip(),False)
+                    report.append('  '+reportline.strip())
+
+                if md5local and md5ref:
+                    (localsum,localfile) = get_md5(md5local)
+                    (refsum,reffile) = get_md5(md5ref)
+                    md5local,md5ref=None,None
+                    if localsum != refsum:
+                        rtstatus('%s: %s changed since build'%(name,reffile),False)
+                        report.append('''  FAIL: EXECUTABLE USED DOES NOT MATCH LAST BUILD.
+    File: %s
+    Expected md5sum: %s
+    Actual md5sum: %s'''%(reffile,refsum,localsum))
+                        md5_passed=False
+                    else:
+                        report.append('''  Executable did not change during test suite:
+    File: %s
+    Expected md5sum: %s
+    Actual md5sum: %s'''%(reffile,refsum,localsum))
+
+        # The pass vs. fail judgement must include the md5sum checks:
+        test_passed=test_passed and md5_passed
+
+        # Lastly, it must also include the state information:
+        if state != 'SUCCEEDED':
+            rtreport('  FAIL: job state is '+state)
+            test_passed=False
+        success=success and test_passed
+
+        # If the job says the test passed, but the md5sum or job
+        # failed, we report the test as a failure:
+        for line in pass_fail_lines:
+            if not test_passed:
+                line=line.replace('TEST PASSED','TEST FAILED',1)
+            report.append(line)
+
+        rtreport()
+        if test_passed:
+            rtreport('TEST #%d: PASS'%itest)
+            tests_passed+=1
+        else:
+            rtreport('TEST #%d: FAIL'%itest)
+            rtstatus('%s: FAIL: %s/%s.log'%(name,logdir,name),False)
+            tests_failed+=1
+        rtreport('\n'.join(report))
+
+    now=int(time.time())
+    rtreport('WORKFLOW REPORT AT %s (+%d)'%(
+        time.ctime(now),now))
+
+rtstatus('Tests: %d failed, %d passed out of %d'%(
+    tests_failed,tests_passed,itest))
+rtstatus('Builds: %d failed, %d passed out of %d'%(
+    builds_failed,builds_passed,build_count))
+
+if not finished:
+    if not success:
+        rtstatus('REGRESSION TEST IS STILL RUNNING (SOME TESTS FAILED)')
+        exit(1)
+    else:
+        rtstatus('REGRESSION TEST IS STILL RUNNING (ALL TESTS PASSED SO FAR)')
+        exit(0)
+
+if success:
+    rtstatus('REGRESSION TEST WAS SUCCESSFUL')
+    exit(0)
+else:
+    rtstatus('REGRESSION TEST FAILED')
+    exit(1)
+        

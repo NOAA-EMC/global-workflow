@@ -1,0 +1,112 @@
+\hypertarget{namespacemodule__radsw__cldprtb}{}\section{module\+\_\+radsw\+\_\+cldprtb Module Reference}
+\label{namespacemodule__radsw__cldprtb}\index{module\+\_\+radsw\+\_\+cldprtb@{module\+\_\+radsw\+\_\+cldprtb}}
+
+
+This module contains cloud radiative property coefficients.  
+
+
+\subsection*{Variables}
+\begin{Indent}\textbf{ Hu and Stamnes (1993) coefficients for cloud liquid condensate (used if iswcliq=1)}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ac68593a33577c720ca8c74eafb3c9f96}\label{namespacemodule__radsw__cldprtb_ac68593a33577c720ca8c74eafb3c9f96}} 
+real(kind=kind\+\_\+phys), dimension(58, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_ac68593a33577c720ca8c74eafb3c9f96}{extliq1}
+\begin{DoxyCompactList}\small\item\em extinction coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a7944084ba9f240723dc93467ec66f825}\label{namespacemodule__radsw__cldprtb_a7944084ba9f240723dc93467ec66f825}} 
+real(kind=kind\+\_\+phys), dimension(58, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a7944084ba9f240723dc93467ec66f825}{ssaliq1}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a430be0720aa2e2ac46aa1ec7c9a9b64b}\label{namespacemodule__radsw__cldprtb_a430be0720aa2e2ac46aa1ec7c9a9b64b}} 
+real(kind=kind\+\_\+phys), dimension(58, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a430be0720aa2e2ac46aa1ec7c9a9b64b}{asyliq1}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Streamer V3 (Key 2002) coefficients for cloud ice condensate (used if iswcice=2)}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a8ed403302034ea073243157749673e14}\label{namespacemodule__radsw__cldprtb_a8ed403302034ea073243157749673e14}} 
+real(kind=kind\+\_\+phys), dimension(43, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a8ed403302034ea073243157749673e14}{extice2}
+\begin{DoxyCompactList}\small\item\em extinction coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a48555ff54d3a46f8c49733ff82e94d70}\label{namespacemodule__radsw__cldprtb_a48555ff54d3a46f8c49733ff82e94d70}} 
+real(kind=kind\+\_\+phys), dimension(43, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a48555ff54d3a46f8c49733ff82e94d70}{ssaice2}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ad9328ffc5e90cc62c8c9c5089b55fc79}\label{namespacemodule__radsw__cldprtb_ad9328ffc5e90cc62c8c9c5089b55fc79}} 
+real(kind=kind\+\_\+phys), dimension(43, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_ad9328ffc5e90cc62c8c9c5089b55fc79}{asyice2}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Fu(1996) coefficients for cloud ice condensate (used if iswcice=3)}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a8b8bae831aa5b460e260c94e7f24f4c7}\label{namespacemodule__radsw__cldprtb_a8b8bae831aa5b460e260c94e7f24f4c7}} 
+real(kind=kind\+\_\+phys), dimension(46, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a8b8bae831aa5b460e260c94e7f24f4c7}{extice3}
+\begin{DoxyCompactList}\small\item\em extinction coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a39b045b05e6bc9c04603277654ff8fc6}\label{namespacemodule__radsw__cldprtb_a39b045b05e6bc9c04603277654ff8fc6}} 
+real(kind=kind\+\_\+phys), dimension(46, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a39b045b05e6bc9c04603277654ff8fc6}{ssaice3}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_aec2685be0de3a557aca169062cf1055e}\label{namespacemodule__radsw__cldprtb_aec2685be0de3a557aca169062cf1055e}} 
+real(kind=kind\+\_\+phys), dimension(46, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_aec2685be0de3a557aca169062cf1055e}{asyice3}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_aa42cf6596d2dcd887864b1de40da3293}\label{namespacemodule__radsw__cldprtb_aa42cf6596d2dcd887864b1de40da3293}} 
+real(kind=kind\+\_\+phys), dimension(46, nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_aa42cf6596d2dcd887864b1de40da3293}{fdlice3}
+\begin{DoxyCompactList}\small\item\em fdelta from fu, unitless \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Ebert and Curry (1992) coefficients for cloud ice condensate (used if iswcice=1)}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ace960bbbf15ab3cadbee76301ff111dd}\label{namespacemodule__radsw__cldprtb_ace960bbbf15ab3cadbee76301ff111dd}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_ace960bbbf15ab3cadbee76301ff111dd}{abari}
+\begin{DoxyCompactList}\small\item\em extinction coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ad5342321ccd4759cb70f7a673620ee19}\label{namespacemodule__radsw__cldprtb_ad5342321ccd4759cb70f7a673620ee19}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_ad5342321ccd4759cb70f7a673620ee19}{bbari}
+\begin{DoxyCompactList}\small\item\em extinction coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ae7f1de5c9736894ac7b54c0e0d312f16}\label{namespacemodule__radsw__cldprtb_ae7f1de5c9736894ac7b54c0e0d312f16}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_ae7f1de5c9736894ac7b54c0e0d312f16}{cbari}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_af8b02590603ea2f838d954cb0a93bbeb}\label{namespacemodule__radsw__cldprtb_af8b02590603ea2f838d954cb0a93bbeb}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_af8b02590603ea2f838d954cb0a93bbeb}{dbari}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a3cc7ab844ca564bd3df02a687bbc2f43}\label{namespacemodule__radsw__cldprtb_a3cc7ab844ca564bd3df02a687bbc2f43}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_a3cc7ab844ca564bd3df02a687bbc2f43}{ebari}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ac2e5b61aea6effe7d49586bf5223c154}\label{namespacemodule__radsw__cldprtb_ac2e5b61aea6effe7d49586bf5223c154}} 
+real(kind=kind\+\_\+phys), dimension(5), public \hyperlink{namespacemodule__radsw__cldprtb_ac2e5b61aea6effe7d49586bf5223c154}{fbari}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Fu (2001, personal communications) coefficients for cloud snow particles}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a81ba576e28e5844772d040ff7543faae}\label{namespacemodule__radsw__cldprtb_a81ba576e28e5844772d040ff7543faae}} 
+real(kind=kind\+\_\+phys), public \hyperlink{namespacemodule__radsw__cldprtb_a81ba576e28e5844772d040ff7543faae}{a0s}
+\begin{DoxyCompactList}\small\item\em optical depth coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a9bf8de06b96c5014ca7f21fd39d84257}\label{namespacemodule__radsw__cldprtb_a9bf8de06b96c5014ca7f21fd39d84257}} 
+real(kind=kind\+\_\+phys), public {\bfseries a1s}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a391fbdda62f6fba95e105c2041e16880}\label{namespacemodule__radsw__cldprtb_a391fbdda62f6fba95e105c2041e16880}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a391fbdda62f6fba95e105c2041e16880}{b0s}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a2d2296e76fb85b66bd4583bcb9fa271b}\label{namespacemodule__radsw__cldprtb_a2d2296e76fb85b66bd4583bcb9fa271b}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public {\bfseries b1s}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_aab7693c5f31ce2182bca61aff77996bc}\label{namespacemodule__radsw__cldprtb_aab7693c5f31ce2182bca61aff77996bc}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_aab7693c5f31ce2182bca61aff77996bc}{c0s}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Chou(1999) coefficients for cloud rain particles}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a0fdb9425031a10735e11d7f5c9e0376e}\label{namespacemodule__radsw__cldprtb_a0fdb9425031a10735e11d7f5c9e0376e}} 
+real(kind=kind\+\_\+phys), public \hyperlink{namespacemodule__radsw__cldprtb_a0fdb9425031a10735e11d7f5c9e0376e}{a0r}
+\begin{DoxyCompactList}\small\item\em optical depth coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a9826a0616c434620200ce4652b5af800}\label{namespacemodule__radsw__cldprtb_a9826a0616c434620200ce4652b5af800}} 
+real(kind=kind\+\_\+phys), public {\bfseries a1r}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_ac39d49e73ffa960421e36e45a35db162}\label{namespacemodule__radsw__cldprtb_ac39d49e73ffa960421e36e45a35db162}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_ac39d49e73ffa960421e36e45a35db162}{b0r}
+\begin{DoxyCompactList}\small\item\em single scattering albedo coefficients \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__cldprtb_a8927b6e7cc810301e3843eb0f5c0c795}\label{namespacemodule__radsw__cldprtb_a8927b6e7cc810301e3843eb0f5c0c795}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__cldprtb_a8927b6e7cc810301e3843eb0f5c0c795}{c0r}
+\begin{DoxyCompactList}\small\item\em asymmetry coefficients \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\subsection{Detailed Description}
+For liquid water clouds, cloud radiative property coefficients are derived from Hu and Stamnes method (1993)\cite{hu_and_stamnes_1993}. For ice clouds, there are various choices for model applications, including data tables derived from Ebert and Curry (1992) \cite{ebert_and_curry_1992}, from the Streamer scheme (Key,2002 \cite{key_2002}), or from Fu (1996) \cite{fu_1996} . Components of snow particles and rain droplets are not parameterized in the operational N\+E\+M\+S/\+G\+SM cloud microphysics scheme, and their radiative properties are neither well established yet. Coefficients for those components listed in the module are more experimental oriented that include the entries for snow from Fu (2001, personal communications), and for rain from Chou and Suarez (1999) \cite{chou_and_suarez_1999}. ~\newline
+ In common practices, the cloud radiative properties (optical depth, single scattering albedo, and asymmetry factor) are usually parametized in the form of a truncated Laurent series (generalized Taylor series) \[ f(x)=\sum_{n=-N}^Na_{n}(x-c)^n \] Where $x$ represents the cloud particle\textquotesingle{}s effective radius (in Fu\textquotesingle{}s scheme, it is called as generalized size parameter) in unites of micro-\/meters, $a_{n}$ represents the corresponding coefficients, and the constant $c$ will be zero. The number of terms, $n$, are usually kept small, such as $n=0,-1$ for the extinction coefficients and $n=0,1,2$ (or a bit larger) for the coefficients of single scattering albedo and asymmetry factor. When using the Ebert and Curry cloud optical property scheme, cloud optical properties are computed \textquotesingle{}on the fly\textquotesingle{} by using the power series in five broad spectral bands (similar expressions are used for Fu\textquotesingle{}s snow and Chou\textquotesingle{}s rain schemes). While for other schemes, optical properties are precomputed for each of the 14 R\+R\+T\+M\+G-\/\+SW bands in corresponding to evenly distributed particle effective radius (e.\+g. 1 or 3 micro-\/meter intervals for water or ice clouds, respectively). Simple linear interpolations will be used during radiative transfer calculations. 

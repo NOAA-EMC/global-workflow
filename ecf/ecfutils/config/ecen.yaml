@@ -1,3 +1,7 @@
+# This file is used to generate config.ecen, which would be used to
+# control ensemble recentering.  The scripts and code for that are not
+# part of this public release, so this file is ignored.
+
 config_ecen:
   filename: config.ecen
   content: !expand |

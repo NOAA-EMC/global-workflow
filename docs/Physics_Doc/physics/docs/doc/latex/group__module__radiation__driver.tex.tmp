@@ -1,0 +1,424 @@
+\hypertarget{group__module__radiation__driver}{}\section{module\+\_\+radiation\+\_\+driver}
+\label{group__module__radiation__driver}\index{module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}}
+
+
+The G\+FS radiation driver module.  
+
+
+
+
+\subsection{Detailed Description}
+module\+\_\+radiation\+\_\+driver prepares the atmospheric profile, invokes the main radiation calculations, and computes radiative fluxes and heating rates for some arbitrary number of vertical columns. This module also regulates the logistic running flow of the computations, such as data initialization and update accordance with forecast timing progress, the sequential order of subroutine calls, and sorting results for final output. There are three externally accessible subroutines\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radiation__driver_ga3d4ef1d77b7d7ef09fafcb4413e1cbf2}{radinit()}\+: the initialization subroutine of radiation calculations It is invoked by the model\textquotesingle{}s initialization process and is independent with forecat time progress.
+\item \hyperlink{group__module__radiation__driver_ga28280ee9ea8ee0d183ab9d541a31b718}{radupdate()}\+: calls many update subroutines to check and update radiation required but time varying data sets and module variables. It is placed inside a model\textquotesingle{}s time advancing loop.
+\item grrad()\+: the driver of radiation calculation subroutines. It sets up profile variables for radiation input, including clouds, surface albedos, atmospheric aerosols, ozone, etc. It is located inside the timing loop, and control the sequence of the radiative process calculations. \begin{DoxyVersion}{Version}
+N\+C\+E\+P-\/\+Radiation\+\_\+driver v5.\+2 Jan 2013 
+\end{DoxyVersion}
+
+\end{DoxyItemize}\subsection*{Constant values}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gafdc2a7e1dbfb075ac33a2388564d9428}\label{group__module__radiation__driver_gafdc2a7e1dbfb075ac33a2388564d9428}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__driver_gafdc2a7e1dbfb075ac33a2388564d9428}{module\+\_\+radiation\+\_\+driver\+::qmin}
+\begin{DoxyCompactList}\small\item\em lower limit of saturation vapor pressure (=1.\+0e-\/10) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gab671cb80142c71dab5f41f01ccdcc088}\label{group__module__radiation__driver_gab671cb80142c71dab5f41f01ccdcc088}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__driver_gab671cb80142c71dab5f41f01ccdcc088}{module\+\_\+radiation\+\_\+driver\+::qme5}
+\begin{DoxyCompactList}\small\item\em lower limit of specific humidity (=1.\+0e-\/7) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga4916e37c472b2f824b6f566ff67200cd}\label{group__module__radiation__driver_ga4916e37c472b2f824b6f566ff67200cd}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__driver_ga4916e37c472b2f824b6f566ff67200cd}{module\+\_\+radiation\+\_\+driver\+::qme6}
+\begin{DoxyCompactList}\small\item\em lower limit of specific humidity (=1.\+0e-\/7) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga0b0bf0fa8723b80d0891ec3327d187d7}\label{group__module__radiation__driver_ga0b0bf0fa8723b80d0891ec3327d187d7}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__driver_ga0b0bf0fa8723b80d0891ec3327d187d7}{module\+\_\+radiation\+\_\+driver\+::epsq}
+\begin{DoxyCompactList}\small\item\em E\+P\+SQ=1.\+0e-\/12. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga3fc43ca0d2c5f69a380ddb4f0926ecc7}\label{group__module__radiation__driver_ga3fc43ca0d2c5f69a380ddb4f0926ecc7}} 
+real, parameter \hyperlink{group__module__radiation__driver_ga3fc43ca0d2c5f69a380ddb4f0926ecc7}{module\+\_\+radiation\+\_\+driver\+::prsmin} = 1.\+0e-\/6
+\begin{DoxyCompactList}\small\item\em lower limit of toa pressure value in mb \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga9ee6a89464bf206cc07ea30d7eeaaeb8}\label{group__module__radiation__driver_ga9ee6a89464bf206cc07ea30d7eeaaeb8}} 
+integer \hyperlink{group__module__radiation__driver_ga9ee6a89464bf206cc07ea30d7eeaaeb8}{module\+\_\+radiation\+\_\+driver\+::itsfc} =0
+\begin{DoxyCompactList}\small\item\em control flag for LW surface temperature at air/ground interface (default=0, the value will be set in subroutine radinit) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga6eb268f296c77047f389ed6fac5f95be}\label{group__module__radiation__driver_ga6eb268f296c77047f389ed6fac5f95be}} 
+integer \hyperlink{group__module__radiation__driver_ga6eb268f296c77047f389ed6fac5f95be}{module\+\_\+radiation\+\_\+driver\+::month0} =0
+\begin{DoxyCompactList}\small\item\em new data input control variables (set/reset in subroutines radinit/radupdate)\+: \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_ga4d755de48d0aa83f337a2a907ac7d8a2}\label{group__module__radiation__driver_ga4d755de48d0aa83f337a2a907ac7d8a2}} 
+integer {\bfseries module\+\_\+radiation\+\_\+driver\+::iyear0} =0
+\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gac4baf8ff048aaa5b85d03cc42c579c7b}\label{group__module__radiation__driver_gac4baf8ff048aaa5b85d03cc42c579c7b}} 
+integer {\bfseries module\+\_\+radiation\+\_\+driver\+::monthd} =0
+\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gaf6e0e1ef2ebb78f57c897ebaf633edd2}\label{group__module__radiation__driver_gaf6e0e1ef2ebb78f57c897ebaf633edd2}} 
+logical \hyperlink{group__module__radiation__driver_gaf6e0e1ef2ebb78f57c897ebaf633edd2}{module\+\_\+radiation\+\_\+driver\+::loz1st} =.true.
+\begin{DoxyCompactList}\small\item\em control flag for the first time of reading climatological ozone data (set/reset in subroutines radinit/radupdate, it is used only if the control parameter ioznflg=0) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gaab2535e9906afd709124056f4ca1e470}\label{group__module__radiation__driver_gaab2535e9906afd709124056f4ca1e470}} 
+integer, parameter \hyperlink{group__module__radiation__driver_gaab2535e9906afd709124056f4ca1e470}{module\+\_\+radiation\+\_\+driver\+::ltp} = 0
+\begin{DoxyCompactList}\small\item\em optional extra top layer on top of low ceiling models ~\newline
+ L\+TP=0\+: no extra top layer \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__driver_gad27b36d0186c8147fe839eb5c268d157}\label{group__module__radiation__driver_gad27b36d0186c8147fe839eb5c268d157}} 
+logical, parameter \hyperlink{group__module__radiation__driver_gad27b36d0186c8147fe839eb5c268d157}{module\+\_\+radiation\+\_\+driver\+::lextop} = (L\+TP $>$ 0)
+\begin{DoxyCompactList}\small\item\em control flag for extra top layer \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__driver_ga3d4ef1d77b7d7ef09fafcb4413e1cbf2}{module\+\_\+radiation\+\_\+driver\+::radinit} (si, N\+L\+AY, imp\+\_\+physics, me)
+\begin{DoxyCompactList}\small\item\em This subroutine initialize a model\textquotesingle{}s radiation process through calling of specific initialization subprograms that directly related to radiation calculations. This subroutine needs to be invoked only once at the start stage of a model\textquotesingle{}s run, and the call is placed outside of both the time advancement loop and horizontal grid loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__driver_ga28280ee9ea8ee0d183ab9d541a31b718}{module\+\_\+radiation\+\_\+driver\+::radupdate} (idate, jdate, deltsw, deltim, lsswr, me, slag, sdec, cdec, solcon)
+\begin{DoxyCompactList}\small\item\em This subroutine checks and updates time sensitive data used by radiation computations. This subroutine needs to be placed inside the time advancement loop but outside of the horizontal grid loop. It is invoked at radiation calling frequncy but before any actual radiative transfer computations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__driver_ga9c5872d3bd177315e79977d40245a99a}{module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\begin{DoxyCompactList}\small\item\em This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radiation__driver_ga9c5872d3bd177315e79977d40245a99a}\label{group__module__radiation__driver_ga9c5872d3bd177315e79977d40245a99a}} 
+\index{module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}!gfs\+\_\+radiation\+\_\+driver@{gfs\+\_\+radiation\+\_\+driver}}
+\index{gfs\+\_\+radiation\+\_\+driver@{gfs\+\_\+radiation\+\_\+driver}!module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}}
+\subsubsection{\texorpdfstring{gfs\+\_\+radiation\+\_\+driver()}{gfs\_radiation\_driver()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(in)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), intent(in)}]{Statein,  }\item[{type(gfs\+\_\+stateout\+\_\+type), intent(inout)}]{Stateout,  }\item[{type(gfs\+\_\+sfcprop\+\_\+type), intent(in)}]{Sfcprop,  }\item[{type(gfs\+\_\+coupling\+\_\+type), intent(inout)}]{Coupling,  }\item[{type(gfs\+\_\+grid\+\_\+type), intent(in)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), intent(in)}]{Tbd,  }\item[{type(gfs\+\_\+cldprop\+\_\+type), intent(in)}]{Cldprop,  }\item[{type(gfs\+\_\+radtend\+\_\+type), intent(inout)}]{Radtend,  }\item[{type(gfs\+\_\+diag\+\_\+type), intent(inout)}]{Diag }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em prsi} & model level pressure in Pa \\
+\hline
+{\em prsl} & model layer mean pressure in Pa \\
+\hline
+{\em prslk} & exner function = $ (p/p0)^{rocp} $ \\
+\hline
+{\em tgrs} & model layer mean temperature in K \\
+\hline
+{\em qgrs} & layer specific humidity in gm/gm \\
+\hline
+{\em tracer} & layer prognostic tracer amount mixing-\/ratio, including\+: ozone,cloud condensate,aerosols,etc \\
+\hline
+{\em vvl} & layer mean vertical velocity in pa/sec (used only for the legacy diagnostic style of cloud scheme) \\
+\hline
+{\em slmsk} & sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em xlon} & grid longitude in radians,ok for both 0-\/$>$2pi or -\/pi-\/$>$+pi ranges \\
+\hline
+{\em xlat} & grid latitude in radians, default to pi/2-\/$>$-\/pi/2 range, otherwise need to adjust in the called subroutine \\
+\hline
+{\em tsfc} & surface temperature in K \\
+\hline
+{\em snowd} & snow depth water equivalent in mm (used when control flag ialbflg=1) \\
+\hline
+{\em sncovr} & snow cover in fraction (used when contrl flag ialbflg=1) \\
+\hline
+{\em snoalb} & maximum snow albedo in fraction (used when control flag ialbflg=1) \\
+\hline
+{\em zorl} & surface roughness in cm \\
+\hline
+{\em hprim} & topographic standard deviation in m \\
+\hline
+{\em alvsf} & ialbflg=0\+: uv+visible albedo with strong cosz dependency (z=60) ~\newline
+ ialbflg=1\+: uv+visible black sky albedo (z=60 degree) \\
+\hline
+{\em alnsf} & ialbflg=0\+: near IR albedo with strong cosz dependency (z=60) ~\newline
+ ialbflg=1\+: near IR black sky albedo (z=60 degree) \\
+\hline
+{\em alvwf} & ialbflg=0\+: uv+visible albedo with weak cosz dependency (z=60) ~\newline
+ ialbflg=1\+: uv+visible white sky albedo \\
+\hline
+{\em alnwf} & ialbflg=0\+: near IR albedo with weak cosz dependency (z=60) ~\newline
+ ialbflg=1\+: near IR white sky albedo \\
+\hline
+{\em facsf} & fractional coverage with strong cosz dependency \\
+\hline
+{\em facwf} & fractional coverage with weak cosz dependency \\
+\hline
+{\em fice} & fraction ice cover over open water grid \\
+\hline
+{\em tisfc} & surface temperature over ice cover in K \\
+\hline
+{\em sinlat} & sine of latitude for the model grid \\
+\hline
+{\em coslat} & cosine of latitude for the model grid \\
+\hline
+{\em solhr} & hour time after 00z at the current time-\/step \\
+\hline
+{\em jdate} & current forecast date and time (year, month, day,time-\/zone,hour, minute, second, mil-\/second) \\
+\hline
+{\em solcon} & solar constant (sun-\/earth distant adjusted) in $W/m^2$ \\
+\hline
+{\em cv} & fraction of convective cloud cover (for diagnostic clouds only) \\
+\hline
+{\em cvt,cvb} & convective cloud top/bottom pressure in pa (for diagnostic clouds only) \\
+\hline
+{\em fcice} & fraction of cloud ice content (for Ferrier microphysics scheme only) \\
+\hline
+{\em frain} & fraction of rain water (for Ferrier microphysics scheme only) \\
+\hline
+{\em rrime} & mass ratio of total to unrimed ice content ($>$= 1, for Ferrier microphysics scheme only) \\
+\hline
+{\em flgmin} & minimum large ice fraction (for Ferrier microphysics scheme only) \\
+\hline
+{\em icsdsw,icsdlw} & auxiliary cloud control arrays for radiations if isubcsw/isubclw (physparam) are set to 2, the arrays contains random seeds for the sub-\/column cloud overlap scheme, Mc\+I\+CA, used in S\+W/\+LW radiations \\
+\hline
+{\em ntcw} & =0\+: no cloud condensate calculated; ~\newline
+ $>$0\+: tracer array location index for cloud condensate \\
+\hline
+{\em ncld} & only used when ntcw$>$0 \\
+\hline
+{\em ntoz} & =0\+: use climatological ozone profile ~\newline
+ $>$0\+: use interactive ozone profile \\
+\hline
+{\em N\+T\+R\+AC} & number of tracers \\
+\hline
+{\em N\+F\+XR} & number of fields (second dimension) of I/O array fluxr \\
+\hline
+{\em dtlw,dtsw} & time durations for L\+W/\+SW radiation calls in second \\
+\hline
+{\em lsswr,lslwr} & logical control flags for S\+W/\+LW radiation calls \\
+\hline
+{\em lssav} & logical control flag for storing 3-\/d cloud field \\
+\hline
+{\em IX,IM} & horizontal dimension and number of used points \\
+\hline
+{\em LM} & vertical layer dimension \\
+\hline
+{\em me} & control flag for parallel process \\
+\hline
+{\em lprnt} & control flag for diagnostic printout \\
+\hline
+{\em ipt} & grid-\/point index for diagnostic printout (debugging) \\
+\hline
+{\em kdt} & time-\/step sequential number \\
+\hline
+{\em deltaq} & half width of pdf cloud uniform total water distribution (for pdf cloud cover scheme) \\
+\hline
+{\em sup} & supersaturation in pdf cloud when t is very low (for pdf cloud cover scheme) \\
+\hline
+{\em cnvw} & layer convective cloud water content (for pdf cloud scheme) \\
+\hline
+{\em cnvc} & layer convective cloud cover (for pdf cloud scheme) \\
+\hline
+{\em htrsw} & total sky SW heating rate in k/sec \\
+\hline
+{\em topfsw} & derived type, SW radiation fluxes at T\+OA, components\+: (check \hyperlink{namespacemodule__radsw__parameters}{module\+\_\+radsw\+\_\+parameters} for definition) ~\newline
+ upfxc -\/ total-\/sky upward SW flux at toa ( $W/m^2$) ~\newline
+ dnflx -\/ total-\/sky downward SW flux at toa ( $W/m^2$) ~\newline
+ upfx0 -\/ clear-\/sky upward SW flux at toa ( $W/m^2$) \\
+\hline
+{\em sfcfsw} & derived type, SW radiation fluxes at surface, components\+: (check \hyperlink{namespacemodule__radsw__parameters}{module\+\_\+radsw\+\_\+parameters} for definition) ~\newline
+ upfxc -\/ total-\/sky upward SW flux at sfc ( $W/m^2$) ~\newline
+ dnfxc -\/ total-\/sky downward SW flux at sfc ( $W/m^2$) ~\newline
+ upfx0 -\/ clear-\/sky upward SW flux at sfc ( $W/m^2$) ~\newline
+ dnfx0 -\/ clear-\/sky downward SW flux at sfc ( $W/m^2$) \\
+\hline
+{\em dswcmp} & downward surface SW spectral components\+: ~\newline
+ (\+:, 1) -\/ total-\/sky sfc downward nir direct flux ~\newline
+ (\+:, 2) -\/ total-\/sky sfc downward nir diffused flux ~\newline
+ (\+:, 3) -\/ total-\/sky sfc downward uv+vis direct flux ~\newline
+ (\+:, 4) -\/ total-\/sky sfc downward uv+vis diffused flux \\
+\hline
+{\em uswcmp} & upward surface SW spectral components\+: ~\newline
+ (\+:, 1) -\/ total-\/sky sfc upward nir direct flux ~\newline
+ (\+:, 2) -\/ total-\/sky sfc upward nir diffused flux ~\newline
+ (\+:, 3) -\/ total-\/sky sfc upward uv+vis direct flux ~\newline
+ (\+:, 4) -\/ total-\/sky sfc upward uv+vis diffused flux \\
+\hline
+{\em sfalb} & mean surface diffused albedo for SW radiation \\
+\hline
+{\em coszen} & mean cosine of solar zenith angle over radiation calling period \\
+\hline
+{\em coszdg} & daytime mean cosine of zenith angle over the radiation calling period \\
+\hline
+{\em htrlw} & total-\/sky LW heating rate in k/sec \\
+\hline
+{\em topflw} & derived type, LW radiation fluxes at T\+OA, component\+: (check module\+\_\+radlw\+\_\+paramters for definition) ~\newline
+ upfxc -\/ total-\/sky upward LW flux at toa ( $W/m^2$) ~\newline
+ upfx0 -\/ clear-\/sky upward LW flux at toa ( $W/m^2$) \\
+\hline
+{\em sfcflw} & derived type, LW radiation fluxes at surface, component\+: (check module\+\_\+radlw\+\_\+paramters for definition) ~\newline
+ upfxc -\/ total-\/sky upward LW flux at sfc ( $W/m^2$) ~\newline
+ upfx0 -\/ clear-\/sky upward LW flux at sfc ( $W/m^2$) ~\newline
+ dnfxc -\/ total-\/sky downward LW flux at sfc ( $W/m^2$) ~\newline
+ dnfx0 -\/ clear-\/sky downward LW flux at sfc ( $W/m^2$) \\
+\hline
+{\em tsflw} & surface air temp during LW calculation call in K \\
+\hline
+{\em semis} & surface emissivity in fraction for LW radiation \\
+\hline
+{\em cldcov} & 3-\/d cloud fraction \\
+\hline
+{\em fluxr} & array for saving time accumulated 2-\/d fields that are defined as\+: ~\newline
+ (\+:, 1) -\/ toa total-\/sky upward LW radiation flux ~\newline
+ (\+:, 2) -\/ toa total-\/sky upward SW radiation flux ~\newline
+ (\+:, 3) -\/ sfc total-\/sky upward SW radiation flux ~\newline
+ (\+:, 4) -\/ sfc total-\/sky downward SW radiation flux ~\newline
+ (\+:, 5) -\/ high domain cloud fraction ~\newline
+ (\+:, 6) -\/ mid domain cloud fraction ~\newline
+ (\+:, 7) -\/ low domain cloud fraction ~\newline
+ (\+:, 8) -\/ high domain mean cloud top pressure ~\newline
+ (\+:, 9) -\/ mid domain mean cloud top pressure ~\newline
+ (\+:,10) -\/ low domain mean cloud top pressure ~\newline
+ (\+:,11) -\/ high domain mean cloud base pressure ~\newline
+ (\+:,12) -\/ mid domain mean cloud base pressure ~\newline
+ (\+:,13) -\/ low domain mean cloud base pressure ~\newline
+ (\+:,14) -\/ high domain mean cloud top temperature ~\newline
+ (\+:,15) -\/ mid domain mean cloud top temperature ~\newline
+ (\+:,16) -\/ low domain mean cloud top temperature ~\newline
+ (\+:,17) -\/ total cloud fraction ~\newline
+ (\+:,18) -\/ boundary layer domain cloud fraction ~\newline
+ (\+:,19) -\/ sfc total-\/sky downward LW radiation flux ~\newline
+ (\+:,20) -\/ sfc total-\/sky upward LW radiation flux ~\newline
+ (\+:,21) -\/ sfc total-\/sky downward SW U\+V-\/B radiation flux ~\newline
+ (\+:,22) -\/ sfc clear-\/sky downward SW U\+V-\/B radiation flux ~\newline
+ (\+:,23) -\/ T\+OA incoming solar radiation flux ~\newline
+ (\+:,24) -\/ sfc U\+V+visible beam downward SW radiation flux ~\newline
+ (\+:,25) -\/ sfc U\+V+visible diffused downward SW radiation flux ~\newline
+ (\+:,26) -\/ sfc near-\/\+IR beam downward SW radiation flux ~\newline
+ (\+:,27) -\/ sfc near-\/\+IR diffused downward SW radiation flux ~\newline
+ (\+:,28) -\/ toa clear-\/sky upward LW radiation flux ~\newline
+ (\+:,29) -\/ toa clear-\/sky upward SW radiation flux ~\newline
+ (\+:,30) -\/ sfc clear-\/sky downward LW radiation flux ~\newline
+ (\+:,31) -\/ sfc clear-\/sky upward SW radiation flux ~\newline
+ (\+:,32) -\/ sfc clear-\/sky downward SW radiation flux ~\newline
+ (\+:,33) -\/ sfc clear-\/sky upward LW radiation flux ~\newline
+ optional\+: ~\newline
+ (\+:,34) -\/ aerosol A\+OD at 550nm (all components) ~\newline
+ (\+:,35) -\/ aerosol A\+OD at 550nm for du component ~\newline
+ (\+:,36) -\/ aerosol A\+OD at 550nm for bc component ~\newline
+ (\+:,37) -\/ aerosol A\+OD at 550nm for oc component ~\newline
+ (\+:,38) -\/ aerosol A\+OD at 550nm for su component ~\newline
+ (\+:,39) -\/ aerosol A\+OD at 550nm for ss component \\
+\hline
+{\em htrswb} & spectral bands distributed total sky SW heating rate in k/sec \\
+\hline
+{\em htrlwb} & spectral bands distributed total sky LW heating rate in k/sec\\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__driver_gen_grrad}{}\subsection{General Algorithm}\label{group__module__radiation__driver_gen_grrad}
+
+\begin{DoxyEnumerate}
+\item Setup surface ground temperature and ground/air skin temperature if required.
+\item Prepare atmospheric profiles for radiation input.
+\begin{DoxyItemize}
+\item Compute relative humidity.
+\item Get layer ozone mass mixing ratio (if use ozone climatology data, call \hyperlink{group__module__radiation__gases_ga91f9dd83a3832ad2615efb06b52eee92}{getozn()}).
+\item Call \hyperlink{group__module__radiation__astronomy_ga804e1504ae720d0f33b507e7c42b6506}{coszmn()}, to compute cosine of zenith angle.
+\item Call \hyperlink{group__module__radiation__gases_gacce60e9b372951eea9c6b3f28568e99c}{getgases()}, to set up non-\/prognostic gas volume mixing ratioes (gasvmr).
+\item Get temperature at layer interface, and layer moisture.
+\item Check for daytime points for SW radiation.
+\item Call \hyperlink{group__module__radiation__aerosols_ga184fcc0618c1c4d42fa08cfe1e20e5c1}{module\+\_\+radiation\+\_\+aerosols\+::setaer()},to setup aerosols property profile for radiation.
+\item Obtain cloud information for radiation calculations (clouds,cldsa,mtopa,mbota) ~\newline
+ for prognostic cloud\+:
+\begin{DoxyItemize}
+\item For Zhao/\+Moorthi\textquotesingle{}s prognostic cloud scheme, call \hyperlink{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}{module\+\_\+radiation\+\_\+clouds\+::progcld1()}
+\item For Zhao/\+Moorthi\textquotesingle{}s prognostic cloud+pdfcld, call \hyperlink{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}{module\+\_\+radiation\+\_\+clouds\+::progcld3()} call \hyperlink{group__module__radiation__clouds_gaa369e2e2910b3468614db856b378f3ba}{module\+\_\+radiation\+\_\+clouds\+::progclduni()} for unified cloud and ncld=2
+\end{DoxyItemize}
+\item If cloud condensate is not computed (ntcw=0), using the legacy cloud scheme, compute cloud information based on Slingo\textquotesingle{}s diagnostic cloud scheme (call \hyperlink{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}{module\+\_\+radiation\+\_\+clouds\+::diagcld1()})
+\end{DoxyItemize}
+\item Start SW radiation calculations
+\begin{DoxyItemize}
+\item Call \hyperlink{group__module__radiation__surface_ga3e3bd6550a924c538c88169c7c169a5b}{module\+\_\+radiation\+\_\+surface\+::setalb()} to setup surface albedo. for SW radiation.
+\end{DoxyItemize}
+\item Approximate mean surface albedo from vis-\/ and nir-\/ diffuse values.
+\begin{DoxyItemize}
+\item Call \hyperlink{group__module__radsw__main_ga784397878835a8cdd0b14a7b9eafb4e3}{module\+\_\+radsw\+\_\+main\+::swrad()}, to compute SW heating rates and fluxes.
+\item Save two spectral bands\textquotesingle{} surface downward and upward fluxes for output.
+\end{DoxyItemize}
+\item Start LW radiation calculations
+\begin{DoxyItemize}
+\item Call \hyperlink{group__module__radiation__surface_ga57ea2aa09c4194e14f2c538ef7fad7b3}{module\+\_\+radiation\+\_\+surface\+::setemis()},to setup surface emissivity for LW radiation.
+\item Call \hyperlink{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}{module\+\_\+radlw\+\_\+main\+::lwrad()}, to compute LW heating rates and fluxes.
+\end{DoxyItemize}
+\item Save calculation results
+\begin{DoxyItemize}
+\item Save surface air temp for diurnal adjustment at model t-\/steps
+\item For time averaged output quantities (including total-\/sky and clear-\/sky SW and LW fluxes at T\+OA and surface; conventional 3-\/domain cloud amount, cloud top and base pressure, and cloud top temperature; aerosols A\+OD, etc.), store computed results in corresponding slots of array fluxr with appropriate time weights. 
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+Definition at line 1015 of file G\+F\+S\+\_\+radiation\+\_\+driver.\+F90.
+
+
+
+References module\+\_\+radiation\+\_\+astronomy\+::coszmn(), module\+\_\+radiation\+\_\+clouds\+::diagcld1(), epsq, module\+\_\+radiation\+\_\+gases\+::getgases(), module\+\_\+radiation\+\_\+gases\+::getozn(), itsfc, lextop, ltp, module\+\_\+radlw\+\_\+main\+::lwrad(), module\+\_\+radiation\+\_\+clouds\+::progcld1(), module\+\_\+radiation\+\_\+clouds\+::progcld3(), module\+\_\+radiation\+\_\+clouds\+::progcld5(), module\+\_\+radiation\+\_\+clouds\+::progclduni(), prsmin, qme5, qme6, qmin, module\+\_\+radiation\+\_\+aerosols\+::setaer(), module\+\_\+radiation\+\_\+surface\+::setalb(), module\+\_\+radiation\+\_\+surface\+::setemis(), and module\+\_\+radsw\+\_\+main\+::swrad().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{group__module__radiation__driver_ga3d4ef1d77b7d7ef09fafcb4413e1cbf2}\label{group__module__radiation__driver_ga3d4ef1d77b7d7ef09fafcb4413e1cbf2}} 
+\index{module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}!radinit@{radinit}}
+\index{radinit@{radinit}!module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}}
+\subsubsection{\texorpdfstring{radinit()}{radinit()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+driver\+::radinit (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{si,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{imp\+\_\+physics,  }\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em si} & model vertical sigma interface \\
+\hline
+{\em nlay} & number of model vertical layers \\
+\hline
+{\em me} & print control flag \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__driver_gen_radinit}{}\subsection{General Algorithm}\label{group__module__radiation__driver_gen_radinit}
+
+\begin{DoxyEnumerate}
+\item Set up control variables and external module variables in module physparam
+\item Initialization
+\end{DoxyEnumerate}
+\begin{DoxyItemize}
+\item astronomy initialization routine\+: call \hyperlink{group__module__radiation__astronomy_gaa9eeb5462c1dbddb971cee28eb38ca47}{module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+init()}
+\item aerosols initialization routine\+: call \hyperlink{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a}{module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+init()}
+\item C\+O2 and other gases intialization routine\+: call \hyperlink{group__module__radiation__gases_gaeff1c60060c81d3f0693a542976ee3db}{module\+\_\+radiation\+\_\+gases\+::gas\+\_\+init()}
+\item surface intialization routine\+: call \hyperlink{group__module__radiation__surface_gac05a5b8f903ace95e45c1cce612ed721}{module\+\_\+radiation\+\_\+surface\+::sfc\+\_\+init()}
+\item cloud initialization routine\+: call \hyperlink{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}{module\+\_\+radiation\+\_\+clouds\+::cld\+\_\+init()}
+\item LW radiation initialization routine\+: call \hyperlink{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}{module\+\_\+radlw\+\_\+main\+::rlwinit()}
+\item SW radiation initialization routine\+: call \hyperlink{group__module__radsw__main_ga5b0d35149515607d94f42b6ee5a40665}{module\+\_\+radsw\+\_\+main\+::rswinit()} 
+\end{DoxyItemize}
+
+Definition at line 417 of file G\+F\+S\+\_\+radiation\+\_\+driver.\+F90.
+
+
+
+References module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+init(), module\+\_\+radiation\+\_\+clouds\+::cld\+\_\+init(), module\+\_\+radiation\+\_\+gases\+::gas\+\_\+init(), itsfc, lextop, loz1st, ltp, month0, module\+\_\+radlw\+\_\+main\+::rlwinit(), module\+\_\+radsw\+\_\+main\+::rswinit(), module\+\_\+radiation\+\_\+surface\+::sfc\+\_\+init(), and module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+init().
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{group__module__radiation__driver_ga28280ee9ea8ee0d183ab9d541a31b718}\label{group__module__radiation__driver_ga28280ee9ea8ee0d183ab9d541a31b718}} 
+\index{module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}!radupdate@{radupdate}}
+\index{radupdate@{radupdate}!module\+\_\+radiation\+\_\+driver@{module\+\_\+radiation\+\_\+driver}}
+\subsubsection{\texorpdfstring{radupdate()}{radupdate()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+driver\+::radupdate (\begin{DoxyParamCaption}\item[{integer, dimension(\+:), intent(in)}]{idate,  }\item[{integer, dimension(\+:), intent(in)}]{jdate,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{deltsw,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{deltim,  }\item[{logical, intent(in)}]{lsswr,  }\item[{integer, intent(in)}]{me,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{slag,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{sdec,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{cdec,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{solcon }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em idate} & N\+C\+EP absolute date and time of intial condition (year,month,day,time-\/zone,hour,minute,second, mil-\/second) \\
+\hline
+{\em jdate} & N\+C\+EP absolute date and time at forecast time (year,month,day,time-\/zone,hour,minute,second, mil-\/second) \\
+\hline
+{\em deltsw} & SW radiation calling time interval in seconds \\
+\hline
+{\em deltim} & model advancing time-\/step duration in seconds \\
+\hline
+{\em lsswr} & logical control flag for SW radiation calculations \\
+\hline
+{\em me} & print control flag \\
+\hline
+{\em slag} & equation of time in radians \\
+\hline
+{\em sdec,cdec} & sine and cosine of the solar declination angle \\
+\hline
+{\em solcon} & solar constant adjusted by sun-\/earth distance $(W/m^2)$ \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__driver_gen_radupdate}{}\subsection{General Algorithm}\label{group__module__radiation__driver_gen_radupdate}
+
+\begin{DoxyEnumerate}
+\item Set up time stamp at fcst time and that for green house gases (currently co2 only)
+\item Call \hyperlink{group__module__radiation__astronomy_ga095550b8122f922ad122db44aa262b15}{module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+update()}, yearly update, no time interpolation.
+\item Call \hyperlink{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5}{module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+update()}, monthly update, no time interpolation
+\item Call co2 and other gases update routine\+: \hyperlink{group__module__radiation__gases_gafce04ada352f998d640606528a8cd25c}{module\+\_\+radiation\+\_\+gases\+::gas\+\_\+update()}
+\item Call surface update routine (currently not needed)
+\item Call clouds update routine (currently not needed) 
+\end{DoxyEnumerate}
+
+Definition at line 667 of file G\+F\+S\+\_\+radiation\+\_\+driver.\+F90.
+
+
+
+References module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+update(), module\+\_\+radiation\+\_\+gases\+::gas\+\_\+update(), loz1st, month0, and module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+update().
+
+Here is the call graph for this function\+:
+% FIG 2

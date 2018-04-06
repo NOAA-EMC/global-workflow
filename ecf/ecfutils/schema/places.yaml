@@ -1,3 +1,6 @@
+# Configures disk locations.  See the defaults/places.yaml and
+# user.yaml.default file for documentation.
+
 places_schema: &places_schema !Template
   PROJECT_DIR: { type: string }
   HOMEgfs: { type: string }

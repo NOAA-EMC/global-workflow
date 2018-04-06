@@ -1,0 +1,8 @@
+user_places: &user_places
+  PROJECT_DIR: /scratch4/NCEPDEV/nems
+
+accounting: &accounting
+  # Project for CPU accounting.
+  cpu_project: fv3-cpu
+  hpss_project: emc-hwrf
+  ecflow_machine: xc40-dev   # only relevant on WCOSS using ecFlow

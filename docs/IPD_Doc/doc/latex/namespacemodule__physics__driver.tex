@@ -1,0 +1,597 @@
+\section{module\+\_\+physics\+\_\+driver Module Reference}
+\label{namespacemodule__physics__driver}\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsection*{Functions/\+Subroutines}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ gfs\+\_\+physics\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\begin{DoxyCompactList}\small\item\em G\+FS Physics Implementation Layer. \end{DoxyCompactList}\item 
+subroutine \textbf{ moist\+\_\+bud} (im, ix, ix2, levs, me, kdt, grav, dtp, delp, rain, qv0, ql0, qi0, qv1, ql1, qi1, comp)
+\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ hocp} = con\+\_\+hvap/con\+\_\+cp
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ qmin} = 1.\+0e-\/10
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ p850} = 85000.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ epsq} = 1.e-\/20
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ hsub} = con\+\_\+hvap+con\+\_\+hfus
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ czmin} = 0.\+0001
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ one} = 1.\+0d0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ onebg} = \textbf{ one}/con\+\_\+g
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ albdf} = 0.\+06
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ tf} =258.\+16
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ tcr} =273.\+16
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ tcrf} =1.\+0/(\textbf{ tcr}-\/\textbf{ tf})
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+p001} = 0.\+001d0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+day} = 86400.d0
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\label{namespacemodule__physics__driver_a13c7ad66034ebcbe6f77208d83ac54da}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!gfs\+\_\+physics\+\_\+driver@{gfs\+\_\+physics\+\_\+driver}}
+\index{gfs\+\_\+physics\+\_\+driver@{gfs\+\_\+physics\+\_\+driver}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{gfs\+\_\+physics\+\_\+driver()}
+{\footnotesize\ttfamily subroutine, public module\+\_\+physics\+\_\+driver\+::gfs\+\_\+physics\+\_\+driver (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(in)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), intent(inout)}]{Statein,  }\item[{type(gfs\+\_\+stateout\+\_\+type), intent(inout)}]{Stateout,  }\item[{type(gfs\+\_\+sfcprop\+\_\+type), intent(inout)}]{Sfcprop,  }\item[{type(gfs\+\_\+coupling\+\_\+type), intent(inout)}]{Coupling,  }\item[{type(gfs\+\_\+grid\+\_\+type), intent(in)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), intent(inout)}]{Tbd,  }\item[{type(gfs\+\_\+cldprop\+\_\+type), intent(inout)}]{Cldprop,  }\item[{type(gfs\+\_\+radtend\+\_\+type), intent(inout)}]{Radtend,  }\item[{type(gfs\+\_\+diag\+\_\+type), intent(inout)}]{Diag }\end{DoxyParamCaption})}
+
+
+
+G\+FS Physics Implementation Layer. 
+
+Layer that invokes individual G\+FS physics routines
+
+This subroutine is the suite driver for the G\+FS atmospheric physics and surface. It is responsible for calculating and applying tendencies of the atmospheric state variables due to the atmospheric physics and due to the surface layer scheme. In addition, this routine applies radiative heating rates that were calculated during the antecedent call to the radiation scheme. Code within this subroutine is executed on the physics sub-\/timestep. The sub-\/timestep loop is executed in the subroutine gloopb.\subsection{General Algorithm}\label{namespacemodule__physics__driver_general}
+
+\begin{DoxyEnumerate}
+\item Prepare input variables for calling individual parameterizations.
+\item Using a two-\/iteration loop, calculate the state variable tendencies for the surface layer.
+\item Calculate the state variable tendencies due to the P\+BL (vertical diffusion) scheme.
+\item Calculate the state variable tendencies due to orographic gravity wave drag and Rayleigh damping.
+\item Apply tendencies to the state variables calculated so far\+:
+\begin{DoxyItemize}
+\item for temperature\+: radiation, surface, P\+BL, oro. G\+WD, Rayleigh damping
+\item for momentum\+: surface, P\+BL, oro. G\+WD, Rayleigh damping
+\item for water vapor\+: surface, P\+BL
+\end{DoxyItemize}
+\item Calculate and apply the tendency of ozone.
+\item Prepare input variables for physics routines that update the state variables within their subroutines.
+\item If S\+H\+OC is active and is supposed to be called before convection, call it and update the state variables within.
+\item Calculate and apply the state variable tendencies (within the subroutine) due to deep convection.
+\item Calculate the state variable tendencies due to convective gravity wave drag and apply them afterwards.
+\item Calculate and apply the state variable tendencies (within the subroutine) due to shallow convection.
+\item If S\+H\+OC is active and is supposed to be called after convection, call it and update the state variables within.
+\item Prepare for microphysics call by calculating preliminary variables.
+\item If necessary, call the moist convective adjustment subroutine and update the state temperature and moisture variable within.
+\item Calculate and apply the state variable tendencies (within the subroutine) due to microphysics.
+\item Determine the precipitation type and update land surface properties if necessary.
+\item Fill the output variables from the local variables as necessary and deallocate allocatable arrays. 
+\end{DoxyEnumerate}\subsection{Detailed Algorithm}\label{namespacemodule__physics__driver_detailed}
+\subsubsection*{Prepare input variables for calling individual parameterizations.}
+
+Before calling any parameterizations, there is a section at the beginning of the subroutine for preparing input arguments to the various schemes based on general input to the driver and initializing variables used throughout the driver.
+\begin{DoxyItemize}
+\item General initialization\+:
+\begin{DoxyItemize}
+\item set a flag for running in debug mode and the horizontal index of the column to print
+\item calculate the pressure at layer centers, the exner function at layer centers and interfaces, geopotential at layer centers and interfaces, and the layer-\/centered pressure difference
+\item calculate the ratio of dynamics time step to physics time step for applying tendencies
+\item initialize local tendency arrays to zero
+\end{DoxyItemize}
+\item Radiation\+:
+\begin{DoxyItemize}
+\item adjust radiative fluxes and heating rates to the shorter physics time step (from the longer radiation time step), unless idealized physics is true (lsidea) where radiative heating rates are set to 0
+\item compute diagnostics from the radiation scheme needed for other schemes (e.\+g., downward longwave flux absorbed by the surface)
+\item accumulate the upward and downward longwave fluxes at the surface
+\end{DoxyItemize}
+\item Surface\+:
+\begin{DoxyItemize}
+\item set N\+O\+AH and O\+SU scheme variables from gbphys input arguments and initialize local soil moisture variables
+\item set local sea ice variables from gbphys arguments
+\item set up A/\+O/I coupling variables from gbphys arguments
+\end{DoxyItemize}
+\item P\+BL\+:
+\begin{DoxyItemize}
+\item set the number of tracers that are diffused vertically
+\end{DoxyItemize}
+\item S\+H\+OC\+:
+\begin{DoxyItemize}
+\item determine the index of T\+KE (ntk) in the convectively transported tracer array (clw)
+\item allocate precipitation mixing ratio cloud droplet number concentration arrays
+\end{DoxyItemize}
+\item Deep Convection\+:
+\begin{DoxyItemize}
+\item determine which tracers in the tracer input array undergo convective transport (valid only for the R\+AS and Chikira-\/\+Sugiyama schemes) and allocate a local convective transported tracer array (clw)
+\item apply an adjustment to the tracers from the dynamics
+\item calculate horizontal grid-\/related parameters needed for some parameterizations
+\item calculate the maxiumum cloud base updraft speed for the Chikira-\/\+Sugiyama scheme
+\item allocate array for cloud water and cloud cover (for non-\/\+R\+AS and non-\/\+Chikira-\/\+Sugiyama deep convective schemes)
+\end{DoxyItemize}
+\item Shallow Convection\+:
+\begin{DoxyItemize}
+\item when using the Tiedtke shallow convection scheme with the stratus modifications, find the lowest model level where a temperature inversion exists in the absence of C\+T\+EI
+\end{DoxyItemize}
+\item Microphysics\+:
+\begin{DoxyItemize}
+\item for the Morrison (M\+GB) scheme, calculate \textquotesingle{}F\+R\+L\+A\+ND\textquotesingle{} if the grid point is over land
+\item allocate arrays associated with the Morrison scheme
+\item assign the local critical relative humidity variables from the gbphys arguments
+\end{DoxyItemize}
+\item Gravity Wave Drag\+:
+\begin{DoxyItemize}
+\item calculate the deep convective cloud fraction at cloud top for the convective G\+WD scheme
+\end{DoxyItemize}
+\end{DoxyItemize}\subsubsection*{Using a two-\/iteration loop, calculate the state variable tendencies for the surface layer.}
+
+
+\begin{DoxyItemize}
+\item Each iteration of the loop calls the following\+:
+\begin{DoxyItemize}
+\item \textquotesingle{}sfc\+\_\+diff\textquotesingle{} to calculate surface exchange coefficients and near-\/surface wind
+\item surface energy balances routines are called regardless of surface type; the surface type is checked within each to determine whether the routine is \char`\"{}active\char`\"{}
+\item for the surface energy balance over the ocean, call \textquotesingle{}sfc\+\_\+nst\textquotesingle{} if N\+S\+ST is on, otherwise, call \textquotesingle{}sfc\+\_\+ocean\textquotesingle{}
+\item for the surface energy balance over the land, call \textquotesingle{}sfc\+\_\+drv\textquotesingle{} for the N\+O\+AH model and \textquotesingle{}sfc\+\_\+land\textquotesingle{} for the O\+SU model
+\item for the surface energy balance over sea ice, call sfc\+\_\+sice; if A/\+O/I coupling, call sfc\+\_\+cice
+\end{DoxyItemize}
+\item The initial iteration has flag\+\_\+guess = F unless wind $<$ 2 m/s; flag\+\_\+iter = T
+\item After the initial iteration, flag\+\_\+guess = F and flag\+\_\+iter = F (unless wind $<$ 2 m/s and over a land surface or an ocean surface with N\+S\+ST on)
+\item The following actions are performed after the iteration to calculate surface energy balance\+:
+\begin{DoxyItemize}
+\item set surface output variables from their local values
+\item call \textquotesingle{}sfc\+\_\+diag\textquotesingle{} to calculate state variable values at 2 and 10 m as appropriate from near-\/surface model levels and the surface exchange coefficients
+\item if A/\+O/I coupling, set coupling variables from local variables and calculate the open water albedo
+\item finally, accumulate surface-\/related diagnostics and calculate the max/min values of T and q at 2 m height.
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the state variable tendencies due to the P\+BL (vertical diffusion) scheme.}
+
+
+\begin{DoxyItemize}
+\item Call the vertical diffusion scheme (P\+BL) based on the following logical flags\+: do\+\_\+shoc, hybedmf, old\+\_\+monin, mstrat
+\begin{DoxyItemize}
+\item the P\+BL scheme is expected to return tendencies of the state variables
+\end{DoxyItemize}
+\item If A/\+O/I coupling and the surface is sea ice, overwrite some surface-\/related variables to their states before P\+BL was called
+\item For diagnostics, do the following\+:
+\begin{DoxyItemize}
+\item accumulate surface state variable tendencies and set the instantaneous values for output
+\item accumulate the temperature tendency due to the P\+BL scheme in dt3dt(\+:,\+:,3), subtracting out the radiative heating rate if necessary
+\item accumulate the u, v tendencies due to the P\+BL in du3dt(\+:,\+:,1\+:2) and dv3dt(\+:,\+:,1\+:2)
+\item accumulate the water vapor tendency due to the P\+BL in dq3dt(\+:,\+:,1)
+\item accumulate the ozone tendency in dq3dt(\+:,\+:,5)
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the state variable tendencies due to orographic gravity wave drag and Rayleigh damping.}
+
+
+\begin{DoxyItemize}
+\item Based on the variable nmtvr, unpack orographic gravity wave varibles from the hprime array
+\item Call \textquotesingle{}gwdps\textquotesingle{} to calculate tendencies of u, v, T, and surface stress
+\item Accumulate gravity wave drag surface stresses.
+\item Accumulate change in u, v, and T due to oro. gravity wave drag in du3dt(\+:,\+:,2), dv3dt(\+:,\+:,2), and dt3dt(\+:,\+:,2)
+\item Call \textquotesingle{}rayleigh\+\_\+damp\textquotesingle{} to calculate tendencies to u, v, and T due to Rayleigh friction
+\end{DoxyItemize}
+
+\subsubsection*{Apply tendencies to the state variables calculated so far.}
+
+\subsubsection*{Calculate and apply the tendency of ozone.}
+
+
+\begin{DoxyItemize}
+\item Call the convective adjustment scheme for I\+D\+EA
+\item Call \textquotesingle{}ozphys\+\_\+2015\textquotesingle{} or \textquotesingle{}ozphys\textquotesingle{} depending on the value of pl\+\_\+coeff, updating the ozone tracer within and outputing the tendency of ozone in dq3dt(\+:,\+:,6)
+\item Call \textquotesingle{}h20phys\textquotesingle{} if necessary (\char`\"{}adaptation of N\+R\+L H20 phys for stratosphere and mesophere\char`\"{})
+\end{DoxyItemize}
+
+\subsubsection*{Prepare input variables for physics routines that update the state variables within their subroutines.}
+
+
+\begin{DoxyItemize}
+\item If diagnostics is active, save the updated values of the state variables in \textquotesingle{}dudt\textquotesingle{}, \textquotesingle{}dvdt\textquotesingle{}, \textquotesingle{}d\+Tdt\textquotesingle{}, and \textquotesingle{}dqdt(\+:,\+:,1)\textquotesingle{}
+\item Call \textquotesingle{}get\+\_\+phi\textquotesingle{} to calculate geopotential from p, q, T
+\item Initialize the cloud water and ice portions of the convectively transported tracer array (clw) and (if the deep convective scheme is not R\+AS or Chikira-\/\+Sugiyama) the convective cloud water and cloud cover.
+\item If the dep convective scheme is R\+AS or Chikira-\/\+Sugiyama, fill the \textquotesingle{}clw\textquotesingle{} array with tracers to be transported by convection
+\item Initialize \textquotesingle{}ktop\textquotesingle{} and \textquotesingle{}kbot\textquotesingle{} (to be modified by all convective schemes except Chikira-\/\+Sugiyama)
+\item Prepare for microphysics call (if cloud condensate is in the input tracer array)\+:
+\begin{DoxyItemize}
+\item all schemes\+: calculate critical relative humidity
+\item Morrison et al. scheme (occasionally denoted M\+GB) (when ncld==2)\+: set clw(\+:,\+:,1) to cloud ice and clw(\+:,\+:,2) to cloud liquid water
+\item Ferrier scheme (num\+\_\+p3d==3)\+: set the cloud water variable and separate hydrometeors into cloud ice, cloud water, and rain; set clw(\+:,\+:,1) to cloud ice and clw(\+:,\+:,2) to cloud liquid water
+\item Zhao-\/\+Carr scheme (num\+\_\+p3d==4)\+: calculate autoconversion coefficients from input constants and grid info; set set clw(\+:,\+:,1) to cloud liquid water
+\item otherwise\+: set autoconversion parameters like in Zhao-\/\+Carr and set critical relative humidity to 1
+\end{DoxyItemize}
+\end{DoxyItemize}\subsubsection*{If S\+H\+OC is active and is supposed to be called before convection, call it and update the state variables within.}
+
+
+\begin{DoxyItemize}
+\item Prior to calling S\+H\+OC, prepare some microphysics variables\+:
+\begin{DoxyItemize}
+\item if Morrison et al. scheme\+: set \textquotesingle{}skip\+\_\+macro\textquotesingle{}, fill clw(\+:,\+:,1,2) with cloud ice, liquid from the tracer array, and fill cloud droplet number concentration arrays from the input tracer array
+\item if Zhao-\/\+Carr scheme\+: initialize precip. mixing ratios to 0, fill clw(\+:,\+:,1,2) with cloud ice, liquid from the tracer array (as a function of temperature)
+\end{DoxyItemize}
+\item Call \textquotesingle{}shoc\textquotesingle{} (modifies state variables within the subroutine)
+\item Afterward, set updated cloud number concentrations in the tracer array from the updated \textquotesingle{}ncpl\textquotesingle{} and \textquotesingle{}ncpi\textquotesingle{}
+\end{DoxyItemize}
+
+\subsubsection*{Calculate and apply the state variable tendencies (within the subroutine) due to deep convection.}
+
+
+\begin{DoxyItemize}
+\item Call deep convective scheme according to the parameter \textquotesingle{}imfdeepcnv\textquotesingle{}, \textquotesingle{}ras\textquotesingle{}, and \textquotesingle{}cscnv\textquotesingle{}.
+\begin{DoxyItemize}
+\item if imfdeepcnv == 0, 1, or 2, no special processing is needed
+\item if the Chikira-\/\+Sugiyama scheme (cscnv), convert rain rate to accumulated rain (rain1)
+\item if R\+AS, initialize \textquotesingle{}ccwfac\textquotesingle{}, \textquotesingle{}dlqfac\textquotesingle{}, \textquotesingle{}lmh\textquotesingle{}, and revap before the call to \textquotesingle{}rascnv\textquotesingle{}
+\end{DoxyItemize}
+\item Zero out \textquotesingle{}cld1d\textquotesingle{} (cloud work function calculated in non-\/\+R\+AS, non-\/\+Chikira-\/\+Sugiyama schemes)
+\item If \textquotesingle{}lgocart\textquotesingle{}, accumulate convective mass fluxes and convective cloud water
+\item Update tracers in the tracer array (gq0) due to convective transport (R\+AS, CS only) from the \textquotesingle{}clw\textquotesingle{} array
+\item Calculate accumulated surface convective precip. for this physics time step (rainc)
+\item If necessary, accumulate cloud work function, convective precipitation, and convective mass fluxes; accumulate dt3dt(\+:,\+:,4), dq3dt(\+:,\+:,2), du3dt(\+:,\+:,3), dv3dt(\+:,\+:,3) as change in state variables due to deep convection
+\item If \textquotesingle{}lgocart\textquotesingle{}, repeat the accumulation of convective mass fluxes and convective cloud water; save convective tendency for water vapor in \textquotesingle{}dqdt\+\_\+v\textquotesingle{}
+\item If P\+D\+F-\/based clouds are active and Zhao-\/\+Carr microphysics, save convective cloud cover and water in \textquotesingle{}phy\+\_\+f3d\textquotesingle{} array
+\begin{DoxyItemize}
+\item otherwise, if non-\/\+P\+D\+F-\/based clouds and the \char`\"{}convective cloudiness enhancement\char`\"{} is active, save convective cloud water in \textquotesingle{}phy\+\_\+f3d\textquotesingle{} array
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the state variable tendencies due to convective gravity wave drag and apply them afterwards.}
+
+
+\begin{DoxyItemize}
+\item Calculate the average deep convective heating rate in the column to pass into \textquotesingle{}gwdc\textquotesingle{}
+\item Call \textquotesingle{}gwdc\textquotesingle{} to calculate tendencies of u, v due to convective G\+WD
+\item For diagnostics, accumulate the vertically-\/integrated change in u, v due to conv. G\+WD; accumulate change in u, v, due to conv. G\+WD in du3dt(\+:,\+:,4) and dv3dt(\+:,\+:,4)
+\item Calculate updated values of u, v, T using conv. G\+WD tendencies
+\end{DoxyItemize}
+
+\subsubsection*{Calculate and apply the state variable tendencies (within the subroutine) due to shallow convection.}
+
+
+\begin{DoxyItemize}
+\item If diagnostics are active, set \textquotesingle{}dtdt\textquotesingle{} and \textquotesingle{}dqdt\textquotesingle{} to updated values of T and q before shallow convection
+\item If S\+H\+OC is not active, do the following\+:
+\begin{DoxyItemize}
+\item for the mass-\/flux shallow convection scheme (imfshalcnv == 1), call \textquotesingle{}shalcnv\textquotesingle{}
+\item for the scale-\/ and aerosol-\/aware scheme (imfshalcnv == 2), call \textquotesingle{}samfshalcnv\textquotesingle{}
+\item for either of the first two schemes, perform the following after the call\+:
+\begin{DoxyItemize}
+\item if Zhao-\/\+Carr microphysics with P\+D\+F-\/based clouds, save convective cloud water an cover in \textquotesingle{}phy\+\_\+f3d\textquotesingle{}
+\item if non-\/\+P\+D\+F-\/based clouds and convective cloudiness enhancement is active, save convective cloud water in \textquotesingle{}phy\+\_\+f3d\textquotesingle{}
+\item calculate shallow convective precip. and add it to convective precip; accumulate convective precip.
+\end{DoxyItemize}
+\item for the Tiedtke scheme (imfshalcnv == 0), find the top level where shallow convection must stratosphere
+\begin{DoxyItemize}
+\item if using Moorthi\textquotesingle{}s approach to stratus, call \textquotesingle{}shalcv\textquotesingle{}
+\item otherwise, call \textquotesingle{}shalcvt3\textquotesingle{}
+\end{DoxyItemize}
+\item for diagnostics, accumulate the change in water vapor due to shallow convection and save in dqdt\+\_\+v if \textquotesingle{}lgocart\textquotesingle{};
+\begin{DoxyItemize}
+\item save the change in T and q due to shallow convection in dt3dt(\+:,\+:,5) and dq3dt(\+:,\+:,3); reset dtdt and dqdt to the updated values of T, q after shallow Convection
+\item if \textquotesingle{}clw\textquotesingle{} is not partitioned into ice/water, set \textquotesingle{}clw(ice)\textquotesingle{} to zero
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item If S\+H\+OC is active (and shocaftcnv)
+\begin{DoxyItemize}
+\item if Morrison et al. scheme\+: set \textquotesingle{}skip\+\_\+macro\textquotesingle{} and fill cloud droplet number concentration arrays from the input tracer array
+\item initialize precip. mixing ratios to 0
+\item call \textquotesingle{}shoc\textquotesingle{} (modifies state variables within the subroutine)
+\item afterward, set updated cloud number concentrations in the tracer array from the updated \textquotesingle{}ncpl\textquotesingle{} and \textquotesingle{}ncpi\textquotesingle{}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+\subsubsection*{Prepare for microphysics call by calculating preliminary variables.}
+
+
+\begin{DoxyItemize}
+\item For Morrison et al. microphysics, set cloud water and ice arrays to the convecitvely transported values
+\item For Ferrier microphysics, combine convectively transported cloud water and ice with column rain and save in cloud water array
+\begin{DoxyItemize}
+\item calculate and save ice fraction and rain fraction in phy\+\_\+f3d(1),(2)
+\end{DoxyItemize}
+\item For Zhao-\/\+Carr, combine convectively transported cloud water and ice into the cloud water array
+\item Otherwise, combine convectively transported cloud water and ice into the convectively transported cloud water
+\item Call \textquotesingle{}cnvc90\textquotesingle{}; a \char`\"{}legacy routine which determines convective clouds\char`\"{}; outputs \textquotesingle{}acv\textquotesingle{},\textquotesingle{}acvb\textquotesingle{},\textquotesingle{}acvt\textquotesingle{},\textquotesingle{}cv\textquotesingle{},\textquotesingle{}cvb\textquotesingle{},\textquotesingle{}cvt\textquotesingle{}
+\end{DoxyItemize}
+
+\subsubsection*{If necessary, call the moist convective adjustment subroutine and update the state temperature and moisture variable within.}
+
+
+\begin{DoxyItemize}
+\item Updates T, q, \textquotesingle{}rain1\textquotesingle{}, cloud water array
+\item Accumulate convective precip
+\item For diagnostics, accumulate the change in T, q due to moist convective adjustment; reset \textquotesingle{}dtdt\textquotesingle{} and \textquotesingle{}dqdt\textquotesingle{} to updated T, q before call to microphysics
+\end{DoxyItemize}
+
+\subsubsection*{Calculate and apply the state variable tendencies (within the subroutine) due to microphysics.}
+
+
+\begin{DoxyItemize}
+\item If \textquotesingle{}lgocart\textquotesingle{}, calculate instantaneous moisture tendency in dqdt\+\_\+v
+\item If no cloud microphysics (ncld == 0), call \textquotesingle{}lrgscl\textquotesingle{} to update T, q and output large scale precipitation and cloud water
+\item Otherwise, a more advanced microphysics scheme is called (which scheme depends on values of \textquotesingle{}num\+\_\+p3d\textquotesingle{},\textquotesingle{}do\+\_\+shoc\textquotesingle{},and \textquotesingle{}ncld\textquotesingle{})
+\item Ferrier scheme (num\+\_\+p3d == 3)\+:
+\begin{DoxyItemize}
+\item calculate droplet number concentration and minimum large ice fraction
+\item call \textquotesingle{}gsmdrive\textquotesingle{} (modifies T, q, cloud water, \textquotesingle{}f\+\_\+ice\textquotesingle{}, \textquotesingle{}f\+\_\+rain\textquotesingle{}, \textquotesingle{}f\+\_\+rimef\textquotesingle{}, \textquotesingle{}rain1\textquotesingle{})
+\end{DoxyItemize}
+\item Zhao-\/\+Carr-\/\+Sundqvist scheme (num\+\_\+p3d == 4)\+:
+\begin{DoxyItemize}
+\item if non-\/\+P\+D\+F-\/based clouds\+:
+\begin{DoxyItemize}
+\item if \textquotesingle{}do\+\_\+shoc\textquotesingle{}, call \textquotesingle{}precpd\+\_\+shoc\textquotesingle{} (precpd modified for S\+H\+OC)
+\item else, call \textquotesingle{}gscond\textquotesingle{} (grid-\/scale condensation/evaporation); updates water vapor, cloud water, temperature
+\begin{DoxyItemize}
+\item call \textquotesingle{}precpd\textquotesingle{}; updates water vapor, cloud water, temperature and outputs precip., snow ratio, and rain water path
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item for P\+D\+F-\/based clouds\+:
+\begin{DoxyItemize}
+\item call \textquotesingle{}gscondp\textquotesingle{} followed by \textquotesingle{}precpdp\textquotesingle{} (similar arguments to gscond, precpd above)
+\end{DoxyItemize}
+\end{DoxyItemize}
+\item Morrison et al. scheme (ncld = 2)\+:
+\begin{DoxyItemize}
+\item if \textquotesingle{}do\+\_\+shoc\textquotesingle{}, set clw(1),(2) from updated values; set phy\+\_\+f3d(\+:,\+:,1) from phy\+\_\+f3d(\+:,\+:,ntot3d-\/2)
+\item else, set clw(1),(2) from updated values; set phy\+\_\+f3d(\+:,\+:,1) to cloud cover from previous time step + convective cloud water from convective scheme
+\item call \textquotesingle{}m\+\_\+micro\+\_\+driver\textquotesingle{}; updates water vapor, temperature, droplet number concentrations, cloud cover
+\end{DoxyItemize}
+\item Combine large scale and convective precip.
+\item For diagnostics, accumulate total surface precipitation and accumulate change in T and q due to microphysics in dt3dt(\+:,\+:,6) and dq3dt(\+:,\+:,4)
+\end{DoxyItemize}
+
+\subsubsection*{Determine the precipitation type and update land surface properties if necessary.}
+
+
+\begin{DoxyItemize}
+\item If \textquotesingle{}cal\+\_\+pre\textquotesingle{}, diagnose the surface precipitation type
+\begin{DoxyItemize}
+\item call \textquotesingle{}calpreciptype\textquotesingle{}; set snow flag to 1 if snow or sleet, 0 otherwise
+\end{DoxyItemize}
+\item For rain/snow decision, calculate temperature at 850 h\+Pa ( $T_{850}$)
+\begin{DoxyItemize}
+\item If not \textquotesingle{}cal\+\_\+pre\textquotesingle{}, set snow flag to 1 if $T_{850}$ is below freezing
+\end{DoxyItemize}
+\item For coupling, accumulate rain if $T_{850}$ is above freezing, otherwise accumulate snow
+\item If using the O\+SU land model, accumulate surface snow depth if $T_{850}$ is below freezing and not over an ocean surface
+\begin{DoxyItemize}
+\item call \textquotesingle{}progt2\textquotesingle{} (canopy and soil moisture?) and set the soil liquid water equal to soil total water
+\item if \textquotesingle{}lgocart\textquotesingle{}, call \textquotesingle{}sfc\+\_\+diag\textquotesingle{} to update near-\/surface state variables (this \char`\"{}allows gocart to use filtered wind fields\char`\"{})
+\end{DoxyItemize}
+\item If necessary (lssav), update the 2m max/min values of T and q
+\item If necessary (lssav), accumulate total runoff and surface runoff.
+\end{DoxyItemize}
+
+\subsubsection*{Fill the output variables from the local variables as necessary and deallocate allocatable arrays.}
+
+
+\begin{DoxyItemize}
+\item Set global sea ice thickness and concentration as well as the temperature of the sea ice
+\item Set global soil moisture variables
+\item Calculate precipitable water and water vapor mass change due to all physics for the column
+\item Deallocate arrays for S\+H\+OC scheme, deep convective scheme, and Morrison et al. microphysics 
+\end{DoxyItemize}
+
+Definition at line 402 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+References albdf, con\+\_\+day, con\+\_\+p001, czmin, epsq, hocp, one, onebg, p850, qmin, tcr, and tcrf.
+
+\mbox{\label{namespacemodule__physics__driver_ab6908356cf617061321a704625ba036d}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!moist\+\_\+bud@{moist\+\_\+bud}}
+\index{moist\+\_\+bud@{moist\+\_\+bud}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{moist\+\_\+bud()}
+{\footnotesize\ttfamily subroutine module\+\_\+physics\+\_\+driver\+::moist\+\_\+bud (\begin{DoxyParamCaption}\item[{integer}]{im,  }\item[{integer}]{ix,  }\item[{integer}]{ix2,  }\item[{integer}]{levs,  }\item[{integer}]{me,  }\item[{integer}]{kdt,  }\item[{real (kind=kind\+\_\+phys)}]{grav,  }\item[{real (kind=kind\+\_\+phys)}]{dtp,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,levs)}]{delp,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{rain,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,levs)}]{qv0,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,levs)}]{ql0,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,levs)}]{qi0,  }\item[{real (kind=kind\+\_\+phys), dimension(ix2,levs)}]{qv1,  }\item[{real (kind=kind\+\_\+phys), dimension(ix2,levs)}]{ql1,  }\item[{real (kind=kind\+\_\+phys), dimension(ix2,levs)}]{qi1,  }\item[{character$\ast$10}]{comp }\end{DoxyParamCaption})}
+
+
+
+Definition at line 3741 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+\subsection{Variable Documentation}
+\mbox{\label{namespacemodule__physics__driver_a39e15d5d87b9ff963c2f6a6a8c88f2f2}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!hocp@{hocp}}
+\index{hocp@{hocp}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{hocp}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::hocp = con\+\_\+hvap/con\+\_\+cp}
+
+
+
+Definition at line 27 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_a21d821aa7850dfcdaae562fe52b37c7b}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!qmin@{qmin}}
+\index{qmin@{qmin}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{qmin}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::qmin = 1.\+0e-\/10}
+
+
+
+Definition at line 28 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_a6df39593461d81766b8dace13a111ce2}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!p850@{p850}}
+\index{p850@{p850}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{p850}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::p850 = 85000.\+0}
+
+
+
+Definition at line 29 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_a7d7dfe680f6f4322f36d8e229a9a26f8}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!epsq@{epsq}}
+\index{epsq@{epsq}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{epsq}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::epsq = 1.e-\/20}
+
+
+
+Definition at line 30 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_ac96914a07b4ef634511dad300c479600}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!hsub@{hsub}}
+\index{hsub@{hsub}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{hsub}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::hsub = con\+\_\+hvap+con\+\_\+hfus}
+
+
+
+Definition at line 31 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+\mbox{\label{namespacemodule__physics__driver_ac1c4adf593ccaf8bb5517c54bd93e197}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!czmin@{czmin}}
+\index{czmin@{czmin}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{czmin}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::czmin = 0.\+0001}
+
+
+
+Definition at line 32 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_ab8fc037a8258ae30d8fc68c743ed6392}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!one@{one}}
+\index{one@{one}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{one}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::one = 1.\+0d0}
+
+
+
+Definition at line 33 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_aaaa0568c03e629872f03eae75d3c242b}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!onebg@{onebg}}
+\index{onebg@{onebg}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{onebg}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::onebg = \textbf{ one}/con\+\_\+g}
+
+
+
+Definition at line 33 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_af95c67209024be3116cbc33bfa7a55fa}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!albdf@{albdf}}
+\index{albdf@{albdf}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{albdf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::albdf = 0.\+06}
+
+
+
+Definition at line 34 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_a6593232e4467eec51b6e4acad3dfab8f}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!tf@{tf}}
+\index{tf@{tf}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{tf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::tf =258.\+16}
+
+
+
+Definition at line 35 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+\mbox{\label{namespacemodule__physics__driver_a9853364a9d20460ff181d784f3d227b3}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!tcr@{tcr}}
+\index{tcr@{tcr}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{tcr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::tcr =273.\+16}
+
+
+
+Definition at line 35 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_af89c09f19c7a6237e1c5264c925adbee}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!tcrf@{tcrf}}
+\index{tcrf@{tcrf}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{tcrf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::tcrf =1.\+0/(\textbf{ tcr}-\/\textbf{ tf})}
+
+
+
+Definition at line 35 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_abe208304c4aa5dca2f6468eff08c1017}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!con\+\_\+p001@{con\+\_\+p001}}
+\index{con\+\_\+p001@{con\+\_\+p001}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{con\+\_\+p001}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::con\+\_\+p001 = 0.\+001d0}
+
+
+
+Definition at line 36 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+
+\mbox{\label{namespacemodule__physics__driver_a64463ae0b1eefb125fa00ada423e8b4d}} 
+\index{module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}!con\+\_\+day@{con\+\_\+day}}
+\index{con\+\_\+day@{con\+\_\+day}!module\+\_\+physics\+\_\+driver@{module\+\_\+physics\+\_\+driver}}
+\subsubsection{con\+\_\+day}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter module\+\_\+physics\+\_\+driver\+::con\+\_\+day = 86400.d0}
+
+
+
+Definition at line 37 of file G\+F\+S\+\_\+physics\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+physics\+\_\+driver().
+

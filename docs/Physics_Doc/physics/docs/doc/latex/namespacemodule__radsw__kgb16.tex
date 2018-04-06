@@ -1,0 +1,33 @@
+\hypertarget{namespacemodule__radsw__kgb16}{}\section{module\+\_\+radsw\+\_\+kgb16 Module Reference}
+\label{namespacemodule__radsw__kgb16}\index{module\+\_\+radsw\+\_\+kgb16@{module\+\_\+radsw\+\_\+kgb16}}
+
+
+This module sets up absorption coefficients for band 16\+: 2600-\/3250 cm-\/1 (low -\/ h2o, ch4; high -\/ ch4)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__kgb16_ad76a9d79e77228ac93ec3db96eed2b29}\label{namespacemodule__radsw__kgb16_ad76a9d79e77228ac93ec3db96eed2b29}} 
+integer, public \hyperlink{namespacemodule__radsw__kgb16_ad76a9d79e77228ac93ec3db96eed2b29}{msa16}
+\begin{DoxyCompactList}\small\item\em msa16=585 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Chou(1999) coefficients for cloud rain particles}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_ga2ce1ab36897fb1fc7d85cbf7fe539e59}{msb16}
+\begin{DoxyCompactList}\small\item\em msb16=235 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_gab35df3f7d231e98fbef5738119138907}{msf16}
+\begin{DoxyCompactList}\small\item\em msf16=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_gaeee3fe8e44f6fbd9a6a008bc9f97f37c}{mfr16}
+\begin{DoxyCompactList}\small\item\em mfr16=3 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_gab35df3f7d231e98fbef5738119138907}{msf16}, ng16), public \hyperlink{group__module__radsw__kgbnn_ga77d98f3fb766d4abfd494332ce67c2c2}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to 6). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{namespacemodule__radsw__kgb16_ad76a9d79e77228ac93ec3db96eed2b29}{msa16}, ng16), public \hyperlink{group__module__radsw__kgbnn_ga51fe40b5f24cc461850fe5be40d18869}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(585,\+N\+G16) (ka(9,5,13,\+N\+G16)) contains absorption coefs at the 16 chosen g-\/values for a range of pressure levels$>$ $\sim$100mb, temperatures, and binary species parameters (see taumol.\+f for definition). the first index in the array, js, runs from 1 to 9, and corresponds to different values of the binary species parameter. for instance, js=1 refers to dry air, js = 2 corresponds to the paramter value 1/8, js = 3 corresponds to the parameter value 2/8, etc. the second index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 3 means that the data are for the reference temperature tref for this pressure level, jt = 2 refers to tref-\/15, jt = 1 is for tref-\/30, jt = 4 is for tref+15, and jt = 5 is for tref+30. the third index, jp, runs from 1 to 13 and refers to the jpth reference pressure level (see taumol.\+f for these levels in mb). the fourth index, ig, goes from 1 to 6, and indicates which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_ga2ce1ab36897fb1fc7d85cbf7fe539e59}{msb16}, ng16), public \hyperlink{group__module__radsw__kgbnn_gafe8639128e4f7a48f133b7399addcb79}{absb}
+\begin{DoxyCompactList}\small\item\em the array absb(235,6) (kb(5,13\+:59,6)) contains absorption coefs at the 16 chosen g-\/values for a range of pressure levels $<$ $\sim$100mb and temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 3 means that the data are for the reference temperature tref for this pressure level, jt = 2 refers to the temperature tref-\/15, jt = 1 is for tref-\/30, jt = 4 is for tref+15, and jt = 5 is for tref+30. the second index, jp, runs from 13 to 59 and refers to the jpth reference pressure level (see taumol.\+f for the value of these pressure levels in mb). the third index, ig, goes from 1 to 6, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_gaeee3fe8e44f6fbd9a6a008bc9f97f37c}{mfr16}, ng16), public {\bfseries forref}
+\item 
+real(kind=kind\+\_\+phys), parameter, public \hyperlink{group__module__radsw__kgbnn_ga27964e0300eb686acf1ed3c8459d3810}{rayl} = 2.\+91e-\/10
+\begin{DoxyCompactList}\small\item\em rayleigh extinction coefficient at v = $2925 cm^{-1}$ \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}

@@ -1,0 +1,6 @@
+<map id="module_radiation_aerosols::gocart_init" name="module_radiation_aerosols::gocart_init">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga8d1f5010e8cbc6abda50b8fc233ad7e9" title="This subroutine computes mean aerosols optical properties over each SW/LW radiation spectral band for..." alt="" coords="241,5,324,32"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#ga15bad8499ffd17d967e5788cd6721c4d" title="This subroutine: " alt="" coords="229,56,336,83"/>
+<area shape="rect" id="node4" href="$group__module__radiation__aerosols.html#ga8b6a882f91674d1c0f7f71f297a5f92e" title="This subroutine reads input gocart aerosol optical data from Mie code calculations. " alt="" coords="231,107,335,133"/>
+<area shape="rect" id="node5" href="$group__module__radiation__aerosols.html#gafb13b833ac59cf949702bdbde93d2c44" title="This subroutine determines merging coefficients ctaer; setup aerosol specification. " alt="" coords="239,157,326,184"/>
+</map>

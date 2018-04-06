@@ -1,0 +1,47 @@
+\section{G\+F\+S\+\_\+physics\+\_\+driver.\+F90 File Reference}
+\label{_g_f_s__physics__driver_8_f90}\index{G\+F\+S\+\_\+physics\+\_\+driver.\+F90@{G\+F\+S\+\_\+physics\+\_\+driver.\+F90}}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \textbf{ module\+\_\+physics\+\_\+driver}
+\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ module\+\_\+physics\+\_\+driver\+::gfs\+\_\+physics\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\begin{DoxyCompactList}\small\item\em G\+FS Physics Implementation Layer. \end{DoxyCompactList}\item 
+subroutine \textbf{ module\+\_\+physics\+\_\+driver\+::moist\+\_\+bud} (im, ix, ix2, levs, me, kdt, grav, dtp, delp, rain, qv0, ql0, qi0, qv1, ql1, qi1, comp)
+\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::hocp} = con\+\_\+hvap/con\+\_\+cp
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::qmin} = 1.\+0e-\/10
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::p850} = 85000.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::epsq} = 1.e-\/20
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::hsub} = con\+\_\+hvap+con\+\_\+hfus
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::czmin} = 0.\+0001
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::one} = 1.\+0d0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::onebg} = one/con\+\_\+g
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::albdf} = 0.\+06
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::tf} =258.\+16
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::tcr} =273.\+16
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::tcrf} =1.\+0/(tcr-\/tf)
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::con\+\_\+p001} = 0.\+001d0
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ module\+\_\+physics\+\_\+driver\+::con\+\_\+day} = 86400.d0
+\end{DoxyCompactItemize}

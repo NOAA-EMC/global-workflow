@@ -1,0 +1,4 @@
+<map id="module_radiation_astronomy::sol_update" name="module_radiation_astronomy::sol_update">
+<area shape="rect" id="node2" href="$group__module__radiation__astronomy.html#ga010c0abb10d9c13e0f654710a85fe0c8" title="This subroutine prints out forecast date, time, and astronomy quantities. " alt="" coords="243,5,431,46"/>
+<area shape="rect" id="node3" href="$group__module__radiation__astronomy.html#ga03b70b5dd6cecf5601c34a45e6552792" title="This subroutine computes radius vector, declination and right ascension of sun, and equation of time..." alt="" coords="243,70,431,111"/>
+</map>

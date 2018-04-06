@@ -1,0 +1,10 @@
+<map id="RRTMG Shortwave/Longwave Radiation" name="RRTMG Shortwave/Longwave Radiation">
+<area shape="rect" id="node1" href="$group__module__radiation__driver.html" title="The GFS radiation driver module. " alt="" coords="269,5,427,32"/>
+<area shape="rect" id="node2" href="$group__module__radiation__gases.html" title="This module sets up ozone climatological profiles and other constant gas profiles, such as co2, ch4, n2o, o2, and those of cfc gases. All data are entered as mixing ratio by volume, except ozone which is mass mixing ratio (g/g). " alt="" coords="267,208,429,235"/>
+<area shape="rect" id="node3" href="$group__module__radiation__clouds.html" title="This module computes cloud related quantities for radiation computations. " alt="" coords="265,157,431,184"/>
+<area shape="rect" id="node8" href="$group__module__radiation__aerosols.html" title="This module contains climatological atmospheric aerosol schemes for radiation computations. " alt="" coords="260,56,436,83"/>
+<area shape="rect" id="node9" href="$group__module__radiation__astronomy.html" title="This module sets up astronomical quantities for solar radiation calculations. " alt="" coords="254,107,442,133"/>
+<area shape="rect" id="node7" href="$group__module__radiation__surface.html" title="This module sets up surface albedo for sw radiation and surface emissivity for lw radiation..." alt="" coords="263,259,433,285"/>
+<area shape="rect" id="node6" href="$group__module__radlw__main.html" title="This module includes NCEP&#39;s modifications of the rrtmg&#45;lw radiation code from AER. " alt="" coords="279,309,417,336"/>
+<area shape="rect" id="node5" href="$group__module__radsw__main.html" title="This module includes NCEP&#39;s modifications of the rrtmg&#45;sw radiation code from AER. " alt="" coords="277,360,419,387"/>
+</map>

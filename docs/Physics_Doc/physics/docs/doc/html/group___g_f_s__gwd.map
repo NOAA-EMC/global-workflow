@@ -1,0 +1,4 @@
+<map id="GFS Orographic and Convective Gravity Wave Drag" name="GFS Orographic and Convective Gravity Wave Drag">
+<area shape="rect" id="node1" href="$group___g_f_s__cgwd.html" title="This subroutine is the parameterization of convective gravity wave drag based on the theory given by ..." alt="" coords="200,86,365,127"/>
+<area shape="rect" id="node3" href="$group___g_f_s__ogwd.html" title="This subroutine includes orographic gravity wave drag and mountain blocking. " alt="" coords="195,5,370,61"/>
+</map>

@@ -1,0 +1,35 @@
+digraph "module_radiation_driver::radinit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node64 [label="module_radiation_driver\l::radinit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node64 -> Node65 [color="midnightblue",fontsize="10",style="solid"];
+  Node65 [label="module_radiation_aerosols\l::aer_init",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga58ac70a5189ef62c63cf2c87465a030a",tooltip="The initialization program is to set up necessary parameters and working arrays. "];
+  Node65 -> Node66 [color="midnightblue",fontsize="10",style="solid"];
+  Node66 [label="wrt_aerlog",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga3135fdf318002f9d56dd2d93225f4aac",tooltip="This subroutine writes aerosol parameter configuration to run log file. "];
+  Node65 -> Node67 [color="midnightblue",fontsize="10",style="solid"];
+  Node67 [label="set_spectrum",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#gaa7fe6dc2964bc474a132b93aaab82cb0",tooltip="This subroutine defines the one wavenumber solar fluxes based on toa solar spectral distribution..."];
+  Node65 -> Node68 [color="midnightblue",fontsize="10",style="solid"];
+  Node68 [label="module_radiation_aerosols\l::clim_aerinit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#gacdc24d7d4c01b97920ef940cc01c9cc0",tooltip="This subroutine is the opac-climatology aerosol initialization program to set up necessary parameters..."];
+  Node68 -> Node69 [color="midnightblue",fontsize="10",style="solid"];
+  Node69 [label="set_aercoef",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga95fabbc4272ae70f3b345f9b1a898d46",tooltip="The initialization program for climatological aerosols. The program reads and maps the pre-tabulated ..."];
+  Node69 -> Node70 [color="midnightblue",fontsize="10",style="solid"];
+  Node70 [label="optavg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga637761b6110739f2d96322e2ddcc1291",tooltip="This subroutine computes mean aerosols optical properties over each SW radiation spectral band for ea..."];
+  Node65 -> Node71 [color="midnightblue",fontsize="10",style="solid"];
+  Node71 [label="set_volcaer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga9b4558586df512eab092565549b835e2",tooltip="The initialization program for stratospheric volcanic aerosols. "];
+  Node64 -> Node72 [color="midnightblue",fontsize="10",style="solid"];
+  Node72 [label="module_radiation_clouds\l::cld_init",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__clouds.html#ga0e1ee94c9ca85849a219803325a61184",tooltip="This subroutine is an initialization program for cloud-radiation calculations and sets up boundary la..."];
+  Node72 -> Node73 [color="midnightblue",fontsize="10",style="solid"];
+  Node73 [label="module_radiation_clouds\l::rhtable",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__clouds.html#ga9b3f43844a53e79cd5c348f8c72ec408",tooltip="cld-rh relations obtained from mitchell-hahn procedure. "];
+  Node64 -> Node74 [color="midnightblue",fontsize="10",style="solid"];
+  Node74 [label="module_radiation_gases\l::gas_init",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__gases.html#gaeff1c60060c81d3f0693a542976ee3db",tooltip="This subroutine sets up ozone, co2, etc. parameters. If climatology ozone then read in monthly ozone ..."];
+  Node64 -> Node75 [color="midnightblue",fontsize="10",style="solid"];
+  Node75 [label="module_radlw_main::\lrlwinit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radlw__main.html#gaa9569479682c83b26584b7e9ee6841fa",tooltip="This subroutine performs calculations necessary for the initialization of the longwave model..."];
+  Node64 -> Node76 [color="midnightblue",fontsize="10",style="solid"];
+  Node76 [label="module_radsw_main::\lrswinit",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radsw__main.html#ga5b0d35149515607d94f42b6ee5a40665",tooltip="This subroutine initializes non-varying module variables, conversion factors, and look-up tables..."];
+  Node64 -> Node77 [color="midnightblue",fontsize="10",style="solid"];
+  Node77 [label="module_radiation_surface\l::sfc_init",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__surface.html#gac05a5b8f903ace95e45c1cce612ed721",tooltip="This subroutine is the initialization program for surface radiation related quantities (albedo..."];
+  Node64 -> Node78 [color="midnightblue",fontsize="10",style="solid"];
+  Node78 [label="module_radiation_astronomy\l::sol_init",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#gaa9eeb5462c1dbddb971cee28eb38ca47",tooltip="This subroutine initializes astronomy process, and set up module constants. "];
+}

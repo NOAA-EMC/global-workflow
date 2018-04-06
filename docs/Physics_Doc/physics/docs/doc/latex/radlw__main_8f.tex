@@ -1,0 +1,149 @@
+\hypertarget{radlw__main_8f}{}\section{radlw\+\_\+main.\+f File Reference}
+\label{radlw__main_8f}\index{radlw\+\_\+main.\+f@{radlw\+\_\+main.\+f}}
+
+
+This file contains N\+C\+EP\textquotesingle{}s modifications of the rrtmg-\/lw radiation code from A\+ER.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}{module\+\_\+radlw\+\_\+main\+::rlwinit} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine performs calculations necessary for the initialization of the longwave model. lookup tables are computed for use in the lw radiative transfer, and input absorption coefficient data for each spectral band are reduced from 256 g-\/point intervals to 140. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_ga9318778651bca6ec1f1776da6c21dfda}{module\+\_\+radlw\+\_\+main\+::mcica\+\_\+subcol} (cldf, nlay, ipseed, lcloudy)
+\begin{DoxyCompactList}\small\item\em This suroutine computes sub-\/colum cloud profile flag array. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gaeb7b74288cf87988c14bf6e24a2039ae}{module\+\_\+radlw\+\_\+main\+::setcoef} (pavel, tavel, tz, stemp, h2ovmr, colamt, coldry, colbrd, nlay, nlp1, laytrop, pklay, pklev, jp, jt, jt1, rfrate, fac00, fac01, fac10, fac11, selffac, selffrac, indself, forfac, forfrac, indfor, minorfrac, scaleminor, scaleminorn2, indminor)
+\begin{DoxyCompactList}\small\item\em This subroutine computes various coefficients needed in radiative transfer calculations. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gab002119955eb2b82f16352459180f5ed}{module\+\_\+radlw\+\_\+main\+::rtrn} (semiss, delp, cldfrc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere. Clouds assumed as randomly overlaping in a vertical column. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gab09f986fb87e796a30c889086c92aeb1}{module\+\_\+radlw\+\_\+main\+::taumol} (laytrop, pavel, coldry, colamt, colbrd, wx, tauaer, rfrate, fac00, fac01, fac10, fac11, jp, jt, jt1, selffac, selffrac, indself, forfac, forfrac, indfor, minorfrac, scaleminor, scaleminorn2, indminor, nlay, fracs, tautot)
+\begin{DoxyCompactList}\small\item\em This subroutine contains optical depths developed for the rapid radiative transfer model. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_ga001d1bcd17533f7f920f859ff9a4e60f}{taugb01}
+\begin{DoxyCompactList}\small\item\em band 1\+: 10-\/350 cm-\/1 (low key -\/ h2o; low minor -\/ n2); (high key -\/ h2o; high minor -\/ n2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a926415cb51870dda9a90883e01a2ee38}\label{radlw__main_8f_a926415cb51870dda9a90883e01a2ee38}} 
+subroutine \hyperlink{radlw__main_8f_a926415cb51870dda9a90883e01a2ee38}{taugb02}
+\begin{DoxyCompactList}\small\item\em Band 2\+: 350-\/500 cm-\/1 (low key -\/ h2o; high key -\/ h2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a45e39b507d1fc031c80d9c7f06905d4a}\label{radlw__main_8f_a45e39b507d1fc031c80d9c7f06905d4a}} 
+subroutine \hyperlink{radlw__main_8f_a45e39b507d1fc031c80d9c7f06905d4a}{taugb03}
+\begin{DoxyCompactList}\small\item\em Band 3\+: 500-\/630 cm-\/1 (low key -\/ h2o,co2; low minor -\/ n2o); (high key -\/ h2o,co2; high minor -\/ n2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_ae69174bcf1a87dc7a5baffac69797d07}\label{radlw__main_8f_ae69174bcf1a87dc7a5baffac69797d07}} 
+subroutine \hyperlink{radlw__main_8f_ae69174bcf1a87dc7a5baffac69797d07}{taugb04}
+\begin{DoxyCompactList}\small\item\em Band 4\+: 630-\/700 cm-\/1 (low key -\/ h2o,co2; high key -\/ o3,co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a92653ffcd20ff247a00eaf3339cba6df}\label{radlw__main_8f_a92653ffcd20ff247a00eaf3339cba6df}} 
+subroutine \hyperlink{radlw__main_8f_a92653ffcd20ff247a00eaf3339cba6df}{taugb05}
+\begin{DoxyCompactList}\small\item\em Band 5\+: 700-\/820 cm-\/1 (low key -\/ h2o,co2; low minor -\/ o3, ccl4) (high key -\/ o3,co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a7190d415614aa35deefacff1041d4719}\label{radlw__main_8f_a7190d415614aa35deefacff1041d4719}} 
+subroutine \hyperlink{radlw__main_8f_a7190d415614aa35deefacff1041d4719}{taugb06}
+\begin{DoxyCompactList}\small\item\em Band 6\+: 820-\/980 cm-\/1 (low key -\/ h2o; low minor -\/ co2) (high key -\/ none; high minor -\/ cfc11, cfc12) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a2208d86ae0712a0ca426bbe96de825bc}\label{radlw__main_8f_a2208d86ae0712a0ca426bbe96de825bc}} 
+subroutine \hyperlink{radlw__main_8f_a2208d86ae0712a0ca426bbe96de825bc}{taugb07}
+\begin{DoxyCompactList}\small\item\em Band 7\+: 980-\/1080 cm-\/1 (low key -\/ h2o,o3; low minor -\/ co2) (high key -\/ o3; high minor -\/ co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a1447d5bda5b521d27171e61881684183}\label{radlw__main_8f_a1447d5bda5b521d27171e61881684183}} 
+subroutine \hyperlink{radlw__main_8f_a1447d5bda5b521d27171e61881684183}{taugb08}
+\begin{DoxyCompactList}\small\item\em Band 8\+: 1080-\/1180 cm-\/1 (low key -\/ h2o; low minor -\/ co2,o3,n2o) (high key -\/ o3; high minor -\/ co2, n2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a889abbaaa2d421c0c3dc820e2004414d}\label{radlw__main_8f_a889abbaaa2d421c0c3dc820e2004414d}} 
+subroutine \hyperlink{radlw__main_8f_a889abbaaa2d421c0c3dc820e2004414d}{taugb09}
+\begin{DoxyCompactList}\small\item\em Band 9\+: 1180-\/1390 cm-\/1 (low key -\/ h2o,ch4; low minor -\/ n2o) (high key -\/ ch4; high minor -\/ n2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a74c1cb8390daff1e5ce5e863c50b7873}\label{radlw__main_8f_a74c1cb8390daff1e5ce5e863c50b7873}} 
+subroutine \hyperlink{radlw__main_8f_a74c1cb8390daff1e5ce5e863c50b7873}{taugb10}
+\begin{DoxyCompactList}\small\item\em Band 10\+: 1390-\/1480 cm-\/1 (low key -\/ h2o; high key -\/ h2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a573fd5b3580d6bbf5bfa2f01ee547034}\label{radlw__main_8f_a573fd5b3580d6bbf5bfa2f01ee547034}} 
+subroutine \hyperlink{radlw__main_8f_a573fd5b3580d6bbf5bfa2f01ee547034}{taugb11}
+\begin{DoxyCompactList}\small\item\em Band 11\+: 1480-\/1800 cm-\/1 (low -\/ h2o; low minor -\/ o2) (high key -\/ h2o; high minor -\/ o2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_ae56eaa9e3b897ca235d4d6b271cc1e47}\label{radlw__main_8f_ae56eaa9e3b897ca235d4d6b271cc1e47}} 
+subroutine \hyperlink{radlw__main_8f_ae56eaa9e3b897ca235d4d6b271cc1e47}{taugb12}
+\begin{DoxyCompactList}\small\item\em Band 12\+: 1800-\/2080 cm-\/1 (low -\/ h2o,co2; high -\/ nothing) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a2ac7254d2dcff516e8e44b8b679302c0}\label{radlw__main_8f_a2ac7254d2dcff516e8e44b8b679302c0}} 
+subroutine \hyperlink{radlw__main_8f_a2ac7254d2dcff516e8e44b8b679302c0}{taugb13}
+\begin{DoxyCompactList}\small\item\em Band 13\+: 2080-\/2250 cm-\/1 (low key-\/h2o,n2o; high minor-\/o3 minor) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a26140cbe1a3d6119b56cf5c2d539670e}\label{radlw__main_8f_a26140cbe1a3d6119b56cf5c2d539670e}} 
+subroutine \hyperlink{radlw__main_8f_a26140cbe1a3d6119b56cf5c2d539670e}{taugb14}
+\begin{DoxyCompactList}\small\item\em Band 14\+: 2250-\/2380 cm-\/1 (low -\/ co2; high -\/ co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a93b5c0ae0525697ffffb6228581a301c}\label{radlw__main_8f_a93b5c0ae0525697ffffb6228581a301c}} 
+subroutine \hyperlink{radlw__main_8f_a93b5c0ae0525697ffffb6228581a301c}{taugb15}
+\begin{DoxyCompactList}\small\item\em Band 15\+: 2380-\/2600 cm-\/1 (low -\/ n2o,co2; low minor -\/ n2) (high -\/ nothing) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radlw__main_8f_a942ce0031745cd1b3b4ebc3915970554}\label{radlw__main_8f_a942ce0031745cd1b3b4ebc3915970554}} 
+subroutine \hyperlink{radlw__main_8f_a942ce0031745cd1b3b4ebc3915970554}{taugb16}
+\begin{DoxyCompactList}\small\item\em Band 16\+: 2600-\/3250 cm-\/1 (low key-\/ h2o,ch4; high key -\/ ch4) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}{module\+\_\+radlw\+\_\+main\+::lwrad} (plyr, plvl, tlyr, tlvl, qlyr, olyr, gasvmr, clouds, icseed, aerosols, sfemis, sfgtmp, npts, nlay, nlp1, lprnt, hlwc, topflx, sfcflx, H\+L\+W0, H\+L\+WB, F\+L\+X\+P\+RF)
+\begin{DoxyCompactList}\small\item\em This subroutine is the main LW radiation routine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga6bfdea656cc7e1f773ffcc797e072e91}{module\+\_\+radlw\+\_\+main\+::cldprop} (cfrac, cliqp, reliq, cicep, reice, cdat1, cdat2, cdat3, cdat4, nlay, nlp1, ipseed, cldfmc, taucld)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the cloud optical depth(s) for each cloudy layer and g-\/point interval. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga8d4a6fecb4ad25468e91661a79d4ca20}{module\+\_\+radlw\+\_\+main\+::rtrnmr} (semiss, delp, cldfrc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere. Clouds are assumed as in maximum-\/randomly overlaping in a vertical column. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga1445abd529b76abe7ffb80e843d9fafc}{module\+\_\+radlw\+\_\+main\+::rtrnmc} (semiss, delp, cldfmc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere.\+Clouds are treated with the mcica stochastic approach. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{radlw__main_8f_a8d63a28d2550f8e193619e46a4c47d70}\label{radlw__main_8f_a8d63a28d2550f8e193619e46a4c47d70}} 
+character(40), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::vtaglw} =\textquotesingle{}N\+C\+EP LW v5.\+1 Nov 2012 -\/R\+R\+T\+MG-\/LW v4.\+82 \textquotesingle{}
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::eps} = 1.\+0e-\/6
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::oneminus} = 1.\+0-\/eps
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::cldmin} = 1.\+0e-\/80
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::bpade} = 1.\+0/0.\+278
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::stpfac} = 296.\+0/1013.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::wtdiff} = 0.\+5
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::tblint} = ntbl
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::f\+\_\+zero} = 0.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::f\+\_\+one} = 1.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::amdw} = con\+\_\+amd/con\+\_\+amw
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::amdo3} = con\+\_\+amd/con\+\_\+amo3
+\item 
+integer, dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::nspa}
+\item 
+integer, dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::nspb}
+\item 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a0}
+\item 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a1}
+\item 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a2}
+\item 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lhlwb} = .false.
+\item 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lhlw0} = .false.
+\item 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lflxprf} = .false.
+\item 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radlw\+\_\+main\+::fluxfac}
+\item 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radlw\+\_\+main\+::heatfac}
+\item 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::semiss0}
+\item 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::tau\+\_\+tbl}
+\item 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::exp\+\_\+tbl}
+\item 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::tfn\+\_\+tbl}
+\item 
+integer, parameter {\bfseries module\+\_\+radlw\+\_\+main\+::ipsdlw0} = ngptlw
+\end{DoxyCompactItemize}

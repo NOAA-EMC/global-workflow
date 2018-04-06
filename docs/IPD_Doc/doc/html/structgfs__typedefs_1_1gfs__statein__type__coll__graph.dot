@@ -1,0 +1,13 @@
+digraph "gfs_typedefs::gfs_statein_type"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="gfs_typedefs::gfs_statein_type",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" vgrs\nugrs\ntgrs\nvvl\ndiss_est\nprsi\nphii\nprslk\nprsl\nphil\n..." ,fontname="Helvetica"];
+  Node2 [label="real(kind=kind_phys)\l, dimension(:,:), pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" qgrs" ,fontname="Helvetica"];
+  Node3 [label="real(kind=kind_phys)\l, dimension(:,:,:),\l pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" pgr" ,fontname="Helvetica"];
+  Node4 [label="real(kind=kind_phys)\l, dimension(:), pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

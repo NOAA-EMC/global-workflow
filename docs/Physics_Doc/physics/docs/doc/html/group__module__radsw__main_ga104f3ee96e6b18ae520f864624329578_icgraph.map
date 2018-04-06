@@ -1,0 +1,4 @@
+<map id="module_radsw_main::taumol" name="module_radsw_main::taumol">
+<area shape="rect" id="node2" href="$group__module__radsw__main.html#gaa7e04f41bd0204760b6d660c2abf510b" title="This subroutine is the main SW radiation routine. " alt="" coords="203,5,352,46"/>
+<area shape="rect" id="node3" href="$group__module__radiation__driver.html#ga8ba1003244d5d4d65e70e760d413f448" title="This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. " alt="" coords="401,5,559,46"/>
+</map>

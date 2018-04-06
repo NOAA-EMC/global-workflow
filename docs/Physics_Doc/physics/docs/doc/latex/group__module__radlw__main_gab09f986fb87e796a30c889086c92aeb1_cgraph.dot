@@ -1,0 +1,39 @@
+digraph "module_radlw_main::taumol"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node32 [label="module_radlw_main::\ltaumol",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node32 -> Node33 [color="midnightblue",fontsize="10",style="solid"];
+  Node33 [label="taugb01",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radlw__main.html#ga001d1bcd17533f7f920f859ff9a4e60f",tooltip="band 1: 10-350 cm-1 (low key - h2o; low minor - n2); (high key - h2o; high minor - n2) ..."];
+  Node32 -> Node34 [color="midnightblue",fontsize="10",style="solid"];
+  Node34 [label="taugb02",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a926415cb51870dda9a90883e01a2ee38",tooltip="Band 2: 350-500 cm-1 (low key - h2o; high key - h2o) "];
+  Node32 -> Node35 [color="midnightblue",fontsize="10",style="solid"];
+  Node35 [label="taugb03",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a45e39b507d1fc031c80d9c7f06905d4a",tooltip="Band 3: 500-630 cm-1 (low key - h2o,co2; low minor - n2o); (high key - h2o,co2; high minor - n2o) ..."];
+  Node32 -> Node36 [color="midnightblue",fontsize="10",style="solid"];
+  Node36 [label="taugb04",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#ae69174bcf1a87dc7a5baffac69797d07",tooltip="Band 4: 630-700 cm-1 (low key - h2o,co2; high key - o3,co2) "];
+  Node32 -> Node37 [color="midnightblue",fontsize="10",style="solid"];
+  Node37 [label="taugb05",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a92653ffcd20ff247a00eaf3339cba6df",tooltip="Band 5: 700-820 cm-1 (low key - h2o,co2; low minor - o3, ccl4) (high key - o3,co2) ..."];
+  Node32 -> Node38 [color="midnightblue",fontsize="10",style="solid"];
+  Node38 [label="taugb06",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a7190d415614aa35deefacff1041d4719",tooltip="Band 6: 820-980 cm-1 (low key - h2o; low minor - co2) (high key - none; high minor - cfc11..."];
+  Node32 -> Node39 [color="midnightblue",fontsize="10",style="solid"];
+  Node39 [label="taugb07",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a2208d86ae0712a0ca426bbe96de825bc",tooltip="Band 7: 980-1080 cm-1 (low key - h2o,o3; low minor - co2) (high key - o3; high minor - co2) ..."];
+  Node32 -> Node40 [color="midnightblue",fontsize="10",style="solid"];
+  Node40 [label="taugb08",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a1447d5bda5b521d27171e61881684183",tooltip="Band 8: 1080-1180 cm-1 (low key - h2o; low minor - co2,o3,n2o) (high key - o3; high minor - co2..."];
+  Node32 -> Node41 [color="midnightblue",fontsize="10",style="solid"];
+  Node41 [label="taugb09",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a889abbaaa2d421c0c3dc820e2004414d",tooltip="Band 9: 1180-1390 cm-1 (low key - h2o,ch4; low minor - n2o) (high key - ch4; high minor - n2o) ..."];
+  Node32 -> Node42 [color="midnightblue",fontsize="10",style="solid"];
+  Node42 [label="taugb10",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a74c1cb8390daff1e5ce5e863c50b7873",tooltip="Band 10: 1390-1480 cm-1 (low key - h2o; high key - h2o) "];
+  Node32 -> Node43 [color="midnightblue",fontsize="10",style="solid"];
+  Node43 [label="taugb11",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a573fd5b3580d6bbf5bfa2f01ee547034",tooltip="Band 11: 1480-1800 cm-1 (low - h2o; low minor - o2) (high key - h2o; high minor - o2) ..."];
+  Node32 -> Node44 [color="midnightblue",fontsize="10",style="solid"];
+  Node44 [label="taugb12",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#ae56eaa9e3b897ca235d4d6b271cc1e47",tooltip="Band 12: 1800-2080 cm-1 (low - h2o,co2; high - nothing) "];
+  Node32 -> Node45 [color="midnightblue",fontsize="10",style="solid"];
+  Node45 [label="taugb13",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a2ac7254d2dcff516e8e44b8b679302c0",tooltip="Band 13: 2080-2250 cm-1 (low key-h2o,n2o; high minor-o3 minor) "];
+  Node32 -> Node46 [color="midnightblue",fontsize="10",style="solid"];
+  Node46 [label="taugb14",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a26140cbe1a3d6119b56cf5c2d539670e",tooltip="Band 14: 2250-2380 cm-1 (low - co2; high - co2) "];
+  Node32 -> Node47 [color="midnightblue",fontsize="10",style="solid"];
+  Node47 [label="taugb15",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a93b5c0ae0525697ffffb6228581a301c",tooltip="Band 15: 2380-2600 cm-1 (low - n2o,co2; low minor - n2) (high - nothing) "];
+  Node32 -> Node48 [color="midnightblue",fontsize="10",style="solid"];
+  Node48 [label="taugb16",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radlw__main_8f.html#a942ce0031745cd1b3b4ebc3915970554",tooltip="Band 16: 2600-3250 cm-1 (low key- h2o,ch4; high key - ch4) "];
+}

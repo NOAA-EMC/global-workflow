@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -n "$pgm" ] && [ -n "$pgmout" ]; then
+  echo "$pgm" >> $pgmout
+fi
+
+if [ -f errfile ]; then
+  rm errfile
+fi
+
+export FORT01=0
+unset `env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}'`
+

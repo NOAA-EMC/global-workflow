@@ -1,0 +1,155 @@
+#!/bin/ksh
+set -x
+CONF_OPTION="$1"
+unset CONF_FILE
+CHOSEN_MODULE="${2:-}"
+EXTERNALS_NEMS="${3:-}"
+ESMF_VERSION_DEFINE="${4:-}"
+
+if [[ -d NEMS/src/conf ]] ; then
+    cd NEMS/src
+elif [[ -d src/conf ]] ; then
+    cd src
+elif [[ -d ../conf ]] ; then
+    cd ..
+fi
+
+if [[ ! -d conf ]] ; then
+    echo "ERROR: This script must be run from the NEMS/src directory." 1>&2
+    exit 1
+fi
+
+if [[ -z "$CONF_OPTION" ]] ; then
+    echo "ERROR: Run with at least one argument:"
+    echo "    ./configure BUILD_NAME"
+    echo "OR: ./configure /path/to/configure.nems [more args]"
+    echo " "
+    echo "Other options:"
+    echo "  \$2 = path to modules.nems"
+    echo "  \$3 = path to externals.nems"
+    echo "  \$4 = path to ESMFVersionDefine.h"
+    exit 1
+fi
+
+if [[ -z "$CHOSEN_MODULE" ]] ; then
+    echo "no \$2 - Will automatically pick a modulefile"
+fi
+if [[ -z "$ESMF_VERSION_DEFINE" ]] ; then
+    echo "no \$3 - Will automatically pick an ESMFVersionDefine.h"
+    ESMF_VERSION_DEFINE=ESMFVersionDefine_ESMF_NUOPC.h
+fi
+if [[ -z "$EXTERNALS_NEMS" ]] ; then
+    echo "no \$4 - Will automatically pick an externals.nems file"
+fi
+
+copy_diff_files(){
+  if ( ! cmp "$1" "$2" > /dev/null 2>&1 ) ; then
+    set -xue
+    cp $1 $2
+    set +xue
+  else
+    echo "confirmed $2"
+  fi
+}
+
+copy_diff_mod()  {
+    if ( ! cmp "$1" "$2" > /dev/null 2>&1 ) ; then
+	set -xue
+	cp -fp "$1" "$2"
+	set +xue
+    else
+	echo "confirmed $2"
+    fi
+    cat > "$2.sh" <<EOF
+source $( pwd -P )/conf/module-setup.sh.inc
+module use $( pwd -P )/conf
+module load modules.nems
+EOF
+    cat > "$2.csh" <<EOF
+source $( pwd -P )/conf/module-setup.csh.inc
+module use $( pwd -P )/conf
+module load modules.nems
+EOF
+}
+
+case "$CONF_OPTION" in
+    nmmb_intel_theia)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Theia.intel_nmmb}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-theia/ESMF_700_nmmb}"
+        ;;
+    nmmb_intel_wcoss)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Wcoss.intel_nmmb}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-wcoss/ESMF_700_nmmb}"
+        ;;
+    gsm_intel_theia)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Theia.intel_gsm}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-theia/ESMF_700_gsm}"
+        ;;
+    gsm_intel_wcoss)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Wcoss.intel_gsm}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-wcoss.phase1/ESMF_700_gsm}"
+        ;;
+    gsm_intel_wcoss_c)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Wcoss_C.intel_gsm}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-wcoss.cray/ESMF_700_gsm}"
+        ;;
+    coupled_intel_wcoss)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Wcoss.intel}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Wcoss}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-wcoss.phase1/ESMF_NUOPC}"
+        ;;
+    coupled_intel_wcoss_cray)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Wcoss_C.intel}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Wcoss_C}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-wcoss.cray/ESMF_NUOPC}"
+        ;;
+    coupled_intel_gaea)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Gaea.intel}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Gaea}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-gaea/ESMF_NUOPC}"
+        ;;
+    coupled_intel_theia)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Theia.intel}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Theia}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-gaea/ESMF_NUOPC}"
+        ;;
+    coupled_intel_yellowstone)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Yellowstone.intel}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Yellowstone}"
+        CHOSEN_MODULE="${CHOSEN_MODULE:-gaea/ESMF_NUOPC}"
+        ;;
+    coupled_linux_gnu)
+        CONF_FILE="${CONF_FILE:-../../conf/configure.nems.Linux.gnu conf/configure.nems}"
+        EXTERNALS_NEMS="${EXTERNALS_NEMS:-../../conf/externals.nems.Linux.gnu}"
+        ;;
+    *)
+        if [[ -f "../../conf/$CONF_OPTION" ]] ; then
+            CONF_FILE="../../conf/$CONF_OPTION"
+        elif [[ ! -f "$CONF_OPTION" ]] ; then
+            echo "$CONF_OPTION: unknown configuration"
+            exit 1
+        fi
+esac
+
+if [[ -z "$CHOSEN_MODULE" ]] ; then
+    cat<<EOF > modules.empty
+#%Module######################################################################
+# Empty module file for coupled_linux_gnu configuration.
+EOF
+    CHOSEN_MODULE='modules.empty'
+fi
+
+set -ue
+
+copy_diff_files "$CONF_FILE" conf/configure.nems
+if [[ -z "$EXTERNALS_NEMS" ]] ; then
+    if [[ ! -e conf/externals.nems || -s conf/externals.nems ]] ; then
+        cat /dev/null > conf/externals.nems
+    fi
+elif [[ -s ../../conf/$EXTERNALS_NEMS ]] ; then
+    copy_diff_files "../../conf/$EXTERNALS_NEMS" conf/externals.nems
+else
+    copy_diff_files "$EXTERNALS_NEMS" conf/externals.nems
+fi
+copy_diff_mod "../../modulefiles/$CHOSEN_MODULE" conf/modules.nems
+copy_diff_files "$ESMF_VERSION_DEFINE" ESMFVersionDefine.h 

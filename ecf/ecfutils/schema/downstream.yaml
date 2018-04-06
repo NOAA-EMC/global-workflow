@@ -1,3 +1,10 @@
+# This file is used by the downstream product generation.  That
+# includes all steps of product generation after the post master file
+# and lat-lon files are created.  For example, the tracker, VSDB, and
+# AWIPS files.  These are not included in this release, so this file
+# should be left unmodified.  These variables must still be defined to
+# ensure validation logic elsewhere is satisfied.
+
 downstream_schema: &downstream_schema !Template
   VDUMP:
     type: string

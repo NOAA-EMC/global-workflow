@@ -1,0 +1,17 @@
+digraph "module_radiation_aerosols::setaer"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node24 [label="module_radiation_aerosols\l::setaer",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node24 -> Node25 [color="midnightblue",fontsize="10",style="solid"];
+  Node25 [label="module_radiation_aerosols\l::aer_property",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga494892c147b1e14ffb241e413bc17a8b",tooltip="This subroutine maps the 5 degree global climatological aerosol data set onto model grids..."];
+  Node25 -> Node26 [color="midnightblue",fontsize="10",style="solid"];
+  Node26 [label="radclimaer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#gae60b55ebc37825b2c3c95f95b23ed558",tooltip="This subroutine computes aerosols optical properties in NSWLWBD bands. there are seven different vert..."];
+  Node24 -> Node27 [color="midnightblue",fontsize="10",style="solid"];
+  Node27 [label="module_radiation_aerosols\l::setgocartaer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga04ce3c11b81d0a0b025f79c4f29acfb8",tooltip="This subroutine computes SW + LW aerosol optical properties for gocart aerosol species (merged from f..."];
+  Node27 -> Node28 [color="midnightblue",fontsize="10",style="solid"];
+  Node28 [label="map_aermr",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga651c4be2fa354238990c5c7b9488e9fd",tooltip="This subroutine maps input tracer fields (trcly) to local tracer array (aermr). "];
+  Node27 -> Node29 [color="midnightblue",fontsize="10",style="solid"];
+  Node29 [label="aeropt_grt",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga4ff866c545425e7029a11999e97d8faa",tooltip="This subroutine computes aerosols optical properties in NSWLWBD SW/LW bands. Aerosol distribution at ..."];
+}

@@ -1,3 +1,7 @@
+# fv3_settings_template - sets the namelist values for the fv3
+# forecast.  See the physcs and model documentation for full
+# information on these variables.
+
 fv3_settings_template: !Template &fv3_settings_template
   imp_physics:
     type: int

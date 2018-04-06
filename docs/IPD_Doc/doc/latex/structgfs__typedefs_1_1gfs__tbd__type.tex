@@ -1,0 +1,302 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+tbd\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__tbd__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+tbd\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ tbd\+\_\+create}
+\begin{DoxyCompactList}\small\item\em allocate array data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+integer, dimension(\+:), pointer \textbf{ icsdsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em (rad. only) auxiliary cloud control arrays passed to main \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ icsdlw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em (rad. only) radiations. if isubcsw/isubclw (input to init) (rad. only) are set to 2, the arrays contains provided (rad. only) random seeds for sub-\/column clouds generators \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ ozpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em ozone forcing data \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ h2opl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em water forcing data \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ rann} =$>$ null()
+\begin{DoxyCompactList}\small\item\em random number array (0-\/1) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ acv} =$>$ null()
+\begin{DoxyCompactList}\small\item\em array containing accumulated convective clouds \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ acvb} =$>$ null()
+\begin{DoxyCompactList}\small\item\em arrays used by cnvc90 bottom \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ acvt} =$>$ null()
+\begin{DoxyCompactList}\small\item\em arrays used by cnvc90 top (cnvc90.\+f) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ dtdtr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em temperature change due to radiative heating per time step (K) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtotprcp} =$>$ null()
+\begin{DoxyCompactList}\small\item\em change in totprcp (diag\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dcnvprcp} =$>$ null()
+\begin{DoxyCompactList}\small\item\em change in cnvprcp (diag\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ drain\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em change in rain\+\_\+cpl (coupling\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dsnow\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em change in show\+\_\+cpl (coupling\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ phy\+\_\+fctd} =$>$ null()
+\begin{DoxyCompactList}\small\item\em For CS convection. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ phy\+\_\+f2d} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 2d arrays saved for restart \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ phy\+\_\+f3d} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 3d arrays saved for restart \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 671 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a396b6323c752b39a7984a788253cd9b4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+allocate array data 
+
+
+
+Definition at line 704 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a105649eb93aa06360ca49dd00572a479}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!icsdsw@{icsdsw}}
+\index{icsdsw@{icsdsw}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{icsdsw}
+{\footnotesize\ttfamily integer, dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::icsdsw =$>$ null()}
+
+
+
+(rad. only) auxiliary cloud control arrays passed to main 
+
+
+
+Definition at line 674 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_afbd55c6c4cb322d6801152ec6e6f786d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!icsdlw@{icsdlw}}
+\index{icsdlw@{icsdlw}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{icsdlw}
+{\footnotesize\ttfamily integer, dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::icsdlw =$>$ null()}
+
+
+
+(rad. only) radiations. if isubcsw/isubclw (input to init) (rad. only) are set to 2, the arrays contains provided (rad. only) random seeds for sub-\/column clouds generators 
+
+
+
+Definition at line 675 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_aaa7a1df304f468447c0ad09fd59bf891}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!ozpl@{ozpl}}
+\index{ozpl@{ozpl}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{ozpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::ozpl =$>$ null()}
+
+
+
+ozone forcing data 
+
+
+
+Definition at line 680 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_aeb69e8042e5ed53ab875fee44034626b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!h2opl@{h2opl}}
+\index{h2opl@{h2opl}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{h2opl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::h2opl =$>$ null()}
+
+
+
+water forcing data 
+
+
+
+Definition at line 681 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a0bbdfcefd94587e075c8ccd35f81cd84}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!rann@{rann}}
+\index{rann@{rann}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{rann}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::rann =$>$ null()}
+
+
+
+random number array (0-\/1) 
+
+
+
+Definition at line 684 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a33ac8eb3b880b53c36bc7bd73b95f2f7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!acv@{acv}}
+\index{acv@{acv}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{acv}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension      (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::acv =$>$ null()}
+
+
+
+array containing accumulated convective clouds 
+
+
+
+Definition at line 687 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_ae1392b666e116068fc578b84c1900fbf}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!acvb@{acvb}}
+\index{acvb@{acvb}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{acvb}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::acvb =$>$ null()}
+
+
+
+arrays used by cnvc90 bottom 
+
+
+
+Definition at line 688 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a8536f12d4967329aea2f69895407f3bb}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!acvt@{acvt}}
+\index{acvt@{acvt}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{acvt}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::acvt =$>$ null()}
+
+
+
+arrays used by cnvc90 top (cnvc90.\+f) 
+
+
+
+Definition at line 689 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a6cdc51c9a3cc1379c7183df5d89bc93a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!dtdtr@{dtdtr}}
+\index{dtdtr@{dtdtr}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{dtdtr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::dtdtr =$>$ null()}
+
+
+
+temperature change due to radiative heating per time step (K) 
+
+
+
+Definition at line 692 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_aefaec3a546da78f04c05c337673a7eca}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!dtotprcp@{dtotprcp}}
+\index{dtotprcp@{dtotprcp}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{dtotprcp}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::dtotprcp =$>$ null()}
+
+
+
+change in totprcp (diag\+\_\+type) 
+
+
+
+Definition at line 693 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a1b0eebd6637eec35a350f3f991fa53cc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!dcnvprcp@{dcnvprcp}}
+\index{dcnvprcp@{dcnvprcp}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{dcnvprcp}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::dcnvprcp =$>$ null()}
+
+
+
+change in cnvprcp (diag\+\_\+type) 
+
+
+
+Definition at line 694 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a5b9557b84e2622b9ba7d8fc0e8835231}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!drain\+\_\+cpl@{drain\+\_\+cpl}}
+\index{drain\+\_\+cpl@{drain\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{drain\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::drain\+\_\+cpl =$>$ null()}
+
+
+
+change in rain\+\_\+cpl (coupling\+\_\+type) 
+
+
+
+Definition at line 695 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a445c700def954d3d0e427e88be173a9f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!dsnow\+\_\+cpl@{dsnow\+\_\+cpl}}
+\index{dsnow\+\_\+cpl@{dsnow\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{dsnow\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::dsnow\+\_\+cpl =$>$ null()}
+
+
+
+change in show\+\_\+cpl (coupling\+\_\+type) 
+
+
+
+Definition at line 696 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_aa898d58c01ded5fa992af4235f618ad7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!phy\+\_\+fctd@{phy\+\_\+fctd}}
+\index{phy\+\_\+fctd@{phy\+\_\+fctd}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{phy\+\_\+fctd}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::phy\+\_\+fctd =$>$ null()}
+
+
+
+For CS convection. 
+
+
+
+Definition at line 699 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a8f4cb930ebc7799026cd6ccc1e9002ca}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!phy\+\_\+f2d@{phy\+\_\+f2d}}
+\index{phy\+\_\+f2d@{phy\+\_\+f2d}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{phy\+\_\+f2d}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::phy\+\_\+f2d =$>$ null()}
+
+
+
+2d arrays saved for restart 
+
+
+
+Definition at line 700 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__tbd__type_a0517446633a07123a504641f34640cd1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}!phy\+\_\+f3d@{phy\+\_\+f3d}}
+\index{phy\+\_\+f3d@{phy\+\_\+f3d}!gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}}
+\subsubsection{phy\+\_\+f3d}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type\+::phy\+\_\+f3d =$>$ null()}
+
+
+
+3d arrays saved for restart 
+
+
+
+Definition at line 701 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

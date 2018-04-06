@@ -1,3 +1,8 @@
+# This file is used to generate config.prep, which controls
+# observation pre-processing.  The output of this is sent into the GFS
+# or GDAS analysis.  The observation processing system is not part of
+# this public release, so this file is ignored.
+
 config_prep:
   filename: config.prep
   content: !expand |

@@ -1,0 +1,56 @@
+\hypertarget{group___g_f_s___ice}{}\section{G\+FS Thermodynamics Surface Ice}
+\label{group___g_f_s___ice}\index{G\+F\+S Thermodynamics Surface Ice@{G\+F\+S Thermodynamics Surface Ice}}
+
+
+Brief description of the parameterization.  
+
+
+
+
+\subsection{Detailed Description}
+\hypertarget{group___g_f_s___n_s_s_t_diagram}{}\subsection{Calling Hierarchy Diagram}\label{group___g_f_s___n_s_s_t_diagram}
+\hypertarget{group___g_f_s___n_s_s_t_intraphysics}{}\subsection{Intraphysics Communication}\label{group___g_f_s___n_s_s_t_intraphysics}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group___g_f_s___ice_ga18fd9a43fb519c32737074cf8f02a496}\label{group___g_f_s___ice_ga18fd9a43fb519c32737074cf8f02a496}} 
+subroutine \hyperlink{group___g_f_s___ice_ga18fd9a43fb519c32737074cf8f02a496}{ice3lay}
+\begin{DoxyCompactList}\small\item\em Brief description of the subroutine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___g_f_s___ice_ga9cc05261a34162c47424df528f679ede}{sfc\+\_\+sice} (im, km, ps, u1, v1, t1, q1, delt, sfcemis, dlwflx, sfcnsw, sfcdsw, srflag, cm, ch, prsl1, prslki, islimsk, ddvel, flag\+\_\+iter, mom4ice, lsm, lprnt, ipr, hice, fice, tice, weasd, tskin, tprcp, stc, ep, snwdph, qsurf, snowmt, gflux, cmm, chh, evap, hflx)
+\begin{DoxyCompactList}\small\item\em Brief description of the subroutine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group___g_f_s___ice_ga9cc05261a34162c47424df528f679ede}\label{group___g_f_s___ice_ga9cc05261a34162c47424df528f679ede}} 
+\index{G\+F\+S Thermodynamics Surface Ice@{G\+F\+S Thermodynamics Surface Ice}!sfc\+\_\+sice@{sfc\+\_\+sice}}
+\index{sfc\+\_\+sice@{sfc\+\_\+sice}!G\+F\+S Thermodynamics Surface Ice@{G\+F\+S Thermodynamics Surface Ice}}
+\subsubsection{\texorpdfstring{sfc\+\_\+sice()}{sfc\_sice()}}
+{\footnotesize\ttfamily subroutine sfc\+\_\+sice (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{im,  }\item[{integer, intent(in)}]{km,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ps,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{u1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{v1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{t1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{q1,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{delt,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sfcemis,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{dlwflx,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sfcnsw,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sfcdsw,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{srflag,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{cm,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ch,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{prsl1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{prslki,  }\item[{integer, dimension(im), intent(in)}]{islimsk,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ddvel,  }\item[{logical, dimension(im), intent(in)}]{flag\+\_\+iter,  }\item[{logical, intent(in)}]{mom4ice,  }\item[{integer, intent(in)}]{lsm,  }\item[{logical, intent(in)}]{lprnt,  }\item[{integer, intent(in)}]{ipr,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{hice,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{fice,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{tice,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{weasd,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{tskin,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{tprcp,  }\item[{real (kind=kind\+\_\+phys), dimension(im,km), intent(inout)}]{stc,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{ep,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{snwdph,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{qsurf,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{snowmt,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{gflux,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{cmm,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{chh,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{evap,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{hflx }\end{DoxyParamCaption})}
+
+\hypertarget{group___g_f_s___ice_arg_table_sice_run}{}\subsection{Arguments}\label{group___g_f_s___ice_arg_table_sice_run}
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{9}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endhead
+im &horizontal\+\_\+loop\+\_\+extent &horizontal loop extent, start at 1 &index &0 &integer &&in &F \\\cline{1-9}
+\end{longtabu}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+\hypertarget{group___g_f_s___n_s_s_t_detailed}{}\subsection{Detailed Algorithm}\label{group___g_f_s___n_s_s_t_detailed}
+
+
+Definition at line 33 of file sfc\+\_\+sice.\+f.
+
+
+
+References ice3lay().
+
+Here is the call graph for this function\+:
+% FIG 0

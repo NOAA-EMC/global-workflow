@@ -1,0 +1,17 @@
+/**@page documentation Users Guide and Reference
+
+These pages contain general documentation for the NEMS, such as
+guides, howtos and system descriptions.
+
+  + @subpage introduction
+  + @subpage architecture
+  + @subpage structure
+  + @subpage building
+  + @subpage configuring
+  + @subpage running
+  + @subpage standards
+  + @subpage mediator
+  + @subpage sw_mediator
+  + @subpage cap-page
+
+*/

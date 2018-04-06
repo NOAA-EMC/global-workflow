@@ -1,0 +1,985 @@
+\hypertarget{group__module__radiation__aerosols}{}\section{module\+\_\+radiation\+\_\+aerosols}
+\label{group__module__radiation__aerosols}\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+
+
+This module contains climatological atmospheric aerosol schemes for radiation computations.  
+
+
+
+
+\subsection{Detailed Description}
+\begin{DoxyVersion}{Version}
+N\+C\+E\+P-\/\+Radiation\+\_\+aerosols v5.\+2 Jan 2013
+\end{DoxyVersion}
+~\newline
+ This module has three externally callable subroutines\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a}{aer\+\_\+init()} -- initialization; called at the start of run to set up module parameters
+\item \hyperlink{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5}{aer\+\_\+update()} -- updating aerosol data; called within the time loop to check and update data sets
+\item \hyperlink{group__module__radiation__aerosols_ga184fcc0618c1c4d42fa08cfe1e20e5c1}{setaer()} -- mapping aeros profile, compute aeros opticals
+\end{DoxyItemize}
+
+~\newline
+ References\+:
+\begin{DoxyItemize}
+\item O\+P\+AC climatological aerosols\+: Hou et al. 2002 \cite{hou_et_al_2002}; Hess et al. 1998 \cite{hess_et_al_1998}
+\item G\+O\+C\+A\+RT interactive aerosols\+: Chin et al., 2000 \cite{chin_et_al_2000}
+\item Stratospheric volcanical aerosols\+: Sato et al. 1993 \cite{sato_et_al_1993} 
+\end{DoxyItemize}\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \hyperlink{structmodule__radiation__aerosols_1_1gocart__index__type}{module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type}
+\begin{DoxyCompactList}\small\item\em index for gocart aerosol species to be included in the calculations of aerosol optical properties (ext, ssa, asy) \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radiation__aerosols_1_1tracer__index__type}{module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type}
+\begin{DoxyCompactList}\small\item\em index for gocart aerosols from prognostic tracer fields \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae0d9615fa694e2a5dfe8fb48e99b7e76}\label{group__module__radiation__aerosols_gae0d9615fa694e2a5dfe8fb48e99b7e76}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_gae0d9615fa694e2a5dfe8fb48e99b7e76}{module\+\_\+radiation\+\_\+aerosols\+::nf\+\_\+aesw} = 3
+\begin{DoxyCompactList}\small\item\em num of output fields for SW rad \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gafba0069cd611248a9595a126a13f5203}\label{group__module__radiation__aerosols_gafba0069cd611248a9595a126a13f5203}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_gafba0069cd611248a9595a126a13f5203}{module\+\_\+radiation\+\_\+aerosols\+::nf\+\_\+aelw} = 3
+\begin{DoxyCompactList}\small\item\em num of output fields for LW rad \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga654ab60d433133542d3c07edd2244566}\label{group__module__radiation__aerosols_ga654ab60d433133542d3c07edd2244566}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_ga654ab60d433133542d3c07edd2244566}{module\+\_\+radiation\+\_\+aerosols\+::nlwstr} = 1
+\begin{DoxyCompactList}\small\item\em starting band number in ir region \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga3d126c465af80bb698d9d1a288c181bb}\label{group__module__radiation__aerosols_ga3d126c465af80bb698d9d1a288c181bb}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_ga3d126c465af80bb698d9d1a288c181bb}{module\+\_\+radiation\+\_\+aerosols\+::nspc} = 5
+\begin{DoxyCompactList}\small\item\em num of species for output aod (opnl) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga476c0181513603112dec3f4d2a2ec839}\label{group__module__radiation__aerosols_ga476c0181513603112dec3f4d2a2ec839}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_ga476c0181513603112dec3f4d2a2ec839}{module\+\_\+radiation\+\_\+aerosols\+::nspc1} = N\+S\+PC + 1
+\begin{DoxyCompactList}\small\item\em total+species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga7db1adcf476a9a5532230aa11fcc3bb7}\label{group__module__radiation__aerosols_ga7db1adcf476a9a5532230aa11fcc3bb7}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+aerosols\+::f\+\_\+zero} = 0.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga63babe7f9ec4ff6a0364993f4be3768e}\label{group__module__radiation__aerosols_ga63babe7f9ec4ff6a0364993f4be3768e}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+aerosols\+::f\+\_\+one} = 1.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1d6c41e3bb818aa8b6f8f10d1c3f38a7}\label{group__module__radiation__aerosols_ga1d6c41e3bb818aa8b6f8f10d1c3f38a7}} 
+integer, save \hyperlink{group__module__radiation__aerosols_ga1d6c41e3bb818aa8b6f8f10d1c3f38a7}{module\+\_\+radiation\+\_\+aerosols\+::nswbnd} = N\+B\+D\+SW
+\begin{DoxyCompactList}\small\item\em number of actual bands for sw aerosols; calculated according to laswflg setting \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab17b7f75d6d737fd2fc81eae44cba81d}\label{group__module__radiation__aerosols_gab17b7f75d6d737fd2fc81eae44cba81d}} 
+integer, save \hyperlink{group__module__radiation__aerosols_gab17b7f75d6d737fd2fc81eae44cba81d}{module\+\_\+radiation\+\_\+aerosols\+::nlwbnd} = N\+B\+D\+LW
+\begin{DoxyCompactList}\small\item\em number of actual bands for lw aerosols; calculated according to lalwflg and lalw1bd settings \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab77b3b4aa76361277d828c7ba5dc3eda}\label{group__module__radiation__aerosols_gab77b3b4aa76361277d828c7ba5dc3eda}} 
+integer, save \hyperlink{group__module__radiation__aerosols_gab77b3b4aa76361277d828c7ba5dc3eda}{module\+\_\+radiation\+\_\+aerosols\+::nswlwbd} = N\+B\+D\+SW+N\+B\+D\+LW
+\begin{DoxyCompactList}\small\item\em total number of bands for sw+lw aerosols \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga2e0dc6d161d1906050efd67c471673c9}\label{group__module__radiation__aerosols_ga2e0dc6d161d1906050efd67c471673c9}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_ga2e0dc6d161d1906050efd67c471673c9}{module\+\_\+radiation\+\_\+aerosols\+::nwvsol} = 151
+\begin{DoxyCompactList}\small\item\em num of wvnum regions where solar flux is constant \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae94df49c8ff8c0ec8e6b8adb891f3c6b}\label{group__module__radiation__aerosols_gae94df49c8ff8c0ec8e6b8adb891f3c6b}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_gae94df49c8ff8c0ec8e6b8adb891f3c6b}{module\+\_\+radiation\+\_\+aerosols\+::nwvtot} = 57600
+\begin{DoxyCompactList}\small\item\em total num of wvnum included \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga45b2c26ccba5d4fd2dfccf31bcc02824}\label{group__module__radiation__aerosols_ga45b2c26ccba5d4fd2dfccf31bcc02824}} 
+integer, parameter, public \hyperlink{group__module__radiation__aerosols_ga45b2c26ccba5d4fd2dfccf31bcc02824}{module\+\_\+radiation\+\_\+aerosols\+::nwvtir} = 4000
+\begin{DoxyCompactList}\small\item\em total num of wvnum in ir range \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga80194c8356dfb92a43306abbe7097711}\label{group__module__radiation__aerosols_ga80194c8356dfb92a43306abbe7097711}} 
+integer, dimension(nwvsol), save \hyperlink{group__module__radiation__aerosols_ga80194c8356dfb92a43306abbe7097711}{module\+\_\+radiation\+\_\+aerosols\+::nwvns0}
+\begin{DoxyCompactList}\small\item\em number of wavenumbers in each region where the solar flux is constant \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaed8bb8a8bc26d72a6c3d31ed4430941f}\label{group__module__radiation__aerosols_gaed8bb8a8bc26d72a6c3d31ed4430941f}} 
+real(kind=kind\+\_\+phys), dimension(nwvsol), save \hyperlink{group__module__radiation__aerosols_gaed8bb8a8bc26d72a6c3d31ed4430941f}{module\+\_\+radiation\+\_\+aerosols\+::s0intv}
+\begin{DoxyCompactList}\small\item\em solar flux $w/m^2$ in each wvnumb region where it is constant \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab37644d8cc2c222af700b86db91f05e7}\label{group__module__radiation__aerosols_gab37644d8cc2c222af700b86db91f05e7}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gab37644d8cc2c222af700b86db91f05e7}{module\+\_\+radiation\+\_\+aerosols\+::minvyr} = 1850
+\begin{DoxyCompactList}\small\item\em lower limit (year) data available \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gad856a3d564ff84043219626759673f27}\label{group__module__radiation__aerosols_gad856a3d564ff84043219626759673f27}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gad856a3d564ff84043219626759673f27}{module\+\_\+radiation\+\_\+aerosols\+::maxvyr} = 1999
+\begin{DoxyCompactList}\small\item\em upper limit (year) data available \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab016f51c81a1157ee234dc82f8f114ee}\label{group__module__radiation__aerosols_gab016f51c81a1157ee234dc82f8f114ee}} 
+integer, dimension(\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_gab016f51c81a1157ee234dc82f8f114ee}{module\+\_\+radiation\+\_\+aerosols\+::ivolae}
+\begin{DoxyCompactList}\small\item\em monthly, 45-\/deg lat-\/zone aerosols data set in subroutine \textquotesingle{}aer\+\_\+init\textquotesingle{} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaf224f7d7991e3d48aeaa4d221da50f41}\label{group__module__radiation__aerosols_gaf224f7d7991e3d48aeaa4d221da50f41}} 
+integer \hyperlink{group__module__radiation__aerosols_gaf224f7d7991e3d48aeaa4d221da50f41}{module\+\_\+radiation\+\_\+aerosols\+::kyrstr}
+\begin{DoxyCompactList}\small\item\em starting year of data in the input file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga79127786cce93bccf8749ef8c85f6467}\label{group__module__radiation__aerosols_ga79127786cce93bccf8749ef8c85f6467}} 
+integer \hyperlink{group__module__radiation__aerosols_ga79127786cce93bccf8749ef8c85f6467}{module\+\_\+radiation\+\_\+aerosols\+::kyrend}
+\begin{DoxyCompactList}\small\item\em ending year of data in the input file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga928c08857f866e4b848873a23a1d49e7}\label{group__module__radiation__aerosols_ga928c08857f866e4b848873a23a1d49e7}} 
+integer \hyperlink{group__module__radiation__aerosols_ga928c08857f866e4b848873a23a1d49e7}{module\+\_\+radiation\+\_\+aerosols\+::kyrsav}
+\begin{DoxyCompactList}\small\item\em the year of data in use in the input file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga302ae8a5aa2b8fb08ad366ef124cee45}\label{group__module__radiation__aerosols_ga302ae8a5aa2b8fb08ad366ef124cee45}} 
+integer \hyperlink{group__module__radiation__aerosols_ga302ae8a5aa2b8fb08ad366ef124cee45}{module\+\_\+radiation\+\_\+aerosols\+::kmonsav}
+\begin{DoxyCompactList}\small\item\em the month of data in use in the input file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1fffbb55ad2986a216b721a6c103c4cf}\label{group__module__radiation__aerosols_ga1fffbb55ad2986a216b721a6c103c4cf}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga1fffbb55ad2986a216b721a6c103c4cf}{module\+\_\+radiation\+\_\+aerosols\+::nxc} = 5
+\begin{DoxyCompactList}\small\item\em num of max componets in a profile \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga45121ca4dcb3194e8afb4090fa810657}\label{group__module__radiation__aerosols_ga45121ca4dcb3194e8afb4090fa810657}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga45121ca4dcb3194e8afb4090fa810657}{module\+\_\+radiation\+\_\+aerosols\+::nae} = 7
+\begin{DoxyCompactList}\small\item\em num of aerosols profile structures \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae77b22f76f193cef19b6e6c3ee8e0773}\label{group__module__radiation__aerosols_gae77b22f76f193cef19b6e6c3ee8e0773}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gae77b22f76f193cef19b6e6c3ee8e0773}{module\+\_\+radiation\+\_\+aerosols\+::ndm} = 5
+\begin{DoxyCompactList}\small\item\em num of atmos aerosols domains \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga52cda855a397136f75768d205292ddbb}\label{group__module__radiation__aerosols_ga52cda855a397136f75768d205292ddbb}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga52cda855a397136f75768d205292ddbb}{module\+\_\+radiation\+\_\+aerosols\+::imxae} = 72
+\begin{DoxyCompactList}\small\item\em num of lon-\/points in glb aeros data set \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gafdfdd058364062349b02cec9c712ea80}\label{group__module__radiation__aerosols_gafdfdd058364062349b02cec9c712ea80}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gafdfdd058364062349b02cec9c712ea80}{module\+\_\+radiation\+\_\+aerosols\+::jmxae} = 37
+\begin{DoxyCompactList}\small\item\em num of lat-\/points in glb aeros data set \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae8ffb66e7e617f045663ce2732743b4a}\label{group__module__radiation__aerosols_gae8ffb66e7e617f045663ce2732743b4a}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gae8ffb66e7e617f045663ce2732743b4a}{module\+\_\+radiation\+\_\+aerosols\+::naerbnd} =61
+\begin{DoxyCompactList}\small\item\em num of bands for clim aer data (opac) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa6d18b0588e80cb40871cc75870d09ba}\label{group__module__radiation__aerosols_gaa6d18b0588e80cb40871cc75870d09ba}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gaa6d18b0588e80cb40871cc75870d09ba}{module\+\_\+radiation\+\_\+aerosols\+::nrhlev} =8
+\begin{DoxyCompactList}\small\item\em num of rh levels for rh-\/dep components \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac6bc533a79d4b19129834cbc9a9fbc18}\label{group__module__radiation__aerosols_gac6bc533a79d4b19129834cbc9a9fbc18}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gac6bc533a79d4b19129834cbc9a9fbc18}{module\+\_\+radiation\+\_\+aerosols\+::ncm1} = 6
+\begin{DoxyCompactList}\small\item\em num of rh independent aeros species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga61dbcce5b0bb02dd31d4a37983887a7b}\label{group__module__radiation__aerosols_ga61dbcce5b0bb02dd31d4a37983887a7b}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga61dbcce5b0bb02dd31d4a37983887a7b}{module\+\_\+radiation\+\_\+aerosols\+::ncm2} = 4
+\begin{DoxyCompactList}\small\item\em num of rh dependent aeros species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab46e61a4a386794a5e9e97d8ef7d98a5}\label{group__module__radiation__aerosols_gab46e61a4a386794a5e9e97d8ef7d98a5}} 
+integer, parameter {\bfseries module\+\_\+radiation\+\_\+aerosols\+::ncm} = N\+C\+M1+N\+C\+M2
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga6aa3218393ea05cab77ab7867cfeab90}\label{group__module__radiation__aerosols_ga6aa3218393ea05cab77ab7867cfeab90}} 
+real(kind=kind\+\_\+phys), dimension(nrhlev), save \hyperlink{group__module__radiation__aerosols_ga6aa3218393ea05cab77ab7867cfeab90}{module\+\_\+radiation\+\_\+aerosols\+::rhlev}
+\begin{DoxyCompactList}\small\item\em predefined relative humidity levels \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga8ce24a58afb33dd372995bf5aaf95be9}\label{group__module__radiation__aerosols_ga8ce24a58afb33dd372995bf5aaf95be9}} 
+real(kind=kind\+\_\+phys), dimension(ndm, nae), save \hyperlink{group__module__radiation__aerosols_ga8ce24a58afb33dd372995bf5aaf95be9}{module\+\_\+radiation\+\_\+aerosols\+::haer}
+\begin{DoxyCompactList}\small\item\em scale height of aerosols (km) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga274fad1b6e00e66375882e32494d61c0}\label{group__module__radiation__aerosols_ga274fad1b6e00e66375882e32494d61c0}} 
+real(kind=kind\+\_\+phys), dimension(ndm, nae), save \hyperlink{group__module__radiation__aerosols_ga274fad1b6e00e66375882e32494d61c0}{module\+\_\+radiation\+\_\+aerosols\+::prsref}
+\begin{DoxyCompactList}\small\item\em ref pressure lev (sfc to toa) in mb (100\+Pa) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga227ac7558dc0f33c34c34544771617ec}\label{group__module__radiation__aerosols_ga227ac7558dc0f33c34c34544771617ec}} 
+real(kind=kind\+\_\+phys), dimension(ndm, nae), save \hyperlink{group__module__radiation__aerosols_ga227ac7558dc0f33c34c34544771617ec}{module\+\_\+radiation\+\_\+aerosols\+::sigref}
+\begin{DoxyCompactList}\small\item\em ref sigma lev (sfc to toa) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga40447f925f01790155c4d98ff8b0c04d}\label{group__module__radiation__aerosols_ga40447f925f01790155c4d98ff8b0c04d}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::extrhi}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga439929b1de549fadecc8537bae13e9de}\label{group__module__radiation__aerosols_ga439929b1de549fadecc8537bae13e9de}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::scarhi}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae4e1ead8bb34371c2d9f1b428846c10c}\label{group__module__radiation__aerosols_gae4e1ead8bb34371c2d9f1b428846c10c}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::ssarhi}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaac2d735c117dd7d1e72264e611764f79}\label{group__module__radiation__aerosols_gaac2d735c117dd7d1e72264e611764f79}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::asyrhi}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1c69f7b8ff0c98252e94def83dabfed4}\label{group__module__radiation__aerosols_ga1c69f7b8ff0c98252e94def83dabfed4}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::extrhd}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga859ba893a7b0b727ce02f3f29906a0a6}\label{group__module__radiation__aerosols_ga859ba893a7b0b727ce02f3f29906a0a6}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::scarhd}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac0714d386ee3dc2ca7f6692905566274}\label{group__module__radiation__aerosols_gac0714d386ee3dc2ca7f6692905566274}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::ssarhd}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga090d37e62ba333db64e28bf89e89a08d}\label{group__module__radiation__aerosols_ga090d37e62ba333db64e28bf89e89a08d}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::asyrhd}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac0c59f22f472671cd86221cc1ed46c60}\label{group__module__radiation__aerosols_gac0c59f22f472671cd86221cc1ed46c60}} 
+real(kind=kind\+\_\+phys), dimension(\+:), allocatable, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::extstra}
+\end{DoxyCompactItemize}
+\subsection*{topospheric aerosol profile distribution}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga358c83599fb321a59c958e54d9f284d9}\label{group__module__radiation__aerosols_ga358c83599fb321a59c958e54d9f284d9}} 
+real(kind=kind\+\_\+phys), dimension(nxc, imxae, jmxae), save \hyperlink{group__module__radiation__aerosols_ga358c83599fb321a59c958e54d9f284d9}{module\+\_\+radiation\+\_\+aerosols\+::cmixg}
+\begin{DoxyCompactList}\small\item\em aeros component mixing ratio \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga0ccc698bc870cb6ccbc1c2b64a3f45f6}\label{group__module__radiation__aerosols_ga0ccc698bc870cb6ccbc1c2b64a3f45f6}} 
+real(kind=kind\+\_\+phys), dimension(2,imxae, jmxae), save \hyperlink{group__module__radiation__aerosols_ga0ccc698bc870cb6ccbc1c2b64a3f45f6}{module\+\_\+radiation\+\_\+aerosols\+::denng}
+\begin{DoxyCompactList}\small\item\em aeros number density \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4cb38abaf6ece5a0ed717edd6f6b4078}\label{group__module__radiation__aerosols_ga4cb38abaf6ece5a0ed717edd6f6b4078}} 
+integer, dimension(nxc, imxae, jmxae), save \hyperlink{group__module__radiation__aerosols_ga4cb38abaf6ece5a0ed717edd6f6b4078}{module\+\_\+radiation\+\_\+aerosols\+::idxcg}
+\begin{DoxyCompactList}\small\item\em aeros component index \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga28df10ba381278cc7474bea0bfdaa870}\label{group__module__radiation__aerosols_ga28df10ba381278cc7474bea0bfdaa870}} 
+integer, dimension( imxae, jmxae), save \hyperlink{group__module__radiation__aerosols_ga28df10ba381278cc7474bea0bfdaa870}{module\+\_\+radiation\+\_\+aerosols\+::kprfg}
+\begin{DoxyCompactList}\small\item\em aeros profile index \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{module variables for gocart aerosol optical properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gad345c77fc29d8b02de34990162645a66}\label{group__module__radiation__aerosols_gad345c77fc29d8b02de34990162645a66}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gad345c77fc29d8b02de34990162645a66}{module\+\_\+radiation\+\_\+aerosols\+::kaerbnd} =61
+\begin{DoxyCompactList}\small\item\em num of bands for aer data (gocart) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga33f2d4489a1730a27cbdc2e2add0f977}\label{group__module__radiation__aerosols_ga33f2d4489a1730a27cbdc2e2add0f977}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga33f2d4489a1730a27cbdc2e2add0f977}{module\+\_\+radiation\+\_\+aerosols\+::krhlev} =36
+\begin{DoxyCompactList}\small\item\em num of rh levels for rh-\/dep components \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga92b09dd26cc321af3b5da0b1c310a588}\label{group__module__radiation__aerosols_ga92b09dd26cc321af3b5da0b1c310a588}} 
+integer, save \hyperlink{group__module__radiation__aerosols_ga92b09dd26cc321af3b5da0b1c310a588}{module\+\_\+radiation\+\_\+aerosols\+::kcm1} = 0
+\begin{DoxyCompactList}\small\item\em num of rh indep aerosols (set in subr set\+\_\+aerspc) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab2be28697a95bcec8d5cd8de7ebd4328}\label{group__module__radiation__aerosols_gab2be28697a95bcec8d5cd8de7ebd4328}} 
+integer, save \hyperlink{group__module__radiation__aerosols_gab2be28697a95bcec8d5cd8de7ebd4328}{module\+\_\+radiation\+\_\+aerosols\+::kcm2} = 0
+\begin{DoxyCompactList}\small\item\em num of rh dep aerosols (set in subr set\+\_\+aerspc) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4816bc93b826ff2fad9ff0805ea39fd5}\label{group__module__radiation__aerosols_ga4816bc93b826ff2fad9ff0805ea39fd5}} 
+integer, save \hyperlink{group__module__radiation__aerosols_ga4816bc93b826ff2fad9ff0805ea39fd5}{module\+\_\+radiation\+\_\+aerosols\+::kcm}
+\begin{DoxyCompactList}\small\item\em =K\+C\+M1+\+K\+C\+M2 (set in subr set\+\_\+aerspc) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gace40d50e36de1fc08c4ff35f6d8dbda9}\label{group__module__radiation__aerosols_gace40d50e36de1fc08c4ff35f6d8dbda9}} 
+real(kind=kind\+\_\+phys), dimension(\+:) {\bfseries module\+\_\+radiation\+\_\+aerosols\+::rhlev\+\_\+grt}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1248e740e53498ed7a06f7d475b1fb25}\label{group__module__radiation__aerosols_ga1248e740e53498ed7a06f7d475b1fb25}} 
+real(kind=kind\+\_\+phys), dimension(krhlev) {\bfseries module\+\_\+radiation\+\_\+aerosols\+::data}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac755c4235327053fff060ffa3b2ee2a3}\label{group__module__radiation__aerosols_gac755c4235327053fff060ffa3b2ee2a3}} 
+integer, dimension(\+:), allocatable \hyperlink{group__module__radiation__aerosols_gac755c4235327053fff060ffa3b2ee2a3}{module\+\_\+radiation\+\_\+aerosols\+::iendwv\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em spectral band structure\+: ending wavenumber ( $cm^-1$) for each band \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{relative humidity independent aerosol optical properties\+:}
+\label{_amgrpa6563448dee168f70e5cf706e8c39b7a}%
+species \+: dust (8 bins) \begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga6683021bded82850053c16eb3e906998}\label{group__module__radiation__aerosols_ga6683021bded82850053c16eb3e906998}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_ga6683021bded82850053c16eb3e906998}{module\+\_\+radiation\+\_\+aerosols\+::rhidext0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em extinction coefficient \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaea46db63db26a316e73640bc63f75383}\label{group__module__radiation__aerosols_gaea46db63db26a316e73640bc63f75383}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_gaea46db63db26a316e73640bc63f75383}{module\+\_\+radiation\+\_\+aerosols\+::rhidssa0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em single scattering albedo \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga8491a714c86e9bd7ebdc401662f5068e}\label{group__module__radiation__aerosols_ga8491a714c86e9bd7ebdc401662f5068e}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_ga8491a714c86e9bd7ebdc401662f5068e}{module\+\_\+radiation\+\_\+aerosols\+::rhidasy0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em asymmetry parameter \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{relative humidity dependent aerosol optical properties\+:}
+\label{_amgrp44cffce2235139b90d4d294d7b587144}%
+species \+: soot, suso, waso, ssam, sscm \begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga35a5c7b67a3cf11c5016a693e115d384}\label{group__module__radiation__aerosols_ga35a5c7b67a3cf11c5016a693e115d384}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_ga35a5c7b67a3cf11c5016a693e115d384}{module\+\_\+radiation\+\_\+aerosols\+::rhdpext0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em extinction coefficient \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga40d680662eadf30221997dadcce734b1}\label{group__module__radiation__aerosols_ga40d680662eadf30221997dadcce734b1}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_ga40d680662eadf30221997dadcce734b1}{module\+\_\+radiation\+\_\+aerosols\+::rhdpssa0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em single scattering albedo \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab5a0bbefbfed6b393f0abad26e6e4d04}\label{group__module__radiation__aerosols_gab5a0bbefbfed6b393f0abad26e6e4d04}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable \hyperlink{group__module__radiation__aerosols_gab5a0bbefbfed6b393f0abad26e6e4d04}{module\+\_\+radiation\+\_\+aerosols\+::rhdpasy0\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em asymmetry parameter \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{relative humidity independent aerosol optical properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gacb7ff037be78e950ea42d956816c93d5}\label{group__module__radiation__aerosols_gacb7ff037be78e950ea42d956816c93d5}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_gacb7ff037be78e950ea42d956816c93d5}{module\+\_\+radiation\+\_\+aerosols\+::extrhi\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em extinction coefficient for S\+W+\+LW spectral band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae8587d9b4ebd9cf5d363a82d15049324}\label{group__module__radiation__aerosols_gae8587d9b4ebd9cf5d363a82d15049324}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_gae8587d9b4ebd9cf5d363a82d15049324}{module\+\_\+radiation\+\_\+aerosols\+::ssarhi\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em single scattering albedo for S\+W+\+LW spectral band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4b5f80817af9f2116618d6c8f0e194de}\label{group__module__radiation__aerosols_ga4b5f80817af9f2116618d6c8f0e194de}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga4b5f80817af9f2116618d6c8f0e194de}{module\+\_\+radiation\+\_\+aerosols\+::asyrhi\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em asymmetry parameter for S\+W+\+LW spectral band \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{relative humidity dependent aerosol optical properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga07bfe1ada075519d1d3ceabe21b65a96}\label{group__module__radiation__aerosols_ga07bfe1ada075519d1d3ceabe21b65a96}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga07bfe1ada075519d1d3ceabe21b65a96}{module\+\_\+radiation\+\_\+aerosols\+::extrhd\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em extinction coefficient for S\+W+\+LW spectral band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4aa91ab1d0b9d71c704dc565ef4704bf}\label{group__module__radiation__aerosols_ga4aa91ab1d0b9d71c704dc565ef4704bf}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga4aa91ab1d0b9d71c704dc565ef4704bf}{module\+\_\+radiation\+\_\+aerosols\+::ssarhd\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em single scattering albedo for S\+W+\+LW band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga2da45b8bd425415ca417f6590cc54da6}\label{group__module__radiation__aerosols_ga2da45b8bd425415ca417f6590cc54da6}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga2da45b8bd425415ca417f6590cc54da6}{module\+\_\+radiation\+\_\+aerosols\+::asyrhd\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em asymmetry parameter for S\+W+\+LW band \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{module variables for gocart aerosol clim data set}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa7b2e0e1d0669af4efc75cb32301f1f1}\label{group__module__radiation__aerosols_gaa7b2e0e1d0669af4efc75cb32301f1f1}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gaa7b2e0e1d0669af4efc75cb32301f1f1}{module\+\_\+radiation\+\_\+aerosols\+::imxg} = 144
+\begin{DoxyCompactList}\small\item\em num of lon-\/points in geos dataset \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga816ee06781e63adf8752a9a67ab2da2d}\label{group__module__radiation__aerosols_ga816ee06781e63adf8752a9a67ab2da2d}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga816ee06781e63adf8752a9a67ab2da2d}{module\+\_\+radiation\+\_\+aerosols\+::jmxg} = 91
+\begin{DoxyCompactList}\small\item\em num of lat-\/points in geos dataset \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga5339e589d92fab8cbb310b84b6ca3d9e}\label{group__module__radiation__aerosols_ga5339e589d92fab8cbb310b84b6ca3d9e}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_ga5339e589d92fab8cbb310b84b6ca3d9e}{module\+\_\+radiation\+\_\+aerosols\+::kmxg} = 30
+\begin{DoxyCompactList}\small\item\em num of vertical layers in geos dataset \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gadb4c4cdc8e3212777229d1f54e79bb05}\label{group__module__radiation__aerosols_gadb4c4cdc8e3212777229d1f54e79bb05}} 
+integer, save \hyperlink{group__module__radiation__aerosols_gadb4c4cdc8e3212777229d1f54e79bb05}{module\+\_\+radiation\+\_\+aerosols\+::nmxg}
+\begin{DoxyCompactList}\small\item\em to be determined by set\+\_\+aerspc \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga084315fde4afcad23cd3aeb18a4d8a4e}\label{group__module__radiation__aerosols_ga084315fde4afcad23cd3aeb18a4d8a4e}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+aerosols\+::dltx} = 360.\+0 / float(I\+M\+XG)
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga499bb3c75e9802c5ee7fd6cdb6660f7e}\label{group__module__radiation__aerosols_ga499bb3c75e9802c5ee7fd6cdb6660f7e}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+aerosols\+::dlty} = 180.\+0 / float(J\+M\+XG-\/1)
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga942aa3a9f61cb40592bd0879a91c2ede}\label{group__module__radiation__aerosols_ga942aa3a9f61cb40592bd0879a91c2ede}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga942aa3a9f61cb40592bd0879a91c2ede}{module\+\_\+radiation\+\_\+aerosols\+::psclmg}
+\begin{DoxyCompactList}\small\item\em pressure in cb \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga123d552c7f98f7371565f4e2017efd45}\label{group__module__radiation__aerosols_ga123d552c7f98f7371565f4e2017efd45}} 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga123d552c7f98f7371565f4e2017efd45}{module\+\_\+radiation\+\_\+aerosols\+::dmclmg}
+\begin{DoxyCompactList}\small\item\em aerosol dry mass in g/m3 or aerosol mixing ration in mol/mol or Kg/\+Kg \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1a0e35ab33517e765898870b8b1ab1ad}\label{group__module__radiation__aerosols_ga1a0e35ab33517e765898870b8b1ab1ad}} 
+real(kind=kind\+\_\+phys), dimension(\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga1a0e35ab33517e765898870b8b1ab1ad}{module\+\_\+radiation\+\_\+aerosols\+::geos\+\_\+rlon}
+\begin{DoxyCompactList}\small\item\em geos-\/gocart longitude arrays \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaef43bfbd28ef9b87e8d6973ba7331a18}\label{group__module__radiation__aerosols_gaef43bfbd28ef9b87e8d6973ba7331a18}} 
+real(kind=kind\+\_\+phys), dimension(\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_gaef43bfbd28ef9b87e8d6973ba7331a18}{module\+\_\+radiation\+\_\+aerosols\+::geos\+\_\+rlat}
+\begin{DoxyCompactList}\small\item\em geos-\/gocart latitude arrays \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab8118108e60a4795a8caa5af71232399}\label{group__module__radiation__aerosols_gab8118108e60a4795a8caa5af71232399}} 
+character $\ast$4, save \hyperlink{group__module__radiation__aerosols_gab8118108e60a4795a8caa5af71232399}{module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+climo} = \textquotesingle{}xxxx\textquotesingle{}
+\begin{DoxyCompactList}\small\item\em control flag for gocart climo data set\+: xxxx as default; ver3 for geos3; ver4 for geos4; 0000 for unknown data \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga166e63abaa518ec795f8eea6d115f03c}\label{group__module__radiation__aerosols_ga166e63abaa518ec795f8eea6d115f03c}} 
+real(kind=kind\+\_\+io4), dimension(\+:), allocatable \hyperlink{group__module__radiation__aerosols_ga166e63abaa518ec795f8eea6d115f03c}{module\+\_\+radiation\+\_\+aerosols\+::molwgt}
+\begin{DoxyCompactList}\small\item\em molecular wght of gocart aerosol species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa27bf6912bfd67b78381892d4f555c51}\label{group__module__radiation__aerosols_gaa27bf6912bfd67b78381892d4f555c51}} 
+logical, save \hyperlink{group__module__radiation__aerosols_gaa27bf6912bfd67b78381892d4f555c51}{module\+\_\+radiation\+\_\+aerosols\+::lgrtint} = .true.
+\begin{DoxyCompactList}\small\item\em logical parameter for gocart initialization control \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga018d5414597049069c1ddd1094285371}\label{group__module__radiation__aerosols_ga018d5414597049069c1ddd1094285371}} 
+logical, save \hyperlink{group__module__radiation__aerosols_ga018d5414597049069c1ddd1094285371}{module\+\_\+radiation\+\_\+aerosols\+::lckprnt} = .false.
+\begin{DoxyCompactList}\small\item\em logical parameter for gocart debug print control \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4b0aa142aee31c40361dadc390ccc68e}\label{group__module__radiation__aerosols_ga4b0aa142aee31c40361dadc390ccc68e}} 
+real(kind=kind\+\_\+phys), save \hyperlink{group__module__radiation__aerosols_ga4b0aa142aee31c40361dadc390ccc68e}{module\+\_\+radiation\+\_\+aerosols\+::ctaer} = f\+\_\+zero
+\begin{DoxyCompactList}\small\item\em merging coefficients for fcst/clim; determined from fdaer \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga36f851e49de5e1f7da38da5fa6ea445c}\label{group__module__radiation__aerosols_ga36f851e49de5e1f7da38da5fa6ea445c}} 
+logical, save \hyperlink{group__module__radiation__aerosols_ga36f851e49de5e1f7da38da5fa6ea445c}{module\+\_\+radiation\+\_\+aerosols\+::get\+\_\+fcst} = .true.
+\begin{DoxyCompactList}\small\item\em option to get fcst gocart aerosol field \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga7fe1943010fe47c9d86ef4c993848459}\label{group__module__radiation__aerosols_ga7fe1943010fe47c9d86ef4c993848459}} 
+logical, save \hyperlink{group__module__radiation__aerosols_ga7fe1943010fe47c9d86ef4c993848459}{module\+\_\+radiation\+\_\+aerosols\+::get\+\_\+clim} = .true.
+\begin{DoxyCompactList}\small\item\em option to get clim gocart aerosol field \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa9aa876f65d1e1e971607bff4ffbddad}\label{group__module__radiation__aerosols_gaa9aa876f65d1e1e971607bff4ffbddad}} 
+integer, save \hyperlink{group__module__radiation__aerosols_gaa9aa876f65d1e1e971607bff4ffbddad}{module\+\_\+radiation\+\_\+aerosols\+::isoot}
+\begin{DoxyCompactList}\small\item\em index for rh dependent aerosol optical properties (2nd dimension for extrhd\+\_\+grt, ssarhd\+\_\+grt, and asyrhd\+\_\+grt) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gad15292f4a185c28ad44687d95ef4d3a4}\label{group__module__radiation__aerosols_gad15292f4a185c28ad44687d95ef4d3a4}} 
+integer, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::iwaso}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gacddb4dccea82201fd3b193c15c85ec78}\label{group__module__radiation__aerosols_gacddb4dccea82201fd3b193c15c85ec78}} 
+integer, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::isuso}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab64435256571a80bbb577fc4f27b39ee}\label{group__module__radiation__aerosols_gab64435256571a80bbb577fc4f27b39ee}} 
+integer, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::issam}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga762cff73e22fefab8adf68d08d5c4df1}\label{group__module__radiation__aerosols_ga762cff73e22fefab8adf68d08d5c4df1}} 
+integer, save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::isscm}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae87b7754284ce0d44cab3ab11c7d302d}\label{group__module__radiation__aerosols_gae87b7754284ce0d44cab3ab11c7d302d}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::dust1}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaaf95cb5b3df728ac3b333edd8ab7820f}\label{group__module__radiation__aerosols_gaaf95cb5b3df728ac3b333edd8ab7820f}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::dust2}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga5d844db6dd6100b45808b5e19b468a84}\label{group__module__radiation__aerosols_ga5d844db6dd6100b45808b5e19b468a84}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::dust3}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga26a20aa03ac34523cc19644000d4924e}\label{group__module__radiation__aerosols_ga26a20aa03ac34523cc19644000d4924e}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::dust4}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga7d24acaa59ee8524dd8eca8f91f740c6}\label{group__module__radiation__aerosols_ga7d24acaa59ee8524dd8eca8f91f740c6}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::dust5}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga911c3dc2e5722a38166950003a4d0875}\label{group__module__radiation__aerosols_ga911c3dc2e5722a38166950003a4d0875}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::ssam}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga814b63e33cdf9c3e1e470406056a9fcb}\label{group__module__radiation__aerosols_ga814b63e33cdf9c3e1e470406056a9fcb}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::sscm}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga1556732edff9dba1d6593a1117af056f}\label{group__module__radiation__aerosols_ga1556732edff9dba1d6593a1117af056f}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::suso}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga9975caaff0c49d25180699beb469601f}\label{group__module__radiation__aerosols_ga9975caaff0c49d25180699beb469601f}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::waso\+\_\+phobic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga05425c83c167f7820a126c72e561a4da}\label{group__module__radiation__aerosols_ga05425c83c167f7820a126c72e561a4da}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::waso\+\_\+philic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gabe87221aca998b4d7ca231525e7dc355}\label{group__module__radiation__aerosols_gabe87221aca998b4d7ca231525e7dc355}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::soot\+\_\+phobic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac382ab82531e2f1cb6021b786666f004}\label{group__module__radiation__aerosols_gac382ab82531e2f1cb6021b786666f004}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+index\+\_\+type\+::soot\+\_\+philic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga70c58693c0aac6e4dbb6cf425fb0ce6a}\label{group__module__radiation__aerosols_ga70c58693c0aac6e4dbb6cf425fb0ce6a}} 
+type(\hyperlink{structmodule__radiation__aerosols_1_1gocart__index__type}{gocart\+\_\+index\+\_\+type}), save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::dm\+\_\+indx}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaf4355efd112704adbaeab5a3fd1d7912}\label{group__module__radiation__aerosols_gaf4355efd112704adbaeab5a3fd1d7912}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::du001}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gab68920703fa2cda7cbc42cb568a2ed56}\label{group__module__radiation__aerosols_gab68920703fa2cda7cbc42cb568a2ed56}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::du002}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga9b2422518e2c8aaba9f0b64bd0c4676a}\label{group__module__radiation__aerosols_ga9b2422518e2c8aaba9f0b64bd0c4676a}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::du003}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga69658f70ffccecfae1751c227ec1b14c}\label{group__module__radiation__aerosols_ga69658f70ffccecfae1751c227ec1b14c}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::du004}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaabd67af89106955952b0010bb3a70e4e}\label{group__module__radiation__aerosols_gaabd67af89106955952b0010bb3a70e4e}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::du005}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gacce0ecff4d4e84dffc0c23965053ac36}\label{group__module__radiation__aerosols_gacce0ecff4d4e84dffc0c23965053ac36}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ss001}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga9e96ed67b1e072d97314bc9e6e09eee7}\label{group__module__radiation__aerosols_ga9e96ed67b1e072d97314bc9e6e09eee7}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ss002}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga5aef8974607bb85ae1a23598a402adfb}\label{group__module__radiation__aerosols_ga5aef8974607bb85ae1a23598a402adfb}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ss003}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga88d0024b6f7f6fa3ae4e1da0e9ce7db8}\label{group__module__radiation__aerosols_ga88d0024b6f7f6fa3ae4e1da0e9ce7db8}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ss004}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga3c67144cb8aeedfb6c51c474a5072605}\label{group__module__radiation__aerosols_ga3c67144cb8aeedfb6c51c474a5072605}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ss005}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa73b4be9d303cfce2c00407204c5f930}\label{group__module__radiation__aerosols_gaa73b4be9d303cfce2c00407204c5f930}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::so4}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga3ace1c1bbade423efd216e676511c470}\label{group__module__radiation__aerosols_ga3ace1c1bbade423efd216e676511c470}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ocphobic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga95e99f68fc7344f78f2ee316bc447651}\label{group__module__radiation__aerosols_ga95e99f68fc7344f78f2ee316bc447651}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::ocphilic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4b1c1a1b44b5eb68ec19abb48e748fa0}\label{group__module__radiation__aerosols_ga4b1c1a1b44b5eb68ec19abb48e748fa0}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::bcphobic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga776ae744bfaad492a1aeccf32864d1a0}\label{group__module__radiation__aerosols_ga776ae744bfaad492a1aeccf32864d1a0}} 
+integer {\bfseries module\+\_\+radiation\+\_\+aerosols\+::tracer\+\_\+index\+\_\+type\+::bcphilic}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gad6c4782fbaae13df20891197b67568ec}\label{group__module__radiation__aerosols_gad6c4782fbaae13df20891197b67568ec}} 
+type(\hyperlink{structmodule__radiation__aerosols_1_1tracer__index__type}{tracer\+\_\+index\+\_\+type}), save {\bfseries module\+\_\+radiation\+\_\+aerosols\+::dmfcs\+\_\+indx}
+\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga6ddeb7b34ad2d6ab1575be3520e85891}\label{group__module__radiation__aerosols_ga6ddeb7b34ad2d6ab1575be3520e85891}} 
+integer, save \hyperlink{group__module__radiation__aerosols_ga6ddeb7b34ad2d6ab1575be3520e85891}{module\+\_\+radiation\+\_\+aerosols\+::num\+\_\+gridcomp} = 0
+\begin{DoxyCompactList}\small\item\em number of aerosol grid components \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga48c2c6c9c509f5c37fea5d788040ad7a}\label{group__module__radiation__aerosols_ga48c2c6c9c509f5c37fea5d788040ad7a}} 
+character, dimension(\+:), allocatable, save \hyperlink{group__module__radiation__aerosols_ga48c2c6c9c509f5c37fea5d788040ad7a}{module\+\_\+radiation\+\_\+aerosols\+::gridcomp}
+\begin{DoxyCompactList}\small\item\em aerosol grid components \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gad1187b5d87889c68cbe5929e20e83ac7}\label{group__module__radiation__aerosols_gad1187b5d87889c68cbe5929e20e83ac7}} 
+integer, parameter \hyperlink{group__module__radiation__aerosols_gad1187b5d87889c68cbe5929e20e83ac7}{module\+\_\+radiation\+\_\+aerosols\+::max\+\_\+num\+\_\+gridcomp} = 5
+\begin{DoxyCompactList}\small\item\em default full-\/package setting \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gac8278b0db773d6ba6ab4d71c9bb1b109}\label{group__module__radiation__aerosols_gac8278b0db773d6ba6ab4d71c9bb1b109}} 
+character $\ast$2, dimension(max\+\_\+num\+\_\+gridcomp) \hyperlink{group__module__radiation__aerosols_gac8278b0db773d6ba6ab4d71c9bb1b109}{module\+\_\+radiation\+\_\+aerosols\+::max\+\_\+gridcomp}
+\begin{DoxyCompactList}\small\item\em data max\+\_\+gridcomp /\textquotesingle{}DU\textquotesingle{}, \textquotesingle{}BC\textquotesingle{}, \textquotesingle{}OC\textquotesingle{}, \textquotesingle{}SU\textquotesingle{}, \textquotesingle{}SS\textquotesingle{}/ \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga8ca79ca1e5161374aff3cad4121b360f}\label{group__module__radiation__aerosols_ga8ca79ca1e5161374aff3cad4121b360f}} 
+integer, dimension(ncm) \hyperlink{group__module__radiation__aerosols_ga8ca79ca1e5161374aff3cad4121b360f}{module\+\_\+radiation\+\_\+aerosols\+::idxspc}
+\begin{DoxyCompactList}\small\item\em index conversion array\+:data idxspc / 1, 2, 1, 1, 1, 1, 3, 5, 5, 4 / \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4555a127ac5bab48353628ea81c55e4e}\label{group__module__radiation__aerosols_ga4555a127ac5bab48353628ea81c55e4e}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__aerosols_ga4555a127ac5bab48353628ea81c55e4e}{module\+\_\+radiation\+\_\+aerosols\+::wvn550} = 1.\+0e4/0.\+55
+\begin{DoxyCompactList}\small\item\em the wavenumber ( $cm^-1$) of wavelength 550nm for diagnostic aod output \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga112670c954eb372efc017253b1096b17}\label{group__module__radiation__aerosols_ga112670c954eb372efc017253b1096b17}} 
+integer, save \hyperlink{group__module__radiation__aerosols_ga112670c954eb372efc017253b1096b17}{module\+\_\+radiation\+\_\+aerosols\+::nv\+\_\+aod} = 1
+\begin{DoxyCompactList}\small\item\em the sw spectral band covering wvn550 (comp in aer\+\_\+init) \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a}{module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+init} (N\+L\+AY, me)
+\begin{DoxyCompactList}\small\item\em The initialization program is to set up necessary parameters and working arrays. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga3135fdf318002f9d56dd2d93225f4aac}\label{group__module__radiation__aerosols_ga3135fdf318002f9d56dd2d93225f4aac}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga3135fdf318002f9d56dd2d93225f4aac}{wrt\+\_\+aerlog}
+\begin{DoxyCompactList}\small\item\em This subroutine writes aerosol parameter configuration to run log file. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__aerosols_gaa7fe6dc2964bc474a132b93aaab82cb0}{set\+\_\+spectrum}
+\begin{DoxyCompactList}\small\item\em This subroutine defines the one wavenumber solar fluxes based on toa solar spectral distribution, and define the one wavenumber IR fluxes based on black-\/body emission distribution at a predefined temperature. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga9b4558586df512eab092565549b835e2}\label{group__module__radiation__aerosols_ga9b4558586df512eab092565549b835e2}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga9b4558586df512eab092565549b835e2}{set\+\_\+volcaer}
+\begin{DoxyCompactList}\small\item\em The initialization program for stratospheric volcanic aerosols. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__aerosols_gacdc24d7d4c01b97920ef940cc01c9cc0}{module\+\_\+radiation\+\_\+aerosols\+::clim\+\_\+aerinit} (solfwv, eirfwv, me)
+\begin{DoxyCompactList}\small\item\em This subroutine is the opac-\/climatology aerosol initialization program to set up necessary parameters and working arrays. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__aerosols_ga95fabbc4272ae70f3b345f9b1a898d46}{set\+\_\+aercoef}
+\begin{DoxyCompactList}\small\item\em The initialization program for climatological aerosols. The program reads and maps the pre-\/tabulated aerosol optical spectral data onto corresponding SW radiation spectral bands. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga637761b6110739f2d96322e2ddcc1291}\label{group__module__radiation__aerosols_ga637761b6110739f2d96322e2ddcc1291}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga637761b6110739f2d96322e2ddcc1291}{optavg}
+\begin{DoxyCompactList}\small\item\em This subroutine computes mean aerosols optical properties over each SW radiation spectral band for each of the species components. This program follows G\+F\+DL\textquotesingle{}s approach for thick cloud optical property in SW radiation scheme (2000). \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5}{module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+update} (iyear, imon, me)
+\begin{DoxyCompactList}\small\item\em This subroutine checks and updates time varying climatology aerosol data sets. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gafac9a9c603c033c8511e8dbfe984f703}\label{group__module__radiation__aerosols_gafac9a9c603c033c8511e8dbfe984f703}} 
+subroutine \hyperlink{group__module__radiation__aerosols_gafac9a9c603c033c8511e8dbfe984f703}{trop\+\_\+update}
+\begin{DoxyCompactList}\small\item\em This subroutine updates the monthly global distribution of aerosol profiles in five degree horizontal resolution. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga6ec9bd68d45a5f2c6bb9997bdad420c3}\label{group__module__radiation__aerosols_ga6ec9bd68d45a5f2c6bb9997bdad420c3}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga6ec9bd68d45a5f2c6bb9997bdad420c3}{volc\+\_\+update}
+\begin{DoxyCompactList}\small\item\em This subroutine searches historical volcanic data sets to find and read in monthly 45-\/degree lat-\/zone band of optical depth. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__aerosols_ga184fcc0618c1c4d42fa08cfe1e20e5c1}{module\+\_\+radiation\+\_\+aerosols\+::setaer} (prsi, prsl, prslk, tvly, rhlay, slmsk, tracer, xlon, xlat, I\+M\+AX, N\+L\+AY, N\+L\+P1, lsswr, lslwr, aerosw, aerolw, aerodp)
+\begin{DoxyCompactList}\small\item\em This subroutine computes aerosols optical properties. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radiation__aerosols_ga494892c147b1e14ffb241e413bc17a8b}{module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+property} (prsi, prsl, prslk, tvly, rhlay, dz, hz, tracer, alon, alat, slmsk, laersw, laerlw, I\+M\+AX, N\+L\+AY, N\+L\+P1, aerosw, aerolw, aerodp)
+\begin{DoxyCompactList}\small\item\em This subroutine maps the 5 degree global climatological aerosol data set onto model grids, and compute aerosol optical properties for SW and LW radiations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gae60b55ebc37825b2c3c95f95b23ed558}\label{group__module__radiation__aerosols_gae60b55ebc37825b2c3c95f95b23ed558}} 
+subroutine \hyperlink{group__module__radiation__aerosols_gae60b55ebc37825b2c3c95f95b23ed558}{radclimaer}
+\begin{DoxyCompactList}\small\item\em This subroutine computes aerosols optical properties in N\+S\+W\+L\+W\+BD bands. there are seven different vertical profile structures. in the troposphere, aerosol distribution at each grid point is composed from up to six components out of ten different substances. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radiation__aerosols_ga579538840d4d8c86efa155b788c14ae3}{module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+init} (N\+W\+V\+T\+OT, solfwv, soltot, N\+W\+V\+T\+IR, eirfwv, N\+B\+D\+SW, N\+L\+W\+B\+ND, N\+S\+W\+L\+W\+BD, imon, me, raddt, fdaer)
+\begin{DoxyCompactList}\small\item\em The initialization program for gocart aerosols. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_gafb13b833ac59cf949702bdbde93d2c44}\label{group__module__radiation__aerosols_gafb13b833ac59cf949702bdbde93d2c44}} 
+subroutine \hyperlink{group__module__radiation__aerosols_gafb13b833ac59cf949702bdbde93d2c44}{set\+\_\+aerspc} (raddt, fdaer)
+\begin{DoxyCompactList}\small\item\em This subroutine determines merging coefficients ctaer; setup aerosol specification. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga8b6a882f91674d1c0f7f71f297a5f92e}\label{group__module__radiation__aerosols_ga8b6a882f91674d1c0f7f71f297a5f92e}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga8b6a882f91674d1c0f7f71f297a5f92e}{rd\+\_\+gocart\+\_\+luts}
+\begin{DoxyCompactList}\small\item\em This subroutine reads input gocart aerosol optical data from Mie code calculations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga8d1f5010e8cbc6abda50b8fc233ad7e9}\label{group__module__radiation__aerosols_ga8d1f5010e8cbc6abda50b8fc233ad7e9}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga8d1f5010e8cbc6abda50b8fc233ad7e9}{optavg\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em This subroutine computes mean aerosols optical properties over each S\+W/\+LW radiation spectral band for each of the species components. This program follows G\+F\+DL\textquotesingle{}s approach for thick cloud optical property in SW radiation scheme (2000). \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__aerosols_ga15bad8499ffd17d967e5788cd6721c4d}{rd\+\_\+gocart\+\_\+clim}
+\begin{DoxyCompactList}\small\item\em This subroutine\+: \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__aerosols_ga04ce3c11b81d0a0b025f79c4f29acfb8}{module\+\_\+radiation\+\_\+aerosols\+::setgocartaer} (alon, alat, prslk, rhlay, dz, hz, N\+S\+W\+L\+W\+BD, prsl, tvly, trcly, I\+M\+AX, N\+L\+AY, N\+L\+P1, ivflip, lsswr, lslwr, aerosw, aerolw)
+\begin{DoxyCompactList}\small\item\em This subroutine computes SW + LW aerosol optical properties for gocart aerosol species (merged from fcst and clim fields). \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga651c4be2fa354238990c5c7b9488e9fd}\label{group__module__radiation__aerosols_ga651c4be2fa354238990c5c7b9488e9fd}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga651c4be2fa354238990c5c7b9488e9fd}{map\+\_\+aermr}
+\begin{DoxyCompactList}\small\item\em This subroutine maps input tracer fields (trcly) to local tracer array (aermr). \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga4ff866c545425e7029a11999e97d8faa}\label{group__module__radiation__aerosols_ga4ff866c545425e7029a11999e97d8faa}} 
+subroutine \hyperlink{group__module__radiation__aerosols_ga4ff866c545425e7029a11999e97d8faa}{aeropt\+\_\+grt}
+\begin{DoxyCompactList}\small\item\em This subroutine computes aerosols optical properties in N\+S\+W\+L\+W\+BD S\+W/\+LW bands. Aerosol distribution at each grid point is composed from up to N\+M\+XG aerosol species (from N\+U\+M\+\_\+\+G\+R\+I\+D\+C\+O\+MP components). \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a}\label{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!aer\+\_\+init@{aer\+\_\+init}}
+\index{aer\+\_\+init@{aer\+\_\+init}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{aer\+\_\+init()}{aer\_init()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+init (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+L\+AY} & number of model vertical layers (not used) \\
+\hline
+{\em me} & print message control flag \\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s__ozn_gen_al}{}\subsection{General Algorithm}\label{group___g_f_s__ozn_gen_al}
+
+\begin{DoxyEnumerate}
+\item Call \hyperlink{group__module__radiation__aerosols_ga3135fdf318002f9d56dd2d93225f4aac}{wrt\+\_\+aerlog()} to write aerosol parameter configuration to output logs.
+\item Call \hyperlink{group__module__radiation__aerosols_gaa7fe6dc2964bc474a132b93aaab82cb0}{set\+\_\+spectrum()} to set up spectral one wavenumber solar/\+IR fluxes.
+\item Call \hyperlink{group__module__radiation__aerosols_gacdc24d7d4c01b97920ef940cc01c9cc0}{clim\+\_\+aerinit()} to invoke tropospheric aerosol initialization.
+\item Call \hyperlink{group__module__radiation__aerosols_ga9b4558586df512eab092565549b835e2}{set\+\_\+volcaer()} to invoke stratospheric volcanic aerosol initialization. 
+\end{DoxyEnumerate}
+
+Definition at line 687 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References clim\+\_\+aerinit(), kmonsav, kyrend, kyrsav, kyrstr, nlwbnd, nswbnd, nswlwbd, set\+\_\+spectrum(), set\+\_\+volcaer(), and wrt\+\_\+aerlog().
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radinit().
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{group__module__radiation__aerosols_ga58ac70a5189ef62c63cf2c87465a030a_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga494892c147b1e14ffb241e413bc17a8b}\label{group__module__radiation__aerosols_ga494892c147b1e14ffb241e413bc17a8b}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!aer\+\_\+property@{aer\+\_\+property}}
+\index{aer\+\_\+property@{aer\+\_\+property}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{aer\+\_\+property()}{aer\_property()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+property (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prsi,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prsl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prslk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhlay,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{dz,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{hz,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(in)}]{tracer,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{logical, intent(in)}]{laersw,  }\item[{logical, intent(in)}]{laerlw,  }\item[{integer, intent(in)}]{I\+M\+AX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerosw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerolw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{aerodp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em prsi} & (I\+M\+AX,N\+L\+P1), pressure at interface in mb \\
+\hline
+{\em prsl} & (I\+M\+AX,N\+L\+AY), layer mean pressure(not used) \\
+\hline
+{\em prslk} & (I\+M\+AX,N\+L\+AY), exner function= $(p/p0)^{rocp}$ (not used) \\
+\hline
+{\em tvly} & (I\+M\+AX,N\+L\+AY), layer virtual temperature (not used) \\
+\hline
+{\em rhlay} & (I\+M\+AX,N\+L\+AY), layer mean relative humidity \\
+\hline
+{\em dz} & (I\+M\+AX,N\+L\+AY), layer thickness in m \\
+\hline
+{\em hz} & (I\+M\+AX,N\+L\+P1), level high in m \\
+\hline
+{\em tracer} & (I\+M\+AX,N\+L\+AY,N\+T\+R\+AC), aer tracer concentrations (not used) \\
+\hline
+{\em alon,alat} & (I\+M\+AX), longitude and latitude of given points in degree \\
+\hline
+{\em slmsk} & (I\+M\+AX), sea/land mask (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em laersw,laerlw} & logical flag for sw/lw aerosol calculations \\
+\hline
+{\em I\+M\+AX} & horizontal dimension of arrays \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical dimensions of arrays \\
+\hline
+{\em N\+S\+PC} & num of species for optional aod output fields \\
+\hline
+{\em aerosw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+SW,N\+F\+\_\+\+A\+E\+SW), aeros opt properties for sw ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+{\em aerolw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+LW,N\+F\+\_\+\+A\+E\+LW), aeros opt properties for lw ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+{\em aerodp} & (I\+M\+AX,N\+S\+P\+C+1), vertically integrated aer-\/opt-\/depth \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_gel_aer_pro}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_gel_aer_pro}
+
+\begin{DoxyEnumerate}
+\item Map aerosol data to model grids
+\begin{DoxyItemize}
+\item Map grid in longitude direction, lon from 0 to 355 deg resolution
+\item Map grid in latitude direction, lat from 90n to 90s in 5 deg resolution
+\end{DoxyItemize}
+\item Determin the type of aerosol profile (kp) and scale hight for domain 1 (h1) to be used at this grid point.
+\item Compute horizontal bi-\/linear interpolation weights
+\item Do horizontal bi-\/linear interpolation on aerosol partical density (denn)
+\item Do horizontal bi-\/linear interpolation on mixing ratios
+\item Prepare to setup domain index array and effective layer thickness, also convert pressure level to sigma level to follow the terrain.
+\item Call \hyperlink{group__module__radiation__aerosols_gae60b55ebc37825b2c3c95f95b23ed558}{radclimaer()} to calculate S\+W/\+LW aerosol optical properties for the corresponding frequency bands. 
+\end{DoxyEnumerate}
+
+Definition at line 2774 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References cmixg, denng, haer, idxcg, imxae, jmxae, kprfg, nlwbnd, nspc, nswbnd, nv\+\_\+aod, nxc, prsref, radclimaer(), and sigref.
+
+
+
+Referenced by setaer().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5}\label{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!aer\+\_\+update@{aer\+\_\+update}}
+\index{aer\+\_\+update@{aer\+\_\+update}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{aer\+\_\+update()}{aer\_update()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+aerosols\+::aer\+\_\+update (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{iyear,  }\item[{integer, intent(in)}]{imon,  }\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em iyear} & 4-\/digit calender year \\
+\hline
+{\em imon} & month of the year \\
+\hline
+{\em me} & print message control flag \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_gen_aer_upd}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_gen_aer_upd}
+
+\begin{DoxyEnumerate}
+\item Call \hyperlink{group__module__radiation__aerosols_gafac9a9c603c033c8511e8dbfe984f703}{trop\+\_\+update()} to update monthly tropospheric aerosol data.
+\item Call \hyperlink{group__module__radiation__aerosols_ga6ec9bd68d45a5f2c6bb9997bdad420c3}{volc\+\_\+update()} to update yearly stratospheric volcanic aerosol data. 
+\end{DoxyEnumerate}
+
+Definition at line 1806 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References trop\+\_\+update(), and volc\+\_\+update().
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radupdate().
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=318pt]{group__module__radiation__aerosols_ga237071d2a0691d5aae199937d9b6aca5_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{group__module__radiation__aerosols_gacdc24d7d4c01b97920ef940cc01c9cc0}\label{group__module__radiation__aerosols_gacdc24d7d4c01b97920ef940cc01c9cc0}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!clim\+\_\+aerinit@{clim\+\_\+aerinit}}
+\index{clim\+\_\+aerinit@{clim\+\_\+aerinit}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{clim\+\_\+aerinit()}{clim\_aerinit()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radiation\+\_\+aerosols\+::clim\+\_\+aerinit (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:)}]{solfwv,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:)}]{eirfwv,  }\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em solfwv} & (N\+W\+V\+T\+OT), solar flux for each individual wavenumber $(w/m^2)$ \\
+\hline
+{\em eirfwv} & (N\+W\+V\+T\+IR), IR flux(273k) for each individual wavenumber $(w/m^2)$ \\
+\hline
+{\em me} & print message control flag\\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_gen_clim_aerinit}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_gen_clim_aerinit}
+
+\begin{DoxyItemize}
+\item call \hyperlink{group__module__radiation__aerosols_ga95fabbc4272ae70f3b345f9b1a898d46}{set\+\_\+aercoef()} to invoke tropospheric aerosol initialization. 
+\end{DoxyItemize}
+
+Definition at line 1083 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References set\+\_\+aercoef().
+
+
+
+Referenced by aer\+\_\+init().
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga579538840d4d8c86efa155b788c14ae3}\label{group__module__radiation__aerosols_ga579538840d4d8c86efa155b788c14ae3}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!gocart\+\_\+init@{gocart\+\_\+init}}
+\index{gocart\+\_\+init@{gocart\+\_\+init}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{gocart\+\_\+init()}{gocart\_init()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radiation\+\_\+aerosols\+::gocart\+\_\+init (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{N\+W\+V\+T\+OT,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{solfwv,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{soltot,  }\item[{integer, intent(in)}]{N\+W\+V\+T\+IR,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{eirfwv,  }\item[{integer, intent(in)}]{N\+B\+D\+SW,  }\item[{integer, intent(in)}]{N\+L\+W\+B\+ND,  }\item[{integer, intent(in)}]{N\+S\+W\+L\+W\+BD,  }\item[{integer, intent(in)}]{imon,  }\item[{integer, intent(in)}]{me,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{raddt,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{fdaer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyItemize}
+\item determine weight and index for aerosol composition/luts
+\item read in monthly global distribution of gocart aerosols
+\item read and map the tabulated aerosol optical spectral data onto corresponding S\+W/\+LW radiation spectral bands.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em N\+W\+V\+T\+OT} & total num of wave numbers used in sw spectrum \\
+\hline
+{\em solfwv} & (N\+W\+V\+T\+OT), solar flux for each individual wavenumber (w/m2) \\
+\hline
+{\em soltot} & total solar flux for the spectrual range (w/m2) \\
+\hline
+{\em N\+W\+V\+T\+IR} & total num of wave numbers used in the ir region \\
+\hline
+{\em eirfwv} & (N\+W\+V\+T\+IR), ir flux(273k) for each individual wavenumber (w/m2) \\
+\hline
+{\em N\+B\+D\+SW} & num of bands calculated for sw aeros opt prop \\
+\hline
+{\em N\+L\+W\+B\+ND} & num of bands calculated for lw aeros opt prop \\
+\hline
+{\em N\+S\+W\+L\+W\+BD} & total num of bands calc for sw+lw aeros opt prop \\
+\hline
+{\em imon} & month of the year \\
+\hline
+{\em me} & print message control flag \\
+\hline
+{\em raddt} & \\
+\hline
+{\em fdaer} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_gel_go_ini}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_gel_go_ini}
+
+
+Definition at line 3533 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References extrhd\+\_\+grt, extrhi\+\_\+grt, get\+\_\+clim, iendwv\+\_\+grt, kaerbnd, krhlev, lckprnt, lgrtint, module\+\_\+radsw\+\_\+parameters\+::nswstr, nv\+\_\+aod, optavg\+\_\+grt(), rd\+\_\+gocart\+\_\+clim(), rd\+\_\+gocart\+\_\+luts(), rhdpasy0\+\_\+grt, rhdpext0\+\_\+grt, rhdpssa0\+\_\+grt, rhidasy0\+\_\+grt, rhidext0\+\_\+grt, rhidssa0\+\_\+grt, and set\+\_\+aerspc().
+
+Here is the call graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga15bad8499ffd17d967e5788cd6721c4d}\label{group__module__radiation__aerosols_ga15bad8499ffd17d967e5788cd6721c4d}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!rd\+\_\+gocart\+\_\+clim@{rd\+\_\+gocart\+\_\+clim}}
+\index{rd\+\_\+gocart\+\_\+clim@{rd\+\_\+gocart\+\_\+clim}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{rd\+\_\+gocart\+\_\+clim()}{rd\_gocart\_clim()}}
+{\footnotesize\ttfamily subroutine gocart\+\_\+init\+::rd\+\_\+gocart\+\_\+clim (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyItemize}
+\item 1. read in aerosol dry mass and surface pressure from G\+E\+O\+S3-\/\+G\+O\+C\+A\+RT C3.\+1 2000 monthly dataset or aerosol mixing ratio and surface pressure from G\+E\+O\+S4-\/\+G\+O\+C\+A\+RT 2000-\/2007 averaged monthly data set.
+\item 2. compute goes lat/lon array (for horizontal mapping) 
+\end{DoxyItemize}
+
+Definition at line 4543 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References dmclmg, geos\+\_\+rlat, geos\+\_\+rlon, gocart\+\_\+climo, gridcomp, imxg, jmxg, kmxg, molwgt, nmxg, nswlwbd, num\+\_\+gridcomp, and psclmg.
+
+
+
+Referenced by gocart\+\_\+init().
+
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga95fabbc4272ae70f3b345f9b1a898d46}\label{group__module__radiation__aerosols_ga95fabbc4272ae70f3b345f9b1a898d46}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!set\+\_\+aercoef@{set\+\_\+aercoef}}
+\index{set\+\_\+aercoef@{set\+\_\+aercoef}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{set\+\_\+aercoef()}{set\_aercoef()}}
+{\footnotesize\ttfamily subroutine clim\+\_\+aerinit\+::set\+\_\+aercoef (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+\hypertarget{group__module__radiation__aerosols_det_set_aercoef}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_det_set_aercoef}
+
+\begin{DoxyEnumerate}
+\item Reading climatological aerosols optical data from aeros\+\_\+file, including\+:
+\begin{DoxyItemize}
+\item ending wave num for 61 aerosol spectral bands
+\item atmos scale height for 5 domains, 7 profs
+\item reference pressure for 5 domains, 7 profs
+\item rh independent ext coef for 61 bands, 6 species
+\item rh independent sca coef for 61 bands, 6 species
+\item rh independent ssa coef for 61 bands, 6 species
+\item rh independent asy coef for 61 bands, 6 species
+\item rh dependent ext coef for 61 bands, 8 rh lev, 4 species
+\item rh dependent sca coef for 61 bands, 8 rh lev, 4 species
+\item rh dependent ssa coef for 61 bands, 8 rh lev, 4 species
+\item rh dependent asy coef for 61 bands, 8 rh lev, 4 species
+\item stratospheric background aeros for 61 bands
+\end{DoxyItemize}
+\item Convert pressure reference level (in mb) to sigma reference level assume an 1000mb reference surface pressure.
+\item Compute solar flux weights and interval indices for mapping spectral bands between SW radiation and aerosol data.
+\item Compute LW flux weights and interval indices for mapping spectral bands between lw radiation and aerosol data.
+\item Call \hyperlink{group__module__radiation__aerosols_ga637761b6110739f2d96322e2ddcc1291}{optavg()} to compute spectral band mean properties for each species. 
+\end{DoxyEnumerate}
+
+Definition at line 1172 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References haer, imxae, jmxae, naerbnd, ncm1, ncm2, nlwbnd, nlwstr, nrhlev, nswbnd, nswlwbd, module\+\_\+radsw\+\_\+parameters\+::nswstr, nv\+\_\+aod, optavg(), prsref, sigref, and wvn550.
+
+
+
+Referenced by clim\+\_\+aerinit().
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=230pt]{group__module__radiation__aerosols_ga95fabbc4272ae70f3b345f9b1a898d46_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{group__module__radiation__aerosols_gaa7fe6dc2964bc474a132b93aaab82cb0}\label{group__module__radiation__aerosols_gaa7fe6dc2964bc474a132b93aaab82cb0}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!set\+\_\+spectrum@{set\+\_\+spectrum}}
+\index{set\+\_\+spectrum@{set\+\_\+spectrum}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{set\+\_\+spectrum()}{set\_spectrum()}}
+{\footnotesize\ttfamily subroutine aer\+\_\+init\+::set\+\_\+spectrum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyItemize}
+\item inputs\+: (module constants)
+\begin{DoxyItemize}
+\item N\+W\+V\+T\+OT\+: total num of wave numbers used in sw spectrum
+\item N\+W\+V\+T\+IR\+: total num of wave numbers used in the ir region
+\end{DoxyItemize}
+\item outputs\+: (in-\/scope variables)
+\begin{DoxyItemize}
+\item solfwv(\+N\+W\+V\+T\+O\+T)\+: solar flux for each individual wavenumber ( $W/m^2$)
+\item eirfwv(\+N\+W\+V\+T\+I\+R)\+: ir flux(273k) for each individual wavenumber ( $W/m^2$) 
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Definition at line 933 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References nwvns0, nwvsol, nwvtir, and s0intv.
+
+
+
+Referenced by aer\+\_\+init().
+
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga184fcc0618c1c4d42fa08cfe1e20e5c1}\label{group__module__radiation__aerosols_ga184fcc0618c1c4d42fa08cfe1e20e5c1}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!setaer@{setaer}}
+\index{setaer@{setaer}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{setaer()}{setaer()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+aerosols\+::setaer (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prsi,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prsl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prslk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhlay,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(in)}]{tracer,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{integer, intent(in)}]{I\+M\+AX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{logical, intent(in)}]{lsswr,  }\item[{logical, intent(in)}]{lslwr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerosw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerolw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{aerodp }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em prsi} & (I\+M\+AX,N\+L\+P1), pressure at interface in mb \\
+\hline
+{\em prsl} & (I\+M\+AX,N\+L\+AY), layer mean pressure in mb \\
+\hline
+{\em prslk} & (I\+M\+AX,N\+L\+AY), exner function = $(p/p0)^{rocp}$ \\
+\hline
+{\em tvly} & (I\+M\+AX,N\+L\+AY), layer virtual temperature in K \\
+\hline
+{\em rhlay} & (I\+M\+AX,N\+L\+AY), layer mean relative humidity \\
+\hline
+{\em slmsk} & (I\+M\+AX), sea/land mask (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em tracer} & (I\+M\+AX,N\+L\+AY,N\+T\+R\+AC), aerosol tracer concentration \\
+\hline
+{\em xlon} & (I\+M\+AX), longitude of given points in radiance, ok for both 0-\/$>$2pi or -\/pi-\/$>$+pi ranges \\
+\hline
+{\em xlat} & (I\+M\+AX), latitude of given points in radiance, default to pi/2 -\/$>$ -\/pi/2, otherwise see in-\/line comment \\
+\hline
+{\em I\+M\+AX} & 1, horizontal dimension of arrays \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & 1, vertical dimensions of arrays \\
+\hline
+{\em lsswr,lslwr} & logical flags for sw/lw radiation calls \\
+\hline
+{\em aerosw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+SW,N\+F\+\_\+\+A\+E\+SW), aeros opt properties for sw ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+{\em aerolw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+LW,N\+F\+\_\+\+A\+E\+LW), aeros opt properties for lw ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+{\em aerodp} & (I\+M\+AX,N\+S\+P\+C1), vertically integrated optical depth \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_general_setaer}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_general_setaer}
+
+\begin{DoxyEnumerate}
+\item Convert lat/lon from radiance to degree.
+\item Compute level height and layer thickness.
+\item Calculate SW aerosol optical properties for the corresponding frequency bands\+:
+\begin{DoxyItemize}
+\item if opac aerosol climatology is used, call \hyperlink{group__module__radiation__aerosols_ga494892c147b1e14ffb241e413bc17a8b}{aer\+\_\+property()}\+: this subroutine maps the 5 degree global climatological aerosol data set onto model grids, and compute aerosol optical properties for SW and LW radiations.
+\item if gocart aerosol scheme is used, call \hyperlink{group__module__radiation__aerosols_ga04ce3c11b81d0a0b025f79c4f29acfb8}{setgocartaer()}\+: this subroutine computes sw + lw aerosol optical properties for gocart aerosol species (merged from fcst and clim fields).
+\end{DoxyItemize}
+\item Compute stratosphere volcanic forcing\+:
+\begin{DoxyItemize}
+\item select data in 4 lat bands, interpolation at the boundaries
+\item Find lower boundary of stratosphere\+: polar, fixed at 25000pa (250mb); tropic, fixed at 15000pa (150mb); mid-\/lat, interpolation
+\item SW\+: add volcanic aerosol optical depth to the background value
+\item Smoothing profile at boundary if needed
+\item LW\+: add volcanic aerosol optical depth to the background value 
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+Definition at line 2186 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References aer\+\_\+property(), ivolae, kmonsav, kyrsav, nf\+\_\+aelw, nf\+\_\+aesw, nlwbnd, nspc1, nswlwbd, module\+\_\+radsw\+\_\+parameters\+::nswstr, and setgocartaer().
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{group__module__radiation__aerosols_ga04ce3c11b81d0a0b025f79c4f29acfb8}\label{group__module__radiation__aerosols_ga04ce3c11b81d0a0b025f79c4f29acfb8}} 
+\index{module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}!setgocartaer@{setgocartaer}}
+\index{setgocartaer@{setgocartaer}!module\+\_\+radiation\+\_\+aerosols@{module\+\_\+radiation\+\_\+aerosols}}
+\subsubsection{\texorpdfstring{setgocartaer()}{setgocartaer()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radiation\+\_\+aerosols\+::setgocartaer (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prslk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhlay,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{dz,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{hz,  }\item[{integer, intent(in)}]{N\+S\+W\+L\+W\+BD,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{prsl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(in)}]{trcly,  }\item[{integer, intent(in)}]{I\+M\+AX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{integer, intent(in)}]{ivflip,  }\item[{logical, intent(in)}]{lsswr,  }\item[{logical, intent(in)}]{lslwr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerosw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:,\+:), intent(out)}]{aerolw }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em alon} & I\+M\+AX, longitude of given points in degree \\
+\hline
+{\em alat} & I\+M\+AX, latitude of given points in degree \\
+\hline
+{\em prslk} & (I\+M\+AX,N\+L\+AY), pressure in cb \\
+\hline
+{\em rhlay} & (I\+M\+AX,N\+L\+AY), layer mean relative humidity \\
+\hline
+{\em dz} & (I\+M\+AX,N\+L\+AY), layer thickness in m \\
+\hline
+{\em hz} & (I\+M\+AX,N\+L\+P1), level high in m \\
+\hline
+{\em N\+S\+W\+L\+W\+BD} & total number of sw+ir bands for aeros opt prop \\
+\hline
+{\em prsl} & (I\+M\+AX,N\+L\+AY), layer mean pressure in mb \\
+\hline
+{\em tvly} & (I\+M\+AX,N\+L\+AY), layer mean virtual temperature in K \\
+\hline
+{\em trcly} & (I\+M\+AX,N\+L\+AY,N\+T\+R\+AC), layer mean specific tracer in g/g \\
+\hline
+{\em I\+M\+AX} & horizontal dimension of arrays \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical dimensions of arrays \\
+\hline
+{\em ivflip} & control flag for direction of vertical index ~\newline
+ =0\+: index from toa to surface ~\newline
+ =1\+: index from surface to toa \\
+\hline
+{\em lsswr,lslwr} & logical flag for sw/lw radiation calls \\
+\hline
+{\em aerosw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+SW,N\+F\+\_\+\+A\+E\+SW), aeros opt properties for SW ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+{\em aerolw} & (I\+M\+AX,N\+L\+AY,N\+B\+D\+LW,N\+F\+\_\+\+A\+E\+LW), aeros opt properties for LW ~\newline
+ (\+:,\+:,\+:,1)\+: optical depth ~\newline
+ (\+:,\+:,\+:,2)\+: single scattering albedo ~\newline
+ (\+:,\+:,\+:,3)\+: asymmetry parameter \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__aerosols_gen_setgo}{}\subsection{General Algorithm}\label{group__module__radiation__aerosols_gen_setgo}
+
+\begin{DoxyEnumerate}
+\item Call \hyperlink{group__module__radiation__aerosols_ga651c4be2fa354238990c5c7b9488e9fd}{map\+\_\+aermr()} to map input tracer array (trcly) to local tracer array (aermr).
+\item Map geos-\/gocart climo (dmclmg) to gfs grids (dmclm).
+\item Call \hyperlink{group__module__radiation__aerosols_ga4ff866c545425e7029a11999e97d8faa}{aeropt\+\_\+grt()} to alculate sw/lw aerosol optical properties for the corresponding frequency bands. 
+\end{DoxyEnumerate}
+
+Definition at line 4898 of file radiation\+\_\+aerosols.\+f.
+
+
+
+References aeropt\+\_\+grt(), ctaer, dmclmg, geos\+\_\+rlat, geos\+\_\+rlon, get\+\_\+clim, get\+\_\+fcst, gocart\+\_\+climo, imxg, jmxg, kmxg, map\+\_\+aermr(), molwgt, nlwbnd, nmxg, and psclmg.
+
+
+
+Referenced by setaer().
+
+Here is the call graph for this function\+:
+% FIG 4

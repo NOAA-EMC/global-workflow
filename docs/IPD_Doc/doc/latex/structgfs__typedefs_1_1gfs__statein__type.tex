@@ -1,0 +1,254 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+statein\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__statein__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+statein\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ statein\+\_\+create}
+\begin{DoxyCompactList}\small\item\em allocate array data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ phii} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interface geopotential height \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ prsi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em model level pressure in Pa \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ prsik} =$>$ null()
+\begin{DoxyCompactList}\small\item\em Exner function at interface. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ phil} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer geopotential height \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ prsl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em model layer mean pressure Pa \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ prslk} =$>$ null()
+\begin{DoxyCompactList}\small\item\em exner function = (p/p0)$\ast$$\ast$rocp \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ pgr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface pressure (Pa) real \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ ugrs} =$>$ null()
+\begin{DoxyCompactList}\small\item\em u component of layer wind \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ vgrs} =$>$ null()
+\begin{DoxyCompactList}\small\item\em v component of layer wind \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ vvl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer mean vertical velocity in pa/sec \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ tgrs} =$>$ null()
+\begin{DoxyCompactList}\small\item\em model layer mean temperature in k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ qgrs} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer mean tracer concentration \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ diss\+\_\+est} =$>$ null()
+\begin{DoxyCompactList}\small\item\em model layer mean temperature in k \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 92 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a75788fa90be0a5d03754e6ca7dfc62a0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+allocate array data 
+
+
+
+Definition at line 115 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a3d26c3e604a433a4bffb3ba39f52ad79}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!phii@{phii}}
+\index{phii@{phii}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{phii}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::phii =$>$ null()}
+
+
+
+interface geopotential height 
+
+
+
+Definition at line 95 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a8baeba7bdd9cedbce7db96b594a736ea}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!prsi@{prsi}}
+\index{prsi@{prsi}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{prsi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::prsi =$>$ null()}
+
+
+
+model level pressure in Pa 
+
+
+
+Definition at line 96 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_ad0bd345385a39d8a61d1bb48527c278d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!prsik@{prsik}}
+\index{prsik@{prsik}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{prsik}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::prsik =$>$ null()}
+
+
+
+Exner function at interface. 
+
+
+
+Definition at line 97 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a1c57fd635ed7f4a98f0bd4778e1db368}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!phil@{phil}}
+\index{phil@{phil}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{phil}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::phil =$>$ null()}
+
+
+
+layer geopotential height 
+
+
+
+Definition at line 100 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a47e0904c1e79a576dfd798844f46ea47}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!prsl@{prsl}}
+\index{prsl@{prsl}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{prsl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::prsl =$>$ null()}
+
+
+
+model layer mean pressure Pa 
+
+
+
+Definition at line 101 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a61b67686362d8e9b01a5433f8e20a3b7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!prslk@{prslk}}
+\index{prslk@{prslk}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{prslk}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::prslk =$>$ null()}
+
+
+
+exner function = (p/p0)$\ast$$\ast$rocp 
+
+
+
+Definition at line 102 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a4e7021eac304d5f27d1dae5683b43ed7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!pgr@{pgr}}
+\index{pgr@{pgr}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{pgr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::pgr =$>$ null()}
+
+
+
+surface pressure (Pa) real 
+
+
+
+Definition at line 105 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a561ab902760c01590225ce0b18be1889}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!ugrs@{ugrs}}
+\index{ugrs@{ugrs}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{ugrs}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::ugrs =$>$ null()}
+
+
+
+u component of layer wind 
+
+
+
+Definition at line 106 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a87e66f3badfc5d919fadce2aac4676af}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!vgrs@{vgrs}}
+\index{vgrs@{vgrs}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{vgrs}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::vgrs =$>$ null()}
+
+
+
+v component of layer wind 
+
+
+
+Definition at line 107 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a756f71b86accc2e644902c615208970d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!vvl@{vvl}}
+\index{vvl@{vvl}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{vvl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::vvl =$>$ null()}
+
+
+
+layer mean vertical velocity in pa/sec 
+
+
+
+Definition at line 108 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a37bfceb7760cb61adf9385b7bec5dc3e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!tgrs@{tgrs}}
+\index{tgrs@{tgrs}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{tgrs}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::tgrs =$>$ null()}
+
+
+
+model layer mean temperature in k 
+
+
+
+Definition at line 109 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_ac4f7e5b5097a7fa88b0b5dc31571dead}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!qgrs@{qgrs}}
+\index{qgrs@{qgrs}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{qgrs}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::qgrs =$>$ null()}
+
+
+
+layer mean tracer concentration 
+
+
+
+Definition at line 110 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__statein__type_a6e901242aed55ce5fbc9ec426fa53d26}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}!diss\+\_\+est@{diss\+\_\+est}}
+\index{diss\+\_\+est@{diss\+\_\+est}!gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}}
+\subsubsection{diss\+\_\+est}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type\+::diss\+\_\+est =$>$ null()}
+
+
+
+model layer mean temperature in k 
+
+
+
+Definition at line 112 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

@@ -1,3 +1,9 @@
+# This file is used to tell the underlying scripts how many threads or
+# MPI ranks are used for various executed programs.  Many of the
+# programs listed here are for the full workflow, such as analysis or
+# ENKF jobs.  Hence, only a few of these are used.  Specifically, the
+# ones in the post, fcst, and getic sections of the large "if" block.
+
 config_resources:
   filename: "config.resources"
   content: !expand |

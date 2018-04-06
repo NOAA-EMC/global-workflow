@@ -1,0 +1,42 @@
+\hypertarget{radiation__surface_8f}{}\section{radiation\+\_\+surface.\+f File Reference}
+\label{radiation__surface_8f}\index{radiation\+\_\+surface.\+f@{radiation\+\_\+surface.\+f}}
+
+
+This file contains routines that set up surface albedo for SW radiation and surface emissivity for LW radiation.  
+
+
+\subsection*{Functions/\+Subroutines}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__surface_gac05a5b8f903ace95e45c1cce612ed721}{module\+\_\+radiation\+\_\+surface\+::sfc\+\_\+init} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine is the initialization program for surface radiation related quantities (albedo, emissivity, etc.) \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__surface_ga3e3bd6550a924c538c88169c7c169a5b}{module\+\_\+radiation\+\_\+surface\+::setalb} (slmsk, snowf, sncovr, snoalb, zorlf, coszf, tsknf, tairf, hprif, alvsf, alnsf, alvwf, alnwf, facsf, facwf, fice, tisfc, I\+M\+AX, sfcalb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes four components of surface albedos (i.\+e., vis-\/nir, direct-\/diffused) according to control flag ialbflg. ~\newline
+ 1) climatological surface albedo scheme (Briegleb 1992 \cite{briegleb_1992}) ~\newline
+ 2) M\+O\+D\+IS retrieval based scheme from Boston univ. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__surface_ga57ea2aa09c4194e14f2c538ef7fad7b3}{module\+\_\+radiation\+\_\+surface\+::setemis} (xlon, xlat, slmsk, snowf, sncovr, zorlf, tsknf, tairf, hprif, I\+M\+AX, sfcemis)
+\begin{DoxyCompactList}\small\item\em This subroutine computes surface emissivity for LW radiation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{radiation__surface_8f_ab0b8c10a0fb6be2644fdf91e3fe1fc5c}\label{radiation__surface_8f_ab0b8c10a0fb6be2644fdf91e3fe1fc5c}} 
+character(40), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::vtagsfc} =\textquotesingle{}N\+C\+EP-\/Radiation\+\_\+surface v5.\+1 Nov 2012 \textquotesingle{}
+\item 
+integer, parameter, public \hyperlink{group__module__radiation__surface_gab7800982c900bd632ca74d5e7d2b5ab3}{module\+\_\+radiation\+\_\+surface\+::nf\+\_\+albd} = 4
+\begin{DoxyCompactList}\small\item\em num of sfc albedo components \end{DoxyCompactList}\item 
+integer, parameter, public \hyperlink{group__module__radiation__surface_gaab4b9853c71ff40f8db2aa78b7cab265}{module\+\_\+radiation\+\_\+surface\+::imxems} = 360
+\begin{DoxyCompactList}\small\item\em num of longitude points in global emis-\/type map \end{DoxyCompactList}\item 
+integer, parameter, public \hyperlink{group__module__radiation__surface_ga3922674f1c727d517ba5b0f7f5093970}{module\+\_\+radiation\+\_\+surface\+::jmxems} = 180
+\begin{DoxyCompactList}\small\item\em num of latitude points in global emis-\/type map \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::f\+\_\+zero} = 0.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::f\+\_\+one} = 1.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::rad2dg} = 180.\+0 / con\+\_\+pi
+\item 
+integer, dimension(\+:,\+:), allocatable \hyperlink{group__module__radiation__surface_gac33f1f3441f8336d7eb7e15cba26caf7}{module\+\_\+radiation\+\_\+surface\+::idxems}
+\begin{DoxyCompactList}\small\item\em global surface emissivity index array \end{DoxyCompactList}\item 
+integer \hyperlink{group__module__radiation__surface_ga3ceebb99dbffcb70a14cfcaa7b029abc}{module\+\_\+radiation\+\_\+surface\+::iemslw} = 0
+\begin{DoxyCompactList}\small\item\em global surface emissivity contrl flag set up in \textquotesingle{}sfc\+\_\+init\textquotesingle{} \end{DoxyCompactList}\end{DoxyCompactItemize}

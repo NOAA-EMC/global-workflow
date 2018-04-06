@@ -1,0 +1,281 @@
+\hypertarget{group___h_e_d_m_e_f}{}\section{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}
+\label{group___h_e_d_m_e_f}\index{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme@{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}}
+
+
+The Hybrid E\+D\+MF scheme is a first-\/order turbulent transport scheme used for subgrid-\/scale vertical turbulent mixing in the P\+BL and above. It blends the traditional first-\/order approach that has been used and improved over the last several years with a more recent scheme that uses a mass-\/flux approach to calculate the countergradient diffusion terms.  
+
+
+
+
+\subsection{Detailed Description}
+The P\+BL scheme\textquotesingle{}s main task is to calculate tendencies of temperature, moisture, and momentum due to vertical diffusion throughout the column (not just the P\+BL). The scheme is an amalgamation of decades of work, starting from the initial first-\/order P\+BL scheme of Troen and Mahrt (1986) \cite{troen_and_mahrt_1986}, implemented according to Hong and Pan (1996) \cite{hong_and_pan_1996} and modified by Han and Pan (2011) \cite{han_and_pan_2011} and Han et al. (2015) \cite{han_et_al_2015} to include top-\/down mixing due to stratocumulus layers from Lock et al. (2000) \cite{lock_et_al_2000} and replacement of counter-\/gradient terms with a mass flux scheme according to Siebesma et al. (2007) \cite{siebesma_et_al_2007} and Soares et al. (2004) \cite{soares_et_al_2004}. Recently, heating due to T\+KE dissipation was also added according to Han et al. (2015) \cite{han_et_al_2015}.\hypertarget{group___g_f_s___n_s_s_t_diagram}{}\subsection{Calling Hierarchy Diagram}\label{group___g_f_s___n_s_s_t_diagram}
+html Hybrid\+\_\+\+E\+D\+M\+F\+\_\+\+Flowchart.\+png \char`\"{}\+Diagram depicting how the Hybrid E\+D\+M\+F P\+B\+L scheme is called from the G\+S\+M physics time loop\char`\"{} height=2cm \hypertarget{group___g_f_s___n_s_s_t_intraphysics}{}\subsection{Intraphysics Communication}\label{group___g_f_s___n_s_s_t_intraphysics}
+This space is reserved for a description of how this scheme uses information from other scheme types and/or how information calculated in this scheme is used in other scheme types. \subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___h_e_d_m_e_f_ga80bebdc639adaba3ed0ed2ea2f24315e}{tridi2} (l, n, cl, cm, cu, r1, r2, au, a1, a2)
+\begin{DoxyCompactList}\small\item\em Routine to solve the tridiagonal system to calculate temperature and moisture at $ t + \Delta t $; part of two-\/part process to calculate time tendencies due to vertical diffusion. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___h_e_d_m_e_f_ga367b6dabfff601023af323f900db86d2}{moninedmf} (ix, im, km, ntrac, ntcw, dv, du, tau, rtg, u1, v1, t1, q1, swh, hlw, xmu, psk, rbsoil, zorl, u10m, v10m, fm, fh, tsea, qss, heat, evap, stress, spd1, kpbl, prsi, del, prsl, prslk, phii, phil, delt, dspheat, dusfc, dvsfc, dtsfc, dqsfc, hpbl, hgamt, hgamq, dkt, kinver, xkzm\+\_\+m, xkzm\+\_\+h, xkzm\+\_\+s, lprnt, ipr, xkzminv, moninq\+\_\+fac)
+\begin{DoxyCompactList}\small\item\em This subroutine contains all of logic for the Hybrid E\+D\+MF P\+BL scheme except for the calculation of the updraft properties and mass flux. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group___h_e_d_m_e_f_ga367b6dabfff601023af323f900db86d2}\label{group___h_e_d_m_e_f_ga367b6dabfff601023af323f900db86d2}} 
+\index{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme@{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}!moninedmf@{moninedmf}}
+\index{moninedmf@{moninedmf}!Hybrid Eddy-\/diffusivity Mass-\/flux Scheme@{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}}
+\subsubsection{\texorpdfstring{moninedmf()}{moninedmf()}}
+{\footnotesize\ttfamily subroutine moninedmf (\begin{DoxyParamCaption}\item[{integer}]{ix,  }\item[{integer}]{im,  }\item[{integer}]{km,  }\item[{integer}]{ntrac,  }\item[{integer}]{ntcw,  }\item[{real(kind=kind\+\_\+phys), dimension(im,km)}]{dv,  }\item[{real(kind=kind\+\_\+phys), dimension(im,km)}]{du,  }\item[{real(kind=kind\+\_\+phys), dimension(im,km)}]{tau,  }\item[{real(kind=kind\+\_\+phys), dimension(im,km,ntrac)}]{rtg,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{u1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{v1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{t1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km,ntrac)}]{q1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{swh,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{hlw,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{xmu,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{psk,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{rbsoil,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{zorl,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{u10m,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{v10m,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{fm,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{fh,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{tsea,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{qss,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{heat,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{evap,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{stress,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{spd1,  }\item[{integer, dimension(im)}]{kpbl,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km+1)}]{prsi,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{del,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{prsl,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{prslk,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km+1)}]{phii,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{phil,  }\item[{real(kind=kind\+\_\+phys)}]{delt,  }\item[{logical}]{dspheat,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{dusfc,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{dvsfc,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{dtsfc,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{dqsfc,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{hpbl,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{hgamt,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{hgamq,  }\item[{real(kind=kind\+\_\+phys), dimension(im,km-\/1)}]{dkt,  }\item[{integer, dimension(im)}]{kinver,  }\item[{real(kind=kind\+\_\+phys)}]{xkzm\+\_\+m,  }\item[{real(kind=kind\+\_\+phys)}]{xkzm\+\_\+h,  }\item[{real(kind=kind\+\_\+phys)}]{xkzm\+\_\+s,  }\item[{logical}]{lprnt,  }\item[{integer}]{ipr,  }\item[{}]{xkzminv,  }\item[{real(kind=kind\+\_\+phys)}]{moninq\+\_\+fac }\end{DoxyParamCaption})}
+
+The scheme works on a basic level by calculating background diffusion coefficients and updating them according to which processes are occurring in the column. The most important difference in diffusion coefficients occurs between those levels in the P\+BL and those above the P\+BL, so the P\+BL height calculation is of utmost importance. An initial estimate is calculated in a \char`\"{}predictor\char`\"{} step in order to calculate Monin-\/\+Obukhov similarity values and a corrector step recalculates the P\+BL height based on updated surface thermal characteristics. Using the P\+BL height and the similarity parameters, the diffusion coefficients are updated below the P\+BL top based on Hong and Pan (1996) \cite{hong_and_pan_1996} (including counter-\/gradient terms). Diffusion coefficients in the free troposphere (above the P\+BL top) are calculated according to Louis (1979) \cite{louis_1979} with updated Richardson number-\/dependent functions. If it is diagnosed that P\+BL top-\/down mixing is occurring according to Lock et al. (2000) \cite{lock_et_al_2000} , then then diffusion coefficients are updated accordingly. Finally, for convective boundary layers (defined as when the Obukhov length exceeds a threshold), the counter-\/gradient terms are replaced using the mass flux scheme of Siebesma et al. (2007) \cite{siebesma_et_al_2007} . In order to return time tendencies, a fully implicit solution is found using tridiagonal matrices, and time tendencies are \char`\"{}backed out.\char`\"{} Before returning, the time tendency of temperature is updated to reflect heating due to T\+KE dissipation following Han et al. (2015) \cite{han_et_al_2015} .
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ix} & horizontal dimension \\
+\hline
+\mbox{\tt in}  & {\em im} & number of used points \\
+\hline
+\mbox{\tt in}  & {\em km} & vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em ntrac} & number of tracers \\
+\hline
+\mbox{\tt in}  & {\em ntcw} & cloud condensate index in the tracer array \\
+\hline
+\mbox{\tt in,out}  & {\em dv} & v-\/momentum tendency ( $ m s^{-2} $) \\
+\hline
+\mbox{\tt in,out}  & {\em du} & u-\/momentum tendency ( $ m s^{-2} $) \\
+\hline
+\mbox{\tt in,out}  & {\em tau} & temperature tendency ( $ K s^{-1} $) \\
+\hline
+\mbox{\tt in,out}  & {\em rtg} & moisture tendency ( $ kg kg^{-1} s^{-1} $) \\
+\hline
+\mbox{\tt in}  & {\em u1} & u component of layer wind ( $ m s^{-1} $) \\
+\hline
+\mbox{\tt in}  & {\em v1} & v component of layer wind ( $ m s^{-1} $) \\
+\hline
+\mbox{\tt in}  & {\em t1} & layer mean temperature ( $ K $) \\
+\hline
+\mbox{\tt in}  & {\em q1} & layer mean tracer concentration (units?) \\
+\hline
+\mbox{\tt in}  & {\em swh} & total sky shortwave heating rate ( $ K s^-1 $) \\
+\hline
+\mbox{\tt in}  & {\em hlw} & total sky longwave heating rate ( $ K s^-1 $) \\
+\hline
+\mbox{\tt in}  & {\em xmu} & time step zenith angle adjust factor for shortwave \\
+\hline
+\mbox{\tt in}  & {\em psk} & Exner function at surface interface? \\
+\hline
+\mbox{\tt in}  & {\em rbsoil} & surface bulk Richardson number \\
+\hline
+\mbox{\tt in}  & {\em zorl} & surface roughness (units?) \\
+\hline
+\mbox{\tt in}  & {\em u10m} & 10-\/m u wind ( $ m s^{-1} $) \\
+\hline
+\mbox{\tt in}  & {\em v10m} & 10-\/m v wind ( $ m s^{-1} $) \\
+\hline
+\mbox{\tt in}  & {\em fm} & fm parameter from P\+BL scheme \\
+\hline
+\mbox{\tt in}  & {\em fh} & fh parameter from P\+BL scheme \\
+\hline
+\mbox{\tt in}  & {\em tsea} & ground surface temperature (K) \\
+\hline
+\mbox{\tt in}  & {\em qss} & surface saturation humidity (units?) \\
+\hline
+\mbox{\tt in}  & {\em heat} & surface sensible heat flux (units?) \\
+\hline
+\mbox{\tt in}  & {\em evap} & evaporation from latent heat flux (units?) \\
+\hline
+\mbox{\tt in}  & {\em stress} & surface wind stress? ( $ cm*v^2$ in sfc\+\_\+diff subroutine) (units?) \\
+\hline
+\mbox{\tt in}  & {\em spd1} & surface wind speed? (units?) \\
+\hline
+\mbox{\tt out}  & {\em kpbl} & P\+BL top index \\
+\hline
+\mbox{\tt in}  & {\em prsi} & pressure at layer interfaces (units?) \\
+\hline
+\mbox{\tt in}  & {\em del} & pressure difference between level k and k+1 (units?) \\
+\hline
+\mbox{\tt in}  & {\em prsl} & mean layer pressure (units?) \\
+\hline
+\mbox{\tt in}  & {\em prslk} & Exner function at layer \\
+\hline
+\mbox{\tt in}  & {\em phii} & interface geopotential height (units?) \\
+\hline
+\mbox{\tt in}  & {\em phil} & layer geopotential height (units?) \\
+\hline
+\mbox{\tt in}  & {\em delt} & physics time step (s) \\
+\hline
+\mbox{\tt in}  & {\em dspheat} & flag for T\+KE dissipative heating \\
+\hline
+\mbox{\tt out}  & {\em dusfc} & surface u-\/momentum tendency (units?) \\
+\hline
+\mbox{\tt out}  & {\em dvsfc} & surface v-\/momentum tendency (units?) \\
+\hline
+\mbox{\tt out}  & {\em dtsfc} & surface temperature tendency (units?) \\
+\hline
+\mbox{\tt out}  & {\em dqsfc} & surface moisture tendency (units?) \\
+\hline
+\mbox{\tt out}  & {\em hpbl} & P\+BL top height (m) \\
+\hline
+\mbox{\tt out}  & {\em hgamt} & counter gradient mixing term for temperature (units?) \\
+\hline
+\mbox{\tt out}  & {\em hgamq} & counter gradient mixing term for moisture (units?) \\
+\hline
+\mbox{\tt out}  & {\em dkt} & diffusion coefficient for temperature (units?) \\
+\hline
+\mbox{\tt in}  & {\em kinver} & index location of temperature inversion \\
+\hline
+\mbox{\tt in}  & {\em xkzm\+\_\+m} & background vertical diffusion coefficient for momentum (units?) \\
+\hline
+\mbox{\tt in}  & {\em xkzm\+\_\+h} & background vertical diffusion coefficeint for heat, moisture (units?) \\
+\hline
+\mbox{\tt in}  & {\em xkzm\+\_\+s} & sigma threshold for background momentum diffusion (units?) \\
+\hline
+\mbox{\tt in}  & {\em lprnt} & flag to print some output \\
+\hline
+\mbox{\tt in}  & {\em ipr} & index of point to print\\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+
+\begin{DoxyEnumerate}
+\item Compute preliminary variables from input arguments.
+\item Calculate the first estimate of the P\+BL height (\char`\"{}\+Predictor step\char`\"{}).
+\item Calculate Monin-\/\+Obukhov similarity parameters.
+\item Update thermal properties of surface parcel and recompute P\+BL height (\char`\"{}\+Corrector step\char`\"{}).
+\item Determine whether stratocumulus layers exist and compute quantities needed for enhanced diffusion.
+\item Calculate the inverse Prandtl number.
+\item Compute diffusion coefficients below the P\+BL top.
+\item Compute diffusion coefficients above the P\+BL top.
+\item If the P\+BL is convective, call the mass flux scheme to replace the countergradient terms.
+\item Compute enhanced diffusion coefficients related to stratocumulus-\/topped P\+B\+Ls.
+\item Solve for the temperature and moisture tendencies due to vertical mixing.
+\item Calculate heating due to T\+KE dissipation and add to the tendency for temperature.
+\item Solve for the horizontal momentum tendencies and add them to output tendency terms. 
+\end{DoxyEnumerate}\hypertarget{group___g_f_s___n_s_s_t_detailed}{}\subsection{Detailed Algorithm}\label{group___g_f_s___n_s_s_t_detailed}
+\subsubsection*{Compute preliminary variables from input arguments}
+
+
+\begin{DoxyItemize}
+\item Compute physical height of the layer centers and interfaces from the geopotential height (zi and zl)
+\item Compute reciprocal of $ \Delta z $ (rdzt)
+\item Compute reciprocal of pressure (tx1, tx2)
+\item Compute background vertical diffusivities for scalars and momentum (xkzo and xkzmo)
+\item The background scalar vertical diffusivity is limited to be less than or equal to xkzminv
+\item Some output variables and logical flags are initialized
+\item Compute $\theta$ (theta), $q_l$ (qlx), $q_t$ (qtx), $\theta_e$ (thetae), $\theta_v$ (thvx), $\theta_{l,v}$ (thlvx)
+\item Initialize diffusion coefficients to 0 and calculate the total radiative heating rate (dku, dkt, radx)
+\item Set lcld to first index above 2.\+5km
+\item Compute $\frac{\partial \theta_v}{\partial z}$ (bf) and the wind shear squared (shr2)
+\item Calculate $\frac{g}{\theta}$ (govrth), $\beta = \frac{\Delta t}{\Delta z}$ (beta), $u_*$ (ustar), total surface flux (sflux), and set pblflag to false if the total surface energy flux is into the surface
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the first estimate of the P\+BL height (``\+Predictor step")}
+
+The calculation of the boundary layer height follows Troen and Mahrt (1986) \cite{troen_and_mahrt_1986} section 3. The approach is to find the level in the column where a modified bulk Richardson number exceeds a critical value.
+
+The temperature of the thermal is of primary importance. For the initial estimate of the P\+BL height, the thermal is assumed to have one of two temperatures. If the boundary layer is stable, the thermal is assumed to have a temperature equal to the surface virtual temperature. Otherwise, the thermal is assumed to have the same virtual potential temperature as the lowest model level. For the stable case, the critical bulk Richardson number becomes a function of the wind speed and roughness length, otherwise it is set to a tunable constant.
+
+Given the thermal\textquotesingle{}s properties and the critical Richardson number, a loop is executed to find the first level above the surface where the modified Richardson number is greater than the critical Richardson number, using equation 10a from Troen and Mahrt (1986) \cite{troen_and_mahrt_1986} (also equation 8 from Hong and Pan (1996) \cite{hong_and_pan_1996})\+: \[ h = Ri\frac{T_0\left|\vec{v}(h)\right|^2}{g\left(\theta_v(h) - \theta_s\right)} \] where $h$ is the P\+BL height, $Ri$ is the Richardson number, $T_0$ is the virtual potential temperature near the surface, $\left|\vec{v}\right|$ is the wind speed, and $\theta_s$ is for the thermal. Rearranging this equation to calculate the modified Richardson number at each level, k, for comparison with the critical value yields\+: \[ Ri_k = gz(k)\frac{\left(\theta_v(k) - \theta_s\right)}{\theta_v(1)*\vec{v}(k)} \]
+
+Once the level is found, some linear interpolation is performed to find the exact height of the boundary layer top (where $Ri = Ri_{cr}$) and the P\+BL height and the P\+BL top index are saved (hpblx and kpblx, respectively)
+
+\subsubsection*{Calculate Monin-\/\+Obukhov similarity parameters}
+
+Using the initial guess for the P\+BL height, Monin-\/\+Obukhov similarity parameters are calculated. They are needed to refine the P\+BL height calculation and for calculating diffusion coefficients.
+
+First, calculate the Monin-\/\+Obukhov nondimensional stability parameter, commonly referred to as $\zeta$ using the following equation from Businger et al. (1971) \cite{businger_et_al_1971} (equation 28)\+: \[ \zeta = Ri_{sfc}\frac{F_m^2}{F_h} = \frac{z}{L} \] where $F_m$ and $F_h$ are surface Monin-\/\+Obukhov stability functions calculated in \hyperlink{sfc__diff_8f_source}{sfc\+\_\+diff.\+f} and $L$ is the Obukhov length. Then, the nondimensional gradients of momentum and temperature (phim and phih) are calculated using equations 5 and 6 from Hong and Pan (1996) \cite{hong_and_pan_1996} depending on the surface layer stability. Then, the velocity scale valid for the surface layer ( $w_s$, wscale) is calculated using equation 3 from Hong and Pan (1996) \cite{hong_and_pan_1996}. For the neutral and unstable P\+BL above the surface layer, the convective velocity scale, $w_*$, is calculated according to\+: \[ w_* = \left(\frac{g}{\theta_0}h\overline{w'\theta_0'}\right)^{1/3} \] and the mixed layer velocity scale is then calculated with equation 6 from Troen and Mahrt (1986) \cite{troen_and_mahrt_1986} \[ w_s = (u_*^3 + 7\epsilon k w_*^3)^{1/3} \]
+
+\subsubsection*{Update thermal properties of surface parcel and recompute P\+BL height (\char`\"{}\+Corrector step\char`\"{}).}
+
+Next, the counter-\/gradient terms for temperature and humidity are calculated using equation 4 of Hong and Pan (1996) \cite{hong_and_pan_1996} and are used to calculate the \char`\"{}scaled virtual temperature excess near the surface\char`\"{} (equation 9 in Hong and Pan (1996) \cite{hong_and_pan_1996}) so that the properties of the thermal are updated to recalculate the P\+BL height.
+
+The P\+BL height calculation follows the same procedure as the predictor step, except that it uses an updated virtual potential temperature for the thermal.
+
+\subsubsection*{Determine whether stratocumulus layers exist and compute quantities needed for enhanced diffusion}
+
+
+\begin{DoxyItemize}
+\item Starting at the P\+BL top and going downward, if the level is less than 2.\+5 km and $q_l>q_{l,cr}$ then set kcld = k (find the cloud top index in the P\+BL). If no cloud water above the threshold is found, scuflg is set to F.
+\item Starting at the P\+BL top and going downward, if the level is less than the cloud top, find the level of the minimum radiative heating rate within the cloud. If the level of the minimum is the lowest model level or the minimum radiative heating rate is positive, then set scuflg to F.
+\item Starting at the P\+BL top and going downward, count the number of levels below the minimum radiative heating rate level that have cloud water above the threshold. If there are none, then set the scuflg to F.
+\item Find the height of the interface where the minimum in radiative heating rate is located. If this height is less than the second model interface height, then set the scuflg to F.
+\item Calculate the hypothetical $\theta_v$ at the minimum radiative heating level that a parcel would reach due to radiative cooling after a typical cloud turnover time spent at that level.
+\item Determine the distance that a parcel would sink downwards starting from the level of minimum radiative heating rate by comparing the hypothetical minimum $\theta_v$ calculated above with the environmental $\theta_v$.
+\item Calculate the cloud thickness, where the cloud top is the in-\/cloud minimum radiative heating level and the bottom is determined previously.
+\item Find the largest between the cloud thickness and the distance of a sinking parcel, then determine the smallest of that number and the height of the minimum in radiative heating rate. Set this number to $zd$. Using $zd$, calculate the characteristic velocity scale of cloud-\/top radiative cooling-\/driven turbulence.
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the inverse Prandtl number}
+
+For an unstable P\+BL, the Prandtl number is calculated according to Hong and Pan (1996) \cite{hong_and_pan_1996}, equation 10, whereas for a stable boundary layer, the Prandtl number is simply $Pr = \frac{\phi_h}{\phi_m}$.
+
+\subsubsection*{Compute diffusion coefficients below the P\+BL top}
+
+Below the P\+BL top, the diffusion coefficients ( $K_m$ and $K_h$) are calculated according to equation 2 in Hong and Pan (1996) \cite{hong_and_pan_1996} where a different value for $w_s$ (P\+BL vertical velocity scale) is used depending on the P\+BL stability. $K_h$ is calculated from $K_m$ using the Prandtl number. The calculated diffusion coefficients are checked so that they are bounded by maximum values and the local background diffusion coefficients.
+
+\subsubsection*{Compute diffusion coefficients above the P\+BL top}
+
+Diffusion coefficients above the P\+BL top are computed as a function of local stability (gradient Richardson number), shear, and a length scale from Louis (1979) \cite{louis_1979} \+: \[ K_{m,h}=l^2f_{m,h}(Ri_g)\left|\frac{\partial U}{\partial z}\right| \] The functions used ( $f_{m,h}$) depend on the local stability. First, the gradient Richardson number is calculated as \[ Ri_g=\frac{\frac{g}{T}\frac{\partial \theta_v}{\partial z}}{\frac{\partial U}{\partial z}^2} \] where $U$ is the horizontal wind. For the unstable case ( $Ri_g < 0$), the Richardson number-\/dependent functions are given by \[ f_h(Ri_g) = 1 + \frac{8\left|Ri_g\right|}{1 + 1.286\sqrt{\left|Ri_g\right|}}\\ \] \[ f_m(Ri_g) = 1 + \frac{8\left|Ri_g\right|}{1 + 1.746\sqrt{\left|Ri_g\right|}}\\ \] For the stable case, the following formulas are used \[ f_h(Ri_g) = \frac{1}{\left(1 + 5Ri_g\right)^2}\\ \] \[ Pr = \frac{K_h}{K_m} = 1 + 2.1Ri_g \] The source for the formulas used for the Richardson number-\/dependent functions is unclear. They are different than those used in Hong and Pan (1996) \cite{hong_and_pan_1996} as the previous documentation suggests. They follow equation 14 of Louis (1979) \cite{louis_1979} for the unstable case, but it is unclear where the values of the coefficients $b$ and $c$ from that equation used in this scheme originate. Finally, the length scale, $l$ is calculated according to the following formula from Hong and Pan (1996) \cite{hong_and_pan_1996} \[ \frac{1}{l} = \frac{1}{kz} + \frac{1}{l_0}\\ \] \[ or\\ \] \[ l=\frac{l_0kz}{l_0+kz} \] where $l_0$ is currently 30 m for stable conditions and 150 m for unstable. Finally, the diffusion coefficients are kept in a range bounded by the background diffusion and the maximum allowable values.
+
+\subsubsection*{If the P\+BL is convective, call the mass flux scheme to replace the countergradient terms.}
+
+If the P\+BL is convective, the updraft properties are initialized to be the same as the state variables and the subroutine mfpbl is called.
+
+For details of the mfpbl subroutine, step into its documentation \hyperlink{mfpbl_8f_a5787e718b62c0502c0734303a16cd8ed}{mfpbl}
+
+\subsubsection*{Compute enhanced diffusion coefficients related to stratocumulus-\/topped P\+B\+Ls}
+
+If a stratocumulus layer has been identified in the P\+BL, the diffusion coefficients in the P\+BL are modified in the following way.
+
+
+\begin{DoxyEnumerate}
+\item First, the criteria for C\+T\+EI is checked, using the threshold from equation 13 of Macvean and Mason (1990) \cite{macvean_and_mason_1990}. If the criteria is met, the cloud top diffusion is increased\+: \[ K_h^{Sc} = -c\frac{\Delta F_R}{\rho c_p}\frac{1}{\frac{\partial \theta_v}{\partial z}} \] where the constant $c$ is set to 0.\+2 if the C\+T\+EI criterion is not met and 1.\+0 if it is.
+\item Calculate the diffusion coefficients due to stratocumulus mixing according to equation 5 in Lock et al. (2000) \cite{lock_et_al_2000} for every level below the stratocumulus top using the characteristic stratocumulus velocity scale previously calculated. The diffusion coefficient for momentum is calculated assuming a constant inverse Prandtl number of 0.\+75.
+\end{DoxyEnumerate}
+
+After $K_h^{Sc}$ has been determined from the surface to the top of the stratocumulus layer, it is added to the value for the diffusion coefficient calculated previously using surface-\/based mixing \mbox{[}see equation 6 of Lock et al. (2000) \cite{lock_et_al_2000} \mbox{]}.
+
+\subsubsection*{Solve for the temperature and moisture tendencies due to vertical mixing.}
+
+The tendencies of heat, moisture, and momentum due to vertical diffusion are calculated using a two-\/part process. First, a solution is obtained using an implicit time-\/stepping scheme, then the time tendency terms are \char`\"{}backed out\char`\"{}. The tridiagonal matrix elements for the implicit solution for temperature and moisture are prepared in this section, with differing algorithms depending on whether the P\+BL was convective (substituting the mass flux term for counter-\/gradient term), unstable but not convective (using the computed counter-\/gradient terms), or stable (no counter-\/gradient terms).
+
+The tridiagonal system is solved by calling the internal \hyperlink{moninedmf_8f_ab77885fe7ace4ef00558157788778408}{tridin} subroutine.
+
+After returning with the solution, the tendencies for temperature and moisture are recovered.
+
+\subsubsection*{Calculate heating due to T\+KE dissipation and add to the tendency for temperature}
+
+Following Han et al. (2015) \cite{han_et_al_2015} , turbulence dissipation contributes to the tendency of temperature in the following way. First, turbulence dissipation is calculated by equation 17 of Han et al. (2015) \cite{han_et_al_2015} for the P\+BL and equation 16 for the surface layer.
+
+Next, the temperature tendency is updated following equation 14.
+
+\subsubsection*{Solve for the horizontal momentum tendencies and add them to the output tendency terms}
+
+As with the temperature and moisture tendencies, the horizontal momentum tendencies are calculated by solving tridiagonal matrices after the matrices are prepared in this section.
+
+Finally, the tendencies are recovered from the tridiagonal solutions. 
+
+Definition at line 97 of file moninedmf.\+f.
+
+
+
+References mfpbl(), tridi2(), and tridin().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{group___h_e_d_m_e_f_ga80bebdc639adaba3ed0ed2ea2f24315e}\label{group___h_e_d_m_e_f_ga80bebdc639adaba3ed0ed2ea2f24315e}} 
+\index{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme@{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}!tridi2@{tridi2}}
+\index{tridi2@{tridi2}!Hybrid Eddy-\/diffusivity Mass-\/flux Scheme@{Hybrid Eddy-\/diffusivity Mass-\/flux Scheme}}
+\subsubsection{\texorpdfstring{tridi2()}{tridi2()}}
+{\footnotesize\ttfamily subroutine tridi2 (\begin{DoxyParamCaption}\item[{integer}]{l,  }\item[{integer}]{n,  }\item[{real(kind=kind\+\_\+phys), dimension(l,2\+:n)}]{cl,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{cm,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n-\/1)}]{cu,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{r1,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{r2,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n-\/1)}]{au,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{a1,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{a2 }\end{DoxyParamCaption})}
+
+Origin of subroutine unknown. 
+
+Definition at line 1200 of file moninedmf.\+f.
+
+
+
+Referenced by moninedmf().
+

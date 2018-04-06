@@ -1,0 +1,25 @@
+\hypertarget{namespacemodule__radsw__kgb25}{}\section{module\+\_\+radsw\+\_\+kgb25 Module Reference}
+\label{namespacemodule__radsw__kgb25}\index{module\+\_\+radsw\+\_\+kgb25@{module\+\_\+radsw\+\_\+kgb25}}
+
+
+This module sets up absorption coeffients for band 25\+: 16000-\/22650 cm-\/1 (low -\/ h2o; high -\/ nothing)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__kgb25_afc06df1f3c3a0b2f3189424ed042973e}\label{namespacemodule__radsw__kgb25_afc06df1f3c3a0b2f3189424ed042973e}} 
+integer, public \hyperlink{namespacemodule__radsw__kgb25_afc06df1f3c3a0b2f3189424ed042973e}{msa25}
+\begin{DoxyCompactList}\small\item\em msa25=65 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Chou(1999) coefficients for cloud rain particles}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{namespacemodule__radsw__kgb25_afc06df1f3c3a0b2f3189424ed042973e}{msa25}, ng25), public \hyperlink{group__module__radsw__kgbnn_gaf4daf474954d4689219ada6d0662aceb}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(65,\+N\+G25) (ka(5,13,\+N\+G25)) contains absorption coefs at the 16 chosen g-\/values for a range of pressure levels$>$ $\sim$100mb, temperatures, and binary species parameters (see taumol.\+f for definition). the first index in the array, js, runs from 1 to 9, and corresponds to different values of the binary species parameter. for instance, js=1 refers to dry air, js = 2 corresponds to the paramter value 1/8, js = 3 corresponds to the parameter value 2/8, etc. the second index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 3 means that the data are for the reference temperature tref for this pressure level, jt = 2 refers to tref-\/15, jt = 1 is for tref-\/30, jt = 4 is for tref+15, and jt = 5 is for tref+30. the third index, jp, runs from 1 to 13 and refers to the jpth reference pressure level (see taumol.\+f for these levels in mb). the fourth index, ig, goes from 1 to 6, and indicates which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng25), public \hyperlink{group__module__radsw__kgbnn_ga3d32a0d74d03129cacd9c4bb2e58683a}{rayl}
+\begin{DoxyCompactList}\small\item\em rayleigh extinction coefficient \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng25), public \hyperlink{group__module__radsw__kgbnn_gab02765dac8ca71a439cdaf1ed2691851}{abso3a}
+\begin{DoxyCompactList}\small\item\em o3 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng25), public \hyperlink{group__module__radsw__kgbnn_ga2844cade392c8805b1d418bc1260b3a5}{abso3b}
+\begin{DoxyCompactList}\small\item\em o3 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}

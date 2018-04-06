@@ -1,3 +1,8 @@
+# This file contains extra shell script contents of the ecf file for
+# the post_manager job.  That is the job in the workflow that watches
+# for post output files to show up, and sets ecflow events every time
+# it sees a new file.
+
 post_manager_job_contents: &post_manager_job_contents !expand |
   fhrs='anl {tools.join(up.Dimensions.fhr," ")}'
   CDATE=%PDY%%CYC%

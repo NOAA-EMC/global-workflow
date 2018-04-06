@@ -1,3 +1,0 @@
-turn off spectral interpolation for wgrib2  wne 6/2010
-splat was modified only to only handle IDRT == 4
-  (fewer routines to link in)

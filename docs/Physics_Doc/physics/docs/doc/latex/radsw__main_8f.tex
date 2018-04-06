@@ -1,0 +1,153 @@
+\hypertarget{radsw__main_8f}{}\section{radsw\+\_\+main.\+f File Reference}
+\label{radsw__main_8f}\index{radsw\+\_\+main.\+f@{radsw\+\_\+main.\+f}}
+
+
+This file contains N\+C\+EP\textquotesingle{}s modifications of the rrtmg-\/sw radiation code from A\+ER.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radsw__main_ga5b0d35149515607d94f42b6ee5a40665}{module\+\_\+radsw\+\_\+main\+::rswinit} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine initializes non-\/varying module variables, conversion factors, and look-\/up tables. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radsw__main_gadf2f35094ed7dc31e8f52781745cf021}{module\+\_\+radsw\+\_\+main\+::mcica\+\_\+subcol} (cldf, nlay, ipseed, lcloudy)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the sub-\/colum cloud profile flag array. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radsw__main_ga5eb9918ebc222138a9dad016440e1a74}{module\+\_\+radsw\+\_\+main\+::setcoef} (pavel, tavel, h2ovmr, nlay, nlp1, laytrop, jp, jt, jt1, fac00, fac01, fac10, fac11, selffac, selffrac, indself, forfac, forfrac, indfor)
+\begin{DoxyCompactList}\small\item\em This subroutine computes various coefficients needed in radiative transfer calculation. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radsw__main_ga859cc14063a58e9d0a252e4366b9fff3}{module\+\_\+radsw\+\_\+main\+::spcvrtm} (ssolar, cosz, sntz, albbm, albdf, sfluxzen, cldfmc, cf1, cf0, taug, taur, tauae, ssaae, asyae, taucw, ssacw, asycw, nlay, nlp1, fxupc, fxdnc, fxup0, fxdn0, ftoauc, ftoau0, ftoadc, fsfcuc, fsfcu0, fsfcdc, fsfcd0, sfbmc, sfdfc, sfbm0, sfdf0, suvbfc, suvbf0)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the shortwave radiative fluxes using two-\/stream method of h. barder and mcica,the monte-\/carlo independent column approximation, for the representation of sub-\/grid cloud variability (i.\+e. cloud overlap). \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_ae46d1c061726bcde426caadd80b1fd80}\label{radsw__main_8f_ae46d1c061726bcde426caadd80b1fd80}} 
+subroutine \hyperlink{radsw__main_8f_ae46d1c061726bcde426caadd80b1fd80}{taumol17}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 17\+: 3250-\/4000 cm-\/1 (low -\/ h2o,co2; high -\/ h2o,co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a06f6f2b0ef60df93c267a667a2e1aa36}\label{radsw__main_8f_a06f6f2b0ef60df93c267a667a2e1aa36}} 
+subroutine \hyperlink{radsw__main_8f_a06f6f2b0ef60df93c267a667a2e1aa36}{taumol18}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 18\+: 4000-\/4650 cm-\/1 (low -\/ h2o,ch4; high -\/ ch4) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a776a0d78fda9f4fd0f1153b55be597df}\label{radsw__main_8f_a776a0d78fda9f4fd0f1153b55be597df}} 
+subroutine \hyperlink{radsw__main_8f_a776a0d78fda9f4fd0f1153b55be597df}{taumol19}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 19\+: 4650-\/5150 cm-\/1 (low -\/ h2o,co2; high -\/ co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a6eb9a29728a986ea6b15240adebd4a0c}\label{radsw__main_8f_a6eb9a29728a986ea6b15240adebd4a0c}} 
+subroutine \hyperlink{radsw__main_8f_a6eb9a29728a986ea6b15240adebd4a0c}{taumol20}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 20\+: 5150-\/6150 cm-\/1 (low -\/ h2o; high -\/ h2o) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a54619c48147f35da2d7855dc488c0ff4}\label{radsw__main_8f_a54619c48147f35da2d7855dc488c0ff4}} 
+subroutine \hyperlink{radsw__main_8f_a54619c48147f35da2d7855dc488c0ff4}{taumol21}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 21\+: 6150-\/7700 cm-\/1 (low -\/ h2o,co2; high -\/ h2o,co2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a3b5392346eee35eb13a2a54175b6338b}\label{radsw__main_8f_a3b5392346eee35eb13a2a54175b6338b}} 
+subroutine \hyperlink{radsw__main_8f_a3b5392346eee35eb13a2a54175b6338b}{taumol22}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 22\+: 7700-\/8050 cm-\/1 (low -\/ h2o,o2; high -\/ o2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_adf5d73763c80ec079b72dda7d74cba94}\label{radsw__main_8f_adf5d73763c80ec079b72dda7d74cba94}} 
+subroutine \hyperlink{radsw__main_8f_adf5d73763c80ec079b72dda7d74cba94}{taumol23}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 23\+: 8050-\/12850 cm-\/1 (low -\/ h2o; high -\/ nothing) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_ae0abf1a08aa5d6ca14bfea83d0603716}\label{radsw__main_8f_ae0abf1a08aa5d6ca14bfea83d0603716}} 
+subroutine \hyperlink{radsw__main_8f_ae0abf1a08aa5d6ca14bfea83d0603716}{taumol24}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 24\+: 12850-\/16000 cm-\/1 (low -\/ h2o,o2; high -\/ o2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a21b72d6de9247eccb20de836ea76cf7a}\label{radsw__main_8f_a21b72d6de9247eccb20de836ea76cf7a}} 
+subroutine \hyperlink{radsw__main_8f_a21b72d6de9247eccb20de836ea76cf7a}{taumol25}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 25\+: 16000-\/22650 cm-\/1 (low -\/ h2o; high -\/ nothing) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a20261640145a5d10e091ef3c67763175}\label{radsw__main_8f_a20261640145a5d10e091ef3c67763175}} 
+subroutine \hyperlink{radsw__main_8f_a20261640145a5d10e091ef3c67763175}{taumol26}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 26\+: 22650-\/29000 cm-\/1 (low -\/ nothing; high -\/ nothing) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a7d2cea6cc0cfde853d25a14ba0efcca2}\label{radsw__main_8f_a7d2cea6cc0cfde853d25a14ba0efcca2}} 
+subroutine \hyperlink{radsw__main_8f_a7d2cea6cc0cfde853d25a14ba0efcca2}{taumol27}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 27\+: 29000-\/38000 cm-\/1 (low -\/ o3; high -\/ o3) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a2113c76707f43cf91fe5926ab69d1b8b}\label{radsw__main_8f_a2113c76707f43cf91fe5926ab69d1b8b}} 
+subroutine \hyperlink{radsw__main_8f_a2113c76707f43cf91fe5926ab69d1b8b}{taumol28}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 28\+: 38000-\/50000 cm-\/1 (low -\/ o3,o2; high -\/ o3,o2) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{radsw__main_8f_a08e2db10432d07392f29a49bc5b5c640}\label{radsw__main_8f_a08e2db10432d07392f29a49bc5b5c640}} 
+subroutine \hyperlink{radsw__main_8f_a08e2db10432d07392f29a49bc5b5c640}{taumol29}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 29\+: 820-\/2600 cm-\/1 (low -\/ h2o; high -\/ co2) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radsw__main_ga89ca572fa54a63a21009caa0760d405b}{module\+\_\+radsw\+\_\+main\+::cldprop} (cfrac, cliqp, reliq, cicep, reice, cdat1, cdat2, cdat3, cdat4, cf1, nlay, ipseed, taucw, ssacw, asycw, cldfrc, cldfmc)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the cloud optical properties for each cloudy layer and g-\/point interval. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radsw__main_gaeb992f35bdf7dbf9ea8709d7d91dedfd}{module\+\_\+radsw\+\_\+main\+::spcvrtc} (ssolar, cosz, sntz, albbm, albdf, sfluxzen, cldfrc, cf1, cf0, taug, taur, tauae, ssaae, asyae, taucw, ssacw, asycw, nlay, nlp1, fxupc, fxdnc, fxup0, fxdn0, ftoauc, ftoau0, ftoadc, fsfcuc, fsfcu0, fsfcdc, fsfcd0, sfbmc, sfdfc, sfbm0, sfdf0, suvbfc, suvbf0)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the shortwave radiative fluxes using two-\/stream method. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radsw__main_gad227ccde86a01f47c1ab3b4bed5ba1be}{module\+\_\+radsw\+\_\+main\+::vrtqdr} (zrefb, zrefd, ztrab, ztrad, zldbt, ztdbt, N\+L\+AY, N\+L\+P1, zfu, zfd)
+\begin{DoxyCompactList}\small\item\em This subroutine is called by \hyperlink{group__module__radsw__main_gaeb992f35bdf7dbf9ea8709d7d91dedfd}{spcvrtc()} and \hyperlink{group__module__radsw__main_ga859cc14063a58e9d0a252e4366b9fff3}{spcvrtm()}, and computes the upward and downward radiation fluxes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radsw__main_gaa82121d21c1e8f2ca938378249fea135}{module\+\_\+radsw\+\_\+main\+::taumol} (colamt, colmol, fac00, fac01, fac10, fac11, jp, jt, jt1, laytrop, forfac, forfrac, indfor, selffac, selffrac, indself, nlay, sfluxzen, taug, taur)
+\begin{DoxyCompactList}\small\item\em This subroutine calculates optical depths for gaseous absorption and rayleigh scattering ~\newline
+ subroutine called taumol\#\# (\#\# = 16-\/29) \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radsw__main_ga8702f5f6285ff1a5cbfad740545fffb6}{taumol16}
+\begin{DoxyCompactList}\small\item\em The subroutine computes the optical depth in band 16\+: 2600-\/3250 cm-\/1 (low -\/ h2o,ch4; high -\/ ch4) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{radsw__main_8f_a93334abce2ca8bfdcdfe5edd4ae1f093}\label{radsw__main_8f_a93334abce2ca8bfdcdfe5edd4ae1f093}} 
+character(40), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::vtagsw} =\textquotesingle{}N\+C\+EP SW v5.\+1 Nov 2012 -\/R\+R\+T\+MG-\/SW v3.\+8 \textquotesingle{}
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ constant values}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::eps} = 1.\+0e-\/6
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::oneminus} = 1.\+0 -\/ eps
+\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radsw__main_gacd9ae7c14cbfdc55f1f0fff637ca0331}{module\+\_\+radsw\+\_\+main\+::bpade} = 1.\+0/0.\+278
+\begin{DoxyCompactList}\small\item\em pade approx constant \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::stpfac} = 296.\+0/1013.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::ftiny} = 1.\+0e-\/12
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::flimit} = 1.\+0e-\/20
+\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radsw__main_ga244c149eb05c0675a7e040dbf7e2bc4b}{module\+\_\+radsw\+\_\+main\+::s0} = 1368.\+22
+\begin{DoxyCompactList}\small\item\em internal solar constant \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::f\+\_\+zero} = 0.\+0
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::f\+\_\+one} = 1.\+0
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ atomic weights for conversion from mass to volume mixing ratios}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::amdw} = con\+\_\+amd/con\+\_\+amw
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radsw\+\_\+main\+::amdo3} = con\+\_\+amd/con\+\_\+amo3
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ band indices}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, dimension(nblow\+:nbhgh) {\bfseries module\+\_\+radsw\+\_\+main\+::nspa}
+\item 
+integer, dimension(nblow\+:nbhgh) {\bfseries module\+\_\+radsw\+\_\+main\+::nspb}
+\item 
+integer, dimension(nblow\+:nbhgh) \hyperlink{group__module__radsw__main_gad295d723dd7d269cb51c73923a4cbb94}{module\+\_\+radsw\+\_\+main\+::idxsfc}
+\begin{DoxyCompactList}\small\item\em band index for sfc flux \end{DoxyCompactList}\item 
+integer, dimension(nblow\+:nbhgh) \hyperlink{group__module__radsw__main_gaa20102786f7e7f8c71fb2783082eac1b}{module\+\_\+radsw\+\_\+main\+::idxebc}
+\begin{DoxyCompactList}\small\item\em band index for cld prop \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radsw__main_ga177282b3087dce2f54f1233ee8631231}{module\+\_\+radsw\+\_\+main\+::nuvb} = 27
+\begin{DoxyCompactList}\small\item\em uv-\/b band index \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{logical flags for optional output fields}
+\begin{DoxyCompactItemize}
+\item 
+logical {\bfseries module\+\_\+radsw\+\_\+main\+::lhswb} = .false.
+\item 
+logical {\bfseries module\+\_\+radsw\+\_\+main\+::lhsw0} = .false.
+\item 
+logical {\bfseries module\+\_\+radsw\+\_\+main\+::lflxprf} = .false.
+\item 
+logical {\bfseries module\+\_\+radsw\+\_\+main\+::lfdncmp} = .false.
+\item 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbmx) \hyperlink{group__module__radsw__main_ga1f9d18b17cc24321ed1cf45254ac2b0f}{module\+\_\+radsw\+\_\+main\+::exp\+\_\+tbl}
+\begin{DoxyCompactList}\small\item\em those data will be set up only once by \char`\"{}rswinit\char`\"{} \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radsw__main_gaad60e753cdda20d4e84d063280f0dfcc}{module\+\_\+radsw\+\_\+main\+::heatfac}
+\begin{DoxyCompactList}\small\item\em the factor for heating rates (in k/day, or k/sec set by subroutine \textquotesingle{}rswinit\textquotesingle{}) \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radsw__main_gae1f88a0b60d69b892cfae83bb9ab67df}{module\+\_\+radsw\+\_\+main\+::ipsdsw0} = 1
+\begin{DoxyCompactList}\small\item\em initial permutation seed used for sub-\/column cloud scheme \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radsw__main_ga784397878835a8cdd0b14a7b9eafb4e3}{module\+\_\+radsw\+\_\+main\+::swrad} (plyr, plvl, tlyr, tlvl, qlyr, olyr, gasvmr, clouds, icseed, aerosols, sfcalb, cosz, solcon, N\+D\+AY, idxday, npts, nlay, nlp1, lprnt, hswc, topflx, sfcflx, H\+S\+W0, H\+S\+WB, F\+L\+X\+P\+RF, F\+D\+N\+C\+MP)
+\begin{DoxyCompactList}\small\item\em This subroutine is the main SW radiation routine. \end{DoxyCompactList}\end{DoxyCompactItemize}

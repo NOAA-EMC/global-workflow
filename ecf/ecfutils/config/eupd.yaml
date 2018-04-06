@@ -1,3 +1,8 @@
+# This file is used to generate config.eupd, which would be used to
+# control the ENKF member updating scripts.  The scripts and code for
+# the ENKF are not provided in this release, so this config file is
+# ignored.
+
 config_eupd:
   filename: config.eupd
   content: !expand |

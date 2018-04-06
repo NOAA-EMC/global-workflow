@@ -1,0 +1,37 @@
+\hypertarget{moninedmf_8f}{}\section{moninedmf.\+f File Reference}
+\label{moninedmf_8f}\index{moninedmf.\+f@{moninedmf.\+f}}
+
+
+Contains most of the hybrid eddy-\/diffusivity mass-\/flux scheme except for the subroutine that calculates the mass flux and updraft properties.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___h_e_d_m_f_ga80bebdc639adaba3ed0ed2ea2f24315e}{tridi2} (l, n, cl, cm, cu, r1, r2, au, a1, a2)
+\begin{DoxyCompactList}\small\item\em Routine to solve the tridiagonal system to calculate temperature and moisture at $ t + \Delta t $; part of two-\/part process to calculate time tendencies due to vertical diffusion. \end{DoxyCompactList}\item 
+subroutine \hyperlink{moninedmf_8f_ab77885fe7ace4ef00558157788778408}{tridin} (l, n, nt, cl, cm, cu, r1, r2, au, a1, a2)
+\begin{DoxyCompactList}\small\item\em Routine to solve the tridiagonal system to calculate u-\/ and v-\/momentum at $ t + \Delta t $; part of two-\/part process to calculate time tendencies due to vertical diffusion. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___h_e_d_m_f_ga367b6dabfff601023af323f900db86d2}{moninedmf} (ix, im, km, ntrac, ntcw, dv, du, tau, rtg, u1, v1, t1, q1, swh, hlw, xmu, psk, rbsoil, zorl, u10m, v10m, fm, fh, tsea, qss, heat, evap, stress, spd1, kpbl, prsi, del, prsl, prslk, phii, phil, delt, dspheat, dusfc, dvsfc, dtsfc, dqsfc, hpbl, hgamt, hgamq, dkt, kinver, xkzm\+\_\+m, xkzm\+\_\+h, xkzm\+\_\+s, lprnt, ipr, xkzminv, moninq\+\_\+fac)
+\begin{DoxyCompactList}\small\item\em This subroutine contains all of logic for the Hybrid E\+D\+MF P\+BL scheme except for the calculation of the updraft properties and mass flux. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{moninedmf_8f_ab77885fe7ace4ef00558157788778408}\label{moninedmf_8f_ab77885fe7ace4ef00558157788778408}} 
+\index{moninedmf.\+f@{moninedmf.\+f}!tridin@{tridin}}
+\index{tridin@{tridin}!moninedmf.\+f@{moninedmf.\+f}}
+\subsubsection{\texorpdfstring{tridin()}{tridin()}}
+{\footnotesize\ttfamily subroutine tridin (\begin{DoxyParamCaption}\item[{integer}]{l,  }\item[{integer}]{n,  }\item[{integer}]{nt,  }\item[{real(kind=kind\+\_\+phys), dimension(l,2\+:n)}]{cl,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{cm,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n-\/1)}]{cu,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{r1,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n$\ast$nt)}]{r2,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n-\/1)}]{au,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n)}]{a1,  }\item[{real(kind=kind\+\_\+phys), dimension(l,n$\ast$nt)}]{a2 }\end{DoxyParamCaption})}
+
+Origin of subroutine unknown. 
+
+Definition at line 1243 of file moninedmf.\+f.
+
+
+
+Referenced by moninedmf().
+

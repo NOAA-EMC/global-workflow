@@ -1,0 +1,107 @@
+\hypertarget{group__precip}{}\section{Precipitation (snow or rain) Production}
+\label{group__precip}\index{Precipitation (snow or rain) Production@{Precipitation (snow or rain) Production}}
+
+
+This subroutine computes the conversion from condensation to precipitation (snow or rain) or evaporation of rain.  
+
+
+
+
+\subsection{Detailed Description}
+The parameterization of precipitation is required in order to remove water from the atmosphere and transport it to the ground. In the scheme discussed here, simplifications in the precipitation parameterization are used due to computational limitations required by operational N\+WP models. First, consideration of particle size and shape can be avoided by using the bulk parameterization method introduced by Kessler (1969) \cite{kessler_1969}. Second, only two types of precipitation, rain and snow, are considered in this scheme. Third, only the most important microphysical processes associated with the formation of rain and snow are included. Figure 2 presents the microphysical processes considered in the precipitation parameterization.  Basically, there are four types of microphysical processes considered here\+:
+\begin{DoxyItemize}
+\item production of rain from cloud water ( $P_{racw}$, $P_{raut}$, $P_{sacw}$)
+\item production of snow from cloud ice ( $P_{saut}$, $P_{saci}$)
+\item melting of snow to form rain below the freezing level ( $P_{sm1}$, $P_{sm2}$)
+\item the evaporation of precipitation ( $E_{rr}$, $E_{rs}$)
+\end{DoxyItemize}
+
+The following two equations can be used to calculate the precipitation rates of rain and snow at each module level\+: \[ P_{r}(\eta)=\frac{p_{s}-p_{t}}{g\eta_{s}}\int_{\eta}^{\eta_{t}}(P_{raut}+P_{racw}+P_{sacw}+P_{sm1}+P_{sm2}-E_{rr})d\eta \] and \[ P_{s}(\eta)=\frac{p_{s}-p_{t}}{g\eta_{s}}\int_{\eta}^{\eta_{t}}(P_{saut}+P_{saci}-P_{sm1}-P_{sm2}-E_{rs})d\eta \] where $p_{s}$ and $p_{t}$ are the surface pressure and the pressure at the top of model domain, respectively, and $g$ is gravity. The implementation of the precipitation scheme also includes a simplified procedure of computing $P_{r}$ and $P_{s}$ (Zhao and Carr(1997) \cite{zhao_and_carr_1997}). \begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__precip_ga5b7dbb93ea6f466ef61be5b331cbc265}{precpd} (im, ix, km, dt, del, prsl, q, cwm, t, rn, sr, rainp, u00k, psautco, prautco, evpco, wminco, lprnt, jpr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__precip_ga5b7dbb93ea6f466ef61be5b331cbc265}\label{group__precip_ga5b7dbb93ea6f466ef61be5b331cbc265}} 
+\index{Precipitation (snow or rain) Production@{Precipitation (snow or rain) Production}!precpd@{precpd}}
+\index{precpd@{precpd}!Precipitation (snow or rain) Production@{Precipitation (snow or rain) Production}}
+\subsubsection{\texorpdfstring{precpd()}{precpd()}}
+{\footnotesize\ttfamily subroutine precpd (\begin{DoxyParamCaption}\item[{integer}]{im,  }\item[{integer}]{ix,  }\item[{integer}]{km,  }\item[{real (kind=kind\+\_\+phys)}]{dt,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{del,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{prsl,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{q,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{cwm,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{t,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{rn,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{sr,  }\item[{real (kind=kind\+\_\+phys), dimension(im,km)}]{rainp,  }\item[{real (kind=kind\+\_\+phys), dimension(im,km)}]{u00k,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{psautco,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{prautco,  }\item[{real (kind=kind\+\_\+phys)}]{evpco,  }\item[{real (kind=kind\+\_\+phys), dimension(2)}]{wminco,  }\item[{logical}]{lprnt,  }\item[{integer}]{jpr }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em im} & horizontal number of used pts \\
+\hline
+\mbox{\tt in}  & {\em ix} & horizontal dimension \\
+\hline
+\mbox{\tt in}  & {\em km} & vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em dt} & time step in seconds \\
+\hline
+\mbox{\tt in}  & {\em del} & pressure layer thickness (bottom to top) \\
+\hline
+\mbox{\tt in}  & {\em prsl} & pressure values for model layers (bottom to top) \\
+\hline
+\mbox{\tt in,out}  & {\em q} & specific humidity (updated in the code) \\
+\hline
+\mbox{\tt in,out}  & {\em cwm} & condensate mixing ratio (updated in the code) \\
+\hline
+\mbox{\tt in,out}  & {\em t} & temperature (updated in the code) \\
+\hline
+\mbox{\tt out}  & {\em rn} & precipitation over one time-\/step dt (m/dt) \\
+\hline
+\mbox{\tt out}  & {\em sr} & \char`\"{}snow ratio\char`\"{}, ratio of snow to total precipitation \\
+\hline
+\mbox{\tt out}  & {\em rainp} & rainwater path \\
+\hline
+\mbox{\tt in}  & {\em u00k} & the critical value of relative humidity for large-\/scale condensation \\
+\hline
+\mbox{\tt in}  & {\em psautco} & auto conversion coeff from ice to snow ~\newline
+ = 4.\+0E-\/4; defined in module\+\_\+\+M\+P\+\_\+\+G\+F\+S.\+F90 \\
+\hline
+\mbox{\tt in}  & {\em prautco} & auto conversion coeff from cloud to rain ~\newline
+ = 1.\+0E-\/4; defined in module\+\_\+\+M\+P\+\_\+\+G\+F\+S.\+F90 \\
+\hline
+\mbox{\tt in}  & {\em evpco} & coeff for evaporation of largescale rain ~\newline
+ = 2.\+0E-\/5; defined in module\+\_\+\+M\+P\+\_\+\+G\+F\+S.\+F90 \\
+\hline
+\mbox{\tt in}  & {\em wminco} & coeff for water and ice minimum threshold to conversion from condensate to precipitation ~\newline
+ = \textbackslash{}1.\+0E-\/5, 1.\+0E-\/5\textbackslash{}; defined in module\+\_\+\+M\+P\+\_\+\+G\+F\+S.\+F90 \\
+\hline
+\mbox{\tt in}  & {\em lprnt} & logical print flag \\
+\hline
+\mbox{\tt in}  & {\em jpr} & check print point for debugging \\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+
+\begin{DoxyEnumerate}
+\item Select columns where rain can be produced, where \[ cwm > \min (wmin, wmini) \] where the cloud water and ice conversion threshold\+: \[ wmin=wminco(1)\times prsl\times 10^{-5} \] \[ wmini=wminco(2)\times prsl\times 10^{-5} \]
+\item Compute ice-\/water identification number IW (see algorithm in \hyperlink{group__condense}{Grid-\/\+Scale Condensation and Evaporation of Cloud}).
+\item Calculate cloud fraction $b$ (see algorithm in \hyperlink{group__condense}{Grid-\/\+Scale Condensation and Evaporation of Cloud})
+\item Precipitation production by auto conversion and accretion
+\begin{DoxyItemize}
+\item The autoconversion of cloud ice to snow ( $P_{saut}$) is simulated using the equation from Lin et al. (1983) \cite{lin_et_al_1983} \[ P_{saut}=a_{1}(cwm-wmini) \] Since snow production in this process is caused by the increase in size of cloud ice particles due to depositional growth and aggregation of small ice particles, $P_{saut}$ is a function of temperature as determined by coefficient $a_{1}$, given by \[ a_{1}=psautco \times dt \times exp\left[ 0.025\left(T-273.15\right)\right] \]
+\item The accretion of cloud ice by snow ( $P_{saci}$) in the regions where cloud ice exists is simulated by \[ P_{saci}=C_{s}cwm P_{s} \] where $P_{s}$ is the precipitation rate of snow. The collection coefficient $C_{s}$ is a function of temperature since the open structures of ice crystals at relative warm temperatures are more likely to stick, given a collision, than crystals of other shapes (Rogers 1979 \cite{rogers_1979}). Above the freezing level, $C_{s}$ is expressed by \[ C_{s}=c_{1}exp\left[ 0.025\left(T-273.15\right)\right] \] where $c_{1}=1.25\times 10^{-3} m^{2}kg^{-1}s^{-1}$ are used. $C_{s}$ is set to zero below the freezing level.
+\item Following Sundqvist et al. (1989) \cite{sundqvist_et_al_1989}, the autoconversion of cloud water to rain ( $P_{raut}$) can be parameterized from the cloud water mixing ratio $m$ and cloud coverage $b$, that is, \[ P_{raut}=(prautco \times dt )\times (cwm-wmin)\left\{1-exp[-(\frac{cwm-wmin}{m_{r}b})^{2}]\right\} \] where $m_{r}$ is $3.0\times 10^{-4}$.
+\item Calculate the accretion of cloud water by rain $P_{racw}$, can be expressed using the cloud mixing ratio $cwm$ and rainfall rate $P_{r}$\+: \[ P_{saci}=C_{s}cwmP_{r} \] where $C_{r}=5.0\times10^{-4}m^{2}kg^{-1}s{-1}$ is the collection coeffiecient. Note that this process is not included in current operational physcics.
+\end{DoxyItemize}
+\item Evaporation of precipitation ( $E_{rr}$ and $E_{rs}$) ~\newline
+ Evaporation of precipitation is an important process that moistens the layers below cloud base. Through this process, some of the precipitating water is evaporated back to the atmosphere and the precipitation efficiency is reduced.
+\begin{DoxyItemize}
+\item Evaporation of rain is calculated using the equation (Sundqvist 1988 \cite{sundqvist_1988})\+: \[ E_{rr}= evpco \times (u-f)(P_{r})^{\beta} \] where $u$ is u00k, $f$ is the relative humidity. $\beta = 0.5$ are empirical parameter.
+\item Evaporation of snow is calculated using the equation\+: \[ E_{rs}=[C_{rs1}+C_{rs2}(T-273.15)](\frac{u-f}{u})P_{s} \] where $C_{rs1}=5\times 10^{-6}m^{2}kg^{-1}s^{-1}$ and $C_{rs2}=6.67\times 10^{-10}m^{2}kg^{-1}K^{-1}s^{-1}$. The evaporation of melting snow below the freezing level is ignored in this scheme because of the difficulty in the latent heat treatment since the surface of a melting snowflake is usually covered by a thin layer of liquid water.
+\end{DoxyItemize}
+\item Melting of snow ( $P_{sm1}$ and $P_{sm2}$) ~\newline
+ In this scheme, we allow snow melting to take place in certain temperature regions below the freezing level in two ways. In both cases, the melted snow is assumed to become raindrops.
+\begin{DoxyItemize}
+\item One is the continuous melting of snow due to the increase in temperature as it falls down through the freezing level. This process is parameterized as a function of temperature and snow precipitation rate, that is, \[ P_{sm1}=C_{sm}(T-273.15)^{2}P_{s} \] where $C_{sm}=5\times 10^{-8}m^{2}kg^{-1}K^{-2}s^{-1}$ cause the falling snow to melt almost completely before it reaches the $T=278.15 K$ level.
+\item Another is the immediate melting of melting snow by collection of the cloud water below the freezing level. In order to calculate the melting rate, the collection rate of cloud water by melting snow is computed first. Similar to the collection of cloud water by rain, the collection of cloud water by melting snow can be parameterized to be proportional to the cloud water mixing ratio $m$ and the precipitation rate of snow $P_{s}$\+: \[ P_{sacw}=C_{r}cwmP_{s} \] where $C_{r}$ is the collection coefficient, $C_{r}=5.0\times 10^{-4}m^{2}kg^{-1}s^{-1}$ . The melting rate of snow then can be computed from \[ P_{sm2}=C_{ws}P_{sacw} \] where $C_{ws}=0.025$.
+\item Update t and q. \[ t=t-\frac{L}{C_{p}}(E_{rr}+E_{rs}+P_{sm1})\times dt \] \[ q=q+(E_{rr}+E_{rs})\times dt \]
+\end{DoxyItemize}
+\item Compute precipitation at surface ( $rn$)and determine fraction of frozen precipitation ( $sr$). \[ rn= (P_{r}(\eta_{sfc})+P_{s}(\eta_{sfc}))/10^3 \] \[ sr=\frac{P_{s}(\eta_{sfc})}{P_{s}(\eta_{sfc})+P_{r}(\eta_{sfc})} \] 
+\end{DoxyEnumerate}
+
+Definition at line 80 of file precpd.\+f.
+

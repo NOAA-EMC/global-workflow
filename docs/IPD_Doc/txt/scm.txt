@@ -1,0 +1,15 @@
+/**
+@page scm Using the IPD with the SCM 
+
+
+GMTB has developed a Single Column Model (SCM) for the purpose of testing physical parameterizations in an environment that is model agnostic. Currently the SCM uses the GFS time-stepping and vertical grid to run idealized cases, and it can be modified to include other schemes. 
+
+The implementation of the IPD in the Single Column Model allows developers who wish to incorporate and evaluate physics changes using the IPD to do so in a simplified framework independent of a full forecast system. It may also bring insight into the implementation of the IPD for those developers who wish to implement it within their dycore. 
+
+More information about the SCM and its implemenation of the IPD can be found here: <a href="http://www.dtcenter.org/GMTB/gmtb_scm_doc/index.html"> GMTB Single Column Model</a>
+
+
+
+
+
+*/

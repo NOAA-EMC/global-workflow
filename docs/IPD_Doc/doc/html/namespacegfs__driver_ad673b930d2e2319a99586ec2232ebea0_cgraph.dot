@@ -1,0 +1,13 @@
+digraph "gfs_driver::gfs_time_vary_step"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node3 [label="gfs_driver::gfs_time\l_vary_step",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="gfs_driver::gfs_phys\l_time_vary",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacegfs__driver.html#a9085d55c53755e5dd9cfae5665dc8a60"];
+  Node3 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="gfs_driver::gfs_rad\l_time_vary",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacegfs__driver.html#a1d85ae05ce74656622bac0724c16e47b"];
+  Node5 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="module_radiation_driver\l::radupdate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__driver.html#ga28280ee9ea8ee0d183ab9d541a31b718",tooltip="This subroutine checks and updates time sensitive data used by radiation computations. This subroutine needs to be placed inside the time advancement loop but outside of the horizontal grid loop. It is invoked at radiation calling frequncy but before any actual radiative transfer computations. "];
+}

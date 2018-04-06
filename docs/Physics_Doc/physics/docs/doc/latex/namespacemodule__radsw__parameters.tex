@@ -1,0 +1,119 @@
+\hypertarget{namespacemodule__radsw__parameters}{}\section{module\+\_\+radsw\+\_\+parameters Module Reference}
+\label{namespacemodule__radsw__parameters}\index{module\+\_\+radsw\+\_\+parameters@{module\+\_\+radsw\+\_\+parameters}}
+
+
+This module is for specifying the band structures and program parameters used by the R\+R\+T\+M\+G-\/\+SW scheme.  
+
+
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \hyperlink{structmodule__radsw__parameters_1_1cmpfsw__type}{cmpfsw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em derived type for special components of surface SW fluxes \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radsw__parameters_1_1profsw__type}{profsw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em derived type for SW fluxes\textquotesingle{} column profiles (at layer interfaces) \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radsw__parameters_1_1sfcfsw__type}{sfcfsw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em derived type for SW fluxes at surface \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radsw__parameters_1_1topfsw__type}{topfsw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em derived type for SW fluxes at T\+OA \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a2c5efc91f02dc0d4bdbd5e490f44c19c}\label{namespacemodule__radsw__parameters_a2c5efc91f02dc0d4bdbd5e490f44c19c}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a2c5efc91f02dc0d4bdbd5e490f44c19c}{nblow} = 16
+\begin{DoxyCompactList}\small\item\em band range lower index \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a39e5ca4fd5defbc2545ee39bbf50d61b}\label{namespacemodule__radsw__parameters_a39e5ca4fd5defbc2545ee39bbf50d61b}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a39e5ca4fd5defbc2545ee39bbf50d61b}{nbhgh} = 29
+\begin{DoxyCompactList}\small\item\em band range upper index \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a8f97b7698e8e5e2aec6e463fd09255cc}\label{namespacemodule__radsw__parameters_a8f97b7698e8e5e2aec6e463fd09255cc}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a8f97b7698e8e5e2aec6e463fd09255cc}{nbands} = N\+B\+H\+GH-\/N\+B\+L\+OW+1
+\begin{DoxyCompactList}\small\item\em total number of SW bands (14) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_adc3e4d5a848d50e2883e05c62f61bc97}\label{namespacemodule__radsw__parameters_adc3e4d5a848d50e2883e05c62f61bc97}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_adc3e4d5a848d50e2883e05c62f61bc97}{ngptsw} = 112
+\begin{DoxyCompactList}\small\item\em total number of g-\/point in all bands \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a0ba0ff5c18d3303a852d88687b4b5ca9}\label{namespacemodule__radsw__parameters_a0ba0ff5c18d3303a852d88687b4b5ca9}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a0ba0ff5c18d3303a852d88687b4b5ca9}{ngmax} = 16
+\begin{DoxyCompactList}\small\item\em maximum number of g-\/point in one band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a5bc6fbb4231281a604352eec6b8e2bfc}\label{namespacemodule__radsw__parameters_a5bc6fbb4231281a604352eec6b8e2bfc}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a5bc6fbb4231281a604352eec6b8e2bfc}{maxgas} = 7
+\begin{DoxyCompactList}\small\item\em maximum number of absorbing gases \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a4bd72558be40bfccfb78c48e640acd07}\label{namespacemodule__radsw__parameters_a4bd72558be40bfccfb78c48e640acd07}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a4bd72558be40bfccfb78c48e640acd07}{ntbmx} = 10000
+\begin{DoxyCompactList}\small\item\em index upper limit of optical depth and transmittance tables \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a3d4238ce9a40d70a6cdfe241d640ff5f}\label{namespacemodule__radsw__parameters_a3d4238ce9a40d70a6cdfe241d640ff5f}} 
+integer, parameter \hyperlink{namespacemodule__radsw__parameters_a3d4238ce9a40d70a6cdfe241d640ff5f}{nswstr} = 1
+\begin{DoxyCompactList}\small\item\em SW bands counter starting index (for compatibility with previous SW radiation schemes) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ab1e121fde29dde00871e4a7d43be1ddb}\label{namespacemodule__radsw__parameters_ab1e121fde29dde00871e4a7d43be1ddb}} 
+integer, parameter {\bfseries nbdsw} = N\+B\+A\+N\+DS
+\end{DoxyCompactItemize}
+
+\begin{Indent}\textbf{ The actual number of g-\/point for bands 16-\/29}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a442b3758f00a388cd8b7129ba910942a}\label{namespacemodule__radsw__parameters_a442b3758f00a388cd8b7129ba910942a}} 
+integer {\bfseries ng16}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_af1f90ffe5780463d1e2edbe0e8dfd1f9}\label{namespacemodule__radsw__parameters_af1f90ffe5780463d1e2edbe0e8dfd1f9}} 
+integer {\bfseries ng17}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ac00a8e59e4f7e584af9b453c2c9fe35d}\label{namespacemodule__radsw__parameters_ac00a8e59e4f7e584af9b453c2c9fe35d}} 
+integer {\bfseries ng18}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ab3551e23105cd3515e887e877407dc39}\label{namespacemodule__radsw__parameters_ab3551e23105cd3515e887e877407dc39}} 
+integer {\bfseries ng19}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a1619a2243f1cb29e4393598fa0bc4c8f}\label{namespacemodule__radsw__parameters_a1619a2243f1cb29e4393598fa0bc4c8f}} 
+integer {\bfseries ng20}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ab029caf0ee0c1195539643bef00e0598}\label{namespacemodule__radsw__parameters_ab029caf0ee0c1195539643bef00e0598}} 
+integer {\bfseries ng21}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a655c1f742fc97d58c32131e8a85cb6fd}\label{namespacemodule__radsw__parameters_a655c1f742fc97d58c32131e8a85cb6fd}} 
+integer {\bfseries ng22}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_aff9670cd3f5bef92ca998e491e28986e}\label{namespacemodule__radsw__parameters_aff9670cd3f5bef92ca998e491e28986e}} 
+integer, dimension(nblow\+:nbhgh) {\bfseries ng}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Accumulative starting index for bands 16-\/29}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a3e6e310ecc531e2d0db52864468dc4a7}\label{namespacemodule__radsw__parameters_a3e6e310ecc531e2d0db52864468dc4a7}} 
+integer {\bfseries ns16}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a08303e69e406f6bb2af252b1b7dff272}\label{namespacemodule__radsw__parameters_a08303e69e406f6bb2af252b1b7dff272}} 
+integer {\bfseries ns17}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a142f7aa9f12272d721cfeae2855eec49}\label{namespacemodule__radsw__parameters_a142f7aa9f12272d721cfeae2855eec49}} 
+integer {\bfseries ns18}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ab666e8da69b308ae5b09e187b8153518}\label{namespacemodule__radsw__parameters_ab666e8da69b308ae5b09e187b8153518}} 
+integer {\bfseries ns19}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_ad63ddbb0abcaeda56220a624a62a7336}\label{namespacemodule__radsw__parameters_ad63ddbb0abcaeda56220a624a62a7336}} 
+integer {\bfseries ns20}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a63b1d13965acda2c131123f67fe456ea}\label{namespacemodule__radsw__parameters_a63b1d13965acda2c131123f67fe456ea}} 
+integer {\bfseries ns21}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a194fffaa7b04c97d8133a9e5686e94d5}\label{namespacemodule__radsw__parameters_a194fffaa7b04c97d8133a9e5686e94d5}} 
+integer {\bfseries ns22}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a715ab3195493dff0639da443c21e4fb5}\label{namespacemodule__radsw__parameters_a715ab3195493dff0639da443c21e4fb5}} 
+integer, dimension(nblow\+:nbhgh) \hyperlink{namespacemodule__radsw__parameters_a715ab3195493dff0639da443c21e4fb5}{ngs}
+\begin{DoxyCompactList}\small\item\em array contains values of N\+S16-\/\+N\+S29 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_afdd8496d7eaa017f7f1e08e998945c1e}\label{namespacemodule__radsw__parameters_afdd8496d7eaa017f7f1e08e998945c1e}} 
+integer, dimension(\hyperlink{namespacemodule__radsw__parameters_adc3e4d5a848d50e2883e05c62f61bc97}{ngptsw}) \hyperlink{namespacemodule__radsw__parameters_afdd8496d7eaa017f7f1e08e998945c1e}{ngb}
+\begin{DoxyCompactList}\small\item\em reverse checking of band index for each g-\/point \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Starting/ending wavenumber for each of the SW bands}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_adc7827bd2bed6502a0a60b40b8f1deeb}\label{namespacemodule__radsw__parameters_adc7827bd2bed6502a0a60b40b8f1deeb}} 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{namespacemodule__radsw__parameters_a8f97b7698e8e5e2aec6e463fd09255cc}{nbands}) {\bfseries wvnum1}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__parameters_a88594ac7d3fbf13f2fdbac4b3b844d88}\label{namespacemodule__radsw__parameters_a88594ac7d3fbf13f2fdbac4b3b844d88}} 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{namespacemodule__radsw__parameters_a8f97b7698e8e5e2aec6e463fd09255cc}{nbands}) {\bfseries wvnum2}
+\end{DoxyCompactItemize}
+\end{Indent}

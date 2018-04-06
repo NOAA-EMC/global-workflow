@@ -33,15 +33,6 @@ fi
 . ./partial_build.sh
 
 #------------------------------------
-# build libraries first
-#------------------------------------
-$Build_libs && {
-echo " .... Library build not currently supported .... "
-#echo " .... Building libraries .... "
-#./build_libs.sh > $logs_dir/build_libs.log 2>&1
-}
-
-#------------------------------------
 # build fv3
 #------------------------------------
 $Build_fv3gfs && {
@@ -71,22 +62,6 @@ echo " .... Building NEMS util .... "
 $Build_chgres && {
 echo " .... Building chgres .... "
 ./build_chgres.sh > $logs_dir/build_chgres.log 2>&1
-}
-
-#------------------------------------
-# build prod_util
-#------------------------------------
-$Build_prod_util && {
-echo " .... Building prod_util .... "
-./build_prod_util.sh > $logs_dir/build_prod_util.log 2>&1
-}
-
-#------------------------------------
-# build grib_util
-#------------------------------------
-$Build_grib_util && {
-echo " .... Building grib_util .... "
-./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
 }
 
 echo;echo " .... Build system finished .... "

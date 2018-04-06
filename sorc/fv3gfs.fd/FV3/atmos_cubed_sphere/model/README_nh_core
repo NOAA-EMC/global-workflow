@@ -1,0 +1,1 @@
+The standard nh_core version has been temporarily separated into two files to work around an Intel bug in which "fast transcendentals" do not give run-to-run reproducibility for one subroutine inside of the non-hydrostatic extensions.

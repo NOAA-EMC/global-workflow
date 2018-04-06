@@ -1,0 +1,9 @@
+<map id="module_radiation_driver::radupdate" name="module_radiation_driver::radupdate">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga237071d2a0691d5aae199937d9b6aca5" title="This subroutine checks and updates time varying climatology aerosol data sets. " alt="" coords="220,34,396,75"/>
+<area shape="rect" id="node5" href="$group__module__radiation__gases.html#gafce04ada352f998d640606528a8cd25c" title="This subroutine reads in 2&#45;d monthly co2 data set for a specified year. Data are in a 15 degree lat/l..." alt="" coords="227,99,389,141"/>
+<area shape="rect" id="node6" href="$group__module__radiation__astronomy.html#ga6d1a4a140a2d5050f9d8a0b1072b9dcd" title="This subroutine computes solar parameters at forecast time. " alt="" coords="214,165,402,206"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#gafac9a9c603c033c8511e8dbfe984f703" title="This subroutine updates the monthly global distribution of aerosol profiles in five degree horizontal..." alt="" coords="500,5,591,32"/>
+<area shape="rect" id="node4" href="$group__module__radiation__aerosols.html#ga6ec9bd68d45a5f2c6bb9997bdad420c3" title="This subroutine searches historical volcanic data sets to find and read in monthly 45&#45;degree lat&#45;zone..." alt="" coords="499,56,591,83"/>
+<area shape="rect" id="node7" href="$group__module__radiation__astronomy.html#ga03b70b5dd6cecf5601c34a45e6552792" title="This subroutine computes radius vector, declination and right ascension of sun, and equation of time..." alt="" coords="451,121,639,162"/>
+<area shape="rect" id="node8" href="$group__module__radiation__astronomy.html#ga010c0abb10d9c13e0f654710a85fe0c8" title="This subroutine prints out forecast date, time, and astronomy quantities. " alt="" coords="451,186,639,227"/>
+</map>

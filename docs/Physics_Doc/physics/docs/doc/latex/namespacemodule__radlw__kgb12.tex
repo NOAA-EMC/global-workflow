@@ -1,0 +1,31 @@
+\hypertarget{namespacemodule__radlw__kgb12}{}\section{module\+\_\+radlw\+\_\+kgb12 Module Reference}
+\label{namespacemodule__radlw__kgb12}\index{module\+\_\+radlw\+\_\+kgb12@{module\+\_\+radlw\+\_\+kgb12}}
+
+
+This module sets up absorption coefficients for band 12\+: 1800-\/2080 cm-\/1 (low -\/ h2o, co2; high -\/ /)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__kgb12_ad1ddd94fe11b11485502d1fe6f5a1615}\label{namespacemodule__radlw__kgb12_ad1ddd94fe11b11485502d1fe6f5a1615}} 
+integer, public \hyperlink{namespacemodule__radlw__kgb12_ad1ddd94fe11b11485502d1fe6f5a1615}{msa12}
+\begin{DoxyCompactList}\small\item\em msa12=585 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ minor gas mapping level\+:}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga3282a15ee0faaafd65509536a59e5b4f}{msf12}
+\begin{DoxyCompactList}\small\item\em msf12=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gacd751a2e48d0286e3d25a9b658a8367a}{mfr12}
+\begin{DoxyCompactList}\small\item\em mfr12=4 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga9d7c05182e21605108bd65f47bb5569c}{maf12}
+\begin{DoxyCompactList}\small\item\em maf12=9 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng12, \hyperlink{namespacemodule__radlw__kgb12_ad1ddd94fe11b11485502d1fe6f5a1615}{msa12}), public \hyperlink{group__module__radlw__kgbnn_ga7600bfa19dde3b47d8479f5766ee0c93}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(\+N\+G12,585) = ka(\+N\+G12,9,5,13) contains absorption coefs at the N\+G12=8 g-\/intervals for a range of pressure levels $>$ $\sim$100mb, temperatures, and ratios of water vapor to co2. the first index in the array, js, runs from 1 to 9, and corresponds to different column amount ratios, as expressed through the binary species parameter eta, defined as eta = gas1/(gas1+(rat)$\ast$gas2), where rat is the ratio of the reference mls column amount value of gas1 to that of gas2. the 2nd index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the third index, jp, runs from 1 to 13 and refers to the reference pressure level (e.\+g. jp = 1 is for a pressure of 1053.\+63 mb). the fourth index, ig, goes from 1 to N\+G12=8, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng12, \hyperlink{group__module__radlw__kgbnn_gacd751a2e48d0286e3d25a9b658a8367a}{mfr12}), public \hyperlink{group__module__radlw__kgbnn_ga97dac0d0e010441171e09e317e5aeee8}{forref}
+\begin{DoxyCompactList}\small\item\em the array forref contains the coefficient of the water vapor foreign-\/continuum (including the energy term). the first index refers to reference temperature (296,260,224,260) and pressure (970,475,219,3 mbar) levels. the second index runs over the g-\/channel (1 to N\+G12=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng12, \hyperlink{group__module__radlw__kgbnn_ga3282a15ee0faaafd65509536a59e5b4f}{msf12}), public \hyperlink{group__module__radlw__kgbnn_ga8aaf83ec7a08a244fd1e5396c9fd9b1d}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to N\+G12=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng12, \hyperlink{group__module__radlw__kgbnn_ga9d7c05182e21605108bd65f47bb5569c}{maf12}), public \hyperlink{group__module__radlw__kgbnn_ga58ff4f54c11eb12f7ab5157823981b16}{fracrefa}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p = 174.\+1640 mbar, t= 215.\+78 k \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}

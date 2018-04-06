@@ -1,0 +1,661 @@
+\hypertarget{group__module__radiation__clouds}{}\section{module\+\_\+radiation\+\_\+clouds}
+\label{group__module__radiation__clouds}\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+
+
+This module computes cloud related quantities for radiation computations.  
+
+
+
+
+\subsection{Detailed Description}
+Knowledge of cloud properties and their vertical structure is important for meteorological studies due to their impact on both the Earth\textquotesingle{}s radiation budget and adiabatic heating within the atmosphere. Cloud properties in the US National Oceanic and Atmospheric Administration National Centers for Environmental Prediction Global Forecast System (G\+FS) include (i) cloud liquid/ice water path; (ii) the fraction of clouds; (iii) effective radius of water/ice droplet\+: \begin{DoxyVersion}{Version}
+N\+C\+E\+P-\/\+Radiation\+\_\+clouds v5.\+1 Nov 2012
+\end{DoxyVersion}
+This module has three externally accessible subroutines\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}{cld\+\_\+init()} --- initialization routine
+\item \hyperlink{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}{progcld1()} --- zhao/moorthi prognostic cloud scheme
+\item \hyperlink{group__module__radiation__clouds_ga3fd7643ce526761b17d04eec6a332333}{progcld2()} --- ferrier prognostic cloud microphysics
+\item \hyperlink{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}{progcld3()} --- zhao/moorthi prognostic cloud + pdfcld
+\item \hyperlink{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}{diagcld1()} --- diagnostic cloud calculation routine
+\end{DoxyItemize}
+
+and two internally accessable only subroutines\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()} --- get diagnostic hi, mid, low,total,BL clouds
+\item \hyperlink{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}{rhtable()} --- rh lookup table for diag cloud scheme
+\end{DoxyItemize}\hypertarget{group___g_f_s__ozn_gen_al}{}\subsection{General Algorithm}\label{group___g_f_s__ozn_gen_al}
+
+\begin{DoxyEnumerate}
+\item Cloud Liquid/\+Ice Water Path (L\+WP,I\+WP) ~\newline
+ We define the fraction of liquid and ice cloud as\+: ~\newline
+ Fraction of ice cloud (F)\+: $F=(273.16K-T)/20$ ~\newline
+ L\+WP = total cloud condensate path X (1-\/F) ~\newline
+ I\+WP = total clod condensate path X F
+\item G\+FS Cloud Fraction ~\newline
+ The cloud fraction in a given grid box of the G\+FS model is computed using the parameterization scheme of Xu and Randall(1996) \cite{xu_and_randall_1996} \+: \[ \sigma =RH^{k_{1}}\left[1-exp\left(-\frac{k_{2}q_{l}}{\left[\left(1-RH\right)q_{s}\right]^{k_{3}}}\right)\right] \] Where $RH$ is relative humidity, $q_{l}$ is the cloud condensate, $q_{s}$ is saturation specific humidity, $k_{1}(=0.25)$, $k_{2}(=100)$, $k_{3}(=0.49)$ are the empirical parameters. The cloud condensate is partitioned into cloud water and ice in radiation based on temperature. Cloud drop effective radius ranges 5-\/10 microns over land depending on temperature. Ice crystal radius is function of ice water content (Heymsfield and Mc\+Farquhar (1996) \cite{heymsfield_and_mcfarquhar_1996}). Maximum-\/randomly cloud overlapping is used in both long-\/wave radiation and short-\/wave radiation. Convective clouds are not considered in radiation. ~\newline
+
+\item The parameterization of effective radius of water/ice droplet ( $r_{e}$) ~\newline
+ Two methods has been used to parameterize cloud properties in the G\+FS model. The first method makes use of a diagnostic cloud scheme, in which cloud properties are determined based on model-\/predicted temperature, pressure, and boundary layer circulation from Harshvardhan et al. (1989) \cite{harshvardhan_et_al_1989} . The diagnostic scheme is now replaced with a prognostic scheme that uses cloud condensate information instead (N\+C\+EP Office Note 441). ~\newline
+ For the parameterization of effective radius, $r_{ew}$, of water droplet, we fix $r_{ew}$ to a value of $10\mu m$ over the oceans. Over the land, $$ is defined as\+: \[ r_{ew} = 5+5\times F \] Thus, the effective radius of cloud water droplets will reach to a minimum values of $5\mu m$ when F=0, and to a maximum value of $10\mu m$ when the ice fraction is increasing. ~\newline
+ For ice clouds, following Heymsfield and Mc\+Farquhar (1996) \cite{heymsfield_and_mcfarquhar_1996}, we have made the effective ice droplet radius to be an empirical function of ice water concentration (I\+WC) and environmental temperature as\+: \[ r_{ei}=\begin{cases}(1250/9.917)IWC^{0.109} & T <-50^0C \\(1250/9.337)IWC^{0.080} & -50^0C \leq T<-40^0C\\(1250/9.208)IWC^{0.055} & -40^0C\leq T <-30^0C\\(1250/9.387)IWC^{0.031} & -30^0C \leq T\end{cases} \] where I\+WC and I\+WP satisfy\+: \[ IWP_{\triangle Z}=\int_{\triangle Z} IWCdZ \] 
+\end{DoxyEnumerate}\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gab4060544be25be2b0a87042fb3bd6242}\label{group__module__radiation__clouds_gab4060544be25be2b0a87042fb3bd6242}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::gfac} =1.\+0e5/con\+\_\+g
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga50ea21222eb91e6363e8bf1338b34a66}\label{group__module__radiation__clouds_ga50ea21222eb91e6363e8bf1338b34a66}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::gord} =con\+\_\+g/con\+\_\+rd
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga66cf0f94619a3d865b0c593197a30576}\label{group__module__radiation__clouds_ga66cf0f94619a3d865b0c593197a30576}} 
+integer, parameter, public \hyperlink{group__module__radiation__clouds_ga66cf0f94619a3d865b0c593197a30576}{module\+\_\+radiation\+\_\+clouds\+::nf\+\_\+clds} = 11
+\begin{DoxyCompactList}\small\item\em number of fields in cloud array \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga2739168b8205ee860eb8a160ea722a44}\label{group__module__radiation__clouds_ga2739168b8205ee860eb8a160ea722a44}} 
+integer, parameter, public \hyperlink{group__module__radiation__clouds_ga2739168b8205ee860eb8a160ea722a44}{module\+\_\+radiation\+\_\+clouds\+::nk\+\_\+clds} = 3
+\begin{DoxyCompactList}\small\item\em number of cloud vertical domains \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga03bc5d19cbdc84a2032c8d591ba4c96a}\label{group__module__radiation__clouds_ga03bc5d19cbdc84a2032c8d591ba4c96a}} 
+real(kind=kind\+\_\+phys), dimension(nk\+\_\+clds+1, 2), save \hyperlink{group__module__radiation__clouds_ga03bc5d19cbdc84a2032c8d591ba4c96a}{module\+\_\+radiation\+\_\+clouds\+::ptopc}
+\begin{DoxyCompactList}\small\item\em pressure limits of cloud domain interfaces (low,mid,high) in mb (0.\+1k\+Pa) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gad4d5840310847f5bf39082114069ceb8}\label{group__module__radiation__clouds_gad4d5840310847f5bf39082114069ceb8}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::climit} = 0.\+001
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga2f6f333d39f496f623036802fc05f209}\label{group__module__radiation__clouds_ga2f6f333d39f496f623036802fc05f209}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::climit2} =0.\+05
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga5667082e13ef37593bdfcc152e3dd449}\label{group__module__radiation__clouds_ga5667082e13ef37593bdfcc152e3dd449}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::ovcst} = 1.\+0 -\/ 1.\+0e-\/8
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga1768a85f4d8af2ad40b62ae6e6667c1e}\label{group__module__radiation__clouds_ga1768a85f4d8af2ad40b62ae6e6667c1e}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga1768a85f4d8af2ad40b62ae6e6667c1e}{module\+\_\+radiation\+\_\+clouds\+::reliq\+\_\+def} = 10.\+0
+\begin{DoxyCompactList}\small\item\em default liq radius to 10 micron \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga721e0fb4a34774f5b61f567b9cad8e7b}\label{group__module__radiation__clouds_ga721e0fb4a34774f5b61f567b9cad8e7b}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga721e0fb4a34774f5b61f567b9cad8e7b}{module\+\_\+radiation\+\_\+clouds\+::reice\+\_\+def} = 50.\+0
+\begin{DoxyCompactList}\small\item\em default ice radius to 50 micron \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga93fcaedae02c0f9c4de9f39061379d6b}\label{group__module__radiation__clouds_ga93fcaedae02c0f9c4de9f39061379d6b}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga93fcaedae02c0f9c4de9f39061379d6b}{module\+\_\+radiation\+\_\+clouds\+::rrain\+\_\+def} = 1000.\+0
+\begin{DoxyCompactList}\small\item\em default rain radius to 1000 micron \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga2b68c4a206e17cb59597f6c4dffc7c1a}\label{group__module__radiation__clouds_ga2b68c4a206e17cb59597f6c4dffc7c1a}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga2b68c4a206e17cb59597f6c4dffc7c1a}{module\+\_\+radiation\+\_\+clouds\+::rsnow\+\_\+def} = 250.\+0
+\begin{DoxyCompactList}\small\item\em default snow radius to 250 micron \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gad2947b3c0a8382fbe12b76dd68b290e0}\label{group__module__radiation__clouds_gad2947b3c0a8382fbe12b76dd68b290e0}} 
+integer, parameter \hyperlink{group__module__radiation__clouds_gad2947b3c0a8382fbe12b76dd68b290e0}{module\+\_\+radiation\+\_\+clouds\+::nbin} =100
+\begin{DoxyCompactList}\small\item\em rh in one percent interval \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gab4d14edea12bbcda5361cad523386c7c}\label{group__module__radiation__clouds_gab4d14edea12bbcda5361cad523386c7c}} 
+integer, parameter \hyperlink{group__module__radiation__clouds_gab4d14edea12bbcda5361cad523386c7c}{module\+\_\+radiation\+\_\+clouds\+::nlon} =2
+\begin{DoxyCompactList}\small\item\em =1,2 for eastern and western hemispheres \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gad4274cb223949e858ecc2e6346bed610}\label{group__module__radiation__clouds_gad4274cb223949e858ecc2e6346bed610}} 
+integer, parameter \hyperlink{group__module__radiation__clouds_gad4274cb223949e858ecc2e6346bed610}{module\+\_\+radiation\+\_\+clouds\+::nlat} =4
+\begin{DoxyCompactList}\small\item\em =1,4 for 60n-\/30n,30n-\/equ,equ-\/30s,30s-\/60s \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gafb94f3d62afa49bef6c33f73a7ecad65}\label{group__module__radiation__clouds_gafb94f3d62afa49bef6c33f73a7ecad65}} 
+integer, parameter \hyperlink{group__module__radiation__clouds_gafb94f3d62afa49bef6c33f73a7ecad65}{module\+\_\+radiation\+\_\+clouds\+::mcld} =4
+\begin{DoxyCompactList}\small\item\em =1,4 for bl,low,mid,hi cld type \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gaaf2a6549a8c42b9eae3d40d21d1e9532}\label{group__module__radiation__clouds_gaaf2a6549a8c42b9eae3d40d21d1e9532}} 
+integer, parameter \hyperlink{group__module__radiation__clouds_gaaf2a6549a8c42b9eae3d40d21d1e9532}{module\+\_\+radiation\+\_\+clouds\+::nseal} =2
+\begin{DoxyCompactList}\small\item\em =1,2 for land,sea \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga2ce850be46f0144caa09309ae01958c2}\label{group__module__radiation__clouds_ga2ce850be46f0144caa09309ae01958c2}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga2ce850be46f0144caa09309ae01958c2}{module\+\_\+radiation\+\_\+clouds\+::cldssa\+\_\+def} = 0.\+99
+\begin{DoxyCompactList}\small\item\em default cld single scat albedo \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gab94e45a81d8be82b6cb686b35fd78a80}\label{group__module__radiation__clouds_gab94e45a81d8be82b6cb686b35fd78a80}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_gab94e45a81d8be82b6cb686b35fd78a80}{module\+\_\+radiation\+\_\+clouds\+::cldasy\+\_\+def} = 0.\+84
+\begin{DoxyCompactList}\small\item\em default cld asymmetry factor \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gab2a798da0bb0125d1d5074b73c5951dc}\label{group__module__radiation__clouds_gab2a798da0bb0125d1d5074b73c5951dc}} 
+real(kind=kind\+\_\+phys), dimension(3) \hyperlink{group__module__radiation__clouds_gab2a798da0bb0125d1d5074b73c5951dc}{module\+\_\+radiation\+\_\+clouds\+::xlabdy}
+\begin{DoxyCompactList}\small\item\em lat bndry between tuning regions \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gaab28f783919380e5ff7f925f70355a57}\label{group__module__radiation__clouds_gaab28f783919380e5ff7f925f70355a57}} 
+real(kind=kind\+\_\+phys), dimension(3) \hyperlink{group__module__radiation__clouds_gaab28f783919380e5ff7f925f70355a57}{module\+\_\+radiation\+\_\+clouds\+::xlobdy}
+\begin{DoxyCompactList}\small\item\em lon bndry between tuning regions \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga1146f43b680b655d354a9c031ee4a463}\label{group__module__radiation__clouds_ga1146f43b680b655d354a9c031ee4a463}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga1146f43b680b655d354a9c031ee4a463}{module\+\_\+radiation\+\_\+clouds\+::xlim} =5.\+0
+\begin{DoxyCompactList}\small\item\em +/-\/ xlim for transition \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga6ec3c0444de53580befd4bb4d39844d3}\label{group__module__radiation__clouds_ga6ec3c0444de53580befd4bb4d39844d3}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga6ec3c0444de53580befd4bb4d39844d3}{module\+\_\+radiation\+\_\+clouds\+::vvcld1} = 0.\+0003e0
+\begin{DoxyCompactList}\small\item\em low cloud vertical velocity adjustment boundaries in mb/sec \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga67962e77fb073cc25cafaaba0c2fa833}\label{group__module__radiation__clouds_ga67962e77fb073cc25cafaaba0c2fa833}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga67962e77fb073cc25cafaaba0c2fa833}{module\+\_\+radiation\+\_\+clouds\+::vvcld2} =-\/0.\+0005e0
+\begin{DoxyCompactList}\small\item\em low cloud vertical velocity adjustment boundaries in mb/sec \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga9673faf82ef00e0501763664743e3720}\label{group__module__radiation__clouds_ga9673faf82ef00e0501763664743e3720}} 
+real(kind=kind\+\_\+phys), dimension(nbin, nlon, nlat, mcld, nseal) \hyperlink{group__module__radiation__clouds_ga9673faf82ef00e0501763664743e3720}{module\+\_\+radiation\+\_\+clouds\+::rhcl}
+\begin{DoxyCompactList}\small\item\em tuned relative humidity relation table for diagnostic cloud scheme \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga3390b20d42afccb3ec569a5b69a93f6e}\label{group__module__radiation__clouds_ga3390b20d42afccb3ec569a5b69a93f6e}} 
+integer \hyperlink{group__module__radiation__clouds_ga3390b20d42afccb3ec569a5b69a93f6e}{module\+\_\+radiation\+\_\+clouds\+::llyr} = 2
+\begin{DoxyCompactList}\small\item\em upper limit of boundary layer clouds \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga5cfafee79e8cf066ddd8440cdfdc41a0}\label{group__module__radiation__clouds_ga5cfafee79e8cf066ddd8440cdfdc41a0}} 
+integer \hyperlink{group__module__radiation__clouds_ga5cfafee79e8cf066ddd8440cdfdc41a0}{module\+\_\+radiation\+\_\+clouds\+::iovr} = 1
+\begin{DoxyCompactList}\small\item\em maximum-\/random cloud overlapping method \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}{module\+\_\+radiation\+\_\+clouds\+::cld\+\_\+init} (si, N\+L\+AY, imp\+\_\+physics, me)
+\begin{DoxyCompactList}\small\item\em This subroutine is an initialization program for cloud-\/radiation calculations and sets up boundary layer cloud top. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}{module\+\_\+radiation\+\_\+clouds\+::progcld1} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, uni\+\_\+cld, lmfshal, lmfdeep2, cldcov, effrl, effri, effrr, effrs, effr\+\_\+in, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga3fd7643ce526761b17d04eec6a332333}{module\+\_\+radiation\+\_\+clouds\+::progcld2} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, f\+\_\+ice, f\+\_\+rain, r\+\_\+rime, flgmin, IX, N\+L\+AY, N\+L\+P1, lmfshal, lmfdeep2, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using ferrier\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}{module\+\_\+radiation\+\_\+clouds\+::progcld3} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, cnvw, cnvc, xlat, xlon, slmsk, ix, nlay, nlp1, deltaq, sup, kdt, me, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme + pdfcld. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gabc94febdae92fa27984f169e713a8774}\label{group__module__radiation__clouds_gabc94febdae92fa27984f169e713a8774}} 
+subroutine, public {\bfseries module\+\_\+radiation\+\_\+clouds\+::progcld4} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, cldtot, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_gaa054de52f7568837d7a82ee1e2117b90}\label{group__module__radiation__clouds_gaa054de52f7568837d7a82ee1e2117b90}} 
+subroutine, public {\bfseries module\+\_\+radiation\+\_\+clouds\+::progcld4o} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga0c2a2c0d1abf49c1d6bbeb12d3223893}{module\+\_\+radiation\+\_\+clouds\+::progcld5} (plyr, plvl, tlyr, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, IX, N\+L\+AY, N\+L\+P1, uni\+\_\+cld, lmfshal, lmfdeep2, cldcov, re\+\_\+cloud, re\+\_\+ice, re\+\_\+snow, clouds, clds, mtop, mbot)
+\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gaa369e2e2910b3468614db856b378f3ba}{module\+\_\+radiation\+\_\+clouds\+::progclduni} (plyr, plvl, tlyr, tvly, ccnd, ncnd, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, cldtot, effrl, effri, effrr, effrs, effr\+\_\+in, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}{module\+\_\+radiation\+\_\+clouds\+::diagcld1} (plyr, plvl, tlyr, rhly, vvel, cv, cvt, cvb, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud fractions for radiation calculations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{module\+\_\+radiation\+\_\+clouds\+::gethml} (plyr, ptop1, cldtot, cldcnv, IX, N\+L\+AY, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes high, mid, low, total, and boundary cloud fractions and cloud top/bottom layer indices for model diagnostic output. The three cloud domain boundaries are defined by ptopc. The cloud overlapping method is defined by control flag \textquotesingle{}iovr\textquotesingle{}, which is also used by LW and SW radiation programs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}\label{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}} 
+subroutine \hyperlink{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}{module\+\_\+radiation\+\_\+clouds\+::rhtable} (me, ier)
+\begin{DoxyCompactList}\small\item\em cld-\/rh relations obtained from mitchell-\/hahn procedure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}\label{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!cld\+\_\+init@{cld\+\_\+init}}
+\index{cld\+\_\+init@{cld\+\_\+init}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{cld\+\_\+init()}{cld\_init()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::cld\+\_\+init (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{si,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{imp\+\_\+physics,  }\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em si} & model vertical sigma layer interface \\
+\hline
+{\em N\+L\+AY} & vertical layer number \\
+\hline
+{\em me} & print control flag \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_cld_init}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_cld_init}
+
+\begin{DoxyEnumerate}
+\item Call \hyperlink{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}{rhtable()} to set up tuned relative humidity table.
+\item Compute the top of BL cld (llyr), which is the topmost non cld(low) layer for stratiform (at or above lowest 0.\+1 of the atmosphere). 
+\end{DoxyEnumerate}
+
+Definition at line 343 of file radiation\+\_\+clouds.\+f.
+
+
+
+References iovr, llyr, and rhtable().
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radinit().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}\label{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!diagcld1@{diagcld1}}
+\index{diagcld1@{diagcld1}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{diagcld1()}{diagcld1()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::diagcld1 (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{vvel,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{cv,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{cvt,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{cvb,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (IX,N\+L\+AY), model layer mean pressure in mb (100\+Pa) \\
+\hline
+{\em plvl} & (IX,N\+L\+P1), model level pressure in mb (100\+Pa) \\
+\hline
+{\em tlyr} & (IX,N\+L\+AY), model layer mean temperature in K \\
+\hline
+{\em rhly} & (IX,N\+L\+AY), layer relative humidity \\
+\hline
+{\em vvel} & (IX,N\+L\+AY), layer mean vertical velocity in mb/sec \\
+\hline
+{\em cv} & (IX), fraction of convective cloud \\
+\hline
+{\em cvt,cvb} & (IX), conv cloud top/bottom pressure in mb \\
+\hline
+{\em xlat} & (IX), grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em xlon} & (IX), grid longitude in radians, ok for both 0-\/$>$2pi or -\/pi -\/$>$ +pi ranges \\
+\hline
+{\em slmsk} & (IX), sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em IX} & horizontal dimention \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical layer/level dimensions \\
+\hline
+{\em clouds} & (IX,N\+L\+AY,N\+F\+\_\+\+C\+L\+DS), cloud profiles ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud optical depth ~\newline
+ (\+:,\+:,3) -\/ layer cloud single scattering albedo ~\newline
+ (\+:,\+:,4) -\/ layer cloud asymmetry factor \\
+\hline
+{\em clds} & (IX,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (IX,3), vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (IX,3), vertical indices for low, mid, hi cloud bases \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_diagcld1}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_diagcld1}
+
+\begin{DoxyEnumerate}
+\item Get rh-\/cld relation for this lat.
+\item Linear transition between latitudinal regions.
+\item Get rh-\/cld relationship for each grid point, interpolating longitudinally between regions if necessary.
+\item Find top pressure for each cloud domain.
+\item Compute stratiform cloud optical depth.
+\item Calculate potential temperature and its lapse rate.
+\item Diagnostic method to find cloud amount cldtot, cldcnv.
+\begin{DoxyItemize}
+\item Find the lowest low cloud top sigma level, computed for each lat cause domain definition changes with latitude.
+\item Find the stratosphere cut off layer for high cloud (about 250mb). It is assumed to be above the layerwith dthdp less than -\/0.\+25 in the high cloud domain.
+\item Put convective cloud into \textquotesingle{}cldcnv\textquotesingle{}, no merge at this point.
+\item Calculate stratiform cloud and put into array \textquotesingle{}cldtot\textquotesingle{} using the cld-\/rh relationship from table look-\/up, where tables obtained using k.\+mitchell frequency distribution tuning.
+\item Compute vertical velocity adjustment on low clouds.
+\item Calculate diagnostic cloud optical depth.
+\end{DoxyItemize}
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()}, to compute low, mid, high, total, and boundary layer cloud fractions and cloud top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 3268 of file radiation\+\_\+clouds.\+f.
+
+
+
+References cldasy\+\_\+def, cldssa\+\_\+def, gethml(), llyr, mcld, nbin, nlon, nseal, ptopc, rhcl, vvcld1, vvcld2, xlabdy, xlim, and xlobdy.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}\label{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!gethml@{gethml}}
+\index{gethml@{gethml}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{gethml()}{gethml()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radiation\+\_\+clouds\+::gethml (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{ptop1,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{cldtot,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{cldcnv,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (IX,N\+L\+AY), model layer mean pressure in mb (100\+Pa) \\
+\hline
+{\em ptop1} & (IX,4), pressure limits of cloud domain interfaces (sfc,low,mid,high) in mb (100\+Pa) \\
+\hline
+{\em cldtot} & (IX,N\+L\+AY), total or stratiform cloud profile in fraction \\
+\hline
+{\em cldcnv} & (IX,N\+L\+AY), convective cloud (for diagnostic scheme only) \\
+\hline
+{\em IX} & horizontal dimension \\
+\hline
+{\em N\+L\+AY} & vertical layer dimensions \\
+\hline
+{\em clds} & (IX,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (IX,3),vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (IX,3),vertical indices for low, mid, hi cloud bases\\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_detail}{}\subsection{Detailed Algorithm}\label{group__module__radiation__clouds_detail}
+
+\begin{DoxyEnumerate}
+\item Calculate total and BL cloud fractions (maximum-\/random cloud overlapping is operational).
+\item Calculte high, mid, low cloud fractions and vertical indices of cloud tops/bases. 
+\end{DoxyEnumerate}
+
+Definition at line 3884 of file radiation\+\_\+clouds.\+f.
+
+
+
+References iovr, llyr, and nk\+\_\+clds.
+
+
+
+Referenced by diagcld1(), progcld1(), progcld2(), progcld3(), progcld5(), and progclduni().
+
+\mbox{\Hypertarget{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}\label{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!progcld1@{progcld1}}
+\index{progcld1@{progcld1}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{progcld1()}{progcld1()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::progcld1 (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qstl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{clw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{logical, intent(in)}]{uni\+\_\+cld,  }\item[{logical, intent(in)}]{lmfshal,  }\item[{logical, intent(in)}]{lmfdeep2,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{cldcov,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effri,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrs,  }\item[{logical, intent(in)}]{effr\+\_\+in,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (IX,N\+L\+AY), model layer mean pressure in mb (100\+Pa) \\
+\hline
+{\em plvl} & (IX,N\+L\+P1), model level pressure in mb (100\+Pa) \\
+\hline
+{\em tlyr} & (IX,N\+L\+AY), model layer mean temperature in K \\
+\hline
+{\em tvly} & (IX,N\+L\+AY), model layer virtual temperature in K \\
+\hline
+{\em qlyr} & (IX,N\+L\+AY), layer specific humidity in gm/gm \\
+\hline
+{\em qstl} & (IX,N\+L\+AY), layer saturate humidity in gm/gm \\
+\hline
+{\em rhly} & (IX,N\+L\+AY), layer relative humidity $ (=qlyr/qstl) $ \\
+\hline
+{\em clw} & (IX,N\+L\+AY), layer cloud condensate amount \\
+\hline
+{\em xlat} & (IX), grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em xlon} & (IX), grid longitude in radians (not used) \\
+\hline
+{\em slmsk} & (IX), sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em IX} & horizontal dimention \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical layer/level dimensions \\
+\hline
+{\em clouds} & (IX,N\+L\+AY,N\+F\+\_\+\+C\+L\+DS), cloud profiles ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud liq water path $(g/m^2)$ ~\newline
+ (\+:,\+:,3) -\/ mean eff radius for liq cloud (micron) ~\newline
+ (\+:,\+:,4) -\/ layer cloud ice water path $(g/m^2)$ ~\newline
+ (\+:,\+:,5) -\/ mean eff radius for ice cloud (micron) ~\newline
+ (\+:,\+:,6) -\/ layer rain drop water path (not assigned) ~\newline
+ (\+:,\+:,7) -\/ mean eff radius for rain drop (micron) ~\newline
+ (\+:,\+:,8) -\/ layer snow flake water path (not assigned) ~\newline
+ (\+:,\+:,9) -\/ mean eff radius for snow flake (micron) ~\newline
+ $\ast$$\ast$$\ast$ fu\textquotesingle{}s scheme need to be normalized by snow density $ (g/m^3/1.0e6)$ \\
+\hline
+{\em clds} & (IX,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (IX,3), vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (IX,3), vertical indices for low, mid, hi cloud bases \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_progcld1}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_progcld1}
+
+\begin{DoxyEnumerate}
+\item Find top pressure for each cloud domain for given latitude.
+\item Compute cloud liquid/ice condensate path in $ g/m^2 $ .
+\item Compute effective liquid cloud droplet radius over land.
+\item Calculate layer cloud fraction.
+\item Compute effective ice cloud droplet radius following Heymsfield and Mc\+Farquhar (1996) \cite{heymsfield_and_mcfarquhar_1996}.
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()} to compute low,mid,high,total, and boundary layer cloud fractions and clouds top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 508 of file radiation\+\_\+clouds.\+f.
+
+
+
+References gethml(), nf\+\_\+clds, ptopc, reice\+\_\+def, reliq\+\_\+def, rrain\+\_\+def, and rsnow\+\_\+def.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{group__module__radiation__clouds_ga3fd7643ce526761b17d04eec6a332333}\label{group__module__radiation__clouds_ga3fd7643ce526761b17d04eec6a332333}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!progcld2@{progcld2}}
+\index{progcld2@{progcld2}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{progcld2()}{progcld2()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::progcld2 (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qstl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{clw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{f\+\_\+ice,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{f\+\_\+rain,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{r\+\_\+rime,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{flgmin,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{logical, intent(in)}]{lmfshal,  }\item[{logical, intent(in)}]{lmfdeep2,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (IX,N\+L\+AY), model layer mean pressure in mb (100\+Pa) \\
+\hline
+{\em plvl} & (IX,N\+L\+P1), model level pressure in mb (100\+Pa) \\
+\hline
+{\em tlyr} & (IX,N\+L\+AY), model layer mean temperature in K \\
+\hline
+{\em tvly} & (IX,N\+L\+AY), model layer virtual temperature in K \\
+\hline
+{\em qlyr} & (IX,N\+L\+AY), layer specific humidity in gm/gm \\
+\hline
+{\em qstl} & (IX,N\+L\+AY), layer saturate humidity in gm/gm \\
+\hline
+{\em rhly} & (IX,N\+L\+AY), layer relative humidity (=qlyr/qstl) \\
+\hline
+{\em clw} & (IX,N\+L\+AY), layer cloud condensate amount \\
+\hline
+{\em f\+\_\+ice} & (IX,N\+L\+AY), fraction of layer cloud ice (ferrier micro-\/phys) \\
+\hline
+{\em f\+\_\+rain} & (IX,N\+L\+AY), fraction of layer rain water (ferrier micro-\/phys) \\
+\hline
+{\em r\+\_\+rime} & (IX,N\+L\+AY), mass ratio of total ice to unrimed ice ($>$=1) \\
+\hline
+{\em flgmin} & (IX), minimum large ice fraction \\
+\hline
+{\em xlat} & (IX), grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em xlon} & (IX), grid longitude in radians (not used) \\
+\hline
+{\em slmsk} & (IX), sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em IX} & horizontal dimention \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical layer/level dimensions \\
+\hline
+{\em clouds} & (IX,N\+L\+AY,N\+F\+\_\+\+C\+L\+DS), cloud profiles ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud liq water path $(g/m^2)$ ~\newline
+ (\+:,\+:,3) -\/ mean eff radius for liq cloud (micron) ~\newline
+ (\+:,\+:,4) -\/ layer cloud ice water path $(g/m^2)$ ~\newline
+ (\+:,\+:,5) -\/ mean eff radius for ice cloud (micron) ~\newline
+ (\+:,\+:,6) -\/ layer rain drop water path $(g/m^2)$ ~\newline
+ (\+:,\+:,7) -\/ mean eff radius for rain drop (micron) ~\newline
+ (\+:,\+:,8) -\/ layer snow flake water path $(g/m^2)$ ~\newline
+ (\+:,\+:,9) -\/ mean eff radius for snow flake (micron) ~\newline
+ $\ast$$\ast$$\ast$ fu\textquotesingle{}s scheme need to be normalized by snow density (g/m$\ast$$\ast$3/1.0e6) \\
+\hline
+{\em clds} & (IX,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (IX,3), vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (IX,3), vertical indices for low, mid, hi cloud bases \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_progcld2}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_progcld2}
+
+\begin{DoxyEnumerate}
+\item Find top pressure (ptopc) for each cloud domain for given latitude.
+\item Seperate cloud condensate into liquid, ice, and rain types, and save the liquid+ice condensate in array clw2 for later calculation of cloud fraction.
+\item Call module\+\_\+microphysics\+::rsipath2(), in Ferrier\textquotesingle{}s scheme, to compute layer\textquotesingle{}s cloud liquid, ice, rain, and snow water condensate path and the partical effective radius for liquid droplet, rain drop, and snow flake.
+\item Calculate layer cloud fraction.
+\item Calculate effective ice cloud droplet radius.
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()}, to compute low, mid, high, total, and boundary layer cloud fractions and clouds top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 989 of file radiation\+\_\+clouds.\+f.
+
+
+
+References gethml(), ptopc, reice\+\_\+def, reliq\+\_\+def, rrain\+\_\+def, and rsnow\+\_\+def.
+
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}\label{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!progcld3@{progcld3}}
+\index{progcld3@{progcld3}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{progcld3()}{progcld3()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::progcld3 (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qstl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{clw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:)}]{cnvw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:)}]{cnvc,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{integer, intent(in)}]{ix,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:)}]{deltaq,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{sup,  }\item[{integer, intent(in)}]{kdt,  }\item[{integer}]{me,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (ix,nlay), model layer mean pressure in mb (100pa) \\
+\hline
+{\em plvl} & (ix,nlp1), model level pressure in mb (100pa) \\
+\hline
+{\em tlyr} & (ix,nlay), model layer mean temperature in K \\
+\hline
+{\em tvly} & (ix,nlay), model layer virtual temperature in K \\
+\hline
+{\em qlyr} & (ix,nlay), layer specific humidity in gm/gm \\
+\hline
+{\em qstl} & (ix,nlay), layer saturate humidity in gm/gm \\
+\hline
+{\em rhly} & (ix,nlay), layer relative humidity (=qlyr/qstl) \\
+\hline
+{\em clw} & (ix,nlay), layer cloud condensate amount \\
+\hline
+{\em xlat} & (ix), grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em xlon} & (ix), grid longitude in radians (not used) \\
+\hline
+{\em slmsk} & (ix), sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em ix} & horizontal dimention \\
+\hline
+{\em nlay,nlp1} & vertical layer/level dimensions \\
+\hline
+{\em deltaq} & (ix,nlay), half total water distribution width \\
+\hline
+{\em sup} & supersaturation \\
+\hline
+{\em kdt} & \\
+\hline
+{\em me} & print control flag \\
+\hline
+{\em clouds} & (ix,nlay,nf\+\_\+clds), cloud profiles ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud liq water path (g/m$\ast$$\ast$2) ~\newline
+ (\+:,\+:,3) -\/ mean eff radius for liq cloud (micron) ~\newline
+ (\+:,\+:,4) -\/ layer cloud ice water path (g/m$\ast$$\ast$2) ~\newline
+ (\+:,\+:,5) -\/ mean eff radius for ice cloud (micron) ~\newline
+ (\+:,\+:,6) -\/ layer rain drop water path not assigned ~\newline
+ (\+:,\+:,7) -\/ mean eff radius for rain drop (micron) ~\newline
+ (\+:,\+:,8) -\/ layer snow flake water path not assigned ~\newline
+ (\+:,\+:,9) -\/ mean eff radius for snow flake(micron) \\
+\hline
+{\em clds} & (ix,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (ix,3), vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (ix,3), vertical indices for low, mid, hi cloud bases \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_progcld3}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_progcld3}
+
+\begin{DoxyEnumerate}
+\item Find top pressure (ptopc) for each cloud domain for given latitude.
+\item Calculate liquid/ice condensate path in $ g/m^2 $
+\item Calculate effective liquid cloud droplet radius over land.
+\item Calculate layer cloud fraction.
+\item Calculate effective ice cloud droplet radius following Heymsfield and Mc\+Farquhar (1996) \cite{heymsfield_and_mcfarquhar_1996}.
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()} to compute low,mid,high,total, and boundary layer cloud fractions and clouds top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 1489 of file radiation\+\_\+clouds.\+f.
+
+
+
+References gethml(), nf\+\_\+clds, ptopc, reice\+\_\+def, reliq\+\_\+def, rrain\+\_\+def, and rsnow\+\_\+def.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{group__module__radiation__clouds_ga0c2a2c0d1abf49c1d6bbeb12d3223893}\label{group__module__radiation__clouds_ga0c2a2c0d1abf49c1d6bbeb12d3223893}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!progcld5@{progcld5}}
+\index{progcld5@{progcld5}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{progcld5()}{progcld5()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::progcld5 (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{qstl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{rhly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(in)}]{clw,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{integer, intent(in)}]{ntrac,  }\item[{integer, intent(in)}]{ntcw,  }\item[{integer, intent(in)}]{ntiw,  }\item[{integer, intent(in)}]{ntrw,  }\item[{integer, intent(in)}]{ntsw,  }\item[{integer, intent(in)}]{ntgl,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{logical, intent(in)}]{uni\+\_\+cld,  }\item[{logical, intent(in)}]{lmfshal,  }\item[{logical, intent(in)}]{lmfdeep2,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{cldcov,  }\item[{}]{re\+\_\+cloud,  }\item[{}]{re\+\_\+ice,  }\item[{}]{re\+\_\+snow,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyEnumerate}
+\item Find top pressure for each cloud domain for given latitude.
+\item Compute cloud liquid/ice condensate path in $ g/m^2 $ .
+\item Calculate layer cloud fraction.
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()} to compute low,mid,high,total, and boundary layer cloud fractions and clouds top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 2464 of file radiation\+\_\+clouds.\+f.
+
+
+
+References gethml(), nf\+\_\+clds, ptopc, and rrain\+\_\+def.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 5
+\mbox{\Hypertarget{group__module__radiation__clouds_gaa369e2e2910b3468614db856b378f3ba}\label{group__module__radiation__clouds_gaa369e2e2910b3468614db856b378f3ba}} 
+\index{module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}!progclduni@{progclduni}}
+\index{progclduni@{progclduni}!module\+\_\+radiation\+\_\+clouds@{module\+\_\+radiation\+\_\+clouds}}
+\subsubsection{\texorpdfstring{progclduni()}{progclduni()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+clouds\+::progclduni (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{tvly,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(in)}]{ccnd,  }\item[{integer, intent(in)}]{ncnd,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{integer, intent(in)}]{IX,  }\item[{integer, intent(in)}]{N\+L\+AY,  }\item[{integer, intent(in)}]{N\+L\+P1,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{cldtot,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrl,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effri,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{effrs,  }\item[{logical, intent(in)}]{effr\+\_\+in,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), intent(out)}]{clouds,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:,\+:), intent(out)}]{clds,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mtop,  }\item[{integer, dimension(\+:,\+:), intent(out)}]{mbot }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & (IX,N\+L\+AY), model layer mean pressure in mb (100\+Pa) \\
+\hline
+{\em plvl} & (IX,N\+L\+P1), model level pressure in mb (100\+Pa) \\
+\hline
+{\em tlyr} & (IX,N\+L\+AY), model layer mean temperature in K \\
+\hline
+{\em tvly} & (IX,N\+L\+AY), model layer virtual temperature in K \\
+\hline
+{\em qlyr} & (IX,N\+L\+AY), layer specific humidity in gm/gm \\
+\hline
+{\em clw} & (IX,N\+L\+AY), layer cloud liquid water amount \\
+\hline
+{\em ciw} & (IX,N\+L\+AY), layer cloud ice water amount \\
+\hline
+{\em xlat} & (IX), grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em xlon} & (IX), grid longitude in radians (not used) \\
+\hline
+{\em slmsk} & (IX), sea/land mask array (sea\+:0,land\+:1,sea-\/ice\+:2) \\
+\hline
+{\em IX} & horizontal dimention \\
+\hline
+{\em N\+L\+AY,N\+L\+P1} & vertical layer/level dimensions \\
+\hline
+{\em clouds} & (IX,N\+L\+AY,N\+F\+\_\+\+C\+L\+DS), cloud profiles ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud liq water path $(g/m^2)$ ~\newline
+ (\+:,\+:,3) -\/ mean eff radius for liq cloud (micron) ~\newline
+ (\+:,\+:,4) -\/ layer cloud ice water path $(g/m^2)$ ~\newline
+ (\+:,\+:,5) -\/ mean eff radius for ice cloud (micron) ~\newline
+ (\+:,\+:,6) -\/ layer rain drop water path (not assigned) ~\newline
+ (\+:,\+:,7) -\/ mean eff radius for rain drop (micron) ~\newline
+ (\+:,\+:,8) -\/ layer snow flake water path (not assigned) ~\newline
+ (\+:,\+:,9) -\/ mean eff radius for snow flake (micron) ~\newline
+ $\ast$$\ast$$\ast$ fu\textquotesingle{}s scheme need to be normalized by snow density $ (g/m^3/1.0e6)$ \\
+\hline
+{\em clds} & (IX,5), fraction of clouds for low, mid, hi, tot, bl \\
+\hline
+{\em mtop} & (IX,3), vertical indices for low, mid, hi cloud tops \\
+\hline
+{\em mbot} & (IX,3), vertical indices for low, mid, hi cloud bases \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__clouds_gen_progclduni}{}\subsection{General Algorithm}\label{group__module__radiation__clouds_gen_progclduni}
+
+\begin{DoxyEnumerate}
+\item Find top pressure for each cloud domain for given latitude.
+\item Compute cloud liquid/ice condensate path in $ g/m^2 $ .
+\item Compute effective liquid cloud droplet radius over land.
+\item Compute effective ice cloud droplet radius following Heymsfield and Mc\+Farquhar (1996) \cite{heymsfield_and_mcfarquhar_1996}.
+\item Call \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{gethml()} to compute low,mid,high,total, and boundary layer cloud fractions and clouds top/bottom layer indices for low, mid, and high clouds. 
+\end{DoxyEnumerate}
+
+Definition at line 2893 of file radiation\+\_\+clouds.\+f.
+
+
+
+References gethml(), nf\+\_\+clds, ptopc, reice\+\_\+def, reliq\+\_\+def, rrain\+\_\+def, and rsnow\+\_\+def.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 6

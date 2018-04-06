@@ -1,0 +1,188 @@
+#
+# Define the name of the executable
+#
+TARGET   = ../../exec/ncep_post
+
+#
+# CPP, Compiler, and Linker Options
+#
+FC       = mpfort -compiler ifort
+CPP      = /lib/cpp -P
+CPPFLAGS = -DLINUX 
+#OPTS     = -O -fp-model strict -traceback -check uninit -check bounds -check format -fpe0
+#OPTS     = -O -fp-model strict
+OPTS     = -O0 -fp-model strict -g  -traceback
+FREE     = -FR
+TRAPS    = 
+DEBUG    = -g
+
+CFLAGS =  -DLINUX -Dfunder -DFortranByte=char -DFortranInt=int -DFortranLlong='long long'
+#
+# Now the hard part. NCEPPOST needs 19 libraries, WOW!!!!!
+#
+
+SFCIO_VER=v1.0.0
+NEMSIO_VER=v2.2.1
+BACIO_VER=v2.0.1
+SIGIO_VER=v1.0.1
+WRF_VER=v1.1.0
+G2_VER=v2.5.0
+G2TMPL_VER=v1.3.0
+JASPER_VER=v1.900.1
+PNG_VER=v1.2.44
+Z_VER=v1.2.6
+XMLPARSE_VER=v2.0.0
+GFSIO_VER=v1.1.0
+IP_VER=v2.0.0
+SP_VER=v2.0.2
+W3EMC_VER=v2.2.0
+W3NCO_VER=v2.0.6
+CRTM_VER=v2.0.6
+
+SFCIO_INC4  = -I/nwprod/lib/sfcio/$(SFCIO_VER)/incmod/sfcio_$(SFCIO_VER)_4
+SFCIO_LIB4  = /nwprod/lib/sfcio/$(SFCIO_VER)/libsfcio_${SFCIO_VER}_4.a
+
+NEMSIO_INC  = -I/nwprod/lib/nemsio/$(NEMSIO_VER)/incmod/nemsio_$(NEMSIO_VER)
+NEMSIO_LIB  = /nwprod/lib/nemsio/$(NEMSIO_VER)/libnemsio_$(NEMSIO_VER).a
+
+BACIO_LIB4  = /nwprod/lib/bacio/$(BACIO_VER)/libbacio_$(BACIO_VER)_4.a
+
+SIGIO_INC4  = -I/nwprod/lib/sigio/$(SIGIO_VER)/incmod/sigio_$(SIGIO_VER)_4
+SIGIO_LIB4  = /nwprod/lib/sigio/$(SIGIO_VER)/libsigio_$(SIGIO_VER)_4.a
+
+WRFPATH    = /nwprod/sorc/wrf_shared.$(WRF_VER)
+WRF_INC    = -I$(WRFPATH)/external/io_quilt -I$(WRFPATH)/frame
+WRF_LIB    = $(WRFPATH)/main/libwrflib.a  \
+             $(WRFPATH)/frame/pack_utils.o  \
+             $(WRFPATH)/frame/module_internal_header_util.o \
+             $(WRFPATH)/external/io_grib1/libio_grib1.a \
+             $(WRFPATH)/external/io_grib_share/libio_grib_share.a \
+             $(WRFPATH)/external/io_int/libwrfio_int.a \
+             $(WRFPATH)/external/io_netcdf/libwrfio_nf.a \
+             $(WRFPATH)/external/esmf_time_f90/libesmf_time.a \
+             $(WRFPATH)/external/RSL_LITE/librsl_lite.a
+
+
+G2_INC4     = -I/nwprod/lib/g2/$(G2_VER)/incmod/g2_$(G2_VER)_4
+G2TMPL_INC  = -I/nwprod/lib/g2tmpl/$(G2TMPL_VER)/incmod/g2tmpl
+G2_LIB4     = /nwprod/lib/g2/$(G2_VER)/libg2_$(G2_VER)_4.a
+G2TMPL_LIB  = /nwprod/lib/g2tmpl/$(G2TMPL_VER)/libg2tmpl.a
+JASPER_LIB  = /nwprod/lib/jasper/$(JASPER_VER)/libjasper_$(JASPER_VER).a
+PNG_LIB     = /nwprod/lib/png/$(PNG_VER)/libpng.a
+Z_LIB       = /nwprod/lib/z/$(Z_VER)/libz_$(Z_VER).a
+
+XMLPARSE_INC    = -I/nwprod/lib/xmlparse/$(XMLPARSE_VER)/incmod/xmlparse_$(XMLPARSE_VER)
+XMLPARSE_LIB    = /nwprod/lib/xmlparse/$(XMLPARSE_VER)/libxmlparse_$(XMLPARSE_VER).a
+
+GFSIO_INC4  = -I/nwprod/lib/gfsio/$(GFSIO_VER)/incmod/gfsio_$(GFSIO_VER)_4
+GFSIO_LIB4  = /nwprod/lib/gfsio/$(GFSIO_VER)/libgfsio_$(GFSIO_VER)_4.a
+
+IP_LIB4     = /nwprod/lib/ip/$(IP_VER)/libip_$(IP_VER)_4.a
+
+#SP_LIB     = /gpfs/gp1/u/James.R.Taft/NWPROD/lib/libsp_4.v0001.a
+SP_LIB4     = /nwprod/lib/sp/$(SP_VER)/libsp_$(SP_VER)_4.a
+
+W3EMC_INC4     = -I/nwprod/lib/w3emc/$(W3EMC_VER)/incmod/w3emc_$(W3EMC_VER)_4
+W3EMC_LIB4     = /nwprod/lib/w3emc/$(W3EMC_VER)/libw3emc_$(W3EMC_VER)_4.a
+W3NCO_LIB4     = /nwprod/lib/w3nco/$(W3NCO_VER)/libw3nco_$(W3NCO_VER)_4.a
+
+CRTM_INC   = -I/nwprod/lib/crtm/$(CRTM_VER)/incmod/crtm_$(CRTM_VER)
+CRTM_LIB   = /nwprod/lib/crtm/$(CRTM_VER)/libcrtm_$(CRTM_VER).a
+
+NETCDFPATH = /usrx/local/NetCDF/3.6.3
+NETCDF_LIB = $(NETCDFPATH)/lib/libnetcdf.a
+NETCDF_INC = -I$(NETCDFPATH)/include
+
+#
+# Assemble Options
+#
+FFLAGS   = $(OPTS) $(FREE) $(TRAPS) $(DEBUG) \
+           $(WRF_INC) \
+           $(XMLPARSE_INC) \
+           $(G2_INC4) \
+           $(G2TMPL_INC) \
+           $(NEMSIO_INC) \
+           $(GFSIO_INC4) \
+           $(SIGIO_INC4) \
+           $(SFCIO_INC4) \
+           $(W3EMC_INC4) \
+           $(CRTM_INC) \
+           $(NETCDF_INC)
+
+LIBS     = $(WRF_LIB) \
+           $(XMLPARSE_LIB) \
+           $(G2TMPL_LIB) \
+           $(G2_LIB4) \
+           $(JASPER_LIB) \
+           $(PNG_LIB) \
+           $(Z_LIB) \
+           $(NEMSIO_LIB) \
+           $(GFSIO_LIB4) \
+           $(SIGIO_LIB4) \
+           $(SFCIO_LIB4) \
+           $(IP_LIB) \
+           $(SP_LIB4) \
+           $(W3NCO_LIB4) \
+           $(W3EMC_LIB4) \
+           $(BACIO_LIB4) \
+           $(CRTM_LIB) \
+           $(NETCDF_LIB)
+
+
+OBJS =  wrf_io_flags.o getVariable.o getIVariable.o getIVariableN.o \
+        kinds_mod.o machine.o physcons.o \
+	native_endianness.o blockIO.o initialize_byte_swap_wrf_binary_file.o \
+        count_recs_wrf_binary_file.o inventory_wrf_binary_file.o \
+        next_buf.o retrieve_index.o ZENSUN.o CLDFRAC_ZHAO.o \
+        GFSPOST.o GETGBANDSCATTER.o \
+        VRBLS2D_mod.o VRBLS3D_mod.o VRBLS4D_mod.o MASKS_mod.o PMICRPH.o SOIL_mod.o \
+        CMASSI.o CTLBLK.o GRIDSPEC.o LOOKUP.o PARAMR.o RHGRD.o RQSTFLD.o xml_perl_data.o \
+        cuparm.o params.o svptbl.o get_postfilename.o grib2_module.o \
+        SET_LVLSXML.o FILL_PSETFLD.o \
+        BNDLYR.o BOUND.o CALCAPE.o CALDWP.o CALDRG.o CALHEL.o CALLCL.o \
+        CALMCVG.o CALPOT.o CALPW.o CALRH.o CALRCH.o CALRH_GSD.o \
+        CALSTRM.o CALTAU.o CALTHTE.o CALVIS.o CALVIS_GSD.o CALVOR.o CALWXT.o \
+        CALWXT_RAMER.o CALWXT_BOURG.o CALWXT_REVISED.o CALRH_PW.o \
+        CALWXT_EXPLICIT.o CALWXT_DOMINANT.o \
+        CLDRAD.o CLMAX.o COLLECT.o COLLECT_LOC.o DEWPOINT.o \
+        FDLVL.o FGAMMA.o FIXED.o FRZLVL.o FRZLVL2.o \
+        GET_BITS.o GRIBIT.o INITPOST.o LFMFLD.o \
+        MAPSSLP.o MISCLN.o MIXLEN.o MDL2P.o MDLFLD.o MPI_FIRST.o MPI_LAST.o \
+        NGMFLD.o NGMSLP.o OTLFT.o OTLIFT.o SLP_new.o SLP_NMM.o EXCH.o \
+        PARA_RANGE.o PROCESS.o INITPOST_NMM.o EXCH2.o \
+        READCNTRL.o READ_xml.o SET_OUTFLDS.o SCLFLD.o SERVER.o SETUP_SERVERS.o \
+        SMOOTH.o SURFCE.o \
+        SPLINE.o TABLE.o TABLEQ.o TRPAUS.o TTBLEX.o WETBULB.o WRFPOST.o \
+        CALMICT.o MICROINIT.o GPVS.o MDL2SIGMA.o \
+        ETCALC.o CANRES.o CALGUST.o WETFRZLVL.o SNFRAC.o MDL2AGL.o SNFRAC_GFS.o \
+        AVIATION.o DEALLOCATE.o INITPOST_NMM_BIN_MPIIO.o \
+        CALPBL.o MDL2SIGMA2.o INITPOST_GFS.o CALRH_GFS.o LFMFLD_GFS.o \
+        CALRAD_WCLOUD_newcrtm.o MDL2THANDPV.o CALPBLREGIME.o POLEAVG.o \
+        INITPOST_NEMS.o GETNEMSNDSCATTER.o ICAOHEIGHT.o INITPOST_GFS_NEMS.o \
+        INITPOST_BIN_MPIIO.o GEO_ZENITH_ANGLE.o GFIP3.o GRIDAVG.o CALUPDHEL.o INITPOST_GFS_SIGIO.o \
+	gtg_config.o gtg_filter.o gtg_trophts.o gtg_itfa.o gtg_indices.o \
+        AllGETHERV_GSD.o MSFPS.o SELECT_CHANNELS.o ALLOCATE_ALL.o INITPOST_NEMS_MPIIO.o ASSIGNNEMSIOVAR.o \
+        INITPOST_GFS_NEMS_MPIIO.o 
+
+
+.SUFFIXES: .F .f .o .f90 .c
+
+.F.f:
+	$(CPP) $(CPPFLAGS) $< > $*.f
+
+$(TARGET): $(OBJS)
+	$(FC) -openmp -o $@ $(OBJST) $(OBJS) $(LIBS)
+
+.f.o:
+	$(FC) $(FFLAGS) -c $<
+
+.f90.o:
+	$(FC) $(FFLAGS) -c $<
+
+.c.o :
+	${CC} ${CFLAGS} -c $<
+
+
+clean:
+	/bin/rm -f  *.lst *.o *.mod
+#	/bin/rm -f  $(TARGET) *.lst *.o *.mod

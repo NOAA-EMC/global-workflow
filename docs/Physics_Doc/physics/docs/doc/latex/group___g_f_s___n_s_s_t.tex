@@ -1,0 +1,44 @@
+\hypertarget{group___g_f_s___n_s_s_t}{}\section{G\+FS Near Sea Surface Temperature}
+\label{group___g_f_s___n_s_s_t}\index{G\+F\+S Near Sea Surface Temperature@{G\+F\+S Near Sea Surface Temperature}}
+
+
+Brief description of the parameterization.  
+
+
+
+
+\subsection{Detailed Description}
+\hypertarget{group___g_f_s___n_s_s_t_diagram}{}\subsection{Calling Hierarchy Diagram}\label{group___g_f_s___n_s_s_t_diagram}
+\hypertarget{group___g_f_s___n_s_s_t_intraphysics}{}\subsection{Intraphysics Communication}\label{group___g_f_s___n_s_s_t_intraphysics}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___g_f_s___n_s_s_t_gaed7d47bed74095e3d9fb0c30814ffa63}{sfc\+\_\+nst} (im, km, ps, u1, v1, t1, q1, tref, cm, ch, prsl1, prslki, islimsk, xlon, sinlat, stress, sfcemis, dlwflx, sfcnsw, rain, timestep, kdt, solhr, xcosz, ddvel, flag\+\_\+iter, flag\+\_\+guess, nstf\+\_\+name, lprnt, ipr, tskin, tsurf, xt, xs, xu, xv, xz, zm, xtts, xzts, dt\+\_\+cool, z\+\_\+c, c\+\_\+0, c\+\_\+d, w\+\_\+0, w\+\_\+d, d\+\_\+conv, ifd, qrain, qsurf, gflux, cmm, chh, evap, hflx, ep)
+\begin{DoxyCompactList}\small\item\em Brief description of the subroutine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group___g_f_s___n_s_s_t_gaed7d47bed74095e3d9fb0c30814ffa63}\label{group___g_f_s___n_s_s_t_gaed7d47bed74095e3d9fb0c30814ffa63}} 
+\index{G\+F\+S Near Sea Surface Temperature@{G\+F\+S Near Sea Surface Temperature}!sfc\+\_\+nst@{sfc\+\_\+nst}}
+\index{sfc\+\_\+nst@{sfc\+\_\+nst}!G\+F\+S Near Sea Surface Temperature@{G\+F\+S Near Sea Surface Temperature}}
+\subsubsection{\texorpdfstring{sfc\+\_\+nst()}{sfc\_nst()}}
+{\footnotesize\ttfamily subroutine sfc\+\_\+nst (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{im,  }\item[{integer, intent(in)}]{km,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ps,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{u1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{v1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{t1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{q1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{tref,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{cm,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ch,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{prsl1,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{prslki,  }\item[{integer, dimension(im), intent(in)}]{islimsk,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sinlat,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{stress,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sfcemis,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{dlwflx,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{sfcnsw,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{rain,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{timestep,  }\item[{integer, intent(in)}]{kdt,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{solhr,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{xcosz,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(in)}]{ddvel,  }\item[{logical, dimension(im), intent(in)}]{flag\+\_\+iter,  }\item[{logical, dimension(im), intent(in)}]{flag\+\_\+guess,  }\item[{integer, dimension(5), intent(in)}]{nstf\+\_\+name,  }\item[{logical, intent(in)}]{lprnt,  }\item[{integer, intent(in)}]{ipr,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{tskin,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{tsurf,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xt,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xs,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xu,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xv,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xz,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{zm,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xtts,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{xzts,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{dt\+\_\+cool,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{z\+\_\+c,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{c\+\_\+0,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{c\+\_\+d,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{w\+\_\+0,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{w\+\_\+d,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{d\+\_\+conv,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{ifd,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(inout)}]{qrain,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{qsurf,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{gflux,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{cmm,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{chh,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{evap,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{hflx,  }\item[{real (kind=kind\+\_\+phys), dimension(im), intent(out)}]{ep }\end{DoxyParamCaption})}
+
+\hypertarget{group___g_f_s___n_s_s_t_arg_table_NSST_run}{}\subsection{Arguments}\label{group___g_f_s___n_s_s_t_arg_table_NSST_run}
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{9}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endhead
+im &horizontal\+\_\+loop\+\_\+extent &horizontal loop extent, start at 1 &index &0 &integer &&in &F \\\cline{1-9}
+\end{longtabu}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+\hypertarget{group___g_f_s___n_s_s_t_detailed}{}\subsection{Detailed Algorithm}\label{group___g_f_s___n_s_s_t_detailed}
+
+
+Definition at line 34 of file sfc\+\_\+nst.\+f.
+

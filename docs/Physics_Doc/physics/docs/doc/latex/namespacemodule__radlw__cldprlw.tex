@@ -1,0 +1,37 @@
+\hypertarget{namespacemodule__radlw__cldprlw}{}\section{module\+\_\+radlw\+\_\+cldprlw Module Reference}
+\label{namespacemodule__radlw__cldprlw}\index{module\+\_\+radlw\+\_\+cldprlw@{module\+\_\+radlw\+\_\+cldprlw}}
+
+
+This module contains cloud property coefficients.  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a9e8ebd81d5d62c2be4c006a595493aed}\label{namespacemodule__radlw__cldprlw_a9e8ebd81d5d62c2be4c006a595493aed}} 
+integer, dimension(nbands) \hyperlink{namespacemodule__radlw__cldprlw_a9e8ebd81d5d62c2be4c006a595493aed}{ipat}
+\begin{DoxyCompactList}\small\item\em ipat is bands index for ebert\&curry ice cloud (for iflagice=1) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a04bff194fec27e0586ab1b4770319882}\label{namespacemodule__radlw__cldprlw_a04bff194fec27e0586ab1b4770319882}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{namespacemodule__radlw__cldprlw_a04bff194fec27e0586ab1b4770319882}{absrain} = 0.\+33e-\/3
+\begin{DoxyCompactList}\small\item\em absrain is the rain drop absorption coefficient $(m^{2}/g)$ . \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a4bcd58c6a7e9abdfbb8f8ec7d925d143}\label{namespacemodule__radlw__cldprlw_a4bcd58c6a7e9abdfbb8f8ec7d925d143}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{namespacemodule__radlw__cldprlw_a4bcd58c6a7e9abdfbb8f8ec7d925d143}{abssnow0} = 1.\+5
+\begin{DoxyCompactList}\small\item\em abssnow0 is the snow flake absorption coefficient (micron), fu coeff \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a7d12b328d9dec0c525a4b0824ae7ab44}\label{namespacemodule__radlw__cldprlw_a7d12b328d9dec0c525a4b0824ae7ab44}} 
+real(kind=kind\+\_\+phys), parameter \hyperlink{namespacemodule__radlw__cldprlw_a7d12b328d9dec0c525a4b0824ae7ab44}{abssnow1} = 2.\+34e-\/3
+\begin{DoxyCompactList}\small\item\em abssnow1 is the snow flake absorption coefficient $(m^{2}/g)$, ncar coeff \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a57896538226e9184c3750440d9f62166}\label{namespacemodule__radlw__cldprlw_a57896538226e9184c3750440d9f62166}} 
+real(kind=kind\+\_\+phys), dimension(58, nbands) \hyperlink{namespacemodule__radlw__cldprlw_a57896538226e9184c3750440d9f62166}{absliq1}
+\begin{DoxyCompactList}\small\item\em Hu and Stamnes method \cite{hu_and_stamnes_1993} . the liquid water absorption coefficients are listed for a range of effective radii from 2.\+5 to 59.\+5 microns in increments of 1.\+0 micron. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a6610d37cab9ccd4de89237c5de536cfb}\label{namespacemodule__radlw__cldprlw_a6610d37cab9ccd4de89237c5de536cfb}} 
+real(kind=kind\+\_\+phys), dimension(2) \hyperlink{namespacemodule__radlw__cldprlw_a6610d37cab9ccd4de89237c5de536cfb}{absice0}
+\begin{DoxyCompactList}\small\item\em for iflagice = 2 or 3, absice0 are the ice water absorption coefficients used for large ice partical size such as refice $>$ 131 microns. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a3b86ff9d6791d95170d3b3ab61cd8291}\label{namespacemodule__radlw__cldprlw_a3b86ff9d6791d95170d3b3ab61cd8291}} 
+real(kind=kind\+\_\+phys), dimension(2, 5) \hyperlink{namespacemodule__radlw__cldprlw_a3b86ff9d6791d95170d3b3ab61cd8291}{absice1}
+\begin{DoxyCompactList}\small\item\em for iflagice = 1, absice1 are the ice water absorption coefficients used for ebert and curry method \cite{ebert_and_curry_1992} . \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_ad2238686c0e6d1c5d74bcfdde1542e1d}\label{namespacemodule__radlw__cldprlw_ad2238686c0e6d1c5d74bcfdde1542e1d}} 
+real(kind=kind\+\_\+phys), dimension(43, nbands) \hyperlink{namespacemodule__radlw__cldprlw_ad2238686c0e6d1c5d74bcfdde1542e1d}{absice2}
+\begin{DoxyCompactList}\small\item\em for iflagice =2, absice2 are the ice water absorption coefficients used for streamer method. the absorption coefficients are listed for a range of effective radii from 5.\+0 to 131.\+0 microns in increments of 3.\+0 microns. spherical ice particle parameterization absorption units (abs coef/iwc)\+: $\frac{m^{-1}}{gm^{-3}}$ \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__cldprlw_a3aa04541d0b809367f88ef8aa0eafdbb}\label{namespacemodule__radlw__cldprlw_a3aa04541d0b809367f88ef8aa0eafdbb}} 
+real(kind=kind\+\_\+phys), dimension(46, nbands) \hyperlink{namespacemodule__radlw__cldprlw_a3aa04541d0b809367f88ef8aa0eafdbb}{absice3}
+\begin{DoxyCompactList}\small\item\em for iflagice = 3, absice3 are the ice water absorption coefficients used for fu parameterization. particle size 5 -\/ 140 micron in increments of 3 microns. units = m2/g. hexagonal ice particle parameterization absorption units (abs coef/iwc)\+: $\frac{m^{-1}}{gm^{-3}}$ \end{DoxyCompactList}\end{DoxyCompactItemize}

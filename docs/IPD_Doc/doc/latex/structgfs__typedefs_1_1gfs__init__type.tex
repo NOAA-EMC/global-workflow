@@ -1,0 +1,440 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+init\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__init__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+init\+\_\+type\+:
+% FIG 0
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+integer \textbf{ me}
+\begin{DoxyCompactList}\small\item\em my M\+P\+I-\/rank \end{DoxyCompactList}\item 
+integer \textbf{ master}
+\begin{DoxyCompactList}\small\item\em master M\+P\+I-\/rank \end{DoxyCompactList}\item 
+integer \textbf{ isc}
+\begin{DoxyCompactList}\small\item\em starting i-\/index for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ jsc}
+\begin{DoxyCompactList}\small\item\em starting j-\/index for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ nx}
+\begin{DoxyCompactList}\small\item\em number of points in i-\/dir for this M\+PI rank \end{DoxyCompactList}\item 
+integer \textbf{ ny}
+\begin{DoxyCompactList}\small\item\em number of points in j-\/dir for this M\+PI rank \end{DoxyCompactList}\item 
+integer \textbf{ levs}
+\begin{DoxyCompactList}\small\item\em number of vertical levels \end{DoxyCompactList}\item 
+integer \textbf{ cnx}
+\begin{DoxyCompactList}\small\item\em number of points in i-\/dir for this cubed-\/sphere face equal to gnx for lat-\/lon grids \end{DoxyCompactList}\item 
+integer \textbf{ cny}
+\begin{DoxyCompactList}\small\item\em number of points in j-\/dir for this cubed-\/sphere face equal to gny$\ast$2 for lat-\/lon grids \end{DoxyCompactList}\item 
+integer \textbf{ gnx}
+\begin{DoxyCompactList}\small\item\em number of global points in x-\/dir (i) along the equator \end{DoxyCompactList}\item 
+integer \textbf{ gny}
+\begin{DoxyCompactList}\small\item\em number of global points in y-\/dir (j) along any meridian \end{DoxyCompactList}\item 
+integer \textbf{ nlunit}
+\begin{DoxyCompactList}\small\item\em fortran unit number for file opens \end{DoxyCompactList}\item 
+integer \textbf{ logunit}
+\begin{DoxyCompactList}\small\item\em fortran unit number for writing logfile \end{DoxyCompactList}\item 
+integer, dimension(8) \textbf{ bdat}
+\begin{DoxyCompactList}\small\item\em model begin date in G\+FS format (same as idat) \end{DoxyCompactList}\item 
+integer, dimension(8) \textbf{ cdat}
+\begin{DoxyCompactList}\small\item\em model current date in G\+FS format (same as jdat) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ dt\+\_\+dycore}
+\begin{DoxyCompactList}\small\item\em dynamics time step in seconds \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ dt\+\_\+phys}
+\begin{DoxyCompactList}\small\item\em physics time step in seconds \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ blksz}
+\begin{DoxyCompactList}\small\item\em for explicit data blocking default blksz(1)=[nx$\ast$ny] \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ak}
+\begin{DoxyCompactList}\small\item\em from surface (k=1) to T\+OA (k=levs) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ bk}
+\begin{DoxyCompactList}\small\item\em from surface (k=1) to T\+OA (k=levs) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ xlon}
+\begin{DoxyCompactList}\small\item\em column longitude for M\+PI rank \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ xlat}
+\begin{DoxyCompactList}\small\item\em column latitude for M\+PI rank \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ area}
+\begin{DoxyCompactList}\small\item\em column area for length scale calculations \end{DoxyCompactList}\item 
+character(len=32), dimension(\+:), pointer \textbf{ tracer\+\_\+names}
+\begin{DoxyCompactList}\small\item\em tracers names to dereference tracer id based on name location in array \end{DoxyCompactList}\item 
+character(len=65) \textbf{ fn\+\_\+nml}
+\begin{DoxyCompactList}\small\item\em namelist filename \end{DoxyCompactList}\item 
+character(len=256), dimension(\+:), pointer \textbf{ input\+\_\+nml\+\_\+file}
+\begin{DoxyCompactList}\small\item\em character string containing full namelist for use with internal file reads \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 49 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_af9faadadefb00562b5cc2df2b580476e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!me@{me}}
+\index{me@{me}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{me}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::me}
+
+
+
+my M\+P\+I-\/rank 
+
+
+
+Definition at line 50 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a62cf2cdb7947cb3c3834182cee398120}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!master@{master}}
+\index{master@{master}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{master}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::master}
+
+
+
+master M\+P\+I-\/rank 
+
+
+
+Definition at line 51 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a1e9a13d50f826493a741082f278838b1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!isc@{isc}}
+\index{isc@{isc}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{isc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::isc}
+
+
+
+starting i-\/index for this M\+P\+I-\/domain 
+
+
+
+Definition at line 52 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_af98085b9e9e94f258b2a4d141533def7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!jsc@{jsc}}
+\index{jsc@{jsc}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{jsc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::jsc}
+
+
+
+starting j-\/index for this M\+P\+I-\/domain 
+
+
+
+Definition at line 53 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_aca3dd8add3fe4c767b02252e22445f24}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!nx@{nx}}
+\index{nx@{nx}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{nx}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::nx}
+
+
+
+number of points in i-\/dir for this M\+PI rank 
+
+
+
+Definition at line 54 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a11eea62e0169348fbe573c4441ab7665}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!ny@{ny}}
+\index{ny@{ny}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{ny}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::ny}
+
+
+
+number of points in j-\/dir for this M\+PI rank 
+
+
+
+Definition at line 55 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_ad5788ad2561bdf0bd54d386e7dc967cc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!levs@{levs}}
+\index{levs@{levs}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{levs}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::levs}
+
+
+
+number of vertical levels 
+
+
+
+Definition at line 56 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_aae98d6cdff38883148f556601523acf2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!cnx@{cnx}}
+\index{cnx@{cnx}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{cnx}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::cnx}
+
+
+
+number of points in i-\/dir for this cubed-\/sphere face equal to gnx for lat-\/lon grids 
+
+
+
+Definition at line 57 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a80369546bbf4e44ea5d5ca7e21ef909c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!cny@{cny}}
+\index{cny@{cny}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{cny}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::cny}
+
+
+
+number of points in j-\/dir for this cubed-\/sphere face equal to gny$\ast$2 for lat-\/lon grids 
+
+
+
+Definition at line 59 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a32b73ea4f44c3198ab7ff182e6add889}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!gnx@{gnx}}
+\index{gnx@{gnx}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{gnx}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::gnx}
+
+
+
+number of global points in x-\/dir (i) along the equator 
+
+
+
+Definition at line 61 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_adf8f5e3f24e2adb2034ddee6205f0f64}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!gny@{gny}}
+\index{gny@{gny}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{gny}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::gny}
+
+
+
+number of global points in y-\/dir (j) along any meridian 
+
+
+
+Definition at line 62 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_ad0b005440fb988b4840957e2251750f8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!nlunit@{nlunit}}
+\index{nlunit@{nlunit}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{nlunit}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::nlunit}
+
+
+
+fortran unit number for file opens 
+
+
+
+Definition at line 63 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a093c18d37849d55c4ad5364611511980}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!logunit@{logunit}}
+\index{logunit@{logunit}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{logunit}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::logunit}
+
+
+
+fortran unit number for writing logfile 
+
+
+
+Definition at line 64 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a04d31080068c1cdf6dde7391bc3c622d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!bdat@{bdat}}
+\index{bdat@{bdat}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{bdat}
+{\footnotesize\ttfamily integer, dimension(8) gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::bdat}
+
+
+
+model begin date in G\+FS format (same as idat) 
+
+
+
+Definition at line 65 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a83c3e8f12ee78db9e6e7f15c3fb5ab89}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!cdat@{cdat}}
+\index{cdat@{cdat}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{cdat}
+{\footnotesize\ttfamily integer, dimension(8) gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::cdat}
+
+
+
+model current date in G\+FS format (same as jdat) 
+
+
+
+Definition at line 66 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_adf0b3a0475fe8e9db1d734c6f129b84a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!dt\+\_\+dycore@{dt\+\_\+dycore}}
+\index{dt\+\_\+dycore@{dt\+\_\+dycore}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{dt\+\_\+dycore}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::dt\+\_\+dycore}
+
+
+
+dynamics time step in seconds 
+
+
+
+Definition at line 67 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a988e155b5aef17af3a747b53cdc2e65c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!dt\+\_\+phys@{dt\+\_\+phys}}
+\index{dt\+\_\+phys@{dt\+\_\+phys}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{dt\+\_\+phys}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::dt\+\_\+phys}
+
+
+
+physics time step in seconds 
+
+
+
+Definition at line 68 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_ab75da119a35eb92cadf2621a761393cc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!blksz@{blksz}}
+\index{blksz@{blksz}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{blksz}
+{\footnotesize\ttfamily integer, dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::blksz}
+
+
+
+for explicit data blocking default blksz(1)=[nx$\ast$ny] 
+
+
+
+Definition at line 70 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a15e2ce352e7e5f92f9b4c0f29f8b2d3f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!ak@{ak}}
+\index{ak@{ak}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{ak}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::ak}
+
+
+
+from surface (k=1) to T\+OA (k=levs) 
+
+
+
+Definition at line 73 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_ac65baae59281ccf2859c6e9e9e66071c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!bk@{bk}}
+\index{bk@{bk}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{bk}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::bk}
+
+
+
+from surface (k=1) to T\+OA (k=levs) 
+
+
+
+Definition at line 74 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a9a4ed14b3045a717322f0bf36167c0aa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!xlon@{xlon}}
+\index{xlon@{xlon}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{xlon}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::xlon}
+
+
+
+column longitude for M\+PI rank 
+
+
+
+Definition at line 76 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a1e78583f739284671882bd9602597a20}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!xlat@{xlat}}
+\index{xlat@{xlat}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{xlat}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::xlat}
+
+
+
+column latitude for M\+PI rank 
+
+
+
+Definition at line 77 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a0dab9957f42cce9ac02a14e672e9fa04}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!area@{area}}
+\index{area@{area}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{area}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::area}
+
+
+
+column area for length scale calculations 
+
+
+
+Definition at line 78 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a5046f201549e140f544af95a0b09426b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!tracer\+\_\+names@{tracer\+\_\+names}}
+\index{tracer\+\_\+names@{tracer\+\_\+names}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{tracer\+\_\+names}
+{\footnotesize\ttfamily character(len=32), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::tracer\+\_\+names}
+
+
+
+tracers names to dereference tracer id based on name location in array 
+
+
+
+Definition at line 80 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_aedbf134446e4f6082b462e2c2a7beb26}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!fn\+\_\+nml@{fn\+\_\+nml}}
+\index{fn\+\_\+nml@{fn\+\_\+nml}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{fn\+\_\+nml}
+{\footnotesize\ttfamily character(len=65) gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::fn\+\_\+nml}
+
+
+
+namelist filename 
+
+
+
+Definition at line 82 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__init__type_a459c0cf6fb901a408429e941cc6be209}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}!input\+\_\+nml\+\_\+file@{input\+\_\+nml\+\_\+file}}
+\index{input\+\_\+nml\+\_\+file@{input\+\_\+nml\+\_\+file}!gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}}
+\subsubsection{input\+\_\+nml\+\_\+file}
+{\footnotesize\ttfamily character(len=256), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type\+::input\+\_\+nml\+\_\+file}
+
+
+
+character string containing full namelist for use with internal file reads 
+
+
+
+Definition at line 83 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

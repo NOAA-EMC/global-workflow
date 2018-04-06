@@ -1,0 +1,51 @@
+\hypertarget{namespacemodule__radlw__kgb08}{}\section{module\+\_\+radlw\+\_\+kgb08 Module Reference}
+\label{namespacemodule__radlw__kgb08}\index{module\+\_\+radlw\+\_\+kgb08@{module\+\_\+radlw\+\_\+kgb08}}
+
+
+This module sets up absorption coefficients for band 08\+: 1080-\/1180 cm-\/1 (low -\/ h2o; high -\/ o3)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__kgb08_a74e4bd8f4b00d0ff6bae1a39d9bddd3b}\label{namespacemodule__radlw__kgb08_a74e4bd8f4b00d0ff6bae1a39d9bddd3b}} 
+integer, public \hyperlink{namespacemodule__radlw__kgb08_a74e4bd8f4b00d0ff6bae1a39d9bddd3b}{msa08}
+\begin{DoxyCompactList}\small\item\em msa08=65 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ minor gas mapping level\+:}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga3dd391fcce47d3aca3512bbfd946807b}{msb08}
+\begin{DoxyCompactList}\small\item\em msb08=235 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga7db22d5a0ece1b1f10cbf64ae1181a09}{msf08}
+\begin{DoxyCompactList}\small\item\em msf08=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gabfaf0cad62f8ae42564f8127198d48f0}{mfr08}
+\begin{DoxyCompactList}\small\item\em mfr08=4 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}
+\begin{DoxyCompactList}\small\item\em mmc08=19 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_gabfaf0cad62f8ae42564f8127198d48f0}{mfr08}), public \hyperlink{group__module__radlw__kgbnn_ga8427ec5170f6a61a008a8580be6fe5ec}{forref}
+\begin{DoxyCompactList}\small\item\em the array forref contains the coefficient of the water vapor foreign-\/continuum (including the energy term). the first index refers to reference temperature (296,260,224,260) and pressure (970,475,219,3 mbar) levels. the second index runs over the g-\/channel (1 to N\+G08=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{namespacemodule__radlw__kgb08_a74e4bd8f4b00d0ff6bae1a39d9bddd3b}{msa08}), public \hyperlink{group__module__radlw__kgbnn_gaba1018958264bbc6fbf7f190fea91fa5}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(\+N\+G08,65) = ka(\+N\+G08,5,13) contains absorption coefs at the N\+G08=8 g-\/intervals for a range of pressure levels $>$ $\sim$100mb, temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the second index, jp, runs from 1 to 13 and refers to the corresponding pressure level in pref (e.\+g. jp = 1 is for a pressure of 1053.\+63 mb). the third index, ig, goes from 1 to N\+G08=8, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga3dd391fcce47d3aca3512bbfd946807b}{msb08}), public \hyperlink{group__module__radlw__kgbnn_ga23d4352fcafb0394d723e2f080a84ece}{absb}
+\begin{DoxyCompactList}\small\item\em the array absb(\+N\+G08,235) = kb(\+N\+G08,5,13\+:59) contains absorption coefs at the N\+G08=8 chosen g-\/values for a range of pressure levels $<$ $\sim$100mb and temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the second index, jp, runs from 13 to 59 and refers to the jpth reference pressure level (see taumol.\+f for the value of these pressure levels in mb). the third index, ig, goes from 1 to N\+G08=8, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga7db22d5a0ece1b1f10cbf64ae1181a09}{msf08}), public \hyperlink{group__module__radlw__kgbnn_ga2c38561d26f86f7ae515b433843c4e5d}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to N\+G08=8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08), public \hyperlink{group__module__radlw__kgbnn_gad1a59ffb362cd72537df9c1916c07621}{fracrefa}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p=473.\+4280 mb, t = 259.\+83 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08), public \hyperlink{group__module__radlw__kgbnn_ga0ae7e4c01034a2b95c03b041537b962e}{fracrefb}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p=95.\+5835 mb, t= 215.\+7 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}), public \hyperlink{group__module__radlw__kgbnn_ga7dec65e880c278f44419c1ae01490eae}{ka\+\_\+mo3}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:lower -\/ o3, p = 317.\+348 mb, t = 240.\+77 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}), public \hyperlink{group__module__radlw__kgbnn_ga0fcd13503b3253ec6aab0aa52056f634}{ka\+\_\+mco2}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:lower -\/ co2, p = 1053.\+63 mb, t = 294.\+2 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}), public \hyperlink{group__module__radlw__kgbnn_ga9a85770aee1b88b9323d9466c1772ec4}{kb\+\_\+mco2}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:upper -\/ co2, p = 35.\+1632 mb, t = 223.\+28 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08), public \hyperlink{group__module__radlw__kgbnn_ga010239f14788bc1ed9953133e30a62fd}{cfc12}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:lower -\/ cfc12 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}), public \hyperlink{group__module__radlw__kgbnn_ga61949dc331e9a58d4f2a31b625481795}{ka\+\_\+mn2o}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:lower -\/ n2o, p = 706.\+2720 mb, t= 278.\+94 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08, \hyperlink{group__module__radlw__kgbnn_ga9e3bfc1880221c18fa07817eb62bcc47}{mmc08}), public \hyperlink{group__module__radlw__kgbnn_ga9a8e2f789421acc307e37b03478efb4b}{kb\+\_\+mn2o}
+\begin{DoxyCompactList}\small\item\em minor gas mapping level\+:upper -\/ n2o, p = 8.\+716e-\/2 mb, t = 226.\+03 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng08), public \hyperlink{group__module__radlw__kgbnn_ga38a3ce7d8f3db6b732511cf78ef735db}{cfc22adj}
+\begin{DoxyCompactList}\small\item\em original cfc22 is multiplied by 1.\+485 to account for the 780-\/850 cm-\/1 and 1290-\/1335 cm-\/1 bands. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}

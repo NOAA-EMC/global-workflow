@@ -446,7 +446,13 @@ def make_rocoto_xml_for(yamldir):
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
 
 def setup_case_usage(why=None):
-    print('fixme: usage message here')
+    sys.stderr.write(f'''USAGE: setup_case.py CASE_NAME EXPERIMENT_NAME\n
+  CASE_NAME: a case name from the cases/ directory
+
+  EXPERIMENT_NAME: your name for this execution.  This string is used to
+    decide where to put temporary and result files from the simulation.
+    This must be alphanumeric and begin with a letter.\n''')
+    if why: sys.stderr.write(f'\nSCRIPT IS ABORTING: {why}\n')
     exit(1)
 
 def setup_case(command_line_arguments):

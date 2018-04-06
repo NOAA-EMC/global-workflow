@@ -1,0 +1,20 @@
+#! /bin/sh
+
+if [ $# -ne 4 ]; then
+   >&2 echo "WARNING: dbn_alert was not given four arguments! Only $# were provided."
+fi
+echo FAKE dbn_alert $*
+
+if [ "${DBNLOG^^}" == "YES" ]; then
+   log_file=${COMOUT:-${COMROOT:?}/output/${envir:?}/today}/${job:?}.${PDY}${cyc}.dbnlog
+   echo [$(date +%T)] $* >> $log_file
+fi
+
+if [ ! -s $4 ]; then
+   if [ -f $4 ]; then
+      >&2 echo "WARNING: $4 is empty (it has a size of zero bytes)"
+   else
+      err_exit "Fake dbn_alert could not find $4"
+   fi
+fi
+

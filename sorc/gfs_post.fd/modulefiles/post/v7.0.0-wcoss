@@ -1,0 +1,44 @@
+#%Module######################################################################
+#############################################################
+## Lin.Gan@noaa.gov
+## EMC
+## post v7.0.0 
+#############################################################
+proc ModulesHelp { } {
+puts stderr "Set environment veriables for post"
+puts stderr "This module initializes the users environment"
+puts stderr "to build the post for WCOSS production.\n"
+}
+module-whatis "post"
+
+set ver v7.0.0
+
+# Loading Intel Compiler Suite
+module load ics/15.0.3
+module load ibmpe/1.3.0.12
+
+# Loding nceplibs modules
+module load sigio/v2.0.1
+module load jasper/v1.900.1
+module load png/v1.2.44
+module load z/v1.2.6
+module load sfcio/v1.0.0
+module load nemsio/v2.2.2
+module load bacio/v2.0.1
+module load g2/v3.1.0
+module load xmlparse/v2.0.0
+module load gfsio/v1.1.0
+module load ip/v2.0.0
+module load sp/v2.0.2
+module load w3emc/v2.2.0
+module load w3nco/v2.0.6
+# module load crtm/v2.2.3
+module load crtm/v2.0.6
+module load NetCDF/3.6.3
+module load g2tmpl/v1.5.0
+
+setenv WRFPATH /nwprod/sorc/wrf_shared.v1.1.0 
+setenv myFC mpiifort 
+setenv myFCFLAGS "-O3 -convert big_endian -traceback -g -fp-model source -openmp"
+setenv myCPP /lib/cpp 
+setenv myCPPFLAGS "-P"

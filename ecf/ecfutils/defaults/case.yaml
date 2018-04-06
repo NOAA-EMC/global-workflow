@@ -1,3 +1,8 @@
+# This file has the top-level logic to merge other YAML data
+# structures into the document-level settings.  It merges the contents
+# of the case files, default files, platform file, and everywhere
+# else, and applies any validation from the schema/ directory.
+
 fv3_settings: !MergeMapping
   - !calc doc.case.fv3_settings
   - CDUMP: gfs

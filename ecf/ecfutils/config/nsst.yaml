@@ -1,3 +1,7 @@
+# This file is used to generate config.nsst, which would be used to
+# control NSST settings.  Specifically, it controls the nstf_name
+# option in the gfs physics namelist (&gfs_physics_nml)
+
 config_nsst:
   filename: config.nsst
   nst_spinup_logic: !FirstTrue

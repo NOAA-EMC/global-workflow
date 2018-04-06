@@ -1,0 +1,64 @@
+!Program Main
+!REAL(8), DIMENSION(14,14) :: Sto_Coef
+!DO k=1,10
+! Print *, 'k=',k
+!CALL Cal_Sto_Coef(15, k, Sto_Coef)
+!DO j=1,14
+! Write (*,'(1x,14f10.5)') (Sto_Coef(i,j),i=1,14)
+!ENDDO
+!ENDDO
+!STOP
+!END
+!Subroutine Cal_Sto_Coef(Total_member, Cpl_Run_Calling_Number, Sto_Coef,year,mm,dd,hh,fhr,eps0,nr0,eps,nr)
+ Subroutine Cal_Sto_Coef(Total_member, t1, t2, delt, Sto_Coef,year,mm,dd,hh,fhr,eps0,nr0,eps,nr)
+
+! This subroutine is used to compute the stochastic coefficients
+! used to combine the tendency perturbation to generate the 
+! stochastic forcing for each ensemble member 
+!-------------------------------------------------------------
+
+ USE pran 
+ USE peuc
+ USE prana
+
+ implicit none
+ INTEGER                                                             :: Total_member
+!INTEGER                                                             :: Cpl_Run_Calling_Number
+ INTEGER                 :: t,t1,t2, delt
+ REAL(8), DIMENSION(Total_member - 1, Total_member - 1) :: Sto_Coef
+!REAL(KIND=KIND_EVOD), DIMENSION(Total_member - 1, Total_member - 1) :: Sto_Coef
+!REAL(KIND=KIND_EVOD), DIMENSION(Total_member - 1)                   :: rp
+
+ INTEGER                 :: i0
+ INTEGER                 :: n, nt
+ INTEGER                 :: iseed0, iseed2
+ INTEGER                 :: iseed1(1:2)
+!INTEGER                 :: iseed3(1:2),iseed4(1:2)
+!INTEGER                 :: year,mm,dd,hh,nth,fhr,delt,fflag
+ INTEGER                 :: year,mm,dd,hh,nth,fhr,fflag
+!year-Year,mm=month,dd=day,hh=hour,fhr=forecast_hour
+ INTEGER                 :: i,j,k
+ INTEGER                 :: ksize,nrank,r,t0,iunit,nr0,nr
+ REAL(8)                 :: x,eps0,eps,g
+ INTEGER                 :: yyc,mmc,ddc,hhc,fhrc,yyi,mmi,ddi,hhi
+
+! Working arrays.
+!----------------
+ REAL(8), DIMENSION(Total_member-1,Total_member-1) :: a,b,c,d,e,ident,b0
+!REAL(KIND=KIND_EVOD), DIMENSION(Total_member - 1, Total_member - 1) :: work1
+!REAL(KIND=KIND_EVOD), DIMENSION(Total_member - 1, Total_member - 1) :: work2
+
+ END SUBROUTINE Cal_Sto_Coef
+
+      SUBROUTINE CURRDATE(yy,mm,dd,hh,fhr,yyc,mmc,ddc,hhc)
+      integer yy,mm,dd,hh,fhr,yyc,mmc,ddc,hhc
+      integer ndpm(12),mdpm,fhrd,fhrh,itest
+
+      end
+
+      SUBROUTINE INITDATE(yy,mm,dd,hh,fhr,yyi,mmi,ddi,hhi)
+      integer yy,mm,dd,hh,fhr,yyi,mmi,ddi,hhi
+      integer ndpm(12),mdpm,fhrd,fhrh,itest
+
+      end
+

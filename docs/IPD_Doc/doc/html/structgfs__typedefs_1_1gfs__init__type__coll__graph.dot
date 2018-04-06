@@ -1,0 +1,17 @@
+digraph "gfs_typedefs::gfs_init_type"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="gfs_typedefs::gfs_init_type",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" input_nml_file" ,fontname="Helvetica"];
+  Node2 [label="character(len=256),\l dimension(:), pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fn_nml" ,fontname="Helvetica"];
+  Node3 [label="character(len=65)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" tracer_names" ,fontname="Helvetica"];
+  Node4 [label="character(len=32)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" blksz\nlogunit\nnlunit\nmaster\ncdat\nbdat\nisc\njsc\ncnx\nlevs\n..." ,fontname="Helvetica"];
+  Node5 [label="integer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" xlon\nxlat\nbk\ndt_dycore\nak\narea\ndt_phys" ,fontname="Helvetica"];
+  Node6 [label="real(kind=kind_phys)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

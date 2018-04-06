@@ -1,0 +1,1758 @@
+#!/bin/bash
+#
+# NEMS Application Builder 
+# A front-end script that guides the source code access and installation of
+# available NEMS applications.
+################################################################################
+
+set -x
+
+ulimit -s 200000
+
+# add paths to find personal "dialog" installations on Theia, Yellowstone.
+PATH=$PATH:/scratch4/NCEPDEV/nems/save/Gerhard.Theurich/bin:/glade/p/work/theurich/bin
+
+global_name='NEMSAppBuilder'
+global_version='version 1.1.0'
+global_capabilities='autobuild dialog whiptail FV3 HYCOM MOM5 CICE IPE WRFHYDRO WW3 LIS IMP GSM NMMB KISS NOAH NOAHMP LegacyGSM LegacyNMM'
+
+# determine whether dialog or whiptail is available
+read dialog <<< "$(which dialog 2> /dev/null)"
+read whiptail <<< "$(which whiptail 2> /dev/null)"
+
+# use whichever tool was found
+if [[ "$#" -gt 0 ]] ; then
+  tool=autobuild
+  toolflag=autobuild
+elif ["${dialog}x" != "x" ] ; then
+  tool=$dialog
+  toolflag="dialog"
+  if [[ "$tool" =~ "scratch4/NCEPDEV/nems/save/Gerhard.Theurich/bin" ]]; then
+    # Special Theia case here of avoiding branches below that spawn multiple 
+    # processes. Those branches seem to cause (intermittent) trouble on Theia
+    # for some reason!
+    toolflag="NOTdialog"
+  fi
+elif [ "${whiptail}x" != "x" ] ; then
+  tool=$whiptail
+  toolflag="whiptail"
+else
+  echo "ABORT: Neither dialog nor whiptail found." 1>&2
+  echo "Must first install one of those tools or run in autobuild mode." 1>&2
+  echo "Run with --help option for details." 1>&2
+  exit 1
+fi
+
+if [[ "$tool" != autobuild ]] ; then
+    echo "$tool"
+    echo $toolflag
+       
+fi
+
+########################################################################
+
+# Machine detection.
+
+if [[ -e /gpfs/hps && -e /usrx ]] ; then
+    if [[ -d /usrx && -d /global && -e /etc/redhat-release && \
+        -e /etc/prod ]] ; then
+        # We are on WCOSS Phase 1 or 2.
+	MACHINE_ID=wcoss
+        if ( ! cat /proc/cpuinfo |grep 'processor.*32' ) ; then
+            # Fewer than 32 fake (hyperthreading) cpus, so Phase 1.
+            FULL_MACHINE_ID=wcoss_phase1
+            PEX=1
+        else
+            FULL_MACHINE_ID=wcoss_phase2
+            PEX=2
+        fi
+    else
+        # WCOSS Cray
+	MACHINE_ID=wcoss_cray
+        FULL_MACHINE_ID=wcoss_cray
+        PEX=c
+    fi
+elif [[ -e /scratch4 && -e /scratch3 ]] ; then
+    FULL_MACHINE_ID=theia
+    MACHINE_ID=theia
+elif [[ -e /glade ]] ; then
+    FULL_MACHINE_ID=yellowstone
+    MACHINE_ID=yellowstone
+elif [[ -e /pan2 && -e /lfs3 ]] ; then
+    FULL_MACHINE_ID=jet
+    MACHINE_ID=jet
+elif ( hostname | grep -i gaea ) ; then
+    # Default to GAEA until we add more platforms
+    FULL_MACHINE_ID=gaea
+    MACHINE_ID=gaea
+else
+    # Unknown platform
+    FULL_MACHINE_ID=unknown
+    MACHINE_ID=''
+fi
+
+MACHINE_ID_DOT=$( echo "$MACHINE_ID" | sed 's,_,\.,g' )
+MACHINE_ID_UNDER=$( echo "$MACHINE_ID" | sed 's,\.,_,g' )
+
+FULL_MACHINE_ID_DOT=$( echo "$FULL_MACHINE_ID" | sed 's,_,\.,g' )
+FULL_MACHINE_ID_UNDER=$( echo "$FULL_MACHINE_ID" | sed 's,\.,_,g' )
+
+if [[ "$MACHINE_ID" == yellowstone ]] ; then
+    source /glade/apps/opt/lmod/lmod/init/bash
+elif [[ "$MACHINE_ID" == gaea ]] ; then
+    # The module init stuff is buggy on gaea.  You really do need
+    # /etc/profile.
+    source /etc/profile
+fi
+
+echo "MACHINE_ID=$MACHINE_ID FULL_MACHINE_ID=$FULL_MACHINE_ID"
+
+# Globals and constants ########################################################
+
+unspecified="**UNSPECIFIED**"  # special constant for unspecified values
+auto__ask=
+auto__components=
+auto__app=unspecified
+
+global_backtitle="NEMS Application Builder" # default --backtitle for dialog
+
+# GUI Wrapper and Utility Functions ############################################
+
+# delete temporary files
+deletetempfiles(){
+  rm -f $LOGDIR/*.$$
+}
+
+guiclear() {
+    # Clear screen only in gui mode
+    if [[ "$tool" != autobuild ]] ; then
+        clear
+    fi
+}
+
+guisleep() {
+    # Sleep only when running in GUI mode.  Sends arguments to sleep
+    # command, unmodified."
+    if [[ "$tool" != autobuild ]] ; then
+        sleep "$@"
+    fi
+}
+
+logimpl() {
+    # Low-level implementation of below logging functions: note, warn,
+    # fail, autonote
+    #
+    # logimpl LEVEL "Message contents" loc1 loc2 [ "Title" [ "Backtitle" ] ]
+    #
+    # LEVEL = logging level; any capital alphanumeric string
+    # "Message contents" = argument to --infobox, sent to stderr in autobuild mode
+    # loc1 loc2 = x and y location in GUI mode
+    # "Title" = --title argument; optional.  Defaults to LEVEL
+    # "Backtitle" = --backtitle argument; optional.  Defaults to
+    #     $global_backtitle.
+    local level="${1:-NOTE}"
+    local infobox="$2"
+    local backtitle="${6:-$global_backtitle}"
+    local title="${5:-$level}"
+    local loc1="$3"
+    local loc2="$4"
+    local widget="--msgbox"
+#    if [[ "$level" == MSGBOX ]] ; then
+#        widget="--msgbox"
+#    fi
+    if [[ "$tool" == autobuild ]] ; then
+        # Send to stderr and stdout a string like "WARNING: world imploded"
+        echo "$level: $infobox" 1>&2
+        return 0
+    else
+  # "$tool" --clear --backtitle "NEMS Application Builder" \
+  #   --title "Welcome" --msgbox "Welcome to the NOAA Environmental Modeling Sy
+
+        "$tool" --clear --backtitle "$backtitle" \
+           --title "$title" --msgbox "${infobox}" "$loc1" "$loc2"
+        return $?
+    fi
+}
+
+ask() {
+    # Asks the user a question in gui mode; searches answer list in
+    # autobuild mode.
+    #
+    # ask [--clear] question_id default "Question: blah blah?" loc1 loc2 \
+    #     [ "Title" [ "Backtitle ] ]
+    #
+    # --clear = before other arguments; if present, --clear is sent in gui mode
+    #
+    # question_id = question identifier for autobuild answer list
+    #     (sent to autoask function)
+    # default = default answer in autobuild mode: yes, no, true, or false
+    #   yes or true = return status 0
+    #   no or false = return status 1
+    # yesno = sent to --yesno in gui mode or stderr in autobuild mode
+    # loc1 loc2 = x and y locations for gui mode
+    # "Title" = --title in gui mode; optional.  Defaults to $1.
+    # "Backtitle" = --backtitle in gui mode; optional.  Defaults to
+    #     $global_backtitle.
+    local clear=' '
+    if [[ "$1" == --clear ]] ; then
+        clear='--clear'
+        shift
+    fi
+    local question_id="$1"
+    local defval="$2"
+    local yesno="$3"
+    local backtitle="${7:-$global_backtitle}"
+    local title="${6:-Question $question_id}"
+    local loc1="$4"
+    local loc2="$5"
+    if [[ "$tool" == autobuild ]] ; then
+        echo "Question id \"$question_id\" text \"$yesno\" ??? (yes/no)" 1>&2
+        autoask "$question_id" "$defval"
+        return $?
+    else
+        "$tool" $clear --backtitle "$backtitle" --title "$title" \
+            --yesno "$yesno" "$loc1" "$loc2"
+        return $?
+    fi
+}
+
+note() {
+    # Wrapper around logimpl that sends information at level="INFO"
+    logimpl NOTE "$@"
+}
+
+msgbox() {
+    # Like note() but uses --msgbox instead
+    logimpl MSGBOX "$@"
+}
+
+warn() {
+    # Wrapper around logimpl that sends information at level="WARNING"
+    logimpl WARNING "$@"
+}
+
+fail() {
+    # Wrapper around logimpl that sends information at level="FAILURE"
+    # and then exits with status 1.  Should only be used for fatal
+    # errors from which the program cannot recover.
+    logimpl FAILURE "$@"
+    exit 2
+}
+
+autonote() {
+    # Sends a note() in autobuild mode; does nothing in gui mode.
+    # Arguments are passed unmodified to the note() function.
+    if [[ "$tool" == autobuild ]] ; then
+        note "$1" 0 0
+    fi
+}
+
+bailout(){
+    # Confirms that the user wants to abort.  If yes, exits with
+    # status 0.  Otherwise, sets the global variable bailFlag=true and
+    # returns.
+    #
+    # Questions: confirm_bail = if yes, abort on bailout()
+    # Side-effects: bailFlag=true if bail is not confirmed; exit if
+    #   bail is confirmed
+    # Globals: bailFlag
+    if ( ask confirm_bail yes "Confirm bail out with <Enter>, back with <Esc>." \
+         8 30 "Bail out" ) ; then
+        # Bail confirmed.  Exit.
+        exit
+    else
+        # Bail aborted.
+        bailFlag=true
+    fi
+}
+
+autoversion() {
+    # Prints version information and returns 0
+    echo "$global_name $global_version"
+    echo "Capabilities: $global_capabilities"
+    return 0
+}
+
+autohelp() {
+    # Prints a help message and returns 0
+    cat<<EOF
+$global_name
+GUI (interactive) mode:
+  $0
+Autobuild (non-interactive) mode:
+  $0 auto \\
+    [project=PROJ] [flags] [question:answer] [+COMP1 [+COMP2 [...]]]
+
+Run with no arguments to start GUI mode.  This will fail if both
+dialog and whiptail are unavailable.
+
+Run with arguments to start automatic (unattended) build mode.
+
+Flags:
+
+  rebuild --- clean and rebuild any components that are partially built
+    or already installed (implies reuse:no and rebuild:yes)
+  norebuild --- attempt to reuse any components that are built.  If 
+    recompiling, no cleaning is done first (implies reuse:yes and rebuild:no).
+
+App and component selection:
+
+  app=APP or
+  project=PROJ --- use this build target.  Only relevant if more than
+                   target is available.
+  +COMP --- enable component COMP.  Only relevant if the app used is NEMS
+
+Question:Answer values:
+
+  Note that a later question:answer overrides an earlier one in the
+  command line arguments.
+
+  reuse:COMP:yes --- reuse the given component if it is installed
+  reuse:COMP:no --- (default) do NOT reuse the component if it is installed; 
+    recompile them instead
+  reuse:yes --- reuse all components that are installed
+  reuse:no --- do not reuse installed components; recompile
+
+  rebuild:COMP:yes --- clean the source directory of each component before building
+  rebuild:COMP:no --- do NOT clean the source directory of each component
+  rebuild:yes --- clean the source directory of any component before building
+  rebuild:no --- do not clean the source directory
+
+  use_nems_modules:yes --- if an environment function is not available for
+    the current machine, then override user environment and use the
+    src/conf/modules.nems
+  use_nems_modules:no --- if an environment function is available, use it
+    and override the environment settings.  Otherwise, leave the 
+    environment untouched.
+
+EOF
+}
+
+autobuild() {
+    # Noop function when $tool is used in autobuild mode
+    echo Ignoring command: '$tool' "$@" 1>&2
+}
+
+autobuild_init() {
+    local opt
+    local app=unspecified
+    local confopt=unspecified
+    local makeopt=unspecified
+    local asklist=
+    local components=
+    local bad=no
+    local should_exit=no
+    for opt in "$@" ; do
+        if [[ "$opt" == '--help' ]] ;  then
+            autohelp
+            should_exit=yes
+        elif [[ "$opt" == '--version' ]] ; then
+            autoversion
+            should_exit=yes
+        elif [[ "$opt" =~ ^app=.+ ]] ; then
+            app="${opt:4}"
+        elif [[ "$opt" =~ ^project=.+ ]] ; then
+            app="${opt:8}"
+        elif [[ "$opt" =~ ^confopt=.+ ]] ; then
+            confopt="${opt:8}"
+        elif [[ "$opt" =~ ^makeopt=.+ ]] ; then
+            makeopt="${opt:8}"
+        elif [[ "$opt" =~ ^(.+):(yes|no|true|false)$ ]] ; then
+            asklist[${#asklist[*]}]="$opt"
+        elif [[ "$opt" =~ \+(.+) ]] ; then
+            components[${#components[*]}]="$BASH_REMATCH[1]"
+            autonote "Request enabling of component \"$BASH_REMATCH[1]\""
+        elif [[ "$opt" == auto ]] ; then
+            : # No-op that means "enable autobuild"
+        elif [[ "$opt" == rebuild || "$opt" == noreuse ]] ; then
+            # Do not reuse existing data and rebuild all components that are selected.
+            asklist[${#asklist[*]}]='rebuild:yes'
+            asklist[${#asklist[*]}]='reuse:no'
+        elif [[ "$opt" == norebuild || "$opt" == reuse ]] ; then
+            # Reuse existing data; do not rebuild components unless they're missing.
+            asklist[${#asklist[*]}]='rebuild:no'
+            asklist[${#asklist[*]}]='reuse:yes'
+        else
+            bad=yes
+            warn "Invalid argument \"$opt\""
+        fi
+    done
+    if [[ "$bad" == yes ]] ; then
+        fail "ABORT: Invalid arguments.  Run with --help for calling instructions."
+    fi
+    if [[ "$should_exit" == yes ]] ; then
+        # Either --version or --help was specified, so we exit now.
+        exit 0
+    fi
+
+    echo "Autobuild mode; will run without GUI."
+
+    auto__ask=( "${asklist[@]}" )
+    auto__app="$app"
+    if [[ "$confopt" != unspecified ]] ; then
+        auto__confopt="$confopt"
+    else
+        unset auto__confopt
+    fi
+    if [[ "$makeopt" != unspecified ]] ; then
+        auto__makeopt="$makeopt"
+    else
+        unset auto__makeopt
+    fi
+    auto__components=( "${components[@]}" )
+
+    local item
+    echo "asklist=("
+    for item in "${asklist[@]}" ; do
+        echo "$item"
+    done
+    echo "auto__ask=("
+    for item in "${auto__ask[@]}" ; do
+        echo "$item"
+    done
+}
+
+autocomponent() {
+    # Determines if the specified component (in $1) is selected in autobuild mode.
+    # Returns 0 if it is, 1 if it is not.
+    local comp
+    for comp in "${auto__components[@]}" ; do
+        if [[ "$comp" == "$1" ]] ; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+autoask() {
+    # Determines if the given question id ($1) has an answer of yes or
+    # no.  If unknown, uses the value in $2, which must be "yes" or
+    # "no".  Returns 0 for "yes" and 1 for "no"
+
+    local question_id="$1"
+    local default_answer="$2"
+    local answer=mu
+    local optval
+    local opt
+    local val
+    for optval in "${auto__ask[@]}" ; do
+        if [[ "${optval:-}x" == x ]] ; then
+            continue # ignore empty arguments
+        elif [[ "$optval" =~ ^(.*):(yes|no|true|false)$ ]] ; then
+            opt="${BASH_REMATCH[1]}"
+            val="${BASH_REMATCH[2]}"
+        else
+            fail "Invalid value \"$optval\" in auto__ask.  Likely internal error in autoask or autobuild_init.  Question_id was $question_id and default_answer was $default_answer"
+        fi
+        case "$question_id" in
+          $opt | $opt:* | $opt:*:* | $opt:*:*:* )
+            autonote "$GLOB MATCH: $opt from $optval for $question_id"
+          ;; # Match.
+          *) 
+            autonote "GLOB MISMATCH: $opt from $optval for $question_id"
+            continue
+          ;; # No match.  On to next value.
+        esac
+        if [[ "$val" == yes || "$val" == true ]] ; then
+            autonote "QUESTION $question_id? YES: from $optval"
+            answer=yes
+        elif [[ "$val" == no || "$val" == false ]] ; then
+            autonote "QUESTION $question_id? NO: from $optval"
+            answer=no
+        else
+            fail "Somehow got val=\"$val\" instead of yes/no/true/false from \"$optval\".  Likely internal error in autoask or autobuild_init.  Question_id was $question_id and default_answer was $default_answer"
+        fi
+    done
+    if [[ "$answer" == yes ]] ; then
+        return 0
+    elif [[ "$answer" == no ]] ; then
+        return 1
+    elif [[ "$2" == yes || "$2" == true ]] ; then
+        autonote "QUESTION $question_id? YES: from default"
+        return 0
+    elif [[ "$2" == no || "$2" == false ]] ; then
+        autonote "QUESTION $question_id? NO: from default"
+        return 1
+    else
+        fail "Invalid value \"$2\" sent as default value to autoask.  Must be yes, no, true or false.  Question_id was $question_id and default_answer was $default_answer"
+    fi
+}
+
+autoconfopt() {
+    # Sends to stdout the specified configuration options
+    # (confopt=...) from the argument list and returns 0.  Returns 1
+    # and prints an empty line if no confopt.
+    echo "${auto__confopt:-}"
+    return 0
+}
+
+automakeopt() {
+    # Sends to stdout the specified make options for the legacy build system
+    # (makeopt=...) from the argument list and returns 0.  Returns 1
+    # and prints an empty line if no confopt.
+    echo "${auto__makeopt:-}"
+    return 0
+}
+
+autoapp() {
+    # Sends to stdout the selected app and returns 0.  Returns 1 and
+    # prints an empty line if no app is selected.
+    echo "$auto__app"
+    return 0
+}
+
+choose_components() {
+    local command=( "$tool" --clear --backtitle "NEMS Application Builder" \
+        --title "NEMS Component Selection" \
+        --checklist "Select the components to be built into the NEMS executable \
+explicitly:"  25 75 18 )
+    local arg
+    local val
+    local def
+    local argval
+    local idx
+    local failmessage=( "Please select at least one component in app=NEMS mode:" )
+    local autocomponent=
+    local count=0
+    for argval in "$@" ; do
+        def=off
+        if [[ "${argval:0:1}" == "+" ]] ; then
+            argval="${argval:1:}"
+            def=on
+            autonote "In GUI mode, default ON for $argval"
+        fi
+        if [[ "${argval:-}x" == x ]] ; then
+            continue # ignore empty arguments
+        fi
+        idx=$( expr index "$argval" "=" )
+        idx="${idx:-0}"
+        if (( idx < 2 )) ; then
+            fail "Invalid argument $argval should be CORE=\"description\"; abort." 8 30
+        fi
+        idx1=$(( idx - 1 ))
+        arg="${argval:0:idx1}"
+        val="${argval:idx}"
+        if [[ "$tool" == autobuild ]] ; then
+            failmessage=( "${failmessage[@]}" "Model \"$arg\" ($val)" )
+            if ( autocomponent "$arg" ) ; then
+                count=$(( count + 1 ))
+                autonote "Model $arg is enabled ($val)"
+                autocomponent=( "${autocomponent[@]}" "$arg" )
+            fi
+        else
+            if [[ "$arg" == GSM ]] ; then
+                def=on
+            else
+                def=off
+            fi
+            command=( "${command[@]}" "$arg" "$val" "$def" )
+        fi
+    done
+    if [[ "$tool" == autobuild ]] ; then
+        if (( count > 0 )) ; then
+            set +x # make sure this is off even if someone turned it on
+            echo "${autocomponent[@]}"
+            echo "${autocomponent[@]}" 1>&2
+        else
+            for arg in "${failmessage[@]}" ; do
+                warn "$arg"
+            done
+            fail "No components selected in autobuild mode when app=NEMS."
+        fi
+    else
+        # Execute the command we just composed.
+        "${command[@]}"
+        return $?
+    fi
+}
+
+# External component build functions ###########################################
+
+build_checkloop(){
+  # in: COMP, ${COMP}_DIR, ${COMP}_SRCDIR, ${COMP}_BINDIR, BUILD_FUNC
+  eval COMP_DIR=\${${COMPOS[0]}_DIR}
+  eval COMP_SRCDIR=\${${COMPOS[0]}_SRCDIR}
+  eval COMP_BINDIR=\${${COMPOS[0]}_BINDIR}
+  if [[ "${COMPOS[0]}" == GSM || "${COMPOS[0]}" == NMM || "${COMPOS[0]}" == FV3 ]] ; then
+    reuse=true
+  elif [[ -d $COMP_BINDIR ]] ; then
+    # component installation directory exists
+    reuse=true
+  else
+    # component installation directory does not exist
+    reuse=false
+    if [[ -f "$COMP.install.md5sum.$MACHINE_ID" ]] ; then
+      # checksum of a previous build exists
+      note "Check against previous checksum..." 6 25 "Info: $COMP"
+      md5sum "$COMP_DIR"/* > "$COMP.install.md5sum.$MACHINE_ID.tmp"
+      # read checksum file line by line and compare between two files.
+      while read line
+      do
+        procline=`echo $line | grep -v "\.mk"`  # exclude .mk from comparing
+        if [ "x$procline" != "x" ]; then
+          # valid line
+          checksum=`echo $procline | awk ' { print $1 } '`
+          check=`grep $checksum $COMP.install.md5sum.$MACHINE_ID.tmp`
+          if [ "x$check" == "x" ]; then
+            # did not find the checksum -> failed check
+            reuse=false_failchecksum
+          fi
+        fi
+      done < "$COMP.install.md5sum.$MACHINE_ID"
+    #  rm -f $COMP.install.md5sum.$MACHINE_ID.tmp
+      if [[ "$reuse" == "false" ]] ; then
+        note "Check against previous checksum...MATCH!" 6 35 "Info: $COMP"
+        guisleep 2
+        # checksum comparison okay -> copy the existing component files over
+        mkdir -p "$COMP_BINDIR"
+        rm -rf "$COMP_BINDIR"/*
+        cp "$COMP_DIR"/* "$COMP_BINDIR"
+      else
+        warn "Check against previous checksum...NO MATCH!" 6 35 "Info: $COMP"
+        guisleep 2
+      fi
+    else
+      # no existing checksum exists
+      reuse=invalid
+    fi
+  fi
+  
+  # conditionally clean-up a pre-existing component installation
+  if [[ "$reuse" == "true" ]] ; then  
+    ask --clear "reuse:$COMP" no \
+        "Looks like the $COMP component has been installed.\
+      \n\nUse previous installation <Yes>, or re-install <No>." 12 40 \
+      "Alert"
+    if [[ "$?" != "0" ]] ; then
+      rm -rf "$COMP_BINDIR"
+      ask --clear "rebuild:$COMP" yes \
+          "Clean the $COMP component and build from scratch?" 10 40
+      if [[ "$?" == "0" ]] ; then
+      
+        if [[ "$toolflag" == "dialog" ]] ; then
+          # "dialog" implementation
+
+          "$tool" --backtitle "NEMS Application Builder" \
+               --title "${COMP} Clean Progress" \
+                --tailboxbg "$LOGDIR/appBuilder.${COMP}.log.$$" 20 120 \
+                --and-widget --ok-label "CANCEL" \
+                --begin 2 1 --msgbox "Press CANCEL to interrupt." 5 30 \
+                2> /dev/null &
+          mypid=$!
+          "$BUILD_FUNC" clean > "$LOGDIR/appBuilder.${COMP}.log.$$" 2>&1 &
+          makepid=$!
+  
+          # now wait for either for $mypid to finish because of canceling, or
+          # $makepid to finish due to done or bail out of make command.
+  
+          while ps -p "$makepid" > /dev/null
+          do
+            if ! ps -p "$mypid" > /dev/null
+            then
+              kill "$makepid" > /dev/null 2>&1
+            fi
+          done
+          kill "$mypid" > /dev/null 2>&1
+        else
+          # "whiptail" implementation (less fancy)
+           "$BUILD_FUNC" clean 2>&1 | tee "$LOGDIR/appBuilder.${COMP}.log.$$"
+        fi
+        
+      fi
+    fi
+  fi
+  
+  # enter re-build cycle
+  while [[ ! -d "$COMP_BINDIR" ]] ; do
+  
+    if [[ "$toolflag" == "dialog" ]] ; then
+      # "dialog" implementation
+
+      "$tool" --backtitle "NEMS Application Builder" \
+            --title "${COMP} Build Progress" \
+            --tailboxbg $LOGDIR/appBuilder.${COMP}.log.$$ 20 120 \
+            --and-widget --ok-label "CANCEL" \
+            --begin 2 1 --msgbox "Press CANCEL to interrupt." 5 30 \
+            2> /dev/null &
+      mypid=$!
+      "$BUILD_FUNC" > "$LOGDIR/appBuilder.${COMP}.log.$$" 2>&1 &
+      makepid=$!
+  
+      echo "$BUILD_FUNC $mypid $makepid" >> "$LOGDIR/appBuilder.log.$$"
+
+      # now wait for either for $mypid to finish because of canceling, or
+      # $makepid to finish due to done or bail out of make command.
+  
+      while ps -p "$makepid" > /dev/null
+      do
+        if ! ps -p "$mypid" > /dev/null
+        then
+          kill "$makepid" > /dev/null 2>&1
+        fi
+      done
+      kill "$mypid" > /dev/null 2>&1
+  
+      if ([ ! -d "$COMP_BINDIR" ]); then
+        # build did not succeed
+        "$tool" --clear --backtitle "NEMS Application Builder" \
+          --title "Trouble view log" \
+          --textbox "$LOGDIR/appBuilder.${COMP}.log.$$" 20 120
+        "$tool" --clear --backtitle "NEMS Application Builder" \
+          --title "Diagnosis" --yesno \
+          "Looks like the attempt to build the $COMP component failed.\
+          \n\nTry again <Yes>, or skip <No>." 10 40
+        if [[ "$?" != "0" ]] ; then
+          cp "$LOGDIR/appBuilder.NEMS.log.$$" "$LOGDIR/appBuilder.NEMS.log"
+          cp "$LOGDIR/appBuilder.${COMP}.log.$$" "$LOGDIR/appBuilder.${COMP}.log"
+          break
+        fi
+      fi
+    else
+      # "whiptail" implementation (less fancy)
+    
+      "$BUILD_FUNC" 2>&1 | tee "$LOGDIR/appBuilder.${COMP}.log.$$"
+    
+      if ([ ! -d "$COMP_BINDIR" ]); then
+        # build did not succeed
+        retry_compile=no
+        if [[ "$tool" != autobuild ]] ; then
+            "$tool" --clear --backtitle "NEMS Application Builder" \
+                --title "Trouble view log" \
+                --textbox "$LOGDIR/appBuilder.${COMP}.log.$$" 20 120 --scrolltext
+            if ( "$tool" --clear --backtitle "NEMS Application Builder" \
+                --title "Diagnosis" --yesno \
+                "Looks like the attempt to build the $COMP component failed.\
+          \n\nTry again <Yes>, or skip <No>." 10 40 ) ; then
+                retry_compile=yes
+            fi
+        fi
+        if [[ "$retry_compile" == "no" ]] ; then
+          cp "$LOGDIR/appBuilder.NEMS.log.$$" "$LOGDIR/appBuilder.NEMS.log"
+          cp "$LOGDIR/appBuilder.${COMP}.log.$$" "$LOGDIR/appBuilder.${COMP}.log"
+          break
+        fi
+      fi
+    fi
+  done
+    
+  if ([ -d "$COMP_BINDIR" ]); then
+    # create a new checksum file
+    md5sum "$COMP_BINDIR"/* > "$COMP.install.md5sum.$MACHINE_ID"
+  fi
+}
+
+build_std(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [[ "$1" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR"
+    make clean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd $COMP_SRCDIR
+    make
+    make DESTDIR=/ "INSTDIR=$COMP_BINDIR" install
+    if ([ ! -d $COMP_BINDIR ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_gsm(){
+  # in: COMPOS, COMP, COMP_SRCDIR, COMP_BINDIR
+  cd $COMP_SRCDIR
+  ./configure gsm_$COMPILER$MACHINE_ID
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    make GSM_DIR=$COMP_SRCDIR nuopcdistclean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    if [[ ${COMPOS[1]} == "gocart" ]] ; then
+      echo "Activate GOCART_MODE=full build option"
+      GSM_BUILDOPT="GOCART_MODE=full"
+    fi
+    make GSM_DIR=$COMP_SRCDIR $GSM_BUILDOPT DESTDIR= INSTDIR=$COMP_BINDIR nuopcinstall
+    if ([ ! -d $COMP_BINDIR ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_fv3(){
+  #TODO: clean
+  #TODO: build either 32 bit or 64 bit
+  #
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR"
+    gmake cleanall
+    rm -rf nems_dir
+
+    # A few things that "cleanall" doesn't clean:
+    rm -rf FV3_INSTALL
+    rm -rf nems_dir
+    find $COMP_SRCDIR/fms/ -name '*.o' -o -name '*.mod'
+
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP... 64 bits by default"
+    cd "$COMP_SRCDIR"
+    #./configure $( echo "$FULL_MACHINE_ID" | sed 's,\.,_,g' )
+    cp -fp $NEMSDIR/src/conf/configure.nems "$COMP_SRCDIR"/conf/configure.fv3
+    cp -fp $NEMSDIR/src/conf/modules.nems "$COMP_SRCDIR"/conf/modules.fv3
+    gmake clean
+    gmake ${COMPOS[@]:1} -j 8 nemsinstall
+    if ([ ! -d $COMP_BINDIR ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_nmmb(){
+  #TODO: cmust be implemented
+  #
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    echo "NOT YET implemented!!!"
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP... 64 bits by default"
+    echo "NOT YET implemented!!!"
+  fi
+}
+
+build_cice(){
+  #TODO: This component has a very non-standard way of building!!!!
+  #TODO: CICE and CICE_CAP should be merged into a single source tree, 
+  #TODO: and building the CICE component in NUOPC mode should be done 
+  #TODO: with standard target "nuopc". See HYCOM for an example.
+  #
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    echo "Only partially implemented!!!"
+    cd CICE_CAP
+    make -f makefile.nuopc clean
+    find . -name '*.a' -o -name '*.mod' -o -name '*.o' | xargs rm -f
+    rm -f cice.mk.install
+    cd ../CICE
+    rm -rf history compile restart *.a
+    find . -name '*.a' -o -name '*.mod' -o -name '*.o' | xargs rm -f
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR"
+    export SITE="NEMS.$MACHINE_ID"
+    export SYSTEM_USERDIR=`pwd`
+    export SRCDIR=`pwd`
+    export EXEDIR=`pwd`
+    if [ "${NEMS_GRID}x" != "x" ] ; then
+      export NEMS_GRID="$NEMS_GRID"
+    else
+      export NEMS_GRID=T126_mx5
+#      export NEMS_GRID=T126_nx1
+    fi
+    ./comp_ice.backend
+    cd ../CICE_CAP
+    make -f makefile.nuopc "LANLCICEDIR=$COMP_SRCDIR" "INSTALLDIR=$COMP_BINDIR" install
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_mom5(){
+  #TODO: This component has a very non-standard way of building!!!!
+  #TODO: MOM5 and MOM5_CAP should be merged into a single source tree, 
+  #TODO: and building the CICE component in NUOPC mode should be done 
+  #TODO: with standard target "nuopc". See HYCOM for an example.
+  #
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    echo "Only partially implemented!!!"
+    cd MOM5
+    rm -rf exec src/path_names_shared
+    find . -name '*.o' -o -name '*.mod' -o -name '*.a' | xargs rm -f
+    cd ../MOM5_CAP
+    rm -f mom5.mk.install
+    find . -name '*.o' -o -name '*.mod' -o -name '*.a' | xargs rm -f
+    cd ..
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR/exp"
+    ./MOM_compile.csh --platform "$MACHINE_ID" --type MOM_solo --experiment box1
+    cd ../../MOM5_CAP
+    make -f makefile.nuopc "NEMSMOMDIR=$COMP_SRCDIR/exec/$MACHINE_ID" "INSTALLDIR=$COMP_BINDIR" install
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_hycom(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  if [ "$MACHINE_ID" = linux_gnu ]; then
+    HYCOM_ARCH='Alinux-gnu-relo'
+  else
+    HYCOM_ARCH='Aintelrelo'    
+  fi
+
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR/sorc"
+    make ARCH="$HYCOM_ARCH" TYPE=nuopc clean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR/sorc"
+    make ARCH="$HYCOM_ARCH" TYPE=nuopc nuopc
+    make ARCH="$HYCOM_ARCH" TYPE=nuopc DESTDIR=/ INSTDIR="$COMP_BINDIR" nuopcinstall
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_ipe(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  local COMP_LIBSRCDIR="${COMP_SRCDIR}LIB"
+  if [[ $1"" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_LIBSRCDIR"
+    make clean
+    cd "$COMP_SRCDIR"
+    make clean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_LIBSRCDIR"
+    mkdir -p include lib bin
+    cd src
+    make theia_intel_parallel
+    cd "$COMP_SRCDIR"
+    make IPE="$COMP_LIBSRCDIR" nuopc
+    make IPE="$COMP_LIBSRCDIR" DESTDIR=/ "INSTDIR=$COMP_BINDIR" nuopcinstall
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_wrfhydro(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  export HYDRO_D=1
+  export WRF_HYDRO=1
+  cp "$COMP_SRCDIR/arc/macros.nems.$MACHINE_ID" "$COMP_SRCDIR/macros"
+  if [[ "$?" != "0" ]] ; then
+    echo "[Error] WRFHYDRO macros file cannot be copied!" 1>&2
+    exit 1
+  fi
+
+  if [[ "$1" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR"
+    make nuopcclean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR"
+    make nuopc
+    make DESTDIR=/ "INSTDIR=$COMP_BINDIR" nuopcinstall
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_ww3(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR
+  #  local WW3_COMP='Intel'
+  local WW3_COMP=$FULL_MACHINE_ID
+  if ([ ! -f "$COMP_SRCDIR/bin/comp.$WW3_COMP" ]); then
+     local WW3_COMP='Intel'
+  fi 
+  if [[ "$1" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR/esmf"
+    make distclean
+    cd "$COMP_SRCDIR"
+    rm -rf exe mod* obj* tmp ftn/makefile ftn/makefile_DIST ftn/makefile_SHRD esmf/wwatch3.env aux/makefile bin/link bin/comp
+    find . -name '*.o' -o -name '*.mod' -o -name '*.a' | xargs rm -f
+    echo "...done cleaning $COMP."
+       
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR/esmf"
+    make WW3_COMP="$WW3_COMP" ww3_nems
+    mkdir -p "$COMP_BINDIR"
+    cp "$COMP_SRCDIR/nuopc.mk" "$COMP_BINDIR"
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+build_lis(){
+  # in: COMP, COMP_SRCDIR, COMP_BINDIR                                                                                                                           
+  # this required due to LIS interactive configure script
+  # ideally, configure could be run here and pick up the
+  # relevant environment variables
+  cp "$COMP_SRCDIR/arch/configure.lis.$MACHINE_ID.debug" "$COMP_SRCDIR/make/configure.lis"
+  if [[ "$?" != "0" ]] ; then
+    echo "[Error] LIS configure.lis file cannot be copied!" 1>&2
+    exit 1
+  fi
+  cp "$COMP_SRCDIR/arch/LIS_misc.h.$MACHINE_ID" "$COMP_SRCDIR/make/LIS_misc.h"
+  if [[ "$?" != "0" ]] ; then
+    echo "[Error] LIS LIS_misc.h file cannot be copied!" 1>&2
+    exit 1
+  fi
+  cp "$COMP_SRCDIR/arch/LIS_NetCDF_inc.h.$MACHINE_ID" "$COMP_SRCDIR/make/LIS_NetCDF_inc.h"
+  if [[ "$?" != "0" ]] ; then
+    echo "[Error] LIS LIS_NetCDF_inc.h file cannot be copied!" 1>&2
+    exit 1
+  fi
+
+  if [[ "$1" == "clean" ]] ; then
+    echo "Cleaning $COMP..."
+    cd "$COMP_SRCDIR/make"
+    make clean
+    echo "...done cleaning $COMP."
+  else
+    echo "Building $COMP..."
+    cd "$COMP_SRCDIR"
+    ./compile
+    cd "$COMP_SRCDIR/runmodes/nuopc_cpl_mode"
+    make
+    make install DESTDIR=/ "INSTDIR=$COMP_BINDIR"
+    if ([ ! -d "$COMP_BINDIR" ]); then
+      echo "...failed building $COMP."
+    else
+      echo "...done building $COMP."
+    fi
+  fi
+}
+
+
+# MAIN #########################################################################
+
+autobuild_init "$@" # Before the trap since there are no temp files yet
+
+trap 'deletetempfiles'  EXIT     # delete temp files on exit
+
+ROOTDIR=`pwd`
+LOGDIR="$ROOTDIR/log"
+if [[ ! -e NEMS ]] ; then
+    echo "ERROR: this script must be called from the app-level checkout (directory above NEMS)" 1>&2
+    exit 1
+fi
+LOGFILE="$LOGDIR/appBuilder.log.$$"
+NEMSDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Start of the Front-End #######################################################
+
+# Determine the available application(s)
+appCounter=0
+shopt -s nullglob # all expansion to null string
+for i in "$ROOTDIR"/*.appBuilder; do
+  if [ "x$i" != "x" ]; then
+    let appCounter++
+    title=`head -1 $i`
+    title=${title#"#"}
+    title=${title#" "}
+    appbuilderlist=( "${appbuilderlist[@]}" $i )
+    appnames=( "${appnames[@]}" $( basename $i ) )
+    i=${i#"$ROOTDIR/"}
+    i=${i%".appBuilder"}
+    if [ $appCounter == 1 ]; then
+      radiolist=( "${radiolist[@]}" $i "$title" on )
+    else
+      radiolist=( "${radiolist[@]}" $i "$title" off )
+    fi
+  fi
+done
+
+autonote "App names: ${appnames[*]}"
+echo "radiolist=${radiolist[@]}, appCounter=$appCounter"
+
+APPLEVELUSE=true
+
+# Situation dependent welcome
+if [[ $appCounter != 1 && "$tool" != autobuild ]]; then
+  bailFlag=true
+  while [ $bailFlag == "true" ] ; do
+  bailFlag=false
+  "$tool" --clear --backtitle "NEMS Application Builder" \
+    --title "Welcome" --msgbox "Welcome to the NOAA Environmental Modeling System (NEMS) \
+Application Builder. \
+  \n\nThe NEMS Application Builder will guide you through the installation of \
+the NEMS executable. \
+  \n\nProceed with <Enter>, exit with <Esc>. \
+  \n\nOther keys used: \
+  \n  <Arrows> - to move between items, \
+  \n  <Tab>    - to change focus between input areas, \
+  \n  <Space>  - to select & unselect items." \
+  19 60
+  if [ "$?" != "0" ] ; then
+    bailout
+  fi
+  done
+fi
+
+# deal with the situation of no appBuilder files found
+if [ $appCounter == 0 ]; then
+  autonote "No apps found."
+  APPLEVELUSE=false
+  radiolist=( NEMS "Explicit selection of NEMS components" on )
+  appCounter=1
+  # check the AppBuilder subdirectory for more appBuilder files
+  for i in "$ROOTDIR/AppBuilder/"*.appBuilder; do
+    if [ "x$i" != "x" ]; then
+      let appCounter++
+      title=`head -1 $i`
+      title=${title#"#"}
+      title=${title#" "}
+      appbuilderlist=( "${appbuilderlist[@]}" $i )
+      appnames=( "${appnames[@]}" $( basename $i ) )
+      i=${i#"$ROOTDIR/AppBuilder/"}
+      i=${i%".appBuilder"}
+      radiolist=( "${radiolist[@]}" $i "$title" off )
+    fi
+  done
+fi
+
+# Selection of NEMS application
+if [[ "$appCounter" > 1 || ( "$appCounter" == 1 && "$tool" == autobuild ) ]]; then
+  if [[ "$tool" == autobuild ]] ; then
+      APP=$( autoapp )
+      autonote "APP from autoapp is $APP"
+      echo "$APP" > "$LOGFILE"
+      bailFlag=false
+  else
+      bailFlag=true
+      while [ "$bailFlag" == "true" ] ; do
+          bailFlag=false
+          "$tool" --clear --backtitle "NEMS Application Builder" \
+              --title "Application Selection" \
+              --radiolist "Select the target application to be supported by the \
+  NEMS executable:"  15 75 "$appCounter" \
+              "${radiolist[@]}" \
+              2> $LOGFILE
+              if [ "$?" != "0" ] ; then
+                  bailout
+              fi
+      done
+  fi
+else
+  # explicitly write selection into the LOGFILE
+  echo "${radiolist[0]}" > $LOGFILE
+fi
+echo "logfile=$LOGFILE"
+
+# new line into file
+echo >> $LOGFILE
+
+# determine APP selection
+APP=`head -1 $LOGFILE`
+
+autonote "Chosen app is $APP"
+
+# select on the APP selection
+case "$APP" in
+
+NEMS) 
+# Selection of NEMS components
+    bailFlag=true
+    while [ $bailFlag == "true" ] ; do
+        bailFlag=false
+        choose_components \
+            SATM="ATM: Stub Model"                                        \
+            XATM="ATM: Dead Model"                                        \
+            +GSM="ATM: Global Spectral Model"                             \
+            FV3="ATM: Global Finite volue 3"                              \
+            NMMB="ATM: Nonhydrostatic Multiscale Model on B Grid"         \
+            LegacyGSM="ATM: Un-capped GSM (deprecated)"                   \
+            LegacyNMM="ATM: Un-capped NMMB (deprecated)"                  \
+            SICE="ICE: Stub Model"                                        \
+            XICE="ICE: Dead Model"                                        \
+            CICE="ICE: Los Alamos Sea Ice Model"                          \
+            KISS="ICE: NOAA Keeping Ice'S Simplicity ice model"           \
+            SOCN="OCN: Stub Model"                                        \
+            XOCN="OCN: Dead Model"                                        \
+            MOM5="OCN: NOAA Modular Ocean Model 5"                        \
+            HYCOM="OCN: HYbrid Coordinate Ocean Model"                    \
+            POM="OCN: Princeton Ocean Model"                              \
+            SWAV="WAV: Stub Model"                                        \
+            XWAV="WAV: Dead Model"                                        \
+            WW3="WAV: WaveWatchIII"                                       \
+            SLND="LND: Stub Model"                                        \
+            XLND="LND: Dead Model"                                        \
+            LIS="LND: NASA LIS"                                           \
+            NOAH="LND: Community Land Surface Model"                      \
+            NOAHMP="LND: Community Land Surface Model with Multi-Physics" \
+            SIPM="IPM: Stub Model"                                        \
+            XIPM="IPM: Dead Model"                                        \
+            IPE="IPM: NOAA Ionosphere Plasmasphere Electrodynamics"       \
+            SHYD="HYD: Stub Model"                                        \
+            XHYD="HYD: Dead Model"                                        \
+            WRFHYDRO="HYD: Hydraulics portion of WRF-Hydro Model"         \
+        2>> $LOGFILE
+        if [[ "$tool" == autobuild ]] ; then
+            break
+        else
+            if [ "$?" != "0" ] ; then
+                bailout
+            fi
+            COMPONENTS=( `tail -1 $LOGFILE` )
+        fi
+    done
+;;
+
+*)
+# Need to find the associated appBuilder file
+FOUNDAPP=false
+for i in "${appbuilderlist[@]}" ; do
+  if [[ $( basename $i ) =~ "$APP" ]] ; then
+    source "$i"
+    echo "${COMPONENTS[@]}" >> $LOGFILE
+    FOUNDAPP=true
+    autonote "FOUND APP FROM $i COMPONENTS ${COMPONENTS[@]}"
+    break
+  fi
+done
+if [[ "$FOUNDAPP" != true ]] ; then
+    autonote "ERROR: $APP is not a valid app.  Choose from: ${appnames[*]} | ${appbuilderlist[*]}"
+fi
+;;
+
+esac
+
+# Situation dependent welcome
+if [ $appCounter == 1 ]; then
+  # exactly one application present -> Application level
+  bailFlag=true
+  while [ $bailFlag == "true" ] ; do
+  bailFlag=false
+  if [[ "$tool" == autobuild ]] ; then
+      break
+  fi
+  comps="${COMPONENTS[@]}"
+  "$tool" --clear --backtitle "NEMS Application Builder" \
+    --title "Welcome" --msgbox "Welcome to the NOAA Environmental Modeling System (NEMS) \
+Application Builder. \
+  \n\nPreparing to build the NEMS executable for the \"$APP\" application. \
+  \n\nWith components: $comps. \
+  \n\nProceed with <Enter>, exit with <Esc>. \
+  \n\nOther keys used: \
+  \n  <Arrows> - to move between items, \
+  \n  <Tab>    - to change focus between input areas, \
+  \n  <Space>  - to select & unselect items." \
+  22 60
+  if [ "$?" != "0" ] ; then
+    bailout
+  fi
+  done
+fi
+
+# Start of the Back-End ########################################################
+
+# use NEMS script to determine the platform
+"$tool" --backtitle "NEMS Application Builder" \
+  --title "Info" --infobox "Determine platform..." 6 25
+bailFlag=true
+while [ $bailFlag == "true" ] ; do
+bailFlag=false
+# NOTE: machine detection is now done at the top of this script
+# and does not use detect_machine.sh
+if [ "${MACHINE_ID}x" == "x" ] ; then
+  "$tool" --clear --backtitle "NEMS Application Builder" \
+  --title "Unknown machine" --yesno \
+  "Need to add NEMS configuration for this machine before trying again!\
+  \n\nTry again <Yes>, or bail out <No>."\
+  10 40
+  if [ "$?" != "0" ] ; then
+    exit
+  fi
+  bailFlag=true
+fi
+done
+
+note "Determine platform...$MACHINE_ID" 10 35 "Info"
+
+# configure NEMS for the specific platform
+if [ $MACHINE_ID = linux_gnu ]; then
+  COMPILER=""
+else
+  COMPILER="intel_"
+fi
+cd $NEMSDIR/src
+autonote "CONFOPT=$CONFOPT MAKEOPT=$MAKEOPT"
+AUTOCONFOPT=$( autoconfopt )
+if [[ "${AUTOCONFOPT}Q" == Q ]] ; then
+    if [[ "${CONFOPT}Q" == Q ]] ; then
+        conf_mode="coupled"
+        CONFOPT="coupled_$COMPILER$MACHINE_ID"
+    else
+        conf_mode="user-specified"
+    fi
+else
+    CONFOPT="$AUTOCONFOPT"
+    conf_mode="appbuilder-specified"
+fi
+
+autonote "Clobber configuration files."
+rm -f ESMFVersionDefine.h conf/modules.nems* externals.nems
+
+autonote "Configure using $conf_mode mode."
+autonote "Command: ./configure $CONFOPT $CHOSEN_MODULE"
+./configure "$CONFOPT" $CHOSEN_MODULE \
+     ${EXTERNALS_NEMS:-''} \
+     ${ESMF_VERSION_DEFINE=''} \
+     2>&1 | tee $LOGDIR/appBuilder.NEMS.log.$$
+
+echo >> $LOGDIR/appBuilder.NEMS.log.$$
+cd $ROOTDIR
+# set the platform specific build environment (if provided)
+envir="environment_${MACHINE_ID}"
+loaded_envir=yes
+if [ `type -t $envir`"" == 'function' ]; then
+  fail \
+"Support for the enviornment_<platform>() functions has been removed.\n
+Please use the CHOSEN_MODULE variable instead." \
+  14 25  "Invalid appBuilder file"
+  exit 10
+fi
+if [[ "Q$CHOSEN_MODULE" == "Q" ]] ; then
+    fail "The appBuilder file did not set the CHOSEN_MODULE variable. Please add a module in the modulefiles directory and set the CHOSEN_MODULE variable in your appBuilder file to a path relative to the app-level modulefiles directory.  This is usually as simple as copying the environment_<platform>() function contents into modulefiles, one file per platform." \
+19 60
+    exit 11
+else
+  if [[ -f $NEMSDIR/src/conf/modules.nems ]] ; then
+    # prompt to use default environment provided by NEMS
+    ask --clear use_nems_modules yes \
+"Source the NEMS provided module file to set up the build environment?\n\n\
+Select <Yes> to overwrite the build environment of the current \
+shell (purge modules) and to replace it with the NEMS provided setting.\n\n\
+Select <No> to retain and use the build environment of the current shell." \
+        16 40 "Build environment" 
+    if [[ "$?" == "0" ]] ; then
+      autonote "Load $NEMSDIR/src/conf/modules.nems"
+      source $NEMSDIR/src/conf/modules.nems.sh
+      echo =============================================
+      module list
+      echo =============================================
+      which mpiifort
+      autonote "Loaded $NEMSDIR/src/conf/modules.nems"
+      loaded_envir=yes
+    fi
+  fi
+fi
+
+# make available dirs of pre-installed externals
+source $NEMSDIR/src/conf/externals.nems
+
+gocartFlag='false'
+for i in "${COMPONENTS[@]}" ; do
+  # first remove potential quotation marks
+  i=${i#\"}
+  COMP=${i%\"}
+  # separate off component build options at the % separator
+  IFS='%' read -ra COMPOS <<< "$COMP"
+  autonote "pos 0 = ${COMPOS[0]} 1 = ${COMPOS[1]}"
+  if [[ ${COMPOS[1]} == "gocart" ]] ; then
+      autonote "gocart $COMPO"
+      gocartFlag='true'
+  else
+      autonote "not gocart $COMPO"
+  fi
+done
+
+# loop over the components to build them
+if [[ "$APPLEVELUSE" == "true" ]] ; then
+  for i in "${COMPONENTS[@]}" ; do
+    # first remove potential quotation marks
+    i=${i#\"}
+    COMP=${i%\"}
+    # separate off component build options at the % separator
+    IFS='%' read -ra COMPOS <<< "$COMP"
+    if [[ ${COMPOS[0]} != "LegacyGSM" && ${COMPOS[0]} != "LegacyNMMB" ]] ; then
+        envir="environment_${MACHINE_ID}_${COMP}"
+        if [ `type -t $envir`"" == 'function' ]; then
+            $envir
+        fi
+        # set the component specific build function
+        
+        if [[ ${COMPOS[0]} == "GSM" ]] ; then
+            BUILD_FUNC=build_gsm
+        elif [[ ${COMPOS[0]} == "FV3" ]] ; then
+            BUILD_FUNC=build_fv3
+        elif [[ ${COMPOS[0]} == "NMMB" ]] ; then
+            BUILD_FUNC=build_nmmb
+        elif [[ ${COMPOS[0]} == "HYCOM" ]] ; then
+            BUILD_FUNC=build_hycom
+        elif [[ ${COMPOS[0]} == "MOM5" ]] ; then
+            BUILD_FUNC=build_mom5
+        elif [[ ${COMPOS[0]} == "CICE" ]] ; then
+            BUILD_FUNC=build_cice
+        elif [[ ${COMPOS[0]} == "IPE" ]] ; then
+            BUILD_FUNC=build_ipe
+        elif [[ ${COMPOS[0]} == "WRFHYDRO" ]] ; then
+            BUILD_FUNC=build_wrfhydro
+        elif [[ ${COMPOS[0]} == "WW3" ]] ; then
+            BUILD_FUNC=build_ww3
+        elif [[ ${COMPOS[0]} == "LIS" ]] ; then
+            BUILD_FUNC=build_lis
+        elif [[ ${COMPOS[0]} == "FV3" ]] ; then
+            BUILD_FUNC=build_fv3
+        else
+            BUILD_FUNC=build_std
+        fi
+        # attempt to build the component
+        build_checkloop
+    fi
+  done
+fi
+
+cd $NEMSDIR/src
+# for the explicit NEMS case must obtain component locations
+if [[ "$APPLEVELUSE" == "false" ]] ; then
+  for i in "${COMPONENTS[@]}" ; do
+    # first remove potential quotation marks
+    i=${i#\"}
+    COMP=${i%\"}
+    # separate off component build options at the % separator
+    IFS='%' read -ra COMPOS <<< "$COMP"
+    if [[ ${COMPOS[0]} != "GSM" && ${COMPOS[0]} != "NMMB" ]] ; then
+      eval ${COMP}_BINDIR=\${${COMP}_DIR}
+    fi
+  done
+fi
+
+# loop over the components to construct COMP and COMPDIRS make variables
+COMP=""
+COMPDIRS=""
+legacyGsmFlag="false"
+legacyNmmFlag="false"
+for i in "${COMPONENTS[@]}" ; do
+  # first remove potential quotation marks
+  i=${i#\"}
+  COMPO=${i%\"}
+  IFS='%' read -ra COMPOS <<< "$COMPO"
+ # - NEMS internal target components
+  if [[ ${COMPOS[0]} == "LegacyGSM" ]] ; then
+    legacyGsmFlag="true"
+  elif [[ ${COMPOS[0]} == "LegacyNMMB" ]] ; then
+    legacyNmmFlag="true"
+ # - stub components
+  elif [[ ${COMPOS[0]} == "GSM" ]] ; then
+    COMP=$COMP",gsm"
+    COMPDIRS="$COMPDIRS GSM_DIR=$GSM_BINDIR"
+  elif [[ ${COMPOS[0]} == "FV3" ]] ; then
+    COMP=$COMP",fv3"
+    COMPDIRS="$COMPDIRS FV3_DIR=$FV3_BINDIR"
+  elif [[ ${COMPOS[0]} == "NMMB" ]] ; then
+    COMP=$COMP",nmmb"
+    COMPDIRS="$COMPDIRS NMMB_DIR=$NMMB_BINDIR"
+  # - stub components
+  elif [[ ${COMPOS[0]} == "SATM" ]] ; then
+    COMP=$COMP",satm"
+    COMPDIRS="$COMPDIRS SATM_DIR=$SATM_BINDIR"
+  elif [[ ${COMPOS[0]} == "SHYD" ]] ; then
+    COMP=$COMP",shyd"
+    COMPDIRS="$COMPDIRS SHYD_DIR=$SHYD_BINDIR"
+  elif [[ ${COMPOS[0]} == "SICE" ]] ; then
+    COMP=$COMP",sice"
+    COMPDIRS="$COMPDIRS SICE_DIR=$SICE_BINDIR"
+  elif [[ ${COMPOS[0]} == "SIPM" ]] ; then
+    COMP=$COMP",sipm"
+    COMPDIRS="$COMPDIRS SIPM_DIR=$SIPM_BINDIR"
+  elif [[ ${COMPOS[0]} == "SLND" ]] ; then
+    COMP=$COMP",slnd"
+    COMPDIRS="$COMPDIRS SLND_DIR=$SLND_BINDIR"
+  elif [[ ${COMPOS[0]} == "SOCN" ]] ; then
+    COMP=$COMP",socn"
+    COMPDIRS="$COMPDIRS SOCN_DIR=$SOCN_BINDIR"
+  elif [[ ${COMPOS[0]} == "SWAV" ]] ; then
+    COMP=$COMP",swav"
+    COMPDIRS="$COMPDIRS SWAV_DIR=$SWAV_BINDIR"
+  # - dead components
+  elif [[ ${COMPOS[0]} == "XATM" ]] ; then
+    COMP=$COMP",xatm"
+    COMPDIRS="$COMPDIRS XATM_DIR=$XATM_BINDIR"
+  elif [[ ${COMPOS[0]} == "XHYD" ]] ; then
+    COMP=$COMP",xhyd"
+    COMPDIRS="$COMPDIRS XHYD_DIR=$XHYD_BINDIR"
+  elif [[ ${COMPOS[0]} == "XICE" ]] ; then
+    COMP=$COMP",xice"
+    COMPDIRS="$COMPDIRS XICE_DIR=$XICE_BINDIR"
+  elif [[ ${COMPOS[0]} == "XIPM" ]] ; then
+    COMP=$COMP",xipm"
+    COMPDIRS="$COMPDIRS XIPM_DIR=$XIPM_BINDIR"
+  elif [[ ${COMPOS[0]} == "XLND" ]] ; then
+    COMP=$COMP",xlnd"
+    COMPDIRS="$COMPDIRS XLND_DIR=$XLND_BINDIR"
+  elif [[ ${COMPOS[0]} == "XOCN" ]] ; then
+    COMP=$COMP",xocn"
+    COMPDIRS="$COMPDIRS XOCN_DIR=$XOCN_BINDIR"
+  elif [[ ${COMPOS[0]} == "XWAV" ]] ; then
+    COMP=$COMP",xwav"
+    COMPDIRS="$COMPDIRS XWAV_DIR=$XWAV_BINDIR"
+  # - data components
+  elif [[ ${COMPOS[0]} == "DATAWAM" ]] ; then
+    COMP=$COMP",datawam"
+    COMPDIRS="$COMPDIRS DATAWAM_DIR=$DATAWAM_BINDIR" 
+  elif [[ ${COMPOS[0]} == "DATAIPE" ]] ; then
+    COMP=$COMP",dataipe"
+    COMPDIRS="$COMPDIRS DATAIPE_DIR=$DATAIPE_BINDIR" 
+  # - actual ocean model components
+  elif [[ ${COMPOS[0]} == "HYCOM" ]] ; then
+    COMP=$COMP",hycom"
+    COMPDIRS="$COMPDIRS HYCOM_DIR=$HYCOM_BINDIR"
+  elif [[ ${COMPOS[0]} == "MOM5" ]] ; then
+    COMP=$COMP",mom5"
+    COMPDIRS="$COMPDIRS MOM5_DIR=$MOM5_BINDIR"
+  # - actual wave model components
+  elif [[ ${COMPOS[0]} == "WW3" ]] ; then
+    COMP=$COMP",ww3"
+    COMPDIRS="$COMPDIRS WW3_DIR=$WW3_BINDIR"
+  # - actual ice model components
+  elif [[ ${COMPOS[0]} == "CICE" ]] ; then
+    COMP=$COMP",cice"
+    COMPDIRS="$COMPDIRS CICE_DIR=$CICE_BINDIR"
+  # - actual ionosphere-plasmasphere model components
+  elif [[ ${COMPOS[0]} == "IPE" ]] ; then
+    COMP=$COMP",ipe"
+    COMPDIRS="$COMPDIRS IPE_DIR=$IPE_BINDIR"
+  # - actual hydraulic model components
+  elif [[ ${COMPOS[0]} == "WRFHYDRO" ]] ; then
+    COMP=$COMP",wrfhydro"
+    COMPDIRS="$COMPDIRS WRFHYDRO_DIR=$WRFHYDRO_BINDIR"
+  elif [[ ${COMPOS[0]} == "LIS" ]] ; then
+    COMP=$COMP",lis"
+    COMPDIRS="$COMPDIRS LIS_DIR=$LIS_BINDIR"
+  fi
+done
+echo "COMP=$COMP,COMPDIRS=$COMPDIRS"
+
+# construct the NEMS target 
+
+# NEMS target is "nems" if no legacy options are enabled
+TARGET=nems
+
+# When legacy options are enabled, we have to override with the model name.
+if ( [[ $legacyGsmFlag == "true" ]] ); then
+  if ( [[ $legacyNmmFlag == "true" ]] ); then
+    TARGET=nmm_gsm
+  else
+    TARGET=gsm
+  fi
+elif ( [[ $legacyNmmFlag == "true" ]] ); then
+  TARGET=nmm
+fi
+
+# turn COMP into a single string with commas
+if [[ "x$COMP" != "x" ]] ; then
+  COMPOPT="COMP=,${COMP#","},"
+else
+  COMPOPT=""
+fi
+
+MAKEOPT="${MAKEOPT:-$TARGET $MAKEOPT $COMPOPT$COMPDIRS}"
+if [[ "$gocartFlag" == true ]] ; then
+    MAKEOPT="$MAKEOPT GOCART_MODE=full"
+fi
+echo "start to build TARGET=$TARGET,COMPOPT=$COMPOPT,COMPDIRS=$COMPDIRS"
+echo "         with MAKEOPT=$MAKEOPT"
+
+# ready to build the NEMS executable
+msgbox "make $MAKEOPT \
+  \n\nProceed with <Enter>, exit with <Esc>." 20 100 \
+    "Ready to build NEMS executable:"
+if [ "$?" != "0" ] ; then
+  bailout
+fi
+
+# finally attempt to build the NEMS executable
+export NEMSAppBuilder # guard variable used by NEMS makefile
+
+# potentially clean-up first
+CLEAN_FIRST=NO
+if ( autoask rebuild no ) ; then
+    CLEAN_FIRST=YES
+elif [[ -f ../exe/NEMS.x ]] ; then
+    ask --clear reuse no \
+        "Re-use parts form the previous NEMS build <Yes>, or build from scratch <No>?" \
+        10 40 "Alert"
+    if [[ "$?" != "0" ]] ; then
+        CLEAN_FIRST=YES
+    fi
+fi
+if [[ "$CLEAN_FIRST" == YES ]] ; then
+    autonote "Should clean first"
+    if [[ "$toolflag" == "dialog" ]] ; then
+      # "dialog" implementation
+  
+      "$tool" --backtitle "NEMS Application Builder" \
+            --title "NEMS Clean Progress" \
+            --tailboxbg $LOGDIR/appBuilder.NEMS.log.$$ 20 120 \
+            --and-widget --ok-label "CANCEL" \
+            --begin 2 1 --msgbox "Press CANCEL to interrupt." 5 30 \
+            2> /dev/null &
+      mypid=$!
+      make clean 2>&1 | tee -a $LOGDIR/appBuilder.NEMS.log.$$ &
+      makepid=$!
+  
+      # now wait for either for $mypid to finish because of canceling, or
+      # $makepid to finish due to done or bail out of make command.
+  
+      while ps -p $makepid > /dev/null
+      do
+        if ! ps -p $mypid > /dev/null
+        then
+          killall gmake
+          killall make
+        fi
+      done
+      kill $mypid > /dev/null 2>&1
+    else
+      # "whiptail" implementation (less fancy)
+      autonote "Simple clean."
+      make clean 2>&1 | tee -a $LOGDIR/appBuilder.NEMS.log.$$
+    fi
+    
+else
+    autonote "Just delete NEMS.x"
+fi
+rm -f ../exe/NEMS.x
+echo "Passed clean loop.  Now start to build nems.x."
+
+# build loop
+while [[ ! -f ../exe/NEMS.x ]] ; do
+  echo "make $MAKEOPT" >> "$LOGDIR/appBuilder.NEMS.log.$$"
+  echo >> "$LOGDIR/appBuilder.NEMS.log.$$"
+  if [[ "$toolflag" == "dialog" ]] ; then
+    # "dialog" implementation
+
+    "$tool" --backtitle "NEMS Application Builder" \
+          --title "NEMS Build Progress" \
+          --tailboxbg $LOGDIR/appBuilder.NEMS.log.$$ 20 120 \
+          --and-widget --ok-label "CANCEL" \
+          --begin 2 1 --msgbox "Press CANCEL to interrupt." 5 30 \
+          2> /dev/null &
+    set -x
+    mypid=$!
+    # NOTE: $MAKEOPT must NOT be in quotes.
+    make $MAKEOPT 2>&1 | tee -a $LOGDIR/appBuilder.NEMS.log.$$
+    makepid=$!
+    set +x
+    # now wait for either for $mypid to finish because of canceling, or
+    # $makepid to finish due to done or bail out of make command.
+  
+    while ps -p $makepid > /dev/null
+    do
+      if ! ps -p $mypid > /dev/null
+      then
+        killall gmake
+        killall make
+      fi
+    done
+    kill $mypid > /dev/null 2>&1
+  
+    echo "Passed build step."
+    if [[ ! -f ../exe/NEMS.x ]] ; then
+      # build did not succeed
+      "$tool" --clear --backtitle "NEMS Application Builder" \
+        --title "Trouble view log" --textbox $LOGDIR/appBuilder.NEMS.log.$$ \
+        20 120
+      "$tool" --clear --backtitle "NEMS Application Builder" \
+        --title "Diagnosis" --yesno \
+        "Looks like the attempt to build the NEMS executable failed.\
+        \n\nTry again <Yes>, or quit <No>." 10 40
+      if [[ "$?" != "0" ]] ; then
+        cp $LOGDIR/appBuilder.NEMS.log.$$ $LOGDIR/appBuilder.NEMS.log
+        break
+      fi
+    fi
+
+  else
+    # "whiptail" implementation (less fancy)
+    set -x  
+    make $MAKEOPT 2>&1 | tee $LOGDIR/appBuilder.NEMS.log.$$
+    set +x
+    if [[ ! -f ../exe/NEMS.x ]] ; then
+      # build did not succeed
+      if [[ "$tool" == autobuild ]] ; then
+          # Print a failure message and exit with non-zero status.
+          fail "Build did not succeed.  See $LOGDIR/appBuilder.NEMS.log.$$"
+      else
+          "$tool" --clear --backtitle "NEMS Application Builder" \
+              --title "Trouble view log" --textbox $LOGDIR/appBuilder.NEMS.log.$$ \
+              20 120 --scrolltext
+          "$tool" --clear --backtitle "NEMS Application Builder" \
+              --title "Diagnosis" --yesno \
+              "Looks like the attempt to build the NEMS executable failed.\
+        \n\nTry again <Yes>, or quit <No>." 10 40
+      fi
+      if [[ "$?" != "0" ]] ; then
+        cp $LOGDIR/appBuilder.NEMS.log.$$ $LOGDIR/appBuilder.NEMS.log
+        break
+      fi
+    fi
+  fi
+done
+if [[ -f ../exe/NEMS.x ]] ; then
+    if [[ "$toolflag" == "dialog" ]] ; then
+    # "dialog" implementation
+    "$tool" --clear --backtitle "NEMS Application Builder" \
+      --title "Success" --yesno "The NEMS executable was successfully built. \
+      \n\nView log <Yes>, or exit <No>." 7 60
+    if [[ "$?" == "0" ]] ; then
+      "$tool" --clear --backtitle "NEMS Application Builder" \
+        --title "Success view log" --textbox $LOGDIR/appBuilder.NEMS.log.$$ \
+        20 120
+    fi
+  elif [[ "$tool" == "whiptail" ]] ; then
+    # "whiptail" implementation
+    "$tool" --clear --backtitle "NEMS Application Builder" \
+      --title "Success" --yesno "The NEMS executable was successfully built. \
+      \n\nView log <Yes>, or exit <No>." 10 60
+    if [[ "$?" == "0" ]] ; then
+      "$tool" --clear --backtitle "NEMS Application Builder" \
+        --title "Success view log" --textbox $LOGDIR/appBuilder.NEMS.log.$$ \
+        20 120 --scrolltext
+    fi
+  else
+    autonote "Success!"
+  fi
+fi
+
+################################################################################
+# Finish up
+
+cd $ROOTDIR
+guiclear
+exit

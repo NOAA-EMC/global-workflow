@@ -1,0 +1,4 @@
+<map id="set_spectrum" name="set_spectrum">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga58ac70a5189ef62c63cf2c87465a030a" title="The initialization program is to set up necessary parameters and working arrays. " alt="" coords="155,5,331,46"/>
+<area shape="rect" id="node3" href="$group__module__radiation__driver.html#ga866dcd42f95b3e7df6b448833fe7c33b" title="This subroutine initialize a model&#39;s radiation process through calling of specific initialization sub..." alt="" coords="379,5,538,46"/>
+</map>

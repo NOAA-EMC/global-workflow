@@ -1,0 +1,35 @@
+\hypertarget{namespacemodule__radlw__kgb10}{}\section{module\+\_\+radlw\+\_\+kgb10 Module Reference}
+\label{namespacemodule__radlw__kgb10}\index{module\+\_\+radlw\+\_\+kgb10@{module\+\_\+radlw\+\_\+kgb10}}
+
+
+This module sets up absorption coefficients for band 10\+: 1390-\/1480 cm-\/1 (low -\/ h2o; high -\/ h2o)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__kgb10_a2305b922082d1cc367276b636f09fb6c}\label{namespacemodule__radlw__kgb10_a2305b922082d1cc367276b636f09fb6c}} 
+integer, public \hyperlink{namespacemodule__radlw__kgb10_a2305b922082d1cc367276b636f09fb6c}{msa10}
+\begin{DoxyCompactList}\small\item\em msa10=65 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ minor gas mapping level\+:}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gaf33570d793ca152588c14ce30ac30798}{msb10}
+\begin{DoxyCompactList}\small\item\em msb10=235 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga1b69c6fe99ed4ebc7b3d78b8f842b880}{msf10}
+\begin{DoxyCompactList}\small\item\em msf10=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga0f3944c4b86044e0c5db3dc351226c88}{mfr10}
+\begin{DoxyCompactList}\small\item\em mfr10=4 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10, \hyperlink{namespacemodule__radlw__kgb10_a2305b922082d1cc367276b636f09fb6c}{msa10}), public \hyperlink{group__module__radlw__kgbnn_ga14f18538f77c1a3d651e36acf90baa19}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(\+N\+G10,65) = ka(\+N\+G10,5,13) contains absorption coefs at the N\+G10=6 chosen g-\/values for a range of pressure levels$>$$\sim$100mb and temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the second index, jp, runs from 1 to 13 and refers to the corresponding pressure level in pref (e.\+g. jp = 1 is for a pressure of 1053.\+63 mb). the third index, ig, goes from 1 to N\+G10=6, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10, \hyperlink{group__module__radlw__kgbnn_gaf33570d793ca152588c14ce30ac30798}{msb10}), public \hyperlink{group__module__radlw__kgbnn_gaf1e2252355a3002080be21ce37d45c3a}{absb}
+\begin{DoxyCompactList}\small\item\em the array absb(\+N\+G10,235) = kb(\+N\+G10,5,13\+:59) contains absorption coefs at the N\+G10=6 chosen g-\/values for a range of pressure levels$<$ $\sim$100mb and temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the second index, jp, runs from 13 to 59 and refers to the jpth reference pressure level (see taumol.\+f for the value of these pressure levels in mb). the third index, ig, goes from 1 to N\+G10=6, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10, \hyperlink{group__module__radlw__kgbnn_ga1b69c6fe99ed4ebc7b3d78b8f842b880}{msf10}), public \hyperlink{group__module__radlw__kgbnn_ga48247dea283a611ebe57dd1c164dda69}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to N\+G10=6). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10, \hyperlink{group__module__radlw__kgbnn_ga0f3944c4b86044e0c5db3dc351226c88}{mfr10}), public \hyperlink{group__module__radlw__kgbnn_gaf70e39048d571053790289549dd8333a}{forref}
+\begin{DoxyCompactList}\small\item\em the array forref contains the coefficient of the water vapor foreign-\/continuum (including the energy term). the first index refers to reference temperature (296,260,224,260) and pressure (970,475,219,3 mbar) levels. the second index runs over the g-\/channel (1 to N\+G10=6). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10), public \hyperlink{group__module__radlw__kgbnn_gaa8bbfdaf370e12ae26d2ee3c464bdbc2}{fracrefa}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p = 212.\+7250, t = 223.\+06 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng10), public \hyperlink{group__module__radlw__kgbnn_ga07d5bac00d30f1ab873a0542b28d7e83}{fracrefb}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p = 95.\+58350 mb, t = 215.\+70 k \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}

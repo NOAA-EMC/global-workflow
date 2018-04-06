@@ -1,10 +1,8 @@
 #
 # define the array of the name of build program
 #
- declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
-                       "Build_ncep_post" "Build_nems_util" \
-                       "Build_chgres" \
-                       "Build_prod_util" "Build_grib_util")
+ declare -a Build_prg=("Build_fv3gfs" "Build_ncep_post" \
+                       "Build_nems_util" "Build_chgres")
 
 #
 # function parse_cfg: read config file and retrieve the values

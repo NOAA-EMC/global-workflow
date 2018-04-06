@@ -1,0 +1,39 @@
+\hypertarget{group___n_o_a_h}{}\section{N\+O\+AH Land Surface}
+\label{group___n_o_a_h}\index{N\+O\+A\+H Land Surface@{N\+O\+A\+H Land Surface}}
+
+
+The Noah L\+SM (Chen et al., 1996; Koren et al., 1999; Ek et al., 2003) is targeted for moderate complexity and good computational efficiency for numerical weather prediction and climate models. Thus, it omits subgrid surface tiling and uses a single-\/layer snowpack. The surface energy balance is solved via a Penman-\/based approximation for latent heat flux. The Noah model includes packages to simulate soil moisture, soil ice, soil temperature, skin temperature, snow depth, snow water equivalent, energy fluxes such as latent heat, sensible heat and ground heat, and water fluxes such as evaporation and total runoff. The Noah surface infiltration scheme follows that of Schaake et al. (1996) for its treatment of the subgrid variability of precipitation and soil moisture.  
+
+
+
+
+\subsection{Detailed Description}
+On 31 May and 14 June 2005, N\+C\+EP extensively upgraded the land-\/surface component of its Global Forecast System (G\+FS), including its Global Data Assimilation System (G\+D\+AS). The Noah L\+SM upgrade includes an increase from two (10, 190 cm thick) to four soil layers (10, 30, 60, 100 cm thick), addition of frozen soil physics, new formulations for infiltration and runoff (giving more runoff for unsaturated soils), revised physics of the snowpack and its influence on surface heat fluxes and albedo, tuning and adding canopy resistance parameters, allowing spatially varying root depth, revised treatment of ground heat flux and soil thermal conductivity, reformulation for dependence of direct surface evaporation on first layer soil moisture, and improved seasonality of green vegetation cover. The frozen soil physics includes soil heat sinks/sources from freezing/thawing and influences vertical transport of soil moisture, soil thermal conductivity and heat capacity, and surface infiltration. The prognostic states of snowpack depth and liquid soil moisture were added to the already present prognostic states of snowpack water-\/equivalent (S\+WE), total soil moisture (liquid plus frozen), soil temperature, canopy water, and skin temperature. S\+WE divided by the snowpack depth gives the snowpack density. Total soil moisture minus liquid soil moisture gives the frozen soil moisture (Mitchell et al. 2005)
+
+The addition of Noah L\+SM greatly reduced the two prominent biases in land-\/surface processes\+: 1) an early depletion of snowpack; and 2) a high bias in both surface evaporation and precipitation in the warm season in non-\/arid mid-\/latitudes. However, a lower tropospheric warm bias as well as increased surface sensible heat flux emerged, particularly over the arid areas during the daytime. Extensive tests attributed this bias mainly to improper treatment of the thermal roughness length. In May 2011, a new thermal roughness length formulation, which assigned a smaller value for the thermal roughness length compared to the momentum roughness length, was implemented. This greatly reduced the warm surface air temperature bias and the cold skin temperature bias over the arid areas during the daytime (Wei et al. 2009; Zheng et al. 2012).
+
+In January 2015, C\+F\+S/\+G\+L\+D\+AS soil moisture climatology at T574 was used for soil moisture nudge to replace the out-\/of-\/date coarse resolution bucket soil moisture climatology; a dependence of the ratio of the thermal and momentum roughness on vegetation type was added to address the land-\/atmosphere coupling strength; a look-\/up table based on vegetation type was used to replace 1.\+0 degree momentum roughness length climatology. After this implementation summer warm/dry biases were found over cropland/grassland areas. Some evaporation-\/related parameters were refined to increase the evaporation to address this issue. The refinement was implemented in May 2016.
+
+In July 2017, new high-\/resolution M\+O\+D\+I\+S-\/based snow-\/free albedo, maximum snow albedo, soil type and vegetation type were used to address the cold biases over the snow area and the blockiness of surface fields due to the coarse resolution data of soil type and vegetation type. The surface layer parameterization scheme was upgraded to modify the roughness-\/length formulation and introduce a stability parameter constraint in the Monin-\/\+Obukhov similarity theory to prevent the land-\/atmosphere system from decoupling which causes the rapid temperature drop during the sunset (Zheng et al. 2017).\hypertarget{group___g_f_s___n_s_s_t_diagram}{}\subsection{Calling Hierarchy Diagram}\label{group___g_f_s___n_s_s_t_diagram}
+\hypertarget{group___g_f_s___n_s_s_t_intraphysics}{}\subsection{Intraphysics Communication}\label{group___g_f_s___n_s_s_t_intraphysics}
+Brief description of the subroutine\hypertarget{group___n_o_a_h_arg_table_Noah_run}{}\subsection{Arguments}\label{group___n_o_a_h_arg_table_Noah_run}
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{9}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endhead
+im &horizontal\+\_\+loop\+\_\+extent &horizontal loop extent, start at 1 &index &0 &integer &&in &F \\\cline{1-9}
+\end{longtabu}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+\hypertarget{group___g_f_s___n_s_s_t_detailed}{}\subsection{Detailed Algorithm}\label{group___g_f_s___n_s_s_t_detailed}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group___n_o_a_h_ga4081cc761ec0846c01aa1b510d79f00d}\label{group___n_o_a_h_ga4081cc761ec0846c01aa1b510d79f00d}} 
+subroutine {\bfseries sfc\+\_\+drv} (im, km, ps, u1, v1, t1, q1, soiltyp, vegtype, sigmaf, sfcemis, dlwflx, dswsfc, snet, delt, tg3, cm, ch, prsl1, prslki, zf, islimsk, ddvel, slopetyp, shdmin, shdmax, snoalb, sfalb, flag\+\_\+iter, flag\+\_\+guess, isot, ivegsrc, weasd, snwdph, tskin, tprcp, srflag, smc, stc, slc, canopy, trans, tsurf, zorl, sncovr1, qsurf, gflux, drain, evap, hflx, ep, runoff, cmm, chh, evbs, evcw, sbsno, snowc, stm, snohf, smcwlt2, smcref2, wet1)
+\end{DoxyCompactItemize}

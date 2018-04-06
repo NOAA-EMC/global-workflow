@@ -1,0 +1,164 @@
+#!/bin/ksh
+
+export PS4='$SECONDS + '
+date
+set -xa
+
+####################################
+# Specify whether the run is production or development
+####################################
+export envir=${envir:-prod}
+
+####################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+####################################
+# obtain unique process id (pid) and make temp directory
+####################################
+export pid=$$
+export DATA=${DATA:-$DATAROOT/${jobid}}
+mkdir -p $DATA
+cd $DATA
+export KEEPDATA=${KEEPDATA:-NO}
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+export ERRSCRIPT=err_chk
+export LOGSCRIPT=startmsg
+export REDOUT='1>>'
+export REDERR='2>'
+
+####################################
+# Specify version numbers
+####################################
+export crtm_ver=${post_crtm_ver:-v2.0.6}
+export gfs_ver=${gfs_ver:-v15.0.0}
+export hwrf_ver=${hwrf_ver:-v11.0.5}
+export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z
+setpdy.sh
+. ./PDY
+
+###########################################
+# Specify grib version: grib1 or grib2
+###########################################
+export GRIBVERSION=${GRIBVERSION:-'grib2'}
+#export res=${res:-0p25}
+
+####################################
+# SENDECF  - Flag Events on ECF
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+# RERUN    - Rerun posts from beginning (default no)
+# VERBOSE  - Specify Verbose Output in global_postgp.sh
+####################################
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export RERUN=${RERUN:-NO}
+export VERBOSE=${VERBOSE:-YES}
+
+####################################
+# Specify Execution Areas
+####################################
+export HOMECRTM=${HOMECRTM:-${NWROOThps}/lib/crtm/${crtm_ver}}
+export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/src/fix}
+#export FIXCRTM=${FIXCRTM:-${NWROOThps}/hwrf.${hwrf_ver}/fix/hwrf-crtm-2.0.6}
+#### export FIXCRTM=${FIXCRTM:-$HOMECRTM/sorc/fix}
+
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+export PARMpost=${PARMpost:-$HOMEgfs/parm/post}
+
+##############################
+# Set up the UTILITIES
+##############################
+export SIGHDR=${SIGHDR:-$EXECgfs/global_sighdr}
+
+##############################################
+# Define COM directories
+##############################################
+#export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
+export COMOUT=${COMOUT:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+mkdir -m 775 -p $COMOUT
+
+############################################
+# Define location of specific executables
+############################################
+export POSTGPEXEC=${POSTGPEXEC:-$EXECgfs/gfs_ncep_post}
+
+####################################
+# Specify Special Post Vars
+####################################
+if [ $RUN = gfs ];then
+  export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+fi
+if [ $RUN = gdas ]; then
+  export IGEN_GFS="gfs_avn"
+  export IGEN_ANL="anal_gfs"
+  export IGEN_FCST="gfs_avn"
+  export IGEN_GDAS_ANL="anal_gdas"
+  export FHOUT_PGB=${FHOUT:-1} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+fi
+
+if [ $GRIBVERSION = grib2 ]; then
+  export IGEN_ANL="anal_gfs"
+  export IGEN_FCST="gfs_avn"
+  export IGEN_GFS="gfs_avn"
+fi
+
+#######################################
+# Specify Restart File Name to Key Off
+#######################################
+restart_file=$COMIN/${RUN}.t${cyc}z.logf
+
+####################################
+# Specify Timeout Behavior of Post
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a restart file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for restart files
+####################################
+export SLEEP_TIME=900
+export SLEEP_INT=5
+
+env
+
+#########################################################
+# Execute the Script
+#########################################################
+$SCRgfs/ex${RUN}_nceppost.sh.ecf
+
+##############################
+# Remove the Temporary working directory
+##############################
+cd $DATAROOT
+if [ $KEEPDATA = NO ]; then
+  rm -rf $DATA
+fi
+
+date

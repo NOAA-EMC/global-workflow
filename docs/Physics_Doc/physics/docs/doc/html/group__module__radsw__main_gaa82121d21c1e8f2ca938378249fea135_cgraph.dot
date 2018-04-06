@@ -1,0 +1,35 @@
+digraph "module_radsw_main::taumol"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node31 [label="module_radsw_main::\ltaumol",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node31 -> Node32 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="taumol16",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radsw__main.html#ga8702f5f6285ff1a5cbfad740545fffb6",tooltip="The subroutine computes the optical depth in band 16: 2600-3250 cm-1 (low - h2o,ch4; high - ch4) ..."];
+  Node31 -> Node33 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node33 [label="taumol17",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#ae46d1c061726bcde426caadd80b1fd80",tooltip="The subroutine computes the optical depth in band 17: 3250-4000 cm-1 (low - h2o,co2; high - h2o..."];
+  Node31 -> Node34 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node34 [label="taumol18",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a06f6f2b0ef60df93c267a667a2e1aa36",tooltip="The subroutine computes the optical depth in band 18: 4000-4650 cm-1 (low - h2o,ch4; high - ch4) ..."];
+  Node31 -> Node35 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="taumol19",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a776a0d78fda9f4fd0f1153b55be597df",tooltip="The subroutine computes the optical depth in band 19: 4650-5150 cm-1 (low - h2o,co2; high - co2) ..."];
+  Node31 -> Node36 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="taumol20",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a6eb9a29728a986ea6b15240adebd4a0c",tooltip="The subroutine computes the optical depth in band 20: 5150-6150 cm-1 (low - h2o; high - h2o) ..."];
+  Node31 -> Node37 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="taumol21",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a54619c48147f35da2d7855dc488c0ff4",tooltip="The subroutine computes the optical depth in band 21: 6150-7700 cm-1 (low - h2o,co2; high - h2o..."];
+  Node31 -> Node38 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="taumol22",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a3b5392346eee35eb13a2a54175b6338b",tooltip="The subroutine computes the optical depth in band 22: 7700-8050 cm-1 (low - h2o,o2; high - o2) ..."];
+  Node31 -> Node39 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="taumol23",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#adf5d73763c80ec079b72dda7d74cba94",tooltip="The subroutine computes the optical depth in band 23: 8050-12850 cm-1 (low - h2o; high - nothing) ..."];
+  Node31 -> Node40 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="taumol24",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#ae0abf1a08aa5d6ca14bfea83d0603716",tooltip="The subroutine computes the optical depth in band 24: 12850-16000 cm-1 (low - h2o,o2; high - o2) "];
+  Node31 -> Node41 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="taumol25",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a21b72d6de9247eccb20de836ea76cf7a",tooltip="The subroutine computes the optical depth in band 25: 16000-22650 cm-1 (low - h2o; high - nothing) ..."];
+  Node31 -> Node42 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="taumol26",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a20261640145a5d10e091ef3c67763175",tooltip="The subroutine computes the optical depth in band 26: 22650-29000 cm-1 (low - nothing; high - nothing..."];
+  Node31 -> Node43 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="taumol27",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a7d2cea6cc0cfde853d25a14ba0efcca2",tooltip="The subroutine computes the optical depth in band 27: 29000-38000 cm-1 (low - o3; high - o3) ..."];
+  Node31 -> Node44 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="taumol28",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a2113c76707f43cf91fe5926ab69d1b8b",tooltip="The subroutine computes the optical depth in band 28: 38000-50000 cm-1 (low - o3,o2; high - o3..."];
+  Node31 -> Node45 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="taumol29",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$radsw__main_8f.html#a08e2db10432d07392f29a49bc5b5c640",tooltip="The subroutine computes the optical depth in band 29: 820-2600 cm-1 (low - h2o; high - co2) ..."];
+}

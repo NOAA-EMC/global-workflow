@@ -1,0 +1,195 @@
+\hypertarget{group___s_a_m_f__shal}{}\section{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection}
+\label{group___s_a_m_f__shal}\index{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection@{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection}}
+
+
+The scale-\/aware mass-\/flux shallow (S\+A\+M\+F\+\_\+shal) convection scheme is an updated version of the previous mass-\/flux shallow convection scheme with scale and aerosol awareness and parameterizes the effect of shallow convection on the environment. The S\+A\+M\+F\+\_\+shal scheme is similar to the S\+A\+MF deep convection scheme but with a few key differences. First, no quasi-\/equilibrium assumption is used for any grid size and the shallow cloud base mass flux is parameterized using a mean updraft velocity. Further, there are no convective downdrafts, the entrainment rate is greater than for deep convection, and the shallow convection is limited to not extend over the level where $p=0.7p_{sfc}$. The paramerization of scale and aerosol awareness follows that of the S\+A\+MF deep convection scheme.  
+
+
+
+
+\subsection{Detailed Description}
+The previous version of the shallow convection scheme (shalcnv.\+f) is described in Han and Pan (2011) \cite{han_and_pan_2011} and differences between the shallow and deep convection schemes are presented in Han and Pan (2011) \cite{han_and_pan_2011} and Han et al. (2017) \cite{han_et_al_2017} . Details of scale-\/ and aerosol-\/aware parameterizations are described in Han et al. (2017) \cite{han_et_al_2017} .\hypertarget{group___g_f_s___n_s_s_t_diagram}{}\subsection{Calling Hierarchy Diagram}\label{group___g_f_s___n_s_s_t_diagram}
+ \hypertarget{group___g_f_s___n_s_s_t_intraphysics}{}\subsection{Intraphysics Communication}\label{group___g_f_s___n_s_s_t_intraphysics}
+This space is reserved for a description of how this scheme uses information from other scheme types and/or how information calculated in this scheme is used in other scheme types. \subsection*{Files}
+\begin{DoxyCompactItemize}
+\item 
+file \hyperlink{samfshalcnv_8f}{samfshalcnv.\+f}
+\begin{DoxyCompactList}\small\item\em Contains the entire S\+A\+MF shallow convection scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___s_a_m_f__shal_ga8dbd74881cc19752c56c4fc49512e44c}{samfshalcnv} (im, ix, km, delt, delp, prslp, psp, phil, ql,
+\begin{DoxyCompactList}\small\item\em This subroutine contains the entirety of the S\+A\+MF shallow convection scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group___s_a_m_f__shal_ga8dbd74881cc19752c56c4fc49512e44c}\label{group___s_a_m_f__shal_ga8dbd74881cc19752c56c4fc49512e44c}} 
+\index{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection@{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection}!samfshalcnv@{samfshalcnv}}
+\index{samfshalcnv@{samfshalcnv}!Scale-\/\+Aware Mass-\/\+Flux Shallow Convection@{Scale-\/\+Aware Mass-\/\+Flux Shallow Convection}}
+\subsubsection{\texorpdfstring{samfshalcnv()}{samfshalcnv()}}
+{\footnotesize\ttfamily subroutine samfshalcnv (\begin{DoxyParamCaption}\item[{integer}]{im,  }\item[{integer}]{ix,  }\item[{integer}]{km,  }\item[{real(kind=kind\+\_\+phys)}]{delt,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{delp,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{prslp,  }\item[{real(kind=kind\+\_\+phys), dimension(im)}]{psp,  }\item[{}]{phil,  }\item[{}]{ql }\end{DoxyParamCaption})}
+
+This routine follows the \hyperlink{group___s_a_m_f}{Scale-\/\+Aware Mass-\/\+Flux Deep Convection} deep scheme quite closely, although it can be interpreted as only having the \char`\"{}static\char`\"{} and \char`\"{}feedback\char`\"{} control portions, since the \char`\"{}dynamic\char`\"{} control is not necessary to find the cloud base mass flux. The algorithm is simplified from S\+A\+MF deep convection by excluding convective downdrafts and being confined to operate below $p=0.7p_{sfc}$. Also, entrainment is both simpler and stronger in magnitude compared to the deep scheme.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em im} & number of used points \\
+\hline
+\mbox{\tt in}  & {\em ix} & horizontal dimension \\
+\hline
+\mbox{\tt in}  & {\em km} & vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em jcap} & number of spectral wave trancation \\
+\hline
+\mbox{\tt in}  & {\em delt} & physics time step in seconds \\
+\hline
+\mbox{\tt in}  & {\em delp} & pressure difference between level k and k+1 (Pa) \\
+\hline
+\mbox{\tt in}  & {\em prslp} & mean layer presure (Pa) \\
+\hline
+\mbox{\tt in}  & {\em psp} & surface pressure (Pa) \\
+\hline
+\mbox{\tt in}  & {\em phil} & layer geopotential ( $m^s/s^2$) \\
+\hline
+\mbox{\tt in,out}  & {\em ql} & cloud water or ice (kg/kg) \\
+\hline
+\mbox{\tt in,out}  & {\em q1} & updated tracers (kg/kg) \\
+\hline
+\mbox{\tt in,out}  & {\em t1} & updated temperature (K) \\
+\hline
+\mbox{\tt in,out}  & {\em u1} & updated zonal wind ( $m s^{-1}$) \\
+\hline
+\mbox{\tt in,out}  & {\em v1} & updated meridional wind ( $m s^{-1}$) \\
+\hline
+\mbox{\tt out}  & {\em rn} & convective rain (m) \\
+\hline
+\mbox{\tt out}  & {\em kbot} & index for cloud base \\
+\hline
+\mbox{\tt out}  & {\em ktop} & index for cloud top \\
+\hline
+\mbox{\tt out}  & {\em kcnv} & flag to denote deep convection (0=no, 1=yes) \\
+\hline
+\mbox{\tt in}  & {\em islimsk} & sea/land/ice mask (=0/1/2) \\
+\hline
+\mbox{\tt in}  & {\em dot} & layer mean vertical velocity (Pa/s) \\
+\hline
+\mbox{\tt in}  & {\em ncloud} & number of cloud species \\
+\hline
+\mbox{\tt in}  & {\em hpbl} & P\+BL height (m) \\
+\hline
+\mbox{\tt in}  & {\em heat} & surface sensible heat flux (K m/s) \\
+\hline
+\mbox{\tt in}  & {\em evap} & surface latent heat flux (kg/kg m/s) \\
+\hline
+\mbox{\tt out}  & {\em ud\+\_\+mf} & updraft mass flux multiplied by time step ( $kg/m^2$) \\
+\hline
+\mbox{\tt out}  & {\em dt\+\_\+mf} & ud\+\_\+mf at cloud top ( $kg/m^2$) \\
+\hline
+\mbox{\tt out}  & {\em cnvw} & convective cloud water (kg/kg) \\
+\hline
+\mbox{\tt out}  & {\em cnvc} & convective cloud cover (unitless) \\
+\hline
+\mbox{\tt in}  & {\em clam} & coefficient for entrainment rate \\
+\hline
+\mbox{\tt in}  & {\em c0s} & convective rain conversion parameter (1/m) \\
+\hline
+\mbox{\tt in}  & {\em c1} & conversion parameter of detrainment from liquid water into grid-\/scale cloud water (1/m) \\
+\hline
+\mbox{\tt in}  & {\em pgcon} & reduction factor in momentum transport due to convection induced pressure gradient force \\
+\hline
+\mbox{\tt in}  & {\em asolfac} & aerosol-\/aware parameter inversely proportional to C\+CN number concentraion\\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+
+\begin{DoxyEnumerate}
+\item Compute preliminary quantities needed for the static and feedback control portions of the algorithm.
+\item Perform calculations related to the updraft of the entraining/detraining cloud model (\char`\"{}static control\char`\"{}).
+\item The cloud base mass flux is obtained using the cumulus updraft velocity averaged ove the whole cloud depth.
+\item Calculate the tendencies of the state variables (per unit cloud base mass flux) and the cloud base mass flux.
+\item For the \char`\"{}feedback control\char`\"{}, calculate updated values of the state variables by multiplying the cloud base mass flux and the tendencies calculated per unit cloud base mass flux from the static control. 
+\end{DoxyEnumerate}\hypertarget{group___g_f_s___n_s_s_t_detailed}{}\subsection{Detailed Algorithm}\label{group___g_f_s___n_s_s_t_detailed}
+\subsubsection*{Compute preliminary quantities needed for the static and feedback control portions of the algorithm.}
+
+
+\begin{DoxyItemize}
+\item Convert input pressure terms to centibar units.
+\item Initialize column-\/integrated and other single-\/value-\/per-\/column variable arrays.
+\item Return to the calling routine if deep convection is present or the surface buoyancy flux is negative.
+\item determine aerosol-\/aware rain conversion parameter over land
+\item determine rain conversion parameter above the freezing level which exponentially decreases with decreasing temperature from Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 8.
+\item Initialize convective cloud water and cloud cover to zero.
+\item Initialize updraft mass fluxes to zero.
+\item Determine maximum indices for the parcel starting point (kbm) and cloud top (kmax).
+\item Calculate hydrostatic height at layer centers assuming a flat surface (no terrain) from the geopotential.
+\item Calculate interface height and the entrainment rate as an inverse function of height.
+\item Find the index for the P\+BL top using the P\+BL height; enforce that it is lower than the maximum parcel starting level.
+\item Convert prsl from centibar to millibar, set normalized mass flux to 1, cloud properties to 0, and save model state variables (after advection/turbulence).
+\item Calculate saturation specific humidity and enforce minimum moisture values.
+\item Calculate moist static energy (heo) and saturation moist static energy (heso).
+\end{DoxyItemize}
+
+\subsubsection*{Perform calculations related to the updraft of the entraining/detraining cloud model (\char`\"{}static control\char`\"{}).}
+
+
+\begin{DoxyItemize}
+\item Search in the P\+BL for the level of maximum moist static energy to start the ascending parcel.
+\item Calculate the temperature, water vapor mixing ratio, and pressure at interface levels.
+\item Recalculate saturation specific humidity, moist static energy, saturation moist static energy, and horizontal momentum on interface levels. Enforce minimum specific humidity.
+\item Search below the index \char`\"{}kbm\char`\"{} for the level of free convection (L\+FC) where the condition $h_b > h^*$ is first met, where $h_b, h^*$ are the state moist static energy at the parcel\textquotesingle{}s starting level and saturation moist static energy, respectively. Set \char`\"{}kbcon\char`\"{} to the index of the L\+FC.
+\item If no L\+FC, return to the calling routine without modifying state variables.
+\item Determine the vertical pressure velocity at the L\+FC. After Han and Pan (2011) \cite{han_and_pan_2011} , determine the maximum pressure thickness between a parcel\textquotesingle{}s starting level and the L\+FC. If a parcel doesn\textquotesingle{}t reach the L\+FC within the critical thickness, then the convective inhibition is deemed too great for convection to be triggered, and the subroutine returns to the calling routine without modifying the state variables.
+\item The updraft detrainment rate is set constant and equal to the entrainment rate at cloud base.
+\item Calculate the normalized mass flux for subcloud and in-\/cloud layers according to Pan and Wu (1995) \cite{pan_and_wu_1995} equation 1\+: \[ \frac{1}{\eta}\frac{\partial \eta}{\partial z} = \lambda_e - \lambda_d \] where $\eta$ is the normalized mass flux, $\lambda_e$ is the entrainment rate and $\lambda_d$ is the detrainment rate. The normalized mass flux increases upward below the cloud base and decreases upward above.
+\item Set cloud properties equal to the state variables at updraft starting level (kb).
+\item Calculate the cloud properties as a parcel ascends, modified by entrainment and detrainment. Discretization follows Appendix B of Grell (1993) \cite{grell_1993} . Following Han and Pan (2006) \cite{han_and_pan_2006}, the convective momentum transport is reduced by the convection-\/induced pressure gradient force by the constant \char`\"{}pgcon\char`\"{}, currently set to 0.\+55 after Zhang and Wu (2003) \cite{zhang_and_wu_2003} .
+\item With entrainment, recalculate the L\+FC as the first level where buoyancy is positive. The difference in pressure levels between L\+F\+Cs calculated with/without entrainment must be less than a threshold (currently 25 h\+Pa). Otherwise, convection is inhibited and the scheme returns to the calling routine without modifying the state variables. This is the subcloud dryness trigger modification discussed in Han and Pan (2011) \cite{han_and_pan_2011}.
+\item Calculate additional trigger condition of the convective inhibition (C\+IN) according to Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 13.
+\item Turn off convection if the C\+IN is less than a critical value (cinacr) which is inversely proportional to the large-\/scale vertical velocity.
+\item Calculate the cloud top as the first level where parcel buoyancy becomes negative; the maximum possible value is at $p=0.7p_{sfc}$.
+\item Calculate the maximum value of the cloud base mass flux using the C\+F\+L-\/criterion-\/based formula of Han and Pan (2011) \cite{han_and_pan_2011}, equation 7.
+\item Set cloud moisture property equal to the enviromental moisture at updraft starting level (kb).
+\item Calculate the moisture content of the entraining/detraining parcel (qcko) and the value it would have if just saturated (qrch), according to equation A.\+14 in Grell (1993) \cite{grell_1993} . Their difference is the amount of convective cloud water (qlk = rain + condensate). Determine the portion of convective cloud water that remains suspended and the portion that is converted into convective precipitation (pwo). Calculate and save the negative cloud work function (aa1) due to water loading. Above the level of minimum moist static energy, some of the cloud water is detrained into the grid-\/scale cloud water from every cloud layer with a rate of 0.\+0005 $m^{-1}$ (dellal).
+\item Calculate the cloud work function according to Pan and Wu (1995) \cite{pan_and_wu_1995} equation 4\+: \[ A_u=\int_{z_0}^{z_t}\frac{g}{c_pT(z)}\frac{\eta}{1 + \gamma}[h(z)-h^*(z)]dz \] (discretized according to Grell (1993) \cite{grell_1993} equation B.\+10 using B.\+2 and B.\+3 of Arakawa and Schubert (1974) \cite{arakawa_and_schubert_1974} and assuming $\eta=1$) where $A_u$ is the updraft cloud work function, $z_0$ and $z_t$ are cloud base and cloud top, respectively, $\gamma = \frac{L}{c_p}\left(\frac{\partial \overline{q_s}}{\partial T}\right)_p$ and other quantities are previously defined.
+\item If the updraft cloud work function is negative, convection does not occur, and the scheme returns to the calling routine.
+\item Continue calculating the cloud work function past the point of neutral buoyancy to represent overshooting according to Han and Pan (2011) \cite{han_and_pan_2011} . Convective overshooting stops when $ cA_u < 0$ where $c$ is currently 10\%, or when 10\% of the updraft cloud work function has been consumed by the stable buoyancy force. Overshooting is also limited to the level where $p=0.7p_{sfc}$.
+\item For the overshooting convection, calculate the moisture content of the entraining/detraining parcel as before. Partition convective cloud water and precipitation and detrain convective cloud water in the overshooting layers.
+\item Calculate updraft velocity square(wu2) according to Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 7.
+\item Calculate the mean updraft velocity within the cloud (wc).
+\item =$>$ Separate the total updraft cloud water at cloud top into vapor and condensate.
+\end{DoxyItemize}
+
+\subsubsection*{Calculate the tendencies of the state variables (per unit cloud base mass flux) and the cloud base mass flux.}
+
+
+\begin{DoxyItemize}
+\item Calculate the change in moist static energy, moisture mixing ratio, and horizontal winds per unit cloud base mass flux for all layers below cloud top from equations B.\+14 and B.\+15 from Grell (1993) \cite{grell_1993}, and for the cloud top from B.\+16 and B.\+17.
+\item Following Bechtold et al. (2008) \cite{bechtold_et_al_2008}, calculate the convective turnover time using the mean updraft velocity (wc) and the cloud depth. It is also proportional to the grid size (gdx).
+\item Calculate advective time scale (tauadv) using a mean cloud layer wind speed.
+\item From Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 6, calculate cloud base mass flux as a function of the mean updraft velcoity. As discussed in Han et al. (2017) \cite{han_et_al_2017} , when dtconv is larger than tauadv, the convective mixing is not fully conducted before the cumulus cloud is advected out of the grid cell. In this case, therefore, the cloud base mass flux is further reduced in proportion to the ratio of tauadv to dtconv.
+\item For scale-\/aware parameterization, the updraft fraction (sigmagfm) is first computed as a function of the lateral entrainment rate at cloud base (see Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 4 and 5), following the study by Grell and Freitas (2014) \cite{grell_and_freitus_2014}.
+\item Then, calculate the reduction factor (scaldfunc) of the vertical convective eddy transport of mass flux as a function of updraft fraction from the studies by Arakawa and Wu (2013) \cite{arakawa_and_wu_2013} (also see Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 1 and 2). The final cloud base mass flux with scale-\/aware parameterization is obtained from the mass flux when sigmagfm $<$$<$ 1, multiplied by the reduction factor (Han et al.\textquotesingle{}s (2017) \cite{han_et_al_2017} equation 2).
+\end{DoxyItemize}
+
+\subsubsection*{For the \char`\"{}feedback control\char`\"{}, calculate updated values of the state variables by multiplying the cloud base mass flux and the tendencies calculated per unit cloud base mass flux from the static control.}
+
+
+\begin{DoxyItemize}
+\item Recalculate saturation specific humidity.
+\item Calculate the temperature tendency from the moist static energy and specific humidity tendencies.
+\item Update the temperature, specific humidity, and horiztonal wind state variables by multiplying the cloud base mass flux-\/normalized tendencies by the cloud base mass flux.
+\item Accumulate column-\/integrated tendencies.
+\item Recalculate saturation specific humidity using the updated temperature.
+\item Add up column-\/integrated convective precipitation by multiplying the normalized value by the cloud base mass flux.
+\item Determine the evaporation of the convective precipitation and update the integrated convective precipitation.
+\item Update state temperature and moisture to account for evaporation of convective precipitation.
+\item Update column-\/integrated tendencies to account for evaporation of convective precipitation.
+\item Calculate shallow convective cloud water.
+\item Calculate convective cloud cover, which is used when pdf-\/based cloud fraction is used (i.\+e., pdfcld=.true.).
+\item Separate detrained cloud water into liquid and ice species as a function of temperature only.
+\item Calculate and retain the updraft mass flux for dust transport by cumulus convection.
+\item Calculate the updraft convective mass flux.
+\item save the updraft convective mass flux at cloud top. 
+\end{DoxyItemize}
+
+Definition at line 62 of file samfshalcnv.\+f.
+

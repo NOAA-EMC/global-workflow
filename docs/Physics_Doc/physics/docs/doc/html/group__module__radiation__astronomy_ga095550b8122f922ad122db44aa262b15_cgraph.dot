@@ -1,0 +1,11 @@
+digraph "module_radiation_astronomy::sol_update"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node2 [label="module_radiation_astronomy\l::sol_update",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="module_radiation_astronomy\l::prtime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#gaee29441c2e62c44728b10915a148cccf",tooltip="This subroutine prints out forecast date, time, and astronomy quantities. "];
+  Node2 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="module_radiation_astronomy\l::solar",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#ga33f3a3fbb7f232aab2a624025c991890",tooltip="This subroutine computes radius vector, declination and right ascension of sun, and equation of time..."];
+}

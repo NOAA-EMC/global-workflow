@@ -1,0 +1,4 @@
+<map id="module_radiation_aerosols::aer_update" name="module_radiation_aerosols::aer_update">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#gafac9a9c603c033c8511e8dbfe984f703" title="This subroutine updates the monthly global distribution of aerosol profiles in five degree horizontal..." alt="" coords="231,5,321,32"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#ga6ec9bd68d45a5f2c6bb9997bdad420c3" title="This subroutine searches historical volcanic data sets to find and read in monthly 45&#45;degree lat&#45;zone..." alt="" coords="230,56,322,83"/>
+</map>

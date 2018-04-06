@@ -1,0 +1,21 @@
+Lin Gan  -  2015 10 14
+
+This version of the post is updated with PMB-SPA standard using module
+To make this version of post in WCOSS, goto sorc/ncep_post.fd and run build_wcoss.sh
+
+**************************************************************************************
+
+Lin Gan  -  2015 12 14
+
+Updated to version 7.0.0 with following change:
+1. Major code merge. 
+2. Updated module configuration.
+3. Unified makefile is available by running makefile.sh. 
+4. Generated libnceppost.a post library file.
+5. All *.mod file has been moved to include sub directory.
+6. Type ./build_wcoss.sh for build using module in WCOSS phase2.
+7. Type ./makefile.sh for unified build on platform independent.
+
+**************************************************************************************
+
+

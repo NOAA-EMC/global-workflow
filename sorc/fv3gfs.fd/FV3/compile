@@ -1,0 +1,43 @@
+#!/bin/bash
+set -eu
+
+echo
+
+if [[ ! -f conf/configure.fv3 ]]; then
+    echo "File conf/configure.fv3 not found!"
+    echo "Running ./configure .... "
+    ./configure
+fi
+
+if [[ -f conf/modules.fv3 ]]; then
+    echo -n "Loading modules .... "
+    source conf/modules.fv3
+    echo "done."
+    echo
+fi
+
+set -x
+
+echo "Running make" "$@"
+
+ make -j 8 "$@"
+
+#make clean
+#make -j 8 "$@"
+#mv fv3.exe fv3_default.exe
+
+#make clean
+#make -j 8 HYDRO=Y "$@"
+#mv fv3.exe fv3_hydro.exe
+
+#make clean
+#make -j 8 32BIT=Y "$@"
+#mv fv3.exe fv3_32bit.exe
+
+#make clean
+#make -j 8 DEBUG=Y "$@"
+#mv fv3.exe fv3_debug.exe
+
+echo
+echo "Compilation finished successfully."
+echo

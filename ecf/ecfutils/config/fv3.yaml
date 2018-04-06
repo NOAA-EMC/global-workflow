@@ -1,3 +1,8 @@
+# This file is used to generate config.fv3, which is one of two files
+# used to control the forecast job.  The other file is config.fcst.
+# This file sets task geometry, domain decomposition, and I/O server
+# options.
+
 config_fv3:
   filename: config.fv3
   enkf_cdmbgwd_settings: !FirstTrue

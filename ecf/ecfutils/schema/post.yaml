@@ -1,3 +1,6 @@
+# This is used to set default values for grib product generation.
+# Reconfiguring These variables are not supported in this release.
+
 post_schema: &post_schema !Template
   GOESF:
     type: bool

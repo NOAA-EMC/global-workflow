@@ -1,0 +1,79 @@
+#!/bin/bash
+set -eux
+
+# copy_diff_files
+copy_diff_files(){
+  if [[ ! -f $2 ]] ; then
+    cp "$1" "$2"
+  else
+  if [[ "$(diff "$1" "$2")" != "" ]] ; then
+    cp "$1" "$2"
+  else
+    echo "confirmed $2"
+  fi
+  fi
+}
+
+CONF_FILES=( conf/configure.fv3.* )
+CONF=()
+
+for f in "${CONF_FILES[@]}"; do
+    name=$(basename "$f")
+    CONF+=( ${name#configure.fv3.} )
+done
+
+usage() {
+    echo
+    echo "Usage: $0 <configuration>"
+    echo
+    echo " where <configuration> is one of:"
+    echo
+    for f in "${CONF[@]}"; do
+        echo "  $f"
+    done
+    echo
+    exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+    CONFIGNAME=""
+    while [[ "$CONFIGNAME" == "" ]]; do
+        echo "Please enter the number of the configuration you want to select:"
+        select CONFIGNAME in "${CONF[@]}"; do
+            if [[ $CONFIGNAME = "" ]]; then
+                 echo
+                 echo "Please enter a valid number. Retry."
+            fi
+            break
+        done
+    done
+    CONFIGURATION=$CONFIGNAME
+elif [[ $# -eq 1 && "$1" == "-h" ]]; then
+    usage
+elif [[ $# -gt 1 ]]; then
+    usage
+elif [[ $# -eq 1 && "$1" == "clean" ]]; then
+    rm -f conf/configure.fv3
+    rm -f conf/modules.fv3
+    exit
+else
+    if [[ "${CONF[@]}" =~ ${1} ]]; then
+        CONFIGURATION=${1}
+    else
+        echo
+        echo "No such configuration. The configuration option \"${1}\" is invalid."
+        usage
+    fi
+fi
+
+CONFIGURE_FILE=conf/configure.fv3.$CONFIGURATION
+MODULES_FILE=conf/modules.fv3.$CONFIGURATION
+
+[[ ! -f "$CONFIGURE_FILE" ]] && usage
+copy_diff_files "$CONFIGURE_FILE" conf/configure.fv3
+
+[[ -f "$MODULES_FILE" ]] && copy_diff_files "$MODULES_FILE" conf/modules.fv3
+
+echo
+echo "The FV3 is now configured on $CONFIGURATION"
+echo

@@ -106,14 +106,14 @@ fi
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN = gfs ];then
-  export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+  export FHOUT_PGB=${FHOUT_PGB:-${FHOUT_GFS:-3}} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
 fi
 if [ $RUN = gdas ]; then
   export IGEN_GFS="gfs_avn"
   export IGEN_ANL="anal_gfs"
   export IGEN_FCST="gfs_avn"
   export IGEN_GDAS_ANL="anal_gdas"
-  export FHOUT_PGB=${FHOUT:-1} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+  export FHOUT_PGB=${FHOUT_PGB:-${FHOUT:-1}} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
 fi
 
 if [ $GRIBVERSION = grib2 ]; then

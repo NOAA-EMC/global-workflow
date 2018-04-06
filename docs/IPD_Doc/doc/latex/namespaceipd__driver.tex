@@ -1,0 +1,74 @@
+\section{ipd\+\_\+driver Module Reference}
+\label{namespaceipd__driver}\index{ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ ipd\+\_\+initialize} (I\+P\+D\+\_\+control, I\+P\+D\+\_\+\+Data, I\+P\+D\+\_\+\+Diag, I\+P\+D\+\_\+\+Restart, I\+P\+D\+\_\+init\+\_\+parm)
+\item 
+subroutine, public \textbf{ ipd\+\_\+setup\+\_\+step} (I\+P\+D\+\_\+\+Control, I\+P\+D\+\_\+\+Data, I\+P\+D\+\_\+\+Diag, I\+P\+D\+\_\+\+Restart)
+\item 
+subroutine, public \textbf{ ipd\+\_\+radiation\+\_\+step} (I\+P\+D\+\_\+\+Control, I\+P\+D\+\_\+\+Data, I\+P\+D\+\_\+\+Diag, I\+P\+D\+\_\+\+Restart)
+\item 
+subroutine, public \textbf{ ipd\+\_\+physics\+\_\+step1} (I\+P\+D\+\_\+\+Control, I\+P\+D\+\_\+\+Data, I\+P\+D\+\_\+\+Diag, I\+P\+D\+\_\+\+Restart)
+\item 
+subroutine, public \textbf{ ipd\+\_\+physics\+\_\+step2} (I\+P\+D\+\_\+\+Control, I\+P\+D\+\_\+\+Data, I\+P\+D\+\_\+\+Diag, I\+P\+D\+\_\+\+Restart)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\label{namespaceipd__driver_afbc6aeb303c31ea8a9fdd3458dda5238}} 
+\index{ipd\+\_\+driver@{ipd\+\_\+driver}!ipd\+\_\+initialize@{ipd\+\_\+initialize}}
+\index{ipd\+\_\+initialize@{ipd\+\_\+initialize}!ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsubsection{ipd\+\_\+initialize()}
+{\footnotesize\ttfamily subroutine, public ipd\+\_\+driver\+::ipd\+\_\+initialize (\begin{DoxyParamCaption}\item[{type(ipd\+\_\+control\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+control,  }\item[{type(ipd\+\_\+data\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Data,  }\item[{type(ipd\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Diag,  }\item[{type(ipd\+\_\+restart\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Restart,  }\item[{type(ipd\+\_\+init\+\_\+type), intent(in)}]{I\+P\+D\+\_\+init\+\_\+parm }\end{DoxyParamCaption})}
+
+
+
+Definition at line 44 of file I\+P\+D\+\_\+driver.\+F90.
+
+
+
+References physics\+\_\+diag\+\_\+layer\+::diag\+\_\+populate(), and physics\+\_\+restart\+\_\+layer\+::restart\+\_\+populate().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\label{namespaceipd__driver_a3a41040612b769b63caf5a0530e3fcd0}} 
+\index{ipd\+\_\+driver@{ipd\+\_\+driver}!ipd\+\_\+setup\+\_\+step@{ipd\+\_\+setup\+\_\+step}}
+\index{ipd\+\_\+setup\+\_\+step@{ipd\+\_\+setup\+\_\+step}!ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsubsection{ipd\+\_\+setup\+\_\+step()}
+{\footnotesize\ttfamily subroutine, public ipd\+\_\+driver\+::ipd\+\_\+setup\+\_\+step (\begin{DoxyParamCaption}\item[{type(ipd\+\_\+control\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Control,  }\item[{type(ipd\+\_\+data\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Data,  }\item[{type(ipd\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Diag,  }\item[{type(ipd\+\_\+restart\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Restart }\end{DoxyParamCaption})}
+
+
+
+Definition at line 78 of file I\+P\+D\+\_\+driver.\+F90.
+
+\mbox{\label{namespaceipd__driver_a989c8f027a74c596a5c61903046b2ca7}} 
+\index{ipd\+\_\+driver@{ipd\+\_\+driver}!ipd\+\_\+radiation\+\_\+step@{ipd\+\_\+radiation\+\_\+step}}
+\index{ipd\+\_\+radiation\+\_\+step@{ipd\+\_\+radiation\+\_\+step}!ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsubsection{ipd\+\_\+radiation\+\_\+step()}
+{\footnotesize\ttfamily subroutine, public ipd\+\_\+driver\+::ipd\+\_\+radiation\+\_\+step (\begin{DoxyParamCaption}\item[{type(ipd\+\_\+control\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Control,  }\item[{type(ipd\+\_\+data\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Data,  }\item[{type(ipd\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Diag,  }\item[{type(ipd\+\_\+restart\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Restart }\end{DoxyParamCaption})}
+
+
+
+Definition at line 95 of file I\+P\+D\+\_\+driver.\+F90.
+
+\mbox{\label{namespaceipd__driver_abafd0a9f2cf822a3be45b837afe561fb}} 
+\index{ipd\+\_\+driver@{ipd\+\_\+driver}!ipd\+\_\+physics\+\_\+step1@{ipd\+\_\+physics\+\_\+step1}}
+\index{ipd\+\_\+physics\+\_\+step1@{ipd\+\_\+physics\+\_\+step1}!ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsubsection{ipd\+\_\+physics\+\_\+step1()}
+{\footnotesize\ttfamily subroutine, public ipd\+\_\+driver\+::ipd\+\_\+physics\+\_\+step1 (\begin{DoxyParamCaption}\item[{type(ipd\+\_\+control\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Control,  }\item[{type(ipd\+\_\+data\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Data,  }\item[{type(ipd\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Diag,  }\item[{type(ipd\+\_\+restart\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Restart }\end{DoxyParamCaption})}
+
+
+
+Definition at line 112 of file I\+P\+D\+\_\+driver.\+F90.
+
+\mbox{\label{namespaceipd__driver_a613c24c131f22ad6cc51bd3a33f9baee}} 
+\index{ipd\+\_\+driver@{ipd\+\_\+driver}!ipd\+\_\+physics\+\_\+step2@{ipd\+\_\+physics\+\_\+step2}}
+\index{ipd\+\_\+physics\+\_\+step2@{ipd\+\_\+physics\+\_\+step2}!ipd\+\_\+driver@{ipd\+\_\+driver}}
+\subsubsection{ipd\+\_\+physics\+\_\+step2()}
+{\footnotesize\ttfamily subroutine, public ipd\+\_\+driver\+::ipd\+\_\+physics\+\_\+step2 (\begin{DoxyParamCaption}\item[{type(ipd\+\_\+control\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Control,  }\item[{type(ipd\+\_\+data\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Data,  }\item[{type(ipd\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{I\+P\+D\+\_\+\+Diag,  }\item[{type(ipd\+\_\+restart\+\_\+type), intent(inout)}]{I\+P\+D\+\_\+\+Restart }\end{DoxyParamCaption})}
+
+
+
+Definition at line 129 of file I\+P\+D\+\_\+driver.\+F90.
+

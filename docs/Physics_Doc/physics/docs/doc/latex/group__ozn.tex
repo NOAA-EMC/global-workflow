@@ -1,0 +1,56 @@
+\hypertarget{group__ozn}{}\section{Ozone Sources and Sinks}
+\label{group__ozn}\index{Ozone Sources and Sinks@{Ozone Sources and Sinks}}
+
+
+The operational G\+FS currently parameterizes ozone production and destruction based on monthly mean coefficients provided by Naval Research Laboratory through C\+H\+E\+M2D chemistry model (Mc\+Cormack et al. 2006 \cite{mccormack_et_al_2006}). Monthly and zonal mean ozone production rate and ozone destruction rate per unit ozone mixing ratio were provided by N\+RL based on C\+H\+E\+M2D model. Original version of these terms were provided by N\+A\+S\+A/\+D\+AO based on N\+A\+SA 2D Chemistry model -\/ G\+SM is capable of running both versions.  
+
+
+
+
+\subsection{Detailed Description}
+\hypertarget{group__ozn_intra_oz}{}\subsection{Intraphysics Cummunication}\label{group__ozn_intra_oz}
+
+\begin{DoxyItemize}
+\item Routine O\+Z\+P\+H\+YS is called from G\+B\+P\+H\+YS after call to R\+A\+Y\+L\+E\+I\+G\+H\+\_\+\+D\+A\+MP
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ix,im} & integer, horizontal dimension and num of used pts \\
+\hline
+\mbox{\tt in}  & {\em levs} & integer, vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em ko3} & integer, number of layers for ozone data \\
+\hline
+\mbox{\tt in}  & {\em dt} & real, physics time step in seconds \\
+\hline
+\mbox{\tt in}  & {\em ozi} & real, updated ozone \\
+\hline
+\mbox{\tt in}  & {\em ozo} & real, updated ozone \\
+\hline
+\mbox{\tt in}  & {\em tin} & real, updated temperature \\
+\hline
+\mbox{\tt in}  & {\em po3} & real, (ko3), ozone forcing data level pressure (ln(\+Pa)) \\
+\hline
+\mbox{\tt in}  & {\em prsl} & real, (ix,levs),mean layer pressure \\
+\hline
+\mbox{\tt in}  & {\em prdout} & real, (ix,ko3,pl\+\_\+coeff),ozone forcing data \\
+\hline
+\mbox{\tt in}  & {\em pl\+\_\+coeff} & integer, number coefficients in ozone forcing \\
+\hline
+\mbox{\tt in}  & {\em delp} & real, (ix,levs) \\
+\hline
+\mbox{\tt in}  & {\em ldiag3d} & logical, flag for 3d diagnostic fields \\
+\hline
+\mbox{\tt out}  & {\em ozp} & real, ozone change due to physics \\
+\hline
+\mbox{\tt in}  & {\em me} & integer, pe number -\/ used for debug prints \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__ozn_gen_al}{}\subsection{General Algorithm}\label{group__ozn_gen_al}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__ozn_ga1994c35a0e329143943d83bd22ee9497}\label{group__ozn_ga1994c35a0e329143943d83bd22ee9497}} 
+subroutine {\bfseries ozphys} (ix, im, levs, ko3, dt, ozi, ozo, tin, po3, prsl, prdout, pl\+\_\+coeff, delp, ldiag3d, ozp, me)
+\end{DoxyCompactItemize}

@@ -1,0 +1,94 @@
+\hypertarget{radiation__gases_8f}{}\section{radiation\+\_\+gases.\+f File Reference}
+\label{radiation__gases_8f}\index{radiation\+\_\+gases.\+f@{radiation\+\_\+gases.\+f}}
+
+
+This file contains routines that set up ozone climatological profiles and other constant gas profiles, such as co2, ch4, n2o, o2, and those of cfc gases. All data are entered as mixing ratio by volume, except ozone which is mass mixing ratio (g/g).  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{radiation__gases_8f_a8a79a6d3d931da021cd19290c58bdfaa}\label{radiation__gases_8f_a8a79a6d3d931da021cd19290c58bdfaa}} 
+character(40), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::vtaggas} =\textquotesingle{}N\+C\+EP-\/Radiation\+\_\+gases v5.\+1 Nov 2012 \textquotesingle{}
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ parameter constants}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, parameter, public \hyperlink{group__module__radiation__gases_gaffc350828412da77ff3cf3e617ddc66c}{module\+\_\+radiation\+\_\+gases\+::nf\+\_\+vgas} = 10
+\begin{DoxyCompactList}\small\item\em number of gas species \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__gases_ga46eb4079ff9932819b3ab133bf6a43d9}{module\+\_\+radiation\+\_\+gases\+::imxco2} = 24
+\begin{DoxyCompactList}\small\item\em input co2 dat lon points \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__gases_gaa56e209872093bfcbdaeb452f5e5e332}{module\+\_\+radiation\+\_\+gases\+::jmxco2} = 12
+\begin{DoxyCompactList}\small\item\em input co2 data lat points \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__gases_ga3b26af64187b57999cadeced419b0f1b}{module\+\_\+radiation\+\_\+gases\+::minyear} = 1957
+\begin{DoxyCompactList}\small\item\em earlist year 2-\/d co2 data available \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_gafda5c1d1129d865b9772e0f58dea7598}{module\+\_\+radiation\+\_\+gases\+::resco2} =15.\+0
+\begin{DoxyCompactList}\small\item\em horizontal resolution in degree \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_gaa5873ae54e950001ff873771378e7a1e}{module\+\_\+radiation\+\_\+gases\+::raddeg} =180.\+0/con\+\_\+pi
+\begin{DoxyCompactList}\small\item\em rad-\/$>$deg conversion \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_gab09dc05b8a02e9a0b56991508b599708}{module\+\_\+radiation\+\_\+gases\+::prsco2} =788.\+0
+\begin{DoxyCompactList}\small\item\em pressure limitation for 2-\/d co2 (mb) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_gab99c75954c59ed92a52de94ca6113f73}{module\+\_\+radiation\+\_\+gases\+::hfpi} =0.\+5$\ast$con\+\_\+pi
+\begin{DoxyCompactList}\small\item\em half of pi \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ parameter constants for gas volume mixing ratioes}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::co2vmr\+\_\+def} = 350.\+0e-\/6
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::n2ovmr\+\_\+def} = 0.\+31e-\/6
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::ch4vmr\+\_\+def} = 1.\+50e-\/6
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::o2vmr\+\_\+def} = 0.\+209
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+gases\+::covmr\+\_\+def} = 1.\+50e-\/8
+\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_ga23ae6bb6860bfefef0c281b7106f521e}{module\+\_\+radiation\+\_\+gases\+::f11vmr\+\_\+def} = 3.\+520e-\/10
+\begin{DoxyCompactList}\small\item\em aer 2003 value \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_ga96d4f78070f30010626e0824b3421250}{module\+\_\+radiation\+\_\+gases\+::f12vmr\+\_\+def} = 6.\+358e-\/10
+\begin{DoxyCompactList}\small\item\em aer 2003 value \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_gafd0018e96811ac64ef2abd8cab821eb5}{module\+\_\+radiation\+\_\+gases\+::f22vmr\+\_\+def} = 1.\+500e-\/10
+\begin{DoxyCompactList}\small\item\em aer 2003 value \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_ga013f8faaee6df0c7c032e1786770c110}{module\+\_\+radiation\+\_\+gases\+::cl4vmr\+\_\+def} = 1.\+397e-\/10
+\begin{DoxyCompactList}\small\item\em aer 2003 value \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__gases_ga76ec88dc6284c48cfaae6cd05428b6dd}{module\+\_\+radiation\+\_\+gases\+::f113vmr\+\_\+def} = 8.\+2000e-\/11
+\begin{DoxyCompactList}\small\item\em gfdl 1999 value \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ variables for climatology ozone (ioznflg = 0)}\par
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:), allocatable {\bfseries module\+\_\+radiation\+\_\+gases\+::pkstr}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable {\bfseries module\+\_\+radiation\+\_\+gases\+::o3r}
+\item 
+integer {\bfseries module\+\_\+radiation\+\_\+gases\+::k1oz} = 0
+\item 
+integer {\bfseries module\+\_\+radiation\+\_\+gases\+::k2oz} = 0
+\item 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radiation\+\_\+gases\+::facoz} = 0.\+0
+\end{DoxyCompactItemize}
+\end{Indent}
+\subsection*{arrays for co2 2-\/d monthly data and global mean values from observed data}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable {\bfseries module\+\_\+radiation\+\_\+gases\+::co2vmr\+\_\+sav}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), allocatable {\bfseries module\+\_\+radiation\+\_\+gases\+::co2cyc\+\_\+sav}
+\item 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radiation\+\_\+gases\+::co2\+\_\+glb} = co2vmr\+\_\+def
+\item 
+real(kind=kind\+\_\+phys), dimension(12) {\bfseries module\+\_\+radiation\+\_\+gases\+::gco2cyc}
+\item 
+integer {\bfseries module\+\_\+radiation\+\_\+gases\+::kyrsav} = 0
+\item 
+integer {\bfseries module\+\_\+radiation\+\_\+gases\+::kmonsav} = 1
+\item 
+subroutine, public \hyperlink{group__module__radiation__gases_gaeff1c60060c81d3f0693a542976ee3db}{module\+\_\+radiation\+\_\+gases\+::gas\+\_\+init} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine sets up ozone, co2, etc. parameters. If climatology ozone then read in monthly ozone data. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__gases_gafce04ada352f998d640606528a8cd25c}{module\+\_\+radiation\+\_\+gases\+::gas\+\_\+update} (iyear, imon, iday, ihour, loz1st, ldoco2, me)
+\begin{DoxyCompactList}\small\item\em This subroutine reads in 2-\/d monthly co2 data set for a specified year. Data are in a 15 degree lat/lon horizontal resolution. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__gases_gacce60e9b372951eea9c6b3f28568e99c}{module\+\_\+radiation\+\_\+gases\+::getgases} (plvl, xlon, xlat, I\+M\+AX, L\+M\+AX, gasdat)
+\begin{DoxyCompactList}\small\item\em This subroutine sets up global distribution of radiation absorbing gases in volume mixing ratio. Currently only co2 has the options from observed values, all other gases are asigned to the climatological values. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__gases_ga91f9dd83a3832ad2615efb06b52eee92}{module\+\_\+radiation\+\_\+gases\+::getozn} (prslk, xlat, I\+M\+AX, LM, o3mmr)
+\begin{DoxyCompactList}\small\item\em This subroutine sets up climatological ozone profile for radiation calculation. This code is originally written by Shrinivas Moorthi. \end{DoxyCompactList}\end{DoxyCompactItemize}

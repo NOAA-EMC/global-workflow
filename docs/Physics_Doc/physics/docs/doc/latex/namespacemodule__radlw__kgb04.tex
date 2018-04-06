@@ -1,0 +1,35 @@
+\hypertarget{namespacemodule__radlw__kgb04}{}\section{module\+\_\+radlw\+\_\+kgb04 Module Reference}
+\label{namespacemodule__radlw__kgb04}\index{module\+\_\+radlw\+\_\+kgb04@{module\+\_\+radlw\+\_\+kgb04}}
+
+
+This module sets up absorption coefficients for band 04\+: 630-\/700 cm-\/1 (low -\/ h2o, co2; high -\/ co2, o3)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__kgb04_ac8c5caff005fd04d01009dd9e977d570}\label{namespacemodule__radlw__kgb04_ac8c5caff005fd04d01009dd9e977d570}} 
+integer, public \hyperlink{namespacemodule__radlw__kgb04_ac8c5caff005fd04d01009dd9e977d570}{msa04}
+\begin{DoxyCompactList}\small\item\em msa04=585 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gab9ce0111a156f7b80f2adaa9f3e84a32}{msb04}
+\begin{DoxyCompactList}\small\item\em msb04=1175 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga4b38dd1165aca80e19697df7ae74a27a}{msf04}
+\begin{DoxyCompactList}\small\item\em msf04=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_gab6ae25b4a793bf78ccd504685d639039}{mfr04}
+\begin{DoxyCompactList}\small\item\em mfr04=4 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga60ff35def4e526c7d9cf3ec88bdd4485}{maf04}
+\begin{DoxyCompactList}\small\item\em maf04=9 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radlw__kgbnn_ga768f4447809fb11206dce383a121d595}{mbf04}
+\begin{DoxyCompactList}\small\item\em mbf04=5 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{group__module__radlw__kgbnn_gab6ae25b4a793bf78ccd504685d639039}{mfr04}), public \hyperlink{group__module__radlw__kgbnn_ga816fd065291a92c13d026d38a708479b}{forref}
+\begin{DoxyCompactList}\small\item\em the array forref contains the coefficient of the water vapor foreign-\/continuum (including the energy term). the first index refers to reference temperature (296,260,224,260) and pressure (970,475,219,3 mbar) levels. the second index runs over the g-\/channel (1 to N\+G04=14). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{namespacemodule__radlw__kgb04_ac8c5caff005fd04d01009dd9e977d570}{msa04}), public \hyperlink{group__module__radlw__kgbnn_ga8d73bb6971c872e15a24a81d3917167e}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(\+N\+G04,585) = ka(\+N\+G04,9,5,13) contains absorption coefs at the N\+G04=14 g-\/intervals for a range of pressure levels $>$ $\sim$100mb, temperatures, and ratios of water vapor to co2. the first index in the array, js, runs from 1 to 9, and corresponds to different gas column amount ratios, as expressed through the binary species parameter eta, defined as eta = gas1/(gas1+(rat)$\ast$gas2), where rat is the ratio of the reference mls column amount value of gas1 to that of gas2. the 2nd index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the third index, jp, runs from 1 to 13 and refers to the reference pressure level (e.\+g. jp = 1 is for a pressure of 1053.\+63 mb). the fourth index, ig, goes from 1 to N\+G04=14, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{group__module__radlw__kgbnn_gab9ce0111a156f7b80f2adaa9f3e84a32}{msb04}), public \hyperlink{group__module__radlw__kgbnn_gaaacc55911b42c67396b5cdc4318e0d5f}{absb}
+\begin{DoxyCompactList}\small\item\em the array absb(\+N\+G04,1175) = kb(\+N\+G04,5,5,13\+:59) contains absorption coefs at the N\+G04=14 g-\/intervals for a range of pressure levels $<$ $\sim$100mb, temperatures, and ratios of h2o to co2. the first index in the array, js, runs from 1 to 5, and corresponds to different gas amount ratios, as expressed through the binary species parameter eta, defined as eta = gas1/(gas1+rat$\ast$gas2), where rat is the ratio of the reference mls column amount value of gas1 to that of gas2. the second index, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 1-\/5 means that the data are for the corresponding temperature of tref-\/30, tref-\/15, tref, tref+15, and tref+30, respectively. the third index, jp, runs from 13 to 59 and refers to the reference pressure level (e.\+g. jp = 13 is for a pressure of 95.\+5835 mb). the fourth index, ig, goes from 1 to N\+G04=14, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{group__module__radlw__kgbnn_ga4b38dd1165aca80e19697df7ae74a27a}{msf04}), public \hyperlink{group__module__radlw__kgbnn_ga696b91ef86ccbda17df10f770797cafa}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to N\+G04=14). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{group__module__radlw__kgbnn_ga60ff35def4e526c7d9cf3ec88bdd4485}{maf04}), public \hyperlink{group__module__radlw__kgbnn_gace1d87742e2c543d9b0662e1c7d2b624}{fracrefa}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level\+: p=212.\+7250 mbar, t = 223.\+06 k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng04, \hyperlink{group__module__radlw__kgbnn_ga768f4447809fb11206dce383a121d595}{mbf04}), public \hyperlink{group__module__radlw__kgbnn_gae8d5d56d09dfbe06d918c6b098e3fddf}{fracrefb}
+\begin{DoxyCompactList}\small\item\em planck fraction mapping level \+: p = 95.\+58350 mb, t = 215.\+70 k \end{DoxyCompactList}\end{DoxyCompactItemize}

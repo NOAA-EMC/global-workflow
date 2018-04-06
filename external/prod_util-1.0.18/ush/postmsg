@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+#  script:  postmsg   author:  Bill Facey  3/14/96
+#
+#  Abstract:  This script posts messages to a log file.  Two arguments
+#  is returned if script cannot find only 2 arguments.  Script assumes 
+#  that the variable JOBID has been exported by the parent shell.  The
+#  variable JOBID contains the name of the job and its pid in the form
+#  JOBNAME.pid.
+#
+#  History:  Mar 1996  B. Facey    Original version
+#            May 2016  K. Menlove  Echo message to stderr if jlogfile
+#                                  variable is undefined
+
+if [ $# -eq 2 ]; then
+   jlogfile="$1"
+   msg="$2"
+elif [ $# -eq 1 ]; then
+   msg="$1"
+else
+   >&2 echo "ERROR: postmsg accepts one (\$msg) or two (\$jlogfile and \$msg) arguments"
+   exit 16
+fi
+
+# Set the date string
+datestr=$(date -u '+%m/%d %H:%M:%S')
+msgline="Z ${jobid}-${msg}"
+
+if [ -n "$jlogfile" ]; then
+   echo "${datestr}${msgline}" >> $jlogfile
+else
+   >&2 echo ""
+   >&2 echo "WARNING: \$jlogfile variable not defined. Message intended for the jlogfile:"
+   >&2 echo "  ${datestr}${msgline}"
+   >&2 echo ""
+fi

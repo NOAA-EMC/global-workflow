@@ -1,0 +1,9 @@
+digraph "module_radiation_driver"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir=LR;
+  Node0 [label="module_radiation_driver",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 [label="RRTMG Shortwave/Longwave\l Radiation Scheme",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group___r_r_t_m_g.html",tooltip="The GFS radiation scheme. "];
+  Node1->Node0 [shape=plaintext, dir="back", style="solid"];
+}

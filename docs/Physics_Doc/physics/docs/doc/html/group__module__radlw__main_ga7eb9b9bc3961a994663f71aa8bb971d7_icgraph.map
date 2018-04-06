@@ -1,0 +1,5 @@
+<map id="module_radlw_main::mcica_subcol" name="module_radlw_main::mcica_subcol">
+<area shape="rect" id="node2" href="$group__module__radlw__main.html#ga809f46ec27afb1d04496b238e674328e" title="This subroutine computes the cloud optical depth(s) for each cloudy layer and g&#45;point interval..." alt="" coords="201,5,346,46"/>
+<area shape="rect" id="node3" href="$group__module__radlw__main.html#ga2f375b280d9aab416d6cffa34cb5255f" title="This subroutine is the main LW radiation routine. " alt="" coords="395,5,541,46"/>
+<area shape="rect" id="node4" href="$group__module__radiation__driver.html#ga8ba1003244d5d4d65e70e760d413f448" title="This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. " alt="" coords="590,5,749,46"/>
+</map>

@@ -1,0 +1,1458 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+diag\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__diag__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+diag\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ diag\+\_\+create}
+\item 
+procedure \textbf{ rad\+\_\+zero} =$>$ \textbf{ diag\+\_\+rad\+\_\+zero}
+\item 
+procedure \textbf{ phys\+\_\+zero} =$>$ \textbf{ diag\+\_\+phys\+\_\+zero}
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ fluxr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em to save time accumulated 2-\/d fields defined as\+:! hardcoded field indices, opt. includes aerosols! \end{DoxyCompactList}\item 
+type(topfsw\+\_\+type), dimension(\+:), pointer \textbf{ topfsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sw radiation fluxes at toa, components\+: \end{DoxyCompactList}\item 
+type(topflw\+\_\+type), dimension(\+:), pointer \textbf{ topflw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em lw radiation fluxes at top, component\+: \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ srunoff} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface water runoff (from lsm) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ evbsa} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ evcwa} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ snohfa} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ transa} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sbsnoa} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ snowca} =$>$ null()
+\begin{DoxyCompactList}\small\item\em noah lsm diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ soilm} =$>$ null()
+\begin{DoxyCompactList}\small\item\em soil moisture \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tmpmin} =$>$ null()
+\begin{DoxyCompactList}\small\item\em min temperature at 2m height (k) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tmpmax} =$>$ null()
+\begin{DoxyCompactList}\small\item\em max temperature at 2m height (k) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dusfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em u component of surface stress \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvsfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em v component of surface stress \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtsfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sensible heat flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dqsfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em latent heat flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ totprcp} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated total precipitation (kg/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ gflux} =$>$ null()
+\begin{DoxyCompactList}\small\item\em groud conductive heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dlwsfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em time accumulated sfc dn lw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ulwsfc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em time accumulated sfc up lw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ suntim} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sunshine duration time (s) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ runoff} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total water runoff \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ep} =$>$ null()
+\begin{DoxyCompactList}\small\item\em potential evaporation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ cldwrk} =$>$ null()
+\begin{DoxyCompactList}\small\item\em cloud workfunction (valid only with sas) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dugwd} =$>$ null()
+\begin{DoxyCompactList}\small\item\em vertically integrated u change by O\+G\+WD \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvgwd} =$>$ null()
+\begin{DoxyCompactList}\small\item\em vertically integrated v change by O\+G\+WD \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ psmean} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface pressure (k\+Pa) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ cnvprcp} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated convective precipitation (kg/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ spfhmin} =$>$ null()
+\begin{DoxyCompactList}\small\item\em minimum specific humidity \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ spfhmax} =$>$ null()
+\begin{DoxyCompactList}\small\item\em maximum specific humidity \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ u10mmax} =$>$ null()
+\begin{DoxyCompactList}\small\item\em maximum u-\/wind \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ v10mmax} =$>$ null()
+\begin{DoxyCompactList}\small\item\em maximum v-\/wind \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ wind10mmax} =$>$ null()
+\begin{DoxyCompactList}\small\item\em maximum wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ rain} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total rain at this time step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ rainc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em convective rain at this time step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ice} =$>$ null()
+\begin{DoxyCompactList}\small\item\em ice fall at this time step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ snow} =$>$ null()
+\begin{DoxyCompactList}\small\item\em snow fall at this time step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ graupel} =$>$ null()
+\begin{DoxyCompactList}\small\item\em graupel fall at this time step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ totice} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated ice precipitation (kg/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ totsnw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated snow precipitation (kg/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ totgrp} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated graupel precipitation (kg/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ u10m} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ v10m} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dpt2m} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 2 meter dew point temperature \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ zlvl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer 1 height (m) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ psurf} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface pressure (Pa) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ hpbl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em pbl height (m) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ pwat} =$>$ null()
+\begin{DoxyCompactList}\small\item\em precipitable water \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ t1} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer 1 temperature (K) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ q1} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer 1 specific humidity (kg/kg) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ u1} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer 1 zonal wind (m/s) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ v1} =$>$ null()
+\begin{DoxyCompactList}\small\item\em layer 1 merdional wind (m/s) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ chh} =$>$ null()
+\begin{DoxyCompactList}\small\item\em thermal exchange coefficient \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ cmm} =$>$ null()
+\begin{DoxyCompactList}\small\item\em momentum exchange coefficient \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dlwsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc dnwd lw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ulwsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc upwd lw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dswsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc dnwd sw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ uswsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc upwd sw flux ( w/m$\ast$$\ast$2 ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dusfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous u component of surface stress \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous v component of surface stress \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc sensible heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dqsfci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc latent heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ gfluxi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc ground heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ epi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc potential evaporation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ smcwlt2} =$>$ null()
+\begin{DoxyCompactList}\small\item\em wilting point (volumetric) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ smcref2} =$>$ null()
+\begin{DoxyCompactList}\small\item\em soil moisture threshold (volumetric) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ wet1} =$>$ null()
+\begin{DoxyCompactList}\small\item\em normalized soil wetness \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em snow ratio \+: ratio of snow to total precipitation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tdomr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated rain type \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tdomzr} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated freezing rain type \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tdomip} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated sleet type \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tdoms} =$>$ null()
+\begin{DoxyCompactList}\small\item\em accumulated snow type \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ skebu\+\_\+wts} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ skebv\+\_\+wts} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ sppt\+\_\+wts} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ shum\+\_\+wts} =$>$ null()
+\begin{DoxyCompactList}\small\item\em 10 meater u/v wind speed \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ zmtnblck} =$>$ null()
+\begin{DoxyCompactList}\small\item\em mountain blocking evel \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ du3dt} =$>$ null()
+\begin{DoxyCompactList}\small\item\em u momentum change due to physics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ dv3dt} =$>$ null()
+\begin{DoxyCompactList}\small\item\em v momentum change due to physics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ dt3dt} =$>$ null()
+\begin{DoxyCompactList}\small\item\em temperature change due to physics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ dq3dt} =$>$ null()
+\begin{DoxyCompactList}\small\item\em moisture change due to physics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ upd\+\_\+mf} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective updraft mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ dwn\+\_\+mf} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective downdraft mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ det\+\_\+mf} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective detrainment mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ cldcov} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous 3D cloud fraction \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ refl\+\_\+10cm} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous refl\+\_\+10cm \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 772 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ae5c5300fb021ee09f6bc4e34dff591f7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 880 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a67d21b8dc84a43a033d57044d8b737b4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!rad\+\_\+zero@{rad\+\_\+zero}}
+\index{rad\+\_\+zero@{rad\+\_\+zero}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{rad\+\_\+zero()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::rad\+\_\+zero (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 881 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ab255c9376758890574e3db7c82983368}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!phys\+\_\+zero@{phys\+\_\+zero}}
+\index{phys\+\_\+zero@{phys\+\_\+zero}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{phys\+\_\+zero()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::phys\+\_\+zero (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 882 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a167dd71147ffc20d84ef50b57cd4e3af}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!fluxr@{fluxr}}
+\index{fluxr@{fluxr}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{fluxr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::fluxr =$>$ null()}
+
+
+
+to save time accumulated 2-\/d fields defined as\+:! hardcoded field indices, opt. includes aerosols! 
+
+
+
+Definition at line 775 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a00e4b54eb9b589ddafbfef53487a58d7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!topfsw@{topfsw}}
+\index{topfsw@{topfsw}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{topfsw}
+{\footnotesize\ttfamily type (topfsw\+\_\+type), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::topfsw =$>$ null()}
+
+
+
+sw radiation fluxes at toa, components\+: 
+
+
+
+Definition at line 777 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa59615824e9e84be82dbf70507f517b8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!topflw@{topflw}}
+\index{topflw@{topflw}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{topflw}
+{\footnotesize\ttfamily type (topflw\+\_\+type), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::topflw =$>$ null()}
+
+
+
+lw radiation fluxes at top, component\+: 
+
+
+
+Definition at line 781 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a781786fecd0390b3c69b56285eade4fc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!srunoff@{srunoff}}
+\index{srunoff@{srunoff}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{srunoff}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::srunoff =$>$ null()}
+
+
+
+surface water runoff (from lsm) 
+
+
+
+Definition at line 786 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a8252b50f5e427ba6899c3d72d55586ea}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!evbsa@{evbsa}}
+\index{evbsa@{evbsa}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{evbsa}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::evbsa =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 787 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_adda851f4e824c2d6a8f8a650a7d9ef96}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!evcwa@{evcwa}}
+\index{evcwa@{evcwa}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{evcwa}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::evcwa =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 788 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a82e7de56f63add72c4353f7108bd8fd8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!snohfa@{snohfa}}
+\index{snohfa@{snohfa}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{snohfa}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::snohfa =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 789 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a590eaf92c6c5fcaf6b8a2c8f1580102c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!transa@{transa}}
+\index{transa@{transa}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{transa}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::transa =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 790 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_acd355bef84752426ef998b18740d1b74}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!sbsnoa@{sbsnoa}}
+\index{sbsnoa@{sbsnoa}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{sbsnoa}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::sbsnoa =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 791 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a33f2b7d46ef0551fcfcb0f12c974879d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!snowca@{snowca}}
+\index{snowca@{snowca}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{snowca}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::snowca =$>$ null()}
+
+
+
+noah lsm diagnostics 
+
+
+
+Definition at line 792 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ae3445ff0f0bbe320105c67e69447a8f7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!soilm@{soilm}}
+\index{soilm@{soilm}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{soilm}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::soilm =$>$ null()}
+
+
+
+soil moisture 
+
+
+
+Definition at line 793 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a7cf9caa696233f4427b4ba524064f78a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tmpmin@{tmpmin}}
+\index{tmpmin@{tmpmin}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tmpmin}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tmpmin =$>$ null()}
+
+
+
+min temperature at 2m height (k) 
+
+
+
+Definition at line 794 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a7ac1c4a9dc314ece5a3169e62fd5af47}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tmpmax@{tmpmax}}
+\index{tmpmax@{tmpmax}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tmpmax}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tmpmax =$>$ null()}
+
+
+
+max temperature at 2m height (k) 
+
+
+
+Definition at line 795 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a74b793fc2479368d9f48c644eea4b88f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dusfc@{dusfc}}
+\index{dusfc@{dusfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dusfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dusfc =$>$ null()}
+
+
+
+u component of surface stress 
+
+
+
+Definition at line 796 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a0bd90d3df9d2289c6c8b51feb0f87b8e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dvsfc@{dvsfc}}
+\index{dvsfc@{dvsfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dvsfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dvsfc =$>$ null()}
+
+
+
+v component of surface stress 
+
+
+
+Definition at line 797 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a0d1b4c62d5cc389feed9c8cabf40f5d8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dtsfc@{dtsfc}}
+\index{dtsfc@{dtsfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dtsfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dtsfc =$>$ null()}
+
+
+
+sensible heat flux (w/m2) 
+
+
+
+Definition at line 798 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a70005f2143fc23d850a62e5eef5784b4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dqsfc@{dqsfc}}
+\index{dqsfc@{dqsfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dqsfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dqsfc =$>$ null()}
+
+
+
+latent heat flux (w/m2) 
+
+
+
+Definition at line 799 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_afe1ba5a2bb3c7ece72570897086baada}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!totprcp@{totprcp}}
+\index{totprcp@{totprcp}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{totprcp}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::totprcp =$>$ null()}
+
+
+
+accumulated total precipitation (kg/m2) 
+
+
+
+Definition at line 800 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a077eb0504b9127a9b109005299daf3c8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!gflux@{gflux}}
+\index{gflux@{gflux}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{gflux}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::gflux =$>$ null()}
+
+
+
+groud conductive heat flux 
+
+
+
+Definition at line 801 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a7c96238c0f2440142668c4a73b404794}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dlwsfc@{dlwsfc}}
+\index{dlwsfc@{dlwsfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dlwsfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dlwsfc =$>$ null()}
+
+
+
+time accumulated sfc dn lw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 802 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a576bccbb8270fbcc4665cb22567b48ba}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!ulwsfc@{ulwsfc}}
+\index{ulwsfc@{ulwsfc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{ulwsfc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::ulwsfc =$>$ null()}
+
+
+
+time accumulated sfc up lw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 803 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa712e733d9a37303cbe3e18b9b4c6255}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!suntim@{suntim}}
+\index{suntim@{suntim}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{suntim}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::suntim =$>$ null()}
+
+
+
+sunshine duration time (s) 
+
+
+
+Definition at line 804 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af221435527bdf4048c77d595c76abad3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!runoff@{runoff}}
+\index{runoff@{runoff}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{runoff}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::runoff =$>$ null()}
+
+
+
+total water runoff 
+
+
+
+Definition at line 805 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a0ed66b85b65ae46b88b3e2d4523f7b0d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!ep@{ep}}
+\index{ep@{ep}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{ep}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::ep =$>$ null()}
+
+
+
+potential evaporation 
+
+
+
+Definition at line 806 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a49087c17a68981b3c1a113d508876a26}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!cldwrk@{cldwrk}}
+\index{cldwrk@{cldwrk}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{cldwrk}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::cldwrk =$>$ null()}
+
+
+
+cloud workfunction (valid only with sas) 
+
+
+
+Definition at line 807 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a2d81dab2f5f1766de72a5f175f71b63e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dugwd@{dugwd}}
+\index{dugwd@{dugwd}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dugwd}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dugwd =$>$ null()}
+
+
+
+vertically integrated u change by O\+G\+WD 
+
+
+
+Definition at line 808 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ab3946608ab8f0d1c5885e6064bcfcf89}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dvgwd@{dvgwd}}
+\index{dvgwd@{dvgwd}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dvgwd}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dvgwd =$>$ null()}
+
+
+
+vertically integrated v change by O\+G\+WD 
+
+
+
+Definition at line 809 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aff2e7ac56f7b0ac95b1469bca27ca652}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!psmean@{psmean}}
+\index{psmean@{psmean}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{psmean}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::psmean =$>$ null()}
+
+
+
+surface pressure (k\+Pa) 
+
+
+
+Definition at line 810 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a99fc14bc432fab23da91408b5e84e14d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!cnvprcp@{cnvprcp}}
+\index{cnvprcp@{cnvprcp}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{cnvprcp}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::cnvprcp =$>$ null()}
+
+
+
+accumulated convective precipitation (kg/m2) 
+
+
+
+Definition at line 811 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af6e9e0ae61d0394b0242429712d36a92}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!spfhmin@{spfhmin}}
+\index{spfhmin@{spfhmin}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{spfhmin}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::spfhmin =$>$ null()}
+
+
+
+minimum specific humidity 
+
+
+
+Definition at line 812 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a4aee658d400f1492d749aefebee20856}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!spfhmax@{spfhmax}}
+\index{spfhmax@{spfhmax}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{spfhmax}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::spfhmax =$>$ null()}
+
+
+
+maximum specific humidity 
+
+
+
+Definition at line 813 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ac9a30db8192366e2bb1ece3f5aafe8ef}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!u10mmax@{u10mmax}}
+\index{u10mmax@{u10mmax}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{u10mmax}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::u10mmax =$>$ null()}
+
+
+
+maximum u-\/wind 
+
+
+
+Definition at line 814 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa57985e35feea1331a5881d1a1d136d5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!v10mmax@{v10mmax}}
+\index{v10mmax@{v10mmax}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{v10mmax}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::v10mmax =$>$ null()}
+
+
+
+maximum v-\/wind 
+
+
+
+Definition at line 815 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a400b065ebb5134026987a619e3b9ac8c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!wind10mmax@{wind10mmax}}
+\index{wind10mmax@{wind10mmax}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{wind10mmax}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::wind10mmax =$>$ null()}
+
+
+
+maximum wind speed 
+
+
+
+Definition at line 816 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ac46d70a2656e35b18a457962671dc27b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!rain@{rain}}
+\index{rain@{rain}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{rain}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::rain =$>$ null()}
+
+
+
+total rain at this time step 
+
+
+
+Definition at line 817 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a4e3d41a849bd7768b571ee2633fe2ce8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!rainc@{rainc}}
+\index{rainc@{rainc}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{rainc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::rainc =$>$ null()}
+
+
+
+convective rain at this time step 
+
+
+
+Definition at line 818 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ac77947bb2825a26fc9ea29c48f022b61}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!ice@{ice}}
+\index{ice@{ice}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{ice}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::ice =$>$ null()}
+
+
+
+ice fall at this time step 
+
+
+
+Definition at line 819 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a9151716c61c481e080ad18c3cbb1ef5d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!snow@{snow}}
+\index{snow@{snow}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{snow}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::snow =$>$ null()}
+
+
+
+snow fall at this time step 
+
+
+
+Definition at line 820 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a4667967acfa91574ee93d8a97dffd6ed}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!graupel@{graupel}}
+\index{graupel@{graupel}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{graupel}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::graupel =$>$ null()}
+
+
+
+graupel fall at this time step 
+
+
+
+Definition at line 821 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ad5e6468b2005fd162123b4e9e654cbba}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!totice@{totice}}
+\index{totice@{totice}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{totice}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::totice =$>$ null()}
+
+
+
+accumulated ice precipitation (kg/m2) 
+
+
+
+Definition at line 822 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a124851c1eb4aafb0ccfc27ef4c46a27a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!totsnw@{totsnw}}
+\index{totsnw@{totsnw}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{totsnw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::totsnw =$>$ null()}
+
+
+
+accumulated snow precipitation (kg/m2) 
+
+
+
+Definition at line 823 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af68d9a60cda99a57bd48bf83789d13b3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!totgrp@{totgrp}}
+\index{totgrp@{totgrp}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{totgrp}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::totgrp =$>$ null()}
+
+
+
+accumulated graupel precipitation (kg/m2) 
+
+
+
+Definition at line 824 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a133c5f40267af5652041e46249463ecb}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!u10m@{u10m}}
+\index{u10m@{u10m}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{u10m}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::u10m =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 827 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ad241e210d6c36a86ea7abdf2a8f5552c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!v10m@{v10m}}
+\index{v10m@{v10m}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{v10m}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::v10m =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 828 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a6a9b82fea02afe9a3da91e00f249a3d3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dpt2m@{dpt2m}}
+\index{dpt2m@{dpt2m}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dpt2m}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dpt2m =$>$ null()}
+
+
+
+2 meter dew point temperature 
+
+
+
+Definition at line 829 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a53a74076f06c4b0cfb66cb815da7f4ca}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!zlvl@{zlvl}}
+\index{zlvl@{zlvl}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{zlvl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::zlvl =$>$ null()}
+
+
+
+layer 1 height (m) 
+
+
+
+Definition at line 830 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a812f293fc452371d886830edd7f5c314}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!psurf@{psurf}}
+\index{psurf@{psurf}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{psurf}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::psurf =$>$ null()}
+
+
+
+surface pressure (Pa) 
+
+
+
+Definition at line 831 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a1c5e23e6703ba9bde3c2f7f061546f13}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!hpbl@{hpbl}}
+\index{hpbl@{hpbl}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{hpbl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::hpbl =$>$ null()}
+
+
+
+pbl height (m) 
+
+
+
+Definition at line 832 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a1b0b0d4da17962ffbd2baead2b0932e4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!pwat@{pwat}}
+\index{pwat@{pwat}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{pwat}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::pwat =$>$ null()}
+
+
+
+precipitable water 
+
+
+
+Definition at line 833 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aeacd443169ff762095c1c5e0f168dd3d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!t1@{t1}}
+\index{t1@{t1}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{t1}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::t1 =$>$ null()}
+
+
+
+layer 1 temperature (K) 
+
+
+
+Definition at line 834 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a8fe0fbdb11a584a5a5851b747d63e814}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!q1@{q1}}
+\index{q1@{q1}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{q1}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::q1 =$>$ null()}
+
+
+
+layer 1 specific humidity (kg/kg) 
+
+
+
+Definition at line 835 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af0c9a03bdfbde1268bf4fd19de3dcbcc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!u1@{u1}}
+\index{u1@{u1}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{u1}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::u1 =$>$ null()}
+
+
+
+layer 1 zonal wind (m/s) 
+
+
+
+Definition at line 836 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af93272620918af90c5bd249f168258d6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!v1@{v1}}
+\index{v1@{v1}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{v1}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::v1 =$>$ null()}
+
+
+
+layer 1 merdional wind (m/s) 
+
+
+
+Definition at line 837 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_adc247904c503459753501be6a4df1ddd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!chh@{chh}}
+\index{chh@{chh}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{chh}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::chh =$>$ null()}
+
+
+
+thermal exchange coefficient 
+
+
+
+Definition at line 838 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a48b6b96247e6cb0bc04033649ff06031}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!cmm@{cmm}}
+\index{cmm@{cmm}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{cmm}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::cmm =$>$ null()}
+
+
+
+momentum exchange coefficient 
+
+
+
+Definition at line 839 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aabc4675278e1d1f5a474c7db4144000d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dlwsfci@{dlwsfci}}
+\index{dlwsfci@{dlwsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dlwsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dlwsfci =$>$ null()}
+
+
+
+instantaneous sfc dnwd lw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 840 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a163d04dbbc29aee4f987c27e9f811416}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!ulwsfci@{ulwsfci}}
+\index{ulwsfci@{ulwsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{ulwsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::ulwsfci =$>$ null()}
+
+
+
+instantaneous sfc upwd lw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 841 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a57302a883c3ac67a70da1ca7d62ef979}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dswsfci@{dswsfci}}
+\index{dswsfci@{dswsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dswsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dswsfci =$>$ null()}
+
+
+
+instantaneous sfc dnwd sw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 842 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ac9c1e2027f515f2c6c9cb416aaff28f5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!uswsfci@{uswsfci}}
+\index{uswsfci@{uswsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{uswsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::uswsfci =$>$ null()}
+
+
+
+instantaneous sfc upwd sw flux ( w/m$\ast$$\ast$2 ) 
+
+
+
+Definition at line 843 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a84049a98778435294494ba1bf96920f2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dusfci@{dusfci}}
+\index{dusfci@{dusfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dusfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dusfci =$>$ null()}
+
+
+
+instantaneous u component of surface stress 
+
+
+
+Definition at line 844 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_acd6ab847768546d85ef09f9d07a05aaa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dvsfci@{dvsfci}}
+\index{dvsfci@{dvsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dvsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dvsfci =$>$ null()}
+
+
+
+instantaneous v component of surface stress 
+
+
+
+Definition at line 845 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a782ed634150b9cd20879d042306526ea}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dtsfci@{dtsfci}}
+\index{dtsfci@{dtsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dtsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dtsfci =$>$ null()}
+
+
+
+instantaneous sfc sensible heat flux 
+
+
+
+Definition at line 846 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af357e5e7aa3d4193cebd2db9a97d18d6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dqsfci@{dqsfci}}
+\index{dqsfci@{dqsfci}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dqsfci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dqsfci =$>$ null()}
+
+
+
+instantaneous sfc latent heat flux 
+
+
+
+Definition at line 847 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a285c6278fc1fac8d8b99e7477934af5b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!gfluxi@{gfluxi}}
+\index{gfluxi@{gfluxi}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{gfluxi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::gfluxi =$>$ null()}
+
+
+
+instantaneous sfc ground heat flux 
+
+
+
+Definition at line 848 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a869a421f13a696a0a1d49c7de50b93e5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!epi@{epi}}
+\index{epi@{epi}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{epi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::epi =$>$ null()}
+
+
+
+instantaneous sfc potential evaporation 
+
+
+
+Definition at line 849 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a9a7ec558a1e42e03be16f778a1e5a857}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!smcwlt2@{smcwlt2}}
+\index{smcwlt2@{smcwlt2}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{smcwlt2}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::smcwlt2 =$>$ null()}
+
+
+
+wilting point (volumetric) 
+
+
+
+Definition at line 850 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a597b7bc5550e9f8130a22aa77824a2d2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!smcref2@{smcref2}}
+\index{smcref2@{smcref2}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{smcref2}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::smcref2 =$>$ null()}
+
+
+
+soil moisture threshold (volumetric) 
+
+
+
+Definition at line 851 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a29ffa9980a633a61d23e94399c0c9f90}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!wet1@{wet1}}
+\index{wet1@{wet1}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{wet1}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::wet1 =$>$ null()}
+
+
+
+normalized soil wetness 
+
+
+
+Definition at line 852 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a3d0803ac451b5909e9d9ce1d33c405d8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!sr@{sr}}
+\index{sr@{sr}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{sr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::sr =$>$ null()}
+
+
+
+snow ratio \+: ratio of snow to total precipitation 
+
+
+
+Definition at line 853 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a47b9e7e4535c69e5155ff6779688adae}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tdomr@{tdomr}}
+\index{tdomr@{tdomr}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tdomr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tdomr =$>$ null()}
+
+
+
+accumulated rain type 
+
+
+
+Definition at line 854 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a8f19c95f270295be9bea7c531a1b3344}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tdomzr@{tdomzr}}
+\index{tdomzr@{tdomzr}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tdomzr}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tdomzr =$>$ null()}
+
+
+
+accumulated freezing rain type 
+
+
+
+Definition at line 855 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a29195596c9a0fedaa4ae6abfde1cc309}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tdomip@{tdomip}}
+\index{tdomip@{tdomip}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tdomip}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tdomip =$>$ null()}
+
+
+
+accumulated sleet type 
+
+
+
+Definition at line 856 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ac10f49bfb215c3d97ca2316e8c9b6bc6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!tdoms@{tdoms}}
+\index{tdoms@{tdoms}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{tdoms}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::tdoms =$>$ null()}
+
+
+
+accumulated snow type 
+
+
+
+Definition at line 857 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a36075b6ee6713ecdcf203f442d806f47}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!skebu\+\_\+wts@{skebu\+\_\+wts}}
+\index{skebu\+\_\+wts@{skebu\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{skebu\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::skebu\+\_\+wts =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 859 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa0570e866cb0bf0a33c3c5e349dd730e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!skebv\+\_\+wts@{skebv\+\_\+wts}}
+\index{skebv\+\_\+wts@{skebv\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{skebv\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::skebv\+\_\+wts =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 860 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a3d7186f4439a4a40297f7daa89355277}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!sppt\+\_\+wts@{sppt\+\_\+wts}}
+\index{sppt\+\_\+wts@{sppt\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{sppt\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::sppt\+\_\+wts =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 861 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a6e77fbf122d9831cfbb0c14633f0ad78}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!shum\+\_\+wts@{shum\+\_\+wts}}
+\index{shum\+\_\+wts@{shum\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{shum\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::shum\+\_\+wts =$>$ null()}
+
+
+
+10 meater u/v wind speed 
+
+
+
+Definition at line 862 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af59a22190caf713ad73c486642628ff5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!zmtnblck@{zmtnblck}}
+\index{zmtnblck@{zmtnblck}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{zmtnblck}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::zmtnblck =$>$ null()}
+
+
+
+mountain blocking evel 
+
+
+
+Definition at line 864 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa0f9c88ca2f6791fdb4a5af89b9031f9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!du3dt@{du3dt}}
+\index{du3dt@{du3dt}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{du3dt}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::du3dt =$>$ null()}
+
+
+
+u momentum change due to physics 
+
+
+
+Definition at line 865 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a91f60632e0de475fba14dcba674fdf53}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dv3dt@{dv3dt}}
+\index{dv3dt@{dv3dt}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dv3dt}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dv3dt =$>$ null()}
+
+
+
+v momentum change due to physics 
+
+
+
+Definition at line 866 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a261635e3ae86fa3cfdfa32e0fc37adc9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dt3dt@{dt3dt}}
+\index{dt3dt@{dt3dt}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dt3dt}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dt3dt =$>$ null()}
+
+
+
+temperature change due to physics 
+
+
+
+Definition at line 867 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a1aa07bf0b006a4bb515ae85001f362d8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dq3dt@{dq3dt}}
+\index{dq3dt@{dq3dt}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dq3dt}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dq3dt =$>$ null()}
+
+
+
+moisture change due to physics 
+
+
+
+Definition at line 868 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_af1ef37fe847cd866d111c0440503d009}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!upd\+\_\+mf@{upd\+\_\+mf}}
+\index{upd\+\_\+mf@{upd\+\_\+mf}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{upd\+\_\+mf}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::upd\+\_\+mf =$>$ null()}
+
+
+
+instantaneous convective updraft mass flux 
+
+
+
+Definition at line 871 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_ae7a7a4c9b97d1ed52b554b64f385bba5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!dwn\+\_\+mf@{dwn\+\_\+mf}}
+\index{dwn\+\_\+mf@{dwn\+\_\+mf}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{dwn\+\_\+mf}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::dwn\+\_\+mf =$>$ null()}
+
+
+
+instantaneous convective downdraft mass flux 
+
+
+
+Definition at line 872 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a7c6090a4e12643c065d4f90587d59665}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!det\+\_\+mf@{det\+\_\+mf}}
+\index{det\+\_\+mf@{det\+\_\+mf}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{det\+\_\+mf}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::det\+\_\+mf =$>$ null()}
+
+
+
+instantaneous convective detrainment mass flux 
+
+
+
+Definition at line 873 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_a6cd9a92470c266f39a0b725ebd903898}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!cldcov@{cldcov}}
+\index{cldcov@{cldcov}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{cldcov}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::cldcov =$>$ null()}
+
+
+
+instantaneous 3D cloud fraction 
+
+
+
+Definition at line 874 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__diag__type_aa85bbfebf8a815ea2e12ea060f6ea8a9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}!refl\+\_\+10cm@{refl\+\_\+10cm}}
+\index{refl\+\_\+10cm@{refl\+\_\+10cm}!gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}}
+\subsubsection{refl\+\_\+10cm}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type\+::refl\+\_\+10cm =$>$ null()}
+
+
+
+instantaneous refl\+\_\+10cm 
+
+
+
+Definition at line 877 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

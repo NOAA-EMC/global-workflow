@@ -1,0 +1,4 @@
+<map id="module_radiation_aerosols::setgocartaer" name="module_radiation_aerosols::setgocartaer">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga15dfef859ce7c87b2e596dbc4b884924" title="This subroutine computes aerosols optical properties. " alt="" coords="229,5,405,46"/>
+<area shape="rect" id="node3" href="$group__module__radiation__driver.html#ga8ba1003244d5d4d65e70e760d413f448" title="This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. " alt="" coords="454,5,613,46"/>
+</map>

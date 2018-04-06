@@ -1,0 +1,26 @@
+var radiation__astronomy_8f =
+[
+    [ "coszmn", "radiation__astronomy_8f.html#ga804e1504ae720d0f33b507e7c42b6506", null ],
+    [ "prtime", "radiation__astronomy_8f.html#gaee29441c2e62c44728b10915a148cccf", null ],
+    [ "sol_init", "radiation__astronomy_8f.html#gaa9eeb5462c1dbddb971cee28eb38ca47", null ],
+    [ "sol_update", "radiation__astronomy_8f.html#ga095550b8122f922ad122db44aa262b15", null ],
+    [ "solar", "radiation__astronomy_8f.html#ga33f3a3fbb7f232aab2a624025c991890", null ],
+    [ "anginc", "radiation__astronomy_8f.html#ga723159a44491e4ae974128123a1e8dcd", null ],
+    [ "cosdec", "radiation__astronomy_8f.html#ga07386e90045639b8023abd826e0e2768", null ],
+    [ "czlimt", "radiation__astronomy_8f.html#gafeb2fccbe8137de6099a09035762ff5e", null ],
+    [ "degrad", "radiation__astronomy_8f.html#ga220d2b997b3073cf2985d62111c5405d", null ],
+    [ "f12", "radiation__astronomy_8f.html#gad59856e8f877eb05a6b22610f14a391d", null ],
+    [ "f3600", "radiation__astronomy_8f.html#ga37b491dde50d06e339effb4a31d9f245", null ],
+    [ "hpi", "radiation__astronomy_8f.html#ga7369d8561566f5e7e51ccc40e09f2520", null ],
+    [ "isolflg", "radiation__astronomy_8f.html#ga7ea431b6d4f4d6ee1f6545d6baeee44f", null ],
+    [ "iyr_sav", "radiation__astronomy_8f.html#ga83370fbee96388e545a89eb25ed6df90", null ],
+    [ "nstp", "radiation__astronomy_8f.html#gab93fe36440da3cc1f1d64cae2ec4c25b", null ],
+    [ "pid12", "radiation__astronomy_8f.html#gadbf9cdfc7b55d882f015a4bc4ef276ab", null ],
+    [ "sindec", "radiation__astronomy_8f.html#gae195d9c834e2789170f89c988d28b01e", null ],
+    [ "smon_sav", "radiation__astronomy_8f.html#gab68b4488022a4c6340cb60dca3feff6a", null ],
+    [ "solar_fname", "radiation__astronomy_8f.html#ga05ee7e378d38b90242738b9bf6c40c00", null ],
+    [ "solc0", "radiation__astronomy_8f.html#ga37e08872f67023b11f839ac15151af09", null ],
+    [ "sollag", "radiation__astronomy_8f.html#ga264a011aa71fb670339ac555dc24e486", null ],
+    [ "tpi", "radiation__astronomy_8f.html#ga4fbf4be04e17f1f8d0674ee2e20506b0", null ],
+    [ "vtagast", "radiation__astronomy_8f.html#aa3497dc9fa4bbd8248fdf0f2784c268a", null ]
+];

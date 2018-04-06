@@ -1,0 +1,37 @@
+\section{G\+F\+S\+\_\+driver.\+F90 File Reference}
+\label{_g_f_s__driver_8_f90}\index{G\+F\+S\+\_\+driver.\+F90@{G\+F\+S\+\_\+driver.\+F90}}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \textbf{ gfs\+\_\+driver}
+\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ gfs\+\_\+driver\+::gfs\+\_\+initialize} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag, Init\+\_\+parm)
+\item 
+subroutine, public \textbf{ gfs\+\_\+driver\+::gfs\+\_\+time\+\_\+vary\+\_\+step} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\item 
+subroutine, public \textbf{ gfs\+\_\+driver\+::gfs\+\_\+stochastic\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\item 
+subroutine \textbf{ gfs\+\_\+driver\+::gfs\+\_\+rad\+\_\+time\+\_\+vary} (Model, Statein, Tbd, sec)
+\item 
+subroutine \textbf{ gfs\+\_\+driver\+::gfs\+\_\+phys\+\_\+time\+\_\+vary} (Model, Grid, Tbd)
+\item 
+subroutine \textbf{ gfs\+\_\+driver\+::gfs\+\_\+grid\+\_\+populate} (Grid, xlon, xlat, area)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+driver\+::con\+\_\+24} = 24.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+driver\+::con\+\_\+hr} = 3600.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+driver\+::con\+\_\+99} = 99.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+driver\+::con\+\_\+100} = 100.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+driver\+::qmin} = 1.\+0e-\/10
+\item 
+integer, dimension(\+:), allocatable \textbf{ gfs\+\_\+driver\+::blksz}
+\end{DoxyCompactItemize}

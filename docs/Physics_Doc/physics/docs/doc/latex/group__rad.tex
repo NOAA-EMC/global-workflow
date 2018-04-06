@@ -1,0 +1,47 @@
+\hypertarget{group__rad}{}\section{R\+R\+T\+MG Shortwave/\+Longwave Radiation Scheme}
+\label{group__rad}\index{R\+R\+T\+M\+G Shortwave/\+Longwave Radiation Scheme@{R\+R\+T\+M\+G Shortwave/\+Longwave Radiation Scheme}}
+
+
+The G\+FS radiation scheme.  
+
+
+
+
+\subsection{Detailed Description}
+Radiative processes are among the most complex and computationally intensive parts of all model physics. As an essential component of modeling the atmosphere, radiation directly and indirectly connects all physics processes with model dynamics, and it regulates the overall earth-\/atmosphere energy exchanges and transformations.
+
+The radiation package in G\+FS physics has standardized component modules (Table 1). The radiation driver module (\hyperlink{group__module__radiation__driver}{module\+\_\+radiation\+\_\+driver}) is the interface with the Interoperable Physics Driver (I\+PD) for N\+G\+G\+PS, and it has three subroutines called by I\+PD (Figure 1)\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radiation__driver_ga3d4ef1d77b7d7ef09fafcb4413e1cbf2}{radinit()} is called in subroutine nuopc\+\_\+phys\+\_\+init to set up radiation related fixed parameters.
+\item \hyperlink{group__module__radiation__driver_ga28280ee9ea8ee0d183ab9d541a31b718}{radupdate()} is called in subroutine nuopc\+\_\+rad\+\_\+update to update values between timesteps.
+\item grrad() is called in subroutine nuopc\+\_\+rad\+\_\+run, and it is the driver of radiation calculation. 
+\end{DoxyItemize}
+
+The schematic radiation module structure is shown in Table 1. 
+
+G\+FS radiation package is intended to provide a fast and accurate method of determining the total radiative flux at any given location. These calculations provide both the total radiative flux at the ground surface, which is needed to establish the surface energy budget, and the vertical radiative flux divergence, which is used to calculate the radiative heating and cooling rates of a given atmospheric layer. The magnitude of the terms in the surface energy budget can set the stage for moist deep convection and are crucial to the formation of low-\/level clouds. In addition, the vertical radiative flux divergence can produce substantial cooling, particularly at the tops of clouds, which can have strong dynamical effects on cloud evolution.
+
+It uses a correlated-\/k distribution method and a transmittance lookup table that is linearly scaled by optical depth to achieve high accuracy and efficiency. The algorithm contains 140 unevenly distributed quadrature points (reduced from the original set of 256) to integrate the cumulative probability distribution functions of absorption over 16 spectral bands. It employs the Clough-\/\+Kneizys-\/\+Davies (C\+K\+D\+\_\+2.\+4) continuum model (Clough et al. 1992 \cite{clough_et_al_1992}) to compute absorption by water vapor at the continuum band. Longwave cloud radiative properties external to the R\+R\+TM depend on cloud liquid/ice water path and the effective radius of ice particles and water droplets (Hu and Stamnes 1993 \cite{hu_and_stamnes_1993}; Ebert and Curry 1992 \cite{ebert_and_curry_1992}).
+
+Changes to Radiation Parameterization since 2007\+: ~\newline
+ The longwave (LW) and the shortwave (SW) radiation parameterizations in N\+C\+EP\textquotesingle{}s operational G\+FS are both modified and optimized versions of the Rapid Radiative Transfer Model for G\+C\+Ms (R\+R\+T\+M\+G\+\_\+\+LW v2.\+3 and R\+R\+T\+M\+G\+\_\+\+SW v2.\+3, respectively) developed at A\+ER (Iacono et al. 2008 \cite{iacono_et_al_2008},Mlawer et al. 1997 \cite{mlawer_et_al_1997}, Iacono et al., 2000 \cite{iacono_et_al_2000}, Clough et al., 2005 \cite{clough_et_al_2005}). The LW algorithm contains 140 unevenly distributed g-\/points (quadrature points) in 16 broad spectral bands, while the SW algorithm includes 112 g-\/points in 14 bands. In addition to the major atmospheric absorbing gases of ozone, water vapor, and carbon dioxide, the algorithm also includes various minor absorbing species such as methane, nitrous oxide, oxygen, and in the longwave up to four types of halocarbons (C\+F\+Cs). To represent statistically the unresolved subgrid cloud variability when dealing multi layered clouds, a Monte-\/\+Carlo Independent Column Approximation (Mc\+I\+CA) method is used in the R\+R\+T\+MG radiative transfer. A maximum-\/random cloud overlap method is used in both LW and SW radiation calculations. Cloud condensate path and effective radius for water and ice are used for the calculation of cloud-\/radiative properties. Hu and Stamnes\textquotesingle{}s method (1993) \cite{hu_and_stamnes_1993} is used to treat water clouds in both LW and SW parameterizations. For ice clouds. Fu\textquotesingle{}s parameterizations (1996,1998) \cite{fu_1996} \cite{fu_et_al_1998} are used in the SW and LW, respectively.
+
+In the operational G\+FS, a climatological tropospheric aerosol with a 5-\/degree horizontal resolution is used in both LW and SW radiations. A generalized spectral mapping formulation was developed to compute radiative properties of various aerosol components for each of the radiation spectral bands. A separate stratospheric volcanic aerosol parameterization was added that is capable of handling volcanic events. In SW, a new table of incoming solar constants is derived covering time period of 1850-\/2019 (Vandendool, personal communivation). An eleven-\/year solar cycle approximation will be used for time out of the window period in long term climate simulations. The SW albedo parameterization uses surface vegetation type based seasonal climatology similar to that described in the N\+C\+EP O\+F\+F\+I\+CE Note 441 (Hou et al. 2002 \cite{hou_et_al_2002}) but with a modification in the treatment of solar zenith angle dependency over snow-\/free land surface (Yang et al. 2008 \cite{yang_et_al_2008}). Similarly, vegetation type based non-\/black-\/body surface emissivity is used for the LW radiation. Concentrations of atmospheric greenhouse gases are either obtained from global network measurements, such as carbon dioxide (C\+O2), or taking the climatological constants, the actual C\+O2 value for the forecast time is an estimation based on the most recent five-\/year observations. In the lower atmosphere ($<$3km) a monthly mean C\+O2 distribution in 15 degree horizontal resolution is used, while a global mean monthly value is used in the upper atmosphere. \subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__module__radiation__driver}{module\+\_\+radiation\+\_\+driver}
+\begin{DoxyCompactList}\small\item\em The G\+FS radiation driver module. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radiation__aerosols}{module\+\_\+radiation\+\_\+aerosols}
+\begin{DoxyCompactList}\small\item\em This module contains climatological atmospheric aerosol schemes for radiation computations. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radiation__astronomy}{module\+\_\+radiation\+\_\+astronomy}
+\begin{DoxyCompactList}\small\item\em This module sets up astronomical quantities for solar radiation calculations. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radiation__clouds}{module\+\_\+radiation\+\_\+clouds}
+\begin{DoxyCompactList}\small\item\em This module computes cloud related quantities for radiation computations. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radiation__gases}{module\+\_\+radiation\+\_\+gases}
+\begin{DoxyCompactList}\small\item\em This module sets up ozone climatological profiles and other constant gas profiles, such as co2, ch4, n2o, o2, and those of cfc gases. All data are entered as mixing ratio by volume, except ozone which is mass mixing ratio (g/g). \end{DoxyCompactList}\item 
+\hyperlink{group__module__radiation__surface}{module\+\_\+radiation\+\_\+surface}
+\begin{DoxyCompactList}\small\item\em This module sets up surface albedo for sw radiation and surface emissivity for lw radiation. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radlw__main}{module\+\_\+radlw\+\_\+main}
+\begin{DoxyCompactList}\small\item\em This module includes N\+C\+EP\textquotesingle{}s modifications of the rrtmg-\/lw radiation code from A\+ER. \end{DoxyCompactList}\item 
+\hyperlink{group__module__radsw__main}{module\+\_\+radsw\+\_\+main}
+\begin{DoxyCompactList}\small\item\em This module includes N\+C\+EP\textquotesingle{}s modifications of the rrtmg-\/sw radiation code from A\+ER. \end{DoxyCompactList}\end{DoxyCompactItemize}

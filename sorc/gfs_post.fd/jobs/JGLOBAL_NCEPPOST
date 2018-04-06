@@ -1,0 +1,170 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+configs="base post"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env post
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export job=${job:-"post"}
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA="$DATAROOT/${job}.${pid}"
+else
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    export DATA="$DATAROOT/post$FHRGRP"
+fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Define the Log File directory
+##############################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+####################################
+# Specify version numbers
+####################################
+export crtm_ver=${post_crtm_ver:-v2.0.6}
+export gfs_ver=${gfs_ver:-v15.0.0}
+export hwrf_ver=${hwrf_ver:-v11.0.5}
+export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export APRUNP=${APRUN:-$APRUN_NP}
+export RERUN=${RERUN:-NO}
+export HOMECRTM=${HOMECRTM:-${NWROOThps}/lib/crtm/${crtm_ver}}
+export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/src/fix}
+#export FIXCRTM=${FIXCRTM:-${NWROOThps}/hwrf.${hwrf_ver}/fix/hwrf-crtm-2.0.6}
+export PARMpost=${PARMpost:-$HOMEgfs/parm/post}
+
+if [ $RUN_ENVIR = "nco" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+else
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+fi
+[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
+
+if [ $RUN = gfs ];then
+  export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+fi
+if [ $RUN = gdas ]; then
+  export IGEN_GFS="gfs_avn"
+  export IGEN_ANL="anal_gfs"
+  export IGEN_FCST="gfs_avn"
+  export IGEN_GDAS_ANL="anal_gdas"
+  export FHOUT_PGB=${FHOUT:-1} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
+fi
+
+if [ $GRIBVERSION = grib2 ]; then
+  export IGEN_ANL="anal_gfs"
+  export IGEN_FCST="gfs_avn"
+  export IGEN_GFS="gfs_avn"
+fi
+
+#######################################
+# Specify Restart File Name to Key Off
+#######################################
+export restart_file=$COMIN/${RUN}.t${cyc}z.logf
+
+####################################
+# Specify Timeout Behavior of Post
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a restart file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for restart files
+####################################
+export SLEEP_TIME=900
+export SLEEP_INT=5
+
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+
+$SCRgfs/ex${RUN}_nceppost.sh.ecf
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+cat $pgmout
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

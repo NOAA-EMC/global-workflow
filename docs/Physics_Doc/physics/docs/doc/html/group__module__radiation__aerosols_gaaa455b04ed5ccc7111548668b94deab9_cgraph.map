@@ -1,0 +1,4 @@
+<map id="module_radiation_aerosols::clim_aerinit" name="module_radiation_aerosols::clim_aerinit">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga95fabbc4272ae70f3b345f9b1a898d46" title="The initialization program for climatological aerosols. The program reads and maps the pre&#45;tabulated ..." alt="" coords="229,12,320,39"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#ga637761b6110739f2d96322e2ddcc1291" title="This subroutine computes mean aerosols optical properties over each SW radiation spectral band for ea..." alt="" coords="368,12,429,39"/>
+</map>

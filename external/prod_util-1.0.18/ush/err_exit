@@ -1,0 +1,127 @@
+#!/bin/sh
+
+# SCRIPT NAME:  err_exit  Author:   Bill Facey   2 Apr 96
+#                         Modified: Kit Menlove 28 May 15
+#
+# ABSTRACT:  This script is to be used when a fatal error or condition 
+# has been reached and you want to terminate the job.
+#
+# USAGE:  To use this script one must export the following variables to the
+# script: jobid, SENDECF, pgm, pgmout, DATA, and jlogfile. One can provide
+# a message for the logfile by passing it to the script as an argument.
+jobid=${jobid:-${LSB_JOBNAME:-${PBS_JOBNAME:-${MOAB_JOBNAME}}}}
+msg1=${@:-Job $jobid failed}
+if [ -n "$pgm" ]; then
+  msg1+=", ERROR IN $pgm"
+fi
+if [ -n "$err" ]; then
+  msg1+=" RETURN CODE $err"
+fi
+
+msg2="
+*************************************************************
+** FATAL ERROR: $msg1
+** ABNORMAL EXIT at $(date) on $HOSTNAME
+*************************************************************
+"
+
+>&2 echo "$msg2"
+
+# list loaded modules
+if [[ -d /lfs3 ]] ; then
+    # We are on NOAA Jet
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+elif [[ -d /scratch3 ]] ; then
+    # We are on NOAA Theia
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
+    # We are on NOAA Luna or Surge
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+	source /opt/modules/default/init/$__ms_shell
+    fi
+elif [[ -d /dcom && -d /hwrf ]] ; then
+    # We are on NOAA Tide or Gyre
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usrx/local/Modules/default/init/$__ms_shell
+    fi
+elif [[ -d /glade ]] ; then
+    # We are on NCAR Yellowstone
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        . /usr/share/Modules/init/$__ms_shell
+    fi
+elif [[ -d /lustre && -d /ncrc ]] ; then
+    # We are on GAEA. 
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        # We cannot simply load the module command.  The GAEA
+        # /etc/profile modifies a number of module-related variables
+        # before loading the module command.  Without those variables,
+        # the module command fails.  Hence we actually have to source
+        # /etc/profile here.
+        source /etc/profile
+    fi
+fi
+module list
+>&2 echo ""
+
+if [ -n "$jlogfile" ]; then
+  postmsg $jlogfile "$msg1"
+else
+  >&2 echo "WARNING: jlogfile variable not defined"
+fi
+
+# list files in temporary working directory
+if [ -n "$DATA" ]; then
+  >&2 echo $DATA
+  >&2 ls -ltr $DATA
+else
+  >&2 echo "WARNING: DATA variable not defined"
+fi
+
+# save standard output
+if [ -n "$pgmout" ]; then
+  if [ -s errfile ]; then
+    echo "----- contents of errfile -----" >> $pgmout
+    cat errfile >> $pgmout
+  fi
+  >&2 cat $pgmout
+elif [ -s errfile ]; then
+  >&2 cat errfile
+fi
+
+if [ -n "$LSB_JOBID" ]; then
+  if [ "$SENDECF" = "YES" ]; then
+    timeout 30 ecflow_client --msg "$ECF_NAME: $msg1"
+    if [ "$RUN_ENVIR" = "nco" ] && [ -n "$ECF_NODE" ] && [ -n "$ECF_NAME" ] && [ -n "$ECF_TRYNO" ]; then
+      if ([ "$SITE" = "LUNA" ] && [[ "$ECF_NODE" == lecflow? ]]) || ([ "$SITE" = "SURGE" ] && [[ "$ECF_NODE" == secflow? ]]); then
+        echo "$msg2" >> /gpfs/hps/nco/ops/ecf/ecfnets/output${ECF_NAME}.$ECF_TRYNO
+      else
+        timeout 30 ssh ecfprod@$ECF_NODE "echo \"$msg2\" >> /ecf/ecfnets/output${ECF_NAME}.$ECF_TRYNO"
+      fi
+    fi
+  fi
+  bkill $LSB_JOBID
+  sleep 60  # Wait for LSF to kill the job
+fi
+
+if [[ -n "$PBS_JOBID" ]] ; then
+    qdel "$PBS_JOBID"
+fi
+
+if [[ -n "$MOAB_JOBID" ]] ; then
+    canceljob "$MOAB_JOBID"
+fi
+
+sleep 60 # wait for job to die
+
+# Last resort.  Terminate (signal 15) whole process group.
+python -c 'import os;p=os.getpgrp();os.kill(-p,15)'
+
+# Last last resort.  Wait for wallclock limit.  Should never get here:
+sleep 666666
+
+# Should never get here either:
+exit 1

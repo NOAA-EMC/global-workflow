@@ -1,0 +1,41 @@
+\hypertarget{namespacemodule__radsw__kgb24}{}\section{module\+\_\+radsw\+\_\+kgb24 Module Reference}
+\label{namespacemodule__radsw__kgb24}\index{module\+\_\+radsw\+\_\+kgb24@{module\+\_\+radsw\+\_\+kgb24}}
+
+
+This module sets up absorption coeffients for band 24\+: 12850-\/16000 cm-\/1 (low -\/ h2o, o2; high -\/ o2)  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__kgb24_ad416df05aed8a6ae1ecd57d5c90c223c}\label{namespacemodule__radsw__kgb24_ad416df05aed8a6ae1ecd57d5c90c223c}} 
+integer, public \hyperlink{namespacemodule__radsw__kgb24_ad416df05aed8a6ae1ecd57d5c90c223c}{msa24}
+\begin{DoxyCompactList}\small\item\em msa24=585 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Chou(1999) coefficients for cloud rain particles}\par
+\begin{DoxyCompactItemize}
+\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_ga0ec09b4df9fbfa868844ad93a84cbe31}{msb24}
+\begin{DoxyCompactList}\small\item\em msb24=235 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_ga52d0fde0af1d5427acf0d1924f393cdc}{msf24}
+\begin{DoxyCompactList}\small\item\em msf24=10 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_ga3a1c3808493ce89f2218116a02350e51}{mfr24}
+\begin{DoxyCompactList}\small\item\em mfr24=3 \end{DoxyCompactList}\item 
+integer, public \hyperlink{group__module__radsw__kgbnn_ga6fcafb0e1605ad49a252ed1e22b00a5b}{mfx24}
+\begin{DoxyCompactList}\small\item\em mfx24=9 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_ga3a1c3808493ce89f2218116a02350e51}{mfr24}, ng24), public {\bfseries forref}
+\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{namespacemodule__radsw__kgb24_ad416df05aed8a6ae1ecd57d5c90c223c}{msa24}, ng24), public \hyperlink{group__module__radsw__kgbnn_ga06965ec156c4e1d18d50a70ba43bd8e1}{absa}
+\begin{DoxyCompactList}\small\item\em the array absa(585,\+N\+G24) (ka(9,5,13,\+N\+G24)) contains absorption coefs at the 16 chosen g-\/values for a range of pressure levels$>$ $\sim$100mb, temperatures, and binary species parameters (see taumol.\+f for definition). the first index in the array, js, runs from 1 to 9, and corresponds to different values of the binary species parameter. for instance, js=1 refers to dry air, js = 2 corresponds to the paramter value 1/8, js = 3 corresponds to the parameter value 2/8, etc. the second index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 3 means that the data are for the reference temperature tref for this pressure level, jt = 2 refers to tref-\/15, jt = 1 is for tref-\/30, jt = 4 is for tref+15, and jt = 5 is for tref+30. the third index, jp, runs from 1 to 13 and refers to the jpth reference pressure level (see taumol.\+f for these levels in mb). the fourth index, ig, goes from 1 to 8, and indicates which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_ga0ec09b4df9fbfa868844ad93a84cbe31}{msb24}, ng24), public \hyperlink{group__module__radsw__kgbnn_gabd4db3c9678fee17f2cfd4a3e290619a}{absb}
+\begin{DoxyCompactList}\small\item\em the array absb(235,8) (kb(5,13\+:59,8)) contains absorption coefs at the 16 chosen g-\/values for a range of pressure levels $<$ $\sim$100mb and temperatures. the first index in the array, jt, which runs from 1 to 5, corresponds to different temperatures. more specifically, jt = 3 means that the data are for the reference temperature tref for this pressure level, jt = 2 refers to the temperature tref-\/15, jt = 1 is for tref-\/30, jt = 4 is for tref+15, and jt = 5 is for tref+30. the second index, jp, runs from 13 to 59 and refers to the jpth reference pressure level (see taumol.\+f for the value of these pressure levels in mb). the third index, ig, goes from 1 to 8, and tells us which g-\/interval the absorption coefficients are for. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\hyperlink{group__module__radsw__kgbnn_ga52d0fde0af1d5427acf0d1924f393cdc}{msf24}, ng24), public \hyperlink{group__module__radsw__kgbnn_ga784e78b5964fadd3e3e1f57f7af30802}{selfref}
+\begin{DoxyCompactList}\small\item\em the array selfref contains the coefficient of the water vapor self-\/continuum (including the energy term). the first index refers to temperature in 7.\+2 degree increments. for instance, jt = 1 refers to a temperature of 245.\+6, jt = 2 refers to 252.\+8, etc. the second index runs over the g-\/channel (1 to 8). \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng24), public \hyperlink{group__module__radsw__kgbnn_ga3df78e9baa46df182aad6ff9b1662dc4}{abso3a}
+\begin{DoxyCompactList}\small\item\em o3 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng24), public \hyperlink{group__module__radsw__kgbnn_ga6b44aa0637523aa1f78de5b4d16c693b}{abso3b}
+\begin{DoxyCompactList}\small\item\em o3 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng24, \hyperlink{group__module__radsw__kgbnn_ga6fcafb0e1605ad49a252ed1e22b00a5b}{mfx24}), public \hyperlink{group__module__radsw__kgbnn_gab24774576414b5d210c34916c3d19404}{rayla}
+\begin{DoxyCompactList}\small\item\em rayleigh extinction coefficient at all v \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(ng24), public {\bfseries raylb}
+\end{DoxyCompactItemize}
+\end{Indent}

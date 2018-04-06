@@ -1,0 +1,27 @@
+Lin Gan  -  2015 10 14
+
+This version of the post is updated with PMB-SPA standard using module
+To make this version of post in WCOSS, goto sorc/ncep_post.fd and run build_wcoss.sh
+
+**************************************************************************************
+
+Lin Gan  -  2015 12 14
+
+Updated to version 7.0.0 with following change:
+1. Major code merge. 
+2. Updated module configuration.
+3. Unified makefile is available by running makefile.sh. 
+4. Generated libnceppost.a post library file.
+5. All *.mod file has been moved to include sub directory.
+6. Type ./build_wcoss.sh for build using module in WCOSS phase2.
+7. Type ./makefile.sh for unified build on platform independent.
+
+**************************************************************************************
+
+Lin Gan  -  2016 02 01
+
+Update the structure to merge into new GFS vertical structure. No source code change.
+Release note is located in:
+https://docs.google.com/a/noaa.gov/document/d/1HECEgxI7yrtIl8sRtCdG1OUTT2Va2M1GONtt5cFMGRQ/edit?usp=sharing
+
+**************************************************************************************

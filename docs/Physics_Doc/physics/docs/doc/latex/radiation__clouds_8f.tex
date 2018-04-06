@@ -1,0 +1,118 @@
+\hypertarget{radiation__clouds_8f}{}\section{radiation\+\_\+clouds.\+f File Reference}
+\label{radiation__clouds_8f}\index{radiation\+\_\+clouds.\+f@{radiation\+\_\+clouds.\+f}}
+
+
+This file contains routines to compute cloud related quantities for radiation computations.  
+
+
+\subsection*{Functions/\+Subroutines}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga0e1ee94c9ca85849a219803325a61184}{module\+\_\+radiation\+\_\+clouds\+::cld\+\_\+init} (si, N\+L\+AY, imp\+\_\+physics, me)
+\begin{DoxyCompactList}\small\item\em This subroutine is an initialization program for cloud-\/radiation calculations and sets up boundary layer cloud top. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gafa23f5bc69fa713abfa32939fd96ade8}{module\+\_\+radiation\+\_\+clouds\+::progcld1} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, uni\+\_\+cld, lmfshal, lmfdeep2, cldcov, effrl, effri, effrr, effrs, effr\+\_\+in, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga3fd7643ce526761b17d04eec6a332333}{module\+\_\+radiation\+\_\+clouds\+::progcld2} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, f\+\_\+ice, f\+\_\+rain, r\+\_\+rime, flgmin, IX, N\+L\+AY, N\+L\+P1, lmfshal, lmfdeep2, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using ferrier\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gaeab51a06b22516fbfc78ab2c9eaf2622}{module\+\_\+radiation\+\_\+clouds\+::progcld3} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, cnvw, cnvc, xlat, xlon, slmsk, ix, nlay, nlp1, deltaq, sup, kdt, me, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme + pdfcld. \end{DoxyCompactList}\item 
+subroutine, public {\bfseries module\+\_\+radiation\+\_\+clouds\+::progcld4} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, cldtot, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\item 
+subroutine, public {\bfseries module\+\_\+radiation\+\_\+clouds\+::progcld4o} (plyr, plvl, tlyr, tvly, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, ntclamt, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga0c2a2c0d1abf49c1d6bbeb12d3223893}{module\+\_\+radiation\+\_\+clouds\+::progcld5} (plyr, plvl, tlyr, qlyr, qstl, rhly, clw, xlat, xlon, slmsk, ntrac, ntcw, ntiw, ntrw, ntsw, ntgl, IX, N\+L\+AY, N\+L\+P1, uni\+\_\+cld, lmfshal, lmfdeep2, cldcov, re\+\_\+cloud, re\+\_\+ice, re\+\_\+snow, clouds, clds, mtop, mbot)
+\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_gaa369e2e2910b3468614db856b378f3ba}{module\+\_\+radiation\+\_\+clouds\+::progclduni} (plyr, plvl, tlyr, tvly, ccnd, ncnd, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, cldtot, effrl, effri, effrr, effrs, effr\+\_\+in, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud related quantities using zhao/moorthi\textquotesingle{}s prognostic cloud microphysics scheme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__clouds_ga022c3706242426745001b7837ae801a3}{module\+\_\+radiation\+\_\+clouds\+::diagcld1} (plyr, plvl, tlyr, rhly, vvel, cv, cvt, cvb, xlat, xlon, slmsk, IX, N\+L\+AY, N\+L\+P1, clouds, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes cloud fractions for radiation calculations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radiation__clouds_gac231d967afcfb252dedba82e9085b34d}{module\+\_\+radiation\+\_\+clouds\+::gethml} (plyr, ptop1, cldtot, cldcnv, IX, N\+L\+AY, clds, mtop, mbot)
+\begin{DoxyCompactList}\small\item\em This subroutine computes high, mid, low, total, and boundary cloud fractions and cloud top/bottom layer indices for model diagnostic output. The three cloud domain boundaries are defined by ptopc. The cloud overlapping method is defined by control flag \textquotesingle{}iovr\textquotesingle{}, which is also used by LW and SW radiation programs. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radiation__clouds_ga9b3f43844a53e79cd5c348f8c72ec408}{module\+\_\+radiation\+\_\+clouds\+::rhtable} (me, ier)
+\begin{DoxyCompactList}\small\item\em cld-\/rh relations obtained from mitchell-\/hahn procedure. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{radiation__clouds_8f_a54f11c2f6353f244501cf4ec3553d78b}\label{radiation__clouds_8f_a54f11c2f6353f244501cf4ec3553d78b}} 
+character(40), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::vtagcld} =\textquotesingle{}N\+C\+EP-\/Radiation\+\_\+clouds v5.\+1 Nov 2012 \textquotesingle{}
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::gfac} =1.\+0e5/con\+\_\+g
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::gord} =con\+\_\+g/con\+\_\+rd
+\item 
+integer, parameter, public \hyperlink{group__module__radiation__clouds_ga66cf0f94619a3d865b0c593197a30576}{module\+\_\+radiation\+\_\+clouds\+::nf\+\_\+clds} = 11
+\begin{DoxyCompactList}\small\item\em number of fields in cloud array \end{DoxyCompactList}\item 
+integer, parameter, public \hyperlink{group__module__radiation__clouds_ga2739168b8205ee860eb8a160ea722a44}{module\+\_\+radiation\+\_\+clouds\+::nk\+\_\+clds} = 3
+\begin{DoxyCompactList}\small\item\em number of cloud vertical domains \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(nk\+\_\+clds+1, 2), save \hyperlink{group__module__radiation__clouds_ga03bc5d19cbdc84a2032c8d591ba4c96a}{module\+\_\+radiation\+\_\+clouds\+::ptopc}
+\begin{DoxyCompactList}\small\item\em pressure limits of cloud domain interfaces (low,mid,high) in mb (0.\+1k\+Pa) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::climit} = 0.\+001
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::climit2} =0.\+05
+\item 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+clouds\+::ovcst} = 1.\+0 -\/ 1.\+0e-\/8
+\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga1768a85f4d8af2ad40b62ae6e6667c1e}{module\+\_\+radiation\+\_\+clouds\+::reliq\+\_\+def} = 10.\+0
+\begin{DoxyCompactList}\small\item\em default liq radius to 10 micron \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga721e0fb4a34774f5b61f567b9cad8e7b}{module\+\_\+radiation\+\_\+clouds\+::reice\+\_\+def} = 50.\+0
+\begin{DoxyCompactList}\small\item\em default ice radius to 50 micron \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga93fcaedae02c0f9c4de9f39061379d6b}{module\+\_\+radiation\+\_\+clouds\+::rrain\+\_\+def} = 1000.\+0
+\begin{DoxyCompactList}\small\item\em default rain radius to 1000 micron \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga2b68c4a206e17cb59597f6c4dffc7c1a}{module\+\_\+radiation\+\_\+clouds\+::rsnow\+\_\+def} = 250.\+0
+\begin{DoxyCompactList}\small\item\em default snow radius to 250 micron \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__clouds_gad2947b3c0a8382fbe12b76dd68b290e0}{module\+\_\+radiation\+\_\+clouds\+::nbin} =100
+\begin{DoxyCompactList}\small\item\em rh in one percent interval \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__clouds_gab4d14edea12bbcda5361cad523386c7c}{module\+\_\+radiation\+\_\+clouds\+::nlon} =2
+\begin{DoxyCompactList}\small\item\em =1,2 for eastern and western hemispheres \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__clouds_gad4274cb223949e858ecc2e6346bed610}{module\+\_\+radiation\+\_\+clouds\+::nlat} =4
+\begin{DoxyCompactList}\small\item\em =1,4 for 60n-\/30n,30n-\/equ,equ-\/30s,30s-\/60s \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__clouds_gafb94f3d62afa49bef6c33f73a7ecad65}{module\+\_\+radiation\+\_\+clouds\+::mcld} =4
+\begin{DoxyCompactList}\small\item\em =1,4 for bl,low,mid,hi cld type \end{DoxyCompactList}\item 
+integer, parameter \hyperlink{group__module__radiation__clouds_gaaf2a6549a8c42b9eae3d40d21d1e9532}{module\+\_\+radiation\+\_\+clouds\+::nseal} =2
+\begin{DoxyCompactList}\small\item\em =1,2 for land,sea \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga2ce850be46f0144caa09309ae01958c2}{module\+\_\+radiation\+\_\+clouds\+::cldssa\+\_\+def} = 0.\+99
+\begin{DoxyCompactList}\small\item\em default cld single scat albedo \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_gab94e45a81d8be82b6cb686b35fd78a80}{module\+\_\+radiation\+\_\+clouds\+::cldasy\+\_\+def} = 0.\+84
+\begin{DoxyCompactList}\small\item\em default cld asymmetry factor \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(3) \hyperlink{group__module__radiation__clouds_gab2a798da0bb0125d1d5074b73c5951dc}{module\+\_\+radiation\+\_\+clouds\+::xlabdy}
+\begin{DoxyCompactList}\small\item\em lat bndry between tuning regions \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(3) \hyperlink{group__module__radiation__clouds_gaab28f783919380e5ff7f925f70355a57}{module\+\_\+radiation\+\_\+clouds\+::xlobdy}
+\begin{DoxyCompactList}\small\item\em lon bndry between tuning regions \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga1146f43b680b655d354a9c031ee4a463}{module\+\_\+radiation\+\_\+clouds\+::xlim} =5.\+0
+\begin{DoxyCompactList}\small\item\em +/-\/ xlim for transition \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga6ec3c0444de53580befd4bb4d39844d3}{module\+\_\+radiation\+\_\+clouds\+::vvcld1} = 0.\+0003e0
+\begin{DoxyCompactList}\small\item\em low cloud vertical velocity adjustment boundaries in mb/sec \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), parameter \hyperlink{group__module__radiation__clouds_ga67962e77fb073cc25cafaaba0c2fa833}{module\+\_\+radiation\+\_\+clouds\+::vvcld2} =-\/0.\+0005e0
+\begin{DoxyCompactList}\small\item\em low cloud vertical velocity adjustment boundaries in mb/sec \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(nbin, nlon, nlat, mcld, nseal) \hyperlink{group__module__radiation__clouds_ga9673faf82ef00e0501763664743e3720}{module\+\_\+radiation\+\_\+clouds\+::rhcl}
+\begin{DoxyCompactList}\small\item\em tuned relative humidity relation table for diagnostic cloud scheme \end{DoxyCompactList}\item 
+integer \hyperlink{group__module__radiation__clouds_ga3390b20d42afccb3ec569a5b69a93f6e}{module\+\_\+radiation\+\_\+clouds\+::llyr} = 2
+\begin{DoxyCompactList}\small\item\em upper limit of boundary layer clouds \end{DoxyCompactList}\item 
+integer \hyperlink{group__module__radiation__clouds_ga5cfafee79e8cf066ddd8440cdfdc41a0}{module\+\_\+radiation\+\_\+clouds\+::iovr} = 1
+\begin{DoxyCompactList}\small\item\em maximum-\/random cloud overlapping method \end{DoxyCompactList}\end{DoxyCompactItemize}

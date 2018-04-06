@@ -1,0 +1,21 @@
+digraph "ipd_typedefs::ipd_diag_type"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="ipd_typedefs::ipd_diag_type",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" data" ];
+  Node2 [label="ipd_typedefs::var_subtype",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structipd__typedefs_1_1var__subtype.html"];
+  Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" var3p" ];
+  Node3 [label="real(kind=kind_phys)\l, dimension(:,:), pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" var2p" ];
+  Node4 [label="real(kind=kind_phys)\l, dimension(:), pointer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" desc" ];
+  Node5 [label="character(len=128)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" unit\noutput_name\nlevel_type\nfile_name\ntype_stat_proc\nmod_name\nname" ];
+  Node6 [label="character(len=32)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" level" ];
+  Node7 [label="integer",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" fcst_hour\nzhour\ncnvfac" ];
+  Node8 [label="real(kind=kind_phys)",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

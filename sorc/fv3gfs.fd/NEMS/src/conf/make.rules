@@ -1,0 +1,20 @@
+.SUFFIXES:
+.SUFFIXES: .F90 .f90 .f .o .c
+
+.F90.f90:
+	$(CPP) $(CPPFLAGS) $< > $*.f90
+
+.f.f90:
+	$(CPP) $(CPPFLAGS) $< > $*.f90
+
+depend: $(DEPEND_FILES)
+	ls -1 $(DEPEND_FILES) > Srcfiles
+	echo "." > Filepath
+	$(MKDEPENDS) -m Filepath Srcfiles > depend
+	$(RM) -f Filepath Srcfiles
+
+depend_stub: $(DEPEND_FILES_stub)
+	ls -1 $(DEPEND_FILES_stub) > Srcfiles
+	echo "." > Filepath
+	$(MKDEPENDS) -m Filepath Srcfiles > depend
+	$(RM) -f Filepath Srcfiles

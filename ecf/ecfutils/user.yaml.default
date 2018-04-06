@@ -1,9 +1,32 @@
 user_places: &user_places
+
+  # PROJECT_DIR - Mandatory. this sets the disk area to use for
+  # storage of intermediate-term files such as the Rocoto XML.  This
+  # should be the directory just above your personal user area.
+  # Examples:
+  #    PROJECT_DIR: /lustre/f1/unswept/ncep
+  #    PROJECT_DIR: /lfs3/projects/hfv3gfs
+  #    PROJECT_DIR: /scratch4/NCEPDEV/nems
+  #    PROJECT_DIR: /gpfs/hps3/emc/nems
+
   PROJECT_DIR: !error Please select a project directory.
     # ie. /scratch4/NCEPDEV/ocean
 
-  # Override scrub areas here.  Mandatory on Jet.
+  # LONG_TERM_TEMP- Optional.  This directory is used for temporary
+  # files that must exist for the duration of the simulation, such as
+  # log files or files shared between jobs.  The setup_case.sh will
+  # make subdirectories within LONG_TERM_TEMP for such purposes.
+  # Reasonable defaults are chosen if this is not specified.
+
   # LONG_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
+
+
+  # SHORT_TERM_TEMP- Optional.  This directory is used for files only
+  # needed within one job.  If the job succeeds, these files are
+  # deleted at the end of the job.  The setup_case.sh will make
+  # subdirectories within SHORT_TERM_TEMP for such purposes.
+  # Reasonable defaults are chosen if this is not specified.
+
   # SHORT_TERM_TEMP: /lfs3/projects/hfv3gfs/Samuel.Trahan/scrub
 
   # Override non-scrubbed areas if desired:
@@ -11,7 +34,18 @@ user_places: &user_places
   # NOSCRUB:  /lfs3/projects/hfv3gfs/Samuel.Trahan/noscrub
 
 accounting: &accounting
-  # Project for CPU accounting.
+
+  # cpu_project: Mandatory.  This is used to tell qsub, bsub, or msub what
+  # project (AKA account, charge code) to use for submitted jobs.
+
   cpu_project: !error What accounting code do I use to submit jobs? # ie.: global
+
+  # hpss_project. Mandatory.  This is used to track hpss archive use.
+  # This argument is vestigial because the workflow is not archiving data, but
+  # you do have to specify some value here.  Use "emc-global" if you don't
+  # have hpss write access.
   hpss_project: !error Where do I put data on HPSS?   # ie.: emc-global
+
+  # ecflow_machine: Mandatory, but only used if you run ecFlow.  You should
+  # leave this at the default value unless you know what you're doing.
   ecflow_machine: xc40-dev   # only relevant on WCOSS using ecFlow

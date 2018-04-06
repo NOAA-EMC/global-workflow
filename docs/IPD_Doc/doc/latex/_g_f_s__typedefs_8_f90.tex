@@ -1,0 +1,82 @@
+\section{G\+F\+S\+\_\+typedefs.\+F90 File Reference}
+\label{_g_f_s__typedefs_8_f90}\index{G\+F\+S\+\_\+typedefs.\+F90@{G\+F\+S\+\_\+typedefs.\+F90}}
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+init\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+statein\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+stateout\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+sfcprop\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+tbd\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+cldprop\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+typedefs\+::gfs\+\_\+diag\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \textbf{ gfs\+\_\+typedefs}
+\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::statein\+\_\+create} (Statein, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::stateout\+\_\+create} (Stateout, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::sfcprop\+\_\+create} (Sfcprop, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::coupling\+\_\+create} (Coupling, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::control\+\_\+initialize} (Model, nlunit, fn\+\_\+nml, me, master, logunit, isc, jsc, nx, ny, levs, cnx, cny, gnx, gny, dt\+\_\+dycore, dt\+\_\+phys, idat, jdat, tracer\+\_\+names, input\+\_\+nml\+\_\+file)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::control\+\_\+print} (Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::grid\+\_\+create} (Grid, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::tbd\+\_\+create} (Tbd, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::cldprop\+\_\+create} (Cldprop, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::radtend\+\_\+create} (Radtend, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::diag\+\_\+create} (Diag, IM, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::diag\+\_\+rad\+\_\+zero} (Diag, Model)
+\item 
+subroutine \textbf{ gfs\+\_\+typedefs\+::diag\+\_\+phys\+\_\+zero} (Diag, Model, linit)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+character(len=64) \textbf{ gfs\+\_\+typedefs\+::phys\+\_\+version} = \textquotesingle{}v2018 F\+V3\+G\+FS B\+E\+TA V\+E\+R\+S\+I\+ON P\+H\+Y\+S\+I\+CS\textquotesingle{}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::zero} = 0.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::huge} = 9.\+9999\+D15
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::clear\+\_\+val} = zero
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::rann\+\_\+init} = 0.\+6\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::cn\+\_\+one} = 1.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::cn\+\_\+100} = 100.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::cn\+\_\+th} = 1000.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ gfs\+\_\+typedefs\+::cn\+\_\+hr} = 3600.\+\_\+kind\+\_\+phys
+\end{DoxyCompactItemize}

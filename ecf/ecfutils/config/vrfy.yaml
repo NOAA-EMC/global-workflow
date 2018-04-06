@@ -1,3 +1,7 @@
+# This file is used to generate config.vrfy which runs some of the
+# post-processing and the VSDB.  That functionality is not included in
+# this release, so this file is ignored.
+
 config_vrfy:
   filename: config.vrfy
   content: !expand |

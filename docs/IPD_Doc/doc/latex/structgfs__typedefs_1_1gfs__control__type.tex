@@ -1,0 +1,3206 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+control\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__control__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+control\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ init} =$>$ \textbf{ control\+\_\+initialize}
+\item 
+procedure \textbf{ print} =$>$ \textbf{ control\+\_\+print}
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+integer \textbf{ me}
+\begin{DoxyCompactList}\small\item\em M\+PI rank designator. \end{DoxyCompactList}\item 
+integer \textbf{ master}
+\begin{DoxyCompactList}\small\item\em M\+PI rank of master atmosphere processor. \end{DoxyCompactList}\item 
+integer \textbf{ nlunit}
+\begin{DoxyCompactList}\small\item\em unit for namelist \end{DoxyCompactList}\item 
+character(len=64) \textbf{ fn\+\_\+nml}
+\begin{DoxyCompactList}\small\item\em namelist filename for surface data cycling \end{DoxyCompactList}\item 
+character(len=256), dimension(\+:), pointer \textbf{ input\+\_\+nml\+\_\+file}
+\begin{DoxyCompactList}\small\item\em character string containing full namelist for use with internal file reads \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhzero}
+\begin{DoxyCompactList}\small\item\em seconds between clearing of diagnostic buckets \end{DoxyCompactList}\item 
+logical \textbf{ lprecip\+\_\+accu}
+\begin{DoxyCompactList}\small\item\em flag for precip accumulation without bucket (fhzero) \end{DoxyCompactList}\item 
+logical \textbf{ ldiag3d}
+\begin{DoxyCompactList}\small\item\em flag for 3d diagnostic fields \end{DoxyCompactList}\item 
+logical \textbf{ lssav}
+\begin{DoxyCompactList}\small\item\em logical flag for storing diagnostics \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhcyc}
+\begin{DoxyCompactList}\small\item\em frequency for surface data cycling (secs) \end{DoxyCompactList}\item 
+logical \textbf{ lgocart}
+\begin{DoxyCompactList}\small\item\em flag for 3d diagnostic fields for gocart 1 \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhgoc3d}
+\begin{DoxyCompactList}\small\item\em seconds between calls to gocart \end{DoxyCompactList}\item 
+integer \textbf{ thermodyn\+\_\+id}
+\begin{DoxyCompactList}\small\item\em valid for G\+FS only for get\+\_\+prs/phi \end{DoxyCompactList}\item 
+integer \textbf{ sfcpress\+\_\+id}
+\begin{DoxyCompactList}\small\item\em valid for G\+FS only for get\+\_\+prs/phi \end{DoxyCompactList}\item 
+logical \textbf{ gen\+\_\+coord\+\_\+hybrid}
+\begin{DoxyCompactList}\small\item\em for Henry\textquotesingle{}s gen coord \end{DoxyCompactList}\item 
+integer \textbf{ isc}
+\begin{DoxyCompactList}\small\item\em starting i-\/index for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ jsc}
+\begin{DoxyCompactList}\small\item\em starting j-\/index for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ nx}
+\begin{DoxyCompactList}\small\item\em number of points in the i-\/dir for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ ny}
+\begin{DoxyCompactList}\small\item\em number of points in the j-\/dir for this M\+P\+I-\/domain \end{DoxyCompactList}\item 
+integer \textbf{ levs}
+\begin{DoxyCompactList}\small\item\em number of vertical levels \end{DoxyCompactList}\item 
+integer \textbf{ cnx}
+\begin{DoxyCompactList}\small\item\em number of points in the i-\/dir for this cubed-\/sphere face \end{DoxyCompactList}\item 
+integer \textbf{ cny}
+\begin{DoxyCompactList}\small\item\em number of points in the j-\/dir for this cubed-\/sphere face \end{DoxyCompactList}\item 
+integer \textbf{ lonr}
+\begin{DoxyCompactList}\small\item\em number of global points in x-\/dir (i) along the equator \end{DoxyCompactList}\item 
+integer \textbf{ latr}
+\begin{DoxyCompactList}\small\item\em number of global points in y-\/dir (j) along any meridian \end{DoxyCompactList}\item 
+logical \textbf{ cplflx}
+\begin{DoxyCompactList}\small\item\em default no cplflx collection \end{DoxyCompactList}\item 
+logical \textbf{ cplwav}
+\begin{DoxyCompactList}\small\item\em default no cplwav collection \end{DoxyCompactList}\item 
+logical \textbf{ lsidea}
+\item 
+real(kind=kind\+\_\+phys) \textbf{ dtp}
+\begin{DoxyCompactList}\small\item\em physics timestep in seconds \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ dtf}
+\begin{DoxyCompactList}\small\item\em dynamics timestep in seconds \end{DoxyCompactList}\item 
+integer \textbf{ nscyc}
+\begin{DoxyCompactList}\small\item\em trigger for surface data cycling \end{DoxyCompactList}\item 
+integer \textbf{ nszero}
+\begin{DoxyCompactList}\small\item\em trigger for zeroing diagnostic buckets \end{DoxyCompactList}\item 
+integer, dimension(1\+:8) \textbf{ idat}
+\begin{DoxyCompactList}\small\item\em initialization date and time (yr, mon, day, t-\/zone, hr, min, sec, mil-\/sec) \end{DoxyCompactList}\item 
+integer, dimension(4) \textbf{ idate}
+\begin{DoxyCompactList}\small\item\em initial date with different size and ordering (hr, mon, day, yr) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhswr}
+\begin{DoxyCompactList}\small\item\em frequency for shortwave radiation (secs) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhlwr}
+\begin{DoxyCompactList}\small\item\em frequency for longwave radiation (secs) \end{DoxyCompactList}\item 
+integer \textbf{ nsswr}
+\begin{DoxyCompactList}\small\item\em integer trigger for shortwave radiation \end{DoxyCompactList}\item 
+integer \textbf{ nslwr}
+\begin{DoxyCompactList}\small\item\em integer trigger for longwave radiation \end{DoxyCompactList}\item 
+integer \textbf{ levr}
+\begin{DoxyCompactList}\small\item\em number of vertical levels for radiation calculations \end{DoxyCompactList}\item 
+integer \textbf{ nfxr}
+\begin{DoxyCompactList}\small\item\em second dimension for fluxr diagnostic variable (radiation) \end{DoxyCompactList}\item 
+logical \textbf{ aero\+\_\+in}
+\begin{DoxyCompactList}\small\item\em aerosol flag for gbphys \end{DoxyCompactList}\item 
+logical \textbf{ lmfshal}
+\begin{DoxyCompactList}\small\item\em parameter for radiation \end{DoxyCompactList}\item 
+logical \textbf{ lmfdeep2}
+\begin{DoxyCompactList}\small\item\em parameter for radiation \end{DoxyCompactList}\item 
+integer \textbf{ nrcm}
+\begin{DoxyCompactList}\small\item\em second dimension of random number stream for R\+AS \end{DoxyCompactList}\item 
+integer \textbf{ iflip}
+\begin{DoxyCompactList}\small\item\em iflip -\/ is not the same as flipv \end{DoxyCompactList}\item 
+integer \textbf{ isol}
+\begin{DoxyCompactList}\small\item\em use prescribed solar constant \end{DoxyCompactList}\item 
+integer \textbf{ ico2}
+\begin{DoxyCompactList}\small\item\em prescribed global mean value (old opernl) \end{DoxyCompactList}\item 
+integer \textbf{ ialb}
+\begin{DoxyCompactList}\small\item\em use climatology alb, based on sfc type 1 =$>$ use modis based alb \end{DoxyCompactList}\item 
+integer \textbf{ iems}
+\begin{DoxyCompactList}\small\item\em use fixed value of 1.\+0 \end{DoxyCompactList}\item 
+integer \textbf{ iaer}
+\begin{DoxyCompactList}\small\item\em default aerosol effect in sw only \end{DoxyCompactList}\item 
+integer \textbf{ iovr\+\_\+sw}
+\begin{DoxyCompactList}\small\item\em sw\+: max-\/random overlap clouds \end{DoxyCompactList}\item 
+integer \textbf{ iovr\+\_\+lw}
+\begin{DoxyCompactList}\small\item\em lw\+: max-\/random overlap clouds \end{DoxyCompactList}\item 
+integer \textbf{ ictm}
+\begin{DoxyCompactList}\small\item\em ictm=0 =$>$ use data at initial cond time, if not available; use latest; no extrapolation. ictm=1 =$>$ use data at the forecast time, if not available; use latest; do extrapolation. ictm=yyyy0 =$>$ use yyyy data for the forecast time; no extrapolation. ictm=yyyy1 = $>$ use yyyy data for the fcst. If needed, do extrapolation to match the fcst time. ictm=-\/1 =$>$ use user provided external data for the fcst time; no extrapolation. ictm=-\/2 =$>$ same as ictm=0, but add seasonal cycle from climatology; no extrapolation. \end{DoxyCompactList}\item 
+integer \textbf{ isubc\+\_\+sw}
+\begin{DoxyCompactList}\small\item\em sw clouds without sub-\/grid approximation \end{DoxyCompactList}\item 
+integer \textbf{ isubc\+\_\+lw}
+\begin{DoxyCompactList}\small\item\em lw clouds without sub-\/grid approximation =1 =$>$ sub-\/grid cloud with prescribed seeds =2 =$>$ sub-\/grid cloud with randomly generated seeds \end{DoxyCompactList}\item 
+logical \textbf{ crick\+\_\+proof}
+\begin{DoxyCompactList}\small\item\em C\+R\+I\+C\+K-\/\+Proof cloud water. \end{DoxyCompactList}\item 
+logical \textbf{ ccnorm}
+\begin{DoxyCompactList}\small\item\em Cloud condensate normalized by cloud cover. \end{DoxyCompactList}\item 
+logical \textbf{ norad\+\_\+precip}
+\begin{DoxyCompactList}\small\item\em radiation precip flag for Ferrier/\+Moorthi \end{DoxyCompactList}\item 
+logical \textbf{ lwhtr}
+\begin{DoxyCompactList}\small\item\em flag to output lw heating rate (Radtendlwhc) \end{DoxyCompactList}\item 
+logical \textbf{ swhtr}
+\begin{DoxyCompactList}\small\item\em flag to output sw heating rate (Radtendswhc) \end{DoxyCompactList}\item 
+integer \textbf{ ncld}
+\begin{DoxyCompactList}\small\item\em cnoice of cloud scheme \end{DoxyCompactList}\item 
+integer \textbf{ imp\+\_\+physics}
+\begin{DoxyCompactList}\small\item\em cnoice of cloud scheme \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ psautco}
+\begin{DoxyCompactList}\small\item\em [in] auto conversion coeff from ice to snow \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ prautco}
+\begin{DoxyCompactList}\small\item\em [in] auto conversion coeff from cloud to rain \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ evpco}
+\begin{DoxyCompactList}\small\item\em [in] coeff for evaporation of largescale rain \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ wminco}
+\begin{DoxyCompactList}\small\item\em [in] water and ice minimum threshold for Zhao \end{DoxyCompactList}\item 
+integer \textbf{ fprcp}
+\begin{DoxyCompactList}\small\item\em no prognostic rain and snow (MG) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ mg\+\_\+dcs}
+\begin{DoxyCompactList}\small\item\em Morrison-\/\+Gettleman microphysics parameters. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ mg\+\_\+qcvar}
+\item 
+real(kind=kind\+\_\+phys) \textbf{ mg\+\_\+ts\+\_\+auto\+\_\+ice}
+\begin{DoxyCompactList}\small\item\em ice auto conversion time scale \end{DoxyCompactList}\item 
+logical \textbf{ effr\+\_\+in}
+\begin{DoxyCompactList}\small\item\em eg to turn on ffective radii for MG \end{DoxyCompactList}\item 
+logical \textbf{ microp\+\_\+uniform}
+\item 
+logical \textbf{ do\+\_\+cldice}
+\item 
+logical \textbf{ hetfrz\+\_\+classnuc}
+\item 
+real(kind=kind\+\_\+phys) \textbf{ shoc\+\_\+pcrit}
+\begin{DoxyCompactList}\small\item\em critical pressure in Pa for tke dissipation in shoc \end{DoxyCompactList}\item 
+integer \textbf{ ncnd}
+\begin{DoxyCompactList}\small\item\em number of cloud condensate types \end{DoxyCompactList}\item 
+logical \textbf{ ltaerosol}
+\begin{DoxyCompactList}\small\item\em flag for aerosol version, currently not working yet \end{DoxyCompactList}\item 
+logical \textbf{ lradar}
+\begin{DoxyCompactList}\small\item\em flag for radar reflectivity \end{DoxyCompactList}\item 
+logical \textbf{ lgfdlmprad}
+\begin{DoxyCompactList}\small\item\em flag for G\+F\+DL mp scheme and radiation consistency \end{DoxyCompactList}\item 
+integer \textbf{ lsm}
+\begin{DoxyCompactList}\small\item\em flag for land surface model lsm=1 for noah lsm \end{DoxyCompactList}\item 
+integer \textbf{ lsoil}
+\begin{DoxyCompactList}\small\item\em number of soil layers \end{DoxyCompactList}\item 
+integer \textbf{ ivegsrc}
+\begin{DoxyCompactList}\small\item\em ivegsrc = 0 =$>$ U\+S\+GS, ivegsrc = 1 =$>$ I\+G\+BP (20 category) ivegsrc = 2 =$>$ U\+MD (13 category) \end{DoxyCompactList}\item 
+integer \textbf{ isot}
+\begin{DoxyCompactList}\small\item\em isot = 0 =$>$ Zobler soil type ( 9 category) isot = 1 =$>$ S\+T\+A\+T\+S\+GO soil type (19 category) \end{DoxyCompactList}\item 
+logical \textbf{ mom4ice}
+\begin{DoxyCompactList}\small\item\em flag controls mom4 sea ice \end{DoxyCompactList}\item 
+logical \textbf{ use\+\_\+ufo}
+\begin{DoxyCompactList}\small\item\em flag for gcycle surface option \end{DoxyCompactList}\item 
+logical \textbf{ ras}
+\begin{DoxyCompactList}\small\item\em flag for ras convection scheme \end{DoxyCompactList}\item 
+logical \textbf{ flipv}
+\begin{DoxyCompactList}\small\item\em flag for vertical direction flip (ras) .true. implies surface at k=1 \end{DoxyCompactList}\item 
+logical \textbf{ trans\+\_\+trac}
+\begin{DoxyCompactList}\small\item\em flag for convective transport of tracers (R\+AS only) \end{DoxyCompactList}\item 
+logical \textbf{ old\+\_\+monin}
+\begin{DoxyCompactList}\small\item\em flag for diff monin schemes \end{DoxyCompactList}\item 
+logical \textbf{ cnvgwd}
+\begin{DoxyCompactList}\small\item\em flag for conv gravity wave drag \end{DoxyCompactList}\item 
+logical \textbf{ mstrat}
+\begin{DoxyCompactList}\small\item\em flag for moorthi approach for stratus \end{DoxyCompactList}\item 
+logical \textbf{ moist\+\_\+adj}
+\begin{DoxyCompactList}\small\item\em flag for moist convective adjustment \end{DoxyCompactList}\item 
+logical \textbf{ cscnv}
+\begin{DoxyCompactList}\small\item\em flag for Chikira-\/\+Sugiyama convection \end{DoxyCompactList}\item 
+logical \textbf{ cal\+\_\+pre}
+\begin{DoxyCompactList}\small\item\em flag controls precip type algorithm \end{DoxyCompactList}\item 
+logical \textbf{ do\+\_\+aw}
+\begin{DoxyCompactList}\small\item\em AW scale-\/aware option in cs convection. \end{DoxyCompactList}\item 
+logical \textbf{ do\+\_\+awdd}
+\begin{DoxyCompactList}\small\item\em AW scale-\/aware option in cs convection. \end{DoxyCompactList}\item 
+logical \textbf{ flx\+\_\+form}
+\begin{DoxyCompactList}\small\item\em AW scale-\/aware option in cs convection. \end{DoxyCompactList}\item 
+logical \textbf{ do\+\_\+shoc}
+\begin{DoxyCompactList}\small\item\em flag for S\+H\+OC \end{DoxyCompactList}\item 
+logical \textbf{ shocaftcnv}
+\begin{DoxyCompactList}\small\item\em flag for S\+H\+OC \end{DoxyCompactList}\item 
+logical \textbf{ shoc\+\_\+cld}
+\begin{DoxyCompactList}\small\item\em flag for clouds \end{DoxyCompactList}\item 
+logical \textbf{ uni\+\_\+cld}
+\begin{DoxyCompactList}\small\item\em flag for clouds in grrad \end{DoxyCompactList}\item 
+logical \textbf{ h2o\+\_\+phys}
+\begin{DoxyCompactList}\small\item\em flag for stratosphere h2o \end{DoxyCompactList}\item 
+logical \textbf{ pdfcld}
+\begin{DoxyCompactList}\small\item\em flag for pdfcld \end{DoxyCompactList}\item 
+logical \textbf{ shcnvcw}
+\begin{DoxyCompactList}\small\item\em flag for shallow convective cloud \end{DoxyCompactList}\item 
+logical \textbf{ redrag}
+\begin{DoxyCompactList}\small\item\em flag for reduced drag coeff. over sea \end{DoxyCompactList}\item 
+logical \textbf{ hybedmf}
+\begin{DoxyCompactList}\small\item\em flag for hybrid edmf pbl scheme \end{DoxyCompactList}\item 
+logical \textbf{ dspheat}
+\begin{DoxyCompactList}\small\item\em flag for tke dissipative heating \end{DoxyCompactList}\item 
+logical \textbf{ cnvcld}
+\item 
+logical \textbf{ random\+\_\+clds}
+\begin{DoxyCompactList}\small\item\em flag controls whether clouds are random \end{DoxyCompactList}\item 
+logical \textbf{ shal\+\_\+cnv}
+\begin{DoxyCompactList}\small\item\em flag for calling shallow convection \end{DoxyCompactList}\item 
+logical \textbf{ do\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em whether to do deep convection \end{DoxyCompactList}\item 
+integer \textbf{ imfshalcnv}
+\begin{DoxyCompactList}\small\item\em flag for mass-\/flux shallow convection scheme 1\+: July 2010 version of mass-\/flux shallow conv scheme current operational version as of 2016 2\+: scale-\/ \& aerosol-\/aware mass-\/flux shallow conv scheme (2017) 0\+: modified Tiedtke\textquotesingle{}s eddy-\/diffusion shallow conv scheme -\/1\+: no shallow convection used \end{DoxyCompactList}\item 
+integer \textbf{ imfdeepcnv}
+\begin{DoxyCompactList}\small\item\em flag for mass-\/flux deep convection scheme 1\+: July 2010 version of S\+AS conv scheme current operational version as of 2016 2\+: scale-\/ \& aerosol-\/aware mass-\/flux deep conv scheme (2017) 0\+: old S\+AS Convection scheme before July 2010 \end{DoxyCompactList}\item 
+integer \textbf{ nmtvr}
+\begin{DoxyCompactList}\small\item\em number of topographic variables such as variance etc used in the G\+WD parameterization \end{DoxyCompactList}\item 
+integer \textbf{ jcap}
+\begin{DoxyCompactList}\small\item\em number of spectral wave trancation used only by sascnv shalcnv \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(10) \textbf{ cs\+\_\+parm}
+\begin{DoxyCompactList}\small\item\em tunable parameters for Chikira-\/\+Sugiyama convection \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ flgmin}
+\begin{DoxyCompactList}\small\item\em [in] ice fraction bounds \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ cgwf}
+\begin{DoxyCompactList}\small\item\em multiplication factor for convective G\+WD \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ ccwf}
+\begin{DoxyCompactList}\small\item\em multiplication factor for critical cloud workfunction for R\+AS \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ cdmbgwd}
+\begin{DoxyCompactList}\small\item\em multiplication factors for cdmb and gwd \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ sup}
+\begin{DoxyCompactList}\small\item\em supersaturation in pdf cloud when t is very low \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ ctei\+\_\+rm}
+\begin{DoxyCompactList}\small\item\em critical cloud top entrainment instability criteria (used if mstrat=.true.) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(3) \textbf{ crtrh}
+\begin{DoxyCompactList}\small\item\em critical relative humidity at the surface P\+BL top and at the top of the atmosphere \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(2) \textbf{ dlqf}
+\begin{DoxyCompactList}\small\item\em factor for cloud condensate detrainment from cloud edges for R\+AS \end{DoxyCompactList}\item 
+integer \textbf{ seed0}
+\begin{DoxyCompactList}\small\item\em random seed for radiation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ rbcr}
+\begin{DoxyCompactList}\small\item\em Critical Richardson Number in the P\+BL scheme. \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ prslrd0}
+\begin{DoxyCompactList}\small\item\em pressure level from which Rayleigh Damping is applied \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ ral\+\_\+ts}
+\begin{DoxyCompactList}\small\item\em time scale for Rayleigh damping in days \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ clam\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em c\+\_\+e for deep convection (Han and Pan, 2011, eq(6)) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ c0s\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em convective rain conversion parameter \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ c1\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em conversion parameter of detrainment from liquid water into grid-\/scale cloud water \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ betal\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em fraction factor of downdraft air mass reaching ground surface over land \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ betas\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em fraction factor of downdraft air mass reaching ground surface over sea \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ evfact\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em evaporation factor from convective rain \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ evfactl\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em evaporation factor from convective rain over land \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ pgcon\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em reduction factor in momentum transport due to convection induced pressure gradient force 0.\+7 \+: Gregory et al. (1997, Q\+J\+R\+MS) 0.\+55\+: Zhang \& Wu (2003, J\+AS) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ asolfac\+\_\+deep}
+\begin{DoxyCompactList}\small\item\em aerosol-\/aware parameter based on Lim (2011) asolfac= cx / c0s(=.002) cx = min([-\/0.\+7 ln(\+Nccn) + 24]$\ast$1.e-\/4, c0s) Nccn\+: C\+CN number concentration in cm$^\wedge$(-\/3) Until a realistic Nccn is provided, Nccns are assumed as Nccn=100 for sea and Nccn=1000 for land \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ clam\+\_\+shal}
+\begin{DoxyCompactList}\small\item\em c\+\_\+e for shallow convection (Han and Pan, 2011, eq(6)) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ c0s\+\_\+shal}
+\begin{DoxyCompactList}\small\item\em convective rain conversion parameter \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ c1\+\_\+shal}
+\begin{DoxyCompactList}\small\item\em conversion parameter of detrainment from liquid water into grid-\/scale cloud water \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ pgcon\+\_\+shal}
+\begin{DoxyCompactList}\small\item\em reduction factor in momentum transport due to convection induced pressure gradient force 0.\+7 \+: Gregory et al. (1997, Q\+J\+R\+MS) 0.\+55\+: Zhang \& Wu (2003, J\+AS) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ asolfac\+\_\+shal}
+\begin{DoxyCompactList}\small\item\em aerosol-\/aware parameter based on Lim (2011) asolfac= cx / c0s(=.002) cx = min([-\/0.\+7 ln(\+Nccn) + 24]$\ast$1.e-\/4, c0s) Nccn\+: C\+CN number concentration in cm$^\wedge$(-\/3) Until a realistic Nccn is provided, Nccns are assumed as Nccn=100 for sea and Nccn=1000 for land \end{DoxyCompactList}\item 
+logical \textbf{ nst\+\_\+anl}
+\begin{DoxyCompactList}\small\item\em flag for N\+S\+S\+TM analysis in gcycle/sfcsub \end{DoxyCompactList}\item 
+integer \textbf{ lsea}
+\item 
+real(kind=kind\+\_\+phys) \textbf{ xkzm\+\_\+m}
+\begin{DoxyCompactList}\small\item\em [in] bkgd\+\_\+vdif\+\_\+m background vertical diffusion for momentum \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ xkzm\+\_\+h}
+\begin{DoxyCompactList}\small\item\em [in] bkgd\+\_\+vdif\+\_\+h background vertical diffusion for heat q \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ xkzm\+\_\+s}
+\begin{DoxyCompactList}\small\item\em [in] bkgd\+\_\+vdif\+\_\+s sigma threshold for background mom. diffusion \end{DoxyCompactList}\item 
+integer, dimension(5) \textbf{ nstf\+\_\+name}
+\begin{DoxyCompactList}\small\item\em flag 0 for no nst 1 for uncoupled nst and 2 for coupled N\+ST nstf\+\_\+name contains the N\+S\+ST related parameters nstf\+\_\+name(1) \+: 0 = N\+S\+S\+TM off, 1 = N\+S\+S\+TM on but uncoupled, 2 = nstf\+\_\+name(2) \+: 1 = N\+S\+S\+TM spin up on, 0 = N\+S\+S\+TM spin up off nstf\+\_\+name(3) \+: 1 = N\+S\+ST analysis on, 0 = N\+S\+S\+TM analysis off nstf\+\_\+name(4) \+: zsea1 in mm nstf\+\_\+name(5) \+: zsea2 in mm \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ xkzminv}
+\begin{DoxyCompactList}\small\item\em diffusivity in inversion layers \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ moninq\+\_\+fac}
+\begin{DoxyCompactList}\small\item\em turbulence diffusion coefficient factor \end{DoxyCompactList}\item 
+logical \textbf{ do\+\_\+sppt}
+\item 
+logical \textbf{ use\+\_\+zmtnblck}
+\item 
+logical \textbf{ do\+\_\+shum}
+\item 
+logical \textbf{ do\+\_\+skeb}
+\item 
+integer \textbf{ skeb\+\_\+npass}
+\item 
+character(len=32), dimension(\+:), pointer \textbf{ tracer\+\_\+names}
+\begin{DoxyCompactList}\small\item\em array of initialized tracers from dynamic core \end{DoxyCompactList}\item 
+integer \textbf{ ntrac}
+\begin{DoxyCompactList}\small\item\em number of tracers \end{DoxyCompactList}\item 
+integer \textbf{ ntoz}
+\begin{DoxyCompactList}\small\item\em tracer index for ozone mixing ratio \end{DoxyCompactList}\item 
+integer \textbf{ ntcw}
+\begin{DoxyCompactList}\small\item\em tracer index for cloud condensate (or liquid water) \end{DoxyCompactList}\item 
+integer \textbf{ ntiw}
+\begin{DoxyCompactList}\small\item\em tracer index for ice water \end{DoxyCompactList}\item 
+integer \textbf{ ntrw}
+\begin{DoxyCompactList}\small\item\em tracer index for rain water \end{DoxyCompactList}\item 
+integer \textbf{ ntsw}
+\begin{DoxyCompactList}\small\item\em tracer index for snow water \end{DoxyCompactList}\item 
+integer \textbf{ ntgl}
+\begin{DoxyCompactList}\small\item\em tracer index for graupel \end{DoxyCompactList}\item 
+integer \textbf{ ntclamt}
+\begin{DoxyCompactList}\small\item\em tracer index for cloud amount \end{DoxyCompactList}\item 
+integer \textbf{ ntlnc}
+\begin{DoxyCompactList}\small\item\em tracer index for liquid number concentration \end{DoxyCompactList}\item 
+integer \textbf{ ntinc}
+\begin{DoxyCompactList}\small\item\em tracer index for ice number concentration \end{DoxyCompactList}\item 
+integer \textbf{ ntrnc}
+\begin{DoxyCompactList}\small\item\em tracer index for rain number concentration \end{DoxyCompactList}\item 
+integer \textbf{ ntsnc}
+\begin{DoxyCompactList}\small\item\em tracer index for snow number concentration \end{DoxyCompactList}\item 
+integer \textbf{ ntke}
+\begin{DoxyCompactList}\small\item\em tracer index for kinetic energy \end{DoxyCompactList}\item 
+integer \textbf{ nto}
+\begin{DoxyCompactList}\small\item\em tracer index for oxygen ion \end{DoxyCompactList}\item 
+integer \textbf{ nto2}
+\begin{DoxyCompactList}\small\item\em tracer index for oxygen \end{DoxyCompactList}\item 
+integer \textbf{ ntwa}
+\begin{DoxyCompactList}\small\item\em tracer index for water friendly aerosol \end{DoxyCompactList}\item 
+integer \textbf{ ntia}
+\begin{DoxyCompactList}\small\item\em tracer index for ice friendly aerosol \end{DoxyCompactList}\item 
+integer \textbf{ ntot2d}
+\begin{DoxyCompactList}\small\item\em total number of variables for phyf2d \end{DoxyCompactList}\item 
+integer \textbf{ ntot3d}
+\begin{DoxyCompactList}\small\item\em total number of variables for phyf3d \end{DoxyCompactList}\item 
+integer \textbf{ num\+\_\+p2d}
+\begin{DoxyCompactList}\small\item\em number of 2D arrays needed for microphysics \end{DoxyCompactList}\item 
+integer \textbf{ num\+\_\+p3d}
+\begin{DoxyCompactList}\small\item\em number of 3D arrays needed for microphysics \end{DoxyCompactList}\item 
+integer \textbf{ nshoc\+\_\+2d}
+\begin{DoxyCompactList}\small\item\em number of 2d fields for S\+H\+OC \end{DoxyCompactList}\item 
+integer \textbf{ nshoc\+\_\+3d}
+\begin{DoxyCompactList}\small\item\em number of 3d fields for S\+H\+OC \end{DoxyCompactList}\item 
+integer \textbf{ ncnvcld3d}
+\begin{DoxyCompactList}\small\item\em number of convective 3d clouds fields \end{DoxyCompactList}\item 
+integer \textbf{ npdf3d}
+\begin{DoxyCompactList}\small\item\em number of 3d arrays associated with pdf based clouds/microphysics \end{DoxyCompactList}\item 
+integer \textbf{ nctp}
+\begin{DoxyCompactList}\small\item\em number of cloud types in Chikira-\/\+Sugiyama scheme \end{DoxyCompactList}\item 
+logical \textbf{ debug}
+\item 
+logical \textbf{ pre\+\_\+rad}
+\begin{DoxyCompactList}\small\item\em flag for testing purpose \end{DoxyCompactList}\item 
+integer \textbf{ ipt}
+\begin{DoxyCompactList}\small\item\em index for diagnostic printout point \end{DoxyCompactList}\item 
+logical \textbf{ lprnt}
+\begin{DoxyCompactList}\small\item\em control flag for diagnostic print out \end{DoxyCompactList}\item 
+logical \textbf{ lsswr}
+\begin{DoxyCompactList}\small\item\em logical flags for sw radiation calls \end{DoxyCompactList}\item 
+logical \textbf{ lslwr}
+\begin{DoxyCompactList}\small\item\em logical flags for lw radiation calls \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ solhr}
+\begin{DoxyCompactList}\small\item\em hour time after 00z at the t-\/step \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ solcon}
+\begin{DoxyCompactList}\small\item\em solar constant (sun-\/earth distant adjusted) [set via radupdate] \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ slag}
+\begin{DoxyCompactList}\small\item\em equation of time ( radian ) [set via radupdate] \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ sdec}
+\begin{DoxyCompactList}\small\item\em sin of the solar declination angle [set via radupdate] \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ cdec}
+\begin{DoxyCompactList}\small\item\em cos of the solar declination angle [set via radupdate] \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ clstp}
+\begin{DoxyCompactList}\small\item\em index used by cnvc90 (for convective clouds) legacy stuff -\/ does not affect forecast \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ phour}
+\begin{DoxyCompactList}\small\item\em previous forecast hour \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fhour}
+\begin{DoxyCompactList}\small\item\em curent forecast hour \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ zhour}
+\begin{DoxyCompactList}\small\item\em previous hour diagnostic buckets emptied \end{DoxyCompactList}\item 
+integer \textbf{ kdt}
+\begin{DoxyCompactList}\small\item\em current forecast iteration \end{DoxyCompactList}\item 
+integer, dimension(1\+:8) \textbf{ jdat}
+\begin{DoxyCompactList}\small\item\em current forecast date and time (yr, mon, day, t-\/zone, hr, min, sec, mil-\/sec) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ iau\+\_\+delthrs}
+\item 
+character(len=240), dimension(7) \textbf{ iau\+\_\+inc\+\_\+files}
+\item 
+real(kind=kind\+\_\+phys), dimension(7) \textbf{ iaufhrs}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 324 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a04bcbc0327a86310791ee04a9289ef0e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!init@{init}}
+\index{init@{init}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{init()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 631 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2247e84875afdd18e3d4e153c15ad61f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!print@{print}}
+\index{print@{print}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{print()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::print (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 632 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a24e95751937017f7f3efcfdb42bf5718}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!me@{me}}
+\index{me@{me}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{me}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::me}
+
+
+
+M\+PI rank designator. 
+
+
+
+Definition at line 326 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac0fa9eaaf21734c14b46cd025951fdd1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!master@{master}}
+\index{master@{master}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{master}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::master}
+
+
+
+M\+PI rank of master atmosphere processor. 
+
+
+
+Definition at line 327 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afa66754418045d25cc259ebf214f1baa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nlunit@{nlunit}}
+\index{nlunit@{nlunit}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nlunit}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nlunit}
+
+
+
+unit for namelist 
+
+
+
+Definition at line 328 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5ff2c92403247c24c3612454cc40e2cd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fn\+\_\+nml@{fn\+\_\+nml}}
+\index{fn\+\_\+nml@{fn\+\_\+nml}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fn\+\_\+nml}
+{\footnotesize\ttfamily character(len=64) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fn\+\_\+nml}
+
+
+
+namelist filename for surface data cycling 
+
+
+
+Definition at line 329 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a473c70eaca4c4d903898e113aa855f50}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!input\+\_\+nml\+\_\+file@{input\+\_\+nml\+\_\+file}}
+\index{input\+\_\+nml\+\_\+file@{input\+\_\+nml\+\_\+file}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{input\+\_\+nml\+\_\+file}
+{\footnotesize\ttfamily character(len=256), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::input\+\_\+nml\+\_\+file}
+
+
+
+character string containing full namelist for use with internal file reads 
+
+
+
+Definition at line 330 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ae55331d95a5ec1b34c7d64f048bee701}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhzero@{fhzero}}
+\index{fhzero@{fhzero}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhzero}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhzero}
+
+
+
+seconds between clearing of diagnostic buckets 
+
+
+
+Definition at line 332 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a9a50c2a74f6bd5c6aeb4aed783643398}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lprecip\+\_\+accu@{lprecip\+\_\+accu}}
+\index{lprecip\+\_\+accu@{lprecip\+\_\+accu}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lprecip\+\_\+accu}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lprecip\+\_\+accu}
+
+
+
+flag for precip accumulation without bucket (fhzero) 
+
+
+
+Definition at line 333 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a011d81b1a1a625ac4453dfaada09db2e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ldiag3d@{ldiag3d}}
+\index{ldiag3d@{ldiag3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ldiag3d}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ldiag3d}
+
+
+
+flag for 3d diagnostic fields 
+
+
+
+Definition at line 334 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad8e78a28467bd6189ca31164ec5bf1e3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lssav@{lssav}}
+\index{lssav@{lssav}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lssav}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lssav}
+
+
+
+logical flag for storing diagnostics 
+
+
+
+Definition at line 335 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a92f31b689b44b2199be7b8e398ceb827}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhcyc@{fhcyc}}
+\index{fhcyc@{fhcyc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhcyc}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhcyc}
+
+
+
+frequency for surface data cycling (secs) 
+
+
+
+Definition at line 336 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa02bd34a9b39b8cb302acbe372e59872}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lgocart@{lgocart}}
+\index{lgocart@{lgocart}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lgocart}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lgocart}
+
+
+
+flag for 3d diagnostic fields for gocart 1 
+
+
+
+Definition at line 337 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad38e700e74f950699688c6ec70b3fd96}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhgoc3d@{fhgoc3d}}
+\index{fhgoc3d@{fhgoc3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhgoc3d}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhgoc3d}
+
+
+
+seconds between calls to gocart 
+
+
+
+Definition at line 338 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a97f5f92f46d0019aba55b35bf34c05fa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!thermodyn\+\_\+id@{thermodyn\+\_\+id}}
+\index{thermodyn\+\_\+id@{thermodyn\+\_\+id}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{thermodyn\+\_\+id}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::thermodyn\+\_\+id}
+
+
+
+valid for G\+FS only for get\+\_\+prs/phi 
+
+
+
+Definition at line 339 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1eb45026325af35925fceeee6d1a5e44}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!sfcpress\+\_\+id@{sfcpress\+\_\+id}}
+\index{sfcpress\+\_\+id@{sfcpress\+\_\+id}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{sfcpress\+\_\+id}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::sfcpress\+\_\+id}
+
+
+
+valid for G\+FS only for get\+\_\+prs/phi 
+
+
+
+Definition at line 340 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a802badcbfec35a257ff0ffc85dac4de9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!gen\+\_\+coord\+\_\+hybrid@{gen\+\_\+coord\+\_\+hybrid}}
+\index{gen\+\_\+coord\+\_\+hybrid@{gen\+\_\+coord\+\_\+hybrid}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{gen\+\_\+coord\+\_\+hybrid}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::gen\+\_\+coord\+\_\+hybrid}
+
+
+
+for Henry\textquotesingle{}s gen coord 
+
+
+
+Definition at line 341 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab2d6058146b0e2985845e6a37392d422}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!isc@{isc}}
+\index{isc@{isc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{isc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::isc}
+
+
+
+starting i-\/index for this M\+P\+I-\/domain 
+
+
+
+Definition at line 344 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a17efd060f9cdf5b4801fafd3aeb3e205}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!jsc@{jsc}}
+\index{jsc@{jsc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{jsc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::jsc}
+
+
+
+starting j-\/index for this M\+P\+I-\/domain 
+
+
+
+Definition at line 345 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a833cb3b48b9af12ef17002afa81f9b5d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nx@{nx}}
+\index{nx@{nx}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nx}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nx}
+
+
+
+number of points in the i-\/dir for this M\+P\+I-\/domain 
+
+
+
+Definition at line 346 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_abf565472513bff9d0db64de492d0665a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ny@{ny}}
+\index{ny@{ny}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ny}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ny}
+
+
+
+number of points in the j-\/dir for this M\+P\+I-\/domain 
+
+
+
+Definition at line 347 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa7409f2c8f458bc4c36d593d5ab0e7e0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!levs@{levs}}
+\index{levs@{levs}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{levs}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::levs}
+
+
+
+number of vertical levels 
+
+
+
+Definition at line 348 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_af955344d7ceea1cb1928755eb249680a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cnx@{cnx}}
+\index{cnx@{cnx}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cnx}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cnx}
+
+
+
+number of points in the i-\/dir for this cubed-\/sphere face 
+
+
+
+Definition at line 349 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2ba0d89e86affb39c91b545109cdbb18}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cny@{cny}}
+\index{cny@{cny}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cny}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cny}
+
+
+
+number of points in the j-\/dir for this cubed-\/sphere face 
+
+
+
+Definition at line 350 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_adb8954fe6554146147687de3fa646db2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lonr@{lonr}}
+\index{lonr@{lonr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lonr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lonr}
+
+
+
+number of global points in x-\/dir (i) along the equator 
+
+
+
+Definition at line 351 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac55a4ae35d9c30b00be1d000fd395f8a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!latr@{latr}}
+\index{latr@{latr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{latr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::latr}
+
+
+
+number of global points in y-\/dir (j) along any meridian 
+
+
+
+Definition at line 352 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6b8eeda35f88a80d96b072f1a541e686}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cplflx@{cplflx}}
+\index{cplflx@{cplflx}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cplflx}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cplflx}
+
+
+
+default no cplflx collection 
+
+
+
+Definition at line 355 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_af430b97d065a7c62a0f6b539d0c614bb}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cplwav@{cplwav}}
+\index{cplwav@{cplwav}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cplwav}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cplwav}
+
+
+
+default no cplwav collection 
+
+
+
+Definition at line 356 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0a0c79eef72a93dd90ced81a9b190ac8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lsidea@{lsidea}}
+\index{lsidea@{lsidea}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lsidea}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lsidea}
+
+
+
+Definition at line 359 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a59a729aa0c8d53dab8d9c0dc0bb4585f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!dtp@{dtp}}
+\index{dtp@{dtp}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{dtp}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::dtp}
+
+
+
+physics timestep in seconds 
+
+
+
+Definition at line 362 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a89acdd50ae5f1f0a48444ef6a13ffce5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!dtf@{dtf}}
+\index{dtf@{dtf}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{dtf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::dtf}
+
+
+
+dynamics timestep in seconds 
+
+
+
+Definition at line 363 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a27c132ee413c6e01bd5943cb8847dd77}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nscyc@{nscyc}}
+\index{nscyc@{nscyc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nscyc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nscyc}
+
+
+
+trigger for surface data cycling 
+
+
+
+Definition at line 364 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1eeb6f79528f7d58bc8216f9a49b0b8f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nszero@{nszero}}
+\index{nszero@{nszero}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nszero}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nszero}
+
+
+
+trigger for zeroing diagnostic buckets 
+
+
+
+Definition at line 365 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ace4de319632990bd2adc6f08f6f1a6f6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!idat@{idat}}
+\index{idat@{idat}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{idat}
+{\footnotesize\ttfamily integer, dimension(1\+:8) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::idat}
+
+
+
+initialization date and time (yr, mon, day, t-\/zone, hr, min, sec, mil-\/sec) 
+
+
+
+Definition at line 366 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8d89c04b6b1738e78176aa0a0d85b55e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!idate@{idate}}
+\index{idate@{idate}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{idate}
+{\footnotesize\ttfamily integer, dimension(4) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::idate}
+
+
+
+initial date with different size and ordering (hr, mon, day, yr) 
+
+
+
+Definition at line 368 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1b900189dd177ae38268f20ccaf30839}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhswr@{fhswr}}
+\index{fhswr@{fhswr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhswr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhswr}
+
+
+
+frequency for shortwave radiation (secs) 
+
+
+
+Definition at line 371 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a86b9264ee96f15c001afc678d6357434}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhlwr@{fhlwr}}
+\index{fhlwr@{fhlwr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhlwr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhlwr}
+
+
+
+frequency for longwave radiation (secs) 
+
+
+
+Definition at line 372 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a35fc371233152b5c811b0e22739bb12e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nsswr@{nsswr}}
+\index{nsswr@{nsswr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nsswr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nsswr}
+
+
+
+integer trigger for shortwave radiation 
+
+
+
+Definition at line 373 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a36ed77319de46dec9fceb14ff1cb74f4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nslwr@{nslwr}}
+\index{nslwr@{nslwr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nslwr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nslwr}
+
+
+
+integer trigger for longwave radiation 
+
+
+
+Definition at line 374 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5c1f5694e7ca29ae141518c6192da337}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!levr@{levr}}
+\index{levr@{levr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{levr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::levr}
+
+
+
+number of vertical levels for radiation calculations 
+
+
+
+Definition at line 375 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ae7be326f75e3275dfb030d4f06a9908f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nfxr@{nfxr}}
+\index{nfxr@{nfxr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nfxr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nfxr}
+
+
+
+second dimension for fluxr diagnostic variable (radiation) 
+
+
+
+Definition at line 376 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5f57863fddf34bc56f6a6d93f7dbef2b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!aero\+\_\+in@{aero\+\_\+in}}
+\index{aero\+\_\+in@{aero\+\_\+in}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{aero\+\_\+in}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::aero\+\_\+in}
+
+
+
+aerosol flag for gbphys 
+
+
+
+Definition at line 377 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac209998c9dc0a52ab7ee35855e2d715f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lmfshal@{lmfshal}}
+\index{lmfshal@{lmfshal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lmfshal}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lmfshal}
+
+
+
+parameter for radiation 
+
+
+
+Definition at line 378 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a35beee4c26d4262b30163b4e6edc7922}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lmfdeep2@{lmfdeep2}}
+\index{lmfdeep2@{lmfdeep2}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lmfdeep2}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lmfdeep2}
+
+
+
+parameter for radiation 
+
+
+
+Definition at line 379 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa28a880915ebf1d7be46fd35fad3e4ee}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nrcm@{nrcm}}
+\index{nrcm@{nrcm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nrcm}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nrcm}
+
+
+
+second dimension of random number stream for R\+AS 
+
+
+
+Definition at line 380 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0cc7e1c7072684282ee95394a9e44682}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iflip@{iflip}}
+\index{iflip@{iflip}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iflip}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iflip}
+
+
+
+iflip -\/ is not the same as flipv 
+
+
+
+Definition at line 381 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8c7751f938eefc1c17f088b4ee68215e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!isol@{isol}}
+\index{isol@{isol}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{isol}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::isol}
+
+
+
+use prescribed solar constant 
+
+
+
+Definition at line 382 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab76d98e99d4e821ddb93ff8657ccf0d0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ico2@{ico2}}
+\index{ico2@{ico2}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ico2}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ico2}
+
+
+
+prescribed global mean value (old opernl) 
+
+
+
+Definition at line 383 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2314615883aba016bf828ba2aae8026d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ialb@{ialb}}
+\index{ialb@{ialb}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ialb}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ialb}
+
+
+
+use climatology alb, based on sfc type 1 =$>$ use modis based alb 
+
+
+
+Definition at line 384 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2f107854ff120604f0d8589ae9c74314}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iems@{iems}}
+\index{iems@{iems}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iems}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iems}
+
+
+
+use fixed value of 1.\+0 
+
+
+
+Definition at line 386 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_af6dd7b7b99c1f5d5e09b39d6b8476f47}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iaer@{iaer}}
+\index{iaer@{iaer}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iaer}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iaer}
+
+
+
+default aerosol effect in sw only 
+
+
+
+Definition at line 387 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a7590d13997f91bb6c84c930a00d0e790}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iovr\+\_\+sw@{iovr\+\_\+sw}}
+\index{iovr\+\_\+sw@{iovr\+\_\+sw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iovr\+\_\+sw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iovr\+\_\+sw}
+
+
+
+sw\+: max-\/random overlap clouds 
+
+
+
+Definition at line 388 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4c472fb025829317fdac304b48f67265}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iovr\+\_\+lw@{iovr\+\_\+lw}}
+\index{iovr\+\_\+lw@{iovr\+\_\+lw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iovr\+\_\+lw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iovr\+\_\+lw}
+
+
+
+lw\+: max-\/random overlap clouds 
+
+
+
+Definition at line 389 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afbc1033e1b036252633e1b0f700e553f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ictm@{ictm}}
+\index{ictm@{ictm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ictm}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ictm}
+
+
+
+ictm=0 =$>$ use data at initial cond time, if not available; use latest; no extrapolation. ictm=1 =$>$ use data at the forecast time, if not available; use latest; do extrapolation. ictm=yyyy0 =$>$ use yyyy data for the forecast time; no extrapolation. ictm=yyyy1 = $>$ use yyyy data for the fcst. If needed, do extrapolation to match the fcst time. ictm=-\/1 =$>$ use user provided external data for the fcst time; no extrapolation. ictm=-\/2 =$>$ same as ictm=0, but add seasonal cycle from climatology; no extrapolation. 
+
+
+
+Definition at line 390 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a81a6ab8b08ef423ecba18b7c5749f800}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!isubc\+\_\+sw@{isubc\+\_\+sw}}
+\index{isubc\+\_\+sw@{isubc\+\_\+sw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{isubc\+\_\+sw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::isubc\+\_\+sw}
+
+
+
+sw clouds without sub-\/grid approximation 
+
+
+
+Definition at line 402 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4bbbadb8ed3d70fa2ad35b2bfa78d838}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!isubc\+\_\+lw@{isubc\+\_\+lw}}
+\index{isubc\+\_\+lw@{isubc\+\_\+lw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{isubc\+\_\+lw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::isubc\+\_\+lw}
+
+
+
+lw clouds without sub-\/grid approximation =1 =$>$ sub-\/grid cloud with prescribed seeds =2 =$>$ sub-\/grid cloud with randomly generated seeds 
+
+
+
+Definition at line 403 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4ca0ffc759fe1394cae1bd5919b9f4db}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!crick\+\_\+proof@{crick\+\_\+proof}}
+\index{crick\+\_\+proof@{crick\+\_\+proof}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{crick\+\_\+proof}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::crick\+\_\+proof}
+
+
+
+C\+R\+I\+C\+K-\/\+Proof cloud water. 
+
+
+
+Definition at line 407 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_abf263936f4c1e6f3a086eab9c4053698}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ccnorm@{ccnorm}}
+\index{ccnorm@{ccnorm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ccnorm}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ccnorm}
+
+
+
+Cloud condensate normalized by cloud cover. 
+
+
+
+Definition at line 408 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1a02325fb8ea4c9e0685037d1f8b38c6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!norad\+\_\+precip@{norad\+\_\+precip}}
+\index{norad\+\_\+precip@{norad\+\_\+precip}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{norad\+\_\+precip}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::norad\+\_\+precip}
+
+
+
+radiation precip flag for Ferrier/\+Moorthi 
+
+
+
+Definition at line 409 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2790711a8b2b7e9ad76510a5dfcfe8fe}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lwhtr@{lwhtr}}
+\index{lwhtr@{lwhtr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lwhtr}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lwhtr}
+
+
+
+flag to output lw heating rate (Radtendlwhc) 
+
+
+
+Definition at line 410 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4afc7f8c77a53712245717e8da707f97}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!swhtr@{swhtr}}
+\index{swhtr@{swhtr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{swhtr}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::swhtr}
+
+
+
+flag to output sw heating rate (Radtendswhc) 
+
+
+
+Definition at line 411 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a7c4b13fd74117266cc92de88bb2f9960}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ncld@{ncld}}
+\index{ncld@{ncld}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ncld}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ncld}
+
+
+
+cnoice of cloud scheme 
+
+
+
+Definition at line 414 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a939fd154b23a25d6aa94c7e5b57d0911}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!imp\+\_\+physics@{imp\+\_\+physics}}
+\index{imp\+\_\+physics@{imp\+\_\+physics}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{imp\+\_\+physics}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::imp\+\_\+physics}
+
+
+
+cnoice of cloud scheme 
+
+
+
+Definition at line 416 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8cd9ed6290c47cb230125ac0b7b9f9fd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!psautco@{psautco}}
+\index{psautco@{psautco}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{psautco}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::psautco}
+
+
+
+[in] auto conversion coeff from ice to snow 
+
+
+
+Definition at line 418 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a41504dcd3aadde149b64be1463fc1f78}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!prautco@{prautco}}
+\index{prautco@{prautco}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{prautco}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::prautco}
+
+
+
+[in] auto conversion coeff from cloud to rain 
+
+
+
+Definition at line 419 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6de866504a68312478400cadcd9bab6e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!evpco@{evpco}}
+\index{evpco@{evpco}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{evpco}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::evpco}
+
+
+
+[in] coeff for evaporation of largescale rain 
+
+
+
+Definition at line 420 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a896bbce71598b48370a4cb777bf86b40}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!wminco@{wminco}}
+\index{wminco@{wminco}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{wminco}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::wminco}
+
+
+
+[in] water and ice minimum threshold for Zhao 
+
+
+
+Definition at line 421 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8473de98b7c8118a7da1c5c08b45b863}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fprcp@{fprcp}}
+\index{fprcp@{fprcp}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fprcp}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fprcp}
+
+
+
+no prognostic rain and snow (MG) 
+
+
+
+Definition at line 424 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_affedd6dc9562dd8744df6d1439af469d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!mg\+\_\+dcs@{mg\+\_\+dcs}}
+\index{mg\+\_\+dcs@{mg\+\_\+dcs}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{mg\+\_\+dcs}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::mg\+\_\+dcs}
+
+
+
+Morrison-\/\+Gettleman microphysics parameters. 
+
+
+
+Definition at line 425 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4eede86b88b00a825b55d3b0f7ddd3a7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!mg\+\_\+qcvar@{mg\+\_\+qcvar}}
+\index{mg\+\_\+qcvar@{mg\+\_\+qcvar}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{mg\+\_\+qcvar}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::mg\+\_\+qcvar}
+
+
+
+Definition at line 426 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a80992ffe0c4f67638aba0ebfa54ef027}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!mg\+\_\+ts\+\_\+auto\+\_\+ice@{mg\+\_\+ts\+\_\+auto\+\_\+ice}}
+\index{mg\+\_\+ts\+\_\+auto\+\_\+ice@{mg\+\_\+ts\+\_\+auto\+\_\+ice}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{mg\+\_\+ts\+\_\+auto\+\_\+ice}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::mg\+\_\+ts\+\_\+auto\+\_\+ice}
+
+
+
+ice auto conversion time scale 
+
+
+
+Definition at line 427 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aca7bbd2a505511075c2662559e5f7432}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!effr\+\_\+in@{effr\+\_\+in}}
+\index{effr\+\_\+in@{effr\+\_\+in}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{effr\+\_\+in}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::effr\+\_\+in}
+
+
+
+eg to turn on ffective radii for MG 
+
+
+
+Definition at line 428 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a12dda30950bc90c3d42f15a42a126a69}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!microp\+\_\+uniform@{microp\+\_\+uniform}}
+\index{microp\+\_\+uniform@{microp\+\_\+uniform}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{microp\+\_\+uniform}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::microp\+\_\+uniform}
+
+
+
+Definition at line 429 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a91c2df41f9629ca57414150325d22623}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+cldice@{do\+\_\+cldice}}
+\index{do\+\_\+cldice@{do\+\_\+cldice}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+cldice}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+cldice}
+
+
+
+Definition at line 430 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_abeb1befe53565dc828cb632e2261413a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!hetfrz\+\_\+classnuc@{hetfrz\+\_\+classnuc}}
+\index{hetfrz\+\_\+classnuc@{hetfrz\+\_\+classnuc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{hetfrz\+\_\+classnuc}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::hetfrz\+\_\+classnuc}
+
+
+
+Definition at line 431 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab1de47a6c3666d2a9ea816e8bbf805a0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!shoc\+\_\+pcrit@{shoc\+\_\+pcrit}}
+\index{shoc\+\_\+pcrit@{shoc\+\_\+pcrit}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{shoc\+\_\+pcrit}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::shoc\+\_\+pcrit}
+
+
+
+critical pressure in Pa for tke dissipation in shoc 
+
+
+
+Definition at line 433 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab52d1c63bf1c1e981686e92d806b10f3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ncnd@{ncnd}}
+\index{ncnd@{ncnd}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ncnd}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ncnd}
+
+
+
+number of cloud condensate types 
+
+
+
+Definition at line 434 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0c6be2b33d56b2d3727629f13dccef80}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ltaerosol@{ltaerosol}}
+\index{ltaerosol@{ltaerosol}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ltaerosol}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ltaerosol}
+
+
+
+flag for aerosol version, currently not working yet 
+
+
+
+Definition at line 437 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a479a0746795111467dc198f82522afc3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lradar@{lradar}}
+\index{lradar@{lradar}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lradar}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lradar}
+
+
+
+flag for radar reflectivity 
+
+
+
+Definition at line 438 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a14c755a9e45ff665f1471153780dc1d5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lgfdlmprad@{lgfdlmprad}}
+\index{lgfdlmprad@{lgfdlmprad}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lgfdlmprad}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lgfdlmprad}
+
+
+
+flag for G\+F\+DL mp scheme and radiation consistency 
+
+
+
+Definition at line 441 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6d4d8f51a9b637c3fe6db2075b63ddbd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lsm@{lsm}}
+\index{lsm@{lsm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lsm}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lsm}
+
+
+
+flag for land surface model lsm=1 for noah lsm 
+
+
+
+Definition at line 444 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4b8e5cb55c6295ab8145c806cc63cd4f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lsoil@{lsoil}}
+\index{lsoil@{lsoil}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lsoil}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lsoil}
+
+
+
+number of soil layers 
+
+
+
+Definition at line 445 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a06c113659566c3065d8a5236cdf1e2d5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ivegsrc@{ivegsrc}}
+\index{ivegsrc@{ivegsrc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ivegsrc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ivegsrc}
+
+
+
+ivegsrc = 0 =$>$ U\+S\+GS, ivegsrc = 1 =$>$ I\+G\+BP (20 category) ivegsrc = 2 =$>$ U\+MD (13 category) 
+
+
+
+Definition at line 446 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa9dc2c862dc3a7e31ed2be8dffed41b0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!isot@{isot}}
+\index{isot@{isot}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{isot}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::isot}
+
+
+
+isot = 0 =$>$ Zobler soil type ( 9 category) isot = 1 =$>$ S\+T\+A\+T\+S\+GO soil type (19 category) 
+
+
+
+Definition at line 449 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2ab616d6815643cf11f12f2eb95b515e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!mom4ice@{mom4ice}}
+\index{mom4ice@{mom4ice}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{mom4ice}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::mom4ice}
+
+
+
+flag controls mom4 sea ice 
+
+
+
+Definition at line 451 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a51a37150a46a791063c531ee0e262316}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!use\+\_\+ufo@{use\+\_\+ufo}}
+\index{use\+\_\+ufo@{use\+\_\+ufo}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{use\+\_\+ufo}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::use\+\_\+ufo}
+
+
+
+flag for gcycle surface option 
+
+
+
+Definition at line 452 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1ee163c48528bf9abec2d84ee6f8964a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ras@{ras}}
+\index{ras@{ras}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ras}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ras}
+
+
+
+flag for ras convection scheme 
+
+
+
+Definition at line 455 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a370fc5a41005e5b4d999543b3f7fb104}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!flipv@{flipv}}
+\index{flipv@{flipv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{flipv}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::flipv}
+
+
+
+flag for vertical direction flip (ras) .true. implies surface at k=1 
+
+
+
+Definition at line 456 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1a9708b569d806e7a5a080827762b94f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!trans\+\_\+trac@{trans\+\_\+trac}}
+\index{trans\+\_\+trac@{trans\+\_\+trac}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{trans\+\_\+trac}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::trans\+\_\+trac}
+
+
+
+flag for convective transport of tracers (R\+AS only) 
+
+
+
+Definition at line 458 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5b2a61e9db4f54ae341f4f06a5948c87}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!old\+\_\+monin@{old\+\_\+monin}}
+\index{old\+\_\+monin@{old\+\_\+monin}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{old\+\_\+monin}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::old\+\_\+monin}
+
+
+
+flag for diff monin schemes 
+
+
+
+Definition at line 459 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aff7fbb83eb1e16cde7d0ccf7662e0b1c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cnvgwd@{cnvgwd}}
+\index{cnvgwd@{cnvgwd}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cnvgwd}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cnvgwd}
+
+
+
+flag for conv gravity wave drag 
+
+
+
+Definition at line 460 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a62acee2129d497ebe7adb95aa75628b5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!mstrat@{mstrat}}
+\index{mstrat@{mstrat}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{mstrat}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::mstrat}
+
+
+
+flag for moorthi approach for stratus 
+
+
+
+Definition at line 461 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aed21e6e11169a3ed0dc811d96525794b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!moist\+\_\+adj@{moist\+\_\+adj}}
+\index{moist\+\_\+adj@{moist\+\_\+adj}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{moist\+\_\+adj}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::moist\+\_\+adj}
+
+
+
+flag for moist convective adjustment 
+
+
+
+Definition at line 462 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2d326c9f89300e62c459a65358a0fedf}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cscnv@{cscnv}}
+\index{cscnv@{cscnv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cscnv}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cscnv}
+
+
+
+flag for Chikira-\/\+Sugiyama convection 
+
+
+
+Definition at line 463 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a235b970ea7a5c8589d479bc001cb1b72}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cal\+\_\+pre@{cal\+\_\+pre}}
+\index{cal\+\_\+pre@{cal\+\_\+pre}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cal\+\_\+pre}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cal\+\_\+pre}
+
+
+
+flag controls precip type algorithm 
+
+
+
+Definition at line 464 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa03016e782c982d19e27b6735fd6ec9a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+aw@{do\+\_\+aw}}
+\index{do\+\_\+aw@{do\+\_\+aw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+aw}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+aw}
+
+
+
+AW scale-\/aware option in cs convection. 
+
+
+
+Definition at line 465 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab573db391511bb5308271180c7c9e719}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+awdd@{do\+\_\+awdd}}
+\index{do\+\_\+awdd@{do\+\_\+awdd}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+awdd}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+awdd}
+
+
+
+AW scale-\/aware option in cs convection. 
+
+
+
+Definition at line 466 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a614081711c7a29ff08b80d472c7e3428}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!flx\+\_\+form@{flx\+\_\+form}}
+\index{flx\+\_\+form@{flx\+\_\+form}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{flx\+\_\+form}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::flx\+\_\+form}
+
+
+
+AW scale-\/aware option in cs convection. 
+
+
+
+Definition at line 467 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a1181d7652779aed0a39644b871668277}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+shoc@{do\+\_\+shoc}}
+\index{do\+\_\+shoc@{do\+\_\+shoc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+shoc}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+shoc}
+
+
+
+flag for S\+H\+OC 
+
+
+
+Definition at line 468 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a075d668e6bd00e5842e5c43f70a05660}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!shocaftcnv@{shocaftcnv}}
+\index{shocaftcnv@{shocaftcnv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{shocaftcnv}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::shocaftcnv}
+
+
+
+flag for S\+H\+OC 
+
+
+
+Definition at line 469 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a57dc8155015c7003eeb0bc074074aed4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!shoc\+\_\+cld@{shoc\+\_\+cld}}
+\index{shoc\+\_\+cld@{shoc\+\_\+cld}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{shoc\+\_\+cld}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::shoc\+\_\+cld}
+
+
+
+flag for clouds 
+
+
+
+Definition at line 470 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad028e557f291a66d67770146dbd0be63}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!uni\+\_\+cld@{uni\+\_\+cld}}
+\index{uni\+\_\+cld@{uni\+\_\+cld}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{uni\+\_\+cld}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::uni\+\_\+cld}
+
+
+
+flag for clouds in grrad 
+
+
+
+Definition at line 471 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a85670082147ee5b0632133f753e0f493}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!h2o\+\_\+phys@{h2o\+\_\+phys}}
+\index{h2o\+\_\+phys@{h2o\+\_\+phys}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{h2o\+\_\+phys}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::h2o\+\_\+phys}
+
+
+
+flag for stratosphere h2o 
+
+
+
+Definition at line 472 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a17cedeaa1c21eacf1106da655768f0ec}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!pdfcld@{pdfcld}}
+\index{pdfcld@{pdfcld}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{pdfcld}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::pdfcld}
+
+
+
+flag for pdfcld 
+
+
+
+Definition at line 473 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aefc3ab3f40f90a0dc91a3b8e7549b8e2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!shcnvcw@{shcnvcw}}
+\index{shcnvcw@{shcnvcw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{shcnvcw}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::shcnvcw}
+
+
+
+flag for shallow convective cloud 
+
+
+
+Definition at line 474 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6f5bd5993e01b368ee74297340ab1253}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!redrag@{redrag}}
+\index{redrag@{redrag}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{redrag}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::redrag}
+
+
+
+flag for reduced drag coeff. over sea 
+
+
+
+Definition at line 475 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3e4b0d3dac0e8fcd67355dbe1ac22c4d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!hybedmf@{hybedmf}}
+\index{hybedmf@{hybedmf}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{hybedmf}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::hybedmf}
+
+
+
+flag for hybrid edmf pbl scheme 
+
+
+
+Definition at line 476 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_abd651ddc08057e2fad190743d7299ccd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!dspheat@{dspheat}}
+\index{dspheat@{dspheat}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{dspheat}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::dspheat}
+
+
+
+flag for tke dissipative heating 
+
+
+
+Definition at line 477 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac9e036de2e9ac72528bb7bafac2a0709}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cnvcld@{cnvcld}}
+\index{cnvcld@{cnvcld}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cnvcld}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cnvcld}
+
+
+
+Definition at line 478 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aedb3dcd018633b2fc6b394695f7b9657}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!random\+\_\+clds@{random\+\_\+clds}}
+\index{random\+\_\+clds@{random\+\_\+clds}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{random\+\_\+clds}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::random\+\_\+clds}
+
+
+
+flag controls whether clouds are random 
+
+
+
+Definition at line 479 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a564d41cf954d484184c5da7bc3706a60}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!shal\+\_\+cnv@{shal\+\_\+cnv}}
+\index{shal\+\_\+cnv@{shal\+\_\+cnv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{shal\+\_\+cnv}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::shal\+\_\+cnv}
+
+
+
+flag for calling shallow convection 
+
+
+
+Definition at line 480 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6e7926161424ad3288740c7d8b60e7f7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+deep@{do\+\_\+deep}}
+\index{do\+\_\+deep@{do\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+deep}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+deep}
+
+
+
+whether to do deep convection 
+
+
+
+Definition at line 481 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a006253679096c777af53ef050902d71a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!imfshalcnv@{imfshalcnv}}
+\index{imfshalcnv@{imfshalcnv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{imfshalcnv}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::imfshalcnv}
+
+
+
+flag for mass-\/flux shallow convection scheme 1\+: July 2010 version of mass-\/flux shallow conv scheme current operational version as of 2016 2\+: scale-\/ \& aerosol-\/aware mass-\/flux shallow conv scheme (2017) 0\+: modified Tiedtke\textquotesingle{}s eddy-\/diffusion shallow conv scheme -\/1\+: no shallow convection used 
+
+
+
+Definition at line 482 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aaae0971de18573e233fb5e985d41ee00}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!imfdeepcnv@{imfdeepcnv}}
+\index{imfdeepcnv@{imfdeepcnv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{imfdeepcnv}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::imfdeepcnv}
+
+
+
+flag for mass-\/flux deep convection scheme 1\+: July 2010 version of S\+AS conv scheme current operational version as of 2016 2\+: scale-\/ \& aerosol-\/aware mass-\/flux deep conv scheme (2017) 0\+: old S\+AS Convection scheme before July 2010 
+
+
+
+Definition at line 488 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a80f29963869a69996bb8ca55e1cc445e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nmtvr@{nmtvr}}
+\index{nmtvr@{nmtvr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nmtvr}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nmtvr}
+
+
+
+number of topographic variables such as variance etc used in the G\+WD parameterization 
+
+
+
+Definition at line 493 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a483dcc59ab546ced0ccd37f4c06dc270}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!jcap@{jcap}}
+\index{jcap@{jcap}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{jcap}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::jcap}
+
+
+
+number of spectral wave trancation used only by sascnv shalcnv 
+
+
+
+Definition at line 495 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4abddcd2c7404bd24555584be6cdb9b3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cs\+\_\+parm@{cs\+\_\+parm}}
+\index{cs\+\_\+parm@{cs\+\_\+parm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cs\+\_\+parm}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(10) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cs\+\_\+parm}
+
+
+
+tunable parameters for Chikira-\/\+Sugiyama convection 
+
+
+
+Definition at line 496 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a20f9774857aa518bb42fafcc429ad650}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!flgmin@{flgmin}}
+\index{flgmin@{flgmin}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{flgmin}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::flgmin}
+
+
+
+[in] ice fraction bounds 
+
+
+
+Definition at line 497 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a445a9eb644d8ddcf33574ead2989921a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cgwf@{cgwf}}
+\index{cgwf@{cgwf}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cgwf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cgwf}
+
+
+
+multiplication factor for convective G\+WD 
+
+
+
+Definition at line 498 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3cccce28f5d03d4b4176a9dab88d4590}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ccwf@{ccwf}}
+\index{ccwf@{ccwf}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ccwf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ccwf}
+
+
+
+multiplication factor for critical cloud workfunction for R\+AS 
+
+
+
+Definition at line 499 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aaa6752102028d3249fcf442a7ba9d92a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cdmbgwd@{cdmbgwd}}
+\index{cdmbgwd@{cdmbgwd}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cdmbgwd}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cdmbgwd}
+
+
+
+multiplication factors for cdmb and gwd 
+
+
+
+Definition at line 501 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a752993c00ad7706a9ba76ce5183fa76d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!sup@{sup}}
+\index{sup@{sup}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{sup}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::sup}
+
+
+
+supersaturation in pdf cloud when t is very low 
+
+
+
+Definition at line 502 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4f84060c52f0fe0cc1a8793a42bd2519}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ctei\+\_\+rm@{ctei\+\_\+rm}}
+\index{ctei\+\_\+rm@{ctei\+\_\+rm}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ctei\+\_\+rm}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ctei\+\_\+rm}
+
+
+
+critical cloud top entrainment instability criteria (used if mstrat=.true.) 
+
+
+
+Definition at line 503 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6a3e396b8dfaa5606daab8243b01b983}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!crtrh@{crtrh}}
+\index{crtrh@{crtrh}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{crtrh}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(3) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::crtrh}
+
+
+
+critical relative humidity at the surface P\+BL top and at the top of the atmosphere 
+
+
+
+Definition at line 505 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a410aaf870b8c477791ed7988249b3405}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!dlqf@{dlqf}}
+\index{dlqf@{dlqf}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{dlqf}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(2) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::dlqf}
+
+
+
+factor for cloud condensate detrainment from cloud edges for R\+AS 
+
+
+
+Definition at line 507 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a214d3720944f421c03071d5fd75ab28d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!seed0@{seed0}}
+\index{seed0@{seed0}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{seed0}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::seed0}
+
+
+
+random seed for radiation 
+
+
+
+Definition at line 509 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5722cc80d3f4d0391f9383eeffa54b4d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!rbcr@{rbcr}}
+\index{rbcr@{rbcr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{rbcr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::rbcr}
+
+
+
+Critical Richardson Number in the P\+BL scheme. 
+
+
+
+Definition at line 511 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aee6807e4eb57989799eab24899ba6b08}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!prslrd0@{prslrd0}}
+\index{prslrd0@{prslrd0}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{prslrd0}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::prslrd0}
+
+
+
+pressure level from which Rayleigh Damping is applied 
+
+
+
+Definition at line 514 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2bfc4ab06cd24f69b0e5977bceef2192}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ral\+\_\+ts@{ral\+\_\+ts}}
+\index{ral\+\_\+ts@{ral\+\_\+ts}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ral\+\_\+ts}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ral\+\_\+ts}
+
+
+
+time scale for Rayleigh damping in days 
+
+
+
+Definition at line 515 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a12af6608d1f6dd42d59876886afd1127}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!clam\+\_\+deep@{clam\+\_\+deep}}
+\index{clam\+\_\+deep@{clam\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{clam\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::clam\+\_\+deep}
+
+
+
+c\+\_\+e for deep convection (Han and Pan, 2011, eq(6)) 
+
+
+
+Definition at line 518 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a862526f5912fec4f56be794e2a83ed73}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!c0s\+\_\+deep@{c0s\+\_\+deep}}
+\index{c0s\+\_\+deep@{c0s\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{c0s\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::c0s\+\_\+deep}
+
+
+
+convective rain conversion parameter 
+
+
+
+Definition at line 519 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5b1ee74da85e3b80b525d94ebf5c8ccb}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!c1\+\_\+deep@{c1\+\_\+deep}}
+\index{c1\+\_\+deep@{c1\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{c1\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::c1\+\_\+deep}
+
+
+
+conversion parameter of detrainment from liquid water into grid-\/scale cloud water 
+
+
+
+Definition at line 520 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad4545adbd0cf7430e288f69f9f1a6dad}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!betal\+\_\+deep@{betal\+\_\+deep}}
+\index{betal\+\_\+deep@{betal\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{betal\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::betal\+\_\+deep}
+
+
+
+fraction factor of downdraft air mass reaching ground surface over land 
+
+
+
+Definition at line 521 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4d91ddfef63c07a7d119d278719daaa3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!betas\+\_\+deep@{betas\+\_\+deep}}
+\index{betas\+\_\+deep@{betas\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{betas\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::betas\+\_\+deep}
+
+
+
+fraction factor of downdraft air mass reaching ground surface over sea 
+
+
+
+Definition at line 522 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a52b9098eecfca26427d8e8405217ca1a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!evfact\+\_\+deep@{evfact\+\_\+deep}}
+\index{evfact\+\_\+deep@{evfact\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{evfact\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::evfact\+\_\+deep}
+
+
+
+evaporation factor from convective rain 
+
+
+
+Definition at line 523 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0bfb968581670046204db105bf97ec76}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!evfactl\+\_\+deep@{evfactl\+\_\+deep}}
+\index{evfactl\+\_\+deep@{evfactl\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{evfactl\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::evfactl\+\_\+deep}
+
+
+
+evaporation factor from convective rain over land 
+
+
+
+Definition at line 524 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad34c7c57d3724a2e57a7bb84417ffb0b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!pgcon\+\_\+deep@{pgcon\+\_\+deep}}
+\index{pgcon\+\_\+deep@{pgcon\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{pgcon\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::pgcon\+\_\+deep}
+
+
+
+reduction factor in momentum transport due to convection induced pressure gradient force 0.\+7 \+: Gregory et al. (1997, Q\+J\+R\+MS) 0.\+55\+: Zhang \& Wu (2003, J\+AS) 
+
+
+
+Definition at line 525 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a821e7620bd3b5abf627f4cf64a2e00aa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!asolfac\+\_\+deep@{asolfac\+\_\+deep}}
+\index{asolfac\+\_\+deep@{asolfac\+\_\+deep}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{asolfac\+\_\+deep}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::asolfac\+\_\+deep}
+
+
+
+aerosol-\/aware parameter based on Lim (2011) asolfac= cx / c0s(=.002) cx = min([-\/0.\+7 ln(\+Nccn) + 24]$\ast$1.e-\/4, c0s) Nccn\+: C\+CN number concentration in cm$^\wedge$(-\/3) Until a realistic Nccn is provided, Nccns are assumed as Nccn=100 for sea and Nccn=1000 for land 
+
+
+
+Definition at line 528 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afae87538077377112cabc9a590d3fa29}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!clam\+\_\+shal@{clam\+\_\+shal}}
+\index{clam\+\_\+shal@{clam\+\_\+shal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{clam\+\_\+shal}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::clam\+\_\+shal}
+
+
+
+c\+\_\+e for shallow convection (Han and Pan, 2011, eq(6)) 
+
+
+
+Definition at line 536 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab39cf17f572e32d553d8141c9a46941a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!c0s\+\_\+shal@{c0s\+\_\+shal}}
+\index{c0s\+\_\+shal@{c0s\+\_\+shal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{c0s\+\_\+shal}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::c0s\+\_\+shal}
+
+
+
+convective rain conversion parameter 
+
+
+
+Definition at line 537 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afbaaba449a7371f92a076016a13183d9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!c1\+\_\+shal@{c1\+\_\+shal}}
+\index{c1\+\_\+shal@{c1\+\_\+shal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{c1\+\_\+shal}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::c1\+\_\+shal}
+
+
+
+conversion parameter of detrainment from liquid water into grid-\/scale cloud water 
+
+
+
+Definition at line 538 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_acdcbeba961429157d7ccf506434e8bad}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!pgcon\+\_\+shal@{pgcon\+\_\+shal}}
+\index{pgcon\+\_\+shal@{pgcon\+\_\+shal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{pgcon\+\_\+shal}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::pgcon\+\_\+shal}
+
+
+
+reduction factor in momentum transport due to convection induced pressure gradient force 0.\+7 \+: Gregory et al. (1997, Q\+J\+R\+MS) 0.\+55\+: Zhang \& Wu (2003, J\+AS) 
+
+
+
+Definition at line 539 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_abc5d0b890d4cf185647af6c170d94a93}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!asolfac\+\_\+shal@{asolfac\+\_\+shal}}
+\index{asolfac\+\_\+shal@{asolfac\+\_\+shal}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{asolfac\+\_\+shal}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::asolfac\+\_\+shal}
+
+
+
+aerosol-\/aware parameter based on Lim (2011) asolfac= cx / c0s(=.002) cx = min([-\/0.\+7 ln(\+Nccn) + 24]$\ast$1.e-\/4, c0s) Nccn\+: C\+CN number concentration in cm$^\wedge$(-\/3) Until a realistic Nccn is provided, Nccns are assumed as Nccn=100 for sea and Nccn=1000 for land 
+
+
+
+Definition at line 542 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad42a9d02a36a989583023eb43b3f535d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nst\+\_\+anl@{nst\+\_\+anl}}
+\index{nst\+\_\+anl@{nst\+\_\+anl}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nst\+\_\+anl}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nst\+\_\+anl}
+
+
+
+flag for N\+S\+S\+TM analysis in gcycle/sfcsub 
+
+
+
+Definition at line 550 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a45758e4d986a80ec887d3608f6041f1c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lsea@{lsea}}
+\index{lsea@{lsea}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lsea}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lsea}
+
+
+
+Definition at line 551 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a228f7f1543def33e43736ec624a66dac}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!xkzm\+\_\+m@{xkzm\+\_\+m}}
+\index{xkzm\+\_\+m@{xkzm\+\_\+m}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{xkzm\+\_\+m}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::xkzm\+\_\+m}
+
+
+
+[in] bkgd\+\_\+vdif\+\_\+m background vertical diffusion for momentum 
+
+
+
+Definition at line 552 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3e18f08ee55a9c6b32c026edba3256f2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!xkzm\+\_\+h@{xkzm\+\_\+h}}
+\index{xkzm\+\_\+h@{xkzm\+\_\+h}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{xkzm\+\_\+h}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::xkzm\+\_\+h}
+
+
+
+[in] bkgd\+\_\+vdif\+\_\+h background vertical diffusion for heat q 
+
+
+
+Definition at line 553 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4fbdd0dbf8ef7b0bfbf90c264b79f120}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!xkzm\+\_\+s@{xkzm\+\_\+s}}
+\index{xkzm\+\_\+s@{xkzm\+\_\+s}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{xkzm\+\_\+s}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::xkzm\+\_\+s}
+
+
+
+[in] bkgd\+\_\+vdif\+\_\+s sigma threshold for background mom. diffusion 
+
+
+
+Definition at line 554 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a57be51720d1df10dd3d7cd888c232a36}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nstf\+\_\+name@{nstf\+\_\+name}}
+\index{nstf\+\_\+name@{nstf\+\_\+name}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nstf\+\_\+name}
+{\footnotesize\ttfamily integer, dimension(5) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nstf\+\_\+name}
+
+
+
+flag 0 for no nst 1 for uncoupled nst and 2 for coupled N\+ST nstf\+\_\+name contains the N\+S\+ST related parameters nstf\+\_\+name(1) \+: 0 = N\+S\+S\+TM off, 1 = N\+S\+S\+TM on but uncoupled, 2 = nstf\+\_\+name(2) \+: 1 = N\+S\+S\+TM spin up on, 0 = N\+S\+S\+TM spin up off nstf\+\_\+name(3) \+: 1 = N\+S\+ST analysis on, 0 = N\+S\+S\+TM analysis off nstf\+\_\+name(4) \+: zsea1 in mm nstf\+\_\+name(5) \+: zsea2 in mm 
+
+
+
+Definition at line 555 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_af5cf69308f78b4ecddecd4532d686b2d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!xkzminv@{xkzminv}}
+\index{xkzminv@{xkzminv}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{xkzminv}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::xkzminv}
+
+
+
+diffusivity in inversion layers 
+
+
+
+Definition at line 562 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a275a1b739351ae2f694fd4d386581b2c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!moninq\+\_\+fac@{moninq\+\_\+fac}}
+\index{moninq\+\_\+fac@{moninq\+\_\+fac}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{moninq\+\_\+fac}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::moninq\+\_\+fac}
+
+
+
+turbulence diffusion coefficient factor 
+
+
+
+Definition at line 563 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a69d9ba8b1dffac6caa221a4c8a9decbd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+sppt@{do\+\_\+sppt}}
+\index{do\+\_\+sppt@{do\+\_\+sppt}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+sppt}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+sppt}
+
+
+
+Definition at line 566 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_adc0a6358666ee36f6f8df9f2009dbefa}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!use\+\_\+zmtnblck@{use\+\_\+zmtnblck}}
+\index{use\+\_\+zmtnblck@{use\+\_\+zmtnblck}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{use\+\_\+zmtnblck}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::use\+\_\+zmtnblck}
+
+
+
+Definition at line 567 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aafbf3356f60b395f4b488975f9c12da9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+shum@{do\+\_\+shum}}
+\index{do\+\_\+shum@{do\+\_\+shum}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+shum}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+shum}
+
+
+
+Definition at line 568 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a437af244a8e602903d31fa872e1a6872}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!do\+\_\+skeb@{do\+\_\+skeb}}
+\index{do\+\_\+skeb@{do\+\_\+skeb}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{do\+\_\+skeb}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::do\+\_\+skeb}
+
+
+
+Definition at line 569 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afde28aaf05f59057ef51bae7263abf59}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!skeb\+\_\+npass@{skeb\+\_\+npass}}
+\index{skeb\+\_\+npass@{skeb\+\_\+npass}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{skeb\+\_\+npass}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::skeb\+\_\+npass}
+
+
+
+Definition at line 570 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4acd5d7cb1d4540f9211a096def7cdc3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!tracer\+\_\+names@{tracer\+\_\+names}}
+\index{tracer\+\_\+names@{tracer\+\_\+names}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{tracer\+\_\+names}
+{\footnotesize\ttfamily character(len=32), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::tracer\+\_\+names}
+
+
+
+array of initialized tracers from dynamic core 
+
+
+
+Definition at line 573 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a80a8626751a29b4ea6d94b60c017c16d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntrac@{ntrac}}
+\index{ntrac@{ntrac}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntrac}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntrac}
+
+
+
+number of tracers 
+
+
+
+Definition at line 574 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a519806e65a837e13499fcedb2cf993d9}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntoz@{ntoz}}
+\index{ntoz@{ntoz}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntoz}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntoz}
+
+
+
+tracer index for ozone mixing ratio 
+
+
+
+Definition at line 575 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8790c103ce121805a0dbf94690da827f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntcw@{ntcw}}
+\index{ntcw@{ntcw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntcw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntcw}
+
+
+
+tracer index for cloud condensate (or liquid water) 
+
+
+
+Definition at line 576 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a351298cbffb6c58b68774e673d99e61f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntiw@{ntiw}}
+\index{ntiw@{ntiw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntiw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntiw}
+
+
+
+tracer index for ice water 
+
+
+
+Definition at line 577 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6fb7d244785b3b874b1d7865dc80464b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntrw@{ntrw}}
+\index{ntrw@{ntrw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntrw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntrw}
+
+
+
+tracer index for rain water 
+
+
+
+Definition at line 578 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_afcd106e33490dc836b74a45bac609bcb}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntsw@{ntsw}}
+\index{ntsw@{ntsw}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntsw}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntsw}
+
+
+
+tracer index for snow water 
+
+
+
+Definition at line 579 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a8cde790a8051c3eb977a1352a8beff69}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntgl@{ntgl}}
+\index{ntgl@{ntgl}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntgl}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntgl}
+
+
+
+tracer index for graupel 
+
+
+
+Definition at line 580 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a298a7648e92ed65f788b5308a2ed2486}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntclamt@{ntclamt}}
+\index{ntclamt@{ntclamt}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntclamt}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntclamt}
+
+
+
+tracer index for cloud amount 
+
+
+
+Definition at line 581 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aa763e6eaaf55e6a6df31dbb80a9b7bbc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntlnc@{ntlnc}}
+\index{ntlnc@{ntlnc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntlnc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntlnc}
+
+
+
+tracer index for liquid number concentration 
+
+
+
+Definition at line 582 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a16ba5f8bae7f3adfb5af2333177a2ebf}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntinc@{ntinc}}
+\index{ntinc@{ntinc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntinc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntinc}
+
+
+
+tracer index for ice number concentration 
+
+
+
+Definition at line 583 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab94c67c338177311741b2245a098fa97}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntrnc@{ntrnc}}
+\index{ntrnc@{ntrnc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntrnc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntrnc}
+
+
+
+tracer index for rain number concentration 
+
+
+
+Definition at line 584 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ae48ebadee6b54223264f96630dfc901c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntsnc@{ntsnc}}
+\index{ntsnc@{ntsnc}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntsnc}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntsnc}
+
+
+
+tracer index for snow number concentration 
+
+
+
+Definition at line 585 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab699a76d80890f71139d3bd38fbc3461}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntke@{ntke}}
+\index{ntke@{ntke}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntke}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntke}
+
+
+
+tracer index for kinetic energy 
+
+
+
+Definition at line 586 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3e21c72583de51f88a226aac16fe37e0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nto@{nto}}
+\index{nto@{nto}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nto}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nto}
+
+
+
+tracer index for oxygen ion 
+
+
+
+Definition at line 587 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a109eb979035e8ae724ec142aee935957}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nto2@{nto2}}
+\index{nto2@{nto2}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nto2}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nto2}
+
+
+
+tracer index for oxygen 
+
+
+
+Definition at line 588 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0ef5b32ba85d1cda7cdc0d53495f0955}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntwa@{ntwa}}
+\index{ntwa@{ntwa}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntwa}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntwa}
+
+
+
+tracer index for water friendly aerosol 
+
+
+
+Definition at line 589 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2bd27c7d34a02b0026dae5fd5ec0a207}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntia@{ntia}}
+\index{ntia@{ntia}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntia}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntia}
+
+
+
+tracer index for ice friendly aerosol 
+
+
+
+Definition at line 590 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad6ae8c6692cdad0117a60590c0ae1f89}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntot2d@{ntot2d}}
+\index{ntot2d@{ntot2d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntot2d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntot2d}
+
+
+
+total number of variables for phyf2d 
+
+
+
+Definition at line 593 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6f42a391d9fe67f872a70e886c384860}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ntot3d@{ntot3d}}
+\index{ntot3d@{ntot3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ntot3d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ntot3d}
+
+
+
+total number of variables for phyf3d 
+
+
+
+Definition at line 594 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4f1908b2ffedb311c71892b232447bd4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!num\+\_\+p2d@{num\+\_\+p2d}}
+\index{num\+\_\+p2d@{num\+\_\+p2d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{num\+\_\+p2d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::num\+\_\+p2d}
+
+
+
+number of 2D arrays needed for microphysics 
+
+
+
+Definition at line 595 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a442c04851021c33325171ca2615e2c0a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!num\+\_\+p3d@{num\+\_\+p3d}}
+\index{num\+\_\+p3d@{num\+\_\+p3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{num\+\_\+p3d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::num\+\_\+p3d}
+
+
+
+number of 3D arrays needed for microphysics 
+
+
+
+Definition at line 596 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0021e6548cad93314da3e957bc0c8db3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nshoc\+\_\+2d@{nshoc\+\_\+2d}}
+\index{nshoc\+\_\+2d@{nshoc\+\_\+2d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nshoc\+\_\+2d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nshoc\+\_\+2d}
+
+
+
+number of 2d fields for S\+H\+OC 
+
+
+
+Definition at line 597 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac5eaf2b349fa26af3d3605c1afe3bc7f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nshoc\+\_\+3d@{nshoc\+\_\+3d}}
+\index{nshoc\+\_\+3d@{nshoc\+\_\+3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nshoc\+\_\+3d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nshoc\+\_\+3d}
+
+
+
+number of 3d fields for S\+H\+OC 
+
+
+
+Definition at line 598 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5bb7a9a5191b606f6f4ebe577b2b6c12}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ncnvcld3d@{ncnvcld3d}}
+\index{ncnvcld3d@{ncnvcld3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ncnvcld3d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ncnvcld3d}
+
+
+
+number of convective 3d clouds fields 
+
+
+
+Definition at line 599 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a2ae5fb72854bb315c04b92340bb98ae0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!npdf3d@{npdf3d}}
+\index{npdf3d@{npdf3d}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{npdf3d}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::npdf3d}
+
+
+
+number of 3d arrays associated with pdf based clouds/microphysics 
+
+
+
+Definition at line 600 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab6d28fbdeb6e7c69e6c06ced1c053775}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!nctp@{nctp}}
+\index{nctp@{nctp}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{nctp}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::nctp}
+
+
+
+number of cloud types in Chikira-\/\+Sugiyama scheme 
+
+
+
+Definition at line 601 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a5820ee90e80c34dfcb9a9ed2836acc93}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!debug@{debug}}
+\index{debug@{debug}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{debug}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::debug}
+
+
+
+Definition at line 604 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a413121c3d1f112107344e261fead66ab}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!pre\+\_\+rad@{pre\+\_\+rad}}
+\index{pre\+\_\+rad@{pre\+\_\+rad}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{pre\+\_\+rad}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::pre\+\_\+rad}
+
+
+
+flag for testing purpose 
+
+
+
+Definition at line 605 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3e2599a246debab9c022761f038d8396}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!ipt@{ipt}}
+\index{ipt@{ipt}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{ipt}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::ipt}
+
+
+
+index for diagnostic printout point 
+
+
+
+Definition at line 608 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a72e0ee93b78dd3dde829ebe2a3e96250}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lprnt@{lprnt}}
+\index{lprnt@{lprnt}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lprnt}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lprnt}
+
+
+
+control flag for diagnostic print out 
+
+
+
+Definition at line 609 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_adf8959b1c525cb151a08097a95c576a8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lsswr@{lsswr}}
+\index{lsswr@{lsswr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lsswr}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lsswr}
+
+
+
+logical flags for sw radiation calls 
+
+
+
+Definition at line 610 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a3d8464c7371771e616df11b6eb378237}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!lslwr@{lslwr}}
+\index{lslwr@{lslwr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{lslwr}
+{\footnotesize\ttfamily logical gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::lslwr}
+
+
+
+logical flags for lw radiation calls 
+
+
+
+Definition at line 611 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a4ccb13a76998bad7a6f6b7e3819b2ce6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!solhr@{solhr}}
+\index{solhr@{solhr}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{solhr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::solhr}
+
+
+
+hour time after 00z at the t-\/step 
+
+
+
+Definition at line 612 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a667ae7c576d45d2e0697ac5ab45d2f7c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!solcon@{solcon}}
+\index{solcon@{solcon}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{solcon}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::solcon}
+
+
+
+solar constant (sun-\/earth distant adjusted) [set via radupdate] 
+
+
+
+Definition at line 613 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ad3ae1fb96ed26612c3a5d25177ae6cf8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!slag@{slag}}
+\index{slag@{slag}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{slag}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::slag}
+
+
+
+equation of time ( radian ) [set via radupdate] 
+
+
+
+Definition at line 614 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ac97f540dad9455091e9490b5856f1e46}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!sdec@{sdec}}
+\index{sdec@{sdec}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{sdec}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::sdec}
+
+
+
+sin of the solar declination angle [set via radupdate] 
+
+
+
+Definition at line 615 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a9a4858a415334db6e696d54473025ac1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!cdec@{cdec}}
+\index{cdec@{cdec}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{cdec}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::cdec}
+
+
+
+cos of the solar declination angle [set via radupdate] 
+
+
+
+Definition at line 616 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a21602325f00529c98e7119fdd4dacda7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!clstp@{clstp}}
+\index{clstp@{clstp}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{clstp}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::clstp}
+
+
+
+index used by cnvc90 (for convective clouds) legacy stuff -\/ does not affect forecast 
+
+
+
+Definition at line 617 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aba6eb931d9a2105fb69c377936d708d6}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!phour@{phour}}
+\index{phour@{phour}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{phour}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::phour}
+
+
+
+previous forecast hour 
+
+
+
+Definition at line 619 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ab2644c1f9da5e6796f18095017b19ab7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!fhour@{fhour}}
+\index{fhour@{fhour}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{fhour}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::fhour}
+
+
+
+curent forecast hour 
+
+
+
+Definition at line 620 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0b20e827210c6a6357daa24934ae3a99}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!zhour@{zhour}}
+\index{zhour@{zhour}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{zhour}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::zhour}
+
+
+
+previous hour diagnostic buckets emptied 
+
+
+
+Definition at line 621 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a9743f78cc411821c4fe157d7abdd85b4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!kdt@{kdt}}
+\index{kdt@{kdt}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{kdt}
+{\footnotesize\ttfamily integer gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::kdt}
+
+
+
+current forecast iteration 
+
+
+
+Definition at line 622 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a6f2e54633e3a47c4017bcd669ebc979e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!jdat@{jdat}}
+\index{jdat@{jdat}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{jdat}
+{\footnotesize\ttfamily integer, dimension(1\+:8) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::jdat}
+
+
+
+current forecast date and time (yr, mon, day, t-\/zone, hr, min, sec, mil-\/sec) 
+
+
+
+Definition at line 623 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_aaba2f9e0110ba0140828bf656956aa90}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iau\+\_\+delthrs@{iau\+\_\+delthrs}}
+\index{iau\+\_\+delthrs@{iau\+\_\+delthrs}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iau\+\_\+delthrs}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iau\+\_\+delthrs}
+
+
+
+Definition at line 626 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_ae9e713f5bb2e29ed10e488843d80aba0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iau\+\_\+inc\+\_\+files@{iau\+\_\+inc\+\_\+files}}
+\index{iau\+\_\+inc\+\_\+files@{iau\+\_\+inc\+\_\+files}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iau\+\_\+inc\+\_\+files}
+{\footnotesize\ttfamily character(len=240), dimension(7) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iau\+\_\+inc\+\_\+files}
+
+
+
+Definition at line 627 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__control__type_a0ad7f25987c3b576589aa486a199444f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}!iaufhrs@{iaufhrs}}
+\index{iaufhrs@{iaufhrs}!gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type}}
+\subsubsection{iaufhrs}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), dimension(7) gfs\+\_\+typedefs\+::gfs\+\_\+control\+\_\+type\+::iaufhrs}
+
+
+
+Definition at line 628 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cp $*
+if [ $? -ne 0 ] ; then
+  err_exit "'cp $*' was not successful."
+fi

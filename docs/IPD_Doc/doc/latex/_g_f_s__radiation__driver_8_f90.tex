@@ -1,0 +1,55 @@
+\section{G\+F\+S\+\_\+radiation\+\_\+driver.\+F90 File Reference}
+\label{_g_f_s__radiation__driver_8_f90}\index{G\+F\+S\+\_\+radiation\+\_\+driver.\+F90@{G\+F\+S\+\_\+radiation\+\_\+driver.\+F90}}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \textbf{ module\+\_\+radiation\+\_\+driver}
+\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ module\+\_\+radiation\+\_\+driver\+::radupdate} (idate, jdate, deltsw, deltim, lsswr, me, slag, sdec, cdec, solcon)
+\begin{DoxyCompactList}\small\item\em This subroutine checks and updates time sensitive data used by radiation computations. This subroutine needs to be placed inside the time advancement loop but outside of the horizontal grid loop. It is invoked at radiation calling frequncy but before any actual radiative transfer computations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\textbf{ }\par
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\begin{DoxyCompactList}\small\item\em This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+character(40), parameter \textbf{ module\+\_\+radiation\+\_\+driver\+::vtagrad} =\textquotesingle{}N\+C\+EP-\/Radiation\+\_\+driver v5.\+2 Jan 2013 \textquotesingle{}
+\end{DoxyCompactItemize}
+\subsection*{Constant values}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys) \textbf{ module\+\_\+radiation\+\_\+driver\+::qmin}
+\begin{DoxyCompactList}\small\item\em lower limit of saturation vapor pressure (=1.\+0e-\/10) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ module\+\_\+radiation\+\_\+driver\+::qme5}
+\begin{DoxyCompactList}\small\item\em lower limit of specific humidity (=1.\+0e-\/7) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ module\+\_\+radiation\+\_\+driver\+::qme6}
+\begin{DoxyCompactList}\small\item\em lower limit of specific humidity (=1.\+0e-\/7) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ module\+\_\+radiation\+\_\+driver\+::epsq}
+\begin{DoxyCompactList}\small\item\em E\+P\+SQ=1.\+0e-\/12. \end{DoxyCompactList}\item 
+real, parameter \textbf{ module\+\_\+radiation\+\_\+driver\+::prsmin} = 1.\+0e-\/6
+\begin{DoxyCompactList}\small\item\em lower limit of toa pressure value in mb \end{DoxyCompactList}\item 
+integer \textbf{ module\+\_\+radiation\+\_\+driver\+::itsfc} =0
+\begin{DoxyCompactList}\small\item\em control flag for LW surface temperature at air/ground interface (default=0, the value will be set in subroutine radinit) \end{DoxyCompactList}\item 
+integer \textbf{ module\+\_\+radiation\+\_\+driver\+::month0} =0
+\begin{DoxyCompactList}\small\item\em new data input control variables (set/reset in subroutines radinit/radupdate)\+: \end{DoxyCompactList}\item 
+integer \textbf{ module\+\_\+radiation\+\_\+driver\+::iyear0} =0
+\item 
+integer \textbf{ module\+\_\+radiation\+\_\+driver\+::monthd} =0
+\item 
+logical \textbf{ module\+\_\+radiation\+\_\+driver\+::loz1st} =.true.
+\begin{DoxyCompactList}\small\item\em control flag for the first time of reading climatological ozone data (set/reset in subroutines radinit/radupdate, it is used only if the control parameter ioznflg=0) \end{DoxyCompactList}\item 
+integer, parameter \textbf{ module\+\_\+radiation\+\_\+driver\+::ltp} = 0
+\begin{DoxyCompactList}\small\item\em optional extra top layer on top of low ceiling models ~\newline
+ L\+TP=0\+: no extra top layer \end{DoxyCompactList}\item 
+logical, parameter \textbf{ module\+\_\+radiation\+\_\+driver\+::lextop} = (L\+TP $>$ 0)
+\begin{DoxyCompactList}\small\item\em control flag for extra top layer \end{DoxyCompactList}\item 
+subroutine, public \textbf{ module\+\_\+radiation\+\_\+driver\+::radinit} (si, N\+L\+AY, imp\+\_\+physics, me)
+\begin{DoxyCompactList}\small\item\em This subroutine initialize a model\textquotesingle{}s radiation process through calling of specific initialization subprograms that directly related to radiation calculations. This subroutine needs to be invoked only once at the start stage of a model\textquotesingle{}s run, and the call is placed outside of both the time advancement loop and horizontal grid loop. \end{DoxyCompactList}\end{DoxyCompactItemize}

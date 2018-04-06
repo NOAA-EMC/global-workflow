@@ -1,0 +1,7 @@
+<map id="module_radiation_aerosols::setaer" name="module_radiation_aerosols::setaer">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#ga6fb356de63fb7ff093b1d11a64ff768f" title="This subroutine maps the 5 degree global climatological aerosol data set onto model grids..." alt="" coords="229,5,405,46"/>
+<area shape="rect" id="node4" href="$group__module__radiation__aerosols.html#gab44024080630ce693e79c56add1df727" title="This subroutine computes SW + LW aerosol optical properties for gocart aerosol species (merged from f..." alt="" coords="229,70,405,111"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#gae60b55ebc37825b2c3c95f95b23ed558" title="This subroutine computes aerosols optical properties in NSWLWBD bands. there are seven different vert..." alt="" coords="456,12,539,39"/>
+<area shape="rect" id="node5" href="$group__module__radiation__aerosols.html#ga651c4be2fa354238990c5c7b9488e9fd" title="This subroutine maps input tracer fields (trcly) to local tracer array (aermr). " alt="" coords="454,69,541,96"/>
+<area shape="rect" id="node6" href="$group__module__radiation__aerosols.html#ga4ff866c545425e7029a11999e97d8faa" title="This subroutine computes aerosols optical properties in NSWLWBD SW/LW bands. Aerosol distribution at ..." alt="" coords="457,120,537,147"/>
+</map>

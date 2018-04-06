@@ -1,3 +1,14 @@
+# This file specifies the resource requirements for all jobs.  This
+# includes jobs from the full DA-cycled workflow, as well as the jobs
+# in the public release workflow.
+
+# Note on threads:
+#  max = use the largest number of threads possible for the platform,
+#        ranks, and processors per node
+#  null = do not specify threading settings.  The underlying scripts
+#        and batch system will fill in settings.
+#  a number = use this many threads per MPI rank
+
 gfs_resource_table: !Select
   select: !calc doc.fv3_gfs_settings.CASE
   otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"

@@ -1,0 +1,1150 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+coupling\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__coupling__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+coupling\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ coupling\+\_\+create}
+\begin{DoxyCompactList}\small\item\em allocate array data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nirbmdi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir beam sw downward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nirdfdi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir diff sw downward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ visbmdi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis beam sw downward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ visdfdi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis diff sw downward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nirbmui} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir beam sw upward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nirdfui} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir diff sw upward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ visbmui} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis beam sw upward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ visdfui} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis diff sw upward flux (w/m2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sfcdsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total sky sfc downward sw flux ( w/m$\ast$$\ast$2 ) G\+F\+S\+\_\+radtend\+\_\+typesfcfswdnfxc \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sfcnsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total sky sfc netsw flx into ground(w/m$\ast$$\ast$2) difference of dnfxc \& upfxc from G\+F\+S\+\_\+radtend\+\_\+typesfcfsw \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sfcdlw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total sky sfc downward lw flux ( w/m$\ast$$\ast$2 ) G\+F\+S\+\_\+radtend\+\_\+typesfclswdnfxc \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dusfcin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+flddusfcin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvsfcin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+flddvsfcin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtsfcin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+flddtsfcin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dqsfcin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+flddqsfcin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ulwsfcin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+fldulwsfcin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ slimskin\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em aoi\+\_\+fldslimskin(item,lan) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ rain\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total rain precipitation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ snow\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em total snow precipitation \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dusfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc u momentum flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc v momentum flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc sensible heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dqsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc latent heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dlwsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc downward lw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dswsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dnirbm\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir beam downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dnirdf\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc nir diff downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvisbm\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis beam dnwd sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvisdf\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sfc uv+vis diff dnwd sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nlwsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net downward lw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nswsfc\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nnirbm\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net nir beam downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nnirdf\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net nir diff downward sw flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nvisbm\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net uv+vis beam downward sw rad flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nvisdf\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em net uv+vis diff downward sw rad flux (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dusfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc u momentum flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc v momentum flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dtsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc sensible heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dqsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc latent heat flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dlwsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc downward lw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dswsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dnirbmi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc nir beam downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dnirdfi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc nir diff downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvisbmi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc uv+vis beam downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dvisdfi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc uv+vis diff downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nlwsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net sfc downward lw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nswsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net sfc downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nnirbmi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net nir beam sfc downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nnirdfi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net nir diff sfc downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nvisbmi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net uv+vis beam downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nvisdfi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous net uv+vis diff downward sw flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ t2mi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous T2m \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ q2mi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous Q2m \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ u10mi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous U10m \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ v10mi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous V10m \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tsfci\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc temperature \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ psurfi\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc pressure \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ oro\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em orography ( oro from G\+F\+S\+\_\+sfcprop\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ slmsk\+\_\+cpl} =$>$ null()
+\begin{DoxyCompactList}\small\item\em Land/\+Sea/\+Ice mask (slmsk from G\+F\+S\+\_\+sfcprop\+\_\+type) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ shum\+\_\+wts} =$>$ null()
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ sppt\+\_\+wts} =$>$ null()
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ skebu\+\_\+wts} =$>$ null()
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ skebv\+\_\+wts} =$>$ null()
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ dqdti} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous total moisture tendency (kg/kg/s) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ cnvqci} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous total convective conensate (kg/kg) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ upd\+\_\+mfi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective updraft mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ dwn\+\_\+mfi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective downdraft mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ det\+\_\+mfi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous convective detrainment mass flux \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ cldcovi} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous 3D cloud fraction \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ nwfa2d} =$>$ null()
+\begin{DoxyCompactList}\small\item\em instantaneous sfc aerosol source \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 222 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a5b91c1b62568b1b26db2fbc5645a336f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+allocate array data 
+
+
+
+Definition at line 315 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a6a55a253f9a7dd6022fe91cfd54660bd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nirbmdi@{nirbmdi}}
+\index{nirbmdi@{nirbmdi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nirbmdi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nirbmdi =$>$ null()}
+
+
+
+sfc nir beam sw downward flux (w/m2) 
+
+
+
+Definition at line 225 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a5d9fb206443ea1aacbc769deb868299f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nirdfdi@{nirdfdi}}
+\index{nirdfdi@{nirdfdi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nirdfdi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nirdfdi =$>$ null()}
+
+
+
+sfc nir diff sw downward flux (w/m2) 
+
+
+
+Definition at line 226 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a102be5efc900ce83a648693b08169a85}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!visbmdi@{visbmdi}}
+\index{visbmdi@{visbmdi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{visbmdi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::visbmdi =$>$ null()}
+
+
+
+sfc uv+vis beam sw downward flux (w/m2) 
+
+
+
+Definition at line 227 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a69f7a6ab15cb856634488ed0aa494007}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!visdfdi@{visdfdi}}
+\index{visdfdi@{visdfdi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{visdfdi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::visdfdi =$>$ null()}
+
+
+
+sfc uv+vis diff sw downward flux (w/m2) 
+
+
+
+Definition at line 228 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4e04c27a76c71c162b14292c74322c70}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nirbmui@{nirbmui}}
+\index{nirbmui@{nirbmui}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nirbmui}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nirbmui =$>$ null()}
+
+
+
+sfc nir beam sw upward flux (w/m2) 
+
+
+
+Definition at line 229 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_aefbeb5116a9dec3fc167e46538062b60}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nirdfui@{nirdfui}}
+\index{nirdfui@{nirdfui}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nirdfui}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nirdfui =$>$ null()}
+
+
+
+sfc nir diff sw upward flux (w/m2) 
+
+
+
+Definition at line 230 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a8b6cd2f23b0ec242f441fe200736d99d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!visbmui@{visbmui}}
+\index{visbmui@{visbmui}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{visbmui}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::visbmui =$>$ null()}
+
+
+
+sfc uv+vis beam sw upward flux (w/m2) 
+
+
+
+Definition at line 231 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a04c2fd4c7659503fb14550422322349f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!visdfui@{visdfui}}
+\index{visdfui@{visdfui}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{visdfui}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::visdfui =$>$ null()}
+
+
+
+sfc uv+vis diff sw upward flux (w/m2) 
+
+
+
+Definition at line 232 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a82bb20f696e3f9218e861e44447e25d1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!sfcdsw@{sfcdsw}}
+\index{sfcdsw@{sfcdsw}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{sfcdsw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::sfcdsw =$>$ null()}
+
+
+
+total sky sfc downward sw flux ( w/m$\ast$$\ast$2 ) G\+F\+S\+\_\+radtend\+\_\+typesfcfswdnfxc 
+
+
+
+Definition at line 235 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ac86e3f1e872103addc5585fef5e1590b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!sfcnsw@{sfcnsw}}
+\index{sfcnsw@{sfcnsw}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{sfcnsw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::sfcnsw =$>$ null()}
+
+
+
+total sky sfc netsw flx into ground(w/m$\ast$$\ast$2) difference of dnfxc \& upfxc from G\+F\+S\+\_\+radtend\+\_\+typesfcfsw 
+
+
+
+Definition at line 237 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_af93ec4d21e8f743bef69cbd1f1444d7f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!sfcdlw@{sfcdlw}}
+\index{sfcdlw@{sfcdlw}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{sfcdlw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::sfcdlw =$>$ null()}
+
+
+
+total sky sfc downward lw flux ( w/m$\ast$$\ast$2 ) G\+F\+S\+\_\+radtend\+\_\+typesfclswdnfxc 
+
+
+
+Definition at line 239 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_afb4232fdc5ab455e82f290fbd1f93ae3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dusfcin\+\_\+cpl@{dusfcin\+\_\+cpl}}
+\index{dusfcin\+\_\+cpl@{dusfcin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dusfcin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dusfcin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+flddusfcin(item,lan) 
+
+
+
+Definition at line 243 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a18bdd27fc57e4a0f234adfe05b8eaee0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvsfcin\+\_\+cpl@{dvsfcin\+\_\+cpl}}
+\index{dvsfcin\+\_\+cpl@{dvsfcin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvsfcin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvsfcin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+flddvsfcin(item,lan) 
+
+
+
+Definition at line 244 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a9c88f4e5114fb1ae3bd49940265e085d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dtsfcin\+\_\+cpl@{dtsfcin\+\_\+cpl}}
+\index{dtsfcin\+\_\+cpl@{dtsfcin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dtsfcin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dtsfcin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+flddtsfcin(item,lan) 
+
+
+
+Definition at line 245 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a354f3edf79ca55fd16093b5bb5137c7f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dqsfcin\+\_\+cpl@{dqsfcin\+\_\+cpl}}
+\index{dqsfcin\+\_\+cpl@{dqsfcin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dqsfcin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dqsfcin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+flddqsfcin(item,lan) 
+
+
+
+Definition at line 246 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a76ba854a9d1d3c720486cd8fcf8fb6cf}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!ulwsfcin\+\_\+cpl@{ulwsfcin\+\_\+cpl}}
+\index{ulwsfcin\+\_\+cpl@{ulwsfcin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{ulwsfcin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::ulwsfcin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+fldulwsfcin(item,lan) 
+
+
+
+Definition at line 247 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_aa958347a656d4e9b57a84900fb4ae31b}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!slimskin\+\_\+cpl@{slimskin\+\_\+cpl}}
+\index{slimskin\+\_\+cpl@{slimskin\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{slimskin\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::slimskin\+\_\+cpl =$>$ null()}
+
+
+
+aoi\+\_\+fldslimskin(item,lan) 
+
+
+
+Definition at line 249 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_acc1d008d2c9b3aef5eb207f5ec7d6976}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!rain\+\_\+cpl@{rain\+\_\+cpl}}
+\index{rain\+\_\+cpl@{rain\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{rain\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::rain\+\_\+cpl =$>$ null()}
+
+
+
+total rain precipitation 
+
+
+
+Definition at line 252 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a75433404a483fcb0fdc1a24251a994a3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!snow\+\_\+cpl@{snow\+\_\+cpl}}
+\index{snow\+\_\+cpl@{snow\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{snow\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::snow\+\_\+cpl =$>$ null()}
+
+
+
+total snow precipitation 
+
+
+
+Definition at line 253 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_aae4bb30387eeb71f61f62880479694d5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dusfc\+\_\+cpl@{dusfc\+\_\+cpl}}
+\index{dusfc\+\_\+cpl@{dusfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dusfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dusfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc u momentum flux 
+
+
+
+Definition at line 254 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a98cdbbeba40ffc7125bf834eb31256e0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvsfc\+\_\+cpl@{dvsfc\+\_\+cpl}}
+\index{dvsfc\+\_\+cpl@{dvsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvsfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc v momentum flux 
+
+
+
+Definition at line 255 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a5e103da61030d1aec263729066fc28c4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dtsfc\+\_\+cpl@{dtsfc\+\_\+cpl}}
+\index{dtsfc\+\_\+cpl@{dtsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dtsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dtsfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc sensible heat flux 
+
+
+
+Definition at line 256 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ac9f309c9120dfa9cacbdaa01289356ad}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dqsfc\+\_\+cpl@{dqsfc\+\_\+cpl}}
+\index{dqsfc\+\_\+cpl@{dqsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dqsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dqsfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc latent heat flux 
+
+
+
+Definition at line 257 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a50f01bebb9c7aa12e91cc91c6eee137d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dlwsfc\+\_\+cpl@{dlwsfc\+\_\+cpl}}
+\index{dlwsfc\+\_\+cpl@{dlwsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dlwsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dlwsfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc downward lw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 258 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a9911574e6652224c9a4d69e7af9790ff}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dswsfc\+\_\+cpl@{dswsfc\+\_\+cpl}}
+\index{dswsfc\+\_\+cpl@{dswsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dswsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dswsfc\+\_\+cpl =$>$ null()}
+
+
+
+sfc downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 259 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a728219ef437f9bbc47ffb2558e64e129}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dnirbm\+\_\+cpl@{dnirbm\+\_\+cpl}}
+\index{dnirbm\+\_\+cpl@{dnirbm\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dnirbm\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dnirbm\+\_\+cpl =$>$ null()}
+
+
+
+sfc nir beam downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 260 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a50e6629a65b37c8e1a283d910c0670d8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dnirdf\+\_\+cpl@{dnirdf\+\_\+cpl}}
+\index{dnirdf\+\_\+cpl@{dnirdf\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dnirdf\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dnirdf\+\_\+cpl =$>$ null()}
+
+
+
+sfc nir diff downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 261 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ad6ed353acebc4fb9d7ebf0470eeed45a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvisbm\+\_\+cpl@{dvisbm\+\_\+cpl}}
+\index{dvisbm\+\_\+cpl@{dvisbm\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvisbm\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvisbm\+\_\+cpl =$>$ null()}
+
+
+
+sfc uv+vis beam dnwd sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 262 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a6406d97ca52a9938fb2a0add83eeec98}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvisdf\+\_\+cpl@{dvisdf\+\_\+cpl}}
+\index{dvisdf\+\_\+cpl@{dvisdf\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvisdf\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvisdf\+\_\+cpl =$>$ null()}
+
+
+
+sfc uv+vis diff dnwd sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 263 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ab42140a81b7dcef20e709ebadc184915}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nlwsfc\+\_\+cpl@{nlwsfc\+\_\+cpl}}
+\index{nlwsfc\+\_\+cpl@{nlwsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nlwsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nlwsfc\+\_\+cpl =$>$ null()}
+
+
+
+net downward lw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 264 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a8c40647f51478503af4ceeb17fe42c12}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nswsfc\+\_\+cpl@{nswsfc\+\_\+cpl}}
+\index{nswsfc\+\_\+cpl@{nswsfc\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nswsfc\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nswsfc\+\_\+cpl =$>$ null()}
+
+
+
+net downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 265 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a43928daa4845549edf874acc64e74612}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nnirbm\+\_\+cpl@{nnirbm\+\_\+cpl}}
+\index{nnirbm\+\_\+cpl@{nnirbm\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nnirbm\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nnirbm\+\_\+cpl =$>$ null()}
+
+
+
+net nir beam downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 266 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4981941e6fc109f6d586df4fb18d7c00}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nnirdf\+\_\+cpl@{nnirdf\+\_\+cpl}}
+\index{nnirdf\+\_\+cpl@{nnirdf\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nnirdf\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nnirdf\+\_\+cpl =$>$ null()}
+
+
+
+net nir diff downward sw flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 267 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_aec62091a06542f3cda5cb31bbab05254}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nvisbm\+\_\+cpl@{nvisbm\+\_\+cpl}}
+\index{nvisbm\+\_\+cpl@{nvisbm\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nvisbm\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nvisbm\+\_\+cpl =$>$ null()}
+
+
+
+net uv+vis beam downward sw rad flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 268 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a486f2ffa99058e4e4cb3ec35f9bd5122}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nvisdf\+\_\+cpl@{nvisdf\+\_\+cpl}}
+\index{nvisdf\+\_\+cpl@{nvisdf\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nvisdf\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nvisdf\+\_\+cpl =$>$ null()}
+
+
+
+net uv+vis diff downward sw rad flux (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 269 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_af62caaab262f6c0cd4082cf2f07096b1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dusfci\+\_\+cpl@{dusfci\+\_\+cpl}}
+\index{dusfci\+\_\+cpl@{dusfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dusfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dusfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc u momentum flux 
+
+
+
+Definition at line 272 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a09a262df2d44e71d6fdc820e64cb13d4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvsfci\+\_\+cpl@{dvsfci\+\_\+cpl}}
+\index{dvsfci\+\_\+cpl@{dvsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc v momentum flux 
+
+
+
+Definition at line 273 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a020368408935772be27eaa098c17ce2e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dtsfci\+\_\+cpl@{dtsfci\+\_\+cpl}}
+\index{dtsfci\+\_\+cpl@{dtsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dtsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dtsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc sensible heat flux 
+
+
+
+Definition at line 274 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a86ca0a5891940de32f482ad187d8145d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dqsfci\+\_\+cpl@{dqsfci\+\_\+cpl}}
+\index{dqsfci\+\_\+cpl@{dqsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dqsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dqsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc latent heat flux 
+
+
+
+Definition at line 275 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a76e8eae43f114412ad203f38c5a9d67a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dlwsfci\+\_\+cpl@{dlwsfci\+\_\+cpl}}
+\index{dlwsfci\+\_\+cpl@{dlwsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dlwsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dlwsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc downward lw flux 
+
+
+
+Definition at line 276 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a54a6abdb5d98a659120f7c5f4d6c1ee7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dswsfci\+\_\+cpl@{dswsfci\+\_\+cpl}}
+\index{dswsfci\+\_\+cpl@{dswsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dswsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dswsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc downward sw flux 
+
+
+
+Definition at line 277 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4107ba26597cf4bf9353c377a8d2f4ee}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dnirbmi\+\_\+cpl@{dnirbmi\+\_\+cpl}}
+\index{dnirbmi\+\_\+cpl@{dnirbmi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dnirbmi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dnirbmi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc nir beam downward sw flux 
+
+
+
+Definition at line 278 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a2c3d4bd312dc85b07481af2cdf621d82}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dnirdfi\+\_\+cpl@{dnirdfi\+\_\+cpl}}
+\index{dnirdfi\+\_\+cpl@{dnirdfi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dnirdfi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dnirdfi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc nir diff downward sw flux 
+
+
+
+Definition at line 279 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a71cc551cecf6bea47252906e2629bd80}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvisbmi\+\_\+cpl@{dvisbmi\+\_\+cpl}}
+\index{dvisbmi\+\_\+cpl@{dvisbmi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvisbmi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvisbmi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc uv+vis beam downward sw flux 
+
+
+
+Definition at line 280 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a8c923110e4845ae5ccc9ae4ef18f7a1e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dvisdfi\+\_\+cpl@{dvisdfi\+\_\+cpl}}
+\index{dvisdfi\+\_\+cpl@{dvisdfi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dvisdfi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dvisdfi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc uv+vis diff downward sw flux 
+
+
+
+Definition at line 281 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a353900a338819c556110d683065cb143}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nlwsfci\+\_\+cpl@{nlwsfci\+\_\+cpl}}
+\index{nlwsfci\+\_\+cpl@{nlwsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nlwsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nlwsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net sfc downward lw flux 
+
+
+
+Definition at line 282 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a050cc9d298c6e4902bd9bc01ecf59412}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nswsfci\+\_\+cpl@{nswsfci\+\_\+cpl}}
+\index{nswsfci\+\_\+cpl@{nswsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nswsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nswsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net sfc downward sw flux 
+
+
+
+Definition at line 283 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a602547ea64ac79280d5ce48bd0f4ec06}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nnirbmi\+\_\+cpl@{nnirbmi\+\_\+cpl}}
+\index{nnirbmi\+\_\+cpl@{nnirbmi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nnirbmi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nnirbmi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net nir beam sfc downward sw flux 
+
+
+
+Definition at line 284 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a47f6a3577bc36a261d9e2141962ca730}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nnirdfi\+\_\+cpl@{nnirdfi\+\_\+cpl}}
+\index{nnirdfi\+\_\+cpl@{nnirdfi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nnirdfi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nnirdfi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net nir diff sfc downward sw flux 
+
+
+
+Definition at line 285 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4ba650a651309ebd6be6c92721fdfd6d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nvisbmi\+\_\+cpl@{nvisbmi\+\_\+cpl}}
+\index{nvisbmi\+\_\+cpl@{nvisbmi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nvisbmi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nvisbmi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net uv+vis beam downward sw flux 
+
+
+
+Definition at line 286 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4d1be4348c19eb837dbdeb3f08a0158d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nvisdfi\+\_\+cpl@{nvisdfi\+\_\+cpl}}
+\index{nvisdfi\+\_\+cpl@{nvisdfi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nvisdfi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nvisdfi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous net uv+vis diff downward sw flux 
+
+
+
+Definition at line 287 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a2c2344e4bd306442eeed8c8a21d09881}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!t2mi\+\_\+cpl@{t2mi\+\_\+cpl}}
+\index{t2mi\+\_\+cpl@{t2mi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{t2mi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::t2mi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous T2m 
+
+
+
+Definition at line 288 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a2f4a34c335ae2c6f664046e20f3c0478}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!q2mi\+\_\+cpl@{q2mi\+\_\+cpl}}
+\index{q2mi\+\_\+cpl@{q2mi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{q2mi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::q2mi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous Q2m 
+
+
+
+Definition at line 289 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a64213a7bb648c1970b46629415010a05}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!u10mi\+\_\+cpl@{u10mi\+\_\+cpl}}
+\index{u10mi\+\_\+cpl@{u10mi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{u10mi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::u10mi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous U10m 
+
+
+
+Definition at line 290 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ab0610e5850c5c2a77e1412c6ac431edd}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!v10mi\+\_\+cpl@{v10mi\+\_\+cpl}}
+\index{v10mi\+\_\+cpl@{v10mi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{v10mi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::v10mi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous V10m 
+
+
+
+Definition at line 291 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a7b1e1a41834ff2f76798f90a20c31de0}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!tsfci\+\_\+cpl@{tsfci\+\_\+cpl}}
+\index{tsfci\+\_\+cpl@{tsfci\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{tsfci\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::tsfci\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc temperature 
+
+
+
+Definition at line 292 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a6d20b2f8a336c0d1f7b45dcee8a7ce7e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!psurfi\+\_\+cpl@{psurfi\+\_\+cpl}}
+\index{psurfi\+\_\+cpl@{psurfi\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{psurfi\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::psurfi\+\_\+cpl =$>$ null()}
+
+
+
+instantaneous sfc pressure 
+
+
+
+Definition at line 293 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a26dd44d22cbb72f5e2a00b8c5186d9d8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!oro\+\_\+cpl@{oro\+\_\+cpl}}
+\index{oro\+\_\+cpl@{oro\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{oro\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::oro\+\_\+cpl =$>$ null()}
+
+
+
+orography ( oro from G\+F\+S\+\_\+sfcprop\+\_\+type) 
+
+
+
+Definition at line 296 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a56d222e615093775982557f1a6e22f1a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!slmsk\+\_\+cpl@{slmsk\+\_\+cpl}}
+\index{slmsk\+\_\+cpl@{slmsk\+\_\+cpl}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{slmsk\+\_\+cpl}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::slmsk\+\_\+cpl =$>$ null()}
+
+
+
+Land/\+Sea/\+Ice mask (slmsk from G\+F\+S\+\_\+sfcprop\+\_\+type) 
+
+
+
+Definition at line 297 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a092ee9e76d7db715421c10368638a9c1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!shum\+\_\+wts@{shum\+\_\+wts}}
+\index{shum\+\_\+wts@{shum\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{shum\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::shum\+\_\+wts =$>$ null()}
+
+
+
+Definition at line 300 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_af2f7511d0c6fec71e88b28715f6dc84f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!sppt\+\_\+wts@{sppt\+\_\+wts}}
+\index{sppt\+\_\+wts@{sppt\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{sppt\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::sppt\+\_\+wts =$>$ null()}
+
+
+
+Definition at line 301 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a310e647b480c2eb9c5a0556a32c1b899}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!skebu\+\_\+wts@{skebu\+\_\+wts}}
+\index{skebu\+\_\+wts@{skebu\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{skebu\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::skebu\+\_\+wts =$>$ null()}
+
+
+
+Definition at line 302 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_ab4c8736bfd7e828907109f92d731cf29}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!skebv\+\_\+wts@{skebv\+\_\+wts}}
+\index{skebv\+\_\+wts@{skebv\+\_\+wts}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{skebv\+\_\+wts}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::skebv\+\_\+wts =$>$ null()}
+
+
+
+Definition at line 303 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a7f9380b74a15b927cb16bf0c462e5c0c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dqdti@{dqdti}}
+\index{dqdti@{dqdti}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dqdti}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dqdti =$>$ null()}
+
+
+
+instantaneous total moisture tendency (kg/kg/s) 
+
+
+
+Definition at line 306 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a493adc200502b6e3378b1b45bb03cdd3}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!cnvqci@{cnvqci}}
+\index{cnvqci@{cnvqci}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{cnvqci}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::cnvqci =$>$ null()}
+
+
+
+instantaneous total convective conensate (kg/kg) 
+
+
+
+Definition at line 307 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a03386881aeafd52f01eb9dc5b5fea16c}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!upd\+\_\+mfi@{upd\+\_\+mfi}}
+\index{upd\+\_\+mfi@{upd\+\_\+mfi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{upd\+\_\+mfi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::upd\+\_\+mfi =$>$ null()}
+
+
+
+instantaneous convective updraft mass flux 
+
+
+
+Definition at line 308 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_afab0f45fb14468d85b62398a8368a27e}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!dwn\+\_\+mfi@{dwn\+\_\+mfi}}
+\index{dwn\+\_\+mfi@{dwn\+\_\+mfi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{dwn\+\_\+mfi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::dwn\+\_\+mfi =$>$ null()}
+
+
+
+instantaneous convective downdraft mass flux 
+
+
+
+Definition at line 309 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a6edde71526a3a4a580ef97cd1e4ecc2a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!det\+\_\+mfi@{det\+\_\+mfi}}
+\index{det\+\_\+mfi@{det\+\_\+mfi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{det\+\_\+mfi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::det\+\_\+mfi =$>$ null()}
+
+
+
+instantaneous convective detrainment mass flux 
+
+
+
+Definition at line 310 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_a4256a8adb99ffad0cc6238822353e16a}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!cldcovi@{cldcovi}}
+\index{cldcovi@{cldcovi}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{cldcovi}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::cldcovi =$>$ null()}
+
+
+
+instantaneous 3D cloud fraction 
+
+
+
+Definition at line 311 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__coupling__type_aa523d3b9680607138915be3e68992d45}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}!nwfa2d@{nwfa2d}}
+\index{nwfa2d@{nwfa2d}!gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type}}
+\subsubsection{nwfa2d}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+coupling\+\_\+type\+::nwfa2d =$>$ null()}
+
+
+
+instantaneous sfc aerosol source 
+
+
+
+Definition at line 312 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

@@ -1,0 +1,222 @@
+\section{gfs\+\_\+driver Module Reference}
+\label{namespacegfs__driver}\index{gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \textbf{ gfs\+\_\+initialize} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag, Init\+\_\+parm)
+\item 
+subroutine, public \textbf{ gfs\+\_\+time\+\_\+vary\+\_\+step} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\item 
+subroutine, public \textbf{ gfs\+\_\+stochastic\+\_\+driver} (Model, Statein, Stateout, Sfcprop, Coupling, Grid, Tbd, Cldprop, Radtend, Diag)
+\item 
+subroutine \textbf{ gfs\+\_\+rad\+\_\+time\+\_\+vary} (Model, Statein, Tbd, sec)
+\item 
+subroutine \textbf{ gfs\+\_\+phys\+\_\+time\+\_\+vary} (Model, Grid, Tbd)
+\item 
+subroutine \textbf{ gfs\+\_\+grid\+\_\+populate} (Grid, xlon, xlat, area)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+24} = 24.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+hr} = 3600.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+99} = 99.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ con\+\_\+100} = 100.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ qmin} = 1.\+0e-\/10
+\item 
+integer, dimension(\+:), allocatable \textbf{ blksz}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\label{namespacegfs__driver_aa53fa4a0921c4443630976402933ff44}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+initialize@{gfs\+\_\+initialize}}
+\index{gfs\+\_\+initialize@{gfs\+\_\+initialize}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+initialize()}
+{\footnotesize\ttfamily subroutine, public gfs\+\_\+driver\+::gfs\+\_\+initialize (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(inout)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), dimension(\+:), intent(inout)}]{Statein,  }\item[{type(gfs\+\_\+stateout\+\_\+type), dimension(\+:), intent(inout)}]{Stateout,  }\item[{type(gfs\+\_\+sfcprop\+\_\+type), dimension(\+:), intent(inout)}]{Sfcprop,  }\item[{type(gfs\+\_\+coupling\+\_\+type), dimension(\+:), intent(inout)}]{Coupling,  }\item[{type(gfs\+\_\+grid\+\_\+type), dimension(\+:), intent(inout)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), dimension(\+:), intent(inout)}]{Tbd,  }\item[{type(gfs\+\_\+cldprop\+\_\+type), dimension(\+:), intent(inout)}]{Cldprop,  }\item[{type(gfs\+\_\+radtend\+\_\+type), dimension(\+:), intent(inout)}]{Radtend,  }\item[{type(gfs\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{Diag,  }\item[{type(gfs\+\_\+init\+\_\+type), intent(in)}]{Init\+\_\+parm }\end{DoxyParamCaption})}
+
+
+
+Definition at line 108 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+References blksz, and gfs\+\_\+grid\+\_\+populate().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\label{namespacegfs__driver_ad673b930d2e2319a99586ec2232ebea0}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+time\+\_\+vary\+\_\+step@{gfs\+\_\+time\+\_\+vary\+\_\+step}}
+\index{gfs\+\_\+time\+\_\+vary\+\_\+step@{gfs\+\_\+time\+\_\+vary\+\_\+step}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+time\+\_\+vary\+\_\+step()}
+{\footnotesize\ttfamily subroutine, public gfs\+\_\+driver\+::gfs\+\_\+time\+\_\+vary\+\_\+step (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(inout)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), dimension(\+:), intent(inout)}]{Statein,  }\item[{type(gfs\+\_\+stateout\+\_\+type), dimension(\+:), intent(inout)}]{Stateout,  }\item[{type(gfs\+\_\+sfcprop\+\_\+type), dimension(\+:), intent(inout)}]{Sfcprop,  }\item[{type(gfs\+\_\+coupling\+\_\+type), dimension(\+:), intent(inout)}]{Coupling,  }\item[{type(gfs\+\_\+grid\+\_\+type), dimension(\+:), intent(inout)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), dimension(\+:), intent(inout)}]{Tbd,  }\item[{type(gfs\+\_\+cldprop\+\_\+type), dimension(\+:), intent(inout)}]{Cldprop,  }\item[{type(gfs\+\_\+radtend\+\_\+type), dimension(\+:), intent(inout)}]{Radtend,  }\item[{type(gfs\+\_\+diag\+\_\+type), dimension(\+:), intent(inout)}]{Diag }\end{DoxyParamCaption})}
+
+
+
+Definition at line 300 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+References blksz, con\+\_\+24, con\+\_\+hr, gfs\+\_\+phys\+\_\+time\+\_\+vary(), and gfs\+\_\+rad\+\_\+time\+\_\+vary().
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\label{namespacegfs__driver_a913f6dc554990798c132f51cf053b2fb}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+stochastic\+\_\+driver@{gfs\+\_\+stochastic\+\_\+driver}}
+\index{gfs\+\_\+stochastic\+\_\+driver@{gfs\+\_\+stochastic\+\_\+driver}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+stochastic\+\_\+driver()}
+{\footnotesize\ttfamily subroutine, public gfs\+\_\+driver\+::gfs\+\_\+stochastic\+\_\+driver (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(in)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), intent(in)}]{Statein,  }\item[{type(gfs\+\_\+stateout\+\_\+type), intent(in)}]{Stateout,  }\item[{type(gfs\+\_\+sfcprop\+\_\+type), intent(in)}]{Sfcprop,  }\item[{type(gfs\+\_\+coupling\+\_\+type), intent(inout)}]{Coupling,  }\item[{type(gfs\+\_\+grid\+\_\+type), intent(in)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), intent(in)}]{Tbd,  }\item[{type(gfs\+\_\+cldprop\+\_\+type), intent(in)}]{Cldprop,  }\item[{type(gfs\+\_\+radtend\+\_\+type), intent(in)}]{Radtend,  }\item[{type(gfs\+\_\+diag\+\_\+type), intent(inout)}]{Diag }\end{DoxyParamCaption})}
+
+
+
+Definition at line 418 of file G\+F\+S\+\_\+driver.\+F90.
+
+\mbox{\label{namespacegfs__driver_a1d85ae05ce74656622bac0724c16e47b}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+rad\+\_\+time\+\_\+vary@{gfs\+\_\+rad\+\_\+time\+\_\+vary}}
+\index{gfs\+\_\+rad\+\_\+time\+\_\+vary@{gfs\+\_\+rad\+\_\+time\+\_\+vary}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+rad\+\_\+time\+\_\+vary()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+driver\+::gfs\+\_\+rad\+\_\+time\+\_\+vary (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(inout)}]{Model,  }\item[{type(gfs\+\_\+statein\+\_\+type), dimension(\+:), intent(in)}]{Statein,  }\item[{type(gfs\+\_\+tbd\+\_\+type), dimension(\+:), intent(inout)}]{Tbd,  }\item[{real(kind=kind\+\_\+phys), intent(in)}]{sec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 518 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+References blksz, con\+\_\+100, qmin, and module\+\_\+radiation\+\_\+driver\+::radupdate().
+
+
+
+Referenced by gfs\+\_\+time\+\_\+vary\+\_\+step().
+
+Here is the call graph for this function\+:
+% FIG 2
+Here is the caller graph for this function\+:
+% FIG 3
+\mbox{\label{namespacegfs__driver_a9085d55c53755e5dd9cfae5665dc8a60}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+phys\+\_\+time\+\_\+vary@{gfs\+\_\+phys\+\_\+time\+\_\+vary}}
+\index{gfs\+\_\+phys\+\_\+time\+\_\+vary@{gfs\+\_\+phys\+\_\+time\+\_\+vary}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+phys\+\_\+time\+\_\+vary()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+driver\+::gfs\+\_\+phys\+\_\+time\+\_\+vary (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+control\+\_\+type), intent(inout)}]{Model,  }\item[{type(gfs\+\_\+grid\+\_\+type), dimension(\+:), intent(inout)}]{Grid,  }\item[{type(gfs\+\_\+tbd\+\_\+type), dimension(\+:), intent(inout)}]{Tbd }\end{DoxyParamCaption})}
+
+
+
+Definition at line 585 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+References blksz, con\+\_\+100, con\+\_\+99, and con\+\_\+hr.
+
+
+
+Referenced by gfs\+\_\+time\+\_\+vary\+\_\+step().
+
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\label{namespacegfs__driver_a59f5e1e0612794f6801490d8d642b89b}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!gfs\+\_\+grid\+\_\+populate@{gfs\+\_\+grid\+\_\+populate}}
+\index{gfs\+\_\+grid\+\_\+populate@{gfs\+\_\+grid\+\_\+populate}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{gfs\+\_\+grid\+\_\+populate()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+driver\+::gfs\+\_\+grid\+\_\+populate (\begin{DoxyParamCaption}\item[{type(gfs\+\_\+grid\+\_\+type), dimension(\+:)}]{Grid,  }\item[{real(kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{xlon,  }\item[{real(kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{xlat,  }\item[{real(kind=kind\+\_\+phys), dimension(\+:,\+:), intent(in)}]{area }\end{DoxyParamCaption})}
+
+
+
+Definition at line 669 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+initialize().
+
+Here is the caller graph for this function\+:
+% FIG 5
+
+
+\subsection{Variable Documentation}
+\mbox{\label{namespacegfs__driver_a361be517e7eafe75c98c0676d08468d3}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!con\+\_\+24@{con\+\_\+24}}
+\index{con\+\_\+24@{con\+\_\+24}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{con\+\_\+24}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+driver\+::con\+\_\+24 = 24.\+0\+\_\+kind\+\_\+phys\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 80 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+time\+\_\+vary\+\_\+step().
+
+\mbox{\label{namespacegfs__driver_aa73c08b478e9f3b45e36e4a5877dfa96}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!con\+\_\+hr@{con\+\_\+hr}}
+\index{con\+\_\+hr@{con\+\_\+hr}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{con\+\_\+hr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+driver\+::con\+\_\+hr = 3600.\+0\+\_\+kind\+\_\+phys\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 81 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+phys\+\_\+time\+\_\+vary(), and gfs\+\_\+time\+\_\+vary\+\_\+step().
+
+\mbox{\label{namespacegfs__driver_a741fe74ab1500b05fa747a711e74610e}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!con\+\_\+99@{con\+\_\+99}}
+\index{con\+\_\+99@{con\+\_\+99}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{con\+\_\+99}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+driver\+::con\+\_\+99 = 99.\+0\+\_\+kind\+\_\+phys\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 82 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+phys\+\_\+time\+\_\+vary().
+
+\mbox{\label{namespacegfs__driver_ac7e929b29814a67e0c2d8f59b7a8f7ef}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!con\+\_\+100@{con\+\_\+100}}
+\index{con\+\_\+100@{con\+\_\+100}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{con\+\_\+100}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+driver\+::con\+\_\+100 = 100.\+0\+\_\+kind\+\_\+phys\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 83 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+phys\+\_\+time\+\_\+vary(), and gfs\+\_\+rad\+\_\+time\+\_\+vary().
+
+\mbox{\label{namespacegfs__driver_a1dc506e00472176743d287ee18bb19c1}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!qmin@{qmin}}
+\index{qmin@{qmin}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{qmin}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+driver\+::qmin = 1.\+0e-\/10\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 84 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+rad\+\_\+time\+\_\+vary().
+
+\mbox{\label{namespacegfs__driver_aa3cc44000d84c245dd953c17da5c0f4b}} 
+\index{gfs\+\_\+driver@{gfs\+\_\+driver}!blksz@{blksz}}
+\index{blksz@{blksz}!gfs\+\_\+driver@{gfs\+\_\+driver}}
+\subsubsection{blksz}
+{\footnotesize\ttfamily integer, dimension(\+:), allocatable gfs\+\_\+driver\+::blksz\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Definition at line 86 of file G\+F\+S\+\_\+driver.\+F90.
+
+
+
+Referenced by gfs\+\_\+initialize(), gfs\+\_\+phys\+\_\+time\+\_\+vary(), gfs\+\_\+rad\+\_\+time\+\_\+vary(), and gfs\+\_\+time\+\_\+vary\+\_\+step().
+

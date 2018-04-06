@@ -1,0 +1,367 @@
+\section{gfs\+\_\+typedefs Module Reference}
+\label{namespacegfs__typedefs}\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \textbf{ gfs\+\_\+cldprop\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+control\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+coupling\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+diag\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+grid\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+init\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+radtend\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+sfcprop\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+statein\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+stateout\+\_\+type}
+\item 
+type \textbf{ gfs\+\_\+tbd\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \textbf{ statein\+\_\+create} (Statein, IM, Model)
+\item 
+subroutine \textbf{ stateout\+\_\+create} (Stateout, IM, Model)
+\item 
+subroutine \textbf{ sfcprop\+\_\+create} (Sfcprop, IM, Model)
+\item 
+subroutine \textbf{ coupling\+\_\+create} (Coupling, IM, Model)
+\item 
+subroutine \textbf{ control\+\_\+initialize} (Model, nlunit, fn\+\_\+nml, me, master, logunit, isc, jsc, nx, ny, levs, cnx, cny, gnx, gny, dt\+\_\+dycore, dt\+\_\+phys, idat, jdat, tracer\+\_\+names, input\+\_\+nml\+\_\+file)
+\item 
+subroutine \textbf{ control\+\_\+print} (Model)
+\item 
+subroutine \textbf{ grid\+\_\+create} (Grid, IM, Model)
+\item 
+subroutine \textbf{ tbd\+\_\+create} (Tbd, IM, Model)
+\item 
+subroutine \textbf{ cldprop\+\_\+create} (Cldprop, IM, Model)
+\item 
+subroutine \textbf{ radtend\+\_\+create} (Radtend, IM, Model)
+\item 
+subroutine \textbf{ diag\+\_\+create} (Diag, IM, Model)
+\item 
+subroutine \textbf{ diag\+\_\+rad\+\_\+zero} (Diag, Model)
+\item 
+subroutine \textbf{ diag\+\_\+phys\+\_\+zero} (Diag, Model, linit)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+character(len=64) \textbf{ phys\+\_\+version} = \textquotesingle{}v2018 F\+V3\+G\+FS B\+E\+TA V\+E\+R\+S\+I\+ON P\+H\+Y\+S\+I\+CS\textquotesingle{}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ zero} = 0.\+0\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ huge} = 9.\+9999\+D15
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ clear\+\_\+val} = \textbf{ zero}
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ rann\+\_\+init} = 0.\+6\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ cn\+\_\+one} = 1.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ cn\+\_\+100} = 100.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ cn\+\_\+th} = 1000.\+\_\+kind\+\_\+phys
+\item 
+real(kind=kind\+\_\+phys), parameter \textbf{ cn\+\_\+hr} = 3600.\+\_\+kind\+\_\+phys
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\label{namespacegfs__typedefs_ad5e5a6d8871401ae9b6949ef5dd0528f}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!statein\+\_\+create@{statein\+\_\+create}}
+\index{statein\+\_\+create@{statein\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{statein\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::statein\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+statein\+\_\+type})}]{Statein,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 901 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_a87019826e2dccdd5d55f84aed2ad2f8c}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!stateout\+\_\+create@{stateout\+\_\+create}}
+\index{stateout\+\_\+create@{stateout\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{stateout\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::stateout\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+stateout\+\_\+type})}]{Stateout,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 952 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_ab3179d5631ba9eedb672e15f2c736fdb}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!sfcprop\+\_\+create@{sfcprop\+\_\+create}}
+\index{sfcprop\+\_\+create@{sfcprop\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{sfcprop\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::sfcprop\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+sfcprop\+\_\+type})}]{Sfcprop,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 976 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val, and zero.
+
+\mbox{\label{namespacegfs__typedefs_a7bff75fce20c087b5e445d7572518104}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!coupling\+\_\+create@{coupling\+\_\+create}}
+\index{coupling\+\_\+create@{coupling\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{coupling\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::coupling\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+coupling\+\_\+type})}]{Coupling,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 1128 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_af247bebcb1fac88a81caedd89dc58b61}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!control\+\_\+initialize@{control\+\_\+initialize}}
+\index{control\+\_\+initialize@{control\+\_\+initialize}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{control\+\_\+initialize()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::control\+\_\+initialize (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+control\+\_\+type})}]{Model,  }\item[{integer, intent(in)}]{nlunit,  }\item[{character(len=64), intent(in)}]{fn\+\_\+nml,  }\item[{integer, intent(in)}]{me,  }\item[{integer, intent(in)}]{master,  }\item[{integer, intent(in)}]{logunit,  }\item[{integer, intent(in)}]{isc,  }\item[{integer, intent(in)}]{jsc,  }\item[{integer, intent(in)}]{nx,  }\item[{integer, intent(in)}]{ny,  }\item[{integer, intent(in)}]{levs,  }\item[{integer, intent(in)}]{cnx,  }\item[{integer, intent(in)}]{cny,  }\item[{integer, intent(in)}]{gnx,  }\item[{integer, intent(in)}]{gny,  }\item[{real(kind=kind\+\_\+phys), intent(in)}]{dt\+\_\+dycore,  }\item[{real(kind=kind\+\_\+phys), intent(in)}]{dt\+\_\+phys,  }\item[{integer, dimension(8), intent(in)}]{idat,  }\item[{integer, dimension(8), intent(in)}]{jdat,  }\item[{character(len=32), dimension(\+:), intent(in)}]{tracer\+\_\+names,  }\item[{character(len=$\ast$), dimension(\+:), intent(in), pointer}]{input\+\_\+nml\+\_\+file }\end{DoxyParamCaption})}
+
+
+
+Definition at line 1330 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References phys\+\_\+version.
+
+\mbox{\label{namespacegfs__typedefs_ae9d285f1bd5b582fd30674cb734e72e9}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!control\+\_\+print@{control\+\_\+print}}
+\index{control\+\_\+print@{control\+\_\+print}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{control\+\_\+print()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::control\+\_\+print (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+control\+\_\+type})}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2188 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{namespacegfs__typedefs_a10c12a1480adeaa94ebaa6f83bf79ce3}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!grid\+\_\+create@{grid\+\_\+create}}
+\index{grid\+\_\+create@{grid\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{grid\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::grid\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+grid\+\_\+type})}]{Grid,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2448 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_a3eb837b3572ec102f6b1aaeb0aadd23e}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!tbd\+\_\+create@{tbd\+\_\+create}}
+\index{tbd\+\_\+create@{tbd\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{tbd\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::tbd\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+tbd\+\_\+type})}]{Tbd,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2491 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val, and rann\+\_\+init.
+
+\mbox{\label{namespacegfs__typedefs_a897c5b06643b685a02790260794c041a}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!cldprop\+\_\+create@{cldprop\+\_\+create}}
+\index{cldprop\+\_\+create@{cldprop\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{cldprop\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::cldprop\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+cldprop\+\_\+type})}]{Cldprop,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2554 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_a6d78a138b900fc2e8afb95f7ebf317ab}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!radtend\+\_\+create@{radtend\+\_\+create}}
+\index{radtend\+\_\+create@{radtend\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{radtend\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::radtend\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+radtend\+\_\+type})}]{Radtend,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2576 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References clear\+\_\+val.
+
+\mbox{\label{namespacegfs__typedefs_a00fa46f18743cd6074b07a42af37c470}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!diag\+\_\+create@{diag\+\_\+create}}
+\index{diag\+\_\+create@{diag\+\_\+create}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{diag\+\_\+create()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::diag\+\_\+create (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+diag\+\_\+type})}]{Diag,  }\item[{integer, intent(in)}]{IM,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2631 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{namespacegfs__typedefs_aefeee1d1a5c27d9fd4ac0eab613c9c65}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!diag\+\_\+rad\+\_\+zero@{diag\+\_\+rad\+\_\+zero}}
+\index{diag\+\_\+rad\+\_\+zero@{diag\+\_\+rad\+\_\+zero}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{diag\+\_\+rad\+\_\+zero()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::diag\+\_\+rad\+\_\+zero (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+diag\+\_\+type})}]{Diag,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2748 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References zero.
+
+\mbox{\label{namespacegfs__typedefs_a272ea938736406d3eba81994b1c8d870}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!diag\+\_\+phys\+\_\+zero@{diag\+\_\+phys\+\_\+zero}}
+\index{diag\+\_\+phys\+\_\+zero@{diag\+\_\+phys\+\_\+zero}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{diag\+\_\+phys\+\_\+zero()}
+{\footnotesize\ttfamily subroutine gfs\+\_\+typedefs\+::diag\+\_\+phys\+\_\+zero (\begin{DoxyParamCaption}\item[{class(\textbf{ gfs\+\_\+diag\+\_\+type})}]{Diag,  }\item[{type(\textbf{ gfs\+\_\+control\+\_\+type}), intent(in)}]{Model,  }\item[{logical, intent(in), optional}]{linit }\end{DoxyParamCaption})}
+
+
+
+Definition at line 2768 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+References huge, and zero.
+
+
+
+\subsection{Variable Documentation}
+\mbox{\label{namespacegfs__typedefs_a789b03371b3c99223aa53b7dbeca9fed}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!phys\+\_\+version@{phys\+\_\+version}}
+\index{phys\+\_\+version@{phys\+\_\+version}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{phys\+\_\+version}
+{\footnotesize\ttfamily character(len=64) gfs\+\_\+typedefs\+::phys\+\_\+version = \textquotesingle{}v2018 F\+V3\+G\+FS B\+E\+TA V\+E\+R\+S\+I\+ON P\+H\+Y\+S\+I\+CS\textquotesingle{}}
+
+
+
+Definition at line 12 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+Referenced by control\+\_\+initialize().
+
+\mbox{\label{namespacegfs__typedefs_aa849da61ede1dbac0dce77ca0d31df26}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!zero@{zero}}
+\index{zero@{zero}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{zero}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::zero = 0.\+0\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 15 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+Referenced by diag\+\_\+phys\+\_\+zero(), diag\+\_\+rad\+\_\+zero(), and sfcprop\+\_\+create().
+
+\mbox{\label{namespacegfs__typedefs_a3beaa525bd66ab84e50317539447515e}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!huge@{huge}}
+\index{huge@{huge}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{huge}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::huge = 9.\+9999\+D15}
+
+
+
+Definition at line 16 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+Referenced by diag\+\_\+phys\+\_\+zero().
+
+\mbox{\label{namespacegfs__typedefs_a09c797072c5588e4c3aedf67cde1f310}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!clear\+\_\+val@{clear\+\_\+val}}
+\index{clear\+\_\+val@{clear\+\_\+val}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{clear\+\_\+val}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::clear\+\_\+val = \textbf{ zero}}
+
+
+
+Definition at line 17 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+Referenced by cldprop\+\_\+create(), coupling\+\_\+create(), grid\+\_\+create(), radtend\+\_\+create(), sfcprop\+\_\+create(), statein\+\_\+create(), stateout\+\_\+create(), and tbd\+\_\+create().
+
+\mbox{\label{namespacegfs__typedefs_a47c92585ca7686a295065794401a4ae3}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!rann\+\_\+init@{rann\+\_\+init}}
+\index{rann\+\_\+init@{rann\+\_\+init}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{rann\+\_\+init}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::rann\+\_\+init = 0.\+6\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 19 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+Referenced by tbd\+\_\+create().
+
+\mbox{\label{namespacegfs__typedefs_a66b5d9f83b4708e3bca75d11e760ae7d}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!cn\+\_\+one@{cn\+\_\+one}}
+\index{cn\+\_\+one@{cn\+\_\+one}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{cn\+\_\+one}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::cn\+\_\+one = 1.\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 20 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{namespacegfs__typedefs_ae0adf4dfd445c20f680566a11eacb2da}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!cn\+\_\+100@{cn\+\_\+100}}
+\index{cn\+\_\+100@{cn\+\_\+100}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{cn\+\_\+100}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::cn\+\_\+100 = 100.\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 21 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{namespacegfs__typedefs_a9e73172adccaeefda76041f572b4bd61}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!cn\+\_\+th@{cn\+\_\+th}}
+\index{cn\+\_\+th@{cn\+\_\+th}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{cn\+\_\+th}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::cn\+\_\+th = 1000.\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 22 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{namespacegfs__typedefs_a23ba5e46ef854a5bf85a72dc0018e00e}} 
+\index{gfs\+\_\+typedefs@{gfs\+\_\+typedefs}!cn\+\_\+hr@{cn\+\_\+hr}}
+\index{cn\+\_\+hr@{cn\+\_\+hr}!gfs\+\_\+typedefs@{gfs\+\_\+typedefs}}
+\subsubsection{cn\+\_\+hr}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys), parameter gfs\+\_\+typedefs\+::cn\+\_\+hr = 3600.\+\_\+kind\+\_\+phys}
+
+
+
+Definition at line 23 of file G\+F\+S\+\_\+typedefs.\+F90.
+

@@ -1,0 +1,97 @@
+#! /usr/bin/env python
+
+import datetime, math, os, sys
+
+USAGE_MESSAGE='Usage: ndate [fhour [idate]]'
+COMMAND='ndate'
+
+def setup(usage_message,command):
+    global USAGE_MESSAGE, COMMAND
+    USAGE_MESSAGE=usage_message
+    COMMAND=command
+
+def fail(message):
+    sys.stderr.write('%s: %s\n'%(COMMAND,message))
+    sys.stderr.write('%s\n'%(USAGE_MESSAGE,))
+    sys.exit(2)
+
+def now(minutes=False):
+    n=datetime.datetime.utcnow()
+    if minutes:
+        return datetime.datetime(n.year,n.month,n.day,n.hour,n.minute)
+    else:
+        return datetime.datetime(n.year,n.month,n.day,n.hour)
+
+def get_int_arg(iarg,what):
+    if len(sys.argv)<=iarg:
+        return None # No such argument
+    s=sys.argv[iarg]
+    try:
+        return int(s,10)
+    except ValueError as v:
+        fail('Noninteger '+what+' '+s)
+
+def get_time_arg(iarg,format,what):
+    if len(sys.argv)<=iarg:
+        return None # No such argument
+    s=sys.argv[iarg]
+    try:
+        return datetime.datetime.strptime(s,format)
+    except ValueError as v:
+        fail('Invalid '+what+' '+s)
+
+def ndate(del_hour,rel_time):
+    if del_hour is None: del_hour=0
+    if rel_time is None: rel_time=now(False)
+    return rel_time+datetime.timedelta(seconds=3600*del_hour)
+
+def mdate(del_minute,rel_time):
+    if del_minute is None: del_minute=0
+    if rel_time is None: rel_time=now(True)
+    return rel_time+datetime.timedelta(seconds=60*del_minute)
+
+def nhour(fcst_time,anal_time):
+    if fcst_time is None:
+        fail('Incorrect number of arguments')
+    if anal_time is None: anal_time=now(False)
+    del_time=fcst_time-anal_time
+    del_seconds=del_time.seconds + del_time.days*3600*24
+    return int(math.floor( del_seconds / 3600.0 ))
+
+called_as=os.path.basename(sys.argv[0])
+
+if called_as not in [ 'ndate', 'mdate', 'nhour' ]:
+    if len(sys.argv)>1:
+        called_as=sys.argv[1]
+        sys.argv=sys.argv[1:]
+
+if called_as == 'ndate':
+    setup('Usage: ndate [fhour [idate]]','ndate')
+    print ndate(get_int_arg(1,'forecast hour'),
+                get_time_arg(2,'%Y%m%d%H','date'))\
+                .strftime("%Y%m%d%H")
+
+elif called_as == 'mdate':
+    setup('Usage: mdate [minutes [idate]]','ndate')
+    print mdate(get_int_arg(1,'forecast minute'),
+                get_time_arg(2,'%Y%m%d%H%M','date'))\
+                .strftime("%Y%m%d%H%M")
+
+elif called_as == 'nhour':
+    setup('Usage: nhour vdate [idate]','nhour')
+    result=nhour(get_time_arg(1,'%Y%m%d%H','date'),
+                 get_time_arg(2,'%Y%m%d%H','date'))
+
+    # Format like Fortran would:
+    format = '%03d' if result<0 else '%02d'
+    print format%result
+    
+else:
+    sys.stderr.write(
+      'General date utility.  Syntax:\n'
+      '  dates.py ndate [ fhour [idate] ]\n'
+      '  dates.py mdate [ minutes [idate] ]\n'
+      '  dates.py nhour vdate [idate] ]\n'
+      'OR: rename this file to ndate, mdate, or nhour\n'
+      'and remove the first argument.\n')
+    exit(2)

@@ -1,0 +1,102 @@
+#!/bin/sh
+
+########################################
+# GFS post manager
+########################################
+
+set -xa
+# #### 07/30/1999 ###################
+# SET SHELL PROCESSING VARIABLES
+# ###################################
+export PS4='$SECONDS + ' 
+date
+
+####################################
+# Specify whether the run is production or development
+####################################
+export envir=${envir:-prod}
+
+####################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+#################################### 
+# obtain unique process id (pid) and make temp directories
+####################################
+export pid=${pid:-$$}
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
+export DATA=${DATA:-$DATAROOT/${job}_${envir}.${pid}}
+mkdir $DATA
+cd $DATA 
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+####################################
+# Specify version numbers
+####################################
+export gfs_ver=${gfs_ver:-v15.0.0}
+
+####################################
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDECF  - Flag Events on ECF
+####################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-YES}
+
+####################################
+# Specify Execution Areas
+####################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${HOMEgfs:-$HOMEgfs/exec}
+export FIXgfs=${HOMEgfs:-$HOMEgfs/fix}
+export PARMgfs=${HOMEgfs:-$HOMEgfs/parm}
+export USHgfs=${HOMEgfs:-$HOMEgfs/ush}
+
+###########################
+# Set up EXT variable
+###########################
+export EXT_FCST=NO
+
+###################################
+# Set up the UTILITIES
+###################################
+# export HOMEutil=${HOMEutil:-/nw${envir}/util.${util_ver}}
+# export utilscript=${utilscript:-$HOMEutil/ush}
+# export utilexec=${utilexec:-$HOMEutil/exec}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z
+setpdy.sh
+. PDY
+
+##############################################
+# Define COM directories
+##############################################
+#export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
+export COMOUT=${COMOUT:-${COMROOT:?}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+
+mkdir -p $COMOUT
+
+env
+
+########################################################
+# Execute the script.
+$HOMEgfs/scripts/exglobal_pmgr.sh.ecf
+########################################################
+
+date

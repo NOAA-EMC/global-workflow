@@ -1,0 +1,194 @@
+\hypertarget{group__module__radiation__astronomy}{}\section{module\+\_\+radiation\+\_\+astronomy}
+\label{group__module__radiation__astronomy}\index{module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}}
+
+
+This module sets up astronomical quantities for solar radiation calculations.  
+
+
+
+
+\subsection{Detailed Description}
+\begin{DoxyVersion}{Version}
+N\+C\+E\+P-\/\+Radiation\+\_\+astronomy v5.\+2 Jan 2013 
+\end{DoxyVersion}
+\subsection*{Parameter constants}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga220d2b997b3073cf2985d62111c5405d}\label{group__module__radiation__astronomy_ga220d2b997b3073cf2985d62111c5405d}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::degrad} = 180.\+0/con\+\_\+pi
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga4fbf4be04e17f1f8d0674ee2e20506b0}\label{group__module__radiation__astronomy_ga4fbf4be04e17f1f8d0674ee2e20506b0}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::tpi} = 2.\+0 $\ast$ con\+\_\+pi
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga7369d8561566f5e7e51ccc40e09f2520}\label{group__module__radiation__astronomy_ga7369d8561566f5e7e51ccc40e09f2520}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::hpi} = 0.\+5 $\ast$ con\+\_\+pi
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gad59856e8f877eb05a6b22610f14a391d}\label{group__module__radiation__astronomy_gad59856e8f877eb05a6b22610f14a391d}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::f12} = 12.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga37b491dde50d06e339effb4a31d9f245}\label{group__module__radiation__astronomy_ga37b491dde50d06e339effb4a31d9f245}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::f3600} = 3600.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gafeb2fccbe8137de6099a09035762ff5e}\label{group__module__radiation__astronomy_gafeb2fccbe8137de6099a09035762ff5e}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::czlimt} = 0.\+0001
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gadbf9cdfc7b55d882f015a4bc4ef276ab}\label{group__module__radiation__astronomy_gadbf9cdfc7b55d882f015a4bc4ef276ab}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+astronomy\+::pid12} = (2.\+0$\ast$asin(1.\+0))/f12
+\end{DoxyCompactItemize}
+\subsection*{Module variable (to be set in module\+\_\+radiation\+\_\+astronomy\+:\+:sol\+\_\+init)\+:}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga37e08872f67023b11f839ac15151af09}\label{group__module__radiation__astronomy_ga37e08872f67023b11f839ac15151af09}} 
+real(kind=kind\+\_\+phys), public {\bfseries module\+\_\+radiation\+\_\+astronomy\+::solc0} = con\+\_\+solr
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga7ea431b6d4f4d6ee1f6545d6baeee44f}\label{group__module__radiation__astronomy_ga7ea431b6d4f4d6ee1f6545d6baeee44f}} 
+integer {\bfseries module\+\_\+radiation\+\_\+astronomy\+::isolflg} = 10
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga05ee7e378d38b90242738b9bf6c40c00}\label{group__module__radiation__astronomy_ga05ee7e378d38b90242738b9bf6c40c00}} 
+character(26) {\bfseries module\+\_\+radiation\+\_\+astronomy\+::solar\+\_\+fname} = \textquotesingle{} \textquotesingle{}
+\end{DoxyCompactItemize}
+\subsection*{Module variables (to be set in module\+\_\+radiation\+\_\+astronomy\+:\+:sol\+\_\+update)}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga264a011aa71fb670339ac555dc24e486}\label{group__module__radiation__astronomy_ga264a011aa71fb670339ac555dc24e486}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__astronomy_ga264a011aa71fb670339ac555dc24e486}{module\+\_\+radiation\+\_\+astronomy\+::sollag} =0.\+0
+\begin{DoxyCompactList}\small\item\em equation of time \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gae195d9c834e2789170f89c988d28b01e}\label{group__module__radiation__astronomy_gae195d9c834e2789170f89c988d28b01e}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__astronomy_gae195d9c834e2789170f89c988d28b01e}{module\+\_\+radiation\+\_\+astronomy\+::sindec} =0.\+0
+\begin{DoxyCompactList}\small\item\em sine of the solar declination angle \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga07386e90045639b8023abd826e0e2768}\label{group__module__radiation__astronomy_ga07386e90045639b8023abd826e0e2768}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__astronomy_ga07386e90045639b8023abd826e0e2768}{module\+\_\+radiation\+\_\+astronomy\+::cosdec} =0.\+0
+\begin{DoxyCompactList}\small\item\em cosine of the solar declination angle \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga723159a44491e4ae974128123a1e8dcd}\label{group__module__radiation__astronomy_ga723159a44491e4ae974128123a1e8dcd}} 
+real(kind=kind\+\_\+phys) \hyperlink{group__module__radiation__astronomy_ga723159a44491e4ae974128123a1e8dcd}{module\+\_\+radiation\+\_\+astronomy\+::anginc} =0.\+0
+\begin{DoxyCompactList}\small\item\em solar angle increment per interation of cosz calc \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gab68b4488022a4c6340cb60dca3feff6a}\label{group__module__radiation__astronomy_gab68b4488022a4c6340cb60dca3feff6a}} 
+real(kind=kind\+\_\+phys), dimension(12) \hyperlink{group__module__radiation__astronomy_gab68b4488022a4c6340cb60dca3feff6a}{module\+\_\+radiation\+\_\+astronomy\+::smon\+\_\+sav}
+\begin{DoxyCompactList}\small\item\em saved monthly solar constants (isolflg=4 only) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga83370fbee96388e545a89eb25ed6df90}\label{group__module__radiation__astronomy_ga83370fbee96388e545a89eb25ed6df90}} 
+integer \hyperlink{group__module__radiation__astronomy_ga83370fbee96388e545a89eb25ed6df90}{module\+\_\+radiation\+\_\+astronomy\+::iyr\+\_\+sav} =0
+\begin{DoxyCompactList}\small\item\em saved year of data used \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gab93fe36440da3cc1f1d64cae2ec4c25b}\label{group__module__radiation__astronomy_gab93fe36440da3cc1f1d64cae2ec4c25b}} 
+integer \hyperlink{group__module__radiation__astronomy_gab93fe36440da3cc1f1d64cae2ec4c25b}{module\+\_\+radiation\+\_\+astronomy\+::nstp} =6
+\begin{DoxyCompactList}\small\item\em total number of zenith angle iterations \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__astronomy_gaa9eeb5462c1dbddb971cee28eb38ca47}{module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+init} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine initializes astronomy process, and set up module constants. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__astronomy_ga095550b8122f922ad122db44aa262b15}{module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+update} (jdate, kyear, deltsw, deltim, lsol\+\_\+chg, me, slag, sdec, cdec, solcon)
+\begin{DoxyCompactList}\small\item\em This subroutine computes solar parameters at forecast time. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga33f3a3fbb7f232aab2a624025c991890}\label{group__module__radiation__astronomy_ga33f3a3fbb7f232aab2a624025c991890}} 
+subroutine \hyperlink{group__module__radiation__astronomy_ga33f3a3fbb7f232aab2a624025c991890}{module\+\_\+radiation\+\_\+astronomy\+::solar} (jd, fjd, r1, dlt, alp)
+\begin{DoxyCompactList}\small\item\em This subroutine computes radius vector, declination and right ascension of sun, and equation of time. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__astronomy_ga804e1504ae720d0f33b507e7c42b6506}{module\+\_\+radiation\+\_\+astronomy\+::coszmn} (xlon, sinlat, coslat, solhr, IM, me, coszen, coszdg)
+\begin{DoxyCompactList}\small\item\em This subroutine computes mean cos solar zenith angle over SW calling interval. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__astronomy_gaee29441c2e62c44728b10915a148cccf}\label{group__module__radiation__astronomy_gaee29441c2e62c44728b10915a148cccf}} 
+subroutine \hyperlink{group__module__radiation__astronomy_gaee29441c2e62c44728b10915a148cccf}{module\+\_\+radiation\+\_\+astronomy\+::prtime} (jd, fjd, dlt, alp, r1, solc)
+\begin{DoxyCompactList}\small\item\em This subroutine prints out forecast date, time, and astronomy quantities. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga804e1504ae720d0f33b507e7c42b6506}\label{group__module__radiation__astronomy_ga804e1504ae720d0f33b507e7c42b6506}} 
+\index{module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}!coszmn@{coszmn}}
+\index{coszmn@{coszmn}!module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}}
+\subsubsection{\texorpdfstring{coszmn()}{coszmn()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+astronomy\+::coszmn (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{sinlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{coslat,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{solhr,  }\item[{integer, intent(in)}]{IM,  }\item[{integer, intent(in)}]{me,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(out)}]{coszen,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(out)}]{coszdg }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em xlon} & (IM), grids\textquotesingle{} longitudes in radians, work both on zonal, 0-\/$>$2pi and -\/pi-\/$>$+pi arrangements \\
+\hline
+{\em sinlat} & (IM), sine of the corresponding latitudes \\
+\hline
+{\em coslat} & (IM), cosine of the corresponding latitudes \\
+\hline
+{\em solhr} & time after 00z in hours \\
+\hline
+{\em IM} & num of grids in horizontal dimension \\
+\hline
+{\em me} & print message control flag \\
+\hline
+{\em coszen} & (IM), average of cosz for daytime only in sw call interval \\
+\hline
+{\em coszdg} & (IM), average of cosz over entire sw call interval \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 805 of file radiation\+\_\+astronomy.\+f.
+
+
+
+References anginc, cosdec, nstp, sindec, and sollag.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+\mbox{\Hypertarget{group__module__radiation__astronomy_gaa9eeb5462c1dbddb971cee28eb38ca47}\label{group__module__radiation__astronomy_gaa9eeb5462c1dbddb971cee28eb38ca47}} 
+\index{module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}!sol\+\_\+init@{sol\+\_\+init}}
+\index{sol\+\_\+init@{sol\+\_\+init}!module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}}
+\subsubsection{\texorpdfstring{sol\+\_\+init()}{sol\_init()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+init (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em me} & print message control flag \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 147 of file radiation\+\_\+astronomy.\+f.
+
+
+
+References iyr\+\_\+sav, and nstp.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radinit().
+
+\mbox{\Hypertarget{group__module__radiation__astronomy_ga095550b8122f922ad122db44aa262b15}\label{group__module__radiation__astronomy_ga095550b8122f922ad122db44aa262b15}} 
+\index{module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}!sol\+\_\+update@{sol\+\_\+update}}
+\index{sol\+\_\+update@{sol\+\_\+update}!module\+\_\+radiation\+\_\+astronomy@{module\+\_\+radiation\+\_\+astronomy}}
+\subsubsection{\texorpdfstring{sol\+\_\+update()}{sol\_update()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+astronomy\+::sol\+\_\+update (\begin{DoxyParamCaption}\item[{integer, dimension(\+:), intent(in)}]{jdate,  }\item[{integer, intent(in)}]{kyear,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{deltsw,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{deltim,  }\item[{logical, intent(in)}]{lsol\+\_\+chg,  }\item[{integer, intent(in)}]{me,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{slag,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{sdec,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{cdec,  }\item[{real (kind=kind\+\_\+phys), intent(out)}]{solcon }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em jdate} & ncep absolute date and time at fcst time (yr, mon, day, t-\/zone, hr, min, sec, mil-\/sec) \\
+\hline
+{\em kyear} & usually kyear=jdate(1). if not, it is for hindcast mode, and it is usually the init cond time and serves as the upper limit of data can be used. \\
+\hline
+{\em deltsw} & time duration in seconds per sw calculation \\
+\hline
+{\em deltim} & timestep in seconds \\
+\hline
+{\em lsol\+\_\+chg} & logical flags for change solar constant \\
+\hline
+{\em me} & print message control flag \\
+\hline
+{\em slag} & equation of time in radians \\
+\hline
+{\em sdec,cdec} & sin and cos of the solar declination angle \\
+\hline
+{\em solcon} & sun-\/earth distance adjusted solar constant $(w/m^2)$ \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__astronomy_gen_sol_update}{}\subsection{General Algorithm}\label{group__module__radiation__astronomy_gen_sol_update}
+
+\begin{DoxyEnumerate}
+\item Call \hyperlink{group__module__radiation__astronomy_ga33f3a3fbb7f232aab2a624025c991890}{solar()}
+\item Call \hyperlink{group__module__radiation__astronomy_gaee29441c2e62c44728b10915a148cccf}{prtime()} 
+\end{DoxyEnumerate}
+
+Definition at line 324 of file radiation\+\_\+astronomy.\+f.
+
+
+
+References anginc, cosdec, iyr\+\_\+sav, nstp, prtime(), sindec, smon\+\_\+sav, solar(), and sollag.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radupdate().
+
+Here is the call graph for this function\+:
+% FIG 0

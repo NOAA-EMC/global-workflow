@@ -1,0 +1,21 @@
+digraph "module_radiation_driver::radupdate"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node79 [label="module_radiation_driver\l::radupdate",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node79 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="module_radiation_aerosols\l::aer_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga237071d2a0691d5aae199937d9b6aca5",tooltip="This subroutine checks and updates time varying climatology aerosol data sets. "];
+  Node80 -> Node81 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="trop_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#gafac9a9c603c033c8511e8dbfe984f703",tooltip="This subroutine updates the monthly global distribution of aerosol profiles in five degree horizontal..."];
+  Node80 -> Node82 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="volc_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga6ec9bd68d45a5f2c6bb9997bdad420c3",tooltip="This subroutine searches historical volcanic data sets to find and read in monthly 45-degree lat-zone..."];
+  Node79 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="module_radiation_gases\l::gas_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__gases.html#gafce04ada352f998d640606528a8cd25c",tooltip="This subroutine reads in 2-d monthly co2 data set for a specified year. Data are in a 15 degree lat/l..."];
+  Node79 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="module_radiation_astronomy\l::sol_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#ga095550b8122f922ad122db44aa262b15",tooltip="This subroutine computes solar parameters at forecast time. "];
+  Node84 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="module_radiation_astronomy\l::solar",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#ga33f3a3fbb7f232aab2a624025c991890",tooltip="This subroutine computes radius vector, declination and right ascension of sun, and equation of time..."];
+  Node84 -> Node86 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node86 [label="module_radiation_astronomy\l::prtime",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__astronomy.html#gaee29441c2e62c44728b10915a148cccf",tooltip="This subroutine prints out forecast date, time, and astronomy quantities. "];
+}

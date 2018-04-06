@@ -1,0 +1,5 @@
+<map id="set_aercoef" name="set_aercoef">
+<area shape="rect" id="node2" href="$group__module__radiation__aerosols.html#gaaa455b04ed5ccc7111548668b94deab9" title="This subroutine is the opac&#45;climatology aerosol initialization program to set up necessary parameters..." alt="" coords="144,5,320,46"/>
+<area shape="rect" id="node3" href="$group__module__radiation__aerosols.html#ga58ac70a5189ef62c63cf2c87465a030a" title="The initialization program is to set up necessary parameters and working arrays. " alt="" coords="368,5,544,46"/>
+<area shape="rect" id="node4" href="$group__module__radiation__driver.html#ga866dcd42f95b3e7df6b448833fe7c33b" title="This subroutine initialize a model&#39;s radiation process through calling of specific initialization sub..." alt="" coords="593,5,751,46"/>
+</map>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<postxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EMC_POST_CTRL_Schema.xsd">
+<!--  Lin Gan:  20150430 validated -->
+  <paramset>
+    <datset>NGAC2d</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>CR_AER_SFC_MASS_CON</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>FN_AER_SFC_MASS_CON</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>CR_AER_COL_MASS_DEN</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>FN_AER_COL_MASS_DEN</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST_EMISSION_FLUX</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST_SEDIMENTATION_FLUX</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST_DRY_DEPOSITION_FLUX</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST_WET_DEPOSITION_FLUX</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>Seasalt_AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>SULFATE_AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>ORGANIC_CARBON_AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+    <param>
+       <shortname>BLACK_CARBON_AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC01</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at550</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC02</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at340</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC03</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at440</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC04</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at660</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC05</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at860</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC06</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at1630</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+  <paramset>
+    <datset>NGAC07</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>AER_OPT_DEP_at11100</shortname>
+       <scale>9.0</scale>
+    </param>
+
+  </paramset>
+
+
+  <paramset>
+    <datset>NGAC3d</datset>
+    <grid_num>4</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>ngac</gen_proc>
+    <packing_method>jpeg2000</packing_method>
+    <order_of_sptdiff>1st_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>PRES_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST1_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>11.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST2_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>11.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST3_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>11.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST4_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>11.0</scale>
+    </param>
+
+    <param>
+       <shortname>DUST5_ON_HYBRID_LVL</shortname>
+       <level>1. 2. 3. 4. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20. 21. 22. 23. 24. 
+25. 26. 27. 28. 29. 30. 31. 32. 33. 34. 35. 36. 37. 38. 39. 40. 41. 42. 43. 44. 45. 46. 47. 48. 
+49. 50. 51. 52. 53. 54. 55. 56. 57. 58. 59. 60. 61. 62. 63. 64.</level>
+       <scale>11.0</scale>
+    </param>
+
+  </paramset>
+
+</postxml>

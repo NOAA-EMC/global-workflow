@@ -1,3 +1,8 @@
+# This file is used to generate config.arch, which would be used to
+# control archiving of model output.  The scripts and code for
+# archiving are not provided in this release, so this config file is
+# ignored.
+
 config_arch:
   filename: config.arch
   content: !expand |

@@ -1,0 +1,29 @@
+\hypertarget{group___zhao-_carr}{}\section{Zhao-\/\+Carr-\/\+Sundqvist Microphysics}
+\label{group___zhao-_carr}\index{Zhao-\/\+Carr-\/\+Sundqvist Microphysics@{Zhao-\/\+Carr-\/\+Sundqvist Microphysics}}
+
+
+The G\+FS scheme for large-\/scale condensation and precipitation , based on Zhao and Carr (1997) \cite{zhao_and_carr_1997} and Sundqvist et al. (1989) \cite{sundqvist_et_al_1989} .  
+
+
+
+
+\subsection{Detailed Description}
+
+
+Figure 1 shows a schematic illustration of this scheme. There are two sources of prognostic cloud condensate, convective detrainment (see convection) and grid-\/sale condensate. The sinks of cloud condensate are grid-\/scale precipitation and evaporation of the cloud condensate. Evaporation of rain in the unsaturated layers below the level of condensation is also taken into account. All precipitation that penetrates the lowest atmospheric layer is allowed to fall to the surface. Subsequent to the May 2001 implementation, excessive amounts of light precipitation were noted. This was addressed through a minor implementation in August 2001, which involved a slight modification of the autoconversion rate of ice. At the same time, an empirically-\/based calculation of the effective radius for ice crystals (Heymsfield and Mc\+Farquhar 1996 \cite{heymsfield_and_mcfarquhar_1996}) was introduced. \hypertarget{group___zhao-_carr_tune}{}\subsection{Important Tunable Parameters}\label{group___zhao-_carr_tune}
+The parameters below, which can be set through a namelist, influence the amount of cloud condensate in the atmosphere and thus the cloud radiative properties\+:
+\begin{DoxyItemize}
+\item P\+S\+A\+U\+T\+CO, P\+R\+A\+U\+T\+CO\+: Auto conversion coefficients (ice and water)
+\item W\+M\+I\+N\+C\+O(2)\+: Coefficients for minimum value of cloud condensate to conversion from condensate (water and ice) to precipitation
+\item E\+V\+P\+CO\+: Coefficient for evaporation of precipitation
+\item C\+R\+T\+RH\+: Critical relative humidity for cloud generation
+\end{DoxyItemize}\hypertarget{group___zhao-_carr_intramps}{}\subsection{Intraphysics Communication}\label{group___zhao-_carr_intramps}
+
+\begin{DoxyItemize}
+\item Routine G\+S\+C\+O\+ND is called from G\+F\+S\+\_\+physics\+\_\+driver after call to shallow convection scheme
+\item Routine P\+R\+E\+C\+PD is called from G\+F\+S\+\_\+physics\+\_\+driver after call to G\+S\+C\+O\+ND 
+\end{DoxyItemize}\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__condense}{Grid-\/\+Scale Condensation and Evaporation of Cloud}
+\begin{DoxyCompactList}\small\item\em This subroutine computes grid-\/scale condensation and evaporation of cloud condensate. \end{DoxyCompactList}\end{DoxyCompactItemize}

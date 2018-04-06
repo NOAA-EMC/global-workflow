@@ -1,0 +1,28 @@
+#! /usr/bin/env python
+
+import os, sys
+
+if len(sys.argv)!=2:
+    print("Usage : %s <file to fsync> "%(argv[0],))
+    sys.exit(1)
+
+try:
+    fd=os.open(sys.argv[1],os.O_WRONLY,0666)
+except EnvironmentError as e:
+    sys.stderr.write("%s: could not open file to fsync it: %s\n"%(
+            sys.argv[1],str(e)))
+    sys.exit(1)
+
+try:
+    os.fsync(fd)
+except EnvironmentError as e:
+    sys.stderr.write("%s: could not fsync: %s\n"%(
+            sys.argv[1],str(e)))
+    sys.exit(1)
+
+try:
+    os.close(fd)
+except EnvironmentError as e:
+    sys.stderr.write("%s: could not close file after fsync: %s\n"%(
+            sys.argv[1],str(e)))
+    sys.exit(1)

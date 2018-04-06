@@ -1,0 +1,227 @@
+\hypertarget{group__module__radiation__surface}{}\section{module\+\_\+radiation\+\_\+surface}
+\label{group__module__radiation__surface}\index{module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}}
+
+
+This module sets up surface albedo for sw radiation and surface emissivity for lw radiation.  
+
+
+
+
+\subsection{Detailed Description}
+\begin{DoxyVersion}{Version}
+N\+C\+E\+P-\/\+Radiation\+\_\+surface v5.\+1 Nov 2012 
+\end{DoxyVersion}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radiation__surface_gab7800982c900bd632ca74d5e7d2b5ab3}\label{group__module__radiation__surface_gab7800982c900bd632ca74d5e7d2b5ab3}} 
+integer, parameter, public \hyperlink{group__module__radiation__surface_gab7800982c900bd632ca74d5e7d2b5ab3}{module\+\_\+radiation\+\_\+surface\+::nf\+\_\+albd} = 4
+\begin{DoxyCompactList}\small\item\em num of sfc albedo components \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__surface_gaab4b9853c71ff40f8db2aa78b7cab265}\label{group__module__radiation__surface_gaab4b9853c71ff40f8db2aa78b7cab265}} 
+integer, parameter, public \hyperlink{group__module__radiation__surface_gaab4b9853c71ff40f8db2aa78b7cab265}{module\+\_\+radiation\+\_\+surface\+::imxems} = 360
+\begin{DoxyCompactList}\small\item\em num of longitude points in global emis-\/type map \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__surface_ga3922674f1c727d517ba5b0f7f5093970}\label{group__module__radiation__surface_ga3922674f1c727d517ba5b0f7f5093970}} 
+integer, parameter, public \hyperlink{group__module__radiation__surface_ga3922674f1c727d517ba5b0f7f5093970}{module\+\_\+radiation\+\_\+surface\+::jmxems} = 180
+\begin{DoxyCompactList}\small\item\em num of latitude points in global emis-\/type map \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__surface_ga86e4f42e46e188303b9a8e4d503d1acb}\label{group__module__radiation__surface_ga86e4f42e46e188303b9a8e4d503d1acb}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::f\+\_\+zero} = 0.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__surface_ga91cec823f595387c92d659d89f307f42}\label{group__module__radiation__surface_ga91cec823f595387c92d659d89f307f42}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::f\+\_\+one} = 1.\+0
+\item 
+\mbox{\Hypertarget{group__module__radiation__surface_gab879c7cf4e0774089a626e54226e4c1b}\label{group__module__radiation__surface_gab879c7cf4e0774089a626e54226e4c1b}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radiation\+\_\+surface\+::rad2dg} = 180.\+0 / con\+\_\+pi
+\item 
+\mbox{\Hypertarget{group__module__radiation__surface_gac33f1f3441f8336d7eb7e15cba26caf7}\label{group__module__radiation__surface_gac33f1f3441f8336d7eb7e15cba26caf7}} 
+integer, dimension(\+:,\+:), allocatable \hyperlink{group__module__radiation__surface_gac33f1f3441f8336d7eb7e15cba26caf7}{module\+\_\+radiation\+\_\+surface\+::idxems}
+\begin{DoxyCompactList}\small\item\em global surface emissivity index array \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radiation__surface_ga3ceebb99dbffcb70a14cfcaa7b029abc}\label{group__module__radiation__surface_ga3ceebb99dbffcb70a14cfcaa7b029abc}} 
+integer \hyperlink{group__module__radiation__surface_ga3ceebb99dbffcb70a14cfcaa7b029abc}{module\+\_\+radiation\+\_\+surface\+::iemslw} = 0
+\begin{DoxyCompactList}\small\item\em global surface emissivity contrl flag set up in \textquotesingle{}sfc\+\_\+init\textquotesingle{} \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radiation__surface_gac05a5b8f903ace95e45c1cce612ed721}{module\+\_\+radiation\+\_\+surface\+::sfc\+\_\+init} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine is the initialization program for surface radiation related quantities (albedo, emissivity, etc.) \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__surface_ga3e3bd6550a924c538c88169c7c169a5b}{module\+\_\+radiation\+\_\+surface\+::setalb} (slmsk, snowf, sncovr, snoalb, zorlf, coszf, tsknf, tairf, hprif, alvsf, alnsf, alvwf, alnwf, facsf, facwf, fice, tisfc, I\+M\+AX, sfcalb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes four components of surface albedos (i.\+e., vis-\/nir, direct-\/diffused) according to control flag ialbflg. ~\newline
+ 1) climatological surface albedo scheme (Briegleb 1992 \cite{briegleb_1992}) ~\newline
+ 2) M\+O\+D\+IS retrieval based scheme from Boston univ. \end{DoxyCompactList}\item 
+subroutine, public \hyperlink{group__module__radiation__surface_ga57ea2aa09c4194e14f2c538ef7fad7b3}{module\+\_\+radiation\+\_\+surface\+::setemis} (xlon, xlat, slmsk, snowf, sncovr, zorlf, tsknf, tairf, hprif, I\+M\+AX, sfcemis)
+\begin{DoxyCompactList}\small\item\em This subroutine computes surface emissivity for LW radiation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radiation__surface_ga3e3bd6550a924c538c88169c7c169a5b}\label{group__module__radiation__surface_ga3e3bd6550a924c538c88169c7c169a5b}} 
+\index{module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}!setalb@{setalb}}
+\index{setalb@{setalb}!module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}}
+\subsubsection{\texorpdfstring{setalb()}{setalb()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+surface\+::setalb (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{snowf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{sncovr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{snoalb,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{zorlf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{coszf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{tsknf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{tairf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{hprif,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alvsf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alnsf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alvwf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{alnwf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{facsf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{facwf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{fice,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{tisfc,  }\item[{integer, intent(in)}]{I\+M\+AX,  }\item[{real (kind=kind\+\_\+phys), dimension(imax,nf\+\_\+albd), intent(out)}]{sfcalb }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em slmsk} & (I\+M\+AX), sea(0),land(1),ice(2) mask on fcst model grid \\
+\hline
+{\em snowf} & (I\+M\+AX), snow depth water equivalent in mm \\
+\hline
+{\em sncovr} & (I\+M\+AX), snow cover over land \\
+\hline
+{\em snoalb} & (I\+M\+AX), maximum snow albedo over land (for deep snow) \\
+\hline
+{\em zorlf} & (I\+M\+AX), surface roughness in cm \\
+\hline
+{\em coszf} & (I\+M\+AX), cosin of solar zenith angle \\
+\hline
+{\em tsknf} & (I\+M\+AX), ground surface temperature in K \\
+\hline
+{\em tairf} & (I\+M\+AX), lowest model layer air temperature in K \\
+\hline
+{\em hprif} & (I\+M\+AX), topographic sdv in m ~\newline
+ --- for ialbflg=0 climtological albedo scheme --- \\
+\hline
+{\em alvsf} & (I\+M\+AX), 60 degree vis albedo with strong cosz dependency \\
+\hline
+{\em alnsf} & (I\+M\+AX), 60 degree nir albedo with strong cosz dependency \\
+\hline
+{\em alvwf} & (I\+M\+AX), 60 degree vis albedo with weak cosz dependency \\
+\hline
+{\em alnwf} & (I\+M\+AX), 60 degree nir albedo with weak cosz dependency ~\newline
+ --- for ialbflg=1 M\+O\+D\+IS based land albedo scheme --- \\
+\hline
+{\em alvsf} & (I\+M\+AX), visible black sky albedo at zenith 60 degree \\
+\hline
+{\em alnsf} & (I\+M\+AX), near-\/ir black sky albedo at zenith 60 degree \\
+\hline
+{\em alvwf} & (I\+M\+AX), visible white sky albedo \\
+\hline
+{\em alnwf} & (I\+M\+AX), near-\/ir white sky albedo \\
+\hline
+{\em facsf} & (I\+M\+AX), fractional coverage with strong cosz dependency \\
+\hline
+{\em facwf} & (I\+M\+AX), fractional coverage with weak cosz dependency \\
+\hline
+{\em fice} & (I\+M\+AX), sea-\/ice fraction \\
+\hline
+{\em tisfc} & (I\+M\+AX), sea-\/ice surface temperature \\
+\hline
+{\em I\+M\+AX} & array horizontal dimension \\
+\hline
+{\em sfcalb} & (I\+M\+AX,N\+F\+\_\+\+A\+L\+BD), mean sfc albedo ~\newline
+ ( \+:, 1) -\/ near ir direct beam albedo ~\newline
+ ( \+:, 2) -\/ near ir diffused albedo ~\newline
+ ( \+:, 3) -\/ uv+vis direct beam albedo ~\newline
+ ( \+:, 4) -\/ uv+vis diffused albedo \\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+
+\begin{DoxyEnumerate}
+\item If use climatological albedo scheme\+:
+\begin{DoxyItemize}
+\item Modified snow albedo scheme -\/ units convert to m (originally snowf in mm; zorlf in cm)
+\item Calculate diffused sea surface albedo
+\item Calculate diffused snow albedo.
+\item Calculate direct snow albedo.
+\item Calculate direct sea surface albedo.
+\end{DoxyItemize}
+\item If use modis based albedo for land area\+:
+\begin{DoxyItemize}
+\item Calculate snow cover input directly for land model, no conversion needed.
+\item Calculate diffused sea surface albedo.
+\item Calculate diffused snow albedo, land area use input max snow albedo.
+\item Calculate direct snow albedo.
+\item Calculate direct sea surface albedo, use fanglin\textquotesingle{}s zenith angle treatment. 
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+Definition at line 314 of file radiation\+\_\+surface.\+f.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+\mbox{\Hypertarget{group__module__radiation__surface_ga57ea2aa09c4194e14f2c538ef7fad7b3}\label{group__module__radiation__surface_ga57ea2aa09c4194e14f2c538ef7fad7b3}} 
+\index{module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}!setemis@{setemis}}
+\index{setemis@{setemis}!module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}}
+\subsubsection{\texorpdfstring{setemis()}{setemis()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+surface\+::setemis (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlon,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{xlat,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{slmsk,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{snowf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{sncovr,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{zorlf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{tsknf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{tairf,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(in)}]{hprif,  }\item[{integer, intent(in)}]{I\+M\+AX,  }\item[{real (kind=kind\+\_\+phys), dimension(\+:), intent(out)}]{sfcemis }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em xlon} & (I\+M\+AX), longitude in radiance, ok for both 0-\/$>$2pi or -\/pi -\/$>$ +pi ranges \\
+\hline
+{\em xlat} & (I\+M\+AX), latitude in radiance, default to pi/2 -\/$>$ -\/pi/2 range, otherwise see in-\/line comment \\
+\hline
+{\em slmsk} & (I\+M\+AX), sea(0),land(1),ice(2) mask on fcst model grid \\
+\hline
+{\em snowf} & (I\+M\+AX), snow depth water equivalent in mm \\
+\hline
+{\em sncovr} & (I\+M\+AX), snow cover over land \\
+\hline
+{\em zorlf} & (I\+M\+AX), surface roughness in cm \\
+\hline
+{\em tsknf} & (I\+M\+AX), ground surface temperature in K \\
+\hline
+{\em tairf} & (I\+M\+AX), lowest model layer air temperature in K \\
+\hline
+{\em hprif} & (I\+M\+AX), topographic standard deviation in m \\
+\hline
+{\em I\+M\+AX} & array horizontal dimension \\
+\hline
+{\em sfcemis} & (I\+M\+AX), surface emissivity \\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s___n_s_s_t_general}{}\subsection{General Algorithm}\label{group___g_f_s___n_s_s_t_general}
+
+\begin{DoxyEnumerate}
+\item Set sfcemis default to 1.\+0 or by surface type and condition.
+\item Check for snow covered area. 
+\end{DoxyEnumerate}
+
+Definition at line 645 of file radiation\+\_\+surface.\+f.
+
+
+
+References idxems, iemslw, imxems, and jmxems.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+\mbox{\Hypertarget{group__module__radiation__surface_gac05a5b8f903ace95e45c1cce612ed721}\label{group__module__radiation__surface_gac05a5b8f903ace95e45c1cce612ed721}} 
+\index{module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}!sfc\+\_\+init@{sfc\+\_\+init}}
+\index{sfc\+\_\+init@{sfc\+\_\+init}!module\+\_\+radiation\+\_\+surface@{module\+\_\+radiation\+\_\+surface}}
+\subsubsection{\texorpdfstring{sfc\+\_\+init()}{sfc\_init()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radiation\+\_\+surface\+::sfc\+\_\+init (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em me} & print control flag \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radiation__surface_gen_sfc_init}{}\subsection{General Algorithm}\label{group__module__radiation__surface_gen_sfc_init}
+
+\begin{DoxyItemize}
+\item Initialization of surface albedo section ~\newline
+ physparam\+::ialbflg
+\begin{DoxyItemize}
+\item = 0\+: using climatology surface albedo scheme for SW
+\item = 1\+: using M\+O\+D\+IS based land surface albedo for SW
+\end{DoxyItemize}
+\item Initialization of surface emissivity section ~\newline
+ physparam\+::iemsflg
+\begin{DoxyItemize}
+\item = 0\+: fixed S\+FC emissivity at 1.\+0
+\item = 1\+: input S\+FC emissivity type map from \char`\"{}semis\+\_\+file\char`\"{} 
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Definition at line 135 of file radiation\+\_\+surface.\+f.
+
+
+
+References idxems, iemslw, imxems, and jmxems.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radinit().
+

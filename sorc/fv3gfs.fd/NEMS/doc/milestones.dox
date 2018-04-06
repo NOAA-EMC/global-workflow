@@ -1,0 +1,32 @@
+/**@page milestones Milestone Revisions
+
+The pages in this section relate to development milestones for NEMS
+applications. The pages' titles include a revision number, application
+name, and milestone number. A revision prefix indicates whether it is
+a branch (DREV) or trunk (R) revision. New development occurs on a
+code repository branch. Stable branch versions are merged back to the
+repository trunk.
+
+Web pages include the purpose of the milestone, grids, run duration,
+validation, and other information.
+
+  + @subpage milestone_DREV93202
+  + @subpage milestone_DREV90957
+  + @subpage milestone_DREV89738
+  + @subpage milestone_DREV88884
+  + @subpage milestone_DREV87779
+  + @subpage milestone_DREV84552
+  + @subpage milestone_DREV84205
+  + @subpage milestone_DREV80567
+  + @subpage milestone_DREV80061
+  + @subpage milestone_DREV79954
+  + @subpage milestone_DREV76675
+  + @subpage milestone_DREV73964
+  + @subpage milestone_DREV73436
+  + @subpage milestone_DREV70089
+  + @subpage milestone_DREV61075
+  + @subpage milestone_DREV58214
+  + @subpage milestone_DREV53978
+
+*/
+

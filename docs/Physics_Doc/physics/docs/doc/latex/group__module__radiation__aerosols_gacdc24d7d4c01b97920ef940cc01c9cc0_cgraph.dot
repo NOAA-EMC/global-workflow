@@ -1,0 +1,11 @@
+digraph "module_radiation_aerosols::clim_aerinit"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node12 [label="module_radiation_aerosols\l::clim_aerinit",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node12 -> Node13 [color="midnightblue",fontsize="10",style="solid"];
+  Node13 [label="set_aercoef",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga95fabbc4272ae70f3b345f9b1a898d46",tooltip="The initialization program for climatological aerosols. The program reads and maps the pre-tabulated ..."];
+  Node13 -> Node14 [color="midnightblue",fontsize="10",style="solid"];
+  Node14 [label="optavg",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__aerosols.html#ga637761b6110739f2d96322e2ddcc1291",tooltip="This subroutine computes mean aerosols optical properties over each SW radiation spectral band for ea..."];
+}

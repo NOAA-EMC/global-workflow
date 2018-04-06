@@ -1,3 +1,0 @@
-    case 0: string="floating point"; break;
-    case 1: string="integer"; break;
-    case 255: string="missing"; break;

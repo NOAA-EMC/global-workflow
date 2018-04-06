@@ -1,0 +1,122 @@
+\hypertarget{radlw__param_8f}{}\section{radlw\+\_\+param.\+f File Reference}
+\label{radlw__param_8f}\index{radlw\+\_\+param.\+f@{radlw\+\_\+param.\+f}}
+
+
+This file contains LW band parameters setup.  
+
+
+\subsection*{Data Types}
+\begin{DoxyCompactItemize}
+\item 
+type \hyperlink{structmodule__radlw__parameters_1_1topflw__type}{module\+\_\+radlw\+\_\+parameters\+::topflw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em Define type construct for radiation fluxes at toa. \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radlw__parameters_1_1sfcflw__type}{module\+\_\+radlw\+\_\+parameters\+::sfcflw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em Define type construct for radiation fluxes at surface. \end{DoxyCompactList}\item 
+type \hyperlink{structmodule__radlw__parameters_1_1proflw__type}{module\+\_\+radlw\+\_\+parameters\+::proflw\+\_\+type}
+\begin{DoxyCompactList}\small\item\em Define type construct for optional radiation flux profiles. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \hyperlink{namespacemodule__radlw__parameters}{module\+\_\+radlw\+\_\+parameters}
+\begin{DoxyCompactList}\small\item\em This module contains LW band parameters set up. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{Indent}\textbf{ Parameter constants for LW band structures}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a48e11b992a80595d71c92f7c9bfbe19c}\label{namespacemodule__radlw__parameters_a48e11b992a80595d71c92f7c9bfbe19c}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a48e11b992a80595d71c92f7c9bfbe19c}{module\+\_\+radlw\+\_\+parameters\+::nbands} = 16
+\begin{DoxyCompactList}\small\item\em num of total spectral bands \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a05fe17fe932ce62a3ae2c6c564584321}\label{namespacemodule__radlw__parameters_a05fe17fe932ce62a3ae2c6c564584321}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a05fe17fe932ce62a3ae2c6c564584321}{module\+\_\+radlw\+\_\+parameters\+::ngptlw} = 140
+\begin{DoxyCompactList}\small\item\em num of total g-\/points \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a61ae33b9db5bac9962f72e2a0db3c0e4}\label{namespacemodule__radlw__parameters_a61ae33b9db5bac9962f72e2a0db3c0e4}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a61ae33b9db5bac9962f72e2a0db3c0e4}{module\+\_\+radlw\+\_\+parameters\+::ntbl} = 10000
+\begin{DoxyCompactList}\small\item\em lookup table dimension \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a01330b4ad09907f2db51cb516ed21033}\label{namespacemodule__radlw__parameters_a01330b4ad09907f2db51cb516ed21033}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a01330b4ad09907f2db51cb516ed21033}{module\+\_\+radlw\+\_\+parameters\+::maxgas} = 7
+\begin{DoxyCompactList}\small\item\em max num of absorbing gases \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a5817221936731c6ee6443da6a64e934e}\label{namespacemodule__radlw__parameters_a5817221936731c6ee6443da6a64e934e}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a5817221936731c6ee6443da6a64e934e}{module\+\_\+radlw\+\_\+parameters\+::maxxsec} = 4
+\begin{DoxyCompactList}\small\item\em num of halocarbon gasees \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a86288e4bbe3d6962505488790ff42bfa}\label{namespacemodule__radlw__parameters_a86288e4bbe3d6962505488790ff42bfa}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a86288e4bbe3d6962505488790ff42bfa}{module\+\_\+radlw\+\_\+parameters\+::nrates} = 6
+\begin{DoxyCompactList}\small\item\em num of ref rates of binary species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a7ade2de4de94ec6e7a0e97321143e2e6}\label{namespacemodule__radlw__parameters_a7ade2de4de94ec6e7a0e97321143e2e6}} 
+integer, parameter \hyperlink{namespacemodule__radlw__parameters_a7ade2de4de94ec6e7a0e97321143e2e6}{module\+\_\+radlw\+\_\+parameters\+::nplnk} = 181
+\begin{DoxyCompactList}\small\item\em dim for plank function table \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a39a115a97296886b2e6e37b220e942c7}\label{namespacemodule__radlw__parameters_a39a115a97296886b2e6e37b220e942c7}} 
+integer, parameter {\bfseries module\+\_\+radlw\+\_\+parameters\+::nbdlw} = N\+B\+A\+N\+DS
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Number of g-\/point in each band}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a54dc7913677d754af2b7ece9732b1280}\label{namespacemodule__radlw__parameters_a54dc7913677d754af2b7ece9732b1280}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng01}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_aed66d66a4da744d27c13b57b41ba78c3}\label{namespacemodule__radlw__parameters_aed66d66a4da744d27c13b57b41ba78c3}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng02}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_ad226d9951e041e991f463a9a90e7f68b}\label{namespacemodule__radlw__parameters_ad226d9951e041e991f463a9a90e7f68b}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng03}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_afd05a94bc29e5a5d792c0c140fe3a0c4}\label{namespacemodule__radlw__parameters_afd05a94bc29e5a5d792c0c140fe3a0c4}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng04}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a1e70690afc3ba2cca4344d6df3d26ee8}\label{namespacemodule__radlw__parameters_a1e70690afc3ba2cca4344d6df3d26ee8}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng05}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a9a176786a0df1e65165db9b3c6f0e582}\label{namespacemodule__radlw__parameters_a9a176786a0df1e65165db9b3c6f0e582}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng06}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_ab8f22f9ceabf3946452055c461476d49}\label{namespacemodule__radlw__parameters_ab8f22f9ceabf3946452055c461476d49}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng07}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a61aba0726187e15acf8bae5c377dbdd5}\label{namespacemodule__radlw__parameters_a61aba0726187e15acf8bae5c377dbdd5}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ng08}
+\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Begining index of each band}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a0f82508bbb4039ebbc3fcb68e8e4e699}\label{namespacemodule__radlw__parameters_a0f82508bbb4039ebbc3fcb68e8e4e699}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns01}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a8b13d877f08e7c26333285fd1db19d4e}\label{namespacemodule__radlw__parameters_a8b13d877f08e7c26333285fd1db19d4e}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns02}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a987d257f8e2f0743e92055be94424401}\label{namespacemodule__radlw__parameters_a987d257f8e2f0743e92055be94424401}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns03}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a57f85389c924ba16fad61578170eadcc}\label{namespacemodule__radlw__parameters_a57f85389c924ba16fad61578170eadcc}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns04}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a6bb5413129239f08596d4e7233c666a5}\label{namespacemodule__radlw__parameters_a6bb5413129239f08596d4e7233c666a5}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns05}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_ab936172cdf831f0b956c1475f175eca2}\label{namespacemodule__radlw__parameters_ab936172cdf831f0b956c1475f175eca2}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns06}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_ac60030c5a4655c6cee7be71dd527ffdc}\label{namespacemodule__radlw__parameters_ac60030c5a4655c6cee7be71dd527ffdc}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns07}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a0a9944341bfe4507370bb6b617ac0476}\label{namespacemodule__radlw__parameters_a0a9944341bfe4507370bb6b617ac0476}} 
+integer {\bfseries module\+\_\+radlw\+\_\+parameters\+::ns08}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a2c571bd14c9b7982a7968976858c7547}\label{namespacemodule__radlw__parameters_a2c571bd14c9b7982a7968976858c7547}} 
+integer, dimension(ngptlw) \hyperlink{namespacemodule__radlw__parameters_a2c571bd14c9b7982a7968976858c7547}{module\+\_\+radlw\+\_\+parameters\+::ngb}
+\begin{DoxyCompactList}\small\item\em band indices for each g-\/point \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Band spectrum structures (wavenumber is 1/cm}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a3a7370a94889d0cbaf6057404830d978}\label{namespacemodule__radlw__parameters_a3a7370a94889d0cbaf6057404830d978}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+parameters\+::wvnlw1}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_ace30abd03d144096ee6b444b46081b58}\label{namespacemodule__radlw__parameters_ace30abd03d144096ee6b444b46081b58}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+parameters\+::wvnlw2}
+\item 
+\mbox{\Hypertarget{namespacemodule__radlw__parameters_a6ad1dff8ffc039d03c5cf3059344308e}\label{namespacemodule__radlw__parameters_a6ad1dff8ffc039d03c5cf3059344308e}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+parameters\+::delwave}
+\end{DoxyCompactItemize}
+\end{Indent}

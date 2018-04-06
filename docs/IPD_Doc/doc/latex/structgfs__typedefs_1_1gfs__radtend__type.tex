@@ -1,0 +1,254 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+radtend\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__radtend__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+radtend\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ radtend\+\_\+create}
+\begin{DoxyCompactList}\small\item\em allocate array data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+type(sfcfsw\+\_\+type), dimension(\+:), pointer \textbf{ sfcfsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sw radiation fluxes at sfc [dim(im)\+: created in grrad.\+f], components\+: (check module\+\_\+radsw\+\_\+parameters for definition) ~\newline
+ upfxc -\/ total sky upward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ upfx0 -\/ clear sky upward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfxc -\/ total sky downward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfx0 -\/ clear sky downward sw flux at sfc (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+type(sfcflw\+\_\+type), dimension(\+:), pointer \textbf{ sfcflw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em lw radiation fluxes at sfc [dim(im)\+: created in grrad.\+f], components\+: (check module\+\_\+radlw\+\_\+paramters for definition) ~\newline
+ upfxc -\/ total sky upward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ upfx0 -\/ clear sky upward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfxc -\/ total sky downward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfx0 -\/ clear sky downward lw flux at sfc (w/m$\ast$$\ast$2) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ htrsw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em swh total sky sw heating rate in k/sec \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ htrlw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em hlw total sky lw heating rate in k/sec \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sfalb} =$>$ null()
+\begin{DoxyCompactList}\small\item\em mean surface diffused sw albedo \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ coszen} =$>$ null()
+\begin{DoxyCompactList}\small\item\em mean cos of zenith angle over rad call period \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ tsflw} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface air temp during lw calculation in k \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ semis} =$>$ null()
+\begin{DoxyCompactList}\small\item\em surface lw emissivity in fraction \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ coszdg} =$>$ null()
+\begin{DoxyCompactList}\small\item\em daytime mean cosz over rad call period \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ swhc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em clear sky sw heating rates ( k/s ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:), pointer \textbf{ lwhc} =$>$ null()
+\begin{DoxyCompactList}\small\item\em clear sky lw heating rates ( k/s ) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:,\+:,\+:), pointer \textbf{ lwhd} =$>$ null()
+\begin{DoxyCompactList}\small\item\em idea sky lw heating rates ( k/s ) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 729 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_adceb0608c6d5b113a11c3b0acc9d9398}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+allocate array data 
+
+
+
+Definition at line 765 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a0ef29a10cf77570a1648c8fbf18b87b5}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!sfcfsw@{sfcfsw}}
+\index{sfcfsw@{sfcfsw}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{sfcfsw}
+{\footnotesize\ttfamily type (sfcfsw\+\_\+type), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::sfcfsw =$>$ null()}
+
+
+
+sw radiation fluxes at sfc [dim(im)\+: created in grrad.\+f], components\+: (check module\+\_\+radsw\+\_\+parameters for definition) ~\newline
+ upfxc -\/ total sky upward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ upfx0 -\/ clear sky upward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfxc -\/ total sky downward sw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfx0 -\/ clear sky downward sw flux at sfc (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 731 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a40ebc1e3f4d9f64c9a93b88ac2032698}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!sfcflw@{sfcflw}}
+\index{sfcflw@{sfcflw}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{sfcflw}
+{\footnotesize\ttfamily type (sfcflw\+\_\+type), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::sfcflw =$>$ null()}
+
+
+
+lw radiation fluxes at sfc [dim(im)\+: created in grrad.\+f], components\+: (check module\+\_\+radlw\+\_\+paramters for definition) ~\newline
+ upfxc -\/ total sky upward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ upfx0 -\/ clear sky upward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfxc -\/ total sky downward lw flux at sfc (w/m$\ast$$\ast$2) ~\newline
+ dnfx0 -\/ clear sky downward lw flux at sfc (w/m$\ast$$\ast$2) 
+
+
+
+Definition at line 739 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a4226d950c1c61b2404e2fcffe295094f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!htrsw@{htrsw}}
+\index{htrsw@{htrsw}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{htrsw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::htrsw =$>$ null()}
+
+
+
+swh total sky sw heating rate in k/sec 
+
+
+
+Definition at line 748 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_ab7778cd34df6ca871edbbbf4c7773873}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!htrlw@{htrlw}}
+\index{htrlw@{htrlw}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{htrlw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::htrlw =$>$ null()}
+
+
+
+hlw total sky lw heating rate in k/sec 
+
+
+
+Definition at line 749 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_ad95defac7b26f67eb71f4c3da5d62be2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!sfalb@{sfalb}}
+\index{sfalb@{sfalb}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{sfalb}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::sfalb =$>$ null()}
+
+
+
+mean surface diffused sw albedo 
+
+
+
+Definition at line 750 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a7ef8d4c15a97407ffd7a6f286e0b3d5d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!coszen@{coszen}}
+\index{coszen@{coszen}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{coszen}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::coszen =$>$ null()}
+
+
+
+mean cos of zenith angle over rad call period 
+
+
+
+Definition at line 752 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a9169ff023fad2126b452af2077571d90}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!tsflw@{tsflw}}
+\index{tsflw@{tsflw}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{tsflw}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::tsflw =$>$ null()}
+
+
+
+surface air temp during lw calculation in k 
+
+
+
+Definition at line 753 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a2b78fe037b4959c60413c3cd0bbbb378}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!semis@{semis}}
+\index{semis@{semis}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{semis}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::semis =$>$ null()}
+
+
+
+surface lw emissivity in fraction 
+
+
+
+Definition at line 754 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a69483d91fc1bc66ef1a9104e16869284}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!coszdg@{coszdg}}
+\index{coszdg@{coszdg}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{coszdg}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension(\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::coszdg =$>$ null()}
+
+
+
+daytime mean cosz over rad call period 
+
+
+
+Definition at line 757 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a8193583e5c812ff25b0cdca012b22a9f}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!swhc@{swhc}}
+\index{swhc@{swhc}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{swhc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::swhc =$>$ null()}
+
+
+
+clear sky sw heating rates ( k/s ) 
+
+
+
+Definition at line 760 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a29af2d7069879c9e982fba9a11e9b4d4}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!lwhc@{lwhc}}
+\index{lwhc@{lwhc}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{lwhc}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::lwhc =$>$ null()}
+
+
+
+clear sky lw heating rates ( k/s ) 
+
+
+
+Definition at line 761 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__radtend__type_a3572137b3a52cecd2d3abedd37afcbf8}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}!lwhd@{lwhd}}
+\index{lwhd@{lwhd}!gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type}}
+\subsubsection{lwhd}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:,\+:,\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+radtend\+\_\+type\+::lwhd =$>$ null()}
+
+
+
+idea sky lw heating rates ( k/s ) 
+
+
+
+Definition at line 762 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

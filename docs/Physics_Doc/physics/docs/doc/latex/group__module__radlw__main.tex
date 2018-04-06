@@ -1,0 +1,806 @@
+\hypertarget{group__module__radlw__main}{}\section{module\+\_\+radlw\+\_\+main}
+\label{group__module__radlw__main}\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+
+
+This module includes N\+C\+EP\textquotesingle{}s modifications of the rrtmg-\/lw radiation code from A\+ER.  
+
+
+
+
+\subsection{Detailed Description}
+The R\+R\+T\+M-\/\+LW package includes three files\+:
+\begin{DoxyItemize}
+\item \hyperlink{radlw__param_8f}{radlw\+\_\+param.\+f}, which contains\+:
+\begin{DoxyItemize}
+\item \hyperlink{namespacemodule__radlw__parameters}{module\+\_\+radlw\+\_\+parameters}\+: band parameters set up
+\end{DoxyItemize}
+\item \hyperlink{radlw__datatb_8f}{radlw\+\_\+datatb.\+f}, which contains modules\+:
+\begin{DoxyItemize}
+\item \hyperlink{namespacemodule__radlw__avplank}{module\+\_\+radlw\+\_\+avplank}\+: plank flux data
+\item \hyperlink{namespacemodule__radlw__ref}{module\+\_\+radlw\+\_\+ref}\+: reference temperature and pressure
+\item \hyperlink{namespacemodule__radlw__cldprlw}{module\+\_\+radlw\+\_\+cldprlw}\+: cloud property coefficients
+\item module\+\_\+radlw\+\_\+kgbnn\+: absorption coeffients for 16 bands, where nn = 01-\/16
+\end{DoxyItemize}
+\item \hyperlink{radlw__main_8f}{radlw\+\_\+main.\+f}, which contains\+:
+\begin{DoxyItemize}
+\item module\+\_\+radlw\+\_\+main, which is the main LW radiation transfer program and contains two externally callable subroutines\+:
+\begin{DoxyItemize}
+\item \hyperlink{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}{lwrad()}\+: the main LW radiation routine
+\item \hyperlink{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}{rlwinit()}\+: the initialization routine
+\end{DoxyItemize}
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+All the LW radiation subprograms become contained subprograms in module \textquotesingle{}module\+\_\+radlw\+\_\+main\textquotesingle{} and many of them are not directly accessable from places outside the module.
+
+\begin{DoxyAuthor}{Author}
+Eli J. Mlawer, \href{mailto:emlawer@aer.com}{\tt emlawer@aer.\+com} 
+
+Jennifer S. Delamere, \href{mailto:jdelamer@aer.com}{\tt jdelamer@aer.\+com} 
+
+Michael J. Iacono, \href{mailto:miacono@aer.com}{\tt miacono@aer.\+com} 
+
+Shepard A. Clough 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+N\+C\+EP LW v5.\+1 Nov 2012 -\/\+R\+R\+T\+M\+G-\/\+LW v4.\+82
+\end{DoxyVersion}
+The authors wish to acknowledge the contributions of the following people\+: Steven J. Taubman, Karen Cady-\/\+Pereira, Patrick D. Brown, Ronald E. Farren, Luke Chen, Robert Bergstrom.
+
+\begin{DoxyCopyright}{Copyright}
+2002-\/2007, Atmospheric \& Environmental Research, Inc. (A\+ER). This software may be used, copied, or redistributed as long as it is not sold and this copyright notice is reproduced on each copy made. This model is provided as is without any express or implied warranties. (\href{http://www.rtweb.aer.com/}{\tt http\+://www.\+rtweb.\+aer.\+com/}) 
+\end{DoxyCopyright}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__module__radlw__kgbnn}{module\+\_\+radlw\+\_\+kgbnn}
+\end{DoxyCompactItemize}
+\subsection*{Modules}
+\begin{DoxyCompactItemize}
+\item 
+module \hyperlink{namespacemodule__radlw__avplank}{module\+\_\+radlw\+\_\+avplank}
+\begin{DoxyCompactList}\small\item\em This module contains plank flux data. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radlw__ref}{module\+\_\+radlw\+\_\+ref}
+\begin{DoxyCompactList}\small\item\em This module contains reference temperature and pressure. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radlw__cldprlw}{module\+\_\+radlw\+\_\+cldprlw}
+\begin{DoxyCompactList}\small\item\em This module contains cloud property coefficients. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radlw__parameters}{module\+\_\+radlw\+\_\+parameters}
+\begin{DoxyCompactList}\small\item\em This module contains LW band parameters set up. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radsw__ref}{module\+\_\+radsw\+\_\+ref}
+\begin{DoxyCompactList}\small\item\em This module contains the reference pressures (in logarithm form) at 59 vertical levels (T\+OA is omitted), and the mid-\/latitude summer (M\+LS) standard temperature profile for the 59 pressure layers that are used to establish pre calculated transmission tables. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radsw__cldprtb}{module\+\_\+radsw\+\_\+cldprtb}
+\begin{DoxyCompactList}\small\item\em This module contains cloud radiative property coefficients. \end{DoxyCompactList}\item 
+module \hyperlink{namespacemodule__radsw__sflux}{module\+\_\+radsw\+\_\+sflux}
+\begin{DoxyCompactList}\small\item\em This module contains various indexes and coefficients for SW spectral bands, as well as the spectral distribution of solar flux. The values of spectral solar flux are derived based on a prescribed solar constant ( $1368.22 W/m^2$). Scaling will be applied for the actual inputted solar constant value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}{module\+\_\+radlw\+\_\+main\+::rlwinit} (me)
+\begin{DoxyCompactList}\small\item\em This subroutine performs calculations necessary for the initialization of the longwave model. lookup tables are computed for use in the lw radiative transfer, and input absorption coefficient data for each spectral band are reduced from 256 g-\/point intervals to 140. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_ga9318778651bca6ec1f1776da6c21dfda}{module\+\_\+radlw\+\_\+main\+::mcica\+\_\+subcol} (cldf, nlay, ipseed, lcloudy)
+\begin{DoxyCompactList}\small\item\em This suroutine computes sub-\/colum cloud profile flag array. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gaeb7b74288cf87988c14bf6e24a2039ae}{module\+\_\+radlw\+\_\+main\+::setcoef} (pavel, tavel, tz, stemp, h2ovmr, colamt, coldry, colbrd, nlay, nlp1, laytrop, pklay, pklev, jp, jt, jt1, rfrate, fac00, fac01, fac10, fac11, selffac, selffrac, indself, forfac, forfrac, indfor, minorfrac, scaleminor, scaleminorn2, indminor)
+\begin{DoxyCompactList}\small\item\em This subroutine computes various coefficients needed in radiative transfer calculations. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gab002119955eb2b82f16352459180f5ed}{module\+\_\+radlw\+\_\+main\+::rtrn} (semiss, delp, cldfrc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere. Clouds assumed as randomly overlaping in a vertical column. \end{DoxyCompactList}\item 
+subroutine \hyperlink{group__module__radlw__main_gab09f986fb87e796a30c889086c92aeb1}{module\+\_\+radlw\+\_\+main\+::taumol} (laytrop, pavel, coldry, colamt, colbrd, wx, tauaer, rfrate, fac00, fac01, fac10, fac11, jp, jt, jt1, selffac, selffrac, indself, forfac, forfrac, indfor, minorfrac, scaleminor, scaleminorn2, indminor, nlay, fracs, tautot)
+\begin{DoxyCompactList}\small\item\em This subroutine contains optical depths developed for the rapid radiative transfer model. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga001d1bcd17533f7f920f859ff9a4e60f}\label{group__module__radlw__main_ga001d1bcd17533f7f920f859ff9a4e60f}} 
+subroutine \hyperlink{group__module__radlw__main_ga001d1bcd17533f7f920f859ff9a4e60f}{taugb01}
+\begin{DoxyCompactList}\small\item\em band 1\+: 10-\/350 cm-\/1 (low key -\/ h2o; low minor -\/ n2); (high key -\/ h2o; high minor -\/ n2) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gac82309fd8d0e351ac37b276833a10376}\label{group__module__radlw__main_gac82309fd8d0e351ac37b276833a10376}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::eps} = 1.\+0e-\/6
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga8c35a92c2a08663ce04bdf9de8717247}\label{group__module__radlw__main_ga8c35a92c2a08663ce04bdf9de8717247}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::oneminus} = 1.\+0-\/eps
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gac55ad4a1ff397794e054be6647bafb73}\label{group__module__radlw__main_gac55ad4a1ff397794e054be6647bafb73}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::cldmin} = 1.\+0e-\/80
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga5c63b9836ad5735dd3d0811ff527c41c}\label{group__module__radlw__main_ga5c63b9836ad5735dd3d0811ff527c41c}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::bpade} = 1.\+0/0.\+278
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga483b88df2bdada7ef349d9530f91b762}\label{group__module__radlw__main_ga483b88df2bdada7ef349d9530f91b762}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::stpfac} = 296.\+0/1013.\+0
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gaf1a0ca36bfce779493a7d1a4b81f6f73}\label{group__module__radlw__main_gaf1a0ca36bfce779493a7d1a4b81f6f73}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::wtdiff} = 0.\+5
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gaf6b84954042db7b1e2a6abdb4d401ccf}\label{group__module__radlw__main_gaf6b84954042db7b1e2a6abdb4d401ccf}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::tblint} = ntbl
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga9b8f65236249b31c8f9fcf1cfd0e7baa}\label{group__module__radlw__main_ga9b8f65236249b31c8f9fcf1cfd0e7baa}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::f\+\_\+zero} = 0.\+0
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga518605a1451822f1888c6c7e85e07328}\label{group__module__radlw__main_ga518605a1451822f1888c6c7e85e07328}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::f\+\_\+one} = 1.\+0
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga9845c3a6eaa014e6a310fe1436162e37}\label{group__module__radlw__main_ga9845c3a6eaa014e6a310fe1436162e37}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::amdw} = con\+\_\+amd/con\+\_\+amw
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga06f62c34722a3d7dcec9b5643d78f039}\label{group__module__radlw__main_ga06f62c34722a3d7dcec9b5643d78f039}} 
+real(kind=kind\+\_\+phys), parameter {\bfseries module\+\_\+radlw\+\_\+main\+::amdo3} = con\+\_\+amd/con\+\_\+amo3
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga42bbf62b5d91586f17d352af74e3c032}\label{group__module__radlw__main_ga42bbf62b5d91586f17d352af74e3c032}} 
+integer, dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::nspa}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga520be8a7f308d9e2c8e88b185170404e}\label{group__module__radlw__main_ga520be8a7f308d9e2c8e88b185170404e}} 
+integer, dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::nspb}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gae55000724e738b7a5b7be4c8cef07553}\label{group__module__radlw__main_gae55000724e738b7a5b7be4c8cef07553}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a0}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gaeba888f00b19a65460f3b587c60ea4a0}\label{group__module__radlw__main_gaeba888f00b19a65460f3b587c60ea4a0}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a1}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga1b4681c9bcc9434e30fef0ca4aaa9dcd}\label{group__module__radlw__main_ga1b4681c9bcc9434e30fef0ca4aaa9dcd}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::a2}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga40b8a6f612a53e0a768cf922aa6f73c3}\label{group__module__radlw__main_ga40b8a6f612a53e0a768cf922aa6f73c3}} 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lhlwb} = .false.
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga7f8818436b81efe586d83b2f03b1617f}\label{group__module__radlw__main_ga7f8818436b81efe586d83b2f03b1617f}} 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lhlw0} = .false.
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gaec461dc1a50b326daa15c57c7dc55602}\label{group__module__radlw__main_gaec461dc1a50b326daa15c57c7dc55602}} 
+logical {\bfseries module\+\_\+radlw\+\_\+main\+::lflxprf} = .false.
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga3c31da677e01139d9a3f1e0795a0b614}\label{group__module__radlw__main_ga3c31da677e01139d9a3f1e0795a0b614}} 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radlw\+\_\+main\+::fluxfac}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga75ff8e29e21f0d07684d4a09c744daec}\label{group__module__radlw__main_ga75ff8e29e21f0d07684d4a09c744daec}} 
+real(kind=kind\+\_\+phys) {\bfseries module\+\_\+radlw\+\_\+main\+::heatfac}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gae3b32aa685e5f07a0003c5e919d22996}\label{group__module__radlw__main_gae3b32aa685e5f07a0003c5e919d22996}} 
+real(kind=kind\+\_\+phys), dimension(nbands) {\bfseries module\+\_\+radlw\+\_\+main\+::semiss0}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga9f73814ee0b1840d8c546ef341645f43}\label{group__module__radlw__main_ga9f73814ee0b1840d8c546ef341645f43}} 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::tau\+\_\+tbl}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_gac2f240a927351a68fc9063321a307891}\label{group__module__radlw__main_gac2f240a927351a68fc9063321a307891}} 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::exp\+\_\+tbl}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga71dcfb3c365280e100e180fd1ce939ad}\label{group__module__radlw__main_ga71dcfb3c365280e100e180fd1ce939ad}} 
+real(kind=kind\+\_\+phys), dimension(0\+:ntbl) {\bfseries module\+\_\+radlw\+\_\+main\+::tfn\+\_\+tbl}
+\item 
+\mbox{\Hypertarget{group__module__radlw__main_ga9b634a4f7b06ffdd919de69a165edadc}\label{group__module__radlw__main_ga9b634a4f7b06ffdd919de69a165edadc}} 
+integer, parameter {\bfseries module\+\_\+radlw\+\_\+main\+::ipsdlw0} = ngptlw
+\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \hyperlink{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}{module\+\_\+radlw\+\_\+main\+::lwrad} (plyr, plvl, tlyr, tlvl, qlyr, olyr, gasvmr, clouds, icseed, aerosols, sfemis, sfgtmp, npts, nlay, nlp1, lprnt, hlwc, topflx, sfcflx, H\+L\+W0, H\+L\+WB, F\+L\+X\+P\+RF)
+\begin{DoxyCompactList}\small\item\em This subroutine is the main LW radiation routine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga6bfdea656cc7e1f773ffcc797e072e91}{module\+\_\+radlw\+\_\+main\+::cldprop} (cfrac, cliqp, reliq, cicep, reice, cdat1, cdat2, cdat3, cdat4, nlay, nlp1, ipseed, cldfmc, taucld)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the cloud optical depth(s) for each cloudy layer and g-\/point interval. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga8d4a6fecb4ad25468e91661a79d4ca20}{module\+\_\+radlw\+\_\+main\+::rtrnmr} (semiss, delp, cldfrc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere. Clouds are assumed as in maximum-\/randomly overlaping in a vertical column. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__module__radlw__main_ga1445abd529b76abe7ffb80e843d9fafc}{module\+\_\+radlw\+\_\+main\+::rtrnmc} (semiss, delp, cldfmc, taucld, tautot, pklay, pklev, fracs, secdif, nlay, nlp1, totuflux, totdflux, htr, totuclfl, totdclfl, htrcl, htrb)
+\begin{DoxyCompactList}\small\item\em This subroutine computes the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere.\+Clouds are treated with the mcica stochastic approach. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__module__radlw__main_ga6bfdea656cc7e1f773ffcc797e072e91}\label{group__module__radlw__main_ga6bfdea656cc7e1f773ffcc797e072e91}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!cldprop@{cldprop}}
+\index{cldprop@{cldprop}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{cldprop()}{cldprop()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::cldprop (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlp1), intent(in)}]{cfrac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cliqp,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{reliq,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cicep,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{reice,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cdat1,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cdat2,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cdat3,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cdat4,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{integer, intent(in)}]{ipseed,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(out)}]{cldfmc,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,nlay), intent(out)}]{taucld }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em cfrac} & layer cloud fraction ~\newline
+ --- for ilwcliq $>$ 0 (prognostic cloud scheme) -\/ -\/ -\/ \\
+\hline
+{\em cliqp} & layer in-\/cloud liq water path ( $g/m^2$) \\
+\hline
+{\em reliq} & mean eff radius for liq cloud (micron) \\
+\hline
+{\em cicep} & layer in-\/cloud ice water path ( $g/m^2$) \\
+\hline
+{\em reice} & mean eff radius for ice cloud (micron) \\
+\hline
+{\em cdat1} & layer rain drop water path ( $g/m^2$) \\
+\hline
+{\em cdat2} & effective radius for rain drop (micron) \\
+\hline
+{\em cdat3} & layer snow flake water path( $g/m^2$) \\
+\hline
+{\em cdat4} & mean effective radius for snow flake(micron) ~\newline
+ --- for ilwcliq = 0 (diagnostic cloud scheme) -\/ -\/ -\/ \\
+\hline
+{\em cliqp} & not used \\
+\hline
+{\em cicep} & not used \\
+\hline
+{\em reliq} & not used \\
+\hline
+{\em reice} & not used \\
+\hline
+{\em cdat1} & layer cloud optical depth \\
+\hline
+{\em cdat2} & layer cloud single scattering albedo \\
+\hline
+{\em cdat3} & layer cloud asymmetry factor \\
+\hline
+{\em cdat4} & optional use \\
+\hline
+{\em nlay} & number of layer number \\
+\hline
+{\em nlp1} & number of veritcal levels \\
+\hline
+{\em ipseed} & permutation seed for generating random numbers (isubclw$>$0) \\
+\hline
+{\em cldfmc} & cloud fraction for each sub-\/column \\
+\hline
+{\em taucld} & cloud optical depth for bands (non-\/mcica) \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radlw__main_gen_cldprop}{}\subsection{General Algorithm}\label{group__module__radlw__main_gen_cldprop}
+
+\begin{DoxyEnumerate}
+\item Compute cloud radiative properties for a cloudy column\+: ~\newline
+ -\/ Compute cloud radiative properties for rain and snow (tauran,tausnw) ~\newline
+ -\/ Calculation of absorption coefficients due to water clouds(tauliq) ~\newline
+ -\/ Calculation of absorption coefficients due to ice clouds (tauice). ~\newline
+ -\/ For prognostic cloud scheme\+: sum up the cloud optical property\+: ~\newline
+ $ taucld=tauice+tauliq+tauran+tausnw $
+\item if physparam\+::isubclw $>$ 0, call \hyperlink{group__module__radlw__main_ga9318778651bca6ec1f1776da6c21dfda}{mcica\+\_\+subcol()} to distribute cloud properties to each g-\/point. 
+\end{DoxyEnumerate}
+
+Definition at line 1497 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+cldprlw\+::absice1, module\+\_\+radlw\+\_\+cldprlw\+::absice2, module\+\_\+radlw\+\_\+cldprlw\+::absice3, module\+\_\+radlw\+\_\+cldprlw\+::absliq1, module\+\_\+radlw\+\_\+cldprlw\+::absrain, module\+\_\+radlw\+\_\+cldprlw\+::abssnow0, module\+\_\+radlw\+\_\+cldprlw\+::ipat, mcica\+\_\+subcol(), module\+\_\+radlw\+\_\+parameters\+::nbands, and module\+\_\+radlw\+\_\+parameters\+::ngptlw.
+
+
+
+Referenced by lwrad().
+
+Here is the call graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}\label{group__module__radlw__main_gaf20db29eaadab298ccd8b6bf489a53f4}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!lwrad@{lwrad}}
+\index{lwrad@{lwrad}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{lwrad()}{lwrad()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radlw\+\_\+main\+::lwrad (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(in)}]{plyr,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlp1), intent(in)}]{plvl,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(in)}]{tlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlp1), intent(in)}]{tlvl,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(in)}]{qlyr,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(in)}]{olyr,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay,9), intent(in)}]{gasvmr,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay,11)}]{clouds,  }\item[{integer, dimension(npts), intent(in)}]{icseed,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay,nbands,3), intent(in)}]{aerosols,  }\item[{real (kind=kind\+\_\+phys), dimension(npts), intent(in)}]{sfemis,  }\item[{real (kind=kind\+\_\+phys), dimension(npts), intent(in)}]{sfgtmp,  }\item[{integer, intent(in)}]{npts,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{logical, intent(in)}]{lprnt,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(out)}]{hlwc,  }\item[{type (\hyperlink{structmodule__radlw__parameters_1_1topflw__type}{topflw\+\_\+type}), dimension(npts), intent(out)}]{topflx,  }\item[{type (\hyperlink{structmodule__radlw__parameters_1_1sfcflw__type}{sfcflw\+\_\+type}), dimension(npts), intent(out)}]{sfcflx,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay), intent(out), optional}]{H\+L\+W0,  }\item[{real (kind=kind\+\_\+phys), dimension(npts,nlay,nbands), intent(out), optional}]{H\+L\+WB,  }\item[{type (\hyperlink{structmodule__radlw__parameters_1_1proflw__type}{proflw\+\_\+type}), dimension(npts,nlp1), intent(out), optional}]{F\+L\+X\+P\+RF }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em plyr} & model layer mean pressure in mb \\
+\hline
+{\em plvl} & model interface pressure in mb \\
+\hline
+{\em tlyr} & model layer mean temperature in K \\
+\hline
+{\em tlvl} & model interface temperature in K \\
+\hline
+{\em qlyr} & layer specific humidity in gm/gm \\
+\hline
+{\em olyr} & layer ozone concentration in gm/gm \\
+\hline
+{\em gasvmr} & atmospheric gases amount\+: ~\newline
+ (\+:,\+:,1) -\/ co2 volume mixing ratio ~\newline
+ (\+:,\+:,2) -\/ n2o volume mixing ratio ~\newline
+ (\+:,\+:,3) -\/ ch4 volume mixing ratio ~\newline
+ (\+:,\+:,4) -\/ o2 volume mixing ratio ~\newline
+ (\+:,\+:,5) -\/ co volume mixing ratio ~\newline
+ (\+:,\+:,6) -\/ cfc11 volume mixing ratio ~\newline
+ (\+:,\+:,7) -\/ cfc12 volume mixing ratio ~\newline
+ (\+:,\+:,8) -\/ cfc22 volume mixing ratio ~\newline
+ (\+:,\+:,9) -\/ ccl4 volume mixing ratio \\
+\hline
+{\em clouds} & layer cloud profile ~\newline
+ for ilwcliq $>$ 0 --- ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer in-\/cloud liq water path ( $ g/m^2 $) ~\newline
+ (\+:,\+:,3) -\/ mean eff radius for liq cloud (micron) ~\newline
+ (\+:,\+:,4) -\/ layer in-\/cloud ice water path ( $ g/m^2 $) ~\newline
+ (\+:,\+:,5) -\/ mean eff radius for ice cloud (micron) ~\newline
+ (\+:,\+:,6) -\/ layer rain drop water path ( $ g/m^2 $) ~\newline
+ (\+:,\+:,7) -\/ mean eff radius for rain drop (micron) ~\newline
+ (\+:,\+:,8) -\/ layer snow flake water path ( $ g/m^2 $) ~\newline
+ (\+:,\+:,9) -\/ mean eff radius for snow flake(micron) ~\newline
+ for ilwcliq = 0 --- ~\newline
+ (\+:,\+:,1) -\/ layer total cloud fraction ~\newline
+ (\+:,\+:,2) -\/ layer cloud optical depth ~\newline
+ (\+:,\+:,3) -\/ layer cloud single scattering albedo ~\newline
+ (\+:,\+:,4) -\/ layer cloud asymmetry factor \\
+\hline
+{\em icseed} & auxiliary special cloud related array. \\
+\hline
+{\em aerosols} & aerosol optical properties ~\newline
+ (\+:,\+:,\+:,1) -\/ optical depth ~\newline
+ (\+:,\+:,\+:,2) -\/ single scattering albedo ~\newline
+ (\+:,\+:,\+:,3) -\/ asymmetry parameter \\
+\hline
+{\em sfemis} & surface emissivity \\
+\hline
+{\em sfgtmp} & surface ground temperature in K \\
+\hline
+{\em npts} & total number of horizontal points \\
+\hline
+{\em nlay,nlp1} & total number of vertical layers, levels \\
+\hline
+{\em lprnt} & cntl flag for diagnostic print out \\
+\hline
+{\em hlwc} & total sky heating rate in k/day or k/sec \\
+\hline
+{\em topflx} & radiation fluxes at top, components ~\newline
+ upfxc -\/ total sky upward flux at top ( $ w/m^2 $) ~\newline
+ upfx0 -\/ clear sky upward flux at top ( $ w/m^2 $) \\
+\hline
+{\em sfcflx} & radiation fluxes at sfc, components ~\newline
+ upfxc -\/ total sky upward flux at sfc ( $ w/m^2 $) ~\newline
+ dnfxc -\/ total sky downward flux at sfc ( $ w/m^2 $) ~\newline
+ upfx0 -\/ clear sky upward flux at sfc ( $ w/m^2 $) ~\newline
+ dnfx0 -\/ clear sky downward flux at sfc ( $ w/m^2 $) \\
+\hline
+{\em hlwb} & spectral band total sky heating rates \\
+\hline
+{\em hlw0} & clear sky heating rates (k/sec or k/day) \\
+\hline
+{\em flxprf} & level radiation fluxes ( $ w/m^2 $), components ~\newline
+ dnfxc -\/ total sky downward flux ~\newline
+ upfxc -\/ total sky upward flux ~\newline
+ dnfx0 -\/ clear sky downward flux ~\newline
+ upfx0 -\/ clear sky upward flux \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radlw__main_gen_lwrad}{}\subsection{General Algorithm}\label{group__module__radlw__main_gen_lwrad}
+
+\begin{DoxyEnumerate}
+\item Change random number seed value for each radiation invocation (isubclw =1 or 2).
+\item Read surface emissivity.
+\item Prepare atmospheric profile for use in rrtm.
+\item Set absorber amount for h2o, co2, and o3.
+\item Set up column amount for rare gases n2o,ch4,o2,co,ccl4,cf11,cf12, cf22, convert from volume mixing ratio to molec/cm2 based on coldry (scaled to 1.\+0e-\/20).
+\item Set aerosol optical properties.
+\item Read cloud optical properties
+\item Compute precipitable water vapor for diffusivity angle adjustments.
+\item Compute column amount for broadening gases.
+\item Compute diffusivity angle adjustments.
+\item For cloudy atmosphere, call \hyperlink{group__module__radlw__main_ga6bfdea656cc7e1f773ffcc797e072e91}{cldprop()} to set cloud optical properties.
+\item Calling \hyperlink{group__module__radlw__main_gaeb7b74288cf87988c14bf6e24a2039ae}{setcoef()} to compute various coefficients needed in radiative transfer calculations.
+\item Call \hyperlink{group__module__radlw__main_gab09f986fb87e796a30c889086c92aeb1}{taumol()} to calculte the gaseous optical depths and Plank fractions for each longwave spectral band.
+\item Call the radiative transfer routine based on cloud scheme selection. Compute the upward/downward radiative fluxes, and heating rates for both clear or cloudy atmosphere. ~\newline
+ -\/ call \hyperlink{group__module__radlw__main_gab002119955eb2b82f16352459180f5ed}{rtrn()}\+: clouds are assumed as randomly overlaping in a vertical column ~\newline
+ -\/ call \hyperlink{group__module__radlw__main_ga8d4a6fecb4ad25468e91661a79d4ca20}{rtrnmr()}\+: clouds are assumed as in maximum-\/randomly overlaping in a vertical column; ~\newline
+ -\/ call \hyperlink{group__module__radlw__main_ga1445abd529b76abe7ffb80e843d9fafc}{rtrnmc()}\+: clouds are treated with the mcica stochastic approach.
+\item Save outputs. 
+\end{DoxyEnumerate}
+
+Definition at line 463 of file radlw\+\_\+main.\+f.
+
+
+
+References cldprop(), module\+\_\+radlw\+\_\+parameters\+::maxgas, module\+\_\+radlw\+\_\+parameters\+::nbands, rtrn(), rtrnmc(), rtrnmr(), setcoef(), and taumol().
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::gfs\+\_\+radiation\+\_\+driver().
+
+Here is the call graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{group__module__radlw__main_ga9318778651bca6ec1f1776da6c21dfda}\label{group__module__radlw__main_ga9318778651bca6ec1f1776da6c21dfda}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!mcica\+\_\+subcol@{mcica\+\_\+subcol}}
+\index{mcica\+\_\+subcol@{mcica\+\_\+subcol}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{mcica\+\_\+subcol()}{mcica\_subcol()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::mcica\+\_\+subcol (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{cldf,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{ipseed,  }\item[{logical, dimension(ngptlw,nlay), intent(out)}]{lcloudy }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em cldf} & layer cloud fraction \\
+\hline
+{\em nlay} & number of model vertical layers \\
+\hline
+{\em ipseed} & permute seed for random num generator \\
+\hline
+{\em lcloudy} & sub-\/colum cloud profile flag array \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 1804 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::ngptlw.
+
+
+
+Referenced by cldprop().
+
+\mbox{\Hypertarget{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}\label{group__module__radlw__main_gaa9569479682c83b26584b7e9ee6841fa}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!rlwinit@{rlwinit}}
+\index{rlwinit@{rlwinit}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{rlwinit()}{rlwinit()}}
+{\footnotesize\ttfamily subroutine, public module\+\_\+radlw\+\_\+main\+::rlwinit (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{me }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}{Parameters}
+{\em me} & print control for parallel process \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 1269 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::ntbl.
+
+
+
+Referenced by module\+\_\+radiation\+\_\+driver\+::radinit().
+
+\mbox{\Hypertarget{group__module__radlw__main_gab002119955eb2b82f16352459180f5ed}\label{group__module__radlw__main_gab002119955eb2b82f16352459180f5ed}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!rtrn@{rtrn}}
+\index{rtrn@{rtrn}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{rtrn()}{rtrn()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::rtrn (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{semiss,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{delp,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlp1), intent(in)}]{cldfrc,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,nlay), intent(in)}]{taucld,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{tautot,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklay,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklev,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{fracs,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{secdif,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuflux,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdflux,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htr,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htrcl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,nbands), intent(out)}]{htrb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+Original Code Description\+: this program calculates the upward fluxes, downward fluxes, and heating rates for an arbitrary clear or cloudy atmosphere. The input to this program is the atmospheric profile, all Planck function information, and the cloud fraction by layer. A variable diffusivity angle (secdif) is used for the angle integration. Bands 2-\/3 and 5-\/9 use a value for secdif that varies from 1.\+50 to 1.\+80 as a function of the column water vapor, and other bands use a value of 1.\+66. The gaussian weight appropriate to this angle (wtdiff =0.\+5) is applied here. Note that use of the emissivity angle for the flux integration can cause errors of 1 to 4 $W/m^2$ within cloudy layers. Clouds are treated with a random cloud overlap method. 
+\begin{DoxyParams}{Parameters}
+{\em semiss} & lw surface emissivity \\
+\hline
+{\em delp} & layer pressure thickness (mb) \\
+\hline
+{\em cldfrc} & layer cloud fraction \\
+\hline
+{\em taucld} & layer cloud opt depth \\
+\hline
+{\em tautot} & total optical depth (gas+aerosols) \\
+\hline
+{\em pklay} & integrated planck function at lay temp \\
+\hline
+{\em pklev} & integrated planck func at lev temp \\
+\hline
+{\em fracs} & planck fractions \\
+\hline
+{\em secdif} & secant of diffusivity angle \\
+\hline
+{\em nlay} & number of vertical layers \\
+\hline
+{\em nlp1} & number of vertical levels (interfaces) \\
+\hline
+{\em totuflux} & total sky upward flux $(w/m^2)$ \\
+\hline
+{\em totdflux} & total sky downward flux $(w/m^2)$ \\
+\hline
+{\em htr} & total sky heating rate (k/sec or k/day) \\
+\hline
+{\em totuclfl} & clear sky upward flux $(w/m^2)$ \\
+\hline
+{\em totdclfl} & clear sky downward flux $(w/m^2)$ \\
+\hline
+{\em htrcl} & clear sky heating rate (k/sec or k/day) \\
+\hline
+{\em htrb} & spectral band lw heating rate (k/day) \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyEnumerate}
+\item Downward radiative transfer loop.
+\item Compute spectral emissivity \& reflectance, include the contribution of spectrally varying longwave emissivity and reflection from the surface to the upward radiative transfer.
+\item Compute total sky radiance.
+\item Compute clear sky radiance
+\item Upward radiative transfer loop.
+\item Process longwave output from band for total and clear streams. Calculate upward, downward, and net flux. 
+\end{DoxyEnumerate}
+
+Definition at line 2295 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::nbands, module\+\_\+radlw\+\_\+parameters\+::ngb, and module\+\_\+radlw\+\_\+parameters\+::ngptlw.
+
+
+
+Referenced by lwrad().
+
+\mbox{\Hypertarget{group__module__radlw__main_ga1445abd529b76abe7ffb80e843d9fafc}\label{group__module__radlw__main_ga1445abd529b76abe7ffb80e843d9fafc}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!rtrnmc@{rtrnmc}}
+\index{rtrnmc@{rtrnmc}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{rtrnmc()}{rtrnmc()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::rtrnmc (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{semiss,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{delp,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{cldfmc,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,nlay), intent(in)}]{taucld,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{tautot,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklay,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklev,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{fracs,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{secdif,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuflux,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdflux,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htr,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htrcl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,nbands), intent(out)}]{htrb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em semiss} & lw surface emissivity \\
+\hline
+{\em delp} & layer pressure thickness (mb) \\
+\hline
+{\em cldfmc} & layer cloud fraction (sub-\/column) \\
+\hline
+{\em taucld} & layer cloud opt depth \\
+\hline
+{\em tautot} & total optical depth (gas+aerosols) \\
+\hline
+{\em pklay} & integrated planck func at lay temp \\
+\hline
+{\em pklev} & integrated planck func at lev temp \\
+\hline
+{\em fracs} & planck fractions \\
+\hline
+{\em secdif} & secant of diffusivity angle \\
+\hline
+{\em nlay} & number of vertical layers \\
+\hline
+{\em nlp1} & number of vertical levels (interfaces) \\
+\hline
+{\em totuflux} & total sky upward flux $(w/m^2)$ \\
+\hline
+{\em totdflux} & total sky downward flux $(w/m^2)$ \\
+\hline
+{\em htr} & total sky heating rate (k/sec or k/day) \\
+\hline
+{\em totuclfl} & clear sky upward flux $(w/m^2)$ \\
+\hline
+{\em totdclfl} & clear sky downward flux $(w/m^2)$ \\
+\hline
+{\em htrcl} & clear sky heating rate (k/sec or k/day) \\
+\hline
+{\em htrb} & spectral band lw heating rate (k/day) \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radlw__main_gen_rtrnmc}{}\subsection{General Algorithm}\label{group__module__radlw__main_gen_rtrnmc}
+
+\begin{DoxyEnumerate}
+\item Downward radiative transfer loop. ~\newline
+ -\/ Clear sky, gases contribution ~\newline
+ -\/ Total sky, gases+clouds contribution ~\newline
+ -\/ Cloudy layer ~\newline
+ -\/ Total sky radiance ~\newline
+ -\/ Clear sky radiance
+\item Compute spectral emissivity \& reflectance, include the contribution of spectrally varying longwave emissivity and reflection from the surface to the upward radiative transfer.
+\item Compute total sky radiance
+\item Compute clear sky radiance
+\item Upward radiative transfer loop ~\newline
+ -\/ Compute total sky radiance ~\newline
+ -\/ Compute clear sky radiance
+\item Process longwave output from band for total and clear streams. Calculate upward, downward, and net flux. 
+\end{DoxyEnumerate}
+
+Definition at line 3271 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::nbands, module\+\_\+radlw\+\_\+parameters\+::ngb, and module\+\_\+radlw\+\_\+parameters\+::ngptlw.
+
+
+
+Referenced by lwrad().
+
+\mbox{\Hypertarget{group__module__radlw__main_ga8d4a6fecb4ad25468e91661a79d4ca20}\label{group__module__radlw__main_ga8d4a6fecb4ad25468e91661a79d4ca20}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!rtrnmr@{rtrnmr}}
+\index{rtrnmr@{rtrnmr}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{rtrnmr()}{rtrnmr()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::rtrnmr (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{semiss,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{delp,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlp1), intent(in)}]{cldfrc,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,nlay), intent(in)}]{taucld,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{tautot,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklay,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(in)}]{pklev,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(in)}]{fracs,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands), intent(in)}]{secdif,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuflux,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdflux,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htr,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totuclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(out)}]{totdclfl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{htrcl,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,nbands), intent(out)}]{htrb }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em semiss} & lw surface emissivity \\
+\hline
+{\em delp} & layer pressure thickness (mb) \\
+\hline
+{\em cldfrc} & layer cloud fraction \\
+\hline
+{\em taucld} & layer cloud opt depth \\
+\hline
+{\em tautot} & total optical depth (gas+aerosols) \\
+\hline
+{\em pklay} & integrated planck func at lay temp \\
+\hline
+{\em pklev} & integrated planck func at lev temp \\
+\hline
+{\em fracs} & planck fractions \\
+\hline
+{\em secdif} & secant of diffusivity angle \\
+\hline
+{\em nlay} & number of vertical layers \\
+\hline
+{\em nlp1} & number of vertical levels (interfaces) \\
+\hline
+{\em totuflux} & total sky upward flux ( $w/m^2$) \\
+\hline
+{\em totdflux} & total sky downward flux ( $w/m^2$) \\
+\hline
+{\em htr} & total sky heating rate (k/sec or k/day) \\
+\hline
+{\em totuclfl} & clear sky upward flux ( $w/m^2$) \\
+\hline
+{\em totdclfl} & clear sky downward flux ( $w/m^2$) \\
+\hline
+{\em htrcl} & clear sky heating rate (k/sec or k/day) \\
+\hline
+{\em htrb} & spectral band lw heating rate (k/day) \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__module__radlw__main_gen_rtrnmr}{}\subsection{General Algorithm}\label{group__module__radlw__main_gen_rtrnmr}
+
+\begin{DoxyEnumerate}
+\item Setup maximum/random cloud overlap.
+\item Initialize for radiative transfer
+\item Downward radiative transfer loop\+:
+\begin{DoxyItemize}
+\item cloudy layer
+\item total sky radiance
+\item clear sky radiance
+\end{DoxyItemize}
+\item Compute spectral emissivity \& reflectance, include the contribution of spectrally varying longwave emissivity and reflection from the surface to the upward radiative transfer.
+\item Compute total sky radiance.
+\item Compute clear sky radiance.
+\item Upward radiative transfer loop\+:
+\begin{DoxyItemize}
+\item cloudy layer radiance
+\item total sky radiance
+\item clear sky radiance
+\end{DoxyItemize}
+\item Process longwave output from band for total and clear streams. calculate upward, downward, and net flux. 
+\end{DoxyEnumerate}
+
+Definition at line 2678 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::nbands, module\+\_\+radlw\+\_\+parameters\+::ngb, and module\+\_\+radlw\+\_\+parameters\+::ngptlw.
+
+
+
+Referenced by lwrad().
+
+\mbox{\Hypertarget{group__module__radlw__main_gaeb7b74288cf87988c14bf6e24a2039ae}\label{group__module__radlw__main_gaeb7b74288cf87988c14bf6e24a2039ae}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!setcoef@{setcoef}}
+\index{setcoef@{setcoef}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{setcoef()}{setcoef()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::setcoef (\begin{DoxyParamCaption}\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{pavel,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{tavel,  }\item[{real (kind=kind\+\_\+phys), dimension(0\+:nlay), intent(in)}]{tz,  }\item[{real (kind=kind\+\_\+phys), intent(in)}]{stemp,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{h2ovmr,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,maxgas), intent(in)}]{colamt,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{coldry,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{colbrd,  }\item[{integer, intent(in)}]{nlay,  }\item[{integer, intent(in)}]{nlp1,  }\item[{integer, intent(out)}]{laytrop,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(out)}]{pklay,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,0\+:nlay), intent(out)}]{pklev,  }\item[{integer, dimension(nlay), intent(out)}]{jp,  }\item[{integer, dimension(nlay), intent(out)}]{jt,  }\item[{integer, dimension(nlay), intent(out)}]{jt1,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,nrates,2), intent(out)}]{rfrate,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{fac00,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{fac01,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{fac10,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{fac11,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{selffac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{selffrac,  }\item[{integer, dimension(nlay), intent(out)}]{indself,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{forfac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{forfrac,  }\item[{integer, dimension(nlay), intent(out)}]{indfor,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{minorfrac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{scaleminor,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(out)}]{scaleminorn2,  }\item[{integer, dimension(nlay), intent(out)}]{indminor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em pavel} & layer pressure (mb) \\
+\hline
+{\em tavel} & layer temperature (K) \\
+\hline
+{\em tz} & level(interface) temperatures (K) \\
+\hline
+{\em stemp} & surface ground temperature (K) \\
+\hline
+{\em h2ovmr} & layer w.\+v. volumn mixing ratio (kg/kg) \\
+\hline
+{\em colamt} & column amounts of absorbing gases. 2nd indices range\+: 1-\/maxgas, for watervapor,carbon dioxide, ozone, nitrous oxide, methane,oxigen, carbon monoxide,etc. $(mol/cm^2)$ \\
+\hline
+{\em coldry} & dry air column amount \\
+\hline
+{\em colbrd} & column amount of broadening gases \\
+\hline
+{\em nlay} & total number of vertical layers \\
+\hline
+{\em nlp1} & total number of vertical levels \\
+\hline
+{\em laytrop} & tropopause layer index (unitless) \\
+\hline
+{\em pklay} & integrated planck func at lay temp \\
+\hline
+{\em pklev} & integrated planck func at lev temp \\
+\hline
+{\em jp} & indices of lower reference pressure \\
+\hline
+{\em jt,jt1} & indices of lower reference temperatures \\
+\hline
+{\em rfrate} & ref ratios of binary species param ~\newline
+ (\+:,m,\+:)m=1-\/h2o/co2,2-\/h2o/o3,3-\/h2o/n2o, 4-\/h2o/ch4,5-\/n2o/co2,6-\/o3/co2 ~\newline
+ (\+:,\+:,n)n=1,2\+: the rates of ref press at the 2 sides of the layer \\
+\hline
+{\em facij} & factors multiply the reference ks, i,j=0/1 for lower/higher of the 2 appropriate temperatures and altitudes. \\
+\hline
+{\em selffac} & scale factor for w. v. self-\/continuum equals (w. v. density)/(atmospheric density at 296k and 1013 mb) \\
+\hline
+{\em selffrac} & factor for temperature interpolation of reference w. v. self-\/continuum data \\
+\hline
+{\em indself} & index of lower ref temp for selffac \\
+\hline
+{\em forfac} & scale factor for w. v. foreign-\/continuum \\
+\hline
+{\em forfrac} & factor for temperature interpolation of reference w.\+v. foreign-\/continuum data \\
+\hline
+{\em indfor} & index of lower ref temp for forfac \\
+\hline
+{\em minorfrac} & factor for minor gases \\
+\hline
+{\em scaleminor,scaleminorn2} & scale factors for minor gases \\
+\hline
+{\em indminor} & index of lower ref temp for minor gases \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 2004 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::nbands, and module\+\_\+radlw\+\_\+avplank\+::totplnk.
+
+
+
+Referenced by lwrad().
+
+\mbox{\Hypertarget{group__module__radlw__main_gab09f986fb87e796a30c889086c92aeb1}\label{group__module__radlw__main_gab09f986fb87e796a30c889086c92aeb1}} 
+\index{module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}!taumol@{taumol}}
+\index{taumol@{taumol}!module\+\_\+radlw\+\_\+main@{module\+\_\+radlw\+\_\+main}}
+\subsubsection{\texorpdfstring{taumol()}{taumol()}}
+{\footnotesize\ttfamily subroutine module\+\_\+radlw\+\_\+main\+::taumol (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{laytrop,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{pavel,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{coldry,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,maxgas), intent(in)}]{colamt,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{colbrd,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,maxxsec), intent(in)}]{wx,  }\item[{real (kind=kind\+\_\+phys), dimension(nbands,nlay), intent(in)}]{tauaer,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay,nrates,2), intent(in)}]{rfrate,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{fac00,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{fac01,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{fac10,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{fac11,  }\item[{integer, dimension(nlay), intent(in)}]{jp,  }\item[{integer, dimension(nlay), intent(in)}]{jt,  }\item[{integer, dimension(nlay), intent(in)}]{jt1,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{selffac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{selffrac,  }\item[{integer, dimension(nlay), intent(in)}]{indself,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{forfac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{forfrac,  }\item[{integer, dimension(nlay), intent(in)}]{indfor,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{minorfrac,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{scaleminor,  }\item[{real (kind=kind\+\_\+phys), dimension(nlay), intent(in)}]{scaleminorn2,  }\item[{integer, dimension(nlay), intent(in)}]{indminor,  }\item[{integer, intent(in)}]{nlay,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(out)}]{fracs,  }\item[{real (kind=kind\+\_\+phys), dimension(ngptlw,nlay), intent(out)}]{tautot }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+This file contains the subroutines taugbn (where n goes from 1 to 16). taugbn calculates the optical depths and planck fractions per g-\/value and layer for band n. 
+\begin{DoxyParams}{Parameters}
+{\em laytrop} & tropopause layer index (unitless) layer at which switch is made for key species \\
+\hline
+{\em pavel} & layer pressures (mb) \\
+\hline
+{\em coldry} & column amount for dry air $(mol/cm^2)$ \\
+\hline
+{\em colamt} & column amounts of h2o, co2, o3, n2o, ch4,o2, co $(mol/cm^2)$ \\
+\hline
+{\em colbrd} & column amount of broadening gases \\
+\hline
+{\em wx} & cross-\/section amounts $(mol/cm^2)$ \\
+\hline
+{\em tauaer} & aerosol optical depth \\
+\hline
+{\em rfrate} & reference ratios of binary species parameter ~\newline
+ (\+:,m,\+:)m=1-\/h2o/co2,2-\/h2o/o3,3-\/h2o/n2o,4-\/h2o/ch4, 5-\/n2o/co2,6-\/o3/co2 ~\newline
+ (\+:,\+:,n)n=1,2\+: the rates of ref press at the 2 sides of the layer \\
+\hline
+{\em facij} & factors multiply the reference ks, i,j of 0/1 for lower/higher of the 2 appropriate temperatures and altitudes \\
+\hline
+{\em jp} & index of lower reference pressure \\
+\hline
+{\em jt,jt1} & indices of lower reference temperatures for pressure levels jp and jp+1, respectively \\
+\hline
+{\em selffac} & scale factor for water vapor self-\/continuum equals (water vapor density)/(atmospheric density at 296k and 1013 mb) \\
+\hline
+{\em selffrac} & factor for temperature interpolation of reference water vapor self-\/continuum data \\
+\hline
+{\em indself} & index of lower reference temperature for the self-\/continuum interpolation \\
+\hline
+{\em forfac} & scale factor for w. v. foreign-\/continuum \\
+\hline
+{\em forfrac} & factor for temperature interpolation of reference w.\+v. foreign-\/continuum data \\
+\hline
+{\em indfor} & index of lower reference temperature for the foreign-\/continuum interpolation \\
+\hline
+{\em minorfrac} & factor for minor gases \\
+\hline
+{\em scaleminor,scaleminorn2} & scale factors for minor gases \\
+\hline
+{\em indminor} & index of lower reference temperature for minor gases \\
+\hline
+{\em nlay} & total number of layers \\
+\hline
+{\em fracs} & planck fractions \\
+\hline
+{\em tautot} & total optical depth (gas+aerosols) \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 3688 of file radlw\+\_\+main.\+f.
+
+
+
+References module\+\_\+radlw\+\_\+parameters\+::ngb, module\+\_\+radlw\+\_\+parameters\+::ngptlw, taugb01(), taugb02(), taugb03(), taugb04(), taugb05(), taugb06(), taugb07(), taugb08(), taugb09(), taugb10(), taugb11(), taugb12(), taugb13(), taugb14(), taugb15(), and taugb16().
+
+
+
+Referenced by lwrad().
+
+Here is the call graph for this function\+:
+% FIG 2

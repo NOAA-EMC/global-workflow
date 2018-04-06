@@ -1,0 +1,16 @@
+digraph "module_radsw_main::vrtqdr"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node70 [label="module_radsw_main::\lvrtqdr",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node70 -> Node71 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node71 [label="module_radsw_main::\lspcvrtc",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radsw__main.html#gaeb992f35bdf7dbf9ea8709d7d91dedfd",tooltip="This subroutine computes the shortwave radiative fluxes using two-stream method. "];
+  Node71 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node72 [label="module_radsw_main::\lswrad",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radsw__main.html#ga784397878835a8cdd0b14a7b9eafb4e3",tooltip="This subroutine is the main SW radiation routine. "];
+  Node72 -> Node73 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node73 [label="module_radiation_driver\l::gfs_radiation_driver",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radiation__driver.html#ga9c5872d3bd177315e79977d40245a99a",tooltip="This subroutine is the driver of main radiation calculations. It sets up column profiles, such as pressure, temperature, moisture, gases, clouds, aerosols, etc., as well as surface radiative characteristics, such as surface albedo, and emissivity. The call of this subroutine is placed inside both the time advancing loop and the horizontal grid loop. "];
+  Node70 -> Node74 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node74 [label="module_radsw_main::\lspcvrtm",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__module__radsw__main.html#ga859cc14063a58e9d0a252e4366b9fff3",tooltip="This subroutine computes the shortwave radiative fluxes using two-stream method of h..."];
+  Node74 -> Node72 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+}

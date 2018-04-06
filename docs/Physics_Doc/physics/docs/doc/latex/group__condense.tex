@@ -1,0 +1,100 @@
+\hypertarget{group__condense}{}\section{Grid-\/\+Scale Condensation and Evaporation of Cloud}
+\label{group__condense}\index{Grid-\/\+Scale Condensation and Evaporation of Cloud@{Grid-\/\+Scale Condensation and Evaporation of Cloud}}
+
+
+This subroutine computes grid-\/scale condensation and evaporation of cloud condensate.  
+
+
+
+
+\subsection{Detailed Description}
+There are two sources of condensation, one from large-\/scale processes and the other from convective processes. Both of them produce either cloud water or cloud ice, depending on the cloud substance at and above the grid point at current and previous time steps, and on the temperature. Evaporation of cloud is allowed at points where the relative humidity is lower than the critical value required for condensation. \begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group__condense_gac51672b28449a810caf82a7292078ccf}{gscond} (im, ix, km, dt, dtf, prsl, ps, q, cwm, t, tp, qp, psp, tp1, qp1, psp1, u, lprnt, ipr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group__condense_gac51672b28449a810caf82a7292078ccf}\label{group__condense_gac51672b28449a810caf82a7292078ccf}} 
+\index{Grid-\/\+Scale Condensation and Evaporation of Cloud@{Grid-\/\+Scale Condensation and Evaporation of Cloud}!gscond@{gscond}}
+\index{gscond@{gscond}!Grid-\/\+Scale Condensation and Evaporation of Cloud@{Grid-\/\+Scale Condensation and Evaporation of Cloud}}
+\subsubsection{\texorpdfstring{gscond()}{gscond()}}
+{\footnotesize\ttfamily subroutine gscond (\begin{DoxyParamCaption}\item[{integer}]{im,  }\item[{integer}]{ix,  }\item[{integer}]{km,  }\item[{real (kind=kind\+\_\+phys)}]{dt,  }\item[{real (kind=kind\+\_\+phys)}]{dtf,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{prsl,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{ps,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{q,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{cwm,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{t,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{tp,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{qp,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{psp,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{tp1,  }\item[{real (kind=kind\+\_\+phys), dimension(ix,km)}]{qp1,  }\item[{real (kind=kind\+\_\+phys), dimension(im)}]{psp1,  }\item[{real (kind=kind\+\_\+phys), dimension(im,km)}]{u,  }\item[{logical}]{lprnt,  }\item[{integer}]{ipr }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em ix} & horizontal dimension \\
+\hline
+\mbox{\tt in}  & {\em im} & horizontal number of used pts \\
+\hline
+\mbox{\tt in}  & {\em km} & vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em dt} & physics time step in seconds \\
+\hline
+\mbox{\tt in}  & {\em dtf} & dynamics time step in seconds \\
+\hline
+\mbox{\tt in}  & {\em prsl} & pressure values for model layers \\
+\hline
+\mbox{\tt in}  & {\em ps} & surface pressure (Pa) \\
+\hline
+\mbox{\tt in,out}  & {\em q} & model layer specific humidity (gm/gm) \\
+\hline
+\mbox{\tt in,out}  & {\em cwm} & model layer cloud condensate \\
+\hline
+\mbox{\tt in,out}  & {\em t} & model layer mean temperature (K) \\
+\hline
+\mbox{\tt in,out}  & {\em tp} & model layer mean temperature (K) saved for restart \\
+\hline
+\mbox{\tt in,out}  & {\em qp} & model layer specific humidity (gm/gm) saved for restart \\
+\hline
+\mbox{\tt in,out}  & {\em psp} & surface pressure (Pa) saved for restart \\
+\hline
+\mbox{\tt in,out}  & {\em tp1} & updated model layer mean temperature (K) saved for restart \\
+\hline
+\mbox{\tt in,out}  & {\em qp1} & updated model layer specific humidity (gm/gm) saved for restart \\
+\hline
+\mbox{\tt in,out}  & {\em psp1} & updated surface pressure (Pa) saved for restart \\
+\hline
+\mbox{\tt in}  & {\em u} & the critical value of relative humidity for large-\/scale condensation \\
+\hline
+\mbox{\tt in}  & {\em lprnt} & logical print flag \\
+\hline
+\mbox{\tt in}  & {\em ipr} & check print point for debugging\\
+\hline
+\end{DoxyParams}
+\hypertarget{group__condense_def}{}\subsection{Definition of symbols}\label{group__condense_def}
+
+\begin{DoxyItemize}
+\item $C_{g}$\+: grid-\/scale condensation rate ( $s^{-1}$)
+\item $E_{c}$\+: evaporation rate of cloud ( $s^{-1}$) 
+\end{DoxyItemize}\hypertarget{group__condense_gen_algorithm}{}\subsection{General Algorithm}\label{group__condense_gen_algorithm}
+
+\begin{DoxyEnumerate}
+\item Begining of grid-\/scale condensation/evaporation loop (start of k-\/loop, i-\/loop)
+\item Compute ice-\/water identification number IW. ~\newline
+ The distinction between cloud water and cloud ice is made by the cloud identification number IW, which is zero for cloud water and unity for cloud ice (Table 2 in zhao and Carr (1997) \cite{zhao_and_carr_1997})\+:
+\begin{DoxyItemize}
+\item All clouds are defined to consist of liquid water below the freezing level ( $T\geq 0^oC$) and of ice particles above the $T=-15^oC$ level.
+\item In the temperature region between $-15^oC$ and $0^oC$, clouds may be composed of liquid water or ice. If there are cloud ice particles above this point at the previous or current time step, or if the cloud at this point at the previous time step consists of ice particles, then the cloud substance at this point is considered to be ice particles because of the cloud seeding effect and the memory of its content. Otherwise, all clouds in this region are considered to contain supercooled cloud water.
+\end{DoxyItemize}
+\item Condensation and evaporation of cloud
+\begin{DoxyItemize}
+\item Compute the changes in t, q and p ( $A_{t}$, $A_{q}$ and $A_{p}$) caused by all the processes except grid-\/scale condensation and evaporation. \[ A_{t}=(t-tp)/dt \] \[ A_{q}=(q-qp)/dt \] \[ A_{p}=(prsl-\frac{prsl}{ps} \times psp)/dt \]
+\item Calculate the saturation specific humidity $q_{s}$ and the relative humidity $f$ using IW.
+\item According to Sundqvist et al. (1989) \cite{sundqvist_et_al_1989}, estimate cloud fraction $b$ at a grid point from relative humidity $f$ using the equation \[ b=1-\left ( \frac{f_{s}-f}{f_{s}-u} \right )^{1/2} \] for $f>u$; and $b=0$ for $f<u$. where $f_{s}=1.0$ is the relative humidity in a cloud region and $u$ ,which is an input parameter accounts for the effects of subgrid-\/scale variations in moisture on large-\/scale condensation. Since both temperature and moisture may vary at scales smaller than the model grid scale, it is possible for condensation to occur before the grid-\/average relative humidity reaches 100\%. Therefore $u$ needs to be less than 1.\+0 to account for the subgrid-\/scale variation of temperature and moisture fields and allow subgrid-\/scale condensation.
+\item If cloud fraction $b\leq 1.0\times10^{-3}$, then evaporate any existing cloud condensate using evaporation rate $E_{c}$ as computed below. ~\newline
+ If $q_{0}$ represents the specific humidity at relative humidity $u$, then \[ q_{0}=uq_{s} \] ~\newline
+ if the cloud water/ice at this point is enough to be evaporated until $u$ is reached, then the evaporation rate $E_{c}$, assuming that the evaporation process occurs in one time step, is determined by \[ E_{c}=\frac{q_{0}-q}{dt} \] ~\newline
+ Using $q_{0}=uq_{s}$ and the equation $q=fq_{s}$, $E_{c}$ then becomes \[ E_{c}=\frac{q_{s}}{dt}(u-f) \] where $dt$ is the time step for precipitation calculation in the model. It is a simplified version of a higher-\/order cloud evaporation algorithm (Rutledge and Hobbs 1983 \cite{rutledge_and_hobbs_1983}). In the case where all clouds will evaporate before $u$ is reached, the following equation is used\+: \[ E_{c}=\frac{cwm}{dt} \]
+\item If cloud fraction $b>1.0\times10^{-3}$, condense water vapor in to cloud condensate ( $C_{g}$). ~\newline
+ Using $q=fq_{s}$, $q_{s}=\epsilon e_{s}/p$, and the Clausius-\/\+Clapeyron equation $de_{s}/dT=\epsilon Le_{s}/RT^{2}$, where $q_{s}$ is the saturation specific humidity, $e_{s}$ is the saturation vapor pressure, $R$ is the specific gas constant for dry air, $f$ is the relative humidity, and $\epsilon=0.622$, the expression for $C_{g}$ has the form \[ C_{g}=\frac{M-q_{s}f_{t}}{1+(f\epsilon L^{2}q_{s}/RC_{p}T^{2})}+E_{c} \] where \[ M=A_{q}-\frac{f\epsilon Lq_{s}}{RT^{2}}A_{t}+\frac{fq_{s}}{p}A_{p} \] To close the system, an equation for the relative humidity tendency $f_{t}$ was derived by Sundqvist et al. (1989) \cite{sundqvist_et_al_1989} using the hypothesis that the quantity $M+E_{c}$ is divided into one part, $bM$,which condenses in the already cloudy portion of a grid square, and another part, $(1-b)M+E_{c}$,which is used to increase the relative humidity of the cloud-\/free portion and the cloudiness in the square. The equation is written as \[ f_{t}=\frac{2(1-b)(f_{s}-u)[(1-b)M+E_{c}]}{2q_{s}(1-b)(f_{s}-u)+cwm/b} \]
+\item Check and correct if over condensation occurs.
+\item Update t, q and cwm (according to Eqs(6) and (7) in Zhao and Carr (1997) \cite{zhao_and_carr_1997}) \[ cwm=cwm+(C_{g}-E_{c})\times dt \] \[ q=q-(C_{g}-E_{c})\times dt \] \[ t=t+\frac{L}{C_{p}}(C_{g}-E_{c})\times dt \] ~\newline
+ where $L$ is the latent heat of condensation/deposition, and $C_{p}$ is the specific heat of air at constant pressure.
+\end{DoxyItemize}
+\item End of the condensation/evaporation loop (end of i-\/loop,k-\/loop)
+\item Store $t$, $q$, $ps$ for next time step. 
+\end{DoxyEnumerate}
+
+Definition at line 86 of file gscond.\+f.
+

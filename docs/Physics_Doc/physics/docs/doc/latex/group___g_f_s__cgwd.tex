@@ -1,0 +1,136 @@
+\hypertarget{group___g_f_s__cgwd}{}\section{G\+FS Convective Gravity Wave Drag}
+\label{group___g_f_s__cgwd}\index{G\+F\+S Convective Gravity Wave Drag@{G\+F\+S Convective Gravity Wave Drag}}
+
+
+This subroutine is the parameterization of convective gravity wave drag based on the theory given by Chun and Baik (1998) \cite{chun_and_baik_1998} modified for implementation into the G\+F\+S/\+C\+FS by Ake Johansson(\+Aug 2005).  
+
+
+
+
+\subsection{Detailed Description}
+
+\begin{DoxyItemize}
+\item The parameterization of stationary convectively-\/forced G\+WD follows the development of Chun and Baik (1998) \cite{chun_and_baik_1998} , which was tested in G\+C\+Ms by Chun et al. (2001,2004) \cite{chun_et_al_2001} \cite{chun_et_al_2004} was implemented in G\+FS by Ake Johansson (2008) and the work of the G\+C\+W\+MB staff. Modest positive effects from using the parameterization are seen in the tropical upper troposphere and lower stratosphere.
+\end{DoxyItemize}
+
+Parameterizing subgrid-\/scale convection-\/induced gravity wave momentum flux for use in large-\/scale models inherently requires some information from subgrid-\/scale cumulus parameterization. The methodology for parameterizing the zonal momentum flux induced by thermal forcing can be summarized as follows. From the cloud-\/base to cloud-\/top height, the effect of the momentum flux induced by subgrid-\/scale diabatic forcing is not considered because subgrid-\/scale cumulus convection in large-\/scale models is only activated in a conditionally unstable atmosphere. Below the cloud base, the momentum flux is also not considered because of the wave momentum cancellation. At the cloud top, the momentum flux is obtained by eq.(18) and (19) in Chun and Baik (1998) \cite{chun_and_baik_1998}. Above the cloud top, there are two ways to construct the momentum flux profile. One way is to specify a vertical structure of the momentum flux normalized by the cloud-\/top value, similar to what has been done for mountain drag parameterization. The other way is to apply the wave saturation hypothesis in order to find wave breaking levels in terms of the Richardon number criterion using the nonlinearity factor of thermally induced waves. \begin{DoxyCompactItemize}
+\item 
+subroutine \hyperlink{group___g_f_s__cgwd_ga722b7730110e3c91524ccf414eab9dfe}{gwdc} (im, ix, iy, km, lat, u1, v1, t1, q1, deltim,
+\end{DoxyCompactItemize}
+
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{group___g_f_s__cgwd_ga722b7730110e3c91524ccf414eab9dfe}\label{group___g_f_s__cgwd_ga722b7730110e3c91524ccf414eab9dfe}} 
+\index{G\+F\+S Convective Gravity Wave Drag@{G\+F\+S Convective Gravity Wave Drag}!gwdc@{gwdc}}
+\index{gwdc@{gwdc}!G\+F\+S Convective Gravity Wave Drag@{G\+F\+S Convective Gravity Wave Drag}}
+\subsubsection{\texorpdfstring{gwdc()}{gwdc()}}
+{\footnotesize\ttfamily subroutine gwdc (\begin{DoxyParamCaption}\item[{integer}]{im,  }\item[{integer}]{ix,  }\item[{integer}]{iy,  }\item[{integer}]{km,  }\item[{integer}]{lat,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{u1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{v1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{t1,  }\item[{real(kind=kind\+\_\+phys), dimension(ix,km)}]{q1,  }\item[{real(kind=kind\+\_\+phys)}]{deltim }\end{DoxyParamCaption})}
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em IM} & horizontal number of used pts \\
+\hline
+\mbox{\tt in}  & {\em IX} & horizontal dimension \\
+\hline
+\mbox{\tt in}  & {\em IY} & horizontal number of used pts \\
+\hline
+\mbox{\tt in}  & {\em KM} & vertical layer dimension \\
+\hline
+\mbox{\tt in}  & {\em L\+AT} & latitude index -\/ used for debug prints \\
+\hline
+\mbox{\tt in}  & {\em U1} & u component of layer wind \\
+\hline
+\mbox{\tt in}  & {\em V1} & v component of layer wind \\
+\hline
+\mbox{\tt in}  & {\em T1} & layer mean temperature (K) \\
+\hline
+\mbox{\tt in}  & {\em Q1} & layer mean tracer concentration \\
+\hline
+\mbox{\tt in}  & {\em P\+M\+I\+D1} & mean layer pressure \\
+\hline
+\mbox{\tt in}  & {\em P\+I\+N\+T1} & pressure at layer interfaces \\
+\hline
+\mbox{\tt in}  & {\em D\+P\+M\+I\+D1} & mean layer delta p \\
+\hline
+\mbox{\tt in}  & {\em Q\+M\+AX} & maximum convective heating rate (k/s) in a horizontal grid point calculated from cumulus parameterization \\
+\hline
+\mbox{\tt in}  & {\em K\+T\+OP} & vertical level index for cloud top \\
+\hline
+\mbox{\tt in}  & {\em K\+B\+OT} & vertical level index for cloud bottom \\
+\hline
+\mbox{\tt in}  & {\em K\+C\+NV} & (0,1) dependent on whether convection occur or not \\
+\hline
+\mbox{\tt in}  & {\em C\+L\+DF} & deep convective cloud fraction at the cloud top \\
+\hline
+\mbox{\tt in}  & {\em G\+R\+AV} & gravity defined in physcon \\
+\hline
+\mbox{\tt in}  & {\em CP} & specific heat at constant pressure defined in physcon \\
+\hline
+\mbox{\tt in}  & {\em RD} & gas constant air defined in physcon \\
+\hline
+\mbox{\tt in}  & {\em FV} & con\+\_\+fvirt = con\+\_\+rv/con\+\_\+rd-\/1 \\
+\hline
+\mbox{\tt in}  & {\em D\+L\+E\+N\+G\+TH} & grid spacing in the direction of basic wind at the cloud top \\
+\hline
+\mbox{\tt in}  & {\em L\+P\+R\+NT} & logical print flag \\
+\hline
+\mbox{\tt in}  & {\em I\+PR} & check print point for debugging \\
+\hline
+\mbox{\tt in}  & {\em F\+H\+O\+UR} & forecast hour \\
+\hline
+\mbox{\tt out}  & {\em U\+T\+G\+WC} & zonal wind tendency \\
+\hline
+\mbox{\tt out}  & {\em V\+T\+G\+WC} & meridional wind tendency \\
+\hline
+\mbox{\tt out}  & {\em T\+A\+U\+C\+TX} & wave stress at the cloud top projected in the east \\
+\hline
+\mbox{\tt out}  & {\em T\+A\+U\+C\+TY} & wave stress at the cloud top projected in the north\\
+\hline
+\end{DoxyParams}
+\hypertarget{group___g_f_s__cgwd_arg_table_gwdc_run}{}\subsection{Arguments}\label{group___g_f_s__cgwd_arg_table_gwdc_run}
+\tabulinesep=1mm
+\begin{longtabu} spread 0pt [c]{*{9}{|X[-1]}|}
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\rowcolor{\tableheadbgcolor}\textbf{ local var name }&\textbf{ longname }&\textbf{ description }&\textbf{ units }&\textbf{ rank }&\textbf{ type }&\textbf{ kind }&\textbf{ intent }&\textbf{ optional  }\\\cline{1-9}
+\endhead
+im &horizontal\+\_\+loop\+\_\+extent &horizontal loop extent, start at 1 &index &0 &integer &&in &F \\\cline{1-9}
+\end{longtabu}
+\hypertarget{group___g_f_s__cgwd_al_gwdc}{}\subsection{General Algorithm}\label{group___g_f_s__cgwd_al_gwdc}
+
+\begin{DoxyEnumerate}
+\item Create local arrays with reversed vertical indices and Initialize local variables
+\begin{DoxyItemize}
+\item The top interface temperature, density, and Brunt-\/\+Vaisala frequencies ( $N$) are calculated assuming an isothermal atmosphere above the top mid level.
+\item The bottom interface temperature, density, and Brunt-\/\+Vaisala frequencies ( $N$) are calculated assuming an isothermal atmosphere below the bottom mid level.
+\item The interface level temperature, density, and Brunt-\/\+Vaisala frequencies ( $N$) are calculated based on linear interpolation of temperature in ln(\+P).
+\item The mid-\/level Brunt-\/\+Vaisala frequencies ( $N$) are calculated based on interpolated interface temperatures.
+\end{DoxyItemize}
+\item Calculate the cloud top wind components and speed. Here, ucltop, vcltop, and windcltop are wind components and wind speed at mid-\/level cloud top index
+\item Calculate the basic state wind projected in the direction of the cloud top wind at mid level and interface level (U, UI), where\+: ~\newline
+ U \+: Basic-\/wind speed profile. Basic-\/wind is parallel to the wind vector at the cloud top level. (mid level) ~\newline
+ UI\+: Basic-\/wind speed profile. Basic-\/wind is parallel to the wind vector at the cloud top level. ( interface level )
+\item Calculate the local Richardson number \[ Ri=N^2/\eta^2 \] where $\eta$ is the vertical shear ( $dU/dz$).
+\item Calculate the gravity wave stress at the interface level cloud top.
+\begin{DoxyItemize}
+\item Wave stress at cloud top is calculated when the atmosphere is dynamically stable at the cloud top
+\item The cloud top wave stress and nonlinear parameter are calculated using density, temperature, and wind that are defined at mid level just below the interface level in which cloud top wave stress is defined. The parameter $\mu$ is the nonlinearity factor of thermally induced internal gravity waves defined by eq.(17) in Chun and Baik, 1998 \cite{chun_and_baik_1998} \[ \mu=\frac{gQ_{0}a_{1}}{c_{p}T_{0}NU^{2}} \] where $Q_{0}$ is the maximum deep convective heating rate in a horizontal grid point calculated from cumulus parameterization. $a_{1}$ is the half-\/width of the forcing function. $g$ is gravity. $c_{p}$ is specific heat at constant pressure. $T_{0}$ is the layer mean temperature (T1). As eqs.(18) and (19) \cite{chun_and_baik_1998}, the zonal momentum flux is given by \[ \tau_{x}=-[\rho U^{3}/(N\triangle x)]G(\mu) \] where \[ G(\mu)=c_{1}c_2^2 \mu^{2} \] wher $\rho$ is the local density. The tunable parameter $c_1$ is related to the horizontal structure of thermal forcing. The tunable parameter $c_2$ is related to the basic-\/state wind and stability and the bottom and top heights of thermal forcing. If the atmosphere is dynamically unstable at the cloud top, the convective G\+WD calculation is skipped at that grid point.
+\item The stress is capped at tauctmax = -\/ 5 $n/m^2$ in order to prevent numerical instability.
+\end{DoxyItemize}
+\item Calculate the minimum Richardson number including both the basic-\/state condition and wave effects. \[ Ri_{min}\approx\frac{Ri(1-\mu|c_{2}|)}{(1+\mu Ri^{1/2}|c_{2}|)^{2}} \]
+\item Calculate the gravity wave stress profile using the wave saturation hypothesis of Lindzen (1981) \cite{lindzen_1981}.
+\begin{DoxyItemize}
+\item When $Ri_{min}$ is set to 1/4 based on Lindzen\textquotesingle{}s (1981) \cite{lindzen_1981} saturation hypothesis, the nonlinearity factor for wave saturation can be derived by \[ \mu_{s}=\frac{1}{|c_{2}|}[2\sqrt{2+\frac{1}{\sqrt{Ri}}}-(2+\frac{1}{\sqrt{Ri}})] \] Then the saturation zonal momentum flux is given by \[ \tau_{s}=-[\rho U^{3}/(N\triangle x)]c_{1}c_2^2\mu_s^2 \]
+\item If the minimum $R_{i}$ at interface cloud top is less than or equal to 1/4, the convective G\+WD calculation is skipped at that grid point.
+\item As an upper boundary condition, upward propagation of gravity wave energy is permitted.
+\end{DoxyItemize}
+\item Calculate wind tendency in direction to the wind vector,zonal wind tendency and meridional wind tendency above the cloud top level due to convectively generated gravity waves.
+\item Convert back local convective G\+WD tendency arrays to G\+FS model vertical indices. 
+\end{DoxyEnumerate}
+
+Definition at line 86 of file gwdc.\+f.
+

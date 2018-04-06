@@ -1,0 +1,3 @@
+<map id="module_radiation_aerosols::aer_update" name="module_radiation_aerosols::aer_update">
+<area shape="rect" id="node2" href="$group__module__radiation__driver.html#gaf786f458b449d00108db0a6697b6958e" title="This subroutine checks and updates time sensitive data used by radiation computations. This subroutine needs to be placed inside the time advancement loop but outside of the horizontal grid loop. It is invoked at radiation calling frequncy but before any actual radiative transfer computations. " alt="" coords="230,5,389,46"/>
+</map>

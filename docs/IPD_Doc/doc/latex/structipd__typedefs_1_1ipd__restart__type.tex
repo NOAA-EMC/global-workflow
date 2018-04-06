@@ -1,0 +1,104 @@
+\section{ipd\+\_\+typedefs\+:\+:ipd\+\_\+restart\+\_\+type Type Reference}
+\label{structipd__typedefs_1_1ipd__restart__type}\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+
+
+Collaboration diagram for ipd\+\_\+typedefs\+:\+:ipd\+\_\+restart\+\_\+type\+:
+% FIG 0
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+integer \textbf{ num2d}
+\begin{DoxyCompactList}\small\item\em current number of registered 2D restart variables \end{DoxyCompactList}\item 
+integer \textbf{ num3d}
+\begin{DoxyCompactList}\small\item\em current number of registered 3D restart variables \end{DoxyCompactList}\item 
+character(len=32), dimension(\+:), allocatable \textbf{ name2d}
+\begin{DoxyCompactList}\small\item\em variable name as it will appear in the restart file \end{DoxyCompactList}\item 
+character(len=32), dimension(\+:), allocatable \textbf{ name3d}
+\begin{DoxyCompactList}\small\item\em variable name as it will appear in the restart file \end{DoxyCompactList}\item 
+type(\textbf{ var\+\_\+subtype}), dimension(\+:,\+:), allocatable \textbf{ data}
+\begin{DoxyCompactList}\small\item\em holds pointers to data in packed format (allocated to (nblks,max(2d/3dfields)) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 37 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structipd__typedefs_1_1ipd__restart__type_af24e39917e0cbf35a55dcc80300eba57}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}!num2d@{num2d}}
+\index{num2d@{num2d}!ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+\subsubsection{num2d}
+{\footnotesize\ttfamily integer ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type\+::num2d}
+
+
+
+current number of registered 2D restart variables 
+
+
+
+Definition at line 38 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__restart__type_a8b9453de49da6dc2eec3f1b8d67b16f9}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}!num3d@{num3d}}
+\index{num3d@{num3d}!ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+\subsubsection{num3d}
+{\footnotesize\ttfamily integer ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type\+::num3d}
+
+
+
+current number of registered 3D restart variables 
+
+
+
+Definition at line 39 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__restart__type_a4c21d56e0bd0e98807a997059ca344e6}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}!name2d@{name2d}}
+\index{name2d@{name2d}!ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+\subsubsection{name2d}
+{\footnotesize\ttfamily character(len=32), dimension(\+:), allocatable ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type\+::name2d}
+
+
+
+variable name as it will appear in the restart file 
+
+
+
+Definition at line 40 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__restart__type_a7fefeb18b03b4e6d405c382b26f09dc2}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}!name3d@{name3d}}
+\index{name3d@{name3d}!ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+\subsubsection{name3d}
+{\footnotesize\ttfamily character(len=32), dimension(\+:), allocatable ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type\+::name3d}
+
+
+
+variable name as it will appear in the restart file 
+
+
+
+Definition at line 41 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__restart__type_a078018c4127e064716fe1117a8a7afa7}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}!data@{data}}
+\index{data@{data}!ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type}}
+\subsubsection{data}
+{\footnotesize\ttfamily type(\textbf{ var\+\_\+subtype}), dimension(\+:,\+:), allocatable ipd\+\_\+typedefs\+::ipd\+\_\+restart\+\_\+type\+::data}
+
+
+
+holds pointers to data in packed format (allocated to (nblks,max(2d/3dfields)) 
+
+
+
+Definition at line 42 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ I\+P\+D\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

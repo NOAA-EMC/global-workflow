@@ -1,0 +1,1024 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<postxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="EMC_POST_CTRL_Schema.xsd">
+<!--  Lin Gan:  20150410 validated -->
+  <paramset>
+    <datset>GFSPRS</datset>
+    <grid_num>0</grid_num>
+    <sub_center>ncep_nco</sub_center>
+    <version_no>v2003</version_no>
+    <local_table_vers_no>local_tab_yes1</local_table_vers_no>
+    <sigreftime>fcst</sigreftime>
+    <prod_status>oper</prod_status>
+    <data_type>fcst</data_type>
+    <gen_proc_type>fcst</gen_proc_type>
+    <time_range_unit>hour</time_range_unit>
+    <orig_center>nws_ncep</orig_center>
+    <gen_proc>gfs_avn</gen_proc>
+    <packing_method>complex_packing_spatial_diff</packing_method>
+    <order_of_sptdiff>2nd_ord_sptdiff</order_of_sptdiff>
+    <field_datatype>fltng_pnt</field_datatype>
+    <comprs_type>lossless</comprs_type>
+
+    <param>
+       <shortname>HGT_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale> 
+    </param>
+
+    <param>
+       <shortname>SPFH_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VVEL_ON_ISOBARIC_SFC</shortname>
+       <level>10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 
+       	65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>ABSV_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>O3MR_ON_ISOBARIC_SFC</shortname>
+       <table_info>NCEP</table_info>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 20000. 25000. 30000. 35000. 40000.</level>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>CLWMR_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 
+       	45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>CICE_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500.
+        45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>RWMR_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500.
+        45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>SNMR_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500.
+        45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>GRMR_ON_ISOBARIC_SFC</shortname>
+       <level>100. 200. 300. 500. 700. 1000. 2000. 3000. 5000. 7000. 10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500.
+        45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>ICIP_ON_ISOBARIC_SFC</shortname>
+       <level>10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 
+       	65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>ICSEV_ON_ISOBARIC_SFC</shortname>
+       <level>10000. 12500. 15000. 17500. 20000. 22500. 25000. 27500. 30000. 32500. 35000. 37500. 40000. 42500. 45000. 47500. 50000. 52500. 55000. 57500. 60000. 62500. 
+        65000. 67500. 70000. 72500. 75000. 77500. 80000. 82500. 85000. 87500. 90000. 92500. 95000. 97500. 100000.</level>
+       <scale>3.0</scale>
+    </param> 
+
+    <param>
+       <shortname>REFC_ON_ENTIRE_ATMOS</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>MSLET_ON_MEAN_SEA_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_MEAN_SEA_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>SPFH_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>DPT_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_10m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_SURFACE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_SURFACE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TSOIL_ON_DEPTH_BEL_LAND_SFC</shortname>
+       <scale_fact_fixed_sfc1>2 2 2 2</scale_fact_fixed_sfc1>
+       <level>0. 10. 40. 100.</level>
+       <scale_fact_fixed_sfc2>2 2 2 2</scale_fact_fixed_sfc2>
+       <level2>10. 40. 100. 200.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>SOILW_ON_DEPTH_BEL_LAND_SFC</shortname>
+       <table_info>NCEP</table_info>
+       <scale_fact_fixed_sfc1>2 2 2 2</scale_fact_fixed_sfc1>
+       <level>0. 10. 40. 100.</level>
+       <scale_fact_fixed_sfc2>2 2 2 2</scale_fact_fixed_sfc2>
+       <level2>10. 40. 100. 200.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>SOILL_ON_DEPTH_BEL_LAND_SFC</shortname>
+       <table_info>NCEP</table_info>
+       <scale_fact_fixed_sfc1>2 2 2 2</scale_fact_fixed_sfc1>
+       <level>0. 10. 40. 100.</level>
+       <scale_fact_fixed_sfc2>2 2 2 2</scale_fact_fixed_sfc2>
+       <level2>10. 40. 100. 200.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>CNWAT_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>WEASD_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>PEVPR_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>ICETK_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>SNOD_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+       <bit_map_flag>yes</bit_map_flag>
+    </param>
+
+    <param>
+       <shortname>WILT_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+       <bit_map_flag>yes</bit_map_flag>
+    </param>
+
+    <param>
+       <shortname>FLDCP_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+       <bit_map_flag>yes</bit_map_flag>
+    </param>
+
+    <param>
+       <shortname>GFS_LFTX_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>GFS_4LFTX_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>PLI_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000.</level>
+       <level2>0.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>CAPE_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>BEST_CAPE_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>UNSTABLE_CAPE_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>CIN_ON_SURFACE</shortname>
+       <level>0.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>BEST_CIN_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>UNSTABLE_CIN_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>PWAT_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>HLCY_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+       <level>3000.</level>
+       <level2>0.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>USTM_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+       <table_info>NCEP</table_info>
+       <level>6000.</level>
+       <level2>0.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VSTM_ON_SPEC_HGT_LVL_ABOVE_GRND</shortname>
+       <table_info>NCEP</table_info>
+       <level>6000.</level>
+       <level2>0.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>ACM_APCP_ON_SURFACE</shortname>
+       <scale>-4.0</scale>
+    </param>
+
+    <param>
+       <shortname>ACM_ACPCP_ON_SURFACE</shortname>
+       <scale>-4.0</scale>
+    </param>
+
+    <param>
+       <shortname>ACM_NCPCP_ON_SURFACE</shortname>
+       <scale>-4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CRAIN_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CSNOW_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CICEP_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CFRZR_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>INST_CRAIN_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>INST_CSNOW_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>INST_CICEP_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>INST_CFRZR_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRATE_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CPRAT_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TCDC_ON_LOW_CLOUD_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TCDC_ON_MID_CLOUD_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TCDC_ON_HIGH_CLOUD_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TCDC_ON_ENTIRE_ATMOS</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>VIS_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_DSWRF_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CDUVB_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_DUVB_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_DLWRF_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_USWRF_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_ULWRF_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_USWRF_ON_TOP_OF_ATMOS</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_ULWRF_ON_TOP_OF_ATMOS</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>BRTMP_ON_TOP_OF_ATMOS</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>SFCR_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>FRICV_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_SHTFL_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_GFLUX_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_LHTFL_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_UFLX_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_VFLX_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>LAND_ON_SURFACE</shortname>
+    </param>
+
+    <param>
+       <shortname>ICEC_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_ALBDO_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_TROPOPAUSE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_TROPOPAUSE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_TROPOPAUSE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_TROPOPAUSE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_TROPOPAUSE</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VWSH_ON_TROPOPAUSE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <level>305. 457. 610. 914. 1829. 2743. 3658. 4572.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <level>305. 457. 610. 914. 1829. 2743. 3658. 4572.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_SPEC_ALT_ABOVE_MEAN_SEA_LVL</shortname>
+       <level>305. 457. 610. 914. 1829. 2743. 3658. 4572.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SPEC_HGT_LVL_ABOVE_GRND_FDHGT</shortname>
+       <level>80. 100.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_FDHGT</shortname>
+       <level>30. 80. 100.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_SPEC_HGT_LVL_ABOVE_GRND_FDHGT</shortname>
+       <level>30. 80. 100.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_SPEC_HGT_LVL_ABOVE_GRND_FDHGT</shortname>
+       <level>80.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>SPFH_ON_SPEC_HGT_LVL_ABOVE_GRND_FDHGT</shortname>
+       <level>80.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_0C_ISOTHERM</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_0C_ISOTHERM</shortname>
+       <scale>2.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_HGHST_TROP_FRZ_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_HGHST_TROP_FRZ_LVL</shortname>
+       <scale>2.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000. 6000. 9000. 12000. 15000. 18000.</level>
+       <level2>0. 3000. 6000. 9000. 12000. 15000.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>DPT_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000.</level>
+       <level2>0.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>SPFH_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000. 6000. 9000. 12000. 15000. 18000.</level>
+       <level2>0. 3000. 6000. 9000. 12000. 15000.</level2>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000. 6000. 9000. 12000. 15000. 18000.</level>
+       <level2>0. 3000. 6000. 9000. 12000. 15000.</level2>
+       <scale>2.0</scale>
+    </param>
+
+    <param>
+       <shortname>PWAT_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000.</level>
+       <level2>0.</level2>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000. 6000. 9000. 12000. 15000. 18000.</level>
+       <level2>0. 3000. 6000. 9000. 12000. 15000.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>3000. 6000. 9000. 12000. 15000. 18000.</level>
+       <level2>0. 3000. 6000. 9000. 12000. 15000.</level2>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SIGMA_LVL_0.33-1.0</shortname>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SIGMA_LVL_0.44-1.0</shortname>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SIGMA_LVL_0.72-0.94</shortname>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SIGMA_LVL_0.44-0.72</shortname>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>POT_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VVEL_ON_SIGMA_LVL_0.9950</shortname>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_MAX_WIND</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_MAX_WIND</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_MAX_WIND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_MAX_WIND</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_MAX_WIND</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>HPBL_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_CONVECTIVE_CLOUD_BOT_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_CONVECTIVE_CLOUD_TOP_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_LOW_CLOUD_BOT_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_MID_CLOUD_BOT_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_HIGH_CLOUD_BOT_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_LOW_CLOUD_TOP_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_MID_CLOUD_TOP_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_PRES_ON_HIGH_CLOUD_TOP_LVL</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TMP_ON_LOW_CLOUD_TOP_LVL</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TMP_ON_MID_CLOUD_TOP_LVL</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TMP_ON_HIGH_CLOUD_TOP_LVL</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>GFS_TCDC_ON_CONVECTIVE_CLOUD_LYR</shortname>
+       <scale>2.0</scale>
+    </param>
+
+    <param>
+       <shortname>CWAT_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>RH_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+       <scale>2.0</scale>
+    </param>
+
+    <param>
+       <shortname>TOZNE_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>GUST_ON_SURFACE</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>PLPL_ON_SPEC_PRES_ABOVE_GRND</shortname>
+       <level>25500.</level>
+       <level2>0.</level2>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>TCDC_ON_ISOBARIC_SFC</shortname>
+       <level>47500.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_ISENTROPIC_LVL</shortname>
+       <level>320.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_ISENTROPIC_LVL</shortname>
+       <level>320.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_ISENTROPIC_LVL</shortname>
+       <level>320.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>PVORT_ON_ISENTROPIC_LVL</shortname>
+       <level>320.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>MNTSF_ON_ISENTROPIC_LVL</shortname>
+       <level>320.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_POT_VORT_SFC</shortname>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_POT_VORT_SFC</shortname>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>TMP_ON_POT_VORT_SFC</shortname>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>HGT_ON_POT_VORT_SFC</shortname>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>PRES_ON_POT_VORT_SFC</shortname>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>VWSH_ON_POT_VORT_SFC</shortname>
+       <table_info>NCEP</table_info>
+       <scale_fact_fixed_sfc1>9 9 9 9 9 9 9 9</scale_fact_fixed_sfc1>
+       <level>500. -500. 1000. -1000. 1500. -1500. 2000. -2000.</level>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_TCDC_ON_BOUND_LYR_CLOUD_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_CWORK_ON_ENTIRE_ATMOS_SINGLE_LYR</shortname>
+       <table_info>NCEP</table_info>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_U-GWD_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>AVE_V-GWD_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>ACM_WATR_ON_SURFACE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>MAX_TMAX_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>MIN_TMIN_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <param>
+       <shortname>ICAHT_ON_MAX_WIND</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>ICAHT_ON_TROPOPAUSE</shortname>
+       <scale>6.0</scale>
+    </param>
+
+    <param>
+       <shortname>SUNSD_ON_SURFACE</shortname>
+       <table_info>NCEP</table_info>
+       <scale>5.0</scale>
+    </param>
+
+    <param>
+       <shortname>UGRD_ON_PLANETARY_BOUND_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>VGRD_ON_PLANETARY_BOUND_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>VRATE_ON_PLANETARY_BOUND_LYR</shortname>
+       <scale>3.0</scale>
+    </param>
+
+    <param>
+       <shortname>HINDEX_ON_SURFACE</shortname>
+       <scale>1.0</scale>
+    </param>
+
+    <param>
+       <shortname>CPOFP_ON_SURFACE</shortname>
+       <scale>4.0</scale>
+    </param>  
+
+    <param>
+       <shortname>APTMP_ON_SPEC_HGT_LVL_ABOVE_GRND_2m</shortname>
+       <scale>4.0</scale>
+    </param>
+
+    <!--  comments wherever I like -->
+  </paramset>
+</postxml>

@@ -1,0 +1,490 @@
+#####################################################################
+echo "-----------------------------------------------------"
+echo " exgfs_nceppost.sh.ecf" 
+echo " Apr 99 - Michaud - Generated to post global forecast"
+echo " Mar 03 - Zhu - Add post for 0.5x0.5 degree"
+echo " Nov 03 - Gilbert - Modified from exglobal_post.sh.sms"
+echo "                    to run only one master post job."
+echo " Jan 07 - Cooke - Add DBNet Alert for Master files"
+echo " May 07 - Chuang - Modified scripts to run unified post"
+echo " Feb 10 - Carlis - Add 12-hr accum precip bucket at f192"
+echo " Jun 12 - Wang   - Add option for grb2"
+echo " Jul 14 - Carlis - Add 0.25 deg master "
+echo " Mar 17 - F Yang -  Modified for running fv3gfs"
+echo " Aug 17 - Meng   - Add flags for turning on/off flx, gtg " 
+echo "                   and satellite look like file creation"   
+echo "                   and use 3-digit forecast hour naming"
+echo "                   post output files"
+echo " Dec 17 - Meng - Link sfc data file to flxfile "
+echo "                 since fv3gfs does not output sfc files any more." 
+echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
+echo " Jan 18 - Meng - Add flag PGBF for truning on/off pgb processing. "
+echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting" 
+echo "                 from j-job script."
+echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
+echo "                 and reading sigio model outputs."
+echo "-----------------------------------------------------"
+#####################################################################
+
+set -x
+
+cd $DATA
+
+# specify model output format type: 4 for nemsio, 3 for sigio
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+
+export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
+export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
+export GFSDWNSH=${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh}
+export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
+
+############################################################
+#  Define Variables:
+#  -----------------
+#  FH           is the current forecast hour.
+#  SLEEP_TIME   is the number of seconds to sleep before exiting with error.
+#  SLEEP_INT    is the number of seconds to sleep between restrt file checks.
+#  restart_file is the name of the file to key off of to kick off post.
+############################################################
+export IO=${LONB:-1440}
+export JO=${LATB:-721}
+export OUTTYP=${OUTTYP:-4}
+export FLXF=${FLXF:-"YES"}
+export GOESF=${GOESF:-"YES"}
+export GTGF=${GTGF:-"YES"}
+export PGBF=${PGBF:-"YES"}
+export TCYC=${TCYC:-".t${cyc}z."}
+export PREFIX=${PREFIX:-${RUN}${TCYC}}
+if [ $OUTTYP -eq 4 ] ; then
+  export SUFFIX=".nemsio"
+else
+  export SUFFIX=
+fi
+export machine=${machine:-WCOSS_C}
+
+###########################
+# Specify Output layers
+###########################
+export POSTGPVARS="KPO=50,PO=1000.,975.,950.,925.,900.,875.,850.,825.,800.,775.,750.,725.,700.,675.,650.,625.,600.,575.,550.,525.,500.,475.,450.,425.,400.,375.,350.,325.,300.,275.,250.,225.,200.,175.,150.,125.,100.,70.,50.,40.,30.,20.,15.,10.,7.,5.,3.,2.,1.,0.4,"
+
+##########################################################
+# Specify variable to directly output pgrb2 files for GDAS/GFS
+##########################################################
+export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon grid
+
+############################################################
+# Post Analysis Files before starting the Forecast Post
+############################################################
+# Process analysis when post_times is 00
+ export stime=`echo $post_times | cut -c1-3`
+if [ $OUTTYP -eq 4 ] ; then
+  export loganl=$COMIN/${PREFIX}atmanl${SUFFIX}
+else
+  export loganl=$COMIN/${PREFIX}sanl
+fi
+
+#----------------------------------
+if [ ${stime} = "anl" ]; then
+#----------------------------------
+
+if test -f $loganl 
+then
+   
+# add new environmental variables for running new ncep post
+# Validation date
+   export VDATE=${PDY}${cyc}
+# specify output file name from chgres which is input file name to nceppost
+# if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
+# new imported variable for global_nceppost.sh
+   export GFSOUT=${PREFIX}gfsioanl
+
+# specify smaller control file for GDAS because GDAS does not
+# produce flux file, the default will be /nwprod/parm/gfs_cntrl.parm
+   if [ $GRIBVERSION = 'grib2' ]; then
+# use grib2 nomonic table in product g2tmpl directory as default 
+     export POSTGRB2TBL=${POSTGRB2TBL:-${NWROOT}/lib/g2tmpl/${g2tmpl_ver}/src/params_grib2_tbl_new}
+     export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt}
+     export CTLFILE=$PARMpost/postcntrl_gfs_anl.xml
+   fi
+
+   rm sigfile sfcfile nemsfile
+   if [ $OUTTYP -eq 4 ] ; then
+     ln -fs $COMIN/${PREFIX}atmanl${SUFFIX} nemsfile
+     export NEMSINP=nemsfile
+     ln -fs $COMIN/${PREFIX}sfcanl${SUFFIX} flxfile
+     export FLXINP=flxfile
+   fi
+
+   export PGBOUT=pgbfile
+   export PGIOUT=pgifile
+   export PGBOUT2=pgbfile.grib2
+   export PGIOUT2=pgifile.grib2.idx
+   export IGEN=$IGEN_ANL
+   export FILTER=1
+
+   $POSTGPSH
+   
+   if test $GRIBVERSION = 'grib2'
+   then
+     cp $PGBOUT $PGBOUT2
+   fi
+
+#  Process pgb files
+   if test "$PGBF" = 'YES'
+   then
+     export FH=-1
+     export downset=${downset:-2}
+     $GFSDOWNSH
+   fi
+
+   if test "$SENDCOM" = 'YES'
+   then
+     export fhr3=anl
+     if [ $GRIBVERSION = 'grib2' ]
+     then
+       MASTERANL=${PREFIX}master.grb2${fhr3}
+       MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
+       cp $PGBOUT2 $COMOUT/${MASTERANL}
+       $GRB2INDEX $PGBOUT2 $COMOUT/${MASTERANLIDX}
+     fi
+
+     if test "$SENDDBN" = 'YES'
+     then
+       #$DBNROOT/bin/dbn_alert MODEL GFS_MSC_sfcanl $job $COMOUT/${PREFIX}sfcanl
+       #$DBNROOT/bin/dbn_alert MODEL GFS_SA $job $COMIN/${PREFIX}atmanl
+       $DBNROOT/bin/dbn_alert MODEL GFS_MASTER $job $COMOUT/${MASTERANL}
+       if test "$PGBF" = 'YES'
+       then
+         $DBNROOT/bin/dbn_alert MODEL GFS_PGB2_0P25 $job $COMOUT/${PREFIX}pgrb2.0p25.anl
+         $DBNROOT/bin/dbn_alert MODEL GFS_PGB2_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2.0p25.anl.idx
+         $DBNROOT/bin/dbn_alert MODEL GFS_PGB2B_0P25 $job $COMOUT/${PREFIX}pgrb2b.0p25.anl
+         $DBNROOT/bin/dbn_alert MODEL GFS_PGB2B_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2b.0p25.anl.idx
+       fi
+     fi 
+
+   fi
+   rm pgbfile pgifile pgbfile.grib2 tfile prmsl h5wav
+   ecflow_client --event release_pgrb2_anl
+fi
+
+#----------------------------------
+else   ## not_anl if_stime
+#----------------------------------
+
+SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+
+# Chuang: modify to submit one post job at a time
+############################################################
+# Loop Through the Post Forecast Files 
+############################################################
+
+for fhr in $post_times
+do
+    echo 'Start processing fhr='$post_times
+    ###############################
+    # Start Looping for the 
+    # existence of the restart files
+    ###############################
+    set -x
+    export pgm="postcheck"
+    ic=1
+    while [ $ic -le $SLEEP_LOOP_MAX ]
+    do
+       if test -f $restart_file$fhr$SUFFIX
+       then
+          break
+       else
+          ic=`expr $ic + 1`
+          sleep $SLEEP_INT
+       fi
+       ###############################
+       # If we reach this point assume
+       # fcst job never reached restart 
+       # period and error exit
+       ###############################
+       if [ $ic -eq $SLEEP_LOOP_MAX ]
+       then
+          echo " *** FATA ERROR: No model output in nemsio for f${fhr} "
+          export err=9
+          err_chk
+       fi
+    done
+    set -x
+
+    msg="Starting post for fhr=$fhr"
+    postmsg "$jlogfile" "$msg"
+
+    ###############################
+    # Put restart files into /nwges 
+    # for backup to start Model Fcst
+    ###############################
+    rm sigfile sfcfile flxfile nemsfile
+    if [ $OUTTYP -eq 4 ] ; then
+      ln -fs $COMIN/${PREFIX}atmf${fhr}${SUFFIX} nemsfile
+      export NEMSINP=nemsfile
+      ln -fs $COMIN/${PREFIX}sfcf${fhr}${SUFFIX} flxfile
+      export FLXINP=flxfile
+    fi
+
+    if test $fhr -gt 0
+    then
+      export IGEN=$IGEN_FCST
+    else
+      export IGEN=$IGEN_ANL
+    fi
+    
+    export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
+    export OUTTYP=${OUTTYP:-4}
+    export GFSOUT=${PREFIX}gfsio${fhr}
+
+    if [ $GRIBVERSION = 'grib2' ]; then
+      export POSTGRB2TBL=${POSTGRB2TBL:-${NWROOT}/lib/g2tmpl/${g2tmpl_ver}/src/params_grib2_tbl_new}
+      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS.txt}
+
+      if [ $RUN = gfs ] ; then
+        export IGEN=$IGEN_GFS
+        if [ $fhr -gt 0 ] ; then export IGEN=$IGEN_FCST ; fi
+      else
+        export IGEN=$IGEN_GDAS_ANL
+        if [ $fhr -gt 0 ] ; then export IGEN=$IGEN_FCST ; fi
+      fi
+      if [[ $RUN = gfs ]] ; then
+        if test $fhr -eq 0
+        then
+          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
+          export CTLFILE=$PARMpost/postcntrl_gfs_f00.xml
+        else
+          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
+        fi
+      else
+        if test $fhr -eq 0
+        then
+          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
+          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs_f00.xml}
+        else
+          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
+        fi
+      fi
+#      export CTL=`basename $CTLFILE1`
+    fi
+    
+#    export SIGINP=sigfile
+#    export NEMSINP=${NEMSINP:-nemsfile}
+#    export SFCINPUT=sfcfile
+#    export FLXINP=${FLXINP:-flxfile}
+    export FLXIOUT=flxifile
+    export PGBOUT=pgbfile
+    export PGIOUT=pgifile
+    export PGBOUT2=pgbfile.grib2
+    export PGIOUT2=pgifile.grib2.idx
+    export FILTER=1 
+
+    $POSTGPSH
+
+#wm
+#    mv outpost_gfs_${VDATE}_${CTL} outpost_gfs_${VDATE}_master
+
+    if test $GRIBVERSION = 'grib2'
+    then
+      cp $PGBOUT $PGBOUT2
+    fi
+
+#  Process pgb files
+   if test "$PGBF" = 'YES'
+   then
+     export FH=`expr $fhr + 0`
+     export downset=${downset:-2}
+     $GFSDOWNSH
+   fi
+
+    if [ $GRIBVERSION = 'grib2' ]; then
+        MASTERFL=${PREFIX}master.grb2f${fhr}
+        MASTERFLIDX=${PREFIX}master.grb2if${fhr}
+    fi
+
+    if test $SENDCOM = "YES"
+    then
+#      echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.master.control
+      if [ $GRIBVERSION = 'grib2' ] ; then
+        cp $PGBOUT2 $COMOUT/${MASTERFL}
+	$GRB2INDEX $PGBOUT2 $COMOUT/${MASTERFLIDX}
+      fi
+ 
+      if test "$SENDDBN" = 'YES'
+      then
+	if [ $GRIBVERSION = 'grib2' ] ; then
+	  $DBNROOT/bin/dbn_alert MODEL GFS_MASTER $job $COMOUT/${MASTERFL}
+          if test "$PGBF" = 'YES'
+          then
+            $DBNROOT/bin/dbn_alert MODEL GFS_PGB2_0P25 $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}
+            $DBNROOT/bin/dbn_alert MODEL GFS_PGB2_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}.idx
+            $DBNROOT/bin/dbn_alert MODEL GFS_PGB2B_0P25 $job $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr}
+            $DBNROOT/bin/dbn_alert MODEL GFS_PGB2B_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr}.idx
+          fi
+	fi
+
+      fi 
+
+#      x3=`expr $fhr % 3`
+# x3=0 ---> Standard 3-hourly or 12-hourly output
+#           Only master grib files are needed for the hourly files
+#      if [ $x3 -eq 0 ] ; then
+       export fhr
+       $USHgfs/gfs_transfer.sh
+#      fi
+    fi
+    rm pgbfile* pgifile* tfile prmsl h5wav
+
+# use post to generate GFS Grib2 Flux file as model generated Flux file
+# will be in nemsio format after FY17 upgrade.
+    if [ $OUTTYP -eq 4 -a $FLXF = "YES" ] ; then
+      if test $fhr -eq 0
+      then
+       export PostFlatFile=$PARMpost/postxconfig-NT-GFS-FLUX-F00.txt
+       export CTLFILE=$PARMpost/postcntrl_gfs_flux_f00.xml
+      else
+       export PostFlatFile=$PARMpost/postxconfig-NT-GFS-FLUX.txt
+       export CTLFILE=$PARMpost/postcntrl_gfs_flux.xml
+      fi
+      export PGBOUT=fluxfile
+      export FILTER=0
+      $POSTGPSH
+      FLUXFL=${PREFIX}sfluxgrbf${fhr}.grib2
+      FLUXFLIDX=${PREFIX}sfluxgrbf${fhr}.grib2.idx
+      mv fluxfile $COMOUT/${FLUXFL}
+      $WGRIB2 -s $COMOUT/${FLUXFL} > $COMOUT/${FLUXFLIDX}
+      if test "$SENDDBN" = 'YES'
+      then
+        $DBNROOT/bin/dbn_alert MODEL GFS_SGB_GB2 $job $COMOUT/${FLUXFL}
+        $DBNROOT/bin/dbn_alert MODEL GFS_SGB_GB2_WIDX $job $COMOUT/${FLUXFLIDX}
+      fi
+     fi
+
+
+# process satellite look alike separately so that master pgb gets out in time    
+# set outtyp to 2 because master post already generates gfs io files
+    if [ $GOESF = "YES" ]; then
+
+    export OUTTYP=${OUTTYP:-4}     
+   
+# specify output file name from chgres which is input file name to nceppost 
+# if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
+# new imported variable for global_nceppost.sh
+
+    export GFSOUT=${PREFIX}gfsio${fhr}     
+
+    # link satellite coefficients files, use hwrf version as ops crtm 2.0.5
+    # does not new coefficient files used by post
+    export FIXCRTM=${FIXCRTM:-${NWROOTprod}/hwrf.${hwrf_ver}/fix/hwrf-crtm-2.0.6}
+    $USHgfs/link_crtm_fix.sh $FIXCRTM
+
+    if [ $GRIBVERSION = 'grib2' ] ; then 
+      export PostFlatFile=$PARMpost/postxconfig-NT-GFS-GOES.txt      
+      export CTLFILE=$PARMpost/postcntrl_gfs_goes.xml
+#      if test $fhr -eq 0
+#      then
+#        sed <$CTLFILE1 -e "s#${IGEN_FCST}#${IGEN_ANL}#" >$CTLFILE
+#      else
+#        cp $CTLFILE1 $CTLFILE
+#      fi
+    fi
+    export FLXINP=flxfile
+    export FLXIOUT=flxifile
+    export PGBOUT=goesfile
+    export PGIOUT=goesifile
+    export FILTER=0
+    export IO=0
+    export JO=0
+    export IGEN=0
+    
+    if [ $NET = gfs ]; then
+     $POSTGPSH
+    fi
+
+    if [ $GRIBVERSION = 'grib2' ]; then
+      SPECIALFL=${PREFIX}special.grb2
+      SPECIALFLIDX=${PREFIX}special.grb2i
+    fi
+    fhr3=$fhr
+
+    if test $SENDCOM = "YES"
+    then
+
+#       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.master.control
+
+       mv goesfile $COMOUT/${SPECIALFL}f$fhr
+       mv goesifile $COMOUT/${SPECIALFLIDX}f$fhr
+
+    fi
+   # rm flxfile flxifile goesfile goesifile    
+    rm flxifile goesfile goesifile    
+    fi
+# end of satellite processing
+
+##########################  GTG  start ##########################
+# process  gtg turbulence separately so that master pgb and
+# satellite look alike gets out in time.
+
+# process gtg turbulence only when fhr is every 3 hour between [3, 36]
+    if [[ $fhr -ge 3  &&  $fhr -le 36  && $((fhr%3)) -eq 0 && $GTGF = "YES" ]] ; then
+      export OUTTYP=${OUTTYP:-4}
+
+# specify output file name from chgres which is input file name to nceppost
+# if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
+# new imported variable for global_nceppost.sh
+      export GFSOUT=${PREFIX}gfsio${fhr}
+
+      # gtg has its own configurations
+      cp $PARMpost/gtg.config.gfs gtg.config
+
+      if [[ $RUN = gfs && $GRIBVERSION = 'grib2' ]] ; then
+          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-GTG.txt
+          export CTLFILE=${CTLFILEGTG:-$PARMpost/postcntrl_gfs_gtg.xml}
+
+#          export SIGINP=sigfile
+#          export NEMSINP=${NEMSINP:-nemsfile}
+#          export SFCINPUT=sfcfile
+#          export FLXINP=${FLXINP:-flxfile}
+          export FLXIOUT=flxifile
+          export PGBOUT=gtgfile
+          export PGIOUT=gtgifile
+          export FILTER=0
+          export IGEN=$IGEN_GFS
+
+          $POSTGPSH
+
+          SPECIALFL=${PREFIX}gtg.grb2
+          SPECIALFLIDX=${PREFIX}gtg.grb2i
+
+          if test $SENDCOM = "YES"
+          then
+              cp $PGBOUT $COMOUT/${SPECIALFL}f$fhr
+              cp $PGIOUT $COMOUT/${SPECIALFLIDX}f$fhr
+
+          fi
+      else
+          echo 'Warning!!!! GTG is NOT generated!!! Currently GTG only supports GFS and grib2.'
+      fi
+    else
+        echo 'Warning!!!! GTG is NOT generated!!! Currently GTG forecast hour is every 3 hour between [3, 36].'
+    fi # $fhr [3, 36]
+###########################  GTG  end ###########################
+
+
+    rm flxfile flxifile gtgfile gtgifile
+# end of gtg turbulence processing
+
+done
+
+#----------------------------------
+fi   ## end_if_stime
+#----------------------------------
+
+#cat $pgmout
+#msg='ENDED NORMALLY.'
+#postmsg "$jlogfile" "$msg"
+
+exit 0
+
+################## END OF SCRIPT #######################

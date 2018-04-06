@@ -1,0 +1,232 @@
+\section{ipd\+\_\+typedefs\+:\+:ipd\+\_\+diag\+\_\+type Type Reference}
+\label{structipd__typedefs_1_1ipd__diag__type}\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+
+
+Collaboration diagram for ipd\+\_\+typedefs\+:\+:ipd\+\_\+diag\+\_\+type\+:
+% FIG 0
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+character(len=32) \textbf{ name}
+\begin{DoxyCompactList}\small\item\em variable name in source \end{DoxyCompactList}\item 
+character(len=32) \textbf{ output\+\_\+name}
+\begin{DoxyCompactList}\small\item\em output name for variable \end{DoxyCompactList}\item 
+character(len=32) \textbf{ mod\+\_\+name}
+\begin{DoxyCompactList}\small\item\em module name (e.\+g. physics, radiation, etc) \end{DoxyCompactList}\item 
+character(len=32) \textbf{ file\+\_\+name}
+\begin{DoxyCompactList}\small\item\em output file name for variable \end{DoxyCompactList}\item 
+character(len=128) \textbf{ desc}
+\begin{DoxyCompactList}\small\item\em long description of field \end{DoxyCompactList}\item 
+character(len=32) \textbf{ unit}
+\begin{DoxyCompactList}\small\item\em units associated with fields \end{DoxyCompactList}\item 
+character(len=32) \textbf{ type\+\_\+stat\+\_\+proc}
+\begin{DoxyCompactList}\small\item\em type of statistic processing\+: average, accumulation, maximal, minimal, etc. \end{DoxyCompactList}\item 
+character(len=32) \textbf{ level\+\_\+type}
+\begin{DoxyCompactList}\small\item\em vertical level of the field \end{DoxyCompactList}\item 
+integer \textbf{ level}
+\begin{DoxyCompactList}\small\item\em vertical level(s) \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ cnvfac}
+\begin{DoxyCompactList}\small\item\em conversion factors to output in specified units \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ zhour}
+\begin{DoxyCompactList}\small\item\em forecast hour when bucket was last emptied for statistical processing \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys) \textbf{ fcst\+\_\+hour}
+\begin{DoxyCompactList}\small\item\em current forecast hour (same as fhour) \end{DoxyCompactList}\item 
+type(\textbf{ var\+\_\+subtype}), dimension(\+:), allocatable \textbf{ data}
+\begin{DoxyCompactList}\small\item\em holds pointers to data in packed format (allocated to nblks) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 49 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a25d840581c4a25b724cfbb2f0c4d9070}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!name@{name}}
+\index{name@{name}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{name}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::name}
+
+
+
+variable name in source 
+
+
+
+Definition at line 50 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a5b29d1f5218313602b1fa780b8c34cd4}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!output\+\_\+name@{output\+\_\+name}}
+\index{output\+\_\+name@{output\+\_\+name}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{output\+\_\+name}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::output\+\_\+name}
+
+
+
+output name for variable 
+
+
+
+Definition at line 51 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a63f48a09956929e7a4e5e46238207496}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!mod\+\_\+name@{mod\+\_\+name}}
+\index{mod\+\_\+name@{mod\+\_\+name}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{mod\+\_\+name}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::mod\+\_\+name}
+
+
+
+module name (e.\+g. physics, radiation, etc) 
+
+
+
+Definition at line 52 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a4938ec86843edc8864192dfe4b061bd5}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!file\+\_\+name@{file\+\_\+name}}
+\index{file\+\_\+name@{file\+\_\+name}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{file\+\_\+name}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::file\+\_\+name}
+
+
+
+output file name for variable 
+
+
+
+Definition at line 53 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_aa584021a964cb1e398fea54999fb5a19}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!desc@{desc}}
+\index{desc@{desc}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{desc}
+{\footnotesize\ttfamily character(len=128) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::desc}
+
+
+
+long description of field 
+
+
+
+Definition at line 54 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a91232bcb4c638f0fabe4deb97c6baffa}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!unit@{unit}}
+\index{unit@{unit}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{unit}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::unit}
+
+
+
+units associated with fields 
+
+
+
+Definition at line 55 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a39b941717014c78a145ba54d28ef4594}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!type\+\_\+stat\+\_\+proc@{type\+\_\+stat\+\_\+proc}}
+\index{type\+\_\+stat\+\_\+proc@{type\+\_\+stat\+\_\+proc}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{type\+\_\+stat\+\_\+proc}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::type\+\_\+stat\+\_\+proc}
+
+
+
+type of statistic processing\+: average, accumulation, maximal, minimal, etc. 
+
+
+
+Definition at line 56 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a1cbc19277349f08ca1c9113f67b3ed87}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!level\+\_\+type@{level\+\_\+type}}
+\index{level\+\_\+type@{level\+\_\+type}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{level\+\_\+type}
+{\footnotesize\ttfamily character(len=32) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::level\+\_\+type}
+
+
+
+vertical level of the field 
+
+
+
+Definition at line 58 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_ac7caec852190e7c39fad83c8ef64a284}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!level@{level}}
+\index{level@{level}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{level}
+{\footnotesize\ttfamily integer ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::level}
+
+
+
+vertical level(s) 
+
+
+
+Definition at line 59 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a29b55cd7963815b209401bece81a5f8f}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!cnvfac@{cnvfac}}
+\index{cnvfac@{cnvfac}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{cnvfac}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::cnvfac}
+
+
+
+conversion factors to output in specified units 
+
+
+
+Definition at line 60 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a47474ea3b178fcda4d69fc3ef8b1ba82}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!zhour@{zhour}}
+\index{zhour@{zhour}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{zhour}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::zhour}
+
+
+
+forecast hour when bucket was last emptied for statistical processing 
+
+
+
+Definition at line 61 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a8de1d39195951ac26ccec6657970d5bb}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!fcst\+\_\+hour@{fcst\+\_\+hour}}
+\index{fcst\+\_\+hour@{fcst\+\_\+hour}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{fcst\+\_\+hour}
+{\footnotesize\ttfamily real(kind=kind\+\_\+phys) ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::fcst\+\_\+hour}
+
+
+
+current forecast hour (same as fhour) 
+
+
+
+Definition at line 62 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+\mbox{\label{structipd__typedefs_1_1ipd__diag__type_a7d584d1547e92e53d293c8c7525b30e3}} 
+\index{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}!data@{data}}
+\index{data@{data}!ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type@{ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type}}
+\subsubsection{data}
+{\footnotesize\ttfamily type(\textbf{ var\+\_\+subtype}), dimension(\+:), allocatable ipd\+\_\+typedefs\+::ipd\+\_\+diag\+\_\+type\+::data}
+
+
+
+holds pointers to data in packed format (allocated to nblks) 
+
+
+
+Definition at line 63 of file I\+P\+D\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ I\+P\+D\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

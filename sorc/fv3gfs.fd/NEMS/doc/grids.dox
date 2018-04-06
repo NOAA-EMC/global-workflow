@@ -1,0 +1,20 @@
+/** @page grids Grids
+
+This is a list of commonly used grids in the NEMS system.  Note that
+this list is not comprehensive; other grids are in use and new ones
+are always considered.  Some applications even generate grids on the fly.
+
++ \subpage GRID_gsm
++ \subpage GRID_wam
++ \subpage GRID_mom5_1deg_tripole
++ \subpage GRID_mom5_0p5deg_tripole
++ \subpage GRID_CICE_gx3
++ \subpage Note_on_MOM-CICE_Grids
++ \subpage GRID_HYCOM_GLBa0p24
++ \subpage GRID_HYCOM_POP_glbx1v6
++ \subpage GRID_IPE
++ \subpage GRID_Front_Range_Regional
++ \subpage GRID_LIS_T126
++ \subpage GRID_Reduced_T574
+
+*/

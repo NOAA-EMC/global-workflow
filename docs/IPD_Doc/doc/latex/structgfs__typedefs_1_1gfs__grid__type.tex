@@ -1,0 +1,254 @@
+\section{gfs\+\_\+typedefs\+:\+:gfs\+\_\+grid\+\_\+type Type Reference}
+\label{structgfs__typedefs_1_1gfs__grid__type}\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+
+
+Collaboration diagram for gfs\+\_\+typedefs\+:\+:gfs\+\_\+grid\+\_\+type\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+procedure \textbf{ create} =$>$ \textbf{ grid\+\_\+create}
+\begin{DoxyCompactList}\small\item\em allocate array data \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ xlon} =$>$ null()
+\begin{DoxyCompactList}\small\item\em grid longitude in radians, ok for both 0-\/$>$2pi or -\/pi -\/$>$ +pi ranges \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ xlat} =$>$ null()
+\begin{DoxyCompactList}\small\item\em grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise adj in subr called \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ xlat\+\_\+d} =$>$ null()
+\begin{DoxyCompactList}\small\item\em grid latitude in degrees, default to 90 -\/$>$ -\/90 range, otherwise adj in subr called \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ sinlat} =$>$ null()
+\begin{DoxyCompactList}\small\item\em sine of the grids corresponding latitudes \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ coslat} =$>$ null()
+\begin{DoxyCompactList}\small\item\em cosine of the grids corresponding latitudes \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ area} =$>$ null()
+\begin{DoxyCompactList}\small\item\em area of the grid cell \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ dx} =$>$ null()
+\begin{DoxyCompactList}\small\item\em relative dx for the grid cell \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ddy\+\_\+o3} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation weight for ozone \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ jindx1\+\_\+o3} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation low index for ozone \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ jindx2\+\_\+o3} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation high index for ozone \end{DoxyCompactList}\item 
+real(kind=kind\+\_\+phys), dimension(\+:), pointer \textbf{ ddy\+\_\+h} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation weight for h2o \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ jindx1\+\_\+h} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation low index for h2o \end{DoxyCompactList}\item 
+integer, dimension(\+:), pointer \textbf{ jindx2\+\_\+h} =$>$ null()
+\begin{DoxyCompactList}\small\item\em interpolation high index for h2o \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 640 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Function/\+Subroutine Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_aa471c1c2f69d997adca4666a740369ea}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!create@{create}}
+\index{create@{create}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{create()}
+{\footnotesize\ttfamily procedure gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::create (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+allocate array data 
+
+
+
+Definition at line 663 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a07da400c91533f7408379969c9aac4ba}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!xlon@{xlon}}
+\index{xlon@{xlon}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{xlon}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::xlon =$>$ null()}
+
+
+
+grid longitude in radians, ok for both 0-\/$>$2pi or -\/pi -\/$>$ +pi ranges 
+
+
+
+Definition at line 642 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a5275cf06912c067ed88fabae76dd8a7d}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!xlat@{xlat}}
+\index{xlat@{xlat}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{xlat}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::xlat =$>$ null()}
+
+
+
+grid latitude in radians, default to pi/2 -\/$>$ -\/pi/2 range, otherwise adj in subr called 
+
+
+
+Definition at line 644 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a225c7a12dfb1a34c5285fd867fa2b9a2}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!xlat\+\_\+d@{xlat\+\_\+d}}
+\index{xlat\+\_\+d@{xlat\+\_\+d}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{xlat\+\_\+d}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::xlat\+\_\+d =$>$ null()}
+
+
+
+grid latitude in degrees, default to 90 -\/$>$ -\/90 range, otherwise adj in subr called 
+
+
+
+Definition at line 646 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_adb544a88fbc90b9bd62d34ff3e9ebf30}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!sinlat@{sinlat}}
+\index{sinlat@{sinlat}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{sinlat}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::sinlat =$>$ null()}
+
+
+
+sine of the grids corresponding latitudes 
+
+
+
+Definition at line 648 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_ac6d24b596028c68dda058dc87d1431b7}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!coslat@{coslat}}
+\index{coslat@{coslat}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{coslat}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::coslat =$>$ null()}
+
+
+
+cosine of the grids corresponding latitudes 
+
+
+
+Definition at line 649 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a4d001df88742f8faf44edf35652f1383}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!area@{area}}
+\index{area@{area}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{area}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension   (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::area =$>$ null()}
+
+
+
+area of the grid cell 
+
+
+
+Definition at line 650 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a69a57baf1454cfb8d52829523ade98bc}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!dx@{dx}}
+\index{dx@{dx}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{dx}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::dx =$>$ null()}
+
+
+
+relative dx for the grid cell 
+
+
+
+Definition at line 651 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_ac7d538f0e7980e44a70fe9e25f59baa1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!ddy\+\_\+o3@{ddy\+\_\+o3}}
+\index{ddy\+\_\+o3@{ddy\+\_\+o3}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{ddy\+\_\+o3}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension    (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::ddy\+\_\+o3 =$>$ null()}
+
+
+
+interpolation weight for ozone 
+
+
+
+Definition at line 654 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_ae7152f13d5b0e409cc0c0f4c3456be04}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!jindx1\+\_\+o3@{jindx1\+\_\+o3}}
+\index{jindx1\+\_\+o3@{jindx1\+\_\+o3}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{jindx1\+\_\+o3}
+{\footnotesize\ttfamily integer, dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::jindx1\+\_\+o3 =$>$ null()}
+
+
+
+interpolation low index for ozone 
+
+
+
+Definition at line 655 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a9d787660cfffab1244b1214c35abf443}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!jindx2\+\_\+o3@{jindx2\+\_\+o3}}
+\index{jindx2\+\_\+o3@{jindx2\+\_\+o3}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{jindx2\+\_\+o3}
+{\footnotesize\ttfamily integer, dimension (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::jindx2\+\_\+o3 =$>$ null()}
+
+
+
+interpolation high index for ozone 
+
+
+
+Definition at line 656 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a5cb8618b83a52ce40b355fc9cd9104ca}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!ddy\+\_\+h@{ddy\+\_\+h}}
+\index{ddy\+\_\+h@{ddy\+\_\+h}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{ddy\+\_\+h}
+{\footnotesize\ttfamily real (kind=kind\+\_\+phys), dimension     (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::ddy\+\_\+h =$>$ null()}
+
+
+
+interpolation weight for h2o 
+
+
+
+Definition at line 659 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a907d528c2a3984106e300c44ebfdfc21}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!jindx1\+\_\+h@{jindx1\+\_\+h}}
+\index{jindx1\+\_\+h@{jindx1\+\_\+h}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{jindx1\+\_\+h}
+{\footnotesize\ttfamily integer, dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::jindx1\+\_\+h =$>$ null()}
+
+
+
+interpolation low index for h2o 
+
+
+
+Definition at line 660 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+\mbox{\label{structgfs__typedefs_1_1gfs__grid__type_a794e35867cbff8496e059ef8981352a1}} 
+\index{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}!jindx2\+\_\+h@{jindx2\+\_\+h}}
+\index{jindx2\+\_\+h@{jindx2\+\_\+h}!gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type@{gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type}}
+\subsubsection{jindx2\+\_\+h}
+{\footnotesize\ttfamily integer, dimension  (\+:), pointer gfs\+\_\+typedefs\+::gfs\+\_\+grid\+\_\+type\+::jindx2\+\_\+h =$>$ null()}
+
+
+
+interpolation high index for h2o 
+
+
+
+Definition at line 661 of file G\+F\+S\+\_\+typedefs.\+F90.
+
+
+
+The documentation for this type was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ G\+F\+S\+\_\+typedefs.\+F90}\end{DoxyCompactItemize}

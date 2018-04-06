@@ -1,0 +1,62 @@
+\hypertarget{namespacemodule__radsw__sflux}{}\section{module\+\_\+radsw\+\_\+sflux Module Reference}
+\label{namespacemodule__radsw__sflux}\index{module\+\_\+radsw\+\_\+sflux@{module\+\_\+radsw\+\_\+sflux}}
+
+
+This module contains various indexes and coefficients for SW spectral bands, as well as the spectral distribution of solar flux. The values of spectral solar flux are derived based on a prescribed solar constant ( $1368.22 W/m^2$). Scaling will be applied for the actual inputted solar constant value.  
+
+
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_aba08e6f9d4dccd130e87300e6fd0ed58}\label{namespacemodule__radsw__sflux_aba08e6f9d4dccd130e87300e6fd0ed58}} 
+integer, parameter {\bfseries mfs01} = 1
+\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Chou(1999) coefficients for cloud rain particles}\par
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_acca3bbc0dd125a3e8c3734c58c48e79b}\label{namespacemodule__radsw__sflux_acca3bbc0dd125a3e8c3734c58c48e79b}} 
+integer, parameter {\bfseries mfs02} = 5
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a5bd55a5106ce82bd47250d38d9b8f22a}\label{namespacemodule__radsw__sflux_a5bd55a5106ce82bd47250d38d9b8f22a}} 
+integer, parameter {\bfseries mfs03} = 9
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a08a0f1278962ac27634169ea7632bc70}\label{namespacemodule__radsw__sflux_a08a0f1278962ac27634169ea7632bc70}} 
+integer, parameter {\bfseries mfb01} = 7
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_afdf71cabed6ae0076d98ff0e563dbc61}\label{namespacemodule__radsw__sflux_afdf71cabed6ae0076d98ff0e563dbc61}} 
+integer, parameter {\bfseries mfb02} = 2
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a2e3b510d781c596fa0bb9b1359a988dd}\label{namespacemodule__radsw__sflux_a2e3b510d781c596fa0bb9b1359a988dd}} 
+integer, parameter {\bfseries mfb03} = 5
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_aee2a2275da028b0960c5c1c8a34f46cf}\label{namespacemodule__radsw__sflux_aee2a2275da028b0960c5c1c8a34f46cf}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_aee2a2275da028b0960c5c1c8a34f46cf}{strrat}
+\begin{DoxyCompactList}\small\item\em coefficients for computing binary absorbing species \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a7d1a386e92555bcb09239ab098d8b398}\label{namespacemodule__radsw__sflux_a7d1a386e92555bcb09239ab098d8b398}} 
+real(kind=kind\+\_\+phys), dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_a7d1a386e92555bcb09239ab098d8b398}{specwt}
+\begin{DoxyCompactList}\small\item\em weighting parameters for major absorbers in each band \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a90c56da1bcadbea0b42e12487c1c1eec}\label{namespacemodule__radsw__sflux_a90c56da1bcadbea0b42e12487c1c1eec}} 
+integer, dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_a90c56da1bcadbea0b42e12487c1c1eec}{layreffr}
+\begin{DoxyCompactList}\small\item\em reference pressure level for each of the spectral bands \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_ac2864b4501e9bc3804d45d14f4aab472}\label{namespacemodule__radsw__sflux_ac2864b4501e9bc3804d45d14f4aab472}} 
+integer, dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_ac2864b4501e9bc3804d45d14f4aab472}{ix1}
+\begin{DoxyCompactList}\small\item\em indexes for 1st entries of the two key species for each of the spectral bands \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a92703c3e826f7e81267c6b7ae31ebe42}\label{namespacemodule__radsw__sflux_a92703c3e826f7e81267c6b7ae31ebe42}} 
+integer, dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_a92703c3e826f7e81267c6b7ae31ebe42}{ix2}
+\begin{DoxyCompactList}\small\item\em indexes for 2nd entries of the two key species for each of the spectral bands \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_acb1498ecf044449dbe6d7a5630fdc375}\label{namespacemodule__radsw__sflux_acb1498ecf044449dbe6d7a5630fdc375}} 
+integer, dimension(nblow\+:nbhgh), public \hyperlink{namespacemodule__radsw__sflux_acb1498ecf044449dbe6d7a5630fdc375}{ibx}
+\begin{DoxyCompactList}\small\item\em band index (3rd index in array sfluxref described below) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a2f3280a36f27cea89fc66d71e799cf6d}\label{namespacemodule__radsw__sflux_a2f3280a36f27cea89fc66d71e799cf6d}} 
+real(kind=kind\+\_\+phys), parameter, public {\bfseries scalekur} =50.\+15/48.\+37
+\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a84205f359fb3e1a0e1d03e755c52dc78}\label{namespacemodule__radsw__sflux_a84205f359fb3e1a0e1d03e755c52dc78}} 
+real(kind=kind\+\_\+phys), dimension(ngmax, mfs01, mfb01), target, public \hyperlink{namespacemodule__radsw__sflux_a84205f359fb3e1a0e1d03e755c52dc78}{sfluxref01}
+\begin{DoxyCompactList}\small\item\em spectral solar fluxes, j=1,2,...,7 for SW band number of 16,20,23,25,26,27,29 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_aa57fca862289bd57327b9c3ef27e3e2f}\label{namespacemodule__radsw__sflux_aa57fca862289bd57327b9c3ef27e3e2f}} 
+real(kind=kind\+\_\+phys), dimension(ngmax, mfs02, mfb02), target, public \hyperlink{namespacemodule__radsw__sflux_aa57fca862289bd57327b9c3ef27e3e2f}{sfluxref02}
+\begin{DoxyCompactList}\small\item\em spectral solar fluxes, j=1,2 for SW band number of 17 and 28 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacemodule__radsw__sflux_a95d2640cf0e6cf0ba4a8ca1758806e48}\label{namespacemodule__radsw__sflux_a95d2640cf0e6cf0ba4a8ca1758806e48}} 
+real(kind=kind\+\_\+phys), dimension(ngmax, mfs03, mfb03), target, public \hyperlink{namespacemodule__radsw__sflux_a95d2640cf0e6cf0ba4a8ca1758806e48}{sfluxref03}
+\begin{DoxyCompactList}\small\item\em spectral solar fluxes, j=1,2,...,5 for SW band number of 18,19,21,22,24 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
