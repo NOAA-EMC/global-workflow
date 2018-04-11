@@ -87,8 +87,17 @@ gcyc=$(echo $GDATE | cut -c9-10)
 export CASE=$CASE_ENKF
 
 
+EUPD_CYC=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
+if [ $EUPD_CYC = "GFS" ]; then
+    CDUMP_ENKF="gfs"
+else
+    CDUMP_ENKF=$CDUMP
+fi
+
+
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX_ENKF="${CDUMP_ENKF}.t${cyc}z."
 export ASUFFIX=".nemsio"
 export GPREFIX="${CDUMP}.t${gcyc}z."
 export GSUFFIX=".nemsio"
@@ -97,7 +106,8 @@ export GSUFFIX=".nemsio"
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in exglobal script
 # TO DO: Map NCO's directory into these variables
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-export COMIN_ENS="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
+export COMIN_ENS="$ROTDIR/enkf.$CDUMP_ENKF.$PDY/$cyc"
+export COMOUT_ENS="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
 export COMIN_GES_ENS="$ROTDIR/enkf.$CDUMP.$gPDY/$gcyc"
 
 

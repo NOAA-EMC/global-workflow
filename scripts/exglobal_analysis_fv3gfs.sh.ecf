@@ -42,6 +42,7 @@ export COMOUT=${COMOUT:-$COMIN}
 CDATE=${CDATE:-"2001010100"}
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
+CDUMP_OBS=${CDUMP_OBS:-$CDUMP}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -107,7 +108,7 @@ export gesenvir=${gesenvir:-$envir}
 # Observations
 OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
-COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP"}
+COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP_OBS"}
 PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
 PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
 NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr${OSUFFIX}}
