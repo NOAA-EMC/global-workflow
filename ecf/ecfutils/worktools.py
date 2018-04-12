@@ -86,13 +86,16 @@ def select_platform(requested_platform,valid_platforms):
     return platdoc
 
 def create_COMROT(conf):
+    comrot = conf.places.ROTDIR
+    logger.info(f'Workflow COM root: {comrot}')
+    loudly_make_dir_if_missing(comrot)
+
     if not 'IC_CDUMP' in conf.settings or not conf.settings.IC_CDUMP:
         logger.info('IC_CDUMP not specified; will assume scripts will provide their own ICs.')
         print('conf.settings.IC_CDUMP: not set; will assume scripts will provide their own ICs.')
         return
     cdump = conf.settings.IC_CDUMP
     icsdir = conf.places.ICSDIR
-    comrot = conf.places.ROTDIR
     resens = conf.fv3_enkf_settings.CASE[1:]
     resdet = conf.fv3_gfs_settings.CASE[1:]
     idate = conf.settings.SDATE
@@ -107,10 +110,9 @@ def create_COMROT(conf):
 
     if conf.settings.run_enkf:
         loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
-        loudly_make_dir_if_missing(os.path.join(comrot, detdir))
+    loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
     print(f'Copy input conditions to: {comrot}')
-    logger.info(f'Workflow COM root: {comrot}')
 
     # Link ensemble member initial conditions
     if conf.settings.run_enkf:
@@ -123,6 +125,10 @@ def create_COMROT(conf):
 
     # Link deterministic initial conditions
     src=os.path.join(icsdir, idatestr, f'C{resdet}', 'control', 'INPUT')
+    if not os.path.exists(src):
+        src=os.path.join(icsdir, idatestr, cdump, f'C{resdet}', 'control', 'INPUT')
+    if not os.path.exists(src):
+        src=os.path.join(icsdir, idatestr, cdump, f'C{resdet}', 'INPUT')
     tgt=os.path.join(comrot, detdir, 'INPUT')
     loudly_make_symlink(src,tgt)
 
@@ -226,7 +232,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
     with open(f'{tgtdir}/names.yaml','wt') as fd:
         fd.write(names_yaml)
 
-    if redo:
+    if redo and os.path.exists(f'{tgtdir}/platform.yaml'):
         logger.warning('I am NOT replacing platform.yaml.  You must edit this manually.')
         logger.warning('This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
         logger.warning(f'{tgtdir}/platform.yaml: NOT replacing this file.')
@@ -389,7 +395,7 @@ def remake_ecflow_files_for_cycles(
         surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
 
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     first_cycle=max(suite.Clock.start,first_cycle)
@@ -413,7 +419,7 @@ If you want to update the suite (cycle) definitions, or add suites
 
 def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
     conf,suite=read_yaml_suite(yamldir)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
         create_new_ecflow_workflow(suite,surrounding_cycles)
     if not ECF_HOME:
@@ -436,11 +442,17 @@ def add_cycles_to_running_ecflow_workflow_at(
 def make_rocoto_xml_for(yamldir):
     conf,suite=read_yaml_suite(yamldir)
     assert(suite.viewed._path)
-    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/log')
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
 
 def setup_case_usage(why=None):
-    print('fixme: usage message here')
+    sys.stderr.write(f'''USAGE: setup_case.py CASE_NAME EXPERIMENT_NAME\n
+  CASE_NAME: a case name from the cases/ directory
+
+  EXPERIMENT_NAME: your name for this execution.  This string is used to
+    decide where to put temporary and result files from the simulation.
+    This must be alphanumeric and begin with a letter.\n''')
+    if why: sys.stderr.write(f'\nSCRIPT IS ABORTING: {why}\n')
     exit(1)
 
 def setup_case(command_line_arguments):

@@ -137,6 +137,7 @@ mkdir -p $OUTDIR
 # Load appropriate modulefiles for global_chgres
 source $HOMEgfs/modulefiles/module-setup.sh.inc
 module use $HOMEgfs/modulefiles/fv3gfs
+
 if [ $target = theia ]; then
   source $HOMEgfs/modulefiles/module_base.$target
   source $HOMEgfs/modulefiles/fv3gfs/global_chgres.$target
@@ -144,6 +145,7 @@ else
   module load $HOMEgfs/modulefiles/module_base.$target
   module load $HOMEgfs/modulefiles/fv3gfs/global_chgres.$target
 fi
+
 module list
 
 $HOMEgfs/ush/global_chgres_driver.sh
