@@ -1,2 +1,5 @@
+# Do not change this file unless you know what you're doing.  It sets
+# default values for the "settings" section.
+
 default_settings: &default_settings
   NCO_NAMING_CONV: YES

@@ -1,3 +1,7 @@
+# This file is used to generate config.efcs, which would be used to
+# control the ENKF forecast jobs.  The scripts and code for the ENKF
+# are not provided in this release, so this config file is ignored.
+
 config_efcs:
   filename: config.efcs
   content: !expand |

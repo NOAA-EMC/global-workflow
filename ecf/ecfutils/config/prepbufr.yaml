@@ -1,3 +1,8 @@
+# This file is used to generate config.prepbufr, which is used to
+# generate the prepbuf file that contains some of the observations
+# sent into the GFS and GDAS analysis.  The observation processing
+# suite is not included in this release, so this file is ignored.
+
 config_prepbufr:
   filename: config.prepbufr
 

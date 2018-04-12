@@ -1,3 +1,6 @@
+# This file is used to generate config.getic, which is used to control
+# the logic that pulls input data from HPSS.
+
 config_getic:
   filename: config.getic
   content: !expand |

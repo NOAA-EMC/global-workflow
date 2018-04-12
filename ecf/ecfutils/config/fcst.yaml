@@ -1,3 +1,7 @@
+# This file is used to generate config.fcst, which is one of two files
+# used to control the forecast job.  The other file is config.fv3.
+# This file sets physics, dynamics, and I/O options.
+
 config_fcst:
   filename: config.fcst
   more_exports_for_microphys: !FirstTrue

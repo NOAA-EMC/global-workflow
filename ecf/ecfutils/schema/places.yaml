@@ -1,3 +1,6 @@
+# Configures disk locations.  See the defaults/places.yaml and
+# user.yaml.default file for documentation.
+
 places_schema: &places_schema !Template
   PROJECT_DIR: { type: string }
   HOMEgfs: { type: string }
@@ -8,8 +11,24 @@ places_schema: &places_schema !Template
   EXPDIR: { type: string }
   ROTDIR: { type: string }
   ICSDIR: { type: string }
+
   SHORT_TERM_TEMP: { type: string }
   LONG_TERM_TEMP: { type: string }
+
+  HOMEDIR:
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.get('SAVE_DIR','')
+        do: !calc doc.platform.SAVE_DIR
+      - otherwise: !expand "{doc.places.PROJECT_DIR}/save/{tools.env('USER')}"
+
+  NOSCRUB:
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.get('NOSCRUB_DIR','')
+        do: !calc doc.platform.NOSCRUB_DIR
+      - otherwise: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+    description: "Disk area used to store reduced output, verification statistics, and other small files that may be desired between runs.  The workflow will not scrub this."
 
   FIXgsi: { type: string, optional: true }
   HOMEfv3gfs: { type: string, optional: true }

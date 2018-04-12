@@ -1,3 +1,7 @@
+# This file configures the data assimilation, which is not included in
+# this release.  Although the variables are not used, they still must
+# be defined to satisfy validation logic elsewhere.
+
 data_assimilation_template: !Template &data_assimilation_template
   DOHYBVAR:
     type: bool

@@ -30,3 +30,7 @@ nsst_schema: &nsst_schema !Template
     type: int
     default: 0
     description: number of elements added in obs. data array
+  NST_SPINUP:
+    type: int
+    allowed: [ 0, 1]
+    optional: yes

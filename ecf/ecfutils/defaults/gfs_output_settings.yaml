@@ -1,3 +1,6 @@
+# This file sets default values for the GFS output settings.  See
+# schema/output.yaml for documentation.
+
 gfs_output_settings_defaults: &gfs_output_settings_defaults
   FHMAX_GFS: 240
   FHOUT_GFS: 6

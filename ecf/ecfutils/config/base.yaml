@@ -1,3 +1,8 @@
+# This file is used to generate config.base, which the shell scripts
+# process before any other files.  The config.base sets global
+# variables and default values that are needed throughout the
+# scripting system.
+
 config_base:
   filename: config.base
   content: !expand |
@@ -38,10 +43,10 @@ config_base:
     export DMPDIR="{doc.places.DMPDIR}"
     export RTMFIX="{doc.places.RTMFIX}"
     
-    export HOMEDIR="{doc.places.PROJECT_DIR}/save/$USER"
+    export HOMEDIR="{doc.places.HOMEDIR}"
     export STMP="{doc.places.SHORT_TERM_TEMP}/$USER"
     export PTMP="{doc.places.LONG_TERM_TEMP}/$USER"
-    export NOSCRUB="{doc.places.PROJECT_DIR}/noscrub/$USER"
+    export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds
     export BASE_SVN="{doc.places.BASE_SVN}"

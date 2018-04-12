@@ -1,3 +1,5 @@
+# This file sets default values for data and executable locations.
+# See the schema/places.yaml for details.
 default_places: &default_places
   PROJECT_DIR: !error Please select a project directory.
   HOMEgfs:     !calc doc.static_locations.HOMEgfs

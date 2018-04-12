@@ -1,3 +1,14 @@
+# This file specifies the resource requirements for all jobs.  This
+# includes jobs from the full DA-cycled workflow, as well as the jobs
+# in the public release workflow.
+
+# Note on threads:
+#  max = use the largest number of threads possible for the platform,
+#        ranks, and processors per node
+#  null = do not specify threading settings.  The underlying scripts
+#        and batch system will fill in settings.
+#  a number = use this many threads per MPI rank
+
 gfs_resource_table: !Select
   select: !calc doc.fv3_gfs_settings.CASE
   otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"
@@ -46,6 +57,14 @@ enkf_resource_table: !Select
       epos:     [  84,   12, !timedelta "00:30:00", 2    ]
       efcs_wall:  !timedelta "01:00:00"
     C384:
+      #          ranks ppn  wallclock             threads
+      ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
+      eobs:     [  72,    6, !timedelta "00:30:00", 4    ]
+      eomg:     [  72,    6, !timedelta "03:00:00", 2    ]
+      eupd:     [ 120,   12, !timedelta "00:30:00", 4    ]
+      epos:     [  84,   12, !timedelta "00:30:00", 2    ]
+      efcs_wall:  !timedelta "03:00:00"
+    C768:
       #          ranks ppn  wallclock             threads
       ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
       eobs:     [  72,    6, !timedelta "00:30:00", 4    ]
