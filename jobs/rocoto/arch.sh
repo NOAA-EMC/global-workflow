@@ -27,9 +27,9 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-# ICS are restarts and always lag INC by $assim_freq hours
+# ICS are restarts and always lag INC by $assim_freq hours, ARCH_CYC cannot be 00
 ARCHINC_CYC=$ARCH_CYC
-ARCHICS_CYC=$($NDATE -$assim_freq $ARCH_CYC)
+ARCHICS_CYC=$((ARCH_CYC-assim_freq))
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
@@ -100,10 +100,24 @@ fi
 # Archive data to HPSS
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
-SAVEIC="NO"
+
+#--determine when to save ICs for wamr start and forecat-only runs 
+SAVEWARMICA="NO"
+SAVEWARMICB="NO"
+SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
-weekday=$(date -d "$PDY" +%u)
-if [ $weekday -eq 7 -o $CDATE -eq $firstday ]; then SAVEIC="YES" ; fi
+mm=`echo $CDATE|cut -c 5-6`
+dd=`echo $CDATE|cut -c 7-8`
+nday=$(( (mm-1)*30+dd ))
+mod=$(($nday % $ARCH_WARMICFREQ))
+if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
+if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
+if [ $mod -eq 0 -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
+if [ $mod -eq 0 -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
+
+mod=$(($nday % $ARCH_FCSTICFREQ))
+if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEFCSTIC="YES" ; fi
+
 
 DATA="$RUNDIR/$CDATE/$CDUMP/arch"
 [[ -d $DATA ]] && rm -rf $DATA
@@ -121,10 +135,14 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfs gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfs gfs_flux gfs_nemsioa gfs_nemsiob; do
+    #for targrp in gfsa gfsb gfs_flux gfs_nemsio gfs_pgrb2b; do
+    for targrp in gfsa gfsb gfs_flux gfs_nemsioa gfs_nemsiob; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
     done
+
+    if [ $SAVEFCSTIC = "YES" ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $DATA/gfs_restarta.txt`
+    fi
 fi
 
 
@@ -137,18 +155,18 @@ if [ $CDUMP = "gdas" ]; then
         exit $status
     fi
 
-    if [ $SAVEIC = "YES" -a $cyc -eq $ARCHINC_CYC ]; then
+    if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $DATA/gdas_restarta.txt`
         status=$?
-        if [ $status -ne 0 ]; then
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gdas_restarta.tar failed"
             exit $status
         fi
     fi
-    if [ $SAVEIC = "YES" -a $cyc -eq $ARCHICS_CYC ]; then
+    if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $DATA/gdas_restartb.txt`
         status=$?
-        if [ $status -ne 0 ]; then
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gdas_restartb.tar failed"
             exit $status
         fi
