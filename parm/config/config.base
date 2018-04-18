@@ -244,9 +244,12 @@ export nst_anl=.true.
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
+
 # Archiving options
-export HPSSARCH="YES"  # save data to HPSS archive
-export ARCH_CYC=18     # Archive all data at this cycle for a warm_start capability
+export HPSSARCH="YES"        # save data to HPSS archive
+export ARCH_CYC=18           # Archive data at this cycle for warm_start capability. Cannot be 00
+export ARCH_WARMICFREQ=6     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=3     # Archive frequency in days for gdas and gfs forecast-only capability
 
 
 echo "END: config.base"

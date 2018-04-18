@@ -23,16 +23,20 @@ if [ $type = "gfs" ]; then
   FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
 
 
-  rm -f gfs.txt
+  rm -f gfsa.txt
+  rm -f gfsb.txt
   rm -f gfs_pgrb2b.txt
   rm -f gfs_flux.txt
   rm -f gfs_nemsioa.txt
   rm -f gfs_nemsiob.txt
-  touch gfs.txt
+  rm -f gfs_restarta.txt
+  touch gfsa.txt
+  touch gfsb.txt
   touch gfs_pgrb2b.txt
   touch gfs_flux.txt
   touch gfs_nemsioa.txt
   touch gfs_nemsiob.txt
+  touch gfs_restarta.txt
 
   dirname="./gfs.${PDY}/${cyc}/"
   head="gfs.t${cyc}z."
@@ -40,38 +44,50 @@ if [ $type = "gfs" ]; then
   #..................
   echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
   echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}nsstbufr                         " >>gfs.txt
-  echo  "${dirname}${head}prepbufr                         " >>gfs.txt
-  echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfs.txt
-  echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfs.txt
-  echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfs.txt
-  echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfs.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl                   " >>gfs.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl.idx               " >>gfs.txt
-  echo  "${dirname}avn.t${cyc}z.cyclone.trackatcfunix      " >>gfs.txt
-  echo  "${dirname}gfso.t${cyc}z.cyclone.trackatcfunix     " >>gfs.txt
-  echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfs.txt
-  echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfs.txt
-  echo  "${dirname}trak.gfso.atcf_gen.${PDY}${cyc}         " >>gfs.txt
-  echo  "${dirname}trak.gfso.atcf_gen.altg.${PDY}${cyc}    " >>gfs.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfs.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfs.txt
-  echo  "${dirname}bufr.t${cyc}z                           " >>gfs.txt
+  echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
+  echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
+
+  echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
+  echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
+  echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
+  echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
+  echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
+  echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
+  echo  "${dirname}avn.t${cyc}z.cyclone.trackatcfunix      " >>gfsa.txt
+  echo  "${dirname}gfso.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
+  echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
+  echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
+  echo  "${dirname}trak.gfso.atcf_gen.${PDY}${cyc}         " >>gfsa.txt
+  echo  "${dirname}trak.gfso.atcf_gen.altg.${PDY}${cyc}    " >>gfsa.txt
+  echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
+  echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
+  echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
+
+  echo  "${dirname}${head}pgrb2.0p50.anl                   " >>gfsb.txt
+  echo  "${dirname}${head}pgrb2.0p50.anl.idx               " >>gfsb.txt
+  echo  "${dirname}${head}pgrb2.1p00.anl                   " >>gfsb.txt
+  echo  "${dirname}${head}pgrb2.1p00.anl.idx               " >>gfsb.txt
+
 
   fh=0
   while [ $fh -le $FHMAX_GFS ]; do
     fhr=$(printf %03i $fh)
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}             " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx         " >>gfs_pgrb2b.txt
 
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
 
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}              " >>gfs.txt
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfs.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}              " >>gfs.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx          " >>gfs.txt
-    echo  "${dirname}${head}logf${fhr}.nemsio               " >>gfs.txt
+    echo  "${dirname}${head}pgrb2.0p25.f${fhr}              " >>gfsa.txt
+    echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
+    echo  "${dirname}${head}logf${fhr}.nemsio               " >>gfsa.txt
+
+    echo  "${dirname}${head}pgrb2.0p50.f${fhr}              " >>gfsb.txt
+    echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx          " >>gfsb.txt
+    echo  "${dirname}${head}pgrb2.1p00.f${fhr}              " >>gfsb.txt
+    echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx          " >>gfsb.txt
 
     inc=$FHOUT_GFS
     if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 -a $fh -lt $FHMAX_HF_GFS ]; then
@@ -98,6 +114,14 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}sfcf${fhr}.nemsio             " >>gfs_nemsiob.txt
     fh=$((fh+6))
   done
+
+  #..................
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
 
 #-----------------------------------------------------
 fi   ##end of gfs

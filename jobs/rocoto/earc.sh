@@ -31,12 +31,15 @@ done
 n=$((ENSGRP))
 SAVEIC="NO"
 firstday=$($NDATE +24 $SDATE)
-weekday=$(date -d "$PDY" +%u)
-if [ $weekday -eq 7 -o $CDATE -eq $firstday ]; then SAVEIC="YES" ; fi
+mm=`echo $CDATE|cut -c 5-6`
+dd=`echo $CDATE|cut -c 7-8`
+nday=$(( (mm-1)*30+dd ))
+mod=$(($nday % $ARCH_WARMICFREQ))
+if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEIC="YES" ; fi
 
-# ICS are restarts and always lag INC by $assim_freq hours
+# ICS are restarts and always lag INC by $assim_freq hours. ARCH_CYC cannot be 00
 EARCINC_CYC=$ARCH_CYC
-EARCICS_CYC=$($NDATE -$assim_freq $ARCH_CYC)
+EARCICS_CYC=$((ARCH_CYC-assim_freq))
 
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
