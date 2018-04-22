@@ -78,7 +78,8 @@ elif [[ -d /gpfs/dell2 ]] ; then
 	source /usrx/local/prod/lmod/lmod/init/$__ms_shell
     fi
     target=wcoss_dell_p3
-    module purge > /dev/null 2>&1
+    module purge 
+    module use /usrx/local/dev/modulefiles
 
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
