@@ -24,8 +24,8 @@ case:
 
   settings: 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2017-07-31t18:00:00
-    EDATE: 2017-08-02t00:00:00
+    SDATE: 2017-08-22t00:00:00
+    EDATE: 2017-08-22t06:00:00
 
-    gfs_cyc: 2 # run gfs at 0z, 12z
+    gfs_cyc: 4 # run gfs at 0z, 12z
 
