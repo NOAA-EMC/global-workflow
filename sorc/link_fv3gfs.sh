@@ -67,19 +67,19 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
 cd ${pwd}/../ush                ||exit 8
-    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh; do
-      $LINK ../sorc/gfs_post.fd/ush/$file                  .
+    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
+        $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
 
 #--add GSI/EnKF file
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS    .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_INNOVATE_OBS  .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE        .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER      .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST          .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST          .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_UPDATE        .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER        .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
     $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .

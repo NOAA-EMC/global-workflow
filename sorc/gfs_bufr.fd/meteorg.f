@@ -1,6 +1,7 @@
       subroutine meteorg(npoint,rlat,rlon,istat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &       iromb,maxwv,kwskip,levso,levs,im,jm,kdim,landwater)
+     &       iromb,maxwv,kwskip,levso,levs,im,jm,kdim,
+     &       landwater,nend1,nint1,nint3)
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !                .      .    .                                       .
@@ -26,6 +27,8 @@
 !   2018-02-08  GUANG PING LOU ADDED READING IN AND USING DZDT AS VERTICAL VELOCITY
 !   2018-02-16  GUANG PING LOU ADDED READING IN AND USING MODEL DELP AND DELZ
 !   2018-02-21  GUANG PING LOU THIS VERSION IS BACKWARD COMPATIBLE TO GFS MODEL
+!   2018-03-27  GUANG PING LOU CHANGE STATION ELEVATION CORRECTION LAPSE RATE FROM 0.01 TO 0.0065
+!   2018-03-28  GUANG PING LOU GENERALIZE TIME INTERVAL 
 !
 ! USAGE:    CALL PROGRAM meteorg
 !   INPUT:
@@ -108,15 +111,17 @@
       integer :: n3dfercld,iseedl,time
       integer :: istat(npoint)
       logical :: trace
-      logical, parameter :: debugprint=.false.
+      logical, parameter :: debugprint=.true.
       character             lprecip_accu*3
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
       real :: ap
       integer :: nf1, fint
+      integer :: nend1, nint1, nint3
       character*150 :: fngrib2
-      character(len=20)  :: VarName
+      character(len=20)  :: VarNameP, VarNameCP
       integer recn_dpres,recn_delz,recn_dzdt
+      integer :: jrec
 
       nsig = 11
       nsfc = 12
@@ -124,6 +129,7 @@
           recn_dpres = 0
           recn_delz = 0
           recn_dzdt = 0
+          jrec = 0
         lprecip_accu='yes'
 
 !      call sigio_sropen(nsig,trim(fnsig),iret)
@@ -369,16 +375,13 @@
 ! close up this nems file
       call nemsio_close(gfile,iret=iret)
 
-! Chuang: modify to read new nemsio flux file directly instead
-!         hence will turn off the run of gfs_flux in ush script
-!
 ! read surface data
 !      read(nsfc,err=910) sfc
 ! open nemsio flux file
-       if ( nf .le. 120 ) then
-      nf1 = nf - 1
+       if ( nf .le. nend1 ) then
+      nf1 = nf - nint1
       else
-      nf1 = nf - 3
+      nf1 = nf - nint3
        endif
        if ( nf .eq. 0 ) nf1=0
       if(nf.eq.0) then
@@ -556,24 +559,34 @@
       end if
 
 ! total precip
-       if ( nf .le. 120 ) then
-      fint = 1
+       if ( nf .le. nend1 ) then
+      fint = nint1
       else
-      fint = 3
+      fint = nint3
        endif
 ! for accumulated precipitation:
 ! read meta data to see if precip has zero bucket
-      VarName='lprecip_accu'
-      call nemsio_getheadvar(ffile,trim(VarName),lprecip_accu,iret)
-      if (iret /= 0) then
-        if(debugprint)print*,trim(VarName),
-     &  " not found in file-Assign non-zero precip bucket"
+!!      call nemsio_getheadvar(ffile,trim(VarName),lprecip_accu,iret)
+      call nemsio_searchrecv(ffile,jrec,'prate_ave','sfc',1,iret=iret)
+      if (jrec > 0) then
+        lprecip_accu='yes'
+        VarNameP='prate_ave'
+        VarNameCP='cprat_ave'
+        if(debugprint)print*,trim(VarNameP),
+     &  " Continous precipitation rate found (no bucket)",
+     &  "iret= ", iret
+         else 
         lprecip_accu='no'
+        VarNameP='prateb_ave'
+        VarNameCP='cpratb_ave'
+        if(debugprint)print*,trim(VarNameP),
+     &  " Continous precipitation rate NOT found (with bucket)",
+     &  "iret= ", iret
       end if
 
         if(lprecip_accu == 'yes') then
         if(debugprint) print*, 'continuous precipitation'
-      call nemsio_readrecvw34(ffile2,'prate_ave','sfc',
+      call nemsio_readrecvw34(ffile2,trim(VarNameP),'sfc',
      & 1,data=dum1d2,iret=iret)
       if (iret /= 0) then
         print*,'total precip not found'
@@ -583,7 +596,7 @@
      & '1sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
        end if
-      call nemsio_readrecvw34(ffile,'prate_ave','sfc',
+      call nemsio_readrecvw34(ffile,trim(VarNameP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'prate_ave not found'
@@ -592,10 +605,11 @@
      & print*,'sample fhour zhour zhour2,4= ', fhour, zhour, zhour2,
      & '2sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
+          ap=fhour-fint
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-           dum2d(i,j,9) =(dum1d(jj+i)*fhour-dum1d2(jj+i)*(fhour-fint))
+           dum2d(i,j,9) =(dum1d(jj+i)*fhour-dum1d2(jj+i)*ap)
      &                        * 3600.0
           end do
         end do
@@ -607,29 +621,30 @@
      +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
 
 ! convective precip
-      call nemsio_readrecvw34(ffile2,'cprat_ave','sfc',
+      call nemsio_readrecvw34(ffile2,trim(VarNameCP),'sfc',
      & 1,data=dum1d2,iret=iret)
       if (iret /= 0) then
-        print*,'convective precip not found'
+        print*,'convective precip not found= ', trim(VarNameCP)
       end if
-      call nemsio_readrecvw34(ffile,'cprat_ave','sfc',
+      call nemsio_readrecvw34(ffile,trim(VarNameCP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
-        print*,'cprat_ave not found'
+        print*,'cprat_ave not found= ', trim(VarNameCP)
       else
+          ap=fhour-fint
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            dum2d(i,j,10)=(dum1d(jj+i)*fhour-dum1d2(jj+i)*(fhour-fint))
+            dum2d(i,j,10)=(dum1d(jj+i)*fhour-dum1d2(jj+i)*ap)
      &                        * 3600.0
           end do
         end do
       end if
 
 !for bucketed precipitation:
-      else     !if not precip_accu
+      else     !if precip_accu = 'no'
         if(debugprint) print*, 'bucketed precipitation'
-        if(debugprint)print*,trim(VarName), lprecip_accu
+        if(debugprint)print*,trim(VarNameP), lprecip_accu
       if ( mod(nf1,6) .eq. 0) then
          do j=1,jm
           do i=1,im
@@ -639,7 +654,7 @@
        print*, 'mod(nf1,6)= ', nf1
       print*,'sample fhour zhour zhour2,6= ', fhour, zhour, zhour2
       else
-      call nemsio_readrecvw34(ffile2,'prate_ave','sfc',
+      call nemsio_readrecvw34(ffile2,trim(VarNameP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'total precip not found'
@@ -648,15 +663,16 @@
      & print*,'sample fhour zhour zhour2,7= ', fhour, zhour, zhour2,
      & '1sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
+          ap=3600.*(fhour-zhour2-fint)
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            apcp(i,j) = dum1d(jj+i)*3600.*(fhour-zhour2-fint)
+            apcp(i,j) = dum1d(jj+i)*ap
           end do
          end do
        end if
        end if
-      call nemsio_readrecvw34(ffile,'prate_ave','sfc',
+      call nemsio_readrecvw34(ffile,trim(VarNameP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'prate_ave not found'
@@ -665,10 +681,10 @@
      & print*,'sample fhour zhour zhour2,8= ', fhour, zhour, zhour2,
      & '2sample precip rate= ',dum1d(im/2+(jm/4-1)*im),
      +         dum1d(im/2+(jm/3-1)*im),dum1d(im/2+(jm/2-1)*im)
+            ap = 3600.*(fhour-zhour)
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            ap = 3600.*(fhour-zhour)
             dum2d(i,j,9) = dum1d(jj+i)*ap - apcp(i,j)
           end do
         end do
@@ -687,28 +703,29 @@
          end do
        print*, 'cpcp mod(nf1,6)= ', nf1
       else
-      call nemsio_readrecvw34(ffile2,'cprat_ave','sfc',
+      call nemsio_readrecvw34(ffile2,trim(VarNameCP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'convective precip not found'
       else
+          ap=3600.*(fhour-zhour2-fint)
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            cpcp(i,j) = dum1d(jj+i)*3600.*(fhour-zhour2-fint)
+            cpcp(i,j) = dum1d(jj+i)*ap
           end do
         end do
       end if
       end if     !precip_accu
-      call nemsio_readrecvw34(ffile,'cprat_ave','sfc',
+      call nemsio_readrecvw34(ffile,trim(VarNameCP),'sfc',
      & 1,data=dum1d,iret=iret)
       if (iret /= 0) then
         print*,'cprat_ave not found'
       else
+            ap = 3600.*(fhour-zhour)
         do j=1,jm
           jj= (j-1)*im
           do i=1,im
-            ap = 3600.*(fhour-zhour)
             dum2d(i,j,10) = dum1d(jj+i)*ap - cpcp(i,j)
           end do
         end do
@@ -1173,6 +1190,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
           data(7+nflx) = psfc * 100.                   ! SURFACE PRESSURE (PA)
           data(6+nflx) = pmsl(np)                           
+!!          dtemp = .0065 * (grids(np,1) - elevstn(np))
           dtemp = .0100 * (grids(np,1) - elevstn(np))
           sfc(37,np) = data(6+nflx) * .01
           sfc(39,np) = zp2(2)   !500 hPa height       
@@ -1272,15 +1290,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             print *, ' divergence sounding'
             print *, (griddiv(np,k),k=1,levs)
           endif
-CC        print *, 'in meteorg nf,nfile,nfhour= ',  nf,nfile,nfhour
-       if (nfhour .ge. 123) then
-          nfile1 = 101 + nfhour/3
 C        print *, 'in meteorg nfile1= ', nfile1
-          write(nfile1) data
-       else
           write(nfile) data
-       endif
         enddo  !End loop over stations np
+        print *, 'in meteorg nf,nfile,nfhour= ',  nf,nfile,nfhour
         print *, 'Finished writing bufr data file'
  6101   format(2x,6f12.3)
  6102   format(2x,6f12.5)
@@ -1299,11 +1312,7 @@ C        print *, 'in meteorg nfile1= ', nfile1
 !      call sigio_axdata(sigdata,iret)
 !      call sigio_sclose(nsig,iret)
 !      call nemsio_close(gfile,iret=iret)
-       if (nfhour .gt. 120) then
-      close(unit=nfile1)
-       else
       close(unit=nfile)
-       endif
       return
  910  print *, ' error reading surface flux file'
       end

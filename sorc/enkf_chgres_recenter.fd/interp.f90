@@ -245,7 +245,7 @@
 
  logical*1, allocatable  :: bitmap_input(:,:), bitmap_output(:,:)
 
- real, allocatable       :: data_input(:,:), rlat(:), rlon(:)
+ real, allocatable       :: data_input(:,:)
  real, allocatable       :: data_output(:,:), crot(:), srot(:)
 
  print*
@@ -270,10 +270,10 @@
  allocate(bitmap_output(ij_output,num_fields))
  bitmap_output = .true.
 
- allocate(rlat(ij_output))
- rlat = 0.0
- allocate(rlon(ij_output))
- rlon = 0.0
+ allocate(rlat_output(ij_output))
+ rlat_output = 0.0
+ allocate(rlon_output(ij_output))
+ rlon_output = 0.0
 
 !----------------
 ! Surface height
@@ -289,7 +289,7 @@
  print*,"INTERPOLATE SURFACE HEIGHT"
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, data_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                data_output, iret)
  if (iret /= 0) goto 89
 
@@ -306,7 +306,7 @@
  print*,"INTERPOLATE SURFACE PRESSURE"
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, data_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                data_output, iret)
  if (iret /= 0) goto 89
 
@@ -341,7 +341,7 @@
  print*,'INTERPOLATE TEMPERATURE'
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, tmp_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                tmp_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
@@ -357,7 +357,7 @@
  print*,'INTERPOLATE CLOUD LIQUID WATER'
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, clwmr_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                clwmr_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
@@ -373,7 +373,7 @@
  print*,'INTERPOLATE SPECIFIC HUMIDITY'
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, spfh_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                spfh_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
@@ -389,7 +389,7 @@
  print*,'INTERPOLATE OZONE'
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, o3mr_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                o3mr_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
@@ -405,7 +405,7 @@
  print*,'INTERPOLATE DZDT'
  call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, dzdt_input,  &
-               numpts, rlat, rlon, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                dzdt_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
@@ -427,7 +427,7 @@
    print*,'INTERPOLATE RWMR'
    call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                  num_fields, ibi, bitmap_input, rwmr_input,  &
-                 numpts, rlat, rlon, ibo, bitmap_output, &
+                 numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                  rwmr_b4_adj_output, iret)
    if (iret /= 0) goto 89
 
@@ -443,7 +443,7 @@
    print*,'INTERPOLATE SNMR'
    call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                  num_fields, ibi, bitmap_input, snmr_input,  &
-                 numpts, rlat, rlon, ibo, bitmap_output, &
+                 numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                  snmr_b4_adj_output, iret)
    if (iret /= 0) goto 89
 
@@ -459,7 +459,7 @@
    print*,'INTERPOLATE ICMR'
    call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                  num_fields, ibi, bitmap_input, icmr_input,  &
-                 numpts, rlat, rlon, ibo, bitmap_output, &
+                 numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                  icmr_b4_adj_output, iret)
    if (iret /= 0) goto 89
 
@@ -475,7 +475,7 @@
    print*,'INTERPOLATE GRLE'
    call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                  num_fields, ibi, bitmap_input, grle_input,  &
-                 numpts, rlat, rlon, ibo, bitmap_output, &
+                 numpts, rlat_output, rlon_output, ibo, bitmap_output, &
                  grle_b4_adj_output, iret)
    if (iret /= 0) goto 89
 
@@ -499,12 +499,12 @@
  print*,'INTERPOLATE WINDS'
  call ipolatev(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
                num_fields, ibi, bitmap_input, ugrd_input, vgrd_input,  &
-               numpts, rlat, rlon, crot, srot, ibo, bitmap_output, &
+               numpts, rlat_output, rlon_output, crot, srot, ibo, bitmap_output, &
                ugrd_b4_adj_output, vgrd_b4_adj_output, iret)
  if (iret /= 0) goto 89
 
  deallocate (ugrd_input, vgrd_input)
- deallocate (crot, srot, rlat, rlon)
+ deallocate (crot, srot)
  deallocate (ibi, ibo, bitmap_input, bitmap_output)
 
  return

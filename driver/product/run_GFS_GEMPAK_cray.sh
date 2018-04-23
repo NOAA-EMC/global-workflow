@@ -1,11 +1,9 @@
 #!/bin/sh
 
-# LSBATCH: User input
 #BSUB -J jgfs_gempak_00
 #BSUB -oo gfs_gempak_00.o%J
 #BSUB -eo gfs_gempak_00.o%J
-#BSUB -L /bin/sh
-#BSUB -q debug
+#BSUB -q  dev_shared
 #BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
 #BSUB -W 03:00
 #BSUB -P GFS-T2O
@@ -14,8 +12,8 @@
 
 export KMP_AFFINITY=disabled
 
-# export PDY=`date -u +%Y%m%d`
-export PDY=20180226
+export PDY=`date -u +%Y%m%d`
+# export PDY=20180307
 
 # export cyc=06
 export cyc=00
@@ -33,24 +31,24 @@ date
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
 module load ESMF-intel-sandybridge/3_1_0rp5
-module load iobuf/2.0.7
+module load iobuf/2.0.8
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.5
-module load util_shared/1.0.6
-
-###########################################
-# Now set up GEMPAK/NTRANS environment
-###########################################
-module load gempak/7.3.0
+module load prod_util
 module load grib_util/1.0.3
+module load util_shared/1.0.6
 #
 #   This is a test version of UTIL_SHARED.v1.0.7 on CRAY
 #
 # module use /gpfs/hps/nco/ops/nwtest/modulefiles
 # module use /usrx/local/nceplibs/util_shared.v1.0.7/modulefiles
 # module load util_shared/1.0.7
+
+###########################################
+# Now set up GEMPAK/NTRANS environment
+###########################################
+module load gempak/7.3.0
 
 module list
 
@@ -68,8 +66,7 @@ export job=gfs_gempak_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
-# export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
-export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn/fv3gfs
+export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
 export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
 
 mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
@@ -91,7 +88,7 @@ cd $DATA
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
@@ -113,9 +110,9 @@ if [ $envir = "prod" ] ; then
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
 else
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
+  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/prfv3l65/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-  export COMIN=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn/gfs.${PDY}/${cyc} ### Boi PARA
+#  export COMIN=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn/gfs.${PDY}/${cyc} ### Boi PARA
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3test/gfs.${PDY}/${cyc}  ### EMC test PARA ####
 
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA

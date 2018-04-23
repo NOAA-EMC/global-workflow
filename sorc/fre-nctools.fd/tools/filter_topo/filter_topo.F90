@@ -30,14 +30,16 @@ program filter_topo
   logical :: zs_filter = .true. 
   logical :: zero_ocean = .true.          ! if true, no diffusive flux into water/ocean area 
   real    :: stretch_fac = 1.0
-  logical :: nested = .false.
+  logical :: nested = .false. &
+            ,regional = .false.
   integer :: grid_type = 0 ! gnomoic_ed
   character(len=128) :: topo_file = "orog"
   character(len=128) :: topo_field = "orog_filt"
   character(len=128) :: mask_field = "slmsk"
   character(len=128) :: grid_file = "atmos_mosaic.nc"
   namelist /filter_topo_nml/ topo_file, topo_field, mask_field, grid_file, zero_ocean, &
-       zs_filter, cd4, n_del2_weak, peak_fac, max_slope, stretch_fac, nested, grid_type
+       zs_filter, cd4, n_del2_weak, peak_fac, max_slope, stretch_fac, nested, grid_type, &
+       regional
 
   integer :: stdunit = 6 
   integer :: ntiles = 0
@@ -58,17 +60,17 @@ program filter_topo
   call read_namelist()
 
   !--- read the target grid.
-  call read_grid_file()
+  call read_grid_file(regional)
 
   !--- read the topography data
-  call read_topo_file
+  call read_topo_file(regional)
 
   !--- filter the data
   call FV3_zs_filter(is,ie,js,je,isd,ied,jsd,jed,npx,npy,npx,ntiles,grid_type, &
-                     stretch_fac, nested, area, dxa, dya, dx, dy, dxc, dyc, sin_sg, oro )
+                     stretch_fac, nested, area, dxa, dya, dx, dy, dxc, dyc, sin_sg, oro, regional )
 
   !--- write out the data
-  call write_topo_file(is,ie,js,je,ntiles,oro(is:ie,js:je,:) )
+  call write_topo_file(is,ie,js,je,ntiles,oro(is:ie,js:je,:),regional )
 
 contains
 
@@ -523,8 +525,9 @@ contains
 
 
   !#####################################################################
-  subroutine read_grid_file()
+  subroutine read_grid_file(regional)
 
+    logical, intent(in) :: regional   ! Is this a regional run?
     integer :: fsize=65536
     integer :: status, ncid, id_dim, id_var, ncid2, t
     integer :: ni, nj, i, j, tw, te, ip
@@ -547,9 +550,13 @@ contains
     status=nf_inq_dimlen(ncid,id_dim,ntiles)
     call handle_err(status, 'inquire dimension ntiles length from file '//trim(grid_file) )
 
-    !--- currently only support cubic sphere grid.
-    if( ntiles .NE. 6 .and. ntiles .NE. 7) call handle_err(-1, "ntiles should be 6 or 7 for file "//trim(grid_file) )
-    if( ntiles == 7 ) print*, " This grid is a nested grid "
+    if( ntiles == 6) then
+      print*, " read_grid_file: This is a global grid."
+    elseif( ntiles == 7 )then
+      print*, " read_grid_file: This is a nested grid."
+    elseif( ntiles == 1 )then
+      print*, " read_grid_file: This is a standalone regional grid."
+    endif
 
     !--- loop through ntiles and make sure the grid size match between all the tiles.
 
@@ -560,6 +567,8 @@ contains
        start(2) = t; nread(1) = 255
        status =  nf_inq_varid(ncid, 'gridfiles', id_var)
        call handle_err(status, 'inquire varid of gridfiles from file '//trim(grid_file) )
+
+       !--- Obtain the grid file name from the mosaic file.
        status = nf_get_vara_text(ncid, id_var, start, nread, tile_file )      
        call handle_err(status, 'get value of gridfiles from file '//trim(grid_file) )
 
@@ -646,10 +655,12 @@ contains
     isd=is-ng; ied=ie+ng
     jsd=js-ng; jed=je+ng
 
-    call fill_cubic_grid_halo(geolon_c, geolon_c, ng, 1, 1, 1, 1)
-    call fill_cubic_grid_halo(geolat_c, geolat_c, ng, 1, 1, 1, 1)    
-    if(.not. nested) call fill_bgrid_scalar_corners(geolon_c, ng, npx, npy, isd, jsd, XDir)
-    if(.not. nested) call fill_bgrid_scalar_corners(geolat_c, ng, npx, npy, isd, jsd, YDir)
+    if( .not. regional ) then
+      call fill_cubic_grid_halo(geolon_c, geolon_c, ng, 1, 1, 1, 1)
+      call fill_cubic_grid_halo(geolat_c, geolat_c, ng, 1, 1, 1, 1)    
+      if(.not. nested) call fill_bgrid_scalar_corners(geolon_c, ng, npx, npy, isd, jsd, XDir)
+      if(.not. nested) call fill_bgrid_scalar_corners(geolat_c, ng, npx, npy, isd, jsd, YDir)
+    endif
 
     !--- compute grid cell center
     allocate(geolon_t(isd:ied,jsd:jed,ntiles), geolat_t(isd:ied,jsd:jed,ntiles))
@@ -670,11 +681,12 @@ contains
     enddo
 
     
-    call fill_cubic_grid_halo(geolon_t, geolon_t, ng, 0, 0, 1, 1)
-    call fill_cubic_grid_halo(geolat_t, geolat_t, ng, 0, 0, 1, 1)
-
-    if (.not. nested) call fill_AGRID_scalar_corners(geolon_t, ng, npx, npy, isd, jsd, XDir)
-    if (.not. nested) call fill_AGRID_scalar_corners(geolat_t, ng, npx, npy, isd, jsd, YDir)
+    if( .not. regional ) then
+      call fill_cubic_grid_halo(geolon_t, geolon_t, ng, 0, 0, 1, 1)
+      call fill_cubic_grid_halo(geolat_t, geolat_t, ng, 0, 0, 1, 1)
+      if (.not. nested) call fill_AGRID_scalar_corners(geolon_t, ng, npx, npy, isd, jsd, XDir)
+      if (.not. nested) call fill_AGRID_scalar_corners(geolat_t, ng, npx, npy, isd, jsd, YDir)
+    endif
 
     !--- compute dx, dy
     allocate(dx(isd:ied,jsd:jed+1,ntiles))
@@ -688,7 +700,7 @@ contains
           dx(i,j,t) = great_circle_dist( g2, g1, radius )
        enddo ; enddo
     enddo
-    if( stretch_fac .NE. 1 ) then
+    if( stretch_fac /= 1 ) then
        do t = 1, ntiles
           do j = js, je
              do i = is, ie+1
@@ -710,27 +722,29 @@ contains
        enddo
     endif
 
-    !--- make sure it is consitent between tiles. The following maybe not necessary.
-    do t = 1, ntiles
-       if(mod(t,2) ==0) then ! tile 2 4 6
-          tw = t - 1
-          te = t + 2
-          if(te > ntiles) te = te - ntiles
-          dy(is, js:je,t) = dy(ie+1,js:je,tw)        ! west boundary
-          dy(ie+1, js:je, t) = dx(ie:is:-1,js, te)  ! east boundary
-       else
-          tw = t - 2
-          if( tw <= 0) tw = tw + ntiles
-          te = t + 1  
-          dy(is, js:je, t) = dx(ie:is:-1, je+1, tw)  ! west boundary
-          dy(ie+1, js:je,t) = dy(1,js:je,te)        ! east boundary
-       endif
-    enddo
+    if( .not. regional ) then
+      !--- make sure it is consitent between tiles. The following maybe not necessary.
+      do t = 1, ntiles
+         if(mod(t,2) ==0) then ! tile 2 4 6
+            tw = t - 1
+            te = t + 2
+            if(te > ntiles) te = te - ntiles
+            dy(is, js:je,t) = dy(ie+1,js:je,tw)        ! west boundary
+            dy(ie+1, js:je, t) = dx(ie:is:-1,js, te)  ! east boundary
+         else
+            tw = t - 2
+            if( tw <= 0) tw = tw + ntiles
+            te = t + 1  
+            dy(is, js:je, t) = dx(ie:is:-1, je+1, tw)  ! west boundary
+            dy(ie+1, js:je,t) = dy(1,js:je,te)        ! east boundary
+         endif
+      enddo
 
-    call fill_cubic_grid_halo(dx, dy, ng, 0, 1, 1, 1)
-    call fill_cubic_grid_halo(dy, dx, ng, 1, 0, 1, 1)
+      call fill_cubic_grid_halo(dx, dy, ng, 0, 1, 1, 1)
+      call fill_cubic_grid_halo(dy, dx, ng, 1, 0, 1, 1)
 
-    if (.not. nested) call fill_dgrid_xy_corners(dx, dy, ng, npx, npy, isd, jsd)
+      if (.not. nested) call fill_dgrid_xy_corners(dx, dy, ng, npx, npy, isd, jsd)
+    endif
 
     !--- compute dxa and dya -----
     allocate(dxa(isd:ied,jsd:jed,ntiles))
@@ -754,10 +768,12 @@ contains
        enddo; enddo
     enddo
 
-    call fill_cubic_grid_halo(dxa, dya, ng, 0, 0, 1, 1)
-    call fill_cubic_grid_halo(dya, dxa, ng, 0, 0, 1, 1)
+    if( .not.regional ) then
+      call fill_cubic_grid_halo(dxa, dya, ng, 0, 0, 1, 1)
+      call fill_cubic_grid_halo(dya, dxa, ng, 0, 0, 1, 1)
     
-    if (.not. nested) call fill_AGRID_xy_corners(dxa, dya, ng, npx, npy, isd, jsd)
+      if (.not. nested) call fill_AGRID_xy_corners(dxa, dya, ng, npx, npy, isd, jsd)
+    endif
 
     !--- compute dxc and dyc
     allocate(dxc(isd:ied+1,jsd:jed,ntiles))
@@ -802,7 +818,9 @@ contains
        enddo
     enddo
 
-    call fill_cubic_grid_halo(area, area, ng, 0, 0, 1, 1)
+    if( .not.regional ) then
+      call fill_cubic_grid_halo(area, area, ng, 0, 0, 1, 1)
+    endif
 
     da_min = minval(area(is:ie,js:je,:))
 
@@ -850,9 +868,11 @@ contains
        enddo
     enddo
 
-    do ip=1,4
-       call fill_cubic_grid_halo(sin_sg(ip,:,:,:), sin_sg(ip,:,:,:), ng, 0, 0, 1, 1)
-    enddo
+    if( .not.regional ) then
+      do ip=1,4
+         call fill_cubic_grid_halo(sin_sg(ip,:,:,:), sin_sg(ip,:,:,:), ng, 0, 0, 1, 1)
+      enddo
+    endif
 
     deallocate(cos_sg, grid3, geolon_c, geolat_c, geolon_t, geolat_t)
 
@@ -861,10 +881,11 @@ contains
 
 
   !#####################################################################
-  subroutine read_topo_file
+  subroutine read_topo_file(regional)
 
+    logical,intent(in) :: regional   ! Is this a run with a regional domain?
     integer :: fsize=65536
-    integer :: status, ncid, id_var, ndim, dimsiz
+    integer :: status, ncid, id_var, ndim, dimsiz, nt
     character(len=256) :: tile_file
     character(len=32)   :: text
     integer :: len, t, dims(2)
@@ -882,7 +903,14 @@ contains
     endif
 
     !--- loop through each tile file to get the orography
-    do t = 1, ntiles
+    do nt = 1, ntiles
+
+       if( regional ) then
+         t = nt + 6    ! The single regional tile must be #7 for now.
+       else
+         t = nt
+       endif
+
        write(text, '(i1.1)' ) t
        tile_file = trim(topo_file)//'.tile'//trim(text)//'.nc'
        status=NF__OPEN(trim(tile_file),NF_NOWRITE,fsize,ncid)
@@ -912,7 +940,7 @@ contains
        if(dimsiz .NE. ny) call handle_err(-1, "mismatch of lat dimension size between "// &
             trim(grid_file)//' and '//trim(tile_file) )
 
-       status = nf_get_var_double(ncid, id_var, oro(is:ie,js:je,t))
+       status = nf_get_var_double(ncid, id_var, oro(is:ie,js:je,nt))
        call handle_err(status, 'get the value of '//trim(topo_field)//' from file '//trim(tile_file) )
 
        status=nf_inq_varid(ncid, mask_field, id_var)
@@ -921,15 +949,17 @@ contains
        status = nf_get_var_double(ncid, id_var, tmp)
        call handle_err(status, 'get the value of '//trim(mask_field)//' from file '//trim(tile_file) )
 
-       mask(is:ie,js:je,t) = tmp
+       mask(is:ie,js:je,nt) = tmp
 
        status = nf_close(ncid)
        call handle_err(status, "close file "//trim(tile_file))
     enddo
 
-    !--- update halo
-    call fill_cubic_grid_halo(oro, oro, ng, 0, 0, 1, 1)
-    call fill_cubic_grid_halo(mask, mask, ng, 0, 0, 1, 1)
+    if( .not.regional ) then
+      !--- update halo
+      call fill_cubic_grid_halo(oro, oro, ng, 0, 0, 1, 1)
+      call fill_cubic_grid_halo(mask, mask, ng, 0, 0, 1, 1)
+    endif
 
 
 
@@ -937,17 +967,25 @@ contains
 
   !##############################################################################
   !--- replace the topo_field
-  subroutine write_topo_file(is,ie,js,je,ntiles,q)
+  subroutine write_topo_file(is,ie,js,je,ntiles,q,regional)
      integer, intent(in) :: is,ie,js,je,ntiles                 
      real,    intent(in) :: q(is:ie,js:je,ntiles) 
+     logical, intent(in) :: regional
 
      integer :: fsize=65536
-     integer :: t, status, ncid, id_var
+     integer :: nt, t, status, ncid, id_var
      character(len=256) :: tile_file
     character(len=3)   :: text
      !--- loop through each tile file to update topo_field
 
-    do t = 1, ntiles
+    do nt = 1, ntiles
+
+       if( regional ) then
+         t = nt + 6
+       else
+         t = nt
+       endif
+
        write(text, '(i1.1)' ) t
        tile_file = trim(topo_file)//'.tile'//trim(text)//'.nc'
        status=NF__OPEN(trim(tile_file),NF_WRITE,fsize,ncid)
@@ -956,7 +994,7 @@ contains
        status=nf_inq_varid(ncid, topo_field, id_var)
        call handle_err(status, 'write_topo_file:inquire varid of '//trim(topo_field)//' from file '//trim(tile_file) )
 
-       status = nf_put_var_double(ncid, id_var, q(:,:,t))
+       status = nf_put_var_double(ncid, id_var, q(:,:,nt))
        call handle_err(status, 'write_topo_file: put the value of '//trim(topo_field)//' from file '//trim(tile_file) )       
 
        status = nf_close(ncid)
@@ -1013,7 +1051,7 @@ contains
   !#####################################################################
   subroutine FV3_zs_filter (is, ie, js, je, isd, ied, jsd, jed, npx, npy, npx_global, ntiles,  &
        grid_type, stretch_fac, nested, area, dxa, dya, dx, dy, dxc, dyc, &
-       sin_sg,  phis )
+       sin_sg,  phis, regional )
     integer, intent(in) :: is, ie, js, je, ntiles
     integer, intent(in) :: isd, ied, jsd, jed, npx, npy, npx_global, grid_type
     real, intent(in), dimension(isd:ied,jsd:jed, ntiles)::area, dxa, dya
@@ -1022,7 +1060,7 @@ contains
 
     real, intent(IN):: sin_sg(4,isd:ied,jsd:jed,ntiles)
     real, intent(IN):: stretch_fac
-    logical, intent(IN) :: nested
+    logical, intent(IN) :: nested, regional
     real, intent(inout):: phis(isd:ied,jsd,jed,ntiles)
     real:: cd2
     integer mdim, n_del2, n_del4
@@ -1042,7 +1080,7 @@ contains
     if ( n_del2 > 0 )   &
          call two_delta_filter(is,ie,js,je,isd,ied,jsd,jed, npx, npy, ntiles, phis, area, &
                                dx, dy, dxa, dya, dxc, dyc, sin_sg, cd2, zero_ocean,  &
-                               .true.,0, grid_type, mask, nested, n_del2)
+                               .true.,0, grid_type, mask, nested, n_del2, regional)
 
     ! MFCT Del-4:
     if ( mdim<=193 ) then
@@ -1053,19 +1091,19 @@ contains
        n_del4 = 3
     endif
     call del4_cubed_sphere(is,ie,js,je,isd,ied,jsd,jed,npx, npy, ntiles, &
-          phis, area, dx, dy, dxc, dyc, sin_sg, n_del4, zero_ocean, mask, nested)
+          phis, area, dx, dy, dxc, dyc, sin_sg, n_del4, zero_ocean, mask, nested, regional)
     ! Applying weak 2-delta-filter:
     cd2 = 0.12*da_min
     call two_delta_filter(is,ie,js,je,isd,ied,jsd,jed,npx, npy, ntiles, &
           phis, area, dx, dy, dxa, dya, dxc, dyc, sin_sg, cd2, zero_ocean,  &
-          .true., 1, grid_type, mask, nested, n_del2_weak)
+          .true., 1, grid_type, mask, nested, n_del2_weak, regional)
 
   end subroutine FV3_zs_filter
 
   !#####################################################################
   subroutine two_delta_filter(is, ie, js, je, isd, ied, jsd, jed, npx, npy, ntiles, &
        q, area, dx, dy, dxa, dya, dxc, dyc, sin_sg, cd, zero_ocean,  &
-        check_slope, filter_type, grid_type, mask, nested, ntmax)
+        check_slope, filter_type, grid_type, mask, nested, ntmax, regional)
     integer, intent(in) :: is,  ie,  js,  je
     integer, intent(in) :: isd, ied, jsd, jed
     integer, intent(in) :: npx, npy, grid_type
@@ -1083,7 +1121,7 @@ contains
     real, intent(in):: sin_sg(4,isd:ied,jsd:jed, ntiles)
     real, intent(in):: mask(isd:ied,  jsd:jed, ntiles)        ! 0==water, 1==land
     logical, intent(in):: zero_ocean, check_slope
-    logical, intent(in):: nested
+    logical, intent(in):: nested, regional
     ! OUTPUT arrays
     real, intent(inout):: q(isd:ied, jsd:jed,ntiles)
     ! Local:
@@ -1103,7 +1141,6 @@ contains
     integer:: i,j, nt, t
     integer:: is1, ie2, js1, je2
 
-
     if ( .not. nested .and. grid_type<3 ) then
        is1 = max(3,is-1);  ie2 = min(npx-2,ie+2)
        js1 = max(3,js-1);  je2 = min(npy-2,je+2)
@@ -1120,7 +1157,9 @@ contains
          
 
     do nt=1, ntmax
-       call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       if( .not.regional ) then
+         call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       endif
 
        ! Check slope
        if ( nt==1 .and. check_slope ) then
@@ -1171,7 +1210,9 @@ contains
              q(npx,je,t) =  q(ie,je,t)
              q(ie,npy,t) =  q(ie,je,t)
           enddo
-          call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+          if( .not.regional ) then
+            call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+          endif
        endif
 
        do t = 1, ntiles
@@ -1182,7 +1223,7 @@ contains
                 a1(i) = p1*(q(i-1,j,t)+q(i,j,t)) + p2*(q(i-2,j,t)+q(i+1,j,t))
              enddo
 
-             if ( .not. nested .and. grid_type<3 ) then
+             if ( (.not. (nested .or. regional)) .and. grid_type<3 ) then
                 a1(0) = c1*q(-2,j,t) + c2*q(-1,j,t) + c3*q(0,j,t)
                 a1(1) = 0.5*(((2.*dxa(0,j,t)+dxa(-1,j,t))*q(0,j,t)-dxa(0,j,t)*q(-1,j,t))/(dxa(-1,j,t)+dxa(0,j,t)) &
                      +      ((2.*dxa(1,j,t)+dxa( 2,j,t))*q(1,j,t)-dxa(1,j,t)*q( 2,j,t))/(dxa(1, j,t)+dxa(2,j,t)))
@@ -1233,7 +1274,7 @@ contains
                 a2(i,j) = p1*(q(i,j-1,t)+q(i,j,t)) + p2*(q(i,j-2,t)+q(i,j+1,t))
              enddo
           enddo
-          if ( .not. nested .and. grid_type<3 ) then
+          if ( (.not. (nested .or. regional)) .and. grid_type<3 ) then
              do i=is,ie
                 a2(i,0) = c1*q(i,-2,t) + c2*q(i,-1,t) + c3*q(i,0,t)
                 a2(i,1) = 0.5*(((2.*dya(i,0,t)+dya(i,-1,t))*q(i,0,t)-dya(i,0,t)*q(i,-1,t))/(dya(i,-1,t)+dya(i,0,t))   &
@@ -1311,7 +1352,9 @@ contains
 
 ! Check slope
     if ( check_slope ) then
-         call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+         if( .not.regional ) then
+           call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+         endif
          do t = 1, ntiles
             do j=js,je
                do i=is,ie+1
@@ -1339,7 +1382,7 @@ contains
 
   !#####################################################################
   subroutine del2_cubed_sphere(is, ie, js, je, isd, ied, jsd, jed, npx, npy, ntiles,&
-          q, area, dx, dy, dxc, dyc, sin_sg, nmax, cd, zero_ocean, mask, nested)
+          q, area, dx, dy, dxc, dyc, sin_sg, nmax, cd, zero_ocean, mask, nested, regional)
     integer, intent(in) :: is,  ie,  js,  je
     integer, intent(in) :: isd, ied, jsd, jed
     integer, intent(in):: npx, npy, ntiles
@@ -1354,7 +1397,7 @@ contains
     real, intent(in):: dyc(isd:ied,  jsd:jed+1, ntiles)
     real, intent(IN):: sin_sg(4,isd:ied,jsd:jed, ntiles)
     real, intent(in):: mask(isd:ied,  jsd:jed, ntiles)        ! 0==water, 1==land
-    logical, intent(IN) :: nested
+    logical, intent(IN) :: nested, regional
 
     ! OUTPUT arrays
     real, intent(inout):: q(is-ng:ie+ng, js-ng:je+ng, ntiles)
@@ -1362,7 +1405,9 @@ contains
     real ddx(is:ie+1,js:je), ddy(is:ie,js:je+1)
     integer i,j,n,t
 
-    call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+    if( .not.regional ) then
+      call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+    endif
 
     do t = 1, ntiles
        ! First step: average the corners:
@@ -1393,7 +1438,9 @@ contains
     enddo
 
     do n=1,nmax
-       if( n>1 ) call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       if( .not.regional ) then
+         if( n>1 ) call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       endif
        do t = 1, ntiles
           do j=js,je
              do i=is,ie+1
@@ -1433,7 +1480,7 @@ contains
 
   !#####################################################################
   subroutine del4_cubed_sphere(is, ie, js, je, isd, ied, jsd, jed, npx, npy, ntiles, &
-       q, area, dx, dy, dxc, dyc, sin_sg, nmax, zero_ocean, mask, nested)
+       q, area, dx, dy, dxc, dyc, sin_sg, nmax, zero_ocean, mask, nested, regional)
     integer, intent(in) :: is,  ie,  js,  je
     integer, intent(in) :: isd, ied, jsd, jed
     integer, intent(in) :: npx, npy, nmax, ntiles
@@ -1446,7 +1493,7 @@ contains
     real, intent(in):: dyc(isd:ied,  jsd:jed+1, ntiles)
     real, intent(IN):: sin_sg(4,isd:ied,jsd:jed, ntiles)
     real, intent(inout):: q(isd:ied, jsd:jed, ntiles)
-    logical, intent(IN) :: nested
+    logical, intent(IN) :: nested, regional
     ! Local:
     ! diffusivity
     real :: diff(is-1:ie+1,js-1:je+1, ntiles)
@@ -1476,7 +1523,9 @@ contains
     enddo
 
     do n=1,nmax
-       call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       if( .not.regional ) then
+         call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+       endif
 
        ! First step: average the corners:
        if ( .not. nested .and. n==1 ) then
@@ -1505,7 +1554,9 @@ contains
              q(ie, npy,t) = q(ie,je,t)
              q(npx,npy,t) = q(ie,je,t)
           enddo
-          call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+          if( .not.regional ) then
+            call fill_cubic_grid_halo(q, q, ng, 0, 0, 1, 1)
+          endif
        endif
 
        do t = 1, ntiles
@@ -1563,7 +1614,9 @@ contains
              enddo
           endif
        enddo
-       call fill_cubic_grid_halo(d2, d2, ng, 0, 0, 1, 1)
+       if( .not.regional ) then
+         call fill_cubic_grid_halo(d2, d2, ng, 0, 0, 1, 1)
+       endif
 
        !---------------------
        ! Compute del4 fluxes:
@@ -1609,8 +1662,10 @@ contains
              enddo
           enddo
        enddo
-       call fill_cubic_grid_halo(win, win, ng, 0, 0, 1, 1)
-       call fill_cubic_grid_halo(wou, wou, ng, 0, 0, 1, 1)
+       if( .not.regional ) then
+         call fill_cubic_grid_halo(win, win, ng, 0, 0, 1, 1)
+         call fill_cubic_grid_halo(wou, wou, ng, 0, 0, 1, 1)
+       endif
        do t = 1, ntiles
           do j=js,je
              do i=is,ie+1

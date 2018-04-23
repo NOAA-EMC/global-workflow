@@ -58,6 +58,15 @@ export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
 
 # Base directories for various builds
 export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
+
+# Toggle to turn on/off GFS downstream processing.
+export DO_BUFRSND="YES"
+export DO_GEMPAK="YES"
+export DO_AWIPS="YES"
+
+# Use NO for retrospective parallel; Use YES for real-time parallel
+export REALTIME="YES"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build paths relative to $HOMEgfs
@@ -65,8 +74,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export BASE_PREP="$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0"
-export BASE_PREP_GLOBAL="$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
@@ -101,7 +110,7 @@ export NET="gfs"
 export RUN=${RUN:-"gfs"}
 export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
 export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
-export REDOUT="1>>"
+export REDOUT="1>"
 export REDERR="2>"
 
 export SENDECF=${SENDECF:-"YES"}
@@ -169,10 +178,11 @@ export DONST="YES"
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
 
-# Precipitation accumulation, true--no bucket, false--bucket=FHZER
-export lprecip_accu=".true."
-
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+
+#--save data to HPSS archive
+export HPSSARCH="NO"
+
 
 echo "END: config.base"

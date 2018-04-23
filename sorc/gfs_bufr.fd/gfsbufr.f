@@ -55,6 +55,7 @@ C$$$
       real :: alat,alon,rla,rlo
       real :: wrkd(1),dummy
       real rlat(nsta), rlon(nsta), elevstn(nsta)
+      integer nint1, nend1, nint3, nend3
       integer landwater(nsta)
       character*1 ns, ew
       character*4 t3
@@ -79,7 +80,8 @@ c      DATA         SEQNAM / 'HEADR', 'PRES TMDB UWND VWND SPFH OMEG',
 c     &                      'CLS1' ,'D10M' /
 C
       namelist /nammet/ iromb, maxwv, levs, makebufr, dird,
-     &                  nstart, nend, nint, nsfc, f00
+     &                  nstart, nend, nint, nend1, nint1, 
+     &                  nint3, nsfc, f00
 
       call mpi_init(ierr)
       call mpi_comm_rank(MPI_COMM_WORLD,mrank,ierr)
@@ -169,7 +171,11 @@ c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
 !            read(12) dummy
           enddo
         endif
-        nfile = 21 + (nf / nint)
+        if(nf .le. nend1) then
+        nfile = 21 + (nf / nint1)
+         else
+        nfile = 21 + (nend1/nint1) + (nf-nend1)/nint3
+        endif
 C        print*, 'nf,nint,nfile = ',nf,nint,nfile
         if(nf.le.nend) then
           if(nf.lt.10) then
@@ -209,15 +215,22 @@ C        print*, 'nf,nint,nfile = ',nf,nint,nfile
           call nemsio_close(gfile,iret=irets)
           call meteorg(npoint,rlat,rlon,istat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &      iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc,landwater)
+     &      iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc,
+     &      landwater,nend1, nint1, nint3)
         endif
       enddo
       call mpi_barrier(mpi_comm_world,ierr)
       call mpi_finalize(ierr)
       if(mrank.eq.0) then
       print *, ' starting to make bufr files'
-      if(makebufr) call buff(nint,nend,npoint,idate,jdate,levs,
+      print *, ' makebufr= ', makebufr
+      print *, 'nint1,nend1,nint3,nend= ',nint1,nend1,nint3,nend
+      if(makebufr) then
+          nend3 = nend
+         call buff(nint1,nend1,nint3,nend3,
+     &        npoint,idate,jdate,levs,
      &        dird,lss,istat,sbset,seqflg,clist,npp,wrkd)
       CALL W3TAGE('METEOMRF')
+      endif
       endif
       end

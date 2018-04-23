@@ -29,6 +29,7 @@ import sys
 import numpy as np
 from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from collections import OrderedDict
 import rocoto
 import workflow_utils as wfu
 
@@ -48,12 +49,16 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
-    steps = gfs_steps + hyb_steps if _base['DOHYBVAR'] == 'YES' else gfs_steps
+    steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
 
     dict_configs = wfu.source_configs(configs, steps)
+
+    # Check and set gfs_cyc specific variables
+    if dict_configs['base']['gfs_cyc'] != 0:
+        dict_configs['base'] = get_gfs_cyc_dates(dict_configs['base'])
 
     # First create workflow XML
     create_xml(dict_configs)
@@ -175,6 +180,7 @@ def get_definitions(base):
     strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
     strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
+    strings.append('\n')
 
     return ''.join(strings)
 
@@ -200,15 +206,23 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         Create GDAS or GFS resource entities
     '''
 
-    strings = []
-
-    strings.append('\n')
-    strings.append('\t<!-- BEGIN: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
-    strings.append('\n')
-
-    machine = dict_configs['base']['machine']
+    base = dict_configs['base']
+    machine = base.get('machine', 'WCOSS_C')
+    do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
+    do_gempak = base.get('DO_GEMPAK', 'NO').upper()
+    do_awips = base.get('DO_AWIPS', 'NO').upper()
 
     tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+
+    if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
+        tasks += ['postsnd']
+    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
+        tasks += ['gempak']
+    if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
+        tasks += ['awips']
+
+    dict_resources = OrderedDict()
+
     for task in tasks:
 
         cfg = dict_configs[task]
@@ -216,58 +230,86 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
+        strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "">\n' % (taskstr))
 
-        strings.append('\n')
+        dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
-    strings.append('\t<!-- END: Resource requirements for %s part of the workflow -->\n' % cdump.upper())
-
-    return ''.join(strings)
+    return dict_resources
 
 
-def get_hyb_resources(dict_configs, cdump='gdas'):
+def get_hyb_resources(dict_configs):
     '''
         Create hybrid resource entities
     '''
 
-    strings = []
-
-    strings.append('\n')
-    strings.append('\t<!-- BEGIN: Resource requirements for hybrid part of the workflow -->\n')
-    strings.append('\n')
-
     base = dict_configs['base']
-    machine = base['machine']
+    machine = base.get('machine', 'WCOSS_C')
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
+    eupd_cyc= base.get('EUPD_CYC', 'gdas').upper()
 
-    tasks = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
-    if lobsdiag_forenkf in ['.T.', '.TRUE.']: tasks.remove('eomg')
+    dict_resources = OrderedDict()
 
-    for task in tasks:
+    # These tasks can be run in either or both cycles
+    tasks1 = ['eobs', 'eomg', 'eupd']
+    if lobsdiag_forenkf in ['.T.', '.TRUE.']:
+        tasks.remove('eomg')
 
-        cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
+    if eupd_cyc in ['BOTH']:
+        cdumps = ['gfs', 'gdas']
+    elif eupd_cyc in ['GFS']:
+        cdumps = ['gfs']
+    elif eupd_cyc in ['GDAS']:
+        cdumps = ['gdas']
+
+    for cdump in cdumps:
+        for task in tasks1:
+
+            cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
+
+            wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+
+            taskstr = '%s_%s' % (task.upper(), cdump.upper())
+
+            strings = []
+
+            strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+            strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
+            strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+            strings.append('\t<!ENTITY NATIVE_%s    "">\n' % (taskstr))
+
+            dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
+
+
+    # These tasks are always run as part of the GDAS cycle
+    cdump = 'gdas'
+    tasks2 = ['ecen', 'efcs', 'epos', 'earc']
+    for task in tasks2:
+
+        cfg = dict_configs[task]
 
         wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
+        strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "">\n' % (taskstr))
 
-        strings.append('\n')
+        dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
-    strings.append('\t<!-- END: Resource requirements for hybrid part of the workflow-->\n')
-
-    return ''.join(strings)
+    return dict_resources
 
 
-def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
+def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     '''
         Create GDAS or GFS tasks
     '''
@@ -281,7 +323,15 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
-    tasks = []
+    base = dict_configs['base']
+    gfs_cyc = base.get('gfs_cyc', 0)
+    dohybvar = base.get('DOHYBVAR', 'NO').upper()
+    eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
+    do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
+    do_gempak = base.get('DO_GEMPAK', 'NO').upper()
+    do_awips = base.get('DO_AWIPS', 'NO').upper()
+
+    dict_tasks = OrderedDict()
 
     # prep
     deps = []
@@ -294,25 +344,33 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    task = wfu.create_wf_task('prep', cdump=cdump, envar=envars, dependency=dependencies)
 
-    tasks.append(task)
-    tasks.append('\n')
+    gfs_enkf = True if eupd_cyc in ['BOTH', 'GFS'] and dohybvar in ['Y', 'YES'] else False
+
+    if gfs_enkf and cdump in ['gfs']:
+        if gfs_cyc == 4:
+            task = wfu.create_wf_task('prep', cdump=cdump, envar=envars, dependency=dependencies)
+        else:
+            task = wfu.create_wf_task('prep', cdump=cdump, envar=envars, dependency=dependencies, cycledef='gdas')
+
+    else:
+        task = wfu.create_wf_task('prep', cdump=cdump, envar=envars, dependency=dependencies)
+
+    dict_tasks['%sprep' % cdump] = task
 
     # anal
     deps = []
     dep_dict = {'type': 'task', 'name': '%sprep' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     if dohybvar in ['y', 'Y', 'yes', 'YES']:
-        dep_dict = {'type': 'task', 'name': '%sepos' % 'gdas', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': '%sepmn' % 'gdas', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:
         dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('anal', cdump=cdump, envar=envars, dependency=dependencies)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%sanal' % cdump] = task
 
     # fcst
     deps = []
@@ -326,8 +384,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
         dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%sfcst' % cdump] = task
 
     # post
     deps = []
@@ -344,8 +401,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     task = wfu.create_wf_task('post', cdump=cdump, envar=postenvars, dependency=dependencies,
                               metatask='post', varname=varname1, varval=varval1, vardict=vardict)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%spost' % cdump] = task
 
     # vrfy
     deps = []
@@ -354,8 +410,38 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%svrfy' % cdump] = task
+
+
+    if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
+        #postsnd
+        deps = []
+        dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('postsnd', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%spostsnd' % cdump] = task
+
+    if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
+        # awips
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('awips', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sawips' % cdump] = task
+
+    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
+        # gempak
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('gempak', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sgempak' % cdump] = task
 
     # arch
     deps = []
@@ -366,83 +452,113 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas', dohybvar='NO'):
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%sarch' % cdump] = task
 
-    return ''.join(tasks)
+    return dict_tasks
 
 
-def get_hyb_tasks(dict_configs, EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'):
+def get_hyb_tasks(dict_configs, cycledef='enkf'):
     '''
         Create Hybrid tasks
     '''
+
+    # Determine groups based on ensemble size and grouping
+    base = dict_configs['base']
+    nens = base['NMEM_ENKF']
+    lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
+    eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
+
+    eobs = dict_configs['eobs']
+    nens_eomg = eobs['NMEM_EOMGGRP']
+    neomg_grps = nens / nens_eomg
+    EOMGGROUPS = ' '.join(['%02d' % x for x in range(1, neomg_grps + 1)])
+
+    efcs = dict_configs['efcs']
+    nens_efcs = efcs['NMEM_EFCSGRP']
+    nefcs_grps = nens / nens_efcs
+    EFCSGROUPS = ' '.join(['%02d' % x for x in range(1, nefcs_grps + 1)])
+
+    earc = dict_configs['earc']
+    nens_earc = earc['NMEM_EARCGRP']
+    nearc_grps = nens / nens_earc
+    EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps + 1)])
 
     envars = []
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
     envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
-    envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
+    #envars.append(rocoto.create_envar(name='CDUMP', value='%s' % cdump))
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     ensgrp = rocoto.create_envar(name='ENSGRP', value='#grp#')
 
-    base = dict_configs['base']
-    machine = base['machine']
-    lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
+    dict_tasks = OrderedDict()
 
-    tasks = []
+    if eupd_cyc in ['BOTH']:
+        cdumps = ['gfs', 'gdas']
+    elif eupd_cyc in ['GFS']:
+        cdumps = ['gfs']
+    elif eupd_cyc in ['GDAS']:
+        cdumps = ['gdas']
 
-    # eobs
-    deps = []
-    dep_dict = {'type': 'task', 'name': '%sprep' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sepos' % cdump, 'offset': '-06:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    task = wfu.create_wf_task('eobs', cdump=cdump, envar=envars, dependency=dependencies)
+    for cdump in cdumps:
 
-    tasks.append(task)
-    tasks.append('\n')
+        envar_cdump = rocoto.create_envar(name='CDUMP', value='%s' % cdump)
+        envars1 = envars + [envar_cdump]
 
-    # eomn, eomg
-    if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+        # eobs
         deps = []
-        dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
+        dep_dict = {'type': 'task', 'name': '%sprep' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': '%sepmn' % 'gdas', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        task = wfu.create_wf_task('eobs', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+        dict_tasks['%seobs' % cdump] = task
+
+        # eomn, eomg
+        if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+            deps = []
+            dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+            eomgenvars= envars1 + [ensgrp]
+            task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
+                                      metatask='eomn', varname='grp', varval=EOMGGROUPS, cycledef=cycledef)
+
+            dict_tasks['%seomn' % cdump] = task
+
+        # eupd
+        deps = []
+        if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+            dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
+        else:
+            dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        eomgenvars = envars + [ensgrp]
-        task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
-                                  metatask='eomn', varname='grp', varval=EOMGGROUPS)
+        task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-        tasks.append(task)
-        tasks.append('\n')
+        dict_tasks['%seupd' % cdump] = task
 
-    # eupd
-    deps = []
-    if lobsdiag_forenkf in ['.F.', '.FALSE.']:
-        dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
-    else:
-        dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
-    task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars, dependency=dependencies)
-
-    tasks.append(task)
-    tasks.append('\n')
+    # All hybrid tasks beyond this point are always executed in the GDAS cycle
+    cdump = 'gdas'
+    envar_cdump = rocoto.create_envar(name='CDUMP', value='%s' % cdump)
+    envars1 = envars + [envar_cdump]
+    cdump_eupd = 'gfs' if eupd_cyc in ['GFS'] else 'gdas'
 
     # ecen
     deps = []
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%seupd' % cdump}
+    dep_dict = {'type': 'task', 'name': '%seupd' % cdump_eupd}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    task = wfu.create_wf_task('ecen', cdump=cdump, envar=envars, dependency=dependencies)
+    task = wfu.create_wf_task('ecen', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%secen' % cdump] = task
 
     # efmn, efcs
     deps = []
@@ -451,36 +567,40 @@ def get_hyb_tasks(dict_configs, EOMGGROUPS, EFCSGROUPS, EARCGROUPS, cdump='gdas'
     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-    efcsenvars = envars + [ensgrp]
+    efcsenvars = envars1 + [ensgrp]
     task = wfu.create_wf_task('efcs', cdump=cdump, envar=efcsenvars, dependency=dependencies,
-                              metatask='efmn', varname='grp', varval=EFCSGROUPS)
+                              metatask='efmn', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%sefmn' % cdump] = task
 
-    # epos
+    # epmn, epos
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%sefmn' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
-    task = wfu.create_wf_task('epos', cdump=cdump, envar=envars, dependency=dependencies)
+    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+    eposenvars = envars1 + [fhrgrp] + [fhrlst]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_eposgroups(dict_configs['epos'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
+    task = wfu.create_wf_task('epos', cdump=cdump, envar=eposenvars, dependency=dependencies,
+                              metatask='epmn', varname=varname1, varval=varval1, vardict=vardict)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%sepmn' % cdump] = task
 
     # eamn, earc
     deps = []
-    dep_dict = {'type': 'task', 'name': '%sepos' % cdump}
+    dep_dict = {'type': 'metatask', 'name': '%sepmn' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
-    earcenvars = envars + [ensgrp]
+    earcenvars = envars1 + [ensgrp]
     task = wfu.create_wf_task('earc', cdump=cdump, envar=earcenvars, dependency=dependencies,
-                              metatask='eamn', varname='grp', varval=EARCGROUPS)
+                              metatask='eamn', varname='grp', varval=EARCGROUPS, cycledef=cycledef)
 
-    tasks.append(task)
-    tasks.append('\n')
+    dict_tasks['%seamn' % cdump] = task
 
-    return ''.join(tasks)
+    return  dict_tasks
 
 
 def get_workflow_header(base):
@@ -499,6 +619,7 @@ def get_workflow_header(base):
     strings.append('\n')
     strings.append('\t<!-- Define the cycles -->\n')
     strings.append('\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>\n')
+    strings.append('\t<cycledef group="enkf" >&SDATE;     &EDATE;     06:00:00</cycledef>\n')
     strings.append('\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>\n')
     if base['gfs_cyc'] != 0:
         strings.append('\t<cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>\n')
@@ -549,6 +670,36 @@ def get_postgroups(post, cdump='gdas'):
 
     return fhrgrp, fhrdep, fhrlst
 
+def get_eposgroups(epos, cdump='gdas'):
+
+    fhmin = epos['FHMIN_ENKF']
+    fhmax = epos['FHMAX_ENKF']
+    fhout = epos['FHOUT_ENKF']
+    fhrs = range(fhmin, fhmax+fhout, fhout)
+
+    neposgrp = epos['NEPOSGRP']
+    ngrps = neposgrp if len(fhrs) > neposgrp else len(fhrs)
+
+    fhrs = ['f%03d' % f for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
+
+    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
+
+    return fhrgrp, fhrdep, fhrlst
+
+
+def dict_to_strings(dict_in):
+
+    strings = []
+    for key in dict_in.keys():
+        strings.append(dict_in[key])
+        strings.append('\n')
+
+    return ''.join(strings)
+
 
 def create_xml(dict_configs):
     '''
@@ -556,10 +707,10 @@ def create_xml(dict_configs):
         create the workflow XML
     '''
 
-    if dict_configs['base']['gfs_cyc'] != 0:
-        dict_configs['base'] = get_gfs_cyc_dates(dict_configs['base'])
-
     base = dict_configs['base']
+    dohybvar = base.get('DOHYBVAR', 'NO').upper()
+    gfs_cyc = base.get('gfs_cyc', 0)
+    eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
 
     # Start collecting workflow pieces
     preamble = get_preamble()
@@ -568,50 +719,50 @@ def create_xml(dict_configs):
     workflow_footer = get_workflow_footer()
 
     # Get GDAS related entities, resources, workflow
-    gdas_resources = get_gdasgfs_resources(dict_configs)
-    gdas_tasks = get_gdasgfs_tasks(dict_configs, dohybvar=base['DOHYBVAR'])
+    dict_gdas_resources = get_gdasgfs_resources(dict_configs)
+    dict_gdas_tasks = get_gdasgfs_tasks(dict_configs)
 
     # Get hybrid related entities, resources, workflow
-    if base['DOHYBVAR'] == "YES":
-
-        # Determine EOMG/EFCS groups based on ensemble size and grouping
-        nens = base['NMEM_ENKF']
-        eobs = dict_configs['eobs']
-        efcs = dict_configs['efcs']
-        earc = dict_configs['earc']
-        nens_eomg = eobs['NMEM_EOMGGRP']
-        nens_efcs = efcs['NMEM_EFCSGRP']
-        nens_earc = earc['NMEM_EARCGRP']
-        neomg_grps = nens / nens_eomg
-        nefcs_grps = nens / nens_efcs
-        nearc_grps = nens / nens_earc
-        EOMGGROUPS = ' '.join(['%02d' % x for x in range(1, neomg_grps + 1)])
-        EFCSGROUPS = ' '.join(['%02d' % x for x in range(1, nefcs_grps + 1)])
-        EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps + 1)])
-
-        hyb_resources = get_hyb_resources(dict_configs)
-        hyb_tasks = get_hyb_tasks(dict_configs, EOMGGROUPS, EFCSGROUPS, EARCGROUPS)
+    if dohybvar in ['Y', 'YES']:
+        dict_hyb_resources = get_hyb_resources(dict_configs)
+        dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
     # Get GFS cycle related entities, resources, workflow
-    if base['gfs_cyc'] != 0:
-        gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
-        gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs', dohybvar=base['DOHYBVAR'])
+    dict_gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
+    dict_gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs')
 
+    # Put together the XML file
     xmlfile = []
+
     xmlfile.append(preamble)
+
     xmlfile.append(definitions)
-    xmlfile.append(gdas_resources)
-    if base['DOHYBVAR'] == "YES":
-        xmlfile.append(hyb_resources)
-    if base['gfs_cyc'] != 0:
-        xmlfile.append(gfs_resources)
+
+    xmlfile.append(dict_to_strings(dict_gdas_resources))
+
+    if dohybvar in ['Y', 'YES']:
+        xmlfile.append(dict_to_strings(dict_hyb_resources))
+
+    if gfs_cyc != 0:
+        xmlfile.append(dict_to_strings(dict_gfs_resources))
+    elif gfs_cyc == 0 and dohybvar in ['Y', 'YES'] and eupd_cyc in ['BOTH', 'GFS']:
+        xmlfile.append(dict_gfs_resources['gfsprep'])
+
     xmlfile.append(workflow_header)
-    xmlfile.append(gdas_tasks)
-    if base['DOHYBVAR'] == 'YES':
-        xmlfile.append(hyb_tasks)
-    if base['gfs_cyc'] != 0:
-        xmlfile.append(gfs_tasks)
+
+    xmlfile.append(dict_to_strings(dict_gdas_tasks))
+
+    if dohybvar in ['Y', 'YES']:
+        xmlfile.append(dict_to_strings(dict_hyb_tasks))
+
+    if gfs_cyc != 0:
+        xmlfile.append(dict_to_strings(dict_gfs_tasks))
+    elif gfs_cyc == 0 and dohybvar in ['Y', 'YES'] and eupd_cyc in ['BOTH', 'GFS']:
+        xmlfile.append(dict_gfs_tasks['gfsprep'])
+        xmlfile.append('\n')
+
     xmlfile.append(wfu.create_firstcyc_task())
+
     xmlfile.append(workflow_footer)
 
     # Write the XML file

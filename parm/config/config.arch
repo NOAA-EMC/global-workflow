@@ -8,15 +8,13 @@ echo "BEGIN: config.arch"
 # Get task specific resources
 . $EXPDIR/config.resources arch
 
-#--save data to HPSS archive                               
-export HPSSARCH=YES
-
 #--online archive of nemsio files for fit2obs verification
-export FITSARC="NO"
+export FITSARC="YES"
+export FHMAX_FITS=132
+if [ $FHMAX_FITS -gt $FHMAX_GFS ]; then export FHMAX_FITS=$FHMAX_GFS; fi
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
 export RMOLDSTD=144
 export RMOLDEND=24
-
 
 echo "END: config.arch"

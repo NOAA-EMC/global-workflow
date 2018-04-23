@@ -80,7 +80,6 @@
 !                           to fv3 cubed sphere grid.
 !   2017-04-12 Gayno      : Write nsst records to the surface netcdf restart
 !                           file.  Previously, the nsst records were written
-!                           to their own nemsio binary file.
 !
 ! NAMELISTS:
 !   NAMCHG:
@@ -124,6 +123,12 @@
 !     OUTTYP     INTEGER NUMBER OF OUTPUT FILE TYPE.  NOT USED YET.  CURRENTLY,
 !                THE FV3 SIGMA AND SURFACE/NSST FILES ARE NETCDF FORMAT ONLY.
 !     CHGQ0      SET NEGATIVE VALUES OF TRACERS TO ZERO: 0 FALSE; 1 TRUE.
+!     REGIONAL   FLAG FOR PROCESSING STAND-ALONE NEST.  WHEN '1', REMOVE HALO
+!                FROM GRIDS AND CREATE AN ATMOSPHERIC BOUNDARY FILE.  WHEN '2',
+!                CREATE BOUNDARY FILE ONLY.  WHEN '0', PROCESS NORMALLY AS
+!                FOR A GLOBAL GRID.  DEFAULT IS '0'.
+!     HALO       WHEN RUNNING A STAND-ALONE NEST, THIS SPECIFIES THE NUMBER OF
+!                ROWS/COLS FOR THE HALO.
 !
 ! INPUT FILES:
 !   UNIT   11    chgres.inp.sig          GFS SIGMA FILE (IN EITHER SIGIO OR NEMSIO FORMAT)
@@ -185,17 +190,20 @@
                 IDVC=0,IDVM=0,IDSL=0,MQUICK=0,IDVT=0,        &
                 LATCH=8,LSOIL=0,IVSSFC=0,NVCOORD=0,                &
                 IDRT=4,OUTTYP=999,IALB=0,CHGQ0=0,ISOT=0,IVEGSRC=0, &
-                NTILES=6,TILE_NUM=1
+                NTILES=6,TILE_NUM=1,REGIONAL=0,HALO=0
 !
       REAL, PARAMETER :: PIFAC=180/ACOS(-1.0)
 !
       REAL RI(0:20),CPI(0:20)
+
       LOGICAL USE_UFO, NST_ANL, RDGRID, NOPDPVV
+
       NAMELIST/NAMCHG/ LEVS,NTRAC,LONB,LATB,                       &
                        IDVC,IDVM,IDSL,MQUICK,IDVT,LATCH,       &
                        LSOIL,IVSSFC,NVCOORD,OUTTYP,IDRT,RI,CPI,    &
-                       IALB,CHGQ0,USE_UFO,NST_ANL,RDGRID,   &
-                       NOPDPVV,ISOT,IVEGSRC,NTILES,TILE_NUM
+                       IALB,CHGQ0,USE_UFO,NST_ANL,RDGRID,      &
+                       NOPDPVV,ISOT,IVEGSRC,NTILES,TILE_NUM,   &
+                       REGIONAL, HALO
 !
       INTEGER NSIGI,NSIL,NSIGO,                    & 
               IRET,IOSSIL,IRET0,IRET1,             &
@@ -207,6 +215,7 @@
               SFCPRESS_ID_O, THERMODYN_ID_O,       &
               NREC, LEVSI, LEVSO, I, L
 
+      INTEGER                 :: IMO_WITH_HALO, JMO_WITH_HALO
       INTEGER                 :: NSST_YEAR, NSST_MON
       INTEGER                 :: NSST_DAY, NSST_HOUR
       INTEGER, DIMENSION(200) :: KGDS_INPUT, KGDS_OUTPUT
@@ -238,7 +247,8 @@
       TYPE(SIGIO_DBTA)        :: SIGDATAI
       TYPE(SFCIO_HEAD)        :: SFCHEADI
       REAL,ALLOCATABLE        :: SLMSKO(:,:)
-      REAL,ALLOCATABLE        :: GEOLAT(:,:), GEOLON(:,:)
+      REAL,ALLOCATABLE        :: GEOLAT(:,:), GEOLON(:,:), TMPVAR(:,:)
+      REAL,ALLOCATABLE        :: TMPLAT(:,:), TMPLON(:,:)
       REAL                    :: FCSTHOUR, NSST_FHOUR
       INTEGER                 :: IOLPL3,NLPL3
       INTEGER,ALLOCATABLE     :: LPL3(:)
@@ -258,7 +268,7 @@
               NVCOORDO,IDATE4O(4),LSOILO,IVSO,          &
               I_OZN,I_CLD, LSOILI, IVSI
       CHARACTER(16),allocatable :: TRAC_NAME(:)
-      REAL(4) FHOURO,PDRYINIO
+      REAL(4) FHOURO
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  EXECUTION BEGINS
@@ -281,6 +291,24 @@
       WRITE(6,NAMCHG)
  
       LATCH2 = LATCH + LATCH
+
+      IF (REGIONAL == 1) THEN
+        PRINT*,"WILL CREATE GRIDS WITHOUT HALO."
+        PRINT*,"WILL CREATE ATMOSPHERIC BOUNDARY FILE."
+      ELSEIF (REGIONAL == 2) THEN
+        PRINT*,"WILL CREATE ATMOSPHERIC BOUNDARY FILE ONLY."
+      ELSE
+        HALO = 0
+      ENDIF
+
+      IF (REGIONAL > 0) THEN
+        IF (HALO == 0) THEN
+          PRINT *,'FATAL ERROR: MUST SPECIFIY NON-ZERO HALO.'
+          CALL ERREXIT(51)
+        ELSE
+          PRINT*,"USER SPECIFIED HALO IS: ", HALO, " ROWS/COLS."
+        ENDIF
+      ENDIF
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  OPEN INPUT ATMOSPHERIC FILE.  DETERMINE FILE TYPE.
@@ -730,9 +758,17 @@
  
         CALL SIGIO_SCLOSE(NSIGI,IRET)
 
-        CALL WRITE_FV3_ATMS_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,GFSDATAO%W,   &
+        IF (REGIONAL < 2) THEN
+          CALL WRITE_FV3_ATMS_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,GFSDATAO%W,   &
                  GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q,VCOORDO,        &
-                 LONBO,LATBO,LEVSO,NTRACM,NVCOORDO,NTILES)  
+                 LONBO,LATBO,LEVSO,NTRACM,NVCOORDO,NTILES,HALO)  
+        ENDIF
+
+        IF (REGIONAL >= 1) THEN
+          CALL WRITE_FV3_ATMS_BNDY_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,   &
+                   GFSDATAO%W,GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q,VCOORDO,         &
+                   LONBO,LATBO,LEVSO,NTRACM,NVCOORDO,HALO)
+        ENDIF
 
         CALL NEMSIO_GFS_AXGRD(GFSDATAO)
 
@@ -741,7 +777,7 @@
 
 ! ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 !  CHANGE RESOLUTION OF INPUT NEMSIO GRID FILE
-!  OUTPUT HISTORY FILE IN SIGIO SIGMA OR NEMSIO GRID FORMAT, OR BOTH
+!  OUTPUT ATMOS FILE ON FV3 CUBED-SPHERE GRID WILL BE NETCDF FORMAT.
 ! ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
       ELSEIF(INPTYP == 1) THEN
@@ -1133,9 +1169,17 @@
           GFSDATAO%W = 0.0
         END IF
 
-        CALL WRITE_FV3_ATMS_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,GFSDATAO%W,  &
+        IF (REGIONAL < 2) THEN
+          CALL WRITE_FV3_ATMS_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,GFSDATAO%W,  &
                  GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q,VCOORDO,         &
-                 LONB,LATB,LEVSO,NTRACO,NVCOORDO,NTILES)
+                 LONB,LATB,LEVSO,NTRACO,NVCOORDO,NTILES,HALO)
+        ENDIF
+
+        IF (REGIONAL >=1) THEN
+          CALL WRITE_FV3_ATMS_BNDY_NETCDF(GFSDATAO%ZS,GFSDATAO%PS,GFSDATAO%T,   &
+                   GFSDATAO%W,GFSDATAO%U,GFSDATAO%V,GFSDATAO%Q,VCOORDO,         &
+                   LONB,LATB,LEVSO,NTRACO,NVCOORDO,HALO)
+        ENDIF
 
         DEALLOCATE(VCOORDO)
 
@@ -1260,6 +1304,17 @@
 
       CALL READ_FV3_GRID_DIMS_NETCDF(TILE_NUM,IMO,JMO)
 
+      IMO_WITH_HALO = IMO
+      JMO_WITH_HALO = JMO
+
+      IF (HALO > 0) THEN
+        IMO = IMO - (2*HALO)
+        JMO = JMO - (2*HALO)
+        PRINT*,"WILL REMOVE HALO."
+        PRINT*,"FULL GRID DIMENSIONS: ", IMO_WITH_HALO, JMO_WITH_HALO
+        PRINT*,"NO HALO DIMENSIONS  : ", IMO, JMO
+      ENDIF
+
       IJMO = IMO * JMO
 
       PRINT '(" CHANGE SURFACE FILE RESOLUTION",           &
@@ -1269,9 +1324,21 @@
          "   TO ",I4," X ",I4," X ",I4,"   VERSION",I8)', &
            IMO,JMO,LSOILO,IVSO
 
-      ALLOCATE(GEOLON(IMO,JMO))
+      ALLOCATE(TMPVAR(IMO_WITH_HALO,JMO_WITH_HALO))
+      ALLOCATE(TMPLAT(IMO_WITH_HALO,JMO_WITH_HALO))
+      ALLOCATE(TMPLON(IMO_WITH_HALO,JMO_WITH_HALO))
+
       ALLOCATE(GEOLAT(IMO,JMO))
-      CALL READ_FV3_LATLON_NETCDF(TILE_NUM,IMO,JMO,GEOLON,GEOLAT)
+      ALLOCATE(GEOLON(IMO,JMO))
+      CALL READ_FV3_LATLON_NETCDF(TILE_NUM,IMO_WITH_HALO,JMO_WITH_HALO,TMPLON,TMPLAT)
+      DO J = 1, JMO
+      DO I = 1, IMO
+        GEOLAT(I,J) = TMPLAT(I+HALO,J+HALO)
+        GEOLON(I,J) = TMPLON(I+HALO,J+HALO)
+      ENDDO
+      ENDDO
+
+      DEALLOCATE(TMPLAT, TMPLON)
 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  INTERPOLATE SOME SURFACE FIELDS THE OLD WAY.  THESE ARE FIELDS
@@ -1295,19 +1362,36 @@
       DEALLOCATE (TPRCPI, SRFLAGI)
 
       ALLOCATE(SLMSKO(IMO,JMO))
-      CALL READ_FV3_GRID_DATA_NETCDF('slmsk',TILE_NUM,IMO,JMO,SLMSKO)
+      CALL READ_FV3_GRID_DATA_NETCDF('slmsk',TILE_NUM,IMO_WITH_HALO,JMO_WITH_HALO,TMPVAR)
+      DO J = 1, JMO
+      DO I = 1, IMO
+        SLMSKO(I,J) = TMPVAR(I+HALO,J+HALO)
+      ENDDO
+      ENDDO
       ALLOCATE(SFCOUTPUT%LSMASK(IJMO))
       SFCOUTPUT%LSMASK = RESHAPE(SLMSKO, (/IJMO/))
       DEALLOCATE(SLMSKO)
 
       ALLOCATE(OROGO(IMO,JMO))
-      CALL READ_FV3_GRID_DATA_NETCDF('orog_filt',TILE_NUM,IMO,JMO,OROGO)
+      CALL READ_FV3_GRID_DATA_NETCDF('orog_filt',TILE_NUM,IMO_WITH_HALO,JMO_WITH_HALO,TMPVAR)
+      DO J = 1, JMO
+      DO I = 1, IMO
+        OROGO(I,J) = TMPVAR(I+HALO,J+HALO)
+      ENDDO
+      ENDDO
       ALLOCATE(SFCOUTPUT%OROG(IJMO))
       SFCOUTPUT%OROG = RESHAPE(OROGO, (/IJMO/))
       DEALLOCATE(OROGO)
  
       ALLOCATE(OROGO_UF(IMO,JMO))
-      CALL READ_FV3_GRID_DATA_NETCDF('orog_raw',TILE_NUM,IMO,JMO,OROGO_UF)
+      CALL READ_FV3_GRID_DATA_NETCDF('orog_raw',TILE_NUM,IMO_WITH_HALO,JMO_WITH_HALO,TMPVAR)
+      DO J = 1, JMO
+      DO I = 1, IMO
+        OROGO_UF(I,J) = TMPVAR(I+HALO,J+HALO)
+      ENDDO
+      ENDDO
+
+      DEALLOCATE(TMPVAR)
 
       ALLOCATE(SFCOUTPUT%LATS(IJMO))
       SFCOUTPUT%LATS = RESHAPE(GEOLAT, (/IJMO/))

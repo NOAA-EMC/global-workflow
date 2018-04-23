@@ -15,6 +15,7 @@ import os
 import sys
 import glob
 import subprocess
+import numpy as np
 from distutils.spawn import find_executable
 from datetime import datetime, timedelta
 import rocoto
@@ -155,7 +156,7 @@ def get_scheduler(machine):
         raise UnknownMachineError('Unknown machine: %s'%(machine,))
 
 
-def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
+def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
                    metatask=None, varname=None, varval=None, vardict=None, \
                    final=False):
 
@@ -170,9 +171,10 @@ def create_wf_task(task, cdump='gdas', envar=None, dependency=None, \
                          'vardict': vardict}
 
     taskstr = '%s%s' % (cdump, taskstr)
+    cycledefstr = cdump if cycledef is None else cycledef
 
     task_dict = {'taskname': '%s' % taskstr, \
-                 'cycledef': '%s' % cdump, \
+                 'cycledef': '%s' % cycledefstr, \
                  'maxtries': '&MAXTRIES;', \
                  'command': '&JOBS_DIR;/%s.sh' % task, \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
@@ -264,13 +266,13 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         tasks = cfg['npe_%s_gfs' % ltask]
     else:
         tasks = cfg['npe_%s' % ltask]
-        
+
     if cdump in ['gfs'] and 'npe_node_%s_gfs' % task in cfg.keys():
         ppn = cfg['npe_node_%s_gfs' % ltask]
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    nodes = tasks / ppn
+    nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
     memstr = '' if memory is None else str(memory)
 

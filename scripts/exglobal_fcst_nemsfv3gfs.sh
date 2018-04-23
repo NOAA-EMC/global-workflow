@@ -551,6 +551,10 @@ cat > input.nml <<EOF
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
   fdiag = $FDIAG
+  fhmax = $FHMAX
+  fhout = $FHOUT
+  fhmaxhf = $FHMAX_HF
+  fhouthf = $FHOUT_HF
   $atmos_model_nml
 /
 
@@ -656,7 +660,6 @@ cat > input.nml <<EOF
 
 &gfs_physics_nml
   fhzero       = $FHZER
-  lprecip_accu = ${lprecip_accu:-".true."}
   h2o_phys     = ${h2o_phys:-".true."}
   ldiag3d      = ${ldiag3d:-".false."}
   fhcyc        = $FHCYC

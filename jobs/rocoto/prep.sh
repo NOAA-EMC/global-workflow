@@ -15,7 +15,6 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 ###############################################################
 # Source machine runtime environment
 . $BASE_ENV/${machine}.env prep
@@ -59,15 +58,22 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    if [ $machine = "WCOSS_C" ]; then
-        export USHSYND=""   # set blank so that prepobs_makeprepbufr defaults USHSYND to HOMEobsproc_prep}/ush
-        $HOMEgfs/jobs/JGLOBAL_PREP
+    if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
+
+        export job="j${CDUMP}_prep_${cyc}"
+        export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+        COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
+        export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
+        export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
+        export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
+        export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
+
+        $HOMEobsproc_network/jobs/JGLOBAL_PREP
+        status=$?
         [[ $status -ne 0 ]] && exit $status
-    elif [ $machine = "THEIA" ]; then
-        $HOMEgfs/ush/drive_makeprepbufr.sh
-        [[ $status -ne 0 ]] && exit $status
+
     else
-        echo "prep step is not supported on $machine, exit"
+        echo "WARNING:  prep step is not supported on $machine, exit"
         exit 1
     fi
 else

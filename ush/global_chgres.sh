@@ -30,6 +30,7 @@
 # 2016-12-27  Updated for FV3 core.  G. Gayno
 # 2017-04-12  Remove references to output nsst file.  nsst data
 #             now written to surface restart file.
+# 2018-02-09  Updated for regional grids.
 #
 # Usage:  global_chgres.sh SIGINP SFCINP NSTINP CASE LEVS
 #
@@ -68,6 +69,14 @@
 #                   climatological soil moisture data file.
 #     NTRAC         New number of tracers
 #                   defaults to input sigma file value
+#     REGIONAL      Process stand-alone regional grid.  When '1', remove halo
+#                   from grids and create an atmospheric boundary file.
+#                   When '2', create boundary file only.  When '0', 
+#                   do neither (process as normal for a global grid).
+#                   Default is '0'.
+#     HALO          When processing a stand-alone regional grid, this
+#                   specifies the number of rows/cols for the halo.
+#                   Default is '0'.
 #     IDVC          New vertical coordinate id (1 for sigma, 2 for hybrid)
 #                   defaults to input sigma file value
 #     IDSL          New midlayer pressure id (1 for phillips, 2 for mean)
@@ -75,12 +84,15 @@
 #     TILE_NUM      The number of the cubed-sphere tile to convert surface
 #                   and nst data.
 #     NWROOT        A string that defaults to /nwprod
-#     FIXSUBDA      Subdirectory string for fix fields; defaults to /fix
-#                   To use parallel fix, set it to /fix/fix_am
-#     FIXam        Directory for global fixed files
-#                   defaults to ${NWROOT}/$FIXSUBDA
-#     EXECgfs       Directory for global executables
-#                   defaults to $NWROOT/exec
+#     gfs_ver       Version number.  Defaults to v15.0.0.
+#     BASEDIR       Base directory.  Defaults to /nwprod2
+#     HOMEgfs       GFS home directory.  Defaults to $BASEDIR/gfs.${gfs_ver}
+#     FIXam         Directory for global climo files
+#                   Defaults to $HOMEgfs/fix/fix_am
+#     FIXfv3        Directory for model 'grid' and 'orography' files.
+#                   Defaults to HOMEgfs/fix/fix_fv3_gmted2010
+#     EXECgfs       Directory for global executables.
+#                   Defaults to $HOMEgfs/exec
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
 #                   defaults to current working directory
@@ -303,6 +315,9 @@ TILE_NUM=${TILE_NUM:-1}
 IDRT=${IDRT:-4}
 OUTTYP=${OUTTYP:-999}
 NTRAC=${NTRAC:-3}
+REGIONAL=${REGIONAL:-0}
+HALO=${HALO:-0}
+gtype=${gtype:-uniform}
 IALB=${IALB:-0}
 IDVC=${IDVC:-2}
 IDVT=${IDVT:-21}
@@ -346,12 +361,18 @@ ln -sf $SFCINP        chgres.inp.sfc
 ln -sf $NSTINP        chgres.inp.nst
 ln -sf $LONSPERLAT    chgres.inp.lpl3
 
-tile=1
-while [ $tile -le $ntiles ]; do
- ln -sf ${FIXfv3}/${CASE}/${CASE}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
- ln -sf ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
- tile=`expr $tile + 1 `
-done
+if [ $gtype = regional ]; then
+ tile=7
+ ln -sf ${FIXfv3}/${CASE}/${CASE}_grid.tile${tile}.halo${HALO}.nc chgres.fv3.grd.t${tile}
+ ln -sf ${FIXfv3}/${CASE}/${CASE}_oro_data.tile${tile}.halo${HALO}.nc chgres.fv3.orog.t${tile}
+else
+ tile=1
+ while [ $tile -le $ntiles ]; do
+  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_grid.tile${tile}.nc chgres.fv3.grd.t${tile}
+  ln -sf ${FIXfv3}/C${CRES}/C${CRES}_oro_data.tile${tile}.nc chgres.fv3.orog.t${tile}
+  tile=`expr $tile + 1 `
+ done
+fi
 
 if [[ $LANDICE_OPT = 3 || $LANDICE_OPT = 4 ]]
 then
@@ -497,8 +518,8 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS_CH:-${CHGRESTHREAD:-1}}
            NTRAC=$NTRAC, IDVC=$IDVC, IDSL=$IDSL,
            LSOIL=$LSOIL, IVSSFC=$IVSSFC, OUTTYP=$OUTTYP,
            IDRT=$IDRT, IALB=$IALB, ISOT=$ISOT,
-           IVEGSRC=$IVEGSRC, TILE_NUM=$TILE_NUM, $CHGRESVARS,
-           NTILES=$ntiles
+           IVEGSRC=$IVEGSRC, TILE_NUM=$TILE_NUM, REGIONAL=$REGIONAL,
+           HALO=$HALO, NTILES=$ntiles, $CHGRESVARS
  /
 EOF
 

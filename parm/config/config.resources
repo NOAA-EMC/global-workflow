@@ -10,6 +10,7 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "anal fcst post vrfy arch"
     echo "eobs eomg eupd ecen efcs epos earc"
+    echo "postsnd awips gempak"
     exit 1
 
 fi
@@ -57,10 +58,10 @@ elif [ $step = "post" ]; then
 elif [ $step = "vrfy" ]; then
 
     export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
+    export wtime_vrfy_gfs="03:00:00"
     export npe_vrfy=1
     export npe_node_vrfy=1
-    export npe_vrfy_gfs=5
+    export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
     if [[ "$machine" == "WCOSS_C" ]]; then
 	    export memory_vrfy="3072M"
@@ -106,7 +107,7 @@ elif [ $step = "efcs" ]; then
 
     export wtime_efcs="01:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_node_efcs=${npe_node_fcst:-12}
+    export npe_node_efcs=12
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_efcs="254M"
     fi
@@ -118,6 +119,37 @@ elif [ $step = "epos" ]; then
     export npe_node_epos=12
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_epos="254M"
+    fi
+
+elif [ $step = "postsnd" ]; then
+
+    export wtime_postsnd="02:00:00"
+    export npe_postsnd=12
+    export npe_node_postsnd=3
+    export npe_postsndcfp=10
+    export npe_node_postsndcfp=3
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_postsnd="254M"
+    fi
+
+elif [ $step = "awips" ]; then
+
+    export wtime_awips="03:30:00"
+    export npe_awips=4
+    export npe_node_awips=4
+    export nth_awips=2
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_awips="254M"
+    fi
+
+elif [ $step = "gempak" ]; then
+
+    export wtime_gempak="02:00:00"
+    export npe_gempak=17
+    export npe_node_gempak=4
+    export nth_gempak=3
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_gempak="254M"
     fi
 
 else
