@@ -12,14 +12,12 @@ module load w3emc/2.3.0
 module load sp/2.0.2
 module load nemsio/2.2.3
 module load nemsiogfs/2.0.1
-module load ip/3.0.0
+module load ip/3.0.1
 module load sfcio/1.0.0
 module load gfsio/1.1.0
 module load landsfcutil/2.1.0
 module load bacio/2.0.2
 
 export FCMP=ifort
-export CCMP=icc
-export NETCDF_INCLUDE=""
-export NETCDF_LDFLAGS_F=""
-
+export LDFLAGSM="-qopenmp -auto"
+export OMPFLAGM="-qopenmp -auto"
