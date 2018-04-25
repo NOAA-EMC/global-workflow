@@ -911,6 +911,8 @@
 !          
 !$$$
 
+ use gdswzd_mod
+
  use program_setup, only    : climo_qc_file,  &
                               grib_year, grib_month, grib_day, &
                               grib_century
@@ -945,8 +947,7 @@
 
  real, allocatable         :: climo(:,:)
  real                      :: fill, percent, x, y
- real, allocatable         :: xpts(:,:),ypts(:,:),rlon_data(:,:),rlat_data(:,:), &
-                              crot(:,:),srot(:,:)
+ real, allocatable         :: xpts(:,:),ypts(:,:),rlon_data(:,:),rlat_data(:,:)
  real                      :: thresh_gross, thresh
 
  type(gribfield)           :: gfld
@@ -967,8 +968,6 @@
  allocate(ypts(idata,jdata))
  allocate(rlon_data(idata,jdata))
  allocate(rlat_data(idata,jdata))
- allocate(crot(idata,jdata))
- allocate(srot(idata,jdata))
  do j=1,jdata
  do i=1,idata
    xpts(i,j)=i
@@ -977,10 +976,9 @@
  enddo
 
  print*,"- CALC LAT/LONS OF SOURCE POINTS."
- call gdswiz(kgds_data,1,(idata*jdata),fill,xpts,ypts,rlon_data,rlat_data,nret,0,  &
-             crot,srot)
+ call gdswzd(kgds_data,1,(idata*jdata),fill,xpts,ypts,rlon_data,rlat_data,nret)
 
- deallocate(xpts,ypts,crot,srot)
+ deallocate(xpts,ypts)
 
  if (nret /= (idata*jdata)) then
    print*,"- WARNING: CALC FAILED. WILL NOT PERFORM QC."
@@ -1204,14 +1202,16 @@
 ! remarks: none.
 !
 !$$$
+ use gdswzd_mod
+
  implicit none
 
  integer, intent(in) :: hemi
  integer             :: kgds(200), nret
  integer, parameter  :: npts=1
 
- real                :: fill, xpts, ypts
- real                :: rlon, rlat, crot, srot
+ real                :: fill, xpts(npts), ypts(npts)
+ real                :: rlon(npts), rlat(npts)
 
  kgds=0
  fill=9999.
@@ -1221,32 +1221,32 @@
    kgds=kgds_afwa_nh
    rlat=75.0
    rlon=-40.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_nh(nint(xpts),nint(ypts)) < 0.001) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_nh(nint(xpts(1)),nint(ypts(1))) < 0.001) then
      print*,'- WARNING: NO SNOW IN GREENLAND: ',snow_dep_afwa_nh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_nh=.true.
    endif
    rlat=3.0
    rlon=-60.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_nh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_nh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN S AMERICA: ',snow_dep_afwa_nh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_nh=.true.
    endif
    rlat=23.0
    rlon=10.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_nh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_nh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN SAHARA: ',snow_dep_afwa_nh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_nh=.true.
    endif
    rlat=15.0
    rlon=10.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_nh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_nh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN S INDIA: ',snow_dep_afwa_nh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_nh=.true.
@@ -1258,32 +1258,32 @@
    kgds=kgds_afwa_sh
    rlat=-88.0
    rlon=0.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_sh(nint(xpts),nint(ypts)) < 0.001) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_sh(nint(xpts(1)),nint(ypts(1))) < 0.001) then
      print*,'- WARNING: NO SNOW IN ANTARCTICA: ',snow_dep_afwa_sh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_sh=.true.
    endif
    rlat=-10.
    rlon=-45.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_sh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_sh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN SOUTH AMERICA: ',snow_dep_afwa_sh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_sh=.true.
    endif
    rlat=-20.0
    rlon=130.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_sh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_sh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN AUSTRALIA: ',snow_dep_afwa_sh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_sh=.true.
    endif
    rlat=-9.0
    rlon=25.
-   call gdswiz(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret,0,crot,srot)
-   if (snow_dep_afwa_sh(nint(xpts),nint(ypts)) > 0.0) then
+   call gdswzd(kgds,(-1),npts,fill,xpts,ypts,rlon,rlat,nret)
+   if (snow_dep_afwa_sh(nint(xpts(1)),nint(ypts(1))) > 0.0) then
      print*,'- WARNING: SNOW IN AFRICA: ',snow_dep_afwa_sh(nint(xpts),nint(ypts))
      print*,'- DONT USE AFWA DATA.'
      bad_afwa_sh=.true.
