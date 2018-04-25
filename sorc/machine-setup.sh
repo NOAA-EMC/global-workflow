@@ -71,7 +71,7 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     module use /opt/modulefiles
     module load modules
 
-elif [[ -d /iodprod_dell ]] ; then
+elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     # We are on NOAA Venus or Mars
     if ( ! eval module help > /dev/null 2>&1 ) ; then
 	echo load the module command 1>&2
