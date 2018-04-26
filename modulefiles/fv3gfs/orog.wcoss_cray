@@ -16,4 +16,3 @@ module load w3nco-intel/2.0.6
 module load bacio-intel/2.0.1
 
 export FCMP=ftn
-export CCMP=cc
