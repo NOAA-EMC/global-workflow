@@ -49,8 +49,8 @@ fi
    fi
  fi
  cd $cwd/gdas_trpsfcmv.fd
- make -f makefile
-#make -f makefile clean
+ make -f makefile.$target
+#make -f makefile.$target clean
  mv gdas_trpsfcmv ../../exec/
 
 exit
