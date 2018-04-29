@@ -1,8 +1,6 @@
 #%Module#####################################################
 ## Module file for regrid_nemsio
 #############################################################
-
-
 module load ips/18.0.1.163
 
 module load NetCDF/4.5.0
@@ -14,4 +12,8 @@ module load w3nco/2.0.6
 module load nemsio/2.2.3
 module load sp/2.0.2
 
-export FCMP=ifort
+export FCMP=mpiifort
+
+export NEMSIO_SRC=/gpfs/dell1/nco/ops/nwprod/lib/nemsio/v2.2.3/src
+export NEMSIO_INC=/gpfs/dell1/nco/ops/nwprod/lib/nemsio/v2.2.3/ips/18.0.1/impi/18.0.1/include/nemsio_v2.2.3
+export NEMSIO_LIB=/gpfs/dell1/nco/ops/nwprod/lib/nemsio/v2.2.3/ips/18.0.1/impi/18.0.1/libnemsio_v2.2.3.a

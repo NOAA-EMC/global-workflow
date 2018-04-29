@@ -1,5 +1,6 @@
 #!/bin/sh
-set -eux
+#set -eux
+set -ux
 
 source ./machine-setup.sh > /dev/null 2>&1
 system_site=$target
