@@ -2,13 +2,11 @@
 ## bufrsnd
 #############################################################
 export F_COMP=ifort
-export F_COMP_MP=ifort
-export F_COMP_MPI=mpif90
+export F_COMP_MP=mpiifort
+export F_COMP_MPI=mpiifort
 
 export C_COMP=icc
 export C_COMP_MP=mpicc
-
-module load modules
 
 # Loading pe environment
 module load ips/18.0.1.163
@@ -23,7 +21,7 @@ module load w3emc/2.3.0
 module load w3nco/2.0.6
 module load bufr/11.2.0
 
-export myFC=ifort
+export myFC=mpiifort
 export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
 export myCPP=/lib/cpp
 export myCPPFLAGS="-P"
