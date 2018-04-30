@@ -75,6 +75,14 @@ fi
 
 ###############################################################
 echo
+echo "=============== START TO RUN MOS ==============="
+if [ $RUNMOS = "YES" -a $CDUMP = "gfs" ]; then
+    $RUNGFSMOSSH $PDY$cyc 
+fi
+
+
+###############################################################
+echo
 echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
 if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
 
@@ -169,7 +177,6 @@ echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
 if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
     $GENESISSH
 fi
-
 
 ###############################################################
 # Force Exit out cleanly
