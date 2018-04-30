@@ -47,6 +47,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
   echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
 
+  echo  "${dirname}${head}gsistat                          " >>gfsa.txt
   echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
   echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
   echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
@@ -144,6 +145,10 @@ if [ $type = "gdas" ]; then
   head="gdas.t${cyc}z."
 
   #..................
+  echo  "${dirname}${head}cnvstat                    " >>gdas.txt
+  echo  "${dirname}${head}gsistat                    " >>gdas.txt
+  echo  "${dirname}${head}oznstat                    " >>gdas.txt
+  echo  "${dirname}${head}radstat                    " >>gdas.txt
   echo  "${dirname}${head}pgrb2.0p25.anl             " >>gdas.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl             " >>gdas.txt

@@ -1,4 +1,0 @@
-igrad_target:cost,grad,step,b,step?:
-igrad_number:5:
-expected_gnorms:202:
-gross_check_val:3.5E-4:

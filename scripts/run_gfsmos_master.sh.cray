@@ -1,0 +1,330 @@
+#!/bin/sh
+#######################################################################
+# run_gfsmos.sh
+#
+#  History:             
+#     03/29/13   Scallion      Created (Adapted from Eric Engle's 
+#                              "master" scripts)
+#     12/03/13   Scallion      Added ptype/wxgrid
+#     04/18/18   J Wagner      Set up to run GFSMOS after GFS FV3 retros
+#
+#  Purpose:
+#      To run the GFS-MOS operational suite
+#
+#######################################################################
+set -x
+
+if (( $# > 1 )); then
+   echo "Incorrect number of arguments."
+   echo "Syntax: $0 [PDYCYC (optional)]"
+   echo "Exiting..."
+   exit 1
+fi
+
+#######################################################################
+#  Source bash_profile to run with proper modules on cron
+#######################################################################
+#. ~/.profile 
+
+#######################################################################
+#  Set global variables neede in the run script and/or each individual
+#  job script.
+#######################################################################
+
+
+. $MODULESHOME/init/sh 2>/dev/null
+module load prod_envir
+module load cfp-intel-sandybridge
+module load craype-hugepages2M
+export FORT_BUFFERED=TRUE
+export KMP_AFFINITY=disabled
+export envir=prod
+#export QUEUE=dev
+
+#------------------ 
+export SENDCOM_SAVE=$SENDCOM
+export SENDCOM=YES
+#------------------ 
+
+dateIn=$1
+
+if [ $REALTIME = "YES" ]; then
+    GDATE=`$NDATE -24 $dateIn`
+    dateIn=$GDATE
+fi
+
+export PDY=`echo $dateIn | cut -c 1-8`
+export cyc=`echo $dateIn | cut -c 9-10`
+export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
+
+#
+# VARIABLES TO SET
+# PTMPROOT and STMPROOT should be set to the user's directories
+export COMDATEROOT=$COMROOTp1
+#export PTMPROOT=/gpfs/hps3/ptmp/$USER
+export PTMPROOT=$ROTDIR/gfsmos.$PDY
+#export STMPROOT=/gpfs/hps3/stmp/$USER
+export STMPROOT=$RUNDIR/gfsmos.$PDY
+export DATAROOT=$STMPROOT
+export MODELROOT=$NWROOThps 
+export MODELDIR=$MODELROOT/gfsmos.v5.0.6
+export CODEDIR=$MODELROOT/mos_shared.v2.6.1
+
+if [[ $SITE == "SURGE" ]]; then
+   export siteprefix=g
+elif [[ $SITE == "LUNA" ]]; then
+   export siteprefix=t
+else
+   echo "SITE $SITE not recognized"
+   exit
+fi
+
+export range=both
+export skipmodel=n
+export skipprep=n
+export stnonly=Y
+export cycle="t${cyc}z"
+export pid="gfs.$$"
+export dailylog=$PTMPROOT/dailylog/log.$PDY
+export jlogfile=$dailylog/jlogfile_gfsmos
+mkdir -p $dailylog
+
+export SENDDBN=NO
+export GET_IOPROFILE=NO
+
+# Specify Execution Areas
+export HOMEmdl=$MODELDIR
+export HOMEcode=$CODEDIR
+
+if [ ! -d $HOMEmdl ]; then
+   echo  "$HOMEmdl does not exist"
+   exit 1
+fi
+
+if [ ! -d $HOMEcode ]; then
+   echo  "$HOMEcode does not exist"
+   exit 1
+fi
+
+# Load modules
+module load prod_util
+module grib_util/1.0.5
+
+# VARIABLES TO SET
+# GFSDIR should be set to the directory containing the input GFS FV3 data
+# COMOUT should be set to the directory where the GFSMOS output files will be saved
+#export GFSDIR=/gpfs/hps3/ptmp/emc.glopara/fv3fy18retro2
+export GFSDIR=$ROTDIR
+export COMINgfs=$GFSDIR/gfs.${PDY}/${cyc}
+export COMOUT=$ROTDIR/gfsmos.$PDY
+
+if [[ ! -d $PTMPROOT/qprod ]]; then
+   mkdir -p $PTMPROOT/qprod
+fi
+
+if [[ ! -d $COMOUT ]]; then
+   mkdir -p $COMOUT
+fi
+
+export PCOM=$COMOUT
+
+if [[ ! -d $PCOM ]]; then
+   mkdir -p $PCOM
+fi
+
+
+# NOTE: On WCOSS_C the directory from which bsub
+# is executed must exist when the submitted job
+# begins.  Otherwise, the submitted job fails
+# with TERM_CWD_NOTEXIST error.
+
+mkdir -p $DATAROOT
+cd $DATAROOT
+
+
+######################################################################## 
+#  JGFSMOS_PREP47
+######################################################################## 
+export job=gfsmos_prep_${cyc}_${pid}
+export COMIN=$GFSDIR
+jobCard=$HOMEmdl/jobs/JGFSMOS_PREP
+#    Define DATA and create directory
+export DATA=$DATAROOT/gfsmos_prep_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+
+export PTILE=7
+export NTASK=7
+export OMP_NUM_THREADS=1
+
+bsub -J $job \
+     -o $logfile \
+     -q $QUEUE \
+     -W 2:00 \
+     -M 2500 \
+     -P $ACCOUNT \
+     -extsched 'CRAYLINUX[]' \
+     -R '1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}' \
+     $jobCard
+
+######################################################################## 
+#  JGFSMOS_FORECAST
+######################################################################## 
+export COMINhourly=$PTMPROOT/hourly.$PDY
+if [[ ! -d $COMINhourly ]]; then
+   mkdir -p $COMINhourly
+fi
+\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}03 $COMINhourly/sfctbl.03
+\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
+\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
+\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
+#
+# Change COMIN to get files from user's PTMP "qprod" area 
+export COMIN=$COMOUT
+#
+export job=gfsmos_fcst_${cyc}_${pid}
+jobCard=$HOMEmdl/jobs/JGFSMOS_FORECAST
+export DATA=$DATAROOT/gfsmos_fcst_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+deps="done(gfsmos_prep_${cyc}_${pid})"
+complist="metar cooprfcmeso tstms"
+complist2=""
+export PTILE=3
+export NTASK=3
+export OMP_NUM_THREADS=1
+
+bsub -J ${job} -oo $logfile -q ${QUEUE} -P $ACCOUNT \
+     -W 2:30 -M 2000 \
+     -extsched 'CRAYLINUX[]' \
+     -R '1*{select[craylinux && !vnode]} + 72*{select[craylinux && vnode]span[ptile=24]}' \
+     -w "$deps" \
+     $jobCard
+#
+######################################################################## 
+#     JGFSMOS_PRDGEN
+######################################################################## 
+jobCard=$HOMEmdl/jobs/JGFSMOS_PRDGEN
+export job=gfsmos_prdgen_${cyc}_${pid}
+# Change COMIN back to COMOUT
+export COMIN=$COMOUT
+# Define DATA and create directory
+export DATA=$DATAROOT/gfsmos_prdgen_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+deps="done(gfsmos_fcst_${cyc}_${pid})"
+nodes='1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}'
+export PTILE=1
+export NTASK=1
+export OMP_NUM_THREADS=1
+#
+bsub -J ${job} -oo $logfile -q ${QUEUE} -P $ACCOUNT \
+     -W 1:00 -M 2000 \
+     -extsched 'CRAYLINUX[]' \
+     -R "$nodes" \
+     -w "$deps" \
+     $jobCard
+#
+########################################################################
+#             EXTENDED-RANGE JOBS
+########################################################################
+
+########################################################################
+#  JGFSMOS_EXT_PREP47
+########################################################################
+export job=gfsmos_extprep_${cyc}_${pid}
+export COMIN=$GFSDIR
+jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_PREP
+#    Define DATA and create directory
+export DATA=$DATAROOT/gfsmos_extprep_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+
+export PTILE=5
+export NTASK=10
+export OMP_NUM_THREADS=1
+
+bsub -J $job \
+     -o $logfile \
+     -q $QUEUE \
+     -W 2:00 \
+     -M 2500 \
+     -P $ACCOUNT \
+     -extsched 'CRAYLINUX[]' \
+     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+     $jobCard
+
+
+#  Skip EXT_FORECAST for 06/18
+if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+######################################################################## 
+#  JGFSMOS_EXT_FORECAST
+######################################################################## 
+#
+# Change COMIN to get files from user's PTMP "qprod" area 
+export COMIN=$COMOUT
+#
+export job=gfsmos_extfcst_${cyc}_${pid}
+jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_FORECAST
+export DATA=$DATAROOT/gfsmos_extfcst_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+if [[ "$skipprep" != "y" && "$range" == "both" ]]; then
+   deps="done(gfsmos_extprep_${cyc}_${pid}) && done(gfsmos_prdgen_${cyc}_${pid})"
+elif [[ "$skipprep" != "y" && "$range" == "ext" ]]; then
+   deps="done(gfsmos_extprep_${cyc}_${pid})"
+elif [[ "$skipprep" == "y" && "$range" == "ext" ]]; then
+   deps=""
+else
+   deps="done(gfsmos_prdgen_${cyc}_${pid})"
+fi
+#
+export PTILE=4
+export NTASK=10
+export OMP_NUM_THREADS=1
+#
+bsub -J ${job} -oo $logfile -q $QUEUE -P $ACCOUNT \
+     -W 4:00 -M 2000 \
+     -extsched 'CRAYLINUX[]' \
+     -R '1*{select[craylinux && !vnode]} + 72*{select[craylinux && vnode]span[ptile=24]}' \
+     -w "$deps" \
+     $jobCard
+#
+fi #endif for skipping 06/18 ext_fcst
+######################################################################### 
+##  JGFSMOS_EXT_PRDGEN
+######################################################################### 
+jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_PRDGEN
+export job=gfsmos_extprdgen_${cyc}_${pid}
+# Change COMIN back to COMOUT
+export COMIN=$COMOUT
+# Define DATA and create directory
+export DATA=$DATAROOT/gfsmos_extprdgen_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+if [[ "$cyc" == "06" || "$cyc" == "18" ]]; then
+   deps="done(gfsmos_prdgen_${cyc}_${pid})"
+elif [[ "$range" == "both" ]]; then
+   deps="done(gfsmos_extfcst_${cyc}_${pid}) && done(gfsmos_prdgen_${cyc}_${pid})"
+else
+   deps="done(gfsmos_extfcst_${cyc}_${pid})"
+fi
+nodes='1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}'
+export PTILE=1
+export NTASK=1
+export OMP_NUM_THREADS=1
+
+bsub -J ${job} -oo $logfile -q ${QUEUE} -P $ACCOUNT \
+     -W 2:00 -M 2000 \
+     -extsched 'CRAYLINUX[]' \
+     -R "$nodes" \
+     -w "$deps" \
+     $jobCard
+
+
+#---------------------
+export SENDCOM=$SENDCOM_SAVE
