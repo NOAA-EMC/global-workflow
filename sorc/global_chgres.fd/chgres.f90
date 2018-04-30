@@ -261,7 +261,8 @@
       TYPE(NEMSIO_HEADV) :: GFSHEADVI
       TYPE(NEMSIO_DBTA)  :: GFSDATAI
       TYPE(NEMSIO_DBTA)  :: GFSDATAO
-      CHARACTER(8)       :: FILETYPE,MODELNAME
+      CHARACTER(8)       :: FILETYPE
+      CHARACTER(LEN=16)  :: FILETYPE2
 !
 ! Define local vars:
       INTEGER LONBO,LATBO,IDVCO,IDVMO,IDSLO,IDVTO,      &
@@ -322,19 +323,22 @@
 
       CALL NEMSIO_INIT(IRET)
 
-      CALL SIGIO_SROPEN(NSIGI,'chgres.inp.sig',IRET)
-      CALL SIGIO_SRHEAD(NSIGI,SIGHEADI,IRET1)
+      OPEN (NSIGI, FILE='chgres.inp.sig', ACCESS='DIRECT', RECL=16, IOSTAT=IRET)
+      READ (NSIGI, REC=1, IOSTAT=IRET1) FILETYPE2
+      CLOSE (NSIGI)
 
       IF(IRET == 0 .AND. IRET1 == 0) THEN
-        INPTYP = 2
-        PRINT*,'INPUT ATMOS FILE chgres.inp.sig IS SIGIO FORMAT'
-      ELSE
-        CALL NEMSIO_OPEN(GFILEI,'chgres.inp.sig','read',IRET=IRET)
-        CALL NEMSIO_GETFILEHEAD(GFILEI, GTYPE=FILETYPE, MODELNAME=MODELNAME)
-        IF (TRIM(FILETYPE) == 'NEMSIO' .AND. TRIM(MODELNAME) == 'GFS'  &
-          .AND. IRET == 0) THEN
-         INPTYP = 1
-         PRINT*,'INPUT ATMOS FILE chgres.inp.sig IS NEMSIO FORMAT'
+        IRET = INDEX(FILETYPE2, "NEMSIO")
+        IF (IRET /= 0) THEN
+          INPTYP = 1
+          PRINT*,'INPUT ATMOS FILE chgres.inp.sig IS NEMSIO FORMAT'
+        ELSE
+          CALL SIGIO_SROPEN(NSIGI,'chgres.inp.sig',IRET)
+          CALL SIGIO_SRHEAD(NSIGI,SIGHEADI,IRET1)
+          IF(IRET == 0 .AND. IRET1 == 0) THEN
+            INPTYP = 2
+            PRINT*,'INPUT ATMOS FILE chgres.inp.sig IS SIGIO FORMAT'
+          ENDIF
         ENDIF
       ENDIF
 
@@ -785,6 +789,7 @@
         PRINT*, 'CHGRES INPUT:  GFS GAUSSIAN NEMSIO GRID FILE '
         PRINT*, 'CHGRES OUTPUT: FV3 NETCDF FILE'
 
+        CALL NEMSIO_OPEN(GFILEI,'chgres.inp.sig','read',IRET=IRET)
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  OPEN (READ) NEMSIO GRID FILE HEADERS
         CALL NEMSIO_GETFILEHEAD(GFILEI, IDATE=GFSHEADI%IDATE,       &
