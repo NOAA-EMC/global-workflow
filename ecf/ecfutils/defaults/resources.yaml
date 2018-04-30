@@ -18,7 +18,7 @@ gfs_resource_table: !Select
       prep:     [  12,   12, !timedelta "00:15:00", null ]
       anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
-      gfspost:  [  72,   12, !timedelta "01:00:00", 1    ]
+      gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
       gfsvrfy:  [   5,    1, !timedelta "06:00:00", null ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null ]
       gfsfcst_wall:  !timedelta "06:00:00"
@@ -81,6 +81,35 @@ default_resources: &default_resources
       OMP_NUM_THREADS: 1
       exe: placeholder
   
+  run_awips: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 4
+      max_ppn: 4
+      walltime: !timedelta "03:30:00"
+      OMP_NUM_THREADS: 2
+      exe: placeholder
+
+  run_postsnd: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 12
+      max_ppn: 3
+      walltime: !timedelta "02:00:00"
+      exe: placeholder
+      
+  run_postsndcfp: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 10
+      max_ppn: 3
+      walltime: !timedelta "02:00:00"
+      exe: placeholder
+      
+  run_gempak: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 17
+      max_ppn: 4
+      walltime: !timedelta "02:00:00"
+      exe: placeholder
+      
   run_prepbufr: !JobRequest
     - batch_memory: "3072M"
       walltime: !timedelta "00:15:00"
@@ -283,7 +312,6 @@ default_resources: &default_resources
 
   run_gdaspost: !JobRequest
     - batch_memory: "3072M"
-      walltime: !timedelta "00:30:00"
       exe: placeholder
       mpi_ranks: !calc doc.gfs_resource_table.gdaspost[0]
       max_ppn: !calc doc.gfs_resource_table.gdaspost[1]
@@ -292,7 +320,6 @@ default_resources: &default_resources
       
   run_gfspost: !JobRequest
     - batch_memory: "3072M"
-      walltime: !timedelta "00:10:00"
       exe: placeholder
       mpi_ranks: !calc doc.gfs_resource_table.gfspost[0]
       max_ppn: !calc doc.gfs_resource_table.gfspost[1]
@@ -317,4 +344,3 @@ default_resources: &default_resources
       walltime: !calc doc.gfs_resource_table.gdasvrfy[2]
       OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdasvrfy[3]
             
-      

@@ -44,6 +44,14 @@ config_post:
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"
-    export FHOUT_PGB={doc.gfs_output_settings.FHOUT_HF_GFS}    
+
+    if [ $machine = "WCOSS_C" ] ; then
+        export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+    elif [ $machine = "THEIA" ] ; then
+        export CRTM_FIX=/scratch3/NCEPDEV/hwrf/noscrub/fix-files/hwrf-H218-20171129-fix/fix/hwrf-crtm-2.0.6/
+    else
+        echo "UPP using CRTM_FIX = $CRTM_FIX"
+    fi
+
     echo "END: config.post"
     

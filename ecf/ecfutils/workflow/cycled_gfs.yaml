@@ -6,6 +6,296 @@ suite: !Cycle
   Alarms:
     <<: *cycled_suite_alarms
 
+  ######################################################################
+  ## GDAS FAMILY #######################################################
+  ######################################################################
+
+  gdas: !Family
+    RUN: gdas
+    ecflow_def: !expand |
+      edit RUN '{RUN}'
+
+    jgdas_verfrad: !Task
+      <<: *exclusive_task_template
+      Dummy: true  ## <-- Node is not implemented yet
+      Trigger: !Depend enkf
+      resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+    jgdas_vminmon: !Task
+      <<: *exclusive_task_template
+      Dummy: true  ## <-- Node is not implemented yet
+      Trigger: !Depend analysis.jgdas_analysis_high
+      resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+    dump_waiter: !Task
+      <<: *dump_waiter_task
+      Disable: !calc metasched.type != 'ecflow'
+      realtime_logic: !FirstTrue
+        - when: !calc doc.settings.realtime
+          do: "edit ECF_TRIES 72"
+        - otherwise: ""
+      ecflow_def: !expand |
+        {realtime_logic}
+        edit DUMPDIR '{doc.places.DMPDIR}'
+      Trigger: !Depend  forecast.at('-6:00:00')
+
+    dump: !Family
+      Dummy: true  ## <-- Node is not implemented yet
+      Trigger: !Depend  forecast.at('-6:00:00')
+      jgdas_ics: !Task
+        <<: *exclusive_task_template
+        release_gdas00_ics: !DataEvent {file="/dev/null"}
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+      #jgdas_dump_post: !Task
+      #  Trigger: !Depend jgdas_dump
+      #  release_sfcprep: !DataEvent {file="/dev/null"}
+      #  release_gdas00_dump_alert: !DataEvent {file="/dev/null"}
+      #  ecf_file: *ecf_file_template
+      #  resources: !calc ( doc.resources.run_nothing )
+      #  accounting: *exclusive_accounting
+      #  J_JOB: nothing
+
+      jgdas_tropcy_qc_reloc: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_dump
+        Time: !FirstTrue
+          - when: !calc doc.settings.four_cycle_mode
+            do: !timedelta +5:50:00
+          - otherwise: null
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+      #Replaced by emc version of dump job 
+      #This dump job should be using NCO version when delivery to NCO
+      jgdas_dump: !Task
+        <<: *exclusive_task_template
+        release_sfcprep: !DataEvent {file="/dev/null"}
+        Time: !FirstTrue
+          - when: !calc doc.settings.four_cycle_mode
+            do: !timedelta +6:20:00
+          - otherwise: null
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+    #endfamily dump
+
+    prep: !Family
+      Trigger: !Depend |
+        dump_waiter.updated_status & up.gdas.forecast.at('-6:00:00')
+      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
+      jgdas_emcsfc_sfc_prep: !Task
+        <<: *exclusive_task_template
+        Dummy: true  ## <-- Node is not implemented yet
+        Trigger: !Depend up.dump.jgdas_dump.release_sfcprep
+        resources: !calc ( doc.resources.run_prep )
+
+      jgdas_prep: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend (up.dump.jgdas_dump & up.dump.jgdas_tropcy_qc_reloc & up.up.gdas.post.at('-6:00:00') )
+        #Trigger: !Depend ( up.dump.jgdas_dump & up.dump.jgdas_tropcy_qc_reloc )
+        resources: !calc ( doc.resources.run_prep )
+        J_JOB: rocoto/prep.sh
+        ecf_module_commands: "# prep.sh will load modules instead"
+
+
+      jgdas_prep_post: !Task
+        <<: *exclusive_task_template
+        Dummy: true  ## <-- Node is not implemented yet
+        Trigger: !Depend up.analysis.jgdas_analysis_high
+        resources: !calc ( doc.resources.run_prep )
+
+    analysis: !Family
+      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
+      jgdas_analysis_high: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.jgdas_enkf_post.at('-6:00:00') )
+        #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep )
+        #release_fcst: !DataEvent {file="/dev/null"}
+        resources: !calc ( doc.resources.run_anal )
+        J_JOB: JGLOBAL_ANALYSIS
+
+    forecast: !Family
+      jgdas_forecast_high: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
+        #release_fcst: !DataEvent {file="/dev/null"}
+        resources: !calc ( doc.resources.run_gdasfcst )
+        J_JOB: JGLOBAL_FORECAST
+
+      jgdas_forecast: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
+        #release_fcst: !DataEvent {file="/dev/null"}
+        #resources: !calc ( doc.resources.run_gdasfcst )
+        resources: !calc ( doc.resources.run_nothing )
+        J_JOB: JGLOBAL_FORECAST
+        Dummy: true  ## <-- Node is not implemented yet
+
+    post_processing: !Family
+      Dummy: true  ## <-- Node is not implemented yet
+      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+      bulletins: !Family
+        jgdas_mknavybulls: !Task
+          <<: *exclusive_task_template
+          #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
+          Trigger: !Depend ( up.up.dump.jgdas_dump )
+          resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+    gempak: !Family
+      Dummy: true  ## <-- Node is not implemented yet
+      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+      jgdas_gempak: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend up.forecast.jgdas_forecast
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+      jgdas_gempak_meta: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_gempak
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+      jgdas_gempak_ncdc: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_gempak
+        resources: !calc ( doc.resources.run_one_hour_exclusive )
+
+    #endfamily gempak
+
+    post: !TaskArray
+      RUN: !calc up.RUN
+      Dimensions:
+        fhr: !calc doc.gfs_output_settings.gdas_forecast_hours
+      post_manager_el: !TaskElement
+        <<: *exclusive_task_template
+        RUN: !calc up.RUN
+        Trigger: !Depend up.forecast.is_running()
+        Complete: !Depend up.forecast
+        Disable: !calc metasched.type=='rocoto'
+        Foreach: []
+        J_JOB: post_manager
+        ecflow_command: *post_manager_job_contents
+        Name: jgdas_post_manager
+        resources: !calc doc.resources.run_gdas_post_manager
+        release_postanl: !DataEvent
+          file: !expand >-
+            {metasched.varref("COM")}/gdas.{metasched.datestring("%Y%m%d/%H/")}gdas.t{metasched.datestring("%H")}z.logf000.nemsio
+        release_post_fhr: !DataEventElement
+          Name: !expand "release_post{dimval.fhr:02d}"
+          Foreach: [ fhr ]
+          file: !expand >
+            {metasched.varref("COM")}/gdas.{metasched.datestring("%Y%m%d/%H/")}gdas.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
+        # NOTE: the above files must match post_manager.yaml
+
+      jgdas_post_anl: !Task
+        <<: *exclusive_task_template
+        FHR: 'anl'
+        HR: 'anl'
+        FHRGRP: '000'
+        FHRLST: 'anl'
+        more_vars: [ FHRGRP, FHRLST, HR, FHR ]
+        Trigger: !Depend jgdas_post_manager.release_postanl | up.forecast
+        release_pgrb2_anl: !DataEvent {file="/dev/null"}
+        resources: !calc ( doc.resources.run_gdaspost )
+        J_JOB: JGLOBAL_NCEPPOST
+        ecflow_command: !expand |
+          export post_times=anl FHRLST={FHRLST} FHRGRP={FHRGRP}
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          /usr/bin/env post_times=anl &HOMEgfs;/jobs/{J_JOB}
+
+      jgdas_post_fhr_el: !TaskElement
+        <<: *exclusive_task_template
+        Foreach: [ fhr  ]
+        resources: !calc doc.resources.run_gdaspost
+        Name: !expand jgdas_post_f{dimval.fhr:02d}
+        FHRGRP: !expand '{dimidx.fhr+1:03d}'
+        FHRLST: !expand 'f{dimval.fhr:03d}'
+        FHR: !expand 'f{dimval.fhr:02d}'
+        HR: !expand '{dimval.fhr:02d}'
+        J_JOB: JGLOBAL_NCEPPOST
+        ecflow_command: !expand |
+          export post_times={dimval.fhr:03d} FHRLST={FHRLST} FHRGRP={FHRGRP}
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          /usr/bin/env post_times={dimval.fhr:03d} &HOMEgfs;/jobs/{J_JOB}
+        Trigger: !Depend jgdas_post_manager.depend("release_post{F:02d}",F=[dimval.fhr]) | up.forecast
+        more_vars: [ FHR, HR, FHRGRP, FHRLST ]
+    #endfamily post
+
+    jgdas_emc_vrfy: !Task
+      <<: *exclusive_task_template
+      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
+      Trigger: !Depend post
+      resources: !calc ( doc.resources.run_gdasvrfy )
+      J_JOB: rocoto/vrfy.sh
+      ecf_module_commands: "# vrfy.sh will load modules instead"
+
+    enkf: !Family
+      jgdas_enkf_select_obs: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend  ( up.prep.jgdas_prep & jgdas_enkf_post.at('-6:00:00') )
+        #Trigger: !Depend  ( up.prep.jgdas_prep )
+        resources: !calc ( doc.resources.run_eobs )
+        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+        J_JOB: JGLOBAL_ENKF_SELECT_OBS
+
+      innovate: !TaskArray
+        Trigger: !Depend jgdas_enkf_select_obs
+        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+        Dimensions:
+          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_INNOVATE_GROUPS,1)
+        jgdas_enkf_innovate_obs_grp: !TaskElement
+          <<: *exclusive_task_template
+          Foreach: [ groupid ]
+          Name: !expand "jgdas_enkf_innovate_obs_grp{dimval.groupid}"
+          resources: !calc ( doc.resources.run_eomg )
+          J_JOB: JGLOBAL_ENKF_INNOVATE_OBS
+          ENSGRP: !expand "{dimval.groupid:02d}"
+          more_vars: [ ENSGRP ]
+
+      jgdas_enkf_update: !Task
+        <<: *exclusive_task_template
+        ecflow_def: |
+          edit ECF_PASS 'FREE'
+        Trigger: !Depend innovate
+        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+        resources: !calc ( doc.resources.run_eupd )
+        J_JOB: JGLOBAL_ENKF_UPDATE
+
+      jgdas_enkf_inflate_recenter: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend ( jgdas_enkf_update & up.analysis.jgdas_analysis_high )
+        resources: !calc ( doc.resources.run_ecen )
+        J_JOB: JGDAS_ENKF_RECENTER
+        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
+
+      forecast: !TaskArray
+
+        Trigger: !Depend up.enkf.jgdas_enkf_inflate_recenter |  ~ suite.has_cycle('-6:00:00') 
+        Dimensions:
+          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_FORECAST_GROUPS,1)
+        jgdas_enkf_fcst_grp: !TaskElement
+          <<: *exclusive_task_template
+          Foreach: [ groupid ]
+          Name: !expand "jgdas_enkf_fcst_grp{dimval.groupid}"
+          resources: !calc ( doc.resources.run_efcs )
+          J_JOB: JGDAS_ENKF_FCST
+          ENSGRP: !expand "{dimval.groupid:02d}"
+          more_vars: [ ENSGRP ]
+          
+      jgdas_enkf_post: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend forecast
+        resources: !calc ( doc.resources.run_epos )
+        J_JOB: JGDAS_ENKF_POST
+
+    #endfamily enkf
+  #endfamily gdas
+
+  ######################################################################
+  ## GFS FAMILY ########################################################
+  ######################################################################
+
   gfs: !Family
     Disable: !calc doc.settings.gfs_cyc==0
     Complete: !Depend ~ suite.has_cycle('-6:00:00')
@@ -168,7 +458,7 @@ suite: !Cycle
         jgfs_postsnd: !Task
           <<: *exclusive_task_template
           Trigger: !Depend up.up.post.jgfs_post_manager.release_post00
-          resources: !calc ( doc.resources.run_one_hour_exclusive )
+          resources: !calc ( doc.resources.run_postsnd )
 
       bulletins: !Family
         jgfs_fbwind: !Task
@@ -241,7 +531,7 @@ suite: !Cycle
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ fhr ]
-          Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
+          Name: !expand "jgfs_awips_f{dimval.fhr:03d}_20km"
           Trigger: !Depend up.up.prdgen.depend('jgfs_pgrb2_f{N:02d}',N=dimval.fhr)
           ecflow_def: !expand |
             edit FCSTHR '{dimval.fhr:03d}'
@@ -408,316 +698,8 @@ suite: !Cycle
   #endfamily gfs
 
   ######################################################################
-  ## GDAS FAMILY #######################################################
+  ## ARCHIVE FAMILY ####################################################
   ######################################################################
-
-  gdas: !Family
-    RUN: gdas
-    ecflow_def: !expand |
-      edit RUN '{RUN}'
-
-    jgdas_verfrad: !Task
-      <<: *exclusive_task_template
-      Dummy: true  ## <-- Node is not implemented yet
-      Trigger: !Depend enkf
-      resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-    jgdas_vminmon: !Task
-      <<: *exclusive_task_template
-      Dummy: true  ## <-- Node is not implemented yet
-      Trigger: !Depend analysis.jgdas_analysis_high
-      resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-    dump_waiter: !Task
-      <<: *dump_waiter_task
-      Disable: !calc metasched.type != 'ecflow'
-      realtime_logic: !FirstTrue
-        - when: !calc doc.settings.realtime
-          do: "edit ECF_TRIES 72"
-        - otherwise: ""
-      ecflow_def: !expand |
-        {realtime_logic}
-        edit DUMPDIR '{doc.places.DMPDIR}'
-      Trigger: !Depend  forecast.at('-6:00:00')
-
-    dump: !Family
-      Dummy: true  ## <-- Node is not implemented yet
-      Trigger: !Depend  forecast.at('-6:00:00')
-      jgdas_ics: !Task
-        <<: *exclusive_task_template
-        release_gdas00_ics: !DataEvent {file="/dev/null"}
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-      #jgdas_dump_post: !Task
-      #  Trigger: !Depend jgdas_dump
-      #  release_sfcprep: !DataEvent {file="/dev/null"}
-      #  release_gdas00_dump_alert: !DataEvent {file="/dev/null"}
-      #  ecf_file: *ecf_file_template
-      #  resources: !calc ( doc.resources.run_nothing )
-      #  accounting: *exclusive_accounting
-      #  J_JOB: nothing
- 
-      jgdas_tropcy_qc_reloc: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend jgdas_dump
-        Time: !FirstTrue
-          - when: !calc doc.settings.four_cycle_mode
-            do: !timedelta +5:50:00
-          - otherwise: null
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-      #Replaced by emc version of dump job 
-      #This dump job should be using NCO version when delivery to NCO
-      jgdas_dump: !Task
-        <<: *exclusive_task_template
-        release_sfcprep: !DataEvent {file="/dev/null"}
-        Time: !FirstTrue
-          - when: !calc doc.settings.four_cycle_mode
-            do: !timedelta +6:20:00
-          - otherwise: null
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-    #endfamily dump
-
-    prep: !Family
-      Trigger: !Depend |
-        dump_waiter.updated_status & up.gdas.forecast.at('-6:00:00')
-      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
-      jgdas_emcsfc_sfc_prep: !Task
-        <<: *exclusive_task_template
-        Dummy: true  ## <-- Node is not implemented yet
-        Trigger: !Depend up.dump.jgdas_dump.release_sfcprep
-        resources: !calc ( doc.resources.run_prep )
-
-      jgdas_prep: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend (up.dump.jgdas_dump & up.dump.jgdas_tropcy_qc_reloc & up.up.gdas.post.at('-6:00:00') )
-        #Trigger: !Depend ( up.dump.jgdas_dump & up.dump.jgdas_tropcy_qc_reloc )
-        resources: !calc ( doc.resources.run_prep )
-        J_JOB: rocoto/prep.sh
-        ecf_module_commands: "# prep.sh will load modules instead"
-
-
-      jgdas_prep_post: !Task
-        <<: *exclusive_task_template
-        Dummy: true  ## <-- Node is not implemented yet
-        Trigger: !Depend up.analysis.jgdas_analysis_high
-        resources: !calc ( doc.resources.run_prep )
-
-    analysis: !Family
-      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
-      jgdas_analysis_high: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.jgdas_enkf_post.at('-6:00:00') )
-        #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep )
-        #release_fcst: !DataEvent {file="/dev/null"}
-        resources: !calc ( doc.resources.run_anal )
-        J_JOB: JGLOBAL_ANALYSIS
-
-    forecast: !Family
-      jgdas_forecast_high: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
-        #release_fcst: !DataEvent {file="/dev/null"}
-        resources: !calc ( doc.resources.run_gdasfcst )
-        J_JOB: JGLOBAL_FORECAST
-
-      jgdas_forecast: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
-        #release_fcst: !DataEvent {file="/dev/null"}
-        #resources: !calc ( doc.resources.run_gdasfcst )
-        resources: !calc ( doc.resources.run_nothing )
-        J_JOB: JGLOBAL_FORECAST
-        Dummy: true  ## <-- Node is not implemented yet
-
-    post_processing: !Family
-      Dummy: true  ## <-- Node is not implemented yet
-      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-      bulletins: !Family
-        jgdas_mknavybulls: !Task
-          <<: *exclusive_task_template
-          #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
-          Trigger: !Depend ( up.up.dump.jgdas_dump )
-          resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-    gempak: !Family
-      Dummy: true  ## <-- Node is not implemented yet
-      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-      jgdas_gempak: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend up.forecast.jgdas_forecast
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-      jgdas_gempak_meta: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend jgdas_gempak
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-
-      jgdas_gempak_ncdc: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend jgdas_gempak
-        resources: !calc ( doc.resources.run_one_hour_exclusive )
-    #endfamily gempak
-
-
-    post: !TaskArray
-      RUN: !calc up.RUN
-      Dimensions:
-        fhr: !calc doc.gfs_output_settings.gdas_forecast_hours
-      post_manager_el: !TaskElement
-        <<: *exclusive_task_template
-        RUN: !calc up.RUN
-        Trigger: !Depend up.forecast.is_running()
-        Complete: !Depend up.forecast
-        Disable: !calc metasched.type=='rocoto'
-        Foreach: []
-        J_JOB: post_manager
-        ecflow_command: *post_manager_job_contents
-        Name: jgdas_post_manager
-        resources: !calc doc.resources.run_gdas_post_manager
-        release_postanl: !DataEvent
-          file: !expand >-
-            {metasched.varref("COM")}/gdas.{metasched.datestring("%Y%m%d/%H/")}gdas.t{metasched.datestring("%H")}z.logf000.nemsio
-        release_post_fhr: !DataEventElement
-          Name: !expand "release_post{dimval.fhr:02d}"
-          Foreach: [ fhr ]
-          file: !expand >
-            {metasched.varref("COM")}/gdas.{metasched.datestring("%Y%m%d/%H/")}gdas.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
-        # NOTE: the above files must match post_manager.yaml
-
-      jgdas_post_anl: !Task
-        <<: *exclusive_task_template
-        FHR: 'anl'
-        HR: 'anl'
-        FHRGRP: '000'
-        FHRLST: 'anl'
-        more_vars: [ FHRGRP, FHRLST, HR, FHR ]
-        Trigger: !Depend jgdas_post_manager.release_postanl | up.forecast
-        release_pgrb2_anl: !DataEvent {file="/dev/null"}
-        resources: !calc ( doc.resources.run_gdaspost )
-        J_JOB: JGLOBAL_NCEPPOST
-        ecflow_command: !expand |
-          export post_times=anl FHRLST={FHRLST} FHRGRP={FHRGRP}
-          $HOMEgfs/jobs/{J_JOB}
-        rocoto_command: !expand >-
-          {rocoto_load_modules} ;
-          /usr/bin/env post_times=anl &HOMEgfs;/jobs/{J_JOB}
-
-      jgdas_post_fhr_el: !TaskElement
-        <<: *exclusive_task_template
-        Foreach: [ fhr  ]
-        resources: !calc doc.resources.run_gdaspost
-        Name: !expand jgdas_post_f{dimval.fhr:02d}
-        FHRGRP: !expand '{dimidx.fhr+1:03d}'
-        FHRLST: !expand 'f{dimval.fhr:03d}'
-        FHR: !expand 'f{dimval.fhr:02d}'
-        HR: !expand '{dimval.fhr:02d}'
-        J_JOB: JGLOBAL_NCEPPOST
-        ecflow_command: !expand |
-          export post_times={dimval.fhr:03d} FHRLST={FHRLST} FHRGRP={FHRGRP}
-          $HOMEgfs/jobs/{J_JOB}
-        rocoto_command: !expand >-
-          {rocoto_load_modules} ;
-          /usr/bin/env post_times={dimval.fhr:03d} &HOMEgfs;/jobs/{J_JOB}
-        Trigger: !Depend jgdas_post_manager.depend("release_post{F:02d}",F=[dimval.fhr]) | up.forecast
-        more_vars: [ FHR, HR, FHRGRP, FHRLST ]
-    #endfamily post
-
-    jgdas_emc_vrfy: !Task
-      <<: *exclusive_task_template
-      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
-      Trigger: !Depend post
-      resources: !calc ( doc.resources.run_gdasvrfy )
-      J_JOB: rocoto/vrfy.sh
-      ecf_module_commands: "# vrfy.sh will load modules instead"
-
-    enkf: !Family
-      jgdas_enkf_select_obs: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend  ( up.prep.jgdas_prep & jgdas_enkf_post.at('-6:00:00') )
-        #Trigger: !Depend  ( up.prep.jgdas_prep )
-        resources: !calc ( doc.resources.run_eobs )
-        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-        J_JOB: JGDAS_ENKF_SELECT_OBS
-
-      innovate: !TaskArray
-        Trigger: !Depend jgdas_enkf_select_obs
-        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-        Dimensions:
-          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_INNOVATE_GROUPS,1)
-        jgdas_enkf_innovate_obs_grp: !TaskElement
-          <<: *exclusive_task_template
-          Foreach: [ groupid ]
-          Name: !expand "jgdas_enkf_innovate_obs_grp{dimval.groupid}"
-          resources: !calc ( doc.resources.run_eomg )
-          J_JOB: JGDAS_ENKF_INNOVATE_OBS
-          ENSGRP: !expand "{dimval.groupid:02d}"
-          more_vars: [ ENSGRP ]
-
-      jgdas_enkf_update: !Task
-        <<: *exclusive_task_template
-        ecflow_def: |
-          edit ECF_PASS 'FREE'
-        Trigger: !Depend innovate
-        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-        resources: !calc ( doc.resources.run_eupd )
-        J_JOB: JGDAS_ENKF_UPDATE
-
-      jgdas_enkf_inflate_recenter: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend ( jgdas_enkf_update & up.analysis.jgdas_analysis_high )
-        resources: !calc ( doc.resources.run_ecen )
-        J_JOB: JGDAS_ENKF_RECENTER
-        Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-
-      forecast: !TaskArray
-
-        Trigger: !Depend up.enkf.jgdas_enkf_inflate_recenter |  ~ suite.has_cycle('-6:00:00') 
-        Dimensions:
-          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_FORECAST_GROUPS,1)
-        jgdas_enkf_fcst_grp: !TaskElement
-          <<: *exclusive_task_template
-          Foreach: [ groupid ]
-          Name: !expand "jgdas_enkf_fcst_grp{dimval.groupid}"
-          resources: !calc ( doc.resources.run_efcs )
-          J_JOB: JGDAS_ENKF_FCST
-          ENSGRP: !expand "{dimval.groupid:02d}"
-          more_vars: [ ENSGRP ]
-          
-      jgdas_enkf_post: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend forecast
-        resources: !calc ( doc.resources.run_epos )
-        J_JOB: JGDAS_ENKF_POST
-    #endfamily enkf
-  #endfamily gdas
-
-  cycle_end: !Task
-    <<: *exclusive_task_template
-    ecflow_def: !expand |
-      edit ECF_PASS 'FREE'
-    Dummy: true  ## <-- Node is not implemented yet
-    Disable: !calc >-
-      not metasched.type=="ecflow"
-      or not doc.settings.four_cycle_mode
-    Time: !FirstTrue
-      - when: !calc doc.settings.four_cycle_mode
-        do: !timedelta +23:00:00
-      - otherwise: null
-    resources: !calc ( doc.resources.run_nothing )
-
-  make_next_cycles: !Task
-    <<: *make_next_cycles_task
-    Disable: !calc not metasched.type=="ecflow"
-    Trigger: !Depend gdas
-    ecflow_def: !expand |
-      # These variables are used by the make_next_cycles job to generate 
-      # suites for later cycles once earlier cycles have finished.
-      edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
-      edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
-      edit WORKFLOW_CYCLES_TO_GENERATE '5'
-      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
-      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
 
   archive: !Family
     ecflow_def:
@@ -765,6 +747,37 @@ suite: !Cycle
       RUN: gfs
       ecflow_def:
         time +00:10
+
+  ######################################################################
+  ## CYCLE COMPLETION TASKS ############################################
+  ######################################################################
+
+  cycle_end: !Task
+    <<: *exclusive_task_template
+    ecflow_def: !expand |
+      edit ECF_PASS 'FREE'
+    Dummy: true  ## <-- Node is not implemented yet
+    Disable: !calc >-
+      not metasched.type=="ecflow"
+      or not doc.settings.four_cycle_mode
+    Time: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do: !timedelta +23:00:00
+      - otherwise: null
+    resources: !calc ( doc.resources.run_nothing )
+
+  make_next_cycles: !Task
+    <<: *make_next_cycles_task
+    Disable: !calc not metasched.type=="ecflow"
+    Trigger: !Depend gdas
+    ecflow_def: !expand |
+      # These variables are used by the make_next_cycles job to generate 
+      # suites for later cycles once earlier cycles have finished.
+      edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
+      edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
+      edit WORKFLOW_CYCLES_TO_GENERATE '5'
+      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
+      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
 
   final: !Task
     <<: *service_task_template

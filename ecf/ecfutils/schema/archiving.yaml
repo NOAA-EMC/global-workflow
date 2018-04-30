@@ -3,8 +3,24 @@ archive_settings_template: !Template &archive_settings_template
     default: yes
     description: save data to HPSS archive
     type: bool
+
+  arch_cyc:
+    default: 18
+    description: cycle for archiving files for warm_start capability
+    type: int
+
+  arch_warmicfreq:
+    default: 6
+    description: archive frequency in days for warm_start capability
+    type: int
+
+  arch_fcsticfreq:
+    default: 3
+    descripton: archive frequency in days for gdas/gfs forecast-only capability
+    type: int
+
   copy_fit2obs_files: 
-    default: no
+    default: yes
     description: online archive of nemsio files for fit2obs verification
     type: bool
 
@@ -23,9 +39,3 @@ archive_settings_template: !Template &archive_settings_template
     default: 24
     description: "ending hour of previous cycles to be removed from rotating directory during archive job"
 
-  EARC_CYC:
-    type: string list
-    allowed: [ "00", "06", "12", "18" ]
-    default: "00"
-    description: |
-      Archive ensemble restarts at EARC_CYC only; can be "00 06 12 18"

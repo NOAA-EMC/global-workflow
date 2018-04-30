@@ -43,6 +43,12 @@ platform: !Platform
   # executables for this workflow.
   BASE_SVN: "/dev/null/global/save/glopara/svn"
 
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/dev/null/global/save/glopara/git"
+
   # config_base_extras - Additional configuration data to put in the
   # config.base file
   config_base_extras: |

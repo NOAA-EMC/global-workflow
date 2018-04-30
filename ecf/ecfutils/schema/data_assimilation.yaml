@@ -61,7 +61,15 @@ data_assimilation_template: !Template &data_assimilation_template
 
   RERUN_EOMGGRP:
     type: bool
-    default: NO
+    default: YES
+
+  GENDIAG:
+    type: bool
+    default: YES
+
+  NEPOSGRP:
+    type: int
+    default: 7
 
   OBSINPUT_INVOBS: 
     type: string
@@ -69,10 +77,6 @@ data_assimilation_template: !Template &data_assimilation_template
   OBSQC_INVOBS:
     type: string
     default: "tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
-  RERUN_EOMGGRP: 
-    type: bool
-    default: YES
-
 
   ENKF_INNOVATE_GROUPS: 
     type: int

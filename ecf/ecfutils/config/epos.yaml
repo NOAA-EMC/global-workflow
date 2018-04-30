@@ -17,6 +17,12 @@ config_epos:
     
     export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
     export nth_epos={doc.nodes.omp_threads_for(doc.resources.run_epos[0])}
+
+    # No. of concurrent epos jobs [1 implies sequential]
+    export NEPOSGRP={tools.YES_NO(doc.data_assimilation.NEPOSGRP)}
+    if [ $l4densvar = ".false." ]; then
+        export NEPOSGRP=3
+    fi
     
     echo "END: config.epos"
     

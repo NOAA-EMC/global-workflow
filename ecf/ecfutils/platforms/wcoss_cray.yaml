@@ -46,9 +46,15 @@ platform: !Platform
 
   # BASE_SVN - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
-  # various repositories.  This is used on some platforms to find
-  # executables for this workflow.
+  # various subversion repositories.  This is used on some platforms
+  # to find executables for this workflow.
   BASE_SVN: "/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
 
   # config_base_extras - Additional configuration data to put in the
   # config.base file

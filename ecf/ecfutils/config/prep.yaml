@@ -18,13 +18,9 @@ config_prep:
     
     export DO_MAKEPREPBUFR="{tools.YES_NO(doc.data_assimilation.DO_MAKEPREPBUFR)}"   # if NO, will copy prepbufr from globaldump
     
-    
     # Relocation and syndata QC
-    export REALTIME="{tools.YES_NO(doc.data_assimilation.PREP_REALTIME)}"
     export PROCESS_TROPCY="{tools.YES_NO(doc.data_assimilation.PROCESS_TROPCY)}"
-    if [ $machine = "WCOSS_C" ]; then
-        [[ $REALTIME == "YES" || $RUN_ENVIR == "nco" ]] && export PROCESS_TROPCY="YES"
-    fi
+    [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
     export DO_RELOCATE="{tools.YES_NO(doc.data_assimilation.DO_RELOCATE)}"
     export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
     export SENDCOM=YES
@@ -33,12 +29,6 @@ config_prep:
     export EXECRELO=${{HOMERELO}}/exec
     export FIXRELO=${{HOMERELO}}/fix/fix_am
     export USHRELO=${{HOMERELO}}/ush
-    
-    export HOMESYND=$HOMEgfs
-    export EXECSYND=${{HOMESYND}}/exec
-    export USHSYND=${{HOMESYND}}/ush
-    export PARMSYND=${{HOMESYND}}/parm/relo
-    export FIXSYND=${{HOMESYND}}/fix/fix_am
     
     ###################################
     # Only used when DO_RELOCATE=YES

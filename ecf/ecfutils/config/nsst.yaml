@@ -9,9 +9,9 @@ config_nsst:
       do: !expand "export NST_SPINUP=$NST_SPINUP"
     - otherwise: |
         export NST_SPINUP=0
-        if [[ "$CDATE" = $SDATE ]]; then
-            export NST_SPINUP=1
-        fi      
+        #if [[ "$CDATE" = $SDATE ]]; then
+        #    export NST_SPINUP=1
+        #fi      
   content: !expand |
     #!/bin/ksh -x
     

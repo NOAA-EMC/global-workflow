@@ -28,7 +28,7 @@ config_fv3:
     
     if [ $# -ne 1 ]; then
     
-        echo "Must specify a forecast mdoe to set variables!"
+        echo "Must specify a forecast mode to set variables!"
         echo "argument can be any one of the following:"
         echo "EFCS GFS GDAS   (upper- or lower-case is okay)"
         err_exit "Missing mandatory argument to config.fv3"

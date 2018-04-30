@@ -87,7 +87,7 @@ fv3_settings_template: !Template &fv3_settings_template
   do_sat_adjust:    { type: bool, default: no }
   random_clds:      { type: bool, default: yes }
   cnvcld:           { type: bool,  default: yes }
-  dnats:            { type: int,  default: 1 }
+  dnats:            { type: int,  default: 0 }
   IEMS:             { type: int,  default: 1 }
   IALB:             { type: int,  default: 1 }
   ISOL:             { type: int,  default: 2 }

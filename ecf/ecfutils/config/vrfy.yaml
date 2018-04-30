@@ -74,12 +74,9 @@ config_vrfy:
             export vlength=$FHMAX_GFS                       # verification length
             export vhr_rain=$FHMAX_GFS                      # verification length for precip
             export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
+            export ptyplist="PRATE"                         # precip types in GRIB: PRATE or APCP
             export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
-            if [ ${{lprecip_accu:-".false."}} = ".true." ]; then
-                export rain_bucket=0
-            else
-                export rain_bucket=${{FHZER:-6}}
-            fi
+            export rain_bucket=6
     
             export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
             export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
@@ -103,7 +100,7 @@ config_vrfy:
         if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
     
             export RADMON_SUFFIX=$PSLOT
-            export TANKverf="$NOSCRUB/radmon"
+            export TANKverf="$NOSCRUB/monitor/radmon"
             if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
                 export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
             else
@@ -117,7 +114,7 @@ config_vrfy:
         if [[ "$VRFYMINMON" = "YES" ]] ; then
     
             export MINMON_SUFFIX=$PSLOT
-            export M_TANKverf="$NOSCRUB/minmon"
+            export M_TANKverf="$NOSCRUB/monitor/minmon"
             if [[ "$machine" == "WCOSS_C" || "$machine" == "THEIA" ]] ; then
                 if [[ "$CDUMP" = "gdas" ]] ; then
                     export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
@@ -136,7 +133,7 @@ config_vrfy:
     
             export HOMEgfs_ozn="$HOMEgfs"
             export OZNMON_SUFFIX=$PSLOT
-            export TANKverf_ozn="$NOSCRUB/oznmon"
+            export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
             if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
                 export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
             else
@@ -156,7 +153,6 @@ config_vrfy:
     if [ $machine = "WCOSS_C" ] ; then
         export ens_tracker_ver=v1.1.14
         #export HOMEens_tracker=${{NWROOT:?}}/ens_tracker.${{ens_tracker_ver}}               
-        #export HOMEens_tracker=/gpfs/hps3/emc/ensemble/save/Jiayi.Peng/ens_tracker.${{ens_tracker_ver}}
         export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${{ens_tracker_ver}}
     elif [ $machine = "THEIA" ] ; then
         export ens_tracker_ver=v2.0.1
@@ -198,26 +194,6 @@ config_vrfy:
             export VRFYGENESIS="NO"
             export GENESISSH=""
         fi
-    fi
-    
-    
-    #----------------------------------------------------------
-    # GFS POSTSND (temporarily add to vrfy, should be with post)
-    #----------------------------------------------------------
-    
-    if [ $RUN_POSTSND = "YES" ]; then
-       export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
-    fi
-    
-    # GFS AWIPS (temporarily add to vrfy, should be with post)
-    if [ $RUN_AWIPS = "YES" ]; then
-        export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
-        export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
-    fi
-    
-    # GFS GEMPAK (temporarily add to vrfy, should be with post)
-    if [ $RUN_GEMPAK = "YES" ]; then
-       export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
     fi
     
     echo "END: config.vrfy"

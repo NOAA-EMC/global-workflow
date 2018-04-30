@@ -30,12 +30,15 @@ config_resources:
     if [[ "$step" == "prep" ]] ; then
         export npe_prep={doc.resources.run_prep.total_ranks()}
         export npe_node_prep={doc.nodes.max_ranks_per_node(doc.resources.run_prep[0])}
+
     elif [[ "$step" == "prepbufr" ]] ; then
         export npe_prepbufr={doc.resources.run_prepbufr.total_ranks()}
         export npe_node_prepbufr={doc.nodes.max_ranks_per_node(doc.resources.run_prepbufr[0])}
+
     elif [[ "$step" == "anal" ]] ; then
         export npe_anal={doc.resources.run_anal.total_ranks()}
         export npe_node_anal={doc.nodes.max_ranks_per_node(doc.resources.run_anal[0])}
+
     elif [[ "$step" == "fcst" ]] ; then
         if [[ "${{CDUMP:-}}" == gdas ]] ; then
             export npe_fcst={doc.resources.run_gdasfcst.total_ranks()}
@@ -44,6 +47,7 @@ config_resources:
             export npe_fcst={doc.resources.run_gfsfcst.total_ranks()}
             export npe_node_fcst={doc.nodes.max_ranks_per_node(doc.resources.run_gfsfcst[0])}
         fi
+
     elif [[ "$step" == "post" ]] ; then
         if [[ "${{CDUMP:-}}" == gdas ]] ; then
             export npe_post={doc.resources.run_gdaspost.total_ranks()}
@@ -53,6 +57,7 @@ config_resources:
             export npe_node_post={doc.nodes.max_ranks_per_node(doc.resources.run_gfspost[0])}
         fi
         export npe_node_dwn={doc.nodes.max_ranks_per_node(doc.resources.run_dwn[0])}
+
     elif [[ "$step" == "vrfy" ]] ; then
         export npe_vrfy={doc.resources.run_gdasvrfy.total_ranks()}
         export npe_node_vrfy={doc.nodes.max_ranks_per_node(doc.resources.run_gdasvrfy[0])}
@@ -62,30 +67,53 @@ config_resources:
     elif [[ "$step" == "arch" ]] ; then
         export npe_arch={doc.resources.run_arch.total_ranks()}
         export npe_node_arch={doc.nodes.max_ranks_per_node(doc.resources.run_arch[0])}
+
     elif [[ "$step" == "earc" ]] ; then
         export npe_earc={doc.resources.run_earc.total_ranks()}
         export npe_node_earc={doc.nodes.max_ranks_per_node(doc.resources.run_earc[0])}
+
     elif [[ "$step" == "getic" ]] ; then
         export npe_getic={doc.resources.run_getic.total_ranks()}
         export npe_node_getic={doc.nodes.max_ranks_per_node(doc.resources.run_getic[0])}
+
     elif [[ "$step" == "eobs" ]] ; then
         export npe_eobs={doc.resources.run_eobs.total_ranks()}
         export npe_node_eobs={doc.nodes.max_ranks_per_node(doc.resources.run_eobs[0])}
+
     elif [[ "$step" == "eomg" ]] ; then
         export npe_getic={doc.resources.run_eomg.total_ranks()}
         export npe_node_eomg={doc.nodes.max_ranks_per_node(doc.resources.run_eomg[0])}
+
     elif [[ "$step" == "eupd" ]] ; then
         export npe_eupd={doc.resources.run_eupd.total_ranks()}
         export npe_node_eupd={doc.nodes.max_ranks_per_node(doc.resources.run_eupd[0])}
+
     elif [[ "$step" == "ecen" ]] ; then
         export npe_ecen={doc.resources.run_ecen.total_ranks()}
         export npe_node_ecen={doc.nodes.max_ranks_per_node(doc.resources.run_ecen[0])}
+
     elif [[ "$step" == "efcs" ]] ; then
         export npe_efcs={doc.resources.run_efcs.total_ranks()}
         export npe_node_efcs={doc.nodes.max_ranks_per_node(doc.resources.run_efcs[0])}
+
     elif [[ "$step" == "epos" ]] ; then
         export npe_epos={doc.resources.run_epos.total_ranks()}
         export npe_node_epos={doc.nodes.max_ranks_per_node(doc.resources.run_epos[0])}
+
+    elif [[ "$step" == "awips" ]] ; then
+        export npe_awips={doc.resources.run_awips.total_ranks()}
+        export npe_node_awips={doc.nodes.max_ranks_per_node(doc.resources.run_awips[0])}
+
+    elif [[ "$step" == "postsnd" ]] ; then
+        export npe_postsnd={doc.resources.run_postsnd.total_ranks()}
+        export npe_node_postsnd={doc.nodes.max_ranks_per_node(doc.resources.run_postsnd[0])}
+        export npe_postsndcfp={doc.resources.run_postsndcfp.total_ranks()}
+        export npe_node_postsndcfp={doc.nodes.max_ranks_per_node(doc.resources.run_postsndcfp[0])}
+
+    elif [[ "$step" == "gempak" ]] ; then
+        export npe_gempak={doc.resources.run_gempak.total_ranks()}
+        export npe_node_gempak={doc.nodes.max_ranks_per_node(doc.resources.run_gempak[0])}
+
     else
     
         echo "Invalid step = $step, ABORT!"

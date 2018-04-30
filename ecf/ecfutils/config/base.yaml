@@ -21,8 +21,8 @@ config_base:
     
     # Account, queue, etc.
     export ACCOUNT="{doc.accounting.cpu_project}"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
+    export QUEUE="{doc.platform.exclusive_queue}"
+    export QUEUE_ARCH="{doc.platform.service_queue}"
         
     # Project to use in mass store:
     HPSS_PROJECT={doc.accounting.hpss_project}
@@ -49,6 +49,7 @@ config_base:
     export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds
+    export BASE_GIT="{doc.places.BASE_GIT}"
     export BASE_SVN="{doc.places.BASE_SVN}"
     
     # Utilities needed in the scripts (mostly post)
@@ -63,14 +64,11 @@ config_base:
     # Build paths relative to $HOMEgfs
     export HOMEgsi="$HOMEgfs"
     export FIXgsi="{doc.places.get('FIXgsi','$HOMEgfs/fix/fix_gsi')}"
-    export HOMEfv3gfs="{
-       doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
+    export HOMEfv3gfs="{doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
     export HOMEpost="{doc.places.get('HOMEpost','$HOMEgfs')}"
-    export BASE_PREP="{doc.places.get('BASE_PREP','$BASE_SVN/obsproc/releases/obsproc_prep_RB-4.0.0')}"
-    export BASE_PREP_GLOBAL="{doc.places.get('BASE_PREP_GLOBAL','$BASE_SVN/obsproc/releases/obsproc_global_RB-3.0.0')}"
-    export BASE_VERIF="{
-       doc.places.get('BASE_VERIF',
-          '$BASE_SVN/verif/global/tags/vsdb')}"
+    export HOMEobsproc_prep="{doc.places.get('HOMEobsproc_prep', '$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs')}"
+    export HOMEobsproc_network="{doc.places.get('HOMEobsproc_network', '$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs')}"
+    export BASE_VERIF="{doc.places.get('BASE_VERIF', '$BASE_SVN/verif/global/tags/vsdb')}"
     
     # CONVENIENT utility scripts and other environment parameters
     export NCP="/bin/cp -p"
@@ -173,11 +171,14 @@ config_base:
     # The switch to apply SST elevation correction or not
     export nst_anl={tools.fort(doc.fv3_settings.nst_anl)}
     
-    # Precipitation accumulation, true--no bucket, false--bucket=FHZER
-    export lprecip_accu=".true."
-    
     # Analysis increments to zero in CALCINCEXEC
     export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"
+
+    # Archiving options
+    export HPSSARCH={tools.YES_NO(doc.archiving.archive_to_hpss)}   # save data to HPSS archive
+    export ARCH_CYC={doc.archiving.arch_cyc}           # Archive data at this cycle for warm_start capability. Cannot be 00
+    export ARCH_WARMICFREQ={doc.archiving.arch_warmicfreq}     # Archive frequency in days for warm_start capability
+    export ARCH_FCSTICFREQ={doc.archiving.arch_fcsticfreq}     # Archive frequency in days for gdas and gfs forecast-only capability
     
     echo "END: config.base"
     
