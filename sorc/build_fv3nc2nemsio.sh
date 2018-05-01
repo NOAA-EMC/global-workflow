@@ -1,6 +1,5 @@
 #!/bin/sh
-#set -eux
-set -ux
+set -eux
 
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
