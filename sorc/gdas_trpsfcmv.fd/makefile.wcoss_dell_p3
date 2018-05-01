@@ -13,7 +13,6 @@ LDFLAGS =  -L$(NCARG_LIB) \
 LIBS     = $(IP_LIB4) \
 	$(SP_LIB4) \
 	$(BACIO_LIB4) \
-	$(W3EMC_LIB4) \
 	$(W3NCO_LIB4) \
 	$(BUFR_LIB4)
 

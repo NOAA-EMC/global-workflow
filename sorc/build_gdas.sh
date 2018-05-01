@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ux
+set -eux
 
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
@@ -46,7 +46,6 @@ fi
  make -f makefile.$target
  make -f makefile.$target clean
  mv navybull ../../exec/
-
 
 ### gdas_trpsfcmv
  cd $cwd
