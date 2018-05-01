@@ -153,18 +153,38 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfsa gfsb gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfsa gfsb gfs_flux gfs_nemsioa gfs_nemsiob; do
+    #for targrp in gfsa gfsb - NOTE - do not check htar error status
+    for targrp in gfsa gfsb; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
     done
 
+    #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
+    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE ${targrp}.tar failed"
+            exit $status
+        fi
+    done
+    
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $DATA/gfs_restarta.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfs_restarta.tar failed"
+            exit $status
+        fi
     fi
 
    #--save mdl gfsmos output from all cycles in the 18Z archive directory
    if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
         htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfsmos.tar failed"
+            exit $status
+        fi
    fi
 
 fi
