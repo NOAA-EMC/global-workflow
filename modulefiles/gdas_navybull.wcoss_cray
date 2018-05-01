@@ -1,9 +1,6 @@
 #%Module################################################
 # Modfule file for gdas_navybull
 ########################################################
-module-whatis "navybull"
-
-set ver v14.1.0
 
 # From default environment
 module load modules

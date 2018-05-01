@@ -4,7 +4,7 @@ SRCS= gdas_trpsfcmv.f getgb1.f
 
 OBJS= gdas_trpsfcmv.o getgb1.o 
 
-FC =    ftn 
+FC = ifort
 LDFLAGS =  -L$(NCARG_LIB) \
            -lncarg -lncarg_gks -lncarg_c -lX11 -lXext -lcairo -lfontconfig -lpixman-1 \
 	   -lfreetype -lexpat -lpthread -lXrender -lgfortran
