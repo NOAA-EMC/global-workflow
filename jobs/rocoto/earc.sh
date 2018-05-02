@@ -29,17 +29,13 @@ for config in $configs; do
 done
 
 n=$((ENSGRP))
-SAVEIC="NO"
-firstday=$($NDATE +24 $SDATE)
-mm=`echo $CDATE|cut -c 5-6`
-dd=`echo $CDATE|cut -c 7-8`
-nday=$(( (mm-1)*30+dd ))
-mod=$(($nday % $ARCH_WARMICFREQ))
-if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEIC="YES" ; fi
 
-# ICS are restarts and always lag INC by $assim_freq hours. ARCH_CYC cannot be 00
+# ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=$ARCH_CYC
 EARCICS_CYC=$((ARCH_CYC-assim_freq))
+if [ $EARCICS_CYC -lt 0 ]; then
+    EARCICS_CYC=$((EARCICS_CYC+24))
+fi
 
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
@@ -63,6 +59,27 @@ cd $ROTDIR
 # ENSGRP > 0 archives a group of ensemble members
 if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
+#--determine when to save ICs for warm start
+   SAVEWARMICA="NO"
+   SAVEWARMICB="NO"
+   firstday=$($NDATE +24 $SDATE)
+   mm=`echo $CDATE|cut -c 5-6`
+   dd=`echo $CDATE|cut -c 7-8`
+   nday=$(( (mm-1)*30+dd ))
+   mod=$(($nday % $ARCH_WARMICFREQ))
+   if [ $CDATE -eq $firstday -a $cyc -eq $EARCINC_CYC ]; then SAVEWARMICA="YES" ; fi
+   if [ $CDATE -eq $firstday -a $cyc -eq $EARCICS_CYC ]; then SAVEWARMICB="YES" ; fi
+   if [ $mod -eq 0 -a $cyc -eq $EARCINC_CYC ]; then SAVEWARMICA="YES" ; fi
+   if [ $mod -eq 0 -a $cyc -eq $EARCICS_CYC ]; then SAVEWARMICB="YES" ; fi
+
+   if [ $EARCICS_CYC -eq 18 ]; then
+       nday1=$((nday+1))
+       mod1=$(($nday1 % $ARCH_WARMICFREQ))
+       if [ $mod1 -eq 0 -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+       if [ $mod1 -ne 0 -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="NO" ; fi
+       if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+   fi
+
    htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_grp${n}.txt`
    status=$?
    if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
@@ -70,7 +87,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        exit $status
    fi
 
-   if [ $SAVEIC = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+   if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restarta_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_restarta_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
@@ -79,7 +96,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        fi
    fi
 
-   if [ $SAVEIC = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+   if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restartb_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_restartb_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then

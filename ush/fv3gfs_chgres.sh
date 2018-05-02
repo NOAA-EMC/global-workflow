@@ -1,7 +1,7 @@
 #!/bin/ksh
 #----WCOSS_CRAY JOBCARD
 #BSUB -L /bin/sh
-#BSUB -P GFS-T2O
+#BSUB -P FV3GFS-T2O
 #BSUB -oo log.chgres.%J
 #BSUB -eo log.chgres.%J
 #BSUB -J fv3_chgres
@@ -28,14 +28,14 @@ set -x
 #-------------------------------------------------------------------------------------------------
 
 export machine=WCOSS_C
-export HOMEgfs=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/git/fv3gfs/tic21f
-export PTMP="/gpfs/hps3/ptmp/$USER"
+export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs_master
+export PTMP="/gpfs/hps2/ptmp/$USER"
 
 export PSLOT=fv3test
-export CDUMP=gfs
+export CDUMP=gdas
 export CASE_HIGH=C768            
 export CASE_ENKF=C384
-export CDATE=2018032300
+export CDATE=2018042000
 
 
 export NSTSMTH=YES                                  ##apply 9-point smoothing to nsst tref
@@ -128,10 +128,14 @@ if [ $CDATE -le 2017072012 ]; then
    radstat=radstat.gdas.$CDATE
 else
    HPSSPATH=/NCEPPROD/hpssprod/runhistory/rh$yy/$yy$mm/$yy$mm$dd      ##use operational nems gfs nems gfs ics
-   tarball_high=gpfs_hps_nco_ops_com_gfs_prod_${CDUMP}.${CDATE}.sigma.tar
-   atm=./${CDUMP}.t${cyc}.atmanl.nemsio
-   sfc=./${CDUMP}.t${cyc}.sfcanl.nemsio
-   nst=./${CDUMP}.t${cyc}.nstanl.nemsio
+   if [ $CDUMP = gfs ]; then
+     tarball_high=gpfs_hps_nco_ops_com_gfs_prod_${CDUMP}.${CDATE}.anl.tar
+   else
+     tarball_high=gpfs_hps_nco_ops_com_gfs_prod_${CDUMP}.${CDATE}.tar
+   fi
+   atm=./${CDUMP}.t${cyc}z.atmanl.nemsio
+   sfc=./${CDUMP}.t${cyc}z.sfcanl.nemsio
+   nst=./${CDUMP}.t${cyc}z.nstanl.nemsio
    biascr=./gdas.t${cyc}z.abias 
    biascr_pc=./gdas.t${cyc}z.abias_pc
    aircraft_t_bias=./gdas.t${cyc}z.abias_air  

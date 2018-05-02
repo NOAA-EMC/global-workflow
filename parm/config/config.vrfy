@@ -21,8 +21,9 @@ export VRFYPRCP="YES"    # Precip threat scores
 export VRFYRAD="YES"     # Radiance data assimilation monitoring
 export VRFYOZN="YES"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
-export VRFYTRAK="NO"    # Hurricane track verification
-export VRFYGENESIS="NO" # Cyclone genesis verification
+export VRFYTRAK="NO"     # Hurricane track verification
+export VRFYGENESIS="NO"  # Cyclone genesis verification
+export RUNMOS="YES"      # whether to run entire MOS package
 
 
 #-------------------------------------------------
@@ -184,6 +185,17 @@ if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
         echo "WARNING: Genesis verification is not enabled on $machine!"
         export VRFYGENESIS="NO"
         export GENESISSH=""
+    fi
+fi
+
+if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
+
+    if [ $machine = "WCOSS_C" ] ; then
+        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
+    else
+        echo "WARNING: MOS package is not enabled on $machine!"
+        export RUNMOS="NO"
+        export RUNGFSMOSSH=""
     fi
 fi
 

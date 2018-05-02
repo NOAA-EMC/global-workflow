@@ -114,22 +114,6 @@ echo " .... Building enkf_chgres_recenter .... "
 }
 
 #------------------------------------
-# build radmon
-#------------------------------------
-$Build_radmon && {
-echo " .... Building radmon .... "
-./build_radmon.sh > $logs_dir/build_radmon.log 2>&1
-}
-
-#------------------------------------
-# build oznmon
-#------------------------------------
-$Build_oznmon && {
-echo " .... Building oznmon .... "
-./build_oznmon.sh > $logs_dir/build_oznmon.log 2>&1
-}
-
-#------------------------------------
 # build tropcy_NEMS
 #------------------------------------
 $Build_tropcy && {
