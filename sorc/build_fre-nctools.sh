@@ -1,6 +1,5 @@
 #!/bin/sh
-#set -eux
-set -ux
+set -eux
 
 source ./machine-setup.sh > /dev/null 2>&1
 system_site=$target
@@ -45,12 +44,8 @@ MPICH_MAX_SHORT_MSG_SIZE=64000
 MPICH_PTL_UNEX_EVENTS=160k
 KMP_STACKSIZE=2g
 F_UFMTENDIAN=big
-if [ $system_site = theia ]; then
-  HDF5_DIR=$HDF5
-  NETCDF_DIR=$NETCDF
-fi
 
-alias make="make HDF5_HOME=${HDF5_DIR}  NETCDF_HOME=${NETCDF_DIR} NC_BLKSZ=64K SITE=${system_site} -f fre-nctools.mk"
+alias make="make HDF5_HOME=${HDF5}  NETCDF_HOME=${NETCDF} NC_BLKSZ=64K SITE=${system_site} -f fre-nctools.mk"
 
 set +x
 echo "////////////////////////////////////////////////////////////////////////////////"
