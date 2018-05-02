@@ -45,6 +45,11 @@ MPICH_PTL_UNEX_EVENTS=160k
 KMP_STACKSIZE=2g
 F_UFMTENDIAN=big
 
+if [ $system_site = "cray" ]; then
+  HDF5=${HDF5_DIR}
+  NETCDF=${NETCDF_DIR}
+fi
+
 alias make="make HDF5_HOME=${HDF5}  NETCDF_HOME=${NETCDF} NC_BLKSZ=64K SITE=${system_site} -f fre-nctools.mk"
 
 set +x
