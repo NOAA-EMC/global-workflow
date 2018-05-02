@@ -7,11 +7,11 @@ RUN_ENVIR=${1:-emc}
 machine=${2:-cray}
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
+if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
     exit 1
 fi
 
@@ -23,6 +23,8 @@ pwd=$(pwd -P)
 #--model fix fields
 if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
+elif [ $machine = "dell" ]; then
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 fi
