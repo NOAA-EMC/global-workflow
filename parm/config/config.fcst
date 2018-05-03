@@ -41,7 +41,6 @@ export dnats=0
 export cal_pre=".true."
 export do_sat_adj=".false."
 export random_clds=".true."
-export cnvcld=".true."
 
 if [ $imp_physics -eq 99 ]; then # ZhaoCarr
     export ncld=1
@@ -66,7 +65,6 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export cal_pre=".false."
     export do_sat_adj=".true."
     export random_clds=".false."
-    export cnvcld=".false."
 
     export hord_mt_nh_nonmono=6
     export hord_xx_nh_nonmono=6
