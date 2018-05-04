@@ -10,6 +10,7 @@ module rm intel
 module load intel
 module load cray-mpich
 module load craype-haswell
+module load cray-hdf5
 module load cray-netcdf
 
 # Load NCEPLIBS modules

@@ -30,7 +30,12 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-if [ $target = wcoss ]; then
+if [ $target = gaea ]; then
+
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  source ../modulefiles/fv3gfs/tropcy_NEMS.$target             > /dev/null 2>&1
+
+elif [ $target = wcoss ]; then
 
     targetx=wcoss
     module load ../modulefiles/modulefile.storm_reloc_v6.0.0.$target

@@ -6,7 +6,9 @@ module load PrgEnv-intel
 module load intel
 module load cray-mpich
 module load craype-haswell
+
 module load cray-netcdf
+module load cray-hdf5
 
 module load nemsio-intel-sandybridge/2.2.3
 module load bacio-intel-sandybridge/2.0.2

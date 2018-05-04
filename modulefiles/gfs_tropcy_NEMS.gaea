@@ -1,0 +1,10 @@
+#%Module#####################################################
+## Module file for tropcy_NEMS
+#############################################################
+
+module load nemsiogfs-intel-sandybridge/2.0.1
+module load nemsio-intel-sandybridge/2.2.2
+module load w3emc-intel-sandybridge/2.2.0
+
+#export FC=
+export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"`
