@@ -37,6 +37,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     cd gfs_post.fd
     #git checkout ncep_post.v8.0.7
     git checkout post_fv3gfs_dell 
+>>>>>>> dab451eb886c05fe6aef72bbd675d8b38d43f5ac
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
