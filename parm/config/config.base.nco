@@ -6,7 +6,7 @@
 echo "BEGIN: config.base"
 
 export RUN_ENVIR="nco"
-export machine="WCOSS_C"
+export machine="WCOSS_DELL_P3"
 
 export ACCOUNT="GFS-OPS"
 export QUEUE="prod"
@@ -37,12 +37,10 @@ done
 ########################################################################
 # GLOBAL static environment parameters
 
-export NWPROD="/gpfs/hps/nco/ops/nwprod"
+export NWPROD="$NWROOT"                 
 if [ -d /gpfs/tp1 ]; then
-    export SITE="LUNA"
     export DMPDIR="/gpfs/tp1/emc/globaldump"
 elif [ -d /gpfs/gp1 ]; then
-    export SITE="SURGE"
     export DMPDIR="/gpfs/gp1/emc/globaldump"
 fi
 export RTMFIX=$CRTM_FIX
@@ -51,14 +49,14 @@ export RTMFIX=$CRTM_FIX
 # Machine specific paths used everywhere
 
 # USER specific paths
-export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-export STMP="/gpfs/hps2/stmp/$USER"
-export PTMP="/gpfs/hps2/ptmp/$USER"
-export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
+export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+export STMP="/gpfs/dell2/stmp/$USER"
+export PTMP="/gpfs/dell2/ptmp/$USER"
+export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
 
 # Base directories for various builds
-export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
+export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
@@ -97,7 +95,7 @@ export EDATE=2018020300
 
 export assim_freq=6
 export PSLOT="nco_prod"
-export EXPDIR="/gpfs/hps3/ptmp/$USER/$PSLOT"
+export EXPDIR="/gpfs/dell2/ptmp/$USER/$PSLOT"
 export ROTDIR="$COMROOT/gfs/prod"
 export RUNDIR="$STMP/$PSLOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"

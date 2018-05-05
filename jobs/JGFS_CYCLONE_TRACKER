@@ -139,11 +139,14 @@ if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
 
 mac=`echo ${SITE}`
-if [ $mac = TIDE -o $mac = GYRE ] ; then # For WCOSS
+if [ $mac = TIDE -o $mac = GYRE ] ; then 
   machine=wcoss
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = LUNA -o $mac = SURGE ] ; then # For CRAY
+elif [ $mac = LUNA -o $mac = SURGE ] ; then 
   machine=cray
+  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+elif [ $mac = VENUS -o $mac = MARS ] ; then 
+  machine=wcoss_dell_p3
   ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
 fi
 export err=$?; err_chk

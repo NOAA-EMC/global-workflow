@@ -39,6 +39,9 @@ if [ $VRFYFITS = "YES" ]; then
     if [ $machine = "WCOSS_C" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
+    if [ $machine = "WCOSS_DELL_P3" ]; then
+        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "THEIA" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_theia_nems"
@@ -92,7 +95,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
+        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
             export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
         else
             echo "WARNING: Radiance monitoring is not enabled on $machine!"
@@ -106,7 +109,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
-        if [[ "$machine" == "WCOSS_C" || "$machine" == "THEIA" ]] ; then
+        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
             if [[ "$CDUMP" = "gdas" ]] ; then
                 export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
             elif [[ "$CDUMP" = "gfs" ]] ; then
@@ -125,7 +128,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
+        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
             export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
         else
             echo "WARNING: Ozone monitoring is not enabled on $machine!"
@@ -143,9 +146,10 @@ fi
 
 if [ $machine = "WCOSS_C" ] ; then
     export ens_tracker_ver=v1.1.14
-    #export HOMEens_tracker=${NWROOT:?}/ens_tracker.${ens_tracker_ver}               
-    #export HOMEens_tracker=/gpfs/hps3/emc/ensemble/save/Jiayi.Peng/ens_tracker.${ens_tracker_ver}
     export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
+elif [ $machine = "WCOSS_DELL_P3" ] ; then
+    export ens_tracker_ver=v1.1.14
+    export HOMEens_tracker=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/ens_tracker.v1.1.14.${ens_tracker_ver}
 elif [ $machine = "THEIA" ] ; then
     export ens_tracker_ver=v2.0.1
     export HOMEens_tracker=/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/ens_tracker.${ens_tracker_ver}
@@ -175,7 +179,7 @@ fi
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" ] ; then
+    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ] ; then
         export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
     elif [ $machine = "THEIA" ] ; then
         export GENESISSH="$HOMEens_tracker/gfs_genesis_para_fv3gfs.sh"	
@@ -190,7 +194,7 @@ fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" ] ; then
+    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ] ; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
     else
         echo "WARNING: MOS package is not enabled on $machine!"

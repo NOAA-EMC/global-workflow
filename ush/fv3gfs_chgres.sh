@@ -10,6 +10,7 @@
 #BSUB -W 06:00
 #BSUB -extsched 'CRAYLINUX[]'
 
+
 #----THEIA JOBCARD
 ##PBS -N fv3_chgres_driver
 ##PBS -A fv3-cpu
@@ -56,16 +57,32 @@ export ROTDIR=$PTMP/$PSLOT
 export RUNDIR=$ROTDIR/chgres
 
 export NODES=1
-export OMP_NUM_THREADS_CH=24
 export APRUNC=""
 if [ $machine = WCOSS_C ]; then
  . $MODULESHOME/init/sh 2>>/dev/null
  module load prod_util prod_envir hpss >>/dev/null
  module load PrgEnv-intel 2>>/dev/null
  export KMP_AFFINITY=disabled
+ export OMP_NUM_THREADS_CH=24
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
  export APRUNTF='aprun -q -j1 -n1 -N1 -d1 -cc depth'
  export SUB=/u/emc.glopara/bin/sub_wcoss_c
+ export ACCOUNT=FV3GFS-T2O
+ export QUEUE=dev
+ export QUEUE_TRANS=dev_transfer 
+elif [ $machine = WCOSS_DELL_P3 ]; then
+ . $MODULESHOME/init/sh 2>>/dev/null
+ module purge
+ module load EnvVars/1.0.2
+ module load lsf/10.1
+ module load ips/18.0.1.163
+ module load impi/
+ module load prod_util/1.1.0 prod_envir/1.0.2 HPSS/5.0.2.5 >>/dev/null
+ export OMP_NUM_THREADS_CH=28
+ export KMP_AFFINITY=disabled
+ export APRUNC="mpirun -n 1 "
+ export APRUNTF='mpirun -n 1 '
+ export SUB=/u/emc.glopara/bin/sub_wcoss_d
  export ACCOUNT=FV3GFS-T2O
  export QUEUE=dev
  export QUEUE_TRANS=dev_transfer 
@@ -74,6 +91,7 @@ elif [ $machine = THEIA ]; then
  module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
  export APRUNC=time
  export APRUNTF=time
+ export OMP_NUM_THREADS_CH=24
  export SUB=/u/emc.glopara/bin/sub_theia
  export ACCOUNT=fv3-cpu
  export QUEUE=debug

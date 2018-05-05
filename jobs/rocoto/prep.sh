@@ -58,7 +58,7 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    if [ $machine = "WCOSS_C" -o $machine = "THEIA" ]; then
+    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
 
         export job="j${CDUMP}_prep_${cyc}"
         export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"

@@ -60,8 +60,10 @@ elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
     if [ -d /gpfs/tp1 ]; then
+        export SITE="LUNA"
         export DMPDIR="/gpfs/tp1/emc/globaldump"
     elif [ -d /gpfs/gp1 ]; then
+        export SITE="SURGE"
         export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
@@ -100,11 +102,11 @@ elif [ $machine = "WCOSS_DELL_P3" ]; then
     export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
     export STMP="/gpfs/dell2/stmp/$USER"
     export PTMP="/gpfs/dell2/ptmp/$USER"
-    export NOSCRUB="/gpfs/dell3/emc/modeling/noscrub/$USER"
+    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
 
     # Base directories for various builds
-    export BASE_GIT="/gpfs/dell3/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell3/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 fi
 

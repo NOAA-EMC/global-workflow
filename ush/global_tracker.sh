@@ -20,6 +20,9 @@ if [ $machine = WCOSS_C ]; then
 # module load iobuf/2.0.5     2>>/dev/null
  export IOBUF_PARAMS="*:size=32M:count=4:verbose"
  export APRUNTRACK="aprun -j1 -n1 -N1 -d1"
+elif [ $machine = WCOSS_DELL_P3 ]; then
+ export IOBUF_PARAMS="*:size=32M:count=4:verbose"
+ export APRUNTRACK="mpirun -n 1 "
 fi
 #
 export HOMEDIR=$HOMEgfs
@@ -91,7 +94,7 @@ else
     # Run first tracker for 180 hours for NHC/JTWC operational forecast:
     ${APRUNTRACK} ${PARATRKR:-$USHDIR/global_extrkr.sh} --gfs-last-hour $gfstrackhour1 --wait-for-data 900
     cp $DATA/trak.$TRACKID.atcfunix.$CDATE $COMOUT/atcfunix.$CDUMP.$CDATE
-    if [ $machine = WCOSS_C ]; then
+    if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
      # Run a second tracker for 252 hours for experimental ten day forecasts:
      if [ $gfstrackhour2 -gt $gfstrackhour1 ]; then;
       export SENDNHC=NO  
