@@ -18,7 +18,7 @@ if [ $machine = "THEIA" ]; then
     export QUEUE="batch"
     export QUEUE_ARCH="service"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export ACCOUNT="FV3GFS-T2O"
     export QUEUE="dev"
@@ -56,14 +56,12 @@ if [ $machine = "THEIA" ]; then
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
     export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
     if [ -d /gpfs/tp1 ]; then
-        export SITE="LUNA"
         export DMPDIR="/gpfs/tp1/emc/globaldump"
     elif [ -d /gpfs/gp1 ]; then
-        export SITE="SURGE"
         export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
@@ -95,6 +93,18 @@ elif [ $machine = "WCOSS_C" ]; then
     # Base directories for various builds
     export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export STMP="/gpfs/dell2/stmp/$USER"
+    export PTMP="/gpfs/dell2/ptmp/$USER"
+    export NOSCRUB="/gpfs/dell3/emc/modeling/noscrub/$USER"
+
+    # Base directories for various builds
+    export BASE_GIT="/gpfs/dell3/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_SVN="/gpfs/dell3/emc/modeling/noscrub/emc.glopara/git"
 
 fi
 
@@ -247,9 +257,9 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 # Archiving options
 export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=18           # Archive data at this cycle for warm_start capability. Cannot be 00
-export ARCH_WARMICFREQ=6     # Archive frequency in days for warm_start capability
-export ARCH_FCSTICFREQ=3     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability. Cannot be 00
+export ARCH_WARMICFREQ=5     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 
 echo "END: config.base"
