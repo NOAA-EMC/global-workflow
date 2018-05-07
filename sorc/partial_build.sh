@@ -8,7 +8,6 @@
                        "Build_sfcanl_nsttfchg" \
                        "Build_orog" "Build_tropcy" \
                        "Build_nctools" "Build_enkf_chgres_recenter" \
-                       "Build_radmon" "Build_oznmon" \
                        "Build_gfs_fbwndgfs" "Build_gfs_overpdtg2" \
                        "Build_gfs_wintemv" "Build_gfs_cnvgrib21_gfs" \
                        "Build_gfs_bufrsnd" "Build_emcsfc" \

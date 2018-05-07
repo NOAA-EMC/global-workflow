@@ -27,14 +27,24 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-# ICS are restarts and always lag INC by $assim_freq hours, ARCH_CYC cannot be 00
+# ICS are restarts and always lag INC by $assim_freq hours
 ARCHINC_CYC=$ARCH_CYC
 ARCHICS_CYC=$((ARCH_CYC-assim_freq))
+if [ $ARCHICS_CYC -lt 0 ]; then
+    ARCHICS_CYC=$((ARCHICS_CYC+24))
+fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=".nemsio"
 
+# Realtime parallels run GFS MOS on 1 day delay
+# If realtime parallel, back up CDATE_MOS one day
+CDATE_MOS=$CDATE
+if [ $REALTIME = "YES" ]; then
+    CDATE_MOS=$($NDATE -24 $CDATE)
+fi
+PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 
 ###############################################################
 # Archive online for verification and diagnostics
@@ -101,7 +111,7 @@ fi
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
 
-#--determine when to save ICs for wamr start and forecat-only runs 
+#--determine when to save ICs for warm start and forecat-only runs 
 SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
@@ -114,6 +124,14 @@ if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; f
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
 if [ $mod -eq 0 -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
 if [ $mod -eq 0 -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
+
+if [ $ARCHICS_CYC -eq 18 ]; then
+    nday1=$((nday+1))
+    mod1=$(($nday1 % $ARCH_WARMICFREQ))
+    if [ $mod1 -eq 0 -a $cyc -eq $ARCHICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+    if [ $mod1 -ne 0 -a $cyc -eq $ARCHICS_CYC ] ; then SAVEWARMICB="NO" ; fi
+    if [ $CDATE -eq $SDATE -a $cyc -eq $ARCHICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+fi
 
 mod=$(($nday % $ARCH_FCSTICFREQ))
 if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEFCSTIC="YES" ; fi
@@ -135,14 +153,40 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfsa gfsb gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfsa gfsb gfs_flux gfs_nemsioa gfs_nemsiob; do
+    #for targrp in gfsa gfsb - NOTE - do not check htar error status
+    for targrp in gfsa gfsb; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
     done
 
+    #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
+    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE ${targrp}.tar failed"
+            exit $status
+        fi
+    done
+    
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $DATA/gfs_restarta.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfs_restarta.tar failed"
+            exit $status
+        fi
     fi
+
+   #--save mdl gfsmos output from all cycles in the 18Z archive directory
+   if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
+        htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfsmos.tar failed"
+            exit $status
+        fi
+   fi
+
 fi
 
 
@@ -197,12 +241,8 @@ if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
     exit 0
 fi
 
-# Remove the hour directory
-COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
-[[ -d $COMIN ]] && rm -rf $COMIN
-
 # Step back every assim_freq hours
-# and remove old rotating directories for successfull cycles
+# and remove old rotating directories for successful cycles
 # defaults from 24h to 120h
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
@@ -216,11 +256,19 @@ while [ $GDATE -le $GDATEEND ]; do
         rc=$?
         [[ $rc -eq 0 ]] && rm -rf $COMIN
     fi
+
     # Remove any empty directories
     COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
     fi
+
+    # Remove mdl gfsmos directory
+    if [ $CDUMP = "gfs" ]; then
+	COMIN="$ROTDIR/gfsmos.$gPDY"
+	if [ -d $COMIN -a $GDATE -lt $CDATE_MOS ]; then rm -rf $COMIN ; fi
+    fi
+
     GDATE=$($NDATE +$assim_freq $GDATE)
 done
 
