@@ -40,7 +40,7 @@ config_post:
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
     export npe_dwn={doc.resources.run_dwn.total_ranks()}
-    export nth_dwn={doc.nodes.omp_threads_for(doc.resources.run_dwn[0])}
+    #export nth_dwn={doc.nodes.omp_threads_for(doc.resources.run_dwn[0])}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"

@@ -54,6 +54,11 @@ config_base:
     
     # Utilities needed in the scripts (mostly post)
     {doc.platform.config_base_extras}
+
+    # Toggle to turn on/off GFS downstream processing.
+    export DO_BUFRSND="{tools.YES_NO(doc.downstream.DO_BUFRSND)}" # Run GFS_POSTSND
+    export DO_GEMPAK="{tools.YES_NO(doc.downstream.DO_GEMPAK)}"  # Run GFS GEMPAK
+    export DO_AWIPS="{tools.YES_NO(doc.downstream.DO_AWIPS)}"   # Run GFS AWIPS
     
     ####################################################
     # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -99,7 +104,7 @@ config_base:
     export envir=${{envir:-"prod"}}
     export NET="gfs"
     export RUN=${{RUN:-${{CDUMP:-"gfs"}}}}
-    export jlogfile="${{ROTDIR}}/logs/jlogfile"
+    export jlogfile="${{EXPDIR}}/logs/jlogfile"
     export ERRSCRIPT=${{ERRSCRIPT:-'eval [[ $err = 0 ]]'}}
     export LOGSCRIPT=${{LOGSCRIPT:-""}}
     #export ERRSCRIPT=${{ERRSCRIPT:-"err_chk"}}

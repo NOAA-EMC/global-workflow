@@ -62,18 +62,22 @@ downstream_schema: &downstream_schema !Template
     type: bool
     default: NO
     description: "Cyclone genesis verification"
-  RUN_POSTSND:
+  RUN_MOS:
+    type: bool
+    default: YES
+    description: "Run GFS MOS"
+  DO_BUFRSND:
     type: bool
     default: NO
     description: "Run GFS_POSTSND"
-  RUN_AWIPS:
-    type: bool
-    default: NO
-    description: "Run GFS AWIPS"
-  RUN_GEMPAK:
+  DO_GEMPAK:
     type: bool
     default: NO
     description: "Run GFS GEMPAK"
+  DO_AWIPS:
+    type: bool
+    default: NO
+    description: "Run GFS AWIPS"
   
   FHOUT_CYCLONE_GFS:
     type: int

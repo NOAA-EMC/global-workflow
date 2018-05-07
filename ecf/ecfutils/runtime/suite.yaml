@@ -25,7 +25,7 @@ cycled_suite_alarms: &cycled_suite_alarms
   # first - first cycle only
   first: !Clock
     start: !calc suite.Clock.start
-    end: !calc suite.Clock.end
+    end: !calc suite.Clock.start
     step: !calc suite.Clock.step
 
   # gdas - cycles for which the GDAS is run
@@ -54,6 +54,7 @@ cycled_suite_alarms: &cycled_suite_alarms
 suite_defaults: &suite_defaults
   # Clock - the list of cycles to run
   Clock: !Clock
+    # NEED TO FIX FOR LESS FREQUENT GFS
     start: !calc doc.settings.SDATE
     end: !calc doc.settings.EDATE
     step: !timedelta "6:00:00"

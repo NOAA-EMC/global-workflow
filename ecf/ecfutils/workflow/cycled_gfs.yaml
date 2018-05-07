@@ -402,8 +402,8 @@ suite: !Cycle
         resources: !calc ( doc.resources.run_one_hour_exclusive )
 
     post_processing: !Family
-      Dummy: true  ## <-- Node is not implemented yet
       fax: !Family
+        Dummy: true  ## <-- Node is not implemented yet
         jgfs_fax_f00: !Task
           ecflow_def: |
             edit FCSTHR '00'
@@ -440,6 +440,7 @@ suite: !Cycle
           resources: !calc ( doc.resources.run_one_hour_exclusive )
 
       grib_wafs: !TaskArray
+        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
         jgfs_wafs: !TaskElement
@@ -459,8 +460,11 @@ suite: !Cycle
           <<: *exclusive_task_template
           Trigger: !Depend up.up.post.jgfs_post_manager.release_post00
           resources: !calc ( doc.resources.run_postsnd )
+          J_JOB: rocoto/postsnd.sh
+          ecf_module_commands: "# postsnd.sh will load modules instead"
 
       bulletins: !Family
+        Dummy: true  ## <-- Node is not implemented yet
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
           Trigger: !Depend ( up.up.post.jgfs_post_f06 & up.up.post.jgfs_post_f12 & up.up.post.jgfs_post_f24 )
@@ -474,6 +478,7 @@ suite: !Cycle
           resources: !calc ( doc.resources.run_one_hour_exclusive )
 
       grib2_wafs: !Family
+        Dummy: true  ## <-- Node is not implemented yet
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
           Trigger: !Depend up.up.prdgen.jgfs_pgrb2_f00
@@ -489,6 +494,7 @@ suite: !Cycle
           resources: !calc ( doc.resources.run_one_hour_exclusive )
 
       grib_awips: !TaskArray
+        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         # tasks every 6 hours till f240
@@ -502,6 +508,7 @@ suite: !Cycle
             edit FCSTHR '{dimval.fhr:02d}'
 
       awips_1p0deg: !TaskArray
+        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         ecflow_def: !expand |
@@ -520,6 +527,7 @@ suite: !Cycle
             edit FCSTHR '{dimval.fhr:03d}'
 
       awips_20km: !TaskArray
+        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
         ecflow_def: !expand |

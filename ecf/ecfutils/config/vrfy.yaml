@@ -30,10 +30,7 @@ config_vrfy:
     export VRFYMINMON="{tools.YES_NO(doc.downstream.VRFYMINMON)}"  # GSI minimization monitoring
     export VRFYTRAK="{tools.YES_NO(doc.downstream.VRFYTRAK)}"    # Hurricane track verification
     export VRFYGENESIS="{tools.YES_NO(doc.downstream.VRFYGENESIS)}" # Cyclone genesis verification
-    export RUN_POSTSND="{tools.YES_NO(doc.downstream.RUN_POSTSND)}" # Run GFS_POSTSND
-    export RUN_AWIPS="{tools.YES_NO(doc.downstream.RUN_AWIPS)}"   # Run GFS AWIPS
-    export RUN_GEMPAK="{tools.YES_NO(doc.downstream.RUN_GEMPAK)}"  # Run GFS GEMPAK
-    
+    export RUNMOS="{tools.YES_NO(doc.downstream.RUN_MOS)}"      # whether to run entire MOS package
     
     #-------------------------------------------------
     # Fit to Observations
@@ -76,7 +73,7 @@ config_vrfy:
             export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
             export ptyplist="PRATE"                         # precip types in GRIB: PRATE or APCP
             export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
-            export rain_bucket=6
+            export rain_bucket=6                            # prate in pgb files is 6-hr accumulated
     
             export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
             export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
@@ -196,5 +193,16 @@ config_vrfy:
         fi
     fi
     
+    if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
+
+        if [ $machine = "WCOSS_C" ] ; then
+            export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
+        else
+            echo "WARNING: MOS package is not enabled on $machine!"
+            export RUNMOS="NO"
+            export RUNGFSMOSSH=""
+        fi
+    fi
+
     echo "END: config.vrfy"
     
