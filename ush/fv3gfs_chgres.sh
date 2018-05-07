@@ -1,14 +1,25 @@
-#!/bin/ksh
-#----WCOSS_CRAY JOBCARD
-#BSUB -L /bin/sh
+#!/bin/sh
+#----WCOSS_DELL JOBCARD
 #BSUB -P FV3GFS-T2O
-#BSUB -oo log.chgres.%J
-#BSUB -eo log.chgres.%J
+#BSUB -o log.chgres.%J
+#BSUB -e log.chgres.%J
 #BSUB -J fv3_chgres
 #BSUB -q dev
 #BSUB -M 2400
 #BSUB -W 06:00
-#BSUB -extsched 'CRAYLINUX[]'
+#BSUB -R span[ptile=14]
+#BSUB -n 14
+
+#----WCOSS_CRAY JOBCARD
+##BSUB -L /bin/sh
+##BSUB -P FV3GFS-T2O
+##BSUB -oo log.chgres.%J
+##BSUB -eo log.chgres.%J
+##BSUB -J fv3_chgres
+##BSUB -q dev
+##BSUB -M 2400
+##BSUB -W 06:00
+##BSUB -extsched 'CRAYLINUX[]'
 
 
 #----THEIA JOBCARD
@@ -28,15 +39,24 @@ set -x
 # Fanglin Yang, 03/08/2018
 #-------------------------------------------------------------------------------------------------
 
-export machine=WCOSS_C
-export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs_master
-export PTMP="/gpfs/hps2/ptmp/$USER"
+export machine=WCOSS_DELL_P3            ;#WCOSS_C, WCOSS_DELL_P3, THEIA
+
+if [ $machine = WCOSS_C ]; then
+ export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs_master
+ export PTMP="/gpfs/hps2/ptmp/$USER"
+elif [ $machine = WCOSS_DELL_P3 ]; then
+ export HOMEgfs=/gpfs/dell2/emc/modeling/noscrub/$USER/git/fv3gfs/port2dell
+ export PTMP="/gpfs/dell2/ptmp/$USER"
+else 
+ echo "Please define HOMEgfs and PTMP for your machine. exit"
+ exit
+fi
 
 export PSLOT=fv3test
 export CDUMP=gdas
 export CASE_HIGH=C768            
 export CASE_ENKF=C384
-export CDATE=2018042000
+export CDATE=2018050100
 
 
 export NSTSMTH=YES                                  ##apply 9-point smoothing to nsst tref
@@ -59,9 +79,9 @@ export RUNDIR=$ROTDIR/chgres
 export NODES=1
 export APRUNC=""
 if [ $machine = WCOSS_C ]; then
- . $MODULESHOME/init/sh 2>>/dev/null
- module load prod_util prod_envir hpss >>/dev/null
- module load PrgEnv-intel 2>>/dev/null
+ . $MODULESHOME/init/sh                 2>>/dev/null
+ module load prod_util prod_envir hpss  2>>/dev/null
+ module load PrgEnv-intel               2>>/dev/null
  export KMP_AFFINITY=disabled
  export OMP_NUM_THREADS_CH=24
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
@@ -71,24 +91,28 @@ if [ $machine = WCOSS_C ]; then
  export QUEUE=dev
  export QUEUE_TRANS=dev_transfer 
 elif [ $machine = WCOSS_DELL_P3 ]; then
- . $MODULESHOME/init/sh 2>>/dev/null
- module purge
- module load EnvVars/1.0.2
- module load lsf/10.1
- module load ips/18.0.1.163
- module load impi/
- module load prod_util/1.1.0 prod_envir/1.0.2 HPSS/5.0.2.5 >>/dev/null
- export OMP_NUM_THREADS_CH=28
+ . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+ module purge                           2>>/dev/null
+ module load EnvVars/1.0.2              2>>/dev/null
+ module load lsf/10.1                   2>>/dev/null
+ module load ips/18.0.1.163             2>>/dev/null
+ module load impi/18.0.1                2>>/dev/null
+ module load prod_util/1.1.0            2>>/dev/null
+ module load prod_envir/1.0.2           2>>/dev/null
+ module load HPSS/5.0.2.5               2>>/dev/null
+ module load NetCDF/4.5.0               2>>/dev/null
+ module load HDF5-serial/1.10.1         2>>/dev/null
+ export OMP_NUM_THREADS_CH=14
  export KMP_AFFINITY=disabled
- export APRUNC="mpirun -n 1 "
- export APRUNTF='mpirun -n 1 '
+ export APRUNC="time"
+ export APRUNTF="time"
  export SUB=/u/emc.glopara/bin/sub_wcoss_d
  export ACCOUNT=FV3GFS-T2O
  export QUEUE=dev
  export QUEUE_TRANS=dev_transfer 
 elif [ $machine = THEIA ]; then
  module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
- module load netcdf/4.3.0 hdf5/1.8.14 2>>/dev/null
+ module load netcdf/4.3.0 hdf5/1.8.14    2>>/dev/null
  export APRUNC=time
  export APRUNTF=time
  export OMP_NUM_THREADS_CH=24
@@ -162,6 +186,16 @@ fi
 
 #--extract ICs from hpss
 cat > read_hpss.sh <<EOF1
+
+ export machine=$machine
+ if [ $machine = WCOSS_C ]; then
+  . $MODULESHOME/init/sh                 2>>/dev/null
+  module load hpss  2>>/dev/null
+ elif [ $machine = WCOSS_DELL_P3 ]; then
+  . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+  module load HPSS/5.0.2.5               2>>/dev/null
+ fi
+
    cd $INIDIR
    htar -xvf  $HPSSPATH/$tarball_high $atm $sfc $nst  
    if [ $CDUMP = gdas ]; then
@@ -271,6 +305,14 @@ fi
 
 #--extract ICs from hpss
 cat > read_hpss.sh <<EOF
+   export machine=$machine
+   if [ $machine = WCOSS_C ]; then
+    . $MODULESHOME/init/sh                 2>>/dev/null
+    module load hpss  2>>/dev/null
+   elif [ $machine = WCOSS_DELL_P3 ]; then
+    . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+    module load HPSS/5.0.2.5               2>>/dev/null
+   fi
    cd $INIDIR
    htar -xvf  $HPSSPATH/$tarball_enkf_atm 
    if [ $CDATE -le 2017072000 ]; then

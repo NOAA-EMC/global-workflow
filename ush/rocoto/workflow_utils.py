@@ -24,6 +24,7 @@ DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
                'WCOSS':'lsf',
+               'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
 
 class UnknownMachineError(Exception): pass
@@ -276,7 +277,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     memstr = '' if memory is None else str(memory)
 
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C']:
+    if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
