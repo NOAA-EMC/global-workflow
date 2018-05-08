@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  07052015	E.Mirvis -   made build more universal - environmental module based (see readme)
 #               EMC/NCEP/NOAA
@@ -15,7 +15,7 @@
 #
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
+source ./machine-setup.sh
 cwd=`pwd`
 
 # Check final exec folder exists
@@ -31,9 +31,11 @@ else
 fi
 
 if [ $target = gaea ]; then
-
+  targetx=$target
   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-  source ../modulefiles/fv3gfs/tropcy_NEMS.$target             > /dev/null 2>&1
+  echo "TARGET: $target"
+  source ../modulefiles/fv3gfs/tropcy_NEMS.$target
+  echo "TARGET DONE"
 
 elif [ $target = wcoss ]; then
 
@@ -89,11 +91,13 @@ fi
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
 export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
-export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
+export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${W3NCO_LIB4} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
 export LIBS_SIG="${SIGIO_INC4}"
 export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"
 export LIBS_SYN_QCT="${W3NCO_LIB8}"
+
+echo "START"
 
 cd relocate_mv_nvortex.fd
    make clean

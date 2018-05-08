@@ -24,6 +24,12 @@ elif [ $machine = "WCOSS_C" ]; then
     export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
+elif [ $machine = "GAEA" ]; then
+
+    export ACCOUNT="nggps_emc"
+    export QUEUE="batch"
+    export QUEUE_ARCH="rdtn"
+
 fi
 
 # Project to use in mass store:
@@ -50,7 +56,13 @@ done
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
+if [ $machine = "GAEA" ]; then
+
+    export NWPROD="/lustre/f1/unswept/ncep/Terry.McGuinness"
+    export DMPDIR="/lustre/f1/pdata/ncep/gdump"
+    export RTMFIX="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
+
+elif [ $machine = "THEIA" ]; then
 
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
@@ -72,7 +84,19 @@ fi
 
 
 # Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
+if [ $machine = "GAEA" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/lustre/f1/unswept/ncep/$USER"
+    export STMP="/lustre/f1/pdata/ncep/$USER"
+    export PTMP="/lustre/f1/pdata/ncep/$USER"
+    export NOSCRUB="/lustre/f1/unswept/ncep/$USER"
+
+    # Base directories for various builds
+    export BASE_GIT="/lustre/f1/unswept/ncep/$USER"
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+
+elif [ $machine = "THEIA" ]; then
 
     # USER specific paths
     export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
@@ -99,11 +123,43 @@ elif [ $machine = "WCOSS_C" ]; then
 fi
 
 # Utilities needed in the scripts (mostly post)
+if [ $machine = "GAEA" ]; then
+
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+
 if [ $machine = "THEIA" ]; then
 
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
     export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+
+fi
+
+# Toggle to turn on/off GFS downstream processing.
+export DO_BUFRSND="NO"
+export DO_GEMPAK="NO"
+export DO_AWIPS="NO"
+
+# NO for retrospective parallel; YES for real-time parallel
     export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
     export COPYGB="$NWPROD/util/exec/copygb"
     export COPYGB2="$NWPROD/util/exec/copygb2"
@@ -235,21 +291,3 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# If YES, NSST is turned on in anal and/or fcst steps
-export DONST="YES"
-
-# The switch to apply SST elevation correction or not
-export nst_anl=.true.
-
-# Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
-
-
-# Archiving options
-export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=18           # Archive data at this cycle for warm_start capability. Cannot be 00
-export ARCH_WARMICFREQ=6     # Archive frequency in days for warm_start capability
-export ARCH_FCSTICFREQ=3     # Archive frequency in days for gdas and gfs forecast-only capability
-
-
-echo "END: config.base"

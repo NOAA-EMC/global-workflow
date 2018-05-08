@@ -38,10 +38,13 @@ class ShellScriptException(Exception):
             (' '.join(scripts)))
 
 def get_shell_env(scripts):
+    print "CHECKING FIRST BUG"
+    print scripts
     vars=dict()
     runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
     magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
-    runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    #runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    runme+='/usr/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
     with open('/dev/null','wb+') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
