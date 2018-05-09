@@ -38,11 +38,14 @@ def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--expdir', help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
     args = parser.parse_args()
+    if 'EXPDIR' in os.environ:
+        print 'FATAL EFFOR: Please do not set the environment variable EXPDIR in your shell'
+        sys.exit(-1)
 
     configs = wfu.get_configs(args.expdir)
 
     _base = wfu.config_parser([wfu.find_config('config.base', configs)])
-
+    
     if not os.path.samefile(args.expdir, _base['EXPDIR']):
         print 'MISMATCH in experiment directories!'
         print 'config.base: EXPDIR = %s' % repr(_base['EXPDIR'])

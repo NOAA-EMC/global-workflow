@@ -64,9 +64,9 @@ fi
 # GLOBAL static environment parameters
 if [ $machine = "GAEA" ]; then
 
-    export NWPROD="/lustre/f1/unswept/ncep/Terry.McGuinness"
+    export NWPROD="/lustre/f1/unswept/ncep"
     export DMPDIR="/lustre/f1/pdata/ncep/gdump"
-    export RTMFIX="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
+    export RTMFIX="/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib/crtm/v2.0.6/src/fix"
 
 elif [ $machine = "THEIA" ]; then
 
@@ -297,3 +297,5 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
+# If YES, NSST is turned on in anal and/or fcst steps
+export DONST="NO"

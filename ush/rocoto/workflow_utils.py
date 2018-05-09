@@ -39,13 +39,14 @@ class ShellScriptException(Exception):
             (' '.join(scripts)))
 
 def get_shell_env(scripts):
-    print "CHECKING FIRST BUG"
-    print scripts
     vars=dict()
     runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
     magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
-    #runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
-    runme+='/usr/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    if os.path.isfile('/usr/bin/echo'):
+        echo_is='/usr/bin/echo'
+    elif os.path.isfile('/bin/echo'):
+        echo_is='/bin/echo'
+    runme+=echo_is+' -n "%s" ; /usr/bin/env -0'%(magic,)
     with open('/dev/null','wb+') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
@@ -280,13 +281,13 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     memstr = '' if memory is None else str(memory)
 
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C']:
+    if machine in ['ZEUS', 'THEIA', 'WCOSS_C','GAEA']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
 
-    elif machine in ['WCOSS','GAEA']:
+    elif machine in ['WCOSS']:
         resstr = '<cores>%d</cores>' % tasks
 
     queuestr = '&QUEUE_ARCH;' if task in ['arch', 'earc', 'getic'] else '&QUEUE;'
