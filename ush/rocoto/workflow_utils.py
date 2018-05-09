@@ -23,6 +23,7 @@ import rocoto
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
+               'GAEA':'moabtorque',
                'WCOSS':'lsf',
                'WCOSS_C':'lsfcray'}
 
@@ -285,7 +286,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
 
-    elif machine in ['WCOSS']:
+    elif machine in ['WCOSS','GAEA']:
         resstr = '<cores>%d</cores>' % tasks
 
     queuestr = '&QUEUE_ARCH;' if task in ['arch', 'earc', 'getic'] else '&QUEUE;'

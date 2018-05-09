@@ -45,13 +45,19 @@ export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
 ########################################################################
+#
+# TODO need to make sure the module load hsi is done at runtime
+# on Gaea when ever htar or hpsstar is used 
+#
+if [ $machine != "GAEA" ]; then
+    for exetest in hsi htar ; do
+        if ( ! which $exetest ) ; then
+            echo "$exetest: executable missing after \"module load\"" 1>&2
+            exit 2
+        fi
+    done
+fi
 
-for exetest in hsi htar ; do
-    if ( ! which $exetest ) ; then
-        echo "$exetest: executable missing after \"module load\"" 1>&2
-        exit 2
-    fi
-done
 
 ########################################################################
 
