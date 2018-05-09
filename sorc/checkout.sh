@@ -23,7 +23,7 @@ if [[ ! -d gsi.fd ]] ; then
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
     #git checkout fv3da.v1.0.10
-    git checkout fv3da.v1.0.9_gaea
+    git checkout fv3da.v1.0.12_gaea
     git submodule update
     cd ${topdir}
 else
