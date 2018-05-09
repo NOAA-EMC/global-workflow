@@ -40,10 +40,10 @@ fi
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-DATA="$RUNDIR/$CDATE/$CDUMP/earc$ENSGRP"
-[[ -d $DATA ]] && rm -rf $DATA
-mkdir -p $DATA
-cd $DATA
+ARCH_LIST="$ROTDIR/enkf.${CDUMP}.$PDY/earc$ENSGRP"
+[[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
+mkdir -p $ARCH_LIST
+cd $ARCH_LIST
 
 $HOMEgfs/ush/hpssarch_gen.sh enkf.${CDUMP}
 status=$?
@@ -80,7 +80,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
    fi
 
-   htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_grp${n}.txt`
+   htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_grp${n}.txt`
    status=$?
    if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
        echo "HTAR $CDATE enkf.${CDUMP}_grp${ENSGRP}.tar failed"
@@ -88,7 +88,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
    fi
 
    if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restarta_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_restarta_grp${n}.txt`
+       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_restarta_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf.${CDUMP}_restarta_grp${ENSGRP}.tar failed"
@@ -97,7 +97,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
    fi
 
    if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restartb_grp${ENSGRP}.tar `cat $DATA/enkf.${CDUMP}_restartb_grp${n}.txt`
+       htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf.${CDUMP}_restartb_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf.${CDUMP}_restartb_grp${ENSGRP}.tar failed"
@@ -114,7 +114,7 @@ if [ $ENSGRP -eq 0 ]; then
 
     if [ $HPSSARCH = "YES" ]; then
 
-        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar `cat $DATA/enkf.${CDUMP}.txt`
+        htar -P -cvf $ATARDIR/$CDATE/enkf.${CDUMP}.tar `cat $ARCH_LIST/enkf.${CDUMP}.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE enkf.${CDUMP}.tar failed"
@@ -172,6 +172,4 @@ if [ $ENSGRP -eq 0 ]; then
 fi
 
 ###############################################################
-# Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 exit 0
