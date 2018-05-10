@@ -56,7 +56,7 @@ if [ $machine = "THEIA" ]; then
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
     export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
 
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
+elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
     if [ -d /gpfs/tp1 ]; then
@@ -68,6 +68,17 @@ elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
     fi
     export RTMFIX=$CRTM_FIX
 
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="MARS"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="VENUS"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
+    fi
+    export RTMFIX=$CRTM_FIX
 fi
 
 
