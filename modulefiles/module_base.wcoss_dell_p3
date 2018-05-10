@@ -6,14 +6,17 @@
 
 module load ips/18.0.1.163
 module load impi/18.0.1    
+module load lsf/10.1       
 
 module load HPSS/5.0.2.5
 module load grib_util/1.0.6
 module load prod_util/1.1.0
 module load g2tmpl/1.5.0       
 module load crtm/2.2.5
+module load ESMF/7_1_0r
 
 module load NCO/4.7.0   
+module load HDF5-serial/1.10.1
 module load NetCDF/4.5.0
 module load CFP/2.0.1
 setenv USE_CFP YES
