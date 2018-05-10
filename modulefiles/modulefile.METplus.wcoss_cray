@@ -1,0 +1,5 @@
+#%Module######################################################################
+module use /usrx/local/dev/modulefiles
+module load met/6.1
+module use /u/Rahul.Mahajan/modulefiles
+module load anaconda/anaconda2
