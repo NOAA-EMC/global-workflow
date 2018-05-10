@@ -16,5 +16,8 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+# Cheat until moving through commit process with post
+cp build_ncep_post_native.sh gfs_post.fd/sorc/build_ncep_post.sh
+
 cd gfs_post.fd/sorc
 sh build_ncep_post.sh
