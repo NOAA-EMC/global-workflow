@@ -24,6 +24,9 @@ cd gsi.fd/ush/
 # Workarounds for bugs in gsi build scripts:
 export PATH=$PATH:.
 
+export BUILD_RADMON="NO"
+export BUILD_OZNMON="NO"
+
 ./build_all.sh "$gsitarget"
 
 exit
