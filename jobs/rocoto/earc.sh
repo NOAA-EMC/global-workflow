@@ -40,7 +40,7 @@ fi
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-ARCH_LIST="$ROTDIR/enkf.${CDUMP}.$PDY/earc$ENSGRP"
+ARCH_LIST="$ROTDIR/enkf.${CDUMP}.$PDY/$cyc/earc$ENSGRP"
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
