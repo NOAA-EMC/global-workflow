@@ -10,7 +10,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia ]; then
+if [ $machine != cray -a $machine != theia -a $machine != gaea ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | theia )'
     exit 1
 fi
@@ -25,6 +25,8 @@ if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+elif [ $machine = "gaea" ]; then
+    FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
@@ -131,10 +133,4 @@ for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  ge
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
-
-
-
 exit 0
-
-
-
