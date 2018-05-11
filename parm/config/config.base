@@ -26,7 +26,7 @@ elif [ $machine = "WCOSS_C" ]; then
 
 elif [ $machine = "GAEA" ]; then
 
-    export ACCOUNT="nggps_emc"
+    export ACCOUNT="ncep"
     export QUEUE="batch"
     export QUEUE_ARCH="rdtn"
 
@@ -131,41 +131,17 @@ fi
 # Utilities needed in the scripts (mostly post)
 if [ $machine = "GAEA" ]; then
 
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    module use /lustre/f1/pdata/ncep_shared/fv3/modulefiles
+    module load grib_util
+    export NHOUR=/lustre/f1/pdata/ncep_shared/emc.nemspara/soft/prod_util/1.0.18/exec/nhour
+    export GRBINDEX2=/lustre/f1/pdata/ncep_shared/fv3/exec/grb2index
+    export CNVGRIB21_GFS=/lustre/f1/pdata/ncep_shared/fv3/exec/cnvgrib21_gfs
 
-if [ $machine = "THEIA" ]; then
+elif [ $machine = "THEIA" ]; then
 
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
     export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
-
-fi
-
-# Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"
-export DO_GEMPAK="NO"
-export DO_AWIPS="NO"
-
-# NO for retrospective parallel; YES for real-time parallel
     export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
     export COPYGB="$NWPROD/util/exec/copygb"
     export COPYGB2="$NWPROD/util/exec/copygb2"
@@ -185,7 +161,6 @@ export DO_AWIPS="NO"
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="NO"
-
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
