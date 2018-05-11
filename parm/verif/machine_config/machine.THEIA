@@ -1,0 +1,17 @@
+#
+# Machine Conf file for THEIA: contains paths to
+# non-METplus executables needed to run METplus
+#
+#
+#  EXECUTABLES
+#
+[exe]
+# NON-MET executables
+WGRIB2 = /scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2
+RM_EXE = /bin/rm
+CUT_EXE = /bin/cut
+TR_EXE = /bin/tr
+NCAP2_EXE = /apps/nco/4.4.5-intel/bin/ncap2
+CONVERT_EXE = /bin/convert
+NCDUMP_EXE = /apps/netcdf/4.3.0-intel/bin/ncdump
+EGREP_EXE = /usr/bin/grep

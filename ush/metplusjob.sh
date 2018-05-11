@@ -36,7 +36,7 @@ export iauf00=${9:-"NO"}                                                        
 ## gfs_cyc
 ## config.vrfy
 ## VRFY_GRID2GRID_STEP(1)(2), VRFY_GRID2OBS_STEP(1)(2), VRFY_PRECIP_STEP(1)(2)
-## VRFY_BACKDATE_PRECIP, metplussave, metplushome, vfhmin, vfmax,
+## VRFY_BACKDATE_PRECIP, metplussave, metplushome, metplusconfig, vfhmin, vfmax,
 ## ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
 ## webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## make sure variables are set and set to names used in this script
@@ -50,6 +50,7 @@ VRFY_PRECIP_STEP2=${VRFY_PRECIP_STEP2:-NO} #create plots for precipitation verif
 VRFY_BACKDATE_PRECIP=${VRFY_BACKDATE_PRECIP:-24} # additonal back up time for QPF verification data to allow observation data to come in 
 metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}              # place to save METplus database
 metplushome=${metplushome:-$BASE_VERIF_METPLUS}                          # location of global verification script
+metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                                   # location of configuration files to run METplus
 vfhmin=${vfmin:-$FHMIN_GFS}                                                 #start forecast hour
 vfhmax=${vfhmax:-$FHMAX_GFS}                                                 #end forecast hour
 anl_type=${anltype:-"gfs"}                                                 #analysis type for verification: gfs or gdas
@@ -93,7 +94,7 @@ elif [ $machine = WCOSS_C ]; then
     export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                  #global stats directory
     export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}  #date executable
 else
-    echo "${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
+    echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
 fi
 ##---------------------------------------------------------------------------
@@ -115,7 +116,7 @@ elif [ $gfs_cyc = 4 ]; then
     export fcyclist="00 06 12 18"                  #forecast cycles to be included in step 1 computation
     export cyc2runmetplus=18                          #cycle to run p which will generate vsdb data for all cycles of the day
 else
-    echo "gfs_cyc must be 1, 2 or 4. EXITING metplusjob.sh!"                                          
+    echo "EXIT ERROR: gfs_cyc must be 1, 2 or 4. EXITING metplusjob.sh!"                                          
     exit
 fi
 
@@ -150,7 +151,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export dumplist=".gfs."                             #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2g1=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
     export anl_type=$anl_type                           #analysis type for verification: gfs or gdas
-    export VDATEST=$VSTART_DATE                               #verification starting date
+    export VDATEST=$VSTART_DATE                         #verification starting date
     export VDATEND=$VEND_DATE                           #verification ending date
     export vfhmin=$vfhmin                               #start forecast hour  
     export vfhmax=$vfhmax                               #end forecast hour
@@ -158,11 +159,11 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export fsub=${fsub:-f}                              #string in pgb fcst file after pgb, say, pgbf06, pgbh06
     #do some checks 
     if [ ! -d $metplushome ]; then
-        echo "$metplushome does not exist "
+        echo "EXIT ERROR: $metplushome does not exist "
         exit
     fi
     if [ ! -d $expdlist ]; then
-        echo "$expdlist does not exist "
+        echo "EXIT ERROR: $expdlist does not exist "
         exit
     fi
     #create directories for output
@@ -222,15 +223,17 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                             #cd $work     ||exit 8
                             #chmod u+rw *; rm -f *
                             if [ ${type} = pres] ; then
-                                echo "======== running METplus grid-to-grid for ${type} ========"
+                                echo "==== running METplus grid-to-grid for ${type} ===="
                                 export savedir=${metplussave}/${type}/${vhr}Z/${exp}
                                 export PATH="${metplushome}/ush:${PATH}"
                                 export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
                                 #${metplushome}/ush/master_metplus.py -c /scratch4/NCEPDEV/global/save/Mallory.Row/VRFY/verif_global/parm/metplus_config/grid2grid_pres_step1.conf -c /scratch4/NCEPDEV/global/save/Mallory.Row/VRFY/verif_global/parm/machine_config/machine.${machine}
                             else
-                               echo "grid-to-grid ${type} currently not supported"
+                               echo "ERROR: grid-to-grid ${type} currently not supported. SKIPPING verification for this."
                             fi
                         done
+                    else
+                        echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING verification for this."  
                     fi
                     VDATE=$($ndate +24 $VDATE)
                 done
@@ -245,15 +248,15 @@ fi
 ##---------------------------------------------------------------------------
 ## Grid-to-grid verification step 2: create plots
 if [ $VRFY_GRID2GRID_STEP2 = YES ] ; then
-    echo "VRFY_GRID2GRID_STEP2 IS NOT SUPPORTED AT THIS TIME"
+    echo "ERROR: VRFY_GRID2GRID_STEP2 IS NOT SUPPORTED AT THIS TIME"
 fi
 ##---------------------------------------------------------------------------
 
 
 ##---------------------------------------------------------------------------
-## Grid-to-observations verification step 1: compute regular and partial sums
+## Grid-to-observations verification step 1: compute regular partial sums
 if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
-    echo "VRFY_GRID2OBS_STEP1 IS NOT SUPPORTED AT THIS TIME"
+    echo "ERROR: VRFY_GRID2OBS_STEP1 IS NOT SUPPORTED AT THIS TIME"
 fi
 ##---------------------------------------------------------------------------
 
@@ -261,15 +264,15 @@ fi
 ##---------------------------------------------------------------------------
 ## Grid-to-observations verification step 2: create plots
 if [ $VRFY_GRID2OBS_STEP2 = YES ] ; then
-    echo "VRFY_GRID2OBS_STEP2 IS NOT SUPPORTED AT THIS TIME"
+    echo "ERROR: VRFY_GRID2OBS_STEP2 IS NOT SUPPORTED AT THIS TIME"
 fi
 ##---------------------------------------------------------------------------
 
 
 ##---------------------------------------------------------------------------
-## Precipitation verification step 1: compute regular and partial sums
+## Precipitation verification step 1: compute contingency table counts
 if [ $VRFY_PRECIP_STEP1 = YES ] ; then
-    echo "VRFY_PRECIP_STEP1 IS NOT SUPPORTED AT THIS TIME"
+    echo "ERROR: VRFY_PRECIP_STEP1 IS NOT SUPPORTED AT THIS TIME"
 fi
 ##---------------------------------------------------------------------------
 
@@ -277,7 +280,7 @@ fi
 ##---------------------------------------------------------------------------
 ## Precipitation verification step 2: create plots
 if [ $VRFY_PRECIP_STEP2 = YES ] ; then
-    echo "VRFY_PRECIP_STEP2 IS NOT SUPPORTED AT THIS TIME"
+    echo "ERROR: VRFY_PRECIP_STEP2 IS NOT SUPPORTED AT THIS TIME"
 fi
 ## --------------------------------------------------------------
 module purge

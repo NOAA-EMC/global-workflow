@@ -1,0 +1,17 @@
+#
+# Machine Conf file for WCOSS_C (Surge/Luna): contains paths to
+# non-METplus executables needed to run METplus
+#
+#
+#  EXECUTABLES
+#
+[exe]
+# NON-MET executables
+WGRIB2 = /gpfs/hps/nco/ops/nwprod/grib_util.v1.0.3/exec/wgrib2
+RM_EXE = /bin/rm
+CUT_EXE = /usr/bin/cut
+TR_EXE = /usr/bin/tr
+NCAP2_EXE = /usrx/local/dev/nco/4.4.4/gnu/sandybridge/bin/ncap2
+CONVERT_EXE = /usr/bin/convert
+NCDUMP_EXE = /usrx/local/dev/NetCDF/4.2/intel/sandybridge/bin/ncdump
+EGREP_EXE = /usr/bin/grep
