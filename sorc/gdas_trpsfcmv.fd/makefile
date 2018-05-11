@@ -4,7 +4,7 @@ SRCS= gdas_trpsfcmv.f getgb1.f
 
 OBJS= gdas_trpsfcmv.o getgb1.o
 
-NCARG_LIB= ($LIBRARY_PATH)
+NCARG_LIB= $(LIBRARY_PATH)
 
 FC =    ifort 
 LDFLAGS =  -L$(NCARG_LIB) \
