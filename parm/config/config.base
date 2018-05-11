@@ -114,6 +114,7 @@ elif [ $machine = "WCOSS_DELL_P3" ]; then
     export STMP="/gpfs/dell2/stmp/$USER"
     export PTMP="/gpfs/dell2/ptmp/$USER"
     export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export POSTGRB2TBL="/gpfs/hps/nco/ops/nwprod/lib/g2tmpl/v1.5.0/src/params_grib2_tbl_new"
 
     # Base directories for various builds
     export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
