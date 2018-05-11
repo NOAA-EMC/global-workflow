@@ -95,11 +95,11 @@ write_cdf_bins = FALSE;
 // Verification masking regions
 //
 mask = {
-   grid = [ "FULL" ];
-   poly = [ "${metplushome}/parm/verif_global/fix/poly/grid2grid/NHX.nc",
-            "${metplushome}/parm/verif_global/fix/poly/grid2grid/SHX.nc",
-            "${metplushome}/parm/verif_global/fix/poly/grid2grid/TRO.nc",
-	    "${metplushome}/parm/verif_global/fix/poly/grid2grid/PNA.nc"
+   grid = [ "G002" ];
+   poly = [ "${metplusfix}/vx_mask_files/grid2grid/NHX.nc",
+            "${metplusfix}/vx_mask_files/grid2grid/SHX.nc",
+            "${metplusfix}/vx_mask_files/grid2grid/TRO.nc",
+	    "${metplusfix}/vx_mask_files/grid2grid/PNA.nc"
 	  ];
 }
 

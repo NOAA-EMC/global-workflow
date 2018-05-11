@@ -36,7 +36,7 @@ export iauf00=${9:-"NO"}                                                        
 ## gfs_cyc
 ## config.vrfy
 ## VRFY_GRID2GRID_STEP(1)(2), VRFY_GRID2OBS_STEP(1)(2), VRFY_PRECIP_STEP(1)(2)
-## VRFY_BACKDATE_PRECIP, metplussave, metplushome, metplusconfig, vfhmin, vfmax,
+## VRFY_BACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, vfhmin, vfmax,
 ## ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
 ## webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## make sure variables are set and set to names used in this script
@@ -50,7 +50,8 @@ VRFY_PRECIP_STEP2=${VRFY_PRECIP_STEP2:-NO} #create plots for precipitation verif
 VRFY_BACKDATE_PRECIP=${VRFY_BACKDATE_PRECIP:-24} # additonal back up time for QPF verification data to allow observation data to come in 
 metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}              # place to save METplus database
 metplushome=${metplushome:-$BASE_VERIF_METPLUS}                          # location of global verification script
-metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                                   # location of configuration files to run METplus
+metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                                   # locaton of configuration files to run METplus
+metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                                       # location of fix files to run METplus
 vfhmin=${vfmin:-$FHMIN_GFS}                                                 #start forecast hour
 vfhmax=${vfhmax:-$FHMAX_GFS}                                                 #end forecast hour
 anl_type=${anltype:-"gfs"}                                                 #analysis type for verification: gfs or gdas
