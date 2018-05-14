@@ -23,7 +23,7 @@ import rocoto
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
-               'GAEA':'moabtorque',
+               'GAEA':'moab',
                'WCOSS':'lsf',
                'WCOSS_C':'lsfcray'}
 
@@ -63,6 +63,12 @@ def get_shell_env(scripts):
 def get_script_env(scripts):
     default_env=get_shell_env([])
     and_script_env=get_shell_env(scripts)
+    var_script_and_env = []
+    for env_var in default_env:
+        if env_var in and_script_env:
+            var_script_and_env.append(env_var)
+    for each_var in var_script_and_env:
+        del default_env[each_var]
     vars_just_in_script=set(and_script_env)-set(default_env)
     union_env=dict(default_env)
     union_env.update(and_script_env)
