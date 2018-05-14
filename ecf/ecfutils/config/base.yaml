@@ -91,6 +91,7 @@ config_base:
     # EXPERIMENT specific environment parameters
     export SDATE={tools.to_YMDH(doc.settings.SDATE)}
     export EDATE={tools.to_YMDH(doc.settings.EDATE)}
+    export REALTIME="{tools.YES_NO(doc.settings.REALTIME)}"   # Run GFS AWIPS
     export assim_freq={doc.data_assimilation.assim_freq}
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"

@@ -58,6 +58,10 @@ settings_schema: !Template &settings_schema
     type: datetime
     description: Last cycle to run GDAS.
   
+  REALTIME:
+    type: bool
+    default: false
+    descript: Whether the run will be done in real-time or retrospective mode
 
   ics_from:
     type: string
