@@ -5,7 +5,7 @@ archive_settings_template: !Template &archive_settings_template
     type: bool
 
   arch_cyc:
-    default: 00
+    default: 18
     description: cycle for archiving files for warm_start capability
     type: int
 

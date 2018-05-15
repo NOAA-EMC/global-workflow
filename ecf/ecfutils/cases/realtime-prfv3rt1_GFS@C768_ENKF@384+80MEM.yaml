@@ -16,14 +16,15 @@ case:
   gfs_output_settings:
     FHMAX_GFS: 384
     FHOUT_GFS: 3
+    FHMAX_HF_GFS: 120
 
   places:
     workflow_file: workflow/cycled_gfs.yaml
     ICSDIR: /gpfs/hps3/emc/global/noscrub/emc.glopara/ICS
     HOMEgfs: /gpfs/hps3/emc/global/noscrub/emc.glopara/parallel-ecf/builds/replace-setup-expt-20180514
 
-  output:
-    FHMAX_HF_GFS: 120
+  post:
+    downset: 2
 
   downstream:
     DO_BUFRSND: Yes
@@ -31,7 +32,7 @@ case:
     DO_AWIPS: Yes
 
   archiving:
-    RMOLDEND: 72
+    scrub_in_archive_end: 72
     arch_warmicfreq: 2
     arch_fcsticfreq: 1
 
