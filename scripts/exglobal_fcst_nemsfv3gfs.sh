@@ -238,8 +238,8 @@ else
     O3FORC=global_o3prdlos.f77
 fi
 H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
-$NLN $FIX_AM/${O3FORC}                         $DATA/INPUT/global_o3prdlos.f77
-$NLN $FIX_AM/${H2OFORC}                        $DATA/INPUT/global_h2oprdlos.f77
+$NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
+$NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
@@ -909,9 +909,8 @@ fi
 # run the executable
 
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-cd $DATA
 export OMP_NUM_THREADS=$NTHREADS_FV3
-$APRUN_FV3 ./$FCSTEXEC 1>&1 2>&2
+$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err
