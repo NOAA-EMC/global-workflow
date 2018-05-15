@@ -1,5 +1,5 @@
 #!/bin/sh
-#set -x
+set -x
 
 mode="${1:-exclusive}"
 
@@ -39,7 +39,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
         module load module-service.gaea
     else
         module load module-run.gaea
-	module load module_base.gaea 
+        module load module_base.gaea 
     fi
 else
     echo WARNING: UNKNOWN PLATFORM 
