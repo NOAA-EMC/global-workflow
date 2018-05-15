@@ -816,6 +816,11 @@ if [ $MEMBER -gt 0 ]; then
   ntrunc = $JCAP_STP
   lon_s = $LONB_STP
   lat_s = $LATB_STP
+  $nam_stochy_nml
+/
+&nam_sfcperts
+  $nam_sfcperts_nml
+/
 EOF
 
   if [ $DO_SKEB = "YES" ]; then
@@ -848,16 +853,6 @@ EOF
   use_zmtnblck = ${use_zmtnblck:-".true."}
 EOF
   fi
-
-  cat >> input.nml << EOF
-  $nam_stochy_nml
-/
-EOF
-
-  cat >> input.nml << EOF
-  $nam_sfcperts_nml
-/
-EOF
 
 else
 
@@ -908,7 +903,7 @@ fi
 
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
-$APRUN_FV3 $DATA/$FCSTEXEC
+$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err
