@@ -19,30 +19,30 @@ gfs_resource_table: !Select
       anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
-      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null ]
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null ]
       gdasfcst_wall:  !timedelta "00:15:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
     C384:
       #          ranks ppn  wallclock             threads
       prep:     [  12,   12, !timedelta "00:15:00", null ]
       anal:     [ 144,    6, !timedelta "01:30:00", max  ]
       gdaspost: [  72,   12, !timedelta "00:30:00", 1    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1    ]
-      gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null ]
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
       gdasfcst_wall:  !timedelta "00:15:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
     C768:
       #          ranks ppn  wallclock             threads
-      prep:     [   2,    6, !timedelta "00:15:00", max  ]
+      prep:     [   4,    4, !timedelta "00:45:00", max  ]
       anal:     [ 480,    4, !timedelta "02:30:00", null ]
       gdaspost: [  72,   12, !timedelta "00:45:00", null ]
       gfspost:  [  72,   12, !timedelta "00:30:00", null ]
-      gfsvrfy:  [   5, null, !timedelta "04:00:00", null ]
-      gdasvrfy: [   1,    1, !timedelta "02:00:00", null ]
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gdasvrfy: [   1,    1, !timedelta "03:00:00", null ]
+      gfsvrfy:  [   5, null, !timedelta "06:00:00", null ]
       gdasfcst_wall:  !timedelta "01:00:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
 
 enkf_resource_table: !Select
   select: !calc doc.fv3_enkf_settings.CASE
@@ -58,18 +58,18 @@ enkf_resource_table: !Select
       efcs_wall:  !timedelta "01:00:00"
     C384:
       #          ranks ppn  wallclock             threads
-      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
-      eobs:     [  72,    6, !timedelta "00:30:00", 4    ]
-      eomg:     [  72,    6, !timedelta "03:00:00", 2    ]
+      eobs:     [ 144,   12, !timedelta "00:30:00", 4    ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
       efcs_wall:  !timedelta "03:00:00"
     C768:
       #          ranks ppn  wallclock             threads
-      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
-      eobs:     [  72,    6, !timedelta "00:30:00", 4    ]
-      eomg:     [  72,    6, !timedelta "03:00:00", 2    ]
+      eobs:     [ 144,   12, !timedelta "00:30:00", 4    ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
       efcs_wall:  !timedelta "03:00:00"
 
@@ -108,6 +108,7 @@ default_resources: &default_resources
       mpi_ranks: 17
       max_ppn: 4
       walltime: !timedelta "02:00:00"
+      OMP_NUM_THREADS: 3
       exe: placeholder
       
   run_prepbufr: !JobRequest
@@ -156,15 +157,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:02:00"
       exclusive: false
 
-  run_arch: !JobRequest
-    - batch_memory: "3072M"
-      exclusive: false
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-      OMP_NUM_THREADS: 2
-
   run_getic: !JobRequest
     - batch_memory: "3072M"
       exclusive: false
@@ -174,14 +166,15 @@ default_resources: &default_resources
       max_ppn: 1
       OMP_NUM_THREADS: 2
   
-  run_final: !JobRequest
-    - memory: "1024M"
+  run_arch: !JobRequest
+    - batch_memory: "3072M"
+      exclusive: false
       mpi_ranks: 1
-      walltime: !timedelta "00:01:00"
+      walltime: !timedelta "06:00:00"
       exe: placeholder
       max_ppn: 1
       OMP_NUM_THREADS: 2
-  
+
   run_earc: !JobRequest
     - batch_memory: "3072M"
       mpi_ranks: 1
@@ -190,6 +183,14 @@ default_resources: &default_resources
       max_ppn: 1
       exclusive: false
 
+  run_final: !JobRequest
+    - memory: "1024M"
+      mpi_ranks: 1
+      walltime: !timedelta "00:01:00"
+      exe: placeholder
+      max_ppn: 1
+      OMP_NUM_THREADS: 2
+  
   # Calculated resources; ones that can be determined entirely from
   # other variables throughout the document.
 

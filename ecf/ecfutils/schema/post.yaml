@@ -17,9 +17,9 @@ post_schema: &post_schema !Template
   PGB1F: { type: bool, default: yes }
   GFS_DOWNSTREAM: { type: bool, default: yes }
   downset: { type: int, default: 1 }
+  NPOSTGRP: { type: int, default: 5 }  
   master_grid:
     type: string
     default: "0p25deg"
     allowed: [ "1deg", "0p5deg", "0p25deg", "0p125deg" ]
     description: Original grid of the post
-  NPOSTGRP: { type: int, default: 5 }  

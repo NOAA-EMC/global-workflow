@@ -41,7 +41,7 @@ fv3_settings_template: !Template &fv3_settings_template
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
           random_clds: { type: bool, default: false }
-          #cnvcld: { type: bool, default: false }
+          cnvcld: { type: bool, default: false }
           hord_mt_nh_nonmono: { type: int, default: 6 }
           hord_xx_nh_nonmono: { type: int, default: 6 }
           vtdm4_nh_nonmono:   { type: float, default: 0.02 }
@@ -83,10 +83,10 @@ fv3_settings_template: !Template &fv3_settings_template
     default: yes
     description: "write velocity restarts on A grid?"
 
-  cal_pre:          { type: bool, default: yes }
-  do_sat_adjust:    { type: bool, default: no }
-  random_clds:      { type: bool, default: yes }
-  cnvcld:           { type: bool,  default: yes }
+  cal_pre:          { type: bool, default: true }
+  do_sat_adjust:    { type: bool, default: false }
+  random_clds:      { type: bool, default: true }
+  cnvcld:           { type: bool,  default: true }
   dnats:            { type: int,  default: 0 }
   IEMS:             { type: int,  default: 1 }
   IALB:             { type: int,  default: 1 }
