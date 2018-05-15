@@ -21,50 +21,54 @@ echo "BEGIN: config.resources"
 
 if [ $step = "prep" -o $step = "prepbufr" ]; then
 
-    eval "export wtime_$step='00:15:00'"
-    eval "export npe_$step=12"
-    eval "export npe_node_$step=12"
-    eval "export memory_$step=1024M"
+    eval "export wtime_$step='00:45:00'"
+    eval "export npe_$step=4"
+    eval "export npe_node_$step=4"
+    eval "export nth_$step=4"
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="01:30:00"
-    export npe_anal=144
-    export npe_node_anal=6
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export wtime_anal="02:30:00"
+    export npe_anal=480
+    export npe_node_anal=4
+    export nth_anal=6
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_anal="3072M"
     fi
 
 elif [ $step = "fcst" ]; then
 
-    export wtime_fcst="00:15:00"
+    export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_fcst=${npe_node_fcst:-12}
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export nth_fcst=2
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
     fi
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="00:30:00"
-    export wtime_post_gfs="01:00:00"
+    export wtime_post="02:00:00"
+    export wtime_post_gfs="06:00:00"
     export npe_post=72
+    export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=24
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_post="3072M"
     fi
 
 elif [ $step = "vrfy" ]; then
 
     export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="03:00:00"
+    export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=1
+    export nth_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_C" ]]; then
 	    export memory_vrfy="3072M"
     elif [[ "$machine" == "THEIA" ]]; then
 	    export memory_vrfy="16384M"
@@ -75,51 +79,57 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export wtime_$step='06:00:00'"
     eval "export npe_$step=1"
     eval "export npe_node_$step=1"
-    eval "export memory_$step=1024M"
+    eval "export nth_$step=1"
+    eval "export memory_$step=2048M"
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
-    export wtime_eobs="00:45:00"
+    export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
-    export npe_eobs=72
-    export npe_node_eobs=6
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export npe_eobs=144
+    export npe_node_eobs=12
+    export nth_eobs=2
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eobs="3072M"
     fi
 
 elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
-    export npe_eupd=120
-    export npe_node_eupd=12
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export npe_eupd=240
+    export npe_node_eupd=4  
+    export nth_eupd=6
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eupd="3072M"
     fi
 
 elif [ $step = "ecen" ]; then
 
-    export wtime_ecen="00:30:00"
-    export npe_ecen=84
-    export npe_node_ecen=12
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export wtime_ecen="01:00:00"
+    export npe_ecen=80
+    export npe_node_ecen=4 
+    export nth_ecen=6
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_ecen="3072M"
     fi
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="01:00:00"
+    export wtime_efcs="03:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_node_efcs=12
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export nth_efcs=2
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_efcs="254M"
     fi
 
 elif [ $step = "epos" ]; then
 
-    export wtime_epos="00:30:00"
-    export npe_epos=84
-    export npe_node_epos=12
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    export wtime_epos="02:00:00"
+    export npe_epos=80
+    export npe_node_epos=3
+    export nth_epos=8
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_epos="254M"
     fi
 
@@ -127,10 +137,11 @@ elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
     export npe_postsnd=12
+    export nth_postsnd=1
     export npe_node_postsnd=3
     export npe_postsndcfp=10
     export npe_node_postsndcfp=3
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_postsnd="254M"
     fi
 
@@ -140,7 +151,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=4
     export npe_node_awips=4
     export nth_awips=2
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_awips="254M"
     fi
 
@@ -150,7 +161,7 @@ elif [ $step = "gempak" ]; then
     export npe_gempak=17
     export npe_node_gempak=4
     export nth_gempak=3
-    if [[ "$machine" == "WCOSS_C" || "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_gempak="254M"
     fi
 
