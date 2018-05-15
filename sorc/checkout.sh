@@ -12,7 +12,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     #git checkout nemsfv3gfs_beta_v1.0.0
     #git checkout fv3gfs_FY2019Q1_v1.0.0
     #git checkout nemsfv3gfs_beta_v1.0.1
-    git checkout fv3gfs_FY2019Q1_v1.0.0_p1
+    #git checkout fv3gfs_FY2019Q1_v1.0.0_p1
+    git checkout nemsfv3gfs_beta_v1.0.2
     git submodule update --init --recursive
     cd ${topdir}
 else
