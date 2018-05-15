@@ -38,12 +38,6 @@ config_fcst:
     export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
     export npe_fv3=$npe_fcst # This is model resolution dependent, see note above    
    
-    #NOT NEEDED ANYMORE - handled by CROW check of QUILTING value 
-    #if [ $QUILTING = ".true." ]; then
-    #    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    #    export npe_fcst=$npe_fv3
-    #fi
-
     # Model configuration
     export TYPE="{doc.fv3_settings.nh_type}"
     export MONO="{doc.fv3_settings.MONO}"

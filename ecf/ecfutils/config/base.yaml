@@ -20,7 +20,7 @@ config_base:
     export RUN_ENVIR="emc"
     
     # Account, queue, etc.
-    export ACCOUNT="{doc.accounting.cpu_project}"
+    export ACCOUNT="{doc.accounting.cpu_project}"     # This comes from user.yaml
     export QUEUE="{doc.platform.exclusive_queue}"
     export QUEUE_ARCH="{doc.platform.service_queue}"
         

@@ -20,7 +20,7 @@ config_anal:
     fi
     
     if [[ "$CDUMP" = "gfs" ]] ; then
-        #export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
+        export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
         export GENDIAG="NO"
         export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
         export DIAG_TARBALL="NO"
@@ -30,7 +30,7 @@ config_anal:
     export npe_gsi=$npe_anal
     
     # Set CONVINFO and SATINFO for retrospective parallels
-    if [ ${REALTIME:-NO} = "NO" ]; then
+    if [ ${{REALTIME:-NO}} = "NO" ]; then
 
       # Set CONVINFO
       if [[ "$CDATE" -ge "2018022818" ]]; then

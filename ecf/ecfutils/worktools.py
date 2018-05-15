@@ -489,7 +489,10 @@ def setup_case(command_line_arguments):
     doc=from_dir(EXPDIR,validation_stage='setup')
     make_config_files_in_expdir(doc,EXPDIR)
 
-    create_COMROT(doc)
+
+#### Lin Gan
+#      comrot copy from realtime do not recreate
+####    create_COMROT(doc)
 
     print()
     print(f'Case "{case_name}" is set up under experiment name "{experiment_name}" with:')
