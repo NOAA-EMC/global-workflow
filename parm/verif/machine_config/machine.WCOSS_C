@@ -1,9 +1,13 @@
 #
-# Machine Conf file for WCOSS_C (Surge/Luna): contains paths to
+# Machine Conf file for WCOSS_C (Surge/Luna): contains directories and paths to
 # non-METplus executables needed to run METplus
 #
+[dir]
 #
-#  EXECUTABLES
+METPLUS_BASE = {ENV[metplushome]}
+PARM_BASE = {METPLUS_BASE}/parm
+MET_INSTALL_DIR = /usrx/local/dev/met/6.1
+MET_BASE = {MET_INSTALL_DIR}/share/met
 #
 [exe]
 # NON-MET executables
