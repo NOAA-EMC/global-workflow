@@ -18,7 +18,9 @@ config_post:
     #-------------------------------------------
     
     # No. of concurrent post jobs [0 implies sequential]
-    export NPOSTGRP=5
+####    Changed to use post setting 
+####    export NPOSTGRP=5
+    export NPOSTGRP={doc.post.NPOSTGRP}
     
     # Post driver job that calls gfs_nceppost.sh and downstream jobs
     export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
