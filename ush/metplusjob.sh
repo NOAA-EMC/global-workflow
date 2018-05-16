@@ -157,8 +157,8 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export VDATEND=$VEND_DATE                           #verification ending date
     export vfhmin=$vfhmin                               #start forecast hour  
     export vfhmax=$vfhmax                               #end forecast hour
-    export asub=${asub:-a}                              #string in pgb anl file after pgb, say, pgbanl, pgbhnl 
-    export fsub=${fsub:-f}                              #string in pgb fcst file after pgb, say, pgbf06, pgbh06
+    #export asub=${asub:-a}                              #string in pgb anl file after pgb, say, pgbanl, pgbhnl 
+    #export fsub=${fsub:-f}                              #string in pgb fcst file after pgb, say, pgbf06, pgbh06
     #do some checks 
     if [ ! -d $metplushome ]; then
         echo "EXIT ERROR: $metplushome does not exist "
@@ -229,7 +229,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                        rm -r ${work}/${VDATE}00
                     fi
                     if [ ${type} = pres ] ; then
-                       anlfile=$exp_dir/$exp/pgb${asub}nl${cdump}${VDATE}
+                       anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
                        if [ -s $anlfile ]; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
                            export PATH="${metplushome}/ush:${PATH}"
