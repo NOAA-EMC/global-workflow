@@ -21,7 +21,6 @@ case:
   places:
     workflow_file: workflow/cycled_gfs.yaml
     ICSDIR: /gpfs/hps3/emc/global/noscrub/emc.glopara/ICS
-    HOMEgfs: /gpfs/hps3/emc/global/noscrub/emc.glopara/parallel-ecf/builds/replace-setup-expt-20180514
 
   post:
     downset: 2
@@ -39,8 +38,8 @@ case:
 
   settings: 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-05-12t06:00:00
-    EDATE: 2018-06-01t00:00:00
+    SDATE: 2018-05-16t00:00:00
+    EDATE: 2018-05-16t06:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4 # run gfs at 0z, 12z
