@@ -25,6 +25,7 @@ case:
 
   post:
     downset: 2
+    NPOSTGRP: 42
 
   downstream:
     DO_BUFRSND: Yes
