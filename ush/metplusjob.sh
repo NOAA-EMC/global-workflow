@@ -100,6 +100,8 @@ else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
 fi
+export PATH="${metplushome}/ush:${PATH}"
+export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
 ##---------------------------------------------------------------------------
 
 
@@ -234,9 +236,20 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                        anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
                        if [ -s $anlfile ]; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           export PATH="${metplushome}/ush:${PATH}"
-                           export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
                            ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                       else
+                           echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                           mkdir -p ${work}/${VDATE}00
+                           echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                       fi
+                    elif [ ${type} = anom ] ; then
+                       anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
+                       if [ -s $anlfile ]; then
+                           echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                        else
                            echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
