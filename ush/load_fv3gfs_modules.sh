@@ -48,3 +48,8 @@ fi
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
+
+echo "Checking for module list and aprun support in load_fv3gfs_modules.sh"
+module list
+which aprun
+
