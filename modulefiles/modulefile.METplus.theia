@@ -2,3 +2,5 @@
 module use /contrib/modulefiles
 module load met/6.1
 module load anaconda/anaconda2-4.4.0
+
+export METver="6.1"

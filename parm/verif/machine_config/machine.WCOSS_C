@@ -6,7 +6,7 @@
 #
 METPLUS_BASE = {ENV[metplushome]}
 PARM_BASE = {METPLUS_BASE}/parm
-MET_INSTALL_DIR = /usrx/local/dev/met/6.1
+MET_INSTALL_DIR = /usrx/local/dev/met/{ENV[METver]}
 MET_BASE = {MET_INSTALL_DIR}/share/met
 #
 [exe]

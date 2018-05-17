@@ -31,9 +31,11 @@ export expdump=${6:-$CDUMP}                                                     
 export rundir_base=${7:-${RUNDIR}/${CDUMP}/${CDATE}/vrfy/metplus_exp}            #run directory for METplus verification
 export expdir=${8:-${NOSCRUB}/archive}                                           #experiment online archive
 export iauf00=${9:-"NO"}                                                         #set pgbf00=pgbanl for forecasts with IAU
-## Environment variables inherited from that are used: config.base, config.vrfy, vrfy.sh
+## Environment variables inherited from that are used: modulefiles.METplus*, config.base, config.vrfy, vrfy.sh
+## modulefiles.METplus*
+## METver
 ## config.base
-## gfs_cyc
+## gfs_cyc, METPLUSver
 ## config.vrfy
 ## VRFY_GRID2GRID_STEP(1)(2), VRFY_GRID2OBS_STEP(1)(2), VRFY_PRECIP_STEP(1)(2)
 ## VRFY_BACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, vfhmin, vfmax,
@@ -234,7 +236,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
                            export PATH="${metplushome}/ush:${PATH}"
                            export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                        else
                            echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
