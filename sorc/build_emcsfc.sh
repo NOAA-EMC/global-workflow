@@ -11,6 +11,7 @@ fi
 
 for prog in emcsfc_ice_blend emcsfc_snow2mdl
 do
+  module purge
   USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
   if [ $USE_PREINST_LIBS = true ]; then
     source ../modulefiles/modulefile.global_${prog}.${target}             > /dev/null 2>&1
