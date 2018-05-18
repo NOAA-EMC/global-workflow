@@ -490,7 +490,7 @@ def setup_case(command_line_arguments):
 
 
 #### Lin Gan
-#      comrot copy from realtime do not recreate
+    comrot copy from realtime do not recreate
 ####    create_COMROT(doc)
 
     print()
