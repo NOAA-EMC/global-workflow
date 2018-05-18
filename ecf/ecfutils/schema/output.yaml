@@ -68,6 +68,10 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     type: int list
     default: !calc "tools.seq(FHMIN_GDAS,FHMAX_GDAS,FHOUT_GDAS)"
 
+  enkf_epos_fhr:
+    type: int list
+    default: !calc "tools.seq(FHMIN_ENKF,FHMAX_ENKF,FHOUT_ENKF)"
+
   wafs_last_hour:
     type: int
     default: !calc 120

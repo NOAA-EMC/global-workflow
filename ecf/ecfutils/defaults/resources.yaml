@@ -59,7 +59,7 @@ enkf_resource_table: !Select
     C384:
       #          ranks ppn  wallclock             threads
       eobs:     [ 144,   12, !timedelta "00:30:00", 4    ]
-      eomg:     [ 144,   12, !timedelta "01:00:00", 4    ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
       ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
@@ -67,7 +67,7 @@ enkf_resource_table: !Select
     C768:
       #          ranks ppn  wallclock             threads
       eobs:     [ 144,   12, !timedelta "00:30:00", 4    ]
-      eomg:     [ 144,   12, !timedelta "01:00:00", 4    ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
       ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
