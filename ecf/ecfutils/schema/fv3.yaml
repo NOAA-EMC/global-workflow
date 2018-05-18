@@ -41,7 +41,6 @@ fv3_settings_template: !Template &fv3_settings_template
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
           random_clds: { type: bool, default: false }
-          cnvcld: { type: bool, default: false }
           hord_mt_nh_nonmono: { type: int, default: 6 }
           hord_xx_nh_nonmono: { type: int, default: 6 }
           vtdm4_nh_nonmono:   { type: float, default: 0.02 }
