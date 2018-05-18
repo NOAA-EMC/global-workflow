@@ -489,9 +489,7 @@ def setup_case(command_line_arguments):
     make_config_files_in_expdir(doc,EXPDIR)
 
 
-#### Lin Gan
     comrot copy from realtime do not recreate
-####    create_COMROT(doc)
 
     print()
     print(f'Case "{case_name}" is set up under experiment name "{experiment_name}" with:')
