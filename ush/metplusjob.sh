@@ -256,15 +256,21 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                            mkdir -p ${work}/${VDATE}00
                            echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
                        fi
-                    #elif [ ${type} = sfc ] ; then
-                    #   f00file=$exp_dir/$exp/pgb${fsub}00${cdump}${VDATE}
-                    #   if [ -s $f00file ]; then
-                    #   else
-                    #   fi
+                    elif [ ${type} = sfc ] ; then
+                       f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
+                       if [ -s $f00file ]; then
+                           echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                       else
+                           echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                           mkdir -p ${work}/${VDATE}00
+                           echo "${f00file} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                       fi
                     else
-                       echo "ERROR: grid-to-grid ${type} currently not supported."
+                       echo "ERROR: grid-to-grid ${type} is not supported."
                        mkdir -p ${work}/${VDATE}00
-                       echo "grid-to-grid ${type} currently not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
+                       echo "grid-to-grid ${type} is not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
                     fi
                 done 
                 VDATE=$($ndate +24 $VDATE)
