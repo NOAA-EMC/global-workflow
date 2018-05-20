@@ -137,6 +137,9 @@ if [ $ENSGRP -eq 0 ]; then
 fi
 
 
+if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
+    exit 0
+fi
 
 ###############################################################
 # ENSGRP 0 also does clean-up
