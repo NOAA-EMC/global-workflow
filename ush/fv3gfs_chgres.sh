@@ -333,11 +333,11 @@ if [ ! -s $testfile ]; then
 fi
 
 #---------------------------
-n=001
+n=1
 while [ $n -le 80 ]; do
 #---------------------------
 mem=$(printf %03i $n)
-mchar=mem$(printf %03i $mem)
+mchar=mem$(printf %03i $n)
 
 
 export COMROT=$ROTDIR/enkf.gdas.$ymd/$cyc/$mchar
