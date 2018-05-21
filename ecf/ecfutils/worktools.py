@@ -105,14 +105,22 @@ def create_COMROT(conf):
     idatestr = f'{idate:%Y%m%d%H}'
 
     print(f'Input conditions from model: {cdump.upper()}')
+<<<<<<< HEAD
     print(f'Copy input conditions from: {icsdir}')
+=======
+    print(f'Copied input conditions from: {icsdir}')
+>>>>>>> replace-setup-expt
     logger.info(f'Input conditions: {icsdir}')
 
     if conf.settings.run_enkf:
         loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
     loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
+<<<<<<< HEAD
     print(f'Copy input conditions to: {comrot}')
+=======
+    print(f'Copied input conditions to: {comrot}')
+>>>>>>> replace-setup-expt
 
     # Link ensemble member initial conditions
     if conf.settings.run_enkf:
@@ -395,7 +403,10 @@ def remake_ecflow_files_for_cycles(
         surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
+<<<<<<< HEAD
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
+=======
+>>>>>>> replace-setup-expt
 
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     first_cycle=max(suite.Clock.start,first_cycle)

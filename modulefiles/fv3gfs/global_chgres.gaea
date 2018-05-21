@@ -6,8 +6,6 @@ module load cray-netcdf
 
 # Load NCEPLIBS modules
 export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
-
-module use $NCEPLIBS/modulefiles
 module load sigio-intel-sandybridge/2.0.1
 module load w3nco-intel-sandybridge/2.0.6
 module load w3emc-intel-sandybridge/2.2.0

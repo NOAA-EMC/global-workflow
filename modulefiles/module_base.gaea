@@ -37,5 +37,10 @@ module load nemsio-intel-sandybridge/2.2.3
 module load esmflocal/7.1.52b
 
 # Get setpdy.sh, ndate, etc.
+<<<<<<< HEAD
 module use /lustre/f1/pdata/ncep_shared/emc.nemspara/soft/modulefiles
 module load prod_util
+=======
+module use /ncrc/home1/Samuel.Trahan/soft/modulefiles/
+module load prod_util
+>>>>>>> replace-setup-expt
