@@ -85,9 +85,19 @@ def select_platform(requested_platform,valid_platforms):
     crow.config.evaluate_immediates(platdoc.platform)
     return platdoc
 
-def create_COMROT(conf):
+def create_COMROT(conf,force):
     comrot = conf.places.ROTDIR
     logger.info(f'Workflow COM root: {comrot}')
+    if os.path.exists(comrot):
+        if force:
+            logger.warning(f'{comrot}: exists but -f was specified, so I will re-link comrot')
+            logger.warning(f'{comrot}: I will ovewrite initial conditions for the first half cycle with symbolic links.')
+            logger.warning(f'{comrot}: I will NOT delete or modify any other files.')
+        else:
+            logger.error(f'{comrot}: exists.  Refusing to recreate unless -f is given.')
+            logger.error(f'Provide -c to skip comrot linking, or')
+            logger.error(f'Provide -f to force comrot linking.')
+            sys.exit(1)
     loudly_make_dir_if_missing(comrot)
 
     if not 'IC_CDUMP' in conf.settings or not conf.settings.IC_CDUMP:
@@ -455,10 +465,11 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'vfp:')
+    options,positionals=getopt(command_line_arguments,'vfcp:')
     options=dict(options)
 
     force='-f' in options
+    skip_comrot='-c' in options
 
     if '-v' in options:
         logger.setLevel(logging.INFO)
@@ -488,8 +499,10 @@ def setup_case(command_line_arguments):
     doc=from_dir(EXPDIR,validation_stage='setup')
     make_config_files_in_expdir(doc,EXPDIR)
 
-
-    comrot copy from realtime do not recreate
+    if skip_comrot:
+        logger.warning('-c specified; will not create comrot')
+    else:
+        create_COMROT(doc,force)
 
     print()
     print(f'Case "{case_name}" is set up under experiment name "{experiment_name}" with:')
