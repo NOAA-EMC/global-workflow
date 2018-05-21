@@ -137,10 +137,10 @@ mod=$(($nday % $ARCH_FCSTICFREQ))
 if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEFCSTIC="YES" ; fi
 
 
-DATA="$RUNDIR/$CDATE/$CDUMP/arch"
-[[ -d $DATA ]] && rm -rf $DATA
-mkdir -p $DATA
-cd $DATA
+ARCH_LIST="$COMIN/archlist"
+[[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
+mkdir -p $ARCH_LIST
+cd $ARCH_LIST
 
 $HOMEgfs/ush/hpssarch_gen.sh $CDUMP
 status=$?
@@ -153,18 +153,38 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfsa gfsb gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfsa gfsb gfs_flux gfs_nemsioa gfs_nemsiob; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $DATA/${targrp}.txt`
+    #for targrp in gfsa gfsb - NOTE - do not check htar error status
+    for targrp in gfsa gfsb; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
     done
 
+    #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
+    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE ${targrp}.tar failed"
+            exit $status
+        fi
+    done
+    
     if [ $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $DATA/gfs_restarta.txt`
+        htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfs_restarta.tar failed"
+            exit $status
+        fi
     fi
 
    #--save mdl gfsmos output from all cycles in the 18Z archive directory
    if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
         htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfsmos.tar failed"
+            exit $status
+        fi
    fi
 
 fi
@@ -172,7 +192,7 @@ fi
 
 if [ $CDUMP = "gdas" ]; then
 
-    htar -P -cvf $ATARDIR/$CDATE/gdas.tar `cat $DATA/gdas.txt`
+    htar -P -cvf $ATARDIR/$CDATE/gdas.tar `cat $ARCH_LIST/gdas.txt`
     status=$?
     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
         echo "HTAR $CDATE gdas.tar failed"
@@ -180,7 +200,7 @@ if [ $CDUMP = "gdas" ]; then
     fi
 
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $DATA/gdas_restarta.txt`
+        htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $ARCH_LIST/gdas_restarta.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gdas_restarta.tar failed"
@@ -188,7 +208,7 @@ if [ $CDUMP = "gdas" ]; then
         fi
     fi
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $DATA/gdas_restartb.txt`
+        htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $ARCH_LIST/gdas_restartb.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gdas_restartb.tar failed"
@@ -262,6 +282,4 @@ if [ $CDUMP = "gfs" ]; then
 fi
 
 ###############################################################
-# Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 exit 0

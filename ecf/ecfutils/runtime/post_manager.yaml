@@ -1,0 +1,28 @@
+# This file contains extra shell script contents of the ecf file for
+# the post_manager job.  That is the job in the workflow that watches
+# for post output files to show up, and sets ecflow events every time
+# it sees a new file.
+
+post_manager_job_contents: &post_manager_job_contents !expand |
+  fhrs='anl {tools.join(up.Dimensions.fhr," ")}'
+  CDATE=%PDY%%CYC%
+  for fid in $fhrs ; do
+    if [[ "$fid" == anl ]] ; then
+      fhr3=000
+      event=release_postanl
+    else
+      fhr3=$( printf %%03d $fid )
+      fhr2=$( printf %%02d $fid )
+      event=release_post$fhr2
+    fi
+
+    file=%COM%/$CDUMP.%PDY%/%CYC%/$CDUMP.t%CYC%z.logf$fhr3.nemsio
+
+    while [[ ! -s "$file" ]] ; do
+      echo "$file: nope"
+      sleep 33
+    done
+    echo "$file: yup"
+    ecflow_client --event "$event"
+  done
+  echo "done"

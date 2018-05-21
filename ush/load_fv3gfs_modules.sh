@@ -3,6 +3,8 @@ set -x
 
 mode="${1:-exclusive}"
 
+mode="${1:-exclusive}"
+
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )

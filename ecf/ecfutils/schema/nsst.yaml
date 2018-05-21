@@ -1,0 +1,36 @@
+nsst_schema: &nsst_schema !Template
+  NST_MODEL:
+    type: int
+    allowed: [ 0, 1, 2 ]
+    default: 2
+    description: >-
+      nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 
+      1 = ON but uncoupled, 2 = ON and coupled
+  NST_RESV:
+    type: int
+    default: 0
+    allowed: [ 0, 1 ]
+  ZSEA1: 
+    type: int
+    default: 0
+  ZSEA2:
+    type: int
+    default: 0
+  NST_GSI:
+    type: int
+    allowed: [ 0, 1, 2, 3, 4 ]
+    default: 3
+    description: |
+       0: No NST info at all;
+       1: Input NST info but not used in GSI;
+       2: Input NST info, used in CRTM simulation, no Tr analysis
+       3: Input NST info, used in both CRTM simulation and Tr analysis
+      
+  NSTINFO:
+    type: int
+    default: 0
+    description: number of elements added in obs. data array
+  NST_SPINUP:
+    type: int
+    allowed: [ 0, 1]
+    optional: yes

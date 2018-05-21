@@ -1,0 +1,69 @@
+## This case file is intended to be modified by the user (you) to run
+## any arbitrary case that pulls data off of the NOAA HPSS tape
+## archiving system.  Obviously, you need access to HPSS to use this
+## script.  If you cannot access HPSS, then you will have to use a staged data case.  
+
+## Follow the instructions below to modify the configuration.
+
+case:
+  fv3_settings:
+    # Set the resolution here, in the "CASE" option.  Fully tested
+    # resolutions are C192, C384, and C768.
+    CASE: C768
+
+    # LEVS: Number of vertical levels.  Do not change.  In this
+    # release, only 65 vertical levels have been tested.
+    LEVS: 65
+
+    # NOTE: You can configure physics, dynamics, and other model
+    # settings here.  However, that is not supported.  See
+    # schema/fv3.yaml for options.
+
+  gfs_output_settings:
+    # Set the GFS output times here.  The output times are:
+    #
+    #   0             to  FHMAX_HF_GFS  stepping by  FHOUT_HF_GFS
+    #   FHMAX_HF_GFS  to  FHMAX_GFS     stepping by  FHOUT_GFS
+    #
+    # The high- and low-frequency output times contain the same
+    # variables at the same resolution.  To disable the high-frequency
+    # output time period and only output at one frequency, remove the
+    # FHMAX_HF_GFS and FHOUT_HF_GFS variables.
+    FHMAX_GFS: 168
+    FHOUT_GFS: 6
+    FHMAX_HF_GFS: 48
+    FHOUT_HF_GFS: 3
+
+  settings:
+    # SDATE: The initial time in an ISO 8601 date format with both day and time:
+    SDATE: 2017-08-22t00:00:00
+
+    ####################################################################
+    ############## DO NOT CHANGE ANYTHING AFTER THIS LINE ##############
+    ####################################################################
+
+    # EDATE: Initial time of the last cycle. Here we set it to the 
+    # initial time of the first cycle so that we only run one cycle.
+    # You can run more than one cycle by setting this to a time after
+    # SDATE.  The difference between EDATE and SDATE must be a multiple
+    # of six hours.  The public release has only been tested with EDATE=SDATE
+    EDATE: !calc SDATE
+
+    # run_gsi: Do not run data assimilation (its scripts and code are missing)
+    run_gsi: No
+
+    # chgres_and_convert_ics: Convert GSM GFS analysis files to FV3.  This is
+    # turned off in the staged data cases because they are using FV3 input
+    # files instead.
+    chgres_and_convert_ics: yes
+
+    # gfs_cyc: this setting is used in a full data assimilation cycled
+    # workflow to only run the GFS every N cycles.  Keep this at "4" to
+    # ensure it is run every cycle.  
+    gfs_cyc: 4
+
+  places:
+    # workflow_file: which workflow we're running.  This specifies the
+    # jobs to run and their dependencies.  The only workflow included
+    # in this release is the public release workflow.
+    workflow_file: workflow/public_release_v1.yaml

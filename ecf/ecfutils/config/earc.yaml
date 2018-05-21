@@ -1,0 +1,20 @@
+# This file is used to generate config.earc, which controls archiving
+# of ESMF member data.  The scripts that do that archiving are not in
+# this public release, so this file is ignored.
+config_earc:
+  filename: config.earc
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.earc ##########
+    # Ensemble archive specific
+    
+    echo "BEGIN: config.earc"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources earc
+    
+    export NMEM_EARCGRP={doc.data_assimilation.NMEM_EARCGRP}
+    
+    echo "END: config.earc"
+    

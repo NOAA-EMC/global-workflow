@@ -1,0 +1,10 @@
+chgres_template: !Template &chgres_template
+  CHGRESVARS_ENKF:
+    type: string
+    default: "use_ufo=.true.,nopdpvv=.true."
+
+  CHGRESTHREAD: 
+    type: int
+    default: 12
+    description: Number of threads to use for chgres
+

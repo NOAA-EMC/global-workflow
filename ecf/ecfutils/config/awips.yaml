@@ -1,0 +1,19 @@
+# This file is used to generate config.awips, which has settings for the GFS awips step
+
+config_awips:
+  filename: config.awips
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.awips ##########
+    # GFS awips step specific
+
+    echo "BEGIN: config.awips"
+
+    # Get task specific resources
+    . $EXPDIR/config.resources awips
+
+    export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+    export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
+
+    echo "END: config.awips"

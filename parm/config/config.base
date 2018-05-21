@@ -58,7 +58,6 @@ if [ $machine != "GAEA" ]; then
     done
 fi
 
-
 ########################################################################
 
 # GLOBAL static environment parameters
