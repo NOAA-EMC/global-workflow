@@ -395,6 +395,7 @@ def remake_ecflow_files_for_cycles(
         surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
+    loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
 
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     first_cycle=max(suite.Clock.start,first_cycle)
@@ -488,8 +489,7 @@ def setup_case(command_line_arguments):
     doc=from_dir(EXPDIR,validation_stage='setup')
     make_config_files_in_expdir(doc,EXPDIR)
 
-
-    comrot copy from realtime do not recreate
+    create_COMROT(doc)
 
     print()
     print(f'Case "{case_name}" is set up under experiment name "{experiment_name}" with:')
