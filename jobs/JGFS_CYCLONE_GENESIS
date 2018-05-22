@@ -105,6 +105,8 @@ export COMINgfs=${COMIN}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
 
 export JYYYY=`echo ${PDY} | cut -c1-4`
+#export COMINgenvit=${COMINgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
+#export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
 export COMINgenvit=${COMINgenvit:-${DATA}/genesis_vital_${JYYYY}}
 export COMOUTgenvit=${COMOUTgenvit:-${DATA}/genesis_vital_${JYYYY}}
 export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
@@ -120,7 +122,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${SCRIPTens_tracker}/exfv3gfs_tc_genesis.sh
+${SCRIPTens_tracker}/exgfs_tc_genesis.sh
 export err=$?; err_chk
 
 ##############################################

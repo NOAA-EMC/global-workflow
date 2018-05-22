@@ -145,10 +145,10 @@ fi
 #-------------------------------------------------
 
 if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.14
+    export ens_tracker_ver=v1.1.13
     export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.14
+    export ens_tracker_ver=v1.1.13
     export HOMEens_tracker=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" ] ; then
     export ens_tracker_ver=v2.0.1

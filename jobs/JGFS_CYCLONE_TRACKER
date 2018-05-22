@@ -114,7 +114,9 @@ if [ $RUN_ENVIR = "nco" ]; then
     export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
     mkdir -m 775 -p $COMOUThur $COMOUTatcf
 else
-    export COMOUThur=$DATA         
+#    export COMOUThur=$COMOUT         
+#    export COMOUTatcf=$COMOUT
+    export COMOUThur=$DATA
     export COMOUTatcf=$DATA
 fi
 
@@ -139,30 +141,31 @@ if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
 
 mac=`echo ${SITE}`
-if [ $mac = TIDE -o $mac = GYRE ] ; then 
+if [ $mac = TIDE -o $mac = GYRE ] ; then # For WCOSS
   machine=wcoss
-  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = LUNA -o $mac = SURGE ] ; then 
+  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+elif [ $mac = LUNA -o $mac = SURGE ] ; then # For CRAY
   machine=cray
-  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = VENUS -o $mac = MARS ] ; then 
-  machine=wcoss_dell_p3
-  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+  ${APRUNTRACK} ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+elif [ $mac = VENUS -o $mac = MARS ] ; then # For DELL
+  machine=dell
+  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+else       # For THEIA
+  machine=theia
+  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 fi
 export err=$?; err_chk
 
 
-if [ "$SENDCOM" = 'YES' ]; then
-
-  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-      sed s:AVNX:GFSO:g \
-    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
-
-  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-      sed s:AVNX:AVNO:g \
-    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
-
-fi
+#if [ "$SENDCOM" = 'YES' ]; then
+#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
+#      sed s:AVNX:GFSO:g \
+#    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
+#
+#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
+#      sed s:AVNX:AVNO:g \
+#    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
+#fi
 
 ##############################################
 # Final processing
