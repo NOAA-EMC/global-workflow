@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
@@ -27,12 +27,14 @@ LINK="ln -fs"
 pwd=$(pwd -P)
 
 #--model fix fields
+echo "target: $target"
 if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $target == "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 elif [ $target == "gaea" ]; then
     FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
+    echo "gaea says what, FIX_DIR = $FIX_DIR"
 elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 else
