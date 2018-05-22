@@ -23,7 +23,6 @@ import rocoto
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
-               'GAEA':'moab',
                'WCOSS':'lsf',
                'WCOSS_C':'lsfcray'}
 
@@ -39,19 +38,21 @@ class ShellScriptException(Exception):
             (' '.join(scripts)))
 
 def get_shell_env(scripts):
+    print "CHECKING FIRST BUG"
+    print scripts
     vars=dict()
     runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
     magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
-    if os.path.isfile('/usr/bin/echo'):
-        echo_is='/usr/bin/echo'
-    elif os.path.isfile('/bin/echo'):
-        echo_is='/bin/echo'
-    runme+=echo_is+' -n "%s" ; /usr/bin/env -0'%(magic,)
+    print ('magic:',magic)
+    #runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    runme+='/usr/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    print ('runme:',runme)
     with open('/dev/null','wb+') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
         (out,err)=env.communicate()
     begin=out.find(magic)
+    print( 'begin',begin )
     if begin<0:
         raise ShellScriptException(scripts,'Cannot find magic string; '
                                    'at least one script failed: '+repr(out))
@@ -63,12 +64,6 @@ def get_shell_env(scripts):
 def get_script_env(scripts):
     default_env=get_shell_env([])
     and_script_env=get_shell_env(scripts)
-    var_script_and_env = []
-    for env_var in default_env:
-        if env_var in and_script_env:
-            var_script_and_env.append(env_var)
-    for each_var in var_script_and_env:
-        del default_env[each_var]
     vars_just_in_script=set(and_script_env)-set(default_env)
     union_env=dict(default_env)
     union_env.update(and_script_env)
@@ -287,7 +282,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     memstr = '' if memory is None else str(memory)
 
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C','GAEA']:
+    if machine in ['ZEUS', 'THEIA', 'WCOSS_C']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
