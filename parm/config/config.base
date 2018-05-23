@@ -119,7 +119,7 @@ if [ $machine = "GAEA" ]; then
     export NHOUR="/lustre/f1/pdata/ncep_shared/emc.nemspara/soft/prod_util/1.0.18/exec/nhour"
     export GRBINDEX2="/lustre/f1/pdata/ncep_shared/fv3/exec/grb2index"
     export CNVGRIB21_GFS="/lustre/f1/pdata/ncep_shared/fv3/exec/cnvgrib21_gfs"
-    export COMPUTE_PARTITION="c4"
+    export COMPUTE_PARTITION="c3:c4"
     export SERVICE_PARTITION="es"
     export COMPUTE_PARTITION_LINE="-l partition=&COMPUTE_PARTITION;"
     export SERVICE_PARTITION_LINE="-l partition=&SERVICE_PARTITION;"

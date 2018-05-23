@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 ################################################################################
 # UNIX Script Documentation Block
 # Script name:         exglobal_fcst_nemsfv3gfs.sh.ecf
@@ -29,6 +29,7 @@ VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXECUTING $0 $* >&2
   set -x
+  module list
 fi
 
 machine=${machine:-"WCOSS_C"}

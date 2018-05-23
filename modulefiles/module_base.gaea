@@ -19,6 +19,7 @@ module load PrgEnv-intel/6.0.3
 module rm intel
 module load intel/16.0.3.210
 module load cray-netcdf
+module load alps
 ##
 ## load nwprod libraries
 ##
@@ -38,3 +39,4 @@ module load esmflocal/7.1.52b
 
 # Get setpdy.sh, ndate, etc.
 module use /lustre/f1/pdata/ncep_shared/emc.nemspara/soft/modulefiles
+module load prod_util
