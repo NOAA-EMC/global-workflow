@@ -17,6 +17,7 @@ module use $NCEPLIBS/modulefiles
 module load modules
 module load PrgEnv-intel
 module load cray-mpich
+module unload craype-broadwell
 module load craype-sandybridge
 
 module load sigio-intel-sandybridge/2.0.1
