@@ -101,7 +101,7 @@ for area in $areas
             sdatenum=$sdate7
         fi
         # JY grid="$COMROOT/nawips/${envir}/ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
-        grid="${COMINROOTecmwf}/ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
+        grid="${COMINecmwf}.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
 
 # 500 MB HEIGHT METAFILE
 
@@ -200,11 +200,11 @@ ls -l ecmwfver.meta
 export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 
 if [ $SENDCOM = "YES" ] ; then
-    mkdir -p -m 775 ${COMOUTROOTecmwf}/ecmwf.${PDY}/meta
-    mv ecmwfver.meta ${COMOUTROOTecmwf}/ecmwf.${PDY}/meta/ecmwfver_${PDY}_${cyc}
+    mkdir -p -m 775 ${COMOUTecmwf}.${PDY}/meta
+    mv ecmwfver.meta ${COMOUTecmwf}.${PDY}/meta/ecmwfver_${PDY}_${cyc}
     if [ $SENDDBN = "YES" ] ; then
         ${DBNROOT}/bin/dbn_alert MODEL ECMWFVER_HPCMETAFILE $job \
-        ${COMOUTROOTecmwf}/ecmwf.${PDY}/meta/ecmwfver_${PDY}_${cyc}
+        ${COMOUTecmwf}.${PDY}/meta/ecmwfver_${PDY}_${cyc}
     fi
 fi
 

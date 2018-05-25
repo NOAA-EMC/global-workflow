@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# LSBATCH: User input
 #BSUB -J gdas_gempak_00
-#BSUB -o /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
-#BSUB -e /gpfs/hps/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
-#BSUB -L /bin/sh
-#BSUB -q dev
-#BSUB -cwd /gpfs/hps/ptmp/Boi.Vuong/output
-#BSUB -W 00:35
+#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
+#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/gdas_gempak_00.o%J
+#BSUB -q debug
+#BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
+#BSUB -W 00:30
 #BSUB -P GFS-T2O
 #BSUB -R rusage[mem=2000]
 
@@ -15,13 +13,14 @@
 
 export KMP_AFFINITY=disabled
 
-export PDY=20170304
+export PDY=`date -u +%Y%m%d`
+# export PDY=20180516
+
 export PDY1=`expr $PDY - 1`
 
-# export cyc=06
 export cyc=00
+# export cyc=12
 export cycle=t${cyc}z
-export PDY1=`expr $PDY - 1`
 
 set -xa
 export PS4='$SECONDS + '
@@ -35,22 +34,25 @@ date
 module load PrgEnv-intel/5.2.56
 module load cfp-intel-sandybridge/1.1.0
 module load ESMF-intel-sandybridge/3_1_0rp5
-module load iobuf
+module load iobuf/2.0.8
 module load craype-hugepages2M
 module load craype-haswell
 module load prod_envir
-module load prod_util/1.0.5
+module load prod_util
+module load grib_util/1.0.3
+module load util_shared/1.0.6
+#
+#   This is a test version of UTIL_SHARED.v1.0.7 on CRAY
+#
+# module use /usrx/local/nceplibs/util_shared.v1.0.7/modulefiles
+# module load util_shared/1.0.7
+
+module list
+
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
 module load gempak/7.3.0
-
-#
-#   This is a test version of GRIB_UTIL.v1.0.5 on CRAY
-#
-module unload grib_util/1.0.3
-module use /gpfs/hps/nco/ops/nwtest/modulefiles
-module load grib_util/1.0.5
 
 module list
 
@@ -67,24 +69,26 @@ module list
 # export envir=prod
 
 export SENDCOM=YES
-export SENDDBN=NO
 export KEEPDATA=YES
 export job=gdas_gempak_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
-export DATAROOT=/gpfs/hps/ptmp/Boi.Vuong/output
-export NWROOT=/gpfs/hps/emc/global/noscrub/Boi.Vuong/svn
-export COMROOT2=/gpfs/hps/ptmp/Boi.Vuong/com
-export PCOMROOT2=/gpfs/hps/ptmp/Boi.Vuong/pcom/${envir}
 
-mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
+# Set FAKE DBNET for testing
+export SENDDBN=YES
+export DBNROOT=/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/fakedbn
+
+export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
+export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
+export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
+
+mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v14.1.0
-export gfs_ver=v14.1.0
+export gfs_ver=v15.0.0
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -96,12 +100,14 @@ cd $DATA
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.${gdas_ver}}
-export EXECgdas=${EXECgdas:-$HOMEgdas/exec}
-export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
-export FIXgdas=${FIXgdas:-$HOMEgdas/gempak/fix}
-export USHgdas=${USHgdas:-$HOMEgdas/gempak/ush}
-export SRCgdas=${SRCgdas:-$HOMEgdas/scripts}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
+export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
+export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
+export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 
 ######################################
 # Set up the GEMPAK directory
@@ -120,17 +126,15 @@ export model=${model:-gdas}
 ##############################################
 # Define COM directories
 ##############################################
-
-if [ $envir == "prod" ] ; then
+if [ $envir = "prod" ] ; then
 #  This setting is for testing with GDAS (production)
-  export COMIN=${COMROOTp2}/gfs/prod/gdas.${PDY}
-  export RUN=gdas1
-  export model=gdas1
+  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gdas.${PDY}
 else
-  export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/gfs/para/gdas.${PDY}         ### EMC PARA Realtime
+#  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gdas.${PDY}   ###   NCO PARA
+  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gdas.${PDY}/${cyc}         ### EMC PARA Realtime
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/nawips/${envir}/gdas.${PDY}}
+export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
@@ -139,4 +143,4 @@ fi
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgdas/jobs/JGDAS_GEMPAK
+sh $HOMEgfs/jobs/JGDAS_GEMPAK

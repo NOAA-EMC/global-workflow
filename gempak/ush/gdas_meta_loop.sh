@@ -65,7 +65,7 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMROOTp2}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+        grid="${COMIN}/gdas_${day}${cycle}f000"
 
 gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf
@@ -166,7 +166,7 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMROOTp2}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+        grid="${COMIN}/gdas_${day}${cycle}f000"
    
 gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf

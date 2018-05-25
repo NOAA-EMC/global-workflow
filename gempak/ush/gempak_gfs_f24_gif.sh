@@ -203,20 +203,20 @@ if [ $SENDCOM = YES ]; then
 
 # Copy the GIF images into my area
 
-  cp ${mslpthksfcdev}   $COMNCDC
-  cp ${hgtvor500dev}    $COMNCDC
-  cp ${hgtvor500usdev}  $COMNCDC
-  cp ${rhvvel700dev}    $COMNCDC
+  cp ${mslpthksfcdev}   ${COMOUT}
+  cp ${hgtvor500dev}    ${COMOUT}
+  cp ${hgtvor500usdev}  ${COMOUT}
+  cp ${rhvvel700dev}    ${COMOUT}
 
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
  if [ $SENDDBN = YES ]; then
 
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtvor500dev}
-#  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtvor500usdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${rhvvel700dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${mslpthksfcdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtvor500dev}
+#  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtvor500usdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${rhvvel700dev}
 
  fi
 
