@@ -60,10 +60,10 @@ export model=${model:-gfs}
 ##############################################
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-export PCOM=${PCOM:-${COMOUT}/wmo}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $PCOM
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 export pgmout=OUTPUT.$$
