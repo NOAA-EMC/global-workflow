@@ -9,6 +9,11 @@
 #   3) 2014-08-01       D. Carlis Updated to vertical structure 
 #                                 and T1534 Resolution 
 #   4) 2016-11-01       H. Chuang Update to read new model nems output
+#   5) 2017-02-21       Guang Ping Lou setup mpmd to speedup the run
+#                                 and 1 & 3 hourly output
+#   6) 2018-03-22       Guang Ping Lou  Take FV3GFS configuration
+#                          parameters as input; make it work for 
+#                          both FV3GFS and GFS
 ################################################################
 set -xa
 
@@ -45,10 +50,8 @@ if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
     export NINT3=${FHOUT_GFS:-3}
 fi
 
-##export SIGLEVEL=${SIGLEVEL:-$FIXgfs/global_siglevel.l${LEVS}.txt}
-#export SIGLEVEL=/gpfs/hps/nco/ops/nwprod/global_shared.v14.0.1/fix/fix_am/global_siglevel.l64.txt
 rm -f -r ${COMOUT}/bufr.${cycle}
-mkdir ${COMOUT}/bufr.${cycle}
+mkdir -p ${COMOUT}/bufr.${cycle}
 
 # Extract number of vertical levels from $STARTHOUR atmospheric file
 fhr3=$(printf %03i $STARTHOUR)

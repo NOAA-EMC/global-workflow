@@ -156,9 +156,12 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}atmanl.nemsio              " >>gdas.txt
   echo  "${dirname}${head}sfcanl.nemsio              " >>gdas.txt
-  for fstep in prep anal fcst post vrfy radmon minmon oznmon; do
-   echo  "./logs/${CDATE}/gdas${fstep}*.log          " >>gdas.txt
+  for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+   if [ -s ./logs/${CDATE}/gdas${fstep}.log ]; then
+     echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
+   fi
   done
+  echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
 
   fh=0
   while [ $fh -le 9 ]; do

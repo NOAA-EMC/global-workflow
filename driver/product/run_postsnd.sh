@@ -65,7 +65,8 @@ mkdir -p $DATA
 cd $DATA
 #PDY=20140811
 #PDY=20170216
-export PDY=20180124
+#export PDY=20180124
+export PDY=20180305
 export cyc=00
 export STARTHOUR=00
 export ENDHOUR=180
