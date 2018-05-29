@@ -2409,6 +2409,7 @@
  integer, intent(in)                   :: ijmdl_output, isot, ivegsrc
  integer                               :: lsoil
  integer, parameter                    :: lugb = 51
+ integer, parameter                    :: sz_nml = 1
  integer                               :: nlunit
 
  real, intent(in)                      :: fhour
@@ -2416,6 +2417,8 @@
  real, intent(in)                      :: orog_output(ijmdl_output)
  real, intent(in)                      :: orog_uf     (ijmdl_output)
  logical,intent(in)                    :: use_ufo, nst_anl
+
+ character(len=4)                      :: input_nml_file(sz_nml)
 
  real (kind=kind_io8), allocatable :: sig1t(:), &
       slmask(:), orog(:),  sihfcs(:), sicfcs(:), sitfcs(:),&
@@ -2430,6 +2433,7 @@
 
  type(sfc1d), intent(in)   :: output
 
+ input_nml_file="NULL"
  lsoil = 4
  deltsfc = 0.0
  fh = fhour
@@ -2477,7 +2481,8 @@
                TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,               &
                CNPFCS,SMCFCS,STCFCS,slifcs,AISFCS,F10M,          &
                VEGFCS, VETFCS, SOTFCS, ALFFCS,                   &
-               CVFCS,CVBFCS,CVTFCS,0,NLUNIT,IALB,ISOT,IVEGSRC)
+               CVFCS,CVBFCS,CVTFCS,0,NLUNIT, &
+               SZ_NML, INPUT_NML_FILE, IALB,ISOT,IVEGSRC)
 !-----------------------------------------------------------------------
 ! if an array is deallocated, the rest of code knows to interpolate
 ! that field from the input grid.

@@ -159,19 +159,19 @@ do
    if [ $SENDCOM = "YES" ] ; then
 
       ##############################
-      # Post Files to PCOM
+      # Post Files to ${COMOUTwmo} 
       ##############################
 
-      mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
+      mv grib2.awpgfs${fcsthrs}.${GRID}   ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
 
       ##############################
       # Distribute Data
       ##############################
 
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
+         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.$job_name
       else
-         msg="File grib2.awpgfs${fcsthrs}.${GRID}.$job_name  not posted to db_net."
+         msg="File ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.$job_name  not posted to db_net."
          postmsg "$jlogfile" "$msg"
       fi
    fi

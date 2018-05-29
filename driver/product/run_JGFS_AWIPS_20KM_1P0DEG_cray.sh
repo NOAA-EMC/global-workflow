@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #BSUB -J jgfs_awips_f012_20km_1p00_00
-#BSUB -oo gfs_awips_f012_20km_1p00_00.o%J
-#BSUB -eo gfs_awips_f012_20km_1p00_00.o%J
+#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_awips_f012_20km_1p00_00.o%J
+#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_awips_f012_20km_1p00_00.o%J
 #BSUB -q debug
 #BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
@@ -16,7 +16,7 @@ export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20180307
+# export PDY=20180514
 
 export PDY1=`expr $PDY - 1`
 
@@ -59,11 +59,15 @@ export fcsthrs=012
 # export envir=prod
 
 export SENDCOM=YES
-export SENDDBN=NO
 export KEEPDATA=YES
 export job=gfs_awips_f${fcsthrs}_20km_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
+
+# Set FAKE DBNET for testing
+export SENDDBN=YES
+export DBNROOT=/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/fakedbn
+
 export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
 export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
 export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
@@ -74,7 +78,6 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v15.0.0
 export gfs_ver=v15.0.0
 
 ################################
@@ -112,10 +115,10 @@ else
 fi
 
 export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-export PCOM=${PCOM:-${COMOUT}/wmo}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $PCOM
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 #########################################################

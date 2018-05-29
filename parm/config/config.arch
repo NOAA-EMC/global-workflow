@@ -11,7 +11,7 @@ echo "BEGIN: config.arch"
 #--online archive of nemsio files for fit2obs verification
 export FITSARC="YES"
 export FHMAX_FITS=132
-if [ $FHMAX_FITS -gt $FHMAX_GFS ]; then export FHMAX_FITS=$FHMAX_GFS; fi
+[[ "$FHMAX_FITS" -gt "$FHMAX_GFS" ]] && export FHMAX_FITS=$FHMAX_GFS
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
 export RMOLDSTD=144
