@@ -140,7 +140,7 @@ for area in $areas
             cyclenum=$cycle9
         fi
         # JY grid="$COMROOT/nawips/${envir}/ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
-        grid="${COMINROOTukmet}/ukmet.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
+        grid="${COMINukmet}.20${sdatenum}/ukmet_20${sdatenum}${cyclenum}${dgdattim}"
 
 # 500 MB HEIGHT METAFILE
 

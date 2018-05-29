@@ -60,22 +60,25 @@ module list
 # export envir=prod
 
 export SENDCOM=YES
-export SENDDBN=NO
 export KEEPDATA=YES
 export job=gfs_gempak_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
+
+# Set FAKE DBNET for testing
+export SENDDBN=YES
+export DBNROOT=/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/fakedbn
+
 export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
 export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
 export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
 
-mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
+mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 
 #############################################################
 # Specify versions
 #############################################################
-export gdas_ver=v15.0.0
 export gfs_ver=v15.0.0
 
 ##########################################################
@@ -128,6 +131,16 @@ export NODES=5
 export ntasks=17
 export ptile=4
 export threads=6
+
+ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_GEMPAK:-17}
+threads=${NTHREADS_GEMPAK:-1}
+export OMP_NUM_THREADS=$threads
+
+APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
+
+APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
+$APRUNCFP $DATA/poescript
 
 #############################################
 # run the GFS job
