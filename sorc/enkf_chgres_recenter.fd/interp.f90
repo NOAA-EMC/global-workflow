@@ -10,6 +10,7 @@
  real, allocatable      :: clwmr_b4_adj_output(:,:)
  real, allocatable      :: dzdt_b4_adj_output(:,:)
  real, allocatable      :: grle_b4_adj_output(:,:)
+ real, allocatable      :: cldamt_b4_adj_output(:,:)
  real, allocatable      :: icmr_b4_adj_output(:,:)
  real, allocatable      :: o3mr_b4_adj_output(:,:)
  real, allocatable      :: rwmr_b4_adj_output(:,:)
@@ -107,6 +108,7 @@
    q_b4_adj_output(:,:,5) = icmr_b4_adj_output(:,:)
    q_b4_adj_output(:,:,6) = snmr_b4_adj_output(:,:)
    q_b4_adj_output(:,:,7) = grle_b4_adj_output(:,:)
+   if (icldamt == 1) q_b4_adj_output(:,:,8) = cldamt_b4_adj_output(:,:)
  endif
 
  allocate(q_output(ij_output,lev,ntrac))
@@ -148,6 +150,10 @@
    snmr_output = q_output(:,:,6)
    allocate(grle_output(ij_output,lev))
    grle_output = q_output(:,:,7)
+   if (icldamt == 1) then
+      allocate(cldamt_output(ij_output,lev))
+      cldamt_output = q_output(:,:,8)
+   endif
  endif
 
  deallocate(q_output)
@@ -213,6 +219,15 @@
 !  enddo
 
    deallocate(grle_b4_adj_output)
+
+   if (icldamt == 1) then
+!     do k = 1, lev
+!     print*,'after vintg cld_amt ',cldamt_b4_adj_output(ij_output/2,k),cldamt_output(ij_output/2,k)
+!     enddo
+
+      deallocate(cldamt_b4_adj_output)
+   endif
+   
 
  endif
 
@@ -480,6 +495,25 @@
    if (iret /= 0) goto 89
 
    deallocate(grle_input)
+
+!---------------------------
+!  Cloud amount (if present)
+!---------------------------
+
+   if (icldamt == 1) then
+      allocate(cldamt_b4_adj_output(ij_output,num_fields))
+      cldamt_b4_adj_output = 0
+
+      print*,'INTERPOLATE CLD_AMT'
+      call ipolates(ip, ipopt, kgds_input, kgds_output, ij_input, ij_output,&
+           num_fields, ibi, bitmap_input, cldamt_input,  &
+           numpts, rlat_output, rlon_output, ibo, bitmap_output, &
+           cldamt_b4_adj_output, iret)
+      if (iret /= 0) goto 89
+      
+      deallocate(cldamt_input)
+   endif
+   
 
  endif
 
