@@ -149,7 +149,7 @@ elif [ $mac = LUNA -o $mac = SURGE ] ; then # For CRAY
   ${APRUNTRACK} ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
 elif [ $mac = VENUS -o $mac = MARS ] ; then # For DELL
   machine=dell
-  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+  mpirun -n 1 ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 else       # For THEIA
   machine=theia
   ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
