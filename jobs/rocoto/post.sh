@@ -11,6 +11,14 @@
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+# Execute config.base to define ROTDIR
+configs="base"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
 if [ $FHRGRP -eq 0 ]; then
     fhrlst="anl"             
@@ -21,10 +29,13 @@ fi
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
 
-    export post_times=$fhr
-    $HOMEgfs/jobs/JGLOBAL_NCEPPOST
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+#   Process analysis or fhr for which atmospheric nemsio file exists
+    if [ $FHRGRP -eq 0 -o -s $ROTDIR/$CDUMP.$PDY/$cyc/$CDUMP.t${cyc}z.atmf$fhr.nemsio ]; then
+	export post_times=$fhr
+	$HOMEgfs/jobs/JGLOBAL_NCEPPOST
+	status=$?
+	[[ $status -ne 0 ]] && exit $status
+    fi
 
 done
 
