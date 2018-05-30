@@ -285,6 +285,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         threads = 24
 
     memstr = '' if memory is None else str(memory)
+    natstr = ''
 
     if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
