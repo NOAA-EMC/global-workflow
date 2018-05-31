@@ -5,9 +5,9 @@
 #BSUB -oo log.chgres.%J
 #BSUB -eo log.chgres.%J
 #BSUB -J fv3_chgres
-#BSUB -q dev
+#BSUB -q devmax
 #BSUB -M 2400
-#BSUB -W 06:00
+#BSUB -W 10:00
 #BSUB -extsched 'CRAYLINUX[]'
 
 #----THEIA JOBCARD
@@ -28,14 +28,14 @@ set -x
 #-------------------------------------------------------------------------------------------------
 
 export machine=WCOSS_C
-export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs_master
-export PTMP="/gpfs/hps2/ptmp/$USER"
+export HOMEgfs=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/git/fv3gfs/tic21h
+export PTMP="/gpfs/hps3/ptmp/$USER/ROTDIRS"
 
 export PSLOT=fv3test
 export CDUMP=gdas
 export CASE_HIGH=C768            
 export CASE_ENKF=C384
-export CDATE=2018042000
+export CDATE=2018052406
 
 
 export NSTSMTH=YES                                  ##apply 9-point smoothing to nsst tref
@@ -99,6 +99,30 @@ rm -rf $INIDIR $OUTDIR $DATA
 mkdir -p $INIDIR $OUTDIR  $DATA
 cd $INIDIR ||exit 8
 
+#................................................
+if [ -s $COMROOT/gfs/prod/${CDUMP}.${ymd} ]; then
+#................................................
+   ## get operational real-time data from COMROT
+   atm=./${CDUMP}.t${cyc}z.atmanl.nemsio
+   sfc=./${CDUMP}.t${cyc}z.sfcanl.nemsio
+   nst=./${CDUMP}.t${cyc}z.nstanl.nemsio
+   biascr=./${CDUMP}.t${cyc}z.abias 
+   biascr_pc=./${CDUMP}.t${cyc}z.abias_pc
+   aircraft_t_bias=./${CDUMP}.t${cyc}z.abias_air  
+   radstat=./${CDUMP}.t${cyc}z.radstat
+   for ff in $atm $sfc $nst ; do
+     cp $COMROOT/gfs/prod/${CDUMP}.${ymd}/$ff .
+   done
+   if [ $CDUMP = gdas ]; then
+    for ff in $biascr $biascr_pc $aircraft_t_bias $radstat ; do
+      cp $COMROOT/gfs/prod/${CDUMP}.${ymd}/$ff $COMROT/.
+    done
+   fi
+
+#................................................
+else   ##get data from HPSS archive
+#................................................
+
 if [ $CDATE -le 2017072012 ]; then
    if [ $CDATE -ge 2016110100 ]; then
      oldexp=prnemsrn
@@ -122,10 +146,10 @@ if [ $CDATE -le 2017072012 ]; then
    atm=gfnanl.${CDUMP}.$CDATE
    sfc=sfnanl.${CDUMP}.$CDATE
    nst=nsnanl.${CDUMP}.$CDATE
-   biascr=biascr.gdas.$CDATE
-   biascr_pc=biascr_pc.gdas.$CDATE
-   aircraft_t_bias=aircraft_t_bias.gdas.$CDATE
-   radstat=radstat.gdas.$CDATE
+   biascr=biascr.${CDUMP}.$CDATE
+   biascr_pc=biascr_pc.${CDUMP}.$CDATE
+   aircraft_t_bias=aircraft_t_bias.${CDUMP}.$CDATE
+   radstat=radstat.${CDUMP}.$CDATE
 else
    HPSSPATH=/NCEPPROD/hpssprod/runhistory/rh$yy/$yy$mm/$yy$mm$dd      ##use operational nems gfs nems gfs ics
    if [ $CDUMP = gfs ]; then
@@ -136,10 +160,10 @@ else
    atm=./${CDUMP}.t${cyc}z.atmanl.nemsio
    sfc=./${CDUMP}.t${cyc}z.sfcanl.nemsio
    nst=./${CDUMP}.t${cyc}z.nstanl.nemsio
-   biascr=./gdas.t${cyc}z.abias 
-   biascr_pc=./gdas.t${cyc}z.abias_pc
-   aircraft_t_bias=./gdas.t${cyc}z.abias_air  
-   radstat=./gdas.t${cyc}z.radstat
+   biascr=./${CDUMP}.t${cyc}z.abias 
+   biascr_pc=./${CDUMP}.t${cyc}z.abias_pc
+   aircraft_t_bias=./${CDUMP}.t${cyc}z.abias_air  
+   radstat=./${CDUMP}.t${cyc}z.radstat
 fi
 
 #--extract ICs from hpss
@@ -150,15 +174,20 @@ cat > read_hpss.sh <<EOF1
       cd $COMROT 
       htar -xvf  $HPSSPATH/$tarball_high $biascr $biascr_pc $aircraft_t_bias $radstat
       if [ $CDATE -le 2017072000 ]; then
-          mv biascr.gdas.$CDATE            gdas.t${cyc}z.abias 
-          mv biascr_pc.gdas.$CDATE         gdas.t${cyc}z.abias_pc
-          mv aircraft_t_bias.gdas.$CDATE   gdas.t${cyc}z.abias_air
-          mv radstat.gdas.$CDATE           gdas.t${cyc}z.radstat
+          mv biascr.${CDUMP}.$CDATE            ${CDUMP}.t${cyc}z.abias 
+          mv biascr_pc.${CDUMP}.$CDATE         ${CDUMP}.t${cyc}z.abias_pc
+          mv aircraft_t_bias.${CDUMP}.$CDATE   ${CDUMP}.t${cyc}z.abias_air
+          mv radstat.${CDUMP}.$CDATE           ${CDUMP}.t${cyc}z.radstat
       fi
    fi
 EOF1
 chmod u+x read_hpss.sh
 $SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
+
+#................................................
+fi
+#................................................
+
 
 testfile=$INIDIR/$sfc                 
 nsleep=0; tsleep=120;  msleep=50
@@ -214,7 +243,7 @@ fi
 
 #----------------------------
 #----------------------------
-#--for enkf 
+#--for ENKF 
 #----------------------------
 #----------------------------
 export CASE=$CASE_ENKF
@@ -222,7 +251,18 @@ export INIDIR=$RUNDIR/$CDUMP/$CASE
 rm -rf $INIDIR; mkdir -p $INIDIR 
 cd $INIDIR ||exit 8
 
+#................................................
+if [ -s $COMROOT/gfs/prod/enkf.${ymd}/${cyc} ]; then
+#................................................
+   ## get operational real-time data from COMROT
+   for ff in ratmanl sfcanl nstanl; do
+    cp $COMROOT/gfs/prod/enkf.${ymd}/${cyc}/gdas.t${cyc}z.${ff}* .
+   done
+   testfile=$INIDIR/gdas.t${cyc}z.sfcanl.mem080.nemsio
 
+#................................................
+else   ## extract data from HPSS                      
+#................................................
 if [ $CDATE -le 2017072012 ]; then
    if [ $CDATE -ge 2016110100 ]; then
      oldexp=prnemsrn
@@ -261,6 +301,11 @@ cat > read_hpss.sh <<EOF
 EOF
 chmod u+x read_hpss.sh
 $SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
+
+#................................................
+fi
+#................................................
+
 
 nsleep=0; tsleep=120;  msleep=50
 while test ! -s $testfile -a $nsleep -lt $msleep;do

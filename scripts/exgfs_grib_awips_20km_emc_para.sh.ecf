@@ -247,20 +247,20 @@ done
 
       if [ $SENDCOM = "YES" ] ; then
         ##############################
-        # Post Files to PCOM
+        # Post Files to ${COMOUTwmo} 
         ##############################
 
         awips1p0deg_name=gfs_awips_f${fcsthrs}_1p0deg_${cyc}
-        mv grib2.awpgfs${fcsthrs}.${GRID}   $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name}
+        mv grib2.awpgfs${fcsthrs}.${GRID}  ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name}
 
         ##############################
         # Distribute Data
         ##############################
 
         if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name}
+           $DBNROOT/bin/dbn_alert NTC_LOW $NET $job ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name}
         else
-           msg="File grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name} not posted to db_net."
+           msg="File ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.${awips1p0deg_name} not posted to db_net."
            postmsg "$jlogfile" "$msg"
         fi
       fi
@@ -276,20 +276,20 @@ done
       if [ $SENDCOM = "YES" ] ; then
 
       ##############################
-      # Post Files to PCOM
+      # Post Files to ${COMOUTwmo}
       ##############################
 
        awips20km_name=gfs_awips_f${fcsthrs}_20km_${cyc}
-       mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
+       mv grib2.awpgfs_20km_${GRID}_f${fcsthrs}   ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
 
       ##############################
       # Distribute Data
       ##############################
 
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
-         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
+         $DBNROOT/bin/dbn_alert NTC_LOW $NET $job ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name}
       else
-         msg="File $PCOM/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name} not posted to db_net."
+         msg="File ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.${awips20km_name} not posted to db_net."
          postmsg "$jlogfile" "$msg"
       fi
      fi

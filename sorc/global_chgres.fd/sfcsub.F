@@ -37,8 +37,9 @@
      &,                   tsffcs,snofcs,zorfcs,albfcs,tg3fcs
      &,                   cnpfcs,smcfcs,stcfcs,slifcs,aisfcs,f10m
      &,                   vegfcs,vetfcs,sotfcs,alffcs
-     &,                   cvfcs,cvbfcs,cvtfcs,me,nlunit,ialb
-     &,                   isot,ivegsrc)
+     &,                   cvfcs,cvbfcs,cvtfcs,me,nlunit
+     &,                   sz_nml,input_nml_file
+     &,                   ialb,isot,ivegsrc)
 !
       use machine , only : kind_io8,kind_io4
       use sfccyc_module
@@ -119,10 +120,11 @@
      &        irtwet,k,iprnt,kk,irttsf,iret,i,igrdbg,iy,im,id,
      &        icalbl,icalbs,icalfl,ictsfs,lugb,len,lsoil,ih,
      &        ictsfl,iczors,icplrl,icplrs,iczorl,icalfs,icsnol,
-     &        icsnos,irttg3,me,kqcm, nlunit,ialb
+     &        icsnos,irttg3,me,kqcm,nlunit,sz_nml,ialb
      &,       irtvmn, irtvmx, irtslp, irtabs, isot, ivegsrc
       logical gausm, deads, qcmsk, znlst, monclm, monanl,
      &        monfcs, monmer, mondif, landice
+      character(len=*), intent(in) :: input_nml_file(sz_nml)
 
       integer num_parthds
 !
@@ -597,7 +599,7 @@
 !
       data fnmskh/'global_slmask.t126.grb'/
       data fnalbc/'global_albedo4.1x1.grb'/
-      data fnalbc2/'/nwprod/fix/global_albedo4.1x1.grb'/
+      data fnalbc2/'global_albedo4.1x1.grb'/
       data fntsfc/'global_sstclim.2x2.grb'/
       data fnsotc/'global_soiltype.1x1.grb'/
       data fnvegc/'global_vegfrac.1x1.grb'/
@@ -779,9 +781,13 @@
           fstcl(k) = 99999.
           fstcs(k) = 0.
         enddo
-!     print *,' in sfcsub nlunit=',nlunit,' me=',me,' ialb=',ialb
+#ifdef INTERNAL_FILE_NML
+        read(input_nml_file, nml=namsfc)
+#else
+!       print *,' in sfcsub nlunit=',nlunit,' me=',me,' ialb=',ialb
         rewind(nlunit)
         read (nlunit,namsfc)
+#endif
 !       write(6,namsfc)
 !
         if (me .eq. 0) then
@@ -1405,7 +1411,8 @@
      &           irttg3,irtscv,irtacn,irtsmc,irtstc,irtveg,
      &           irtvet,irtsot,irtalf
      &,          irtvmn,irtvmx,irtslp,irtabs, 
-     &           imsk, jmsk, slmskh, rla, rlo, gausm, blnmsk, bltmsk,me)
+     &           imsk, jmsk, slmskh, rla, rlo, gausm, blnmsk, bltmsk
+     &,          me, lanom)
 !     if(lprnt) print *,' tsfanl=',tsfanl(iprnt)
 !
 !  scale zor and alb to match forecast model units
@@ -1427,7 +1434,7 @@
 !
 !  interpolate climatology but fixing initial anomaly
 !
-      if(fh.gt.0.0.and.fntsfa(1:8).ne.'        '.and.lanom) then
+      if(fh > 0.0 .and. fntsfa(1:8) /= '        ' .and. lanom) then
         call anomint(tsfan0,tsfclm,tsfcl0,tsfanl,len)
       endif
 !
@@ -1990,7 +1997,7 @@
 !     if(lprnt) print *,'tsfclm=',tsfclm(iprnt),' tsfcl2=',tsfcl2(iprnt)
 !    *,' tsffcs=',tsffcs(iprnt),' slianl=',slianl(iprnt)
 
-      if (fh > 0.0) then
+      if (fh-deltsfc > 0.001) then
         do i=1,len
           if(slianl(i) == 0.0) then
             tsffcs(i) = tsffcs(i) + (tsfclm(i) - tsfcl2(i))
@@ -3015,7 +3022,7 @@
          if (.not. allocated(imxnx)) allocate (imxnx(num_threads))
       endif
 !
-      if (me == 0) print *,' num_threads =',num_threads,' me=',me
+!      if (me == 0) print *,' num_threads =',num_threads,' me=',me
 !
 !     if(me .eq. 0) then
 !     print *,'rlon=',rlon,' me=',me
@@ -3052,7 +3059,8 @@
 
       if (inttyp /=1) allocate (ifill(num_threads))
 !
-!$omp parallel do private(i1_t,i2_t,len_thread,it,i,ii,i1,i2)
+!$omp parallel do default(none) 
+!$omp+private(i1_t,i2_t,len_thread,it,i,ii,i1,i2)
 !$omp+private(j,j1,j2,jq,ix,jy,nx,kxs,kxt,kmami)
 !$omp+private(alamd,denom,rnume,aphi,x,y,wsum,wsumiv,sum1,sum2)
 !$omp+private(sum3,sum4,wi1j1,wi2j1,wi1j2,wi2j2,wei1,wei2,wei3,wei4)
@@ -3060,6 +3068,9 @@
 !$omp+shared(imxin,jmxin,ifill)
 !$omp+shared(outlon,outlat,wrk,iindx1,rinlon,jindx1,rinlat,ddx,ddy)
 !$omp+shared(rlon,rlat,regin,gauout,imxnx)
+!$omp+private(tem)
+!$omp+shared(num_threads,len_thread_m,len,lmask,iindx2,jindx2,rslmsk)
+!$omp+shared(inttyp,me,slmask)
 !
       do it=1,num_threads   ! start of threaded loop ...................
         i1_t       = (it-1)*len_thread_m+1
@@ -3323,9 +3334,9 @@
 !cggg end
 
           enddo
-          kmami=1
-          if (me == 0 .and. num_threads == 1)
-     &                  call maxmin(gauout(i1_t),len_thread,kmami)
+!         kmami=1
+!         if (me == 0 .and. num_threads == 1)
+!    &                  call maxmin(gauout(i1_t),len_thread,kmami)
         else  ! nearest neighbor interpolation
 
 !
@@ -3501,8 +3512,8 @@
         deallocate (ifill)
       endif
 !
-      kmami=1
-      if (me .eq. 0) call maxmin(gauout,len,kmami)
+!     kmami = 1
+!     if (me == 0) call maxmin(gauout,len,kmami)
 !
       return
       end subroutine la2ga
@@ -3530,9 +3541,9 @@
           endif
         enddo
 !
-      write(6,100) k,fmax,iimax,fmin,iimin
-  100 format(2x,'level=',i2,' max=',e11.4,' at i=',i7,
-     &                      ' min=',e11.4,' at i=',i7)
+!      write(6,100) k,fmax,iimax,fmin,iimin
+!  100 format(2x,'level=',i2,' max=',e11.4,' at i=',i7,
+!     &                      ' min=',e11.4,' at i=',i7)
 !
       enddo
 !
@@ -3660,9 +3671,10 @@
 !clu [+1l] add irt() for vmn, vmx, slp, abs
      &,                irtvmn,irtvmx,irtslp,irtabs
      &,                imsk, jmsk, slmskh, outlat, outlon
-     &,                gaus, blno, blto, me)
+     &,                gaus, blno, blto, me, lanom)
       use machine , only : kind_io8,kind_io4
       implicit none
+      logical  lanom
       integer irtsmc,irtacn,irtstc,irtvet,irtveg,irtscv,irtzor,irtsno,
      &        irtalb,irttg3,irtais,iret,me,kk,kpdvet,i,irtalf,irtsot,
 !cggg snow mods start     & imsk,jmsk,irtwet,lsoil,len, kpdtsf,kpdsno,kpdwet,iy,
@@ -3707,24 +3719,24 @@
       irttsf = 1
       if(fntsfa(1:8).ne.'        ') then
         call fixrda(lugb,fntsfa,kpdtsf,slmask,
-     &             iy,im,id,ih,fh,tsfanl,len,iret
-     &,            imsk, jmsk, slmskh, gaus,blno, blto
-     &,            outlat, outlon, me)
+     &              iy,im,id,ih,fh,tsfanl,len,iret
+     &,             imsk, jmsk, slmskh, gaus,blno, blto
+     &,             outlat, outlon, me)
         irttsf = iret
-        if(iret.eq.1) then
+        if(iret == 1) then
           write(6,*) 't surface analysis read error'
           call abort
-        elseif(iret.eq.-1) then
-          if (me .eq. 0) then
-          print *,'old t surface analysis provided, indicating proper',
-     &            ' file name is given.  no error suspected.'
-          write(6,*) 'forecast guess will be used'
+        elseif(iret == -1) then
+          if (me == 0) then
+            print *,'old t surface analysis provided, indicating proper'
+     &,           ' file name is given.  no error suspected.'
+            write(6,*) 'forecast guess will be used'
           endif
         else
-          if (me .eq. 0) print *,'t surface analysis provided.'
+          if (me == 0) print *,'t surface analysis provided.'
         endif
       else
-        if (me .eq. 0) then
+        if (me == 0) then
 !       print *,'************************************************'
         print *,'no tsf analysis available.  climatology used'
         endif
@@ -3732,25 +3744,27 @@
 !
 ! tsf0
 !
-!     if(fntsfa(1:8).ne.'        ') then
-!       call fixrda(lugb,fntsfa,kpdtsf,slmask,
-!    &             iy,im,id,ih,0.,tsfan0,len,iret
-!    &,            imsk, jmsk, slmskh, gaus,blno, blto
-!    &,            outlat, outlon, me)
-!       if(iret.eq.1) then
-!         write(6,*) 't surface at ft=0 analysis read error'
-!         call abort
-!       elseif(iret.eq.-1) then
-!         write(6,*) 'could not find t surface analysis at ft=0'
-!         call abort
-!       else
-!         print *,'t surface analysis at ft=0 found.'
-!       endif
-!     else
-!       do i=1,len
-!         tsfan0(i)=-999.9
-!       enddo
-!     endif
+      if(fntsfa(1:8).ne.'        ' .and. lanom) then
+        call fixrda(lugb,fntsfa,kpdtsf,slmask,
+     &              iy,im,id,ih,0.,tsfan0,len,iret
+     &,             imsk, jmsk, slmskh, gaus,blno, blto
+     &,             outlat, outlon, me)
+        if(iret == 1) then
+          write(6,*) 't surface at ft=0 analysis read error'
+          call abort
+        elseif(iret == -1) then
+          if (me == 0) then
+            write(6,*) 'could not find t surface analysis at ft=0'
+          endif
+          call abort
+        else
+          print *,'t surface analysis at ft=0 found.'
+        endif
+      else
+        do i=1,len
+          tsfan0(i)=-999.9
+        enddo
+      endif
 !
 !  albedo
 !
@@ -6506,6 +6520,8 @@
         allocate (gaul(jmxin))
         jmxsav = jmxin
         if (gaus) then
+cjfe      call gaulat(gaul,jmxin)
+cjfe
 !
           kspla=4
           call splat(kspla, jmxin, a, w)
@@ -6723,6 +6739,29 @@ cjfe
       enddo
       return
       end subroutine landtyp
+      subroutine gaulat(gaul,k)
+!
+      use machine , only : kind_io8,kind_io4
+      implicit none
+      integer n,k
+      real (kind=kind_io8) radi
+      real (kind=kind_io8) a(k), w(k), gaul(k)
+!
+      call splat(4, k, a, w)
+!
+      radi = 180.0 / (4.*atan(1.))
+      do  n=1,k
+        gaul(n) = acos(a(n)) * radi
+      enddo
+!
+!     print *,'gaussian lat (deg) for jmax=',k
+!     print *,(gaul(n),n=1,k)
+!
+      return
+   70 write(6,6000)
+ 6000 format(//5x,'error in gauaw'//)
+      stop
+      end
 !-----------------------------------------------------------------------
       subroutine anomint(tsfan0,tsfclm,tsfcl0,tsfanl,len)
 !
@@ -6828,16 +6867,17 @@ cjfe
      &                     tg3(:),   alb(:,:,:), alf(:,:),
      &                     vet(:),   sot(:),     tsf2(:),
      &                     veg(:,:), stc(:,:,:)
-     &,                    vmn(:), vmx(:),  slp(:), abs(:)
+     &,                    vmn(:), vmx(:),  slp(:), absm(:)
 !
       integer mon1s, mon2s, sea1s, sea2s, sea1, sea2, hyr1, hyr2
       data first/.true./
       data mon1s/0/, mon2s/0/, sea1s/0/, sea2s/0/
 !
       save first, tsf, sno, zor, wet,  ais, acn, scv, smc, tg3,
-     &     alb,   alf, vet, sot, tsf2, veg, stc
-     &,    vmn,   vmx, slp, abs,
-     &     mon1s, mon2s, sea1s, sea2s, dayhf, k1, k2, m1, m2
+     &     alb,   alf, vet, sot, tsf2, veg, stc,
+     &     vmn,   vmx, slp, absm,
+     &     mon1s, mon2s, sea1s, sea2s, dayhf, k1, k2, m1, m2,
+     &     landice_cat
 !
       logical lprnt
 !
@@ -6891,7 +6931,7 @@ cjfe
      &           tg3(len),   alb(len,4,2),    alf(len,2),
      &           vet(len),   sot(len), tsf2(len),
 !clu [+1l] add vmn, vmx, slp, abs
-     &           vmn(len),   vmx(len), slp(len), abs(len),
+     &           vmn(len),   vmx(len), slp(len), absm(len),
      &           veg(len,2), stc(len,lsoil,2))
 !
 !     get tsf climatology for the begining of the forecast
@@ -7197,7 +7237,7 @@ cjfe
         if(fnabsc(1:8).ne.'        ') then
           kpd7=-1
           call fixrdc(lugb,fnabsc,kpdabs,kpd7,kpd9,slmask,
-     &                abs,len,iret
+     &                absm,len,iret
      &,               imsk, jmsk, slmskh, gaus,blno, blto
      &,               outlat, outlon, me)
           if (me .eq. 0) write(6,*) 'climatological snoalb read in.'
@@ -7787,25 +7827,25 @@ cjfe
 !
       if(fnvmnc(1:8).ne.'        ') then
         do i=1,len
-          vmnclm(i) =         vmn(i)
+          vmnclm(i) = vmn(i)
         enddo
       endif
 !
       if(fnvmxc(1:8).ne.'        ') then
         do i=1,len
-          vmxclm(i) =         vmx(i)
+          vmxclm(i) = vmx(i)
         enddo
       endif
 !
       if(fnslpc(1:8).ne.'        ') then
         do i=1,len
-          slpclm(i) =         slp(i)
+          slpclm(i) = slp(i)
         enddo
       endif
 !
       if(fnabsc(1:8).ne.'        ') then
         do i=1,len
-          absclm(i) =         abs(i)
+          absclm(i) = absm(i)
         enddo
       endif
 !clu ----------------------------------------------------------------------
@@ -7964,16 +8004,16 @@ cjfe
         call abort
       endif
 !
-      if (me .eq. 0) then
-      write(6,*) ' maxmin of input as is'
-      kmami=1
-      call maxmin(data(1,1),ijmax,kmami)
-      endif
+!     if (me == 0) then
+!       write(6,*) ' maxmin of input as is'
+!       kmami=1
+!       call maxmin(data(1,1),ijmax,kmami)
+!     endif
 !
       call getarea(kgds,dlat,dlon,rslat,rnlat,wlon,elon,ijordr,me)
-      if (me .eq. 0) then
-      write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
-      write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
+      if (me == 0) then
+        write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
+        write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
       endif
       call subst(data,imax,jmax,dlon,dlat,ijordr)
 !
@@ -8272,16 +8312,16 @@ cjfe
       endif
 !
    80 continue
-      if (me .eq. 0) then
-      write(6,*) ' maxmin of input as is'
-      kmami=1
-      call maxmin(data(1,1),ijmax,kmami)
-      endif
+!     if (me == 0) then
+!       write(6,*) ' maxmin of input as is'
+!       kmami=1
+!       call maxmin(data(1,1),ijmax,kmami)
+!     endif
 !
       call getarea(kgds,dlat,dlon,rslat,rnlat,wlon,elon,ijordr,me)
-      if (me .eq. 0) then
-      write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
-      write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
+      if (me == 0) then
+        write(6,*) 'imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat='
+        write(6,*)  imax,jmax,ijmax,dlon,dlat,ijordr,wlon,rnlat
       endif
       call subst(data,imax,jmax,dlon,dlat,ijordr)
 !

@@ -563,21 +563,21 @@ if [ $SENDCOM = YES ]; then
 
 # Copy the GIF images into my area
 
-  cp ${hgttmp700dev}    $COMNCDC
-  cp ${hgttmp500dev}    $COMNCDC
-  cp ${hgtiso300dev}    $COMNCDC
-  cp ${hgtiso250dev}    $COMNCDC
-  cp ${hgttmp250dev}    $COMNCDC
-  cp ${hgtiso200dev}    $COMNCDC
-  cp ${hgtiso100dev}    $COMNCDC
-  cp ${hgttmp100dev}    $COMNCDC
-  cp ${mslpthksfcdev}   $COMNCDC
-  cp ${mslpthksfcusdev} $COMNCDC
-  cp ${hgtvor500dev}    $COMNCDC
-  cp ${hgtvor500usdev}  $COMNCDC
-  cp ${liftdev}         $COMNCDC
-  cp ${prswshtropdev}   $COMNCDC
-  cp ${rhvvel700dev}    $COMNCDC
+  cp ${hgttmp700dev}    ${COMOUT}
+  cp ${hgttmp500dev}    ${COMOUT}
+  cp ${hgtiso300dev}    ${COMOUT}
+  cp ${hgtiso250dev}    ${COMOUT}
+  cp ${hgttmp250dev}    ${COMOUT}
+  cp ${hgtiso200dev}    ${COMOUT}
+  cp ${hgtiso100dev}    ${COMOUT}
+  cp ${hgttmp100dev}    ${COMOUT}
+  cp ${mslpthksfcdev}   ${COMOUT}
+  cp ${mslpthksfcusdev} ${COMOUT}
+  cp ${hgtvor500dev}    ${COMOUT}
+  cp ${hgtvor500usdev}  ${COMOUT}
+  cp ${liftdev}         ${COMOUT}
+  cp ${prswshtropdev}   ${COMOUT}
+  cp ${rhvvel700dev}    ${COMOUT}
 
 
 
@@ -586,29 +586,29 @@ if [ $SENDCOM = YES ]; then
  if [ $SENDDBN = YES ]; then
 
 
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp700dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp500dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso300dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso250dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp250dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso200dev}
-# $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp200dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso100dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp100dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcusdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtvor500dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtvor500usdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${liftdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${prswshtropdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${rhvvel700dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp700dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp500dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtiso300dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtiso250dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp250dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtiso200dev}
+# $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp200dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtiso100dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp100dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${mslpthksfcdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${mslpthksfcusdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtvor500dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgtvor500usdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${liftdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${prswshtropdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${rhvvel700dev}
 
 
 # Convert the 500mb NH Hgts/Temps chart to tif, attach a heading and 
 #   send to TOC via the NTC
 
  fi
-  export input=$COMNCDC/${hgttmp500dev}
+  export input=${COMOUT}/${hgttmp500dev}
   export HEADER=YES
   export OUTPATH=$DATA/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
   make_tif.sh
