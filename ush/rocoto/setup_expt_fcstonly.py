@@ -20,7 +20,7 @@ global machines
 global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc
 
 
-machines = ['THEIA', 'WCOSS_C']
+machines = ['GAEA','THEIA', 'WCOSS_C']
 
 
 def makedirs_if_missing(d):
@@ -105,7 +105,9 @@ Create COMROT experiment directory structure'''
 
     args = parser.parse_args()
 
-    if os.path.exists('/scratch3'):
+    if os.path.exists('/lustre') and os.path.exists('/ncrc'):
+        machine = 'GAEA'
+    elif os.path.exists('/scratch3'):
         machine = 'THEIA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'

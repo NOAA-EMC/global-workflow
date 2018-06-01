@@ -28,3 +28,5 @@ module load sysadm/2.2.2-3.39
 module load CmrsEnv
 module load pdsh/2.26-6.1
 module load DefApps
+module use /lustre/f1/pdata/ncep_shared/fv3/modulefiles
+module load grib_util

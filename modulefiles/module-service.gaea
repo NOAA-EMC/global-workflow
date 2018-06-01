@@ -8,3 +8,5 @@ module load globus/5.2.1
 module load switch/1.0-1.0502.60522.1.61.ari
 module load uberftp/2.6
 module load hsi
+module use /lustre/f1/pdata/ncep_shared/emc.nemspara/soft/modulefiles
+module load prod_util

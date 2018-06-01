@@ -115,14 +115,14 @@ def create_COMROT(conf,force):
     idatestr = f'{idate:%Y%m%d%H}'
 
     print(f'Input conditions from model: {cdump.upper()}')
-    print(f'Copied input conditions from: {icsdir}')
+    print(f'Copy input conditions from: {icsdir}')
     logger.info(f'Input conditions: {icsdir}')
 
     if conf.settings.run_enkf:
         loudly_make_dir_if_missing(os.path.join(comrot,enkfdir))
     loudly_make_dir_if_missing(os.path.join(comrot, detdir))
 
-    print(f'Copied input conditions to: {comrot}')
+    print(f'Copy input conditions to: {comrot}')
 
     # Link ensemble member initial conditions
     if conf.settings.run_enkf:

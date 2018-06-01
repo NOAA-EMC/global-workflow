@@ -1,4 +1,6 @@
-#!/bin/ksh -x
+#!/bin/bash
+
+set -x
 
 ###############################################################
 # Source FV3GFS workflow modules

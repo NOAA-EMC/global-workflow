@@ -107,6 +107,9 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
     module use -a /opt/cray/pe/ari/modulefiles
     module use -a /opt/cray/pe/craype/default/modulefiles
     source /etc/opt/cray/pe/admin-pe/site-config
+    export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
+    echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
+    module use $NCEPLIBS/modulefiles
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
