@@ -23,7 +23,7 @@ export VRFYOZN="YES"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
 export VRFYTRAK="NO"     # Hurricane track verification
 export VRFYGENESIS="NO"  # Cyclone genesis verification
-export RUNMOS="YES"      # whether to run entire MOS package
+export RUNMOS="NO"       # whether to run entire MOS package
 
 
 #-------------------------------------------------
@@ -194,8 +194,10 @@ fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ] ; then
+    if [ $machine = "WCOSS_C" ] ; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
+    elif [ $machine = "WCOSS_DELL_P3" ] ; then
+        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.dell"
     else
         echo "WARNING: MOS package is not enabled on $machine!"
         export RUNMOS="NO"
