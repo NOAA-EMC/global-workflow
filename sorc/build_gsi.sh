@@ -27,7 +27,6 @@ export PATH=$PATH:.
 export BUILD_RADMON="NO"
 export BUILD_OZNMON="NO"
 
-./build_all.sh "$gsitarget"
+./build_all_cmake.sh
 
 exit
-
