@@ -142,9 +142,7 @@ fi
 #-------------------------------------------------
 
 if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.14
-    #export HOMEens_tracker=${NWROOT:?}/ens_tracker.${ens_tracker_ver}               
-    #export HOMEens_tracker=/gpfs/hps3/emc/ensemble/save/Jiayi.Peng/ens_tracker.${ens_tracker_ver}
+    export ens_tracker_ver=v1.1.13.1
     export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" ] ; then
     export ens_tracker_ver=v2.0.1
