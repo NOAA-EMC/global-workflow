@@ -110,6 +110,11 @@ def get_gfs_cyc_dates(base):
     base_out['EDATE_GFS'] = edate_gfs
     base_out['INTERVAL_GFS'] = interval_gfs
 
+    fhmax_gfs = {}
+    for hh in ['00', '06', '12', '18']:
+        fhmax_gfs[hh] = base.get('FHMAX_GFS_%s' % hh, 'FHMAX_GFS_00')
+    base_out['FHMAX_GFS'] = fhmax_gfs
+
     return base_out
 
 
@@ -391,10 +396,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.nemsio' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
+    dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
     fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    postenvars = envars + [fhrgrp] + [fhrlst]
+    ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+    postenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
     varname1, varname2, varname3 = 'grp', 'dep', 'lst'
     varval1, varval2, varval3 = get_postgroups(dict_configs['post'], cdump=cdump)
     vardict = {varname2: varval2, varname3: varval3}
@@ -650,7 +658,7 @@ def get_postgroups(post, cdump='gdas'):
     if cdump in ['gdas']:
         fhrs = range(fhmin, fhmax+fhout, fhout)
     elif cdump in ['gfs']:
-        fhmax = post['FHMAX_GFS']
+        fhmax = np.max([post['FHMAX_GFS_00'],post['FHMAX_GFS_06'],post['FHMAX_GFS_12'],post['FHMAX_GFS_18']])
         fhout = post['FHOUT_GFS']
         fhmax_hf = post['FHMAX_HF_GFS']
         fhout_hf = post['FHOUT_HF_GFS']

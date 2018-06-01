@@ -40,15 +40,6 @@ export SCRgfs=$HOMEgfs/scripts
 
 ########################################################################
 
-for exetest in hsi htar ; do
-    if ( ! which $exetest ) ; then
-        echo "$exetest: executable missing after \"module load\"" 1>&2
-        exit 2
-    fi
-done
-
-########################################################################
-
 # GLOBAL static environment parameters
 if [ $machine = "THEIA" ]; then
 
@@ -224,7 +215,13 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=120
+
+export FHMAX_GFS_00=120
+export FHMAX_GFS_06=120
+export FHMAX_GFS_12=120
+export FHMAX_GFS_18=120
+export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
+
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
