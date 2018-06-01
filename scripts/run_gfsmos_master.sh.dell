@@ -320,10 +320,10 @@ if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
    if [[ ! -d $COMINhourly ]]; then
       mkdir -p $COMINhourly
    fi
-   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}03 $COMINhourly/sfctbl.03
-   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
-   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
-   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
+   \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}03 $COMINhourly/sfctbl.03
+   \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
+   \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
+   \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
 fi
 
 # Change COMIN to get files from user's PTMP "qprod" area 
