@@ -18,7 +18,37 @@ set -x
 mac=$(hostname | cut -c1-1)
 mac2=$(hostname | cut -c1-2)
 
-if [[ -d /lustre && -d /ncrc ]] ; then # for GAEA. 
+# Create a test function for sh vs. bash detection.  The name is
+# randomly generated to reduce the chances of name collision.
+__ms_function_name="setup__test_function__$$"
+eval "$__ms_function_name() { /bin/true ; }"
+
+# Determine which shell we are using
+__ms_ksh_test=$( eval '__text="text" ; if [[ $__text =~ ^(t).* ]] ; then printf "%s" ${.sh.match[1]} ; fi' 2> /dev/null | cat )
+__ms_bash_test=$( eval 'if ( set | grep '$__ms_function_name' | grep -v name > /dev/null 2>&1 ) ; then echo t ; fi ' 2> /dev/null | cat )
+
+if [[ ! -z "$__ms_ksh_test" ]] ; then
+    __ms_shell=ksh
+elif [[ ! -z "$__ms_bash_test" ]] ; then
+    __ms_shell=bash
+else
+    # Not bash or ksh, so assume sh.
+    __ms_shell=sh
+fi
+
+target=""
+USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
+
+if [[ -d /lfs3 ]] ; then
+    # We are on NOAA Jet
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+	echo load the module command 1>&2
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    target=jet
+    machine=$target
+    module purge
+elif [[ -d /lustre && -d /ncrc ]] ; then # for GAEA. 
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         # We cannot simply load the module command.  The GAEA
         # /etc/profile modifies a number of module-related variables
@@ -70,3 +100,9 @@ if [ ! -d "../../exec" ] ; then
   mkdir -p ../../exec
 fi
 cp ncep_post ../../exec/
+
+unset __ms_shell
+unset __ms_ksh_test
+unset __ms_bash_test
+unset $__ms_function_name
+unset __ms_function_name
