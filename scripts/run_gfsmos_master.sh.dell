@@ -140,6 +140,7 @@ else
    export range=short
 fi
 # ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
+export stnonly='Y'
 export skipmodel=n
 export skipprep=n
 export cycle="t${cyc}z"
@@ -345,7 +346,7 @@ if [[ "$skipprep" != "y" ]]; then
 else
    deps=""
 fi
-if [[ $cyc == "00" || $cyc == "12" ]]; then
+if [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" != "Y" ]]; then
    complist="metar pac cooprfcmeso goe higoe akgoe tstms"
    complist2="copopo3 coptype akpopo3 akptype"
 else
@@ -353,9 +354,13 @@ else
    complist2=""
 fi
 
-if [[ $cyc == "00" || $cyc == "12" ]]; then
+if [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" != "Y" ]]; then
    export NTASK=11
    export PTILE=11
+   export OMP_NUM_THREADS=1
+elif [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" == "Y" ]]; then
+   export NTASK=4
+   export PTILE=4
    export OMP_NUM_THREADS=1
 else
    export NTASK=3
@@ -388,7 +393,7 @@ export out_dir=$dailylog
 # Set dependencies
 deps="done(gfsmos_fcst_${cyc}_${pid})"
 # Set Nodes
-if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [ "$stnonly" -ne "Y" ]; then
    #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
    export NTASK=1
    export PTILE=1
@@ -406,7 +411,7 @@ bsub -J ${job} \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 0:30 \
-     -M 2000 \
+     -M 20000 \
      -P $ACCOUNT \
      -w "$deps" \
      $jobCard
@@ -414,40 +419,40 @@ bsub -J ${job} \
 ########################################################################
 #   JGFSMOS_WX_PRDGEN (00z and 12z only)
 ########################################################################
-if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
-   jobCard=$HOMEmdl/jobs/JGFSMOS_WX_PRDGEN
-   export job=gfsmos_wx_prdgen_${cyc}_${pid}
-   # Change COMIN back to COMOUT
-   export COMIN=$COMOUT
-   # Define DATA and create directory
-   export DATA=$STMPROOT/qprod/gfsmos_wx_prdgen_${cyc}
-   export logfile=$dailylog/$job.out
-   export out_dir=$dailylog
-   # Set dependencies
-   deps="done(gfsmos_prdgen_${cyc}_${pid})"
-
-   export NTASK=2
-   export PTILE=1
-   export OMP_NUM_THREADS=20
-
-   #bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
-   #     -W 1:00 -M 1000 \
-   #     -extsched 'CRAYLINUX[]' \
-   #     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
-   #     -w "$deps" \
-   #     $jobCard
-
-   bsub -J ${job} \
-        -o $logfile \
-        -q ${QUEUE} -x \
-        -n $NTASK \
-        -R "span[ptile=$PTILE]" \
-        -W 1:00 \
-        -M 3000 \
-        -P $ACCOUNT \
-        -w "$deps" \
-        $jobCard
-fi
+#if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+#   jobCard=$HOMEmdl/jobs/JGFSMOS_WX_PRDGEN
+#   export job=gfsmos_wx_prdgen_${cyc}_${pid}
+#   # Change COMIN back to COMOUT
+#   export COMIN=$COMOUT
+#   # Define DATA and create directory
+#   export DATA=$STMPROOT/qprod/gfsmos_wx_prdgen_${cyc}
+#   export logfile=$dailylog/$job.out
+#   export out_dir=$dailylog
+#   # Set dependencies
+#   deps="done(gfsmos_prdgen_${cyc}_${pid})"
+#
+#   export NTASK=2
+#   export PTILE=1
+#   export OMP_NUM_THREADS=20
+#
+#   #bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
+#   #     -W 1:00 -M 1000 \
+#   #     -extsched 'CRAYLINUX[]' \
+#   #     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+#   #     -w "$deps" \
+#   #     $jobCard
+#
+#   bsub -J ${job} \
+#        -o $logfile \
+#        -q ${QUEUE} -x \
+#        -n $NTASK \
+#        -R "span[ptile=$PTILE]" \
+#        -W 1:00 \
+#        -M 3000 \
+#        -P $ACCOUNT \
+#        -w "$deps" \
+#        $jobCard
+#fi
 
 fi #endif short
 
@@ -546,7 +551,7 @@ if [[ "$skipprep" != "y" ]]; then
 
    export NTASK=2
    export PTILE=2
-   export OMP_NUM_THREADS=6
+   export OMP_NUM_THREADS=1
 
 #   bsub -J $job \
 #        -o $logfile \
@@ -607,9 +612,15 @@ else
    deps="done(gfsmos_fcst_${cyc}_${pid})"
 fi
 
-export NTASK=10
-export PTILE=10
-export OMP_NUM_THREADS=1
+if [[ $stnonly != "Y" ]]; then
+   export NTASK=10
+   export PTILE=10
+   export OMP_NUM_THREADS=1
+else
+   export NTASK=3
+   export PTILE=3
+   export OMP_NUM_THREADS=1
+fi
 
 #bsub -J ${job} -oo $logfile -q $QUEUE -P MDLST-T2O \
 #     -W 1:00 -M 2000 \
@@ -650,7 +661,7 @@ else
    deps="done(gfsmos_extfcst_${cyc}_${pid})"
 fi
 # Set Nodes
-if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [ "$stnonly" -ne "Y" ]; then
    #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
    export NTASK=1
    export PTILE=1
@@ -688,41 +699,41 @@ fi
 ########################################################################
 #   JGFSMOS_WX_EXT_PRDGEN
 ########################################################################
-jobCard=$HOMEmdl/jobs/JGFSMOS_WX_EXT_PRDGEN
-export job=gfsmos_wx_extprdgen_${cyc}_${pid}
-# Change COMIN back to COMOUT
-export COMIN=$COMOUT
-# Define DATA and create directory
-export DATA=$STMPROOT/qprod/gfsmos_wx_extprdgen_${cyc}
-export logfile=$dailylog/$job.out
-export out_dir=$dailylog
-# Set dependencies
-if [[ "$range" == "both" ]]; then
-   deps="done(gfsmos_extprdgen_${cyc}_${pid}) && done(gfsmos_wx_prdgen_${cyc}_${pid})"
-else
-   deps="done(gfsmos_extprdgen_${cyc}_${pid})"
-fi
+#jobCard=$HOMEmdl/jobs/JGFSMOS_WX_EXT_PRDGEN
+#export job=gfsmos_wx_extprdgen_${cyc}_${pid}
+## Change COMIN back to COMOUT
+#export COMIN=$COMOUT
+## Define DATA and create directory
+#export DATA=$STMPROOT/qprod/gfsmos_wx_extprdgen_${cyc}
+#export logfile=$dailylog/$job.out
+#export out_dir=$dailylog
+## Set dependencies
+#if [[ "$range" == "both" ]]; then
+#   deps="done(gfsmos_extprdgen_${cyc}_${pid}) && done(gfsmos_wx_prdgen_${cyc}_${pid})"
+#else
+#   deps="done(gfsmos_extprdgen_${cyc}_${pid})"
+#fi
+#
+#export NTASK=1
+#export PTILE=1
+#export OMP_NUM_THREADS=20
 
-export NTASK=1
-export PTILE=1
-export OMP_NUM_THREADS=20
+##bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
+##     -W 1:00 -M 1000 \
+##     -extsched 'CRAYLINUX[]' \
+##     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+##     -w "$deps" \
+##     $jobCard
 
-#bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
-#     -W 1:00 -M 1000 \
-#     -extsched 'CRAYLINUX[]' \
-#     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE} -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 1:00 \
+#     -M 3000 \
+#     -P $ACCOUNT \
 #     -w "$deps" \
-#     $jobCard
-
-bsub -J ${job} \
-     -o $logfile \
-     -q ${QUEUE} -x \
-     -n $NTASK \
-     -R "span[ptile=$PTILE]" \
-     -W 1:00 \
-     -M 3000 \
-     -P $ACCOUNT \
-     -w "$deps" \
      $jobCard
 
 fi #endif for ext/both
