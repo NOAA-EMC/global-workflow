@@ -89,10 +89,6 @@ export CODEDIR=$MODELROOT/mos_shared.v2.6.1
 ##export prevday=`date -u --date="${PDY} 0000 UTC 24 hours ago" +%Y%m%d`
 
 dateIn=$1
-if [ $REALTIME = "YES" ]; then
-    GDATE=`$NDATE -24 $dateIn`
-    dateIn=$GDATE
-fi
 export PDY=`echo $dateIn | cut -c 1-8`
 export cyc=`echo $dateIn | cut -c 9-10`
 export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
@@ -320,8 +316,7 @@ fi #end for skipprep
 ######################################################################## 
 #  JGFSMOS_FORECAST
 ######################################################################## 
-##if [[ "$PDY" != `date -u +%Y%m%d` ]]; then
-   ##export COMINhourly=/ptmpp2/$USER/dcom/hourly.$PDY
+if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
    export COMINhourly=$PTMPROOT/hourly.$PDY
    if [[ ! -d $COMINhourly ]]; then
       mkdir -p $COMINhourly
@@ -330,7 +325,7 @@ fi #end for skipprep
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
-##fi
+fi
 
 # Change COMIN to get files from user's PTMP "qprod" area 
 export COMIN=$COMOUT
