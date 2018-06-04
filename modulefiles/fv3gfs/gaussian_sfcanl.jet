@@ -1,5 +1,5 @@
 #%Module#####################################################
-## gaussian_sfcanl build module for Theia
+## gaussian_sfcanl build module for Jet
 #############################################################
 
 # Loading Intel Compiler Suite

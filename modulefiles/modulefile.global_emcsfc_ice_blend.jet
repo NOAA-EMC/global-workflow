@@ -1,5 +1,5 @@
 #%Module#####################################################
-## emcsfc_ice_blend build module for Theia
+## emcsfc_ice_blend build module for Jet
 #############################################################
 
 export FCOMP=ifort

@@ -1,5 +1,5 @@
 #%Module#####################################################
-## emcsfc_snow2mdl build module for Theia
+## emcsfc_snow2mdl build module for Jet
 #############################################################
 
 # load intel compiler
