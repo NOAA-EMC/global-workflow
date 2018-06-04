@@ -89,6 +89,10 @@ export CODEDIR=$MODELROOT/mos_shared.v2.6.1
 ##export prevday=`date -u --date="${PDY} 0000 UTC 24 hours ago" +%Y%m%d`
 
 dateIn=$1
+#if [ $REALTIME = "YES" ]; then
+#    GDATE=`$NDATE -24 $dateIn`
+#    dateIn=$GDATE
+#fi
 export PDY=`echo $dateIn | cut -c 1-8`
 export cyc=`echo $dateIn | cut -c 9-10`
 export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
@@ -130,7 +134,7 @@ export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
 
 # ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
 #export range=both
-if [ $cyc -eq 00 ]; then
+if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
    export range=both
 else
    export range=short
@@ -316,7 +320,8 @@ fi #end for skipprep
 ######################################################################## 
 #  JGFSMOS_FORECAST
 ######################################################################## 
-if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
+##if [[ "$PDY" != `date -u +%Y%m%d` ]]; then
+   ##export COMINhourly=/ptmpp2/$USER/dcom/hourly.$PDY
    export COMINhourly=$PTMPROOT/hourly.$PDY
    if [[ ! -d $COMINhourly ]]; then
       mkdir -p $COMINhourly
@@ -325,7 +330,7 @@ if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
    \cp /gpfs/${gort}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
-fi
+##fi
 
 # Change COMIN to get files from user's PTMP "qprod" area 
 export COMIN=$COMOUT
@@ -388,7 +393,7 @@ export out_dir=$dailylog
 # Set dependencies
 deps="done(gfsmos_fcst_${cyc}_${pid})"
 # Set Nodes
-if [ $cyc -eq 00 -o $cyc -eq 12 ] && [ "$stnonly" -ne "Y" ]; then
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [[ "$stnonly" != "Y" ]]; then
    #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
    export NTASK=1
    export PTILE=1
@@ -406,7 +411,7 @@ bsub -J ${job} \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 0:30 \
-     -M 20000 \
+     -M 2000 \
      -P $ACCOUNT \
      -w "$deps" \
      $jobCard
@@ -656,7 +661,7 @@ else
    deps="done(gfsmos_extfcst_${cyc}_${pid})"
 fi
 # Set Nodes
-if [ $cyc -eq 00 -o $cyc -eq 12 ] && [ "$stnonly" -ne "Y" ]; then
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [[ "$stnonly" != "Y" ]]; then
    #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
    export NTASK=1
    export PTILE=1
@@ -729,7 +734,7 @@ fi
 #     -M 3000 \
 #     -P $ACCOUNT \
 #     -w "$deps" \
-     $jobCard
+#     $jobCard
 
 fi #endif for ext/both
 
