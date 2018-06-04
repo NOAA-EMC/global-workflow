@@ -161,11 +161,14 @@ if [[ $target == "gaea" ]]; then
   fi
 fi
 if [[ $target == "jet" ]]; then
-  if [[ -f /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/wgrib2 ]]; then
-   cp /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/wgrib2 .
-  else
-   echo 'WARNING wgrib2 did not copy from /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec on Jet'
-  fi
+  for util_exec in cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2 ;do
+      if [[ -f /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} ]]; then
+       #cp /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} .
+       $LINK /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} .
+      else
+       echo "WARNING ${util_exec} did not copy softlink from /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec on Jet"
+      fi
+  done    
 fi
 
 exit 0
