@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 #  07052015	E.Mirvis -   made build more universal - environmental module based (see readme)
 #               EMC/NCEP/NOAA
@@ -15,7 +15,7 @@
 #
 set -eux
 
-source ./machine-setup.sh
+source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
 # Check final exec folder exists
@@ -30,14 +30,7 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-if [ $target = gaea ]; then
-  targetx=$target
-  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-  echo "TARGET: $target"
-  source ../modulefiles/fv3gfs/tropcy_NEMS.$target
-  echo "TARGET DONE"
-
-elif [ $target = wcoss ]; then
+if [ $target = wcoss ]; then
 
     targetx=wcoss
     module load ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
@@ -81,6 +74,16 @@ elif [ $target = wcoss_cray ]; then
 
     #export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
     export FFLAGS="-openmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+elif [ $target = jet   ]; then
+
+    targetx=theia
+    source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target > /dev/null 2>&1
+    module list
+
+    export LIBS_REL="${W3NCO_LIBd}"
+
+    export FC=mpiifort
+    export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
 else
 
@@ -91,13 +94,11 @@ fi
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
 export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
-export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${W3NCO_LIB4} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
+export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
 export LIBS_SIG="${SIGIO_INC4}"
 export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"
 export LIBS_SYN_QCT="${W3NCO_LIB8}"
-
-echo "START"
 
 cd relocate_mv_nvortex.fd
    make clean

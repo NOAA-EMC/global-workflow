@@ -1,19 +1,16 @@
 #%Module#####################################################
-## Module file for nemsutil
+## enkf_chgres_recenter component - theia
 #############################################################
 
-# Loading Intel Compiler Suite
 
 module load newdefaults
 module load intel/15.0.3.187
 
-
-# Loding nceplibs modules
 module use $NCEPLIBS/modulefiles
+module load nemsio-intel-sandybridge/2.2.3
+module load bacio-intel-sandybridge/2.0.2
 module load w3nco-intel-sandybridge/2.0.6
-module load w3emc-intel-sandybridge/2.2.0
-module load bacio-intel-sandybridge/2.0.1
-module load nemsio-intel-sandybridge/2.2.2
+module load ip-intel-sandybridge/3.0.0
+module load sp-intel-sandybridge/2.0.2
 
-export FCMP=ifort
-export CCMP=icc
+export FC=ifort

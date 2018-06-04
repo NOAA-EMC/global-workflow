@@ -49,6 +49,8 @@ fi
    fi
  fi
  cd $cwd/gdas_trpsfcmv.fd
+module load ncl
+export LIBRARY_PATH=$NCARG_ROOT/lib
  make -f makefile
 #make -f makefile clean
  mv gdas_trpsfcmv ../../exec/
