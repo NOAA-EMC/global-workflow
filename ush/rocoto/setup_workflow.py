@@ -434,11 +434,22 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         # awips
         deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.sfluxgrb#dep#.grib2.idx' % (cdump, cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('awips', cdump=cdump, envar=envars, dependency=dependencies)
-
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+        fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+        ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+        awipsenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = get_awipsgroups(dict_configs['awips'], cdump=cdump)
+        vardict = {varname2: varval2, varname3: varval3}
+        task = wfu.create_wf_task('awips', cdump=cdump, envar=awipsenvars, dependency=dependencies,
+                                  metatask='awips', varname=varname1, varval=varval1, vardict=vardict)
+        
         dict_tasks['%sawips' % cdump] = task
 
     if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
@@ -675,6 +686,40 @@ def get_postgroups(post, cdump='gdas'):
     fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps+1)])
     fhrdep = ' '.join(['f000'] + [f[-1] for f in fhrs])
     fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
+
+    return fhrgrp, fhrdep, fhrlst
+
+def get_awipsgroups(awips, cdump='gdas'):
+
+    fhmin = awips['FHMIN']
+    fhmax = awips['FHMAX']
+    fhout = awips['FHOUT']
+
+    # Get a list of all forecast hours
+    if cdump in ['gdas']:
+        fhrs = range(fhmin, fhmax+fhout, fhout)
+    elif cdump in ['gfs']:
+        fhmax = np.max([awips['FHMAX_GFS_00'],awips['FHMAX_GFS_06'],awips['FHMAX_GFS_12'],awips['FHMAX_GFS_18']])
+        fhout = awips['FHOUT_GFS']
+        fhmax_hf = awips['FHMAX_HF_GFS']
+        fhout_hf = awips['FHOUT_HF_GFS']
+        if fhmax > 240:
+            fhmax = 240
+        if fhmax_hf > 240:
+            fhmax_hf = 240
+        fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
+        fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+
+    nawipsgrp = awips['NAWIPSGRP']
+    ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+
+    fhrs = ['f%03d' % f for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
+
+    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
 

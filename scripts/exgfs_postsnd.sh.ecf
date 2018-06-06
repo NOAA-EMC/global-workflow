@@ -33,8 +33,8 @@ export LONB=${LONB:-3072}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
 export NEND1=120   ##first period length with time interval = NINT1
-export NINT1=3     ##first period time interval
-##export NINT1=1     ##first period time interval
+##export NINT1=3     ##first period time interval
+export NINT1=1     ##first period time interval
 export NINT3=3     ##second period time interval
 export NZERO=6
 export INCREMENT=12
@@ -127,7 +127,7 @@ fi
 ########################################
 collect=' 1 2 3 4 5 6 7 8 9'
 rm -rf poe_col
-echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
+##echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
 for m in ${collect}
 do
 echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
@@ -138,19 +138,12 @@ mv poe_col cmdfile
 
 cat cmdfile
 chmod +x cmdfile
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=cmdfile
-export MP_LABELIO=YES
-export MP_INFOLEVEL=3
-export MP_STDOUTMODE=ordered
 
-export APRUNCFP=${APRUN_POSTSNDCFP:-'aprun -j 1 -n 10 -N 3 -d 1 cfp'}
-$APRUNCFP cmdfile
-
+mpirun -n 9 cfp cmdfile
 ################################################
 # Convert the bufr soundings into GEMPAK files
 ################################################
-##$USHbufrsnd/gfs_bfr2gpk.sh
+$USHbufrsnd/gfs_bfr2gpk.sh
 
 #####################################################################
 # GOOD RUN
