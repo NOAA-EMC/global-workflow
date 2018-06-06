@@ -4,11 +4,14 @@ suite: !Cycle
   <<: *suite_defaults
 
   ics: !Family
+    Disable: !calc >-
+      doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
     RUN: 'gfs' # useless but required
     ecflow_def: !expand |
       edit RUN '{RUN}'
     jgfs_emc_getics: !Task
       <<: *service_task_template
+      Disable: !calc doc.settings.get("IC_CDUMP","") 
       resources: !calc ( doc.resources.run_getic )
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
@@ -16,6 +19,7 @@ suite: !Cycle
 
     jgfs_emc_fv3ic: !Task
       <<: *exclusive_task_template
+      Disable: !calc not doc.settings.chgres_and_convert_ics
       Trigger: !Depend jgfs_emc_getics
       resources: !calc ( doc.resources.run_fv3ic )
       J_JOB: rocoto/fv3ic.sh
@@ -23,7 +27,6 @@ suite: !Cycle
       RUN: gfs
 
   gfs: !Family
-    Trigger: !Depend ics
     RUN: 'gfs'
     ecflow_def: !expand |
       edit RUN '{RUN}'
