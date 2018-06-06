@@ -161,14 +161,15 @@ if [[ $target == "gaea" ]]; then
   fi
 fi
 if [[ $target == "jet" ]]; then
-  for util_exec in cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2 ;do
-      if [[ -f /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} ]]; then
-       #cp /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} .
-       $LINK /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec/${util_exec} .
+  #for util_exec in cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2 ;do
+  util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
+  for util_exec_dirs in grib_utils opbsproc prod_util ;do
+      if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
+       $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
       else
-       echo "WARNING ${util_exec} did not copy softlink from /mnt/lfs3/projects/hfv3gfs/gwv/fv3/exec on Jet"
+       echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
       fi
-  done    
+  done 
 fi
 
 exit 0
