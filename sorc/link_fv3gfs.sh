@@ -163,7 +163,7 @@ fi
 if [[ $target == "jet" ]]; then
   #for util_exec in cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2 ;do
   util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
-  for util_exec_dirs in grib_utils opbsproc prod_util ;do
+  for util_exec_dirs in grib_utils obsproc prod_util ;do
       if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
        $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
       else
