@@ -31,7 +31,7 @@ fi
 #######################################################################
 #  Source bash_profile to run with proper modules on cron
 #######################################################################
-#. ~/.bash_profile 1> /dev/null 2>&1
+. ~/.bash_profile 1> /dev/null 2>&1
 #. ~/.bash_profile 
 
 #######################################################################
@@ -48,14 +48,16 @@ fi
 #  Set global variables neede in the run script and/or each individual
 #  job script.
 #######################################################################
-#module purge                 2>/dev/null
-#module load EnvVars/1.0.2    2>/dev/null
-#module load ips/18.0.1.163   2>/dev/null
-#module load impi/18.0.1      2>/dev/null
-#module load prod_envir/1.0.2 2>/dev/null
-#module load prod_util/1.1.0  2>/dev/null
-#module load grib_util/1.0.6  2>/dev/null
-#module load CFP/2.0.1        2>/dev/null
+. $MODULESHOME/init/bash 
+module purge                  2>/dev/null
+module load EnvVars/1.0.2     2>/dev/null
+module load ips/18.0.1.163    2>/dev/null
+module load impi/18.0.1       2>/dev/null
+module load lsf/10.1          2>/dev/null
+module load prod_envir/1.0.2  2>/dev/null
+module load prod_util/1.1.0   2>/dev/null
+module load grib_util/1.0.6   2>/dev/null
+module load CFP/2.0.1         2>/dev/null
  
 export FORT_BUFFERED=TRUE
 export KMP_AFFINITY=disabled
@@ -134,7 +136,8 @@ export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
 
 # ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
 #export range=both
-if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+#if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+if [ $cyc -eq 00 ]; then
    export range=both
 else
    export range=short
@@ -302,12 +305,12 @@ if [[ "$skipprep" != "y" ]]; then
    export out_dir=$dailylog
 
    export NTASK=3
-   export PTILE=3
+   export PTILE=1
    export OMP_NUM_THREADS=1
 
    bsub -J $job \
         -o $logfile \
-        -q $QUEUE -x \
+        -q $QUEUE \
         -n $NTASK \
         -R "span[ptile=$PTILE]" \
         -W 0:15 \
@@ -356,21 +359,21 @@ fi
 
 if [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" != "Y" ]]; then
    export NTASK=11
-   export PTILE=11
+   export PTILE=1
    export OMP_NUM_THREADS=1
 elif [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" == "Y" ]]; then
    export NTASK=4
-   export PTILE=4
+   export PTILE=1
    export OMP_NUM_THREADS=1
 else
    export NTASK=3
-   export PTILE=3
+   export PTILE=1
    export OMP_NUM_THREADS=1
 fi
 
 bsub -J ${job} \
      -o $logfile \
-     -q ${QUEUE} -x \
+     -q ${QUEUE}  \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 0:15 \
@@ -407,7 +410,7 @@ fi
 
 bsub -J ${job} \
      -o $logfile \
-     -q ${QUEUE} -x \
+     -q ${QUEUE}  \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 0:30 \
@@ -550,7 +553,7 @@ if [[ "$skipprep" != "y" ]]; then
    export out_dir=$dailylog
 
    export NTASK=2
-   export PTILE=2
+   export PTILE=1
    export OMP_NUM_THREADS=1
 
 #   bsub -J $job \
@@ -565,7 +568,7 @@ if [[ "$skipprep" != "y" ]]; then
 
 bsub -J ${job} \
      -o $logfile \
-     -q ${QUEUE} -x \
+     -q ${QUEUE}  \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 2:00 \
@@ -614,11 +617,11 @@ fi
 
 if [[ $stnonly != "Y" ]]; then
    export NTASK=10
-   export PTILE=10
+   export PTILE=1
    export OMP_NUM_THREADS=1
 else
    export NTASK=3
-   export PTILE=3
+   export PTILE=1
    export OMP_NUM_THREADS=1
 fi
 
@@ -631,7 +634,7 @@ fi
 
 bsub -J ${job} \
      -o $logfile \
-     -q ${QUEUE} -x \
+     -q ${QUEUE} \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 1:00 \
@@ -683,7 +686,7 @@ fi
 
 bsub -J ${job} \
      -o $logfile \
-     -q ${QUEUE} -x \
+     -q ${QUEUE} \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 1:00 \
