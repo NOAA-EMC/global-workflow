@@ -30,12 +30,12 @@ platform: !Platform
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: "/dev/null/global/noscrub/dump"
+  DMPDIR: "/mnt/lfs3/projects/hfv3gfs/glopara/noscrub/dump"
 
   # RTMFIX - location of the CRTM fixed data files used by the GSI data
   # assimilation.  The data assimilation is not included in this public release
   # so this path is unused.
-  RTMFIX: "/dev/null/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  RTMFIX: "/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/crtm/v2.2.5/fix"
 
   # BASE_SVN - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
@@ -47,7 +47,7 @@ platform: !Platform
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/dev/null/global/save/glopara/git"
+  BASE_GIT: "/mnt/lfs3/projects/hfv3gfs/glopara/git"
 
   # config_base_extras - Additional configuration data to put in the
   # config.base file
