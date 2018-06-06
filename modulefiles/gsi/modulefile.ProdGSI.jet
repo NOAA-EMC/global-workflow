@@ -1,0 +1,61 @@
+#%Module######################################################################
+##                                                       Russ.Treadon@noaa.gov
+##                                                           NOAA/NWS/NCEP/EMC
+## GDAS_ENKF v6.2.3
+##_____________________________________________________
+#proc ModulesHelp { } {
+#puts stderr "Set environment veriables for GSI build with CMake"
+#puts stderr "This module initializes the environment "
+#puts stderr "for the Intel Compiler Suite $version\n"
+#}
+#module-whatis " GDAS_ENKF whatis description"
+#
+#
+#module load intel/14.0.3 
+module load newdefaults
+#module load intel/15.0.3.187
+module load intel/2016.2.181 
+#
+module load szip/2.1   
+module load hdf5/1.8.9
+module load netcdf4/4.2.1.1  
+module load openmpi/1.6.3
+
+export COREPATH=/lfs3/projects/hfv3gfs/nwprod/lib
+export COREPATH=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+export NCEPLIBS=$COREPATH
+module use $NCEPLIBS/modulefiles
+
+export FFLAGS="-openmp"
+export LDFLAGS="-openmp"
+module load bacio-intel-sandybridge/2.0.2
+module load crtm-intel-sandybridge/2.2.5
+module load bufr-intel-sandybridge/11.1.0
+module load nemsio-intel-sandybridge/2.2.2
+module load sp-intel-sandybridge/2.0.2
+module load w3emc-intel-sandybridge/2.2.0
+module load w3nco-intel-sandybridge/2.0.6
+module load sigio-intel-sandybridge/2.0.1
+module load sfcio-intel-sandybridge/1.0.0
+
+#export BACIO_LIB4=${CAREPATH}/bacio/v2.0.2/libbacio_v2.0.2_4.a
+#export BUFR_LIBd=$CAREPATH/bufr/v11.1.0/libbufr_v11.1.0_d_64.a
+#export CRTM_LIB=$CAREPATH/crtm/v2.2.4/libcrtm_v2.2.4.a
+#export CRTM_INC=$CAREPATH/crtm/v2.2.4/include
+#export NEMSIO_LIB=$CAREPATH/nemsio/v2.2.2/libnemsio_v2.2.2.a
+#export NEMSIO_INC=$CAREPATH/nemsio/v2.2.2/include/nemsio_v2.2.2
+#export SP_LIBd=$CAREPATH/sp/v2.0.2/libsp_v2.0.2_d.a
+#export SP_LIB4=$CAREPATH/sp/v2.0.2/libsp_v2.0.2_4.a
+#export W3EMC_LIBd=$CAREPATH/w3emc/v2.2.0/libw3emc_v2.2.0_d.a
+#export W3EMC_LIB4=$CAREPATH/w3emc/v2.2.0/libw3emc_v2.2.0_4.a
+#export W3EMC_INC4=$CAREPATH/w3emc/v2.2.0/include/w3emc_v2.2.0_4
+#export W3EMC_INCd=$CAREPATH/w3emc/v2.2.0/include/w3emc_v2.2.0_d
+#export W3NCO_LIBd=$CAREPATH/w3nco/v2.0.6/libw3nco_v2.0.6_d.a
+#export W3NCO_LIB4=$CAREPATH/w3nco/v2.0.6/libw3nco_v2.0.6_4.a
+#export SFCIO_LIB4=$CAREPATH/sfcio/v1.0.0/libsfcio_v1.0.0_4.a
+#export SFCIO_INC4=$CAREPATH/sfcio/v1.0.0/include/sfcio_v1.0.0_4
+#export SIGIO_LIB4=$CAREPATH/sigio/v2.0.1/libsigio_v2.0.1_4.a
+#export SIGIO_INC4=$CAREPATH/sigio/v2.0.1/include/sigio_v2.0.1_4
+
+export NETCDF=${NETCDF4}
+export NETCDF_DIR=${NETCDF4}

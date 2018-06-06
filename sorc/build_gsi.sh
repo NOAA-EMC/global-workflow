@@ -14,6 +14,15 @@ fi
 gsitarget=$target
 [[ "$target" == wcoss_cray ]] && gsitarget=cray
 
+if [[ "$target" == jet ]]; then
+    if [ -f "../modulefiles/gsi/modulefile.ProdGSI.jet" ]; then
+        if [ -d gsi.fd/modulefiles ]; then
+            cp ../modulefiles/gsi/modulefile.ProdGSI.jet gsi.fd/modulefiles
+        fi
+    fi
+fi    
+
+
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec
