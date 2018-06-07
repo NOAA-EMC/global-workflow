@@ -52,7 +52,7 @@ platform: !Platform
   # config_base_extras - Additional configuration data to put in the
   # config.base file
   config_base_extras: |
-    export POSTGRB2TBL=$PARMgfs/g2tmpl-1.5.0/params_grib2_tbl_new
+    export POSTGRB2TBL=/lfs3/projects/hfv3gfs/glopara/nwpara/lib/g2tmpl/v1.5.0/src/params_grib2_tbl_new
     export WGRIB2=$EXECgfs/wgrib2
 
   # shared_accounting_ref - accounting settings for shared jobs
