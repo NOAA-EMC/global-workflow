@@ -15,11 +15,11 @@
 module load newdefaults
 #module load intel/15.0.3.187
 module load intel/2016.2.181 
+module load impi/5.1.1.109
 #
 module load szip/2.1   
 module load hdf5/1.8.9
 module load netcdf4/4.2.1.1  
-module load openmpi/1.6.3
 
 export COREPATH=/lfs3/projects/hfv3gfs/nwprod/lib
 export COREPATH=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
