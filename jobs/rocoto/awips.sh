@@ -55,51 +55,83 @@ echo "=============== BEGIN AWIPS ==============="
 export SENDCOM="YES"
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 export PCOM="$COMOUT/wmo"
-export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"    
+export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"
+
+SLEEP_TIME=1800
+SLEEP_INT=5
+SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
 for fhr in $fhrlst; do
-    if [ -s $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr}.idx ]; then
-
-	fhmin=0
-	fhmax=84
-	if [ $fhr -ge $fhmin -a $fhr -le $fhmax ] ; then
-	    if [[ `expr $fhr % 3` -eq 0 ]]; then
-		fhr3=$(printf %03i $fhr)
-		export fcsthrs=$fhr3
-		export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
-		export DATA="${DATAROOT}/$job"
-		$AWIPS20SH
-	    fi
-	    
-	    if [[ `expr $fhr % 6` -eq 0 ]]; then
-		export job="jgfs_awips_f${fcsthrs}_${cyc}"
-		export DATA="${DATAROOT}/$job"
-		$AWIPSG2SH
-	    fi
-	fi
-
-	fhmin=90
-	fhmax=240
-	if [ $fhr -ge $fhmin -a $fhr -le $fhmax ]; then
-	    
-	    if [[ `expr $fhr % 6` -eq 0 ]]; then
-		fhr3=$(printf %03i $fhr)
-		export fcsthrs=$fhr3
-		
-		export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
-		export DATA="${DATAROOT}/$job"
-		$AWIPS20SH
-		
-		export job="jgfs_awips_f${fcsthrs}_${cyc}"
-		export DATA="${DATAROOT}/$job"
-		$AWIPSG2SH
-	    fi
+    fhmin=0
+    fhmax=84
+    if [ $fhr -ge $fhmin -a $fhr -le $fhmax ] ; then
+	if [[ `expr $fhr % 3` -eq 0 ]]; then
+            fhr3=$(printf %03i $fhr)
+            
+#           Check for input file existence.  If not present, sleep
+#           Loop SLEEP_LOOP_MAX times.  Abort if not found.            
+            ic=1
+            while [[ $ic -le $SLEEP_LOOP_MAX ]]; do
+                if [ -s $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx ]; then
+                    break
+                else
+                    ic=`expr $ic + 1`
+                    sleep $SLEEP_INT
+                fi
+                if [ $ic -eq $SLEEP_LOOP_MAX ]; then
+                    echo " *** FATA ERROR: No pgrb2b.0p25.f${fhr3}.idx "
+                    export err=9
+                    err_chk
+                fi
+            done
+            
+	    export fcsthrs=$fhr3
+	    export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+	    export DATA="${DATAROOT}/$job"
+	    $AWIPS20SH
 	fi
 	
-    else
-        echo "***WARNING*** $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr}.idx NOT AVAILABLE"
+	if [[ `expr $fhr % 6` -eq 0 ]]; then
+	    export job="jgfs_awips_f${fcsthrs}_${cyc}"
+	    export DATA="${DATAROOT}/$job"
+	    $AWIPSG2SH
+	fi
     fi
 
+    fhmin=90
+    fhmax=240
+    if [ $fhr -ge $fhmin -a $fhr -le $fhmax ]; then
+	
+	if [[ `expr $fhr % 6` -eq 0 ]]; then
+	    fhr3=$(printf %03i $fhr)
+
+#           Check for input file existence.  If not present, sleep
+#           Loop SLEEP_LOOP_MAX times.  Abort if not found.            
+            ic=1
+            while [[ $ic -le $SLEEP_LOOP_MAX ]]; do
+                if [ -s $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx ]; then
+                    break
+                else
+                    ic=`expr $ic + 1`
+                    sleep $SLEEP_INT
+                fi
+                if [ $ic -eq $SLEEP_LOOP_MAX ]; then
+                    echo " *** FATA ERROR: No pgrb2b.0p25.f${fhr3}.idx "
+                    export err=9
+                    err_chk
+                fi
+            done
+            
+	    export fcsthrs=$fhr3
+	    export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+	    export DATA="${DATAROOT}/$job"
+	    $AWIPS20SH
+	    
+	    export job="jgfs_awips_f${fcsthrs}_${cyc}"
+	    export DATA="${DATAROOT}/$job"
+	    $AWIPSG2SH
+	fi
+    fi
 done
 
 
