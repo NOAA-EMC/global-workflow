@@ -273,7 +273,8 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    threads = cfg['nth_%s' % ltask]
+    if machine in [ 'WCOSS_DELL_P3']:
+        threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
