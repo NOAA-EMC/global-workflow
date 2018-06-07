@@ -62,6 +62,12 @@ SLEEP_INT=5
 SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
 for fhr in $fhrlst; do
+
+    if [ $fhr -gt $FHMAX_GFS ]; then
+        echo "Nothing to process for FHR = $fhr, cycle"
+        continue
+    fi
+
     fhmin=0
     fhmax=84
     if [ $fhr -ge $fhmin -a $fhr -le $fhmax ] ; then
@@ -79,7 +85,7 @@ for fhr in $fhrlst; do
                     sleep $SLEEP_INT
                 fi
                 if [ $ic -eq $SLEEP_LOOP_MAX ]; then
-                    echo " *** FATA ERROR: No pgrb2b.0p25.f${fhr3}.idx "
+                    echo "***FATAL ERROR*** $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx NOT available"
                     export err=9
                     err_chk
                 fi
@@ -116,7 +122,7 @@ for fhr in $fhrlst; do
                     sleep $SLEEP_INT
                 fi
                 if [ $ic -eq $SLEEP_LOOP_MAX ]; then
-                    echo " *** FATA ERROR: No pgrb2b.0p25.f${fhr3}.idx "
+                    echo "***FATAL ERROR*** $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx NOT available"
                     export err=9
                     err_chk
                 fi
