@@ -172,4 +172,16 @@ if [[ $target == "jet" ]]; then
   done 
 fi
 
+cd ${pwd}
+cd gsi.fd
+gsi_branch=`git branch | grep \*`
+cd ../fv3gfs.fd
+fv3gfs_branch=`git branch | grep \*`
+cd ../gfs_post.fd
+gfspost_branch=`git branch | grep \*`
+
+set +x
+echo "FV3  Branch: $fv3gfs_branch"
+echo "GSI  Branch: $gsi_branch"
+echo "POST Branch: $gfspost_branch"
 exit 0
