@@ -112,6 +112,7 @@
 
 "gfs_sfc",     "crain",         "crain",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "tprcp",         "tprcp",        "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "rainc",         "cnvprcp",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "hgtsfc",        "orog",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "weasd",         "weasd",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "f10m",          "f10m",         "fv3_history2d",  "all",  .false.,  "none",  2
