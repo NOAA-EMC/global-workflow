@@ -307,15 +307,16 @@ suite: !Cycle
           FHMIN_EPOS: !expand '{dimval.fhr:03d}'
           FHMAX_EPOS: !expand '{dimval.fhr:03d}'
           FHOUT_EPOS: !expand '{dimval.fhr:03d}'
+          job: !expand "epos{dimval.fhr:03d}"
           ecflow_command: !expand |
             export FHMIN_EPOS={FHMIN_EPOS} FHMAX_EPOS={FHMAX_EPOS} FHOUT_EPOS={FHOUT_EPOS}
             $HOMEgfs/jobs/{J_JOB}
           rocoto_command: !expand >-
             {rocoto_load_modules} ;
-            /usr/bin/env FHMIN_EPOS={FHMIN_EPOS} FHMAX_EPOS={FHMAX_EPOS} FHOUT_EPOS={FHOUT_EPOS} &HOMEgfs;/jobs/{J_JOB}
+            /usr/bin/env FHMIN_EPOS={FHMIN_EPOS} FHMAX_EPOS={FHMAX_EPOS} FHOUT_EPOS={FHOUT_EPOS} job={job} &HOMEgfs;/jobs/{J_JOB}
           resources: !calc ( doc.resources.run_epos )
           J_JOB: JGDAS_ENKF_POST
-          more_vars: [ FHMIN_EPOS, FHMAX_EPOS, FHOUT_EPOS ]
+          more_vars: [ FHMIN_EPOS, FHMAX_EPOS, FHOUT_EPOS, job ]
 
     #endfamily enkf
   #endfamily gdas

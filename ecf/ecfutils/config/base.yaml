@@ -149,7 +149,7 @@ config_base:
     export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
     
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-    export imp_physics=11
+    export imp_physics={doc.fv3_settings.imp_physics}
     
     # Shared parameters
     # Hybrid related
@@ -157,17 +157,15 @@ config_base:
     export NMEM_ENKF={doc.data_assimilation.NMEM_ENKF}
     export SMOOTH_ENKF="{tools.YES_NO(doc.data_assimilation.SMOOTH_ENKF)}"
     export l4densvar="{tools.fort(doc.data_assimilation.l4densvar)}"
-    export lwrite4danl=".false."
+    export lwrite4danl="{tools.fort(doc.data_assimilation.lwrite4danl)}"
     
     # EnKF output frequency
     if [ $DOHYBVAR = "YES" ]; then
-        export FHMIN_ENKF=3
-        export FHMAX_ENKF=9
+        export FHMIN_ENKF={doc.gfs_output_settings.FHMIN_ENKF}
+        export FHMAX_ENKF={doc.gfs_output_settings.FHMAX_ENKF}
+        export FHOUT_ENKF={doc.gfs_output_settings.FHOUT_ENKF}
         if [ $l4densvar = ".true." ]; then
             export FHOUT=1
-            export FHOUT_ENKF=1
-        else
-            export FHOUT_ENKF=3
         fi
     fi
     

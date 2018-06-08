@@ -5,7 +5,7 @@
 #BSUB -oo log.chgres.%J
 #BSUB -eo log.chgres.%J
 #BSUB -J fv3_chgres
-#BSUB -q devmax
+#BSUB -q dev
 #BSUB -M 2400
 #BSUB -W 10:00
 #BSUB -extsched 'CRAYLINUX[]'
@@ -28,14 +28,14 @@ set -x
 #-------------------------------------------------------------------------------------------------
 
 export machine=WCOSS_C
-export HOMEgfs=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/git/fv3gfs/tic21h
-export PTMP="/gpfs/hps3/ptmp/$USER/ROTDIRS"
+export HOMEgfs=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/master
+export PTMP="/gpfs/hps2/ptmp/$USER/ROTDIRS"
 
 export PSLOT=fv3test
 export CDUMP=gdas
 export CASE_HIGH=C768            
 export CASE_ENKF=C384
-export CDATE=2018052406
+export CDATE=2018052800
 
 
 export NSTSMTH=YES                                  ##apply 9-point smoothing to nsst tref

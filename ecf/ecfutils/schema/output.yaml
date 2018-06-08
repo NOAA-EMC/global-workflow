@@ -21,8 +21,11 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     description: GDAS ENKF forecast length
   FHOUT_ENKF:
     type: int
-    default: 3
     description: GDAS ENKF output frequency in hours
+    default: !FirstTrue
+      - when: doc.data_assimilation.l4densvar
+        do: 1
+      - otherwise: 3
 
   FHMIN_GDAS:
     type: int
