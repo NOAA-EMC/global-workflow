@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout beta-tjet-ujet
+    git checkout tjet-ujet
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -33,7 +33,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ncep_post.v8.0.10
+    git checkout ncep_post.v8.0.8
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'

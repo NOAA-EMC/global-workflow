@@ -26,7 +26,7 @@ platform: !Platform
   # NWPROD - location of the NCEP operational "nwprod" directory, which
   # only has meaning on the NCEP WCOSS machines.  It is used to get
   # the paths to certain programs and scripts.
-  NWPROD: "/dev/null/global/save/glopara/nwpara"
+  NWPROD: "/lfs3/projects/hfv3gfs/nwprod"
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
@@ -53,7 +53,17 @@ platform: !Platform
   # config.base file
   config_base_extras: |
     export POSTGRB2TBL=/lfs3/projects/hfv3gfs/glopara/nwpara/lib/g2tmpl/v1.5.0/src/params_grib2_tbl_new
-    export WGRIB2=$EXECgfs/wgrib2
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
 
   # shared_accounting_ref - accounting settings for shared jobs
   shared_accounting_ref:

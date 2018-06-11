@@ -20,6 +20,7 @@ module use "$HOMEgfs/modulefiles"
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
+    export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
     if [[ "$mode" == forecast ]] ; then
 	module load module_fcst.jet 
     else
@@ -53,6 +54,8 @@ echo "CHECKING which mpirun is getting loaded on Jet"
 which mpirun
 mpirun --version
 mpirun echo hello world
+echo "CHECK MODULE LIST"
+module list
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
