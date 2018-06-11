@@ -31,7 +31,7 @@ export expdump=${6:-$CDUMP}                                                     
 export rundir_base=${7:-${RUNDIR}/${CDUMP}/${CDATE}/vrfy/metplus_exp}            # Run directory for METplus verification
 export expdir=${8:-${NOSCRUB}/archive}                                           # Experiment online archive
 export iauf00=${9:-"NO"}                                                         # Set pgbf00=pgbanl for forecasts with IAU
-## Environment variables inherited from that are used: modulefiles.METplus*, config.base, config.vrfy
+## Environment variables inherited from that are used: config.base, config.vrfy
 ## config.base
 ##   gfs_cyc, METver, METPLUSver
 ## config.vrfy
@@ -41,6 +41,8 @@ export iauf00=${9:-"NO"}                                                        
 ##   webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## Make sure variables are set and set to names used in this script
 gfs_cyc=${gfs_cyc:-1}                                                       # number of GFS cycles, 1-->00Z, 4-->00Z 06Z 12Z and 18Z, default is 1 if unset
+METver=${METver:-V6.1}                                                      # MET version to use
+METPLUSver=${METPLUSver:-METplus.v0.0.gamma}                                # METplus version to use
 VRFY_STEP1=${VRFY_STEP1:-NO}                                                # run METplus verification step 1: partial sum and/or contingency table counts
 VRFY_STEP2=${VRFY_STEP2:-NO}                                                # run METplus verification step 2: make plots
 VRFY_GRID2GRID=${VRFY_GRID2GRID:-NO}                                        # run METplus desired steps for grid-to-grid verification
@@ -54,10 +56,9 @@ metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                            # lo
 metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                               # location of fix files to run METplus
 vfhmin=${vfmin:-$FHMIN_GFS}                                                 # start forecast hour
 vfhmax=${vfhmax:-$FHMAX_GFS}                                                # end forecast hour
-anl_type=${anltype:-"gfs"}                                                  # analysis type for verification: gfs or gdas
+anltype=${anltype:-"gfs"}                                                   # analysis type for verification: gfs or gdas
 ftyplist=${ftyplist:-"pgbq"}                                                # verif. files used for computing precip. verif.
 ptyplist=${ptyplst:-"PRATE"}                                                # precip types in GRIB: PRATE or APCP
-anltype=${anltype:-"gfs"}                                                   # default=gfs, analysis type (gfs or gdas) for verification
 rain_bucket=${rain_bucket:-6}                                               # prate/apcp in pgb files in 6 hour buckets for GSM, continuous for FV3
 g2g_sfc=${g2g_sfc:-"NO"}                                                    # include the group of surface variables for grid-to-grid verification
 STEP2_START_DATE=${STEP2_START_DATE:-"$SDATE"}                              # starting date for METplus plots
@@ -175,7 +176,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export complist=$(hostname)                         #computers where experiments are run
     export dumplist=".gfs."                             #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2g1=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
-    export anl_type=$anl_type                           #analysis type for verification: gfs or gdas
+    export anltype=$anltype                             #analysis type for verification: gfs or gdas
     export VDATEST=$VSTART_DATE                         #verification starting date
     export VDATEND=$VEND_DATE                           #verification ending date
     export vfhmin=$vfhmin                               #start forecast hour  
