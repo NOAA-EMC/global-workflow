@@ -22,80 +22,75 @@ set -x
 ##---------------------------------------------------------------------------
 ## Below are all the variables that must be set
 ## Variables passed in from call in vrfy.sh
-export VSTART_DATE=${1:-$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)}   #step 1 forecast starting date
-export VEND_DATE=${2:-$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)}     #step 1 forecast ending date
-export CHECK_DATE=${3:-$CDATE}                                                   #check with $STEP2_END_DATE to check to see if time to start making plots 
-export cycle=${4:-$cyc}                                                          #forecast cycle
-export expname=${5:-$PSLOT}                                                      #experiment name
-export expdump=${6:-$CDUMP}                                                      #experiment dump
-export rundir_base=${7:-${RUNDIR}/${CDUMP}/${CDATE}/vrfy/metplus_exp}            #run directory for METplus verification
-export expdir=${8:-${NOSCRUB}/archive}                                           #experiment online archive
-export iauf00=${9:-"NO"}                                                         #set pgbf00=pgbanl for forecasts with IAU
-## Environment variables inherited from that are used: modulefiles.METplus*, config.base, config.vrfy, vrfy.sh
-## modulefiles.METplus*
-## METver
+export VSTART_DATE=${1:-$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)}   # Step 1 forecast starting date
+export VEND_DATE=${2:-$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)}     # Step 1 forecast ending date
+export CHECK_DATE=${3:-$CDATE}                                                   # Check with $STEP2_END_DATE to check to see if time to start making plots 
+export cycle=${4:-$cyc}                                                          # Forecast cycle
+export expname=${5:-$PSLOT}                                                      # Experiment name
+export expdump=${6:-$CDUMP}                                                      # Experiment dump
+export rundir_base=${7:-${RUNDIR}/${CDUMP}/${CDATE}/vrfy/metplus_exp}            # Run directory for METplus verification
+export expdir=${8:-${NOSCRUB}/archive}                                           # Experiment online archive
+export iauf00=${9:-"NO"}                                                         # Set pgbf00=pgbanl for forecasts with IAU
+## Environment variables inherited from that are used: modulefiles.METplus*, config.base, config.vrfy
 ## config.base
-## gfs_cyc, METPLUSver
+##   gfs_cyc, METver, METPLUSver
 ## config.vrfy
-## VRFY_GRID2GRID_STEP(1)(2), VRFY_GRID2OBS_STEP(1)(2), VRFY_PRECIP_STEP(1)(2)
-## VRFY_BACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, vfhmin, vfmax,
-## ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
-## webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
-## make sure variables are set and set to names used in this script
-gfs_cyc=${gfs_cyc:-1}                                                   #number of GFS cycles, 1-->00Z, 4-->00Z 06Z 12Z and 18Z, default is 1 if unset
-VRFY_GRID2GRID_STEP1=${VRFY_GRID2GRID_STEP1:-NO} #create partial sum data for grid-to-grid verifcation using METplus
-VRFY_GRID2OBS_STEP1=${VRFY_GRID2OBS_STEP1:-NO} #create partial sum data for grid-to-obs verifcation using METplus
-VRFY_PRECIP_STEP1=${VRFY_PRECIP_STEP1:-NO} #create contingency table counts for precipitation verifcation using METplus
-VRFY_GRID2GRID_STEP2=${VRFY_GRID2GRID_STEP2:-NO} #create plots for grid-to-grid verifcation using METplus
-VRFY_GRID2OBS_STEP2=${VRFY_GRID2OBS_STEP2:-NO} #create plots for grid-to-obs verifcation using METplus
-VRFY_PRECIP_STEP2=${VRFY_PRECIP_STEP2:-NO} #create plots for precipitation verifcation using METplus
-VRFY_BACKDATE_PRECIP=${VRFY_BACKDATE_PRECIP:-24} # additonal back up time for QPF verification data to allow observation data to come in 
-metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}              # place to save METplus database
-metplushome=${metplushome:-$BASE_VERIF_METPLUS}                          # location of global verification script
-metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                                   # locaton of configuration files to run METplus
-metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                                       # location of fix files to run METplus
-vfhmin=${vfmin:-$FHMIN_GFS}                                                 #start forecast hour
-vfhmax=${vfhmax:-$FHMAX_GFS}                                                 #end forecast hour
-anl_type=${anltype:-"gfs"}                                                 #analysis type for verification: gfs or gdas
-ftyplist=${ftyplist:-"pgbq"}                                          # verif. files used for computing precip. verif.
-ptyplist=${ptyplst:-"PRATE"}                                         # precip types in GRIB: PRATE or APCP
-anltype=${anltype:-"gfs"}                                            # default=gfs, analysis type (gfs or gdas) for verification
-rain_bucket=${rain_bucket:-6}                                            # prate/apcp in pgb files in 6 hour buckets for GSM, continuous for FV3
-g2g_sfc=${g2g_sfc:-"NO"}                                            # include the group of surface variables for grid-to-grid verification
-STEP2_START_DATE=${STEP2_START_DATE:-"$SDATE"}                                # starting date for METplus plots
+##   VRFY_STEP(1)(2), VRFY_GRID2GRID, VRFY_GRID2OBS, VRFY_PRECIP, VRFYBACKDATE,
+##   VRFYBACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, vfhmin, vfmax,
+##   ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
+##   webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
+## Make sure variables are set and set to names used in this script
+gfs_cyc=${gfs_cyc:-1}                                                       # number of GFS cycles, 1-->00Z, 4-->00Z 06Z 12Z and 18Z, default is 1 if unset
+VRFY_STEP1=${VRFY_STEP1:-NO}                                                # run METplus verification step 1: partial sum and/or contingency table counts
+VRFY_STEP2=${VRFY_STEP2:-NO}                                                # run METplus verification step 2: make plots
+VRFY_GRID2GRID=${VRFY_GRID2GRID:-NO}                                        # run METplus desired steps for grid-to-grid verification
+VRFY_GRID2OBS=${VRFY_GRID2OBS:-NO}                                          # run METplus desired steps for grid-to-obs verification
+VRFY_PRECIP=${VRFY_PRECIP:-NO}                                              # run METplus desired steps for precipitation verification
+VRFYBACKDATE=${VRFYBACKDATE:-24}                                            # execute step 1 metplusjob for the x hours
+VRFYBACKDATE_PRECIP=${VRFYBACKDATE_PRECIP:-24}                              # additonal back up time for QPF verification data to allow observation data to come in 
+metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}                 # place to save METplus database
+metplushome=${metplushome:-$BASE_VERIF_METPLUS}                             # location of global verification script
+metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                            # locaton of configuration files to run METplus
+metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                               # location of fix files to run METplus
+vfhmin=${vfmin:-$FHMIN_GFS}                                                 # start forecast hour
+vfhmax=${vfhmax:-$FHMAX_GFS}                                                # end forecast hour
+anl_type=${anltype:-"gfs"}                                                  # analysis type for verification: gfs or gdas
+ftyplist=${ftyplist:-"pgbq"}                                                # verif. files used for computing precip. verif.
+ptyplist=${ptyplst:-"PRATE"}                                                # precip types in GRIB: PRATE or APCP
+anltype=${anltype:-"gfs"}                                                   # default=gfs, analysis type (gfs or gdas) for verification
+rain_bucket=${rain_bucket:-6}                                               # prate/apcp in pgb files in 6 hour buckets for GSM, continuous for FV3
+g2g_sfc=${g2g_sfc:-"NO"}                                                    # include the group of surface variables for grid-to-grid verification
+STEP2_START_DATE=${STEP2_START_DATE:-"$SDATE"}                              # starting date for METplus plots
 STEP2_END_DATE=${STEP2_END_DATE:-"$EDATE"}                                  # ending date for METplus plots
-webhost=${webhost:-"emcrzdm.ncep.noaa.gov"}                             #host for web display
-webhostid=${webhostid:-$LOGNAME}                                        #id of webhost
-ftpdir=${WEBDIR:-/home/people/emc/www/htdocs/gmb/$webhostid/METplus/$PSLOT}
-doftp=${SEND2WEB:-"NO"}                                                 #whether or not to sent maps to ftpdir
-mdlist=${mdlist:-"gfs $PSLOT "}                                     # exps (up to 10) to compare in plots
+webhost=${webhost:-"emcrzdm.ncep.noaa.gov"}                                 # host for web display
+webhostid=${webhostid:-$LOGNAME}                                            # id of webhost
+ftpdir=${WEBDIR:-/home/people/emc/www/htdocs/gmb/$webhostid/METplus/$PSLOT} # web save directory
+doftp=${SEND2WEB:-"NO"}                                                     # whether or not to sent maps to ftpdir
+mdlist=${mdlist:-"gfs $PSLOT "}                                             # exps (up to 10) to compare in plots
 ##-------------------------------------------------------------------
 
 
 ##---------------------------------------------------------------------------
 ## Set up some general and machine related paths, load modules
-export machine=${machine}                                        #machine name              
-export machine=$(echo $machine|tr '[a-z]' '[A-Z]')               #machine name in CAPS
-export ACCOUNT=${ACCOUNT}                                        #computer ACCOUNT task
-export CUE2RUN=${CUE2RUN:-$QUEUE}                                #batch queue
-export CUE2FTP=${CUE2FTP:-$QUEUE_ARCH}                           #queue for data transfer
-export GROUP=${GROUP:-g01}                                       #account group, not sure what this is       
+export machine=${machine}                                        # machine name              
+export machine=$(echo $machine|tr '[a-z]' '[A-Z]')               # machine name in CAPS
+export ACCOUNT=${ACCOUNT}                                        # computer ACCOUNT task
+export CUE2RUN=${CUE2RUN:-$QUEUE}                                # batch queue
+export CUE2FTP=${CUE2FTP:-$QUEUE_ARCH}                           # queue for data transfer
+export GROUP=${GROUP:-g01}                                       # account group, not sure what this is       
 chost=`echo $(hostname) |cut -c 1-1 `
 chost2=`echo $(hostname) |cut -c 1-2 `
 
-source ${HOMEgfs}/sorc/machine-setup.sh > /dev/null 2>&1
 if [ $machine = THEIA ]; then
-    source ${HOMEgfs}/modulefiles/modulefile.METplus.theia > /dev/null 2>&1
-    export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 #temporary directory
-    export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 #temporary directory
-    export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   #global stats directory
-    export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  #date executable
+    export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
+    export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 # temporary directory
+    export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
+    export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
 elif [ $machine = WCOSS_C ]; then
-    source ${HOMEgfs}/modulefiles/modulefile.METplus.wcoss_cray > /dev/null 2>&1
-    export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                  #temporary directory
-    export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                  #temporary directory
-    export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                  #global stats directory
-    export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}  #date executable
+    export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                  # temporary directory
+    export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                  # temporary directory
+    export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                  # global stats directory
+    export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}  # date executable
 else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
@@ -106,8 +101,11 @@ export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
 
 
 ##---------------------------------------------------------------------------
-## Set switches to run various verification step based on current cycle and number of
-## cycles running per day, and date (for step 2)
+## Set switches to run various verification steps based variables set in config.vrfy, current cycle,
+## number of cycles running per day, and date (for step 2)
+## VRFY_GRID2GRID_STEP1, VRFY_GRID2GRID_STEP2,
+## VRFY_GRID2OBS_STEP1, VRFY_GRID2OBS_STEP2
+## VRFY_PRECIP_STEP1, VRFY_PRECIP_STEP2
 if [ $gfs_cyc = 1 ]; then
     export vhrlist=${vhrlist:-"$cycle"}            #verification hours
     export fcyclist="$cycle"                       #forecast cycles to be included in step 1
@@ -124,21 +122,42 @@ else
     echo "EXIT ERROR: gfs_cyc must be 1, 2 or 4. EXITING metplusjob.sh!"                                          
     exit
 fi
-
+# Checks for step 1
 if [ $cycle != $cyc2runmetplus ]; then 
     VRFY_GRID2GRID_STEP1=NO 
     VRFY_GRID2OBS_STEP1=NO 
     VRFY_GRID2GRID_STEP2=NO 
     VRFY_GRID2OBS_STEP2=NO
+else
+    if [ $VRFY_STEP1 = YES -a $VRFY_GRID2GRID = YES ]; then
+       VRFY_GRID2GRID_STEP1=YES
+    fi
+    if [ $VRFY_STEP1 = YES -a $VRFY_GRID2OBS = YES ]; then
+       VRFY_GRID2OBS_STEP1=YES
+    fi
+    if [ $VRFY_STEP1 = YES -a $VRFY_PRECIP = YES ]; then
+       VRFY_PRECIP_STEP1=YES
+    fi
 fi
-if [ $cycle != 00 -a $cycle != 12 ]; then 
-    VRFY_PRECIP_STEP1=NO
-    VRFY_PRECIP_STEP2=NO
-fi
-
+# Checks for step 2
 if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
     VRFY_GRID2GRID_STEP2=NO
-    VRFY_GRID2OBS_STEP2=NO  
+    VRFY_GRID2OBS_STEP2=NO
+    VRFY_PRECIP_STEP2=NO
+else
+    if [ $VRFY_STEP2 = YES -a $VRFY_GRID2GRID = YES ]; then
+       VRFY_GRID2GRID_STEP2=YES
+    fi
+    if [ $VRFY_STEP2 = YES -a $VRFY_GRID2OBS = YES ]; then
+       VRFY_GRID2OBS_STEP2=YES
+    fi
+    if [ $VRFY_STEP2 = YES -a $VRFY_PRECIP = YES ]; then
+       VRFY_PRECIP_STEP2=YES
+    fi
+fi
+# Special checks for precip
+if [ $cycle != 00 -a $cycle != 12 ]; then 
+    VRFY_PRECIP_STEP1=NO
     VRFY_PRECIP_STEP2=NO
 fi
 ##--------------------------------------------------------------------------- 
@@ -178,6 +197,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     mkdir -p ${rundir_g2g1}/VSDB_format
     mkdir -p ${rundir_g2g1}/logs
     mkdir -p ${rundir_g2g1}/confs
+    mkdir -p ${rundir_g2g1}/jobs
     #determine requested forecast hours for verification
     export nvhr=`echo $vhrlist |wc -w`           #number of verification hours
     export nfcyc=`echo $fcyclist |wc -w`         #number of forecast cycles per day
@@ -218,6 +238,9 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         export exp_dir=${expdir[nn]}        #exp directory
         export cdump=${dumpname[nn]:-".gfs."} #file dump format
         export obtype=$exp                  #obs/analysis data type for verification
+        mkdir -p ${rundir_g2g1}/logs/${exp}
+        mkdir -p ${rundir_g2g1}/confs/${exp}
+        mkdir -p ${rundir_g2g1}/jobs/${exp}
         for vhr in $vhrlist; do
             VDATE=${VDATEST}${vhr}
             while [ $VDATE -le ${VDATEND}${vhr} ] ; do

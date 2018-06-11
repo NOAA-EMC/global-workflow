@@ -121,7 +121,7 @@ echo "=============== START TO RUN METPLUS VERIFICATION ==============="
 if [ $CDUMP = "gfs" ]; then
 
     if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
-        if [ $VRFY_GRID2GRID_STEP1 = "YES" -o $VRFY_GRID2OBS_STEP1 = "YES" -o $VRFY_PRECIP_STEP1 = "YES" -o $VRFY_GRID2GRID_STEP2 = "YES" -o $VRFY_GRID2OBS_STEP2 = "YES" -o $VRFY_PRECIP_STEP2 = "YES" ]; then
+        if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
 
             xdate=$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)
             export ARCDIR1="$NOSCRUB/archive"

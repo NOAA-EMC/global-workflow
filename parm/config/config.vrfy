@@ -8,29 +8,28 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
-export VDUMP="gfs"       # verifying dump
-export CDUMPFCST="gdas"  # Fit-to-obs with GDAS/GFS prepbufr
-export CDFNL="gdas"      # Scores verification against GDAS/GFS analysis
+export VDUMP="gfs"                # Verifying dump
+export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
+export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 
-export MKPGB4PRCP="YES"  # make 0.25-deg pgb files in ARCDIR for precip verification
-export VRFYFITS="YES"    # Fit to observations
-export VRFY_PKCG2RUN="BOTH" #"VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
-export VSDB_STEP1="YES"  # populate VSDB database
+export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
+export VRFYFITS="YES"             # Fit to observations
+export VRFY_PKCG2RUN="BOTH"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
+export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
-export VRFYG2OBS="YES"   # Grid to observations, see note below if turning ON
-export VRFYPRCP="YES"    # Precip threat scores
-export VRFY_GRID2GRID_STEP1="YES" #create partial sum data for grid-to-grid verifcation using METplus
-export VRFY_GRID2OBS_STEP1="NO" #create partial sum data for grid-to-obs verifcation using METplus
-export VRFY_PRECIP_STEP1="NO" #create contingency table counts for precipitation verifcation using METplus
-export VRFY_GRID2GRID_STEP2="NO" #create plots for grid-to-grid verifcation using METplus
-export VRFY_GRID2OBS_STEP2="NO" #create plots for grid-to-obs verifcation using METplus
-export VRFY_PRECIP_STEP2="NO" #create plots for precipitation verifcation using METplus
-export VRFYRAD="YES"     # Radiance data assimilation monitoring
-export VRFYOZN="YES"     # Ozone data assimilation monitoring
-export VRFYMINMON="YES"  # GSI minimization monitoring
-export VRFYTRAK="NO"     # Hurricane track verification
-export VRFYGENESIS="NO"  # Cyclone genesis verification
-export RUNMOS="YES"      # whether to run entire MOS package
+export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
+export VRFYPRCP="YES"             # Precip threat scores
+export VRFY_STEP1="YES"           # Run METplus verification step 1: partial sum and/or contingency table counts
+export VRFY_STEP2="NO"            # Run METplus verification step 2: make plots
+export VRFY_GRID2GRID="YES"       # Run METplus desired steps for grid-to-grid verification
+export VRFY_GRID2OBS="YES"        # Run METplus desired steps for grid-to-obs verification
+export VRFY_PRECIP="YES"          # Run METplus desired steps for precipitation verification
+export VRFYRAD="YES"              # Radiance data assimilation monitoring
+export VRFYOZN="YES"              # Ozone data assimilation monitoring
+export VRFYMINMON="YES"           # GSI minimization monitoring
+export VRFYTRAK="NO"              # Hurricane track verification
+export VRFYGENESIS="NO"           # Cyclone genesis verification
+export RUNMOS="YES"               # whether to run entire MOS package
 
 
 #-------------------------------------------------
@@ -94,9 +93,9 @@ fi
 # All these call $METPLUSSH
 
 if [ "$CDUMP" = "gfs" ] ; then
-    if [ $VRFY_GRID2GRID_STEP1 = "YES" -o $VRFY_GRID2OBS_STEP1 = "YES" -o $VRFY_PRECIP_STEP1 = "YES" -o $VRFY_GRID2GRID_STEP2 = "YES" -o $VRFY_GRID2OBS_STEP2 = "YES" -o $VRFY_PRECIP_STEP2 = "YES" ]; then
+    if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
         if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
-            export VRFYBACKDATE=24                                          # execute step 1 metplusjob for the previous day
+            export VRFYBACKDATE=24                                          # execute step 1 metplusjob for the previous x hours
             export VRFYBACKDATE_PRCP=24                                     # additonal back up time for QPF verification data to allow observation data to come in
             export metplussave="$NOSCRUB/archive/metplus_data"              # place to save METplus database
             export metplushome=$BASE_VERIF_METPLUS                          # location of global verification scripts

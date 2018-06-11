@@ -1,6 +1,0 @@
-#%Module######################################################################
-module use /usrx/local/dev/modulefiles
-module load met/6.1
-module load python
-
-export METver="6.1"
