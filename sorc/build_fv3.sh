@@ -16,6 +16,8 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+if [ $target = theia ]; then target=theia.intel ; fi
+
 cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
 cd tests/
