@@ -200,6 +200,16 @@ if [[ ! -d $PCOM ]]; then
    mkdir -p $PCOM
 fi
 
+
+# NOTE: On WCOSS_DELL_P3 the directory from which bsub
+# is executed must exist when the submitted job
+# begins.  Otherwise, the submitted job fails
+# with TERM_CWD_NOTEXIST error.
+
+mkdir -p $DATAROOT
+cd $DATAROOT
+
+
 if [ "$range" == "short" -o "$range" == "both" ]; then
 ########################################################################
 ########################################################################
@@ -572,7 +582,6 @@ bsub -J ${job} \
      -n $NTASK \
      -R "span[ptile=$PTILE]" \
      -W 2:00 \
-     -M 3000 \
      -P $ACCOUNT \
      -w "$deps" \
      $jobCard
