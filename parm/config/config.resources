@@ -143,6 +143,9 @@ elif [ $step = "postsnd" ]; then
     export npe_node_postsndcfp=3
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_postsnd="254M"
+    elif [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_node_postsnd=4
+        export npe_postsndcfp=9
     fi
 
 elif [ $step = "awips" ]; then
@@ -153,6 +156,10 @@ elif [ $step = "awips" ]; then
     export nth_awips=2
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_awips="254M"
+    elif [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_awips=2
+        export npe_node_awips=2
+        export nth_awips=1
     fi
 
 elif [ $step = "gempak" ]; then
