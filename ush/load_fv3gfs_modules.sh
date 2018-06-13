@@ -50,13 +50,6 @@ else
     echo WARNING: UNKNOWN PLATFORM 
 fi
 
-echo "CHECKING which mpirun is getting loaded on Jet"
-which mpirun
-mpirun --version
-mpirun echo hello world
-echo "CHECK MODULE LIST"
-module list
-
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
