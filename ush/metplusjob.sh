@@ -40,9 +40,9 @@ export iauf00=${9:-"NO"}                                                        
 ##   ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
 ##   webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## Make sure variables are set and set to names used in this script
-gfs_cyc=${gfs_cyc:-1}                                                       # number of GFS cycles, 1-->00Z, 4-->00Z 06Z 12Z and 18Z, default is 1 if unset
-METver=${METver:-V6.1}                                                      # MET version to use
-METPLUSver=${METPLUSver:-METplus.v0.0.gamma}                                # METplus version to use
+gfs_cyc=${gfs_cyc:-1}                                                       # number of GFS cycles, 1-->00Z, 2-->00Z 12Z, 4-->00Z 06Z 12Z and 18Z
+METver=${METver:-6.1}                                                       # MET version to use
+METPLUSver=${METPLUSver:-1.0}                                               # METplus version to use
 VRFY_STEP1=${VRFY_STEP1:-NO}                                                # run METplus verification step 1: partial sum and/or contingency table counts
 VRFY_STEP2=${VRFY_STEP2:-NO}                                                # run METplus verification step 2: make plots
 VRFY_GRID2GRID=${VRFY_GRID2GRID:-NO}                                        # run METplus desired steps for grid-to-grid verification
@@ -260,7 +260,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                        anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
                        if [ -s $anlfile ]; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                        else
                            echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
@@ -271,9 +271,9 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                        anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
                        if [ -s $anlfile ]; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                        else
                            echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
@@ -284,7 +284,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                        f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
                        if [ -s $f00file ]; then
                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                        else
                            echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
