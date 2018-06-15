@@ -1,4 +1,4 @@
 [submodule "ecf/ecfutils/CROW"]
 	path = ecf/ecfutils/CROW
 	url = gerrit:CROW
-	branch = public_release_v1
+	branch = multiplat

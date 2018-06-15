@@ -21,7 +21,7 @@ config_eobs:
     export NMEM_EOMGGRP={doc.data_assimilation.NMEM_EOMGGRP}
     export RERUN_EOMGGRP="{tools.YES_NO(doc.data_assimilation.RERUN_EOMGGRP)}"
     export npe_gsi=$npe_eobs
-    #export nth_gsi={doc.nodes.omp_threads_for(doc.resources.run_eobs[0])}
+    #export nth_gsi={doc.aliases.eobs.nth}
     
     # GSI namelist options related to observer for EnKF
     export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0"

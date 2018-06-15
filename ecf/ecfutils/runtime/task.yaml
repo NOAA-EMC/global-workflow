@@ -6,6 +6,18 @@ task_template: &task_template
   # Template - specifies a schema that is used to validate the variables in this scope.
   Template: *task_schema
 
+  # Together, accounting and default_accounting set the accounting
+  # information, such as queues, projects, and partitions.
+
+  default_accounting: {}
+  accounting: {}
+
+  # partition_specification - this is passed into the
+  # rocoto_accounting and batch_accounting functions to set the
+  # partition to request (-l partition=) if needed.
+  partition_specification: !calc |
+    {'partition':partition.get('specification',None)}
+
   # rocoto_load_modules - commands to run before passing control to
   # the j-jobs (jobs/ directory) in Rocoto:
   rocoto_load_modules: !expand >-
@@ -28,9 +40,12 @@ task_template: &task_template
   # in CROW/crow/metascheduler/rocoto.py
   Rocoto: !expand |
     <command>sh -c '{rocoto_command}'</command>
-    {sched.rocoto_accounting(accounting,jobname=task_path_var,
-        outerr="<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")}
-    {sched.rocoto_resources(resources)}
+    {partition.scheduler.rocoto_accounting(
+        partition_specification,default_accounting,accounting,
+      jobname=task_path_var,
+        outerr="<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>",
+        partition=partition.specification)}
+    {partition.scheduler.rocoto_resources(resources)}
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
     <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
     <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
@@ -154,8 +169,8 @@ task_template: &task_template
 
   # ecf_batch_resources - generates batch card settings for the ecflow ecf file
   ecf_batch_resources: !expand |-
-    {sched.batch_accounting(accounting,jobname=task_path_var,outerr="%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")}
-    {sched.batch_resources(resources)}
+    {partition.scheduler.batch_accounting(partition_specification,default_accounting,accounting,jobname=task_path_var,outerr="%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")}
+    {partition.scheduler.batch_resources(resources)}
 
   # ecf_resource_more - generates the ntasks, ptile, and threads variables
   # in cases where they are needed
@@ -183,34 +198,16 @@ task_template: &task_template
   # MPI ranks per node.
   ecf_maybe_ptile: !FirstTrue
     - when: !calc resources.has_threads() or resources.total_ranks()>0
-      do: !expand 'export ptile={sched.max_ranks_per_node(resources)}'
+      do: !expand 'export ptile={partition.nodes.max_ranks_per_node(resources[0])}'
     - otherwise: "# Neither OpenMP nor MPI are in use, so I am not setting $ptile"
-
-# shared_accounting - information about accounting for jobs that share
-# nodes with other jobs.  This is used by CROW/crow/sysenv/schedulers
-# to generate batch cards and rocoto xml.
-shared_accounting: &shared_accounting !calc >-
-  doc.platform.shared_accounting_ref
-
-# shared_accounting - information about accounting for jobs that must
-# have access to tape archiving, network, or other limited
-# availability resources.  This is used by CROW/crow/sysenv/schedulers
-# to generate batch cards and rocoto xml.
-service_accounting: &service_accounting !calc >-
-  doc.platform.service_accounting_ref
-
-# shared_accounting - information about accounting for jobs that share
-# nodes with other jobs.  This is used by CROW/crow/sysenv/schedulers
-# to generate batch cards and rocoto xml.
-exclusive_accounting: &exclusive_accounting !calc >-
-  doc.platform.exclusive_accounting_ref
 
 # shared_task_template - a convenient alias to define a task that has
 # the shared_accounting and passes "shared" to the
 # load_fv3gfs_modules.sh
 shared_task_template: &shared_task_template
   <<: *task_template
-  accounting: *shared_accounting
+  partition: !calc doc.platform.partitions.default_shared
+  default_accounting: !calc partition.shared_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: shared
 
@@ -219,7 +216,8 @@ shared_task_template: &shared_task_template
 # load_fv3gfs_modules.sh
 service_task_template: &service_task_template
   <<: *task_template
-  accounting: *service_accounting
+  partition: !calc doc.platform.partitions.default_service
+  default_accounting: !calc partition.service_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: service
 
@@ -228,7 +226,8 @@ service_task_template: &service_task_template
 # load_fv3gfs_modules.sh
 exclusive_task_template: &exclusive_task_template
   <<: *task_template
-  accounting: *exclusive_accounting
+  partition: !calc doc.platform.partitions.default_exclusive
+  default_accounting: !calc partition.exclusive_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: exclusive
 

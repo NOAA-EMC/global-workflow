@@ -16,7 +16,7 @@ dump_waiter: &dump_waiter_task !Task
 
   Disable: !calc metasched.type=='rocoto'
 
-  resources: !calc doc.resources.run_dump_waiter
+  resources: !calc tools.ref(doc.resources,'run_dump_waiter')
 
   updated_status: !DataEvent
      file: !expand >-

@@ -14,8 +14,8 @@ config_fv3ic:
     
     # Task and thread configuration
     export wtime_fv3ic="00:30:00"
-    export npe_fv3ic={doc.resources.run_fv3ic.total_ranks()}
-    export npe_node_fv3ic={doc.resources.run_fv3ic.total_ranks()}
+    export npe_fv3ic={doc.aliases.fv3ic.npe}
+    export npe_node_fv3ic={doc.aliases.fv3ic.npe}
     
     echo "END: config.fv3ic"
     

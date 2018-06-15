@@ -16,7 +16,7 @@ config_epos:
     . $EXPDIR/config.resources epos
     
     export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
-    #export nth_epos={doc.nodes.omp_threads_for(doc.resources.run_epos[0])}
+    #export nth_epos={doc.aliases.epos.nth}
 
     # No. of concurrent epos jobs [1 implies sequential]
     export NEPOSGRP={doc.data_assimilation.NEPOSGRP}
@@ -25,4 +25,6 @@ config_epos:
     fi
     
     echo "END: config.epos"
+    
+
     

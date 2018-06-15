@@ -7,7 +7,7 @@ make_next_cycles: &make_next_cycles_task !Task
 
   Disable: !calc metasched.type=='rocoto'
 
-  resources: !calc doc.resources.run_make_next_cycles
+  resources: !calc tools.ref(doc.resources,'run_make_next_cycles')
 
   Trigger: !Depend gdas
 

@@ -22,11 +22,11 @@ case:
     workflow_file: workflow/cycled_gfs.yaml
 
   post:
-    NPOSTGRP: 42
     downset: 2
-    
+    NPOSTGRP: 42
+
   downstream:
-    DO_BUFRSND: Yes
+    DO_BUFRSND: No
     DO_GEMPAK: No
     DO_AWIPS: No
 

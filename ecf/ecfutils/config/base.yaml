@@ -21,8 +21,8 @@ config_base:
     
     # Account, queue, etc.
     export ACCOUNT="{doc.accounting.cpu_project}"     # This comes from user.yaml
-    export QUEUE="{doc.platform.exclusive_queue}"
-    export QUEUE_ARCH="{doc.platform.service_queue}"
+    export QUEUE="{doc.accounting.exclusive_partition.exclusive_queue}"
+    export QUEUE_ARCH="{doc.accounting.service_partition.service_queue}"
         
     # Project to use in mass store:
     HPSS_PROJECT={doc.accounting.hpss_project}

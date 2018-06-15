@@ -210,7 +210,7 @@ default_resources: &default_resources
         min(240,doc.resources.run_gdasfcst.total_ranks())
       OMP_NUM_THREADS: 2
       max_ppn: !calc >-
-          doc.nodes.max_ranks_per_node(
+          partition.nodes.max_ranks_per_node(
             doc.resources.run_gdasfcst[0])
   
   run_efcs: !JobRequest
@@ -240,7 +240,7 @@ default_resources: &default_resources
           min(240,doc.resources.run_gfsfcst.total_ranks())
       OMP_NUM_THREADS: 2
       max_ppn: !calc >-
-          doc.nodes.max_ranks_per_node(
+          partition.nodes.max_ranks_per_node(
             doc.resources.run_gfsfcst[0])
   
   run_gdas_post_manager: !JobRequest

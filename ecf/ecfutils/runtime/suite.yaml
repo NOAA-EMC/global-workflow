@@ -59,6 +59,11 @@ suite_defaults: &suite_defaults
     end: !calc doc.settings.EDATE
     step: !timedelta "6:00:00"
 
+  Overrides:
+    allowed: [ 'partition', 'resources', 'rocoto_command',
+    'accounting', 'ecflow_command' ]
+    rules: !calc doc.suite_overrides
+
   # ecFlow - definition of variables specific to ecFlow suite generation
   ecFlow:
     # suite_def_filename - file to receive the suite definition
@@ -72,9 +77,6 @@ suite_defaults: &suite_defaults
       - when: !calc doc.settings.four_cycle_mode
         do:   !expand "{doc.names.experiment}%H"
       - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H"
-    # scheduler - one of the schedulers in CROW/crow/sysenv/schedulers that knows how
-    # to generate batch cards for this workflow.
-    scheduler: !calc doc.scheduler
 
     # dates_in_time_dependencies - flag that controls whether ecflow
     # suite definition "date" triggers are to be defined.
@@ -107,10 +109,6 @@ suite_defaults: &suite_defaults
 
   # Rocoto - contains settings specific to Rocoto workflow generation
   Rocoto: &Rocoto
-    # scheduler - one of the schedulers in CROW/crow/sysenv/schedulers that knows how
-    # to generate batch cards for this workflow.
-    scheduler: !calc doc.scheduler
-
     # max_tries - maximum number of times to run a job before giving
     # up.  Set to 1 to disable automatic resubmission of jobs.
     max_tries: 1
@@ -130,7 +128,7 @@ suite_defaults: &suite_defaults
       ]>
       <workflow realtime="F"
                 cyclethrottle="&CYCLE_THROTTLE;"
-                scheduler="{sched.rocoto_name.lower()}"
+                scheduler="{doc.platform.partitions.default_exclusive.scheduler.rocoto_name.lower()}"
                 taskthrottle="&TASK_THROTTLE;" >
         <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
       {to_rocoto.make_time_xml(indent=1)}

@@ -47,8 +47,8 @@ downstream: !MergeMapping
 places: !MergeMapping
   - Template: *places_schema
   - !calc doc.default_places
-  - !calc doc.user_places
   - !calc doc.case.get('places',{})
+  - !calc doc.user_places
 
 nsst: !MergeMapping
   - Template: *nsst_schema
@@ -66,9 +66,9 @@ archiving: !MergeMapping
   - Template: *archive_settings_template
   - !calc doc.case.get('archiving',{})
 
-nodes: !calc doc.platform.nodes
-scheduler: !calc doc.platform.scheduler
-parallelism: !calc doc.platform.parallelism
+suite_overrides: !AppendSequence
+  - !calc doc.case.get('suite_overrides',[])
+  - !calc doc.get('user_suite_overrides',[])
 
 validate_me: 
   - fv3_settings

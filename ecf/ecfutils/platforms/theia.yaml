@@ -66,62 +66,59 @@ platform: !Platform
     export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
     export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
 
-  # shared_accounting_ref - accounting settings for shared jobs
-  shared_accounting_ref:
-    queue: !calc metasched.varref('QUEUESHARED')
-    project: !calc metasched.varref('CPU_PROJECT')
-
-  # service_accounting_ref - accounting settings for service jobs (jobs
-  # that require tape or network access)
-  service_accounting_ref:
-    queue: !calc metasched.varref('QUEUESERV')
-    project: !calc metasched.varref('CPU_PROJECT')
-
-  # exclusive_accounting_ref - accounting settings for jobs that require
-  # exclusive access to a node.
-  exclusive_accounting_ref:
-    queue: !calc metasched.varref('QUEUE')
-    project: !calc metasched.varref('CPU_PROJECT')
-
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |
-    {metasched.defvar("QUEUE", doc.platform.exclusive_queue)}
-    {metasched.defvar("QUEUESHARED", doc.platform.shared_queue)}
-    {metasched.defvar("QUEUESERV", doc.platform.service_queue)}
+    {metasched.defvar("QUEUE", doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar("QUEUESHARED", doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar("QUEUESERV", doc.accounting.service_partition.service_queue)}
     {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
 
-  # Queues to use for each job type
-  shared_queue: batch
-  service_queue: service
-  exclusive_queue: batch
+  partitions:
+    default_shared: !calc doc.platform.partitions.theia
+    default_exclusive: !calc doc.platform.partitions.theia
+    default_service: !calc doc.platform.partitions.theia
+    theia:
+      specification: null
+      # shared_accounting_ref - accounting settings for shared jobs
+      shared_accounting_ref:
+        queue: !calc metasched.varref('QUEUESHARED')
+        project: !calc metasched.varref('CPU_PROJECT')
+        
+      # service_accounting_ref - accounting settings for service jobs (jobs
+      # that require tape or network access)
+      service_accounting_ref:
+        queue: !calc metasched.varref('QUEUESERV')
+        project: !calc metasched.varref('CPU_PROJECT')
 
-  # Details about the scheduler on this cluster.
-  scheduler_settings: &scheduler_settings
-    name: MoabTorque
-    physical_cores_per_node: 24
-    logical_cpus_per_core: 2
-    hyperthreading_allowed: true
-    indent_text: "  "
+      # exclusive_accounting_ref - accounting settings for jobs that require
+      # exclusive access to a node.
+      exclusive_accounting_ref:
+        queue: !calc metasched.varref('QUEUE')
+        project: !calc metasched.varref('CPU_PROJECT')
 
-  # How to generate aprun, mpirun, srun, etc. commands.  This
-  # is unused but required.
-  parallelism_settings: &parallelism_settings
-    <<: *scheduler_settings
-    name: HydraIMPI
+      # Queues to use for each job type
+      shared_queue: batch
+      service_queue: service
+      exclusive_queue: batch
 
-  # Details about tbe compute nodes in this cluster.   
-  node_type_settings: &node_type_settings
-    <<: *scheduler_settings
-    node_type: generic
+      # Details about the scheduler on this cluster.
+      scheduler_settings: &scheduler_settings
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
 
-  # Generate the actual Python objects for the scheduler, parallelism,
-  # and nodes:
-  scheduler: !calc |
-    tools.get_scheduler(scheduler_settings.name, scheduler_settings)
-  parallelism: !calc |
-    tools.get_parallelism(parallelism_settings.name, parallelism_settings)
-  nodes: !calc |
-    tools.node_tool_for(node_type_settings.node_type, node_type_settings)
+      # Generate the actual Python objects for the scheduler, parallelism,
+      # and nodes:
+      scheduler: !calc |
+        tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+      parallelism: !calc |
+        tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+      nodes: !calc |
+        tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
 
   # Path to pan_df, the program used to get Panasas disk usage information:
   pan_df: pan_df

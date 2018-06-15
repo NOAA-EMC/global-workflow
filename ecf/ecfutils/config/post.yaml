@@ -33,14 +33,14 @@ config_post:
     export PGB1F={tools.YES_NO(doc.post.PGB1F)}
     
     if [[ "$CDUMP" == gdas ]] ; then
-        export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gdaspost[0])}
+        export nth_postgp={doc.aliases.gdaspost.nth}
     else
-        export nth_postgp={doc.nodes.omp_threads_for(doc.resources.run_gfspost[0])}
+        export nth_postgp={doc.aliases.gfspost.nth}
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
-    export npe_dwn={doc.resources.run_dwn.total_ranks()}
-    #export nth_dwn={doc.nodes.omp_threads_for(doc.resources.run_dwn[0])}
+    export npe_dwn={doc.aliases.dwn.npe}
+    #export nth_dwn={doc.aliases.dwn.nth}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"

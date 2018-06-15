@@ -23,13 +23,14 @@ except ImportError as ie:
     sys.path.append(topdir)
     del thisdir, topdir
 
-level=logging.WARNING
-if os.environ.get('WORKTOOLS_VERBOSE','NO') == 'YES':
-    level=logging.INFO
-logging.basicConfig(stream=sys.stderr,level=level)
+def init_logging(verbose=False):
+    level=logging.WARNING
+    if verbose or os.environ.get('WORKTOOLS_VERBOSE','NO') == 'YES':
+        level=logging.INFO
+    logging.basicConfig(stream=sys.stderr,level=level)
 
 import crow.tools, crow.config
-from crow.metascheduler import to_ecflow, to_rocoto
+from crow.metascheduler import to_ecflow, to_rocoto, to_dummy
 from crow.config import from_dir, Suite, from_file, to_yaml
 from crow.tools import Clock
 
@@ -177,6 +178,7 @@ def make_config_files_in_expdir(doc,expdir):
         if not 'filename' in value or not 'content' in value:
             logger.warning(f'{key}: config files require "filename" and "content" entries.')
         filename=os.path.join(expdir,str(value.filename))
+        logger.debug(f'{filename}: expand')
         content=str(value.content)
         logger.info(f'{filename}: write')
         with open(filename,'wt') as fd:
@@ -403,6 +405,7 @@ def make_rocoto_xml(suite,filename):
 def remake_ecflow_files_for_cycles(
         yamldir,first_cycle_str,last_cycle_str,
         surrounding_cycles=2):
+    init_logging()
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
@@ -428,6 +431,7 @@ If you want to update the suite (cycle) definitions, or add suites
 --replace, or --delete commands.''')
 
 def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
+    init_logging()
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
@@ -441,6 +445,7 @@ def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
         
 def add_cycles_to_running_ecflow_workflow_at(
         yamldir,first_cycle_str,last_cycle_str,surrounding_cycles=2): 
+    init_logging()
     conf,suite=read_yaml_suite(yamldir)
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     last_cycle=datetime.datetime.strptime(last_cycle_str,'%Y%m%d%H')
@@ -450,6 +455,7 @@ def add_cycles_to_running_ecflow_workflow_at(
     begin_ecflow_suites(ECF_HOME,suite_def_files)    
 
 def make_rocoto_xml_for(yamldir):
+    init_logging()
     conf,suite=read_yaml_suite(yamldir)
     assert(suite.viewed._path)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
@@ -466,8 +472,14 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'vfcp:')
+    options,positionals=getopt(command_line_arguments,'vfcp:D')
     options=dict(options)
+
+    init_logging('-v' in options)
+
+    if '-D' in options:
+        logger.warning('superdebug mode enabled')
+        crow.set_superdebug(True)
 
     force='-f' in options
     skip_comrot='-c' in options
@@ -498,7 +510,11 @@ def setup_case(command_line_arguments):
         os.path.abspath('.'),case_name,experiment_name,platdoc,force)
 
     doc=from_dir(EXPDIR,validation_stage='setup')
-    make_config_files_in_expdir(doc,EXPDIR)
+    suite=Suite(doc.suite)
+    logger.info('creating a dummy workflow in memory...')
+    to_dummy(suite)
+    suite_doc=suite._globals()['doc']
+    make_config_files_in_expdir(suite_doc,EXPDIR)
 
     if skip_comrot:
         logger.warning('-c specified; will not create comrot')
