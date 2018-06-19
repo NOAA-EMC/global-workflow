@@ -49,7 +49,7 @@ config_fv3:
             export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
             export nth_fv3={doc.aliases.efcs.nth}
-            export npe_node_fcst={doc.aliases.efcs.npe}
+            export npe_node_fcst={doc.aliases.efcs.npe_node}
             {enkf_cdmbgwd_settings}
             ;;
         GFS)
@@ -60,7 +60,7 @@ config_fv3:
             export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
             export nth_fv3={doc.aliases.gfsfcst.nth}
-            export npe_node_fcst={doc.aliases.gfsfcst.npe}
+            export npe_node_fcst={doc.aliases.gfsfcst.npe_node}
             {gfs_cdmbgwd_settings}
             ;;
         GDAS)
@@ -71,7 +71,7 @@ config_fv3:
             export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
             export nth_fv3={doc.aliases.gdasfcst.nth}
-            export npe_node_fcst={doc.aliases.gdasfcst.npe}
+            export npe_node_fcst={doc.aliases.gdasfcst.npe_node}
             {gdas_cdmbgwd_settings}
             ;;
         *)

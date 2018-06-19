@@ -61,7 +61,7 @@ suite_defaults: &suite_defaults
 
   Overrides:
     allowed: [ 'partition', 'resources', 'rocoto_command',
-    'accounting', 'ecflow_command' ]
+    'accounting', 'ecflow_command', 'max_tries', 'resources_remap' ]
     rules: !calc doc.suite_overrides
 
   # ecFlow - definition of variables specific to ecFlow suite generation
@@ -111,7 +111,7 @@ suite_defaults: &suite_defaults
   Rocoto: &Rocoto
     # max_tries - maximum number of times to run a job before giving
     # up.  Set to 1 to disable automatic resubmission of jobs.
-    max_tries: 1
+    max_tries: !calc doc.settings.max_job_tries
 
     # workflow_xml - the contents of this variable are written to the Rocoto XML file.
     workflow_xml: !expand |

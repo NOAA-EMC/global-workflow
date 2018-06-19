@@ -1,0 +1,37 @@
+user_places: &user_places
+  PROJECT_DIR: /lfs3/projects/hfv3gfs # !error Please select a project directory.
+    # ie. /scratch4/NCEPDEV/ocean
+
+  # Override scrub areas here.  Mandatory on Jet.
+  LONG_TERM_TEMP: !expand "/lfs3/projects/hfv3gfs/{tools.env('USER')}/scrub"
+  SHORT_TERM_TEMP: !expand "/lfs3/projects/hfv3gfs/{tools.env('USER')}/scrub"
+
+  # Some other interesting directories:
+
+  # COM directory:
+  # ROTDIR: !expand "/path/to/some/scrub/area/{tools.env('USER')}/comrot/{doc.names.experiment}"  
+
+  # Scrub area for individual jobs:
+  # DATAROOT: !expand "/path/to/some/scrub/area/RUNDIRS/{doc.names.experiment}"
+
+  # Input conditions.  This should usually be specified in the case file:
+  # ICSDIR: !expand "/path/to/your/FV3ICS"
+
+accounting: &accounting
+  # Project for CPU accounting.
+  cpu_project: hfv3gfs # !error What accounting code do I use to submit jobs? # ie.: global
+  hpss_project: emc-hwrf # !error Where do I put data on HPSS?   # ie.: emc-global
+  ecflow_machine: xc40-dev   # only relevant on WCOSS using ecFlow
+
+  # Choose the partition used for each job type.  Default is set in
+  # the platform yaml files.
+  shared_partition: !calc doc.platform.partitions.xjet
+  exclusive_partition: !calc doc.platform.partitions.xjet
+  service_partition: !calc doc.platform.partitions.service
+
+user_suite_overrides:
+  - Search: '**/forecast/*_forecast*'
+    partition: !calc doc.platform.partitions.tjet_or_ujet
+  - Search: '**/post/j*_post*'
+    partition: !calc doc.platform.partitions.xjet
+    max_tries: 5

@@ -26,6 +26,14 @@ aliases:
     <<: *alias_template
     alt_partition: !calc doc.accounting.exclusive_partition
 
+  alias_remap: &alias_remap
+    <<: *alias_template
+    alt_partition: !calc doc.accounting.exclusive_partition
+    resources: !FirstTrue
+      - when: !calc flag
+        do: !calc task.resources_remap
+      - otherwise: !calc alt_resources
+
   prep:
     <<: *alias_exclusive
     flag: !calc ( 'prep' in doc.suite.gfs )
@@ -73,6 +81,18 @@ aliases:
     flag: !calc ( 'gfs' in doc.suite )
     task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
     alt_resources: !error should not get here
+
+  gdasremap:
+    <<: *alias_remap
+    flag: !calc ( 'gdas' in doc.suite )
+    task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
+    alt_resources: !calc doc.resources.run_gdasremap
+
+  gfsremap:
+    <<: *alias_remap
+    flag: !calc ( 'gfs' in doc.suite )
+    task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
+    alt_resources: !error doc.resources.run_gfsremap
 
   gdaspost:
     <<: *alias_exclusive

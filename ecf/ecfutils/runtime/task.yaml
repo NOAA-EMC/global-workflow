@@ -206,7 +206,7 @@ task_template: &task_template
 # load_fv3gfs_modules.sh
 shared_task_template: &shared_task_template
   <<: *task_template
-  partition: !calc doc.platform.partitions.default_shared
+  partition: !calc doc.accounting.shared_partition
   default_accounting: !calc partition.shared_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: shared
@@ -216,7 +216,7 @@ shared_task_template: &shared_task_template
 # load_fv3gfs_modules.sh
 service_task_template: &service_task_template
   <<: *task_template
-  partition: !calc doc.platform.partitions.default_service
+  partition: !calc doc.accounting.service_partition
   default_accounting: !calc partition.service_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: service
@@ -226,7 +226,7 @@ service_task_template: &service_task_template
 # load_fv3gfs_modules.sh
 exclusive_task_template: &exclusive_task_template
   <<: *task_template
-  partition: !calc doc.platform.partitions.default_exclusive
+  partition: !calc doc.accounting.exclusive_partition
   default_accounting: !calc partition.exclusive_accounting_ref
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: exclusive

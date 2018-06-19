@@ -147,11 +147,16 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-#for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
-for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
-    [[ -s $gsiexe ]] && rm -f $gsiexe
-    $LINK ../sorc/gsi.fd/exec/$gsiexe .
-done
+#  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  
+#  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time
+#  cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2
+
+if [[ $target != "jet" ]]; then
+    for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
+        [[ -s $gsiexe ]] && rm -f $gsiexe
+        $LINK ../sorc/gsi.fd/exec/$gsiexe .
+    done
+fi
 
 if [[ $target == "gaea" ]]; then
   if [[ -f /lustre/f1/pdata/ncep_shared/exec/wgrib2 ]]; then
@@ -160,16 +165,23 @@ if [[ $target == "gaea" ]]; then
    echo 'WARNING wgrib2 did not copy from /lustre/f1/pdata/ncep_shared/exec on Gaea'
   fi
 fi
+
+# TODO: Temp fix for GSI on Jet we have built GSI on tJet (needes to be compile to work accross partitions via CMake build)
+
 if [[ $target == "jet" ]]; then
-  #for util_exec in cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2 ;do
   util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
-  for util_exec_dirs in grib_utils prod_util ;do
+  for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
       if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
        $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
       else
        echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
       fi
   done 
+else
+  for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
+      [[ -s $gsiexe ]] && rm -f $gsiexe
+      $LINK ../sorc/gsi.fd/exec/$gsiexe .
+  done
 fi
 
 cd ${pwd}

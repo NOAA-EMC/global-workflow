@@ -26,16 +26,16 @@ platform: !Platform
   # NWPROD - location of the NCEP operational "nwprod" directory, which
   # only has meaning on the NCEP WCOSS machines.  It is used to get
   # the paths to certain programs and scripts.
-  NWPROD: "/dev/null/global/save/glopara/nwpara"
+  NWPROD: "/lfs3/projects/hfv3gfs/nwprod"
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: "/dev/null/global/noscrub/dump"
+  DMPDIR: "/mnt/lfs3/projects/hfv3gfs/glopara/noscrub/dump"
 
   # RTMFIX - location of the CRTM fixed data files used by the GSI data
   # assimilation.  The data assimilation is not included in this public release
   # so this path is unused.
-  RTMFIX: "/dev/null/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+  RTMFIX: "/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/crtm/v2.2.5/fix"
 
   # BASE_SVN - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
@@ -47,13 +47,23 @@ platform: !Platform
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/dev/null/global/save/glopara/git"
+  BASE_GIT: "/mnt/lfs3/projects/hfv3gfs/glopara/git"
 
   # config_base_extras - Additional configuration data to put in the
   # config.base file
   config_base_extras: |
-    export POSTGRB2TBL=$PARMgfs/g2tmpl-1.5.0/params_grib2_tbl_new
-    export WGRIB2=$EXECgfs/wgrib2
+    export POSTGRB2TBL=/lfs3/projects/hfv3gfs/glopara/nwpara/lib/g2tmpl/v1.5.0/src/params_grib2_tbl_new
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
 
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |
@@ -61,6 +71,11 @@ platform: !Platform
     {metasched.defvar("QUEUESHARED", doc.accounting.shared_partition.shared_queue)}
     {metasched.defvar("QUEUESERV", doc.accounting.service_partition.service_queue)}
     {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+
+  accounting: &accounting
+    shared_partition: !calc doc.platform.partitions.xjet
+    exclusive_partition: !calc doc.platform.partitions.xjet
+    service_partition: !calc doc.platform.partitions.service
 
   partition_common: &partition_common
 
@@ -123,6 +138,19 @@ platform: !Platform
         hyperthreading_allowed: true
         indent_text: "  "
 
+    service:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "service"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 2
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+
     tjet_or_ujet:
       <<: *partition_common
       # Details about the scheduler on this cluster.
@@ -138,7 +166,7 @@ platform: !Platform
 
     default_shared: !calc doc.platform.partitions.sjet_or_vjet
     default_exclusive: !calc doc.platform.partitions.sjet_or_vjet
-    default_service: !calc doc.platform.partitions.sjet_or_vjet
+    default_service: !calc doc.platform.partitions.service
 
   # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.

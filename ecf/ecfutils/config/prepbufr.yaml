@@ -23,6 +23,10 @@ config_prepbufr:
     
       export GESROOT=/scratch4/NCEPDEV/rstprod/nwges/prod   # set by module prod_envir on WCOSS_C
     
+    elif [ $machine = "JET" ]; then
+
+      export GESROOT=/mnt/lfs3/projects/hfv3gfs/glopara/nwges/prod  # this is a dummy dir
+
     fi
     
     echo "END: config.prepbufr"

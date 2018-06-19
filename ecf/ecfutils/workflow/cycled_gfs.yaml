@@ -114,6 +114,7 @@ suite: !Cycle
       jgdas_forecast_high: !Task
         <<: *exclusive_task_template
         Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
+        resources_remap: !JobRequest [ <<: *remap_resource_template ]
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc ( tools.ref(doc.resources,'run_gdasfcst') )
         J_JOB: JGLOBAL_FORECAST
@@ -123,6 +124,7 @@ suite: !Cycle
         Trigger: !Depend ( up.analysis.jgdas_analysis_high & up.enkf.innovate ) | ~ suite.has_cycle('-6:00:00')
         #release_fcst: !DataEvent {file="/dev/null"}
         #resources: !calc ( tools.ref(doc.resources,'run_gdasfcst') )
+        resources_remap: !JobRequest [ <<: *remap_resource_template ]
         resources: !calc ( tools.ref(doc.resources,'run_nothing') )
         J_JOB: JGLOBAL_FORECAST
         Dummy: true  ## <-- Node is not implemented yet
@@ -408,6 +410,7 @@ suite: !Cycle
         Trigger: !Depend up.jgfs_analysis
         resources: !calc ( tools.ref(doc.resources,'run_gfsfcst') )
         J_JOB: JGLOBAL_FORECAST
+        resources_remap: !JobRequest [ <<: *remap_resource_template ]
 
       jgfs_forecast_low: !Task
         <<: *exclusive_task_template
@@ -415,6 +418,7 @@ suite: !Cycle
         Trigger: !Depend jgfs_forecast_high
         resources: !calc ( tools.ref(doc.resources,'run_gfsfcst') )
         J_JOB: JGLOBAL_FORECAST
+        resources_remap: !JobRequest [ <<: *remap_resource_template ]
 
     sminit_guam: !Family
       Dummy: true  ## <-- Node is not implemented yet

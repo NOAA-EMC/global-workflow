@@ -22,9 +22,9 @@ case:
     workflow_file: workflow/cycled_gfs.yaml
 
   post:
-    downset: 2
     NPOSTGRP: 42
-
+    downset: 2
+    
   downstream:
     DO_BUFRSND: No
     DO_GEMPAK: No
@@ -43,4 +43,4 @@ case:
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z
     run_gsi: Yes
-
+    max_tries: 2

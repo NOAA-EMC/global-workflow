@@ -81,7 +81,7 @@ config_resources:
         export npe_node_eobs={doc.aliases.eobs.npe_node}
 
     elif [[ "$step" == "eomg" ]] ; then
-        export npe_getic={doc.aliases.getic.npe}
+        export npe_getic={doc.aliases.eomg.npe}
         export npe_node_eomg={doc.aliases.eomg.npe_node}
 
     elif [[ "$step" == "eupd" ]] ; then
