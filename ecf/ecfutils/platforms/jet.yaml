@@ -72,11 +72,6 @@ platform: !Platform
     {metasched.defvar("QUEUESERV", doc.accounting.service_partition.service_queue)}
     {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
 
-  accounting: &accounting
-    shared_partition: !calc doc.platform.partitions.xjet
-    exclusive_partition: !calc doc.platform.partitions.xjet
-    service_partition: !calc doc.platform.partitions.service
-
   partition_common: &partition_common
 
     # shared_accounting_ref - accounting settings for shared jobs
