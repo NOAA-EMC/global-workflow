@@ -127,17 +127,22 @@ fi
 if [ $cycle != $cyc2runmetplus ]; then 
     VRFY_GRID2GRID_STEP1=NO 
     VRFY_GRID2OBS_STEP1=NO 
-    VRFY_GRID2GRID_STEP2=NO 
-    VRFY_GRID2OBS_STEP2=NO
+    VRFY_PRECIP_STEP1=NO
 else
     if [ $VRFY_STEP1 = YES -a $VRFY_GRID2GRID = YES ]; then
        VRFY_GRID2GRID_STEP1=YES
+    else
+       VRFY_GRID2GRID_STEP1=NO
     fi
     if [ $VRFY_STEP1 = YES -a $VRFY_GRID2OBS = YES ]; then
        VRFY_GRID2OBS_STEP1=YES
+    else 
+       VRFY_GRID2OBS_STEP1=NO
     fi
     if [ $VRFY_STEP1 = YES -a $VRFY_PRECIP = YES ]; then
        VRFY_PRECIP_STEP1=YES
+    else
+       VRFY_PRECIP_STEP1=NO 
     fi
 fi
 # Checks for step 2
@@ -148,12 +153,18 @@ if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
 else
     if [ $VRFY_STEP2 = YES -a $VRFY_GRID2GRID = YES ]; then
        VRFY_GRID2GRID_STEP2=YES
+    else
+       VRFY_GRID2GRID_STEP2=NO
     fi
     if [ $VRFY_STEP2 = YES -a $VRFY_GRID2OBS = YES ]; then
        VRFY_GRID2OBS_STEP2=YES
+    else
+       VRFY_GRID2OBS_STEP2=NO
     fi
     if [ $VRFY_STEP2 = YES -a $VRFY_PRECIP = YES ]; then
        VRFY_PRECIP_STEP2=YES
+    else
+       VRFY_PRECIP_STEP2=NO
     fi
 fi
 # Special checks for precip
@@ -163,6 +174,23 @@ if [ $cycle != 00 -a $cycle != 12 ]; then
 fi
 ##--------------------------------------------------------------------------- 
 
+##---------------------------------------------------------------------------
+## Determine MPMD jobs setup
+if [ $machine = WCOSS -o $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
+    if [ $CUE2RUN = dev_shared ]; then
+        export MPMD="NO"
+    else
+        export MPMD="YES"
+        if [ $machine = WCOSS -a $CUE2RUN = dev ] ; then
+            export nproc=16
+        else
+            export nproc=24
+        fi
+    fi
+else
+    export MPMD="NO"
+fi
+##--------------------------------------------------------------------------
 
 ##---------------------------------------------------------------------------
 ## Grid-to-grid verification step 1: compute partial sums
@@ -170,19 +198,20 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     echo "===== RUNNING VRFY_GRID2GRID_STEP1 ====="
     echo "===== creating partial sum data for grid-to-grid verifcation using METplus ====="
     #set some environment variables
-    export fcyclist="$fcyclist"                         #all fcst cycles to be included in verification
-    export expnlist=$expname                            #experiment names 
-    export expdlist=$expdir                             #exp online archive directories
-    export complist=$(hostname)                         #computers where experiments are run
-    export dumplist=".gfs."                             #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
-    export rundir_g2g1=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
-    export anltype=$anltype                             #analysis type for verification: gfs or gdas
-    export VDATEST=$VSTART_DATE                         #verification starting date
-    export VDATEND=$VEND_DATE                           #verification ending date
-    export vfhmin=$vfhmin                               #start forecast hour  
-    export vfhmax=$vfhmax                               #end forecast hour
-    #export asub=${asub:-a}                              #string in pgb anl file after pgb, say, pgbanl, pgbhnl 
-    #export fsub=${fsub:-f}                              #string in pgb fcst file after pgb, say, pgbf06, pgbh06
+    export fcyclist="$fcyclist"                              #all fcst cycles to be included in verification 
+    export vhrlist="$vhrlist"                                #valid hours to verify
+    export expnlist=$expname                                 #experiment names 
+    export expdlist=$expdir                                  #exp online archive directories
+    export complist=$(hostname)                              #computers where experiments are run
+    export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
+    export rundir_g2g1_base=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
+    export anltype=$anltype                                  #analysis type for verification: gfs or gdas
+    export VDATEST=$VSTART_DATE                              #verification starting date
+    export VDATEND=$VEND_DATE                                #verification ending date
+    export vfhmin=$vfhmin                                    #start forecast hour  
+    export vfhmax=$vfhmax                                    #end forecast hour
+    #export asub=${asub:-a}                                   #string in pgb anl file after pgb, say, pgbanl, pgbhnl 
+    #export fsub=${fsub:-f}                                   #string in pgb fcst file after pgb, say, pgbf06, pgbh06
     #do some checks 
     if [ ! -d $metplushome ]; then
         echo "EXIT ERROR: $metplushome does not exist "
@@ -193,12 +222,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         exit
     fi
     #create directories for output
-    mkdir -p $rundir_g2g1 $metplussave
-    mkdir -p ${rundir_g2g1}/make_met_data
-    mkdir -p ${rundir_g2g1}/VSDB_format
-    mkdir -p ${rundir_g2g1}/logs
-    mkdir -p ${rundir_g2g1}/confs
-    mkdir -p ${rundir_g2g1}/jobs
+    mkdir -p $rundir_g2g1_base $metplussave
     #determine requested forecast hours for verification
     export nvhr=`echo $vhrlist |wc -w`           #number of verification hours
     export nfcyc=`echo $fcyclist |wc -w`         #number of forecast cycles per day
@@ -221,7 +245,6 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export vfh_list_config=$( printf "%s," "${vfh_list[@]}" | cut -d "," -f 1-${#vfh_list[@]} )
     echo $vfh_list_config
     #determine which grid-to-grid verification types to run
-    typelist="anom pres"
     if [ $g2g_sfc = "YES" ]; then      
         typelist="anom pres sfc"
     else
@@ -239,64 +262,149 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         export exp_dir=${expdir[nn]}        #exp directory
         export cdump=${dumpname[nn]:-".gfs."} #file dump format
         export obtype=$exp                  #obs/analysis data type for verification
-        mkdir -p ${rundir_g2g1}/logs/${exp}
-        mkdir -p ${rundir_g2g1}/confs/${exp}
-        mkdir -p ${rundir_g2g1}/jobs/${exp}
         for vhr in $vhrlist; do
             VDATE=${VDATEST}${vhr}
             while [ $VDATE -le ${VDATEND}${vhr} ] ; do
                 export VDATE=$VDATE
-                for type in $typelist ; do
-                    export type=${type}
-                    export savedir=${metplussave}/${type}/${vhr}Z/${exp}
-                    mkdir -p ${savedir}
-                    export work=${rundir_g2g1}/make_met_data/${type}/${exp}
-                    mkdir -p $work
-                    if [ -d ${work}/${VDATE}00 ] ; then
-                       echo "REMOVING ${work}/${VDATE}00"
-                       rm -r ${work}/${VDATE}00
-                    fi
-                    if [ ${type} = pres ] ; then
-                       anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
-                       if [ -s $anlfile ]; then
-                           echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
-                       else
-                           echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
-                           mkdir -p ${work}/${VDATE}00
-                           echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
-                       fi
-                    elif [ ${type} = anom ] ; then
-                       anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
-                       if [ -s $anlfile ]; then
-                           echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
-                       else
-                           echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
-                           mkdir -p ${work}/${VDATE}00
-                           echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
-                       fi
-                    elif [ ${type} = sfc ] ; then
-                       f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
-                       if [ -s $f00file ]; then
-                           echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                           ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                           cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
-                       else
-                           echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
-                           mkdir -p ${work}/${VDATE}00
-                           echo "${f00file} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
-                       fi
+                export rundir_g2g1=${rundir_g2g1_base}/${VDATE}
+                if [ -d ${rundir_g2g1} ] ; then
+                    echo "REMOVING ${rundir_g2g1}"
+                    rm -r $rundir_g2g1
+                fi
+                mkdir -p ${rundir_g2g1}/make_met_data
+                mkdir -p ${rundir_g2g1}/VSDB_format
+                mkdir -p ${rundir_g2g1}/logs/${exp}
+                mkdir -p ${rundir_g2g1}/confs/${exp}
+                mkdir -p ${rundir_g2g1}/jobs/${exp}
+                #create poejob scripts, if MPMD=YES, else run METplus
+                if [ $MPMD = YES ] ; then
+                    #do some pre-checks for files and creating directories
+                    anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
+                    if [ -s $anlfile ]; then
+                        mpmd_test_pass="YES"
+                        if [ $g2g_sfc = "YES" ]; then
+                           f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
+                           if [ -s $f00file ]; then
+                               export typelist4mpmd="anom pres sfc"
+                           else
+                               export typelist4mpmd="anom pres"
+                               work=${rundir_g2g1}/make_met_data/sfc/${exp}
+                               echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid sfc verification for this date." 
+                               mkdir -p ${work}/${VDATE}00
+                               echo "${f00file} doesn't exist or zero-sized. No grid-to-grid sfc verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt      
+                           fi
+                        else
+                           export typelist4mpmd="anom pres"
+                        fi
                     else
-                       echo "ERROR: grid-to-grid ${type} is not supported."
-                       mkdir -p ${work}/${VDATE}00
-                       echo "grid-to-grid ${type} is not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
+                        mpmd_test_pass="NO"
+                        work1=${rundir_g2g1}/make_met_data/pres/${exp}
+                        work2=${rundir_g2g1}/make_met_data/anom/${exp}
+                        echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid pres and anom verification for this date." 
+                        mkdir -p ${work1}/${VDATE}00
+                        echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid pres verification for this date." >> ${work1}/${VDATE}00/error_${VDATE}.txt
+                        mkdir -p ${work2}/${VDATE}00
+                        echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid anom verification for this date." >> ${work2}/${VDATE}00/error_${VDATE}.txt
                     fi
-                done 
+                    #
+                    if [ $mpmd_test_pass = "YES" ] ; then
+                        export poedir=${rundir_g2g1}/jobs/${exp}/poe_scripts
+                        mkdir -p $poedir
+                        #output from METplus poejobs need to be written to individual directories
+                        #otherwise sometimes errors get thrown by METplus when trying to make the
+                        #directory; need to create directory to move all output to when jobs are done
+                        for type in $typelist4mpmd ; do
+                            mkdir -p ${rundir_g2g1}/make_met_data/${type}/${exp}/${VDATE}00/grid_stat
+                        done
+                        python ${USHgfs}/metplusjob_create_g2g_poejobscripts.py
+                        cd $poedir ||exit 8
+                        chmod u+x poejob*.sh
+                        ncount=$(ls -l poejob*.sh |wc -l)
+                        nc=0; iproc=0; node=1
+                        while [ $nc -lt $ncount ]; do
+                            if [ $iproc -ge $nproc ]; then iproc=0; node=$((node+1)); fi
+                                poescript=$poedir/poe_node${node}
+                                if [ $iproc -eq 0 ]; then
+                                    rm -f $poescript; touch $poescript
+                                fi
+                                nc=$((nc+1))
+                                iproc=$((iproc+1))
+                                echo "$poedir/poejob${nc}.sh" >>$poescript
+                                if [ $iproc -eq $nproc -o $nc -eq $ncount ]; then
+                                    export MP_PGMMODEL=mpmd
+                                    export MP_CMDFILE=${poescript}
+                                    launcher="aprun -j 1 -n ${iproc} -N ${iproc} -d 1 cfp"
+                                    if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ] ; then
+                                        $launcher $MP_CMDFILE
+                                    else
+                                        $launcher
+                                    fi
+                                    export err=$?
+                                    echo "EXIT ${MP_CMDFILE} WITH ${err}"
+                                    if [ $err -ne 0 ]; then sh +x ${poescript} ; fi
+                               fi
+                        done
+                        for type in $typelist4mpmd ; do
+                            export type=$type
+                            export savedir=${metplussave}/${type}/${vhr}Z/${exp}
+                            mkdir -p ${savedir}
+                            if [ ${type} = anom ] ; then
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_statanalysis_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                            else
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_statanalysis_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                            fi
+                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                        done
+                    fi
+                else
+                    for type in $typelist ; do
+                        export type=${type}
+                        export savedir=${metplussave}/${type}/${vhr}Z/${exp}
+                        mkdir -p ${savedir}
+                        export work=${rundir_g2g1}/make_met_data/${type}/${exp}
+                        mkdir -p $work
+                        if [ ${type} = pres ] ; then
+                            anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
+                            if [ -s $anlfile ]; then
+                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                            else
+                                echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                                mkdir -p ${work}/${VDATE}00
+                                echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                            fi
+                        elif [ ${type} = anom ] ; then
+                            anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
+                            if [ -s $anlfile ]; then
+                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                            else
+                                echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                                mkdir -p ${work}/${VDATE}00
+                                echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                            fi
+                        elif [ ${type} = sfc ] ; then
+                            f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
+                            if [ -s $f00file ]; then
+                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                            else
+                                echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                                mkdir -p ${work}/${VDATE}00
+                                echo "${f00file} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                            fi
+                        else
+                            echo "ERROR: grid-to-grid ${type} is not supported."
+                            mkdir -p ${work}/${VDATE}00
+                            echo "grid-to-grid ${type} is not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
+                        fi
+                    done 
+                fi
                 VDATE=$($ndate +24 $VDATE)
             done
         done
@@ -344,7 +452,6 @@ if [ $VRFY_PRECIP_STEP2 = YES ] ; then
     echo "ERROR: VRFY_PRECIP_STEP2 IS NOT SUPPORTED AT THIS TIME"
 fi
 ## --------------------------------------------------------------
-module purge
 exit
 ########################################################################
 ########################################################################
