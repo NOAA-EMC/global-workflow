@@ -18,6 +18,8 @@ if [[ "$target" == jet ]]; then
     if [ -f "../modulefiles/gsi/modulefile.ProdGSI.jet" ]; then
         if [ -d gsi.fd/modulefiles ]; then
             cp ../modulefiles/gsi/modulefile.ProdGSI.jet gsi.fd/modulefiles
+            cp ../modulefiles/gsi/CMakeLists.txt gsi.fd
+            cp ../modulefiles/gsi/setCompilerFlags.cmake gsi.fd/cmake/Modules
         fi
     fi
 fi    
