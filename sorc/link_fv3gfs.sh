@@ -170,19 +170,21 @@ fi
 
 if [[ $target == "jet" ]]; then
   util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
-  for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  for util_exec_dirs in grib_utils prod_util ;do
       if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
        $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
       else
        echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
       fi
   done 
-else
+fi
+#else
   for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
       [[ -s $gsiexe ]] && rm -f $gsiexe
       $LINK ../sorc/gsi.fd/exec/$gsiexe .
   done
-fi
+#fi
 
 cd ${pwd}
 cd gsi.fd
