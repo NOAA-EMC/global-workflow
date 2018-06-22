@@ -99,7 +99,7 @@ config_base:
     export RUNDIR="{doc.places.DATAROOT}"
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
     export ICSDIR="{doc.places.ICSDIR}"
-    export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+    export ATARDIR="{doc.archiving.ATARDIR}"
     
     # Commonly defined parameters in JJOBS
     export envir=${{envir:-"prod"}}

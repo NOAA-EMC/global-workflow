@@ -39,3 +39,7 @@ archive_settings_template: !Template &archive_settings_template
     default: 24
     description: "ending hour of previous cycles to be removed from rotating directory during archive job"
 
+  ATARDIR:
+    type: string
+    default: "/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+    description: "Archiving directory on HPSS for the current workflow.  Default is a shell expression typically used in config.base."
