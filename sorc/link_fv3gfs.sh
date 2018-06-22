@@ -166,8 +166,6 @@ if [[ $target == "gaea" ]]; then
   fi
 fi
 
-# TODO: Temp fix for GSI on Jet we have built GSI on tJet (needes to be compile to work accross partitions via CMake build)
-
 if [[ $target == "jet" ]]; then
   util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
   #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
@@ -179,12 +177,11 @@ if [[ $target == "jet" ]]; then
       fi
   done 
 fi
-#else
-  for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
-      [[ -s $gsiexe ]] && rm -f $gsiexe
-      $LINK ../sorc/gsi.fd/exec/$gsiexe .
-  done
-#fi
+
+for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+     [[ -s $gsiexe ]] && rm -f $gsiexe
+     $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
 
 cd ${pwd}
 cd gsi.fd
