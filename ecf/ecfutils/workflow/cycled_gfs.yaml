@@ -489,7 +489,7 @@ suite: !Cycle
       bufr_sounding: !Family
         jgfs_postsnd: !Task
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.post.jgfs_post_manager.release_post00
+          Trigger: !Depend up.up.post.jgfs_post_f144
           resources: !calc ( tools.ref(doc.resources,'run_postsnd') )
           J_JOB: rocoto/postsnd.sh
           ecf_module_commands: "# postsnd.sh will load modules instead"
