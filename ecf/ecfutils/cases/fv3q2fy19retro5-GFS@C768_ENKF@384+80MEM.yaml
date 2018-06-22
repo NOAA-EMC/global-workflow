@@ -29,13 +29,29 @@ case:
     DO_BUFRSND: No
     DO_GEMPAK: No
     DO_AWIPS: No
+    VRFYFITS: NO
+    VSDB_STEP1: YES
+    VSDB_STEP2: NO
+    VRFYG2OBS: YES
+    VRFYPRCP: YES
+    VRFYRAD: YES
+    VRFYOZN: YES
+    VRFYMINMON: YES
+    VRFYTRAK: NO
+    VRFYGENESIS: NO
+    RUNMOS: NO
+    RMOLDSTD: 144
+    RMOLDEND: 72
 
   archiving:
+    ATARDIR: /5year/NCEPDEV/emc-global/emc.glopara/JET/Q2FY19/fv3q2fy19retro5
     scrub_in_archive_end: 72
     arch_warmicfreq: 2
     arch_fcsticfreq: 1
 
   settings: 
+    BASE_GIT: /mnt/lfs3/projects/hfv3gfs/glopara/git
+    BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
     SDATE: 2015-11-25t00:00:00
     EDATE: 2015-11-25t06:00:00
@@ -43,4 +59,3 @@ case:
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z
     run_gsi: Yes
-    max_tries: 2
