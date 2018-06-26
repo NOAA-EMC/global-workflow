@@ -26,5 +26,3 @@ config_epos:
     
     echo "END: config.epos"
     
-
-    

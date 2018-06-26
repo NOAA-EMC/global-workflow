@@ -38,43 +38,43 @@ aliases:
     <<: *alias_exclusive
     flag: !calc ( 'prep' in doc.suite.gfs )
     task: !calc doc.suite.gfs.prep.jgfs_prep
-    alt_resources: !calc doc.resources.run_prep
+    alt_resources: !calc doc.exclusive_resources.run_prep
 
   epos:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite )
     task: !calc doc.suite.gdas.enkf.post.jgdas_enkf_post_fhr
-    alt_resources: !calc doc.resources.run_epos
+    alt_resources: !calc doc.exclusive_resources.run_epos
 
   anal:
     <<: *alias_exclusive
     flag: !calc ( 'gfs' in doc.suite and 'gfs_analysis' in doc.suite.gfs )
     task: !calc doc.suite.gfs.jgfs_analysis
-    alt_resources: !calc doc.resources.run_anal
+    alt_resources: !calc doc.exclusive_resources.run_anal
 
   gfsvrfy:
     <<: *alias_exclusive
     flag: !calc ( 'gfs' in doc.suite and 'jgfs_emc_vrfy' in doc.suite.gfs )
     task: !calc doc.suite.gfs.jgfs_emc_vrfy
-    alt_resources: !calc doc.resources.run_gfsvrfy
+    alt_resources: !calc doc.exclusive_resources.run_gfsvrfy
 
   gdasvrfy:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'jgdas_emc_vrfy' in doc.suite.gdas )
     task: !calc doc.suite.gdas.jgdas_emc_vrfy
-    alt_resources: !calc doc.resources.run_gdasvrfy
+    alt_resources: !calc doc.exclusive_resources.run_gdasvrfy
 
   eobs:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite )
     task: !calc doc.suite.gdas.enkf.jgdas_enkf_select_obs
-    alt_resources: !calc doc.resources.run_eobs
+    alt_resources: !calc doc.exclusive_resources.run_eobs
 
   gdasfcst:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite )
     task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
-    alt_resources: !calc doc.resources.run_gfsfcst
+    alt_resources: !calc doc.exclusive_resources.run_gfsfcst
 
   gfsfcst:
     <<: *alias_exclusive
@@ -86,78 +86,78 @@ aliases:
     <<: *alias_remap
     flag: !calc ( 'gdas' in doc.suite )
     task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
-    alt_resources: !calc doc.resources.run_gdasremap
+    alt_resources: !calc doc.exclusive_resources.run_gdasremap
 
   gfsremap:
     <<: *alias_remap
     flag: !calc ( 'gfs' in doc.suite )
     task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
-    alt_resources: !error doc.resources.run_gfsremap
+    alt_resources: !error doc.exclusive_resources.run_gfsremap
 
   gdaspost:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite )
     task: !calc doc.suite.gdas.post.jgdas_post_fhr_el
-    alt_resources: !calc doc.resources.run_gdaspost
+    alt_resources: !calc doc.exclusive_resources.run_gdaspost
 
   gfspost:
     <<: *alias_exclusive
     flag: !calc ( 'gfs' in doc.suite )
     task: !calc doc.suite.gfs.post.jgfs_post_fhr_el
-    alt_resources: !calc doc.resources.run_gfspost
+    alt_resources: !calc doc.exclusive_resources.run_gfspost
 
   efcs:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite )
     task: !calc doc.suite.gdas.enkf.forecast.jgdas_enkf_fcst_grp
-    alt_resources: !calc doc.resources.run_efcs
+    alt_resources: !calc doc.exclusive_resources.run_efcs
 
   eupd: 
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite )
     task: !calc doc.suite.gdas.enkf.jgdas_enkf_update
-    alt_resources: !calc doc.resources.run_eupd
+    alt_resources: !calc doc.exclusive_resources.run_eupd
 
   eomg: 
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite )
     task: !calc doc.suite.gdas.enkf.innovate.jgdas_enkf_innovate_obs_grp
-    alt_resources: !calc doc.resources.run_eomg
+    alt_resources: !calc doc.exclusive_resources.run_eomg
 
   ecen: 
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite )
     task: !calc doc.suite.gdas.enkf.innovate.jgdas_enkf_inflate_recenter
-    alt_resources: !calc doc.resources.run_ecen
+    alt_resources: !calc doc.exclusive_resources.run_ecen
 
   dwn:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_dwn
+    alt_resources: !calc doc.exclusive_resources.run_dwn
 
   fv3ic:
     <<: *alias_exclusive
     flag: !calc ( 'ics' in doc.suite and 'jgfs_emc_fv3ic' in doc.suite.ics )
     task: !calc doc.suite.ics.jgfs_emc_fv3ic
-    alt_resources: !calc doc.resources.run_fv3ic
+    alt_resources: !calc doc.exclusive_resources.run_fv3ic
 
   getic:
     <<: *alias_exclusive
     flag: !calc ( 'ics' in doc.suite and 'jgfs_emc_getics' in doc.suite.ics )
     task: !calc doc.suite.ics.jgfs_emc_getics
-    alt_resources: !calc doc.resources.run_getic
+    alt_resources: !calc doc.service_resources.run_getic
 
   earc:
     <<: *alias_exclusive
     flag: !calc ( 'archive' in doc.suite and 'jgfs_enkf_archive' in doc.suite.archive )
     task: !calc doc.suite.archive.jgdas_enkf_archive.grp
-    alt_resources: !calc doc.resources.run_earc
+    alt_resources: !calc doc.service_resources.run_earc
 
   arch:
     <<: *alias_exclusive
     flag: !calc ( 'archive' in doc.suite )
     task: !calc doc.suite.archive.jgfs_archive
-    alt_resources: !calc doc.resources.run_arch
+    alt_resources: !calc doc.service_resources.run_arch
 
   ######################################################################
 
@@ -168,26 +168,26 @@ aliases:
   prepbufr:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_prepbufr
+    alt_resources: !calc doc.exclusive_resources.run_prepbufr
 
   awips:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_awips
+    alt_resources: !calc doc.exclusive_resources.run_awips
 
   postsnd:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_postsnd
+    alt_resources: !calc doc.exclusive_resources.run_postsnd
 
   postsndcfp:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_postsndcfp
+    alt_resources: !calc doc.exclusive_resources.run_postsndcfp
 
   gempak:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.resources.run_gempak
+    alt_resources: !calc doc.exclusive_resources.run_gempak
 
   

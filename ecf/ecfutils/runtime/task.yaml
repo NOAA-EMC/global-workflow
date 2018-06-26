@@ -35,6 +35,10 @@ task_template: &task_template
   # control to the j-job (jobs/ directory) for this task.
   ecflow_command: !expand "${{HOMEgfs}}/jobs/{J_JOB}"
 
+  # rocoto_log_path: contents of the <join> entry of the <task> which
+  # sets the stdout and stderr log path in the Rocoto XML.
+  rocoto_log_path: !ref doc.settings.rocoto_log_path
+
   # Rocoto - contents of the Rocoto <task> tag for this task,
   # excluding the <dependency> tag, which is automatically generated
   # in CROW/crow/metascheduler/rocoto.py
@@ -43,7 +47,7 @@ task_template: &task_template
     {partition.scheduler.rocoto_accounting(
         partition_specification,default_accounting,accounting,
       jobname=task_path_var,
-        outerr="<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>",
+        outerr=rocoto_log_path,
         partition=partition.specification)}
     {partition.scheduler.rocoto_resources(resources)}
     <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
@@ -137,6 +141,7 @@ task_template: &task_template
     {ecf_module_commands}
     module load ecflow
     module list
+    export ECF_PORT=%ECF_PORT%
 
     #############################################################
     # WCOSS environment settings
@@ -161,15 +166,18 @@ task_template: &task_template
 
   # ecf_module_commands - these commands are sent to the ecf file for
   # this task to load any modules that are required for the job
-  ecf_module_commands: |-
+  ecf_module_commands: !expand |-
     source "$HOMEgfs/ush/load_fv3gfs_modules.sh" {task_type}
 
   ecf_environment_settings: |-
     # Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
 
+  # ecf_log_path: sets the stdout/stderr log path for the job
+  ecf_log_path: !ref doc.settings.ecf_log_path
+
   # ecf_batch_resources - generates batch card settings for the ecflow ecf file
   ecf_batch_resources: !expand |-
-    {partition.scheduler.batch_accounting(partition_specification,default_accounting,accounting,jobname=task_path_var,outerr="%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")}
+    {partition.scheduler.batch_accounting(partition_specification,default_accounting,accounting,jobname=task_path_var,outerr=ecf_log_path)}
     {partition.scheduler.batch_resources(resources)}
 
   # ecf_resource_more - generates the ntasks, ptile, and threads variables

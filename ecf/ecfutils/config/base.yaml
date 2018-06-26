@@ -44,8 +44,8 @@ config_base:
     export RTMFIX="{doc.places.RTMFIX}"
     
     export HOMEDIR="{doc.places.HOMEDIR}"
-    export STMP="{doc.places.SHORT_TERM_TEMP}"
-    export PTMP="{doc.places.LONG_TERM_TEMP}"
+    export STMP="{doc.places.SHORT_TERM_TEMP}/$USER"
+    export PTMP="{doc.places.LONG_TERM_TEMP}/$USER"
     export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds

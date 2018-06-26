@@ -1,6 +1,8 @@
 # This file configures the workflow to run on the cray parts of WCOSS
 
 platform: !Platform
+  <<: *global_platform_common
+
   # Evaluate: this must be "false" to ensure disk space availability logic
   # is not run unless this file is for the current platform.
   Evaluate: false
@@ -73,10 +75,15 @@ platform: !Platform
     {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
 
   partitions:
+    Evaluate: false
     default_exclusive: !calc doc.platform.partitions.wcoss_cray
     default_service: !calc doc.platform.partitions.wcoss_cray
     default_shared: !calc doc.platform.partitions.wcoss_cray
     wcoss_cray:
+      <<: *global_partition_common
+
+      # specification - string to specify to the batch system to
+      # request this partition.  Not relevant for WCOSS Cray
       specification: null
 
       # shared_accounting_ref - accounting settings for shared jobs
@@ -119,6 +126,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
+        memory_per_node: !calc (64*1024)
 
       scheduler: !calc |
         tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)

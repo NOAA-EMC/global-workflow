@@ -1,6 +1,8 @@
 # This file configures the workflow to run on GAEA.  
 
 platform: !Platform
+  <<: *global_platform_common
+
   # Evaluate: this must be "false" to ensure disk space availability logic
   # is not run unless this file is for the current platform.
   Evaluate: false
@@ -64,6 +66,7 @@ platform: !Platform
     export WGRIB2="aprun -n 1 -j 1 -N 1 -d 1 -cc depth $EXECgfs/wgrib2"
 
   partition_common: &partition_common
+    <<: *global_partition_common
     # Settings common to all partitions of this machine
 
     # shared_accounting_ref - accounting settings for shared jobs
@@ -98,6 +101,7 @@ platform: !Platform
       tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
 
   partitions:
+    Evaluate: false
     c4:
       <<: *partition_common
       specification: c4
@@ -110,6 +114,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
+        memory_per_node: !calc (64*1024)
 
     es:
       <<: *partition_common
@@ -136,6 +141,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
+        memory_per_node: !calc (64*1024)
 
     c3_or_c4:
       <<: *partition_common
@@ -149,6 +155,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
+        memory_per_node: !calc (64*1024)
 
     # Default partitions for each common job type:
     default_shared: !calc doc.platform.partitions.c3_or_c4

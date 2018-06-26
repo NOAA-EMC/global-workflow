@@ -23,6 +23,7 @@ gfs_resource_table: !Select
       gfsvrfy:  [   5,    1, !timedelta "06:00:00", null ]
       gdasfcst_wall:  !timedelta "00:15:00"
       gfsfcst_wall:  !timedelta "06:00:00"
+      post_manager_wallclock_extra: !timedelta "00:15:00"
     C384:
       #          ranks ppn  wallclock             threads
       prep:     [  12,   12, !timedelta "00:15:00", null ]
@@ -33,6 +34,7 @@ gfs_resource_table: !Select
       gfsvrfy:  [   5,    1, !timedelta "03:00:00", null ]
       gdasfcst_wall:  !timedelta "00:15:00"
       gfsfcst_wall:  !timedelta "06:00:00"
+      post_manager_wallclock_extra: !timedelta "00:15:00"
     C768:
       #          ranks ppn  wallclock             threads
       prep:     [   4,    4, !timedelta "00:45:00", max  ]
@@ -43,6 +45,7 @@ gfs_resource_table: !Select
       gfsvrfy:  [   5, null, !timedelta "06:00:00", null ]
       gdasfcst_wall:  !timedelta "01:00:00"
       gfsfcst_wall:  !timedelta "06:00:00"
+      post_manager_wallclock_extra: !timedelta "00:15:00"
 
 enkf_resource_table: !Select
   select: !calc doc.fv3_enkf_settings.CASE
@@ -58,8 +61,8 @@ enkf_resource_table: !Select
       efcs_wall:  !timedelta "01:00:00"
     C384:
       #          ranks ppn  wallclock             threads
-      eobs:     [ 144,   12, !timedelta "00:30:00", 2    ]
-      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
+      eobs:     [ 144,   12, !timedelta "00:30:00", max  ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", max  ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
       ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
@@ -69,7 +72,7 @@ enkf_resource_table: !Select
       eobs:     [ 144,   12, !timedelta "00:30:00", 2    ]
       eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
       eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
-      ecen:     [  80,    1, !timedelta "01:00:00", 2    ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
       epos:     [  80,    3, !timedelta "02:00:00", 2    ]
       efcs_wall:  !timedelta "03:00:00"
 
@@ -93,7 +96,7 @@ default_resources: &default_resources
     - batch_memory: "254M"
       mpi_ranks: 12
       max_ppn: 3
-      walltime: !timedelta "02:00:00"
+      walltime: !timedelta "04:00:00"
       exe: placeholder
       
   run_postsndcfp: !JobRequest
@@ -134,7 +137,7 @@ default_resources: &default_resources
         - otherwise: !timedelta "00:05:00"
             
   run_make_next_cycles: !JobRequest
-    - memory: "300M"
+    - memory: "600M"
       exe: placeholder
       walltime: !timedelta "00:15:00"
       
@@ -206,10 +209,10 @@ default_resources: &default_resources
       OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
   
   remap_resource_template: &remap_resource_template
-    - mpi_ranks: !calc >-
-        min(240,resources.total_ranks())
-      OMP_NUM_THREADS: 2
-      max_ppn: !calc partition.nodes.max_ranks_per_node(resources[0])
+    mpi_ranks: !calc >-
+      min(240,resources.total_ranks())
+    OMP_NUM_THREADS: 2
+    max_ppn: !calc partition.nodes.max_ranks_per_node(resources[0])
   
   run_efcs: !JobRequest
     - batch_memory: "254M"
@@ -233,25 +236,24 @@ default_resources: &default_resources
       OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
       walltime: !calc doc.gfs_resource_table.gfsfcst_wall
   
-  run_gfsremap: !JobRequest
+  fallback_run_gfsremap: !JobRequest
+    # Used to generate the config files if the gfs remap is not run in the workflow.
     - mpi_ranks: !calc >-
-          min(240,doc.resources.run_gfsfcst.total_ranks())
+          min(240,doc.exclusive_resources.run_gfsfcst.total_ranks())
       OMP_NUM_THREADS: 2
       max_ppn: !calc >-
           partition.nodes.max_ranks_per_node(
-            doc.resources.run_gfsfcst[0])
+            doc.exclusive_resources.run_gfsfcst[0])
   
   run_gdas_post_manager: !JobRequest
     - memory: "300M"
       exe: placeholder
-      walltime: !calc >-
-          doc.resources.run_gdasfcst[0].walltime + tools.to_timedelta('00:15:00')
+      walltime: !calc doc.gfs_resource_table.gdasfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
   
   run_gfs_post_manager: !JobRequest
     - memory: "300M"
       exe: placeholder
-      walltime: !calc >-
-          doc.resources.run_gfsfcst[0].walltime + tools.to_timedelta('00:15:00')
+      walltime: !calc doc.gfs_resource_table.gfsfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
 
   run_ecen: !JobRequest
     - batch_memory: "3072M"
@@ -260,6 +262,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.ecen[1]
       walltime: !calc doc.enkf_resource_table.ecen[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.ecen[3]
+      # memory_per_rank: !calc (19*1024) <== used to test functionality
   
   run_eobs: !JobRequest
     - batch_memory: "3072M"

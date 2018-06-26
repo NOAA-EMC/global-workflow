@@ -2,8 +2,8 @@ settings_schema: !Template &settings_schema
 
   realtime:
     type: bool
-    description: "Simulation of an event that is currently happening (ie.: a forecast)"
     default: false
+    description: "Simulation of an event that is currently happening (ie.: a forecast)"
 
   four_cycle_mode:
     type: bool
@@ -58,11 +58,6 @@ settings_schema: !Template &settings_schema
     type: datetime
     description: Last cycle to run GDAS.
   
-  REALTIME:
-    type: bool
-    default: false
-    descript: Whether the run will be done in real-time or retrospective mode
-
   ics_from:
     type: string
     default: opsgfs

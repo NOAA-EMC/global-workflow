@@ -1,0 +1,15 @@
+platform_common: &global_platform_common
+  Evaluate: False
+  default_resources: {}
+
+partition_common: &global_partition_common
+  Evaluate: False
+  resources: !MergeMapping
+    - !calc doc.default_resources
+    - !calc doc.platform.default_resources
+    - !calc default_resources
+    - !calc doc.case.get('resources',{})
+    - !calc doc.get('user_resources',{})
+
+  default_resources: {}
+

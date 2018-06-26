@@ -20,7 +20,7 @@ suite: !Cycle
     jgfs_emc_getics: !Task
       <<: *service_task_template
       Disable: !calc doc.settings.get("IC_CDUMP","") 
-      resources: !calc ( tools.ref(doc.resources,'run_getic') )
+      resources: !calc ( tools.ref(partition.resources,'run_getic') )
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
       RUN: gfs
@@ -30,7 +30,7 @@ suite: !Cycle
       <<: *exclusive_task_template
       Disable: !calc not doc.settings.chgres_and_convert_ics
       Trigger: !Depend jgfs_emc_getics
-      resources: !calc ( tools.ref(doc.resources,'run_fv3ic') )
+      resources: !calc ( tools.ref(partition.resources,'run_fv3ic') )
       J_JOB: rocoto/fv3ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
       RUN: gfs
@@ -51,7 +51,7 @@ suite: !Cycle
       # jgfs_forecast_high - the FV3 forecast
       jgfs_forecast_high: !Task
         <<: *forecast_task_template
-        resources: !calc ( tools.ref(doc.resources,'run_gfsfcst') )
+        resources: !calc ( tools.ref(partition.resources,'run_gfsfcst') )
         J_JOB: JGLOBAL_FORECAST
         
     # post family - this family runs the UPP to convert FV3 output
@@ -79,7 +79,7 @@ suite: !Cycle
         ecflow_command: *post_manager_job_contents
         J_JOB: post_manager
         Name: jgfs_post_manager
-        resources: !calc tools.ref(doc.resources,'run_gfs_post_manager')
+        resources: !calc tools.ref(partition.resources,'run_gfs_post_manager')
         release_post_fhr: !DataEventElement
           Name: !expand "release_post{dimval.fhr:02d}"
           Foreach: [ fhr ]
@@ -93,7 +93,7 @@ suite: !Cycle
       jgfs_post_fhr_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
-        resources: !calc tools.ref(doc.resources,'run_gfspost')
+        resources: !calc tools.ref(partition.resources,'run_gfspost')
         Name: !expand jgfs_post_f{dimval.fhr:02d}
         FHRGRP: !expand "{dimidx.fhr+1:03d}"
         FHRLST: !expand "f{dimval.fhr:03d}"
@@ -124,7 +124,7 @@ suite: !Cycle
   final: !Task
     <<: *service_task_template
     Disable: !calc not metasched.type=="rocoto"
-    resources: !calc (tools.ref(doc.resources,'run_nothing'))
+    resources: !calc (tools.ref(partition.resources,'run_nothing'))
     rocoto_command: /bin/true
     RUN: gfs # useless but required
 

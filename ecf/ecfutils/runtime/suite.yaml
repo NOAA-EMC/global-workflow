@@ -60,8 +60,9 @@ suite_defaults: &suite_defaults
     step: !timedelta "6:00:00"
 
   Overrides:
-    allowed: [ 'partition', 'resources', 'rocoto_command',
-    'accounting', 'ecflow_command', 'max_tries', 'resources_remap' ]
+    allowed: [ 'partition', 'resources', 'rocoto_command', 'rocoto_log_path',
+    'accounting', 'ecflow_command', 'max_tries', 'resources_remap', 'ecf_log_path',
+    'Rocoto', 'ecf_file' ]
     rules: !calc doc.suite_overrides
 
   # ecFlow - definition of variables specific to ecFlow suite generation
@@ -80,7 +81,7 @@ suite_defaults: &suite_defaults
 
     # dates_in_time_dependencies - flag that controls whether ecflow
     # suite definition "date" triggers are to be defined.
-    dates_in_time_dependencies: true
+    dates_in_time_dependencies: !calc (not doc.settings.four_cycle_mode)
 
     # write_cycles/analyze_cycles: Use these to generate a subset of
     # the cycles in ecFlow.  Make sure analyze_cycles starts at least

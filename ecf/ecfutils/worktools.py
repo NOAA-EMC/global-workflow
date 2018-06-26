@@ -23,9 +23,11 @@ except ImportError as ie:
     sys.path.append(topdir)
     del thisdir, topdir
 
-def init_logging(verbose=False):
+def init_logging(verbose=False,debug=False):
     level=logging.WARNING
-    if verbose or os.environ.get('WORKTOOLS_VERBOSE','NO') == 'YES':
+    if debug:
+        level=logging.DEBUG
+    elif verbose or os.environ.get('WORKTOOLS_VERBOSE','NO') == 'YES':
         level=logging.INFO
     logging.basicConfig(stream=sys.stderr,level=level)
 
@@ -54,9 +56,9 @@ def make_parent_dir(filename):
 
 def find_available_platforms(platdir):
     available={}
-    for matching_file in glob.glob(f'{platdir}/*.yaml'):
+    for matching_file in glob.glob(f'{platdir}/[a-zA-Z]*.yaml'):
         logger.info(f'{matching_file}: check this platform...')
-        plat=from_file('user.yaml',matching_file)
+        plat=from_file('user.yaml',f'{platdir}/_common.yaml',matching_file)
         if not 'platform' in plat or \
            not 'detect' in plat.platform or \
            not 'name' in plat.platform:
@@ -472,10 +474,10 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'vfcp:D')
+    options,positionals=getopt(command_line_arguments,'dvfcp:D')
     options=dict(options)
 
-    init_logging('-v' in options)
+    init_logging('-v' in options,'-d' in options or '-D' in options)
 
     if '-D' in options:
         logger.warning('superdebug mode enabled')
@@ -493,8 +495,9 @@ def setup_case(command_line_arguments):
     case_name=positionals[0]
     experiment_name=positionals[1]
     if not re.match('^[A-Za-z][A-Za-z0-9_]*$',experiment_name):
-        logger.error('{experiment_name}: experiment names must be '
+        logger.error(f'{experiment_name}: experiment names must be '
                      'alphanumeric and start with a letter.')
+        exit(1)
 
     if not os.path.exists('user.yaml'):
         logger.error('You did not create user.yaml!')
