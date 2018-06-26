@@ -23,7 +23,7 @@ PDY2=`echo $PDY | cut -c3-`
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+himouo.nws
 gdfile     = F-${MDL} | ${PDY2}/${cyc}00
 gdattim    = f00-f180-6

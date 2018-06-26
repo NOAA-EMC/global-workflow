@@ -144,7 +144,7 @@ for area in $areas
 
 # 500 MB HEIGHT METAFILE
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL = mepowo.gsf
 PROJ     = ${proj}
 GAREA    = ${garea}

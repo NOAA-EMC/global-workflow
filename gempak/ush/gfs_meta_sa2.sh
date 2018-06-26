@@ -43,14 +43,16 @@ then
 fi
 
 PDY2=`echo ${PDY} | cut -c3-`
-export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDY}
+# export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDY}
+export HPCGFS=${COMINgempak}/${NET}/${envir}/${mdl}.${PDY}/${cyc}/nawips
+
 grid1="F-GFSHPC | ${PDY2}/${cyc}00"
 
 # DEFINE YESTERDAY
 PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
 PDY2m1=`echo ${PDYm1} | cut -c 3-`
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL= mepowo.gsf
 GDFILE	= ${grid1}
 GDATTIM	= F000-F144-12 
@@ -215,9 +217,9 @@ do
             ecmwffhr="F0`expr ${gfsfhr} + 6`"
         done
     gfsfhr="F${gfsfhr}"
-    grid2="${COMINROOTecmwf}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
 
-gdplot2_nc << EOF10
+$GEMEXE/gdplot2_nc << EOF10
 \$MAPFIL = mepowo.gsf
 GDFILE	= ${grid1} !${grid2}
 GDATTIM	= ${gfsfhr}!${ecmwffhr}
@@ -299,9 +301,9 @@ do
         ukmetfhr=${gfsfhr}
     fi
     gfsfhr="F${gfsfhr}"
-    grid3="${COMINROOTukmet}/ukmet.${PDY}/ukmet_${PDY}00f${ukmetfhr}"
+    grid3="${COMINukmet}.${PDY}/ukmet_${PDY}00f${ukmetfhr}"
 
-gdplot2_nc << EOF25
+$GEMEXE/gdplot2_nc << EOF25
 \$MAPFIL = mepowo.gsf
 DEVICE  = ${device}
 PANEL   = 0

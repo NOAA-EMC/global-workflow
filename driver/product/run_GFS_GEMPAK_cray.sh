@@ -53,7 +53,7 @@ module load gempak/7.3.0
 module list
 
 ############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para

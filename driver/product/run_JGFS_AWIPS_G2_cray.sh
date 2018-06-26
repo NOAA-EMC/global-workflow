@@ -55,7 +55,7 @@ module list
 export fcsthrs=012
 
 ############################################
-# User Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
@@ -102,7 +102,7 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)

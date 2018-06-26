@@ -88,6 +88,10 @@ export pgmout=OUTPUT.$$
 
 env
 
+if [ -f $DATA/poescrip ]; then
+   rm $DATA/poescript
+fi
+
 ########################################################
 # Execute the script.
 echo "$SRCgfs/exgdas_nawips.sh.ecf gdas 009 GDAS_GEMPAK" >>poescript
@@ -102,19 +106,12 @@ chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
-export NODES=2
-ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
-ptile=${PTILE_GEMPAK:-17}
-threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=$threads
+# Execute the script.
+export MPIRUN=${MPIRUN_GDAS:-"mpirun  -n 2 cfp"}
+echo " mpirun is $MPIRUN "
+$MPIRUN $DATA/poescript
+export err=$?;err_chk
 
-APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
-
-APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
-$APRUNCFP $DATA/poescript
-
-# aprun -n 34 -N 17 cfp $DATA/poescript
-export err=$?; err_chk
 ########################################################
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

@@ -42,7 +42,7 @@ do
   cp $COMIN/gfs.${cycle}.pgrb2b.0p25.f${fhr}  tmp_pgrb2b_0p25${fhr} 
   cat tmp_pgrb2_0p25${fhr} tmp_pgrb2b_0p25${fhr} > tmp0p25filef${fhr} 
   $WGRIB2 tmp0p25filef${fhr} | grep  -F -f $PARMproduct/gfs_fbwnd_parmlist_g2 | $WGRIB2 -i -grib tmpfilef${fhr} tmp0p25filef${fhr}
-  $EXECgfs/cnvgrib21_gfs  -g21 tmpfilef${fhr} tmpfilef${fhr}.grib1
+  $CNVGRIB -g21 tmpfilef${fhr} tmpfilef${fhr}.grib1
   $GRBINDEX tmpfilef${fhr}.grib1 tmpfilef${fhr}.grib1i
   mv tmpfilef${fhr}.grib1   gfs.t${cyc}z.grbf${fhr}_grb1
   mv tmpfilef${fhr}.grib1i  gfs.t${cyc}z.grbif${fhr}_grb1

@@ -52,7 +52,7 @@ do
     fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE	= F-${MDL} | ${PDY2}/${cyc}00
 GDATTIM = F00-F180-12
 DEVICE	= ${device}

@@ -93,7 +93,7 @@ inc=6
 while [ $hr -le $fhr ]
 do
   cp $COMIN/$grib2file  .
-  $EXECgfs/cnvgrib21_gfs -g21 $grib2file pgrbf0${hr}
+  $CNVGRIB -g21 $grib2file pgrbf0${hr}
   $GRBINDEX pgrbf0${hr}  pgrbif0${hr}
   hr=`expr $hr + $inc`
 done

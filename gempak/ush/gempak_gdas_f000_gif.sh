@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 #########################################################################
 #
 #   Script:  gempak_gdas_f00_gif.sh
@@ -14,14 +13,10 @@
 #
 #########################################################################
 
-
-
    msg=" Make GEMPAK GIFS utility"
    postmsg "$jlogfile" "$msg"
 
-
   set -x
-
 
   MAPAREA="normal"
 
@@ -32,11 +27,9 @@
 
   cp $FIXgempak/coltbl.spc coltbl.xwp
 
-
 #################################################################
 #              NORTHERN HEMISPHERE ANALYSIS CHARTS              # 
 #################################################################
-
 
 # Create time stamp (bottom) label 
 
@@ -45,7 +38,6 @@
   $WEBTITLE < dates
   export TITLE=`cat title.output`
   echo "\n\n TITLE = $TITLE \n"
-
 
 # Define labels and file names for Northern Hemisphere analysis charts
 
@@ -79,7 +71,7 @@
 
 #  Execute the GEMPAK program
 
-  gdplot2_gif << EOF
+$GEMEXE/gdplot2_gif << EOF
 
 
 ! 850MB HEIGHTS/TEMPERATURES
@@ -289,35 +281,31 @@
   exit
 EOF
 
-
-gpend
-
+$GEMEXE/gpend
 
 if [ $SENDCOM = YES ]; then
 
 # Copy the GIF images into my area
 
-  cp ${hgttmp850dev}    $COMNCDC/.
-  cp ${hgttmp700dev}    $COMNCDC/.
-  cp ${hgttmp500dev}    $COMNCDC/.
-  cp ${hgtiso300dev}    $COMNCDC/.
-  cp ${hgtiso250dev}    $COMNCDC/.
-  cp ${hgtiso200dev}    $COMNCDC/.
-  cp ${mslpthksfcdev}   $COMNCDC/.
-
-
+  cp ${hgttmp850dev}    $COMOUTncdc/.
+  cp ${hgttmp700dev}    $COMOUTncdc/.
+  cp ${hgttmp500dev}    $COMOUTncdc/.
+  cp ${hgtiso300dev}    $COMOUTncdc/.
+  cp ${hgtiso250dev}    $COMOUTncdc/.
+  cp ${hgtiso200dev}    $COMOUTncdc/.
+  cp ${mslpthksfcdev}   $COMOUTncdc/.
 
 # Send the GIF images onto the NCDC area on the public ftp server
 
  if [ $SENDDBN = YES ]; then
 
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp850dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp700dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp500dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso300dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso250dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso200dev}    
-   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcdev}   
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgttmp850dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgttmp700dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgttmp500dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgtiso300dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgtiso250dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgtiso200dev}    
+   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${mslpthksfcdev}   
 
  fi
 
@@ -346,7 +334,7 @@ fi
 
 #  Execute the GEMPAK program
 
-  gdplot2_gif << EOF
+$GEMEXE/gdplot2_gif << EOF
 
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
@@ -470,27 +458,27 @@ fi
 EOF
 
 
-gpend
+$GEMEXE/gpend
 
 
 if [ $SENDCOM = YES ]; then
 
 # Copy the GIF images into my area
 
-  cp ${mslpthksfcdev}   $COMNCDC/.
-  cp ${hgttmp500dev}    $COMNCDC/.
-  cp ${hgtiso300dev}    $COMNCDC/.
-  cp ${hgtiso250dev}    $COMNCDC/.
+  cp ${mslpthksfcdev}   $COMOUTncdc/.
+  cp ${hgttmp500dev}    $COMOUTncdc/.
+  cp ${hgtiso300dev}    $COMOUTncdc/.
+  cp ${hgtiso250dev}    $COMOUTncdc/.
 
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
  if [ $SENDDBN = YES ]; then
 
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${mslpthksfcdev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgttmp500dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso300dev}
-  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMNCDC/${hgtiso250dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${mslpthksfcdev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgttmp500dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgtiso300dev}
+  $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} $COMOUTncdc/${hgtiso250dev}
 
  fi
 

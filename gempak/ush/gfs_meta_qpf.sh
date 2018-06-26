@@ -48,7 +48,7 @@ PDY2=`echo $PDY | cut -c3-`
     run="r"
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 gdfile   = F-${MDL} | ${PDY2}/${cyc}00
 gdattim  = ${gdat}
 garea    = us

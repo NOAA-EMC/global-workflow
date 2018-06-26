@@ -25,7 +25,7 @@ for fhr in 000 006 012 018 024 030 036 042 048 054 060 066 072
 do
     export pgm=gdprof;. prep_step; startmsg
 
-gdprof << EOFplt
+$GEMEXE/gdprof << EOFplt
 GDATTIM  = F${fhr}
 GVCORD   = PRES
 GDFILE   = F-${MDL}

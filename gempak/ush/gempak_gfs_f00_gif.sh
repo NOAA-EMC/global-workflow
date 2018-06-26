@@ -110,7 +110,7 @@
 
 #  Execute the GEMPAK program
 
-  gdplot2_gif << EOF
+  $GEMEXE/gdplot2_gif << EOF
 
 
 ! 700MB HEIGHTS/TEMPERATURES
@@ -556,7 +556,7 @@
 EOF
 
 
-gpend
+$GEMEXE/gpend
 
 
 if [ $SENDCOM = YES ]; then

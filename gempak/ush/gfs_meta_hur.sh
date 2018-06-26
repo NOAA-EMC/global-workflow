@@ -80,7 +80,7 @@ else
 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 gdfile  = F-${MDL} | ${PDY2}/${cyc}00
 gdattim = ${gdat}
 GAREA   = -6;-111;52;-14
@@ -334,13 +334,13 @@ EOF
 export err=$?;err_chk
 
 if [ ${cyc} -eq 00 ] ; then
-    export MODEL=/com/nawips/prod
+    # BV export MODEL=/com/nawips/prod
     # JY export HPCECMWF=${MODEL}/ecmwf.${PDY}
     # JY export HPCUKMET=${MODEL}/ukmet.${PDY}
-    export HPCECMWF=${COMINROOTecmwf}/ecmwf.${PDY}
-    export HPCUKMET=${COMINROOTukmet}/ukmet.${PDY}
+    export HPCECMWF=${COMINecmwf}.${PDY}
+    export HPCUKMET=${COMINukmet}.${PDY}
     grid1="F-${MDL} | ${PDY2}/${cyc}00"
-    grid2="${COMINROOTecmwf}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
     grid3="F-UKMETHPC | ${PDY2}/${cyc}00"
     for gfsfhr in 12 36 60 84 108
     do
@@ -348,7 +348,7 @@ if [ ${cyc} -eq 00 ] ; then
         gfsfhr="F${gfsfhr}"
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
 DEVICE  = ${device}
@@ -414,7 +414,7 @@ export err=$?;err_chk
         gfsfhr=F${gfsfhr}
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 PANEL   = 0
 TEXT    = 1/21//hw

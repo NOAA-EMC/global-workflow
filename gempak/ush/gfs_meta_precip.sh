@@ -88,7 +88,7 @@ elif [ ${cyc} = "18" ] ; then
 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 gdfile   = F-${MDL} | ${PDY2}/${cyc}00
 garea    = us
 proj     = 
