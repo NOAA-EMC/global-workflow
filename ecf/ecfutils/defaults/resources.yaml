@@ -92,11 +92,14 @@ default_resources: &default_resources
       OMP_NUM_THREADS: 2
       exe: placeholder
 
+
+  postsnd_walltime: !timedelta "04:00:00"
+
   run_postsnd: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 12
       max_ppn: 3
-      walltime: !timedelta "04:00:00"
+      walltime: !calc postsnd_walltime
       exe: placeholder
       
   run_postsndcfp: !JobRequest

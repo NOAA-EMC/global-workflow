@@ -145,7 +145,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
-        memory_per_node: !calc (64*1024)
+        memory_per_node: !calc (63.5*1024)
 
     vjet:
       <<: *partition_common
@@ -159,7 +159,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
-        memory_per_node: !calc (64*1024)
+        memory_per_node: !calc (63.5*1024)
 
     sjet_or_vjet:
       <<: *partition_common
@@ -173,7 +173,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
-        memory_per_node: !calc (32*1024)
+        memory_per_node: !calc (31.5*1024)
 
     service:
       <<: *partition_common
@@ -201,7 +201,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
-        memory_per_node: !calc (24*1024)
+        memory_per_node: !calc (23.5*1024)
         
     default_shared: !calc doc.platform.partitions.sjet_or_vjet
     default_exclusive: !calc doc.platform.partitions.sjet_or_vjet
@@ -215,31 +215,30 @@ platform: !Platform
     select: !calc doc.fv3_enkf_settings.CASE
     otherwise: !error "Unknown FV3 ENKF grid: {doc.fv3_enkf_settings.CASE}"
     cases:
+      # TODO: Replace memory with real values.  
+      # This lists 5, 20, and 81 MB as memory per rank.
       C192:
-        #          ranks ppn  wallclock             threads
-        eobs:     [  72,    6, !timedelta "00:45:00", 4    ]
-        eomg:     [  72,    6, !timedelta "01:00:00", 2    ]
+        #          ranks ppn  wallclock             threads   Memory
+        eobs:     [  72,    6, !timedelta "00:45:00", 4,      5    ]
+        eomg:     [  72,    6, !timedelta "01:00:00", 2,      5    ]
       C384:
         #          ranks ppn  wallclock             threads
-        eobs:     [ 144,   16, !timedelta "00:30:00", 2    ]
-        eomg:     [ 144,   16, !timedelta "01:00:00", 2    ]
+        eobs:     [ 144,   16, !timedelta "00:30:00", 2,      20   ]
+        eomg:     [ 144,   16, !timedelta "01:00:00", 2,      20   ]
       C768:
         #          ranks ppn  wallclock             threads
-        eobs:     [ 144,   12, !timedelta "00:30:00", 2    ]
-        eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
+        eobs:     [ 144,   12, !timedelta "00:30:00", 2,      81   ]
+        eomg:     [ 144,   12, !timedelta "01:00:00", 2,      81   ]
 
   default_resources:
     run_eomg: !JobRequest
       - batch_memory: "3072M"
         exe: placeholder
-        mpi_ranks: 144
-        max_ppn: 12
-        walltime: !timedelta "00:30:00"
-        OMP_NUM_THREADS: max
         mpi_ranks: !calc doc.platform.enkf_resource_table.eomg[0]
         max_ppn: !calc doc.platform.enkf_resource_table.eomg[1]
         walltime: !calc doc.platform.enkf_resource_table.eomg[2]
         OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eomg[3]
+        memory_per_rank: !calc doc.platform.enkf_resource_table.eomg[4]
         
     run_eobs: !JobRequest
       - batch_memory: "3072M"
@@ -248,10 +247,6 @@ platform: !Platform
         max_ppn: !calc doc.platform.enkf_resource_table.eobs[1]
         walltime: !calc doc.platform.enkf_resource_table.eobs[2]
         OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eobs[3]
-        
-    run_postsnd: !JobRequest
-      - batch_memory: "254M"
-        mpi_ranks: 12
-        max_ppn: 3
-        walltime: !timedelta "02:00:00"
-        exe: placeholder
+        memory_per_rank: !calc doc.platform.enkf_resource_table.eobs[4]
+ 
+    postsnd_walltime: !timedelta "02:00:00"       
