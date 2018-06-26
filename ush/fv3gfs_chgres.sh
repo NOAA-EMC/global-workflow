@@ -27,8 +27,8 @@
 ##PBS -o log.chgres
 ##PBS -e log.chgres
 ##PBS -l nodes=1:ppn=24
-##PBS -q debug
-##PBS -l walltime=00:30:00
+##PBS -q batch
+##PBS -l walltime=06:00:00
 set -x
 
 #-------------------------------------------------------------------------------------------------
@@ -41,11 +41,17 @@ set -x
 export machine=WCOSS_DELL_P3            ;#WCOSS_C, WCOSS_DELL_P3, THEIA
 
 if [ $machine = WCOSS_C ]; then
- export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs_master
+ export HOMEgfs=/gpfs/hps3/emc/global/noscrub/$USER/git/fv3gfs/master
  export PTMP="/gpfs/hps2/ptmp/$USER"
+ export zero_bias_dir=/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS/bias_zero
 elif [ $machine = WCOSS_DELL_P3 ]; then
- export HOMEgfs=/gpfs/dell2/emc/modeling/noscrub/$USER/git/fv3gfs/port2dell
+ export HOMEgfs=/gpfs/dell2/emc/modeling/noscrub/$USER/git/fv3gfs/master
  export PTMP="/gpfs/dell2/ptmp/$USER"
+ export zero_bias_dir=/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS/bias_zero
+elif [ $machine = THEIA ]; then
+ export HOMEgfs=/scratch4/NCEPDEV/global/save/$USER/git/fv3gfs/master
+ export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
+ export zero_bias_dir=/scratch4/NCEPDEV/global/save/Fanglin.Yang/git/bias_zero
 else 
  echo "Please define HOMEgfs and PTMP for your machine. exit"
  exit
@@ -60,7 +66,6 @@ export CDATE=2018050100
 export NSTSMTH=YES                                  ##apply 9-point smoothing to nsst tref
 export NST_TF_CHG=$HOMEgfs/exec/nst_tf_chg.x
 export ZERO_BIAS=YES                                ##zeroed out all bias and radsat files 
-export zero_bias_dir=/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS/bias_zero
 
 #===========================================================
 #===========================================================
@@ -76,10 +81,15 @@ export RUNDIR=$ROTDIR/chgres
 
 export NODES=1
 export APRUNC=""
+
+. $HOMEgfs/ush/load_fv3gfs_modules.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 if [ $machine = WCOSS_C ]; then
- . $MODULESHOME/init/sh                 2>>/dev/null
- module load prod_util prod_envir hpss  2>>/dev/null
- module load PrgEnv-intel               2>>/dev/null
+ # . $MODULESHOME/init/sh                 2>>/dev/null
+ # module load prod_util prod_envir hpss  2>>/dev/null
+ # module load PrgEnv-intel               2>>/dev/null
  export KMP_AFFINITY=disabled
  export OMP_NUM_THREADS_CH=24
  export APRUNC="aprun -n 1 -N 1 -j 1 -d $OMP_NUM_THREADS_CH -cc depth"
@@ -89,17 +99,17 @@ if [ $machine = WCOSS_C ]; then
  export QUEUE=dev
  export QUEUE_TRANS=dev_transfer 
 elif [ $machine = WCOSS_DELL_P3 ]; then
- . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
- module purge                           2>>/dev/null
- module load EnvVars/1.0.2              2>>/dev/null
- module load lsf/10.1                   2>>/dev/null
- module load ips/18.0.1.163             2>>/dev/null
- module load impi/18.0.1                2>>/dev/null
- module load prod_util/1.1.0            2>>/dev/null
- module load prod_envir/1.0.2           2>>/dev/null
- module load HPSS/5.0.2.5               2>>/dev/null
- module load NetCDF/4.5.0               2>>/dev/null
- module load HDF5-serial/1.10.1         2>>/dev/null
+ # . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+ # module purge                           2>>/dev/null
+ # module load EnvVars/1.0.2              2>>/dev/null
+ # module load lsf/10.1                   2>>/dev/null
+ # module load ips/18.0.1.163             2>>/dev/null
+ # module load impi/18.0.1                2>>/dev/null
+ # module load prod_util/1.1.0            2>>/dev/null
+ # module load prod_envir/1.0.2           2>>/dev/null
+ # module load HPSS/5.0.2.5               2>>/dev/null
+ # module load NetCDF/4.5.0               2>>/dev/null
+ # module load HDF5-serial/1.10.1         2>>/dev/null
  export OMP_NUM_THREADS_CH=14
  export KMP_AFFINITY=disabled
  export APRUNC="time"
@@ -109,14 +119,15 @@ elif [ $machine = WCOSS_DELL_P3 ]; then
  export QUEUE=dev
  export QUEUE_TRANS=dev_transfer 
 elif [ $machine = THEIA ]; then
- module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
- module load netcdf/4.3.0 hdf5/1.8.14    2>>/dev/null
+ # source $HOMEgfs/sorc/machine-setup.sh
+ # module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+ # module load netcdf hdf5/1.8.14    2>>/dev/null
  export APRUNC=time
  export APRUNTF=time
  export OMP_NUM_THREADS_CH=24
- export SUB=/u/emc.glopara/bin/sub_theia
+ export SUB=/home/Fanglin.Yang/bin/sub_theia
  export ACCOUNT=fv3-cpu
- export QUEUE=debug
+ export QUEUE=batch
  export QUEUE_TRANS=service
 else
  echo "$machine not supported, exit"
@@ -209,14 +220,20 @@ fi
 #--extract ICs from hpss
 cat > read_hpss.sh <<EOF1
 
- export machine=$machine
- if [ $machine = WCOSS_C ]; then
-  . $MODULESHOME/init/sh                 2>>/dev/null
-  module load hpss  2>>/dev/null
- elif [ $machine = WCOSS_DELL_P3 ]; then
-  . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
-  module load HPSS/5.0.2.5               2>>/dev/null
- fi
+   . $HOMEgfs/ush/load_fv3gfs_modules.sh   2>>/dev/null
+
+   #export machine=$machine
+   #if [ $machine = WCOSS_C ]; then
+   # . $MODULESHOME/init/sh                 2>>/dev/null
+   # module load hpss  2>>/dev/null
+   #elif [ $machine = WCOSS_DELL_P3 ]; then
+   # . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+   # module load HPSS/5.0.2.5               2>>/dev/null
+   #elif [ $machine = THEIA ]; then
+   # source $HOMEgfs/sorc/machine-setup.sh  2>>/dev/null
+   # module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles  2>>/dev/null
+   # module load hpss                       2>>/dev/null
+   #fi
 
    cd $INIDIR
    htar -xvf  $HPSSPATH/$tarball_high $atm $sfc $nst  
@@ -232,7 +249,7 @@ cat > read_hpss.sh <<EOF1
    fi
 EOF1
 chmod u+x read_hpss.sh
-$SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
+$SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out $INIDIR/read_hpss.sh
 
 #................................................
 fi
@@ -343,14 +360,22 @@ fi
 
 #--extract ICs from hpss
 cat > read_hpss.sh <<EOF
-   export machine=$machine
-   if [ $machine = WCOSS_C ]; then
-    . $MODULESHOME/init/sh                 2>>/dev/null
-    module load hpss  2>>/dev/null
-   elif [ $machine = WCOSS_DELL_P3 ]; then
-    . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
-    module load HPSS/5.0.2.5               2>>/dev/null
-   fi
+
+   . $HOMEgfs/ush/load_fv3gfs_modules.sh   2>>/dev/null
+
+   #export machine=$machine
+   #if [ $machine = WCOSS_C ]; then
+   # . $MODULESHOME/init/sh                 2>>/dev/null
+   # module load hpss  2>>/dev/null
+   #elif [ $machine = WCOSS_DELL_P3 ]; then
+   # . /usrx/local/prod/lmod/lmod/init/sh   2>>/dev/null
+   # module load HPSS/5.0.2.5               2>>/dev/null
+   #elif [ $machine = THEIA ]; then
+   # source $HOMEgfs/sorc/machine-setup.sh  2>>/dev/null
+   # module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles  2>>/dev/null
+   # module load hpss                       2>>/dev/null
+   #fi
+
    cd $INIDIR
    htar -xvf  $HPSSPATH/$tarball_enkf_atm 
    if [ $CDATE -le 2017072000 ]; then
@@ -358,7 +383,7 @@ cat > read_hpss.sh <<EOF
    fi
 EOF
 chmod u+x read_hpss.sh
-$SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out read_hpss.sh
+$SUB -a $ACCOUNT -q $QUEUE_TRANS -p 1/1/S -r 1024/1/1 -t 2:00:00 -j read_hpss -o read_hpss.out $INIDIR/read_hpss.sh
 
 #................................................
 fi
