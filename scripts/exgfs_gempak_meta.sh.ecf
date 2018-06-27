@@ -19,6 +19,7 @@ while [ $fhr -ge $fhbeg ] ; do
       break
    fi
    fhr=`expr $fhr - $fhinc`
+   export fhr
 done
 
 maxtries=180
@@ -57,7 +58,7 @@ do
       fi
    done
 
-#   export fhr
+   export fhr
 
    ########################################################
    # Create a script to be poe'd
@@ -91,17 +92,17 @@ do
      eval "echo $script" >> $DATA/poescript
    done
 
-   num=`cat $DATA/poescript |wc -l` 
-
-   while [ $num -lt $numproc ] ; do
-      echo "hostname" >>poescript
-      num=`expr $num + 1`
-   done
-
-   chmod 775 $DATA/poescript
-   cat $DATA/poescript
-   export MP_PGMMODEL=mpmd
-   export MP_CMDFILE=$DATA/poescript
+#   num=`cat $DATA/poescript |wc -l` 
+#
+#   while [ $num -lt $numproc ] ; do
+#      echo "hostname" >>poescript
+#      num=`expr $num + 1`
+#   done
+#
+#   chmod 775 $DATA/poescript
+#   cat $DATA/poescript
+#   export MP_PGMMODEL=mpmd
+#   export MP_CMDFILE=$DATA/poescript
 #
 #  If this is the final fcst hour, alert the
 #  file to all centers.
@@ -116,8 +117,8 @@ do
 #   sleep 20
 #   mpirun.lsf
 #   mpirun -n 23  cfq $DATA/poescript
-   $DATA/poescript
-   export err=$?; err_chk
+#   $DATA/poescript
+#   export err=$?; err_chk
 
    typeset -Z3 fhr
    if [ $fhr -eq 126 ] ; then

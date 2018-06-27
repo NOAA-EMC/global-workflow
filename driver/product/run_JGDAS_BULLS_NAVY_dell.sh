@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20180617
+export PDY=20180626
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -119,7 +119,7 @@ else
 #  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/svn/${RUN}.${PDYm1}/${cyc} ### Boi PARA
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then

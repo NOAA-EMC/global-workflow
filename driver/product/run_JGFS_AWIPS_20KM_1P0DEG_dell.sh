@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20180617
+export PDY=20180626
 
 export PDY1=`expr $PDY - 1`
 
@@ -107,7 +107,7 @@ else
 
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then

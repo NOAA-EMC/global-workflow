@@ -112,6 +112,24 @@ $SRCgfs/exgfs_gempak_meta.sh.ecf
 export err=$?; err_chk
 ########################################################
 
+cat poescript
+
+chmod 775 $DATA/poescript
+export MP_PGMMODEL=mpmd
+export MP_CMDFILE=$DATA/poescript
+
+ntasks=${NTASKS_META:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_META:-4}
+threads=${NTHREADS_META:-1}
+export OMP_NUM_THREADS=$threads
+APRUN="mpirun -n $ntasks cfp "
+
+APRUN_METACFP=${APRUN_METACFP:-$APRUN}
+APRUNCFP=$(eval echo $APRUN_METACFP)
+
+$APRUNCFP $DATA/poescript
+export err=$?; err_chk
+
 msg="JOB $job HAS COMPLETED NORMALLY!"
 postmsg $jlogfile "$msg"
 

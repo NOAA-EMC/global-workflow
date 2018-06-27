@@ -134,8 +134,8 @@ fi
 
 export COMOUTukmet=${COMOUTukmet:-$(compath.py nawips/${envir}/ukmet)}
 export COMOUTecmwf=${COMOUTecmwf:-$(compath.py nawips/${envir}/ecmwf)}
-export COMOUTncdc=${COMOUTncdc:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta}
+export COMOUTncdc=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

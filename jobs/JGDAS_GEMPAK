@@ -94,23 +94,31 @@ fi
 
 ########################################################
 # Execute the script.
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas 009 GDAS_GEMPAK" >>poescript
+echo "$SRCgfs/exgdas_nawips.sh.ecf gdas 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas_0p25 009 GDAS_GEMPAK" >>poescript
+echo "$SRCgfs/exgdas_nawips.sh.ecf gdas_0p25 009 GDAS_GEMPAK " >>poescript
 ########################################################
+
+cat poescript
 
 chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
-# Execute the script.
-export MPIRUN=${MPIRUN_GDAS:-"mpirun  -n 2 cfp"}
-echo " mpirun is $MPIRUN "
-$MPIRUN $DATA/poescript
-export err=$?;err_chk
+ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_GEMPAK:-4}
+threads=${NTHREADS_GEMPAK:-1}
+export OMP_NUM_THREADS=$threads
+APRUN="mpirun -n $ntasks cfp "
+
+APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-$APRUN}
+APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
+
+$APRUNCFP $DATA/poescript
+export err=$?; err_chk
 
 ########################################################
 

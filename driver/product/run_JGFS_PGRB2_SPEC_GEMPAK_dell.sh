@@ -128,7 +128,7 @@ else
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}.${PDY}/${cyc} ### Boi PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

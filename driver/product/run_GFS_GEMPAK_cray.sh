@@ -121,26 +121,11 @@ else
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
-
-export NODES=5
-export ntasks=17
-export ptile=4
-export threads=6
-
-ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
-ptile=${PTILE_GEMPAK:-17}
-threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=$threads
-
-APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
-
-APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
-$APRUNCFP $DATA/poescript
 
 #############################################
 # run the GFS job

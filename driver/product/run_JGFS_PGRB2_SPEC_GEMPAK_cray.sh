@@ -131,7 +131,7 @@ else
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

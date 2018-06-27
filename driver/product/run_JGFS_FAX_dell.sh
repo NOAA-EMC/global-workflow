@@ -117,7 +117,7 @@ else
 
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then

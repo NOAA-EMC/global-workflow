@@ -146,13 +146,11 @@ else
 
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta}
-
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
 export COMINnam=${COMINnam:-$(compath.py nawips/prod/nam)}
 
-export COMOUT=${COMOUT:-${COMROOT2}/nawips/${envir}/${RUN}.${PDY}/meta}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta
 
 if [ ! -f $COMOUT ] ; then
   mkdir -p -m 775 $COMOUT

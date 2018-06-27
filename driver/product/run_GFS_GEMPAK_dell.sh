@@ -14,10 +14,11 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180622
+export PDY=20180627
 
 # export cyc=06
-export cyc=00
+ export cyc=00
+# export cyc=18
 export cycle=t${cyc}z
 
 set -xa
@@ -44,11 +45,12 @@ module load dev/util_shared/1.0.8
 #  This is a test GEMPAK version 7.3.0 on DELL
 #
 module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-
+module load gempak/7.3.0
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
-module load gempak/7.3.0
+# module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+# module load gempak/7.3.1
 
 module list
 
@@ -119,7 +121,7 @@ else
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc} ### Boi PARA
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

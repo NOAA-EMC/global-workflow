@@ -129,7 +129,7 @@ else
   export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gdas.${PDY}/${cyc}         ### EMC PARA Realtime
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
