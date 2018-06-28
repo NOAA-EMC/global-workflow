@@ -24,3 +24,4 @@ module load nemsio/v2.2.2
 module use /lfs3/projects/hwrf-vd/soft/modulefiles
 module load prod_util
 module load grib_util
+module load hpss

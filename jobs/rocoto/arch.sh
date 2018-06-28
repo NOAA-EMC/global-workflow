@@ -252,10 +252,11 @@ while [ $GDATE -le $GDATEEND ]; do
     gcyc=$(echo $GDATE | cut -c9-10)
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
-        rocotolog="$EXPDIR/logs/${GDATE}.log"
-        testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-        rc=$?
-        [[ $rc -eq 0 ]] && rm -rf $COMIN
+#        rocotolog="$EXPDIR/logs/${GDATE}.log"
+#        testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
+#        rc=$?
+#        [[ $rc -eq 0 ]] && rm -rf $COMIN
+       rm -rf $COMIN
     fi
 
     # Remove any empty directories

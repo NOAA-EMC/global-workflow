@@ -49,12 +49,29 @@ case:
     arch_warmicfreq: 2
     arch_fcsticfreq: 1
 
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/analysis/jgdas_analysis_high'
+          partition: !calc doc.platform.partitions.xjet
+          max_tries: 3
+        - Search: '**/forecast/*_forecast*'
+          partition: !calc doc.platform.partitions.sjet_or_vjet
+          max_tries: 3
+        - Search: '**/post/j*_post*'
+          partition: !calc doc.platform.partitions.sjet_or_vjet
+          max_tries: 3
+        - Search: '**/prep/jgdas_prep'
+          partition: !calc doc.platform.partitions.bigmem
+          max_tries: 3
+    - otherwise: null
+
   settings: 
     BASE_GIT: /mnt/lfs3/projects/hfv3gfs/glopara/git
     BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
     SDATE: 2015-11-25t00:00:00
-    EDATE: 2015-11-25t06:00:00
+    EDATE: 2015-11-30t06:00:00
     chgres_and_convert_ics: No
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z
