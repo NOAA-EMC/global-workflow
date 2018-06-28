@@ -54,6 +54,7 @@ rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
 # Extract number of vertical levels from $STARTHOUR atmospheric file
+export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
 fhr3=$(printf %03i $STARTHOUR)
 ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
 export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
@@ -127,11 +128,10 @@ fi
 ########################################
 collect=' 1 2 3 4 5 6 7 8 9'
 rm -rf poe_col
-##echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
+echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
 for m in ${collect}
 do
 echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
-##$USHbufrsnd/gfs_sndp.sh
 done
 
 mv poe_col cmdfile
@@ -139,11 +139,11 @@ mv poe_col cmdfile
 cat cmdfile
 chmod +x cmdfile
 
-mpirun -n 9 cfp cmdfile
+mpirun -n 10 cfp cmdfile
 ################################################
 # Convert the bufr soundings into GEMPAK files
 ################################################
-$USHbufrsnd/gfs_bfr2gpk.sh
+##$USHbufrsnd/gfs_bfr2gpk.sh
 
 #####################################################################
 # GOOD RUN
