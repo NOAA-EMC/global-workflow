@@ -123,6 +123,8 @@
 
  namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst
 
+ call w3tagb('GAUSSIAN_SFCANL',2018,0179,0055,'NP20')
+
  print*,"- BEGIN EXECUTION"
 
  donst = 'no'
@@ -421,6 +423,8 @@
 
  print*
  print*,'- NORMAL INTERPOLATION'
+
+ call w3tage('GAUSSIAN_SFCANL')
 
  end program main
 
