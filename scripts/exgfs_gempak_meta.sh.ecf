@@ -9,7 +9,7 @@ cd $DATA
 
 GEMGRD1=${RUN}_${PDY}${cyc}f
 #find out what fcst hr to start processing
-export fhr=$fhend
+fhr=$fhend
 
 while [ $fhr -ge $fhbeg ] ; do
    typeset -Z3 fhr
@@ -19,7 +19,6 @@ while [ $fhr -ge $fhbeg ] ; do
       break
    fi
    fhr=`expr $fhr - $fhinc`
-   export fhr
 done
 
 maxtries=180
@@ -49,7 +48,7 @@ do
          break
       else
          let "icnt= icnt + 1"
-         sleep 20
+#         sleep 20
       fi
       if [ $icnt -ge $maxtries ]
       then
@@ -66,10 +65,7 @@ do
    #  Note:  The number of scripts to be run MUST match the number
    #  of total_tasks set in the ecf script, or the job will fail.
    #
-   if test -f $DATA/poescript
-   then
-      rm $DATA/poescript
-   fi
+   rm $DATA/poescript
    if [ $fhr -lt 100 ] ; then
       typeset -Z2 fhr
    fi
@@ -93,12 +89,13 @@ do
    done
 
 #   num=`cat $DATA/poescript |wc -l` 
+#   numproc=22
 #
 #   while [ $num -lt $numproc ] ; do
 #      echo "hostname" >>poescript
 #      num=`expr $num + 1`
 #   done
-#
+
 #   chmod 775 $DATA/poescript
 #   cat $DATA/poescript
 #   export MP_PGMMODEL=mpmd
@@ -114,17 +111,13 @@ do
    # Execute the script.
 
    export fend=$fhr
-#   sleep 20
+#  sleep 20
 #   mpirun.lsf
-#   mpirun -n 23  cfq $DATA/poescript
-#   $DATA/poescript
-#   export err=$?; err_chk
-
    typeset -Z3 fhr
    if [ $fhr -eq 126 ] ; then
       let fhr=fhr+6
    else
-     let fhr=fhr+fhinc
+      let fhr=fhr+fhinc
    fi
 done
 

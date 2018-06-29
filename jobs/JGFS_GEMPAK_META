@@ -112,9 +112,8 @@ $SRCgfs/exgfs_gempak_meta.sh.ecf
 export err=$?; err_chk
 ########################################################
 
-cat poescript
-
 chmod 775 $DATA/poescript
+cat  $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
