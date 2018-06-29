@@ -38,7 +38,7 @@ gfs_resource_table: !Select
     C768:
       #          ranks ppn  wallclock             threads
       prep:     [   4,    4, !timedelta "00:45:00", max,  null  ]
-      anal:     [ 360,    6, !timedelta "02:30:00", null, 11.024e+3 ]
+      anal:     [ 360,    6, !timedelta "05:30:00", null, 11.024e+3 ]
       gdaspost: [  72,   12, !timedelta "00:45:00", null, 4.024e+3  ]
       gfspost:  [  72,   12, !timedelta "00:30:00", null, 4.024e+3  ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null    ]
