@@ -25,3 +25,6 @@ module use /lfs3/projects/hwrf-vd/soft/modulefiles
 module load prod_util
 module load grib_util
 module load hpss
+
+module use /home/Raghu.Reddy/modules
+module load gempak-rr/7.4.2

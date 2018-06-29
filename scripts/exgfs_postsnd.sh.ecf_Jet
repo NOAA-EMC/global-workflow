@@ -1,0 +1,142 @@
+#!/bin/ksh
+################################################################
+# Script Name:		exgfs_postsnd.sh.sms
+# Script Description:	Generate GFS BUFR sounding files
+# Script History Log:
+#   1) 2003-03-25       Hualu Pan       First Implementation
+#   2) 2010-05-25       V. Krishna Kumar Modified for the GFS 
+#                                  resolution upgrade
+#   3) 2014-08-01       D. Carlis Updated to vertical structure 
+#                                 and T1534 Resolution 
+#   4) 2016-11-01       H. Chuang Update to read new model nems output
+#   5) 2018-04-13       Guang Ping Lou This version is for Theia only
+################################################################
+set -xa
+
+cd $DATA
+########################################
+msg="HAS BEGUN"
+#postmsg "$jlogfile" "$msg"
+########################################
+
+###################################################
+## Run meteogram generator for T574
+###################################################
+export JCAP=${JCAP:-1534}
+export LEVS=${LEVS:-64}
+export LATB=${LATB:-1536}
+export LONB=${LONB:-3072}
+export STARTHOUR=${STARTHOUR:-00}
+export ENDHOUR=${ENDHOUR:-180}
+export NEND1=120   ##first period length with time interval = NINT1
+##export NINT1=3     ##first period time interval
+export NINT1=1     ##first period time interval
+export NINT3=3     ##second period time interval
+export NZERO=6
+export INCREMENT=12
+export OUTFILE=meteomrf
+export MAKEBUFR=NO
+export F00FLAG=YES
+
+if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
+  then
+    export NINT1=${FHOUT_HF_GFS:-1}
+    export NEND1=${FHMAX_HF_GFS:-120}
+  else
+    export NINT3=${FHOUT_GFS:-3}
+fi
+
+rm -f -r ${COMOUT}/bufr.${cycle}
+mkdir -p ${COMOUT}/bufr.${cycle}
+
+# Extract number of vertical levels from $STARTHOUR atmospheric file
+export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
+fhr3=$(printf %03i $STARTHOUR)
+ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
+export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+
+### Loop for the hour and wait for the sigma and surface flux file:
+export FSTART=$STARTHOUR
+#
+while [ $FSTART -lt $ENDHOUR ]
+do
+export FINT=$NINT1
+   # Define the end hour for the input
+   export FEND=`expr $FSTART + $INCREMENT` 
+   if test $FEND -lt 100; then FEND=0$FEND; fi 
+   if [ $FSTART -eq 00 ]
+   then
+       export F00FLAG=YES
+   else
+       export F00FLAG=NO
+   fi
+   
+   if [ $FEND -eq $ENDHOUR ]
+   then
+       export MAKEBUFR=YES
+   fi
+
+   ic=0
+   while [ $ic -lt 1000 ]
+   do
+      if [ ! -f $COMIN/${RUN}.${cycle}.sfcf$FEND.nemsio ]
+      then
+          sleep 10
+          ic=`expr $ic + 1`
+      else
+          break
+      fi
+
+      if [ $ic -ge 360 ]
+      then
+         err_exit "COULD NOT LOCATE logf$FEND file AFTER 1 HOUR"
+      fi
+   done
+
+## 1-hourly output before $NEND1, 3-hourly output after
+   if [ $FEND -gt $NEND1 ]; then
+     export FINT=$NINT3
+   fi
+   $USHbufrsnd/gfs_bufr.sh
+  
+   export FSTART=$FEND
+done
+
+##############################################################
+# Tar and gzip the individual bufr files and send them to /com
+##############################################################
+cd ${COMOUT}/bufr.${cycle}
+tar -cf - . | /usr/bin/gzip > ../${RUN}.${cycle}.bufrsnd.tar.gz
+cd $DATA
+
+########################################
+
+########################################
+# Create Regional Collectives of BUFR data and 
+# add appropriate WMO Headers.
+########################################
+collect=' 1 2 3 4 5 6 7 8 9'
+for m in ${collect}
+do
+sh $USHbufrsnd/gfs_sndp.sh $m
+done
+
+################################################
+# Convert the bufr soundings into GEMPAK files
+################################################
+sh $USHbufrsnd/gfs_bfr2gpk.sh_Jet
+
+#####################################################################
+# GOOD RUN
+set +x
+echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
+set -x
+#####################################################################
+
+msg='HAS COMPLETED NORMALLY.'
+#postmsg "$jlogfile" "$msg"
+
+############## END OF SCRIPT #######################
+
