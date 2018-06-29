@@ -28,7 +28,7 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-n=$((ENSGRP))
+n=${ENSGRP#0}
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=$ARCH_CYC
@@ -57,7 +57,7 @@ cd $ROTDIR
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
-if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
+if [ $ENSGRP -gt 0 ] && [[ $HPSSARCH = "YES" ]]; then
 
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"

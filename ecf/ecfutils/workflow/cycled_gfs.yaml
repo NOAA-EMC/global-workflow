@@ -761,7 +761,7 @@ suite: !Cycle
       AlarmName: gdas
       Trigger: !Depend up.gdas.enkf.post
       Dimensions:
-        groupid: !calc tools.seq(0,doc.data_assimilation.ENKF_ARCHIVE_GROUPS-1,1)
+        groupid: !calc tools.seq(0,doc.data_assimilation.ENKF_ARCHIVE_GROUPS,1)
       grp: !TaskElement
         <<: *service_task_template
         resources: !calc partition.resources.run_arch

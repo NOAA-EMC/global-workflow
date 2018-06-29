@@ -15,4 +15,8 @@ config_postsnd:
 
     export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
 
+    if [ $machine = "JET" ]; then
+      export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND_JET
+    fi
+
     echo "END: config.postsnd" 
