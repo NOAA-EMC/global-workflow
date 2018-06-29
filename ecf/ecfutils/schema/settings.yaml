@@ -10,6 +10,16 @@ settings_schema: !Template &settings_schema
     description: "Enable NCO-like four cycle suite.  Not well tested.  Do not use unless you know what you're doing."
     default: false
 
+  rocoto_cycle_throttle:
+    type: int
+    description: "Maximum number of cycles active at once in a Rocoto workflow"
+    default: 2
+
+  rocoto_task_throttle:
+    type: int
+    description: "Maximum number of tasks active (queued/running) at once in a Rocoto workflow"
+    default: 5
+
   run_gsi:
     type: bool
     description: "Run Gridpoint Statistical Interpolation"

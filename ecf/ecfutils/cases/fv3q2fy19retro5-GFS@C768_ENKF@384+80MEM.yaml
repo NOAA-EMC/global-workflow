@@ -54,24 +54,33 @@ case:
       do:
         - Search: '**/analysis/jgdas_analysis_high'
           partition: !calc doc.platform.partitions.xjet
-          max_tries: 3
+          accounting:
+            queue: urgent
+          max_tries: 2
         - Search: '**/forecast/*_forecast*'
-          partition: !calc doc.platform.partitions.sjet_or_vjet
-          max_tries: 3
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
         - Search: '**/post/j*_post*'
           partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 3
         - Search: '**/prep/jgdas_prep'
           partition: !calc doc.platform.partitions.bigmem
-          max_tries: 3
+          max_tries: 2
     - otherwise: null
 
   settings: 
+    rocoto_task_throttle: 100
+    rocoto_cycle_throttle: 5
+
+    # This belongs in "places" and putting it here makes it unused.
+    # The default values are in platforms/jet.yaml.  You should delete
+    # these lines:
     BASE_GIT: /mnt/lfs3/projects/hfv3gfs/glopara/git
     BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
+
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2015-11-25t00:00:00
-    EDATE: 2015-11-30t06:00:00
+    SDATE: 2015-11-26t06:00:00
+    EDATE: 2016-05-31t18:00:00
     chgres_and_convert_ics: No
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z

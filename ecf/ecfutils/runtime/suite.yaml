@@ -119,8 +119,8 @@ suite_defaults: &suite_defaults
       <?xml version="1.0"?>
       <!DOCTYPE workflow [
         <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
-        <!ENTITY TASK_THROTTLE "5">
-        <!ENTITY CYCLE_THROTTLE "2">
+        <!ENTITY TASK_THROTTLE "{doc.settings.rocoto_task_throttle}">
+        <!ENTITY CYCLE_THROTTLE "{doc.settings.rocoto_cycle_throttle}">
         <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
         <!ENTITY EXPDIR "{doc.places.EXPDIR}">
         <!ENTITY PSLOT "{doc.names.experiment}">

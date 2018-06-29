@@ -133,6 +133,20 @@ platform: !Platform
   partitions:
     Evaluate: false
 
+    bigmem:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: bigmem 
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (250*1024)
+
     xjet:
       <<: *partition_common
       # Details about the scheduler on this cluster.
@@ -202,35 +216,46 @@ platform: !Platform
         hyperthreading_allowed: true
         indent_text: "  "
         memory_per_node: !calc (23.5*1024)
+
+    bigmem:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "bigmem"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (251.5*1024)
         
     default_shared: !calc doc.platform.partitions.sjet_or_vjet
     default_exclusive: !calc doc.platform.partitions.sjet_or_vjet
     default_service: !calc doc.platform.partitions.service
 
   ######################################################################
-
   # Platform-specific resources
 
   enkf_resource_table: !Select
     select: !calc doc.fv3_enkf_settings.CASE
-    otherwise: !error "Unknown FV3 ENKF grid: {doc.fv3_enkf_settings.CASE}"
+    otherwise: !error "Unknown FV3 GDAS grid: {doc.fv3_gdas_settings.CASE} you may need to determin the memory per rank requiremtns for C192 and C768"
     cases:
-      # TODO: Replace memory with real values.  
-      # This lists 5, 20, and 81 MB as memory per rank.
-      C192:
-        #          ranks ppn  wallclock             threads   Memory
-        eobs:     [  72,    6, !timedelta "00:45:00", 4,      5    ]
-        eomg:     [  72,    6, !timedelta "01:00:00", 2,      5    ]
+      # TODO: Replace memory with real values for C192 and C768 .. 5 is a dummy (it will error if not set .. see above)
+      #C192:
+      #  #          ranks ppn  wallclock            threads MB_per_rank 
+      #  eobs:     [  72,    6, !timedelta "00:45:00", 4, 5  ]
+      #  eomg:     [  72,    6, !timedelta "01:00:00", 2, 5  ]
       C384:
-        #          ranks ppn  wallclock             threads
-        eobs:     [ 144,   16, !timedelta "00:30:00", 2,      20   ]
-        eomg:     [ 144,   16, !timedelta "01:00:00", 2,      20   ]
-      C768:
-        #          ranks ppn  wallclock             threads
-        eobs:     [ 144,   12, !timedelta "00:30:00", 2,      81   ]
-        eomg:     [ 144,   12, !timedelta "01:00:00", 2,      81   ]
+        #          ranks ppn  wallclock             threads  MB_per_rank
+        eobs:     [ 144,   13, !timedelta "00:30:00", 2,  3600 ]
+        eomg:     [ 144,   16, !timedelta "01:00:00", 2,  4140 ]
+      #C768:
+      #  #          ranks ppn  wallclock             threads  MB_per_rank
+      #  eobs:     [ 144,   2,  !timedelta "00:30:00", 3, 5  ]
+      #  eomg:     [ 144,   12, !timedelta "01:00:00", 2, 5  ]
 
-  default_resources:
     run_eomg: !JobRequest
       - batch_memory: "3072M"
         exe: placeholder
@@ -248,5 +273,3 @@ platform: !Platform
         walltime: !calc doc.platform.enkf_resource_table.eobs[2]
         OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eobs[3]
         memory_per_rank: !calc doc.platform.enkf_resource_table.eobs[4]
- 
-    postsnd_walltime: !timedelta "02:00:00"       
