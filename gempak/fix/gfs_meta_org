@@ -1,0 +1,23 @@
+$USHgfs/gfs_meta_us.sh 36 84 126 216
+$USHgfs/gfs_meta_bwx.sh 36 84 126 180
+$USHgfs/gfs_meta_comp.sh 36 84 126 
+$USHgfs/gfs_meta_ak.sh 36 84 132 216
+$USHgfs/gfs_meta_crb.sh 126 
+$USHgfs/gfs_meta_hur.sh 36 84 126 
+$USHgfs/gfs_meta_qpf.sh 36 84 132 216 
+$USHgfs/gfs_meta_precip.sh 36 84 132 216 384
+$USHgfs/gfs_meta_sa.sh 126  
+$USHgfs/gfs_meta_ver.sh 126  
+$USHgfs/gfs_meta_hi.sh 384
+$USHgfs/gfs_meta_nhsh.sh 384
+$USHgfs/gfs_meta_trop.sh 384
+$USHgfs/gfs_meta_usext.sh 384
+$USHgfs/gfs_meta_mar_ql.sh 24 48 96 180
+$USHgfs/gfs_meta_mar_comp.sh 126
+$USHgfs/gfs_meta_opc_na_ver 126
+$USHgfs/gfs_meta_opc_np_ver 126
+$USHgfs/gfs_meta_mar_atl.sh 180
+$USHgfs/gfs_meta_mar_pac.sh 180
+$USHgfs/gfs_meta_mar_ver.sh 48
+$USHgfs/gfs_meta_mar_skewt.sh 72
+$USHgfs/gfs_meta_sa2.sh 144

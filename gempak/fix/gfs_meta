@@ -20,3 +20,4 @@
  $USHgfs/gfs_meta_mar_pac.sh 180
  $USHgfs/gfs_meta_mar_ver.sh 48
  $USHgfs/gfs_meta_sa2.sh 144
+ $USHgfs/gfs_meta_mar_skewt.sh 72
