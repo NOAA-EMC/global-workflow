@@ -19,8 +19,8 @@ export PDY=20180702
 
 export PDY1=`expr $PDY - 1`
 
-# export cyc=06
-export cyc=00
+ export cyc=06
+# export cyc=00
 export cycle=t${cyc}z
 
 set -xa
