@@ -124,7 +124,7 @@ platform: !Platform
         scheduler_name: MoabAlps
         parallelism_name: AprunCrayMPI
         node_type: generic
-        physical_cores_per_node: 1
+        physical_cores_per_node: 2
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "

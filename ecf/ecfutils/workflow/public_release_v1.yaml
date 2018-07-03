@@ -53,7 +53,8 @@ suite: !Cycle
         <<: *forecast_task_template
         resources: !calc partition.resources.run_gfsfcst
         J_JOB: JGLOBAL_FORECAST
-        
+        resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
+
     # post family - this family runs the UPP to convert FV3 output
     # conditions to GRIB files.  It runs wgrib2 to convert 
     # gaussian grid files to lat-lon.
