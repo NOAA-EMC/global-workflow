@@ -36,7 +36,7 @@ gfs_resource_table: !Select
       gfsfcst_wall:  !timedelta "06:00:00"
       post_manager_wallclock_extra: !timedelta "00:15:00"
     C768:
-      #          ranks ppn  wallclock             threads
+      #          ranks ppn  wallclock            threads  MB_per_rank
       prep:     [   4,    4, !timedelta "00:45:00", max,  null  ]
       anal:     [ 360,    6, !timedelta "05:30:00", null, 11.024e+3 ]
       gdaspost: [  72,   12, !timedelta "00:45:00", null, 4.024e+3  ]
@@ -54,28 +54,28 @@ enkf_resource_table: !Select
   otherwise: !error "Unknown FV3 ENKF grid: {doc.fv3_enkf_settings.CASE}"
   cases:
     C192:
-      #          ranks ppn  wallclock             threads
-      ecen:     [  84,   12, !timedelta "00:30:00", 2    ]
-      eobs:     [  72,    6, !timedelta "00:45:00", 4    ]
-      eomg:     [  72,    6, !timedelta "01:00:00", 2    ]
-      eupd:     [ 120,   12, !timedelta "00:30:00", 4    ]
-      epos:     [  84,   12, !timedelta "00:30:00", 2    ]
+      #          ranks ppn  wallclock          threads  MB_per_rank
+      ecen:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
+      eobs:     [  72,    6, !timedelta "00:45:00", 4,  null  ]
+      eomg:     [  72,    6, !timedelta "01:00:00", 2,  null  ]
+      eupd:     [ 120,   12, !timedelta "00:30:00", 4,  null  ]
+      epos:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
       efcs_wall:  !timedelta "01:00:00"
     C384:
-      #          ranks ppn  wallclock             threads
-      eobs:     [ 144,   12, !timedelta "00:30:00", max  ]
-      eomg:     [ 144,   12, !timedelta "01:00:00", max  ]
-      eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
-      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
-      epos:     [  80,    3, !timedelta "02:00:00", 2    ]
+      #          ranks ppn  wallclock           threads  MB_per_rank
+      eobs:     [ 144,   12, !timedelta "00:30:00", max, 4.2e+3  ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", max, 4.0e+3  ]
+      eupd:     [ 240,    4, !timedelta "00:30:00", 4,   1.5e+3  ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2,   55.0e+3 ]
+      epos:     [  80,    3, !timedelta "02:00:00", 2,   31.0e+3 ]
       efcs_wall:  !timedelta "03:00:00"
     C768:
-      #          ranks ppn  wallclock             threads
-      eobs:     [ 144,   12, !timedelta "00:30:00", 2    ]
-      eomg:     [ 144,   12, !timedelta "01:00:00", 2    ]
-      eupd:     [ 240,    4, !timedelta "00:30:00", 4    ]
-      ecen:     [  80,    4, !timedelta "01:00:00", 2    ]
-      epos:     [  80,    3, !timedelta "02:00:00", 2    ]
+      #          ranks ppn  wallclock          threads  MB_per_rank
+      eobs:     [ 144,   12, !timedelta "00:30:00", 2,  null  ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2,  null  ]
+      eupd:     [ 240,    4, !timedelta "00:30:00", 4,  null  ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2,  null  ]
+      epos:     [  80,    3, !timedelta "02:00:00", 2,  null  ]
       efcs_wall:  !timedelta "03:00:00"
 
 default_resources: &default_resources
@@ -269,7 +269,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.ecen[1]
       walltime: !calc doc.enkf_resource_table.ecen[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.ecen[3]
-      # memory_per_rank: !calc (19*1024) <== used to test functionality
+      memory_per_rank: !calc doc.enkf_resource_table.ecen[4]
   
   run_eobs: !JobRequest
     - batch_memory: "3072M"
@@ -278,6 +278,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.eobs[1]
       walltime: !calc doc.enkf_resource_table.eobs[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.eobs[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eobs[4]
   
   run_eomg: !JobRequest
     - batch_memory: "3072M"
@@ -286,6 +287,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.eomg[1]
       walltime: !calc doc.enkf_resource_table.eomg[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.eomg[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eomg[4]
   
   run_eupd: !JobRequest
     - batch_memory: "3072M"
@@ -294,6 +296,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.eupd[1]
       walltime: !calc doc.enkf_resource_table.eupd[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.eupd[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eupd[4]
   
   run_epos: !JobRequest
     - batch_memory: "254M"
@@ -302,6 +305,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.enkf_resource_table.epos[1]
       walltime: !calc doc.enkf_resource_table.epos[2]
       OMP_NUM_THREADS: !calc doc.enkf_resource_table.epos[3]
+      memory_per_rank: !calc doc.enkf_resource_table.epos[4]
 
   run_prep: !JobRequest
     - batch_memory: "3072M"
@@ -310,6 +314,7 @@ default_resources: &default_resources
       max_ppn: !calc doc.gfs_resource_table.prep[1]
       walltime: !calc doc.gfs_resource_table.prep[2]
       OMP_NUM_THREADS: !calc doc.gfs_resource_table.prep[3]
+      memory_per_rank: !calc  doc.gfs_resource_table.prep[4]
 
   run_anal: !JobRequest
     - batch_memory: "3072M"

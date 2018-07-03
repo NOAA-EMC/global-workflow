@@ -237,39 +237,39 @@ platform: !Platform
 
   ######################################################################
   # Platform-specific resources
-
-  enkf_resource_table: !Select
-    select: !calc doc.fv3_enkf_settings.CASE
-    otherwise: !error "Unknown FV3 GDAS grid: {doc.fv3_gdas_settings.CASE} you may need to determin the memory per rank requiremtns for C192 and C768"
-    cases:
-      # TODO: Replace memory with real values for C192 and C768 .. 5 is a dummy (it will error if not set .. see above)
-      #C192:
-      #  #          ranks ppn  wallclock            threads MB_per_rank 
-      #  eobs:     [  72,    6, !timedelta "00:45:00", 4, 5  ]
-      #  eomg:     [  72,    6, !timedelta "01:00:00", 2, 5  ]
-      C384:
-        #          ranks ppn  wallclock             threads  MB_per_rank
-        eobs:     [ 144,   13, !timedelta "00:30:00", 2,  3600 ]
-        eomg:     [ 144,   16, !timedelta "01:00:00", 2,  4140 ]
-      #C768:
-      #  #          ranks ppn  wallclock             threads  MB_per_rank
-      #  eobs:     [ 144,   2,  !timedelta "00:30:00", 3, 5  ]
-      #  eomg:     [ 144,   12, !timedelta "01:00:00", 2, 5  ]
-
-    run_eomg: !JobRequest
-      - batch_memory: "3072M"
-        exe: placeholder
-        mpi_ranks: !calc doc.platform.enkf_resource_table.eomg[0]
-        max_ppn: !calc doc.platform.enkf_resource_table.eomg[1]
-        walltime: !calc doc.platform.enkf_resource_table.eomg[2]
-        OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eomg[3]
-        memory_per_rank: !calc doc.platform.enkf_resource_table.eomg[4]
-        
-    run_eobs: !JobRequest
-      - batch_memory: "3072M"
-        exe: placeholder
-        mpi_ranks: !calc doc.platform.enkf_resource_table.eobs[0]
-        max_ppn: !calc doc.platform.enkf_resource_table.eobs[1]
-        walltime: !calc doc.platform.enkf_resource_table.eobs[2]
-        OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eobs[3]
-        memory_per_rank: !calc doc.platform.enkf_resource_table.eobs[4]
+# This is all now in resources.yaml
+#  enkf_resource_table: !Select
+#    select: !calc doc.fv3_enkf_settings.CASE
+#    otherwise: !error "Unknown FV3 GDAS grid: {doc.fv3_gdas_settings.CASE} you may need to determin the memory per rank requiremtns for C192 and C768"
+#    cases:
+#      # TODO: Replace memory with real values for C192 and C768 .. 5 is a dummy (it will error if not set .. see above)
+#      C192:
+#      #          ranks ppn  wallclock            threads MB_per_rank 
+#        eobs:     [  72,    6, !timedelta "00:45:00", 4, 5  ]
+#        eomg:     [  72,    6, !timedelta "01:00:00", 2, 5  ]
+#      C384:
+#        #          ranks ppn  wallclock             threads  MB_per_rank
+#        eobs:     [ 144,   13, !timedelta "00:30:00", 2,  3600 ]
+#        eomg:     [ 144,   16, !timedelta "01:00:00", 2,  4140 ]
+#      C768:
+#        #          ranks ppn  wallclock             threads  MB_per_rank
+#        eobs:     [ 144,   2,  !timedelta "00:30:00", 3, 5  ]
+#        eomg:     [ 144,   12, !timedelta "01:00:00", 2, 5  ]
+#
+#    run_eomg: !JobRequest
+#      - batch_memory: "3072M"
+#        exe: placeholder
+#        mpi_ranks: !calc doc.platform.enkf_resource_table.eomg[0]
+#        max_ppn: !calc doc.platform.enkf_resource_table.eomg[1]
+#        walltime: !calc doc.platform.enkf_resource_table.eomg[2]
+#        OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eomg[3]
+#        memory_per_rank: !calc doc.platform.enkf_resource_table.eomg[4]
+#        
+#    run_eobs: !JobRequest
+#      - batch_memory: "3072M"
+#        exe: placeholder
+#        mpi_ranks: !calc doc.platform.enkf_resource_table.eobs[0]
+#        max_ppn: !calc doc.platform.enkf_resource_table.eobs[1]
+#        walltime: !calc doc.platform.enkf_resource_table.eobs[2]
+#        OMP_NUM_THREADS: !calc doc.platform.enkf_resource_table.eobs[3]
+#        memory_per_rank: !calc doc.platform.enkf_resource_table.eobs[4]
