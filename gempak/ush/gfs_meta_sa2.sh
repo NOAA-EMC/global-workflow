@@ -44,7 +44,7 @@ fi
 
 PDY2=`echo ${PDY} | cut -c3-`
 # export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDY}
-export HPCGFS=${COMINgempak}/${NET}/${envir}/${mdl}.${PDY}/${cyc}/nawips
+export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/nawips
 
 grid1="F-GFSHPC | ${PDY2}/${cyc}00"
 

@@ -27,3 +27,4 @@ cd overpdtg2.fd
 make -f makefile.$target
 make -f makefile.$target install
 make -f makefile.$target clean
+mv overpdtg2 ../../exec
