@@ -52,6 +52,9 @@ case:
   suite_overrides: !FirstTrue
     - when: !calc (doc.platform.name=="JET")
       do:
+        - Search: '**/prep/j*_prep*'
+          partition: !calc doc.platform.partitions.bigmem
+          max_tries: 2
         - Search: '**/analysis/j*_analysis*'
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
@@ -69,9 +72,6 @@ case:
         - Search: '**/post/jgdas_enkf_post*'
           partition: !calc doc.platform.partitions.vjet
           max_tries: 3
-        - Search: '**/prep/j*_prep*'
-          partition: !calc doc.platform.partitions.bigmem
-          max_tries: 2
         - Search: '**/enkf/innovate*'
           partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 2
@@ -80,6 +80,9 @@ case:
           max_tries: 2
         - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
           partition: !calc doc.platform.partitions.vjet
+          max_tries: 2
+        - Search: '**/enkf/jgdas_enkf_select*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
     - otherwise: null
 
