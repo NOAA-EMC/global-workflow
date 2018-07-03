@@ -69,7 +69,7 @@ case:
         - Search: '**/post/j*_post*'
           partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 3
-        - Search: '**/post/jgdas_enkf_post*'
+        - Search: '**/enkf/post/jgdas_enkf_post_f*'
           partition: !calc doc.platform.partitions.vjet
           max_tries: 3
         - Search: '**/enkf/innovate*'

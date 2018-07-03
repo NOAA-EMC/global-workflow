@@ -164,7 +164,7 @@ platform: !Platform
     vjet:
       <<: *partition_common
       # Details about the scheduler on this cluster.
-      specification: "sjet:vjet"
+      specification: "vjet"
       scheduler_settings:
         scheduler_name: MoabTorque
         parallelism_name: HydraIMPI
