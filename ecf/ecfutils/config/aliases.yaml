@@ -86,7 +86,7 @@ aliases:
     <<: *alias_remap
     flag: !calc ( 'gdas' in doc.suite )
     task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
-    alt_resources: !calc doc.exclusive_resources.run_gdasremap
+    alt_resources: !calc doc.default_resources.no_gdasfcst_remap
 
   gfsremap:
     <<: *alias_remap

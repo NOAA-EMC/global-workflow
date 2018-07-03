@@ -214,6 +214,11 @@ default_resources: &default_resources
       OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
       memory_per_rank: !calc doc.gfs_resource_table.gdasfcst_mem_per_rank
   
+  no_gdasfcst_remap: !JobRequest
+    - mpi_ranks: !calc (min(240,doc.default_resources.run_gdasfcst.total_ranks()))
+      OMP_NUM_THREADS: 2
+      max_ppn: !calc (doc.accounting.exclusive_partition.nodes.max_ranks_per_node(doc.default_resources.run_gdasfcst[0]))
+
   remap_resource_template: &remap_resource_template
     mpi_ranks: !calc >-
       min(240,resources.total_ranks())
