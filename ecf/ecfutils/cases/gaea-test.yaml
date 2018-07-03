@@ -1,0 +1,25 @@
+case:
+  fv3_settings:
+    CASE: C768
+    LEVS: 65
+
+  gfs_output_settings:
+    FHMAX_GFS: 240
+    FHOUT_GFS: 3
+
+  places:
+    workflow_file: workflow/public_release_v1.yaml
+
+  post:
+    NPOSTGRP: 42
+    downset: 2
+    
+  settings: 
+    chgres_and_convert_ics: No # disable jgfs_emc_fv3ic job
+
+    # Set the date range to one cycle:
+    SDATE: 2015-11-26t00:00:00
+    EDATE: 2015-11-26t00:00:00
+    realtime: false
+    gfs_cyc: 4 # run gfs four cycles a day
+    run_gsi: No # disable data assimilation
