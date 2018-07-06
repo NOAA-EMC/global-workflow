@@ -59,21 +59,16 @@ case:
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: 'gfs/jgfs_analysis*'
-          partition: !calc doc.platform.partitions.sjet
+          partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: '**/forecast/*_forecast*'
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: '**/forecast/jgdas_forecast_high'
           partition: !calc doc.platform.partitions.tjet_or_ujet
-          accounting:
-            queue: urgent
           max_tries: 2
         - Search: '**/post/j*_post*'
           partition: !calc doc.platform.partitions.sjet
-          max_tries: 3
-        - Search: '**/post/post_processing*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 3
         - Search: '**/enkf/post/jgdas_enkf_post_f*'
           partition: !calc doc.platform.partitions.sjet
@@ -86,6 +81,8 @@ case:
           max_tries: 2
         - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
           partition: !calc doc.platform.partitions.vjet
+          accounting:
+            queue: urgent
           max_tries: 2
         - Search: '**/enkf/jgdas_enkf_select*'
           partition: !calc doc.platform.partitions.tjet_or_ujet
@@ -94,7 +91,7 @@ case:
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: 'gfs/post_processing/bufr_sounding/j*'
-          partition: !calc doc.platform.partitions.sjet
+          partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: '**/*_emc_vrfy'
           partition: !calc doc.platform.partitions.tjet_or_ujet
