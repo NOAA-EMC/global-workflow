@@ -49,7 +49,7 @@ config_vrfy:
             export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
             export PREPQFITSH="$fitdir/subfits_theia_nems"
         elif [ $machine = "JET" ]; then
-            export fitdir="$BASE_GIT/verif/global/parafits.fv3nems/batrun"
+            export fitdir="$BASE_GIT/verif/global/parafits.fv3nems.dell/batrun"
             export PREPQFITSH="$fitdir/subfits_jet_nems"
         fi
     
