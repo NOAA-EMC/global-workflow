@@ -77,7 +77,7 @@ case:
           partition: !calc doc.platform.partitions.sjet
           max_tries: 2
         - Search: '**/enkf/forecast/j*_enkf*'
-          partition: !calc doc.platform.partitions.sjet
+          partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
         - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
           partition: !calc doc.platform.partitions.vjet

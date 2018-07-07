@@ -187,7 +187,7 @@ platform: !Platform
         logical_cpus_per_core: 2
         hyperthreading_allowed: true
         indent_text: "  "
-        memory_per_node: !calc (32.5*1024)
+        memory_per_node: !calc (31.5*1024)
 
     sjet_or_vjet:
       <<: *partition_common
