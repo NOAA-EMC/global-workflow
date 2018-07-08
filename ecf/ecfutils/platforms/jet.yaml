@@ -175,6 +175,20 @@ platform: !Platform
         indent_text: "  "
         memory_per_node: !calc (63.5*1024)
 
+    sjet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "sjet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 16
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (31.5*1024)
+
     sjet_or_vjet:
       <<: *partition_common
       # Details about the scheduler on this cluster.
