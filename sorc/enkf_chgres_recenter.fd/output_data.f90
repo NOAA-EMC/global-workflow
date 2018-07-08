@@ -1,34 +1,12 @@
  module output_data
 
  use nemsio_module 
+ use grid2grid
 
  implicit none
 
  private
 
- integer, public                   :: kgds_output(200)
-
-! data on the output grid.
- real, allocatable, public         :: hgt_output(:)  ! interpolated from input grid
- real, allocatable, public         :: hgt_external_output(:)
- real, allocatable, public         :: sfcp_output(:)
- real, allocatable, public         :: tmp_output(:,:)
- real, allocatable, public         :: clwmr_output(:,:)
- real, allocatable, public         :: delz_output(:,:)
- real, allocatable, public         :: dpres_output(:,:)
- real, allocatable, public         :: dzdt_output(:,:)
- real, allocatable, public         :: o3mr_output(:,:)
- real, allocatable, public         :: spfh_output(:,:)
- real, allocatable, public         :: ugrd_output(:,:)
- real, allocatable, public         :: vgrd_output(:,:)
- real, allocatable, public         :: rwmr_output(:,:)
- real, allocatable, public         :: icmr_output(:,:)
- real, allocatable, public         :: snmr_output(:,:)
- real, allocatable, public         :: grle_output(:,:)
- real, allocatable, public         :: rlat_output(:)
- real, allocatable, public         :: rlon_output(:)
-
- public                            :: set_output_grid
  public                            :: write_output_data
 
  character(len=50), allocatable    :: recname(:)
@@ -42,87 +20,12 @@
 
  contains
 
- subroutine set_output_grid
-
-!-------------------------------------------------------------------
-! Set grid specs on the output grid.
-!-------------------------------------------------------------------
-
- use setup
- use input_data
- use utils
-
- implicit none
-
- character(len=20)                    :: vlevtyp, vname
-
- integer(nemsio_intkind)              :: vlev
- integer                              :: iret
-
- real(nemsio_realkind), allocatable   :: dummy(:)
-
- type(nemsio_gfile)                   :: gfile
-
- print*
- print*,"OUTPUT GRID I/J DIMENSIONS: ", i_output, j_output
-
-!-------------------------------------------------------------------
-! Set the grib 1 grid description section, which is needed
-! by the IPOLATES library.
-!-------------------------------------------------------------------
-
- kgds_output = 0
-
- call calc_kgds(i_output, j_output, kgds_output)
-
-!-------------------------------------------------------------------
-! Read the terrain on the output grid.  To ensure exact match,
-! read it from an existing enkf nemsio restart file.
-!-------------------------------------------------------------------
-
- call nemsio_init(iret)
-
- print*
- print*,"OPEN OUTPUT GRID TERRAIN FILE: ", trim(terrain_file)
- call nemsio_open(gfile, terrain_file, "read", iret=iret)
- if (iret /= 0) then
-   print*,"FATAL ERROR OPENING FILE: ",trim(terrain_file)
-   print*,"IRET IS: ", iret
-   call errexit(50)
- endif
-
- allocate(dummy(ij_output))
- allocate(hgt_external_output(ij_output))
-
- print*
- print*,"READ SURFACE HEIGHT"
- vlev    = 1
- vlevtyp = "sfc"
- vname   = "hgt"
- call nemsio_readrecv(gfile, vname, vlevtyp, vlev, dummy, 0, iret)
- if (iret /= 0) then
-   print*,"FATAL ERROR READING FILE: ",trim(terrain_file)
-   print*,"IRET IS: ", iret
-   call errexit(51)
- endif
-
- hgt_external_output = dummy
-
- deallocate(dummy)
-
- call nemsio_close(gfile, iret=iret)
-
- call nemsio_finalize()
-
- end subroutine set_output_grid
-
  subroutine write_output_data
 
 !-------------------------------------------------------------------
 ! Write output grid data to a nemsio file.
 !-------------------------------------------------------------------
 
- use input_data
  use setup
 
  implicit none
@@ -149,6 +52,7 @@
 
  gaction="write"
 
+ call printrusage
  print*
  print*,'OPEN OUTPUT FILE: ',trim(output_file)
  call nemsio_open(gfile, output_file, gaction, iret=iret, gdatatype="bin4", &
@@ -194,7 +98,6 @@
    call nemsio_writerecv(gfile, "clwmr", "mid layer", n, dummy, iret=iret)
    if (iret/=0) goto 88
  enddo
- deallocate(clwmr_output)
 
  print*,"WRITE SPECIFIC HUMIDITY"
  do n = 1, lev
@@ -202,15 +105,14 @@
    call nemsio_writerecv(gfile, "spfh", "mid layer", n, dummy, iret=iret)
    if (iret/=0) goto 88
  enddo
- deallocate(spfh_output)
 
+ call printrusage
  print*,"WRITE OZONE"
  do n = 1, lev
    dummy = o3mr_output(:,n)
    call nemsio_writerecv(gfile, "o3mr", "mid layer", n, dummy, iret=iret)
    if (iret/=0) goto 88
  enddo
- deallocate(o3mr_output)
 
  print*,"WRITE U-WINDS"
  do n = 1, lev
@@ -254,13 +156,13 @@
 
  if (gfdl_mp) then
 
+ call printrusage
    print*,"WRITE RAIN WATER"
    do n = 1, lev
      dummy = rwmr_output(:,n)
      call nemsio_writerecv(gfile, "rwmr", "mid layer", n, dummy, iret=iret)
      if (iret/=0) goto 88
    enddo
-   deallocate(rwmr_output)
 
    print*,"WRITE SNOW WATER"
    do n = 1, lev
@@ -268,7 +170,6 @@
      call nemsio_writerecv(gfile, "snmr", "mid layer", n, dummy, iret=iret)
      if (iret/=0) goto 88
    enddo
-   deallocate(snmr_output)
 
    print*,"WRITE ICE WATER"
    do n = 1, lev
@@ -276,7 +177,6 @@
      call nemsio_writerecv(gfile, "icmr", "mid layer", n, dummy, iret=iret)
      if (iret/=0) goto 88
    enddo
-   deallocate(icmr_output)
 
    print*,"WRITE GRAUPEL"
    do n = 1, lev
@@ -284,7 +184,25 @@
      call nemsio_writerecv(gfile, "grle", "mid layer", n, dummy, iret=iret)
      if (iret/=0) goto 88
    enddo
-   deallocate(grle_output)
+
+   if (icldamt == 1) then
+      print*,"WRITE CLD_AMT"
+      do n = 1, lev
+         dummy = cldamt_output(:,n)
+         call nemsio_writerecv(gfile, "cld_amt", "mid layer", n, dummy, iret=iret)
+         if (iret/=0) goto 88
+      enddo
+   endif
+
+ call printrusage
+   deallocate(q_output)
+
+   nullify(sfcp_output,hgt_output,ugrd_output)
+   nullify(vgrd_output,tmp_output,dzdt_output)
+   nullify(q_output,spfh_output,o3mr_output)
+   nullify(clwmr_output,rwmr_output,icmr_output)
+   nullify(snmr_output,grle_output,cldamt_output)
+   nullify(delz_output,hgt_external_output,dpres_output)
 
  endif
 
@@ -294,6 +212,7 @@
 
  call nemsio_finalize()
 
+ call printrusage
  return
 
  88 continue
@@ -308,13 +227,13 @@
 ! Set header information for the output nemsio file.  
 !-------------------------------------------------------------------
 
- use input_data
+ use grid2grid
  use setup
 
  implicit none
 
  character(len=8)           :: fields(9)
- character(len=8)           :: fields_gfdl_mp(4)
+ character(len=8)           :: fields_gfdl_mp(5)
 
  integer                    :: count, l, n
 
@@ -323,13 +242,13 @@
               'tmp', 'spfh', 'clwmr', 'o3mr'/
 
 ! Fields for GFDL microphysics
- data fields_gfdl_mp /'rwmr', 'icmr', 'snmr', 'grle'/
+ data fields_gfdl_mp /'rwmr', 'icmr', 'snmr', 'grle', 'cld_amt'/
 
  print*
  print*,"SET HEADER INFO FOR OUTPUT FILE."
 
  if (gfdl_mp) then
-   nrec = (13 * lev) + 2
+   nrec = ((13+icldamt) * lev) + 2
  else
    nrec = (9 * lev) + 2
  endif
@@ -349,7 +268,7 @@
  enddo
 
  if (gfdl_mp) then
-   do n = 1, 4
+   do n = 1, 4 + icldamt
      do l = 1, lev
        count = count + 1
        recname(count) = fields_gfdl_mp(n)

@@ -643,7 +643,7 @@
                                                                         
  END SUBROUTINE RSEARCH 
 
- SUBROUTINE VINTG(IM,KM1,KM2,NT,P1,U1,V1,T1,Q1,W1,P2, &
+ SUBROUTINE VINTG(IM,JM,KM1,KM2,NT,P1,U1,V1,T1,Q1,W1,P2, &
                   U2,V2,T2,Q2,W2)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
@@ -692,19 +692,19 @@
 !C$$$
       IMPLICIT NONE
 
-      INTEGER, INTENT(IN)      :: IM, KM1, KM2, NT
+      INTEGER, INTENT(IN)      :: IM, JM, KM1, KM2, NT
 
-      REAL,    INTENT(IN)      :: P1(IM,KM1),U1(IM,KM1),V1(IM,KM1)
-      REAL,    INTENT(IN)      :: T1(IM,KM1),Q1(IM,KM1,NT)
-      REAL,    INTENT(IN)      :: W1(IM,KM1),P2(IM,KM2)
-      REAL,    INTENT(OUT)     :: U2(IM,KM2),V2(IM,KM2)
-      REAL,    INTENT(OUT)     :: T2(IM,KM2),Q2(IM,KM2,NT)
-      REAL,    INTENT(OUT)     :: W2(IM,KM2)
+      REAL,    INTENT(IN)      :: P1(IM*JM,KM1),U1(IM*JM,KM1),V1(IM*JM,KM1)
+      REAL,    INTENT(IN)      :: T1(IM*JM,KM1),Q1(IM*JM,KM1,NT)
+      REAL,    INTENT(IN)      :: W1(IM*JM,KM1),P2(IM*JM,KM2)
+      REAL,    INTENT(OUT)     :: U2(IM*JM,KM2),V2(IM*JM,KM2)
+      REAL,    INTENT(OUT)     :: T2(IM*JM,KM2),Q2(IM*JM,KM2,NT)
+      REAL,    INTENT(OUT)     :: W2(IM*JM,KM2)
 
       REAL, PARAMETER          :: DLTDZ=-6.5E-3*287.05/9.80665
       REAL, PARAMETER          :: DLPVDRT=-2.5E6/461.50
 
-      INTEGER                  :: I, K, N
+      INTEGER                  :: I, K, N, J, IJ0
 
       REAL                     :: DZ
       REAL,ALLOCATABLE         :: Z1(:,:),Z2(:,:)
@@ -712,32 +712,36 @@
  
       ALLOCATE (Z1(IM+1,KM1),Z2(IM+1,KM2))
       ALLOCATE (C1(IM+1,KM1,4+NT),C2(IM+1,KM2,4+NT),J2(IM+1,KM2,4+NT))
+
+      big_j_loop: DO J=1,JM
+         IJ0=IM*(J-1)
+
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !  COMPUTE LOG PRESSURE INTERPOLATING COORDINATE
 !  AND COPY INPUT WIND, TEMPERATURE, HUMIDITY AND OTHER TRACERS
 !$OMP PARALLEL DO PRIVATE(K,I)
       DO K=1,KM1
         DO I=1,IM
-          Z1(I,K)   = -LOG(P1(I,K))
-          C1(I,K,1) =  U1(I,K)
-          C1(I,K,2) =  V1(I,K)
-          C1(I,K,3) =  W1(I,K)
-          C1(I,K,4) =  T1(I,K)
-          C1(I,K,5) =  Q1(I,K,1)
+          Z1(I,K)   = -LOG(P1(IJ0+I,K))
+          C1(I,K,1) =  U1(IJ0+I,K)
+          C1(I,K,2) =  V1(IJ0+I,K)
+          C1(I,K,3) =  W1(IJ0+I,K)
+          C1(I,K,4) =  T1(IJ0+I,K)
+          C1(I,K,5) =  Q1(IJ0+I,K,1)
         ENDDO
       ENDDO
 !$OMP END PARALLEL DO
       DO N=2,NT
         DO K=1,KM1
           DO I=1,IM
-            C1(I,K,4+N) = Q1(I,K,N)
+            C1(I,K,4+N) = Q1(IJ0+I,K,N)
           ENDDO
         ENDDO
       ENDDO
 !$OMP PARALLEL DO PRIVATE(K,I)
       DO K=1,KM2
         DO I=1,IM
-          Z2(I,K) = -LOG(P2(I,K))
+          Z2(I,K) = -LOG(P2(IJ0+I,K))
         ENDDO
       ENDDO
 !$OMP END PARALLEL DO
@@ -751,28 +755,29 @@
 !  COPY OUTPUT WIND, TEMPERATURE, HUMIDITY AND OTHER TRACERS
 !  EXCEPT BELOW THE INPUT DOMAIN, LET TEMPERATURE INCREASE WITH A FIXED
 !  LAPSE RATE AND LET THE RELATIVE HUMIDITY REMAIN CONSTANT.
-      DO K=1,KM2
+      k_copy_loop: DO K=1,KM2
         DO I=1,IM
-          U2(I,K)=C2(I,K,1)
-          V2(I,K)=C2(I,K,2)
-          W2(I,K)=C2(I,K,3)
+          U2(IJ0+I,K)=C2(I,K,1)
+          V2(IJ0+I,K)=C2(I,K,2)
+          W2(IJ0+I,K)=C2(I,K,3)
           DZ=Z2(I,K)-Z1(I,1)
           IF(DZ.GE.0) THEN
-            T2(I,K)=C2(I,K,4)
-            Q2(I,K,1)=C2(I,K,5)
+            T2(IJ0+I,K)=C2(I,K,4)
+            Q2(IJ0+I,K,1)=C2(I,K,5)
           ELSE
-            T2(I,K)=T1(I,1)*EXP(DLTDZ*DZ)
-            Q2(I,K,1)=Q1(I,1,1)*EXP(DLPVDRT*(1/T2(I,K)-1/T1(I,1))-DZ)
+            T2(IJ0+I,K)=T1(IJ0+I,1)*EXP(DLTDZ*DZ)
+            Q2(IJ0+I,K,1)=Q1(IJ0+I,1,1)*EXP(DLPVDRT*(1/T2(IJ0+I,K)-1/T1(IJ0+I,1))-DZ)
           ENDIF
         ENDDO
-      ENDDO
+      ENDDO k_copy_loop
       DO N=2,NT
         DO K=1,KM2
           DO I=1,IM
-            Q2(I,K,N)=C2(I,K,4+N)
+            Q2(IJ0+I,K,N)=C2(I,K,4+N)
           ENDDO
         ENDDO
       ENDDO
+      END DO big_j_loop
       DEALLOCATE (Z1,Z2,C1,C2,J2)
  END SUBROUTINE VINTG
  end module utils
