@@ -86,11 +86,15 @@ if [ $machine = THEIA ]; then
     export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
     export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 # temporary directory
     export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
+    export prepbufr_arch_dir=/scratch4/NCEPDEV/global/noscrub/stat/prepbufr              # prepbufr archive directory
     export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
 elif [ $machine = WCOSS_C ]; then
     export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                  # temporary directory
     export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                  # temporary directory
     export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                  # global stats directory
+    export prepbufr_arch_dir=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/prepbufr  # prepbufr archive directory
+    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod             # directory leading to ops. prepbufr files 
+    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                             # directory leading to ops. prepbufr files
     export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}  # date executable
 else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
@@ -243,7 +247,6 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         ffcst=$((ffcst+fhout))
     done
     export vfh_list_config=$( printf "%s," "${vfh_list[@]}" | cut -d "," -f 1-${#vfh_list[@]} )
-    echo $vfh_list_config
     #determine which grid-to-grid verification types to run
     if [ $g2g_sfc = "YES" ]; then      
         typelist="anom pres sfc"
@@ -425,7 +428,140 @@ fi
 ##---------------------------------------------------------------------------
 ## Grid-to-observations verification step 1: compute regular partial sums
 if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
-    echo "ERROR: VRFY_GRID2OBS_STEP1 IS NOT SUPPORTED AT THIS TIME"
+    echo "===== RUNNING VRFY_GRID2OBS_STEP1 ====="
+    echo "===== creating partial sum data for grid-to-obs verifcation using METplus ====="
+    #set some environment variables
+    export fcyclist="$fcyclist"                              #all fcst cycles to be included in verification 
+    #export vhrlist="$vhrlist"                                #valid hours to verify
+    export expnlist=$expname                                 #experiment names 
+    export expdlist=$expdir                                  #exp online archive directories
+    export complist=$(hostname)                              #computers where experiments are run
+    export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
+    export rundir_g2o1_base=$rundir_base/grid2obs_step1      #run directory, where to save METplus output
+    export VDATEST=$VSTART_DATE                              #verification starting date
+    export VDATEND=$VEND_DATE                                #verification ending date
+    export vfhmin=$vfhmin                                    #start forecast hour 
+    if [ $vfhmax -ge 168 ]; then                             #end forecast hour
+        export vfhmax=168
+    else
+        export vfhmax=$vfhmax
+    fi
+    export run_upper_air="YES"                               #run grid-to-obs upper_air use case
+    export fhout_upper_air="6"                               #grid-to-obs upper_air use case forecast output frequency in hours
+    export grid_upper_air="G003"                             #grid for grid-to-obs upper_air use case, format GXXX
+    export run_conus_sfc="YES"                               #run grid-to-obs conus_sfc use case
+    export fhout_conus_sfc="3"                               #grid-to-obs conus_sfc use case forecast output frequency in hours
+    export grid_conus_sfc="G104"                             #grid for grid-to-obs conus_sfc use case, format GXXX
+    #do some checks 
+    if [ ! -d $metplushome ]; then
+        echo "EXIT ERROR: $metplushome does not exist "
+        exit
+    fi
+    if [ ! -d $expdlist ]; then
+        echo "EXIT ERROR: $expdlist does not exist "
+        exit
+    fi
+    #create directories for output
+    mkdir -p $rundir_g2o1_base $metplussave
+    #specify verification hours in a day 
+    if [ $fhout_upper_air -eq 12 ]; then
+        export vhrlist_upper_air="00 12"
+        export vhr_upper_air_start="00"
+        export vhr_upper_air_end="12"
+        export vhr_upper_air_inc="12"
+    elif [ $fhout_upper_air -eq 6 ]; then
+        export vhrlist_upper_air="00 06 12 18"
+        export vhr_upper_air_start="00"
+        export vhr_upper_air_end="18"
+        export vhr_upper_air_inc="6"
+    elif [ $fhout_upper_air -eq 3 ]; then
+        export vhrlist_upper_air="00 03 06 09 12 15 18 21"
+        export vhr_upper_air_start="00"
+        export vhr_upper_air_end="21"
+        export vhr_upper_air_inc="3"
+    else
+        echo "ERROR: fhout_upper_air=$fhout_upper_air hours is not supported"
+        export run_upper_air="NO"
+    fi
+    if [ $fhout_conus_sfc -eq 12 ]; then
+        export vhrlist_conus_sfc="00 12"
+        export vhr_conus_sfc_start="00"
+        export vhr_conus_sfc_end="12"
+        export vhr_conus_sfc_inc="12"
+    elif [ $fhout_conus_sfc -eq 6 ]; then
+        export vhrlist_conus_sfc="00 06 12 18"
+        export vhr_conus_sfc_start="00"
+        export vhr_conus_sfc_end="18"
+        export vhr_conus_sfc_inc="6"
+    elif [ $fhout_conus_sfc -eq 3 ]; then
+        export vhrlist_conus_sfc="00 03 06 09 12 15 18 21"
+        export vhr_conus_sfc_start="00"
+        export vhr_conus_sfc_end="21"
+        export vhr_conus_sfc_inc="3"
+    else
+        echo "ERROR: fhout_conus_sfc=$fhout_conus_sfc hours is not supported"
+        export run_conus_sfc="NO"
+    fi
+    if [ $run_upper_air = "NO" -a $run_conus_sfc = "NO" ]; then 
+        echo "EXIT ERROR: run_upper_air and run_conus_sfc are both NO"
+        exit
+    fi
+    #run METplus
+    VDATE=${VDATEST}
+    while [ $VDATE -le ${VDATEND} ] ; do
+        export VDATE=$VDATE
+        export rundir_g2o1=${rundir_g2o1_base}/${VDATE}
+        if [ -d ${rundir_g2o1} ] ; then
+            echo "REMOVING ${rundir_g2o1}"
+            rm -r $rundir_g2o1
+        fi
+        mkdir -p ${rundir_g2o1}/make_met_data
+        mkdir -p ${rundir_g2o1}/VSDB_format
+        #first run pb2nc to avoid rerunning for multiple experiments
+        mkdir -p ${rundir_g2o1}/logs/prepbufr
+        mkdir -p ${rundir_g2o1}/confs/prepbufr
+        mkdir -p ${rundir_g2o1}/jobs/prepbufr
+        #create poejob scripts, if MPMD=YES, else run METplus
+        if [ $MPMD = YES ] ; then
+            echo "RUN MPMD HOLDER"
+        else
+            if [ $run_upper_air = "YES" ]; then
+                echo "==== running METplus grid-to-obs-pb2nc for upper_air for ${VDATE} ${exp} ===="
+                export prepbufr_upper_air="gdas"
+                export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/prepbufr
+                mkdir -p ${pb2nc_upper_air_dir}
+                #currently using only archive gdas
+                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                ###Next METplus version will support prod GDAS file format name 
+                ###archive vs. prod GDAS files
+                ###if [ -d ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE} ]; then
+                ###    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                ###elif [ -d ${prepbufr_arch_dir}/${prepbufr_upper_air} ]; then
+                ###   ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                ###fi
+            fi
+            if [ $run_conus_sfc = "YES" ]; then
+                echo "==== running METplus grid-to-obs-pb2nc for conus_sfc for ${VDATE} ${exp} ===="
+                export pb2nc_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/prepbufr
+                mkdir -p ${pb2nc_conus_sfc_dir}
+                if [ $VDATE -le 20170319 ]; then
+                    export prepbufr_conus_sfc="ndas" 
+                    #NDAS files/naming convention no longer used in production; archive only
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_ndas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                else
+                    export prepbufr_conus_sfc="nam"
+                    #archive vs. prod NAM files
+                    if [ -d ${prepbufr_prod_conus_sfc_dir}/${prepbufr_conus_sfc}.${VDATE} ]; then
+                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    elif [ -d ${prepbufr_arch_dir}/${prepbufr_conus_sfc} ]; then
+                       ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    fi
+                fi
+                
+            fi
+        fi
+        VDATE=$(echo $($ndate +24 ${VDATE}00 ) |cut -c 1-8 )
+    done
 fi
 ##---------------------------------------------------------------------------
 
@@ -454,165 +590,3 @@ fi
 ## --------------------------------------------------------------
 exit
 ########################################################################
-########################################################################
-      if [ $MAKEVSDBDATA = YES ] ; then
-###   make vsdb database
-
-export fcyclist="$fcyclist"                         ;#all fcst cycles to be included in verification
-export expnlist=$exp1name                           ;#experiment names 
-export expdlist=$exp1dir                            ;#exp online archive directories
-export complist=$(hostname)                         ;#computers where experiments are run
-export dumplist=".gfs."                             ;#file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
-
-export anl_type=$anl_type                           ;#analysis type for verification: gfs, gdas or canl
-export DATEST=$DATEST                               ;#verification starting date
-export DATEND=$DATEND                               ;#verification ending date
-export vlength=$vlength                             ;#forecast length in hour
-export asub=${asub:-a}                              ;#string in pgb anal file after pgb, say, pgbanl, pgbhnl 
-export fsub=${fsub:-f}                              ;#string in pgb fcsy file after pgb, say, pgbf06, pgbh06
-
-if [ ! -d $vsdbhome ]; then
- echo "$vsdbhome does not exist "
- exit
-fi
-if [ ! -d $expdlist ]; then
- echo "$expdlist does not exist "
- exit
-fi
-
-export rundir=$rundir0/acrmse_stat
-#export listvar1=fcyclist,vhrlist,expnlist,expdlist,complist,dumplist,DATEST,DATEND,vlength,rundir
-#export listvar2=machine,anl_type,scppgb,sfcvsdb,canldir,ecmanldir,vsdbsave,vsdbhome,gd,NWPROD
-#export listvar="$listvar1,$listvar2"
-
-${vsdbhome}/verify_exp_step1.sh
-
-### --------------------------------------------------------------
-      fi                                       
-### --------------------------------------------------------------
-
-
- 
-### --------------------------------------------------------------
-###   make AC and RMSE maps            
-      if [ $MAKEMAPS = YES ] ; then
-### --------------------------------------------------------------
-#
-export mdlist=${mdlist:-"gfs $exp1name"}        ;#experiment names, up to 10                                     
-export fcyclist="$fcyclist"                     ;#forecast cycles to show on map 
-export DATEST=${VSDB_START_DATE:-$DATEST}       ;#map starting date  starting date to show on map
-export DATEND=$DATEND                           ;#verification ending date to show on map
-export vlength=$vlength                         ;#forecast length in hour to show on map
-export maptop=${maptop:-10}                     ;#can be set to 10, 50 or 100 hPa for cross-section maps
-export maskmiss=${maskmiss:-1}                  ;#remove missing data from all models to unify sample size, 0-->NO, 1-->Yes
-
-set -A namelist $mdlist
-export rundir=$rundir0/acrmse_map  
-
-${vsdbhome}/verify_exp_step2.sh
-### --------------------------------------------------------------
-    fi
-### --------------------------------------------------------------
-
-
-### --------------------------------------------------------------
-###   make CONUS precip plots
-      if [ $CONUSPLOTS = YES ] ; then
-### --------------------------------------------------------------
-export expnlist=$mdlist                                             ;#experiment names, up to 6 
-export expdlist=${expd_list:-"$exp1dir $exp1dir $exp1dir $exp1dir $exp1dir $exp1dir"}    ;#precip stats online archive dirs
-export complist=${comp_list:-"$(hostname) $(hostname) $(hostname) $(hostname) $(hostname) $(hostname) "}  ;#computers where experiments are run
-
-export cycle=$cycle                                       ;#cycle to make QPF plots 
-export DATEST=$DATEST                                     ;#forecast starting date to show on map
-export DATEND=$(echo $($NWPROD/util/exec/ndate -${VBACKUP_PRCP:-00} ${DATEND}00 ) |cut -c1-8 )
-export rundir=$rundir0/rain_map  
-export scrdir=${vsdbhome}/precip                  
-export vhour=${vhr_rain:-${vhour:-180}}                                 ;#verification length in hour
-                                                                                                                           
-${scrdir}/plot_pcp.sh
-### --------------------------------------------------------------
-      fi
-### --------------------------------------------------------------
-                                                                                                                           
-
-### --------------------------------------------------------------
-###   compute precip threat score stats over CONUS
-      if [ $CONUSDATA = YES ] ; then
-### --------------------------------------------------------------
-export cycle=$cycle                                 ;#cycle to generate QPF stats data
-export expnlist=$exp1name                           ;#experiment names 
-export expdlist=`dirname $COMROT`                   ;#exp online archive directories
-export complist=$(hostname)                         ;#computers where experiments are run
-export dumplist=".gfs."                             ;#file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
-export DATEST=`$NWPROD/util/exec/ndate -${VBACKUP_PRCP:-00} ${DATEST}00 |cut -c 1-8 ` ;#verification starting date
-export DATEND=`$NWPROD/util/exec/ndate -${VBACKUP_PRCP:-00} ${DATEND}00 |cut -c 1-8 ` ;#verification starting date
-
-export ftyplist=${ftyplist:-"flxf"}                 ;#file types: pgbq or flxf
-export dumplist=${dumplist:-".gfs."}                ;#file format ${ftyp}f${fhr}${dump}${yyyymmdd}${cyc}
-export ptyplist=${ptyplist:-"PRATE"}                ;#precip types in GRIB: PRATE or APCP
-export fhout=6                                      ;#forecast output frequency in hours
-export vhour=${vhr_rain:-${vhour:-180}}             ;#verification length in hour
-export ARCDIR=${ARCDIR1:-$GNOSCRUB/$LOGNAME/archive} ;#directory to save stats data
-export rundir=$rundir0/rain_stat  
-export scrdir=${vsdbhome}/precip
-
-#export listvar1=expnlist,expdlist,complist,ftyplist,dumplist,ptyplist,bucket,fhout,cyclist,vhour
-#export listvar2=machine,DATEST,DATEND,ARCDIR,rundir,scrdir,OBSPCP,mapdir,scppgb,NWPROD
-#export listvar="$listvar1,$listvar2"
-
-${scrdir}/mkup_rain_stat.sh  
-### --------------------------------------------------------------
-      fi
-### --------------------------------------------------------------
-
-
-### --------------------------------------------------------------
-###   make grid2obs vsdb database
-      if [ $VRFYG2OBS = YES ] ; then
-### --------------------------------------------------------------
-export cyclist="$fcyclist"                  ;#all fcst cycles to be included in verification
-export expnlist="$exp1name"                  ;#experiment names 
-export expdlist="$exp1dir"                   ;#exp online archive directories
-export complist="$(hostname)"               ;#computers where experiments are run
-export dumplist=".gfs."                     ;#file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
-export fhoutair="6"                         ;#forecast output frequency in hours for raobs vrfy
-export fhoutsfc="3"                         ;#forecast output frequency in hours for sfc vrfy
-export gdtype="3"                           ;#pgb file resolution, 2 for 2.5-deg and 3 for 1-deg
-export vsdbsfc="YES"                        ;#run sfc verification
-export vsdbair="YES"                        ;#run upper-air verification
-if [ $vlength -ge 168 ]; then
- export vlength=168                          ;#forecast length in hour
-else
- export vlength=$vlength                     ;#forecast length in hour
-fi
-export DATEST=`$NWPROD/util/exec/ndate -${VBACKUP_G2OBS:-00} ${DATEST}00 |cut -c 1-8 ` ;#verification starting date
-export DATEND=`$NWPROD/util/exec/ndate -${VBACKUP_G2OBS:-00} ${DATEND}00 |cut -c 1-8 ` ;#verification ending date
-export batch=YES
-export rundir=$rundir0/grid2obs_stat  
-export HPSSTAR=${HPSSTAR:-/u/Fanglin.Yang/bin/hpsstar}
-export hpssdirlist=${hpsslist:-"/5year/NCEPDEV/emc-global/$LOGNAME/$machine"}
-export runhpss=${runhpss:-NO}               ;#run hpsstar in batch mode if data are missing
-
-if [ ! -d $vsdbhome ]; then
- echo "$vsdbhome does not exist "
- exit
-fi
-if [ ! -d $expdlist ]; then
- echo "$expdlist does not exist "
- exit
-fi
-
-
-#listvar1=vsdbhome,vsdbsave,cyclist,expnlist,expdlist,dumplist,complist,fhoutair,fhoutsfc,vsdbsfc,vsdbair,gdtype,vlength
-#listvar2=NWPROD,SUBJOB,ACCOUNT,CUE2RUN,CUE2FTP,GROUP,DATEST,DATEND,rundir,HPSSTAR,gdas_prepbufr_arch,batch,runhpss,APRUN,COMROTNCO
-#export listvar=$listvar1,$listvar2
-${vsdbhome}/grid2obs/grid2obs.sh
-
-
-### --------------------------------------------------------------
-      fi                                       
-### --------------------------------------------------------------
-
-exit
-
