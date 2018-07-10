@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180618
+export PDY=20180710
 
 export PDY1=`expr $PDY - 1`
 

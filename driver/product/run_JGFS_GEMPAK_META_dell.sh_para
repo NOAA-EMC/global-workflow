@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #BSUB -J gfs_gempak_meta_00
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_meta_00.o%J
-#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_meta_00.o%J
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_meta_para_00.o%J
+#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_meta_para_00.o%J
 #BSUB -q debug
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
@@ -15,7 +15,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180702
+export PDY=20180703
 
 export PDY1=`expr $PDY - 1`
 
@@ -65,7 +65,7 @@ module list
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=gfs_gempak_meta_${cyc}
+export job=gfs_gempak_meta_para_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 

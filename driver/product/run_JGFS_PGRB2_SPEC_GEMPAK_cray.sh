@@ -16,7 +16,7 @@ export MP_LABELIO=yes
 export MP_STDOUTMODE=ordered
 
 export PDY=`date -u +%Y%m%d`
-# expor PDY=20180324
+expor PDY=20180710
 
 export PDY1=`expr $PDY - 1`
 
@@ -126,7 +126,7 @@ else
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
 #   export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
 
-  export COMIN=/gpfs/hps3/ptmp/Boi.Vuong/com/gfs/para/gfs.${PDY}/${cyc} ### Boi PARA
+#  export COMIN=/gpfs/hps3/ptmp/Boi.Vuong/com/gfs/para/gfs.${PDY}/${cyc} ### Boi PARA
 
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
