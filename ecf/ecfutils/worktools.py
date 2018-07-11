@@ -186,7 +186,7 @@ def make_config_files_in_expdir(doc,expdir):
         with open(filename,'wt') as fd:
             fd.write(content)
 
-def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
+def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,skip_comrot):
     logger.info(f'{srcdir}: get yaml files from here')
     logger.info(f'{case_name}: use this case')
 
@@ -222,8 +222,11 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force):
         gud=False
         logger.warning(f'{tgtdir}: already exists!')
     if os.path.exists(rotdir):
-        gud=False
-        logger.warning(f'{rotdir}: already exists!')
+        if not skip_comrot:
+            gud=False
+            logger.warning(f'{rotdir}: already exists!')
+        else:
+            logger.info(f'{rotdir}: already exists, but -c was specified, so I will ignore it.')
     if not gud and not force:
         logger.error('Target directories already exist.')
         logger.error('I will not start a workflow unless you do -f.')
@@ -510,7 +513,7 @@ def setup_case(command_line_arguments):
     logger.info(f'{platdoc.platform.name}: selected this platform.')
 
     EXPDIR = make_yaml_files_in_expdir(
-        os.path.abspath('.'),case_name,experiment_name,platdoc,force)
+        os.path.abspath('.'),case_name,experiment_name,platdoc,force,skip_comrot)
 
     doc=from_dir(EXPDIR,validation_stage='setup')
     suite=Suite(doc.suite)
