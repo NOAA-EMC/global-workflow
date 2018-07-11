@@ -40,7 +40,7 @@ maybe_verbose_source() {
 
 find_python36() {
     if ( ! which python3 > /dev/null 2>&1 || \
-	     ! python3 -c 'import yaml ; f{"1+1"}' > /dev/null 2>&1 ) ; then
+	     ! python3 -c 'import yaml ; f"{1+1}"' > /dev/null 2>&1 ) ; then
 	python36=/gpfs/hps3/emc/nems/noscrub/Samuel.Trahan/python/3.6.1-emc/bin/python3.6
         if [[ ! -x "$python36" && -d /scratch4 ]] ; then
             module load intelpython
