@@ -25,3 +25,6 @@ module load nemsio/v2.2.2
 
 module use /lfs3/projects/hwrf-vd/soft/modulefiles/
 module load prod_util
+
+# mpiserial on Jet includes a cfp wrapper
+module load mpiserial
