@@ -39,7 +39,7 @@ config_post:
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
-    export npe_dwn={doc.aliases.dwn.npe}
+    #export npe_dwn={doc.aliases.dwn.npe}
     #export nth_dwn={doc.aliases.dwn.nth}
     
     export GRIBVERSION='grib2'
