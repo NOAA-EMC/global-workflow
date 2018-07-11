@@ -26,4 +26,7 @@ module load prod_util
 module load grib_util
 module load hpss
 
+# mpiserial on Jet includes a cfp wrapper
+module load mpiserial
+
 module load gempak/7.4.2
