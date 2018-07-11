@@ -67,6 +67,9 @@ platform: !Platform
     export CNVGRIB="$NWPROD/util/exec/cnvgrib"
     export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
 
+    # A CFP wrapper is installed as part of the "mpiserial" module on Jet.
+    export USE_CFP=YES
+
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |
     {metasched.defvar("QUEUE", doc.accounting.exclusive_partition.exclusive_queue)}
@@ -245,8 +248,8 @@ platform: !Platform
         indent_text: "  "
         memory_per_node: !calc (251.5*1024)
         
-    default_shared: !calc doc.platform.partitions.sjet_or_vjet
-    default_exclusive: !calc doc.platform.partitions.sjet_or_vjet
+    default_shared: !calc doc.platform.partitions.xjet
+    default_exclusive: !calc doc.platform.partitions.xjet
     default_service: !calc doc.platform.partitions.service
 
   ######################################################################
