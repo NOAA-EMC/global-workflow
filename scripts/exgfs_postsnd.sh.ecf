@@ -139,7 +139,8 @@ mv poe_col cmdfile
 cat cmdfile
 chmod +x cmdfile
 
-mpirun -n 10 cfp cmdfile
+##mpirun -n 10 cfp cmdfile
+${APRUN_POSTSNDCFP} cmdfile
 ################################################
 # Convert the bufr soundings into GEMPAK files
 ################################################
