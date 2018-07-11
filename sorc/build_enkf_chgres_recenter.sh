@@ -23,7 +23,7 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd ${cwd}/new_enkf_chgres_recenter.fd
+cd ${cwd}/enkf_chgres_recenter.fd
 
 export FFLAGS="-r8 -i4 -qopenmp -traceback -O3 -fp-model precise"
 
