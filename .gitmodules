@@ -2,3 +2,12 @@
 	path = ecf/ecfutils/CROW
 	url = gerrit:CROW
 	branch = multiplat
+[submodule "sorc/fv3gfs.fd"]
+	path = sorc/fv3gfs.fd
+	url = gerrit:NEMSfv3gfs
+[submodule "sorc/gsi.fd"]
+	path = sorc/gsi.fd
+	url = gerrit:ProdGSI
+[submodule "sorc/gfs_post.fd"]
+	path = sorc/gfs_post.fd
+	url = gerrit:EMC_post
