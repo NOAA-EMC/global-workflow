@@ -124,21 +124,25 @@ export model=${model:-gdas}
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GDAS (production)
   export COMIN=/gpfs/hps/nco/ops/com/nawips/prod/${RUN}.${PDY}         ### NCO PROD
-  export COMINgdas=/gpfs/hps/nco/ops/com
+  export COMROOT=/gpfs/hps/nco/ops/com
 else
 # export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc}/nawips ### EMC PARA Realtime
-#  export COMINgdas=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gdas
-  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}/nawips  ### Boi PARA
-  export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}  ### Boi PARA
+#  export COMINgdas=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips   ### Boi PARA
+  export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
 fi
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
+
+export COMOUTukmet=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
+export COMOUTecmwf=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
+
 export COMOUTncdc=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+  mkdir -m 775 -p $COMOUT $COMOUTukmet $COMOUTecmwf
 fi
 
 #############################################

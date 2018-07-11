@@ -134,11 +134,14 @@ fi
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
 
+export COMOUTukmet=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
+export COMOUTecmwf=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
+
 export COMOUTncdc=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $COMOUTncdc
+  mkdir -m 775 -p $COMOUT $COMOUTncdc $COMOUTukmet $COMOUTecmwf
 fi
 
 #############################################
