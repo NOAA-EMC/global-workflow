@@ -126,5 +126,6 @@ ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 #startmsg
 ##export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
 ##${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
-mpirun $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
+##mpirun $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
+${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
 export err=$?;err_chk
