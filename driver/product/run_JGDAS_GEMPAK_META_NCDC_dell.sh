@@ -131,8 +131,8 @@ else
   export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
 fi
 
-export COMOUTukmet=${COMOUTukmet:-$(compath.py nawips/prod/ukmet)}
-export COMOUTecmwf=${COMOUTecmwf:-$(compath.py nawips/prod/ecmwf)}
+export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
+export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
 
 export COMOUTncdc=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta

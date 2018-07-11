@@ -59,8 +59,8 @@ module list
 # GDAS GEMPAK META PRODUCT GENERATION
 ############################################
 # set envir=prod or para to test with data in prod or para
-# export envir=para
- export envir=prod
+ export envir=para
+# export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -132,8 +132,8 @@ else
   export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}  ### Boi PARA
 fi
 
-export COMOUTukmet=${COMOUTukmet:-$(compath.py nawips/${envir}/ukmet)}
-export COMOUTecmwf=${COMOUTecmwf:-$(compath.py nawips/${envir}/ecmwf)}
+export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
+export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
 export COMOUTncdc=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta
 
