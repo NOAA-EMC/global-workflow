@@ -106,10 +106,10 @@ config_base:
     export NET="gfs"
     export RUN=${{RUN:-${{CDUMP:-"gfs"}}}}
     export jlogfile="${{ROTDIR}}/logs/jlogfile"
-    export ERRSCRIPT=${{ERRSCRIPT:-'eval [[ $err = 0 ]]'}}
-    export LOGSCRIPT=${{LOGSCRIPT:-""}}
-    #export ERRSCRIPT=${{ERRSCRIPT:-"err_chk"}}
-    #export LOGSCRIPT=${{LOGSCRIPT:-"startmsg"}}
+    #export ERRSCRIPT=${{ERRSCRIPT:-'eval [[ $err = 0 ]]'}}
+    #export LOGSCRIPT=${{LOGSCRIPT:-""}}
+    export ERRSCRIPT=${{ERRSCRIPT:-"err_chk"}}
+    export LOGSCRIPT=${{LOGSCRIPT:-"startmsg"}}
     export REDOUT="1>"
     export REDERR="2>"
     
