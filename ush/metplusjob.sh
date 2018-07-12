@@ -254,28 +254,31 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         typelist="anom pres"
     fi
     #run METplus
-    nexp=`echo $expnlist |wc -w`
     n=0 ; for runn in $expnlist ; do n=$((n+1)) ; expname[n]=$runn ; done
     n=0 ; for rund in $expdlist ; do n=$((n+1)) ; expdir[n]=$rund  ; done
     n=0 ; for dump in $dumplist ; do n=$((n+1)) ; dumpname[n]=$dump  ; done
-    #
-    nn=1
-    while [ $nn -le $nexp ] ; do
-        export exp=${expname[nn]}           #exp name
-        export exp_dir=${expdir[nn]}        #exp directory
-        export cdump=${dumpname[nn]:-".gfs."} #file dump format
-        export obtype=$exp                  #obs/analysis data type for verification
-        for vhr in $vhrlist; do
-            VDATE=${VDATEST}${vhr}
-            while [ $VDATE -le ${VDATEND}${vhr} ] ; do
-                export VDATE=$VDATE
-                export rundir_g2g1=${rundir_g2g1_base}/${VDATE}
-                if [ -d ${rundir_g2g1} ] ; then
-                    echo "REMOVING ${rundir_g2g1}"
-                    rm -r $rundir_g2g1
-                fi
-                mkdir -p ${rundir_g2g1}/make_met_data
-                mkdir -p ${rundir_g2g1}/VSDB_format
+    nexp=`echo $expnlist |wc -w`
+    for vhr in $vhrlist; do
+        VDATE=${VDATEST}${vhr}
+        while [ $VDATE -le ${VDATEND}${vhr} ] ; do
+            export VDATE=$VDATE
+            export rundir_g2g1=${rundir_g2g1_base}/${VDATE}
+            if [ -d ${rundir_g2g1} ] ; then
+                echo "REMOVING ${rundir_g2g1}"
+                rm -r $rundir_g2g1
+            fi
+            mkdir -p ${rundir_g2g1}/make_met_data
+            mkdir -p ${rundir_g2g1}/VSDB_format
+            mkdir -p ${rundir_g2g1}/logs
+            mkdir -p ${rundir_g2g1}/confs
+            mkdir -p ${rundir_g2g1}/jobs
+            #
+            nn=1
+            while [ $nn -le $nexp ] ; do
+                export exp=${expname[nn]}           #exp name
+                export exp_dir=${expdir[nn]}        #exp directory
+                export cdump=${dumpname[nn]:-".gfs."} #file dump format
+                export obtype=$exp                  #obs/analysis data type for verification
                 mkdir -p ${rundir_g2g1}/logs/${exp}
                 mkdir -p ${rundir_g2g1}/confs/${exp}
                 mkdir -p ${rundir_g2g1}/jobs/${exp}
@@ -408,10 +411,10 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                         fi
                     done 
                 fi
-                VDATE=$($ndate +24 $VDATE)
+                nn=`expr $nn + 1 `
             done
+            VDATE=$($ndate +24 $VDATE)
         done
-        nn=`expr $nn + 1 `
     done
 fi
 ##---------------------------------------------------------------------------
