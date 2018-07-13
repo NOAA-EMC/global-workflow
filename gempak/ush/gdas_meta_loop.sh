@@ -67,6 +67,7 @@ for day in $verdays
         do
 #  Test with GDAS in PROD
 #        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
          grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
 
 $GEMEXE/gdplot2_nc << EOF
@@ -170,6 +171,7 @@ for day in $verdays
         do
 #  Test with GDAS in PROD
 #        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
          grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
    
 $GEMEXE/gdplot2_nc << EOF
