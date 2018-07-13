@@ -124,7 +124,8 @@ mask = {
            "${metplusfix}/vx_mask_files/grid2obs/SA.nc",
            "${metplusfix}/vx_mask_files/grid2obs/NH.nc",
            "${metplusfix}/vx_mask_files/grid2obs/SH.nc",
-           "${metplusfix}/vx_mask_files/grid2obs/TRO.nc"
+           "${metplusfix}/vx_mask_files/grid2obs/TRO.nc",
+           "${metplusfix}/vx_mask_files/grid2obs/CONUS.nc"
            ];
    sid = ${POINT_STAT_STATION_ID};
 }

@@ -87,6 +87,8 @@ if [ $machine = THEIA ]; then
     export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 # temporary directory
     export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
     export prepbufr_arch_dir=/scratch4/NCEPDEV/global/noscrub/stat/prepbufr              # prepbufr archive directory
+    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod             # directory leading to ops. prepbufr files 
+    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                             # directory leading to ops. prepbufr files
     export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
 elif [ $machine = WCOSS_C ]; then
     export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                  # temporary directory
@@ -527,98 +529,72 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
         mkdir -p ${rundir_g2o1}/logs
         mkdir -p ${rundir_g2o1}/confs
         mkdir -p ${rundir_g2o1}/jobs
-        #create poejob scripts, if MPMD=YES, else run METplus
-        if [ $MPMD = YES ] ; then
-            echo "RUN MPMD HOLDER"
-        else
-            if [ $run_upper_air = "YES" ]; then
-                echo "==== running METplus grid-to-obs for upper_air for ${VDATE} ===="
-                #first run pb2nc to avoid rerunning for multiple experiments
-                mkdir -p ${rundir_g2o1}/logs/prepbufr
-                mkdir -p ${rundir_g2o1}/confs/prepbufr
-                mkdir -p ${rundir_g2o1}/jobs/prepbufr
-                export prepbufr_upper_air="gdas"
-                echo "==== ${prepbufr_upper_air} prepbufr files ===="
-                export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/prepbufr
-                mkdir -p ${pb2nc_upper_air_dir}
-                #currently using only archive gdas
-                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                ###Next METplus version will support prod GDAS file format name 
-                ###archive vs. prod GDAS files
-                ###if [ -d ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE} ]; then
-                ###    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                ###elif [ -d ${prepbufr_arch_dir}/${prepbufr_upper_air} ]; then
-                ###   ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                ###fi
-                #now run point_stat
-                nn=1
-                while [ $nn -le $nexp ] ; do
-                    export exp=${expname[nn]}             #exp name
-                    export exp_dir=${expdir[nn]}          #exp directory
-                    export cdump=${dumpname[nn]:-".gfs."} #file dump format
-                    mkdir -p ${rundir_g2o1}/logs/${exp}
-                    mkdir -p ${rundir_g2o1}/confs/${exp}
-                    mkdir -p ${rundir_g2o1}/jobs/${exp}
-                    echo "==== model ${exp} ===="
-                    work=${rundir_g2o1}/make_met_data/upper_air/${exp}
-                    mkdir -p $work
-                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1b_G236.conf -c ${metplusconfig}/machine_config/machine.${machine}
+        nn=1
+        while [ $nn -le $nexp ] ; do
+            export exp=${expname[nn]}             #exp name
+            export exp_dir=${expdir[nn]}          #exp directory
+            export cdump=${dumpname[nn]:-".gfs."} #file dump format
+            mkdir -p ${rundir_g2o1}/logs/${exp}
+            mkdir -p ${rundir_g2o1}/confs/${exp}
+            mkdir -p ${rundir_g2o1}/jobs/${exp}
+            #create poejob scripts, if MPMD=YES, else run METplus
+            if [ $MPMD = YES ] ; then
+                echo "RUN MPMD HOLDER"
+            else
+                if [ $run_upper_air = "YES" ]; then
+                    type="upper_air"
+                    echo "==== running METplus grid-to-obs for ${type} for ${VDATE} ${exp} ===="   
+                    export prepbufr_upper_air="gdas"
+                    export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/pb2nc
+                    export point_stat_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/point_stat
+                    mkdir -p ${pb2nc_upper_air_dir} ${point_stat_upper_air_dir}
+                    #currently using only archive gdas
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    ###Next METplus version will support prod GDAS file format name 
+                    ###archive vs. prod GDAS files
+                    ###if [ -d ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE} ]; then
+                    ###    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    ###elif [ -d ${prepbufr_arch_dir}/${prepbufr_upper_air} ]; then
+                    ###   ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    ###fi
                     #now run stat_analysis
                     for fcycl in $fcyclist ; do
                         export fcycl=${fcycl}
                         export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
                         mkdir -p ${savedir}
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                         cp ${rundir_g2o1}/VSDB_format/upper_air/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_air_${VDATE}.stat
                     done
-                    nn=`expr $nn + 1 `
-                done
-            fi
-            if [ $run_conus_sfc = "YES" ]; then
-                echo "==== running METplus grid-to-obs for conus_sfc for ${VDATE} ===="
-                #first run pb2nc to avoid rerunning for multiple experiments
-                export pb2nc_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/prepbufr
-                mkdir -p ${pb2nc_conus_sfc_dir}
-                if [ $VDATE -le 20170319 ]; then
-                    export prepbufr_conus_sfc="ndas" 
-                    #NDAS files/naming convention no longer used in production; archive only
-                    echo "==== ${prepbufr_conus_sfc} prepbufr files ===="
-                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_ndas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                else
-                    export prepbufr_conus_sfc="nam"
-                    echo "==== ${prepbufr_conus_sfc} prepbufr files ===="
-                    #archive vs. prod NAM files
-                    if [ -d ${prepbufr_prod_conus_sfc_dir}/${prepbufr_conus_sfc}.${VDATE} ]; then
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    elif [ -d ${prepbufr_arch_dir}/${prepbufr_conus_sfc} ]; then
-                       ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    fi
                 fi
-                #now run point_stat
-                nn=1
-                while [ $nn -le $nexp ] ; do
-                    export exp=${expname[nn]}             #exp name
-                    export exp_dir=${expdir[nn]}          #exp directory
-                    export cdump=${dumpname[nn]:-".gfs."} #file dump format
-                    export obtype=$prepbufr_conus_sfc     #obs/analysis data type for verification 
-                    mkdir -p ${rundir_g2o1}/logs/${exp}
-                    mkdir -p ${rundir_g2o1}/confs/${exp}
-                    mkdir -p ${rundir_g2o1}/jobs/${exp}
-                    echo "==== model ${exp} ===="
-                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                if [ $run_conus_sfc = "YES" ]; then
+                    type="conus_sfc"
+                    echo "==== running METplus grid-to-obs for ${type} for ${VDATE} ${exp} ===="
+                    export pb2nc_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/pb2nc
+                    export point_stat_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/point_stat
+                    mkdir -p ${pb2nc_conus_sfc_dir} ${point_stat_conus_sfc_dir} 
+                    if [ $VDATE -le 20170319 ]; then
+                        export prepbufr_conus_sfc="ndas"
+                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_ndas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine} 
+                    else
+                        export prepbufr_conus_sfc="nam"
+                        if [ -d ${prepbufr_prod_conus_sfc_dir}/${prepbufr_conus_sfc}.${VDATE} ]; then
+                            ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                        elif [ -d ${prepbufr_arch_dir}/${prepbufr_conus_sfc} ]; then
+                            ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                        fi
+                    fi
                     #now run stat_analysis
                     for fcycl in $fcyclist ; do
                         export fcycl=${fcycl}
                         export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
                         mkdir -p ${savedir}
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                         cp ${rundir_g2o1}/VSDB_format/conus_sfc/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_sfc_${VDATE}.stat
                     done
-                    nn=`expr $nn + 1 `
-                done      
+                fi
             fi
-        fi
+            nn=`expr $nn + 1 `
+        done
         VDATE=$(echo $($ndate +24 ${VDATE}00 ) |cut -c 1-8 )
     done
 fi

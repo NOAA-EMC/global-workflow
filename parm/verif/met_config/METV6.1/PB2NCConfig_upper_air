@@ -92,17 +92,6 @@ obs_bufr_map = [];
 
 // This map is for PREPBUFR. It will be added into obs_bufr_map.
 // Please do not override this map.
-//obs_prefbufr_map = [
-//   { key = "PMO";     val = "PRMSL";  },
-//  { key = "TOB";     val = "TMP";   },
-//   { key = "TDO";     val = "DPT";   },
-//   { key = "UOB";     val = "UGRD";  },
-//  { key = "VOB";     val = "VGRD";  },
-//   { key = "PWO";     val = "PWAT";  },
-//   { key = "TOCC";    val = "PWAT";  },
-//   { key = "D_WIND";  val = "WIND";  },
-//   { key = "D_RH";    val = "RH";    }
-//];
 
 obs_prefbufr_map = [
    { key = "POB";     val = "PRES";  },
