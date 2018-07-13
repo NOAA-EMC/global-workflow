@@ -96,7 +96,7 @@ export gfs_ver=v15.0.0
 # obtain unique process id (pid) and make temp directory
 ##########################################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
+mkdir -p -m 775 $DATA
 cd $DATA
 
 ################################

@@ -61,7 +61,7 @@ export fcsthrs=012
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=jgfs_awips_f${fcsthrs}_${cyc}
+export job=gfs_awips_f${fcsthrs}_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 

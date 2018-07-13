@@ -63,7 +63,7 @@ module list
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=gfs_gempak_meta_ncdc_${cyc}
+export job=gdas_gempak_meta_ncdc_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 

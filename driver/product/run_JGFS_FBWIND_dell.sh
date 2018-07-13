@@ -19,7 +19,6 @@ export PDY=20180712
 
 export PDY1=`expr $PDY - 1`
 
-# export cyc=06
 export cyc=00
 export cycle=t${cyc}z
 
