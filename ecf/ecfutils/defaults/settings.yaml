@@ -1,0 +1,15 @@
+# Do not change this file unless you know what you're doing.  It sets
+# default values for the "settings" section.  You probably want to
+# override the settings in the case file instead.
+
+default_settings: &default_settings
+  # ecf_log_path: sets the stdout/stderr log path for batch jobs when using ecFlow
+#  ecf_log_path: !calc ("%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".%j.log")
+  ecf_log_path: !calc ("%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")
+
+  # rocoto_log_path: sets the stdout/stderr log path for batch jobs
+  # when using Rocoto.  This is inserted in the <join> tag of the
+  # task's <task> tag.
+  rocoto_log_path: !calc ("<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")
+
+  REALTIME: !calc realtime

@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash
 
 ###############################################################
 ## Abstract:
@@ -253,9 +253,13 @@ while [ $GDATE -le $GDATEEND ]; do
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
-        testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-        rc=$?
-        [[ $rc -eq 0 ]] && rm -rf $COMIN
+	if [[ -s "$rocotolog" ]] ; then
+            testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
+            rc=$?
+            [[ $rc -eq 0 ]] && rm -rf $COMIN
+	else
+	    rm -rf $COMIN
+	fi
     fi
 
     # Remove any empty directories

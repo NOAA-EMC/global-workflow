@@ -1,0 +1,57 @@
+# This file is used to generate config.post, which is used to control
+# the deterministic atmospheric post processing.
+
+config_post: 
+  filename: config.post
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.post ##########
+    # Post specific
+    
+    echo "BEGIN: config.post"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources post
+    
+    # Convert nemsio files to grib files using post job
+    #-------------------------------------------
+    
+    # No. of concurrent post jobs [0 implies sequential]
+    export NPOSTGRP={doc.post.NPOSTGRP}
+    
+    # Post driver job that calls gfs_nceppost.sh and downstream jobs
+    export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+    export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
+    export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
+    
+    export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+    export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+    export GOESF={tools.YES_NO(doc.post.GOESF)}   # goes image
+    export GTGF={tools.YES_NO(doc.post.GTGF)}     # gtg icing product
+    export FLXF={tools.YES_NO(doc.post.FLXF)}     # grib2 flux file written by post
+    export PGB1F={tools.YES_NO(doc.post.PGB1F)}
+    
+    if [[ "$CDUMP" == gdas ]] ; then
+        export nth_postgp={doc.aliases.gdaspost.nth}
+    else
+        export nth_postgp={doc.aliases.gfspost.nth}
+    fi
+    export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
+    export downset={doc.post.downset}
+    #export npe_dwn={doc.aliases.dwn.npe}
+    #export nth_dwn={doc.aliases.dwn.nth}
+    
+    export GRIBVERSION='grib2'
+    export SENDCOM="YES"
+
+    if [ $machine = "WCOSS_C" ] ; then
+        export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+    elif [ $machine = "THEIA" ] ; then
+        export CRTM_FIX=/scratch3/NCEPDEV/hwrf/noscrub/fix-files/hwrf-H218-20171129-fix/fix/hwrf-crtm-2.0.6/
+    else
+        echo "UPP using CRTM_FIX = $CRTM_FIX"
+    fi
+
+    echo "END: config.post"
+    

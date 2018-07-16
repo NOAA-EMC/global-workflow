@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  07052015	E.Mirvis -   made build more universal - environmental module based (see readme)
 #               EMC/NCEP/NOAA
@@ -30,7 +30,14 @@ else
   export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
-if [ $target = wcoss ]; then
+if [ $target = gaea ]; then
+  targetx=$target
+  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
+  echo "TARGET: $target"
+  source ../modulefiles/fv3gfs/tropcy_NEMS.$target
+  echo "TARGET DONE"
+
+elif [ $target = wcoss ]; then
 
     targetx=wcoss
     module load ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
@@ -74,6 +81,17 @@ elif [ $target = wcoss_cray ]; then
 
     #export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
     export FFLAGS="-openmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+
+elif [ $target = jet   ]; then
+
+    targetx=theia
+    source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target > /dev/null 2>&1
+    module list
+
+    export LIBS_REL="${W3NCO_LIBd}"
+
+    export FC=mpiifort
+    export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
 elif [ $target = wcoss_dell_p3 ]; then
 

@@ -1,0 +1,9 @@
+## initial_directory: location from which the setup script was run.
+## HOMEgfs: top level of the installation area (directory above ush,
+## jobs, ecf)
+
+static_locations:
+  HOMEgfs: !Immediate
+    - !calc ( tools.realpath(tools.abspath("../../")) )
+  initial_directory: !Immediate
+    - !calc ( tools.realpath(tools.abspath('.')) )

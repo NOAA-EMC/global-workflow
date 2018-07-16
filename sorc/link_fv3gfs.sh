@@ -2,22 +2,22 @@
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
+. ./machine-setup.sh
+echo "target system (machine) set to $target"
+
+if [ -z $target ]; then
+    echo 'target value not set (unknown system not supported)'
+    exit 1
+fi
 
 RUN_ENVIR=${1}
-machine=${2}
-
-if [ $# -lt 2 ]; then
-    echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
-    exit 1
-fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet ]; then
+    echo '$target value set to unknown or unsupported system'
     exit 1
 fi
 
@@ -33,13 +33,29 @@ elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+elif [ $target == "gaea" ]; then
+    FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
+    echo "gaea says what, FIX_DIR = $FIX_DIR"
+elif [ $target == "jet" ]; then
+    FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
+else
+    echo 'CRITICAL: links to fix files not set'
+    exit 1
 fi
-cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-    [[ -d $dir ]] && rm -rf $dir
-done
-$LINK $FIX_DIR/* .
 
+if [ ! -r $FIX_DIR ]; then
+   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
+   exit -1
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
 
 #--add gfs_post file
 cd ${pwd}/../jobs               ||exit 8
@@ -133,10 +149,42 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
+if [[ $target != "jet" ]]; then
+    for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x ;do
+	[[ -s $gsiexe ]] && rm -f $gsiexe
+	$LINK ../sorc/gsi.fd/exec/$gsiexe .
+    done
+fi
+
+if [[ $target == "jet" ]]; then
+  util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
+  #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  for util_exec_dirs in grib_utils prod_util ;do
+      if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
+       $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
+      else
+       echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
+      fi
+  done 
+fi
+
 for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
-    [[ -s $gsiexe ]] && rm -f $gsiexe
-    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+     [[ -s $gsiexe ]] && rm -f $gsiexe
+     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
+ 
+cd ${pwd}
+cd gsi.fd
+gsi_branch=`git branch | grep \*`
+cd ../fv3gfs.fd
+fv3gfs_branch=`git branch | grep \*`
+cd ../gfs_post.fd
+gfspost_branch=`git branch | grep \*`
+
+set +x
+echo "FV3  Branch: $fv3gfs_branch"
+echo "GSI  Branch: $gsi_branch"
+echo "POST Branch: $gfspost_branch"
 
 
 

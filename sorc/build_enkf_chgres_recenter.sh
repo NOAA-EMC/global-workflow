@@ -25,7 +25,7 @@ fi
 
 cd ${cwd}/enkf_chgres_recenter.fd
 
-export FFLAGS="-O0 -r8 -i4 -qopenmp -traceback"
+export FFLAGS="-r8 -i4 -qopenmp -traceback -O3 -fp-model precise"
 
 make clean
 make

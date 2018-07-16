@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash
 
 ###############################################################
 ## Abstract:
@@ -28,7 +28,7 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-n=$((ENSGRP))
+n=${ENSGRP#0}
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=$ARCH_CYC

@@ -1,0 +1,47 @@
+case:
+  fv3_settings:
+    CASE: C384
+    LEVS: 65
+
+  gfs_output_settings:
+    FHMAX_GFS: 168
+    FHOUT_GFS: 6
+    FHMAX_HF_GFS: 48
+    FHOUT_HF_GFS: 3
+
+  places:
+    workflow_file: workflow/public_release_v1.yaml
+    ICSDIR: !calc doc.platform.public_release_ics
+
+  settings: 
+    SDATE: 2017-08-17t12:00:00
+    EDATE: !calc SDATE
+    IC_CDUMP: gfs
+    run_gsi: No
+    chgres_and_convert_ics: No
+    gfs_cyc: 4 # run gfs every cycle
+
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/forecast/*_forecast*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+        - Search: '**/post/j*_post*'
+          partition: !calc doc.platform.partitions.xjet
+          max_tries: 5
+    - otherwise: null
+
+  resources: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        run_gempak: !JobRequest
+          - batch_memory: "254M"
+            mpi_ranks: 17
+            max_ppn: 4
+            walltime: !timedelta "02:00:00"
+            OMP_NUM_THREADS: 12
+            exe: placeholder
+    - otherwise: {}
+
+    
+    

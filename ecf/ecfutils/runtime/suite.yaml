@@ -1,0 +1,173 @@
+# This file contains convenient variables to include in workflow
+# suites in the workflow/ directory.  Most of these variables are
+# specific to the cycled workflow which is not in this release.
+
+# gfs_clock_1 - run GFS only at 0 UTC daily
+gfs_clock_1: !Clock
+  start: !calc tools.day_of(suite.Clock.start+suite.Clock.step)
+  step: !timedelta "24:00:00"
+
+# gfs_clock_2 - run GFS only at 0 UTC and 12 UTC daily
+gfs_clock_2: !Clock
+  start: !calc tools.day_of(suite.Clock.start+suite.Clock.step)
+  step: !timedelta "12:00:00"
+
+# gfs_clock_4 - run GFS every cycle
+gfs_clock_4: !Clock
+  start: !calc suite.Clock.start+suite.Clock.step
+  step: !timedelta "06:00:00"
+
+# cycled_suite_alarms - this is used to define which cycles various
+# jobs run in.  In the workflow suite definition, jobs may have an
+# AlarmName defined.  That AlarmName refers to one of the clocks in
+# this section.
+cycled_suite_alarms: &cycled_suite_alarms
+  # first - first cycle only
+  first: !Clock
+    start: !calc suite.Clock.start
+    end: !calc suite.Clock.start
+    step: !calc suite.Clock.step
+
+  # gdas - cycles for which the GDAS is run
+  gdas: !Clock
+    start: !calc suite.Clock.start
+    end: !calc suite.Clock.end
+    step: !calc suite.Clock.step
+
+  # gfs - cycles for which the gfs is run
+  gfs: !FirstTrue
+    - when: !calc doc.settings.gfs_cyc == 0
+      do: !Clock  # required but ignored because gfs is disabled
+        start: !calc suite.Clock.start
+        end: !calc suite.Clock.end
+        step: !calc suite.Clock.step
+    - when: !calc doc.settings.gfs_cyc == 1
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_1)
+    - when: !calc doc.settings.gfs_cyc == 2
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
+    - when: !calc doc.settings.gfs_cyc == 4
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_4)
+    - otherwise: !error Unknown gfs clock settings {doc.settings.gfs_cyc}
+
+# suite_defaults - this is inherited by the actual suite definitions
+# It sets defaults for various variables that are generally not overridden
+suite_defaults: &suite_defaults
+  # Clock - the list of cycles to run
+  Clock: !Clock
+    # NEED TO FIX FOR LESS FREQUENT GFS
+    start: !calc doc.settings.SDATE
+    end: !calc doc.settings.EDATE
+    step: !timedelta "6:00:00"
+
+  Overrides:
+    allowed: [ 'partition', 'resources', 'rocoto_command', 'rocoto_log_path',
+    'accounting', 'ecflow_command', 'max_tries', 'resources_remap', 'ecf_log_path',
+    'Rocoto', 'ecf_file' ]
+    rules: !calc doc.suite_overrides
+
+  # ecFlow - definition of variables specific to ecFlow suite generation
+  ecFlow:
+    # suite_def_filename - file to receive the suite definition
+    suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"
+    suite_def_filename: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   !expand "{doc.names.experiment}%H.def"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H.def"
+    # suite_name - name of the suite (the top-level node in the suite definition)
+    suite_name: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   !expand "{doc.names.experiment}%H"
+      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H"
+
+    # dates_in_time_dependencies - flag that controls whether ecflow
+    # suite definition "date" triggers are to be defined.
+    dates_in_time_dependencies: !calc (not doc.settings.four_cycle_mode)
+
+    # write_cycles/analyze_cycles: Use these to generate a subset of
+    # the cycles in ecFlow.  Make sure analyze_cycles starts at least
+    # one cycle before write_cycles so that dependencies are
+    # processed.  These are overridden by update_ecflow_workflow.py
+    # during its execution.
+
+    # write_cycles: !Clock
+    #   start: 2018-01-02T00:00:00
+    #   end: 2018-01-02T18:00:00
+    #   step: !timedelta "6:00:00"
+    # analyze_cycles: !Clock
+    #   start: 2018-01-02T00:00:00
+    #   end: 2018-01-02T18:00:00
+    #   step: !timedelta "6:00:00"
+
+  # ecflow_cycling_logic - used to switch between NCO-style suite
+  # definitions, with four suites total (one per synoptic time) and
+  # development-style (one suite per cycle).
+  ecflow_cycling_logic: !FirstTrue
+      - when: !calc doc.settings.four_cycle_mode
+        do:   "repeat day 1"
+      - otherwise: !expand |
+          autocancel 5
+          edit PDY '{tools.strftime(suite.Clock.now,"%Y%m%d")}'
+
+  # Rocoto - contains settings specific to Rocoto workflow generation
+  Rocoto: &Rocoto
+    # max_tries - maximum number of times to run a job before giving
+    # up.  Set to 1 to disable automatic resubmission of jobs.
+    max_tries: !calc doc.settings.max_job_tries
+
+    # workflow_xml - the contents of this variable are written to the Rocoto XML file.
+    workflow_xml: !expand |
+      <?xml version="1.0"?>
+      <!DOCTYPE workflow [
+        <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
+        <!ENTITY TASK_THROTTLE "{doc.settings.rocoto_task_throttle}">
+        <!ENTITY CYCLE_THROTTLE "{doc.settings.rocoto_cycle_throttle}">
+        <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
+        <!ENTITY EXPDIR "{doc.places.EXPDIR}">
+        <!ENTITY PSLOT "{doc.names.experiment}">
+      {tools.indent(suite.common_metasched_vars,"  ")}
+      {tools.indent(doc.platform.metasched_more,"  ")}
+      ]>
+      <workflow realtime="F"
+                cyclethrottle="&CYCLE_THROTTLE;"
+                scheduler="{doc.platform.partitions.default_exclusive.scheduler.rocoto_name.lower()}"
+                taskthrottle="&TASK_THROTTLE;" >
+        <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
+      {to_rocoto.make_time_xml(indent=1)}
+      {to_rocoto.make_task_xml(indent=1)}
+      </workflow>
+
+  # before_suite_def - when generating an ecFlow suite, the contents
+  # of this variable are written before anything else in the suite
+  # definition.  The totality limit line sets an external dependency
+  # on a limit that has the effect of throttling the number of jobs
+  # the entire ecFlow server can run at a time.
+  before_suite_def:
+    extern /totality_limit:TOTALITY
+
+  ecflow_def: !expand |
+    {ecflow_cycling_logic}
+    edit ECF_TRIES '{doc.settings.max_job_tries}'
+    edit ECF_HOME '{doc.places.ECF_HOME}'
+    edit CYC '{tools.strftime(suite.Clock.now,"%H")}'
+    edit MACHINE '{doc.accounting.ecflow_machine}'
+    edit ENVIR 'prod'
+    edit E 'jecffv3'
+    edit EMCPEN '{doc.names.experiment}'
+    edit DATAROOT '{doc.places.DATAROOT}'
+    edit ECF_OUT '{doc.places.ECF_HOME}/submit'
+    edit ECF_LOG '{doc.places.EXPDIR}/ecf.log'
+    edit RUN 'gfs'
+    edit NET 'gfs'
+    {common_metasched_vars}
+    {doc.platform.metasched_more}
+    inlimit /totality_limit:TOTALITY
+
+  # common_metasched_vars - variables to write to both the ecFlow
+  # suite definitions ("edit" variables) and Rocoto XML (XML
+  # entities).  The conversion to text is done by the
+  # CROW/crow/metascheduler/ python package.
+
+  common_metasched_vars: !expand |
+    {metasched.defvar("HOMEgfs", doc.places.HOMEgfs)}
+    {metasched.defvar("COM", doc.places.ROTDIR)}
+

@@ -1,0 +1,26 @@
+# This file is used to generate config.eupd, which would be used to
+# control the ENKF member updating scripts.  The scripts and code for
+# the ENKF are not provided in this release, so this config file is
+# ignored.
+
+config_eupd:
+  filename: config.eupd
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.eupd ##########
+    # Ensemble update specific, dependency config.anal
+    
+    echo "BEGIN: config.eupd"
+    
+    # Get task specific resources
+    . $EXPDIR/config.resources eupd
+    
+    export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
+    export npe_enkf=$npe_eupd
+    #export nth_enkf={doc.aliases.eupd.nth}
+    
+    export NAM_ENKF="{doc.data_assimilation.NAM_ENKF}"
+    
+    echo "END: config.eupd"
+    

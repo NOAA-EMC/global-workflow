@@ -1,0 +1,47 @@
+case:
+  fv3_settings:
+    CASE: C768
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C384
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 4
+    NMEM_EFCSGRP: 4
+    NMEM_EARCGRP: 10
+    l4densvar: Yes
+
+  gfs_output_settings:
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHMAX_HF_GFS: 120
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+    ICSDIR: /gpfs/hps3/emc/global/noscrub/emc.glopara/ICS
+
+  post:
+    downset: 2
+    NPOSTGRP: 42
+
+  downstream:
+    DO_BUFRSND: Yes
+    DO_GEMPAK: Yes
+    DO_AWIPS: Yes
+
+  archiving:
+    scrub_in_archive_end: 72
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+
+  settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2018-06-04t00:00:00
+    EDATE: 2018-06-04t12:00:00
+    chgres_and_convert_ics: No
+    realtime: true
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: Yes
+
