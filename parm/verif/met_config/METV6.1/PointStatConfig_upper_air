@@ -203,7 +203,7 @@ output_flag = {
 
 rank_corr_flag = FALSE;
 tmp_dir        = "/tmp";
-output_prefix  = "${grid_upper_air}";
+output_prefix  = "";
 version        = "V6.1";
 
 ////////////////////////////////////////////////////////////////////////////////
