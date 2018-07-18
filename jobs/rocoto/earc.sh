@@ -137,10 +137,14 @@ if [ $ENSGRP -eq 0 ]; then
 fi
 
 
-
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then
+
+    if [[ "${DELETE_COM_IN_ARCHIVE_JOB_ENKF:-YES}" == NO ]] ; then
+        exit 0
+    fi
+
     ###############################################################
     # Clean up previous cycles; various depths
     # PRIOR CYCLE: Leave the prior cycle alone

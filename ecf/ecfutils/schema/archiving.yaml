@@ -27,7 +27,12 @@ archive_settings_template: !Template &archive_settings_template
   scrub_in_archive:
     type: bool
     default: yes
-    description: "delete COM directories at the end of the archive job"
+    description: "delete GDAS/GFS COM directories at the end of the archive job"
+
+  scrub_in_archive_enkf:
+    type: bool
+    default: yes
+    description: "delete EnKF COM directories at the end of the EnKF archive job"
 
   scrub_in_archive_start:
     type: int
