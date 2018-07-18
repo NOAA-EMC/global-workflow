@@ -28,19 +28,26 @@ def write_poejob(poedir, nc, type, var, var_levels):
     exp = os.environ.get('exp')
     VDATE = os.environ.get('VDATE')
     if type == 'pres':
-        poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_pres_gridstat_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
+        poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_pres_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
     elif type == 'anom':
         if var == 'HGT':
-            poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_anom_gridstat_step1b.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
+            poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_anom_step1b.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
         else:
-            poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_anom_gridstat_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
+            poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_anom_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
     elif type == 'sfc':
-        poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_sfc_gridstat_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
+        poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_sfc_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
     poejob_file.write('mv '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc)+'/'+VDATE+'00/grid_stat/* '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/'+VDATE+'00/grid_stat/. \n')
     poejob_file.write('rm -r '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc))
 #
 type_list = os.environ.get('typelist4mpmd').split(' ')
 poedir = os.environ.get('poedir')
+#make sure starting with a clean directory
+if os.path.exists(poedir):
+    for root, dirs, files in os.walk(poedir):
+        for file in files:
+            os.remove(os.path.join(poedir, file))
+os.rmdir(poedir)
+os.makedirs(poedir)
 nc = 0
 for type in type_list:
     print(type)

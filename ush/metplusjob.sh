@@ -357,9 +357,9 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                             export savedir=${metplussave}/${type}/${vhr}Z/${exp}
                             mkdir -p ${savedir}
                             if [ ${type} = anom ] ; then
-                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_statanalysis_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
                             else
-                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_statanalysis_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                             fi
                             cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                         done
