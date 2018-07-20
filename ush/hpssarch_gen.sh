@@ -218,6 +218,7 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
   [[ $NTARS -eq 0 ]] && NTARS=1
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
+  NTARS2=$((NTARS/2))
 
   dirname="./enkf.${CDUMP}.${PDY}/${cyc}/"
   head="${CDUMP}.t${cyc}z."
@@ -264,7 +265,9 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
      head="${CDUMP}.t${cyc}z."
 
     #---
-    echo "${dirname}${head}ratmanl.nemsio       " >>enkf.${CDUMP}_grp${n}.txt
+    if [ $n -le $NTARS2 ]; then
+     echo "${dirname}${head}ratmanl.nemsio      " >>enkf.${CDUMP}_grp${n}.txt
+    fi
     echo "${dirname}${head}atmf006.nemsio       " >>enkf.${CDUMP}_grp${n}.txt
     echo "${dirname}${head}cnvstat              " >>enkf.${CDUMP}_grp${n}.txt
     echo "${dirname}${head}gsistat              " >>enkf.${CDUMP}_grp${n}.txt
