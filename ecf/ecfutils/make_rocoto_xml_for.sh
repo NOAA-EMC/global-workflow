@@ -28,12 +28,13 @@ if [[ "$1" == "-v" ]] ; then
 fi
 export EXPDIR="$1"
 
-if [[ ! ( -d /scratch4 && -d /scratch3 || \
-          -d /usrx/local && ! -e /etc/redhat-release || \
-          -d /lfs3 || \
-          -d /lustre/f1 ) \
-    ]] ; then
-   echo "ERROR: This script only runs on WCOSS Cray, Jet, and Theia" 1>&2
+if ( ! ( test -d /scratch4 && test -d /scratch3 || \
+          test -d /usrx/local && ! test -e /etc/redhat-release || \
+          test -d /lfs3 || \
+          test -d /lustre/f1 ||
+	  test -d /gpfs/dell2 && test -d /usrx && ( readlink /usrx | grep dell ) ) \
+	      ) ; then
+   echo "ERROR: This script only runs on WCOSS Cray, WCOSS Phase 3 (Dell), Jet, and Theia" 1>&2
    exit 1
 fi
 

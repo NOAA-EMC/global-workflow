@@ -151,7 +151,7 @@ case:
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
 
-    - otherwise: null
+    - otherwise: []
 
   settings: 
     rocoto_task_throttle: 100
