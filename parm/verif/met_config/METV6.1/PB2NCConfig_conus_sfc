@@ -107,7 +107,8 @@ obs_prefbufr_map = [
    { key = "D_WIND";  val = "WIND";  },
    { key = "D_RH";    val = "RH";    },
    { key = "D_MIXR";  val = "MIXR";  },
-   { key = "D_PRMSL"; val = "PRMSL"; }
+   { key = "D_PRMSL"; val = "PRMSL"; },
+   { key = "TOCC";    val = "TCDC";   }
 ];
 
 ////////////////////////////////////////////////////////////////////////////////
