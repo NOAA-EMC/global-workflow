@@ -14,6 +14,7 @@
 
 ###############################################################
 # Source FV3GFS workflow modules
+
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
@@ -160,7 +161,9 @@ if [ $CDUMP = "gfs" ]; then
     done
 
     #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+    #for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+    # Removed gfs_nemsiob to reduce HPSS troughput because too many retros are running at once T.McG
+    for targrp in gfs_flux gfs_nemsioa; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then

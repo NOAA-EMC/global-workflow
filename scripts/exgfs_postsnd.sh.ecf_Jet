@@ -28,22 +28,23 @@ export LATB=${LATB:-1536}
 export LONB=${LONB:-3072}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
-export NEND1=120   ##first period length with time interval = NINT1
-##export NINT1=3     ##first period time interval
-export NINT1=1     ##first period time interval
-export NINT3=3     ##second period time interval
+#export NEND1=120   ##first period length with time interval = NINT1
+#export NINT1=3     ##first period time interval
+#export NINT1=1     ##first period time interval
+#export NINT3=3     ##second period time interval
+export NINT3=${FHOUT_GFS:-3}
 export NZERO=6
 export INCREMENT=12
 export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
 
-if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
-  then
+if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ] ; then
     export NINT1=${FHOUT_HF_GFS:-1}
     export NEND1=${FHMAX_HF_GFS:-120}
-  else
-    export NINT3=${FHOUT_GFS:-3}
+else
+    export NINT1=$NINT3
+    export NEND1=0
 fi
 
 rm -f -r ${COMOUT}/bufr.${cycle}

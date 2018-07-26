@@ -104,9 +104,10 @@ done
 ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 
-#startmsg
+export pgm=gfs_bufr
+startmsg
 export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
 ${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
 export err=$?
-
+errchk
 ##rm  metflxmrf gfs12.dat 
