@@ -511,6 +511,8 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
         echo "EXIT ERROR: run_upper_air and run_conus_sfc are both NO"
         exit
     fi
+    export vhr_upper_air_end=$((vhr_upper_air_end+1))
+    export vhr_conus_sfc_end=$((vhr_conus_sfc_end+1))
     #run METplus
     n=0 ; for runn in $expnlist ; do n=$((n+1)) ; expname[n]=$runn ; done
     n=0 ; for rund in $expdlist ; do n=$((n+1)) ; expdir[n]=$rund  ; done
@@ -558,11 +560,14 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     ###   ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
                     ###fi
                     #now run stat_analysis
+                    n=0 ; for fcyc in $fcyclist ; do n=$((n+1)) ; fcycname[n]=$fcyc  ; done
+                    export fcyc_start=${fcycname[1]}
+                    export fcyc_end=${fcycname[$gfs_cyc]}
+                    export fcyc_int=`expr 24 \/ $gfs_cyc  \* 3600 `
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                     for fcycl in $fcyclist ; do
-                        export fcycl=${fcycl}
                         export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
                         mkdir -p ${savedir}
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                         cp ${rundir_g2o1}/VSDB_format/upper_air/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_air_${VDATE}.stat
                     done
                 fi
@@ -584,11 +589,14 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         fi
                     fi
                     #now run stat_analysis
+                    n=0 ; for fcyc in $fcyclist ; do n=$((n+1)) ; fcycname[n]=$fcyc  ; done
+                    export fcyc_start=${fcycname[1]}
+                    export fcyc_end=${fcycname[$gfs_cyc]}
+                    export fcyc_int=`expr 24 \/ $gfs_cyc  \* 3600 `
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                     for fcycl in $fcyclist ; do
-                        export fcycl=${fcycl}
                         export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
                         mkdir -p ${savedir}
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                         cp ${rundir_g2o1}/VSDB_format/conus_sfc/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_sfc_${VDATE}.stat
                     done
                 fi
