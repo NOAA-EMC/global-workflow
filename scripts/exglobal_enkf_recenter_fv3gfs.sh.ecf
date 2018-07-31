@@ -79,6 +79,8 @@ APRUN_CHGRES=${APRUN_CHGRES:-""}
 # global_cycle stuff
 CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
+APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
+NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
 export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
 export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
@@ -303,8 +305,8 @@ else
     export GSI_FILE="NULL"
 fi
 
-export APRUNCY=$APRUN_ECEN
-export OMP_NUM_THREADS_CY=$NTHREADS_ECEN
+export APRUNCY=${APRUN_CYCLE:-$APRUN_ECEN}
+export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-$NTHREADS_ECEN}
 export MAX_TASKS_CY=$NMEM_ENKF
 
 for n in $(seq 1 $ntiles); do

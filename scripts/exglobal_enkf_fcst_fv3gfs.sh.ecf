@@ -124,7 +124,7 @@ export IAER=${IAER_ENKF:-${IAER:-111}}
 export ICO2=${ICO2_ENKF:-${ICO2:-2}}
 export cdmbgwd=${cdmbgwd_ENKF:-${cdmbgwd:-"3.5,0.25"}}
 export dspheat=${dspheat_ENKF:-${dspheat:-".true."}}
-export shal_cnv=${shal_cnv_ENKF:-${shal_cnv:-".false."}}
+export shal_cnv=${shal_cnv_ENKF:-${shal_cnv:-".true."}}
 export FHZER=${FHZER_ENKF:-${FHZER:-6}}
 export FHCYC=${FHCYC_ENKF:-${FHCYC:-6}}
 
