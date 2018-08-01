@@ -185,6 +185,8 @@
 !
 !$$$
 
+ use gdswzd_mod
+
  implicit none
 
  integer                   :: i, j, ii, jj, ij
@@ -196,9 +198,8 @@
 
  logical*1, allocatable    :: bitmap_mdl(:)
 
- real                      :: dum
- real                      :: gridi
- real                      :: gridj
+ real                      :: gridi(1)
+ real                      :: gridj(1)
  real, allocatable         :: lsmask_1d(:)
  real, allocatable         :: snow_cvr_mdl_1d(:)
  real, allocatable         :: snow_dep_mdl_tmp(:) 
@@ -312,14 +313,14 @@
        if (lats_mdl(ij) <= lat_threshold) then
          snow_cvr_mdl_1d(ij) = 0.0
        else 
-         call gdswiz(kgds_nesdis,-1,1,undefined_value,gridi,gridj, &
-                     lons_mdl(ij),lats_mdl(ij),nret,0,dum,dum) 
+         call gdswzd(kgds_nesdis,-1,1,undefined_value,gridi,gridj, &
+                     lons_mdl(ij),lats_mdl(ij),nret) 
          if (nret /= 1) then
            print*,"- WARNING: MODEL POINT OUTSIDE NESDIS/IMS GRID: ", ipts_mdl(ij), jpts_mdl(ij)
            snow_cvr_mdl_1d(ij) = 0.0
          else
-           ii = nint(gridi)
-           jj = nint(gridj)
+           ii = nint(gridi(1))
+           jj = nint(gridj(1))
            if (sea_ice_nesdis(ii,jj) == 1) then
              snow_cvr_mdl_1d(ij) = 100.0
            else

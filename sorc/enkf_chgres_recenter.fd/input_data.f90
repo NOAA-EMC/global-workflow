@@ -9,7 +9,7 @@
  private
 
  integer, public                              :: idvc, idsl, idvm, nvcoord
- integer, public                              :: ntrac, ncldt
+ integer, public                              :: ntrac, ncldt,icldamt
  integer, public                              :: ij_input, kgds_input(200)
  integer(nemsio_intkind), public              :: i_input, j_input, lev
  integer(nemsio_intkind), public              :: idate(7)
@@ -20,6 +20,7 @@
  real, allocatable, public                    :: clwmr_input(:,:)
  real, allocatable, public                    :: dzdt_input(:,:)
  real, allocatable, public                    :: grle_input(:,:)
+ real, allocatable, public                    :: cldamt_input(:,:) 
  real, allocatable, public                    :: hgt_input(:)
  real, allocatable, public                    :: icmr_input(:,:)
  real, allocatable, public                    :: o3mr_input(:,:)
@@ -88,6 +89,14 @@
    endif
  enddo
 
+ icldamt = 0
+ do n = 1, nrec
+   if (trim(recname(n)) == "cld_amt") then
+     icldamt = 1        ! 3D cloud amount present
+     exit
+   endif
+ enddo
+
  call nemsio_getfilehead(gfile, iret=iret, idvc=idum)
  if (iret /= 0) goto 67
  idvc = idum
@@ -104,7 +113,7 @@
  print*,'IDVM IS: ', idvm
 
  if (gfdl_mp) then
-   ntrac = 7
+   ntrac = 7 + icldamt
    ncldt = 5
  else
    ntrac = 3
@@ -270,6 +279,21 @@
      grle_input(:,vlev) = dummy
      print*,'MAX/MIN GRLE AT LEVEL ', vlev, 'IS: ', maxval(grle_input(:,vlev)), minval(grle_input(:,vlev))
    enddo
+
+   if (icldamt == 1) then
+      print*
+      print*,"READ CLD_AMT"
+      vname   = "cld_amt"
+      vlevtyp = "mid layer"
+      allocate(cldamt_input(ij_input,lev))
+      do vlev = 1, lev
+         write(6,*) 'read ',vname,' on ',vlev
+         call nemsio_readrecv(gfile, vname, vlevtyp, vlev, dummy, 0, iret)
+         if (iret /= 0) goto 67
+         cldamt_input(:,vlev) = dummy
+         print*,'MAX/MIN CLD_AMT AT LEVEL ', vlev, 'IS: ', maxval(cldamt_input(:,vlev)), minval(cldamt_input(:,vlev))
+      enddo
+   endif
 
  endif
 

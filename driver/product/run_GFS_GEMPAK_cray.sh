@@ -13,7 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20180307
+export PDY=20180710
 
 # export cyc=06
 export cyc=00
@@ -53,7 +53,7 @@ module load gempak/7.3.0
 module list
 
 ############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
@@ -112,37 +112,20 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
 else
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/com2/gfs/para/gfs.${PDY}         ### EMC PARA Realtime
-  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/prfv3l65/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMIN=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn/gfs.${PDY}/${cyc} ### Boi PARA
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3test/gfs.${PDY}/${cyc}  ### EMC test PARA ####
+#  export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime on DELL
 
-#  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
+ export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtimea on CRAY
+
+#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc} ### Boi PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-export NODES=5
-export ntasks=17
-export ptile=4
-export threads=6
-
-ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
-ptile=${PTILE_GEMPAK:-17}
-threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=$threads
-
-APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
-
-APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
-$APRUNCFP $DATA/poescript
-
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_GEMPAK1

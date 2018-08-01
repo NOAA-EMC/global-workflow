@@ -65,9 +65,12 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMIN}/gdas_${day}${cycle}f000"
+#  Test with GDAS in PROD
+#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
+         grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf
 GDFILE	= $grid
 GDATTIM	= F00
@@ -166,9 +169,12 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMIN}/gdas_${day}${cycle}f000"
+#  Test with GDAS in PROD
+#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
+         grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
    
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf
 GDFILE	= $grid
 GDATTIM	= F00

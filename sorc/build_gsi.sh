@@ -24,7 +24,11 @@ cd gsi.fd/ush/
 # Workarounds for bugs in gsi build scripts:
 export PATH=$PATH:.
 
-./build_all.sh "$gsitarget"
+if [ "$target" = wcoss_dell_p3 ]; then
+   ./build_all_cmake.sh "$cwd/gsi.fd"
+else
+   ./build_all.sh "$gsitarget"
+fi
 
 exit
 

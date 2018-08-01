@@ -18,7 +18,7 @@ if [ $machine = "THEIA" ]; then
     export QUEUE="batch"
     export QUEUE_ARCH="service"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export ACCOUNT="FV3GFS-T2O"
     export QUEUE="dev"
@@ -59,6 +59,17 @@ elif [ $machine = "WCOSS_C" ]; then
     fi
     export RTMFIX=$CRTM_FIX
 
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="MARS"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="VENUS"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
+    fi
+    export RTMFIX=$CRTM_FIX
 fi
 
 
@@ -87,6 +98,18 @@ elif [ $machine = "WCOSS_C" ]; then
     export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export STMP="/gpfs/dell2/stmp/$USER"
+    export PTMP="/gpfs/dell2/ptmp/$USER"
+    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+
+    # Base directories for various builds
+    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+
 fi
 
 # Utilities needed in the scripts (mostly post)
@@ -102,8 +125,7 @@ if [ $machine = "THEIA" ]; then
     export GRB2INDEX="$NWPROD/util/exec/grb2index"
     export GRBINDEX2="$NWPROD/util/exec/grb2index"
     export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
 
 fi
 
@@ -244,9 +266,9 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 # Archiving options
 export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=18           # Archive data at this cycle for warm_start capability. Cannot be 00
-export ARCH_WARMICFREQ=6     # Archive frequency in days for warm_start capability
-export ARCH_FCSTICFREQ=3     # Archive frequency in days for gdas and gfs forecast-only capability
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability. Cannot be 00
+export ARCH_WARMICFREQ=5     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 
 echo "END: config.base"

@@ -69,4 +69,3 @@ tdew.o:	tdew.f
 
 clean:
 	/bin/rm -f $(OBJS) *.mod gfs_bufr
-

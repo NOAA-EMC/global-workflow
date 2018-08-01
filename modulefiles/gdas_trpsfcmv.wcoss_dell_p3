@@ -1,0 +1,11 @@
+#%Module################################################
+# Modfule file for gdas_trpsfcmv
+########################################################
+module load ips/18.0.1.163
+
+module load NCL/6.4.0                
+module load bufr/11.2.0
+module load ip/3.0.1         
+module load sp/2.0.2
+module load w3nco/2.0.6
+module load bacio/2.0.2

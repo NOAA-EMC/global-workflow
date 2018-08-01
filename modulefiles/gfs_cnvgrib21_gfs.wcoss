@@ -1,7 +1,7 @@
 #%Module#####################################################
 ## Module file for cnvgrib21
 #############################################################
-module-whatis "cnvgrib21_gfs"
+#module-whatis "cnvgrib21_gfs"
 
 #
 #  Loading required system modules
@@ -14,8 +14,5 @@ module-whatis "cnvgrib21_gfs"
 
 # Loading Intel-Compiled NCEP Libraries
    module load bacio/v2.0.2
-   module load w3emc/v2.2.0
    module load w3nco/v2.0.6
-   module load ip/v3.0.0
-   module load sp/v2.0.2
    module load g2/v3.1.0

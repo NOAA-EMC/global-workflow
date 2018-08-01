@@ -180,7 +180,6 @@ if [ $type = "gdas" ]; then
 
 
   #..................
-  echo  "${dirname}${head}atmanl.ensres.nemsio     " >>gdas_restarta.txt
   echo  "${dirname}${head}cnvstat                  " >>gdas_restarta.txt
   echo  "${dirname}${head}radstat                  " >>gdas_restarta.txt
   echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt

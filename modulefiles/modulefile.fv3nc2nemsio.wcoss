@@ -1,0 +1,12 @@
+#%Module#####################################################
+## Module file for fv3nc2nemsio
+#############################################################
+
+module load ics/12.1
+module load NetCDF/4.2/serial
+module load bacio/v2.0.2
+module load nemsio/v2.2.3
+module load w3nco/v2.0.6
+
+export FCMP="ifort"
+export FFLAGS="-free -O3 -xHOST"

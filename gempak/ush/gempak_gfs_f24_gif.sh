@@ -73,7 +73,7 @@
 
 #  Execute the GEMPAK program
 
-  gdplot2_gif << EOF
+  $GEMEXE/gdplot2_gif << EOF
 
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
@@ -196,7 +196,7 @@
 EOF
 
 
-gpend
+$GEMEXE/gpend
 
 
 if [ $SENDCOM = YES ]; then

@@ -55,7 +55,7 @@ module list
 export fcsthrs=012
 
 ############################################
-# User Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
@@ -63,7 +63,7 @@ export fcsthrs=012
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=jgfs_awips_f${fcsthrs}_${cyc}
+export job=gfs_awips_f${fcsthrs}_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
@@ -102,7 +102,7 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
@@ -117,7 +117,7 @@ else
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then

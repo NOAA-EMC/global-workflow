@@ -18,4 +18,3 @@ module load w3nco/v2.0.6
 module load bacio/v2.0.2
 
 export FCMP=ftn
-export CCMP=cc

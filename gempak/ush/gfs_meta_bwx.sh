@@ -22,7 +22,7 @@
 set -x
 #
 export PS4='BWX:$SECONDS + '
-mkdir $DATA/BWX
+mkdir -p -m 775 $DATA/BWX
 cd $DATA/BWX
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -44,7 +44,7 @@ PDY2=`echo $PDY | cut -c3-`
 fend=F180
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc<< EOFplt
+$GEMEXE/gdplot2_nc<< EOFplt
 gdfile   = F-${MDL} | ${PDY2}/${cyc}00
 gdattim  = F00-${fend}-6
 CONTUR	 = 1

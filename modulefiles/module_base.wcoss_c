@@ -33,7 +33,6 @@ module load udreg
 module load ugni
 module load hpss
 
-module load grib_util/1.0.3
 module load prod_util
 module load g2tmpl-intel/1.4.0
 module load crtm-intel/2.2.5
@@ -49,3 +48,7 @@ setenv USE_CFP YES
 module load pm5
 module load prod_envir
 module load util_shared/1.0.6
+
+module unload grib_util/1.0.3 
+module use /usrx/local/nceplibs/modulefiles
+module load grib_util/1.1.0

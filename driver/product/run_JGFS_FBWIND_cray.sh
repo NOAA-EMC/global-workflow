@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #BSUB -J gfs_fbwind_00
-#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/jgfs_fbwind_00.o%J
-#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/jgfs_fbwind_00.o%J
+#BSUB -o /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_fbwind_00.o%J
+#BSUB -e /gpfs/hps3/ptmp/Boi.Vuong/output/gfs_fbwind_00.o%J
 #BSUB -W 00:30
 #BSUB -q debug
 #BSUB -cwd /gpfs/hps3/ptmp/Boi.Vuong/output
@@ -52,7 +52,7 @@ module load util_shared/1.0.6
 module list
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
@@ -97,7 +97,7 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
@@ -111,7 +111,7 @@ else
 #  export COMIN=/gpfs/hps3/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
