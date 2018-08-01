@@ -25,6 +25,7 @@
  real, allocatable, public         :: icmr_output(:,:)
  real, allocatable, public         :: snmr_output(:,:)
  real, allocatable, public         :: grle_output(:,:)
+ real, allocatable, public         :: cldamt_output(:,:)
  real, allocatable, public         :: rlat_output(:)
  real, allocatable, public         :: rlon_output(:)
 
@@ -286,6 +287,17 @@
    enddo
    deallocate(grle_output)
 
+   if (icldamt == 1) then
+      print*,"WRITE CLD_AMT"
+      do n = 1, lev
+         dummy = cldamt_output(:,n)
+         call nemsio_writerecv(gfile, "cld_amt", "mid layer", n, dummy, iret=iret)
+         if (iret/=0) goto 88
+      enddo
+      deallocate(cldamt_output)
+   endif
+   
+
  endif
 
  deallocate(dummy)
@@ -314,7 +326,7 @@
  implicit none
 
  character(len=8)           :: fields(9)
- character(len=8)           :: fields_gfdl_mp(4)
+ character(len=8)           :: fields_gfdl_mp(5)
 
  integer                    :: count, l, n
 
@@ -323,13 +335,13 @@
               'tmp', 'spfh', 'clwmr', 'o3mr'/
 
 ! Fields for GFDL microphysics
- data fields_gfdl_mp /'rwmr', 'icmr', 'snmr', 'grle'/
+ data fields_gfdl_mp /'rwmr', 'icmr', 'snmr', 'grle', 'cld_amt'/
 
  print*
  print*,"SET HEADER INFO FOR OUTPUT FILE."
 
  if (gfdl_mp) then
-   nrec = (13 * lev) + 2
+   nrec = ((13+icldamt) * lev) + 2
  else
    nrec = (9 * lev) + 2
  endif
@@ -349,7 +361,7 @@
  enddo
 
  if (gfdl_mp) then
-   do n = 1, 4
+   do n = 1, 4 + icldamt
      do l = 1, lev
        count = count + 1
        recname(count) = fields_gfdl_mp(n)

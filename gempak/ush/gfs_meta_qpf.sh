@@ -24,7 +24,7 @@
 #
 set -x
 export PS4='qpf:$SECONDS + '
-mkdir $DATA/qpf
+mkdir -p -m 775 $DATA/qpf
 cd $DATA/qpf
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -48,7 +48,7 @@ PDY2=`echo $PDY | cut -c3-`
     run="r"
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 gdfile   = F-${MDL} | ${PDY2}/${cyc}00
 gdattim  = ${gdat}
 garea    = us

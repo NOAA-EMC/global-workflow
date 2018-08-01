@@ -50,7 +50,6 @@ module load util_shared/1.0.6
 # module load util_shared/1.0.7
 
 export obsproc_dump_ver=v4.0.0
-# export obsproc_shared_bufr_dumplist_ver=v1.3.0
 export obsproc_shared_bufr_dumplist_ver=v1.5.0
 module load dumpjb/4.0.0
 
@@ -67,7 +66,7 @@ export fcsthrs="anl"
 # export fcsthrs="000"
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
@@ -116,7 +115,7 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
@@ -129,7 +128,7 @@ else
 #  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
-export COMOUT=${COMOUT:-${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then

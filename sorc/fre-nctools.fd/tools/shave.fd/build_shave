@@ -9,6 +9,9 @@ case $1 in
   "wcoss" )
      FCMP=ifort
      FFLAGS="-O0 ${NETCDF_FFLAGS} ${NETCDF_LDFLAGS_F}" ;;
+  "wcoss_dell_p3" )
+     FCMP=ifort
+     FFLAGS="-O0 ${NETCDF_FFLAGS} ${NETCDF_LDFLAGS_F}" ;;
   "theia" )
      FCMP=ifort
      FFLAGS="-O0 -I$NETCDF/include -L$NETCDF/lib -lnetcdff -lnetcdf" ;;

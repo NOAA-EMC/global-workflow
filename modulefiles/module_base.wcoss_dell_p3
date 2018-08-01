@@ -1,0 +1,37 @@
+#%Module######################################################################
+##
+##      FV3GFS prerequisites
+
+# From default environment
+
+module load ips/18.0.1.163
+module load impi/18.0.1    
+module load lsf/10.1       
+module load EnvVars/1.0.2
+
+module load HPSS/5.0.2.5
+module load prod_util/1.1.0
+module load prod_envir/1.0.2
+module load g2tmpl/1.5.0       
+module load crtm/2.2.5
+module load ESMF/7_1_0r
+module load dev/util_shared/1.0.8
+
+module unload grib_util/1.0.6   
+module load dev/grib_util/1.1.0
+
+module load NCO/4.7.0   
+module load HDF5-serial/1.10.1
+module load NetCDF/4.5.0
+module load CFP/2.0.1
+setenv USE_CFP YES
+
+# modules used by vrfy
+module load pm5
+
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
+
+##module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
+##module load gempak/7.3.0
+

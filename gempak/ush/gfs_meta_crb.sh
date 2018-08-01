@@ -15,7 +15,7 @@
 set -x
 #
 export PS4='crb:$SECONDS + '
-mkdir $DATA/crb
+mkdir -p -m 775 $DATA/crb
 cd $DATA/crb
 cp $FIXgempak/datatype.tbl datatype.tbl
 #
@@ -42,7 +42,7 @@ PDY2m1=`echo ${PDYm1} | cut -c 3-`
 fend=F126
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE	= F-${MDL} | ${PDY2}/${cyc}00
 GDATTIM	= F00-${fend}-06 
 DEVICE	= ${device}
@@ -260,13 +260,13 @@ export err=$?;err_chk
 
 
 if [ ${cyc} -eq 00 ] ; then
-    export MODEL=/com/nawips/prod
+    # BV export MODEL=/com/nawips/prod
     # JY export HPCECMWF=${MODEL}/ecmwf.${PDY}
     # JY export HPCUKMET=${MODEL}/ukmet.${PDYm1}
-    export HPCECMWF=${COMINROOTecmwf}/ecmwf.${PDY}
-    export HPCUKMET=${COMINROOTukmet}/ukmet.${PDYm1}
+    export HPCECMWF=${COMINecmwf}.${PDY}
+    export HPCUKMET=${COMINukmet}.${PDYm1}
     grid1="F-${MDL} | ${PDY2}/${cyc}00"
-    grid2="${COMINROOTecmwf}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
     grid3="F-UKMETHPC | ${PDY2m1}/1200"
     for gfsfhr in 12 36 60 84 108
     do
@@ -274,7 +274,7 @@ if [ ${cyc} -eq 00 ] ; then
         gfsfhr="F${gfsfhr}"
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF10
+$GEMEXE/gdplot2_nc << EOF10
 GDFILE  = ${grid1} !${grid2}
 GDATTIM = ${gfsfhr}!${ecmwffhr}
 DEVICE  = ${device}
@@ -339,7 +339,7 @@ export err=$?;err_chk
         gfsfhr=F${gfsfhr}
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF25
+$GEMEXE/gdplot2_nc << EOF25
 DEVICE  = ${device}
 PANEL   = 0
 TEXT    = 1/21//hw

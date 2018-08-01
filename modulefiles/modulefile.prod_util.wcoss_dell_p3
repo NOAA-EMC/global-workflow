@@ -1,0 +1,6 @@
+#%Module#####################################################
+
+module load w3nco/2.0.6
+
+export FCMP=ifort
+export CCMP=icc

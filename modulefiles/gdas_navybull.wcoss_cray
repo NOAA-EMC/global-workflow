@@ -1,9 +1,6 @@
 #%Module################################################
 # Modfule file for gdas_navybull
 ########################################################
-module-whatis "navybull"
-
-set ver v14.1.0
 
 # From default environment
 module load modules
@@ -27,7 +24,6 @@ module load craype-sandybridge
 module load iobuf/2.0.7
 
 module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
-module load bacio-intel/2.0.1
 module load w3emc-intel/2.2.0
 module load w3nco-intel/2.0.6
 module load bufr-intel/11.0.1

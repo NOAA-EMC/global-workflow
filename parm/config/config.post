@@ -36,10 +36,22 @@ export npe_dwn=24
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
 
+#if [ $machine = "WCOSS_C" ] ; then
+#    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+#elif [ $machine = "WCOSS_DELL_P3" ] ; then
+#    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+#elif [ $machine = "THEIA" ] ; then
+#    export CRTM_FIX=/scratch3/NCEPDEV/hwrf/noscrub/fix-files/hwrf-H218-20171129-fix/fix/hwrf-crtm-2.0.6/
+#else
+#    echo "UPP using CRTM_FIX = $CRTM_FIX"
+#fi
+
 if [ $machine = "WCOSS_C" ] ; then
-    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.5/fix
+elif [ $machine = "WCOSS_DELL_P3" ] ; then
+    export CRTM_FIX=/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.5/fix
 elif [ $machine = "THEIA" ] ; then
-    export CRTM_FIX=/scratch3/NCEPDEV/hwrf/noscrub/fix-files/hwrf-H218-20171129-fix/fix/hwrf-crtm-2.0.6/
+    export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
 else
     echo "UPP using CRTM_FIX = $CRTM_FIX"
 fi

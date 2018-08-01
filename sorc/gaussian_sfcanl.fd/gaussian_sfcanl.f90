@@ -123,6 +123,8 @@
 
  namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst
 
+ call w3tagb('GAUSSIAN_SFCANL',2018,0179,0055,'NP20')
+
  print*,"- BEGIN EXECUTION"
 
  donst = 'no'
@@ -221,6 +223,7 @@
  allocate(gaussian_data%uustar(igaus*jgaus))
  allocate(gaussian_data%fice(igaus*jgaus))
  allocate(gaussian_data%hice(igaus*jgaus))
+ allocate(gaussian_data%srflag(igaus*jgaus))
  allocate(gaussian_data%slc(igaus*jgaus,4))
  allocate(gaussian_data%smc(igaus*jgaus,4))
  allocate(gaussian_data%stc(igaus*jgaus,4))
@@ -277,6 +280,7 @@
    gaussian_data%fice(row(i))   = gaussian_data%fice(row(i)) + s(i)*tile_data%fice(col(i))
    gaussian_data%hice(row(i))   = gaussian_data%hice(row(i)) + s(i)*tile_data%hice(col(i))
    gaussian_data%snoalb(row(i)) = gaussian_data%snoalb(row(i)) + s(i)*tile_data%snoalb(col(i))
+   gaussian_data%srflag(row(i)) = gaussian_data%srflag(row(i)) + s(i)*tile_data%srflag(col(i))
    if (trim(donst) == "yes" .or. trim(donst) == "YES") then
      gaussian_data%c0(row(i))     = gaussian_data%c0(row(i)) + s(i)*tile_data%c0(col(i))
      gaussian_data%cd(row(i))     = gaussian_data%cd(row(i)) + s(i)*tile_data%cd(col(i))
@@ -335,6 +339,7 @@
  deallocate(tile_data%uustar)
  deallocate(tile_data%fice)
  deallocate(tile_data%hice)
+ deallocate(tile_data%srflag)
  deallocate(tile_data%slc)
  deallocate(tile_data%smc)
  deallocate(tile_data%stc)
@@ -395,6 +400,7 @@
  deallocate(gaussian_data%uustar)
  deallocate(gaussian_data%fice)
  deallocate(gaussian_data%hice)
+ deallocate(gaussian_data%srflag)
  deallocate(gaussian_data%slc)
  deallocate(gaussian_data%smc)
  deallocate(gaussian_data%stc)
@@ -422,6 +428,8 @@
  print*
  print*,'- NORMAL INTERPOLATION'
 
+ call w3tage('GAUSSIAN_SFCANL')
+
  end program main
 
 !-------------------------------------------------------------------------------------------
@@ -435,7 +443,7 @@
 
  implicit none
 
- integer(nemsio_intkind), parameter :: nrec_all=59
+ integer(nemsio_intkind), parameter :: nrec_all=60
  integer(nemsio_intkind), parameter :: nmetaaryi=1
  integer(nemsio_intkind), parameter :: nmetavari=4
  integer(nemsio_intkind), parameter :: nmetavarr=1
@@ -468,7 +476,7 @@
  type(nemsio_gfile)                 :: gfileo
 
  data recname_all /'alnsf', 'alnwf', 'alvsf', 'alvwf', &
-               'cnwat', 'f10m',  'facsf', &
+               'cnwat', 'crain', 'f10m',  'facsf', &
                'facwf', 'ffhh',  'ffmm',  'fricv', &
                'icec',  'icetk', 'land',  'orog', &
                'snoalb', 'sfcr',  'shdmax', 'shdmin', &
@@ -485,7 +493,7 @@
                'xzts', 'zc'/
 
  data reclevtyp_all /'sfc',   'sfc',   'sfc',   'sfc', &
-                 'sfc',   '10 m above gnd',   'sfc', &
+                 'sfc',   'sfc', '10 m above gnd',   'sfc', &
                  'sfc',   'sfc',   'sfc',   'sfc', &
                  'sfc',   'sfc',   'sfc',   'sfc', &
                  'sfc',   'sfc',   'sfc',   'sfc', &
@@ -510,7 +518,7 @@
               1, 1, 1, 1, 1, 1, &
               1, 1, 1, 1, 1, 1, &
               1, 1, 1, 1, 1, 1, &
-              1, 1, 1, 1, 1, 1/
+              1, 1, 1, 1, 1, 1, 1/
         
  data aryiname /'lpl'/
 
@@ -585,7 +593,7 @@
    allocate(reclev(nrec))
    reclev = reclev_all
  else
-   nrec = 43
+   nrec = 44
    allocate(recname(nrec))
    recname = recname_all(1:nrec)
    allocate(reclevtyp(nrec))
@@ -647,267 +655,272 @@
  call nemsio_writerec(gfileo,  5, the_data, iret=iret)
  if (iret /= 0) goto 44
 
+ print*,"- WRITE CRAIN (SRFLAG)"
+ the_data = gaussian_data%srflag
+ call nemsio_writerec(gfileo,  6, the_data, iret=iret)
+ if (iret /= 0) goto 44
+
  print*,"- WRITE F10M"
  the_data = gaussian_data%f10m
- call nemsio_writerec(gfileo, 6, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 7, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE FACSF"
  the_data = gaussian_data%facsf
- call nemsio_writerec(gfileo, 7, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 8, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE FACWF"
  the_data = gaussian_data%facwf
- call nemsio_writerec(gfileo, 8, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 9, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE FFHH"
  the_data = gaussian_data%ffhh
- call nemsio_writerec(gfileo,  9, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 10, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE FFMM"
  the_data = gaussian_data%ffmm
- call nemsio_writerec(gfileo, 10, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 11, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE UUSTAR"
  the_data = gaussian_data%uustar
- call nemsio_writerec(gfileo, 11, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 12, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE FICE"
  the_data = gaussian_data%fice
- call nemsio_writerec(gfileo, 12, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 13, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE HICE"
  the_data = gaussian_data%hice
- call nemsio_writerec(gfileo, 13, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 14, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SLMSK"
  the_data = gaussian_data%slmask
- call nemsio_writerec(gfileo, 14, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 15, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE OROG"
  the_data = gaussian_data%orog
- call nemsio_writerec(gfileo, 15, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 16, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SNOALB"
  the_data = gaussian_data%snoalb
- call nemsio_writerec(gfileo, 16, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 17, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE ZORL"
  the_data = gaussian_data%zorl * 0.01 ! meters
- call nemsio_writerec(gfileo, 17, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 18, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SHDMAX"
  the_data = gaussian_data%shdmax
- call nemsio_writerec(gfileo, 18, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 19, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SHDMIN"
  the_data = gaussian_data%shdmin
- call nemsio_writerec(gfileo, 19, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 20, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SLC"
  the_data = gaussian_data%slc(:,1)
- call nemsio_writerec(gfileo, 20, the_data, iret=iret)
- if (iret /= 0) goto 44
-
- the_data = gaussian_data%slc(:,2)
  call nemsio_writerec(gfileo, 21, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%slc(:,3)
+ the_data = gaussian_data%slc(:,2)
  call nemsio_writerec(gfileo, 22, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%slc(:,4)
+ the_data = gaussian_data%slc(:,3)
  call nemsio_writerec(gfileo, 23, the_data, iret=iret)
+ if (iret /= 0) goto 44
+
+ the_data = gaussian_data%slc(:,4)
+ call nemsio_writerec(gfileo, 24, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SLOPE"
  the_data = gaussian_data%slope
- call nemsio_writerec(gfileo, 24, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 25, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SMC"
  the_data = gaussian_data%smc(:,1)
- call nemsio_writerec(gfileo, 25, the_data, iret=iret)
- if (iret /= 0) goto 44
-
- the_data = gaussian_data%smc(:,2)
  call nemsio_writerec(gfileo, 26, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%smc(:,3)
+ the_data = gaussian_data%smc(:,2)
  call nemsio_writerec(gfileo, 27, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%smc(:,4)
+ the_data = gaussian_data%smc(:,3)
  call nemsio_writerec(gfileo, 28, the_data, iret=iret)
+ if (iret /= 0) goto 44
+
+ the_data = gaussian_data%smc(:,4)
+ call nemsio_writerec(gfileo, 29, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SNWDPH"
  the_data = gaussian_data%snwdph * 0.001 ! meters
- call nemsio_writerec(gfileo, 29, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 30, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE STYPE"
  the_data = gaussian_data%stype
- call nemsio_writerec(gfileo, 30, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 31, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE Q2M"
  the_data = gaussian_data%q2m
- call nemsio_writerec(gfileo, 31, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 32, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE STC"
  the_data = gaussian_data%stc(:,1)
- call nemsio_writerec(gfileo, 32, the_data, iret=iret)
- if (iret /= 0) goto 44
-
- the_data = gaussian_data%stc(:,2)
  call nemsio_writerec(gfileo, 33, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%stc(:,3)
+ the_data = gaussian_data%stc(:,2)
  call nemsio_writerec(gfileo, 34, the_data, iret=iret)
  if (iret /= 0) goto 44
 
- the_data = gaussian_data%stc(:,4)
+ the_data = gaussian_data%stc(:,3)
  call nemsio_writerec(gfileo, 35, the_data, iret=iret)
+ if (iret /= 0) goto 44
+
+ the_data = gaussian_data%stc(:,4)
+ call nemsio_writerec(gfileo, 36, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE TG3"
  the_data = gaussian_data%tg3
- call nemsio_writerec(gfileo, 36, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 37, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE TISFC"
  the_data = gaussian_data%tisfc
- call nemsio_writerec(gfileo, 37, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 38, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE T2M"
  the_data = gaussian_data%t2m
- call nemsio_writerec(gfileo, 38, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 39, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE TSEA"
  the_data = gaussian_data%tsea
- call nemsio_writerec(gfileo, 39, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 40, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE TPRCP"
  the_data = gaussian_data%tprcp
- call nemsio_writerec(gfileo, 40, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 41, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE VFRAC"
  the_data = gaussian_data%vfrac * 100.0 ! whole percent
- call nemsio_writerec(gfileo, 41, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 42, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE VTYPE"
  the_data = gaussian_data%vtype
- call nemsio_writerec(gfileo, 42, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 43, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  print*,"- WRITE SHELEG"
  the_data = gaussian_data%sheleg
- call nemsio_writerec(gfileo, 43, the_data, iret=iret)
+ call nemsio_writerec(gfileo, 44, the_data, iret=iret)
  if (iret /= 0) goto 44
 
  if (trim(donst) == "yes" .or. trim(donst) == "YES") then
 
    print*,"- WRITE C0"
    the_data = gaussian_data%c0
-   call nemsio_writerec(gfileo, 44, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 45, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE CD"
    the_data = gaussian_data%cd
-   call nemsio_writerec(gfileo, 45, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 46, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE DCONV"
    the_data = gaussian_data%dconv
-   call nemsio_writerec(gfileo, 46, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 47, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE DTCOOL"
    the_data = gaussian_data%dtcool
-   call nemsio_writerec(gfileo, 47, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 48, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE QRAIN"
    the_data = gaussian_data%qrain
-   call nemsio_writerec(gfileo, 48, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 49, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE TREF"
    the_data = gaussian_data%tref
-   call nemsio_writerec(gfileo, 49, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 50, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE W0"
    the_data = gaussian_data%w0
-   call nemsio_writerec(gfileo, 50, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 51, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE WD"
    the_data = gaussian_data%wd
-   call nemsio_writerec(gfileo, 51, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 52, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XS"
    the_data = gaussian_data%xs
-   call nemsio_writerec(gfileo, 52, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 53, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XT"
    the_data = gaussian_data%xt
-   call nemsio_writerec(gfileo, 53, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 54, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XTTS"
    the_data = gaussian_data%xtts
-   call nemsio_writerec(gfileo, 54, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 55, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XU"
    the_data = gaussian_data%xu
-   call nemsio_writerec(gfileo, 55, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 56, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XV"
    the_data = gaussian_data%xv
-   call nemsio_writerec(gfileo, 56, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 57, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XZ"
    the_data = gaussian_data%xz
-   call nemsio_writerec(gfileo, 57, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 58, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE XZTS"
    the_data = gaussian_data%xzts
-   call nemsio_writerec(gfileo, 58, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 59, the_data, iret=iret)
    if (iret /= 0) goto 44
  
    print*,"- WRITE ZC"
    the_data = gaussian_data%zc
-   call nemsio_writerec(gfileo, 59, the_data, iret=iret)
+   call nemsio_writerec(gfileo, 60, the_data, iret=iret)
    if (iret /= 0) goto 44
  
  endif
