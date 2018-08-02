@@ -19,6 +19,7 @@ config_resources:
         echo "argument can be any one of the following:"
         echo "anal fcst post vrfy arch"
         echo "eobs eomg eupd ecen efcs epos earc"
+        echo "postsnd awips gempak"
         exit 1
     
     fi
@@ -38,7 +39,7 @@ config_resources:
     elif [[ "$step" == "anal" ]] ; then
         export npe_anal={doc.aliases.anal.npe}
         export npe_node_anal={doc.aliases.anal.npe_node}
-        export nth_gsi={doc.aliases.anal.nth}
+        export nth_anal={doc.aliases.anal.nth}
 
     elif [[ "$step" == "fcst" ]] ; then
         if [[ "${{CDUMP:-}}" == gdas ]] ; then

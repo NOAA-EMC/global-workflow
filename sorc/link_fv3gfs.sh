@@ -16,7 +16,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet ]; then
+if [ $target != wcoss_cray -a $target != wcoss_dell_p3 -a $target != theia -a $target != gaea -a $target != jet ]; then
     echo '$target value set to unknown or unsupported system'
     exit 1
 fi
@@ -27,11 +27,11 @@ LINK="ln -fs"
 pwd=$(pwd -P)
 
 #--model fix fields
-if [ $machine == "cray" ]; then
+if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "dell" ]; then
+elif [ $target = "wcoss_dell_p3" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "theia" ]; then
+elif [ $target = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 elif [ $target == "gaea" ]; then
     FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"

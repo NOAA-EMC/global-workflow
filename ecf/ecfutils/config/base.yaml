@@ -140,7 +140,7 @@ config_base:
     export FHOUT_GFS={doc.gfs_output_settings.FHOUT_GFS}
     export FHMAX_HF_GFS={doc.gfs_output_settings.FHMAX_HF_GFS}
     export FHOUT_HF_GFS={doc.gfs_output_settings.FHOUT_HF_GFS}
-    
+
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
@@ -179,8 +179,9 @@ config_base:
     export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"
 
     # Archiving options
+    export DELETE_COM_IN_ARCHIVE_JOB={tools.YES_NO(doc.archiving.scrub_in_archive)}
     export HPSSARCH={tools.YES_NO(doc.archiving.archive_to_hpss)}   # save data to HPSS archive
-    export ARCH_CYC={doc.archiving.arch_cyc}           # Archive data at this cycle for warm_start capability. Cannot be 00
+    export ARCH_CYC={doc.archiving.arch_cyc:02d}           # Archive data at this cycle for warm_start capability. Cannot be 00
     export ARCH_WARMICFREQ={doc.archiving.arch_warmicfreq}     # Archive frequency in days for warm_start capability
     export ARCH_FCSTICFREQ={doc.archiving.arch_fcsticfreq}     # Archive frequency in days for gdas and gfs forecast-only capability
     

@@ -3,9 +3,6 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     type: int
     default: 3
     description: GFS forecast output frequency in hours
-  FHMAX_GFS:
-    type: int
-    description: GFS forecast length in hours
   FHMIN_GFS: 
     type: int
     default: 0

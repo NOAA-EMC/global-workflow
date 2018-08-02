@@ -62,7 +62,7 @@ downstream_schema: &downstream_schema !Template
     type: bool
     default: NO
     description: "Cyclone genesis verification"
-  RUN_MOS:
+  RUNMOS:
     type: bool
     default: YES
     description: "Run GFS MOS"

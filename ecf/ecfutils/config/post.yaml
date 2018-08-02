@@ -39,13 +39,14 @@ config_post:
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
-    #export npe_dwn={doc.aliases.dwn.npe}
-    #export nth_dwn={doc.aliases.dwn.nth}
+    export npe_dwn={doc.aliases.dwn.npe}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"
 
     if [ $machine = "WCOSS_C" ] ; then
+        export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
+    elif [ $machine = "WCOSS_DELL_P3" ] ; then
         export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.0.6/src/fix
     elif [ $machine = "THEIA" ] ; then
         export CRTM_FIX=/scratch3/NCEPDEV/hwrf/noscrub/fix-files/hwrf-H218-20171129-fix/fix/hwrf-crtm-2.0.6/
