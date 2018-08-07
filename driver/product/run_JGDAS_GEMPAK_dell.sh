@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180710
+export PDY=20180724
 
 export PDY1=`expr $PDY - 1`
 
@@ -42,17 +42,12 @@ module load prod_envir/1.0.2
 #   This is a test version of UTIL_SHARED.v1.0.8 on DELL
 #
 module load dev/util_shared/1.0.8
-#
-#  This is a test GEMPAK version 7.3.0 on DELL
-#
-module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-module load gempak/7.3.0
 
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
-# module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-# module load gempak/7.3.1
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
 
 module list
 

@@ -27,7 +27,7 @@ set -x
 #
 export PS4='COMP:$SECONDS + '
 rm -Rf $DATA/COMP $DATA/GEMPAK_META
-mkdir -p $DATA/COMP  $DATA/GEMPAK_META
+mkdir -p -m 775 $DATA/COMP  $DATA/GEMPAK_META
 cd $DATA/COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
 

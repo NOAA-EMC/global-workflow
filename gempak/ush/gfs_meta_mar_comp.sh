@@ -14,10 +14,9 @@
 set -x
 #
 export PS4='MAR_COMP_F${fend}:$SECONDS + '
-rm -Rf $DATA/COMP $DATA/GEMPAK_META
-mkdir -p $DATA/COMP  $DATA/GEMPAK_META
+rm -Rf $DATA/GEMPAK_META
+mkdir -p -m 775 $DATA/GEMPAK_META $DATA/MAR_COMP
 
-mkdir $DATA/MAR_COMP
 cd $DATA/MAR_COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
 

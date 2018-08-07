@@ -15,7 +15,7 @@
 set -x
 #
 export PS4='crb:$SECONDS + '
-mkdir $DATA/crb
+mkdir -p -m 775 $DATA/crb
 cd $DATA/crb
 cp $FIXgempak/datatype.tbl datatype.tbl
 #

@@ -22,7 +22,7 @@
 set -x
 #
 export PS4='BWX:$SECONDS + '
-mkdir $DATA/BWX
+mkdir -p -m 775 $DATA/BWX
 cd $DATA/BWX
 cp $FIXgempak/datatype.tbl datatype.tbl
 

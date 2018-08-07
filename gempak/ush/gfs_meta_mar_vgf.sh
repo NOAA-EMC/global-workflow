@@ -13,7 +13,7 @@ set -x
 #
 export PS4='OPC_MAR_VGF:$SECONDS + '
 workdir="${DATA}/OPC_MAR_VGF"
-mkdir -p ${workdir}
+mkdir -p -m 775 ${workdir}
 cd ${workdir}
 
 cp $FIXgempak/datatype.tbl datatype.tbl

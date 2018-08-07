@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_PAC:$SECONDS + '
-mkdir $DATA/MAR_PAC
+mkdir -p -m 775 $DATA/MAR_PAC
 cd $DATA/MAR_PAC
 cp $FIXgempak/datatype.tbl datatype.tbl
 

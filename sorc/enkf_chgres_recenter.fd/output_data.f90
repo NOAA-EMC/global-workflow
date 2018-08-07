@@ -7,6 +7,30 @@
 
  private
 
+ integer, public                   :: kgds_output(200)
+
+! data on the output grid.
+ real, allocatable, public         :: hgt_output(:)  ! interpolated from input grid
+ real, allocatable, public         :: hgt_external_output(:)
+ real, allocatable, public         :: sfcp_output(:)
+ real, allocatable, public         :: tmp_output(:,:)
+ real, allocatable, public         :: clwmr_output(:,:)
+ real, allocatable, public         :: delz_output(:,:)
+ real, allocatable, public         :: dpres_output(:,:)
+ real, allocatable, public         :: dzdt_output(:,:)
+ real, allocatable, public         :: o3mr_output(:,:)
+ real, allocatable, public         :: spfh_output(:,:)
+ real, allocatable, public         :: ugrd_output(:,:)
+ real, allocatable, public         :: vgrd_output(:,:)
+ real, allocatable, public         :: rwmr_output(:,:)
+ real, allocatable, public         :: icmr_output(:,:)
+ real, allocatable, public         :: snmr_output(:,:)
+ real, allocatable, public         :: grle_output(:,:)
+ real, allocatable, public         :: cldamt_output(:,:)
+ real, allocatable, public         :: rlat_output(:)
+ real, allocatable, public         :: rlon_output(:)
+
+ public                            :: set_output_grid
  public                            :: write_output_data
 
  character(len=50), allocatable    :: recname(:)
@@ -203,6 +227,17 @@
    nullify(clwmr_output,rwmr_output,icmr_output)
    nullify(snmr_output,grle_output,cldamt_output)
    nullify(delz_output,hgt_external_output,dpres_output)
+
+   if (icldamt == 1) then
+      print*,"WRITE CLD_AMT"
+      do n = 1, lev
+         dummy = cldamt_output(:,n)
+         call nemsio_writerecv(gfile, "cld_amt", "mid layer", n, dummy, iret=iret)
+         if (iret/=0) goto 88
+      enddo
+      deallocate(cldamt_output)
+   endif
+   
 
  endif
 

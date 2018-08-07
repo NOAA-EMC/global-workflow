@@ -25,10 +25,10 @@ module load grib_util/1.0.6
 module load prod_envir/1.0.2
 module load CFP/2.0.1
 
-#module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-#module load gempak/7.3.1
-module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-module load gempak/7.3.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
+#module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
+#module load gempak/7.3.0
 module list
 
 #module use /usrx/local/dev/modulefiles
@@ -47,24 +47,34 @@ export MP_STDOUTMODE=ordered
 #export machine="WCOSS_C"
 machine="WCOSS_DELL_P3"
 #machine="THEIA"
+#machine="JET"
+export npe_postsnd=12
+export npe_postsndcfp=10
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
 export launcher="aprun"
-export npe_postsnd=12
 export npe_node_postsnd=3
 export NTHREADS_POSTSND=1
-export npe_postsndcfp=10
 export npe_node_postsndcfp=3
 export NTHREADS_POSTSNDCFP=1
 export APRUN_POSTSND="$launcher -j 1 -n $npe_postsnd -N $npe_node_postsnd -d $NTHREADS_POSTSND -cc depth"
 export APRUN_POSTSNDCFP="$launcher -j 1 -n $npe_postsndcfp -N $npe_node_postsndcfp -d $NTHREADS_POSTSNDCFP cfp"
-else
-##For WCOSS-Dell and Theia, Jet################
+elif [ $machine == "WCOSS_DELL_P3" ]; then
+##For WCOSS-Dell ################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
 export launcher="mpirun -n"
-export npe_postsnd=12
-export npe_postsndcfp=10
 export APRUN_POSTSND="$launcher $npe_postsnd"
 export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp cfp"
+else
+##For Theia, Jet################
+export FHMAX_HF_GFS=0
+export FHOUT_HF_GFS=0
+export launcher="mpirun -np"
+export APRUN_POSTSND="$launcher $npe_postsnd"
+export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
 fi
 
 #export PS4='$SECONDS + '

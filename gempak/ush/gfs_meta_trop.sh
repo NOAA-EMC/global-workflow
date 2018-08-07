@@ -27,7 +27,7 @@
 set -x
 #
 export PS4='TROP:$SECONDS + '
-mkdir $DATA/TROP
+mkdir -p -m 775 $DATA/TROP
 cd $DATA/TROP
 cp $FIXgempak/datatype.tbl datatype.tbl
 

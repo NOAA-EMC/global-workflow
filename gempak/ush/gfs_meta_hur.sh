@@ -23,7 +23,7 @@
 set -x
 #
 export PS4='hur:$SECONDS + '
-mkdir $DATA/hur
+mkdir  -p -m 775 $DATA/hur
 cd $DATA/hur
 cp $FIXgempak/datatype.tbl datatype.tbl
 

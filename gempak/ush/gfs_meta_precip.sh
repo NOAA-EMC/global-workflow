@@ -9,7 +9,7 @@
 #
 set -x
 export PS4='qpf:$SECONDS + '
-mkdir $DATA/precip
+mkdir -p -m 775 $DATA/precip
 cd $DATA/precip
 cp $FIXgempak/datatype.tbl datatype.tbl
 

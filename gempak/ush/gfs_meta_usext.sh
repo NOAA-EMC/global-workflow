@@ -26,7 +26,7 @@
 # M. Klein/HPC      01/10   Add boundary layer winds/isotachs to the metafile for CPC.
 #
 set -xa
-mkdir $DATA/mrfus
+mkdir -p -m 775 $DATA/mrfus
 cd $DATA/mrfus
 cp $FIXgempak/datatype.tbl datatype.tbl
 

@@ -102,7 +102,10 @@ fi
 
 # Load modules
 module load prod_util
-module grib_util/1.0.5
+
+module unload grib_util/1.0.3             
+module use /usrx/local/nceplibs/modulefiles
+module load grib_util/1.1.0
 
 # VARIABLES TO SET
 # GFSDIR should be set to the directory containing the input GFS FV3 data

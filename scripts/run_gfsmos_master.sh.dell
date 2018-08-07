@@ -56,9 +56,11 @@ module load impi/18.0.1       2>/dev/null
 module load lsf/10.1          2>/dev/null
 module load prod_envir/1.0.2  2>/dev/null
 module load prod_util/1.1.0   2>/dev/null
-module load grib_util/1.0.6   2>/dev/null
 module load CFP/2.0.1         2>/dev/null
  
+module unload grib_util/1.0.6    2>/dev/null
+module load dev/grib_util/1.1.0  2>/dev/null
+
 export FORT_BUFFERED=TRUE
 export KMP_AFFINITY=disabled
 export envir=prod

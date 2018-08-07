@@ -17,7 +17,7 @@
 #                           Added a ? to all title/TITLE lines.
 #
 set -xa
-mkdir $DATA/mrfnhsh
+mkdir -p -m 775 $DATA/mrfnhsh
 cd $DATA/mrfnhsh
 cp $FIXgempak/datatype.tbl datatype.tbl
 

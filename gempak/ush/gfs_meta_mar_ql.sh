@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_QL_F${fend}:$SECONDS + '
-mkdir -p $DATA/MAR_QL
+mkdir -p -m 775  $DATA/MAR_QL
 cd $DATA/MAR_QL
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -20,6 +20,7 @@ metatype="mar_ql"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 PDY2=`echo $PDY | cut -c3-`
+fend=180
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 

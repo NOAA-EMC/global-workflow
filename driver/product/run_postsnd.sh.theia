@@ -2,8 +2,9 @@
 #PBS -o /scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs/driver/product/postsnd_00.out19
 #PBS -e /scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs/driver/product/postsnd_00.out19
 #PBS -N postsnd
-#PBS -A fv3-cam
-#PBS -l nodes=4:ppn=3
+##PBS -A fv3-cam
+#PBS -A fv3-cpu
+#PBS -l nodes=6:ppn=3
 #PBS -l walltime=02:30:00
 
 ############################################
@@ -41,22 +42,32 @@ export MP_STDOUTMODE=ordered
 #export machine="WCOSS_C"
 #machine="WCOSS_DELL_P3"
 machine="THEIA"
+#machine="JET"
+export npe_postsnd=12
+export npe_postsndcfp=10
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
 export launcher="aprun"
-export npe_postsnd=12
 export npe_node_postsnd=3
 export NTHREADS_POSTSND=1
-export npe_postsndcfp=10
 export npe_node_postsndcfp=3
 export NTHREADS_POSTSNDCFP=1
 export APRUN_POSTSND="$launcher -j 1 -n $npe_postsnd -N $npe_node_postsnd -d $NTHREADS_POSTSND -cc depth"
 export APRUN_POSTSNDCFP="$launcher -j 1 -n $npe_postsndcfp -N $npe_node_postsndcfp -d $NTHREADS_POSTSNDCFP cfp"
-else
-##For WCOSS-Dell and Theia, Jet################
+elif [ $machine == "WCOSS_DELL_P3" ]; then
+##For WCOSS-Dell ################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
 export launcher="mpirun -n"
-export npe_postsnd=12
-export npe_postsndcfp=10
+export APRUN_POSTSND="$launcher $npe_postsnd"
+export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
+else
+##For Theia, Jet################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
+export launcher="mpirun -np"
 export APRUN_POSTSND="$launcher $npe_postsnd"
 export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
 fi
@@ -87,17 +98,10 @@ export DATA_IN=${DATA_IN:-/scratch4/NCEPDEV/meso/scrub/$USER}
 export DATA=$DATA_IN/postsnd.${pid}
 mkdir -p $DATA
 cd $DATA
-#PDY=20140811
-#PDY=20170216
 export PDY=20180305
 export cyc=00
 export STARTHOUR=00
 export ENDHOUR=180
-#export INCREMENT=24
-#export JCAP=${JCAP:-574}
-#export LEVS=${LEVS:-64}
-#export LATB=${LATB:-880}
-#export LONB=${LONB:-1760}
 
 ####################################
 # File To Log Msgs
@@ -133,33 +137,14 @@ export HOMEbufrsnd=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs
 #export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/Bufr_sounding
 #export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/bufr_fnl_mpmd2_test
 
-#export STNLIST=$PARMbufrsnd/bufr_stalist.meteo.gfs3
-
-# Run setup to initialize working directory and utility scripts
-#$utilscript/setup.sh
-# Run setpdy and initialize PDY variables
-#$utilscript/setpdy.sh
-#. PDY
-
 ##############################
 # Define COM Directories
 ##############################
-#export COMIN=/com2/${NET}/${envir}/${RUN}.${PDY}
 ##export COMIN=/gpfs/hps/ptmp/emc.glopara/com2/${NET}/para/${RUN}.${PDY}
-##export COMIN=/gpfs/hps/emc/meso/noscrub/Guang.Ping.Lou/para_look_alike/${RUN}.${PDY}
-#export COMIN=/gpfs/hps/emc/global/noscrub/Hui-Ya.Chuang/para_look_alike/${RUN}.${PDY}
-####export FIXgsm=${HOMEgsm:-$HOMEgsm/fix/fix_am}
-##export COMIN=/gpfs/hps/nco/ops/com/gfs/para/${RUN}.${PDY}
 ##export COMIN=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3data/${RUN}.${PDY}/$cyc
 ##export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}
 export COMIN=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3data/${RUN}.${PDY}/$cyc
 
-#mkdir -p $COMIN
-#NEMSIO Sample input 
-
-#export COMOUT=/com/${NET}/${envir}/${RUN}.${PDY}
-#export COMIN=/meso/save/$USER/com/${NET}/para/${RUN}.${PDY}
-#export COMOUT=$DATA
 export COMOUT=$DATA_IN/com2/${NET}/${envir}/${RUN}.${PDY}
 mkdir -p $COMOUT
 export COMAWP=$DATA_IN/com2/nawips/${envir}/${RUN}.${PDY}

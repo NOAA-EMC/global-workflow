@@ -35,7 +35,7 @@ set -x
 #
 export PS4='OPC_SW_VGF:$SECONDS + '
 workdir="${DATA}/OPC_SW_VGF"
-mkdir -p ${workdir}
+mkdir -p -m 775  ${workdir}
 cd ${workdir}
 
 cp $FIXgempak/datatype.tbl datatype.tbl

@@ -17,7 +17,7 @@
 # M. Klein           4/07   Fix bug in PW display.
 #
 set -xa
-mkdir $DATA/mrfhi
+mkdir -p -m 775 $DATA/mrfhi
 cd $DATA/mrfhi
 cp $FIXgempak/datatype.tbl datatype.tbl
 

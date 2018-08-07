@@ -22,7 +22,7 @@
 set -x
 #
 export PS4='SA:$SECONDS + '
-mkdir $DATA/SA
+mkdir -p -m 775 $DATA/SA
 cd $DATA/SA
 cp $FIXgempak/datatype.tbl datatype.tbl
 

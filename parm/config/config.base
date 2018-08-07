@@ -125,8 +125,7 @@ if [ $machine = "THEIA" ]; then
     export GRB2INDEX="$NWPROD/util/exec/grb2index"
     export GRBINDEX2="$NWPROD/util/exec/grb2index"
     export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
 
 fi
 
