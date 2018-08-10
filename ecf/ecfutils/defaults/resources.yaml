@@ -122,7 +122,7 @@ default_resources: &default_resources
       
   run_gempak: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: 17
+      mpi_ranks: 20
       max_ppn: 4
       walltime: !timedelta "02:00:00"
       OMP_NUM_THREADS: 3

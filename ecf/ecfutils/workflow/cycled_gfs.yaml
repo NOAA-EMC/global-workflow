@@ -699,13 +699,14 @@ suite: !Cycle
     #endfamily prdgen
 
     gempak: !Family
-      Dummy: true  ## <-- Node is not implemented yet
       jgfs_gempak_upapgif: !Task
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Trigger: !Depend up.dump.jgfs_dump
         resources: !calc partition.resources.run_one_hour_exclusive
 
       jgfs_gempak_ncdc: !Task
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         #Trigger: !Depend jgfs_gempak.is_running()
         Trigger: !Depend jgfs_gempak.is_running() | jgfs_gempak.is_completed()
@@ -713,15 +714,18 @@ suite: !Cycle
 
       jgfs_gempak: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend up.jgfs_analysis
-        resources: !calc partition.resources.run_one_hour_exclusive
+        Trigger: !Depend ( up.post )
+        resources: !calc partition.resources.run_gempak
+        J_JOB: rocoto/gempak.sh
 
       jgfs_gempak_meta: !Task
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Trigger: !Depend up.jgfs_analysis
         resources: !calc partition.resources.run_one_hour_exclusive
 
       jgfs_pgrb2_spec_gempak: !Task
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Trigger: !Depend up.post.jgfs_pgrb2_spec_post
         resources: !calc partition.resources.run_one_hour_exclusive
