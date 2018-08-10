@@ -90,34 +90,34 @@ case:
         walltime: !timedelta '10:00:00'
 
     run_eobs: !JobRequest
-      - mpi_ranks: 280
+      - mpi_ranks: 140
         max_ppn: 14
-        walltime: !timedelta '00:45:00'
+        walltime: !timedelta '00:30:00'
         OMP_NUM_THREADS: 2
   
     run_eomg: !JobRequest
-      - mpi_ranks: 280
+      - mpi_ranks: 140
         max_ppn: 14
-        walltime: !timedelta '03:00:00'
+        walltime: !timedelta '01:00:00'
         OMP_NUM_THREADS: 2
   
     run_eupd: !JobRequest
-      - mpi_ranks: 350
-        max_ppn: 7
-        walltime: !timedelta '03:00:00'
+      - mpi_ranks: 360
+        max_ppn: 4
+        walltime: !timedelta '00:30:00'
         OMP_NUM_THREADS: 4
   
     run_ecen: !JobRequest
-      - mpi_ranks: 140
-        max_ppn: 7
-        walltime: !timedelta '02:00:00'
+      - mpi_ranks: 80
+        max_ppn: 4
+        walltime: !timedelta '01:00:00'
         OMP_NUM_THREADS: 4
   
     run_epos: !JobRequest
-      - mpi_ranks: 81
-        max_ppn: 3
-        walltime: !timedelta '03:00:00'
-        OMP_NUM_THREADS: 8
+      - mpi_ranks: 80
+        max_ppn: 4
+        walltime: !timedelta '02:00:00'
+        OMP_NUM_THREADS: 4
 
   settings: 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
@@ -131,9 +131,9 @@ case:
     BASE_SVN: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-08-06t06:00:00
-    EDATE: 2018-08-06t18:00:00
+    SDATE: 2018-08-09t00:00:00
+    EDATE: 2018-08-09t12:00:00
     chgres_and_convert_ics: No
-    realtime: false
+    realtime: true
     gfs_cyc: 4 # run gfs at 0z, 12z
     run_gsi: Yes
