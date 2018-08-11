@@ -26,7 +26,9 @@ LINK="ln -fs"
 
 pwd=$(pwd -P)
 
+#------------------------------
 #--model fix fields
+#------------------------------
 if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
@@ -41,7 +43,9 @@ done
 $LINK $FIX_DIR/* .
 
 
+#------------------------------
 #--add gfs_post file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
@@ -58,7 +62,27 @@ cd ${pwd}/../ush                ||exit 8
     done
 
 
+#------------------------------
+#--add gfs_wafs file if on Dell
+if [ $machine = dell ]; then 
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+cd ${pwd}/../parm               ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
+    $LINK ../sorc/gfs_wafs.fd/parm                           wafs
+cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+cd ${pwd}/../fix                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/fix/wafs                       wafs
+fi
+
+
+#------------------------------
 #--add GSI/EnKF file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
@@ -80,7 +104,9 @@ cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 
 
+#------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
+#------------------------------
 cd ${pwd}/../fix                ||exit 8
     [[ -d gdas ]] && rm -rf gdas
     mkdir -p gdas
@@ -124,7 +150,9 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
     
 
+#------------------------------
 #--link executables 
+#------------------------------
 
 cd $pwd/../exec
 [[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
@@ -132,6 +160,14 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+
+if [ $machine = dell ]; then 
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
+
 
 for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
