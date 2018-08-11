@@ -3,6 +3,7 @@
 #
  declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
                        "Build_gsi" "Build_ncep_post" \
+                       "Build_gfs_wafs" \
                        "Build_gdas" "Build_nems_util" \
                        "Build_chgres" "Build_cycle" \
                        "Build_sfcanl_nsttfchg" \

@@ -155,7 +155,7 @@ elif [ $step = "awips" ]; then
     export npe_node_awips=4
     export nth_awips=2
     if [[ "$machine" == "WCOSS_C" ]]; then
-        export memory_awips="254M"
+        export memory_awips="2048M"
     elif [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_awips=2
         export npe_node_awips=2
