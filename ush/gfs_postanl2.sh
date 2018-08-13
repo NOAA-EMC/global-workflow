@@ -120,7 +120,7 @@ ${REDSAT}  >> $pgmout 2> errfile
 export err=$?;err_chk
 
 cp ${COMIN}/gfs.$cycle.pgrb2.1p00.anl .
-$EXECgfs/cnvgrib21_gfs -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
+$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
 $COPYGB -xg3 gfs.$cycle.tmppgrbanl gfs.$cycle.pgrbanl
 ${GRBINDEX} gfs.$cycle.pgrbanl gfs.$cycle.pgrbianl
 if [ -f $COMIN/gfs.$cycle.syndata.tcvitals.tm00 ] ; then
