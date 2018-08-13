@@ -289,7 +289,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     dependencies = rocoto.create_dependency(dep=deps)
     fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    postenvars = envars + [fhrgrp] + [fhrlst]
+    ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+    postenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
     varname1, varname2, varname3 = 'grp', 'dep', 'lst'
     varval1, varval2, varval3 = get_postgroups(dict_configs['post'], cdump=cdump)
     vardict = {varname2: varval2, varname3: varval3}

@@ -27,3 +27,4 @@ cd wintemv.fd
 make -f makefile.$target
 make -f makefile.$target install
 make -f makefile.$target clean
+mv wintemv ../../exec

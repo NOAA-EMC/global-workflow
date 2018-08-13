@@ -75,6 +75,21 @@ elif [ $target = wcoss_cray ]; then
     #export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
     export FFLAGS="-openmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
+elif [ $target = wcoss_dell_p3 ]; then
+
+    targetx=wcoss_dell_p3
+    if [ $USE_PREINST_LIBS = true ]; then
+      source ../modulefiles/modulefile.storm_reloc_v5.1.0.$target           > /dev/null 2>&1
+    else
+      source ../modulefiles/modulefile.storm_reloc_v5.1.0.${target}_userlib > /dev/null 2>&1
+    fi
+    module load  ips/18.0.1.163 impi/18.0.1         
+
+    export LIBS_REL="${W3NCO_LIB4}"
+
+    #export FFLAGS="-qopenmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+    export FFLAGS="-qopenmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+
 else
 
     echo "Unknown machine = $target"

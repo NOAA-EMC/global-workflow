@@ -42,10 +42,10 @@ then
 
        cp ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} gem_grids${fhr}.gem
      
-#       if [ $cyc -eq 00 -o $cyc -eq 12 ]
-       #then
+       if [ $cyc -eq 00 -o $cyc -eq 12 ]
+       then
           $USHgfs/gempak_${RUN}_f${fhr}_gif.sh
-       #fi
+       fi
 
     done
 fi

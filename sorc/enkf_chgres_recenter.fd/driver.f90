@@ -8,6 +8,8 @@
 
  implicit none
 
+ call w3tagb('CHGRES_RECENTER',2018,0179,0055,'NP20')
+
  print*,"STARTING PROGRAM"
 
 !--------------------------------------------------------
@@ -55,6 +57,8 @@
 
  print*
  print*,"PROGRAM FINISHED NORMALLY!"
+
+ call w3tage('CHGRES_RECENTER')
 
  stop
  

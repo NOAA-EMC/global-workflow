@@ -42,7 +42,7 @@ OBJS=	BULHDR.o NAVYBULL.o
 #
 FC =            ifort
 LDFLAGS =
-LIBS =  -Xlinker --start-group ${W3EMC_LIB8} ${W3NCO_LIB8} ${BUFR_LIB8} ${BACIO_LIB8} 
+LIBS =  -Xlinker --start-group ${W3EMC_LIB8} ${W3NCO_LIB8} ${BUFR_LIB8}
 CMD =		navybull
 PROFLIB =       -lprof
 

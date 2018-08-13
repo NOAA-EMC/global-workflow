@@ -278,13 +278,6 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
-#   Jim Taft recommended submitting WCOSS_DELL_P3 jobs with
-#   ppn=1 and core(28).   There appears to be a performance 
-#   hit when specifying core(28).  For time being set core(24).
-    if machine in [ 'WCOSS_DELL_P3']:
-        ppn = 1
-        threads = 24
-
     memstr = '' if memory is None else str(memory)
     natstr = ''
 

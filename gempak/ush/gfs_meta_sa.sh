@@ -22,7 +22,7 @@
 set -x
 #
 export PS4='SA:$SECONDS + '
-mkdir $DATA/SA
+mkdir -p -m 775 $DATA/SA
 cd $DATA/SA
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -44,7 +44,7 @@ PDY2=`echo ${PDY} | cut -c3-`
 fend=F126
 #
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE	= F-${MDL} | ${PDY2}/${cyc}00
 GDATTIM	= F00-${fend}-06 
 DEVICE	= ${device}

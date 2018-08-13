@@ -26,7 +26,7 @@
 # M. Klein/HPC      01/10   Add boundary layer winds/isotachs to the metafile for CPC.
 #
 set -xa
-mkdir $DATA/mrfus
+mkdir -p -m 775 $DATA/mrfus
 cd $DATA/mrfus
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -56,7 +56,7 @@ fi
 
 export pgm=gdplot2_nc; prep_step; startmsg
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE	= F-GFS | ${PDY2}/${cyc}00
 GDATTIM	= F000-F384-06
 DEVICE	= ${device}

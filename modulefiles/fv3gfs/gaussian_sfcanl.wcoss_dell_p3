@@ -1,0 +1,18 @@
+#%Module#####################################################
+## gaussian_sfcanl component of fv3gfs - wcoss_dell_p3
+#############################################################
+
+set ver v15.0.0
+
+# Load Intel environment
+module load ips/18.0.1.163
+module load impi/18.0.1
+
+module load NetCDF/4.5.0
+module load HDF5-serial/1.10.1
+module load nemsio/2.2.3
+module load w3nco/2.0.6
+module load bacio/2.0.2
+module load sp/2.0.2
+
+export FCOMP=ifort

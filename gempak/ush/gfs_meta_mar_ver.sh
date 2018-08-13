@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_VER:$SECONDS + '
-mkdir $DATA/MAR_VER
+mkdir -p -m 775 $DATA/MAR_VER
 cd $DATA/MAR_VER
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -23,7 +23,7 @@ PDY2=`echo $PDY | cut -c3-`
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL=hipowo.gsf+mefbao.ncp
 gdfile	= F-${MDL} | ${PDY2}/${cyc}00
 gdattim	= f00-f48-6

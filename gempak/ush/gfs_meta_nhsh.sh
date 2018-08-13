@@ -17,7 +17,7 @@
 #                           Added a ? to all title/TITLE lines.
 #
 set -xa
-mkdir $DATA/mrfnhsh
+mkdir -p -m 775 $DATA/mrfnhsh
 cd $DATA/mrfnhsh
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -31,7 +31,7 @@ fi
 
 export pgm=gdplot2_nc; prep_step; startmsg
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL=mepowo.gsf
 GDFILE	= F-GFS | ${PDY2}/${cyc}00
 GDATTIM	= F000-F384-12

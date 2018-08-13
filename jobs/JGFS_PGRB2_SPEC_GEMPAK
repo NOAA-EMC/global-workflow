@@ -1,0 +1,153 @@
+#!/bin/sh
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+############################################
+# GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
+############################################
+
+#########################################################
+# obtain unique process id (pid) and make temp directory
+#########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+. PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
+export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+
+######################################
+# Set up the GEMPAK directory
+#######################################
+export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
+export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
+export USHgempak=${USHgempak:-$HOMEgempak/ush}
+
+# For half-degree P Grib files
+#export DO_HD_PGRB=YES
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=gfs
+export RUN=gfs_goessim
+export finc=3
+export model=gfs
+export EXT=""
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -m 775 -p $COMOUT
+fi
+
+env
+
+export DATA_HOLD=$DATA
+
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
+
+#################################################################
+# Execute the script for the regular grib
+#################################################################
+export DATA=$DATA_HOLD/SPECIAL
+mkdir -p $DATA
+cd $DATA
+
+export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
+export GRIB=goessimpgrb2.1p00.f
+export EXT=" "
+export fend=180
+export finc=3
+export fstart=000
+
+echo "RUNS the Program"
+set -xa
+
+########################################################
+# Execute the script.
+$SRCgfs/exgoes_nawips.sh.ecf
+
+#################################################################
+# Execute the script for the 221 grib
+
+export DATA=$DATA_HOLD/SPECIAL221
+mkdir -p $DATA
+cd $DATA
+
+export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
+export RUN=gfs_goessim221
+export GRIB=goessimpgrb2f
+export EXT=".grd221"
+export fend=180
+export finc=3
+export fstart=000
+
+echo "RUNS the Program"
+set -xa
+
+########################################################
+# Execute the script.
+$SRCgfs/exgoes_nawips.sh.ecf
+export err=$?; err_chk
+########################################################
+
+msg="JOB $job HAS COMPLETED NORMALLY!"
+postmsg $jlogfile "$msg"
+
+echo "end of program"
+cd $DATA_HOLD
+echo "######################################"
+echo "  SPECIAL.OUT "
+echo "######################################"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ] ; then
+  rm -rf $DATA
+fi
+
+date

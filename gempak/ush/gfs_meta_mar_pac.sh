@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_PAC:$SECONDS + '
-mkdir $DATA/MAR_PAC
+mkdir -p -m 775 $DATA/MAR_PAC
 cd $DATA/MAR_PAC
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -23,7 +23,7 @@ PDY2=`echo $PDY | cut -c3-`
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+himouo.nws
 gdfile     = F-${MDL} | ${PDY2}/${cyc}00
 gdattim    = f00-f180-6

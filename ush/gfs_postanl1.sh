@@ -150,7 +150,7 @@ $TRPANL  >> $pgmout < ${PARMshared}/graph_trpanl.ft5.gfs_${cycle}.anl 2>errfile
 if [ ${cyc} -eq 00 -o ${cyc} -eq 12 ];
 then
  
- # JY- this is used for part of the pcom file name in mk_graphics.sh
+ # JY- this is used for part of the COMOUTwmo file name in mk_graphics.sh
  jobn=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
  for KEYW in TRP850_g TRP850V TRP700A TRP700_g TRP500A TRP500_g TRP250A TRP250_g

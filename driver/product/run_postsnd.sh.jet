@@ -1,0 +1,173 @@
+#!/bin/sh
+#PBS -o postsnd.out.01
+#PBS -e postsnd.out.01
+#PBS -N postsnd
+#PBS -A hfv3gfs
+#PBS -l partition=xjet:sjet:vjet:tjet
+#PBS -l nodes=6:ppn=2
+#PBS -l walltime=02:30:00
+
+############################################
+# Loading module
+############################################
+. $MODULESHOME/init/ksh
+
+module load newdefaults intel/15.0.3.187 impi/5.1.3.181 szip hdf5 netcdf4/4.2.1.1
+
+module use /lfs3/projects/hfv3gfs/nwprod/lib/modulefiles
+module load bacio/v2.0.2
+module load sp/v2.0.2
+module load ip/v2.0.0
+module load w3nco/v2.0.6
+module load w3emc/v2.2.0
+module load nemsio/v2.2.2
+
+module use /lfs3/projects/hwrf-vd/soft/modulefiles
+
+module use /lfs3/projects/hwrf-vd/soft/modulefiles
+module load prod_util
+module load grib_util
+module load hpss
+
+# mpiserial on Jet includes a cfp wrapper
+module load mpiserial
+
+module load gempak/7.4.2
+
+########################################
+# Runs GFS BUFR SOUNDINGS
+########################################
+set -xa
+
+export OMP_NUM_THREADS=1
+export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=2048m
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered
+
+#export machine="WCOSS_C"
+#machine="WCOSS_DELL_P3"
+#machine="THEIA"
+machine="JET"
+export npe_postsnd=12
+export npe_postsndcfp=10
+if [ $machine == "WCOSS_C" ]; then
+##For WCOSS-Cray##################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
+export launcher="aprun"
+export npe_node_postsnd=3
+export NTHREADS_POSTSND=1
+export npe_node_postsndcfp=3
+export NTHREADS_POSTSNDCFP=1
+export APRUN_POSTSND="$launcher -j 1 -n $npe_postsnd -N $npe_node_postsnd -d $NTHREADS_POSTSND -cc depth"
+export APRUN_POSTSNDCFP="$launcher -j 1 -n $npe_postsndcfp -N $npe_node_postsndcfp -d $NTHREADS_POSTSNDCFP cfp"
+elif [ $machine == "WCOSS_DELL_P3" ]; then
+##For WCOSS-Dell ################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=1
+export launcher="mpirun -n"
+export APRUN_POSTSND="$launcher $npe_postsnd"
+export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
+else
+##For Theia, Jet################
+export FHMAX_HF_GFS=0
+export FHOUT_HF_GFS=0
+export launcher="mpirun -np"
+export APRUN_POSTSND="$launcher $npe_postsnd"
+export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
+fi
+
+#export PS4='$SECONDS + '
+date
+# #### 08/25/1999 ###################
+# SET SHELL PROCESSING VARIABLES
+# ###################################
+#
+#Specify whether the run is production or development
+#
+export envir=${envir:-prod}
+
+####################################
+# Specify version numbers
+####################################
+export gfs_bufrsnd_ver=${gfs_bufrsnd_ver:-v1.0.2}
+export gsm_ver=${gsm_ver:-v12.0.0}
+export util_ver=${util_ver:-v1.0.0}
+
+# obtain unique process id (pid) and make temp directories
+#
+export pid=$$
+export DATA_IN=${DATA_IN:-/mnt/lfs3/projects/hfv3gfs/$USER/scrub}
+export DATA=$DATA_IN/postsnd.${pid}
+mkdir -p $DATA
+cd $DATA
+export PDY=20151130
+export cyc=00
+export STARTHOUR=00
+export ENDHOUR=180
+
+####################################
+# File To Log Msgs
+####################################
+job=gfs_postsnd_test
+export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export outid="LL$job"
+export jobid="${outid}.o${pid}"
+export pgmout="OUTPUT.${pid}"
+
+export cycle=t${cyc}z
+
+export SENDCOM=YES
+export SENDECF=YES
+export SENDDBN=YES
+
+export NET=gfs
+export RUN=gfs
+export model=gfs
+export pcom=$DATA_IN/pcom/gfs
+mkdir -p $pcom
+
+###################################
+# Set up the UTILITIES
+###################################
+
+export HOMEbufrsnd=/mnt/lfs3/projects/hfv3gfs/Guang.Ping.Lou/fv3gfs
+#export HOMEbufrsnd=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs
+#export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
+#export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/Bufr_sounding
+#export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/bufr_fnl_mpmd2_test
+
+#export STNLIST=$PARMbufrsnd/bufr_stalist.meteo.gfs3
+
+##############################
+# Define COM Directories
+##############################
+##export COMIN=/gpfs/hps/nco/ops/com/gfs/para/${RUN}.${PDY}
+##export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}
+##export COMIN=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3data/${RUN}.${PDY}/$cyc
+export COMIN=/mnt/lfs3/projects/hfv3gfs/glopara/comrot/fv3q2fy19retro5/${RUN}.${PDY}/$cyc
+
+export COMOUT=$DATA_IN/com2/${NET}/${envir}/${RUN}.${PDY}
+mkdir -p $COMOUT
+export COMAWP=$DATA_IN/com2/nawips/${envir}/${RUN}.${PDY}
+mkdir -p $COMAWP
+env
+
+export KEEPDATA=YES
+########################################################
+# Execute the script.
+#$SCRbufrsnd/exgfs_postsnd.sh.ecf
+${HOMEbufrsnd}/jobs/JGFS_POSTSND
+########################################################
+
+#cat $pgmout
+
+#cd /tmpnwprd1
+#rm -rf $DATA
+date
+

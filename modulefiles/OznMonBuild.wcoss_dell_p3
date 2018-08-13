@@ -1,0 +1,15 @@
+#%Module################################################
+# Modfule file for oznmon
+########################################################
+export ver=2.0.2
+export FCOMP=ifort
+
+export CF=$FCOMP
+export FC=$FCOMP
+export FFLAGS="-O3 -fp-model strict -convert big_endian -assume byterecl"
+
+export D_FFLAGS="-O3 -fp-model strict -convert big_endian -assume byterecl -debug"
+
+module load  ips/18.0.1.163
+module load w3nco/2.0.6
+

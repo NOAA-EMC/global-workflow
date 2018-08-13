@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_QL_F${fend}:$SECONDS + '
-mkdir $DATA/MAR_QL
+mkdir -p -m 775  $DATA/MAR_QL
 cd $DATA/MAR_QL
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -20,10 +20,11 @@ metatype="mar_ql"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 PDY2=`echo $PDY | cut -c3-`
+fend=180
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL=mepowo.gsf+mehsuo.ncp+mereuo.ncp+mefbao.ncp
 gdfile	= F-${MDL} | ${PDY2}/${cyc}00
 gdattim	= f00-f${fend}-6

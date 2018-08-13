@@ -1,0 +1,17 @@
+#%Module#####################################################
+## Module file for emcsfc_ice_blend
+#############################################################
+
+# intel compiler
+
+module load ips/18.0.1.163
+
+export FCOMP=ifort
+export FFLAGS="-O0 -i4"
+
+module load w3nco/2.0.6
+module load bacio/2.0.2
+module load jasper/1.900.1
+module load libpng/1.2.59
+module load zlib/1.2.11
+module load g2/3.1.0
