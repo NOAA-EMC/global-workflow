@@ -813,7 +813,7 @@ suite: !Cycle
       J_JOB: rocoto/arch.sh
       ecf_module_commands: "# arch.sh will load modules instead"
       RUN: gfs
-      ecflow_def:
+      ecflow_def: |
         time +00:10
         edit RUN 'gfs'
 
