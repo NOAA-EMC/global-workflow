@@ -97,8 +97,8 @@ default_resources: &default_resources
   
   run_awips: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: 4
-      max_ppn: 4
+      mpi_ranks: 2
+      max_ppn: 2
       walltime: !timedelta "03:30:00"
       OMP_NUM_THREADS: 2
       exe: placeholder

@@ -75,3 +75,18 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
   wafs_last_hour:
     type: int
     default: !calc 120
+
+  awips_g2_hours:
+    type: int list
+    default: !calc >-
+      tools.uniq(sorted(
+        tools.seq(0,90,3) +
+        tools.seq(96,240,6)))
+
+  awips_20km_1p0_hours:
+    type: int list
+    default: !calc >-
+      tools.uniq(sorted(
+        tools.seq(0,90,3) +
+        tools.seq(96,240,6)))
+
