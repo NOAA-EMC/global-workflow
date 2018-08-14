@@ -1,0 +1,52 @@
+case:
+  fv3_settings:
+    CASE: C384
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C192
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 4
+    NMEM_EFCSGRP: 4
+    NMEM_EARCGRP: 10
+    l4densvar: YES
+
+  gfs_output_settings:
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHOUT_ENKF: 1
+    FHMAX_HF_GFS: 120
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+    ICSDIR: /gpfs/hps3/emc/global/noscrub/Jian.Kuang/ICS
+####    HOMEgfs: /gpfs/hps3/emc/global/noscrub/emc.glopara/parallel-ecf/builds/replace-setup-expt-20180529
+    HOMEgfs: /gpfs/hps3/emc/global/noscrub/Jian.Kuang/fv3gfs/
+
+  settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2018-05-31t00:00:00
+    EDATE: 2018-05-31t12:00:00
+    chgres_and_convert_ics: No
+    REALTIME: true
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: YES
+
+  post:
+    NPOSTGRP: 42
+    downset: 1
+
+  downstream:
+    DO_BUFRSND: YES
+    DO_GEMPAK: YES
+    DO_AWIPS: YES
+    VRFYTRAK: YES
+    VRFYGENESIS: YES
+
+  archiving:
+    RMOLDEND: 72
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+    arch_cyc: 00
