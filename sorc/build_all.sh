@@ -162,14 +162,6 @@ echo " .... Building gfs_wintemv .... "
 }
 
 #------------------------------------
-# build gfs_cnvgrib21_gfs
-#------------------------------------
-$Build_gfs_cnvgrib21_gfs && {
-echo " .... Building gfs_cnvgrib21_gfs .... "
-./build_gfs_cnvgrib21_gfs.sh > $logs_dir/build_gfs_cnvgrib21_gfs.log 2>&1
-}
-
-#------------------------------------
 # build gfs_bufrsnd
 #------------------------------------
 $Build_gfs_bufrsnd && {

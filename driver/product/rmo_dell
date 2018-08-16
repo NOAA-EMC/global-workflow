@@ -1,0 +1,22 @@
+
+set -x
+
+cd /gpfs/dell2/ptmp/Boi.Vuong/output
+ls -l
+sleep 3
+cd /gpfs/dell2/ptmp/Boi.Vuong
+ls -l
+sleep 3
+
+rm -rf /gpfs/dell2/ptmp/Boi.Vuong/output
+rm -rf /gpfs/dell2/ptmp/Boi.Vuong/com
+
+mkdir -p -m 775  /gpfs/dell2/ptmp/Boi.Vuong/output
+mkdir -p -m 775  /gpfs/dell2/ptmp/Boi.Vuong/com
+
+chmod  -R 775 /gpfs/dell2/ptmp/Boi.Vuong/output /gpfs/dell2/ptmp/Boi.Vuong/com
+ 
+cd /gpfs/dell2/ptmp/Boi.Vuong/output
+ls
+exit
+

@@ -15,7 +15,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180702
+export PDY=20180804
 
 export PDY1=`expr $PDY - 1`
 
@@ -30,30 +30,22 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
 module load prod_envir/1.0.2
 #
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
+#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/util_shared/1.0.8
-#
-#  This is a test GEMPAK version 7.3.0 on DELL
-#
-module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-module load gempak/7.3.0
+module load dev/grib_util/1.1.0
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
-# module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-# module load gempak/7.3.1
-
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
 module list
 
 ##############################################
