@@ -79,25 +79,25 @@ export ACCOUNT=${ACCOUNT}                                        # computer ACCO
 export CUE2RUN=${CUE2RUN:-$QUEUE}                                # batch queue
 export CUE2FTP=${CUE2FTP:-$QUEUE_ARCH}                           # queue for data transfer
 export GROUP=${GROUP:-g01}                                       # account group, not sure what this is       
-chost=`echo $(hostname) |cut -c 1-1 `
-chost2=`echo $(hostname) |cut -c 1-2 `
+#chost=`echo $(hostname) |cut -c 1-1 `
+#chost2=`echo $(hostname) |cut -c 1-2 `
 
 if [ $machine = THEIA ]; then
     export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
     export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 # temporary directory
     export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
     export prepbufr_arch_dir=/scratch4/NCEPDEV/global/noscrub/stat/prepbufr              # prepbufr archive directory
-    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod             # directory leading to ops. prepbufr files 
-    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                             # directory leading to ops. prepbufr files
+    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod                    # directory leading to ops. prepbufr files 
+    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                                    # directory leading to ops. prepbufr files
     export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
 elif [ $machine = WCOSS_C ]; then
-    export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                  # temporary directory
-    export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                  # temporary directory
-    export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                  # global stats directory
-    export prepbufr_arch_dir=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/prepbufr  # prepbufr archive directory
-    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod             # directory leading to ops. prepbufr files 
-    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                             # directory leading to ops. prepbufr files
-    export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}  # date executable
+    export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                         # temporary directory
+    export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                         # temporary directory
+    export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                         # global stats directory
+    export prepbufr_arch_dir=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/prepbufr         # prepbufr archive directory
+    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod                    # directory leading to ops. prepbufr files 
+    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                                    # directory leading to ops. prepbufr files
+    export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}         # date executable
 else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
@@ -116,20 +116,20 @@ export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
 if [ $gfs_cyc = 1 ]; then
     export vhrlist=${vhrlist:-"$cycle"}            #verification hours
     export fcyclist="$cycle"                       #forecast cycles to be included in step 1
-    export cyc2runmetplus="$cycle"                    #cycle to run step 1 which will generate METplus data for all cycles of the day
+    export cyc2runmetplus="$cycle"                 #cycle to run step 1 which will generate METplus data for all cycles of the day
 elif [ $gfs_cyc = 2 ]; then
     export vhrlist=${vhrlist:-"00 12 "}            #verification hours
     export fcyclist="00 12"                        #forecast cycles to be included in step 1 computation
-    export cyc2runmetplus=12                          #cycle to run step 1 which will generate METplus data for all cycles of the day
+    export cyc2runmetplus=12                       #cycle to run step 1 which will generate METplus data for all cycles of the day
 elif [ $gfs_cyc = 4 ]; then
     export vhrlist=${vhrlist:-"00 06 12 18"}       #verification hours
     export fcyclist="00 06 12 18"                  #forecast cycles to be included in step 1 computation
-    export cyc2runmetplus=18                          #cycle to run p which will generate vsdb data for all cycles of the day
+    export cyc2runmetplus=18                       #cycle to run p which will generate vsdb data for all cycles of the day
 else
     echo "EXIT ERROR: gfs_cyc must be 1, 2 or 4. EXITING metplusjob.sh!"                                          
     exit
 fi
-# Checks for step 1
+## Checks for step 1
 if [ $cycle != $cyc2runmetplus ]; then 
     VRFY_GRID2GRID_STEP1=NO 
     VRFY_GRID2OBS_STEP1=NO 
@@ -151,7 +151,7 @@ else
        VRFY_PRECIP_STEP1=NO 
     fi
 fi
-# Checks for step 2
+## Checks for step 2
 if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
     VRFY_GRID2GRID_STEP2=NO
     VRFY_GRID2OBS_STEP2=NO
@@ -173,7 +173,7 @@ else
        VRFY_PRECIP_STEP2=NO
     fi
 fi
-# Special checks for precip
+## Special checks for precip
 if [ $cycle != 00 -a $cycle != 12 ]; then 
     VRFY_PRECIP_STEP1=NO
     VRFY_PRECIP_STEP2=NO
@@ -208,7 +208,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export vhrlist="$vhrlist"                                #valid hours to verify
     export expnlist=$expname                                 #experiment names 
     export expdlist=$expdir                                  #exp online archive directories
-    export complist=$(hostname)                              #computers where experiments are run
+    #export complist=$(hostname)                              #computers where experiments are run
     export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2g1_base=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
     export anltype=$anltype                                  #analysis type for verification: gfs or gdas
@@ -223,17 +223,13 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
         echo "EXIT ERROR: $metplushome does not exist "
         exit
     fi
-    if [ ! -d $expdlist ]; then
-        echo "EXIT ERROR: $expdlist does not exist "
-        exit
-    fi
     #create directories for output
     mkdir -p $rundir_g2g1_base $metplussave
     #determine requested forecast hours for verification
-    export nvhr=`echo $vhrlist |wc -w`           #number of verification hours
-    export nfcyc=`echo $fcyclist |wc -w`         #number of forecast cycles per day
-           nfout=$nvhr ; if [ $nfcyc -gt $nvhr ]; then nfout=$nfcyc ; fi
-    export fhout=`expr 24 \/ $nfout `            #forecast output frequency
+    export nvhr=`echo $vhrlist |wc -w`                       #number of verification hours
+    export nfcyc=`echo $fcyclist |wc -w`                     #number of forecast cycles per day
+    nfout=$nvhr ; if [ $nfcyc -gt $nvhr ]; then nfout=$nfcyc ; fi
+    export fhout=`expr 24 \/ $nfout `                        #forecast output frequency
     export nfcst=`expr $vlength \/ $fhout ` 
     export vlength=`expr $nfcst \* $fhout  `
     ffcst=${vfhmin}
@@ -279,12 +275,12 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
             while [ $nn -le $nexp ] ; do
                 export exp=${expname[nn]}           #exp name
                 export exp_dir=${expdir[nn]}        #exp directory
-                export cdump=${dumpname[nn]:-".gfs."} #file dump format
+                export cdump=${dumpname[nn]}        #file dump format
                 export obtype=$exp                  #obs/analysis data type for verification
                 mkdir -p ${rundir_g2g1}/logs/${exp}
                 mkdir -p ${rundir_g2g1}/confs/${exp}
                 mkdir -p ${rundir_g2g1}/jobs/${exp}
-                #create poejob scripts, if MPMD=YES, else run METplus
+                #run in MPMD style if MPMD=YES, else run serially METplus
                 if [ $MPMD = YES ] ; then
                     #do some pre-checks for files and creating directories
                     anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
@@ -314,7 +310,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                         mkdir -p ${work2}/${VDATE}00
                         echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid anom verification for this date." >> ${work2}/${VDATE}00/error_${VDATE}.txt
                     fi
-                    #
+                    #now run METplus
                     if [ $mpmd_test_pass = "YES" ] ; then
                         export poedir=${rundir_g2g1}/jobs/${exp}/poe_scripts
                         mkdir -p $poedir
@@ -437,10 +433,9 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
     echo "===== creating partial sum data for grid-to-obs verifcation using METplus ====="
     #set some environment variables
     export fcyclist="$fcyclist"                              #all fcst cycles to be included in verification 
-    #export vhrlist="$vhrlist"                                #valid hours to verify
     export expnlist=$expname                                 #experiment names 
     export expdlist=$expdir                                  #exp online archive directories
-    export complist=$(hostname)                              #computers where experiments are run
+    #export complist=$(hostname)                              #computers where experiments are run
     export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2o1_base=$rundir_base/grid2obs_step1      #run directory, where to save METplus output
     export VDATEST=$VSTART_DATE                              #verification starting date
@@ -460,10 +455,6 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
     #do some checks 
     if [ ! -d $metplushome ]; then
         echo "EXIT ERROR: $metplushome does not exist "
-        exit
-    fi
-    if [ ! -d $expdlist ]; then
-        echo "EXIT ERROR: $expdlist does not exist "
         exit
     fi
     #create directories for output
@@ -535,11 +526,11 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
         while [ $nn -le $nexp ] ; do
             export exp=${expname[nn]}             #exp name
             export exp_dir=${expdir[nn]}          #exp directory
-            export cdump=${dumpname[nn]:-".gfs."} #file dump format
+            export cdump=${dumpname[nn]}          #file dump format
             mkdir -p ${rundir_g2o1}/logs/${exp}
             mkdir -p ${rundir_g2o1}/confs/${exp}
             mkdir -p ${rundir_g2o1}/jobs/${exp}
-            #create poejob scripts, if MPMD=YES, else run METplus
+            #run in MPMD style if MPMD=YES, else run serially METplus
             if [ $MPMD = YES ] ; then
                 echo "RUN MPMD HOLDER"
             else
