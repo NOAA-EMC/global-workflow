@@ -55,7 +55,7 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 ############################################
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 
 # set envir=prod or para to test with data in prod or para
@@ -76,7 +76,7 @@ export DATAROOT=/gpfs/hps3/ptmp/Boi.Vuong/output
 export NWROOT=/gpfs/hps3/emc/global/noscrub/Boi.Vuong/svn
 export COMROOT2=/gpfs/hps3/ptmp/Boi.Vuong/com
 
-mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles $PCOMROOT2
+mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 
 #############################################################
