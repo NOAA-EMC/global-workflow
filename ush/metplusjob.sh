@@ -36,7 +36,7 @@ export iauf00=${9:-"NO"}                                                        
 ##   gfs_cyc, METver, METPLUSver
 ## config.vrfy
 ##   VRFY_STEP(1)(2), VRFY_GRID2GRID, VRFY_GRID2OBS, VRFY_PRECIP, VRFYBACKDATE,
-##   VRFYBACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, vfhmin, vfmax,
+##   VRFYBACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, fhrmin, fhrmax,
 ##   ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
 ##   webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## Make sure variables are set and set to names used in this script
@@ -54,8 +54,8 @@ metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}                 # pl
 metplushome=${metplushome:-$BASE_VERIF_METPLUS}                             # location of global verification script
 metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                            # locaton of configuration files to run METplus
 metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                               # location of fix files to run METplus
-vfhmin=${vfmin:-$FHMIN_GFS}                                                 # start forecast hour
-vfhmax=${vfhmax:-$FHMAX_GFS}                                                # end forecast hour
+fhrmin=${fhrmin:-$FHMIN_GFS}                                                 # start forecast hour
+fhrmax=${fhrmax:-$FHMAX_GFS}                                                # end forecast hour
 anltype=${anltype:-"gfs"}                                                   # analysis type for verification: gfs or gdas
 ftyplist=${ftyplist:-"pgbq"}                                                # verif. files used for computing precip. verif.
 ptyplist=${ptyplst:-"PRATE"}                                                # precip types in GRIB: PRATE or APCP
@@ -79,8 +79,6 @@ export ACCOUNT=${ACCOUNT}                                        # computer ACCO
 export CUE2RUN=${CUE2RUN:-$QUEUE}                                # batch queue
 export CUE2FTP=${CUE2FTP:-$QUEUE_ARCH}                           # queue for data transfer
 export GROUP=${GROUP:-g01}                                       # account group, not sure what this is       
-#chost=`echo $(hostname) |cut -c 1-1 `
-#chost2=`echo $(hostname) |cut -c 1-2 `
 
 if [ $machine = THEIA ]; then
     export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
@@ -208,16 +206,13 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export vhrlist="$vhrlist"                                #valid hours to verify
     export expnlist=$expname                                 #experiment names 
     export expdlist=$expdir                                  #exp online archive directories
-    #export complist=$(hostname)                              #computers where experiments are run
     export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2g1_base=$rundir_base/grid2grid_step1     #run directory, where to save METplus output
     export anltype=$anltype                                  #analysis type for verification: gfs or gdas
     export VDATEST=$VSTART_DATE                              #verification starting date
     export VDATEND=$VEND_DATE                                #verification ending date
-    export vfhmin=$vfhmin                                    #start forecast hour  
-    export vfhmax=$vfhmax                                    #end forecast hour
-    #export asub=${asub:-a}                                   #string in pgb anl file after pgb, say, pgbanl, pgbhnl 
-    #export fsub=${fsub:-f}                                   #string in pgb fcst file after pgb, say, pgbf06, pgbh06
+    export fhrmin=$fhrmin                                    #start forecast hour  
+    export fhrmax=$fhrmax                                    #end forecast hour
     #do some checks 
     if [ ! -d $metplushome ]; then
         echo "EXIT ERROR: $metplushome does not exist "
@@ -229,22 +224,20 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
     export nvhr=`echo $vhrlist |wc -w`                       #number of verification hours
     export nfcyc=`echo $fcyclist |wc -w`                     #number of forecast cycles per day
     nfout=$nvhr ; if [ $nfcyc -gt $nvhr ]; then nfout=$nfcyc ; fi
-    export fhout=`expr 24 \/ $nfout `                        #forecast output frequency
-    export nfcst=`expr $vlength \/ $fhout ` 
-    export vlength=`expr $nfcst \* $fhout  `
-    ffcst=${vfhmin}
+    export fhrout=`expr 24 \/ $nfout `                        #forecast output frequency
+    ffcst=${fhrmin}
     ffcst_count=0
-    while [ $ffcst -le $vfhmax ] ; do
+    while [ $ffcst -le $fhrmax ] ; do
         if [ $ffcst -lt 10 ]; then ffcst=0$ffcst ; fi
         if [ $ffcst_count -eq 0 ] ; then
-            vfh_list=${ffcst}
+            fhr_list=${ffcst}
         else
-            vfh_list[$ffcst_count]=${ffcst}
+            fhr_list[$ffcst_count]=${ffcst}
         fi
         ffcst_count=` expr $ffcst_count + 1 `
-        ffcst=$((ffcst+fhout))
+        ffcst=$((ffcst+fhrout))
     done
-    export vfh_list_config=$( printf "%s," "${vfh_list[@]}" | cut -d "," -f 1-${#vfh_list[@]} )
+    export fhr_list_config=$( printf "%s," "${fhr_list[@]}" | cut -d "," -f 1-${#fhr_list[@]} )
     #determine which grid-to-grid verification types to run
     if [ $g2g_sfc = "YES" ]; then      
         typelist="anom pres sfc"
@@ -270,6 +263,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
             mkdir -p ${rundir_g2g1}/logs
             mkdir -p ${rundir_g2g1}/confs
             mkdir -p ${rundir_g2g1}/jobs
+            mkdir -p ${rundir_g2g1}/data
             #
             nn=1
             while [ $nn -le $nexp ] ; do
@@ -280,44 +274,58 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                 mkdir -p ${rundir_g2g1}/logs/${exp}
                 mkdir -p ${rundir_g2g1}/confs/${exp}
                 mkdir -p ${rundir_g2g1}/jobs/${exp}
-                #run in MPMD style if MPMD=YES, else run serially METplus
-                if [ $MPMD = YES ] ; then
-                    #do some pre-checks for files and creating directories
-                    anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
-                    if [ -s $anlfile ]; then
-                        mpmd_test_pass="YES"
-                        if [ $g2g_sfc = "YES" ]; then
-                           f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
-                           if [ -s $f00file ]; then
-                               export typelist4mpmd="anom pres sfc"
-                           else
-                               export typelist4mpmd="anom pres"
-                               work=${rundir_g2g1}/make_met_data/sfc/${exp}
-                               echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid sfc verification for this date." 
-                               mkdir -p ${work}/${VDATE}00
-                               echo "${f00file} doesn't exist or zero-sized. No grid-to-grid sfc verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt      
-                           fi
+                mkdir -p ${rundir_g2g1}/data/${exp}
+                #get model files
+                if [ -s $exp_dir/$exp/pgbanl${cdump}${VDATE} ] ; then
+                    ln -sf $exp_dir/$exp/pgbanl${cdump}${VDATE} ${rundir_g2g1}/data/${exp}/.
+                fi
+                fhr=${fhrmin}
+                while [ $fhr -le $fhrmax ] ; do
+                    if [ $fhr -lt 10 ]; then fhr=0$fhr ; fi
+                    IDATE=$($ndate -$fhr $VDATE)
+                    if [ -s $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ] ; then
+                        ln -sf $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ${rundir_g2g1}/data/${exp}/.
+                    fi
+                    fhr=$((fhr+fhrout))
+                done 
+                #do checks for needed "truth" files, run verfication types for files that exist
+                anlfile=${rundir_g2g1}/data/${exp}/pgbanl${cdump}${VDATE}
+                if [ -s $anlfile ]; then 
+                    if [ $g2g_sfc = "YES" ]; then
+                        f00file=${rundir_g2g1}/data/$exp/pgbf00${cdump}${VDATE}
+                        if [ -s $f00file ]; then
+                            export typelist="anom pres sfc"
                         else
-                           export typelist4mpmd="anom pres"
+                            export typelist="anom pres"
+                            echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid sfc verification for this date."
+                            work=${rundir_g2g1}/make_met_data/sfc/${exp}
+                            mkdir -p ${work}/${VDATE}00
+                           echo "${f00file} doesn't exist or zero-sized. No grid-to-grid sfc verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
                         fi
                     else
-                        mpmd_test_pass="NO"
-                        work1=${rundir_g2g1}/make_met_data/pres/${exp}
-                        work2=${rundir_g2g1}/make_met_data/anom/${exp}
-                        echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid pres and anom verification for this date." 
-                        mkdir -p ${work1}/${VDATE}00
-                        echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid pres verification for this date." >> ${work1}/${VDATE}00/error_${VDATE}.txt
-                        mkdir -p ${work2}/${VDATE}00
-                        echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid anom verification for this date." >> ${work2}/${VDATE}00/error_${VDATE}.txt
+                        export typelist="anom pres"
                     fi
-                    #now run METplus
-                    if [ $mpmd_test_pass = "YES" ] ; then
+                else
+                    echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid pres and anom verification for this date." 
+                    work=${rundir_g2g1}/make_met_data/pres/${exp}
+                    mkdir -p ${work}/${VDATE}00
+                    echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid pres verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                    work=${rundir_g2g1}/make_met_data/anom/${exp}
+                    mkdir -p ${work}/${VDATE}00
+                    echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid anom verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                    typelist=""                    
+                fi
+                #run grid-to-grid verification for requested and avaiable types
+                ntype=`echo $typelist |wc -w`
+                if [ $ntype -ge 2 ] ; then
+                    #run in MPMD style if MPMD=YES
+                    if [ $MPMD = YES ] ; then
                         export poedir=${rundir_g2g1}/jobs/${exp}/poe_scripts
                         mkdir -p $poedir
                         #output from METplus poejobs need to be written to individual directories
                         #otherwise sometimes errors get thrown by METplus when trying to make the
                         #directory; need to create directory to move all output to when jobs are done
-                        for type in $typelist4mpmd ; do
+                        for type in $typelist ; do
                             mkdir -p ${rundir_g2g1}/make_met_data/${type}/${exp}/${VDATE}00/grid_stat
                         done
                         python ${USHgfs}/metplusjob_create_g2g_poejobscripts.py
@@ -348,7 +356,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                                     if [ $err -ne 0 ]; then sh +x ${poescript} ; fi
                                fi
                         done
-                        for type in $typelist4mpmd ; do
+                        for type in $typelist ; do
                             export type=$type
                             export savedir=${metplussave}/${type}/${vhr}Z/${exp}
                             mkdir -p ${savedir}
@@ -356,58 +364,33 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
                             else
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                            fi
-                            cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
+                             fi
+                             cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                         done
-                    fi
-                else
-                    for type in $typelist ; do
-                        export type=${type}
-                        export savedir=${metplussave}/${type}/${vhr}Z/${exp}
-                        mkdir -p ${savedir}
-                        export work=${rundir_g2g1}/make_met_data/${type}/${exp}
-                        mkdir -p $work
-                        if [ ${type} = pres ] ; then
-                            anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
-                            if [ -s $anlfile ]; then
-                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
-                                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                                cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
-                            else
-                                echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
-                                mkdir -p ${work}/${VDATE}00
-                                echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
-                            fi
-                        elif [ ${type} = anom ] ; then
-                            anlfile=$exp_dir/$exp/pgbanl${cdump}${VDATE}
-                            if [ -s $anlfile ]; then
-                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                    #run in serially if MPMD=NO
+                    else
+                        for type in $typelist ; do
+                            export type=${type}
+                            export savedir=${metplussave}/${type}/${vhr}Z/${exp}
+                            mkdir -p ${savedir}
+                            export work=${rundir_g2g1}/make_met_data/${type}/${exp}
+                            mkdir -p $work
+                            echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                            if [ ${type} = anom ] ; then
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1b.conf -c ${metplusconfig}/machine_config/machine.${machine}
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
                                 cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
-                            else
-                                echo "ERROR: ${anlfile} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
-                                mkdir -p ${work}/${VDATE}00
-                                echo "${anlfile} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
-                            fi
-                        elif [ ${type} = sfc ] ; then
-                            f00file=$exp_dir/$exp/pgbf00${cdump}${VDATE}
-                            if [ -s $f00file ]; then
-                                echo "==== running METplus grid-to-grid for ${type} for ${VDATE} ${exp} ===="
+                            elif [ $type = pres -o $type = sfc ] ; then
                                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2grid_${type}_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
                                 cp ${rundir_g2g1}/VSDB_format/${type}/${vhr}Z/${exp}/*.stat ${savedir}/.
                             else
-                                echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid ${type} verification for this date." 
+                                echo "ERROR: grid-to-grid ${type} is not supported."
                                 mkdir -p ${work}/${VDATE}00
-                                echo "${f00file} doesn't exist or zero-sized. No grid-to-grid ${type} verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                                echo "grid-to-grid ${type} is not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
                             fi
-                        else
-                            echo "ERROR: grid-to-grid ${type} is not supported."
-                            mkdir -p ${work}/${VDATE}00
-                            echo "grid-to-grid ${type} is not supported."  >> ${work}/${VDATE}00/error_${VDATE}.txt   
-                        fi
-                    done 
+                        done 
+                    fi
                 fi
                 nn=`expr $nn + 1 `
             done
@@ -435,22 +418,21 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
     export fcyclist="$fcyclist"                              #all fcst cycles to be included in verification 
     export expnlist=$expname                                 #experiment names 
     export expdlist=$expdir                                  #exp online archive directories
-    #export complist=$(hostname)                              #computers where experiments are run
     export dumplist=".gfs."                                  #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
     export rundir_g2o1_base=$rundir_base/grid2obs_step1      #run directory, where to save METplus output
     export VDATEST=$VSTART_DATE                              #verification starting date
     export VDATEND=$VEND_DATE                                #verification ending date
-    export vfhmin=$vfhmin                                    #start forecast hour 
-    if [ $vfhmax -ge 168 ]; then                             #end forecast hour
-        export vfhmax=168
+    export fhrmin=$fhrmin                                    #start forecast hour 
+    if [ $fhrmax -ge 168 ]; then                             #end forecast hour
+        export fhrmax=168
     else
-        export vfhmax=$vfhmax
+        export fhrmax=$fhrmax
     fi
     export run_upper_air="YES"                               #run grid-to-obs upper_air use case
-    export fhout_upper_air="6"                               #grid-to-obs upper_air use case forecast output frequency in hours
+    export fhrout_upper_air="6"                              #grid-to-obs upper_air use case forecast output frequency in hours
     export grid_upper_air="G003"                             #grid for grid-to-obs upper_air use case, format GXXX
     export run_conus_sfc="YES"                               #run grid-to-obs conus_sfc use case
-    export fhout_conus_sfc="3"                               #grid-to-obs conus_sfc use case forecast output frequency in hours
+    export fhrout_conus_sfc="3"                              #grid-to-obs conus_sfc use case forecast output frequency in hours
     export grid_conus_sfc="G104"                             #grid for grid-to-obs conus_sfc use case, format GXXX
     #do some checks 
     if [ ! -d $metplushome ]; then
@@ -460,42 +442,42 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
     #create directories for output
     mkdir -p $rundir_g2o1_base $metplussave
     #specify verification hours in a day 
-    if [ $fhout_upper_air -eq 12 ]; then
+    if [ $fhrout_upper_air -eq 12 ]; then
         export vhrlist_upper_air="00 12"
         export vhr_upper_air_start="00"
         export vhr_upper_air_end="12"
         export vhr_upper_air_inc="12"
-    elif [ $fhout_upper_air -eq 6 ]; then
+    elif [ $fhrout_upper_air -eq 6 ]; then
         export vhrlist_upper_air="00 06 12 18"
         export vhr_upper_air_start="00"
         export vhr_upper_air_end="18"
         export vhr_upper_air_inc="6"
-    elif [ $fhout_upper_air -eq 3 ]; then
+    elif [ $fhrout_upper_air -eq 3 ]; then
         export vhrlist_upper_air="00 03 06 09 12 15 18 21"
         export vhr_upper_air_start="00"
         export vhr_upper_air_end="21"
         export vhr_upper_air_inc="3"
     else
-        echo "ERROR: fhout_upper_air=$fhout_upper_air hours is not supported"
+        echo "ERROR: fhrout_upper_air=$fhrout_upper_air hours is not supported"
         export run_upper_air="NO"
     fi
-    if [ $fhout_conus_sfc -eq 12 ]; then
+    if [ $fhrout_conus_sfc -eq 12 ]; then
         export vhrlist_conus_sfc="00 12"
         export vhr_conus_sfc_start="00"
         export vhr_conus_sfc_end="12"
         export vhr_conus_sfc_inc="12"
-    elif [ $fhout_conus_sfc -eq 6 ]; then
+    elif [ $fhrout_conus_sfc -eq 6 ]; then
         export vhrlist_conus_sfc="00 06 12 18"
         export vhr_conus_sfc_start="00"
         export vhr_conus_sfc_end="18"
         export vhr_conus_sfc_inc="6"
-    elif [ $fhout_conus_sfc -eq 3 ]; then
+    elif [ $fhrout_conus_sfc -eq 3 ]; then
         export vhrlist_conus_sfc="00 03 06 09 12 15 18 21"
         export vhr_conus_sfc_start="00"
         export vhr_conus_sfc_end="21"
         export vhr_conus_sfc_inc="3"
     else
-        echo "ERROR: fhout_conus_sfc=$fhout_conus_sfc hours is not supported"
+        echo "ERROR: fhrout_conus_sfc=$fhrout_conus_sfc hours is not supported"
         export run_conus_sfc="NO"
     fi
     if [ $run_upper_air = "NO" -a $run_conus_sfc = "NO" ]; then 
@@ -522,6 +504,122 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
         mkdir -p ${rundir_g2o1}/logs
         mkdir -p ${rundir_g2o1}/confs
         mkdir -p ${rundir_g2o1}/jobs
+        mkdir -p ${rundir_g2o1}/data
+        #get prepbufr data
+        if [ $run_upper_air = "YES" ]; then
+            export prepbufr_upper_air="gdas"
+            mkdir -p ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}
+            for vhr in $vhrlist_upper_air ; do
+                if [ -s ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE}/${prepbufr_upper_air}.t${vhr}.prepbufr  ] ; then
+                    ln -sf ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE}/${prepbufr_upper_air}.t${vhr}.prepbufr ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
+                elif [ -s ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ] ; then
+                    ln -sf ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
+                else
+                    echo "NO GDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                fi
+            done
+        fi
+        if [ $run_conus_sfc = "YES" ]; then
+            if [ $VDATE -le 20170319 ]; then
+                export prepbufr_conus_sfc="ndas"
+                mkdir -p ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}
+                for vhr in $vhrlist_conus_sfc; do
+                    DATE=${VDATE}${vhr}
+                    for xh in 00 03 06 09 12 15 18 21; do
+                        xdate=$($ndate +$xh $DATE )
+                        eval YYYY${xh}=`echo $xdate |cut -c 1-4 `
+                        eval YYYYMM${xh}=`echo $xdate |cut -c 1-6 `
+                        eval PDY${xh}=`echo $xdate |cut -c 1-8 `
+                        eval HH${xh}=`echo $xdate |cut -c 9-10 `
+                    done
+                    case $HH00 in
+                     00) date1=${PDY12}
+                         date2=${PDY06}
+                         date3=${PDY00};;
+                     03) date1=${PDY09}
+                         date2=${PDY03};;
+                     06) date1=${PDY12}
+                         date2=${PDY06}
+                         date3=${PDY00};;
+                     09) date1=${PDY09}
+                         date2=${PDY03};;
+                     12) date1=${PDY12}
+                         date2=${PDY06}
+                         date3=${PDY00};;
+                     15) date1=${PDY09}
+                         date2=${PDY03};;
+                     18) date1=${PDY12}
+                         date2=${PDY06}
+                         date3=${PDY00};;
+                     21) date1=${PDY09}
+                         date2=${PDY03};;
+                    esac
+                    case $HH00 in
+                     00) ndas1=ndas.t${HH12}z.prepbufr.tm12
+                         ndas2=ndas.t${HH06}z.prepbufr.tm06
+                         ndas3=nam.t${HH00}z.prepbufr.tm00;;
+                     03) ndas1=ndas.t${HH09}z.prepbufr.tm09
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                     06) ndas1=ndas.t${HH12}z.prepbufr.tm12
+                         ndas2=ndas.t${HH06}z.prepbufr.tm06
+                         ndas3=nam.t${HH00}z.prepbufr.tm00;;
+                     09) ndas1=ndas.t${HH09}z.prepbufr.tm09
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                     12) ndas1=ndas.t${HH12}z.prepbufr.tm12
+                         ndas2=ndas.t${HH06}z.prepbufr.tm06
+                         ndas3=nam.t${HH00}z.prepbufr.tm00;;
+                     15) ndas1=ndas.t${HH09}z.prepbufr.tm09
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                     18) ndas1=ndas.t${HH12}z.prepbufr.tm12
+                         ndas2=ndas.t${HH06}z.prepbufr.tm06
+                         ndas3=nam.t${HH00}z.prepbufr.tm00;;
+                     21) ndas1=ndas.t${HH09}z.prepbufr.tm09
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                    esac
+                    if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ] ; then
+                        ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                    else
+                        if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ] ; then
+                            ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        else
+                            if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ] ; then
+                                ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                            else
+                                 echo "NO NDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                            fi
+                        fi
+                    fi
+                done
+            else
+                export prepbufr_conus_sfc="nam"
+                mkdir -p ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}
+                for vhr in $vhrlist_conus_sfc; do
+                    DATE=${VDATE}${vhr}
+                    HH=`echo $DATE |cut -c 9-10 `
+                    if [ $(((HH/6)*6)) -eq $HH ]; then
+                        xdate=$DATE
+                        suffix=tm00
+                    else
+                        xdate=$($ndate +3 $DATE )
+                        suffix=tm03
+                    fi
+                    eval YYYY=`echo $xdate |cut -c 1-4 `
+                    eval YYYYMM=`echo $xdate |cut -c 1-6 `
+                    eval PDY=`echo $xdate |cut -c 1-8 `
+                    eval CYC=`echo $xdate |cut -c 9-10 `
+                    namcomdir=${prepbufr_prod_conus_sfc_dir}/nam.$PDY
+                    namarcdir=${prepbufr_arch_dir}/${prepbufr_conus_sfc}/nam.$PDY
+                    bufrfile=nam.t${CYC}z.prepbufr.$suffix
+                    if [ -s $namcomdir/$bufrfile ]; then
+                        ln -sf $namcomdir/$bufrfile ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                    elif [ -s $namarcdir/$bufrfile ]; then
+                        ln -sf $namarcdir/$bufrfile ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                    else
+                        echo "NO NAM PREPBUFR FILE FOR ${VDATE}${vhr}"
+                    fi
+                done
+            fi
+        fi
         nn=1
         while [ $nn -le $nexp ] ; do
             export exp=${expname[nn]}             #exp name
@@ -530,6 +628,36 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
             mkdir -p ${rundir_g2o1}/logs/${exp}
             mkdir -p ${rundir_g2o1}/confs/${exp}
             mkdir -p ${rundir_g2o1}/jobs/${exp}
+            mkdir -p ${rundir_g2o1}/data/${exp}
+            #get model files
+            if [ $run_upper_air = "YES" ]; then
+                for vhr in $vhrlist_upper_air ; do
+                    DATE=${VDATE}${vhr}
+                    fhr=${fhrmin}
+                    while [ $fhr -le $fhrmax ] ; do
+                        if [ $fhr -lt 10 ]; then fhr=0$fhr ; fi
+                        IDATE=$($ndate -$fhr $DATE)
+                        if [ -s $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ] ; then
+                            ln -sf $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ${rundir_g2o1}/data/${exp}/.
+                        fi
+                        fhr=$((fhr+fhrout_upper_air))
+                    done
+                done
+            fi
+            if [ $run_conus_sfc = "YES" ]; then
+                for vhr in $vhrlist_conus_sfc ; do
+                    DATE=${VDATE}${vhr}
+                    fhr=${fhrmin}
+                    while [ $fhr -le $fhrmax ] ; do
+                        if [ $fhr -lt 10 ]; then fhr=0$fhr ; fi
+                        IDATE=$($ndate -$fhr $DATE)
+                        if [ -s $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ] ; then
+                            ln -sf $exp_dir/$exp/pgbf${fhr}.gfs.${IDATE} ${rundir_g2o1}/data/${exp}/.
+                        fi
+                        fhr=$((fhr+fhrout_conus_sfc))
+                    done
+                done
+            fi
             #run in MPMD style if MPMD=YES, else run serially METplus
             if [ $MPMD = YES ] ; then
                 echo "RUN MPMD HOLDER"
@@ -541,15 +669,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/pb2nc
                     export point_stat_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/point_stat
                     mkdir -p ${pb2nc_upper_air_dir} ${point_stat_upper_air_dir}
-                    #currently using only archive gdas
-                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    ###Next METplus version will support prod GDAS file format name 
-                    ###archive vs. prod GDAS files
-                    ###if [ -d ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE} ]; then
-                    ###    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    ###elif [ -d ${prepbufr_arch_dir}/${prepbufr_upper_air} ]; then
-                    ###   ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a_gdas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                    ###fi
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_upper_air_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine}
                     #now run stat_analysis
                     n=0 ; for fcyc in $fcyclist ; do n=$((n+1)) ; fcycname[n]=$fcyc  ; done
                     export fcyc_start=${fcycname[1]}
@@ -568,17 +688,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     export pb2nc_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/pb2nc
                     export point_stat_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/point_stat
                     mkdir -p ${pb2nc_conus_sfc_dir} ${point_stat_conus_sfc_dir} 
-                    if [ $VDATE -le 20170319 ]; then
-                        export prepbufr_conus_sfc="ndas"
-                        ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_ndas_arch.conf -c ${metplusconfig}/machine_config/machine.${machine} 
-                    else
-                        export prepbufr_conus_sfc="nam"
-                        if [ -d ${prepbufr_prod_conus_sfc_dir}/${prepbufr_conus_sfc}.${VDATE} ]; then
-                            ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_prod.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                        elif [ -d ${prepbufr_arch_dir}/${prepbufr_conus_sfc} ]; then
-                            ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a_nam_arch.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                        fi
-                    fi
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/grid2obs_conus_sfc_step1a.conf -c ${metplusconfig}/machine_config/machine.${machine} 
                     #now run stat_analysis
                     n=0 ; for fcyc in $fcyclist ; do n=$((n+1)) ; fcycname[n]=$fcyc  ; done
                     export fcyc_start=${fcycname[1]}

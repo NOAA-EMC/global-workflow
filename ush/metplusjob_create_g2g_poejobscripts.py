@@ -39,7 +39,7 @@ def write_poejob(poedir, nc, type, var, var_levels):
     poejob_file.write('mv '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc)+'/'+VDATE+'00/grid_stat/* '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/'+VDATE+'00/grid_stat/. \n')
     poejob_file.write('rm -r '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc))
 #
-type_list = os.environ.get('typelist4mpmd').split(' ')
+type_list = os.environ.get('typelist').split(' ')
 poedir = os.environ.get('poedir')
 #make sure starting with a clean directory
 if os.path.exists(poedir):
