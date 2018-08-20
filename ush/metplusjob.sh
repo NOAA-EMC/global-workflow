@@ -510,12 +510,30 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
             export prepbufr_upper_air="gdas"
             mkdir -p ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}
             for vhr in $vhrlist_upper_air ; do
+                #first check online directories
                 if [ -s ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE}/${prepbufr_upper_air}.t${vhr}.prepbufr  ] ; then
                     ln -sf ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE}/${prepbufr_upper_air}.t${vhr}.prepbufr ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
                 elif [ -s ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ] ; then
                     ln -sf ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
                 else
-                    echo "NO GDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                    #get file from HPSS if not in online directories
+                    HPSSGFS="/NCEPPROD/hpssprod/runhistory"
+                    yyyy=`echo $VDATE |cut -c 1-4 `
+                    mm=`echo $VDATE |cut -c 5-6 `
+                    dd=`echo $VDATE |cut -c 7-8 `
+                    if [ ${Iyyyy}${Imm}${Idd} -ge 20170720 ] ; then
+                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/gpfs_hps_nco_ops_com_gfs_prod_gdas.${VDATE}${vhr}
+                    elif [ ${Iyyyy}${Imm}${Idd} -ge 20160510 ] && [ ${Iyyyy}${Imm}${Idd} -lt 20170720 ] ; then
+                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/com2_gfs_prod_gdas.${VDATE}${vhr}
+                    else
+                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/com_gfs_prod_gdas.${VDATE}${vhr}
+                    fi
+                    htar -xf ${gdas_tar} ./${prepbufr_upper_air}.t${vhr}z.prepbufr
+                    if [ $? -eq 0 ]; then
+                        mv ${prepbufr_upper_air}.t${vhr}z.prepbufr ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
+                    else
+                        echo "NO GDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                    fi
                 fi
             done
         fi
@@ -532,6 +550,30 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         eval PDY${xh}=`echo $xdate |cut -c 1-8 `
                         eval HH${xh}=`echo $xdate |cut -c 9-10 `
                     done
+                    HPSSNAM="/NCEPPROD/hpssprod/runhistory"
+                    
+                    case $HH00 in
+                     00) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
+                         hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
+                     03) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                     06) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
+                         hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
+                     09) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                     12) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
+                         hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
+                     15) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                     18) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
+                         hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
+                     21) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                    esac
                     case $HH00 in
                      00) date1=${PDY12}
                          date2=${PDY06}
@@ -579,13 +621,28 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ] ; then
                         ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                     else
-                        if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ] ; then
-                            ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        htar -xf ${hpss1} ./$ndas1
+                        if [ $? -eq 0 ]; then
+                            mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                         else
-                            if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ] ; then
-                                ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                            if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ] ; then
+                                ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                             else
-                                 echo "NO NDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                                htar -xf ${hpss2} ./$ndas2
+                                if [ $? -eq 0 ]; then
+                                    mv ${ndas2} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                                else
+                                    if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ] ; then
+                                        ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                                    else
+                                        htar -xf ${hpss3} ./$ndas3
+                                        if [ $? -eq 0 ]; then
+                                            mv ${ndas3} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                                        else
+                                            echo "NO NDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                                        fi
+                                    fi
+                                fi
                             fi
                         fi
                     fi
@@ -615,7 +672,18 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     elif [ -s $namarcdir/$bufrfile ]; then
                         ln -sf $namarcdir/$bufrfile ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                     else
-                        echo "NO NAM PREPBUFR FILE FOR ${VDATE}${vhr}"
+                        HPSSNAM="/NCEPPROD/hpssprod/runhistory"
+                        if [ $PDY -eq 20170320 ] ; then
+                            nam_tar=$HPSSNAM/rh${YYYY}/${YYYYMM}/${PDY}/com_nam_prod_nam.${PDY}${CYC}.bufr.tar
+                        else
+                            nam_tar=$HPSSNAM/rh${YYYY}/${YYYYMM}/${PDY}/com2_nam_prod_nam.${PDY}${CYC}.bufr.tar
+                        fi
+                        htar -xf ${nam_tar} ./$bufrfile
+                        if [ $? -eq 0 ]; then
+                            mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        else
+                            echo "NO NAM PREPBUFR FILE FOR ${VDATE}${vhr}"
+                        fi
                     fi
                 done
             fi
