@@ -521,16 +521,19 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     yyyy=`echo $VDATE |cut -c 1-4 `
                     mm=`echo $VDATE |cut -c 5-6 `
                     dd=`echo $VDATE |cut -c 7-8 `
-                    if [ ${Iyyyy}${Imm}${Idd} -ge 20170720 ] ; then
-                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/gpfs_hps_nco_ops_com_gfs_prod_gdas.${VDATE}${vhr}
-                    elif [ ${Iyyyy}${Imm}${Idd} -ge 20160510 ] && [ ${Iyyyy}${Imm}${Idd} -lt 20170720 ] ; then
-                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/com2_gfs_prod_gdas.${VDATE}${vhr}
+                    if [ ${yyyy}${mm}${dd} -ge 20170720 ] ; then
+                        gdas_tar=${HPSSGFS}/rh${yyyy}/${yyyy}${mm}/${yyyy}${mm}${dd}/gpfs_hps_nco_ops_com_gfs_prod_gdas.${VDATE}${vhr}.tar
+                        gdas_prepbufr_file=gdas.t${vhr}z.prepbufr
+                    elif [ ${yyyy}${mm}${dd} -ge 20160510 ] && [ ${yyyy}${mm}${dd} -lt 20170720 ] ; then
+                        gdas_tar=${HPSSGFS}/rh${yyyy}/${yyyy}${mm}/${yyyy}${mm}${dd}/com2_gfs_prod_gdas.${VDATE}${vhr}.tar
+                        gdas_prepbufr_file=gdas1.t${vhr}z.prepbufr
                     else
-                        gdas_tar=${HPSSGFS}/rh${Iyyyy}/${Iyyyy}${Imm}/${Iyyyy}${Imm}${Idd}/com_gfs_prod_gdas.${VDATE}${vhr}
+                        gdas_tar=${HPSSGFS}/rh${yyyy}/${yyyy}${mm}/${yyyy}${mm}${dd}/com_gfs_prod_gdas.${VDATE}${vhr}.tar
+                        gdas_prepbufr_file=gdas1.t${vhr}z.prepbufr
                     fi
-                    htar -xf ${gdas_tar} ./${prepbufr_upper_air}.t${vhr}z.prepbufr
+                    htar -xf ${gdas_tar} ./${gdas_prepbufr_file}
                     if [ $? -eq 0 ]; then
-                        mv ${prepbufr_upper_air}.t${vhr}z.prepbufr ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
+                        mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
                     else
                         echo "NO GDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
                     fi
