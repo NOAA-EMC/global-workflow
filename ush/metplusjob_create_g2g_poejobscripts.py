@@ -8,7 +8,7 @@ def write_poejob(poedir, nc, type, var, var_levels):
     poejob_file = open(poejob_filename, 'w')
     #write environment variables
     for key in os.environ.keys():
-        if key != 'A__z':
+        if key != 'A__z' and key != 'BASH_FUNC_module%%':
             poejob_file.write('export '+key+'="'+os.environ[key]+'"\n')
     poejob_file.write('export poejobnum="'+str(nc)+'"\n')
     poejob_file.write('export type="'+type+'"\n')
@@ -16,7 +16,7 @@ def write_poejob(poedir, nc, type, var, var_levels):
     if type == 'sfc':
        var_level, var_grblvl = var_levels.split(';')
        poejob_file.write('export VAR_LEVELS="'+var_level+'"\n')
-       poejob_file.write('export VAR_GRBLVL_NUM="'+var_grblvl+'"\n')
+       poejob_file.write('export VAR_GRBLVL_NUM_DESC="GRIB_lvl_typ = '+var_grblvl+';"\n')
     else:
        poejob_file.write('export VAR_LEVELS="'+var_levels+'"\n')
     #write METplus command
