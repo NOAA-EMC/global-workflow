@@ -57,6 +57,8 @@ task_template: &task_template
     <envar><name>CDUMP</name><value>{CDUMP}</value></envar>
     <envar><name>RUN_ENVIR</name><value>emc</value></envar>
     <envar><name>HOMEgfs</name><value>&HOMEgfs;</value></envar>
+    <envar><name>DATAROOT</name><value>&DATAROOT;</value></envar>
+    <envar><name>COMIN</name><value>&COM;/{CDUMP}.@Y@m@d/@H</value></envar>
     {rocoto_more_vars}
     {rocoto_platform_vars}
 

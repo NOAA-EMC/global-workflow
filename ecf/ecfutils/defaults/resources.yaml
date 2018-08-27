@@ -107,9 +107,7 @@ default_resources: &default_resources
       OMP_NUM_THREADS: 2
       exe: placeholder
 
-
   postsnd_walltime: !timedelta "04:00:00"
-
   run_postsnd: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 12
@@ -130,6 +128,70 @@ default_resources: &default_resources
       max_ppn: 4
       walltime: !timedelta "02:00:00"
       OMP_NUM_THREADS: 3
+      exe: placeholder
+
+  run_mknavybulls: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_fax: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      walltime: !timedelta "00:02:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_fax_wafs: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      walltime: !timedelta "00:02:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_wafs: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_wafs_blending: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_wafs_grib2: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_fbwind: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      walltime: !timedelta "00:02:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_npoess: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "01:00:00"
+      OMP_NUM_THREADS: 1
       exe: placeholder
       
   run_prepbufr: !JobRequest
@@ -380,4 +442,4 @@ default_resources: &default_resources
       max_ppn: !calc doc.gfs_resource_table.gdasvrfy[1]
       walltime: !calc doc.gfs_resource_table.gdasvrfy[2]
       OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdasvrfy[3]
-            
+

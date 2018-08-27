@@ -123,6 +123,7 @@ suite_defaults: &suite_defaults
         <!ENTITY CYCLE_THROTTLE "{doc.settings.rocoto_cycle_throttle}">
         <!ENTITY MAX_TRIES "{suite.Rocoto.max_tries}">
         <!ENTITY EXPDIR "{doc.places.EXPDIR}">
+        <!ENTITY DATAROOT "{doc.places.DATAROOT}">
         <!ENTITY PSLOT "{doc.names.experiment}">
       {tools.indent(suite.common_metasched_vars,"  ")}
       {tools.indent(doc.platform.metasched_more,"  ")}

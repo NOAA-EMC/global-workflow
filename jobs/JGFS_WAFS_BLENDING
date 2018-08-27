@@ -1,0 +1,187 @@
+#!/bin/sh
+########################################################
+# This job runs the code to blend US's and UK's WAFS products 
+########################################################
+
+date
+export PS4='$SECONDS + ' 
+set -x
+
+############################################
+# Override some ecFlow environment variables
+############################################
+export RUN_ENVIR=${RUN_ENVIR:-nco}
+
+export NWROOTp1=${NWROOTp1:-/nwprod}
+
+if [ ${envir} != "prod" ]; then
+  export RUN_PLOT=NO
+fi
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
+
+export DATAROOT=${DATAROOT:-/tmpnwprd1}
+
+# keep the working directory or not
+export KEEPDATA=${KEEPDATA:-NO}
+
+############################################
+# Working Directory
+############################################
+export DATA=${DATA:-${DATAROOT:?}/$jobid}
+[ -d $DATA ] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+############################################
+# Output for executables
+############################################
+export pgmout=OUTPUT.$$
+
+############################################
+# Load the UTILITIES module
+############################################
+#### module load prod_util
+#### module load grib_util
+#### module use /nwpara2/modulefiles
+#### module load util_shared/v1.0.3
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=t${cyc}z 
+setpdy.sh
+. ./PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC, set to NO for testing
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-YES}
+export SENDDBN=${SENDDBN:-YES}  # need to set to NO for testing
+#export SENDDBN_GB2=${SENDDBN_GB2:-YES}  # need to set to NO for testing
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}  # need to set to NO for testing
+export RERUN=${RERUN:-NO}
+
+############################################
+# Set up the NET and RUN
+############################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+############################################
+# Specify HOME Directory
+############################################
+export gfs_ver=${gfs_ver:-v15.0.0}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=$HOMEgfs/exec
+export FIXgfs=$HOMEgfs/fix/wafs
+export PARMgfs=$HOMEgfs/parm
+export USHgfs=$HOMEgfs/ush
+export SCRIPTSgfs=$HOMEgfs/scripts
+
+################################################
+# Set up the INPUT and OUTPUT directories
+################################################
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/$RUN.$PDY/$cyc}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/$cyc}
+export PCOM=${PCOM:-$COMOUT/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+export COMINus=${COMINus:-$COMIN/wmo}
+export COMINuk=${COMINuk:-$DCOMROOT/us007003/$PDY/wgrbbul/ukmet_wafs}
+
+############################################
+# print current environment
+############################################
+env
+
+##############################################
+# Set up the forecast hours
+##############################################
+export SHOUR=06
+export EHOUR=36
+
+export FHINC=03
+
+###############################################
+# Specify Timeout Behavior of WAFS blending
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a input file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for input files
+###############################################
+# export SLEEP_TIME=300   # changed to 60 to avoid hitting wall_clock when miss umket wafs files ... 
+export SLEEP_TIME=60
+export SLEEP_INT=10
+
+####################################
+# Check if this is a restart
+####################################
+if test -f $COMOUT/$RUN.t${cyc}z.control.wafsblending
+then
+  modelrecvy=`cat < $COMOUT/${RUN}.t${cyc}z.control.wafsblending`
+  recvy_pdy=`echo $modelrecvy | cut -c1-8`
+  recvy_cyc=`echo $modelrecvy | cut -c9-10`
+  recvy_shour=`echo $modelrecvy | cut -c11-`
+
+  if test $RERUN = "NO"
+  then
+    if [ $recvy_shour -lt $EHOUR ]
+    then
+      new_shour=`expr $recvy_shour + $FHINC`
+    fi
+    if test $new_shour -ge $SHOUR
+    then
+      export SHOUR=$new_shour
+      if [ $SHOUR -lt 10 ]; then SHOUR=0$SHOUR; fi
+    fi
+    if test $recvy_shour -ge $EHOUR
+    then
+      msg="WAFS blending Already Completed to $EHOUR"
+      postmsg "$jlogfile" "$msg"
+    else
+      msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
+      postmsg "$jlogfile" "$msg"
+    fi
+  fi
+fi
+
+############################################
+# Execute the script.
+############################################
+${SCRIPTSgfs}/exgfs_wafs_blending.sh.ecf
+export err=$?; err_chk
+
+msg="JOB $job HAS COMPLETED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+###############################################
+# This part is for developers usage only 
+# It is turned off for operational run
+###############################################
+if [ $RUN_ENVIR != nco -a $RUN_PLOT = YES ]
+then
+  /global/save/Hui-Ya.Chuang/WAFC/scripts/plot_wafs.sh $PDY $cyc
+fi
+
+############################################
+# print exec output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+############################################
+# remove temporary working directory
+############################################
+if [ $KEEPDATA != YES ] ; then
+    rm -rf $DATA
+fi
+
+date

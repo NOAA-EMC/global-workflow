@@ -81,9 +81,9 @@ suite: !Cycle
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_emcsfc_sfc_prep: !Task
         <<: *exclusive_task_template
-        Dummy: true  ## <-- Node is not implemented yet
         Trigger: !Depend up.dump.jgdas_dump.release_sfcprep
         resources: !calc partition.resources.run_prep
+        J_JOB: JGLOBAL_EMCSFC_SFC_PREP
 
       jgdas_prep: !Task
         <<: *exclusive_task_template
@@ -92,7 +92,6 @@ suite: !Cycle
         resources: !calc partition.resources.run_prep
         J_JOB: rocoto/prep.sh
         ecf_module_commands: "# prep.sh will load modules instead"
-
 
       jgdas_prep_post: !Task
         <<: *exclusive_task_template
@@ -130,14 +129,14 @@ suite: !Cycle
         Dummy: true  ## <-- Node is not implemented yet
 
     post_processing: !Family
-      Dummy: true  ## <-- Node is not implemented yet
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       bulletins: !Family
         jgdas_mknavybulls: !Task
           <<: *exclusive_task_template
           #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
           Trigger: !Depend ( up.up.dump.jgdas_dump )
-          resources: !calc partition.resources.run_one_hour_exclusive
+          resources: !calc partition.resources.run_mknavybulls
+          J_JOB: JGDAS_BULLS_NAVY
 
     gempak: !Family
       Dummy: true  ## <-- Node is not implemented yet
@@ -372,9 +371,9 @@ suite: !Cycle
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_emcsfc_sfc_prep: !Task
         <<: *exclusive_task_template
-        Dummy: true  ## <-- Node is not implemented yet
         Trigger: !Depend up.dump.jgfs_dump.release_sfcprep
-        resources: !calc partition.resources.run_one_hour_exclusive
+        resources: !calc partition.resources.run_prep
+        J_JOB: JGLOBAL_EMCSFC_SFC_PREP
     
       jgfs_prep: !Task
         <<: *exclusive_task_template
@@ -508,44 +507,47 @@ suite: !Cycle
 
     post_processing: !Family
       fax: !Family
-        Dummy: true  ## <-- Node is not implemented yet
-        jgfs_fax_f00: !Task
-          ecflow_def: |
-            edit FCSTHR '00'
-          <<: *exclusive_task_template
-          Trigger: !Depend ( up.up.prdgen.jgfs_pgrb2_f00 & up.up.prdgen.jgfs_pgrb2_anl )
-          resources: !calc partition.resources.run_one_hour_exclusive
-
         jgfs_fax_anl: !Task
           ecflow_def: |
             edit FCSTHR 'anl'
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.prdgen.jgfs_pgrb2_anl
-          resources: !calc partition.resources.run_one_hour_exclusive
+          Trigger: !Depend up.up.post.jgfs_post_anl
+          resources: !calc partition.resources.run_fax
+          J_JOB: JGFS_FAX
+
+        jgfs_fax_f00: !Task
+          ecflow_def: |
+            edit FCSTHR '00'
+          <<: *exclusive_task_template
+          Trigger: !Depend ( up.up.post.jgfs_post_anl & up.up.post.jgfs_post_f00 )
+          resources: !calc partition.resources.run_fax
+          J_JOB: JGFS_FAX
 
         jgfs_fax_wafs_f12: !Task
           ecflow_def: |
             edit FCSTHR '12'
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.prdgen.jgfs_pgrb2_f12
-          resources: !calc partition.resources.run_one_hour_exclusive
+          Trigger: !Depend up.up.post.jgfs_post_f12
+          resources: !calc partition.resources.run_fax_wafs
+          J_JOB: JGFS_FAX_WAFS
 
         jgfs_fax_wafs_f24: !Task
           ecflow_def: |
             edit FCSTHR '24'
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.prdgen.jgfs_pgrb2_f24
-          resources: !calc partition.resources.run_one_hour_exclusive
+          Trigger: !Depend up.up.post.jgfs_post_f24
+          resources: !calc partition.resources.run_fax_wafs
+          J_JOB: JGFS_FAX_WAFS
 
         jgfs_fax_wafs_f36: !Task
           ecflow_def: |
             edit FCSTHR '36'
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.prdgen.jgfs_pgrb2_f36
-          resources: !calc partition.resources.run_one_hour_exclusive
+          Trigger: !Depend up.up.post.jgfs_post_f36
+          resources: !calc partition.resources.run_fax_wafs
+          J_JOB: JGFS_FAX_WAFS
 
       grib_wafs: !TaskArray
-        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
         jgfs_wafs: !TaskElement
@@ -553,12 +555,13 @@ suite: !Cycle
           Name: !expand 'jgfs_wafs_f{dimval.fhr:02d}'
           Trigger: !FirstTrue
             - when: !calc dimval.fhr == 0
-              do:   !Depend ( up.up.prdgen.jgfs_pgrb2_f00 & up.up.prdgen.jgfs_pgrb2_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
+              do:   !Depend ( up.up.post.jgfs_post_f00 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
             - otherwise: !Depend >-
-                up.up.prdgen.depend("jgfs_pgrb2_f{N:02d}",N=[ dimval.fhr ])
+                up.up.post.depend("jgfs_post_f{N:02d}",N=[ dimval.fhr ])
                 & up.grib_wafs.depend("jgfs_wafs_f{N:02d}",N=[ dimval.fhr-6 ])
-          resources: !ref partition.resources.run_one_hour_exclusive
+          resources: !ref partition.resources.run_wafs
           ecflow_def: !expand "edit FCSTHR '{dimval.fhr:02d}'"
+          J_JOB: JGFS_WAFS
 
       bufr_sounding: !Family
         jgfs_postsnd: !Task
@@ -569,13 +572,14 @@ suite: !Cycle
           ecf_module_commands: "# postsnd.sh will load modules instead"
 
       bulletins: !Family
-        Dummy: true  ## <-- Node is not implemented yet
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
           Trigger: !Depend ( up.up.post.jgfs_post_f06 & up.up.post.jgfs_post_f12 & up.up.post.jgfs_post_f24 )
-          resources: !calc partition.resources.run_one_hour_exclusive
+          resources: !calc partition.resources.run_fbwind
+          J_JOB: JGFS_FBWIND
           
         jgfs_cyclone_tracker: !Task
+          Dummy: true  ## <-- Node is not implemented yet
           <<: *exclusive_task_template
           Trigger: !Depend >- 
                 up.up.post.depend("jgfs_post_f{N:02d}",N=tools.seq(0,180,6))
@@ -583,11 +587,11 @@ suite: !Cycle
           resources: !calc partition.resources.run_one_hour_exclusive
 
       grib2_wafs: !Family
-        Dummy: true  ## <-- Node is not implemented yet
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.prdgen.jgfs_pgrb2_f00
-          resources: !calc partition.resources.run_one_hour_exclusive
+          Trigger: !Depend up.up.post.jgfs_post_f00
+          resources: !calc partition.resources.run_wafs_grib2
+          J_JOB: JGFS_WAFS_GRIB2
 
         jgfs_wafs_blending: !Task
           <<: *exclusive_task_template
@@ -596,7 +600,8 @@ suite: !Cycle
             - when: !calc doc.settings.four_cycle_mode
               do: !timedelta +4:33:00
             - otherwise: null
-          resources: !calc partition.resources.run_one_hour_exclusive
+          resources: !calc partition.resources.run_wafs_blending
+          J_JOB: JGFS_WAFS_BLENDING
 
       awips_g2: !TaskArray
         Dimensions:
@@ -674,11 +679,11 @@ suite: !Cycle
     #endfamily post_processing
 
     prdgen: !TaskArray
-      Dummy: true  ## <-- Node is not implemented yet
       Dimensions:
         fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
 
       jgfs_pgrb2_manager_el: !TaskElement
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Foreach: []
         Name: jgfs_pgrb2_manager
@@ -693,10 +698,12 @@ suite: !Cycle
 
       jgfs_npoess_pgrb2_0p5deg: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.post )
-        resources: !calc partition.resources.run_one_hour_exclusive
+        Trigger: !Depend ( up.post.jgfs_post_anl.release_pgrb2_anl )
+        resources: !calc partition.resources.run_npoess
+        J_JOB: JGFS_PGRB2_SPEC_NPOESS
 
       jgfs_pgrb2_anl: !Task
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Trigger: !Depend ( up.post.jgfs_post_anl.release_pgrb2_anl )
         resources: !calc partition.resources.run_one_hour_exclusive
@@ -706,6 +713,7 @@ suite: !Cycle
           edit HR 'anl'
 
       pgrb2_f: !TaskElement
+        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
         Foreach: [ fhr ]
         Name: !expand "jgfs_pgrb2_f{dimval.fhr:02d}"
