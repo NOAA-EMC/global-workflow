@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180804
+export PDY=20180824
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -51,8 +51,8 @@ module list
 # GDAS BULLS NAVYL BULLETIN PRODUCT GENERATION
 ###############################################
 # set envir=prod or para to test with data in prod or para
-# export envir=para
- export envir=prod
+ export envir=para
+# export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -111,14 +111,14 @@ if [ $envir = "prod" ] ; then
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}         ### NCO PROD
   export COMINm1=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDYm1}         ### NCO PROD
 else
-#  export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMINm1=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
+  export COMINm1=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
-  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
-  export COMINm1=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMINm1=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
-#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/svn/${RUN}.${PDY}/${cyc} ### Boi PARA
-#  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/svn/${RUN}.${PDYm1}/${cyc} ### Boi PARA
+#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc} ### Boi PARA
+#  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDYm1}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
