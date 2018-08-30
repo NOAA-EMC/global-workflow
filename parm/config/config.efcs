@@ -8,6 +8,9 @@ echo "BEGIN: config.efcs"
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE_ENKF
 
+export layout_x=$layout_x_efcs
+export layout_y=$layout_y_efcs
+
 # Get task specific resources
 . $EXPDIR/config.resources efcs
 
