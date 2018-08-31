@@ -13,7 +13,14 @@ config_awips:
     # Get task specific resources
     . $EXPDIR/config.resources awips
 
+    export SENDCOM="YES"
+
     export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
     export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
+
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUTwmo="$COMOUT/wmo"
+    export PCOM="$COMOUT/wmo"
 
     echo "END: config.awips"

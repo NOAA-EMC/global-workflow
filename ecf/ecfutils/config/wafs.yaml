@@ -1,0 +1,23 @@
+# This file is used to generate config.wafs, which has settings for the GFS wafs step
+
+config_wafs:
+  filename: config.wafs
+  content: !expand |
+    #!/bin/ksh -x
+   
+    ########## config.wafs ##########
+    # GFS wafs step specific
+
+    echo "BEGIN: config.wafs"
+
+    export SENDCOM="YES"
+
+    export FIXgfs=$HOMEgfs/gempak/fix
+    export USHgfs=$HOMEgfs/gempak/ush
+
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUTwmo="$COMOUT/wmo"
+    export PCOM="$COMOUT/wmo"
+
+    echo "END: config.wafs" 

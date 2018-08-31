@@ -73,6 +73,22 @@ cd ${pwd}/../ush                ||exit 8
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
 
+#------------------------------
+#--add gfs_wafs file if on Dell
+if [ $target = wcoss_dell_p3 ]; then
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+cd ${pwd}/../parm               ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
+    $LINK ../sorc/gfs_wafs.fd/parm                           wafs
+cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+cd ${pwd}/../fix                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/fix/wafs                       wafs
+fi
 
 #--add GSI/EnKF file
 cd ${pwd}/../jobs               ||exit 8
@@ -172,6 +188,13 @@ for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  ge
      [[ -s $gsiexe ]] && rm -f $gsiexe
      $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
+
+if [ $target = wcoss_dell_p3 ]; then
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
  
 cd ${pwd}
 cd gsi.fd

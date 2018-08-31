@@ -109,7 +109,7 @@ if [ $SENDCOM = "YES" ] ; then
   mv gdas.meta ${COMOUT}/gdas_${PDY}_${cyc}_na
   if [ $SENDDBN = "YES" ] ; then
     $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-     $COMOUT/gdas_${PDY}_${cyc}_na
+    $COMOUT/gdas_${PDY}_${cyc}_na
   fi
 fi
 

@@ -122,15 +122,47 @@ default_resources: &default_resources
       walltime: !timedelta "02:00:00"
       exe: placeholder
       
-  run_gempak: !JobRequest
+  run_gdasgempak: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: 20
-      max_ppn: 4
-      walltime: !timedelta "02:00:00"
-      OMP_NUM_THREADS: 3
+      mpi_ranks: 2
+      max_ppn: 1
+      walltime: !timedelta "00:03:00"
+      OMP_NUM_THREADS: 1
       exe: placeholder
 
-  run_mknavybulls: !JobRequest
+  run_gempak: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 28
+      max_ppn: 4
+      walltime: !timedelta "03:00:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+
+  run_gempak_ncdc_upapgif: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+
+  run_gempak_spec: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+
+  run_npoess: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "01:00:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_bulls_navy: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 1
       max_ppn: 1
@@ -183,14 +215,6 @@ default_resources: &default_resources
       mpi_ranks: 2
       max_ppn: 2
       walltime: !timedelta "00:02:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_npoess: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "01:00:00"
       OMP_NUM_THREADS: 1
       exe: placeholder
       

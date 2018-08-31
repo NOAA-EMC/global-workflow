@@ -23,7 +23,7 @@ config_prep:
     [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
     export DO_RELOCATE="{tools.YES_NO(doc.data_assimilation.DO_RELOCATE)}"
     export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
-    export SENDCOM=YES
+    export SENDCOM="YES"
     
     export HOMERELO=$HOMEgfs
     export EXECRELO=${{HOMERELO}}/exec

@@ -80,13 +80,13 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     type: int list
     default: !calc >-
       tools.uniq(sorted(
-        tools.seq(0,90,3) +
-        tools.seq(96,240,6)))
+        tools.seq(0,84,6) +
+        tools.seq(90,240,6)))
 
   awips_20km_1p0_hours:
     type: int list
     default: !calc >-
       tools.uniq(sorted(
-        tools.seq(0,90,3) +
-        tools.seq(96,240,6)))
+        tools.seq(0,84,3) +
+        tools.seq(90,240,6)))
 

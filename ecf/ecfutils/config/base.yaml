@@ -117,6 +117,16 @@ config_base:
     export SENDCOM="NO"
     export SENDDBN="NO"
     export SENDSDM="NO"
+
+    # Adjusting COM paths for non-prod experiments
+    #export PDY=`expr $CDATE | cut -c1-8`
+    #export GDATE=`$NDATE -06 $CDATE`
+    #export PDY_m6hrs=`expr $GDATE | cut -c1-8`
+    #export COMINgfs="$COMROOThps/$NET/$envir/$RUN.$PDY"
+    #export COMINgfs_m6hrs="$COMROOThps/$NET/$envir/$RUN.$PDY_m6hrs"
+    #export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    #export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    #export COMOUTwmo="$ROTDIR/$CDUMP.$PDY/$cyc/wmo"
     
     # Resolution specific parameters
     export LEVS={doc.fv3_settings.LEVS}

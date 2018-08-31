@@ -131,30 +131,28 @@ suite: !Cycle
     post_processing: !Family
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       bulletins: !Family
-        jgdas_mknavybulls: !Task
+        jgdas_bulls_navy: !Task
           <<: *exclusive_task_template
+          job: '<cyclestr>gdas_bulls_navy_@H</cyclestr>'
           #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
           Trigger: !Depend ( up.up.dump.jgdas_dump )
-          resources: !calc partition.resources.run_mknavybulls
+          resources: !calc partition.resources.run_bulls_navy
+          more_vars: [ job ]
           J_JOB: JGDAS_BULLS_NAVY
 
     gempak: !Family
-      Dummy: true  ## <-- Node is not implemented yet
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgdas_gempak: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend up.forecast.jgdas_forecast
-        resources: !calc partition.resources.run_one_hour_exclusive
+        Trigger: !Depend up.forecast.jgdas_forecast_high
+        resources: !calc partition.resources.run_gdasgempak
+        J_JOB: JGDAS_GEMPAK
 
-      jgdas_gempak_meta: !Task
+      jgdas_gempak_meta_ncdc: !Task
         <<: *exclusive_task_template
         Trigger: !Depend jgdas_gempak
-        resources: !calc partition.resources.run_one_hour_exclusive
-
-      jgdas_gempak_ncdc: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend jgdas_gempak
-        resources: !calc partition.resources.run_one_hour_exclusive
+        resources: !calc partition.resources.run_gdasgempak
+        J_JOB: JGDAS_GEMPAK_META_NCDC
 
     #endfamily gempak
 
@@ -506,45 +504,67 @@ suite: !Cycle
         resources: !calc partition.resources.run_one_hour_exclusive
 
     post_processing: !Family
+
+      jgfs_wafs_gcip: !Task
+        Dummy: true  ## <-- Node is not implemented yet
+        <<: *exclusive_task_template
+        Trigger: !Depend up.up.post.jgfs_post_f03
+        resources: !calc partition.resources.run_wafs
+
       fax: !Family
         jgfs_fax_anl: !Task
           ecflow_def: |
             edit FCSTHR 'anl'
           <<: *exclusive_task_template
+          fcsthrs: anl
+          job: '<cyclestr>gfs_fax_anl_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_anl
           resources: !calc partition.resources.run_fax
+          more_vars: [ fcsthrs, job ]
           J_JOB: JGFS_FAX
 
         jgfs_fax_f00: !Task
           ecflow_def: |
             edit FCSTHR '00'
           <<: *exclusive_task_template
+          fcsthrs: !expand "{0:02d}" 
+          job: '<cyclestr>gfs_fax_f00_@H</cyclestr>'
           Trigger: !Depend ( up.up.post.jgfs_post_anl & up.up.post.jgfs_post_f00 )
           resources: !calc partition.resources.run_fax
+          more_vars: [ fcsthrs, job ]
           J_JOB: JGFS_FAX
 
         jgfs_fax_wafs_f12: !Task
           ecflow_def: |
             edit FCSTHR '12'
           <<: *exclusive_task_template
+          fhr_list: '06 12'
+          job: '<cyclestr>gfs_fax_wafs_f12_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f12
           resources: !calc partition.resources.run_fax_wafs
+          more_vars: [ fhr_list, job ]
           J_JOB: JGFS_FAX_WAFS
 
         jgfs_fax_wafs_f24: !Task
           ecflow_def: |
             edit FCSTHR '24'
           <<: *exclusive_task_template
+          fhr_list: '18 24'
+          job: '<cyclestr>gfs_fax_wafs_f24_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f24
           resources: !calc partition.resources.run_fax_wafs
+          more_vars: [ fhr_list, job ]
           J_JOB: JGFS_FAX_WAFS
 
         jgfs_fax_wafs_f36: !Task
           ecflow_def: |
             edit FCSTHR '36'
           <<: *exclusive_task_template
+          fhr_list: '30 36'
+          job: '<cyclestr>gfs_fax_wafs_f36_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f36
           resources: !calc partition.resources.run_fax_wafs
+          more_vars: [ fhr_list, job ]
           J_JOB: JGFS_FAX_WAFS
 
       grib_wafs: !TaskArray
@@ -553,6 +573,7 @@ suite: !Cycle
         jgfs_wafs: !TaskElement
           <<: *exclusive_task_template
           Name: !expand 'jgfs_wafs_f{dimval.fhr:02d}'
+          fcsthrs: !expand "{dimval.fhr:02d}" 
           Trigger: !FirstTrue
             - when: !calc dimval.fhr == 0
               do:   !Depend ( up.up.post.jgfs_post_f00 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
@@ -561,6 +582,7 @@ suite: !Cycle
                 & up.grib_wafs.depend("jgfs_wafs_f{N:02d}",N=[ dimval.fhr-6 ])
           resources: !ref partition.resources.run_wafs
           ecflow_def: !expand "edit FCSTHR '{dimval.fhr:02d}'"
+          more_vars: [ fcsthrs ]
           J_JOB: JGFS_WAFS
 
       bufr_sounding: !Family
@@ -574,8 +596,10 @@ suite: !Cycle
       bulletins: !Family
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
+          job: '<cyclestr>gfs_fbwind_@H</cyclestr>'
           Trigger: !Depend ( up.up.post.jgfs_post_f06 & up.up.post.jgfs_post_f12 & up.up.post.jgfs_post_f24 )
           resources: !calc partition.resources.run_fbwind
+          more_vars: [ job ]
           J_JOB: JGFS_FBWIND
           
         jgfs_cyclone_tracker: !Task
@@ -589,18 +613,22 @@ suite: !Cycle
       grib2_wafs: !Family
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
+          job: '<cyclestr>gfs_wafs_grib2_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f00
           resources: !calc partition.resources.run_wafs_grib2
+          more_vars: [ job ]
           J_JOB: JGFS_WAFS_GRIB2
 
         jgfs_wafs_blending: !Task
           <<: *exclusive_task_template
+          job: '<cyclestr>gfs_wafs_blending_@H</cyclestr>'
           Trigger: !Depend jgfs_wafs_grib2
           Time: !FirstTrue
             - when: !calc doc.settings.four_cycle_mode
               do: !timedelta +4:33:00
             - otherwise: null
           resources: !calc partition.resources.run_wafs_blending
+          more_vars: [ job ]
           J_JOB: JGFS_WAFS_BLENDING
 
       awips_g2: !TaskArray
@@ -611,16 +639,17 @@ suite: !Cycle
           Foreach: [ fhr ]
           Name: !expand "jgfs_awips_g2_f{dimval.fhr:03d}"
           FHRGRP: !expand "{dimval.fhr:03d}"
-          FHRLST: !expand "f{dimval.fhr:03d}"
-          more_vars: [ FHRGRP, FHRLST ]
+          FHRLST: !expand "f{dimval.fhr:02d}"
+          fcsthrs: !expand "{dimval.fhr:03d}"
+          job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_@H</cyclestr>"
+          more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
           Trigger: !Depend up.up.post.depend('jgfs_post_f{N:02d}',N=dimval.fhr)
           resources: !calc partition.resources.run_awips
-          J_JOB: rocoto/awips.sh
+          J_JOB: JGFS_AWIPS_G2
           ecflow_def: !expand |
             edit FCSTHR '{dimval.fhr:02d}'
 
       awips_20km_1p0: !TaskArray
-        Dummy: true  ## <-- Node is not implemented yet
         Dimensions:
           fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_20km_1p0_hours))) "
         ecflow_def: !expand |
@@ -631,10 +660,12 @@ suite: !Cycle
           Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
           FHRGRP: !expand "{dimval.fhr:03d}"
           FHRLST: !expand "f{dimval.fhr:03d}"
-          more_vars: [ FHRGRP, FHRLST ]
-          Trigger: !Depend up.up.prdgen.depend('jgfs_pgrb2_f{N:02d}',N=dimval.fhr)
+          fcsthrs: !expand "{dimval.fhr:03d}"
+          job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_20km_@H</cyclestr>"
+          more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
+          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:02d}',N=dimval.fhr)
           resources: !calc partition.resources.run_awips
-          J_JOB: rocoto/awips.sh
+          J_JOB: JGFS_AWIPS_20KM_1P0DEG
           ecflow_def: !expand |
             edit FCSTHR '{dimval.fhr:03d}'
 
@@ -679,6 +710,7 @@ suite: !Cycle
     #endfamily post_processing
 
     prdgen: !TaskArray
+      Dummy: true  ## <-- Node is not implemented yet
       Dimensions:
         fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
 
@@ -695,12 +727,6 @@ suite: !Cycle
           Name: !expand "release_pgrb2_{dimval.fhr:02d}"
           Foreach: [ fhr ]
           file: "/dev/null"
-
-      jgfs_npoess_pgrb2_0p5deg: !Task
-        <<: *exclusive_task_template
-        Trigger: !Depend ( up.post.jgfs_post_anl.release_pgrb2_anl )
-        resources: !calc partition.resources.run_npoess
-        J_JOB: JGFS_PGRB2_SPEC_NPOESS
 
       jgfs_pgrb2_anl: !Task
         Dummy: true  ## <-- Node is not implemented yet
@@ -728,36 +754,35 @@ suite: !Cycle
     #endfamily prdgen
 
     gempak: !Family
-      jgfs_gempak_upapgif: !Task
-        Dummy: true  ## <-- Node is not implemented yet
-        <<: *exclusive_task_template
-        Trigger: !Depend up.dump.jgfs_dump
-        resources: !calc partition.resources.run_one_hour_exclusive
-
-      jgfs_gempak_ncdc: !Task
-        Dummy: true  ## <-- Node is not implemented yet
-        <<: *exclusive_task_template
-        #Trigger: !Depend jgfs_gempak.is_running()
-        Trigger: !Depend jgfs_gempak.is_running() | jgfs_gempak.is_completed()
-        resources: !calc partition.resources.run_one_hour_exclusive
-
       jgfs_gempak: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.post )
+        Trigger: !Depend up.forecast.jgfs_forecast_high
         resources: !calc partition.resources.run_gempak
-        J_JOB: rocoto/gempak.sh
+        J_JOB: JGFS_GEMPAK
 
       jgfs_gempak_meta: !Task
-        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
-        Trigger: !Depend up.jgfs_analysis
-        resources: !calc partition.resources.run_one_hour_exclusive
+        Trigger: !Depend jgfs_gempak
+        resources: !calc partition.resources.run_gempak
+        J_JOB: JGFS_GEMPAK_META
+
+      jgfs_gempak_ncdc_upapgif: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgfs_gempak.is_running() | jgfs_gempak.is_completed()
+        resources: !calc partition.resources.run_gempak_ncdc_upapgif
+        J_JOB: JGFS_GEMPAK_NCDC_UPAPGIF
+
+      jgfs_npoess_pgrb2_0p5deg: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend up.post.jgfs_post_anl
+        resources: !calc partition.resources.run_npoess
+        J_JOB: JGFS_PGRB2_SPEC_NPOESS
 
       jgfs_pgrb2_spec_gempak: !Task
-        Dummy: true  ## <-- Node is not implemented yet
         <<: *exclusive_task_template
-        Trigger: !Depend up.post.jgfs_pgrb2_spec_post
-        resources: !calc partition.resources.run_one_hour_exclusive
+        Trigger: !Depend jgfs_npoess_pgrb2_0p5deg
+        resources: !calc partition.resources.run_gempak_spec
+        J_JOB: JGFS_PGRB2_SPEC_GEMPAK
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template

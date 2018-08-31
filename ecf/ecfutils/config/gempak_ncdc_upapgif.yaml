@@ -1,0 +1,26 @@
+# This file is used to generate config.gempak_ncdc_upapgif, which has settings for the GFS gempak_ncdc_upapgif step
+
+config_gempak_ncdc_upapgif:
+  filename: config.gempak_ncdc_upapgif
+  content: !expand |
+    #!/bin/ksh -x
+   
+    ########## config.gempak_ncdc_upapgif ##########
+    # GFS gempak_ncdc_upapgif step specific
+
+    echo "BEGIN: config.gempak_ncdc_upapgif"
+
+    # Get task specific resources
+    . $EXPDIR/config.resources gempak
+
+    export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
+    export FIXgfs=$HOMEgfs/gempak/fix
+    export USHgfs=$HOMEgfs/gempak/ush
+    export FIXgempak=$HOMEgfs/gempak/fix
+    export USHgempak=$HOMEgfs/gempak/ush
+
+    export COMIN=$ROTDIR/$RUN.$PDY/$cyc/nawips
+    export COMOUT=$ROTDIR/$RUN.$PDY/$cyc
+    export COMINgempak="$ROTDIR"
+
+    echo "END: config.gempak_ncdc_upapgif" 
