@@ -49,7 +49,7 @@ module list
 # GFS_AWIPS_20KM_1P00 AWIPS PRODUCT GENERATION
 ################################################
 
-export fcsthrs=012
+export fcsthrs=009
 
 ############################################
 # user defined

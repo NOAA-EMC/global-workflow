@@ -10,13 +10,15 @@ config_pgrb2_spec_npoess:
 
     echo "BEGIN: config.pgrb2_spec_npoess"
 
+    export SENDCOM="YES"
+
     export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
     export FIXgfs=$HOMEgfs/gempak/fix
     export USHgfs=$HOMEgfs/gempak/ush
     export FIXgempak=$HOMEgfs/gempak/fix
     export USHgempak=$HOMEgfs/gempak/ush
 
-    export COMIN=$ROTDIR/$RUN.$PDY/$cyc/nawips
-    export COMOUT=$ROTDIR/$RUN.$PDY/$cyc/nawips/meta
+    export COMIN=$ROTDIR/$RUN.$PDY/$cyc
+    export COMOUT=$ROTDIR/$RUN.$PDY/$cyc
 
     echo "END: config.pgrb2_spec_npoess" 

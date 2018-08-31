@@ -4,7 +4,7 @@
 post_schema: &post_schema !Template
   GOESF:
     type: bool
-    default: no
+    default: yes
     description: make synthetic goes imagery
   GTGF:
     type: bool

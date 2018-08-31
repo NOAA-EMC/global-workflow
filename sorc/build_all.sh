@@ -66,6 +66,14 @@ echo " .... Building ncep_post .... "
 }
 
 #------------------------------------
+# build gfs_wafs 
+#------------------------------------
+$Build_gfs_wafs  && {
+echo " .... Building gfs_wafs  .... "
+./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+}
+
+#------------------------------------
 # build NEMS util
 #------------------------------------
 $Build_nems_util && {
@@ -151,14 +159,6 @@ echo " .... Building gfs_overpdtg2 .... "
 $Build_gfs_wintemv && {
 echo " .... Building gfs_wintemv .... "
 ./build_gfs_wintemv.sh > $logs_dir/build_gfs_wintemv.log 2>&1
-}
-
-#------------------------------------
-# build gfs_cnvgrib21_gfs
-#------------------------------------
-$Build_gfs_cnvgrib21_gfs && {
-echo " .... Building gfs_cnvgrib21_gfs .... "
-./build_gfs_cnvgrib21_gfs.sh > $logs_dir/build_gfs_cnvgrib21_gfs.log 2>&1
 }
 
 #------------------------------------

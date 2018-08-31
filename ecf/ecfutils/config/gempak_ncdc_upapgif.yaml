@@ -13,14 +13,16 @@ config_gempak_ncdc_upapgif:
     # Get task specific resources
     . $EXPDIR/config.resources gempak
 
-    export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
+    export SENDCOM="YES"
+
     export FIXgfs=$HOMEgfs/gempak/fix
     export USHgfs=$HOMEgfs/gempak/ush
-    export FIXgempak=$HOMEgfs/gempak/fix
+    export FIXgempak=$NWROOTp1/gempak/fix
     export USHgempak=$HOMEgfs/gempak/ush
 
     export COMIN=$ROTDIR/$RUN.$PDY/$cyc/nawips
+    export COMINgfs="$COMROOThps/$NET/$envir/$RUN.$PDY"
     export COMOUT=$ROTDIR/$RUN.$PDY/$cyc
-    export COMINgempak="$ROTDIR"
+    export COMOUTwmo="$COMOUT/wmo"
 
     echo "END: config.gempak_ncdc_upapgif" 

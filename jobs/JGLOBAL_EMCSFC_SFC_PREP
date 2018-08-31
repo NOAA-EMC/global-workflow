@@ -27,7 +27,6 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################

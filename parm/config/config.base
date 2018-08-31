@@ -254,8 +254,9 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# If YES, NSST is turned on in anal and/or fcst steps
+# turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
+if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.

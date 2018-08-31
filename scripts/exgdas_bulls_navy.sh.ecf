@@ -58,7 +58,7 @@ case $cyc in
  00) echo 18 > parm.job1
      cp $COMINm1/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
  12) echo 06 > parm.job1
-     cp $COMIN/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
+     cp $COMINm1/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
 esac
 
 export pgm=navybull;. prep_step

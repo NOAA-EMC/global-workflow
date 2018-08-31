@@ -26,6 +26,7 @@ LINK="ln -fs"
 
 pwd=$(pwd -P)
 
+#------------------------------
 #--model fix fields
 if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
@@ -57,7 +58,9 @@ if [ ! -z $FIX_DIR ]; then
  $LINK $FIX_DIR/* .
 fi
 
+#------------------------------
 #--add gfs_post file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
@@ -90,7 +93,9 @@ cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/fix/wafs                       wafs
 fi
 
+#------------------------------
 #--add GSI/EnKF file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
@@ -112,7 +117,9 @@ cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 
 
+#------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
+#------------------------------
 cd ${pwd}/../fix                ||exit 8
     [[ -d gdas ]] && rm -rf gdas
     mkdir -p gdas
@@ -156,7 +163,9 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
     
 
+#------------------------------
 #--link executables 
+#------------------------------
 
 cd $pwd/../exec
 [[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
@@ -182,6 +191,13 @@ if [[ $target == "jet" ]]; then
        echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
       fi
   done 
+fi
+
+if [ $target = wcoss_dell_p3 ]; then
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
 fi
 
 for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do

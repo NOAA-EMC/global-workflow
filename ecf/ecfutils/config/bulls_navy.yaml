@@ -9,6 +9,7 @@ config_bulls_navy:
     echo "BEGIN: config.bulls_navy"
    
     export SENDCOM="YES"
+    export SENDDBN="YES"
  
     export PDY=`expr $CDATE | cut -c1-8`
     export MDATE=`$NDATE -24 $CDATE`
