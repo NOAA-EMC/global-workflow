@@ -8,9 +8,6 @@ echo "BEGIN: config.fcst"
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
 
-export layout_x=$(eval echo \${layout_x_$CDUMP})
-export layout_y=$(eval echo \${layout_y_$CDUMP})
-
 # Get task specific resources
 . $EXPDIR/config.resources fcst
 
@@ -27,6 +24,7 @@ export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
+    export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
 
 # Model configuration

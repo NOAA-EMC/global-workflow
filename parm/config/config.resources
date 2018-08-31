@@ -41,8 +41,9 @@ elif [ $step = "fcst" ]; then
     export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export npe_node_fcst=${npe_node_fcst:-12}
-    export nth_fcst=2
+    export nth_fcst=${nth_fv3:-2}
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
     fi
@@ -117,8 +118,8 @@ elif [ $step = "efcs" ]; then
 
     export wtime_efcs="03:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_node_efcs=12
-    export nth_efcs=2
+    export npe_node_efcs=${npe_node_fcst:-12}
+    export nth_efcs=${nth_fv3:-2}
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_efcs="254M"
     fi
