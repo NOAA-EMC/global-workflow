@@ -14,6 +14,7 @@ config_wafs:
 
     export FIXgfs=$HOMEgfs/gempak/fix
     export USHgfs=$HOMEgfs/gempak/ush
+    export PARMgfs=$HOMEgfs/parm/wafs
 
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
