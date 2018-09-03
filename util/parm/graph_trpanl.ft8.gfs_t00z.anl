@@ -1,0 +1,13 @@
+1RUN  OPN2600Z     4  JFNL
+ 850  STRM 00HR 850  ITACH00HR 850  V    00HR OPN26   MERCIS-I   124   2
+3V904      VFULL 3836    0    0    0                  00HR 850 HT/WIND
+3J052      APT5  3837 3838    0    0                  00HR 850 HT/WIND
+ 700  STRM 00HR 700  U    00HR 700  V    00HR OPN26   MERCIS-I   120   2
+3V900      VFULL 2400    0    0    0                  00HR 700 HT/WIND
+3J045      APT5  3840 3841    0    0                  00HR 700 HT/WIND
+ 500  STRM 00HR 500  ITACH00HR 500  V    00HR OPN26   MERCIS-I   121   2
+3V901      VFULL 2403    0    0    0                  00HR 500 HT/WIND
+3J046      APT5  3842 3843    0    0                  00HR 500 HT/WIND
+ 250  STRM 00HR 250  ITACH00HR 250  V    00HR OPN26   MERCIS-I   122   2
+3V902      VFULL 2406    0    0    0                  00HR 250 HT/WIND
+3J047      APT5  3844 3845    0    0                  00HR 250 HT/WIND

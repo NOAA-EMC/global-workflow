@@ -104,7 +104,19 @@ do
       grib2file=${RUN}.${cycle}.pgrb2.1p00.f${hr}
   fi
   cp $COMIN/$grib2file  .
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File $grib2file does not exist."
+    exit $err
+  fi
+
   $CNVGRIB -g21 $grib2file pgrbf${hr}
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+    exit $err
+  fi
+
   $GRBINDEX pgrbf${hr}  pgrbif${hr}
   hr=`expr $hr + $inc`
   if [ $hr -lt 10 ]; then hr=0$hr; fi
@@ -128,19 +140,28 @@ then
      sendkey=fax.pepfax$fhr
 
      jobn=_$cyc"_"$PDY
-     mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
+
+#     mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
+     ${UTILgfs}/ush/mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
 
      KEYW=NHANL_g
 
-     grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+#     grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+     grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
      if [ ${cyc} = '00' ]; then submn=$sub00; fi
      if [ ${cyc} = '12' ]; then submn=$sub12; fi
 
      echo $FAXOUT $submn $name $Keyword $gif $toc $prt $jobn $lprt
      export FAXOUT submn name Keyword gif toc prt jobn lprt
-     mk_graphics.sh
 
+#     mk_graphics.sh
+     ${UTILgfs}/ush/mk_graphics.sh
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/mk_graphics.sh does not exist."
+        exit $err
+     fi
   fi
 
   set +x
@@ -152,18 +173,33 @@ then
   then
 
      FAXOUT=trpsfprv.faxx.${model}_${cyc}
-     trpsfprv.sh 
+#     trpsfprv.sh 
+     ${UTILgfs}/ush/trpsfprv.sh 
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/trpsfprv.sh does not exist."
+        exit $err
+     fi
+
      jobn=${model}_fax_${cyc}
 
      for KEYW in TRPSFG01 TRPSFG02 TRPSFG03
      do
 
-    grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+#    grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+    grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
      submn=$sub12
 
      export FAXOUT submn name Keyword gif toc prt jobn lprt
-     mk_graphics.sh
+
+#    mk_graphics.sh
+     ${UTILgfs}/ush/mk_graphics.sh
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/mk_graphics.sh does not exist."
+        exit $err
+     fi
 
      done
   fi

@@ -1,0 +1,140 @@
+      SUBROUTINE setkeil(KRUN,KEIL,KLLGO2)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    setkeil     DEFINE KEIL AND KLLGO2 FROM KRUN
+C   PRGMMR: SHIMOMURA        ORG: W/NP12     DATE: 97-02-04
+C
+C ABSTRACT: KEIL IS DEFINED FOR TRUIJ AND TRULL; AND KLLGO2
+C   FOR BOUNDARY TESTING REPORTS (BY SUBR WIBOUND) LATER ON.
+C
+C PROGRAM HISTORY LOG:
+C   YY-MM-DD  ORIGINAL AUTHOR  UNKNOWN
+C   89-04-25  STEVE LILLY  DOCUMENT
+C   93-05-12  LILLY CONVERT SUBROUTINE TO FORTRAN 77
+C   97-02-04  SHIMOMURA - CONVERT TO RUN ON CRAY
+C   97-03-10  SHIMOMURA - ADD KRUN=20 OPTION FOR BIG SHEMI
+C
+C USAGE:    CALL setkeil(KRUN,KEIL,KLLGO2)
+C
+C   INPUT ARGUMENT LIST:
+C     KRUN     - SETTING OPTIONS BY RUN TYPE
+C     KEIL     - GIVEN THE KRUN OPTION; KEIL SPECIFIED THE GRID
+C     KLLGO2   - TO DETERMINE THE TYPE OF LAT/LONG TESTING;
+C
+C   OUTPUT ARGUMENT LIST:
+C     KEIL     - GIVEN THE KRUN OPTION; KEIL SPECIFIED THE GRID
+C     KLLGO2   - TO DETERMINE THE TYPE OF LAT/LONG TESTING;
+C
+C REMARKS:
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 77
+C   MACHINE:  CRAY
+C
+C$$$
+C
+      IF(KRUN .EQ. 4) THEN
+C       ...  STANDARD NH GRID ... FINAL.
+C
+        KLLGO2 = 3
+        KEIL = 2
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 5) THEN
+C       ... NA AFOS SECTION ... LFM.
+C
+        KLLGO2 = 2
+        KEIL = 15
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 8) THEN
+C       ... LFM GRID ... 1DOT.
+C
+        KLLGO2 = 2
+        KEIL = 1
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 9) THEN
+C       ... LFM GRID ... 2DOT.
+C
+        KLLGO2 = 2
+        KEIL = 1
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 10) THEN
+C       ... STANDARD NH GRID ... SIRSPLOT.
+C
+        KLLGO2 = 3
+        KEIL = 2
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 11) THEN
+C       ... TROPIC PLOT ON MR4001 ... TROPIC1.
+C
+        KLLGO2 = 5
+        KEIL = 0
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 15) THEN
+C       ... LARGE 1/20M NH ... NHEMI20.
+C
+        KLLGO2 = 4
+        KEIL = 7
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 17) THEN
+C       ... STANDARD NH GRID ... NHEMI40.
+C
+        KLLGO2 = 3
+        KEIL = 2
+        GO TO 999
+C
+      ELSE IF(KRUN .eq. 18) THEN
+C       ... STANDARD SH GRID ... SHEMI40.
+C
+        KLLGO2 = 6
+        KEIL = 3
+        GO TO 999
+C
+      ELSE IF(KRUN .eq. 19) THEN
+C       ... UAB 1/60M NH GRID ... NHEMI60.
+C
+        KLLGO2 = 7
+        KEIL = 14
+        GO TO 999
+C
+      ELSE IF(KRUN .EQ. 20) THEN		!... BIG SH2001
+        KLLGO2 = 6			!... ???? TRYING SOMETHING
+        KEIL = 16
+        GO TO 999
+C
+      ELSE IF(KRUN .eq. 22) THEN
+C       ... PSEUDO-GOES WEST ... GH2601
+C
+        KLLGO2 = 5
+        KEIL = 0
+C       ...JUST LIKE KRUN = 11.
+        GO TO 999
+C
+      ELSE IF(KRUN .eq. 23) THEN
+C       ... PSEUDO-GOES EAST ... GH2602
+C
+        KLLGO2 = 5
+        KEIL = 0
+C       ..LIKE KRUN = 11.
+        GO TO 999
+C
+      ELSE
+C       ...IF I HAVEN'T CAUGHT YET, SET TO BYPASS LAT/LON BOUNDARY TEST.
+C
+        KLLGO2 = 1
+        KEIL = 0
+        PRINT 9000,KRUN
+ 9000   FORMAT(1H ,'setkeil: Failed to find an entry for KRUN = ',I2,
+     1        /1h ,7X,'UNABLE TO DO I/J TESTING FOR THIS KRUN CATEGORY')
+        GO TO 999
+       ENDIF
+
+  999  CONTINUE
+       RETURN
+       END

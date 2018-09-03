@@ -1,0 +1,125 @@
+      SUBROUTINE PLTRH(FLDA,IMAX,JMAX,I1BIG,J1BIG,IGPLOT,
+     1                 ISTART,JSTART,DOTSGI)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK  ***
+C
+C SUBPROGRAM:  PLTHR    PLOTS THE RELATIVE HUMIDITY AT GRID POINTS.
+C   AUTHOR:KRISHNA KUMAR    ORG:W/NP12       DATE: 1999-08-01 
+C
+C ABSTRACT:  CONVERTS UNPACKED SCALED GRID POINT RH TO INTEGER
+C   AND PLOTS THE VALUES AT GRID POINT LOCATIONS.
+C
+C PROGRAM HISTORY LOG:
+C   85-05-31  PETER HENRICHSEN
+C   93-04-28  LUKE LIN      CONVERT TO FORTRAN-77 AND ADD DOC BLOCK.
+C 1999-08-01  KRISHNA KUMAR CONVERTED THIS CODE FROM CRAY TO IBM
+C                           RS/6000. ASSIGNED PROPER VALUE TO XINDEF
+C                           USING RANGE FUNCTION FOR IBM RS/6000 FOR
+C                           COMPILE OPTIONS xlf -qintsize=8 -qrealsize=8
+C
+C USAGE:  CALL PLTRH(FLDA,IMAX,JMAX,I1BIG,J1BIG,IGPLOT,DOTSGI)
+C   INPUT ARGUMENTS:
+C     FLDA = FIELD CONTAINING THE RH GRID POINT DATA.
+C     IMAX,JMAX   = THE DIMENIONS OF FLDA.
+C     I1BIG,J1BIG = THE CORRECTIVE LOCATION FROM BIG GRID FIELD.
+C     DOTSGI      = DOTS PER GRID INTERVAL WHICH IS FUNCTION OF BGND.
+C     IGPLOT      = INTEGER*2 TWO WORD ARRAY THAT CONTAINS THE FOLLING:
+C     IGPLOT(1)   KEY TO DETERMINE ADDATIVE CONSTANTS FOR GRID CORR.
+C     IGPLOT(2)   COTAINS TO PLOTTING INGREMENT FOR PLOTTING.
+C                 IF .LE. 1 PLOT EVEY GRID POINT.
+C                 IF .EQ. 2 PLOT EVEY OTHER GRID POINT.
+C                 IF .EQ. 3 PLOT EVEY THIRD GRID POINT.
+C
+C   INPUT FILES:  NONE
+C
+C
+C   OUTPUT ARGUMENTS: NONE
+C
+C   OUTPUT FILES: NONE
+C
+C
+C
+C   RETURN CONDITIONS:NONE.
+C
+C   SUBPROGRAMS CALLED:
+C     UNIQUE :  BIN2EB  PUTLAB
+C
+C     LIBRARY:  NONE
+C
+C ATTRIBUTES:
+C   LANGUAGE:   FORTRAN 90
+C   MACHINE :   IBM
+C$$$
+C
+C
+      COMMON/KPLOT/LABEL(2,1024),LABIX,NOBUF,IDRA(50)
+C     COMMON USED FOR PUTLAB.
+C
+      REAL        FLDA(IMAX,JMAX)
+      REAL        XINDEF
+      DATA  XINDEF   /1.0E307 /
+C
+      INTEGER     IADD(3)
+      DATA        IADD                  /4,12,0/
+      CHARACTER*8 IBCDCH
+C
+      INTEGER JADD(3)
+      DATA        JADD                  /4,08,0/
+C
+      INTEGER     IGPLOT(2)
+      INTEGER     IPR(2) 
+C
+C
+C                CORRECT FOR LOCATION ON BACKGROUND.
+C
+                   IPR(1) = 0
+                   IPR(2) = 1
+                   KK = IGPLOT(1)
+                   MM = IGPLOT(2)
+                     IF(KK.LT.1) KK = 1
+                     IF(KK.GT.3) KK = 3
+                     IF(MM.LT.1) MM = 1
+C
+                       IGDCOR = I1BIG - IADD(KK)
+                       JGDCOR = J1BIG - JADD(KK)
+C
+                   N  = 1
+                     IF(MM.NE.1) N = MM
+C
+C       WHICH WILL MAKE SURE THAT THE 1ST GRID POINT IS ALWAYS PLOTTED
+C
+            DO  340 J= JSTART,JMAX
+C
+               DO 330 I =ISTART,IMAX
+C
+                     NODD = MOD(N,MM)
+                          IF(NODD.NE.0) GO TO 320
+C
+                     IF(FLDA(I,J).EQ.XINDEF) GO TO 320
+                      IRH =FLDA(I,J) + 0.5
+                      IF(IRH.GT.99) IRH = 99
+C
+C                       CONVERT IRH TO HOLLERTH.
+C
+                       CALL BIN2EB(IRH,IBCDCH,2,'A99')
+C
+C . . . NOW GET IDOT AND JDOT LOCATION FOR PLOTTING OF RH.
+C
+                        XI = I + IGDCOR
+                        XJ = J + JGDCOR
+C
+C . . .  CONVERT TO DOTS.
+C
+                        IDOT = DOTSGI*(XI - 1.0) + 0.5
+                        JDOT = DOTSGI*(XJ - 1.0) + 0.5
+C
+C . . . NOW PLOT THE HR ON MAP.................
+C
+                 CALL PUTLAB(IDOT,JDOT,1.0,IBCDCH,0.0,2,IPR,0)
+C
+  320              CONTINUE
+                 N = N + 1
+  330          CONTINUE
+  340       CONTINUE
+      RETURN
+      END
+C

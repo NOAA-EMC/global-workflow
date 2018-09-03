@@ -1,0 +1,93 @@
+#####    convertfax.tbl     Fax graphic conversion table              
+#####                
+#####                The keyword can be up to 8 characters long, but make sure
+#####                it contains no spaces.    Leave at least one space
+#####                between width and the keyword   
+#####
+#####    05/01/2006  Lilly - Table is created.
+#####    08/27/2007  Lilly - Modify table to remove keywords 06HPPT_p (6-hour
+#####                        precipitation) and 24HPPT_p (24-hour precipitation).
+#####                        HPC no longer requires printed copies of the 6- and
+#####                        24-hour precipitation graphics.
+#####    04/02/2008  Lilly - Modify table to remove the following keywords:
+#####                      - FM2D01_p  fm2dot_00HR_850MB_HGT_TMP
+#####                      - FM2D02_p  fm2dot_00HR_700MB_HGT_TMP
+#####                      - FM2D03_p  fm2dot_00HR_500MB_HGT_TMP
+#####                      - FM2D04_p  fm2dot_00HR_300MB_HGT_ISO
+#####                      - FM2D05_p  fm2dot_00HR_200MB_HGT_ISO
+#####                      - FM2D06_p  fm2dot_00HR_250MB_HGT_ISO
+#####                      - FM2D07_p  fm2dot_00HR_100MB_HGT_ISO
+#####                      - PLOT70_p  ANL_070MB_HGT_WIND
+#####                      - DM3GFS_p  bcgfsmp1.D-3_GFS_500MB_HGT_DN
+#####                      - DP0GFS_p  bcgfsmp1.D+0_GFS_500MB_HGT_DN_TENDENDENCY
+#####                      - DP3GFS_p  bcgfsmp1.D+3_GFS_500MB_HGT_DN
+#####                      - DP6GFS_p  bcgfsmp1.D+6_GFS_500MB_HGT_DN
+#####                      - ECMWFD_p  ECMWF_500MB_D+3_HGT_DN
+#####                      -  RG250_p  rg250plt_250MB_PLOTTED_DATA
+#####
+Keyword  width       height       FMAT      WMO         ORIG       HEADER      ROTATE   
+#####################################################################################
+RADAR    1728        1100         fax       QAUA00      KWBC       YES         NO 
+RADAR_g  1728        1100         gif       QAUA00      KWBC       NO         180 
+WXDEP    1728        1107         fax       QGUA00      KWBC       YES         NO 
+WXDEP_g  1728        1107         gif       QGUA00      KWBC       NO         180 
+MAX_TMP  1728        1140         fax       QTTA00      KWBC       YES         NO
+MAXT_g   1728        1140         gif       QTTA00      KWBC       NO         180
+MIN_TMP  1728        1140         fax       QTTA01      KWBC       YES         NO   
+MINT_g   1728        1140         gif       QTTA01      KWBC       NO         180   
+24HRPCPN 1728        1140         fax       QETA00      KWBC       YES         NO   
+24HPPT_g 1728        1140         gif       QETA00      KWBC       NO         180   
+12ZSNOW  1728        1140         fax       QSTA00      KWBC       YES         NO   
+12ZSNO_g 1728        1140         gif       QSTA00      KWBC       NO         180   
+SNOWOB_p 1728        1140         ps        QETA00      KWBC       NO          90   
+FREEZLEV 1728        1200         fax       QYSA00      KWBC       YES         NO   
+FREEZL_g 1728        1200         gif       QYSA00      KWBC       NO         180   
+FREEZL_p 1728        1200         ps        QYSA00      KWBC       NO          NO   
+AVGRELHU 1728        1200         fax       QRUA00      KWBC       YES         NO
+AVGREL_g 1728        1200         gif       QRUA00      KWBC       NO         180   
+AVGREL_p 1728        1200         ps        QRUA00      KWBC       NO          NO   
+LI_KINDX 1728        1200         fax       QXUA00      KWBC       YES         NO   
+LIKIDX_g 1728        1200         gif       QXUA00      KWBC       NO         180   
+LIKIDX_p 1728        1200         ps        QXUA00      KWBC       NO          NO   
+PPT_PCNT 1728        1200         fax       QESA00      KWBC       YES         NO   
+PPT_PC_g 1728        1200         gif       QESA00      KWBC       NO         180   
+PPT_PC_p 1728        1200         ps        QESA00      KWBC       NO          NO   
+GMEXWV   1728        2120         fax       QJAA88      KWBC       YES         NO   
+FM2D01_g 1728        1900         gif       QHUA04      KWBC       NO         180
+FM2D001  1728        1165         fax       QHUA04      KWBC       YES         NO
+FM2D02_g 1728        1900         gif       QHTA07      KWBC       NO         180
+FM2D002  1728        1165         fax       QHTA07      KWBC       YES         NO
+FM2D03_g 1728        1900         gif       QHTA11      KWBC       NO         180
+FM2D003  1728        1425         fax       QHTA11      KWBC       YES         NO
+FM2D04_g 1728        1900         gif       QHUA15      KWBC       NO         180
+FM2DA04  1728        1165         fax       QHUA15      KWBC       YES         NO
+FM2D05_g 1728        1900         gif       QHUA17      KWBC       NO         180
+FM2D005  1728        1165         fax       QHUA17      KWBC       YES         NO
+FM2D06_g 1728        1900         gif       QHUA17      KWBC       NO         180
+FM2D07_g 1728        1900         gif       QHUA17      KWBC       NO         180
+GD12NH_p 1728        1863         ps        QHUA15      KWBC       NO          NO
+GDTROP_g 1728        6942         gif       QYFA99      KWBC       NO         270
+V48140_1 1728        1800         fax       QMTQ81      KWBC       YES         NO   
+TRP850V  1728        1400         fax       PPEA85      KWBC       YES         NO
+TRP850_g 1728        3540         gif       PPEA85      KWBC       NO         270
+TRP700V  1728        3540         fax       QZQA07      KWBC       YES         NO
+TRP700A  1728        1400         fax       PPEA70      KWBC       YES         NO
+TRP700_g 1728        3540         gif       QZQA07      KWBC       NO         270
+TRP500V  1728        3500         fax       QZQA11      KWBC       YES         NO
+TRP500A  1728        1400         fax       PPEA50      KWBC       YES         NO
+TRP500_g 1728        3500         gif       QZQA11      KWBC       NO         270
+TRP250V  1728        3500         fax       QZQA16      KWBC       YES         NO
+TRP250A  1728        1400         fax       PPEA25      KWBC       YES         NO
+TRP250_g 1728        3500         gif       QZQA16      KWBC       NO         270
+NHANL_g  1728        1863         gif       QWTA16      KWBC       NO         180
+WNDAFT   1728        1244         fax       QWTA16      KWBC       YES         NO
+WNDAFT_g 1728        1244         gif       QWTA16      KWBC       NO         180
+GDTROPE  1728        3480         fax       QWQA00      KWBC       YES         NO
+GDTROPW  1728        3530         fax       QWAA00      KWBC       YES         NO
+TRPSFG01 1728        3600         fax       QWUI01      KWBC       YES         NO
+GDTROPC  1728        2630         fax       QYFA99      KWBC       YES         NO
+HMERC48A 1728        2353         fax       QDEQ99      KWBC       YES         NO
+TRPSFG02 1728        2734         fax       QWFI99      KWBC       YES         NO
+TRPSFG03 1728        2734         fax       QWFQ99      KWBC       YES         NO
+OPCWND24 1728        1655         fax       QWBI99      KWBC       YES        180
+OPCWND48 1728        1655         fax       QWBQ99      KWBC       YES        180

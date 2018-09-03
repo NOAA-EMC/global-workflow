@@ -85,7 +85,8 @@ done
 export pgm=gendata
 . prep_step
 
-cp ${FIXshared}/graph_pillist1 .
+# cp ${FIXshared}/graph_pillist1 .
+cp ${UTILgfs}/fix/graph_pillist1 .
  
 export FORT11="synop.$PDY$cyc"
 export FORT12="metar.$PDY$cyc"
@@ -97,7 +98,8 @@ export FORT17="graph_pillist1"
 export FORT52="NHPLOT"
 
 startmsg
-${GENDATA} >>$pgmout <<EOF 2>errfile
+# ${GENDATA} >>$pgmout <<EOF 2>errfile
+${UTILgfs}/exec/gendata >>$pgmout <<EOF 2>errfile
 $PDY$cyc
   50 -50  00 360 006 006
 EOF
@@ -116,15 +118,33 @@ export FORT11="gfs.$cycle.prepbufr"
 export FORT78="satwinds"
 
 startmsg
-${REDSAT}  >> $pgmout 2> errfile
+
+# ${REDSAT}  >> $pgmout 2> errfile
+${UTILgfs}/exec/redsat >> $pgmout 2> errfile
 export err=$?;err_chk
 
 cp ${COMIN}/gfs.$cycle.pgrb2.1p00.anl .
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File gfs.$cycle.pgrb2.1p00.anl does not exist."
+    exit $err
+  fi
+
 $CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.anl gfs.$cycle.tmppgrbanl
+export err=$?;err_chk
+
 $COPYGB -xg3 gfs.$cycle.tmppgrbanl gfs.$cycle.pgrbanl
+export err=$?;err_chk
+
 ${GRBINDEX} gfs.$cycle.pgrbanl gfs.$cycle.pgrbianl
 if [ -f $COMIN/gfs.$cycle.syndata.tcvitals.tm00 ] ; then
    cp $COMIN/gfs.$cycle.syndata.tcvitals.tm00 tcvitals
+   export err=$?
+   if [[ $err -ne 0 ]] ; then
+      echo " File gfs.$cycle.syndata.tcvitals.tm00 does not exist."
+      exit $err
+    fi
+
 else
    touch tcvitals
 fi
@@ -151,7 +171,8 @@ filesize=`cat NHPLOT | wc -c`
 echo $filesize >fsize_in
 
 startmsg
-${TRPSFCMV} <fsize_in >> $pgmout 2> errfile
+# ${TRPSFCMV} <fsize_in >> $pgmout 2> errfile
+${UTILgfs}/exec/trpsfcmv <fsize_in >> $pgmout 2> errfile
 export err=$?; err_chk
 
 ###########################################################
@@ -179,13 +200,15 @@ echo 6912 >>fin
 echo 1728 >>fin
 
 startmsg
-${RAS2BITY} <fin >> $pgmout 2> errfile
+# ${RAS2BITY} <fin >> $pgmout 2> errfile
+${UTILgfs}/exec/ras2bity <fin >> $pgmout 2> errfile
 export err=$?;err_chk
 
 ###############################################################
 # Set up the first input image with the header glued at the top
 ###############################################################
-cat ${FIXshared}/graph_ras2bity.header f59 > f59_ras2bity1
+# cat ${FIXshared}/graph_ras2bity.header f59 > f59_ras2bity1
+cat ${UTILgfs}/fix/graph_ras2bity.header f59 > f59_ras2bity1
 
 cp f59_ras2bity1 image001.pur
 cp image001.pur mapback.pur
@@ -213,7 +236,8 @@ export err=$?;err_chk
 ###############################################################
 # Set up the second input image with the header glued at the top
 ###############################################################
-cat ${FIXshared}/graph_ras2bity.header > f59_ras2bity2
+# cat ${FIXshared}/graph_ras2bity.header > f59_ras2bity2
+cat ${UTILgfs}/fix/graph_ras2bity.header > f59_ras2bity2
 
 cp f59_ras2bity2 image002.pur
 
@@ -228,7 +252,8 @@ FAXOUT=tropc${cycle}"."${cyc}
 
 export DTIME=`cat $DATA/fort.79`
 cp f88 fort.13
-cat ${FIXshared}/graph_sixbitb.trpsfcmv.all >> fort.13
+# cat ${FIXshared}/graph_sixbitb.trpsfcmv.all >> fort.13
+cat ${UTILgfs}/fix/graph_sixbitb.trpsfcmv.all >> fort.13
 cat >>fort.13 <<EOF
 SHIFT 000020034600000
 GULFT 0150001400 TROPICAL SURFACE ANAL. AND OBS.
@@ -249,8 +274,10 @@ cat HBULL >> fort.13
 #input files
 ################
 
-cp ${FIXshared}/graph_sixbitb.generic.f15 .
-cp ${FIXshared}/graph_sixbitb.trpsfcmv.$cycle .
+# cp ${FIXshared}/graph_sixbitb.generic.f15 .
+cp ${UTILgfs}/fix/graph_sixbitb.generic.f15 .
+# cp ${FIXshared}/graph_sixbitb.trpsfcmv.$cycle .
+cp ${UTILgfs}/fix/graph_sixbitb.trpsfcmv.$cycle .
 
 export FORT12="mapback.pur"
 export FORT12="image002.pur"
@@ -277,20 +304,23 @@ export FORT81="tropc${cycle}"."${cyc}"
 rm fort.80
 
 startmsg
-${SIXBITB2} >> $pgmout 2>errfile
+# ${SIXBITB2} >> $pgmout 2>errfile
+${UTILgfs}/exec/sixbitb2 >> $pgmout 2>errfile
 export err=$?;err_chk
 
  for KEYW in GDTROPC GDTROPE GDTROPW GDTROP_g
  do
 
- grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+# grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+ grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
  if [ ${cyc} = '00' ]; then submn=$sub00; fi
  if [ ${cyc} = '12' ]; then submn=$sub12; fi
 
  echo $FAXOUT $submn $name $Keyword $gif $toc $prt $jobn $lprt
  export FAXOUT submn name Keyword gif toc prt jobn lprt
- mk_graphics.sh
+# mk_graphics.sh
+ ${UTILgfs}/ush/mk_graphics.sh
 
  done
 

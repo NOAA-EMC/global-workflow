@@ -1,0 +1,81 @@
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    FNDHGT      FIND THE 12HR OLD HEIGHTS
+C   PRGMMR: LARRY SAGER      ORG: W/NMC41    DATE: 96-08-27
+C
+C ABSTRACT: FNDHGT FINDS A STATION IN A LIST OF 12HR OLD     
+C   MANDATORY LEVEL OBSERVATIONS.  THE DATA IS RETURNED FOR
+C   EACH MANDATORY LEVEL.
+C
+C PROGRAM HISTORY LOG:
+C   96-08-27  LARRY SAGER
+C
+C USAGE:    CALL FNDHGT  (HDR, RHGTS, IREP, RLVLS, IRET)            
+C   INPUT ARGUMENT LIST:
+C     HDR      - UNPACKED BUFR HEADING INFORMATION (ID, LAT/LON ...)
+C     RHGTS    - 12HR OLD MANDATORY LEVEL DATA
+C     IREP     - NUMBER OF STATIONS IN RHGTS
+C                .      .    .                                       .
+C   OUTPUT ARGUMENT LIST:      (INCLUDING WORK ARRAYS)
+C     RLVLS    - 12HR OLD MANDATORY LEVEL DATA
+C     IRET     - RETURN CODE
+C
+C REMARKS: LIST CAVEATS, OTHER HELPFUL HINTS OR INFORMATION
+C
+C ATTRIBUTES:
+C   LANGUAGE: CRAY CFT77 FORTRAN
+C   MACHINE:  CRAY4
+C
+C$$$
+      SUBROUTINE FNDHGT(HDR, RHGTS, IREP, RLVLS, IRET)
+C
+C     This subroutine finds a station in the array of 12HR      
+C     old mandatory height data.  The found station is      
+C     returned.     
+C
+      REAL*8        RHGTS(800,23)
+      REAL*8        RLVLS(23)
+C
+      DIMENSION     HDR(10)
+      CHARACTER*8   CAR
+      REAL*8 RAR
+      EQUIVALENCE (CAR,RAR)
+C
+C     START BY SETTING THE LEVEL ARRAY TO ZERO
+C
+      DATA IX /0/
+      IF (IX .EQ. 0) THEN
+         PRINT *,' I HAVE HGTS FOR:'
+         IX = 1
+C         PRINT 102,(RHGTS(K,1),K=1,IREP)
+ 102     FORMAT(10A8)
+ 103     FORMAT(A8)
+      END IF
+      DO K = 2,23
+         RLVLS(K) = 99999.
+      END DO
+      RLVLS(1) = HDR(1)
+C
+C     LOCATE THE STATION TO PROCESS
+C 
+      IRET = 0
+C      PRINT 100,HDR(1)
+ 100  FORMAT(' SEARCH FOR STATION ',A8)
+      DO K = 1,IREP
+         RAR = RHGTS(K,1)
+         IF (HDR(1) .EQ. RHGTS(K,1)) THEN
+C           PRINT *,' STATION FOUND' 
+            DO J = 2,23
+	 	RLVLS(J) = RHGTS(K,J)
+            END DO
+            RETURN
+	 END IF
+      END DO
+C
+C     STATION NOT FOUND  --  RETURN IRET = -1
+C 
+      IRET = -1
+      RETURN
+C
+      END
+
