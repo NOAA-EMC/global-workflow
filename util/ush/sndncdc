@@ -1,0 +1,135 @@
+#!/bin/ksh
+USAGE="usage: sndncdc  <ncdcbasename> <local-file>"
+SMEMBER=sndncdc
+VERS="version: ${SMEMBER} 2000-02-02 09:40L "
+#______________________________________________________________________________
+# NAME     : sndncdc
+# Author   : Peter Henrichsen
+# Purpose  : This script calls dbn_alert to post a nmc6bit file for NCDC 
+#          :
+#          : 
+# History  : 1999-12-03 Peter Henrichsen
+#            2000-01-21 Peter Henrichsen modified to change "job" arg
+#            to lower case.
+#            2000-01-21 Peter Henrichsen modified to put all nmc6bit files
+#            into ${COMROOT}/foreign/ncdc
+#            
+#
+# Location : This script is found on hp36 as:
+#          : /tmp_mnt/export/sgi73/peterhen/util/scripts/ibm/sndncdc
+#          : & on ncosp as          
+#          : ${NWROOT}/util/ush/sndncdc or
+#          : /nfsuser/g02/wx12ph/util/ush/sndncdc           
+#
+# Remarks  : This script assumes that the following values have been 
+#            exported by the parent shell:
+#            job JOBID SENDDBN jlogfile model COMOUTwmo.
+#
+#          : Arg1 ncdcbasename this is the ncdc base name to which 
+#            the extenion of CCYYMMDDHH will be added.
+#
+#          : Arg2 (local-file)
+#            This is the full path of the local file to be sent 
+#            to NCDC.
+#        
+#_______________________________________________________________________________
+#
+#_______________________________________________________________________________
+#
+cd $DATA
+print "$VERS"
+integer   istat
+
+if test $# -ge 2
+then
+ echo "sndncdc has $# args!"
+
+else 
+   echo "Error sndncdc needs 2 args!"
+   echo "Error: $USAGE"
+  exit
+fi
+outfil="$1"
+INFILE="$2"
+ set -x
+export subdir=`basename ${COMOUTwmo}`
+if test "$subdir" = 'faxx'
+then
+ export dir=${COMROOT}/foreign/ncdc
+else
+  export dirn=`dirname ${HOMEutil}`
+  if test "$dirn" = '${NWROOT}'
+  then
+   export dir=${COMROOT}/foreign/ncdc  
+  else
+   export dir=$HOMEutil${COMROOT}/foreign/ncdc  
+  fi
+ set +x  
+  
+fi
+
+
+#  get the year month day and z time to append to end of the file that is to
+#  go to NCDC $outfil
+
+    YMDZ=`date -u +"%Y%m%d%H"`
+
+#  this makes sure that the new file is copied into ${COMROOT}/foreign/faxx !
+
+
+ ncdcfil=`echo ${outfil} | awk 'BEGIN{FS="."} {print $1}'`
+ 
+   if [ -z "${dir}" ] ; then
+      cp ${INFILE} ${dir}/${ncdcfil}.${YMDZ}
+     else
+      set -x
+      mkdir -m 775 -p $dir 
+      cp ${INFILE}  ${dir}/${ncdcfil}.${YMDZ}
+      set +x
+    fi  
+ 
+ 
+istat=0 
+
+#   check to see if $job is missing
+
+    if [ -z "$job" ] ; then
+      job=missgn
+      export job
+    fi
+ #   check to see if $model is missing
+
+
+    if [ -z "$model" ] ; then
+      model=unkown
+      export model
+    fi 
+#set -x
+#______________________________________________________________
+#    call dbn_alert to send file to NCDC 
+#______________________________________________________________
+  set -x
+   if test "$SENDDBN" = 'YES'    
+   then
+
+     $DBNROOT/bin/dbn_alert \
+      NCDC ${model} ${job} ${dir}/${ncdcfil}.${YMDZ} 
+      istat=$?
+      echo dbn_alert: Ended with return code = $istat
+      if test "$istat" = 0 
+      then
+        if test "$dir" = '${COMROOT}/foreign/ncdc'
+        then
+          msg="SENT ${dir}/${ncdcfil}.${YMDZ} to NCDC !"
+        else
+          msg="SENT ${ncdcfil}.${YMDZ} to NCDC !" 
+        fi
+      else
+       msg="ERROR FROM dbn_alert = $istat, trying to send to NCDC!"
+      fi            
+   else 
+       msg="sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"    
+   fi
+ postmsg "$jlogfile" "$msg" 
+ set +x    
+exit 

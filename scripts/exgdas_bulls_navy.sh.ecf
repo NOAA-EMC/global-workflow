@@ -23,9 +23,20 @@ cd $DATA
 # Copy in updated files containing dates and times
 
 if [ $cyc = '00' ]; then
+  export COMINm1=${COMINm1:-$(compath.py ${NET}/${envir}/${RUN}.${PDYm1})/${cyc}}
   cp ${COMINm1}/ship.cntl ship.cntl
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File ship.cntl does not exist."
+    exit $err
+  fi
 else
   cp ${COMIN}/ship.cntl ship.cntl
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File ship.cntl does not exist."
+    exit $err
+  fi
 fi
 
 # Save original ship.cnrl file that containing dates and times
@@ -38,6 +49,11 @@ echo $cyc > parm.job1
 # Copy in SFCSHP file for use as input data set
 
 cp ${COMIN}/${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr SFCSHP
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File ${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr does not exist."
+   exit $err
+fi
 
 export pgm=navybull;. prep_step
 
@@ -56,9 +72,22 @@ export err=$?; err_chk
 
 case $cyc in
  00) echo 18 > parm.job1
-     cp $COMINm1/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
+     export COMINm1=${COMINm1:-$(compath.py ${NET}/${envir}/${RUN}.${PDYm1})/18}
+     cp $COMINm1/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP
+     export err=$? 
+     if [[ $err -ne 0 ]] ; then
+         echo " File ${RUN}.t18z.sfcshp.tm00.bufr_d.nr does not exist." 
+         exit $err
+     fi ;;
+
  12) echo 06 > parm.job1
-     cp $COMIN/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP ;;
+     export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/06}
+     cp $COMIN/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP
+     export err=$? 
+     if [[ $err -ne 0 ]] ; then
+         echo " File ${RUN}.t06z.sfcshp.tm00.bufr_d.nr does not exist."
+         exit $err
+     fi ;;
 esac
 
 export pgm=navybull;. prep_step
@@ -106,7 +135,7 @@ if test $err1 -eq 0 -o $err2 -eq 0; then
   if test $SENDDBN = 'YES'
   then
     cp navybull.tran.${cyc} ${COMOUTwmo}/navybull.tran.${cyc}.$jobn
-    make_ntc_bull.pl WMONV NONE KWBC NONE  \
+    $UTILgfs/ush/make_ntc_bull.pl WMONV NONE KWBC NONE  \
        navybull.tran.${cyc} ${COMOUTwmo}/navybull.tran.${cyc}.$jobn
   fi
 
@@ -146,7 +175,13 @@ postmsg "$jlogfile" "$msg"
  # this is used for part of the ${COMOUTwmo} file name
   jobn=`echo $job|sed 's/[jpt]gdas/gdas/'`
 
-  cp $PARMshared/bull_grdbgdas.d$cyc .
+  cp $UTILgfs/parm/bull_grdbgdas.d$cyc .
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File bull_grdbgdas.d$cyc does not exist."
+    exit $err
+  fi
+
   bullparm=bull_grdbgdas.d$cyc
   out=grdbuls.tran.gdas000.${jobn}
 
@@ -157,6 +192,6 @@ postmsg "$jlogfile" "$msg"
   echo $msg
   postmsg "$jlogfile" "$msg"
 else
-  msg=" GDAS bulletin was not created "
+  msg=" GDAS bulletin was not created at ${cyc}z "
   postmsg "$jlogfile" "$msg"
 fi

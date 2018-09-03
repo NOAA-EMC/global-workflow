@@ -1,0 +1,78 @@
+      SUBROUTINE COMIFID(IVARIN,JFID,IFAXFG,CIFID)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    COMIFID      MAKE IFID
+C   PRGMMR: KRISHNA KUMAR       ORG: W/NP12     DATE: 1999-08-01
+C
+C ABSTRACT: COMPOSITE IFID
+C
+C PROGRAM HISTORY LOG:
+C   96-06-25  LUKE LIN
+C 1999-08-01  KRISHNA KUMAR CONVERTED THIS CODE FROM CRAY TO IBM RS/6000.
+C
+C USAGE:    CALL COMIFID(IVARIN,IFAXFG,CIFID)
+C     1                 IXSCAN, JFID,IRETN)
+C   INPUT ARGUMENT LIST:
+C     IVARIN   - SUBSET NO FOR VARIAN MAP.
+C     JFID     - TEXT TO PUT INTO IJID AT THE BEGENNING OF THE MAP.
+C     IFAXFG   - GT O; FOR FAX CHARTS.
+C
+C   OUTPUT ARGUMENT LIST:
+C
+C   OUTPUT FILES:
+C     FT06F001 - MESSAGE FOR COMIFID
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 90
+C   MACHINE:  IBM
+C
+C$$$
+C
+      CHARACTER*48  JFID
+C
+      CHARACTER*1 BLANK
+      CHARACTER*1 CHARV
+      CHARACTER*1 CHARB
+      INTEGER     IVARNO
+      CHARACTER*12 CTEMP
+      CHARACTER*1 CIFID(48)
+      DATA       MFF00  /Z'FFFF0000'/
+      DATA       M00FF  /Z'0000FFFF'/
+      DATA       BLANK  /' '/
+      DATA       CHARV  /'V'/
+      DATA       CHARB  /'B'/
+C
+C------------------------------------------------------------------
+C
+c
+C     PRINT *,' COMIFID: STARTING!'
+C
+C     .... GET 48 CHAR CIFID MAP ID
+             DO 150 K=1,48
+                CIFID(K)=BLANK
+  150        CONTINUE
+             IF (IFAXFG .GT. 0) THEN
+                CIFID(4)=CHARB
+             ELSE
+                CIFID(4)=CHARV
+             ENDIF
+C
+C            ... CONVERT VARIAN # INTO EBCDIC CHARACTERS
+C
+
+             CALL BIN2EB(IVARIN,CTEMP,4,'A999')
+             PRINT *,'IVARIAN NUMBER=',IVARIN
+
+             DO 155 M=1,4
+                CIFID(4+M)=CTEMP(M:M)
+  155        CONTINUE
+C
+             WRITE(6,FMT='('' COMIFID: JFID='',A)')JFID(1:44)
+             DO 160 N=9,48
+                CIFID(N)=JFID(N:N)
+  160        CONTINUE
+C
+             PRINT *,' CIFID=', CIFID
+C
+      RETURN
+      END

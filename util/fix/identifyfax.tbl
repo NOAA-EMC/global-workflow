@@ -1,0 +1,93 @@
+#####    identifyfax.tbl     Fax graphic identification table              
+#####                
+#####                The keyword can be up to 8 characters long, but make sure
+#####                it contains no spaces.    Leave at least one space
+#####                between sub00 and the keyword   
+#####
+#####    05/01/2006  Lilly - Table is created.
+#####    08/27/2007  Lilly - Modify table to remove keywords 06HPPT_p (6-hour
+#####                        precipitation) and 24HPPT_p (24-hour precipitation).
+#####                        HPC no longer requires printed copies of the 6- and
+#####                        24-hour precipitation graphics.
+#####    04/02/2008  Lilly - Modify table to remove the following keywords:
+#####                      - FM2D01_p  fm2dot_00HR_850MB_HGT_TMP
+#####                      - FM2D02_p  fm2dot_00HR_700MB_HGT_TMP
+#####                      - FM2D03_p  fm2dot_00HR_500MB_HGT_TMP
+#####                      - FM2D04_p  fm2dot_00HR_300MB_HGT_ISO
+#####                      - FM2D05_p  fm2dot_00HR_200MB_HGT_ISO
+#####                      - FM2D06_p  fm2dot_00HR_250MB_HGT_ISO
+#####                      - FM2D07_p  fm2dot_00HR_100MB_HGT_ISO
+#####                      - PLOT70_p  ANL_070MB_HGT_WIND
+#####                      - DM3GFS_p  bcgfsmp1.D-3_GFS_500MB_HGT_DN
+#####                      - DP0GFS_p  bcgfsmp1.D+0_GFS_500MB_HGT_DN_TENDENDENCY
+#####                      - DP3GFS_p  bcgfsmp1.D+3_GFS_500MB_HGT_DN
+#####                      - DP6GFS_p  bcgfsmp1.D+6_GFS_500MB_HGT_DN
+#####                      - ECMWFD_p  ECMWF_500MB_D+3_HGT_DN
+#####                      -  RG250_p  rg250plt_250MB_PLOTTED_DATA
+#####
+Keyword  sub00 sub06 sub12 sub18 gif  toc  prt   lprt   name    
+############################################################################################
+RADAR    x     x     x     x     NO   YES  NO     x     radar.fax
+RADAR_g  x     x     x     x     YES  NO   NO     x     radar.fax
+WXDEP    x     x     x     x     NO   YES  NO     x     wxpxmap 
+WXDEP_g  x     x     x     x     YES  NO   NO     x     wxpxmap
+MAX_TMP  2705  x     x     x     NO   YES  NO     x     max_temperture
+MAXT_g   2705  x     x     x     YES  NO   NO     x     max_temperture   
+MIN_TMP  x     x     2706  x     NO   YES  NO     x     min_temperture  
+MINT_g   x     x     2706  x     YES  NO   NO     x     min_temperture     
+24HRPCPN x     x     2831  x     NO   YES  NO     x     24HR_PPT    
+24HPPT_g x     x     2831  x     YES  NO   NO     x     24HR_PPT 
+12ZSNOW  x     x     2254  x     NO   YES  NO     x     12Z_snow_cover
+12ZSNO_g x     x     2254  x     YES  NO   NO     x     12Z_snow_cover
+SNOWOB_p 2250  2251  2252  2253  NO   NO   YES lj8-44   obs_snow_cover
+FREEZLEV 4910  x     4930  x     NO   YES  NO     x     freezing_level
+FREEZL_g 4910  x     4930  x     YES  NO   NO     x     freezing_level   
+FREEZL_p 4910  x     4930  x     NO   NO   YES hplj4sdm freezing_level
+AVGRELHU 4911  x     4931  x     NO   YES  NO     x     avg_rel_hum
+AVGREL_g 4911  x     4931  x     YES  NO   NO     x     avg_rel_hum
+AVGREL_p 4911  x     4931  x     NO   NO   YES hplj4sdm avg_rel_hum
+LI_KINDX 4912  x     4932  x     NO   YES  NO     x     li_k_index
+LIKIDX_g 4912  x     4932  x     YES  NO   NO     x     li_k_index
+LIKIDX_p 4912  x     4932  x     NO   NO   YES hplj4sdm li_k_index
+PPT_PCNT 4913  x     4933  x     NO   YES  NO     x     precip_water
+PPT_PC_g 4913  x     4933  x     YES  NO   NO     x     precip_water
+PPT_PC_p 4913  x     4933  x     NO   NO   YES hplj4sdm precip_water
+GMEXWV   2728  x     2729  x     NO   YES  NO     x     12HR_48HOUR_FRCST_WAVE_HGT_DIR      
+FM2D01_g 2230  x     2280  x     YES  NO   NO     x     fm2dot_00HR_850MB_HGT_TMP
+FM2D001  2329  x     2339  x     NO   YES  NO     x     fm2dot_00HR_850MB_HGT_TMP
+FM2D02_g 2235  x     2285  x     YES  NO   NO     x     fm2dot_00HR_700MB_HGT_TMP
+FM2D002  2331  x     2341  x     NO   YES  NO     x     fm2dot_00HR_700MB_HGT_TMP
+FM2D03_g 2242  x     2292  x     YES  NO   NO     x     fm2dot_00HR_500MB_HGT_TMP
+FM2D003  2333  x     2343  x     NO   YES  NO     x     fm2dot_00HR_500MB_HGT_TMP
+FM2D04_g 2318  x     2368  x     YES  NO   NO     x     fm2dot_00HR_300MB_HGT_ISO
+FM2DA04  2335  x     x     x     NO   YES  NO     x     fm2dot_ANAL_300MB_HGT_ISO
+FM2D05_g 2323  x     2373  x     YES  NO   NO     x     fm2dot_00HR_200MB_HGT_ISO
+FM2D005  2337  x     2347  x     NO   YES  NO     x     fm2dot_00HR_200MB_HGT_ISO
+FM2D06_g 2742  x     2792  x     YES  NO   NO     x     fm2dot_00HR_250MB_HGT_ISO
+FM2D07_g 4328  x     4329  x     YES  NO   NO     x     fm2dot_00HR_100MB_HGT_ISO
+GD12NH_p x     2745  x     2795  NO   NO   YES hplj4sdm gf12nhfx_12HR_250MB_HGT_ISO
+GDTROPC  3658  3659  3670  3671  NO   YES  NO     x     PACF_TROPICAL_SFC_ANAL
+GDTROP_g 2700  2701  2702  2704  YES  NO   NO     x     VFULL_TROPICAL_SFC_ANAL
+V48140_1 2008  x     x     x     NO   YES  NO     x     48HR_500MB_HGT_VORT
+TRP850V  3837  x     3887  x     NO   YES  NO     x     ANAL_850MB_HGT_WIND
+TRP850_g 3836  x     3886  x     YES  NO   NO     x     00HR_850MB_HGT_WIND
+TRP700V  2400  x     2450  x     NO   YES  NO     x     00HR_700MB_HGT_WIND
+TRP700A  3840  x     3890  x     NO   YES  NO     x     ANAL_700MB_HGT_WIND
+TRP700_g 2400  x     2450  x     YES  NO   NO     x     00HR_700MB_HGT_WIND
+TRP500V  2403  x     2453  x     NO   YES  NO     x     00HR_500MB_HGT_WIND
+TRP500A  3842  x     3892  x     NO   YES  NO     x     ANAL_500MB_HGT_WIND
+TRP500_g 2403  x     2453  x     YES  NO   NO     x     00HR_500MB_HGT_WIND
+TRP250V  2406  2406  2456  2456  NO   YES  NO     x     00HR_250MB_HGT_WIND
+TRP250A  3844  3844  3894  3894  NO   YES  NO     x     ANAL_250MB_HGT_WIND
+TRP250_g 2406  2406  2456  2456  YES  NO   NO     x     00HR_250MB_HGT_WIND
+WNDAFT   2927  x     2977  x     NO   YES  NO     x     WNDS_ALOFT_GR_14_24_34
+WNDAFT_g 2929  x     2979  x     YES  NO   NO     x     WNDS_ALOFT_GR_14_24_34
+GDTROPE  3656  x     3668  x     NO   YES  NO     x     MERC_TROP_SFC_E
+GDTROPW  3657  x     3669  x     NO   YES  NO     x     MERC_TROP_SFC_W
+TRPSFG01 x     x     4390  x     NO   YES  NO     x     24HR_1000MB_STREAMLINE_WIND
+TRPSFG02 x     x     4350  x     NO   YES  NO     x     24HR_1000MB_STREAMF_WIND
+TRPSFG03 x     x     4352  x     NO   YES  NO     x     48HR_1000MB_STREAMF_WIND
+HMERC48A 2424  x     2424  x     NO   YES  NO     x     48HR_SFC_1000MB_500MB_THKNESS
+NHANL_g  2439  x     2489  x     YES  NO   NO     x     gfs_200_hgt_tmp_nh_anl
+OPCWND24 1521  x     1521  x     NO   YES  NO     x     24HR_FRCST_OCEAN_SFC_WND_WAVE
+OPCWND48 1525  x     1525  x     NO   YES  NO     x     48HR_FRCST_OCEAN_SFC_WND_WAVE

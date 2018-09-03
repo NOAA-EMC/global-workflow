@@ -1,0 +1,265 @@
+C$$$  MAIN PROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C MAIN PROGRAM: GENDATA
+C   PRGMMR: HOLLERN          ORG: NP12        DATE: 1999-09-20
+C
+C ABSTRACT: GENDATA READS THE SURFACE SYNOPTIC, SURFACE SHIP,  
+C   MOORED BUOYS, DRIFTING BUOYS AND CMAN OBSERVATIONS   
+C   AND CREATES A FILTERED SURFACE AFOS PLOTFILE FOR 
+C   USE IN MAKING THE TROPICAL MERCATOR SURFACE STRIP ON
+C   THE IBM SP.
+C
+C
+C PROGRAM HISTORY LOG:
+C   96-12-10  LARRY SAGER
+C   97-07-08  GEORGE VANDENbERGHE.  MADE ABSENT SYNOP DATA 
+C                                   A FATAL ERROR.
+C   98-04-24  BOB HOLLERN, MADE THE PROGRAM Y2K COMPLIANT
+C   99-09-16  BOB HOLLERN, CONVERTED THE PROGRAM TO RUN ON THE
+C             IBM SP.  THIS ENTAILED REPLACING SEQUENTIAL WITH
+C             DIRECT ACCESS I/O TO WRITE THE NHPLOT FILE
+C             RECORDS. THE PROGRAM WAS MODIFIED TO READ IN A
+C             4-DIGIT YEAR IN THE PDY DATE VARIABLE.  CHECKS
+C             WERE ADDED IN THE SUBROUTINE THNSTN TO PREVENT
+C             AN ARRAY SUBSCRIPT OF ZERO.
+C  2013-02-20 KRISHNA KUMAR PORTED THIS CODE TO THE WCOSS
+C
+C USAGE:
+C   INPUT FILES:
+C     FORT.05 - DATE/TIME
+C     FORT.11 - SURFACE SYNOPTIC DATA FILE                  
+C     FORT.12 - METAR DATA                                  
+C     FORT.13 - SFCSHP DATA FILE                             
+C     FORT.14 - CMAN DATA FILE                    
+C     FORT.15 - MOORED BUOY DATA FILE                     
+C     FORT.16 - DRIFTING BUOY DATA FILE                   
+C     FORT.17 - GRAPHICS PIL LIST  
+C
+C   OUTPUT FILES:  (INCLUDING SCRATCH FILES)
+C     FORT.52  - SURFACE PLOTFILE                         
+C
+C   SUBPROGRAMS CALLED: (LIST ALL CALLED FROM ANYWHERE IN CODES)
+C     UNIQUE:    - GETDAT HEAFOS REDSFC AFZOOM DATAFS ADDLAB
+C                  LKLNDNAM BDSANAM BDSMNAM CHKFIL FILTER 
+C                  IJAFOS OUTPLT THNSTN
+C     LIBRARY:
+C       COMMON   - ORDERS                       
+C       W3LIB    - W3UTCDAT
+C       GRAPHICS - BIN2CH TRUIJ GTAPIL DAYOWK
+C
+C   EXIT STATES:
+C     COND =   0 - SUCCESSFUL RUN
+c     COND =   8 - NO SYNOPTIC DATA.  dON'T CONTINUE (GEORGE V)
+C
+C REMARKS: LIST CAVEATS, OTHER HELPFUL HINTS OR INFORMATION
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 90
+C   MACHINE:  IBM SP
+C
+C$$$
+      PROGRAM  GENDATA
+C
+      CHARACTER*10  CDATE
+C
+      CHARACTER*8   CWORK 
+      CHARACTER*8   CSTN(20000)
+C
+      CHARACTER*1   OTABL(20000,150)
+CKUMAR      CHARACTER*1   OHED(100)
+      CHARACTER*100 OHED
+      CHARACTER*1   OWORK(8)
+      CHARACTER*1   OEND(32)
+      CHARACTER*10  CHEDA
+      CHARACTER*4   PIL(12)
+      CHARACTER*1   OHEDR(133)
+C     
+      REAL          ARR(300)
+      REAL          RLIMS(4)
+C
+      DIMENSION     HDR(10), HDT(10)
+C 
+      INTEGER       IARR(300) 
+      INTEGER       IOUTUN(6)
+      INTEGER       ITABL(3,20000)
+      INTEGER       ICNT(6)
+      INTEGER       ISTT(20000)
+      INTEGER       LL(6)
+C
+      COMMON  /IDTG/ IYMT(5)
+C
+      EQUIVALENCE   (CWORK,OWORK)
+      EQUIVALENCE   (IWORK,OWORK)
+      EQUIVALENCE   (RWORK,OWORK)
+C 
+      DATA          IOUTUN /11,12,13,14,15,16/ 
+      DATA          ICNT   /6*0/
+      DATA          KSTN   /0/
+      DATA          IPOIN  /133/
+      DATA          IAFS   /52/
+      DATA          IUNIT  /17/
+      DATA          RLIMS  /90.,00.,00.,360./
+      DATA          PIL    /'7007',11*' '/
+      DATA          JTOL   /3000/
+      DATA          LL     /6*999/
+C
+      CALL W3TAGB('GENDATA',1999,0263,0058,'NP12')                   
+C
+      OPEN ( IAFS, ACCESS='DIRECT', RECL=1280 )
+C
+      IREC = 0
+C
+C     INITIALIZE OTABL TO BLANKS IN DO-LOOP RATHER THAN IN
+C     DATA STATEMENT TO PREVENT INSUFFICIENT MEMORY ERROR
+C     DURING COMPILE STEP
+C
+      DO I = 1, 20000
+        DO J = 1, 150
+          OTABL(I,J) = ' '
+        END DO
+      END DO
+C
+C     GET THE DATE TIME TO PROCESS FROM THE SYSTEM
+C
+      READ(5,102) CDATE
+ 102  FORMAT(A)
+C
+      PRINT *,' SYSTEM RUN-TIME IS ',CDATE
+C
+      READ(CDATE,103) IYR,IMT,IDY,ITME
+ 103  FORMAT ( I4, 3I2 )
+C
+      PRINT *,' YR MT DY TME ',IYR,IMT,IDY,ITME
+C
+C     GET THE JULIAN DAY NUMBER
+C 
+      IJDN = IW3JDN(IYR,IMT,IDY)
+      PRINT *,' JULIAN DAY NUMBER IS ',IJDN
+      IJMIN = IJDN*1440 + ITME*60
+      PRINT *,' IJMIN IS ',IJMIN
+      IYMT(4) = ITME      
+C
+C     READ IN THE GEOGRAPHIC LIMITS AND I J TOLERANCES
+C       IF PRESENT
+C
+      READ(5,104,END=10,ERR=10) (LL(K),K=1,6)
+ 104  FORMAT(6I4)
+
+      PRINT *,' READ IN LIMS/TOLS ',(LL(K),K=1,6)
+C
+C     REPLACE THE HARD-WIRED VALUES IF NEW VALUES ARE READ IN
+C
+      IF(LL(1) .NE. 999) RLIMS(1) = LL(1)
+      IF(LL(2) .NE. 999) RLIMS(2) = LL(2)
+      IF(LL(3) .NE. 999) RLIMS(3) = LL(3)
+      IF(LL(4) .NE. 999) RLIMS(4) = LL(4)
+
+      PRINT *,' GEOGRAPHIC LIMITS: ',(RLIMS(K),K=1,4)
+C
+C     START BY BUILDING THE 3 HEADER LABELS AND
+C       ADDING THEM TO THE OUTPUT BLOCK
+C
+ 10   CALL GTAPIL(PIL, IUNIT, CHEDA, IRET1)
+
+      CALL ADDLAB(OHEDR, CDATE, CHEDA, OHED)
+C
+C     LOOP THROUGH THE DATA TYPES 
+C        IUNO = 11      SYNOPTIC DATA
+C             = 12      METAR DATA
+C             = 13      SHIP DATA
+C             = 14      CMAN DATA
+C             = 15      MBUOY DATA
+C             = 16      DBUOY DATA
+C
+      ITYP = 0
+
+      DO 20 I = 1,6     
+         IX = 0
+         IRYN = 1
+         ITYP = ITYP + 1
+         IUNO = IOUTUN(I)
+         KNEXT = 1
+         IRET = 0
+         IRTN = 0
+C
+C        CHKFIL MAKES SURE THE INPUT FILES ARE PRESENT.
+C          IF NOT, THE FILE IS SKIPPED
+C
+         CALL CHKFIL(ITYP,CDATE,IRCF)
+         IF(IRCF .EQ. 1) GOTO 20
+
+         DO WHILE (IRTN .GE. 0)
+C
+C              RETRIEVE A REPORT FROM THE PACKED DATA
+C 
+               CALL REDSFC(RLIMS, IUNO, IX, HDR, HDT, ARR, 
+     1              IAUTO, ITYP, IJREP, IRET)
+               IX = 1
+               IF (IRET .EQ. 0) THEN
+C
+C                 FILTER DROPS UNWANTED BLOCKS AND RETURNS A 
+C                   THINNING PRIORITY FOR ALL OTHER STATIONS
+C                   IRYN = 1   ACCEPT STATION
+C                   IRYN = 0   REJECT STATION
+C
+                  CALL FILTER(HDR, HDT, ARR, IPRIOR, ITYP, 
+     1                  IJMIN, IJREP, IRYN)
+                  IF (IRYN .EQ. 1) THEN
+C
+C                    FORM THE SORT TABLE ENTRY FOR THIS REPORT
+C  
+                     CALL IJAFOS(HDR, ILOC, JLOC)
+C                    IF (JLOC .LT. JTOL) THEN
+C
+                       KSTN = KSTN + 1
+                       ITABL (1,KSTN) = ILOC
+                       ITABL (2,KSTN) = JLOC
+                       ITABL (3,KSTN) = IPRIOR
+                       RWORK = HDR(1)
+                       CSTN(KSTN) = CWORK 
+C                      PRINT 109,KSTN,HDR(1),ILOC,JLOC,IPRIOR
+ 109                   FORMAT(' #',i6,3X,A8,' I J ',2i6,' PRY ',i6)
+                       ISTT (KSTN) = ITYP
+                       ICNT(I) = ICNT(I) + 1
+                       IF(KSTN .GE. 20000) THEN
+                          KSTN = 1      
+                       END IF
+C
+C                      CONVERT TO GRAPHICS FORMAT
+C
+                       CALL FORSFC(HDR, HDT, ARR, IARR, IRET1)
+C
+C                      CONVERT THE DATA TO AFOS FORMAT AND
+C                      STORE IN THE OUTPUT BLOCK
+C
+                       CALL DATAFS(IARR, OTABL, KSTN, IAUTO, IRTN)
+C                  END IF
+                  END IF
+               ELSE
+                  IRTN = -1 
+               END IF
+            END DO
+ 20   CONTINUE   
+C
+C     THIN THE STATION LIST BY THE PRIORITY WEIGHT CALCULATED
+C       IN SUBROUTINE FILTER
+C
+      DO K = 1,5
+         PRINT *,' TYPE ',K,' STATIONS ',ICNT(K)
+      END DO
+      PRINT *,' # STATIONS IS ',KSTN
+c      do i=1,KSTN
+c      write(36,177)(ITABL(j,i),j=1,3)
+c      enddo
+      CALL THNSTN (LL, ITABL, KSTN, CSTN)       
+C
+C     OUTPUT THE NH SURFACE PLOT FILE.        
+C
+      CALL OUTPLT (IAFS, IREC, OHEDR, OTABL, ISTT, KSTN, ITABL)
+C
+      PRINT *,' NH PLOTFILE MAKER END NORMALLY'           
+      PRINT *,' '
+C
+      CALL W3TAGE('GENDATA') 
+      STOP  
+      END
