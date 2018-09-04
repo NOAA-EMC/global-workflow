@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180824
+export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 
@@ -119,9 +119,9 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
 else
-  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${NET}.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${NET}.${PDY}/${cyc} ### EMC PARA Realtime
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${NET}.${PDY}/${cyc} ### EMC PARA Realtimea on CRAY
-  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}.${PDY}/${cyc} ### Boi PARA
+  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/${NET}.${PDY}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips

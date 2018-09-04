@@ -31,7 +31,8 @@ if [ $HEADER = "YES" ]
 then
    INPATH=$DATA/$outname
    SUB=DFAX1064       
-   make_NTC_file.pl $WMO $ORIG $PDYHH $SUB $INPATH $OUTPATH   
+#   make_NTC_file.pl $WMO $ORIG $PDYHH $SUB $INPATH $OUTPATH   
+   $UTILgfs/ush/make_NTC_file.pl $WMO $ORIG $PDYHH $SUB $INPATH $OUTPATH   
 #
 #  Send the graphic to TOC
 

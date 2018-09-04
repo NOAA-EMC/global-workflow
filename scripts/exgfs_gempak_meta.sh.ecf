@@ -100,7 +100,7 @@ do
 
    export fend=$fhr
 
-#  sleep 20
+  sleep 20
 #   mpirun.lsf
 
       typeset -Z3 fhr

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-
-
 #########################################################################
 #
 #   Script:  gempak_gfs_f12_gif.sh
@@ -17,15 +15,10 @@
 #
 #########################################################################
 
-
-
    msg=" Make GEMPAK GIFS utility"
    postmsg "$jlogfile" "$msg"
 
-
-
   set -x
-
 
   MAPAREA="normal"
 
@@ -34,8 +27,6 @@
   pixels="1728;1472"
 
   cp $FIXgempak/coltbl.spc coltbl.xwp
-
-
  
 ##########################################################
 #                12HR FORECAST CHARTS                    #
@@ -46,7 +37,9 @@
 
   echo 00${fhr}${PDY}${cyc} > dates
   export FORT55="title.output"
-  $WEBTITLE < dates
+#  $WEBTITLE < dates
+ ${UTILgfs}/exec/webtitle < dates
+
   export TITLE=`cat title.output`
   echo "\n\n TITLE = $TITLE \n"
 
@@ -64,18 +57,14 @@
   rhvvel700lab="700MB ${fhr}HR FORECAST  RH/VERT VEL"
   rhvvel700dev="gfs_700_rh_vvel_nh_f${fhr}_${cyc}.gif"
 
-
 # Set grid date and input file name
 
   gdattim=`echo ${PDY} | cut -c3-8`/${cyc}00F0${fhr}
   gdfile=gem_grids${fhr}.gem
 
-
-
 #  Execute the GEMPAK program
 
   $GEMEXE/gdplot2_gif << EOF
-
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
@@ -106,7 +95,6 @@
   l
   r
 
-
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
   restore $NTS/base_nh
@@ -134,7 +122,6 @@
   TITLE   = 1/3/${hgtvor500lab}
   l
   r
-
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
@@ -196,9 +183,7 @@
   exit
 EOF
 
-
 $GEMEXE/gpend
-
 
 if [ $SENDCOM = YES ]; then
 
@@ -208,7 +193,6 @@ if [ $SENDCOM = YES ]; then
   cp ${hgtvor500dev}    ${COMOUT}
   cp ${hgtvor500usdev}  ${COMOUT}
   cp ${rhvvel700dev}    ${COMOUT}
-
 
 # Copy the GIF images onto the NCDC area on the public ftp server
 
@@ -223,10 +207,7 @@ if [ $SENDCOM = YES ]; then
 
 fi
 
-
-
    msg=" GEMPAK_GIF ${fhr} hour completed normally"
    postmsg "$jlogfile" "$msg"
 
    exit
-
