@@ -214,8 +214,10 @@ do
         do
 #           ORIG=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
            ORIG=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
+
 #           FILE=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
            FILE=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+
            PDYHH=${PDY}${cyc}
            SUB=IMAG2000
 

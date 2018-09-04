@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180829
+export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -44,7 +44,7 @@ module load dev/grib_util/1.1.0
 #
 #   This is a test version of UTIL_SHARED.v1.0.8 on DELL
 #
-module load dev/util_shared/1.0.8
+# module load dev/util_shared/1.0.8
 module list
 
 ###############################################
@@ -111,18 +111,19 @@ if [ $envir = "prod" ] ; then
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}         ### NCO PROD
   export COMINm1=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDYm1}         ### NCO PROD
 else
-  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
-  export COMINm1=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMINm1=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
 #  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
 #  export COMINm1=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
-#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc} ### Boi PARA
-#  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDYm1}/${cyc} ### Boi PARA
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
+  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $COMOUTwmo

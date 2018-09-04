@@ -15,7 +15,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180829
+export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 
@@ -145,3 +145,4 @@ fi
 # run the GFS job
 #############################################
 sh $HOMEgfs/jobs/JGDAS_GEMPAK_META_NCDC
+

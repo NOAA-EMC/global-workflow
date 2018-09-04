@@ -7,7 +7,8 @@
 ######################################################################
 
 LMOD_EXACT_MATCH=no
-module load prod_util
+module load ips/18.0.1.163
+module load prod_util/1.1.0
 machine=$(getsystem.pl -t)
 ver=1.0.8
 

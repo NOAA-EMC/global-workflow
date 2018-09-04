@@ -47,12 +47,17 @@ export err=$?; err_chk
   if test $SENDCOM = 'YES'
   then
     cp wintemv.bul $COMOUTwmo/wintemv.tran.$job_name
+    export err=$?
+    if [[ $err -ne 0 ]] ; then
+       echo " File wintemv.bul does not exist."
+       exit $err
+    fi
 
 # Add an entry to the OSO status file.
 
     if test $SENDDBN = 'YES'
     then
-       make_ntc_bull.pl WMONV NONE KWNO NONE   \
+       ${UTILgfs}/ush/make_ntc_bull.pl WMONV NONE KWNO NONE   \
                wintemv.bul   $COMOUTwmo/wintemv.tran.$job_name    
     fi
   fi

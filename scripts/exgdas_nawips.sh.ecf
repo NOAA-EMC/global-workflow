@@ -32,6 +32,12 @@ cp $FIXgfs/g2vcrdncep1.tbl g2vcrdncep1.tbl
 
 #
 NAGRIB_TABLE=${NAGRIB_TABLE:-$NWROOTp1/gempak/fix/nagrib.tbl}
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File nagrib.tbl does not exist."
+   exit $err
+fi
+
 NAGRIB=$GEMEXE/nagrib2_nc
 #
 
@@ -123,6 +129,12 @@ EOF
 
   if [ $SENDCOM = "YES" ] ; then
      cp $GEMGRD $COMOUT/.$GEMGRD
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File $GEMGRD does not exist."
+        exit $err
+     fi
+
      mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
      if [ $SENDDBN = "YES" ] ; then
          $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \

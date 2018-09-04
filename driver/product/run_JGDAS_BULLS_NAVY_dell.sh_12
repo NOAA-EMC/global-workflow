@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180830
+export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -51,8 +51,8 @@ module list
 # GDAS BULLS NAVYL BULLETIN PRODUCT GENERATION
 ###############################################
 # set envir=prod or para to test with data in prod or para
-# export envir=para
- export envir=prod
+ export envir=para
+# export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -123,6 +123,7 @@ fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+export COMROOT=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $COMOUTwmo
@@ -131,4 +132,4 @@ fi
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGDAS_BULLS_NAVY1
+sh $HOMEgfs/jobs/JGDAS_BULLS_NAVY
