@@ -731,12 +731,112 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
             fi
             #run in MPMD style if MPMD=YES, else run serially METplus
             if [ $MPMD = YES ] ; then
-                echo "RUN MPMD HOLDER"
+                if [ $run_upper_air = "YES" ]; then
+                    type="upper_air"
+                    echo "==== running METplus grid-to-obs for ${type} for ${VDATE} ${exp} ===="
+                    export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/pb2nc
+                    export point_stat_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/point_stat
+                    mkdir -p ${pb2nc_upper_air_dir} ${point_stat_upper_air_dir}
+                fi
+                if [ $run_conus_sfc = "YES" ]; then
+                    type="conus_sfc"
+                    echo "==== running METplus grid-to-obs for ${type} for ${VDATE} ${exp} ===="
+                    export pb2nc_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/pb2nc
+                    export point_stat_conus_sfc_dir=${rundir_g2o1}/make_met_data/conus_sfc/${exp}/point_stat
+                    mkdir -p ${pb2nc_conus_sfc_dir} ${point_stat_conus_sfc_dir}
+                fi
+                #first run pb2nc to keep from writing over or having numerous copies of same file
+                export g2o_process="pb2nc"
+                export poedir=${rundir_g2o1}/jobs/${exp}/poe_scripts
+                mkdir -p $poedir/${g2o_process}
+                python ${USHgfs}/metplusjob_create_g2o_poejobscripts.py
+                cd $poedir/${g2o_process} ||exit 8
+                chmod u+x poejob*.sh
+                ncount=$(ls -l poejob*.sh |wc -l)
+                nc=0; iproc=0; node=1
+                while [ $nc -lt $ncount ]; do
+                    if [ $iproc -ge $nproc ]; then iproc=0; node=$((node+1)); fi
+                        poescript=$poedir/${g2o_process}/poe_node${node}
+                        if [ $iproc -eq 0 ]; then
+                            rm -f $poescript; touch $poescript
+                        fi
+                        nc=$((nc+1))
+                        iproc=$((iproc+1))
+                        echo "$poedir/${g2o_process}/poejob${nc}.sh" >>$poescript
+                        if [ $iproc -eq $nproc -o $nc -eq $ncount ]; then
+                            export MP_PGMMODEL=mpmd
+                            export MP_CMDFILE=${poescript}
+                            launcher="aprun -j 1 -n ${iproc} -N ${iproc} -d 1 cfp"
+                            if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ] ; then
+                                $launcher $MP_CMDFILE
+                            else
+                                $launcher
+                            fi
+                            export err=$?
+                            echo "EXIT ${MP_CMDFILE} WITH ${err}"
+                            #if [ $err -ne 0 ]; then sh +x ${poescript} ; fi
+                        fi
+                done
+                #second run point_stat
+                export g2o_process="point_stat"
+                export poedir=${rundir_g2o1}/jobs/${exp}/poe_scripts
+                mkdir -p $poedir/${g2o_process}
+                python ${USHgfs}/metplusjob_create_g2o_poejobscripts.py
+                cd $poedir/${g2o_process} ||exit 8
+                chmod u+x poejob*.sh
+                ncount=$(ls -l poejob*.sh |wc -l)
+                nc=0; iproc=0; node=1
+                while [ $nc -lt $ncount ]; do
+                    if [ $iproc -ge $nproc ]; then iproc=0; node=$((node+1)); fi
+                        poescript=$poedir/${g2o_process}/poe_node${node}
+                        if [ $iproc -eq 0 ]; then
+                            rm -f $poescript; touch $poescript
+                        fi
+                        nc=$((nc+1))
+                        iproc=$((iproc+1))
+                        echo "$poedir/${g2o_process}/poejob${nc}.sh" >>$poescript
+                        if [ $iproc -eq $nproc -o $nc -eq $ncount ]; then
+                            export MP_PGMMODEL=mpmd
+                            export MP_CMDFILE=${poescript}
+                            launcher="aprun -j 1 -n ${iproc} -N ${iproc} -d 1 cfp"
+                            if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ] ; then
+                                $launcher $MP_CMDFILE
+                            else
+                                $launcher
+                            fi
+                            export err=$?
+                            echo "EXIT ${MP_CMDFILE} WITH ${err}"
+                            #if [ $err -ne 0 ]; then sh +x ${poescript} ; fi
+                        fi
+                done
+                #third run stat_analysis
+                n=0 ; for fcyc in $fcyclist ; do n=$((n+1)) ; fcycname[n]=$fcyc  ; done
+                export fcyc_start=${fcycname[1]}
+                export fcyc_end=${fcycname[$gfs_cyc]}
+                export fcyc_int=`expr 24 \/ $gfs_cyc  \* 3600 `
+                if [ $run_upper_air = "YES" ]; then
+                    type="upper_air"
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2obs_upper_air_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    for fcycl in $fcyclist ; do
+                        export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
+                        mkdir -p ${savedir}
+                        cp ${rundir_g2o1}/VSDB_format/upper_air/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_air_${VDATE}.stat
+                    done
+                fi
+                if [ $run_conus_sfc = "YES" ]; then
+                    type="conus_sfc"
+                    ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/mpmd_confs/grid2obs_conus_sfc_step1c.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                    for fcycl in $fcyclist ; do
+                        export savedir=${metplussave}/grid2obs/${fcycl}Z/${exp}
+                        mkdir -p ${savedir}
+                        cp ${rundir_g2o1}/VSDB_format/conus_sfc/${fcycl}Z/${exp}/*.stat ${savedir}/${exp}_sfc_${VDATE}.stat
+                    done
+                fi
             else
                 if [ $run_upper_air = "YES" ]; then
                     type="upper_air"
                     echo "==== running METplus grid-to-obs for ${type} for ${VDATE} ${exp} ===="   
-                    export prepbufr_upper_air="gdas"
+                    #export prepbufr_upper_air="gdas"
                     export pb2nc_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/pb2nc
                     export point_stat_upper_air_dir=${rundir_g2o1}/make_met_data/upper_air/${exp}/point_stat
                     mkdir -p ${pb2nc_upper_air_dir} ${point_stat_upper_air_dir}
