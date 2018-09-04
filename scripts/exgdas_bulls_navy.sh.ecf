@@ -71,8 +71,8 @@ export err=$?; err_chk
 
 case $cyc in
  00) echo 18 > parm.job1
-     export COMINm1_18=${COMROOT}/${NET}/${envir}/${RUN}.${PDYm1}/18
-     cp $COMINm1_18/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP
+     export COMINgdas=${COMINgdas}.${PDYm1}/18
+     cp $COMINgdas/${RUN}.t18z.sfcshp.tm00.bufr_d.nr SFCSHP
      export err=$? 
      if [[ $err -ne 0 ]] ; then
          echo " File ${RUN}.t18z.sfcshp.tm00.bufr_d.nr does not exist." 
@@ -80,8 +80,8 @@ case $cyc in
      fi ;;
 
  12) echo 06 > parm.job1
-     export COMIN_06=${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/06
-     cp $COMIN_06/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP
+     export COMINgdas=${COMINgdas}.${PDY}/06
+     cp $COMINgdas/${RUN}.t06z.sfcshp.tm00.bufr_d.nr SFCSHP
      export err=$? 
      if [[ $err -ne 0 ]] ; then
          echo " File ${RUN}.t06z.sfcshp.tm00.bufr_d.nr does not exist."
