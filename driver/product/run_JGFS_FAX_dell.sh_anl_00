@@ -54,7 +54,7 @@ module list
 ############################################
 
 export fcsthrs="anl"
-# export fcsthrs="000"
+# export fcsthrs="00"
 
 ##############################################
 # Define COM, COMOUTwmo, COMIN  directories

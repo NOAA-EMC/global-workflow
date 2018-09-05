@@ -249,7 +249,7 @@ then
 
   startmsg
 #  ${RSONDPLT} < ${PARMshared}/graph_rsondplt.ft05.P >>$pgmout 2>errfile
-  ${UTILgfs}/exec/rsondplt ${RSONDPLT} < ${UTILgfs}/parm/graph_rsondplt.ft05.P >>$pgmout 2>errfile
+  ${UTILgfs}/exec/rsondplt < ${UTILgfs}/parm/graph_rsondplt.ft05.P >>$pgmout 2>errfile
   export err=$?;err_chk
 
   set +x

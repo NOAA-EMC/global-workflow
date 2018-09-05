@@ -96,7 +96,9 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
-export TMPDIR=/gpfs/hps3/ptmp/Boi.Vuong/output
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+
+# export TMPDIR=/gpfs/hps3/ptmp/Boi.Vuong/output
 
 ###################################
 # Specify NET and RUN Name and model
