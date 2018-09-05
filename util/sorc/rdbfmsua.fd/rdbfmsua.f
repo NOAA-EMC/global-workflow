@@ -1,0 +1,397 @@
+      PROGRAM RDBFUA
+C$$$  MAIN PROGRAM DOCUMENTATION BLOCK
+C
+C MAIN PROGRAM: RDBFUA
+C   PRGMMR: J. ATOR           ORG: NP12        DATE: 2007-08-13
+C
+C ABSTRACT: Upper Air Plotted Data for levels 1000MB; 925MB; 850MB; 700MB;
+C           500MB; 400MB; 300MB; 250MB; 200MB; 150MB, and 100MB for the 
+C           following regions: 1)United States; 2)Canada; 3)Alaska; and,
+C           the 4)Mexico and Caribbean.  Note that Alaska includes eastern
+C           Russia.  Also adding South America, Africa, and the Pacific.
+C
+C PROGRAM HISTORY LOG:
+C
+C 2007-08-13 J. ATOR -- ORIGINAL AUTHOR
+C 2007-08-20 C. Magee -- Added block 25 (eastern Russia)
+C 2007-09-20 S. Lilly -- Changing to read blks 60 thru 91.
+C 2007-09-20 C. Magee -- Added code to read upper air and metar stn tables
+C 2007-09-25 S. Lilly -- Added logic to write statements in order to put STID,
+C                        STNM and TIME on the same line.
+C 2007-09-27 C. Magee -- Change output for stntbl.out. Use st_rmbl to remove   
+C                        leading blank from reportid if internal write was
+C                        used to convert integer WMO block/stn number to  
+C                        char report id.                                  
+C 2012-01-24 J. Cahoon -- Modified from original RDBFUA to include 
+C			significant and standard together in output
+C 2012-02-15 B. Mabe -- Changed Program name and output file to reflect
+C                        change to output for sig and man data
+C 2016-10-18 B. Vuong -- Removed hardwire '/nwprod/dictionaries/' in CALL FL_TBOP
+C
+C USAGE:
+C   INPUT FILES:
+C     UNIT 40  - adpupa dumpfile (contains data from BUFR tank b002/xx001)
+C
+C     sonde.land.tbl                                           
+C     metar.tbl                                                
+C
+C   OUTPUT FILES:
+C     UNIT 51  - rdbfmsua.out - contains ASCII upper air data for the desired 
+C                             stations.
+C     UNIT 52  - stnmstbl.out - contains ASCII station table info for use by  
+C                             html generator.
+C
+C   SUBPROGRAMS CALLED:
+C     UNIQUE:   
+C     LIBRARY: BUFRLIB - OPENBF UFBINT
+C              GEMLIB - FL_TBOP ST_RMBL TB_RSTN         
+C              BRIDGE - DC_BSRH         
+C
+C   EXIT STATES:
+C     COND =   0 - SUCCESSFUL RUN
+C
+C REMARKS:
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 90
+C   MACHINE : IBM-SP
+C
+C$$$
+        INCLUDE 'GEMPRM.PRM'
+        INCLUDE 'BRIDGE.PRM'
+C*----------------------------------------------------------------------
+C*	Set the name of the output file.
+C*----------------------------------------------------------------------
+
+	CHARACTER*(*)	FLO, STNO
+
+	PARAMETER	( FLO = 'rdbfmsua.out' )
+	PARAMETER	( STNO = 'sonde.idsms.tbl' )
+
+	REAL*8		BFMSNG
+	PARAMETER	( BFMSNG = 10.0E10 )
+
+	PARAMETER	( GPMSNG = -9999.0 )
+	PARAMETER	( MAXSTN = 10000 )
+	
+	REAL*8		r8hdr ( 9, 1 ), r8lvl ( 6, 100 ), r8arr( 1, 1 )
+	REAL*8		r8tmp ( 6, 100 ), r8out ( 6, 300 ),swpbuf
+	REAL*8		r8tmptot ( 6, 300 )
+
+	CHARACTER*8	cmgtag, reportid
+        CHARACTER       stnnam*32, tbchrs*20, state*2, tabcon*2 
+        CHARACTER       ldcoun( LLSTFL )*2, mtcoun ( MAXSTN )*2
+        CHARACTER       ldstid ( LLSTFL )*8, mtstid ( MAXSTN )*8       
+        INTEGER         ldstnm ( LLSTFL ), mtstnm ( MAXSTN ), ispri             
+        INTEGER         itabnum             
+        REAL            slat, slon, selv                          
+        LOGICAL         nomatch, needHeader
+
+C*----------------------------------------------------------------------
+C*	Open and read the sonde land station table.
+C*----------------------------------------------------------------------
+        CALL FL_TBOP ( 'sonde.land.tbl',
+     +                 'stns', iunltb, iertop )
+        IF ( iertop .ne. 0 ) THEN
+           print*,' error opening sonde land station table'
+        END IF
+
+        ii = 1
+        ierrst = 0
+        DO WHILE  ( ( ii .le. LLSTFL ) .and. ( ierrst .eq. 0 ) )
+            CALL TB_RSTN  ( iunltb, ldstid (ii), stnnam, ldstnm (ii),
+     +                      state, ldcoun (ii), slat, slon,
+     +                      selv, ispri, tbchrs, ierrst )
+            ii = ii + 1
+        END DO
+        IF ( ierrst .eq. -1 ) THEN
+          numua = ii - 1
+        END IF
+C*----------------------------------------------------------------------
+C*      Close the sonde land station table file.
+C*----------------------------------------------------------------------
+        CALL FL_CLOS ( iunltb, iercls )
+C*----------------------------------------------------------------------
+C*	Open and read the metar station table.
+C*----------------------------------------------------------------------
+        CALL FL_TBOP ( 'metar_stnm.tbl',
+     +                 'stns', iunmtb, iertop )
+        IF ( iertop .ne. 0 ) THEN
+           print*,' error opening metar station table'
+        END IF
+
+        jj = 1
+        ierrst = 0
+        DO WHILE  ( ( jj .le. MAXSTN ) .and. ( ierrst .eq. 0 ) )
+            CALL TB_RSTN  ( iunmtb, mtstid (jj), stnnam, mtstnm (jj),
+     +                      state, mtcoun(jj), slat, slon,
+     +                      selv, ispri, tbchrs, ierrst )
+            jj = jj + 1
+        END DO
+        IF ( ierrst .eq. -1 ) THEN
+          nummet = jj - 1
+        END IF
+C*----------------------------------------------------------------------
+C*      Close the metar station table file.
+C*----------------------------------------------------------------------
+        CALL FL_CLOS ( iunmtb, iercls )
+C*----------------------------------------------------------------------
+C*	Open and initialize the output files.
+C*----------------------------------------------------------------------
+ 
+	OPEN  ( UNIT = 51, FILE = FLO )
+	WRITE ( 51, FMT = '(A)' ) 'PARM=PRES;HGHT;TMPK;DWPK;DRCT;SPED'
+	OPEN  ( UNIT = 52, FILE = STNO)
+
+C*----------------------------------------------------------------------
+C*	Open the BUFR file.
+C*----------------------------------------------------------------------
+
+        CALL OPENBF  ( 40, 'IN', 40 )
+
+C*----------------------------------------------------------------------
+C*	Read a BUFR subset from the BUFR file.
+C*----------------------------------------------------------------------
+
+  	DO WHILE ( IREADNS ( 40, cmgtag, imgdt ) .eq. 0 )
+
+	    IF ( cmgtag .eq. 'NC002001' ) THEN
+
+C*----------------------------------------------------------------------
+C*		Unpack the header information from this subset.
+C*----------------------------------------------------------------------
+
+		CALL UFBINT  ( 40, r8hdr, 9, 1, nlev, 
+     +			'WMOB WMOS CLAT CLON SELV YEAR MNTH DAYS HOUR' )
+
+		IF  ( ( ( r8hdr(1,1) .ge. 60 ) .and.
+     +		      ( r8hdr(1,1) .le. 91 ) ) .or.   
+     +		      ( r8hdr(1,1) .eq. 25 ) ) THEN
+
+C*----------------------------------------------------------------------
+C*		    Unpack the level information from this subset.
+C*		    and replicate for VISG =2,4,and 32
+C*----------------------------------------------------------------------
+		    levelit = 0
+		    needHeader = .true.
+		    nlevtot = 0   
+		    DO WHILE ( levelit .le. 2 )
+			IF ( levelit .eq. 0 ) THEN
+		    	    CALL UFBINT  ( 40, r8lvl, 6, 50, nlev,
+     +				'VSIG=2 PRLC GP10 TMDB TMDP WDIR WSPD' )
+			ELSE IF ( levelit .eq. 1 ) THEN
+			    CALL UFBINT  ( 40, r8lvl, 6, 50, nlev,
+     +				'VSIG=4 PRLC GP10 TMDB TMDP WDIR WSPD' ) 
+			ELSE IF ( levelit .eq. 2 ) THEN
+			    CALL UFBINT  ( 40, r8lvl, 6, 50, nlev,
+     +				'VSIG=32 PRLC GP10 TMDB TMDP WDIR WSPD' )
+			END IF
+		     IF  ( nlev .gt. 0 )  THEN
+C*----------------------------------------------------------------------
+C*                      Find the corresponding 3 or 4 character ID 
+C*                      in the sonde land station table. Store into
+C*                      reportid only if non-blank.
+C*----------------------------------------------------------------------
+                        iblkstn = NINT( r8hdr(1,1)*1000 + r8hdr(2,1) )
+                        nomatch = .true.
+                        CALL DC_BSRH ( iblkstn, ldstnm, numua,
+     +                                 ii, iersrh )
+                        IF ( iersrh .ge. 0 ) THEN
+                          reportid = ldstid(ii)
+                          tabcon = ldcoun(ii)
+                          itabnum = ldstnm(ii)
+                          IF ( ldstid (ii) .ne. '        ') THEN
+                            nomatch = .false.
+                          END IF
+                        END IF
+C*----------------------------------------------------------------------
+C*                      Either no match in sonde land table or tdstid       
+C*                      was found but ldstid was blank, so check metar      
+C*                      table for match and non-blank char id.      
+C*----------------------------------------------------------------------
+                        IF ( nomatch ) THEN
+                          mblkstn = INT( iblkstn * 10 )
+                          CALL DC_BSRH ( mblkstn, mtstnm, nummet,
+     +                                 jj, iersrh )
+                          IF ( iersrh .ge. 0 ) THEN
+                            reportid = mtstid(jj)
+                            tabcon = mtcoun(jj)
+                            itabnum = mtstnm(jj)
+                            nomatch = .false.
+                          END IF
+                        END IF
+C*----------------------------------------------------------------------
+C*                      If no header, build it
+C*----------------------------------------------------------------------
+                      IF  ( needHeader ) THEN
+C*----------------------------------------------------------------------
+C*			Write the data to the output file.
+C*----------------------------------------------------------------------
+                        IF ( reportid .ne. '        ' ) THEN
+C*----------------------------------------------------------------------
+C*			3- or 4-char ID found.            
+C*----------------------------------------------------------------------
+			  WRITE ( 51,
+     +			    FMT = '(/,A,A5,3X,A,I2,I3.3,3x,A,3I2.2,A,2I2.2)' )
+     +			    'STID=', reportid(1:5),
+     +			    'STNM=', INT(r8hdr(1,1)), INT(r8hdr(2,1)),
+     +			  'TIME=', MOD(NINT(r8hdr(6,1)),100),
+     +				   NINT(r8hdr(7,1)), NINT(r8hdr(8,1)),
+     +				   '/', NINT(r8hdr(9,1)), 0
+			  WRITE ( 51,
+     +			    FMT = '(2(A,F7.2,1X),A,F7.1)' )
+     +			    'SLAT=', r8hdr(3,1),
+     +			    'SLON=', r8hdr(4,1),
+     +			    'SELV=', r8hdr(5,1)
+                        ELSE
+C*----------------------------------------------------------------------
+C*			write WMO block/station instead   
+C*----------------------------------------------------------------------
+			  WRITE ( 51,
+     +			    FMT = '(/,A,I2,I3.3,3X,A,I2,I3.3,3x,A,3I2.2,A,2I2.2)' )
+     +			    'STID=', INT(r8hdr(1,1)), INT(r8hdr(2,1)),
+     +			    'STNM=', INT(r8hdr(1,1)), INT(r8hdr(2,1)),
+     +			  'TIME=', MOD(NINT(r8hdr(6,1)),100),
+     +				   NINT(r8hdr(7,1)), NINT(r8hdr(8,1)),
+     +				   '/', NINT(r8hdr(9,1)), 0
+			  WRITE ( 51,
+     +			    FMT = '(2(A,F7.2,1X),A,F7.1)' )
+     +			    'SLAT=', r8hdr(3,1),
+     +			    'SLON=', r8hdr(4,1),
+     +			    'SELV=', r8hdr(5,1)
+                        END IF
+
+
+			WRITE ( 51, FMT = '(/,6(A8,1X))' )
+     +			  'PRES', 'HGHT', 'TMPK', 'DWPK', 'DRCT', 'SPED'
+			needHeader = .false.
+		    END IF
+	       	    DO jj = 1, nlev
+
+C*----------------------------------------------------------------------
+C*			  Convert pressure to millibars.
+C*----------------------------------------------------------------------
+
+			  IF  ( r8lvl(1,jj) .lt. BFMSNG )  THEN
+			    r8lvl(1,jj) = r8lvl (1,jj) / 100.0
+			  ELSE
+			    r8lvl(1,jj) = GPMSNG
+			  END IF
+
+C*----------------------------------------------------------------------
+C*			  Convert geopotential to height in meters.
+C*----------------------------------------------------------------------
+
+			  IF  ( r8lvl(2,jj) .lt. BFMSNG )  THEN
+			    r8lvl (2,jj) = r8lvl (2,jj) / 9.8
+			  ELSE
+			    r8lvl (2,jj) = GPMSNG
+			  END IF
+
+			  DO ii = 3, 6
+			    IF  ( r8lvl(ii,jj) .ge. BFMSNG )  THEN
+			      r8lvl (ii,jj) = GPMSNG
+			    END IF
+			  END DO
+       	           END DO
+C*----------------------------------------------------------------------
+C*                itterate through levels and add to total array 
+C*                ignore -9999 and 0 pressure levels 
+C*----------------------------------------------------------------------
+		   IF ( nlevtot .eq. 0 ) THEN
+			nlevtot = 1
+		   END IF
+                   DO jj = 1,nlev 
+		  	IF (  r8lvl(1,jj) .gt. 99 ) THEN 
+                     	    DO ii = 1,6 
+                         	r8tmptot(ii,nlevtot) = r8lvl(ii,jj)
+                            END DO
+	             	    nlevtot = nlevtot + 1
+			END IF
+                    END DO
+		   nlevtot = nlevtot - 1 
+		   END IF
+		   levelit = levelit + 1
+             END DO 
+C*---------------------------------------------------------------------
+C*		bubble sort so output starts at lowest level of the
+C*		atmosphere (usu. 1000mb), only if there are available
+C*		levels 
+C*---------------------------------------------------------------------
+             IF (nlevtot .gt. 0) THEN
+                istop = nlevtot - 1  
+                iswflg = 1
+                DO WHILE  ( ( iswflg .ne. 0 )  .and.  
+     +          	     ( istop .ge. 1 ) )
+                    iswflg = 0
+C
+                    DO  j = 1, istop
+                        IF  ( r8tmptot(1,j) .lt. r8tmptot(1,j+1) ) THEN
+                           iswflg = 1
+                           DO i = 1,6
+                              swpbuf  = r8tmptot (i,j)
+                              r8tmptot  (i,j)  = r8tmptot (i,j+1)
+                              r8tmptot (i,j+1) = swpbuf
+                           END DO
+                        END IF
+                     END DO
+                     istop = istop-1
+                END DO
+C*---------------------------------------------------------------------
+C*		check for exact or partial dupes and only write
+C*		one line for each level to output file.
+C*---------------------------------------------------------------------
+		DO jj = 1,nlevtot
+		   DO ii = 1,6
+			r8out(ii,jj) = r8tmptot(ii,jj)
+		   END DO
+		END DO
+
+                kk = 1
+                DO jj = 1,nlevtot-1
+                   IF ( r8out(1,kk) .eq. r8tmptot(1,jj+1) ) THEN
+                       r8out(1,kk) = r8tmptot(1,jj)
+                       DO ii = 2,6
+                         IF ( r8out(ii,kk) .lt. r8tmptot(ii,jj+1))
+     +			     THEN 
+                            r8out(ii,kk) = r8tmptot(ii,jj+1)
+                         END IF
+                       END DO
+                   ELSE
+                        kk = kk + 1
+                        r8out(1,kk) = r8tmptot(1,jj+1)
+                        r8out(2,kk) = r8tmptot(2,jj+1)
+                        r8out(3,kk) = r8tmptot(3,jj+1)
+                        r8out(4,kk) = r8tmptot(4,jj+1)
+                        r8out(5,kk) = r8tmptot(5,jj+1)
+                        r8out(6,kk) = r8tmptot(6,jj+1)
+                   END IF
+                END DO
+C*----------------------------------------------------------------------
+C*              write pres, hght, temp, dew point, wind dir, 
+C*              and wind speed to output file.                      
+C*----------------------------------------------------------------------
+                DO jj = 1,kk
+		  WRITE ( 51, FMT = '(6(F8.2,1X))' )
+     +		    ( r8out (ii,jj), ii = 1,6 )
+                END DO
+C*----------------------------------------------------------------------
+C*              Write info for the current station to new table.
+C*              Includes reportid, lat, lon, country, and blk/
+C*              stn.
+C*----------------------------------------------------------------------
+                IF ( reportid .eq. '        ') THEN
+                   WRITE ( reportid(1:6),FMT='(I6)') itabnum
+                   CALL ST_RMBL ( reportid,reportid,len,iret )
+	        END IF
+		WRITE ( 52, FMT = '(A6,F7.2,1X,F7.2,
+     +                              1X,A2,1x,I6)' )
+     +		    reportid(1:6),r8hdr(3,1),r8hdr(4,1),
+     +              tabcon,itabnum
+		END IF
+	      END IF
+	    END IF
+	END DO
+
+	STOP
+	END

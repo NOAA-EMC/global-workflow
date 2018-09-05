@@ -15,7 +15,8 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180824
+
+export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 
@@ -117,7 +118,7 @@ if [ $envir = "prod" ] ; then
   export COMROOT=/gpfs/hps/nco/ops/com
 
 else
-#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc}/nawips   ### EMC PARA Realtime 
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc}/nawips   ### EMC PARA Realtime
 #  export COMINgempak=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1                          ### EMC PARA Realtime
 
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips   ### Boi PARA

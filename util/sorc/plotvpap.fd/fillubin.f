@@ -1,0 +1,139 @@
+       SUBROUTINE fillubin(LUNUPA,LCKPT,IRET_FIL)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    fillubin    TO BUFFER-IN OBS DATA FROM UPA FILE
+C   PRGMMR: SHIMOMURA        ORG: W/NP12      DATE: 97-02-18
+C
+C ABSTRACT: A LIMITED USE BUFFERIN-IN ROUTINE CALLED FROM RD_AIRC()
+C   TO REPLENISH THE INPUT BUFFER WHILE RD_AIRC() PULLS ONE AIRCRAFT 
+C   REPORT AT A TIME FROM THE BUFFER.  THIS READS ONE 512-LONGWORD
+C   BUFFER; THEN UNPACKS INTO 32-BITS PER WORD VIA GBYTES
+C
+C PROGRAM HISTORY LOG:
+C   97-02-18  ORIGINAL AUTHOR -- DAVID SHIMOMURA
+C
+C USAGE:  CALL fillubin(LUNUPA,LCKPT,IRET_FIL)
+C   INPUT ARGUMENT LIST:
+C     LUNUPA   - UNIT NUMBER OF INPUT AIRCRAFT OBS FILE
+C     LCKPT    - CHECKPOINT WITHIN THE CALLER; FOR REMARKS TO TELL
+C                  WHERE I WAS CALLED FROM.
+C
+C   OUTPUT ARGUMENT LIST:
+C     IRET_FIL - ERRFLAG
+C              = 0;  NORMAL RETURN
+C              = -1; FAILED TO READ DUE TO PARITY ERROR
+C              = -2; FAILED TO READ DUE TO HITTING AN END-OF-FILE MARK
+C
+C     
+C      ... READS IN THE NEXT BLOCK INTO BUFFER IN COMMON /RDUPABFS/ ...
+C ...       COMMON  /RDUPABFS/ K8ENDREP, KNEXT, NBUFUPA,
+C ... 1                    LPREVEND, LPREVNXT, NBUFPREV,JUPABUF,I4UPABIN
+C ...       INTEGER           K8ENDREP
+C ...       INTEGER           KNEXT
+C ...       INTEGER           NBUFUPA
+
+C ...       INTEGER           LPREVEND
+C ...       INTEGER           LPREVNXT
+C ...       INTEGER           NBUFPREV
+
+C ...       INTEGER           JUPABUF(512)
+C ...       CHARACTER*8       C8INPBUF (512)	
+C ...                              !... 512 longwords=4096 byte/blk
+C ...       EQUIVALENCE      (JUPABUF(1),C8INPBUF(1)(1:1))
+
+C ...       INTEGER           I4UPABIN(1024)
+C
+C   INPUT FILES:   
+C     LUNUPA   - AIRCRAFT OBSERVATIONS FILE 
+C                   WHICH UNIT NO. LUNUPA HAS BEEN ASSIGNED TO;
+C
+C
+C REMARKS: 
+C   THIS FILLUBIN() IS A DOCUMENTED VERSION OF FILLUPBIN() WHICH IS
+C   REFERENCED BY RD_UUPA().  SINCE THESE TWO USE THE SAME COMMON AREA,
+C   YOU MUST ORGANIZE YOUR PROGRAM TO READ THE RAOB FILE TO ITS END 
+C   BEFORE READING THE AIRCRAFT FILE.
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 77
+C   MACHINE:  CRAY
+C
+C$$$
+C                                                  21-JAN-1997/DSS
+C      ...
+C      ... TO READ IN THE NEXT BLOCK
+       COMMON  /RDUPABFS/ K8ENDREP, KNEXT, NBUFUPA,
+     1                    LPREVEND, LPREVNXT, NBUFPREV,JUPABUF,I4UPABIN
+       INTEGER           K8ENDREP
+       INTEGER           KNEXT
+       INTEGER           NBUFUPA
+
+       INTEGER           LPREVEND
+       INTEGER           LPREVNXT
+       INTEGER           NBUFPREV
+
+       INTEGER          JUPABUF(512)
+       CHARACTER*8      C8INPBUF (512)	!... 512 longwords=4096 byte/blk
+       EQUIVALENCE     (JUPABUF(1),C8INPBUF(1)(1:1))
+
+       INTEGER          I4UPABIN(1024)
+      
+C     ... TO UNPACK THE 64-BIT WORDS INTO 32-BIT WORDS,
+C ...  CALL GBYTES(JUPABUF,I4UPABIN,NOFFSET,NBITSGRP,NPADBITS,NGRPS2DO)
+       INTEGER       NOFFSET
+       DATA          NOFFSET       /  0 /
+       INTEGER       NBITSGRP
+       DATA          NBITSGRP      / 32 /
+       INTEGER       NPADBITS
+       DATA          NPADBITS      /  0 /
+       INTEGER       NGRPS2DO
+       DATA          NGRPS2DO      / 1024 /
+     
+       INTEGER       NEGSIGNEXT
+       DATA          NEGSIGNEXT     / X'FFFFFFFF00000000' /
+C
+       integer       LUNUPA
+       INTEGER       LCKPT
+       integer       iret_fil
+C
+C
+C
+       iret_fil = 0
+       READ(LUNUPA,ERR=910,END=920) JUPABUF
+       NBUFUPA = NBUFUPA + 1
+
+C      WRITE(6,FMT='(1H ,''rd_airc::fillubin: was called at LCKPT='',
+C    1             I5,''; after-read buffer count='',I5)') 
+C    A         LCKPT,NBUFUPA
+
+       CALL GBYTES(JUPABUF,I4UPABIN,NOFFSET,NBITSGRP,NPADBITS,
+     1             NGRPS2DO)
+       do ihw = 1,NGRPS2DO
+         IF(BTEST(I4UPABIN(IHW),31)) THEN	!... HI-ORDER BIT
+           I4UPABIN(IHW) = IOR(NEGSIGNEXT,I4UPABIN(IHW))
+         ENDIF
+       ENDDO
+       GO TO 999
+
+C      . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+  910  CONTINUE
+       WRITE(6,915)LCKPT,LUNUPA,NBUFUPA
+  915  FORMAT(1H ,'rd_airc::fillubin:AT LCKPT=',I5,
+     1            'FAILED ON PARITY ERROR ',
+     2       /1h ,7X,' WHILE READING FROM UNIT=',I3,
+     2       /1H ,'        COUNT OF INPUT BLOCKS READ BEFORE ERR =',I8)
+       IRET_fil = 1
+       GO TO 999
+
+  920  CONTINUE
+       WRITE(6,925)LCKPT,LUNUPA,NBUFUPA
+  925  FORMAT(1H ,'rd_airc::fillubin:AT LCKPT=',I5,
+     1            'FAILED ON PHYSICAL END-OF-FILE ',
+     2       /1h ,7X,'WHILE READING FROM UNIT=',I3,
+     2       /1H ,'        COUNT OF INPUT BLOCKS READ BEFORE END =',I8)
+       IRET_FIL = 2
+       GO TO 999
+
+  999  CONTINUE
+       RETURN
+       END

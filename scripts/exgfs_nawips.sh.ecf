@@ -45,7 +45,7 @@ proj=
 output=T
 pdsext=no
 
-maxtries=180
+maxtries=360
 fhcnt=$fstart
 while [ $fhcnt -le $fend ] ; do
 
@@ -100,7 +100,7 @@ if mkdir lock.$fhcnt  ; then
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1/2 hour of waiting for F$fhr to end."
+      msg="ABORTING after 1 hour of waiting for F$fhr to end."
       err_exit $msg
     fi
   done

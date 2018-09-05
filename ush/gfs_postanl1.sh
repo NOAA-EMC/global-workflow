@@ -51,11 +51,11 @@ export pgm=upaprep
 
 echo ${PDY}${cyc} > upaprep.input
 
-export FORT9=$PARMshared/graph_upaprep.ft9.mrcontrl
+export FORT9=${UTILgfs}/parm/graph_upaprep.ft9.mrcontrl
 export FORT10=gfs.$cycle.prepbufr
-export FORT22=$PARMshared/graph_upaprep.ft22.aircft
-export FORT23=$PARMshared/graph_upaprep.ft23.satwnd
-export FORT24=$PARMshared/graph_upaprep.ft24.tiros
+export FORT22=${UTILgfs}/parm/graph_upaprep.ft22.aircft
+export FORT23=${UTILgfs}/parm/graph_upaprep.ft23.satwnd
+export FORT24=${UTILgfs}/parm/graph_upaprep.ft24.tiros
 export FORT55=gfs.${PDY}${cyc}.upaprep
 export FORT56=gfs.${PDY}${cyc}.aircft
 export FORT57=gfs.${PDY}${cyc}.satwnd
@@ -63,7 +63,8 @@ export FORT58=gfs.${PDY}${cyc}.satell
 export FORT75=LOGMSG
 
 startmsg
-$UPAPREP < upaprep.input >> $pgmout 2> errfile
+# $UPAPREP < upaprep.input >> $pgmout 2> errfile
+${UTILgfs}/exec/upaprep < upaprep.input >> $pgmout 2> errfile
 export err=$?;err_chk
   
 set +x
@@ -77,8 +78,10 @@ set -x
 export pgm=plotvpap
 . prep_step
 
-cp $PARMshared/graph_plotvpap.gfs.anl .
-cp $PARMshared/graph_plotvpap.plotmlty.ft26 .
+# cp $PARMshared/graph_plotvpap.gfs.anl .
+cp ${UTILgfs}/parm/graph_plotvpap.gfs.anl .
+# cp $PARMshared/graph_plotvpap.plotmlty.ft26 .
+cp ${UTILgfs}/parm/graph_plotvpap.plotmlty.ft26 .
 
 export FORT15="graph_plotvpap.gfs.anl"
 export FORT26="graph_plotvpap.plotmlty.ft26"
@@ -94,7 +97,8 @@ export FORT63="label63"
 export FORT75="LOGMSG"
   
 startmsg
-$PLOTVPAP
+# $PLOTVPAP
+${UTILgfs}/exec/plotvpap
 export err=$?;err_chk
 
 set +x
@@ -122,9 +126,12 @@ then
   err_exit
 fi
 
-cp ${FIXshared}/graph_gphbg/mr4002.pur mr4002.pur
-cp ${PARMshared}/graph_trpanl.ft8.gfs_${cycle}.anl .
-cp ${FIXshared}/graph_awpseed .
+# cp ${FIXshared}/graph_gphbg/mr4002.pur mr4002.pur
+cp ${UTILgfs}/fix/graph_gphbg/mr4002.pur mr4002.pur
+# cp ${PARMshared}/graph_trpanl.ft8.gfs_${cycle}.anl .
+cp ${UTILgfs}/parm/graph_trpanl.ft8.gfs_${cycle}.anl .
+# cp ${FIXshared}/raph_awpseed .
+cp ${UTILgfs}/fix/graph_awpseed .
 
 export pgm=trpanl
 . prep_step
@@ -144,7 +151,8 @@ export FORT72="rs2"
 export FORT81="trpismer.${cyc}"
 
 startmsg
-$TRPANL  >> $pgmout < ${PARMshared}/graph_trpanl.ft5.gfs_${cycle}.anl 2>errfile
+# $TRPANL  >> $pgmout < ${PARMshared}/graph_trpanl.ft5.gfs_${cycle}.anl 2>errfile
+${UTILgfs}/exec/trpanl >> $pgmout < ${UTILgfs}/parm/graph_trpanl.ft5.gfs_${cycle}.anl 2>errfile
 #export err=$?; err_chk 
 
 if [ ${cyc} -eq 00 -o ${cyc} -eq 12 ];
@@ -156,13 +164,15 @@ then
  for KEYW in TRP850_g TRP850V TRP700A TRP700_g TRP500A TRP500_g TRP250A TRP250_g
  do
 
- grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+# grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+ grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
  if [ ${cyc} = '00' ]; then submn=$sub00; fi
  if [ ${cyc} = '12' ]; then submn=$sub12; fi
 
  export FAXOUT submn name Keyword gif toc prt jobn lprt
- mk_graphics.sh
+# mk_graphics.sh
+ ${UTILgfs}/ush/mk_graphics.sh
 
  done
 fi
@@ -176,13 +186,15 @@ then
  for KEYW in  TRP250A TRP250_g
  do
 
- grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+#  grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+ grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
  if [ ${cyc} = '06' ]; then submn=$sub06; fi
  if [ ${cyc} = '18' ]; then submn=$sub18; fi
 
  export FAXOUT submn name Keyword gif toc prt jobn lprt
- mk_graphics.sh
+#  mk_graphics.sh
+ ${UTILgfs}/ush/mk_graphics.sh
 
  done
 fi
@@ -197,7 +209,8 @@ then
   echo " "
   set -x
 
-  mkwindalftf.sh
+#  mkwindalftf.sh
+  ${UTILgfs}/ush/mkwindalftf.sh
 
   set +x
   echo " "
@@ -217,7 +230,8 @@ then
   export FORT51="f51Z"
   
   startmsg
-  ${RSONDPLT} < ${PARMshared}/graph_rsondplt.ft05.Z >> $pgmout 2>errfile
+#  ${RSONDPLT} < ${PARMshared}/graph_rsondplt.ft05.Z >> $pgmout 2>errfile
+  ${UTILgfs}/exec/rsondplt < ${UTILgfs}/parm/graph_rsondplt.ft05.Z >> $pgmout 2>errfile
   export err=$?;err_chk
 
   set +x
@@ -234,7 +248,8 @@ then
   export FORT51="f51P"
 
   startmsg
-  ${RSONDPLT} < ${PARMshared}/graph_rsondplt.ft05.P >>$pgmout 2>errfile
+#  ${RSONDPLT} < ${PARMshared}/graph_rsondplt.ft05.P >>$pgmout 2>errfile
+  ${UTILgfs}/exec/rsondplt < ${UTILgfs}/parm/graph_rsondplt.ft05.P >>$pgmout 2>errfile
   export err=$?;err_chk
 
   set +x

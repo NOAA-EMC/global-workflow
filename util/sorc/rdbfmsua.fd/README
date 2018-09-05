@@ -1,0 +1,2 @@
+added libgem.a and changed libbufr_4_32 to 64-bit.
+also changed -m32 -m64.

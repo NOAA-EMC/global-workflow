@@ -1,0 +1,127 @@
+      SUBROUTINE CKPARM(LPARM,NC,NUMFIL,FLAGS)
+C$$$  SUBPROGRAM DOCUMENTATION  BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    CKPARM      CHECKS THE PARM ARRAY TO TURN ON FLAGS.
+C   PRGMMR: LIN              ORG: W/NMC41    DATE: 97-01-29
+C
+C ABSTRACT: SET THE FLAGS PASSED IN FROM PARM ARRAY FOR PROGRAM
+C   PLOTVPAP.
+C
+C PROGRAM HISTORY LOG:
+C   89-04-14  ORIGINAL AUTHOR HENRICHSEN.
+C   89-05-19  HENRICHSEN CORRECT ERROR IN WRITE STATEMENTS.
+C   93-05-13  LILLY CONVERTED SUB. TO FORTRAN 77.
+C   97-01-29  LIN   CONVERTED SUB. TO CFT-77
+C
+C USAGE:    CALL CKPARM(LPARM,NC,NUMFIL,FLAGS)
+C   INPUT ARGUMENT LIST:
+C     LPARM    - LOGICAL   100 BYTE ARRAY CONTAINING HOLLERITH
+C                FLAGS AND KEY WORDS.
+C     NC       - INTEGER NUMBER OF BYTES OF HOLLERITH DATA IN LPARM.
+C
+C   OUTPUT ARGUMENT LIST:
+C     NUMFIL   - INTEGER   WORD CONTAINS THE NUMBER OF FILES TO USE.
+C     FLAGS    - LOGICAL   8 BYTE ARRAY SET TO TRUE OR FALSE
+C
+C   RETURN CONDITIONS:
+C       NONE
+C
+C   OUTPUT FILES:
+C     FT06F001 - PRINT FILE.
+C
+C
+C   SUBPROGRAMS CALLED:
+C     LIBRARY:
+C       W3LIB    - W3AI24
+C
+C REMARKS: THE LOGICAL FLAGS ARE:
+C    FLAGS(1) IS ACAR FLAG.
+C    FLAGS(2) IS MIDC FLAG.
+C    FLAGS(3) IS TSW1 FLAG.
+C    FLAGS(4) IS TSW2 FLAG.
+C    FLAGS(5) IS AFOS FLAG.
+C    FLAGS(6) IS SEND FLAG.
+C    FLAGS(7) IS CARD FLAG.
+C    FLAGS(8) IS MARGIN FLAG.
+C    FLAGS(9) IS PUNCH FILE FLAG.
+C
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 77
+C   MACHINE:  NAS
+C
+C$$$
+C
+      CHARACTER*1 ICMA
+      DATA        ICMA               /','/
+      CHARACTER*1 LEQU
+      DATA        LEQU               /'='/
+      CHARACTER*1 LPARM(100)
+      CHARACTER*1 FPARM(2)  
+      CHARACTER*1 L1BLNK
+      DATA        L1BLNK             /' '/
+C
+      CHARACTER*4 TFLAGS( 10)
+      DATA        TFLAGS            / 'ACAR','MIDC','TSW1','TSW2',
+     1                                 'AFOS','SEND','CARD','MARG',
+     2                                 'PNCH','NUMF'/
+      CHARACTER*4  ON
+      DATA         ON                  / 'ON  '/
+C
+      LOGICAL    W3AI24
+C
+      LOGICAL    FLAGS(9)
+C
+        NUMFIL = 0
+          DO 1  I = 1,9
+             FLAGS(I)= .FALSE.
+ 1        CONTINUE
+C
+C . . . CHECK TO SEE IF BYTE COUNT LESS THAN 5 IF SO LPARM EMPTY.
+C
+      IF(NC.LE.5) GO TO 100
+C
+             WRITE(6,2) (LPARM(I),I = 1,NC)
+ 2            FORMAT(' ','LPARM=',100A1)
+C
+        DO 40 NK  = 1,10
+              DO 20 NM  = 1,NC
+                IF(W3AI24(LPARM(NM),TFLAGS(NK),4)) GO TO 5
+              GO TO 20
+ 5              CONTINUE
+                IF(W3AI24(LPARM(NM+4),LEQU,1)) GO TO 10
+              GO TO 20
+ 10             CONTINUE
+              NUM = NM  + 5
+           IF(NUM.GT.NC) GO TO 40
+           IF(W3AI24(LPARM(NUM),ICMA,1)) GO TO 40
+           IF(W3AI24(LPARM(NUM),L1BLNK,1)) GO TO 40
+           IF(NK.EQ.10) GO TO 30
+           IF(W3AI24(LPARM(NUM),ON,2)) FLAGS(NK) = .TRUE.
+           GO TO 40
+ 20           CONTINUE
+           GO TO 40
+C
+ 30     CONTINUE
+C
+C        THIS IS NUM FILES FLAG SO I MUST GET NUMBER OF FILES IN
+C        INTEGER
+C
+C????      CALL FFA2I(LPARM,NUM,2,1,NUMFIL,IERR)
+C???      IF(IERR.NE.0) NUMFIL = 0
+           FPARM(1) = LPARM(NUM)
+           FPARM(2) = LPARM(NUM+1)
+           CALL  ASC2INT(2,FPARM,NUMFIL,IERR)
+          WRITE(6,35) NUMFIL
+ 35       FORMAT(' NUMFIL =',I2)
+C
+ 40     CONTINUE
+ 100  CONTINUE
+        WRITE(6,102) (FLAGS(I),I = 1,9),NUMFIL
+ 102            FORMAT(' ACAR FLAG=',L1,' MIDC FLAG=',L1,
+     1                 ' TSW1 FLAG=',L1,' TSW2 FLAG=',L1,
+     2                 ' AFOS FLAG=',L1,' SEND FLAG=',L1,
+     3                 ' CARD FLAG=',L1,' MARG FLAG=',L1,
+     4                 ' PNCH FLAG=',L1,' NUMFIL=',I2)
+      RETURN
+      END

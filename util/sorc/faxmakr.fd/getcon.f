@@ -1,0 +1,890 @@
+      SUBROUTINE GETCON(NUMBYT,INTEXT,NUMDGN,OUTDGN1,
+     1                  OUTDGN2,FAXFIL,GRIDT1,IFAXNO)
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    GETCON      GET CONSTANTS FROM INPUT CONTROLS.
+C   PRGMMR: KRISHNA KUMAR         ORG: W/NP12     DATE: 1999-08-01
+C
+C ABSTRACT: GET CONSTANTS FROM INPUT CONTROLS.
+C
+C PROGRAM HISTORY LOG:
+C   89-11-24  ORIGINAL AUTHOR  LUKE LIN
+C   94-11-25  HENRICHSEN    ADD TWO NEW INPUT ARGS WINTER AND NEWCON
+C                           AND LOGIC TO USE THE NEW ARGUEMENTS.
+C   94-12-21  LUKE LIN      CONVERT IT TO CFT-77.
+C   96-02-28  LUKE LIN      MODIFY TO GET CONSTANTS FROM INPUT CONTROLS.
+C   96-04-30  LUKE LIN      MODIFY TO GET SHADING CONSTANTS.
+C   96-06-03  HENRICHSEN    MODIFY TO GET JFID TITLE.
+C   96-06-05  LUKE LIN      MODIFY TO GET CENTER, CENTER ABOVE, AND 
+C                           LABEL CONS.
+C   96-06-07  HENRICHSEN    MODIFY TO GET MEAN FLAG ADDED NEW COMMON
+C                           /MEANCON/ MEANFG,LKMEAN,MEANTYP.
+C   96-06-11  HENRICHSEN    MODIFY FORMAT OF READ TO GET "RTC AND UPC".
+C                           ADD LOGIC TO GET X/Y FOR AN ADDITIONAL GULF
+C                           TITLLE.
+C   96-06-14  LUKE LIN      CHANGE DASH LOGIC
+C   96-06-17  LUKE LIN      MODIFY FOR PRECIP BECAUSE FLD2 COMES FROM DIFFERENT
+C                           FORECAST HOUR.
+C   96-06-20  LUKE LIN      CHANGE TO READ IN GRID INTERVAL T1 AND UOR_DOT
+C   96-06-20  HENRICHSEN    MODIFY READ FORMAT OF TLOC CARD TO GET A LVFLG
+C                           WHICH SIGNALS THAT THERE IS TO BE AN EXTRA
+C                           LINE IN THE GULF TITLE THAT HAS THE LEVEL OF
+C                           THE SURFACE.
+C   96-06-24  HENRICHSEN    MODIFY TO READ TLOB AND TLOD CARD INSTEAD OF 
+C                           TLOC CARD WHICH GETS THE TITLE HEIGHT AND 
+C                           HGTFLG.
+C   96-06-24  LUKE LIN      ADD CNTR OPTIONS
+C   96-06-28  LUKE LIN      ADD FAX CUT OPTION CARDS.
+C   96-07-09  LUKE LIN      ADD IPOLATE OPTIONS.
+C   96-07-22  LUKE LIN      TURN SOME PRINT STATEMENTS OFF
+C   96-08-30  LUKE LIN      ADD ONE CARD FOR CHANGING GRAB AND GRAB INDEX.
+C   96-09-11  LUKE LIN      FIX CENTER LABEL CARD#2.
+C   96-09-19  LUKE LIN      ADD SHADE INTERVEL OPTION. 
+C   96-10-07  LUKE LIN      ADD CTRA OPTION FOR GFS.
+C   97-01-21  LUKE LIN      ADD COPY OBSERVATION OPTIONS
+C   97-03-17  LUKE LIN      ADD ADD CONTOUR RANGE AND FLD PLOT OPTIONS.
+C   97-06-17  LUKE LIN      ADD ADD POLE CLIP FLAG FOR TYPE 5 NAM MODEL.
+C 1999-08-01  KRISHNA KUMAR MODIFY TO RUN ON IBM RS/6000 SP
+C   99-09-27  Bill FACEY    MODIFIED CODE FOR CASE WHERE KEYIDX GT 50,
+C 
+C
+C USAGE:    CALL GETCON(NUMBYT,INTEXT,NUMDGN,OUTDGN1,
+C                       FAXFIL,GRIDT1,IFAXNO)
+C   INPUT ARGUMENT LIST:
+C     IDFLD    - 8-WORD ID
+C
+C   OUTPUT ARGUMENT LIST:
+C     NUMBYT   - NUMBER OF BYTES IN TITLE.
+C     INTEXT   - THE MAP TITLE.
+C     NUMDGN   - NUMBER OF DESIGN FILES TO BE USED
+C     OUTDGN1  - UNIT NUMBER OF DESIGN FILE 1
+C     OUTDGN2  - UNIT NUMBER OF DESIGN FILE 2
+C     FAXFILE  - UNIT NUMBER OF FAX OUTPUT FILE
+C     GRIDT1   - GRID INTERVAL
+C     IFAXNO   - VARIAN SUBSET NUMBER
+C
+C ATTRIBUTES:
+C   LANGUAGE: F90
+C   MACHINE:  IBM
+C
+C$$$
+      COMMON /ICON/ UA1(50),UA2(50),UA3(50),UM1(50),UM2(50),UM3(50),
+     1              KTYPE(50)
+      CHARACTER*4 KTYPE
+      REAL        UA1,UA2,UA3,UM1,UM2,UM3
+C
+      COMMON /MEANCON/ MEANFG,LKMEAN,MEANTYP
+C
+      CHARACTER*4 MEANTYP  
+C
+      INTEGER    MEANFG 
+      LOGICAL    LKMEAN
+C
+      COMMON / GRB1 / LUGRB, LUGRBIX, IFCSTHR
+      INTEGER     LUGRB, LUGRBIX
+C
+      COMMON /MUTCON/ KEYIDX,UA1V,UA2V,UA3V,UM1V,UM2V,UM3V,LINEVU,LINEP,
+     X               IGRIDP,T1
+C     ...KEY TYPE INDEX, CONSTANT, AND CONTOUR LINE VALUE
+C
+      COMMON / DASH / LDOUBLE, DASHFG, DASHMK, IDASH, SHADNO, SHADMK
+      LOGICAL      LDOUBLE
+      LOGICAL      DASHFG
+      INTEGER      DASHMK(2)
+      INTEGER      SHADNO
+      INTEGER      SHADMK(20)
+      INTEGER      IDASH
+C
+      COMMON / FLDCON / IDFLD(16),NUMFLD,NDEGNS
+C
+      COMMON / BOUND / XMIN, YMIN, XMAX, YMAX, CUTWOW
+      INTEGER      XMIN, YMIN, XMAX, YMAX
+      INTEGER      CUTWOW(4)
+C
+      COMMON /LABG/ GULPXX(2),GULPXY(2),LVFLG,NUMG,GLAB
+C 
+      INTEGER       GULPXX,GULPXY,LVFLG,NUMG
+      CHARACTER*24  GLAB             
+C
+      COMMON /LLABFX/ TITPXX,TITPXY,HGTFLG,THEIGHT,NUMT,JBYT,
+     1              TITLE,JFID,EXVALID              
+C
+      INTEGER       TITPXX,TITPXY,HGTFLG,NUMT,JBYT
+      REAL          THEIGHT
+      CHARACTER*152 TITLE
+      CHARACTER*48  JFID
+      CHARACTER*32  EXVALID
+C
+      COMMON /CENTR/ CENTFLAG,CENTFONT,CENTNC,CENTCEN,CENTB1RC,
+     1               CENTXID,CENTYID,CENTXLIM,CENTFLO,CENTFHI,
+     2               CENTFORM
+      LOGICAL        CENTFLAG
+      REAL           CENTFONT,CENTXID,CENTYID,CENTXLIM,CENTB1RC
+      CHARACTER*4    CENTFORM,CENTFLO,CENTFHI
+      INTEGER        CENTNC,CENTCEN
+C
+      COMMON /CENTV/ CENVFLAG,CENVFONT,CENVNC,CENVJUP,
+     1               CENVICR,CENVJCR,CENVB1RC,CENVFORM,CENVIFF
+      LOGICAL        CENVFLAG
+      REAL           CENVFONT,CENVB1RC
+      CHARACTER*4    CENVFORM,CENVIFF
+      INTEGER        CENVNC,CENVJUP,CENVICR,CENVJCR
+      COMMON /FIXLAB/ LABFLAG,LABFONT,LABNC,LABRTC,LABUPC,
+     1                LABNLAB,LABIJFIX(7),LABB1RC,LABIFF,LABFORM
+      LOGICAL         LABFLAG
+      CHARACTER*4     LABFORM,LABIFF
+      REAL            LABFONT, LABB1RC
+      INTEGER         LABNC,LABRTC,LABUPC,LABNLAB,LABIJFIX
+C
+      COMMON /RANG/   RANGFG, ICBEG, ICEND
+      LOGICAL         RANGFG
+      INTEGER         ICBEG, ICEND
+C
+      COMMON /PCLP/   PCLPFG
+      LOGICAL         PCLPFG
+C
+      COMMON /PLOT/   PLOTFG, IMAXP, JMAXP, I1BIG, J1BIG, IGPLOT(2),
+     1                ISTART,JSTART
+      LOGICAL         PLOTFG
+C
+      INTEGER       USRBYT
+C
+      CHARACTER*96  USRNAM
+C
+      LOGICAL LUFID
+C
+      COMMON /DUCKNOAA/ DUCKX,DUCKY,DUCKFG
+      INTEGER       DUCKX,DUCKY,DUCKFG
+      
+      
+C
+      INTEGER       NUMBYT
+      CHARACTER*80  INTEXT
+C
+      COMMON /GRB2/ ALUGRB,ALUGRBIX,AFCSTHR,AKEYIDX,CALFLAG,GRB2FLAG
+      INTEGER       ALUGRB
+      INTEGER       ALUGRBIX
+      INTEGER       AFCSTHR
+      INTEGER       AKEYIDX
+      INTEGER       CALFLAG
+      LOGICAL       GRB2FLAG
+C
+      COMMON /EXTIT/ ETITFONT,ETITPXX,ETITPXY,NOEXT,EXTRAT,FGEXTRAT
+      INTEGER ETITPXX,ETITPXY,NOEXT
+      REAL    ETITFONT
+      CHARACTER*80    EXTRAT
+      LOGICAL         FGEXTRAT
+C
+C      .... THIS SET IS FOR UOR_DOT
+       COMMON /UOR2D/ UGRIDT1,UXPO,UYPO,UXADJUS,UYADJUS,UCU2GI,UORFG,
+     1                IP,IPOPT
+       REAL     UGRIDT1,UXPO,UYPO,UXADJUS,UYADJUS,UCU2GI
+       LOGICAL  UORFG
+C
+C     ... FOR CONTOR OPTIONS
+      COMMON /CNTROP/ NDVD, NDIV, NCNTRFILT, NCENTFILT,SHADIV
+      INTEGER SHADIV
+C     ... NDVD FOR INTERPOLATION, NDIV FOR DIVISION
+C     ... NCNTRFILT FOR CONTOUR FILTER, NCENTFILT FOR CENTER FILTER
+C
+C ..........   FOR FAX CUT
+C
+      COMMON /FAXICK/ ISCHED(8,50),INXISCHED
+      COMMON /FLFSRP/ INXLFSTRP,LSNUMBYT(20),LSINTEXT(20),LSTITPX(20),
+     1                LSTITPY(20),LSDCKPX(20),LSDCKPY(20),
+     2                LSDCKOPT(20),LSFONT(20)
+      CHARACTER*120   LSINTEXT
+      REAL            LSFONT
+      COMMON /FRTSRP/ INXRTSTRP,RSNUMBYT(20),RSINTEXT(20),RSTITPX(20),
+     1                RSTITPY(20),RSFONT(20),RSFCSTHR(20)
+      CHARACTER*120   RSINTEXT
+      INTEGER         RSNUMBYT,RSTITPX,RSTITPY,RSFCSTHR
+      REAL            RSFONT
+C
+      COMMON /CPOB/ CPOBFG,ITAPOB,ILVLT,KRUN,IOPTRA(2)
+      LOGICAL        CPOBFG
+C
+      INTEGER       NUMDGN,OUTDGN1,OUTDGN2,FAXFIL,IFAXNO
+      REAL          GRIDT1
+      CHARACTER*1   COMENT
+      CHARACTER*5   CTITLE
+      CHARACTER*5   COUTCL
+      CHARACTER*5   COPTION
+C
+      CHARACTER*5   INPFLD
+      CHARACTER*5   IDS6W1
+      CHARACTER*5   IDS6W2
+ckumar
+      character*5   JFIDTI
+ckumar
+      CHARACTER*5   LINEAT
+      CHARACTER*5   CRANGE
+      CHARACTER*5   CPCLIP
+      CHARACTER*5   UAVUMV
+      CHARACTER*5   WINDOW
+      CHARACTER*5   ENDFLD
+      CHARACTER*5   ENDMAP
+      CHARACTER*5   TITLOC
+      CHARACTER*5   TITLOD
+      CHARACTER*5   TITLOB
+      CHARACTER*5   SHADE
+      CHARACTER*5   EXTLOC
+C
+      CHARACTER*5   CENTLAB1
+      CHARACTER*5   CENTLAB2
+      CHARACTER*5   CENTABOV
+      CHARACTER*5   LABEL1
+      CHARACTER*5   LABEL2
+      CHARACTER*5   LABEL4
+      CHARACTER*5   CGRB2IN
+      CHARACTER*5   CPROJ
+      CHARACTER*5   CCNTR
+      CHARACTER*5   CCTRA
+C
+      CHARACTER*5   CVISCHED 
+      CHARACTER*5   CSISCHED 
+      CHARACTER*5   CLFSTRPTL
+      CHARACTER*5   CLFSTRPLC
+      CHARACTER*5   CRTSTRPTL
+      CHARACTER*5   CRTSTRPLC
+      CHARACTER*5   CIISCHED 
+      CHARACTER*5   CCOPYOB  
+      CHARACTER*5   CPLOT    
+C
+      CHARACTER*5   CGRAB
+C
+      CHARACTER*80  CARD
+C
+      DATA          CTITLE    /'TITL:'/
+
+      DATA          COUTCL    /'OUTC:'/
+      DATA          INPFLD    /'INPF:'/
+      DATA          IDS6W1    /'IDS1:'/
+      DATA          IDS6W2    /'IDS2:'/
+      DATA          JFIDTI    /'JFID:'/
+      DATA          LINEAT    /'LINE:'/
+      DATA          CRANGE    /'RANG:'/
+      DATA          CPCLIP    /'PCLP:'/
+      DATA          UAVUMV    /'UAMV:'/
+      DATA          WINDOW    /'WWBD:'/
+      DATA          ENDFLD    /'ENDF:'/
+      DATA          ENDMAP    /'ENDM:'/
+      DATA          TITLOC    /'TLOC:'/
+      DATA          EXTLOC    /'XTIT:'/
+      DATA          TITLOB    /'TLOB:'/
+      DATA          TITLOD    /'TLOD:'/
+      DATA          SHADE     /'SHAD:'/
+      DATA          COMENT    /'!'/
+C
+      DATA          CENTLAB1  /'CEN1:'/
+      DATA          CENTLAB2  /'CEN2:'/
+      DATA          CENTABOV  /'CENV:'/
+      DATA          LABEL1    /'LAB1:'/
+      DATA          LABEL2    /'LAB2:'/
+      DATA          LABEL4    /'LAB4:'/
+      DATA          CGRB2IN   /'GRB2:'/
+      DATA          CPROJ     /'PROJ:'/
+      DATA          CCNTR     /'CNTR:'/
+      DATA          CCTRA     /'CTRA:'/
+C
+      DATA          CVISCHED  /'VICK:'/
+      DATA          CSISCHED  /'SICK:'/
+      DATA          CLFSTRPTL /'LSTL:'/
+      DATA          CLFSTRPLC /'LSLC:'/
+      DATA          CRTSTRPTL /'RSTL:'/
+      DATA          CRTSTRPLC /'RSLC:'/
+      DATA          CIISCHED  /'IICK:'/
+      DATA          CCOPYOB   /'CPOB:'/
+      DATA          CPLOT     /'PLOT:'/ 
+C 
+      DATA          CGRAB     /'GRAB:'/ 
+C 
+C ------------ STARTS ----------------------------------
+        print*,'***************In GETCON  '
+C
+C
+C       ZERO THE IDFLD ARRAY
+C
+          DO J=1, 16
+             IDFLD(J) =  0
+          ENDDO
+C
+        LDOUBLE = .FALSE.
+        DASHFG  = .FALSE.
+        SHADNO = 0
+        DO I=1,20
+          SHADMK(I) = 0
+        ENDDO
+C
+        CENTFLAG = .FALSE.
+        CENVFLAG = .FALSE.
+        LABFLAG = .FALSE.
+C
+        GRB2FLAG = .FALSE.
+        CALFLAG = -1
+        THEIGHT = 11.00
+        HGTFLG = 1
+        SHADIV = 1
+        CPOBFG = .FALSE.
+        RANGFG = .FALSE.
+        PCLPFG = .FALSE.
+        PLOTFG = .FALSE.
+        FGEXTRAT = .FALSE.
+C
+  100 CONTINUE
+C
+C     .... READ ONE INPUT CARD
+C
+         READ(15,FMT='(A)')CARD(1:80)
+C        WRITE(6,FMT='('' '',A)')CARD(1:80)
+C
+         IF (CARD(1:1) .EQ. COMENT) GOTO 100
+C        ... JUST A COMMENT CARD
+         COPTION = CARD(3:7)
+C
+       IF (COPTION .EQ. ENDFLD .OR. COPTION .EQ. ENDMAP) RETURN
+C
+C
+
+         IF (COPTION .EQ. CTITLE) THEN
+C
+C            READ IN THE MAP TITLE
+C
+C
+            READ(CARD,FMT='(15X,I2,2X,A60)')NUMBYT,INTEXT(1:60)
+C           WRITE(6,FMT='('' GETCON: MAP TITLE HAS '',I2,
+C    1         '' TITLE='',A)')NUMBYT,INTEXT(1:60)
+C
+         ELSE IF (COPTION .EQ. 'JFID:') THEN
+C
+C           READ IN THE JFID TITLE.
+C
+            READ(CARD,FMT='(15X,I2,2X,A)')JBYT,JFID(1:48)
+C           WRITE(6,FMT='('' GETCON: JFID TITLE '',I2,
+C    1         '' TITLE='',A)')JBYT,JFID(1:JBYT)
+C
+         ELSE IF (COPTION .EQ. TITLOB) THEN
+C
+C           GET THE X AND Y GRID COORDINATES FOR LOCATION OF MAP TITLE
+C           AND THE CHARACTER HEIGHT.
+C
+           READ(CARD,FMT='(14X,I4,1X,I4,8X,I1,9X,F5.2)')
+     1          TITPXX,TITPXY,HGTFLG,THEIGHT
+C
+C          WRITE(6,FMT='('' GETCON: TITPXX=''I4,'' TITPXY=''I4,
+C    1           '' HGTFLG='',I2,'' THEIGHT='',F5.2)')           
+C    2           TITPXX,TITPXY,HGTFLG,THEIGHT
+C
+         ELSE IF (COPTION .EQ. TITLOC) THEN
+C
+C           GET THE X AND Y GRID COORDINATES FOR LOCATION OF TITLES,
+C           DUCK AND LEVEL FLAG.
+C
+           READ(CARD,FMT='(14X,I4,1X,I4,7X,I4,1X,I4,1X,I4,1X,I4,
+     1                     8X,I4,1X,I4,8X,I2,3X,I1)')
+     2     TITPXX,TITPXY,GULPXX(1),GULPXY(1),GULPXX(2),GULPXY(2),
+     3     DUCKX,DUCKY,DUCKFG,LVFLG
+C
+C          WRITE(6,FMT='('' GETCON: TITPXX=''I4,'' TITPXY=''I4,/,
+C    1      '' GULPXX(1)=''I4,'' GULPXY(1)='',I4,'' GULPXX(2)=''I4,
+C    2      '' GULPXY(2)='',I4,/,'' DUCKX=''I4,
+C    3      '' DUCKY=''I4,'' DUCKFG=''I2,'' LVFLG='',I2)')      
+C    4     TITPXX,TITPXY,GULPXX(1),GULPXY(1),GULPXX(2),GULPXY(2),
+C    5     DUCKX,DUCKY,DUCKFG,LVFLG
+C
+         ELSE IF (COPTION .EQ. EXTLOC) THEN
+C
+C           GET THE LOCATION AND EXTRA TITLE,
+C
+           READ(CARD,FMT='(13X,F4.1,5X,I4,1X,I4,6X,I2,2X,A)')
+     1     ETITFONT,ETITPXX,ETITPXY,NOEXT,EXTRAT(1:38)
+           FGEXTRAT = .TRUE.
+C
+         ELSE IF (COPTION .EQ. TITLOD) THEN
+C
+C           GET THE X AND Y GRID COORDINATES FOR LOCATION OF GULF AND
+C           DUCK LABELS AND LEVEL FLAG.
+C
+           READ(CARD,FMT='(14X,I4,1X,I4,1X,I4,1X,I4,
+     1                     8X,I4,1X,I4,8X,I2,3X,I1)')
+     2     GULPXX(1),GULPXY(1),GULPXX(2),GULPXY(2),
+     3     DUCKX,DUCKY,DUCKFG,LVFLG
+C
+C          WRITE(6,FMT='('' GETCON: GULPXX(1)=''I4,'' GULPXY(1)='',I4,
+C    1      '' GULPXX(2)=''I4,'' GULPXY(2)='',I4,/,'' DUCKX=''I4,      
+C    2      '' DUCKY=''I4,'' DUCKFG=''I2,'' LVFLG='',I2)')      
+C    3     GULPXX(1),GULPXY(1),GULPXX(2),GULPXY(2),
+C    4     DUCKX,DUCKY,DUCKFG,LVFLG
+C
+         ELSE IF (COPTION .EQ. COUTCL) THEN
+         READ(CARD,FMT='(15X,I2,9X,I2,9X,I2,8X,I2,4X,F8.3,12X,I4)')
+     1         NUMDGN,OUTDGN1,OUTDGN2,FAXFIL,GRIDT1,IFAXNO
+ckumar
+         print*,'In getcon : numdgn,outdgn1,outdgn2,faxfil,grdt1,
+     &   ifaxno  ',
+ckumar
+     &    NUMDGN,OUTDGN1,OUTDGN2,FAXFIL,GRIDT1,IFAXNO
+C        WRITE(6,FMT='('' GETCON: '',A,I2,A,I2,A,I2,A,I2,A,
+C    1         F8.3,A,I4,A)')CARD(8:15),
+C    2         NUMDGN,CARD(18:26),OUTDGN1,CARD(29:37),OUTDGN2,
+C    3         CARD(40:46),FAXFIL,CARD(50:53),GRIDT1,CARD(62:73),
+C    4         IFAXNO
+C
+         ELSE IF (COPTION .EQ. INPFLD) THEN
+C
+C            GET NUMFLD,AND THE CURRENT OUTPUT DESIGN,NEWMDI,           
+C            MEAN FLAG AND MEAN TYPE .
+C
+             MEANFG = 0
+             MEANTYP(1:4) = '   '
+             LKMEAN = .FALSE.
+             READ(CARD,FMT='(15X,I2,8X,I2,8X,I2,8X,I2,8X,A)')
+     1              NUMFLD, NDEGNS, KEYIDX,MEANFG,MEANTYP(1:4)
+C
+C            WRITE(6,FMT='('' GETCON: NUMFLD='',I2,'' NDEGNS='',I2, 
+C    1           '' KEYIDX='',I2,'' MEANFG='',I2,'' MEANTYP='',A)')
+C    2       NUMFLD,NDEGNS,KEYIDX,MEANFG,MEANTYP(1:4)
+             IF(MEANFG.GE.1.AND.MEANFG.LE.9)THEN
+               LKMEAN = .TRUE.
+                 WRITE(6,FMT='('' GETCON: THIS IS A '',A, 
+     1           '' MEAN FIELD. BECAUSE MEANFG='',I2)')
+     2           MEANTYP(1:4),MEANFG 
+             ENDIF
+C
+             IF(KEYIDX.LE.50) THEN
+               UA1V = UA1(KEYIDX)
+               UA2V = UA2(KEYIDX)
+               UA3V = UA3(KEYIDX)
+               UM1V = UM1(KEYIDX)
+               UM2V = UM2(KEYIDX)
+               UM3V = UM3(KEYIDX)
+             ENDIF
+
+C            WRITE(6,FMT='('' GETCON: UA1V='',F10.5,'' UA2V='',F5.2, 
+C    1               '' UA3V='',F5.2)')UA1V,UA2V,UA3V
+C    
+C            WRITE(6,FMT='('' GETCON: UM1V='',F10.5,'' UM2V='',F5.2, 
+C    1               '' UM3V='',F5.2)')UM1V,UM2V,UM3V
+C    
+C
+         ELSE IF (COPTION .EQ. IDS6W1) THEN
+C
+C
+C         READ IN THE FIRST IDS
+C
+             LSTRT = 1
+             LEND  = 6
+             READ(CARD,FMT='(10X,6(Z8,3X))')
+     1       (IDFLD(L),L=LSTRT,LEND)
+C            WRITE(6,FMT='('' GETCON:'',6(Z8,3X))')
+C    1       (IDFLD(L),L=LSTRT,LEND)
+C
+         ELSE IF (COPTION .EQ. IDS6W2) THEN
+C
+C
+C         READ IN THE SECOND IDS
+C
+             LSTRT = 9
+             LEND  = 14
+             READ(CARD,FMT='(10X,6(Z8,3X))')
+     1       (IDFLD(L),L=LSTRT,LEND)
+C            WRITE(6,FMT='('' GETCON:'',6(Z8,3X))')
+C    1       (IDFLD(L),L=LSTRT,LEND)
+C
+C
+         ELSE IF (COPTION .EQ. LINEAT) THEN
+C
+C         READ IN THE LINE ATTRIBUTES
+C
+            READ(CARD,FMT='(19X, I1,8X, I1, 10X, I2,1X,I2)')
+     1        IDOUBLE,IDASHIN,DASHMK(1),DASHMK(2)
+             WRITE(6,FMT='('' GETCON: LINEAT='',4(I3))') 
+     1        IDOUBLE,IDASHIN,DASHMK(1),DASHMK(2)
+C
+            IF (IDOUBLE .EQ. 1) THEN
+               LDOUBLE = .TRUE.
+            ELSE
+               LDOUBLE = .FALSE.
+            ENDIF
+C
+            IF (IDASHIN .EQ. 1) THEN
+                DASHFG = .TRUE.
+                IDASH = 0
+            ELSE
+                DASHFG = .FALSE.
+            ENDIF
+C
+            IF (.NOT. DASHFG) THEN
+               DASHMK(1) = 0
+               DASHMK(2) = 0
+            ELSE IF (DASHMK(1) .LT. DASHMK(2)) THEN
+                ITEMP = DASHMK(1)
+                DASHMK(1) = DASHMK(2)
+                DASHMK(2) = ITEMP
+            ENDIF
+C
+         ELSE IF (COPTION .EQ. UAVUMV) THEN
+C
+C              READ UAV AND UMV CONSTANTS
+C
+            READ(CARD,FMT='(8X,3(F7.2,1X),4X,3(F12.6,1X))')
+     1         UA1V,UA2V,UA3V,UM1V,UM2V,UM3V
+C
+             WRITE(6,FMT='('' GETCON: OVERWRITE UA1V='',F5.2,
+     1       '' UA2V='',F5.2,'' UA3V='',F5.2)')UA1V,UA2V,UA3V
+C    
+             WRITE(6,FMT='('' GETCON: OVERWRITE UM1V='',F5.2, 
+     1       '' UM2V='',F5.2,'' UMV3='',F5.2)')UM1V,UM2V,UM3V
+C    
+
+C
+         ELSE IF (COPTION .EQ. WINDOW) THEN
+C
+C             READ DATA CARDS TO GET BOUNDS OF THE FAX MAP..
+C
+            READ(CARD,FMT='(8X,4(I7,1X),4X,4(I7,1X))')XMIN,YMIN,
+     1      XMAX,YMAX,CUTWOW(1),CUTWOW(2),CUTWOW(3),CUTWOW(4)
+C
+C           WRITE(6,FMT='('' GETCON: WINDOW='',4(I7,1X))')
+C    1      XMIN,YMIN,XMAX,YMAX
+
+C           WRITE(6,FMT='('' GETCON: CUT WINDOW='',4(I7,1X))')
+C    1      CUTWOW(1),CUTWOW(2),CUTWOW(3),CUTWOW(4)
+C
+         ELSE IF (COPTION .EQ.  SHADE) THEN
+C
+C         READ IN THE SHADING ATTRIBUTES
+C
+            READ(CARD,FMT='(15X, I1)')SHADNO
+            PRINT *, ' SHADNO=', SHADNO
+            IF (SHADNO .EQ. 1) THEN
+               READ(CARD,FMT='(25X, 1X,I2,1X,I2)')
+     1              SHADMK(1),SHADMK(2)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 2) THEN
+               READ(CARD,FMT='(25X, 2(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,4)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 3) THEN
+               READ(CARD,FMT='(25X, 3(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,6)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 4) THEN
+               READ(CARD,FMT='(25X, 4(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,8)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 5) THEN
+               READ(CARD,FMT='(25X, 5(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,10)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 6) THEN
+               READ(CARD,FMT='(25X, 6(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,12)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 7) THEN
+               READ(CARD,FMT='(25X, 7(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,14)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 8) THEN
+               READ(CARD,FMT='(25X, 8(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,16)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ELSE IF (SHADNO .EQ. 9) THEN
+               READ(CARD,FMT='(25X, 9(1X,I2,1X,I2))')
+     1              (SHADMK(L),L=1,18)
+             PRINT *,' SHADNO=',SHADNO,' ', SHADMK(1),' ',SHADMK(2)
+            ENDIF
+C
+         ELSE IF (COPTION .EQ. CENTLAB1) THEN
+C
+C              READ CENTER LABEL CONSTANTS 1
+C
+            READ(CARD,FMT='(13X,F4.1,4X,I1,5X,I1,7X,A4,
+     1                      6X,F5.1,5X,F5.1,6X,F7.1)')
+     2         CENTFONT,CENTNC,CENTCEN,CENTFORM,CENTXID,CENTYID,
+     3         CENTXLIM
+C
+            WRITE(6,FMT='('' GETCON: OVERWRITE CENTER CONSTANTS 1-'',
+     1        /,'' FONT='',F4.1,'' NC='',I1,'' CEN='',I1,'' FORM='',
+     2        A4,'' XID='',F5.1,'' YID='',F5.1,'' XLIM='',F7.1)')
+     3         CENTFONT,CENTNC,CENTCEN,CENTFORM,CENTXID,CENTYID,
+     4         CENTXLIM
+            CENTFLAG = .TRUE.
+C    
+         ELSE IF (COPTION .EQ. CENTLAB2) THEN
+C
+C              READ CENTER LABEL CONSTANTS 2
+C
+            CENTB1RC = 1.0
+            READ(CARD,FMT='(13X,A4,7X,A4, 8X,F4.1)')
+     1                     CENTFLO,CENTFHI,CENTB1RC
+C
+            WRITE(6,FMT='('' GETCON: OVERWRITE CENTER CONSTANTS 2-'',
+     1      /,''  FLO='',A4,'' FHI='',A4,'' CENT SCALE FACTOR='',
+     2      F4.1)') CENTFLO,CENTFHI,CENTB1RC
+            CENTFLAG = .TRUE. 
+C
+         ELSE IF (COPTION .EQ. CENTABOV) THEN
+C
+C              READ CENTER LABEL ABOVE CONSTANTS 
+C
+           CENVB1RC = 1.0
+           READ(CARD,FMT='(13X,F4.1,4X,I1,7X,A4,6X,I2,5X,I3,
+     1                      5X,I3,6X,A4,8X,F4.1)')
+     2      CENVFONT,CENVNC,CENVFORM,CENVJUP,CENVICR,CENVJCR,
+     3      CENVIFF,CENVB1RC
+C
+          WRITE(6,FMT='('' GETCON: OVERWRITE CENTER ABOVE CONSTANT-'',
+     1     /,'' FONT='',F4.1,'' NC='',I1,'' FORM='',A4,'' JUP='',I2,
+     2     '' ICR='',I3,'' JCR='',I3,'' IFF='',A4,'' B1RC='',F4.1)')
+     3      CENVFONT,CENVNC,CENVFORM,CENVJUP,CENVICR,CENVJCR,
+     4      CENVIFF,CENVB1RC
+            CENVFLAG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. LABEL1) THEN
+C
+C              READ FIX COLUMN LABEL 1 CONSTANTS   
+C
+           LABB1RC = 1.0
+           READ(CARD,FMT='(13X,F4.1,4X,I1,7X,A4,
+     1                    6X,I3,5X,I3,6X,A4,8X,F4.1)')
+     2      LABFONT,LABNC,LABFORM,LABRTC,LABUPC,LABIFF,LABB1RC
+C
+           WRITE(6,FMT='('' GETCON: OVERWRITE FIX LABEL1 CONSTANT-'',
+     1     /,'' FONT='',F4.1,'' NC='',I1,'' FORM='',A4,
+     2     '' RTC='',I3,'' UPC='',I3,'' IFF='',A4,'' B1_RC='',F4.1)')
+     3      LABFONT,LABNC,LABFORM,LABRTC,LABUPC,LABIFF,LABB1RC
+            LABFLAG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. LABEL2) THEN
+C
+C              READ FIX COLUMN LABEL 1 CONSTANTS   
+C
+           READ(CARD,FMT='(13X,I1,4X,5(1X,I3))')LABNLAB,
+     1      (LABIJFIX(I),I=1,5)
+C
+           WRITE(6,FMT='('' GETCON: OVERWRITE FIX LABEL2 CONSTANT-'',
+     1     /, '' NLAB='',I1,'' IJFIX='',5(1X,I3))')LABNLAB,
+     2       (LABIJFIX(I),I=1,5)
+            LABFLAG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. LABEL4) THEN
+C
+C              READ FIX COLUMN LABEL 1 CONSTANTS   
+C
+           READ(CARD,FMT='(13X,I1,4X,7(1X,I4))')LABNLAB,
+     1      (LABIJFIX(I),I=1,7)
+C
+           WRITE(6,FMT='('' GETCON: OVERWRITE FIX LABEL2 CONSTANT-'',
+     1     /, '' NLAB='',I1,'' IJFIX='',7(1X,I4))')LABNLAB,
+     2       (LABIJFIX(I),I=1,7)
+            LABFLAG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. CGRB2IN) THEN
+C
+C            READ THE SECOND GRB AND GRB INDEX FILE UNITS
+C            ... FOR PRECIP ACCUMULATION CHARTS.....  
+C
+           READ(CARD,FMT='(26X,I2,9X,I2,9X,I3,8X,I2,9X,I2)')
+     1          ALUGRB,ALUGRBIX,AFCSTHR,AKEYIDX,CALFLAG
+           WRITE(6,FMT='(/,'' GETCON: 2ND INPUT GRB FORECAST HOUR:'',
+     1        I3,/,'' GETCON: 2ND INPUT GRIB FILE AND INDEX FILE;'',
+     2        2(I4),/,'' GETCON: CACULATION FLAG='',I3)')
+     2       AFCSTHR,ALUGRB,ALUGRBIX,CALFLAG
+            GRB2FLAG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. CPROJ) THEN
+C
+C            READ THE PROJECTION CONSTANTS FOR MAPPING UOR TO DOT
+C
+             READ (CARD,125)UXPO,UYPO,UXADJUS,UYADJUS,UCU2GI,IP,IPOPT
+  125          FORMAT(12X,F6.2,5X,F6.2,5X,F6.2,5x,F6.2,7X,F8.2,4X,I1,
+     1                7X,I1)
+               PRINT *, ' '
+             WRITE(6,FMT='('' GETCON: OVERWRITE UOR_DOT CONSTANT-'',
+     1       /,'' UXPO='',F6.2,'' UYPO='',F6.2,'' UXADJUS=='',F6.2,
+     2       '' UYADJUS='',F6.2,'' UCU2GI='',F8.2,'' IP='',I2,
+     3       '' IPOPT='',I2)')
+     4       UXPO,UYPO,UXADJUS,UYADJUS,UCU2GI,IP,IPOPT
+             UORFG = .TRUE.
+             IF (UORFG) THEN
+                PRINT *, ' UORFG IS TRUE.'
+             ENDIF
+             UGRIDT1 = GRIDT1
+             PRINT *,' UGRIDT1=',GRIDT1
+C
+         ELSE IF (COPTION .EQ. CCNTR) THEN
+C
+C            READ THE CNTOR OPTIONS ONLY
+C
+            READ(CARD,134)INDVD,INDIV
+  134       FORMAT(13X,I1,6X,I1)
+            PRINT *,' INDVD=', INDVD
+            PRINT *,' INDIV=', INDIV
+            IF (INDVD.GT.0 .AND. INDVD.LT.3) NDVD = INDVD
+            IF (INDIV.GE.1 .AND. INDIV.LT.8) NDIV = INDIV
+                NCNTRFILT = 0
+                NCENTFILT = 0
+                SHADIV=1
+            PRINT *,' NDVD=', NDVD
+            PRINT *,' NDIV=', NDIV
+            PRINT *,' NCNTRFILT=', NCNTRFILT
+            PRINT *,' NCENTFILT=', NCENTFILT
+            PRINT *,' SHADE INTERVAL=',SHADIV
+C
+         ELSE IF (COPTION .EQ. CCTRA) THEN
+C
+C            READ THE CNTOR OPTIONS AND FILTER OPTIONS
+C
+            READ(CARD,135)INDVD,INDIV,INCNTRFILT,INCENTFILT,SHADIV
+  135       FORMAT(13X,I1,6X,I1,10X,I1,10X,I1,8X,I1)
+            PRINT *,' INDVD=', INDVD
+            PRINT *,' INDIV=', INDIV
+            PRINT *,' INCNTRFILT=', INCNTRFILT
+            PRINT *,' INCENTFILT=', INCENTFILT
+            PRINT *,' SHADE INTERVAL=',SHADIV
+            IF (INDVD.GT.0 .AND. INDVD.LT.3) NDVD = INDVD
+            IF (INDIV.GE.1 .AND. INDIV.LT.8) NDIV = INDIV
+            IF (INCNTRFILT.GE.0 .AND. INCNTRFILT.LT.5) THEN
+                NCNTRFILT = INCNTRFILT
+            ENDIF
+            IF (INCENTFILT.GE.0 .AND. INCENTFILT.LT.5) THEN
+                NCENTFILT = INCENTFILT
+            ENDIF
+            IF (SHADIV.LE.0 .OR. SHADIV.GT.4) SHADIV=1
+            PRINT *,' NDVD=', NDVD
+            PRINT *,' NDIV=', NDIV
+            PRINT *,' NCNTRFILT=', NCNTRFILT
+            PRINT *,' NCENTFILT=', NCENTFILT
+            PRINT *,' SHADE INTERVAL=',SHADIV
+C
+         ELSE IF (COPTION .EQ. CVISCHED) THEN
+C
+C            READ THE VARIAN ISCHED TO OVERWRITE THE DEFAULT
+C
+           READ(CARD,FMT='(8X,4(I4,1X),2X,Z4,4X,Z4,1X,2(1X,I4))')
+     1          (ISCHED(M,1),M=1,8)
+ 
+           WRITE(6,FMT='('' GETCON: VARIAN ISCHED AS FOLLOWS-'',
+     1     /,8X,4(I4,1X),2X,Z4,4X,Z4,2(1X,I4))')
+     2       (ISCHED(M,1),M=1,8)
+ 
+         ELSE IF (COPTION.EQ.CSISCHED .OR. COPTION.EQ.CIISCHED) THEN
+C
+C            READ THE SUBSET & INSET ISCHEDS FOR FAX CUT.
+C
+           INXISCHED = INXISCHED + 1
+           READ(CARD,FMT='(8X,4(I4,1X),2X,Z4,4X,Z4,1X,2(1X,I4))')
+     1          (ISCHED(M,INXISCHED),M=1,8)
+ 
+           WRITE(6,FMT='('' GETCON: SUBSET/INSET ISCHED AS FOLLOWS-'',
+     1     /,8X,4(I4,1X),2X,Z4,4X,Z4,2(1X,I4))')
+     2          (ISCHED(M,INXISCHED),M=1,8)
+           print *, 'INXISCHED=',INXISCHED
+C
+         ELSE IF (COPTION .EQ. CLFSTRPTL) THEN
+C
+C            READ THE LEFT STRIP TITLE
+C
+C
+            INXLFSTRP = INXLFSTRP + 1
+C           PRINT *,' INXLFSTRP=', INXLFSTRP
+            READ(CARD,FMT='(15X,I2,2X,A60)')LSNUMBYT(INXLFSTRP),
+     1                                      LSINTEXT(INXLFSTRP)(1:60)
+C           WRITE(6,FMT='('' GETCON: LEFT STRIP TITLE HAS '',I2,
+C    1         '' TITLE='',A)')LSNUMBYT(INXLFSTRP),
+C    2                         LSINTEXT(INXLFSTRP)(1:60)
+C
+         ELSE IF (COPTION .EQ. CRTSTRPTL) THEN
+C
+C            READ THE RIGHT STRIP TITLE
+C
+C
+            INXRTSTRP = INXRTSTRP + 1
+C           PRINT *,' INXRTSTRP=', INXRTSTRP
+            READ(CARD,FMT='(15X,I2,2X,A60)')RSNUMBYT(INXRTSTRP),
+     1                                      RSINTEXT(INXRTSTRP)(1:60)
+C           WRITE(6,FMT='('' GETCON: RIGHT STRIP TITLE HAS '',I2,
+C    1         '' TITLE='',A)')RSNUMBYT(INXRTSTRP),
+C    2                         RSINTEXT(INXRTSTRP)(1:60)
+C
+         ELSE IF (COPTION .EQ. CLFSTRPLC) THEN
+C
+C            READ THE LEFT STRIP TITLE LOCATION
+C
+            PRINT *,' INXLFSTRP=', INXLFSTRP
+           READ(CARD,FMT='(16X,I4,1X,I4,6X,F4.1,8X,I4,1X,I4,8X,I2)')
+     1       LSTITPX(INXLFSTRP),LSTITPY(INXLFSTRP),LSFONT(INXLFSTRP),
+     2       LSDCKPX(INXLFSTRP),LSDCKPY(INXLFSTRP),LSDCKOPT(INXLFSTRP)
+C
+C          WRITE(6,FMT='('' GETCON: LEFT STRIP TITLE    AS FOLLOWS-'',
+C    1     /,16X,I4,1X,I4,6X,F4.1,8X,I4,1X,I4,8X,I2)')
+C    2       LSTITPX(INXLFSTRP),LSTITPY(INXLFSTRP),LSFONT(INXLFSTRP),
+C    3       LSDCKPX(INXLFSTRP),LSDCKPY(INXLFSTRP),LSDCKOPT(INXLFSTRP)
+C
+         ELSE IF (COPTION .EQ. CRTSTRPLC) THEN
+C
+C            READ THE RIGHT STRIP TITLE LOCATION
+C
+C           PRINT *,' INXRTSTRP=', INXRTSTRP
+           READ(CARD,FMT='(16X,I4,1X,I4,6X,F4.1,8X,I4)')
+     1       RSTITPX(INXRTSTRP),RSTITPY(INXRTSTRP),RSFONT(INXRTSTRP),
+     2       RSFCSTHR(INXRTSTRP)
+C
+C          WRITE(6,FMT='('' GETCON: RIGHT STRIP TITLE  AS FOLLOWS-'',
+C    1     /,16X,I4,1X,I4,6X,F4.1,8X,I4)')
+C    2       RSTITPX(INXRTSTRP),RSTITPY(INXRTSTRP),RSFONT(INXRTSTRP),
+C    3       RSFCSTHR(INXRTSTRP)
+C
+         ELSE IF (COPTION .EQ. CGRAB) THEN
+C
+C            READ THIS GRAB AND GRAB INDEX UNITS AND FORECAST
+C
+             READ (CARD,105)LUGRB,LUGRBIX,IFCSTHR
+  105          FORMAT(26X,I2,9X,I2,9X,I3)
+               PRINT *, ' '
+               PRINT *, ' PROCESSING FORECAST HOUR2:',IFCSTHR
+               PRINT *, ' GRIB FILE AND INDEX FILE:',LUGRB,LUGRBIX
+C
+         ELSE IF (COPTION .EQ. CCOPYOB) THEN
+C
+C            COPY OBSERVATION FILE FROM TAPE 54 IF NECESSARY 
+C
+             READ (CARD,205)ITAPOB,ILVLT,KRUN,IOPTRA(1),IOPTRA(2)
+  205          FORMAT(13X,I2,6X,I2,6X,I2,8X,I2,1X,I2)
+               PRINT *, ' GET COPYOB CONSTANTS:'
+               CPOBFG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. CRANGE) THEN
+C
+C         READ IN THE CONTOUR RANGES 
+C
+            READ(CARD,FMT='(19X, I4,5X, I4)')
+     1        ICBEG,ICEND
+             WRITE(6,FMT='('' GETCON: ICBEG ='',2(I4,1X))') 
+     1        ICBEG,ICEND
+              RANGFG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. CPCLIP) THEN
+C
+C         READ IN THE CONTOUR POLE CLIP FLAG FOR TYPE 5 NAM MODEL
+C
+              PCLPFG = .TRUE.
+C
+         ELSE IF (COPTION .EQ. CPLOT ) THEN
+C
+C         READ IN THE PLOT OPTION    
+C
+            READ(CARD,FMT='(14X,I4,3(7X,I4),8X,I2,1X,I2,7X,I2,1X,I2)')
+     1        IMAXP,JMAXP,I1BIG, J1BIG,IGPLOT(1),IGPLOT(2),ISTART,
+     2        JSTART
+              PLOTFG = .TRUE.
+C
+         ELSE
+            PRINT *, ' GETCON: UNRECOGNIZED IDENTIFIER:',COPTION
+         ENDIF
+C
+         GOTO 100
+C
+      RETURN
+      END

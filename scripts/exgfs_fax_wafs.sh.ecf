@@ -25,12 +25,18 @@ cd $DATA
 set -x
 
 cp $FIXgempak/tiffprod.tbl .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File tiffprod.tbl does not exist."
+   exit $err
+fi
 
 #  Parse PDY and find base time and month name
 
 imon=`echo $PDY | cut -c5-6`
 
-MON=`month_name.sh $imon MON`
+# MON=`month_name.sh $imon MON`
+MON=`${UTILgfs}/ush/month_name.sh $imon MON`
 DAY=`echo $PDY | cut -c7-8`
 YEAR=`echo $PDY | cut -c1-4`
 
@@ -96,7 +102,8 @@ do
         ###################################################
         # Compute valid time for this forecast hour
         ###################################################
-        verfdate.sh $PDY $cyc $fhr
+#        verfdate.sh $PDY $cyc $fhr
+         ${UTILgfs}/ush/verfdate.sh $PDY $cyc $fhr
         cat verfdate.txt | read fy fm fd valid dum monvrf
           echo "\n $fy $fm $fd $valid $monvrf \n"
 
@@ -139,6 +146,12 @@ do
         # copy of big parm file
         ###################################################
         cp $FIXgfs/waf1 .
+        export err=$?
+        if [[ $err -ne 0 ]] ; then
+           echo " File waf1 does not exist."
+           exit $err
+        fi
+        
         cp $FIXgfs/waf2 .
         cp $FIXgfs/waf_tiff3.parm .
         sed s/SUBDATE/$subdate/g waf_tiff3.parm > temp1.t
@@ -147,7 +160,8 @@ do
         ###################################################
         # Generate WMO labels
         ###################################################
-        for hdr in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+#        for hdr in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+        for hdr in `awk '{print $2}' ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr`
         do
            echo $hdr > ${hdr}.wmo 
         done
@@ -195,17 +209,23 @@ do
         ##############################################
         # Create a file header and send the graphics to TOC
         ##############################################
-        for HEADER in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+#        for HEADER in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+        for HEADER in `awk '{print $2}' ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr`
         do
-           ORIG=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
-           FILE=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+#           ORIG=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
+           ORIG=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
+
+#           FILE=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+           FILE=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+
            PDYHH=${PDY}${cyc}
            SUB=IMAG2000
 
            INFILE=$DATA/$HEADER.tiff
            OUTFILE=${COMOUTwmo}/${FILE}.${job_name}.ntc
  
-           make_NTC_file.pl $HEADER $ORIG $PDYHH $SUB $INFILE $OUTFILE
+#           make_NTC_file.pl $HEADER $ORIG $PDYHH $SUB $INFILE $OUTFILE
+           ${UTILgfs}/ush/make_NTC_file.pl $HEADER $ORIG $PDYHH $SUB $INFILE $OUTFILE
 
            if [ $SENDDBN = YES ]
            then

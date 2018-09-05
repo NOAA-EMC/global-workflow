@@ -1,0 +1,8 @@
+1RUN  OPN3300Z    2
+ SFC  U    00HR SFC  V    00HR SFC  TEMPS00HR OPN33   POLARW-T     1  03
+3V0099     VFULL 2700 3825    0    0                  00HR SFC   PROG
+3 D270     EAST  3656 3827    0    0                  00HR SFC   PROG
+3 D186     WEST  3657 3801    0    0                  00HR SFC   PROG
+ SFC  U    00HR SFC  V    00HR SFC  TEMPS00HR OPN33   POLARW-T     1  02
+3V0099     VFULL 0099 2031    0    0                  00HR SFC   PROG
+3 H066     PACF  3658 3875    0    0                  00HR SFC   PROG

@@ -1,0 +1,10 @@
+added libgem.a and changed libbufr_4_32 to 64-bit.
+also changed -m32 -m64.
+
+# JY - 02/09/2016
+Run the following command before run the "make"
+ . /nwprod/gempak/.gempak
+
+# Boi - 09/10/2016
+on CRAY
+module load gempak/6.32.0

@@ -1,0 +1,38 @@
+#%Module######################################################################
+proc ModulesHelp { } {
+  puts stderr "Load modules for building GRIB utilities"
+}
+module-whatis "This module loads the modules and libraries for building\
+               the GRIB utilities, including jasper, png, zlib, bacio, g2,\
+               w3emc, w3nco, ip, sp, and iobuf."
+
+conflict build_grib_util
+
+#
+#  Loading required system modules
+#
+   module load ips/18.0.1.163
+   module load impi/18.0.1
+   module load jasper/1.900.29
+   module load libpng/1.2.59
+   module load zlib/1.2.11
+#   module load NCARG/6.4.0
+   module load NCL/6.4.0
+
+# Loading GEMPAK
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
+
+# Loading Intel-Compiled NCEP Libraries
+   module load bacio/2.0.2
+   module load w3emc/2.3.0
+   module load w3nco/2.0.6
+   module load ip/3.0.1
+   module load sp/2.0.2
+   module load g2/3.1.0
+   module load bufr/11.2.0
+
+#
+#  Pre-load EMC Development Compiled Libraries and Tools
+#
+module load dev/graphics/2.0.0

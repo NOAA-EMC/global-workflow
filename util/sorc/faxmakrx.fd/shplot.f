@@ -1,0 +1,158 @@
+      SUBROUTINE SHPLOT
+C$$$  SUBPROGRAM DOCUMENTATION  BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    SHPLOT      PLOT SPECIAL LABELS ON S.H. WEFAX CUT
+C   PRGMMR: KRISHNA KUMAR         ORG: W/NP12   DATE: 1999-08-01
+C
+C ABSTRACT: PLOT SELECTED AIRPORT STATIONS AND LATITUDE/LONGITUDE
+C   LABELS ON THE SPECIAL SOUTHERN HEMISPHERE WEFAX CUT.
+C
+C PROGRAM HISTORY LOG:
+C   89-07-24  ORIGINAL AUTHOR GLORIA R.DENT
+C   96-10-17  LUKE LIN CONVERT IT TO CFT-77.
+C 1999-08-01  KRISHNA KUMAR CONVERTED THIS CODE FROM CRAY TO IBM RS/6000.
+C
+C USAGE     CALL SHPLOT
+C   INPUT ARGUMENT LIST:
+C     NONE
+C
+C   OUTPUT ARGUMENT LIST:
+C     NONE
+C
+C REMARKS:
+C
+C ATTRIBUTES:
+C   LANGUAGE: F90
+C   MACHINE:  IBM
+C
+C$$$
+      REAL      ARPTST(4,10)
+      REAL      SHLALO(3,18)
+ckumar
+      character*8 cshlalo(3,18)
+      equivalence (cshlalo,shlalo)
+ckumar
+      INTEGER   IRPTST(4,10)
+ckumar
+      character*8 cirptst(4,10)
+      equivalence (cirptst,irptst)
+ckumar
+      INTEGER   ISTCIR(2)  
+ckumar
+      character*8 cistcir(2)
+      equivalence (cistcir,istcir)
+ckumar
+      INTEGER   ISTPLT
+      INTEGER   NLALO 
+C
+C   NLALO IS THE NUMBER LAT/LONGS (2ND DIMENSION) OF SHLALO
+C
+      INTEGER   NSTA 
+C
+C   NSTA IS THE NUMBER STATIONS (2ND DIMENSION) OF ARPTST
+C
+      DATA      ARPTST
+     &        /-33.383,70.783,4HSCEL,1.,-15.517,68.183,4HSLLP,0.,
+C*   &        /-33.383,70.783,'SCEL',1.,-15.517,68.183,'SLLP',0.,
+C   'SANTIAGO/INTL A.MERINO B      ' L 'LAPAQZ/KENNEDY INTL (BOLIVIA)'
+     &         -15.867,47.933,4HSBBR,1.,-22.817,43.250,4HSBGL,1.,
+C*   &         -15.867,47.933,'SBBR',1.,-22.817,43.250,'SBGL',1.,
+C   'BRASILIA/INTL DF              ' L 'RIO DE JANEIRO/INTL (BRAZIL) '
+     &         -25.267,57.633,4HSGAS,0.,-34.567,58.417,4HSABE,1.,
+C*   &         -25.267,57.633,'SGAS',0.,-34.567,58.417,'SABE',1.,
+C   'ABUNCION/PRESIDENTE (PARAGUAY)' R 'BUENOS AIRES/AEROPARQUE CF   '
+     &         -53.000,70.850,4HSCCI,1.,-23.433,70.450,4HSCFA,1.,
+C*   &         -53.000,70.850,'SCCI',1.,-23.433,70.450,'SCFA',1.,
+C   'PUNTA ARENAS/INTL (CHILE)     ' L 'AUTOFAGASTA/INTL (CHILE)     '
+     &         -41.433,73.100,4HSCTE,1.,-27.167,109.433,4HSCIP,1.
+C*   &         -41.433,73.100,'SCTE',1.,-27.167,109.433,'SCIP',1.
+C   'PUERTO MOTT/INTL (CHILE)      ' L 'ISLA DE PASCUA/MATAVERI CHILE'
+     &           /
+C
+      DATA      SHLALO
+     &        /-12.00,110.00,4H11OW, -13.00,100.00,4H100W,
+     &         -16.00, 90.00,4H 9OW, -19.00, 80.00,4H 80W,
+     &         -15.00, 60.00,4H 6OW, -12.00, 50.00,4H 50W,
+     &         -05.00, 40.00,4H 4OW, -25.00, 80.00,4H 80W,
+     &         -20.00, 78.00,4H 20S, -20.00,105.00,4H 20S,
+     &         -20.00, 64.00,4H 20S, -10.00, 45.00,4H 10S,
+     &         -30.00, 78.00,4H 30S, -30.00, 45.00,4H 30S,
+     &         -40.00, 78.00,4H 40S, -40.00, 45.00,4H 40S,
+     &         -50.00, 78.00,4H 50S, -50.00, 45.00,4H 50S/
+C    &        /-12.00,110.00,'11OW', -13.00,100.00,'100W',
+C    &         -16.00, 90.00,' 9OW', -19.00, 80.00,' 80W',
+C    &         -15.00, 60.00,' 6OW', -12.00, 50.00,' 50W',
+C    &         -05.00, 40.00,' 4OW', -25.00, 80.00,' 80W',
+C    &         -20.00, 78.00,' 20S', -20.00,105.00,' 20S',
+C    &         -20.00, 64.00,' 20S', -10.00, 45.00,' 10S',
+C    &         -30.00, 78.00,' 30S', -30.00, 45.00,' 30S',
+C    &         -40.00, 78.00,' 40S', -40.00, 45.00,' 40S',
+C    &         -50.00, 78.00,' 50S', -50.00, 45.00,' 50S'/
+C
+C
+      CHARACTER*1 LSTCIR(8)
+C
+      EQUIVALENCE(IRPTST(1,1),ARPTST(1,1))
+      EQUIVALENCE (LSTCIR(1),ISTPLT)
+C
+      DATA      ISTCIR       /Z'0000005D00000000',Z'5D00000000000000'/
+      DATA      NLALO        /18/
+      DATA      NSTA         /10/
+      DATA      IDETAX       /335/
+      DATA      IDETAY       /263/
+C
+C  INITIALIZE CONSTANTS FOR SOUTHERN HEMISPHERE 65/65 POLAR GRID
+      XMESHL = -381.0
+      ORIENT = 260.0
+      XIPOLE = 24.0
+      XJPOLE = 26.0
+C  PLOT AIRPORT STATIONS
+      DO 100 I= 1,NSTA
+      ALAT = ARPTST(1,I)
+      ALONG = ARPTST(2,I)
+      CALL W3FB04(ALAT,ALONG,XMESHL,ORIENT,XI,XJ)
+C  CONVERT TO TRUE GRIDS
+      XI = XI + XIPOLE
+      XJ = XJ + XJPOLE
+C  CONVERT TO VARIAN DOT UNITS
+      IXI = (XI-1.0)*37.5 + 0.5 + IDETAX
+      JXJ = (XJ-1.0)*37.5 + 0.5 + IDETAY
+      IF(I .NE.2) GO TO 20
+C  SET UP TO PLOT STATION (SLLP) BELOW STATION CIRCLE
+      CALL PUTLAB(IXI-5,JXJ-6,1.0,CISTCIR(2),0.0,1,0,0) ! modified by kumar
+      CALL PUTLAB(IXI-5,JXJ-18,1.0,CIRPTST(3,I),0.0,4,0,0) ! modified by kumar
+      GO TO 100
+   20 CONTINUE
+C  SET UP TO PLOT STATION LEFT OF STATION CIRCLE
+      IBEG = 1
+      IADJ = -40
+      ISTPLT = IRPTST(3,I)
+C     ISTPLT(2) = ISTCIR(2)
+      LSTCIR(5) = CHAR(41)
+      IF(ARPTST(4,I) .EQ. 1.) GO TO 30
+C  SET UP TO PLOT STATION RIGHT OF STATION CIRCLE
+      IBEG = 4
+      IADJ = 0
+C     ISTPLT(1) = ISTCIR(1)
+      ISTPLT = IRPTST(3,I)
+      LSTCIR(4) = CHAR(41)
+   30 CONTINUE
+      CALL PUTLAB(IXI-5+IADJ,JXJ-6,1.0,LSTCIR(IBEG),0.0,5,0,0) 
+  100 CONTINUE
+C
+C  PLOT LATITUDE/LONGITUDE LABELS
+      DO 200 I= 1,NLALO
+      ALAT = SHLALO(1,I)
+      ALONG = SHLALO(2,I)
+      CALL W3FB04(ALAT,ALONG,XMESHL,ORIENT,XI,XJ)
+C  CONVERT TO TRUE GRIDS
+      XI = XI + XIPOLE
+      XJ = XJ + XJPOLE
+C  CONVERT TO VARIAN DOT UNITS
+      IXI = (XI-1.0)*37.5 + 0.5 + IDETAX
+      JXJ = (XJ-1.0)*37.5 + 0.5 + IDETAY
+      CALL PUTLAB(IXI-14,JXJ,4.0,CSHLALO(3,I),0.0,4,0,0) ! modified by kumar
+  200 CONTINUE
+C
+      RETURN
+      END

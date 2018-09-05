@@ -41,7 +41,9 @@ if [ $REALTIME = "NO" ]; then
     fi
 
 #   Set SATINFO
-    if [[ "$CDATE" -ge "2018021212" ]]; then
+    if [[ "$CDATE" -ge "2018053012" ]]; then
+        export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
+    elif [[ "$CDATE" -ge "2018021212" ]]; then
 	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
     elif [[ "$CDATE" -ge "2017103118" ]]; then
 	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
@@ -69,6 +71,5 @@ if [ $REALTIME = "NO" ]; then
 	echo "WARNING: No SATINFO for $CDATE"
     fi
 fi
-
 
 echo "END: config.anal"

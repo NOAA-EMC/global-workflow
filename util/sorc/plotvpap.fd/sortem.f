@@ -1,0 +1,200 @@
+      SUBROUTINE SORTEM(ADATA,ITM,JTM,SDATA,ISKEY,ML,MH,IERR)
+C                                                25-JUL-1996/DSS
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    SORTEM      UPWARD RADIX SORT
+C   PRGMMR: LILLY            ORG: W/NMC412   DATE: 93-05-08
+C
+C ABSTRACT: REORDER THE ENTIRE ARRAY INTO SORTED ORDER
+C
+C PROGRAM HISTORY LOG:
+C   YY-MM-DD  ORIGINAL AUTHOR  UNKNOWN
+C   88-07-25  GLORIA DENT  PUT IN DOCUMENTATION BLOCK
+C   89-04-19  STEVE LILLY  UPDATE DOCUMENTATION BLOCK
+C   93-05-08  LILLY CONVERT SUBROUTINE TO FORTRAN 77
+C   96-07-25  SHIMOMURA -- CONVERT TO CRAY
+C
+C USAGE:    CALL SORTEM  (ADATA,ITM,JTM,SDATA,ISKEY,ML,MH,IERR)
+C
+C   INPUT ARGUMENT LIST:
+C     ADATA(ITM,JTM) - INTEGER*8  ARRAY CONTAINING THE DATA TO
+C                      BE SORTED
+C     ISKEY    - TELLS WHICH OF THE ITM WORDS CONTAINS THE SORT KEY.
+C     ML       - IS THE LO-ORDER BIT POSITION OF THE SORT KEY W/I WORD.
+C     MH       - IS THE HI-ORDER BIT POSITION OF THE SORT KEY W/I THE
+C              - WORD  (SEE REMARK)
+C
+C   OUTPUT ARGUMENT LIST:
+C     SDATA    - INTEGER*8, A SCRATCH AREA OF THE SAME DIMENSIONS AS
+C              - ADATA.  SDATA MUST BE A LEAST (2,JTM) FOR SCRATCH
+C              - WORK
+C     IERR     - = 0 FOR NORMAL EXIT
+C              - = 2 IF THERE IS A SORTEM PROBLEM
+C
+C
+C   OUTPUT FILES:  (DELETE IF NO OUTPUT FILES IN SUBPROGRAM)
+C     FT06F001 - INCLUDE IF ANY PRINTOUT
+C
+C REMARKS: SORT KEY IN RANGE OF BITS (1) THRU (48), SO MAX MH IS
+C   48...WHERE 1 IS THE RIGHT-MOST LOW-ORDER BIT POSITION.  END OF
+C   DATA IN BIN IS FLAGGED BY AN ALL ZERO WORD (IN ADATA(ISKEY,J).
+C   NO OF OBS RESTRICTED TO 2**16 - 1.
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 77
+C   MACHINE:  CRAY
+C
+C$$$
+C
+C     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+C     ...USAGE: CALL SORTEM(ADATA,ITM,JTM,SDATA,ISKEY,ML,MH,IERR)
+
+      INTEGER*8  ADATA(ITM,JTM)
+      INTEGER*8  SDATA(ITM,JTM)
+      INTEGER    ISKEY
+      INTEGER    ML
+      INTEGER    MH
+      INTEGER    IERR
+C
+C     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+C
+C ...      INTEGER*8  ISBIT           / Z'8000000000000000' /
+
+C
+      INTEGER    MSK48
+      DATA       MSK48           / X'0000FFFFFFFFFFFF' /
+
+      INTEGER    NOTMSK48
+      DATA       NOTMSK48        / X'FFFF000000000000' /
+
+      INTEGER    J1B48
+      DATA       J1B48           / X'0001000000000000' /
+
+      DATA       MSK16 /Z'0000FFFF'/
+
+      DATA       MXMH  /48/
+C
+      INTEGER*8  MB
+      INTEGER*8  ACC
+
+C     . . . . . . . .  S T A R T   . . . . . . . . . . . . . . . . .
+
+      IERR = 0
+      IF((ML .LE. 0) .OR. (ML .GT. 64)) GO TO 900
+      IF(MH .LT. ML) GO TO 900
+      IF(MH .GT. MXMH) GO TO 930
+      IF((ISKEY .LE. 0) .OR. (ISKEY .GT. ITM)) GO TO 910
+      IF(ADATA(ISKEY,1) .EQ. 0) GO TO 920
+C
+C     ...STEP(1) ... TO FORM SORT WORD ARRAY IN SDATA(1,N)
+C     ...   /J/SORT KEY/   /16/48/
+      JS = 0
+      DO  144  N = 1,JTM
+        NOBS = N - 1
+        ACC = ADATA(ISKEY,N)
+        IF(ACC .EQ. 0) GO TO 146
+
+        acc = iand(acc,msk48)  		!...  ERASE HI-ORDER 16 BITS
+        JS  = JS + J1B48    		!...  JS++;  POSITIONED AT 48
+        IHOLD = IAND(JS,NOTMSK48)
+        ACC = IOR(IHOLD,ACC)
+        SDATA(1,N) = ACC
+
+  144 CONTINUE
+      NOBS = NOBS + 1
+  146 CONTINUE
+C
+C     ...STEP (2) ... TO SORT THE SORT WORD ARRAY...
+C
+C     ...      CALL DSHIFT(ISBIT,MB,ML)  ...
+      MB = 0
+      ibit = ML - 1       		!... ibit=0; sets low-order bit
+      if(ibit .LT. 0) then
+        ibit = 0
+      endif
+      MB = ibset(MB,ibit)
+
+      DO  244  M = ML,MH
+        NX = 0
+        NY = 0
+        DO  230  N = 1,NOBS
+          ACC = SDATA(1,N)
+          ACC = IAND(ACC,MB)
+          IF(ACC .EQ. 0) GO TO 226
+C     ...COMES HERE IF BIT, SO HOLD IN TEMPO BUFFER, LET OTHERS PASS UP
+          NY = NY + 1
+          SDATA(2,NY) = SDATA(1,N)
+          GO TO 230
+  226     CONTINUE
+C       ...COMES HERE IF NO BIT, MOVE UP TO SPACES VACATED BY BIT WORDS
+          NX = NX + 1
+          IF(NX .EQ.N) GO TO 230
+          SDATA(1,NX) = SDATA(1,N)
+  230   CONTINUE
+        IF(NY .EQ. 0) GO TO 241
+C       ...TO MOVE BIT-WORDS BACK INTO TAIL END OF ORIG BUFFER...
+        DO  N = 1,NY
+          NX = NX + 1
+          SDATA(1,NX) = SDATA(2,N)
+        enddo
+  241   CONTINUE
+
+        MB = ishft(MB,1)
+C       ...        CALL DSHIFT(MB(1),MB(1),1)   ...
+
+  244 CONTINUE
+C
+C     ...STEP (3)...  REORDER THE ENTIRE ARRAY INTO SORTED ORDER...
+C
+      DO  322  N = 1,NOBS
+        ACC = SDATA(1,N)
+        JR = IAND((ISHFT(ACC,-48)),MSK16)
+        DO   I = 1,ITM
+          SDATA(I,N) = ADATA(I,JR)
+        enddo
+  322 CONTINUE
+
+C     ...TRANSFER FROM SCRATCH ARRAY TO OVERWRITE GIVEN ARRAY...
+      DO   N = 1,NOBS
+        DO   I = 1,ITM
+          ADATA(I,N) = SDATA(I,N)
+        enddo
+      enddo
+
+C     ...ALL FINISHED...
+      PRINT  246, NOBS
+  246 FORMAT(1H0, 10X, 'COMPLETED SORTEM WITH NOBS = ', I5)
+C
+      RETURN
+C     ...NORMAL END OF SUPER SORT...
+C
+C     ...ERROR EXITS
+  900 CONTINUE
+C     ...COMES TO 900 IF GIVEN ML OR MH INCORRECT...
+      PRINT  902, ML, MH
+  902 FORMAT(1H ,'SORTEM ERROR...GIVEN ML OR MH INCORRECT',
+     X     5X, 'ML = HEX ', Z8, 5X, 'MH = HEX ', Z8, /1H0)
+      GO TO 990
+
+  910 CONTINUE
+      PRINT  912, ISKEY,ITM
+  912 FORMAT(1H ,'SORTEM ERROR...GIVEN ISKEY OR ITM INCORRECT',
+     X     5X, 'ISKEY = HEX ',Z8, 5X, 'ITM = HEX ', Z8, /1H0)
+      GO TO 990
+
+  920 CONTINUE
+C     ...COMES TO 920 IF EMPTY DATA BIN WERE GIVEN...
+      PRINT  922
+  922 FORMAT(1H ,'SORTEM ERROR...EMPTY DATA BIN GIVEN', /1H0)
+      GO TO 990
+
+  930 CONTINUE
+C     ...COMES TO 930 IF MH IS TOO BIG TO ALLOW ROOM FOR J
+      PRINT  932, MXMH
+  932 FORMAT(1H ,'SORTEM ERROR ...GIVEN MH EXCEEDS', I4)
+      GO TO 900
+
+  990 CONTINUE
+      IERR = 1
+      RETURN
+      END

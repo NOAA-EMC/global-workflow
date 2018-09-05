@@ -102,8 +102,8 @@ elif [ $machine = "WCOSS_DELL_P3" ]; then
 
     # USER specific paths
     export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export STMP="/gpfs/dell2/stmp/$USER"
-    export PTMP="/gpfs/dell2/ptmp/$USER"
+    export STMP="/gpfs/dell3/stmp/$USER"
+    export PTMP="/gpfs/dell3/ptmp/$USER"
     export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
 
     # Base directories for various builds
@@ -130,12 +130,12 @@ if [ $machine = "THEIA" ]; then
 fi
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"
-export DO_GEMPAK="NO"
-export DO_AWIPS="NO"
+export DO_BUFRSND="YES"
+export DO_GEMPAK="YES"
+export DO_AWIPS="YES"
 
 # NO for retrospective parallel; YES for real-time parallel
-export REALTIME="NO"
+export REALTIME="YES"
 
 
 ####################################################
@@ -214,14 +214,14 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=120
-export FHMAX_GFS_06=120
-export FHMAX_GFS_12=120
-export FHMAX_GFS_18=120
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
-export FHMAX_HF_GFS=0
+export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
@@ -239,7 +239,7 @@ export imp_physics=11
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="YES"
-export l4densvar=".false."
+export l4densvar=".true."
 export lwrite4danl=".false."
 
 # EnKF output frequency
@@ -267,8 +267,8 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 # Archiving options
 export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability. Cannot be 00
-export ARCH_WARMICFREQ=5     # Archive frequency in days for warm_start capability
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
+export ARCH_WARMICFREQ=2     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 

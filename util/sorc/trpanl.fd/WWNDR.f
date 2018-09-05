@@ -1,0 +1,36 @@
+      SUBROUTINE WWNDR(U,V,IDDFF,IDD,IFFF)
+      IF(V)14,10,14
+   10 CONTINUE
+      IF(U)12,13,11
+   11 CONTINUE
+      ND=27
+      GO TO 15
+   12 CONTINUE
+      ND=9
+      GO TO 15
+   13 CONTINUE
+      IDDFF=0
+      IDD=0
+      IFFF=0
+      RETURN
+   14 CONTINUE
+      TAN=U/V
+      ANGLE=ATAN(ABS(TAN))
+      ND=(3.1416+SIGN(1.5708,U)-SIGN((1.5708-ANGLE),TAN))*5.72958+.5
+      IF(ND.EQ.0) ND=36
+   15 CONTINUE
+      NV=SQRT(U*U+V*V)+0.5
+      IFFF=NV
+      IDD=ND
+      IF(NV-200)18,17,17
+   17 CONTINUE
+      NV=199
+   18 CONTINUE
+      IF(NV-100)20,19,19
+   19 CONTINUE
+      NV=NV-100
+      ND=ND+50
+   20 CONTINUE
+      IDDFF=ND*100+NV
+      RETURN
+      END
