@@ -71,13 +71,13 @@ case $case_in in
         export layout_x=4
         export layout_y=6
         export layout_x_gfs=4
-        export layout_y_gfs=8
+        export layout_y_gfs=6
         export npe_node_fcst=12
         export nth_fv3=2
         export cdmbgwd="1.0,1.2"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_gfs=3
+        export WRITE_GROUP_gfs=1
         export WRTTASK_PER_GROUP_gfs=24
         export WRTIOBUF="16M"
         ;;

@@ -21,8 +21,8 @@ export VRFYPRCP="YES"    # Precip threat scores
 export VRFYRAD="YES"     # Radiance data assimilation monitoring
 export VRFYOZN="YES"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
-export VRFYTRAK="NO"     # Hurricane track verification
-export VRFYGENESIS="NO"  # Cyclone genesis verification
+export VRFYTRAK="YES"     # Hurricane track verification
+export VRFYGENESIS="YES"  # Cyclone genesis verification
 export RUNMOS="NO"       # whether to run entire MOS package
 
 
