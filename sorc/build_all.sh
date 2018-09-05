@@ -202,6 +202,14 @@ echo " .... Building regrid_nemsio .... "
 }
 
 #------------------------------------
+# build gfs_util       
+#------------------------------------
+$Build_gfs_util && {
+echo " .... Building gfs_util .... "
+./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+}
+
+#------------------------------------
 # build prod_util
 #------------------------------------
 $Build_prod_util && {
