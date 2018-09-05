@@ -135,7 +135,7 @@ export DO_GEMPAK="YES"
 export DO_AWIPS="YES"
 
 # NO for retrospective parallel; YES for real-time parallel
-export REALTIME="NO"
+export REALTIME="YES"
 
 
 ####################################################
@@ -267,7 +267,7 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 # Archiving options
 export HPSSARCH="YES"        # save data to HPSS archive
-export ARCH_CYC=00           # Archive data at this cycle for warm_start capability. Cannot be 00
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=2     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
