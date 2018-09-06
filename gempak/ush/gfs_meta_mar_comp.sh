@@ -14,8 +14,8 @@
 set -x
 #
 export PS4='MAR_COMP_F${fend}:$SECONDS + '
-rm -Rf $DATA/GEMPAK_META
-mkdir -p -m 775 $DATA/GEMPAK_META $DATA/MAR_COMP
+rm -Rf $DATA/GEMPAK_META_MAR
+mkdir -p -m 775 $DATA/GEMPAK_META_MAR $DATA/MAR_COMP
 
 cd $DATA/MAR_COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
@@ -36,21 +36,21 @@ export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/nawips
 export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/nawips
 export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/nawips
 if [ ${cyc} -eq 00 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 06 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 12 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
-   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
 elif [ ${cyc} -eq 18 ] ; then
-   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META
-   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META
-   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META
-   cp $COMIN18/gfs_${PDY}18f* $DATA/GEMPAK_META
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
+   cp $COMIN18/gfs_${PDY}18f* $DATA/GEMPAK_META_MAR
 fi
-export COMIN=$DATA/GEMPAK_META
+export COMIN=$DATA/GEMPAK_META_MAR
 
 # export HPCNAM=${COMINnam}.$PDY
 export HPCNAM=${COMINnam}.$PDY
