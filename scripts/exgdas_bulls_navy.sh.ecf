@@ -116,7 +116,6 @@ if test $err1 -eq 0 -o $err2 -eq 0; then
   echo 'navybull finished'
 
   cp ship.cntl ${COMOUT}
-#  chmod 775 ${GESOUT}/ship.cntl
 
   if test $SENDCOM = 'YES'
   then
