@@ -111,10 +111,9 @@ set +x
 echo "********** JGFS_GEMPAK_NCDC_UPAPGIF COMPLETED"
 set -x
 ############################################################
-
-cat $pgmout
-
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 msg="HAS COMPLETED NORMALLY!"
-
 
 exit

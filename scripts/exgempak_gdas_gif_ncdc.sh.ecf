@@ -41,14 +41,23 @@ then
         done
 
        cp ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} gem_grids${fhr}.gem
+       export err=$?
+       if [[ $err -ne 0 ]] ; then
+          echo " File: ${COMIN}/${RUN}_${PDY}${cyc}f${fhr} does not exist."
+          exit $err
+       fi
      
        if [ $cyc -eq 00 -o $cyc -eq 12 ]
        then
           $USHgfs/gempak_${RUN}_f${fhr}_gif.sh
+          if [ ! -f $USHgfs/gempak_${RUN}_f${fhr}_gif.sh ] ; then
+             echo "WARNING: $USHgfs/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
+             msg=" $USHgfs/gempak_${RUN}_f${fhr}_gif.sh file is missing "
+             postmsg "jlogfile" "$msg"
+          fi
        fi
 
     done
 fi
 
 exit
-
