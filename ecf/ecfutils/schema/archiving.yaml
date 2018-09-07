@@ -5,17 +5,17 @@ archive_settings_template: !Template &archive_settings_template
     type: bool
 
   arch_cyc:
-    default: 18
+    default: 00
     description: cycle for archiving files for warm_start capability
     type: int
 
   arch_warmicfreq:
-    default: 6
+    default: 2
     description: archive frequency in days for warm_start capability
     type: int
 
   arch_fcsticfreq:
-    default: 3
+    default: 1
     descripton: archive frequency in days for gdas/gfs forecast-only capability
     type: int
 
@@ -36,7 +36,7 @@ archive_settings_template: !Template &archive_settings_template
 
   scrub_in_archive_end:
     type: int
-    default: 24
+    default: 72
     description: "ending hour of previous cycles to be removed from rotating directory during archive job"
 
   ATARDIR:

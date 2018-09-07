@@ -91,6 +91,7 @@ suite: !Cycle
         #Trigger: !Depend ( up.dump.jgdas_dump & up.dump.jgdas_tropcy_qc_reloc )
         resources: !calc partition.resources.run_prep
         J_JOB: rocoto/prep.sh
+        #J_JOB: $HOMEobsproc_network/jobs/JGLOBAL_PREP
         ecf_module_commands: "# prep.sh will load modules instead"
 
       jgdas_prep_post: !Task
@@ -379,6 +380,7 @@ suite: !Cycle
         #Trigger: !Depend ( up.dump.jgfs_dump & up.dump.jgfs_tropcy_qc_reloc
         resources: !calc partition.resources.run_prep
         J_JOB: rocoto/prep.sh
+        #J_JOB: $HOMEobsproc_network/jobs/JGLOBAL_PREP
 
       jgfs_prep_post: !Task
         <<: *exclusive_task_template

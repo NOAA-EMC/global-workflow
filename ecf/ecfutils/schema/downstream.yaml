@@ -56,11 +56,11 @@ downstream_schema: &downstream_schema !Template
     description: "GSI minimization monitoring"
   VRFYTRAK:
     type: bool
-    default: NO
+    default: YES
     description: "Hurricane track verification"
   VRFYGENESIS:
     type: bool
-    default: NO
+    default: YES
     description: "Cyclone genesis verification"
   RUNMOS:
     type: bool
@@ -68,15 +68,15 @@ downstream_schema: &downstream_schema !Template
     description: "Run GFS MOS"
   DO_BUFRSND:
     type: bool
-    default: NO
+    default: YES
     description: "Run GFS_POSTSND"
   DO_GEMPAK:
     type: bool
-    default: NO
+    default: YES
     description: "Run GFS GEMPAK"
   DO_AWIPS:
     type: bool
-    default: NO
+    default: YES
     description: "Run GFS AWIPS"
   
   FHOUT_CYCLONE_GFS:

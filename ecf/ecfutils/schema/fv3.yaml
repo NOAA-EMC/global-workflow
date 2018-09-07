@@ -210,13 +210,17 @@ fv3_settings_template: !Template &fv3_settings_template
           DELTIM: { type: int, default: 450 }
           layout_x: { type: int, default: 2 }
           layout_y: { type: int, default: 4 }
+          layout_x_gfs: { type: int, default: 2 }
+          layout_y_gfs: { type: int, default: 4 }
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
             default: "0.062,3.5"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
+          WRITE_GROUP_gfs: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 24 }
           WRTIOBUF: { type: string, default: "4M" }
 
       - when: !calc (CASE == "C96")
@@ -224,13 +228,17 @@ fv3_settings_template: !Template &fv3_settings_template
           DELTIM: { type: int, default: 450 }
           layout_x: { type: int, default: 4 }
           layout_y: { type: int, default: 4 }
+          layout_x_gfs: { type: int, default: 4 }
+          layout_y_gfs: { type: int, default: 4 }
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
             default: "0.125,3.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
+          WRITE_GROUP_gfs: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 24 }
           WRTIOBUF: { type: string, default: "4M" }
 
       - when: !calc (CASE == "C192")
@@ -238,41 +246,52 @@ fv3_settings_template: !Template &fv3_settings_template
           DELTIM: { type: int, default: 450 }
           layout_x: { type: int, default: 4 }
           layout_y: { type: int, default: 6 }
+          layout_x_gfs: { type: int, default: 4 }
+          layout_y_gfs: { type: int, default: 6 }
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
             default: "0.2,2.5"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 2 }
+          WRITE_GROUP_gfs: { type: int, default: 2 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 24 }
           WRTIOBUF: { type: string, default: "8M" }
 
       - when: !calc (CASE == "C384")
         do: !Template
           DELTIM: { type: int, default: 300 }
           layout_x: { type: int, default: 4 }
-          layout_y: { type: int, default: 8 }
+          layout_y: { type: int, default: 6 }
+          layout_x_gfs: { type: int, default: 4 }
+          layout_y_gfs: { type: int, default: 6 }
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
             default: "1.0,1.2"
             description: "mountain blocking and gravity wave drag"
-          WRITE_GROUP: { type: int, default: 3 }
+          WRITE_GROUP: { type: int, default: 1 }
+          WRITE_GROUP_gfs: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
           WRTIOBUF: { type: string, default: "16M" }
 
       - when: !calc (CASE == "C768")
         do: !Template
           DELTIM: { type: int, default: 225 }
-          layout_x: { type: int, default: 8 }
-          layout_y: { type: int, default: 16 }
+          layout_x: { type: int, default: 6 }
+          layout_y: { type: int, default: 8 }
+          layout_x_gfs: { type: int, default: 12 }
+          layout_y_gfs: { type: int, default: 16 }
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
             default: "3.5,0.25"
             description: "mountain blocking and gravity wave drag"
-          WRITE_GROUP: { type: int, default: 4 }
-          WRTTASK_PER_GROUP: { type: int, default: 60 }
+          WRITE_GROUP: { type: int, default: 1 }
+          WRITE_GROUP_gfs: { type: int, default: 4 }
+          WRTTASK_PER_GROUP: { type: int, default: 48 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 60 }
           WRTIOBUF: { type: string, default: "32M" }
 
       - when: !calc (CASE == "C1152")
@@ -280,9 +299,13 @@ fv3_settings_template: !Template &fv3_settings_template
           DELTIM: { type: int, default: 150 }
           layout_x: { type: int, default: 8 }
           layout_y: { type: int, default: 16 }
+          layout_x_gfs: { type: int, default: 8 }
+          layout_y_gfs: { type: int, default: 16 }
           fv3_threads: { type: int, default: 4 }
           WRITE_GROUP: { type: int, default: 4 }
+          WRITE_GROUP_gfs: { type: int, default: 4 }
           WRTTASK_PER_GROUP: { type: int, default: 84 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 84 }
           WRTIOBUF: { type: string, default: "48M" }
 
       - when: !calc (CASE == "C3072")
@@ -290,8 +313,11 @@ fv3_settings_template: !Template &fv3_settings_template
           DELTIM: { type: int, default: 90 }
           layout_x: { type: int, default: 16 }
           layout_y: { type: int, default: 32 }
+          layout_x_gfs: { type: int, default: 16 }
+          layout_y_gfs: { type: int, default: 32 }
           fv3_threads: { type: int, default: 4 }
           WRITE_GROUP: { type: int, default: 4 }
           WRTTASK_PER_GROUP: { type: int, default: 120 }
+          WRTTASK_PER_GROUP_gfs: { type: int, default: 120 }
           WRTIOBUF: { type: string, default: "64M" }
       - otherwise: !error "Unknown case: {CASE}"
