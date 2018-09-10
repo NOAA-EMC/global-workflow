@@ -35,7 +35,9 @@ config_anal:
     if [ $REALTIME = "NO" ]; then
 
       # Set CONVINFO
-      if [[ "$CDATE" -ge "2018022818" ]]; then
+      if [[ "$CDATE" -ge "2018053012" ]]; then
+        export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018053012
+      elif [[ "$CDATE" -ge "2018022818" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
       elif [[ "$CDATE" -ge "2018010512" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512

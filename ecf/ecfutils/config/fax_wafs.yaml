@@ -1,6 +1,6 @@
 # This file is used to generate config.fax_wafs, which has settings for the GFS wafs step
 
-config.fax_wafs:
+config_fax_wafs:
   filename: config.fax_wafs
   content: !expand |
     #!/bin/ksh -x
@@ -12,7 +12,7 @@ config.fax_wafs:
 
     export SENDCOM="YES"
 
-    export FIXgfs=$HOMEgfs/gemapk/fix
+    export FIXgfs=$HOMEgfs/gempak/fix
     export USHgfs=$HOMEgfs/gempak/ush
     export PARMgfs=$HOMEgfs/parm/wafs
 
