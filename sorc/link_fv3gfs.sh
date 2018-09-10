@@ -84,7 +84,7 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
 cd ${pwd}/../parm               ||exit 8
     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm                           wafs
+    $LINK ../sorc/gfs_wafs.fd/parm/*                         .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
 cd ${pwd}/../ush                ||exit 8

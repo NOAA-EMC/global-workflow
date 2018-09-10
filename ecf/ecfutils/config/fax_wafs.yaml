@@ -1,18 +1,18 @@
-# This file is used to generate config.wafs, which has settings for the GFS wafs step
+# This file is used to generate config.fax_wafs, which has settings for the GFS wafs step
 
-config_wafs:
-  filename: config.wafs
+config.fax_wafs:
+  filename: config.fax_wafs
   content: !expand |
     #!/bin/ksh -x
    
-    ########## config.wafs ##########
+    ########## config.fax_wafs ##########
     # GFS wafs step specific
 
-    echo "BEGIN: config.wafs"
+    echo "BEGIN: config.fax_wafs"
 
     export SENDCOM="YES"
 
-    export FIXgfs=$HOMEgfs/fix/wafs
+    export FIXgfs=$HOMEgfs/gemapk/fix
     export USHgfs=$HOMEgfs/gempak/ush
     export PARMgfs=$HOMEgfs/parm/wafs
 
@@ -31,4 +31,4 @@ config_wafs:
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-    echo "END: config.wafs" 
+    echo "END: config.fax_wafs" 

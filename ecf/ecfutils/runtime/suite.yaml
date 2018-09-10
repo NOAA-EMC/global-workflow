@@ -170,5 +170,6 @@ suite_defaults: &suite_defaults
 
   common_metasched_vars: !expand |
     {metasched.defvar("HOMEgfs", doc.places.HOMEgfs)}
+    {metasched.defvar("HOMEobsproc_network", doc.places.HOMEobsproc_network)}
     {metasched.defvar("COM", doc.places.ROTDIR)}
 

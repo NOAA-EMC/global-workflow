@@ -29,11 +29,12 @@ task_template: &task_template
   # j-job (jobs/ directory) for this task.
   rocoto_command: !expand >-
      {rocoto_load_modules} ;
-     &HOMEgfs;/jobs/{J_JOB}
+     {config_source} ;
+     {J_JOB_PATH_ROCOTO}/{J_JOB}
 
   # ecflow_command - command ecFlow executes from the ecf file to pass
   # control to the j-job (jobs/ directory) for this task.
-  ecflow_command: !expand "${{HOMEgfs}}/jobs/{J_JOB}"
+  ecflow_command: !expand "{J_JOB_PATH_ECFLOW}/{J_JOB}"
 
   # rocoto_log_path: contents of the <join> entry of the <task> which
   # sets the stdout and stderr log path in the Rocoto XML.
@@ -217,8 +218,11 @@ shared_task_template: &shared_task_template
   <<: *task_template
   partition: !calc doc.accounting.shared_partition
   default_accounting: !calc partition.shared_accounting_ref
+  J_JOB_PATH_ROCOTO: !expand '&HOMEgfs;/jobs'
+  J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: shared
+  config_source: !expand 'source &EXPDIR;/config.base'
 
 # service_task_template - a convenient alias to define a task that has
 # the service_accounting and passes "service" to the
@@ -227,8 +231,11 @@ service_task_template: &service_task_template
   <<: *task_template
   partition: !calc doc.accounting.service_partition
   default_accounting: !calc partition.service_accounting_ref
+  J_JOB_PATH_ROCOTO: !expand '&HOMEgfs;/jobs'
+  J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: service
+  config_source: !expand 'source &EXPDIR;/config.base'
 
 # exclusive_task_template - a convenient alias to define a task that has
 # the exclusive_accounting and passes "exclusive" to the
@@ -237,8 +244,11 @@ exclusive_task_template: &exclusive_task_template
   <<: *task_template
   partition: !calc doc.accounting.exclusive_partition
   default_accounting: !calc partition.exclusive_accounting_ref
+  J_JOB_PATH_ROCOTO: !expand '&HOMEgfs;/jobs'
+  J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: exclusive
+  config_source: !expand 'source &EXPDIR;/config.base'
 
 # exclusive_task_template - a convenient alias for the special case of
 # an exclusive_accounting job that runs a forecast.  These jobs must

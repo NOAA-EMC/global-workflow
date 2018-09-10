@@ -15,7 +15,7 @@ config_prep:
     
     # Get task specific resources
     . $EXPDIR/config.resources prep
-    
+
     export DO_MAKEPREPBUFR="{tools.YES_NO(doc.data_assimilation.DO_MAKEPREPBUFR)}"   # if NO, will copy prepbufr from globaldump
     
     # Relocation and syndata QC
@@ -30,6 +30,17 @@ config_prep:
     export FIXRELO=${{HOMERELO}}/fix/fix_am
     export USHRELO=${{HOMERELO}}/ush
     
+    export OPREFIX="$CDUMP.t\"$cyc\"z."
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+    export COMSP="$COMIN_OBS/$CDUMP.t\"$cyc\"z."
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMINgdas="$ROTDIR/gdas.$PDY/$cyc"
+    export COMINgfs="$ROTDIR/gfs.$PDY/$cyc"
+
     ###################################
     # Only used when DO_RELOCATE=YES
     # ignore them for now
