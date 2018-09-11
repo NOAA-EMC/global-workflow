@@ -10,12 +10,9 @@ config_fax:
 
     echo "BEGIN: config.fax"
 
-    module load NCL/6.4.0
-    module load bufr_dumplist/1.5.0
-    module load dumpjb/4.0.0
-
     export SENDCOM="YES"
 
+    export TMPDIR=$STMP
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMOUTwmo="$COMOUT/wmo"

@@ -49,6 +49,8 @@ cycled_suite_alarms: &cycled_suite_alarms
       do: !calc suite.Clock.for_alarm(doc.gfs_clock_4)
     - otherwise: !error Unknown gfs clock settings {doc.settings.gfs_cyc}
 
+  gfs_00_12: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
+
 # suite_defaults - this is inherited by the actual suite definitions
 # It sets defaults for various variables that are generally not overridden
 suite_defaults: &suite_defaults

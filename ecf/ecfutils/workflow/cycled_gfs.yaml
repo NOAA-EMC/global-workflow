@@ -147,8 +147,10 @@ suite: !Cycle
         jgdas_bulls_navy: !Task
           <<: *exclusive_task_template
           job: '<cyclestr>gdas_bulls_navy_@H</cyclestr>'
+          AlarmName: gfs_00_12
           #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
-          Trigger: !Depend ( up.up.dump.jgdas_dump )
+          #Trigger: !Depend ( up.up.dump.jgdas_dump )
+          Trigger: !Depend ( up.up.prep.jgdas_prep )
           resources: !calc partition.resources.run_bulls_navy
           more_vars: [ job ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
@@ -831,7 +833,7 @@ suite: !Cycle
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK_NCDC_UPAPGIF
 
-      jgfs_npoess_pgrb2_0p5deg: !Task
+      jgfs_pgrb2_spec_npoess: !Task
         <<: *exclusive_task_template
         Trigger: !Depend up.post.jgfs_post_f180
         resources: !calc partition.resources.run_npoess
@@ -841,7 +843,7 @@ suite: !Cycle
 
       jgfs_pgrb2_spec_gempak: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend jgfs_npoess_pgrb2_0p5deg
+        Trigger: !Depend jgfs_pgrb2_spec_npoess
         resources: !calc partition.resources.run_gempak_spec
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
