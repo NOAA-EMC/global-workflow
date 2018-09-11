@@ -665,7 +665,7 @@ suite: !Cycle
           resources: !calc partition.resources.run_postsnd
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
-          J_JOB: rocoto/postsnd.sh
+          J_JOB: JGFS_POSTSND
           ecf_module_commands: "# postsnd.sh will load modules instead"
 
       bulletins: !Family
