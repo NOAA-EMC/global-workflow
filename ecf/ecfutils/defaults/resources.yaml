@@ -126,7 +126,7 @@ default_resources: &default_resources
     - batch_memory: "254M"
       mpi_ranks: 2
       max_ppn: 1
-      walltime: !timedelta "00:03:00"
+      walltime: !timedelta "00:05:00"
       OMP_NUM_THREADS: 1
       exe: placeholder
 
