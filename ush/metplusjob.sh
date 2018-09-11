@@ -37,7 +37,7 @@ export iauf00=${9:-"NO"}                                                        
 ## config.vrfy
 ##   VRFY_STEP(1)(2), VRFY_GRID2GRID, VRFY_GRID2OBS, VRFY_PRECIP, VRFYBACKDATE,
 ##   VRFYBACKDATE_PRECIP, metplussave, metplushome, metplusconfig, metplusfix, fhrmin, fhrmax,
-##   ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
+##   vhr_rain, ftypelist, ptyplist, anltype, rain_bucket, g2g_sfc, STEP2_START_DATE, STEP2_END_DATE
 ##   webhost, webhostid, SEND2WEB, WEB_DIR, mdlist
 ## Make sure variables are set and set to names used in this script
 gfs_cyc=${gfs_cyc:-1}                                                       # number of GFS cycles, 1-->00Z, 2-->00Z 12Z, 4-->00Z 06Z 12Z and 18Z
@@ -54,12 +54,13 @@ metplussave=${metplussave:-"$NOSCRUB/archive/metplus_data"}                 # pl
 metplushome=${metplushome:-$BASE_VERIF_METPLUS}                             # location of global verification script
 metplusconfig=${metplusconfig:-"$PARMgfs/verif"}                            # locaton of configuration files to run METplus
 metplusfix=${metplusfix:-"$FIXgfs/fix_verif"}                               # location of fix files to run METplus
-fhrmin=${fhrmin:-$FHMIN_GFS}                                                 # start forecast hour
+fhrmin=${fhrmin:-$FHMIN_GFS}                                                # start forecast hour
 fhrmax=${fhrmax:-$FHMAX_GFS}                                                # end forecast hour
+vhr_rain=${vhr_rain:-$FHMAX_GFS}                                            # end verification forecast hour for precip, needed to create 0.25 deg grib1 files
 anltype=${anltype:-"gfs"}                                                   # analysis type for verification: gfs or gdas
-ftyplist=${ftyplist:-"pgbq"}                                                # verif. files used for computing precip. verif.
-ptyplist=${ptyplst:-"PRATE"}                                                # precip types in GRIB: PRATE or APCP
-rain_bucket=${rain_bucket:-6}                                               # prate/apcp in pgb files in 6 hour buckets for GSM, continuous for FV3
+ftyplist=${ftyplist:-"pgbf"}                                                # file types: pgbf, pgbq, or flxf
+ptyplist=${ptyplist:-"APCP"}                                                # precip types in GRIB: PRATE or APCP
+rain_bucket=${rain_bucket:-"6"}                                             # accumulation bucket in hours. bucket=0 -- continuous accumulation
 g2g_sfc=${g2g_sfc:-"NO"}                                                    # include the group of surface variables for grid-to-grid verification
 STEP2_START_DATE=${STEP2_START_DATE:-"$SDATE"}                              # starting date for METplus plots
 STEP2_END_DATE=${STEP2_END_DATE:-"$EDATE"}                                  # ending date for METplus plots
@@ -80,26 +81,28 @@ export CUE2RUN=${CUE2RUN:-$QUEUE}                                # batch queue
 export CUE2FTP=${CUE2FTP:-$QUEUE_ARCH}                           # queue for data transfer
 export GROUP=${GROUP:-g01}                                       # account group, not sure what this is       
 
+
+export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod                    # directory leading to ops. prepbufr files 
+export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                                    # directory leading to ops. prepbufr files
+export ccpa_prod_dir=/com/verf/prod                                                  # directory leading to ops. 24 accum. CCPA files
+
 if [ $machine = THEIA ]; then
     export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
     export PTMP=${PTMP:-/scratch4/NCEPDEV/stmp4/${USER}}                                 # temporary directory
     export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
     export prepbufr_arch_dir=/scratch4/NCEPDEV/global/noscrub/stat/prepbufr              # prepbufr archive directory
-    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod                    # directory leading to ops. prepbufr files 
-    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                                    # directory leading to ops. prepbufr files
     export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
 elif [ $machine = WCOSS_C ]; then
     export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                         # temporary directory
     export PTMP=${PTMP:-/gpfs/hps3/ptmp/${USER}}                                         # temporary directory
     export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                         # global stats directory
     export prepbufr_arch_dir=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/prepbufr         # prepbufr archive directory
-    export prepbufr_prod_upper_air_dir=/gpfs/hps/nco/ops/com/gfs/prod                    # directory leading to ops. prepbufr files 
-    export prepbufr_prod_conus_sfc_dir=/com2/nam/prod                                    # directory leading to ops. prepbufr files
     export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}         # date executable
 else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
 fi
+
 export PATH="${metplushome}/ush:${PATH}"
 export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
 ##---------------------------------------------------------------------------
@@ -131,7 +134,6 @@ fi
 if [ $cycle != $cyc2runmetplus ]; then 
     VRFY_GRID2GRID_STEP1=NO 
     VRFY_GRID2OBS_STEP1=NO 
-    VRFY_PRECIP_STEP1=NO
 else
     if [ $VRFY_STEP1 = YES -a $VRFY_GRID2GRID = YES ]; then
        VRFY_GRID2GRID_STEP1=YES
@@ -143,17 +145,11 @@ else
     else 
        VRFY_GRID2OBS_STEP1=NO
     fi
-    if [ $VRFY_STEP1 = YES -a $VRFY_PRECIP = YES ]; then
-       VRFY_PRECIP_STEP1=YES
-    else
-       VRFY_PRECIP_STEP1=NO 
-    fi
 fi
 ## Checks for step 2
 if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
     VRFY_GRID2GRID_STEP2=NO
     VRFY_GRID2OBS_STEP2=NO
-    VRFY_PRECIP_STEP2=NO
 else
     if [ $VRFY_STEP2 = YES -a $VRFY_GRID2GRID = YES ]; then
        VRFY_GRID2GRID_STEP2=YES
@@ -165,16 +161,28 @@ else
     else
        VRFY_GRID2OBS_STEP2=NO
     fi
-    if [ $VRFY_STEP2 = YES -a $VRFY_PRECIP = YES ]; then
-       VRFY_PRECIP_STEP2=YES
-    else
-       VRFY_PRECIP_STEP2=NO
-    fi
 fi
 ## Special checks for precip
 if [ $cycle != 00 -a $cycle != 12 ]; then 
     VRFY_PRECIP_STEP1=NO
     VRFY_PRECIP_STEP2=NO
+else 
+    #check for step 1
+    if [ $VRFY_STEP1 = YES -a $VRFY_PRECIP = YES ]; then
+       VRFY_PRECIP_STEP1=YES
+    else
+       VRFY_PRECIP_STEP1=NO
+    fi
+    #check for step 2
+    if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
+        VRFY_PRECIP_STEP2=NO
+    else
+        if [ $VRFY_STEP2 = YES -a $VRFY_PRECIP = YES ]; then
+            VRFY_PRECIP_STEP2=YES
+        else
+            VRFY_PRECIP_STEP2=NO 
+        fi
+    fi   
 fi
 ##--------------------------------------------------------------------------- 
 
@@ -691,6 +699,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                 done
             fi
         fi
+        #
         nn=1
         while [ $nn -le $nexp ] ; do
             export exp=${expname[nn]}             #exp name
@@ -892,7 +901,149 @@ fi
 ##---------------------------------------------------------------------------
 ## Precipitation verification step 1: compute contingency table counts
 if [ $VRFY_PRECIP_STEP1 = YES ] ; then
-    echo "ERROR: VRFY_PRECIP_STEP1 IS NOT SUPPORTED AT THIS TIME"
+    export cycle=$cycle                                                                #cycle to generate QPF stats data
+    export expnlist=$expname                                                           #experiment names 
+    export expdlist=$expdir                                                            #exp online archive directories
+    export dumplist=".gfs."                                                            #file format pgb${asub}${fhr}${dump}${yyyymmdd}${cyc}
+    export rundir_precip1_base=$rundir_base/precip_step1                               #run directory, where to save METplus output
+    export VDATEST_precip=`$ndate -${VRFYBACKDATE_PRCP} ${VSTART_DATE}00 |cut -c 1-8 ` #verification starting date
+    export VDATEND_precip=`$ndate -${VRFYBACKDATE_PRCP} ${VEND_DATE}00 |cut -c 1-8 `   #verification ending date
+    export ftyplist=${ftyplist}                                                        #file types: pgbf, pgbq, or flxf
+    export ptyplist=${ptyplist}                                                        #precip types in GRIB: PRATE or APCP
+    export fhrmin=$fhrmin                                                              #start forecast hour
+    if [ $vhr_rain -ge 168 ]; then                                                     #end forecast hour
+        export fhrmax=168
+    else
+        export fhrmax=$vhr_rain
+    fi
+    export rain_bucket=${rain_bucket}                                                  #accumulation buckets in hours. bucket=0 -- continuous accumulation
+    #do some checks 
+    if [ ! -d $metplushome ]; then
+        echo "EXIT ERROR: $metplushome does not exist "
+        exit
+    fi
+    #create directories for output
+    mkdir -p $rundir_precip1_base $metplussave
+    #determine requested forecast hours for verification that match 12Z - 12Z valid frame
+    if [ $cycle -eq 00 ]; then
+        export fhrmin=$(($fhrmin+12))
+        export fhrmax=$(($fhrmax-12))
+    elif [ $cycle -eq 12 ]; then
+        export fhrmin=${fhrmin}
+        export fhrmax=${fhrmax}
+    else
+        echo "cycle=${cycle}Z not supported. Exiting."
+        exit
+    fi
+    #run METplus
+    n=0 ; for runn in $expnlist ; do n=$((n+1)) ; expname[n]=$runn ; done
+    n=0 ; for rund in $expdlist ; do n=$((n+1)) ; expdir[n]=$rund  ; done
+    n=0 ; for dump in $dumplist ; do n=$((n+1)) ; dumpname[n]=$dump  ; done
+    n=0 ; for ftyp in $ftyplist ; do n=$((n+1)) ; ftypname[n]=$ftyp  ; done
+    n=0 ; for ptyp in $ptyplist ; do n=$((n+1)) ; ptypname[n]=$ptyp  ; done
+    n=0 ; for rb in $rain_bucket ; do n=$((n+1)) ; accum_bucket[n]=$rb  ; done
+    nexp=`echo $expnlist |wc -w`
+    VDATE=${VDATEST_precip}12
+    while [ $VDATE -le ${VDATEND_precip}12 ] ; do
+        export VDATE=$VDATE
+        export YYYY=$(echo ${VDATE}  |cut -c 1-4 )
+        export YYYYMM=$(echo ${VDATE}  |cut -c 1-6 )
+        export PDY=$(echo ${VDATE}  |cut -c 1-8 )
+        export rundir_precip1=${rundir_precip1_base}/${PDY}12/init_${cycle}Z
+        if [ -d ${rundir_precip1} ] ; then
+            echo "REMOVING ${rundir_precip1}"
+            rm -r $rundir_precip1
+        fi
+        mkdir -p ${rundir_precip1}/make_met_data
+        mkdir -p ${rundir_precip1}/VSDB_format
+        mkdir -p ${rundir_precip1}/logs
+        mkdir -p ${rundir_precip1}/confs
+        mkdir -p ${rundir_precip1}/jobs
+        mkdir -p ${rundir_precip1}/data
+        #get CCPA data, valid VDATE-24hr 12Z - VDATE 12Z
+        mkdir -p ${rundir_precip1}/data/CCPA
+        if [ -s ${ccpa_prod_dir}/precip.${PDY}/ccpa.${PDY}12.24h ]; then
+            ln -sf ${ccpa_prod_dir}/precip.${PDY}/ccpa.${PDY}12.24h ${rundir_precip1}/data/CCPA/.
+        else
+            ccpa_tar=/NCEPPROD/hpssprod/runhistory/rh${YYYY}/${YYYYMM}/${PDY}/com_verf_prod_precip.${PDY}.precip.tar
+            if [ $machine = THEIA ]; then
+                echo "#!/bin/bash" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -l nodes=1:ppn=1" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -l walltime=0:05:00" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -A fv3-cpu" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -q service" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -o ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.out" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -j oe" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -N get_ccpa" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#PBS -W umask=022" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "module load hpss" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh  
+                echo "htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "mv ccpa.${PDY}12.24h ${rundir_precip1}/data/CCPA/." >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                qsub ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+            else
+                htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h
+            fi
+            sleep 300
+        fi
+        #
+        nn=1
+        while [ $nn -le $nexp ] ; do
+            export exp=${expname[nn]}           #exp name
+            export exp_dir=${expdir[nn]}        #exp directory
+            export cdump=${dumpname[nn]}        #file dump format
+            export file_type=${ftypname[nn]}    #file type
+            export precip_type=${ptypname[nn]}  #PRATE -> precip rate; APCP -> accumulated precip
+            export bucket=${accum_bucket[nn]}   #bucket accumulation
+            export file_template="${file_type}{lead?fmt=%HH}.gfs.{init?fmt=%Y%m%d%H}"
+            mkdir -p ${rundir_precip1}/logs/${exp}
+            mkdir -p ${rundir_precip1}/confs/${exp}
+            mkdir -p ${rundir_precip1}/jobs/${exp}
+            mkdir -p ${rundir_precip1}/data/${exp}
+            #get model files, valid 12Z - 12Z for cycle
+            if [ $bucket -eq 0 ]; then
+                export fhrout=24
+            else
+                export fhrout=$bucket
+            fi
+            export nfhr_day=`expr 24 \/ $fhrout ` #number of model files to make 24 hour accumulation
+            fhr_start=$((fhrmin+24))
+            while [ $fhr_start -le $fhrmax ] ; do
+                 if [ $fhr_start -lt 10 ]; then fhr_start=0$fhr_start ; fi
+                 if [ $fhr_start -eq $((fhrmin+24)) ]; then
+                     fhr_list=${fhr_start}
+                     fhr_count=1
+                 else
+                     fhr_list[$fhr_count]=${fhr_start}
+                     fhr_count=` expr $fhr_count + 1 `    
+                 fi
+                 IDATE=$($ndate -$fhr_start ${VDATE})
+                 nfhr=1
+                 while [ $nfhr -le $nfhr_day ]; do 
+                     fhr=$(($fhr_start-$(($((nfhr-1))*$bucket))))
+                     if [ $fhr -lt 10 ]; then fhr_start=0$fhr ; fi
+                     if [ -s $exp_dir/$exp/${file_type}${fhr}.gfs.${IDATE} ] ; then
+                         ln -sf $exp_dir/$exp/${file_type}${fhr}.gfs.${IDATE} ${rundir_precip1}/data/${exp}/.
+                     fi
+                     nfhr=$((nfhr+1))
+                 done
+                fhr_start=$((fhr_start+24))
+            done
+            export fhr_list_config=$( printf "%s," "${fhr_list[@]}" | cut -d "," -f 1-${#fhr_list[@]} )
+            #run in MPMD style if MPMD=YES, else run serially METplus
+            if [ $MPMD = YES ] ; then
+                echo "MPMD HOLDER"
+            else
+                echo "==== running METplus precip for ${VDATE} ${exp} ===="
+                ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/precip_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
+                export savedir=${metplussave}/precip/${cycle}/${exp}
+                mkdir -p ${savedir}
+                cp ${rundir_precip1}/VSDB_format/accum24/12Z/${exp}/*.stat ${savedir}/${exp}_precip_${PDY}.stat
+            fi
+            nn=`expr $nn + 1 `
+        done
+        VDATE=$(echo $($ndate +24 ${VDATE}))
+    done
+
 fi
 ##---------------------------------------------------------------------------
 
