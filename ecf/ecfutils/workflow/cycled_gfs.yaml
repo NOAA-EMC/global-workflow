@@ -563,12 +563,6 @@ suite: !Cycle
 
     post_processing: !Family
 
-      jgfs_wafs_gcip: !Task
-        Dummy: true  ## <-- Node is not implemented yet
-        <<: *exclusive_task_template
-        Trigger: !Depend up.up.post.jgfs_post_f03
-        resources: !calc partition.resources.run_wafs
-
       fax: !Family
         jgfs_fax_anl: !Task
           ecflow_def: |
@@ -695,11 +689,11 @@ suite: !Cycle
           job: '<cyclestr>gfs_wafs_grib2_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f00
           resources: !calc partition.resources.run_wafs_grib2
-          more_vars: [ job ]
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS_GRIB2
+          more_vars: [ job ]
 
         jgfs_wafs_blending: !Task
           <<: *exclusive_task_template
@@ -710,11 +704,22 @@ suite: !Cycle
               do: !timedelta +4:33:00
             - otherwise: null
           resources: !calc partition.resources.run_wafs_blending
-          more_vars: [ job ]
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS_BLENDING
+          more_vars: [ job ]
+
+        jgfs_wafs_gcip: !Task
+          <<: *exclusive_task_template
+          job: '<cyclestr>gfs_wafs_gcip_@H</cyclestr>'
+          Trigger: !Depend up.up.post.jgfs_post_f03
+          resources: !calc partition.resources.run_wafs_gcip
+          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs_gcip"
+          J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
+          J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
+          J_JOB: JGFS_WAFS_GCIP
+          more_vars: [ job ]
 
       awips_g2: !TaskArray
         Dimensions:

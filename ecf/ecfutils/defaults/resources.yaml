@@ -210,6 +210,14 @@ default_resources: &default_resources
       OMP_NUM_THREADS: 1
       exe: placeholder
       
+  run_wafs_gcip: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 1
+      walltime: !timedelta "00:30:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
   run_fbwind: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 2
