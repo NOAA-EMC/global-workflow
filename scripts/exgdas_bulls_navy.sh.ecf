@@ -133,8 +133,19 @@ if test $err1 -eq 0 -o $err2 -eq 0; then
   if test $SENDDBN = 'YES'
   then
     cp navybull.tran.${cyc} ${COMOUTwmo}/navybull.tran.${cyc}.$jobn
+    export err=$?
+    if [[ $err -ne 0 ]] ; then
+       echo " File navybull.tran.${cyc} does not exist."
+       exit $err
+    fi
     $UTILgfs/ush/make_ntc_bull.pl WMONV NONE KWBC NONE  \
        navybull.tran.${cyc} ${COMOUTwmo}/navybull.tran.${cyc}.$jobn
+    export err=$?
+    if [[ $err -ne 0 ]] ; then
+       echo " File navybull.tran.${cyc} failed to send TOC."
+       exit $err
+    fi
+
   fi
 
 ###################################################################
