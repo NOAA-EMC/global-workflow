@@ -30,7 +30,8 @@ config_prep:
     export FIXRELO=${{HOMERELO}}/fix/fix_am
     export USHRELO=${{HOMERELO}}/ush
     
-    export OPREFIX="$CDUMP.t\"$cyc\"z."
+    export cycle="t\"$cyc\"z"
+    export OPREFIX="{doc.data_assimilation.OPREFIX}"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
@@ -52,6 +53,15 @@ config_prep:
     #   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
     #fi
     
+    # If PROCESS_TROPCY=NO, copy over tcvitals files to COMROT
+    if [ $PROCESS_TROPCY = "NO" ]; then
+       cp $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}syndata.tcvitals.tm00 $COMOUT/.
+    fi
+    if [ $DO_MAKEPREPBUFR = "NO" ]; then
+       $NCP $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}prepbufr               $COMOUT/{doc.data_assimilation.OPREFIX}prepbufr
+       $NCP $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}prepbufr.acft_profiles $COMOUT/{doc.data_assimilation.OPREFIX}prepbufr.acft_profiles
+       [[ $DONST = "YES" ]] && $NCP $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}nsstbufr $COMOUT/{doc.data_assimilation.OPREFIX}nsstbufr
+    fi
     
     echo "END: config.prep"
     

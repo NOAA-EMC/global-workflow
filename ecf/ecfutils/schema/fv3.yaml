@@ -41,8 +41,10 @@ fv3_settings_template: !Template &fv3_settings_template
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
           random_clds: { type: bool, default: false }
-          hord_mt_nh_nonmono: { type: int, default: 6 }
-          hord_xx_nh_nonmono: { type: int, default: 6 }
+          hord_mt_nh_nonmono_gdas: { type: int, default: 6 }
+          hord_xx_nh_nonmono_gdas: { type: int, default: 6 }
+          hord_mt_nh_nonmono_gfs: { type: int, default: 5 }
+          hord_xx_nh_nonmono_gfs: { type: int, default: 5 }
           vtdm4_nh_nonmono:   { type: float, default: 0.02 }
           nord: { type: int, default: 2 }
           dddmp: { type: float, default: 0.1 }

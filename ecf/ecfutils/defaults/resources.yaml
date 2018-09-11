@@ -339,10 +339,10 @@ default_resources: &default_resources
   run_gfsfcst: !JobRequest
     - batch_memory: "1024M"
       mpi_ranks: !calc >-
-          doc.fv3_gfs_settings.layout_x *
-          doc.fv3_gfs_settings.layout_y * 6 + 
-          ( ( doc.fv3_gfs_settings.WRITE_GROUP * 
-          doc.fv3_gfs_settings.WRTTASK_PER_GROUP )
+          doc.fv3_gfs_settings.layout_x_gfs *
+          doc.fv3_gfs_settings.layout_y_gfs * 6 + 
+          ( ( doc.fv3_gfs_settings.WRITE_GROUP_gfs * 
+          doc.fv3_gfs_settings.WRTTASK_PER_GROUP_gfs )
           if doc.fv3_gfs_settings.QUILTING else 0 )
       max_ppn: !calc "doc.fv3_gfs_settings.get('fcst_max_ppn',None)"
       OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads

@@ -7,8 +7,13 @@ config_fcst:
   more_exports_for_microphys: !FirstTrue
     - when: !calc ( doc.fv3_settings.imp_physics==11 )
       do: !expand |
-        export hord_mt_nh_nonmono={doc.fv3_settings.hord_mt_nh_nonmono}
-        export hord_xx_nh_nonmono={doc.fv3_settings.hord_xx_nh_nonmono}
+        if [[ "$CDUMP" == "gdas" ]] ; then
+          export hord_mt_nh_nonmono={doc.fv3_settings.hord_mt_nh_nonmono_gdas}
+          export hord_xx_nh_nonmono={doc.fv3_settings.hord_xx_nh_nonmono_gdas}
+        else
+          export hord_mt_nh_nonmono={doc.fv3_settings.hord_mt_nh_nonmono_gfs}
+          export hord_xx_nh_nonmono={doc.fv3_settings.hord_xx_nh_nonmono_gfs}
+        fi
         export vtdm4_nh_nonmono={doc.fv3_settings.vtdm4_nh_nonmono}
         export nord={doc.fv3_settings.nord}
         export dddmp={doc.fv3_settings.dddmp}
@@ -37,6 +42,14 @@ config_fcst:
     export FCSTEXECDIR="$HOMEgfs/exec"
     export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
     export npe_fv3=$npe_fcst # This is model resolution dependent, see note above    
+
+    if [[ "$CDUMP" == "gfs" ]] ; then
+       export npe_fv3=$npe_fcst_gfs
+       export layout_x=$layout_x_gfs
+       export layout_y=$layout_y_gfs
+       export WRITE_GROUP=$WRITE_GROUP_GFS
+       export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+    fi
    
     # Model configuration
     export TYPE="{doc.fv3_settings.nh_type}"

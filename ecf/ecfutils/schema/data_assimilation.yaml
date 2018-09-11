@@ -50,6 +50,11 @@ data_assimilation_template: !Template &data_assimilation_template
     default: YES
     description: If NO, will copy prepbufr from globaldump.  Otherwise, generates prepbufr file anew.
 
+  OPREFIX:
+    type: string
+    default: "$CDUMP.$cycle."
+    description: Format for dump file name prefix
+
   RERUN_EFCSGRP:
     type: bool
     default: NO

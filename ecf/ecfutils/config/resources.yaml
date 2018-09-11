@@ -46,7 +46,7 @@ config_resources:
             export npe_fcst={doc.aliases.gdasfcst.npe}
             export npe_node_fcst={doc.aliases.gdasfcst.npe_node}
         else
-            export npe_fcst={doc.aliases.gfsfcst.npe}
+            export npe_fcst_gfs={doc.aliases.gfsfcst.npe}
             export npe_node_fcst={doc.aliases.gfsfcst.npe_node}
         fi
 
