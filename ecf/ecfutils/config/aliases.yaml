@@ -80,7 +80,7 @@ aliases:
     <<: *alias_exclusive
     flag: !calc ( 'gfs' in doc.suite )
     task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
-    alt_resources: !error should not get here
+    alt_resources: !calc doc.exclusive_resources.run_efcs
 
   gdasremap:
     <<: *alias_remap
@@ -97,7 +97,7 @@ aliases:
   gdaspost:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite )
-    task: !calc doc.suite.gdas.post.jgdas_post_anl
+    task: !calc doc.suite.gdas.post.jgdas_post_f000
     alt_resources: !calc doc.exclusive_resources.run_gdaspost
 
   gfspost:
@@ -110,8 +110,7 @@ aliases:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
     task: !calc doc.suite.gdas.enkf.forecast.jgdas_enkf_fcst_grp1
-    alt_resources: !error should not get here
-#    alt_resources: !calc doc.exclusive_resources.run_efcs
+    alt_resources: !calc doc.exclusive_resources.run_efcs
 
   eupd: 
     <<: *alias_exclusive
@@ -175,6 +174,18 @@ aliases:
     <<: *alias_exclusive
     flag: false
     alt_resources: !calc doc.exclusive_resources.run_awips
+
+  awips_g2:
+    <<: *alias_exclusive
+    flag: !calc ('gfs' in doc.suite and 'awips_g2' in doc.suite.gfs)
+    task: doc.suite.awips_g2.jgfs_awips_g2_f000
+    alt_resources: !calc doc.exclusive_resources.run_awips_g2
+
+  awips_20km_1p0:
+    <<: *alias_exclusive
+    flag: !calc ('gfs' in doc.suite and 'awips_20km_1p0' in doc.suite.gfs)
+    task: doc.suite.awips_20km_1p0.jgfs_awips_f000
+    alt_resources: !calc doc.exclusive_resources.run_awips_20km_1p0
 
   postsnd:
     <<: *alias_exclusive

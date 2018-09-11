@@ -162,7 +162,7 @@ suite: !Cycle
       jgdas_gempak: !Task
         <<: *exclusive_task_template
         Trigger: !Depend up.forecast.jgdas_forecast_high
-        resources: !calc partition.resources.run_gdasgempak
+        resources: !calc partition.resources.run_gdas_gempak
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK
@@ -170,7 +170,7 @@ suite: !Cycle
       jgdas_gempak_meta_ncdc: !Task
         <<: *exclusive_task_template
         Trigger: !Depend jgdas_gempak
-        resources: !calc partition.resources.run_gdasgempak
+        resources: !calc partition.resources.run_gdas_gempak_meta_ncdc
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK_META_NCDC
@@ -226,7 +226,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
         resources: !calc partition.resources.run_gdaspost
-        Name: !expand jgdas_post_f{dimval.fhr:02d}
+        Name: !expand jgdas_post_f{dimval.fhr:03d}
         FHRGRP: !expand '{dimidx.fhr+1:03d}'
         FHRLST: !expand 'f{dimval.fhr:03d}'
         FHR: !expand 'f{dimval.fhr:02d}'
@@ -522,7 +522,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
         resources: !calc partition.resources.run_gfspost
-        Name: !expand jgfs_post_f{dimval.fhr:02d}
+        Name: !expand jgfs_post_f{dimval.fhr:03d}
         FHRGRP: !expand "{dimidx.fhr+1:03d}"
         FHRLST: !expand "f{dimval.fhr:03d}"
         FHR: !expand 'f{dimval.fhr:02d}'
@@ -571,7 +571,7 @@ suite: !Cycle
           fcsthrs: anl
           job: '<cyclestr>gfs_fax_anl_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_anl
-          resources: !calc partition.resources.run_fax
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ fcsthrs, job ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -583,8 +583,8 @@ suite: !Cycle
           <<: *exclusive_task_template
           fcsthrs: !expand "{0:02d}" 
           job: '<cyclestr>gfs_fax_f00_@H</cyclestr>'
-          Trigger: !Depend ( up.up.post.jgfs_post_anl & up.up.post.jgfs_post_f00 )
-          resources: !calc partition.resources.run_fax
+          Trigger: !Depend ( up.up.post.jgfs_post_anl & up.up.post.jgfs_post_f000 )
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ fcsthrs, job ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -596,8 +596,8 @@ suite: !Cycle
           <<: *exclusive_task_template
           fhr_list: '06 12'
           job: '<cyclestr>gfs_fax_wafs_f12_@H</cyclestr>'
-          Trigger: !Depend up.up.post.jgfs_post_f12
-          resources: !calc partition.resources.run_fax_wafs
+          Trigger: !Depend up.up.post.jgfs_post_f012
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ fhr_list, job ]
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
@@ -610,8 +610,8 @@ suite: !Cycle
           <<: *exclusive_task_template
           fhr_list: '18 24'
           job: '<cyclestr>gfs_fax_wafs_f24_@H</cyclestr>'
-          Trigger: !Depend up.up.post.jgfs_post_f24
-          resources: !calc partition.resources.run_fax_wafs
+          Trigger: !Depend up.up.post.jgfs_post_f024
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ fhr_list, job ]
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
@@ -624,8 +624,8 @@ suite: !Cycle
           <<: *exclusive_task_template
           fhr_list: '30 36'
           job: '<cyclestr>gfs_fax_wafs_f36_@H</cyclestr>'
-          Trigger: !Depend up.up.post.jgfs_post_f36
-          resources: !calc partition.resources.run_fax_wafs
+          Trigger: !Depend up.up.post.jgfs_post_f036
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ fhr_list, job ]
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
@@ -641,11 +641,11 @@ suite: !Cycle
           fcsthrs: !expand "{dimval.fhr:02d}" 
           Trigger: !FirstTrue
             - when: !calc dimval.fhr == 0
-              do:   !Depend ( up.up.post.jgfs_post_f00 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
+              do:   !Depend ( up.up.post.jgfs_post_f000 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
             - otherwise: !Depend >-
-                up.up.post.depend("jgfs_post_f{N:02d}",N=[ dimval.fhr ])
+                up.up.post.depend("jgfs_post_f{N:03d}",N=[ dimval.fhr ])
                 & up.grib_wafs.depend("jgfs_wafs_f{N:02d}",N=[ dimval.fhr-6 ])
-          resources: !ref partition.resources.run_wafs
+          resources: !ref partition.resources.run_one_node_downstream
           ecflow_def: !expand "edit FCSTHR '{dimval.fhr:02d}'"
           job: '<cyclestr>gfs_wafs_f{dimval.fhr:02d}_@H</cyclestr>'
           more_vars: [ fcsthrs, job ]
@@ -668,8 +668,8 @@ suite: !Cycle
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
           job: '<cyclestr>gfs_fbwind_@H</cyclestr>'
-          Trigger: !Depend ( up.up.post.jgfs_post_f06 & up.up.post.jgfs_post_f12 & up.up.post.jgfs_post_f24 )
-          resources: !calc partition.resources.run_fbwind
+          Trigger: !Depend ( up.up.post.jgfs_post_f006 & up.up.post.jgfs_post_f012 & up.up.post.jgfs_post_f024 )
+          resources: !calc partition.resources.run_small_downstream
           more_vars: [ job ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -679,7 +679,7 @@ suite: !Cycle
           Dummy: true  ## <-- Node is not implemented yet
           <<: *exclusive_task_template
           Trigger: !Depend >- 
-                up.up.post.depend("jgfs_post_f{N:02d}",N=tools.seq(0,180,6))
+                up.up.post.depend("jgfs_post_f{N:03d}",N=tools.seq(0,180,6))
                 & up.up.prdgen.depend("jgfs_pgrb2_f{N:02d}",N=tools.seq(0,180,6))
           resources: !calc partition.resources.run_one_hour_exclusive
 
@@ -687,8 +687,8 @@ suite: !Cycle
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
           job: '<cyclestr>gfs_wafs_grib2_@H</cyclestr>'
-          Trigger: !Depend up.up.post.jgfs_post_f00
-          resources: !calc partition.resources.run_wafs_grib2
+          Trigger: !Depend up.up.post.jgfs_post_f000
+          resources: !calc partition.resources.run_one_node_downstream
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -703,7 +703,7 @@ suite: !Cycle
             - when: !calc doc.settings.four_cycle_mode
               do: !timedelta +4:33:00
             - otherwise: null
-          resources: !calc partition.resources.run_wafs_blending
+          resources: !calc partition.resources.run_one_node_downstream
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -713,8 +713,8 @@ suite: !Cycle
         jgfs_wafs_gcip: !Task
           <<: *exclusive_task_template
           job: '<cyclestr>gfs_wafs_gcip_@H</cyclestr>'
-          Trigger: !Depend up.up.post.jgfs_post_f03
-          resources: !calc partition.resources.run_wafs_gcip
+          Trigger: !Depend up.up.post.jgfs_post_f003
+          resources: !calc partition.resources.run_one_node_downstream
           config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs_gcip"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -733,8 +733,8 @@ suite: !Cycle
           fcsthrs: !expand "{dimval.fhr:03d}"
           job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_@H</cyclestr>"
           more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:02d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips
+          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
+          resources: !calc partition.resources.run_awips_g2
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_AWIPS_G2
@@ -755,8 +755,8 @@ suite: !Cycle
           fcsthrs: !expand "{dimval.fhr:03d}"
           job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_20km_@H</cyclestr>"
           more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:02d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips
+          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
+          resources: !calc partition.resources.run_awips_20km_1p0
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_AWIPS_20KM_1P0DEG
@@ -803,7 +803,7 @@ suite: !Cycle
         Name: !expand "jgfs_pgrb2_f{dimval.fhr:02d}"
         Trigger: !Depend >-
           jgfs_pgrb2_manager.depend('release_pgrb2_{N:02d}',N=dimval.fhr) 
-          & up.post.depend('jgfs_post_f{N:02d}',N=dimval.fhr)
+          & up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
         resources: !calc partition.resources.run_one_hour_exclusive
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -817,7 +817,7 @@ suite: !Cycle
       jgfs_gempak: !Task
         <<: *exclusive_task_template
         Trigger: !Depend up.forecast.jgfs_forecast_high
-        resources: !calc partition.resources.run_gempak
+        resources: !calc partition.resources.run_gfs_gempak
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK
@@ -825,7 +825,7 @@ suite: !Cycle
       jgfs_gempak_meta: !Task
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_gempak
-        resources: !calc partition.resources.run_gempak
+        resources: !calc partition.resources.run_gfs_gempak
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK_META
@@ -833,7 +833,7 @@ suite: !Cycle
       jgfs_gempak_ncdc_upapgif: !Task
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_gempak.is_running() | jgfs_gempak.is_completed()
-        resources: !calc partition.resources.run_gempak_ncdc_upapgif
+        resources: !calc partition.resources.run_one_node_downstream
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK_NCDC_UPAPGIF
@@ -849,7 +849,7 @@ suite: !Cycle
       jgfs_pgrb2_spec_gempak: !Task
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_pgrb2_spec_npoess
-        resources: !calc partition.resources.run_gempak_spec
+        resources: !calc partition.resources.run_big_downstream
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_PGRB2_SPEC_GEMPAK

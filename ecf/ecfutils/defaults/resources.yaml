@@ -98,7 +98,7 @@ default_resources: &default_resources
     - mpi_ranks: 24
       OMP_NUM_THREADS: 1
       exe: placeholder
-  
+
   run_awips: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 2
@@ -106,12 +106,29 @@ default_resources: &default_resources
       walltime: !timedelta "03:30:00"
       OMP_NUM_THREADS: 2
       exe: placeholder
+  
+  run_awips_g2: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      lsf_affinity: 'core(1)'
+      walltime: !timedelta "00:06:00"
+      exe: placeholder
+
+  run_awips_20km_1p0: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 28
+      max_ppn: 28
+      walltime: !timedelta "00:06:00"
+      lsf_affinity: 'core(1)'
+      exe: placeholder
 
   postsnd_walltime: !timedelta "04:00:00"
   run_postsnd: !JobRequest
     - batch_memory: "254M"
       mpi_ranks: 12
-      max_ppn: 3
+      max_ppn: 4
+      lsf_affinity: 'core(1)'
       walltime: !calc postsnd_walltime
       exe: placeholder
       
@@ -122,36 +139,62 @@ default_resources: &default_resources
       walltime: !timedelta "02:00:00"
       exe: placeholder
       
-  run_gdasgempak: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 1
-      walltime: !timedelta "00:05:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-
   run_gempak: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: 28
+      mpi_ranks: 20
       max_ppn: 4
+      walltime: !timedelta "02:00:00"
+      OMP_NUM_THREADS: 3
+      exe: placeholder
+
+  run_gfs_gempak: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 24
+      max_ppn: 12
       walltime: !timedelta "03:00:00"
       OMP_NUM_THREADS: 1
+      lsf_affinity: 'core(1)'
       exe: placeholder
 
-  run_gempak_ncdc_upapgif: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-
-  run_gempak_spec: !JobRequest
-    - batch_memory: "254M"
+  run_gdas_gempak: !JobRequest
+    - batch_memory: "3072M"
       mpi_ranks: 2
-      max_ppn: 2
-      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      walltime: !timedelta "00:03:00"
       OMP_NUM_THREADS: 1
+      lsf_affinity: 'core(1)'
+      exe: placeholder
+
+  run_gdas_gempak_meta_ncdc: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 2
+      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
+      exe: placeholder
+
+  run_one_node_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 1
+      lsf_affinity: 'core(1)'
+      exe: placeholder
+
+  run_big_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 2
+      lsf_affinity: 'core(1)'
+      exe: placeholder
+
+  run_small_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:02:00"
+      max_ppn: 2
+      mpi_ranks: 2
+      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
       exe: placeholder
 
   run_npoess: !JobRequest
@@ -163,67 +206,11 @@ default_resources: &default_resources
       exe: placeholder
       
   run_bulls_navy: !JobRequest
-    - batch_memory: "254M"
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
       mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_fax: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 2
-      walltime: !timedelta "00:02:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_fax_wafs: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 2
-      walltime: !timedelta "00:02:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_wafs: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_wafs_blending: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_wafs_grib2: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_wafs_gcip: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 1
-      walltime: !timedelta "00:30:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_fbwind: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 2
-      walltime: !timedelta "00:02:00"
-      OMP_NUM_THREADS: 1
+      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
       exe: placeholder
       
   run_prepbufr: !JobRequest
