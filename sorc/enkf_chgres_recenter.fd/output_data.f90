@@ -7,28 +7,28 @@
 
  private
 
- integer, public                   :: kgds_output(200)
+! integer, public                   :: kgds_output(200)
 
 ! data on the output grid.
- real, allocatable, public         :: hgt_output(:)  ! interpolated from input grid
- real, allocatable, public         :: hgt_external_output(:)
- real, allocatable, public         :: sfcp_output(:)
- real, allocatable, public         :: tmp_output(:,:)
- real, allocatable, public         :: clwmr_output(:,:)
- real, allocatable, public         :: delz_output(:,:)
- real, allocatable, public         :: dpres_output(:,:)
- real, allocatable, public         :: dzdt_output(:,:)
- real, allocatable, public         :: o3mr_output(:,:)
- real, allocatable, public         :: spfh_output(:,:)
- real, allocatable, public         :: ugrd_output(:,:)
- real, allocatable, public         :: vgrd_output(:,:)
- real, allocatable, public         :: rwmr_output(:,:)
- real, allocatable, public         :: icmr_output(:,:)
- real, allocatable, public         :: snmr_output(:,:)
- real, allocatable, public         :: grle_output(:,:)
- real, allocatable, public         :: cldamt_output(:,:)
- real, allocatable, public         :: rlat_output(:)
- real, allocatable, public         :: rlon_output(:)
+! real, allocatable, public         :: hgt_output(:)  ! interpolated from input grid
+! real, allocatable, public         :: hgt_external_output(:)
+! real, allocatable, public         :: sfcp_output(:)
+! real, allocatable, public         :: tmp_output(:,:)
+! real, allocatable, public         :: clwmr_output(:,:)
+! real, allocatable, public         :: delz_output(:,:)
+! real, allocatable, public         :: dpres_output(:,:)
+! real, allocatable, public         :: dzdt_output(:,:)
+! real, allocatable, public         :: o3mr_output(:,:)
+! real, allocatable, public         :: spfh_output(:,:)
+! real, allocatable, public         :: ugrd_output(:,:)
+! real, allocatable, public         :: vgrd_output(:,:)
+! real, allocatable, public         :: rwmr_output(:,:)
+! real, allocatable, public         :: icmr_output(:,:)
+! real, allocatable, public         :: snmr_output(:,:)
+! real, allocatable, public         :: grle_output(:,:)
+! real, allocatable, public         :: cldamt_output(:,:)
+! real, allocatable, public         :: rlat_output(:)
+! real, allocatable, public         :: rlon_output(:)
 
  public                            :: set_output_grid
  public                            :: write_output_data
