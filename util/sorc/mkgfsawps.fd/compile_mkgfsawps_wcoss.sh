@@ -1,33 +1,33 @@
 #!/bin/sh
-
-######################################################################
-#
-# Build executable utility: util_shared using module compile standard
-#
-######################################################################
-
 LMOD_EXACT_MATCH=no
-module load prod_util
-machine=$(getsystem.pl -t)
+source ../../../sorc/machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ "$machine" = "IBM" ] || [ "$machine" = "Cray" ] || [ "$machine" = "Dell" ]; then
+if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "theia" ] ; then
    echo " "
-   echo " You are on WCOSS:  $(getsystem.pl -p)"
+   echo " You are on WCOSS:  $target "
+   echo " "
+elif [ "$target" = "wcoss" ] ; then
+   echo " "
+   echo " "
+   echo " You are on WCOSS:  $target "
+   echo " You do not need to build GFS utilities for GFS V15.0.0 "
+   echo " "
+   echo " "
 else
    echo " "
-   echo " Your machine is $machine is not recognized as a WCOSS machine."
+   echo " Your machine is $target is not recognized as a WCOSS machine."
    echo " The script $0 can not continue.  Aborting!"
    echo " "
    exit
 fi
 echo " "
 
-machine_lc=${machine,,} # Get lower case
-
 # Load required modules
-module use ../modulefiles
-module load build_util_shared/$machine_lc
+source ../../modulefiles/gfs_util.${target}
 module list
+
+makefile=makefile_$target
 
 set -x
 
