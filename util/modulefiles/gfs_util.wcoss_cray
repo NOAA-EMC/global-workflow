@@ -7,7 +7,7 @@
    module load modules
    module load craype-sandybridge
    module load PrgEnv-intel/5.2.56
-   module switch intel intel/15.0.6.233
+   module switch intel/15.0.6.233
    module load gcc
 
 # Loading GEMPAK

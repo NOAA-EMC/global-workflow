@@ -34,15 +34,16 @@ echo " "
 source ../modulefiles/gfs_util.${target}
 module list 
 
-dirlist="faxmakr faxmakrx fxcompoz gendata mkgfsawps overgridid plotvpap
-         ras2bit ras2bity rdbfmsua redsat rsonde rsondplt sixbitb sixbitb2 
-         trpanl trpsfcmv upaprep webtitle wndanftf"
+dirlist="faxmakr faxmakrx fxcompoz gendata overgridid plotvpap ras2bit 
+         ras2bity rdbfmsua redsat rsonde rsondplt sixbitb sixbitb2 
+         trpanl trpsfcmv upaprep webtitle wndanftf mkgfsawps"
 set -x
 
 for dir in $dirlist
 do
-  if [ $dir = ascii2shp ] ; then
-     cd $dir.cd
+  if [ $dir = mkgfsawps ] ; then
+     cd $dir.fd
+     makefile=makefile_$target
   else
      cd $dir.fd
   fi
