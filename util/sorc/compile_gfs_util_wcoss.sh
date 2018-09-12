@@ -7,30 +7,32 @@
 ######################################################################
 
 LMOD_EXACT_MATCH=no
-module load ips/18.0.1.163
-module load prod_util/1.1.0
-machine=$(getsystem.pl -t)
-ver=1.0.8
+source ../../sorc/machine-setup.sh > /dev/null 2>&1
+cwd=`pwd`
 
-if [ "$machine" = "IBM" ] || [ "$machine" = "Cray" ] || [ "$machine" = "Dell" ]; then
+if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] ; then
    echo " "
-   echo " You are on WCOSS:  $(getsystem.pl -p)"
-else
+   echo " You are on WCOSS:  $target "
    echo " "
-   echo " Your machine is $machine is not recognized as a WCOSS machine."
+elif [ "$target" = "wcoss" ] ; then
+   echo " "
+   echo " "
+   echo " You are on WCOSS:  $target "
+   echo " You do not need to build GFS utilities for GFS V15.0.0 "
+   echo " "
+   echo " "
+else 
+   echo " "
+   echo " Your machine is $target is not recognized as a WCOSS machine."
    echo " The script $0 can not continue.  Aborting!"
    echo " "
    exit
 fi
 echo " "
 
-machine_lc=${machine,,} # Get lower case
-
 # Load required modules
-module use ../modulefiles
-module load build_util_shared/$machine_lc/$ver
+source ../modulefiles/gfs_util.${target}
 module list 
- sleep 5
 
 dirlist="faxmakr faxmakrx fxcompoz gendata mkgfsawps overgridid plotvpap
          ras2bit ras2bity rdbfmsua redsat rsonde rsondplt sixbitb sixbitb2 
