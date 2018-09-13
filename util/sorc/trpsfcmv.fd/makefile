@@ -6,7 +6,6 @@ OBJS= trpsfcmv.o getgb1.o
 
 FC =    ifort 
 XLIBS=/usr/lib64
-NCARG_LIB=/usrx/local/dev/packages/gnu/4.8.5/ncarg/6.4.0/lib
 
 LDFLAGS =  -L${NCARG_LIB} -L${XLIBS} \
            -lncarg -lncarg_gks -lncarg_c -lX11 -lXext -lcairo -lfontconfig -lpixman-1 \
