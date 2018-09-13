@@ -21,6 +21,7 @@ elif [ "$target" = "wcoss" ] ; then
    echo " You do not need to build GFS utilities for GFS V15.0.0 "
    echo " "
    echo " "
+   exit
 else
    echo " "
    echo " Your machine is $target is not recognized as a WCOSS machine."

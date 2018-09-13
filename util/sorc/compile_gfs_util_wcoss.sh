@@ -21,6 +21,7 @@ elif [ "$target" = "wcoss" ] ; then
    echo " You do not need to build GFS utilities for GFS V15.0.0 "
    echo " "
    echo " "
+   exit
 else 
    echo " "
    echo " Your machine is $target is not recognized as a WCOSS machine."
@@ -41,21 +42,13 @@ set -x
 
 for dir in $dirlist
 do
-  if [ $dir = mkgfsawps ] ; then
-     cd $dir.fd
-     makefile=makefile_$target
-  else
-     cd $dir.fd
-  fi
+  cd $dir.fd
   set +x
   echo " "
   echo " ### ${dir} ### "
   echo " "
   set -x
-  mkdir -p ../../exec
-  make
-  mv ${dir} ../../exec
-  make clean
+  compile_${dir}_wcoss.sh
   set +x
   echo " "
   echo " ######################################### "
