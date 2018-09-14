@@ -83,6 +83,13 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.dump.jgdas_dump.release_sfcprep
         resources: !calc partition.resources.run_prep
+        SENDCOM: !expand "YES"
+        DATA: !expand '<cyclestr>&DATAROOT;/gdas_emcsfc_sfc_prep_@H</cyclestr>'
+        PDY_m6hrs: !expand '<cyclestr offset="6:00:00">@Y@m@d</cyclestr>'
+        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        more_vars: [ SENDCOM, DATA, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
@@ -95,10 +102,24 @@ suite: !Cycle
         J_JOB_PATH_ROCOTO: !expand "&HOMEobsproc_network;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEobsproc_network}}/jobs"
         J_JOB: JGLOBAL_PREP
-        config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.prep ; source &EXPDIR;/config.prepbufr"
         job: '<cyclestr>jgdas_prep_@H</cyclestr>'
-        more_vars: [ job ]
         ecf_module_commands: "# prep.sh will load modules instead"
+        HOMEobsproc_network: !expand "&HOMEobsproc_network;"
+        HOMEobsproc_prep: !expand "&HOMEobsproc_prep;"
+        envir: prod
+        COMIN_OBS: !expand '<cyclestr>&DMPDIR;/@Y@m@d@H/gdas</cyclestr>'
+        COMSP: !expand '<cyclestr>&DMPDIR;/@Y@m@d@H/gdas/gdas.t@Hz.</cyclestr>'
+        COMIN: !expand '<cyclestr>/gpfs/hps/nco/ops/com/gfs/prod/gdas.@Y@m@d/@H</cyclestr>'
+        COMINgdas: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        more_vars: [ HOMEobsproc_network, HOMEobsproc_prep, envir, COMIN_OBS, COMSP, COMIN, COMINgdas, COMINgfs, COMOUT, job ]
+
+      jgdas_tropcy_cp: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_prep
+        resources: !calc partition.resources.run_one_hour_exclusive
+        J_JOB: rocoto/tropcy_cp.sh
 
       jgdas_prep_post: !Task
         <<: *exclusive_task_template
@@ -110,7 +131,8 @@ suite: !Cycle
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_analysis_high: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.post.at('-6:00:00') )
+        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.prep.jgdas_tropcy_cp & up.enkf.post.at('-6:00:00') )
+        #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.post.at('-6:00:00') )
         #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep )
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_anal
@@ -150,9 +172,17 @@ suite: !Cycle
           AlarmName: gfs_00_12
           #Trigger: !Depend ( up.up.dump.jgdas_dump_post )
           #Trigger: !Depend ( up.up.dump.jgdas_dump )
-          Trigger: !Depend ( up.up.prep.jgdas_prep )
+          Trigger: !Depend ( up.up.prep.jgdas_prep & up.up.dump.jgdas_dump )
           resources: !calc partition.resources.run_bulls_navy
-          more_vars: [ job ]
+          SENDCOM: !expand "YES"
+          SENDDBN: !expand "YES"
+          PDYm1: !expand '<cyclestr offset="24:00:00">@Y@m@d</cyclestr>'
+          DATA: !expand '<cyclestr>&DATAROOT;/gdas_bulls_navy_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+          COMINm1: !expand '<cyclestr offset="24:00:00">&COM;/gdas.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ SENDCOM, SENDDBN, PDYm1, DATA, COMIN, COMINm1, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGDAS_BULLS_NAVY
@@ -163,6 +193,16 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.forecast.jgdas_forecast_high
         resources: !calc partition.resources.run_gdas_gempak
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gdas_gempak_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        COMINgempak: !expand '&COM;'
+        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgempak, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK
@@ -171,6 +211,17 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend jgdas_gempak
         resources: !calc partition.resources.run_gdas_gempak_meta_ncdc
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gdas_gempak_meta_ncdc_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips</cyclestr>'
+        COMINgdas: !expand '&COM;/gdas'
+        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        COMOUTncdc: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgdas, COMOUT, COMOUTncdc ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK_META_NCDC
@@ -412,21 +463,41 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.dump.jgfs_dump.release_sfcprep
         resources: !calc partition.resources.run_prep
+        SENDCOM: !expand "YES"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_emcsfc_sfc_prep_@H</cyclestr>'
+        PDY_m6hrs: !expand '<cyclestr offset="6:00:00">@Y@m@d</cyclestr>'
+        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        more_vars: [ SENDCOM, DATA, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
     
       jgfs_prep: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend up.dump
-        #Trigger: !Depend ( up.dump.jgfs_dump & up.dump.jgfs_tropcy_qc_reloc
+        Trigger: !Depend ( up.dump.jgfs_dump & up.dump.jgfs_tropcy_qc_reloc )
         resources: !calc partition.resources.run_prep
         J_JOB_PATH_ROCOTO: !expand "&HOMEobsproc_network;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEobsproc_network}}/jobs"
         J_JOB: JGLOBAL_PREP
-        config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.prep ; source &EXPDIR;/config.prepbufr"
         job: '<cyclestr>jgfs_prep_@H</cyclestr>'
-        more_vars: [ job ]
+        HOMEobsproc_network: !expand "&HOMEobsproc_network;"
+        HOMEobsproc_prep: !expand "&HOMEobsproc_prep;"
+        envir: prod
+        COMIN_OBS: !expand '<cyclestr>&DMPDIR;/@Y@m@d@H/gfs</cyclestr>'
+        COMSP: !expand '<cyclestr>&DMPDIR;/@Y@m@d@H/gfs/gfs.t@Hz.</cyclestr>'
+        COMIN: !expand '<cyclestr>/gpfs/hps/nco/ops/com/gfs/prod/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgdas: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        more_vars: [ HOMEobsproc_network, HOMEobsproc_prep, envir, COMIN_OBS, COMSP, COMIN, COMINgdas, COMINgfs, COMOUT, job ]
+
+      jgfs_tropcy_cp: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgfs_prep
+        resources: !calc partition.resources.run_one_hour_exclusive
+        J_JOB: rocoto/tropcy_cp.sh
 
       jgfs_prep_post: !Task
         <<: *exclusive_task_template
@@ -436,7 +507,7 @@ suite: !Cycle
 
     jgfs_analysis: !Task
       <<: *exclusive_task_template
-      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep  & up.gdas.enkf.post.at('-6:00:00') )
+      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & prep.jgfs_tropcy_cp & up.gdas.enkf.post.at('-6:00:00') )
       #Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep )
       resources: !calc partition.resources.run_anal
       J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
@@ -572,7 +643,12 @@ suite: !Cycle
           job: '<cyclestr>gfs_fax_anl_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_anl
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ fcsthrs, job ]
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fax_anl_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fcsthrs, job, SENDCOM, DATA, COMIN, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FAX
@@ -585,7 +661,12 @@ suite: !Cycle
           job: '<cyclestr>gfs_fax_f00_@H</cyclestr>'
           Trigger: !Depend ( up.up.post.jgfs_post_anl & up.up.post.jgfs_post_f000 )
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ fcsthrs, job ]
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fax_f00_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fcsthrs, job, SENDCOM, DATA, COMIN, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FAX
@@ -598,8 +679,16 @@ suite: !Cycle
           job: '<cyclestr>gfs_fax_wafs_f12_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f012
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ fhr_list, job ]
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fax_wafs_f12_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fhr_list, job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FAX_WAFS
@@ -612,8 +701,16 @@ suite: !Cycle
           job: '<cyclestr>gfs_fax_wafs_f24_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f024
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ fhr_list, job ]
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fax_wafs_f24_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fhr_list, job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FAX_WAFS
@@ -626,8 +723,16 @@ suite: !Cycle
           job: '<cyclestr>gfs_fax_wafs_f36_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f036
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ fhr_list, job ]
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.fax_wafs"
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fax_wafs_f36_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fhr_list, job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FAX_WAFS
@@ -638,7 +743,6 @@ suite: !Cycle
         jgfs_wafs: !TaskElement
           <<: *exclusive_task_template
           Name: !expand 'jgfs_wafs_f{dimval.fhr:02d}'
-          fcsthrs: !expand "{dimval.fhr:02d}" 
           Trigger: !FirstTrue
             - when: !calc dimval.fhr == 0
               do:   !Depend ( up.up.post.jgfs_post_f000 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
@@ -646,10 +750,19 @@ suite: !Cycle
                 up.up.post.depend("jgfs_post_f{N:03d}",N=[ dimval.fhr ])
                 & up.grib_wafs.depend("jgfs_wafs_f{N:02d}",N=[ dimval.fhr-6 ])
           resources: !ref partition.resources.run_one_node_downstream
-          ecflow_def: !expand "edit FCSTHR '{dimval.fhr:02d}'"
+          fcsthrs: !expand "{dimval.fhr:02d}" 
           job: '<cyclestr>gfs_wafs_f{dimval.fhr:02d}_@H</cyclestr>'
-          more_vars: [ fcsthrs, job ]
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/fix/wafs"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_wafs_f{dimval.fhr:02d}_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ fcsthrs, job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
+          ecflow_def: !expand "edit FCSTHR '{dimval.fhr:02d}'"
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS
@@ -657,7 +770,7 @@ suite: !Cycle
       bufr_sounding: !Family
         jgfs_postsnd: !Task
           <<: *exclusive_task_template
-          Trigger: !Depend up.up.post.jgfs_post_f144
+          Trigger: !Depend up.up.post.jgfs_post_f000
           resources: !calc partition.resources.run_postsnd
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
@@ -667,10 +780,15 @@ suite: !Cycle
       bulletins: !Family
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
-          job: '<cyclestr>gfs_fbwind_@H</cyclestr>'
           Trigger: !Depend ( up.up.post.jgfs_post_f006 & up.up.post.jgfs_post_f012 & up.up.post.jgfs_post_f024 )
           resources: !calc partition.resources.run_small_downstream
-          more_vars: [ job ]
+          job: '<cyclestr>gfs_fbwind_@H</cyclestr>'
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_fbwind_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ job, SENDCOM, DATA, COMIN, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_FBWIND
@@ -686,40 +804,60 @@ suite: !Cycle
       grib2_wafs: !Family
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
-          job: '<cyclestr>gfs_wafs_grib2_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f000
           resources: !calc partition.resources.run_one_node_downstream
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
+          job: '<cyclestr>gfs_wafs_grib2_@H</cyclestr>'
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/fix/wafs"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_wafs_grib2_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS_GRIB2
-          more_vars: [ job ]
 
         jgfs_wafs_blending: !Task
           <<: *exclusive_task_template
-          job: '<cyclestr>gfs_wafs_blending_@H</cyclestr>'
           Trigger: !Depend jgfs_wafs_grib2
           Time: !FirstTrue
             - when: !calc doc.settings.four_cycle_mode
               do: !timedelta +4:33:00
             - otherwise: null
           resources: !calc partition.resources.run_one_node_downstream
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs"
+          job: '<cyclestr>gfs_wafs_blending_@H</cyclestr>'
+          SENDCOM: !expand "YES"
+          FIXgfs: !expand "&HOMEgfs;/fix/wafs"
+          USHgfs: !expand "&HOMEgfs;/gempak/ush"
+          PARMgfs: !expand "&HOMEgfs;/parm/wafs"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_wafs_blending_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ job, SENDCOM, FIXgfs, USHgfs, PARMgfs, DATA, COMIN, COMOUT, COMOUTwmo, PCOM ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS_BLENDING
-          more_vars: [ job ]
 
         jgfs_wafs_gcip: !Task
           <<: *exclusive_task_template
           job: '<cyclestr>gfs_wafs_gcip_@H</cyclestr>'
           Trigger: !Depend up.up.post.jgfs_post_f003
           resources: !calc partition.resources.run_one_node_downstream
-          config_source: !expand "source &EXPDIR;/config.base ; source &EXPDIR;/config.wafs_gcip"
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_wafs_gcip_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          more_vars: [ job, SENDCOM, DATA, COMIN, COMINgfs, COMOUT ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_WAFS_GCIP
-          more_vars: [ job ]
 
       awips_g2: !TaskArray
         Dimensions:
@@ -728,13 +866,19 @@ suite: !Cycle
           <<: *exclusive_task_template
           Foreach: [ fhr ]
           Name: !expand "jgfs_awips_g2_f{dimval.fhr:03d}"
+          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
+          resources: !calc partition.resources.run_awips_g2
           FHRGRP: !expand "{dimval.fhr:03d}"
           FHRLST: !expand "f{dimval.fhr:02d}"
           fcsthrs: !expand "{dimval.fhr:03d}"
-          job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_@H</cyclestr>"
-          more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_g2
+          job: !expand "<cyclestr>gfs_awips_g2_f{dimval.fhr:03d}_@H</cyclestr>"
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_awips_g2_f{dimval.fhr:03d}_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ FHRGRP, FHRLST, fcsthrs, job, SENDCOM, DATA, COMIN, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_AWIPS_G2
@@ -749,14 +893,20 @@ suite: !Cycle
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ fhr ]
-          Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
+          Name: !expand "jgfs_awips_20km_1p0_f{dimval.fhr:03d}"
+          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
+          resources: !calc partition.resources.run_awips_20km_1p0
           FHRGRP: !expand "{dimval.fhr:03d}"
           FHRLST: !expand "f{dimval.fhr:03d}"
           fcsthrs: !expand "{dimval.fhr:03d}"
-          job: !expand "<cyclestr>jgfs_awips_f{dimval.fhr:03d}_20km_@H</cyclestr>"
-          more_vars: [ FHRGRP, FHRLST, fcsthrs, job ]
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_20km_1p0
+          job: !expand "<cyclestr>jgfs_awips_20km_1p0_f{dimval.fhr:03d}_@H</cyclestr>"
+          SENDCOM: !expand "YES"
+          DATA: !expand '<cyclestr>&DATAROOT;/gfs_awips_20km_1p0_f{dimval.fhr:03d}_@H</cyclestr>'
+          COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+          COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          PCOM: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+          more_vars: [ FHRGRP, FHRLST, fcsthrs, job, SENDCOM, DATA, COMIN, COMOUT, COMOUTwmo ]
           J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
           J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
           J_JOB: JGFS_AWIPS_20KM_1P0DEG
@@ -818,6 +968,16 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.forecast.jgfs_forecast_high
         resources: !calc partition.resources.run_gfs_gempak
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_gempak_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgempak: !expand '&COM;'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/nawips</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgempak, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK
@@ -826,6 +986,19 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_gempak
         resources: !calc partition.resources.run_gfs_gempak
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_gempak_meta_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/nawips</cyclestr>'
+        COMINgempak: !expand '&COM;'
+        COMINukmet: !expand '&COM;'
+        COMINecmwf: !expand '&COM;'
+        COMINnam: !expand '&COM;'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/nawips/meta</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgempak, COMINukmet, COMINecmwf, COMINnam, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK_META
@@ -834,14 +1007,35 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_gempak.is_running() | jgfs_gempak.is_completed()
         resources: !calc partition.resources.run_one_node_downstream
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_gempak_ncdc_upapgif_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/nawips</cyclestr>'
+        #COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgfs: !expand '<cyclestr>&DMPDIR;/@Y@m@d@H/gfs</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUTwmo: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/wmo</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgfs, COMOUT, COMOUTwmo ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_GEMPAK_NCDC_UPAPGIF
 
       jgfs_pgrb2_spec_npoess: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend up.post.jgfs_post_f180
+        Trigger: !Depend up.post.jgfs_post_anl
         resources: !calc partition.resources.run_npoess
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_pgrb2_spec_npoess_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_PGRB2_SPEC_NPOESS
@@ -850,6 +1044,16 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend jgfs_pgrb2_spec_npoess
         resources: !calc partition.resources.run_big_downstream
+        SENDCOM: !expand "YES"
+        FIXgfs: !expand "&HOMEgfs;/gempak/fix"
+        USHgfs: !expand "&HOMEgfs;/gempak/ush"
+        FIXgempak: !expand "&HOMEgfs;/gempak/fix"
+        USHgempak: !expand "&HOMEgfs;/gempak/ush"
+        DATA: !expand '<cyclestr>&DATAROOT;/gfs_pgrb2_spec_npoess_@H</cyclestr>'
+        COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/nawips</cyclestr>'
+        COMOUTgempak: !expand '&COM;'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMOUT, COMOUTgempak ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGFS_PGRB2_SPEC_GEMPAK

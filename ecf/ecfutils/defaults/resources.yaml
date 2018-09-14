@@ -111,7 +111,6 @@ default_resources: &default_resources
     - batch_memory: "254M"
       mpi_ranks: 2
       max_ppn: 2
-      lsf_affinity: 'core(1)'
       walltime: !timedelta "00:06:00"
       exe: placeholder
 
@@ -120,7 +119,6 @@ default_resources: &default_resources
       mpi_ranks: 28
       max_ppn: 28
       walltime: !timedelta "00:06:00"
-      lsf_affinity: 'core(1)'
       exe: placeholder
 
   postsnd_walltime: !timedelta "04:00:00"
@@ -128,7 +126,6 @@ default_resources: &default_resources
     - batch_memory: "254M"
       mpi_ranks: 12
       max_ppn: 4
-      lsf_affinity: 'core(1)'
       walltime: !calc postsnd_walltime
       exe: placeholder
       
@@ -153,7 +150,6 @@ default_resources: &default_resources
       max_ppn: 12
       walltime: !timedelta "03:00:00"
       OMP_NUM_THREADS: 1
-      lsf_affinity: 'core(1)'
       exe: placeholder
 
   run_gdas_gempak: !JobRequest
@@ -162,7 +158,6 @@ default_resources: &default_resources
       max_ppn: 1
       walltime: !timedelta "00:03:00"
       OMP_NUM_THREADS: 1
-      lsf_affinity: 'core(1)'
       exe: placeholder
 
   run_gdas_gempak_meta_ncdc: !JobRequest
@@ -170,7 +165,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:30:00"
       max_ppn: 1
       mpi_ranks: 2
-      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
       exe: placeholder
 
   run_one_node_downstream: !JobRequest
@@ -178,7 +172,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:30:00"
       max_ppn: 1
       mpi_ranks: 1
-      lsf_affinity: 'core(1)'
       exe: placeholder
 
   run_big_downstream: !JobRequest
@@ -186,7 +179,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:30:00"
       max_ppn: 1
       mpi_ranks: 2
-      lsf_affinity: 'core(1)'
       exe: placeholder
 
   run_small_downstream: !JobRequest
@@ -194,7 +186,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:02:00"
       max_ppn: 2
       mpi_ranks: 2
-      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
       exe: placeholder
 
   run_npoess: !JobRequest
@@ -210,7 +201,6 @@ default_resources: &default_resources
       walltime: !timedelta "00:30:00"
       max_ppn: 1
       mpi_ranks: 1
-      lsf_affinity: 'core(1)' # hard-coded value from Lin Gan
       exe: placeholder
       
   run_prepbufr: !JobRequest

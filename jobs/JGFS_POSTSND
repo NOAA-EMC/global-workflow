@@ -6,31 +6,7 @@ set -xa
 # Runs GFS BUFR SOUNDINGS
 ########################################
 
-NWROOT=${NWROOT:?}
-DATAROOT=${DATAROOT:?}
-COMROOT=${COMROOT:?}
-
-#############################
-# Source relevant config files
-#############################
-configs="base postsnd"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env postsnd
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-#########################################
 #Specify whether the run is production or development
-#########################################
 export envir=${envir:-prod}
 
 ############################
@@ -46,19 +22,7 @@ export MP_MPILIB=mpich2
 export MP_LABELIO=yes
 
 ####################################
-# Determine Job Output Name on System
 # obtain unique process id (pid) and make temp directories
-export job=${job:-"postsnd"}
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-export pgmout="OUTPUT.${pid}"
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/$jobid"
-else
-    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-    export DATA="$DATAROOT/$job"
-fi
 export DATA=${DATA:-$DATAROOT/${jobid}}
 mkdir $DATA
 cd $DATA 

@@ -63,7 +63,7 @@ pdsext=no
 #
 if [ $RUN = "ghm" -a "$GRIB" = "grib.f" -a $SENDDBN = "YES" ] ; then
   $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE_2} $job \
-   $COMIN/${model}.${PDY}${cyc}.stats.short
+   $COMIN/${RUN}.${PDY}${cyc}.stats.short
 fi
 
 # for gefs
@@ -82,34 +82,34 @@ while [ $fhcnt -le $fend ] ; do
 
   fhr3=$fhcnt
   typeset -Z3 fhr3
-  GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+  GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
   case $RUN in
-   gfs_goessim) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+   gfs_goessim) GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
                 GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-   gfs_goessim221) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+   gfs_goessim221) GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
                    GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-   threats) GEMGRD=${model}_${PDY}${cyc}f${fhr3} ;;
-   nam12) GRIBIN1=$COMIN/${model}.${cycle}.${GRIB1}${fhr}${EXT} ;;
-   nam12carib) GRIBIN1=$COMIN/${model}.${cycle}.${GRIB1}${fhr}${EXT} ;;
-   rucs)  GRIBIN=$COMIN/${model}.${cycle}.pgrbanl 
+   threats) GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
+   nam12) GRIBIN1=$COMIN/${RUN}.${cycle}.${GRIB1}${fhr}${EXT} ;;
+   nam12carib) GRIBIN1=$COMIN/${RUN}.${cycle}.${GRIB1}${fhr}${EXT} ;;
+   rucs)  GRIBIN=$COMIN/${RUN}.${cycle}.pgrbanl 
           GEMGRD=${RUN}_${PDY}${cyc} 
           maxtries=30;;
    ruc2)
      if [ $fhcnt -eq 00 ] ; then
-       GRIBIN=$COMIN/${model}.${cycle}.pgrbanl
+       GRIBIN=$COMIN/${RUN}.${cycle}.pgrbanl
      fi ;;
    ruc20)
      if [ $fhcnt -eq 00 ] ; then
-       GRIBIN=$COMIN/${model}.${cycle}.pgrb20anl
+       GRIBIN=$COMIN/${RUN}.${cycle}.pgrb20anl
      fi ;;
    ruc13)
      if [ $fhcnt -eq 00 ] ; then
-       GRIBIN=$COMIN/${model}.${cycle}.pgrb13anl.grib2
+       GRIBIN=$COMIN/${RUN}.${cycle}.pgrb13anl.grib2
      fi
      NAGRIB=nagrib2 ;;
-   nww3 | akw | wna | nah | enp | nph)  GRIBIN=$COMIN/${model}.${cycle}.${GRIB} 
+   nww3 | akw | wna | nah | enp | nph)  GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB} 
                       GEMGRD=${RUN}_${PDY}${cyc} ;;
    mww3) GRIBIN=$COMIN/multi_1.glo_30m.${cycle}.f${fhr3}.grib2
          GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
@@ -165,8 +165,8 @@ while [ $fhcnt -le $fend ] ; do
    mwhwc4m) GRIBIN=$COMIN/multi_2.wc_4m.${cycle}.${GRIB}
         GEMGRD=${RUN}_${PDY}${cyc}
         NAGRIB=nagrib2 ;;
-   wave_ens)  GRIBIN=$COMIN/${model}.glo_60m.${cycle}.grib2
-              GEMGRD=${model}_${PDY}${cyc}
+   wave_ens)  GRIBIN=$COMIN/${RUN}.glo_60m.${cycle}.grib2
+              GEMGRD=${RUN}_${PDY}${cyc}
               NAGRIB=nagrib2 ;;
 
    ofs)  if [ $fhr3 = "000" ]
@@ -175,23 +175,23 @@ while [ $fhcnt -le $fend ] ; do
          else
             fhr3_ofs="f$fhr3"
          fi 
-         GRIBIN=$COMIN/${RUN}_atl.${cycle}.${fhr3_ofs}.${model}.${GRIB} 
-         if [ $model = "atl" ]
+         GRIBIN=$COMIN/${RUN}_atl.${cycle}.${fhr3_ofs}.${RUN}.${GRIB} 
+         if [ $RUN = "atl" ]
          then
             GEMGRD=watl_${PDY}${cyc}f${fhr3}
-         elif [ $model = "gm" ]
+         elif [ $RUN = "gm" ]
          then
             GEMGRD=gmex_${PDY}${cyc}f${fhr3}
-         elif [ $model = "gs" ]
+         elif [ $RUN = "gs" ]
          then
             GEMGRD=gstr_${PDY}${cyc}f${fhr3}
          else
-            GEMGRD=${model}_${PDY}${cyc}f${fhr3}
+            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
          fi
          ;; 
-   ice)   GRIBIN=$COMIN/${model}${RUN}.${cycle}.grb
+   ice)   GRIBIN=$COMIN/${RUN}${RUN}.${cycle}.grb
           GEMGRD=${RUN}_${PDY}${cyc} ;;
-   rtma)  GRIBIN=$COMIN/${model}.${cycle}.2dvaranl_ndfd.grb1
+   rtma)  GRIBIN=$COMIN/${RUN}.${cycle}.2dvaranl_ndfd.grb1
           GEMGRD=${RUN}_${PDY}${cyc}f000 ;;
    vaftad | hysplit) GRIBIN=$COMOUT/${VNAME}.e${EPDY}${ECYC}.r${PDY}${cyc}.grib
            vname=`echo $VNAME | tr [A-Z] [a-z]`
@@ -210,29 +210,29 @@ while [ $fhcnt -le $fend ] ; do
            GEMGRD=hy_${meteo}_${EPDY}${ECYC}_${vname}
            echo $COMOUT/$GEMGRD > $DATA/gempak_file.vaftad
            mkdir -p -m 775 $COMOUT ;;
-   ghm)   GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+   ghm)   GRIBIN=$COMIN/${RUN}.${PDY}${cyc}.${GRIB}${fhr}
           if [ $GRIB = "grib.f" ] ; then
-            GEMGRD=${RUN}g_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}g_${PDY}${cyc}f${fhr3}_${RUN}
           elif [ $GRIB = "gribn3.f" ] ; then
-            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${RUN}
           else
-            GEMGRD=${RUN}6th_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}6th_${PDY}${cyc}f${fhr3}_${RUN}
           fi ;;
-   ghmc)   GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+   ghmc)   GRIBIN=$COMIN/${RUN}.${PDY}${cyc}.${GRIB}${fhr}
           if [ $GRIB = "gfdc.grib.f" ] ; then
-            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${model}g
+            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${RUN}g
           else
-            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${model}n
+            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${RUN}n
           fi ;;
-   hwrf)  GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+   hwrf)  GRIBIN=$COMIN/${RUN}.${PDY}${cyc}.${GRIB}${fhr}
           if [ $GRIB = "hwrfprs_n.grbf" ] ; then
-            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${RUN}
           elif [ $GRIB = "hwrfprs_p.grbf" ] ; then
-            GEMGRD=${RUN}p_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}p_${PDY}${cyc}f${fhr3}_${RUN}
           else
-            GEMGRD=${RUN}c_${PDY}${cyc}f${fhr3}_${model}
+            GEMGRD=${RUN}c_${PDY}${cyc}f${fhr3}_${RUN}
           fi ;;
-   ecmwf_glob | ecmwf_trop)  GRIBIN=$COMIN/${model}.${cycle}
+   ecmwf_glob | ecmwf_trop)  GRIBIN=$COMIN/${RUN}.${cycle}
           GEMGRD=${RUN}_${PDY}${cyc} ;;
    ecmwf_hr)
           GRIBIN=$DATA/${RUN}.t${cyc}z.pgrb${fhr}
@@ -246,96 +246,96 @@ while [ $fhcnt -le $fend ] ; do
           -i -grib -o ukmet2.${fhr} ukmet2.grib
           GRIBIN=ukmet2.${fhr}
           GEMGRD=ukmet_${PDY}${cyc}f${fhr3} ;;
-   ens*)  GRIBIN=$COMIN/${model}.${member}.${PDY}.${cyc}
+   ens*)  GRIBIN=$COMIN/${RUN}.${member}.${PDY}.${cyc}
           GEMGRD=${RUN}_${PDY}${cyc} ;;
-    ge*)  if test "$model" = "bc" -o "$model" = "an" -o "$model" = "wt" -o "$model" = "me" -o "$model" = "anv" 
+    ge*)  if test "$RUN" = "bc" -o "$RUN" = "an" -o "$RUN" = "wt" -o "$RUN" = "me" -o "$RUN" = "anv" 
           then
-             GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${model}f${fhr}
-             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+             GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${RUN}f${fhr}
+             GEMGRD=${RUN}${RUN}_${PDY}${cyc}f${fhr3}
 
              # create subdirectory for the bc and an gefs files, -- 05/16/2013
              # so that the mag system can only take the expected gefs files
              # COMOUT_hold=$COMOUT
-             if test "$model" = "bc" -o "$model" = "an" 
+             if test "$RUN" = "bc" -o "$RUN" = "an" 
              then
-                COMOUT=${COMOUT_hold}/${model}
+                COMOUT=${COMOUT_hold}/${RUN}
                 mkdir -p -m 775 $COMOUT
              fi
-          elif test "$model" = "glbanl"
+          elif test "$RUN" = "glbanl"
           then
-             GRIBIN=$COMIN/${model}.${cycle}.pgrba_mdf${fhr}
-             GEMGRD=${model}_${PDYm2}${cyc}f${fhr3}
-          elif test "$model" = "ndgd"
+             GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_mdf${fhr}
+             GEMGRD=${RUN}_${PDYm2}${cyc}f${fhr3}
+          elif test "$RUN" = "ndgd"
           then
-             GRIBIN=$COMIN/${RUN}.${cycle}.${model}_conusf${fhr}
-             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
-          elif test "$model" = "ndgd_alaska"
+             GRIBIN=$COMIN/${RUN}.${cycle}.${RUN}_conusf${fhr}
+             GEMGRD=${RUN}${RUN}_${PDY}${cyc}f${fhr3}
+          elif test "$RUN" = "ndgd_alaska"
           then
-             GRIBIN=$COMIN/${RUN}.${cycle}.${model}f${fhr}
-             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+             GRIBIN=$COMIN/${RUN}.${cycle}.${RUN}f${fhr}
+             GEMGRD=${RUN}${RUN}_${PDY}${cyc}f${fhr3}
           else
              GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
              GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
           fi;;
-   naefs) if test "$model" = "geavganv"
+   naefs) if test "$RUN" = "geavganv"
           then
              GRIBIN=$COMIN/${RUN}_geavg.${cycle}.pgrba_anvf${fhr}
-             GEMGRD=${model}_${PDY}${cyc}f${fhr3}
-          elif test "$model" = "ndgd"
+             GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+          elif test "$RUN" = "ndgd"
           then
-             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${model}_conusf${fhr}
-             GEMGRD=${model}${member}_${PDY}${cyc}f${fhr3}
-          elif test "$model" = "ndgd_alaska"
+             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${RUN}_conusf${fhr}
+             GEMGRD=${RUN}${member}_${PDY}${cyc}f${fhr3}
+          elif test "$RUN" = "ndgd_alaska"
           then
-             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${model}f${fhr}
-             GEMGRD=${model}${member}_${PDY}${cyc}f${fhr3}
-          elif test "$model" = "dvrtma"
+             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${RUN}f${fhr}
+             GEMGRD=${RUN}${member}_${PDY}${cyc}f${fhr3}
+          elif test "$RUN" = "dvrtma"
           then
              if test "$region" = "alaska"
              then
-               GRIBIN=$COMIN/${model}.${cycle}.ndgd_alaska
-               GEMGRD=${model}_${region}_${PDY}${cyc}
+               GRIBIN=$COMIN/${RUN}.${cycle}.ndgd_alaska
+               GEMGRD=${RUN}_${region}_${PDY}${cyc}
              else
-               GRIBIN=$COMIN/${model}.${cycle}.ndgd_conus
-               GEMGRD=${model}_${PDY}${cyc}
+               GRIBIN=$COMIN/${RUN}.${cycle}.ndgd_conus
+               GEMGRD=${RUN}_${PDY}${cyc}
              fi
           else
-             GRIBIN=$COMIN/${RUN}_${model}.${cycle}.pgrba_bcf${fhr}
-             GEMGRD=${model}_${PDY}${cyc}f${fhr3}
+             GRIBIN=$COMIN/${RUN}_${RUN}.${cycle}.pgrba_bcf${fhr}
+             GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
           fi;;
    cmc_ge*)GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
           GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-   fnmoc_ge*) if test "$model" = "bc" -o "$model" = "an" -o "$model" = "wt"
+   fnmoc_ge*) if test "$RUN" = "bc" -o "$RUN" = "an" -o "$RUN" = "wt"
               then
-                GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${model}f${fhr}
-                GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+                GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${RUN}f${fhr}
+                GEMGRD=${RUN}${RUN}_${PDY}${cyc}f${fhr3}
               else
                 GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
                 GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
               fi ;;
-   sref)  if test "$model" = "eta" -o "$model" = "rsm" -o "$model" = "em" -o "$model" = "nmm"
+   sref)  if test "$RUN" = "eta" -o "$RUN" = "rsm" -o "$RUN" = "em" -o "$RUN" = "nmm"
           then
-             GRIBIN=$COMIN/${RUN}_${model}.${cycle}.pgrb212.${member}
-             GEMGRD=${RUN}_${PDY}${cyc}_${model}_${member}
+             GRIBIN=$COMIN/${RUN}_${RUN}.${cycle}.pgrb212.${member}
+             GEMGRD=${RUN}_${PDY}${cyc}_${RUN}_${member}
           else
              GRIBIN=$COMIN/${RUN}.${cycle}.pgrb212.${member}
              GEMGRD=${RUN}_${PDY}${cyc}_${member}
 	     pdsext=YES
           fi;;
    mdlngm) GRIBIN=$COMIN/ngmmosgrib.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlngmsvr) GRIBIN=$COMIN/ngmmoscatstmgrb.${cycle}
-              GEMGRD=${model}_${PDY}${cyc} ;;
+              GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlmrf) GRIBIN=$COMIN/mrfmosgrib.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlgfs) GRIBIN=$COMIN/gfsmosgrib.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlgfssvr) GRIBIN=$COMIN/mdl_mavgribtsvr.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlnamsvr) GRIBIN=$COMIN/mdl_metgribtsvr.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    mdlmrfsvr) GRIBIN=$COMIN/mdl_mexgribtsvr.${cycle}
-           GEMGRD=${model}_${PDY}${cyc} ;;
+           GEMGRD=${RUN}_${PDY}${cyc} ;;
    nam40)  cp /nwprod/gempak/fix/model/nam/* . ;;
    dgex) if [ $cyc = 00 -o $cyc = 12 ]
          then
@@ -347,10 +347,10 @@ while [ $fhcnt -le $fend ] ; do
          fi
 
          GEMGRD=dgex_${PDY}${cyc}f${fhr3}
-         GRIBIN=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}
+         GRIBIN=$COMIN/${RUN}.t${cyc}z.${GRIB}${fhr}${EXT}
          ;;
-   hiresw) GRIBIN=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}
-           GEMGRD=hiresw_${model}_${PDY}${cyc}f${fhr3} 
+   hiresw) GRIBIN=$COMIN/${RUN}.t${cyc}z.${GRIB}${fhr}${EXT}
+           GEMGRD=hiresw_${RUN}_${PDY}${cyc}f${fhr3} 
          ;;
    sst)  GRIBIN=$COMIN/rtgssthr_grb_0.083_awips
 	 GEMGRD=rtgsst_${GRIB}_${PDY}00
@@ -368,7 +368,7 @@ while [ $fhcnt -le $fend ] ; do
   esac
 
   if [ $RUN = "ngm" ] ; then
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrbif${fhr}
   elif [ $RUN = "gfs" ] ; then
     if test $fhr -lt 100
     then
@@ -376,27 +376,27 @@ while [ $fhcnt -le $fend ] ; do
     else
        fcsthr=${fhr}
     fi
-    cp $COMIN/${model}.${cycle}.pgrb2.1p00.f${fcsthr} .
-    $CNVGRIB -g21 ${model}.${cycle}.pgrb2.1p00.f${fcsthr} ${model}.${cycle}.${GRIB}${fhr}
-    GRIBIN=${model}.${cycle}.${GRIB}${fhr}
-    $GRBINDEX ${model}.${cycle}.${GRIB}${fhr} ${model}.${cycle}.pgrbif${fhr}
-    GRIBIN_chk=${model}.${cycle}.pgrbif${fhr}
+    cp $COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fcsthr} .
+    $CNVGRIB -g21 ${RUN}.${cycle}.pgrb2.1p00.f${fcsthr} ${RUN}.${cycle}.${GRIB}${fhr}
+    GRIBIN=${RUN}.${cycle}.${GRIB}${fhr}
+    $GRBINDEX ${RUN}.${cycle}.${GRIB}${fhr} ${RUN}.${cycle}.pgrbif${fhr}
+    GRIBIN_chk=${RUN}.${cycle}.pgrbif${fhr}
   elif [ $RUN = "gfshd" ] ; then
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}${EXT}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrbif${fhr}${EXT}
   elif [ $RUN = "gdas" ] ; then
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrbif${fhr}
   elif [ $RUN = "mrf" ] ; then
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrbif${fhr}
   elif [ $RUN = "nww3" -o $RUN = "akw" -o $RUN = "wna" -o $RUN = "nah" -o $RUN = "enp" -o $RUN = "nph" ] ; then
-    GRIBIN_chk=$COMIN/${model}.${cycle}.${GRIB}done 
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.${GRIB}done 
   elif [ $RUN4 = "mww3" -o $RUN3 = "mwh" ]; then
     GRIBIN_chk=$GRIBIN.idx
   elif [ $RUN = "dgex" ] ; then
-    GRIBIN_chk=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}_icwf
+    GRIBIN_chk=$COMIN/${RUN}.t${cyc}z.${GRIB}${fhr}${EXT}_icwf
   elif [ $RUN = "gfs35_pac" -o $RUN = "gfs35_atl" -o $RUN = "gfs40" -o $RUN = "gfs_asbkup" ] ; then
     GRIBIN_chk=$COMIN/gfs.t${cyc}z.master.grbif${fhr}
   elif [ $RUN = "ofs" ] ; then
-    GRIBIN_chk=$COMIN/${RUN}_atl.t${cyc}z.${fhr3_ofs}.${model}.$GRIB.grib2.idx
+    GRIBIN_chk=$COMIN/${RUN}_atl.t${cyc}z.${fhr3_ofs}.${RUN}.$GRIB.grib2.idx
   elif [ $RUN = "nam12" ] ; then
     GRIBIN_chk=$GRIBIN
     GRIBIN_chk1=$GRIBIN1
@@ -493,7 +493,7 @@ while [ $fhcnt -le $fend ] ; do
          cat temp temp1 > grib$fhr
        fi
      ;;
-    ge*)  if test "$model" = "bc" -o "$model" = "me" -o "$model" = "an" -o "$model" = "wt" -o "$model" = "glbanl" -o "$model" = "ndgd" -o "$model" = "ensemble" -o "$model" = "anv"
+    ge*)  if test "$RUN" = "bc" -o "$RUN" = "me" -o "$RUN" = "an" -o "$RUN" = "wt" -o "$RUN" = "glbanl" -o "$RUN" = "ndgd" -o "$RUN" = "ensemble" -o "$RUN" = "anv"
           then
              cp $GRIBIN grib$fhr
           else
@@ -506,7 +506,7 @@ while [ $fhcnt -le $fend ] ; do
      cp $GRIBIN grib$fhr
   esac
 
-  if [ "$model" = "ensemble" -o $RUN = "sref" ] ; then
+  if [ "$RUN" = "ensemble" -o $RUN = "sref" ] ; then
     export pgm="nagrib_nc $RUN"
   else
     export pgm="nagrib_nc F$fhr"
@@ -537,7 +537,7 @@ EOF
   # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
   # FOR THIS CASE HERE.
   #####################################################
-  if [ $model != "ukmet_early" ] ; then
+  if [ $RUN != "ukmet_early" ] ; then
     ls -l $GEMGRD
     export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
   fi

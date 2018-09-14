@@ -8,41 +8,9 @@ date
 # GFS FAX PRODUCT GENERATION
 ############################################
 
-NWROOT=${NWROOT:?}
-DATAROOT=${DATAROOT:?}
-COMROOT=${COMROOT:?}
-
-#############################
-# Source relevant config files
-#############################
-configs="base fax"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env fax
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export job=${job:-"fax"}
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/$jobid"
-else
-    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-    export DATA="$DATAROOT/$job"
-fi
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA

@@ -124,6 +124,7 @@ case:
     # unless overridden by that job's max_tries variable.
     max_job_tries: 2
     rocoto_task_throttle: 25
+    rocoto_cycle_throttle: 5
 
     # This belongs in "places" and putting it here makes it unused.
     # The default values are in platforms/jet.yaml.  You should delete
@@ -132,8 +133,8 @@ case:
     BASE_SVN: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-09-10t06:00:00
-    EDATE: 2018-09-14t18:00:00
+    SDATE: 2018-09-14t00:00:00
+    EDATE: 2018-09-16t18:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4 # run gfs at 0z, 12z

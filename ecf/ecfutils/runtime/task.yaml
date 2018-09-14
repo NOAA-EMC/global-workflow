@@ -29,7 +29,6 @@ task_template: &task_template
   # j-job (jobs/ directory) for this task.
   rocoto_command: !expand >-
      {rocoto_load_modules} ;
-     {config_source} ;
      {J_JOB_PATH_ROCOTO}/{J_JOB}
 
   # ecflow_command - command ecFlow executes from the ecf file to pass
@@ -222,7 +221,6 @@ shared_task_template: &shared_task_template
   J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: shared
-  config_source: !expand 'source &EXPDIR;/config.base'
 
 # service_task_template - a convenient alias to define a task that has
 # the service_accounting and passes "service" to the
@@ -235,7 +233,6 @@ service_task_template: &service_task_template
   J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: service
-  config_source: !expand 'source &EXPDIR;/config.base'
 
 # exclusive_task_template - a convenient alias to define a task that has
 # the exclusive_accounting and passes "exclusive" to the
@@ -248,7 +245,6 @@ exclusive_task_template: &exclusive_task_template
   J_JOB_PATH_ECFLOW: !expand '${{HOMEgfs}}/jobs'
   J_JOB: !expand '{task_path_list[-1]}.sh'
   task_type: exclusive
-  config_source: !expand 'source &EXPDIR;/config.base'
 
 # exclusive_task_template - a convenient alias for the special case of
 # an exclusive_accounting job that runs a forecast.  These jobs must

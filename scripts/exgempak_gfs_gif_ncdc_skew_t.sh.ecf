@@ -14,9 +14,9 @@ postmsg "$jlogfile" "$msg"
 
 export NTS=$USHgempak/restore
 
-if [ $MODEL = GDAS -o $MODEL = GFS ]
+if [ $RUN = GDAS -o $RUN = GFS ]
 then
-    case $MODEL in
+    case $RUN in
       GDAS) fcsthrs="00";;
       GFS)  fcsthrs="00 12 24 36 48";;
     esac
@@ -74,10 +74,10 @@ export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 cp ${NWROOTp1}/dictionaries/sonde.land.tbl .
 cp ${NWROOTp1}/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cp $COMINgfs/${model}.$cycle.adpupa.tm00.bufr_d fort.40
+cp $COMINgfs/${RUN}.$cycle.adpupa.tm00.bufr_d fort.40
 export err=$?
 if [[ $err -ne 0 ]] ; then
-   echo " File ${model}.$cycle.adpupa.tm00.bufr_d does not exist."
+   echo " File ${RUN}.$cycle.adpupa.tm00.bufr_d does not exist."
    exit $err
 fi
 # $RDBFMSUA  >> $pgmout 2> errfile

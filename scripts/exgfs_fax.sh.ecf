@@ -135,7 +135,7 @@ then
   then
 
      hour="anl 00"
-     faxparm=graph_faxmakr.${model}_${cycle}.${fhr}
+     faxparm=graph_faxmakr.${RUN}_${cycle}.${fhr}
      FAXOUT=varfaxgfs$cyc$fhr.gfs
      sendkey=fax.pepfax$fhr
 
@@ -172,7 +172,7 @@ then
   if [ $fhr -eq 48 -a $cyc = "12" ]
   then
 
-     FAXOUT=trpsfprv.faxx.${model}_${cyc}
+     FAXOUT=trpsfprv.faxx.${RUN}_${cyc}
 #     trpsfprv.sh 
      ${UTILgfs}/ush/trpsfprv.sh 
      export err=$?
@@ -181,7 +181,7 @@ then
         exit $err
      fi
 
-     jobn=${model}_fax_${cyc}
+     jobn=${RUN}_fax_${cyc}
 
      for KEYW in TRPSFG01 TRPSFG02 TRPSFG03
      do
