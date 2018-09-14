@@ -28,7 +28,7 @@ echo " "
 source ../../modulefiles/gfs_util.${target}
 module list
 
-makefile=makefile_$target
+makefile=makefile.$target
 
 set -x
 

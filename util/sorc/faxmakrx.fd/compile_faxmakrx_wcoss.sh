@@ -35,8 +35,11 @@ echo " "
 source ../../modulefiles/gfs_util.${target}
 module list
 
+makefile=makefile.$target
+
 set -x
+
 mkdir -p ../../exec
-make
+make -f $makefile
 mv faxmakrx ../../exec
-make clean
+make -f $makefile clean
