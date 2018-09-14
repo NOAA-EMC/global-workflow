@@ -1,13 +1,8 @@
 SHELL=/bin/sh
 #
+SRCS=	mkgfsawps.f
 
-SRCS=   upaupa.f forupa.f redupa.f redhgt.f fndhgt.f brdhgt.f \
-        conaft.f contrl.f dosbyt.f foraft.f conwnd.f forwnd.f \
-        consat.f forsat.f
-
-OBJS=   upaupa.o forupa.o redupa.o redhgt.o fndhgt.o brdhgt.o \
-        conaft.o contrl.o dosbyt.o foraft.o conwnd.o forwnd.o \
-        consat.o forsat.o
+OBJS=	mkgfsawps.o
 
 # Tunable parameters
 #
@@ -17,20 +12,24 @@ OBJS=   upaupa.o forupa.o redupa.o redhgt.o fndhgt.o brdhgt.o \
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =		 ifort
+FC =       ifort     
 
-LIBS = ${GPHCNTR_LIB8} ${GPHFONT_LIB8} ${GPH_LIB8} ${UTIL_LIB}  \
-       ${IP_LIB8} ${SP_LIB8} ${W3EMC_LIB8} ${W3NCO_LIB8} ${BACIO_LIB8} ${BUFR_LIB8}
+LDFLAGS =
+IOMP5_LIB=/opt/intel/composer_xe_2015.3.187/compiler/lib/intel64/libiomp5.a 
 
-CMD =		upaprep        
+LIBS =  -Xlinker --start-group ${W3NCO_LIBd} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${BACIO_LIB4} ${IOMP5_LIB}
 
-FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8 -assume byterecl -convert big_endian \
-        -assume noold_ldout_format
+CMD =		mkgfsawps
+PROFLIB =	-lprof
 
 # To perform the default compilation, use the first line
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
+FFLAGS =        -O3 -g -convert big_endian -r8 -i4 -assume noold_ldout_format
+
+#FFLAGS =	 -F
+#FFLAGS =	 -Wf"-ez"
 
 # Lines from here on down should not need to be changed.  They are the
 # actual rules which make uses to build a.out.
@@ -38,12 +37,14 @@ FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8 -assume byterecl -convert big_endian \
 all:		$(CMD)
 
 $(CMD):		$(OBJS)
-	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+	$(FC) -o $(LDFLAGS) $(@) $(OBJS) $(LIBS)
+	rm -f $(OBJS)
 
 # Make the profiled version of the command and call it a.out.prof
 #
-# $(CMD).prof:	$(OBJS)
-#	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+$(CMD).prof:	$(OBJS)
+	$(FC) -o  $(LDFLAGS)  $(@) $(OBJS) $(LIBS)
+	-rm -f $(OBJS)
 
 clean:
 	-rm -f $(OBJS)

@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180907
+export PDY=20180913
 
 export cyc=00
 export cycle=t${cyc}z

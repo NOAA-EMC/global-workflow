@@ -5,9 +5,9 @@ SRCS= trpsfcmv.f getgb1.f
 OBJS= trpsfcmv.o getgb1.o 
 
 FC =    ifort 
-# XLIBS=/usr/lib64
+XLIBS=/usr/lib64
 
-LDFLAGS =  -L${NCARG_LIB} \
+LDFLAGS =  -L${NCARG_LIB} -L${XLIBS} \
            -lncarg -lncarg_gks -lncarg_c -lX11 -lXext -lcairo -lfontconfig -lpixman-1 \
            -lfreetype -lexpat -lpng -lz -lpthread -lbz2 -lXrender -lgfortran
 

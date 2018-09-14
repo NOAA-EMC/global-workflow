@@ -19,9 +19,6 @@ FC =             ifort
 LIBS = ${GPHCNTR_LIB8} ${GPHFONT_LIB8} ${GPH_LIB8} ${UTIL_LIB}  \
        ${IP_LIB8} ${SP_LIB8} ${W3EMC_LIB8} ${W3NCO_LIB8} ${BACIO_LIB8}
 
-# LIBS = -L/nwprod/lib/graphics -lgphcntr_8 -lgphfont_8 -lgph_8 -lutil \
-#       -L/nwprod/lib -lip_8 -lsp_8 -lw3emc_8 -lw3nco_8 -lbacio_8 -lbufr_8_64 
-
 CMD =      trpanl
 #
 FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8  -qopenmp -assume byterecl -convert big_endian \

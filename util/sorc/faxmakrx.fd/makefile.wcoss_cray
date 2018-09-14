@@ -15,7 +15,7 @@ FC      = ifort
 
 FFLAGS  = -D_LITTLE_ENDIAN -O -g -traceback -C -i8 -r8 -assume byterecl -convert big_endian -assume nobscc -assume noold_ldout_format
 
-LDFLAGS = -qopenmp
+LDFLAGS = -openmp
 
 LIBS = ${GPHCNTR_LIB8} ${GPHFONT_LIB8} ${GPH_LIB8} ${UTIL_LIB} ${W3G_LIB8}  \
        ${IP_LIB8} ${SP_LIB8} ${W3EMC_LIB8} ${W3NCO_LIB8} ${BACIO_LIB8}
