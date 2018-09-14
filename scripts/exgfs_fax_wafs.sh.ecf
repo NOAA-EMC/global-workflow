@@ -247,7 +247,9 @@ echo "**************GFS WAF FAX gempak COMPLETED NORMALLY"
 set -x
 #####################################################################
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 msg="HAS COMPLETED NORMALLY!"
 echo $msg

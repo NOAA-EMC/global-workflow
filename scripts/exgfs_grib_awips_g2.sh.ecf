@@ -253,7 +253,9 @@ EOF
    done
 fi
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ###################################################################################
 # GOOD RUN

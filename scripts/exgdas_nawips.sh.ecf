@@ -26,9 +26,31 @@ msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
 cp $FIXgfs/g2varswmo2.tbl g2varswmo2.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2varswmo2.tbl file is missing."
+   exit $err
+fi
 cp $FIXgfs/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2vcrdwmo2.tbl file is missing."
+   exit $err
+fi
+
 cp $FIXgfs/g2varsncep1.tbl g2varsncep1.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2varsncep1.tbl file is missing."
+   exit $err
+fi
+
 cp $FIXgfs/g2vcrdncep1.tbl g2vcrdncep1.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2vcrdncep1.tbl file is missing."
+   exit $err
+fi
 
 #
 NAGRIB_TABLE=${NAGRIB_TABLE:-$NWROOTp1/gempak/fix/nagrib.tbl}
@@ -39,6 +61,13 @@ if [[ $err -ne 0 ]] ; then
 fi
 
 NAGRIB=$GEMEXE/nagrib2_nc
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File $GEMEXE/nagrib2_nc is missing."
+   echo " WARNING: module GEMPAK was not loaded"
+   exit $err
+fi
+
 #
 
 entry=`grep "^$GEMPAK_RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
@@ -79,9 +108,19 @@ while [ $fhcnt -le $fend ] ; do
 
   if [ $GEMPAK_RUN = "gdas_0p25" ]; then 
     export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}
+    if [ ! -f $GRIBIN ] ; then
+       echo "WARNING: $GRIBIN FILE is missing"
+       msg=" $GRIBIN file is missing "
+       postmsg "jlogfile" "$msg"
+    fi
     GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
     export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}
+    if [ ! -f $GRIBIN ] ; then
+       echo "WARNING: $GRIBIN FILE is missing"
+       msg=" $GRIBIN file is missing "
+       postmsg "jlogfile" "$msg"
+    fi
     GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
@@ -100,8 +139,6 @@ while [ $fhcnt -le $fend ] ; do
       err_exit $msg
     fi
   done
-
-  #cat ${COMIN}/${RUN}.${cycle}.pgrb2.1p00.f${fhr} ${COMIN}/${RUN}.${cycle}.pgrb2b.1p00.f${fhr} > temp
 
   cp $GRIBIN grib$fhr
 

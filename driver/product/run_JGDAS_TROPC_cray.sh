@@ -1,25 +1,27 @@
 #!/bin/sh
 
-#BSUB -J gfs_fax_f00_00
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f00_00.o%J
-#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f00_00.o%J
-#BSUB -q debug
-#BSUB -n 1                      # number of tasks
-#BSUB -R span[ptile=1]          # 1 task per node
-#BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
+#BSUB -J gdas_tropc_f00_00
+#BSUB -o /gpfs/hps3/ptmp/Qingfu.Liu/output/gdas_tropc_f012_00.o%J
+#BSUB -e /gpfs/hps3/ptmp/Qingfu.Liu/output/gdas_tropc_f012_00.o%J
+#BSUB -q dev
+#BSUB -cwd /gpfs/hps3/ptmp/Qingfu.Liu/output
 #BSUB -W 00:30
 #BSUB -P GFS-T2O
-#BSUB -R affinity[core(1):distribute=balance]
+#BSUB -M 1000
 
+export OMP_NUM_THREADS=1
 export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=1024m
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180907
+# export PDY=20180515
 
 export PDY1=`expr $PDY - 1`
 
-# export cyc=06
-export cyc=00
+ export cyc=06
+# export cyc=00
 export cycle=t${cyc}z
 
 set -xa
@@ -29,33 +31,43 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-module load EnvVars/1.0.2
-module load ips/18.0.1.163
-module load CFP/2.0.1
-module load impi/18.0.1
-module load lsf/10.1
-module load prod_util/1.1.0
-module load prod_envir/1.0.2
-module load ips/18.0.1.163
-module load bufr_dumplist/1.5.0
+
+. $MODULESHOME/init/sh
+module load PrgEnv-intel/5.2.56
+module load cfp-intel-sandybridge/1.1.0
+module load ESMF-intel-sandybridge/3_1_0rp5
+module load iobuf/2.0.7
+module load craype-hugepages2M
+module load craype-haswell
+module load prod_envir
+module load prod_util
+module load grib_util/1.0.3
+module load util_shared/1.0.6
+
+#module unload grib_util/1.0.3
+# module use /usrx/local/nceplibs/modulefiles
+#module load grib_util/1.1.0
+#
+#   This is a test version of UTIL_SHARED.v1.0.7 on CRAY
+#
+# module use /usrx/local/nceplibs/util_shared.v1.0.7/modulefiles
+# module load util_shared/1.0.7
+
+export obsproc_dump_ver=v4.0.0
+export obsproc_shared_bufr_dumplist_ver=v1.5.0
 module load dumpjb/4.0.0
-module load NCL/6.4.0
-#
-#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
-#
-module load dev/grib_util/1.1.0
-#
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
-#
-# module load dev/util_shared/1.0.8
+
+module use  /usrx/local/prod/modulefiles
+module load  ncarg-intel-sandybridge/6.1.0
+
 module list
 
 ############################################
-# GFS FAX PRODUCT GENERATION
+# GDAS TROPC PRODUCT GENERATION
 ############################################
 
-# export fcsthrs="anl"
-export fcsthrs="00"
+export fcsthrs="anl"
+# export fcsthrs="000"
 
 ##############################################
 # Define COM, COMOUTwmo, COMIN  directories
@@ -66,7 +78,7 @@ export fcsthrs="00"
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=gfs_fax_${fcsthrs}_${cyc}
+export job=gdas_tropc_${fcsthrs}_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
@@ -74,9 +86,10 @@ export jobid=${job}.${pid}
 export SENDDBN=YES
 export DBNROOT=/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/fakedbn
 
-export DATAROOT=/gpfs/dell2/ptmp/Boi.Vuong/output
-export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git
-export COMROOT2=/gpfs/dell2/ptmp/Boi.Vuong/com
+export DATAROOT=/gpfs/hps3/ptmp/Qingfu.Liu/output
+export NWROOT=/gpfs/hps3/emc/global/noscrub/Qingfu.Liu/svn
+export COMROOT2=/gpfs/hps3/ptmp/Qingfu.Liu/com
+export HOMEgfs=/gpfs/hps3/emc/global/noscrub/Qingfu.Liu/fv3gfs_port2dell2
 
 mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
@@ -96,28 +109,28 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
-export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+export TMPDIR=/gpfs/hps3/ptmp/Qingfu.Liu/output
 
-# export TMPDIR=/gpfs/hps3/ptmp/Boi.Vuong/output
-
+export HOMEobsproc_shared_bufr_dumplist=/gpfs/hps/nco/ops/nwtest/obsproc_shared/bufr_dumplist.v1.5.0
 ###################################
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-export model=${model:-gfs}
+export RUN=${RUN:-gdas}
+export model=${model:-gdas}
 
 ##############################################
 # Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 if [ $envir = "prod" ] ; then
-#  This setting is for testing with GFS (production)
-  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
+#  This setting is for testing with GDAS (production)
+  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gdas.${PDY}         ### NCO PROD
 else
-  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-#   export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}   ### Boi PARA
-
+#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/com2/gfs/para/gdas.${PDY}         ### EMC PARA Realtime
+#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gdas.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/hps3/emc/global/noscrub/Qingfu.Liu/svn/gdas.${PDY}/${cyc} ### Boi PARA
+  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gdas.${PDY}
+#  export COMIN=/gpfs/hps/nco/ops/com/gfs/para/gfs.${PDY}       ### NCO PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
@@ -135,6 +148,6 @@ mkdir -p $DATA
 cd $DATA
 
 #############################################
-# run the GFS job
+# run the GDAS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_FAX
+sh $HOMEgfs/jobs/JGDAS_TROPC
