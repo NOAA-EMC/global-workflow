@@ -221,7 +221,11 @@ suite: !Cycle
         COMINgdas: !expand '&COM;/gdas'
         COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
         COMOUTncdc: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
-        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgdas, COMOUT, COMOUTncdc ]
+        COMINukmet: !expand '&COM;/ukmet'
+        COMINecmwf: !expand '&COM;/ecmwf'
+        COMOUTukmet: !expand '&COM;/ukmet'
+        COMOUTecmwf: !expand '&COM;/ecwmf'
+        more_vars: [ SENDCOM, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgdas, COMOUT, COMOUTncdc, COMINukmet, COMINecmwf, COMOUTukmet, COMOUTecmwf ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK_META_NCDC
