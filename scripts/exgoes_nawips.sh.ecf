@@ -63,7 +63,7 @@ while [ $fhcnt -le $fend ] ; do
 
   fhr3=$fhcnt
   typeset -Z3 fhr3
-  GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
+  GRIBIN=$COMIN/${NET}.${cycle}.${GRIB}${fhr}${EXT}
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
 #  case $RUN in

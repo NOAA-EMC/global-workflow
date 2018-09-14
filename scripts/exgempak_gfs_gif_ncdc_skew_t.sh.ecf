@@ -14,11 +14,11 @@ postmsg "$jlogfile" "$msg"
 
 export NTS=$USHgempak/restore
 
-if [ $RUN = GDAS -o $RUN = GFS ]
+if [ $RUN = gdas -o $RUN = gfs ]
 then
     case $RUN in
-      GDAS) fcsthrs="00";;
-      GFS)  fcsthrs="00 12 24 36 48";;
+      gdas) fcsthrs="00";;
+      gfs)  fcsthrs="00 12 24 36 48";;
     esac
 
     export fhr
