@@ -28,11 +28,9 @@ echo " "
 source ../../modulefiles/gfs_util.${target}
 module list
 
-makefile=makefile.$target
-
 set -x
 
 mkdir -p ../../exec
-make -f $makefile
+make -f makefile.$target
+make -f makefile.$target clean
 mv mkgfsawps ../../exec
-make -f $makefile clean
