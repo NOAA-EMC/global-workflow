@@ -83,13 +83,16 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.dump.jgdas_dump.release_sfcprep
         resources: !calc partition.resources.run_prep
+        job: '<cyclestr>gdas_emcsfc_sfc_prep_@H</cyclestr>'
         SENDCOM: !expand "YES"
+        RUN: gdas
         DATA: !expand '<cyclestr>&DATAROOT;/gdas_emcsfc_sfc_prep_@H</cyclestr>'
+        SCRgfs: !expand '&HOMEgfs;/scripts'
         PDY_m6hrs: !expand '<cyclestr offset="6:00:00">@Y@m@d</cyclestr>'
-        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
-        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgfs: !expand '<cyclestr>/gpfs/hps/nco/ops/com/gfs/prod/gdas.@Y@m@d</cyclestr>'
+        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">/gpfs/hps/nco/ops/com/gfs/prod/gdas.@Y@m@d</cyclestr>'
         COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
-        more_vars: [ SENDCOM, DATA, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
+        more_vars: [ job, SENDCOM, RUN, DATA, SCRgfs, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
@@ -467,13 +470,16 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.dump.jgfs_dump.release_sfcprep
         resources: !calc partition.resources.run_prep
+        job: '<cyclestr>gfs_emcsfc_sfc_prep_@H</cyclestr>'
         SENDCOM: !expand "YES"
         DATA: !expand '<cyclestr>&DATAROOT;/gfs_emcsfc_sfc_prep_@H</cyclestr>'
+        RUN: gfs
+        SCRgfs: !expand '&HOMEgfs;/scripts'
         PDY_m6hrs: !expand '<cyclestr offset="6:00:00">@Y@m@d</cyclestr>'
-        COMINgfs: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
-        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">&COM;/gfs.@Y@m@d/@H</cyclestr>'
+        COMINgfs: !expand '<cyclestr>/gpfs/hps/nco/ops/com/gfs/prod/gfs.@Y@m@d</cyclestr>'
+        COMINgfs_m6hrs: !expand '<cyclestr offset="6:00:00">/gpfs/hps/nco/ops/com/gfs/prod/gfs.@Y@m@d</cyclestr>'
         COMOUT: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
-        more_vars: [ SENDCOM, DATA, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
+        more_vars: [ job, SENDCOM, DATA, RUN, SCRgfs, PDY_m6hrs, COMINgfs, COMINgfs_m6hrs, COMOUT ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
