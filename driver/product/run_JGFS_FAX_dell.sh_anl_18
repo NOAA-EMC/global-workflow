@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180906
+export PDY=20180915
 
 export PDY1=`expr $PDY - 1`
 
@@ -43,10 +43,6 @@ module load NCL/6.4.0
 #   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
 module load dev/grib_util/1.1.0
-#
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
-#
-# module load dev/util_shared/1.0.8
 module list
 
 ############################################
