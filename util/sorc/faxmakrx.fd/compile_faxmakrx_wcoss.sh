@@ -36,7 +36,8 @@ source ../../modulefiles/gfs_util.${target}
 module list
 
 set -x
+
 mkdir -p ../../exec
-make
+make -f makefile.$target
+make -f makefile.$target clean
 mv faxmakrx ../../exec
-make clean

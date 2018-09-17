@@ -28,9 +28,6 @@ PROFLIB =	-lprof
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
 FFLAGS =        -O3 -g -convert big_endian -r8 -i4 -assume noold_ldout_format
 
-#FFLAGS =	 -F
-#FFLAGS =	 -Wf"-ez"
-
 # Lines from here on down should not need to be changed.  They are the
 # actual rules which make uses to build a.out.
 #

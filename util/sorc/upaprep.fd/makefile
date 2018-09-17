@@ -22,10 +22,6 @@ FC =		 ifort
 LIBS = ${GPHCNTR_LIB8} ${GPHFONT_LIB8} ${GPH_LIB8} ${UTIL_LIB}  \
        ${IP_LIB8} ${SP_LIB8} ${W3EMC_LIB8} ${W3NCO_LIB8} ${BACIO_LIB8} ${BUFR_LIB8}
 
-# LIBS = -L/nwprod/lib/graphics -lgphcntr_8 -lgphfont_8 -lgph_8 -lutil \
-#       -L/nwprod/lib -lw3emc_8 -lw3nco_8 -lip_8 -lsp_8 -lbacio_8 -lbufr_8_64
-
-
 CMD =		upaprep        
 
 FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8 -assume byterecl -convert big_endian \
@@ -35,8 +31,6 @@ FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8 -assume byterecl -convert big_endian \
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
-# FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8 -assume byterecl -convert big_endian \
-#         -assume noold_ldout_format
 
 # Lines from here on down should not need to be changed.  They are the
 # actual rules which make uses to build a.out.
