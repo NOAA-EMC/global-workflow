@@ -442,6 +442,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
     export run_conus_sfc="YES"                               #run grid-to-obs conus_sfc use case
     export fhrout_conus_sfc="3"                              #grid-to-obs conus_sfc use case forecast output frequency in hours
     export grid_conus_sfc="G104"                             #grid for grid-to-obs conus_sfc use case, format GXXX
+    export runhpss="NO"                            #get missing prepbufr data from HPSS
     #do some checks 
     if [ ! -d $metplushome ]; then
         echo "EXIT ERROR: $metplushome does not exist "
@@ -523,7 +524,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                     ln -sf ${prepbufr_prod_upper_air_dir}/${prepbufr_upper_air}.${VDATE}/${prepbufr_upper_air}.t${vhr}.prepbufr ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
                 elif [ -s ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ] ; then
                     ln -sf ${prepbufr_arch_dir}/${prepbufr_upper_air}/prepbufr.${prepbufr_upper_air}.${VDATE}${vhr} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
-                else
+                elif [ $runhpss = YES ]; then
                     #get file from HPSS if not in online directories
                     HPSSGFS="/NCEPPROD/hpssprod/runhistory"
                     yyyy=`echo $VDATE |cut -c 1-4 `
@@ -539,12 +540,41 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         gdas_tar=${HPSSGFS}/rh${yyyy}/${yyyy}${mm}/${yyyy}${mm}${dd}/com_gfs_prod_gdas.${VDATE}${vhr}.tar
                         gdas_prepbufr_file=gdas1.t${vhr}z.prepbufr
                     fi
-                    htar -xf ${gdas_tar} ./${gdas_prepbufr_file}
-                    if [ $? -eq 0 ]; then
-                        mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
+                    if [ $machine = THEIA ]; then
+                        echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -l nodes=1:ppn=1" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -l walltime=0:05:00" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -A fv3-cpu" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -q service" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -o  ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -j oe" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -N get_${prepbufr_upper_air}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#PBS -W umask=022" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "htar -xf ${gdas_tar} ./${gdas_prepbufr_file}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        qsub ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                    elif [ $machine = WCOSS_C ]; then
+                        echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -e ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -o ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -J get_${prepbufr_upper_air}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -q dev_transfer" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -W 0:05" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -R rusage[mem=2048]" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "#BSUB -P GFS-T2O" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "htar -xf ${gdas_tar} ./${gdas_prepbufr_file}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        echo "mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
+                        bsub < ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/get_${prepbufr_upper_air}_prepbufr_${VDATE}${vhr}.sh
                     else
-                        echo "NO GDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
+                        htar -xf ${gdas_tar} ./${gdas_prepbufr_file}
+                        mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}
                     fi
+                    sleep 300
+                fi
+                if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr} ]; then
+                    echo "prepbufr.${VDATE}${vhr} doesn't exist or zero-sized." >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/error_${prepbufr_upper_air}_${VDATE}${vhr}.txt
                 fi
             done
         fi
@@ -568,94 +598,157 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                          hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
                          hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
                      03) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
-                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar
+                         hpss3=;;
                      06) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
                          hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
                          hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
                      09) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
-                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar
+                         hpss3=;;
                      12) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
                          hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
                          hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
                      15) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
-                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar
+                         hpss3=;;
                      18) hpss1=$HPSSNAM/rh${YYYY12}/${YYYYMM12}/${PDY12}/com_nam_prod_ndas.${PDY12}${HH12}.bufr.tar
                          hpss2=$HPSSNAM/rh${YYYY06}/${YYYYMM06}/${PDY06}/com_nam_prod_ndas.${PDY06}${HH06}.bufr.tar
                          hpss3=$HPSSNAM/rh${YYYY00}/${YYYYMM00}/${PDY00}/com_nam_prod_nam.${PDY00}${HH00}.bufr.tar;;
                      21) hpss1=$HPSSNAM/rh${YYYY09}/${YYYYMM09}/${PDY09}/com_nam_prod_ndas.${PDY09}${HH09}.bufr.tar
-                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar;;
+                         hpss2=$HPSSNAM/rh${YYYY03}/${YYYYMM03}/${PDY03}/com_nam_prod_ndas.${PDY03}${HH03}.bufr.tar
+                         hpss3=;;
                     esac
                     case $HH00 in
                      00) date1=${PDY12}
                          date2=${PDY06}
                          date3=${PDY00};;
                      03) date1=${PDY09}
-                         date2=${PDY03};;
+                         date2=${PDY03}
+                         date3=;;
                      06) date1=${PDY12}
                          date2=${PDY06}
                          date3=${PDY00};;
                      09) date1=${PDY09}
-                         date2=${PDY03};;
+                         date2=${PDY03}
+                         date3=;;
                      12) date1=${PDY12}
                          date2=${PDY06}
                          date3=${PDY00};;
                      15) date1=${PDY09}
-                         date2=${PDY03};;
+                         date2=${PDY03}
+                         date3=;;
                      18) date1=${PDY12}
                          date2=${PDY06}
                          date3=${PDY00};;
                      21) date1=${PDY09}
-                         date2=${PDY03};;
+                         date2=${PDY03}
+                         date3=;;
                     esac
                     case $HH00 in
                      00) ndas1=ndas.t${HH12}z.prepbufr.tm12
                          ndas2=ndas.t${HH06}z.prepbufr.tm06
                          ndas3=nam.t${HH00}z.prepbufr.tm00;;
                      03) ndas1=ndas.t${HH09}z.prepbufr.tm09
-                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03
+                         ndas3=;;
                      06) ndas1=ndas.t${HH12}z.prepbufr.tm12
                          ndas2=ndas.t${HH06}z.prepbufr.tm06
                          ndas3=nam.t${HH00}z.prepbufr.tm00;;
                      09) ndas1=ndas.t${HH09}z.prepbufr.tm09
-                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03
+                         ndas3=;;
                      12) ndas1=ndas.t${HH12}z.prepbufr.tm12
                          ndas2=ndas.t${HH06}z.prepbufr.tm06
                          ndas3=nam.t${HH00}z.prepbufr.tm00;;
                      15) ndas1=ndas.t${HH09}z.prepbufr.tm09
-                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03
+                         ndas3=;;
                      18) ndas1=ndas.t${HH12}z.prepbufr.tm12
                          ndas2=ndas.t${HH06}z.prepbufr.tm06
                          ndas3=nam.t${HH00}z.prepbufr.tm00;;
                      21) ndas1=ndas.t${HH09}z.prepbufr.tm09
-                         ndas2=ndas.t${HH03}z.prepbufr.tm03;;
+                         ndas2=ndas.t${HH03}z.prepbufr.tm03
+                         ndas3=;;
                     esac
+                    #check first file
                     if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ] ; then
                         ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date1}/$ndas1 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
-                    else
-                        htar -xf ${hpss1} ./$ndas1
-                        if [ $? -eq 0 ]; then
-                            mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                    elif [ $runhpss = YES ];  then
+                        if [ $machine = THEIA ]; then
+                            echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -l nodes=1:ppn=1" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -l walltime=0:05:00" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -A fv3-cpu" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -q service" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -o  ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -j oe" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -N get_${prepbufr_conus_sfc}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -W umask=022" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "htar -xf ${hpss1} ./$ndas1" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                                qsub ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                        elif [ $machine = WCOSS_C ]; then
+                            echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -J get_${prepbufr_conus_sfc}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -q dev_transfer" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -W 0:05" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -R rusage[mem=2048]" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -P GFS-T2O" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "htar -xf ${hpss1} ./$ndas1" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            bsub < ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
                         else
-                            if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ] ; then
-                                ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                            htar -xf ${hpss1} ./$ndas1
+                            mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        fi
+                        sleep 300
+                    fi
+                    #check second file if first not found
+                    if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE} ]; then
+                        if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ] ; then
+                            ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date2}/$ndas2 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        elif [ $runhpss = YES ];  then
+                            mv ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}_2.out
+                            sed -i 's/'${ndas1}'/'${hpss2}'/g' ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            sed -i 's/'${ndas1}'/'${ndas2}'/g' ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            if [ $machine = THEIA ]; then
+                                qsub ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            elif [ $machine = WCOSS_C ]; then
+                                bsub < ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
                             else
                                 htar -xf ${hpss2} ./$ndas2
-                                if [ $? -eq 0 ]; then
-                                    mv ${ndas2} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
-                                else
-                                    if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ] ; then
-                                        ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
-                                    else
-                                        htar -xf ${hpss3} ./$ndas3
-                                        if [ $? -eq 0 ]; then
-                                            mv ${ndas3} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
-                                        else
-                                            echo "NO NDAS PREPBUFR FILE FOR ${VDATE}${vhr}"
-                                        fi
-                                    fi
-                                fi
+                                mv ${ndas2} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                             fi
+                            sleep 300
                         fi
+                    fi
+                    #check third file if first and second not found
+                    if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE} ]; then
+                        if [ -s ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ] ; then
+                            ln -sf ${prepbufr_arch_dir}/${prepbufr_conus_sfc}/${prepbufr_conus_sfc}.${date3}/$ndas3 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        elif [ $runhpss = YES ];  then
+                            mv ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}_2.out
+                            sed -i 's/'${ndas2}'/'${hpss3}'/g' ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            sed -i 's/'${ndas2}'/'${ndas3}'/g' ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            if [ $machine = THEIA ]; then
+                                qsub ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            elif [ $machine = WCOSS_C ]; then
+                                bsub < ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            else
+                                htar -xf ${hpss3} ./$ndas3
+                                mv ${ndas3} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                            fi
+                            sleep 300
+                        fi
+                    fi
+                    #make sure we have file
+                    if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE} ]; then
+                        echo "prepbufr.${DATE} doesn't exist or zero-sized." >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/error_${prepbufr_conus_sfc}_${DATE}.txt
                     fi
                 done
             else
@@ -682,19 +775,48 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         ln -sf $namcomdir/$bufrfile ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                     elif [ -s $namarcdir/$bufrfile ]; then
                         ln -sf $namarcdir/$bufrfile ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
-                    else
+                    elif [ $runhpss = YES ]; then
                         HPSSNAM="/NCEPPROD/hpssprod/runhistory"
                         if [ $PDY -eq 20170320 ] ; then
                             nam_tar=$HPSSNAM/rh${YYYY}/${YYYYMM}/${PDY}/com_nam_prod_nam.${PDY}${CYC}.bufr.tar
                         else
                             nam_tar=$HPSSNAM/rh${YYYY}/${YYYYMM}/${PDY}/com2_nam_prod_nam.${PDY}${CYC}.bufr.tar
                         fi
-                        htar -xf ${nam_tar} ./$bufrfile
-                        if [ $? -eq 0 ]; then
-                            mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
+                        if [ $machine = THEIA ]; then
+                            echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -l nodes=1:ppn=1" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -l walltime=0:05:00" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -A fv3-cpu" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -q service" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -o  ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -j oe" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -N get_${prepbufr_conus_sfc}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#PBS -W umask=022" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "htar -xf ${nam_tar} ./$bufrfile" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            qsub ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                        elif [ $machine = WCOSS_C ]; then
+                            echo "#!/bin/bash" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.out" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -J get_${prepbufr_conus_sfc}_prepbufr" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -q dev_transfer" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -W 0:05" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -R rusage[mem=2048]" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "#BSUB -P GFS-T2O" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "module load hpss" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "htar -xf ${nam_tar} ./$bufrfile" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            echo "mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
+                            bsub < ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/get_${prepbufr_conus_sfc}_prepbufr_${DATE}.sh
                         else
-                            echo "NO NAM PREPBUFR FILE FOR ${VDATE}${vhr}"
+                            htar -xf ${nam_tar} ./$bufrfile
+                            mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}
                         fi
+                        sleep 300
+                    fi 
+                    if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE} ]; then
+                        echo "prepbufr.${DATE} doesn't exist or zero-sized." >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/error_${prepbufr_conus_sfc}_${DATE}.txt
                     fi
                 done
             fi
@@ -995,6 +1117,7 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
                 bsub < ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
             else
                 htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h
+                mv ccpa.${PDY}12.24h ${rundir_precip1}/data/CCPA/.
             fi
             sleep 300
         fi
