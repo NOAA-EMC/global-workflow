@@ -14,10 +14,6 @@ LDFLAGS =  -L${NCARG_LIB} -L${XLIBS} \
 
 LIBS=   ${IP_LIB4} ${SP_LIB4} ${W3EMC_LIB4} ${W3NCO_LIB4} ${BACIO_LIB4} 
 
-# LDFLAGS =  -L/usrx/local/NCL_NCARG-6.1.0_gcc446/OpenNDAPenabled/lib -L/usr/X11R6/lib \
-#           -lncarg -lncarg_gks -lncarg_c -lX11 -lXext -lcairo -lfontconfig -lpixman-1 \
-#           -lfreetype -lexpat -lpng -lz -lpthread -lbz2 -lXrender -lgfortran
-
 CMD =     wndanftf 
 PROFLIB =       -lprof
 

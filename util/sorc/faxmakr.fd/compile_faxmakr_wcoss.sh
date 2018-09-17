@@ -38,6 +38,6 @@ module list
 set -x
 
 mkdir -p ../../exec
-make
+make -f makefile.$target
+make -f makefile.$target clean
 mv faxmakr ../../exec
-make clean
