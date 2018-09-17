@@ -108,8 +108,8 @@ if [ "$CDUMP" = "gfs" ] ; then
             export vfhmin=$FHMIN_GFS                                        # start verification forecast hour
             export vfhmax=$FHMAX_GFS                                        # end verification forecast hour
             export vhr_rain=$FHMAX_GFS                                      # needed to create 0.25 deg grib1 files
-            export ftyplist="pgbq"                                          # file types: pgbf, pgbq, or flxf
-            export ptyplist="PRATE"                                         # precip types in GRIB: PRATE or APCP
+            export ftyplist="pgbf"                                          # file types: pgbf, pgbq, or flxf
+            export ptyplist="APCP"                                          # precip types in GRIB: PRATE or APCP
             export anltype="gfs"                                            # default=gfs, analysis type (gfs or gdas) for verification
             export rain_bucket=6                                            # accumulation bucket in hours. bucket=0 -- continuous accumulation
             export g2g_sfc="YES"                                            # include the group of surface variables for grid-to-grid verification

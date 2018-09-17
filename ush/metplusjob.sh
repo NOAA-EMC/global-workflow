@@ -308,7 +308,7 @@ if [ $VRFY_GRID2GRID_STEP1 = YES ] ; then
                             echo "ERROR: ${f00file} doesn't exist or zero-sized. SKIPPING grid-to-grid sfc verification for this date."
                             work=${rundir_g2g1}/make_met_data/sfc/${exp}
                             mkdir -p ${work}/${VDATE}00
-                           echo "${f00file} doesn't exist or zero-sized. No grid-to-grid sfc verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
+                            echo "${f00file} doesn't exist or zero-sized. No grid-to-grid sfc verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
                         fi
                     else
                         export typelist="anom pres"
@@ -949,7 +949,7 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
         export YYYY=$(echo ${VDATE}  |cut -c 1-4 )
         export YYYYMM=$(echo ${VDATE}  |cut -c 1-6 )
         export PDY=$(echo ${VDATE}  |cut -c 1-8 )
-        export rundir_precip1=${rundir_precip1_base}/${PDY}12/init_${cycle}Z
+        export rundir_precip1=${rundir_precip1_base}/${PDY}
         if [ -d ${rundir_precip1} ] ; then
             echo "REMOVING ${rundir_precip1}"
             rm -r $rundir_precip1
@@ -980,6 +980,19 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
                 echo "htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
                 echo "mv ccpa.${PDY}12.24h ${rundir_precip1}/data/CCPA/." >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
                 qsub ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+            elif [ $machine = WCOSS_C ]; then
+                echo "#!/bin/bash" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -e ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.out" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -o ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.out" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -J get_ccpa" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -q dev_transfer" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -W 0:05" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -R rusage[mem=2048]" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "#BSUB -P GFS-T2O" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "module load hpss" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h" >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                echo "mv ccpa.${PDY}12.24h ${rundir_precip1}/data/CCPA/." >> ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
+                bsub < ${rundir_precip1}/data/CCPA/get_ccpa_data_${PDY}12.sh
             else
                 htar -xf ${ccpa_tar} ./ccpa.${PDY}12.24h
             fi
@@ -1023,21 +1036,26 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
                      if [ $fhr -lt 10 ]; then fhr_start=0$fhr ; fi
                      if [ -s $exp_dir/$exp/${file_type}${fhr}.gfs.${IDATE} ] ; then
                          ln -sf $exp_dir/$exp/${file_type}${fhr}.gfs.${IDATE} ${rundir_precip1}/data/${exp}/.
+                     else
+                         echo "WARNING: $exp_dir/$exp/${file_type}${fhr}.gfs.${IDATE} doesn't exist or zero-sized."
                      fi
                      nfhr=$((nfhr+1))
                  done
                 fhr_start=$((fhr_start+24))
             done
             export fhr_list_config=$( printf "%s," "${fhr_list[@]}" | cut -d "," -f 1-${#fhr_list[@]} )
-            #run in MPMD style if MPMD=YES, else run serially METplus
-            if [ $MPMD = YES ] ; then
-                echo "MPMD HOLDER"
-            else
+            #run METplus serially
+            if [ -s ${rundir_precip1}/data/CCPA/ccpa.${PDY}12.24h ]; then
                 echo "==== running METplus precip for ${VDATE} ${exp} ===="
                 ${metplushome}/ush/master_metplus.py -c ${metplusconfig}/metplus_config/METplus-${METPLUSver}/precip_step1.conf -c ${metplusconfig}/machine_config/machine.${machine}
-                export savedir=${metplussave}/precip/${cycle}/${exp}
+                export savedir=${metplussave}/precip/${cycle}Z/${exp}
                 mkdir -p ${savedir}
                 cp ${rundir_precip1}/VSDB_format/accum24/12Z/${exp}/*.stat ${savedir}/${exp}_precip_${PDY}.stat
+            else
+                echo "ERROR: ${rundir_precip1}/data/CCPA/ccpa.${PDY}12.24h doesn't exist or zero-sized. SKIPPING precip. verification for this date." 
+                work=${rundir_precip1}/make_met_data/precip/${exp}
+                mkdir -p ${work}/${VDATE}00
+                echo "${rundir_precip1}/data/CCPA/ccpa.${PDY}12.24h doesn't exist or zero-sized. No precip. verification for this date." >> ${work}/${VDATE}00/error_${VDATE}.txt
             fi
             nn=`expr $nn + 1 `
         done
