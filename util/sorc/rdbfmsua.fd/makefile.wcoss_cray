@@ -45,10 +45,13 @@ FFLAGS =	-I${GEMINC} -I${OS_INC}
 # LDFLAGS =       -O3 -q32 -s
 # LDFLAGS =       -Wl,-Map,MAPFILE
 
-BRIDGE=/gpfs/hps/nco/ops/nwprod/gempak.v6.32.0/nawips/os/linux3.0.101_x86_64/lib/libbridge.a
-LIBS =    ${DECOD_UT_LIB} ${BUFR_LIB4} \
-          -L${GEMOLB} -lgemlib -lappl -lsyslib -lcgemlib -lgfortran ${BRIDGE}
+# BRIDGE=/gpfs/dell1/nco/ops/nwpara/gempak.v7.3.1/nawips/os/linux3.10.0_x86_64/lib/libbridge.a
+BRIDGE=${GEMOLB}/libbridge.a
 
+LIBS =    ${DECOD_UT_LIB} ${BUFR_LIB4} \
+	-L${GEMOLB} -lgemlib -lappl -lsyslib -lcgemlib -lgfortran ${BRIDGE}
+
+#	-L${GEMOLB} -lgemlib -lappl -lsyslib -lcgemlib -lgfortran ${BRIDGE}
 #          -L/nwprod/gempak/nawips1/os/linux2.6.32_x86_64/lib -lgemlib -lappl -lsyslib -lcgemlib -lbridge -lncepBUFR \
 #           -lgfortran
 

@@ -1,0 +1,17 @@
+set -x
+vi run_GFS_GEMPAK_dell.sh_18
+vi run_JGDAS_GEMPAK_dell.sh_18
+vi run_JGDAS_GEMPAK_META_NCDC_dell.sh_18
+vi run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_18 
+vi run_JGFS_AWIPS_G2_dell.sh_18   
+vi run_JGFS_FAX_dell.sh_anl_18 
+vi run_JGFS_FAX_dell.sh_f00_18 
+vi run_JGFS_FAX_WAFS_dell.sh_f12_18
+vi run_JGFS_FAX_WAFS_dell.sh_f24_18
+vi run_JGFS_FAX_WAFS_dell.sh_f36_18
+vi run_JGFS_FBWIND_dell.sh_18 
+vi run_JGFS_GEMPAK_META_dell.sh_18
+vi run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_18 
+vi run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_18
+vi run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_18 
+vi run_JGDAS_TROPC_dell.sh_18

@@ -168,8 +168,8 @@ cd ${pwd}/../ush                ||exit 8
 #------------------------------
 
 cd $pwd/../exec
-[[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
+[[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
+$LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post

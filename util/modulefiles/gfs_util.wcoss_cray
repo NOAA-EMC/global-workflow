@@ -1,0 +1,27 @@
+#%Module#####################################################
+## Module file for GFS util
+#############################################################
+#
+#  Loading required system modules
+#
+   module load modules
+   module load craype-sandybridge
+   module load PrgEnv-intel/5.2.56
+   module switch intel/15.0.6.233
+   module unload gcc
+   module load gcc
+
+# Loading GEMPAK
+   module unload gempak
+   module load gempak/6.32.0
+   module unload ncarg-intel-sandybridge
+   module load ncarg-intel-sandybridge/6.1.0
+   module load graphics-intel/2.0.0
+
+# Loading Intel-Compiled NCEP Libraries
+   module load bacio-intel/2.0.1
+   module load w3emc-intel/2.2.0
+   module load w3nco-intel/2.0.6
+   module load ip-intel/3.0.0
+   module load sp-intel/2.0.2
+   module load bufr-intel/11.1.0
