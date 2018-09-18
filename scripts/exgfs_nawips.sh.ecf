@@ -17,13 +17,13 @@ set -xa
 export ILPOST=${ILPOST:-1}
 
 cd $DATA
-RUN=$1
+GEMPAK_RUN=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
-export 'PS4=$RUN:$SECONDS + '
+export 'PS4=$GEMPAK_RUN:$SECONDS + '
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$GEMPAK_RUN
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
@@ -64,7 +64,7 @@ if mkdir lock.$fhcnt  ; then
   fhr3=$fhcnt
   typeset -Z3 fhr3
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${GEMPAK_RUN}_${PDY}${cyc}f${fhr3}
 
 # Set type of Interpolation for WGRIB2
   export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -78,15 +78,15 @@ if mkdir lock.$fhcnt  ; then
   export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
   export opt28=' -new_grid_interpolation budget -fi '
 
-  if [ $RUN = "gfs_0p50" ]; then
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}.idx
-  elif [ $RUN = "gfs_0p25" -o $RUN = "gdas_0p25" -o $RUN = "gfs35_atl" -o $RUN = "gfs35_pac" -o $RUN = "gfs40" ]; then 
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
+  if [ $GEMPAK_RUN = "gfs_0p50" ]; then
+    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p50.f${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p50.f${fhr}.idx
+  elif [ $GEMPAK_RUN = "gfs_0p25" -o $GEMPAK_RUN = "gdas_0p25" -o $GEMPAK_RUN = "gfs35_atl" -o $GEMPAK_RUN = "gfs35_pac" -o $GEMPAK_RUN = "gfs40" ]; then 
+    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
+    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
   icnt=1
@@ -105,7 +105,7 @@ if mkdir lock.$fhcnt  ; then
     fi
   done
 
-case $RUN in
+case $GEMPAK_RUN in
  gfs35_pac)
 #   $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 0 75125000 130000000 48 17000000 260000000 312000 312000 0" -x $GRIBIN grib$fhr
 #   NEW define gfs35_pac="0 6 0 0 0 0 0 0 416 186 0 -1 75125000 130000000 48 17405000 259480000 312000 312000 0"
@@ -178,9 +178,9 @@ $GEMEXE/gpend
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 

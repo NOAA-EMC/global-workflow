@@ -86,6 +86,7 @@ export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/nawips}
 export COMINgdas=${COMINgdas:-$(compath.py ${NET}/${envir}/${RUN})}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta}
 export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUTmeta=${COMOUTmeta:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/${envir}/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py nawips/${envir}/ecmwf)}
@@ -95,7 +96,7 @@ export COMOUTukmet=${COMOUTukmet:-$(compath.py nawips/${envir}/ukmet)}
 export COMOUTecmwf=${COMOUTecmwf:-$(compath.py nawips/${envir}/ecmwf)}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $COMOUTncdc
+  mkdir -m 775 -p $COMOUT $COMOUTncdc $COMOUTmeta
 fi
 
 export pgmout=OUTPUT.$$
