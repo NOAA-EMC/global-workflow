@@ -79,14 +79,14 @@ if mkdir lock.$fhcnt  ; then
   export opt28=' -new_grid_interpolation budget -fi '
 
   if [ $RUN = "gfs_0p50" ]; then
-    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p50.f${fhr}
-    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p50.f${fhr}.idx
+    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}.idx
   elif [ $RUN = "gfs_0p25" -o $RUN = "gdas_0p25" -o $RUN = "gfs35_atl" -o $RUN = "gfs35_pac" -o $RUN = "gfs40" ]; then 
-    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}
-    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}.idx
+    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
-    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}
-    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}.idx
+    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
   icnt=1
