@@ -13,18 +13,6 @@ suite: !Cycle
     ecflow_def: !expand |
       edit RUN '{RUN}'
 
-    jgdas_verfrad: !Task
-      <<: *exclusive_task_template
-      Dummy: true  ## <-- Node is not implemented yet
-      Trigger: !Depend enkf
-      resources: !calc partition.resources.run_one_hour_exclusive
-
-    jgdas_vminmon: !Task
-      <<: *exclusive_task_template
-      Dummy: true  ## <-- Node is not implemented yet
-      Trigger: !Depend analysis.jgdas_analysis_high
-      resources: !calc partition.resources.run_one_hour_exclusive
-
     dump_waiter: !Task
       <<: *dump_waiter_task
       Disable: !calc metasched.type != 'ecflow'
@@ -142,6 +130,45 @@ suite: !Cycle
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGLOBAL_ANALYSIS
+
+      jgdas_verfrad: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_analysis_high
+        resources: !calc partition.resources.run_one_node_downstream
+        J_JOB: JGDAS_VERFRAD
+        COM_IN: !expand '&COM;'
+        COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        TANKverf: !expand '&COM;'
+        TANKverf_rad: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/radmon</cyclestr>'
+        TANKverf_radM1: !expand '<cyclestr offset="24:00:00">&COM;/gdas.@Y@m@d/@H/radmon</cyclestr>'
+        jlogfile: !expand '&COM;/logs/jlogfile'
+        more_vars: [ COM_IN, COMIN, TANKverf, TANKverf_rad, TANKverf_radM1, jlogfile ]
+
+      jgdas_vminmon: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_analysis_high
+        resources: !calc partition.resources.run_small_downstream
+        J_JOB: JGDAS_VMINMON
+        COM_IN: !expand '&COM;'
+        COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        M_TANKverfM0: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/minmon</cyclestr>'
+        M_TANKverfM1: !expand '<cyclestr offset="24:00:00">&COM;/gdas.@Y@m@d/@H/minmon</cyclestr>'
+        jlogfile: !expand '&COM;/logs/jlogfile'
+        more_vars: [ COM_IN, COMIN, M_TANKverfM0, M_TANKverfM1, jlogfile ]
+
+      jgdas_oznmon: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend jgdas_analysis_high
+        resources: !calc partition.resources.run_small_downstream
+        J_JOB: JGDAS_VERFOZN
+        OZN_TANKDIR: !expand '&COM;'
+        COM_IN: !expand '&COM;'
+        COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        TANKverf_ozn: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/oznmon</cyclestr>'
+        TANKverf_oznM1: !expand '<cyclestr offset="24:00:00">&COM;/gdas.@Y@m@d/@H/oznmon</cyclestr>'
+        HOMEgfs_ozn: !expand '&HOMEgfs;'
+        jlogfile: !expand '&COM;/logs/jlogfile'
+        more_vars: [ COM_IN, COMIN, OZN_TANKDIR, TANKverf_ozn, TANKverf_oznM1, HOMEgfs_ozn, jlogfile ]
 
     forecast: !Family
       jgdas_forecast_high: !Task
@@ -530,9 +557,15 @@ suite: !Cycle
 
     jgfs_vminmon: !Task
       <<: *exclusive_task_template
-      Dummy: true  ## <-- Node is not implemented yet
       Trigger: !Depend jgfs_analysis
-      resources: !calc partition.resources.run_one_hour_exclusive
+      resources: !calc partition.resources.run_small_downstream
+      J_JOB: JGFS_VMINMON
+      COM_IN: !expand '&COM;'
+      COMIN: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H</cyclestr>'
+      M_TANKverfM0: !expand '<cyclestr>&COM;/gfs.@Y@m@d/@H/minmon</cyclestr>'
+      M_TANKverfM1: !expand '<cyclestr offset="24:00:00">&COM;/gfs.@Y@m@d/@H/minmon</cyclestr>'
+      jlogfile: !expand '&COM;/logs/jlogfile'
+      more_vars: [ COM_IN, COMIN, M_TANKverfM0, M_TANKverfM1, jlogfile ]
 
     forecast: !Family
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
