@@ -233,7 +233,8 @@ suite: !Cycle
         COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
         COMINgempak: !expand '&COM;'
         COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips</cyclestr>'
-        more_vars: [ SENDCOM, SENDDBN, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgempak, COMOUT ]
+        jlogfile: !expand '&COM;/logs/jlogfile'
+        more_vars: [ SENDCOM, SENDDBN, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgempak, COMOUT, jlogfile ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK
