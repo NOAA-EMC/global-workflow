@@ -130,10 +130,10 @@ while [ $fhcnt -le $fend ] ; do
     if [ -r $GRIBIN_chk ] ; then
       break
     else
-      let "icnt=icnt+1"
       msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
       postmsg "${jlogfile}" "$msg"
       sleep 20
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
