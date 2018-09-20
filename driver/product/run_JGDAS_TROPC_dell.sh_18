@@ -23,7 +23,7 @@ export PDY=`date -u +%Y%m%d`
 
 export PDY1=`expr $PDY - 1`
 
-export PDY=20180915
+export PDY=20180918
 
  export cyc=06
 # export cyc=00
