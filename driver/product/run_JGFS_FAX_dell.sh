@@ -14,7 +14,6 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180903
 
 export PDY1=`expr $PDY - 1`
 
@@ -36,17 +35,15 @@ module load lsf/10.1
 module load prod_util/1.1.0
 module load prod_envir/1.0.2
 module load ips/18.0.1.163
-module load bufr_dumplist/1.5.0
-module load dumpjb/4.0.0
 module load NCL/6.4.0
 #
 #   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/grib_util/1.1.0
-#
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
-#
-# module load dev/util_shared/1.0.8
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
+module load  bufr_dumplist/2.0.0
+module load  dumpjb/5.0.0
+
 module list
 
 ############################################
