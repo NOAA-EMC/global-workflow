@@ -32,10 +32,10 @@ then
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
             break
           else
-            let "icnt=icnt+1"
             msg="The process is waiting ... ${GRIBFILE} file to proceed."
             postmsg "${jlogfile}" "$msg"
             sleep 20
+            let "icnt=icnt+1"
           fi
           if [ $icnt -ge $maxtries ]
           then
