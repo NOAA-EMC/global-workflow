@@ -96,12 +96,16 @@ if mkdir lock.$fhcnt  ; then
       break
     else
       let "icnt=icnt+1"
+      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
+      postmsg "${jlogfile}" "$msg"
       sleep 10
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
+      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
 
