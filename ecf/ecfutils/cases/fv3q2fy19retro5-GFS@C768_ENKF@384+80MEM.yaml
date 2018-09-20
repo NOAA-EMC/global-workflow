@@ -14,6 +14,7 @@ case:
     l4densvar: Yes
 
   gfs_output_settings:
+    FHOUT_GDAS: 1
     FHMAX_GFS: 384
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 0
@@ -29,7 +30,7 @@ case:
     DO_BUFRSND: No
     DO_GEMPAK: No
     DO_AWIPS: No
-    VRFYFITS: NO
+    VRFYFITS: YES
     VSDB_STEP1: YES
     VSDB_STEP2: NO
     VRFYG2OBS: YES
@@ -37,14 +38,17 @@ case:
     VRFYRAD: YES
     VRFYOZN: YES
     VRFYMINMON: YES
-    VRFYTRAK: NO
-    VRFYGENESIS: NO
+    VRFYTRAK: YES
+    VRFYGENESIS: YES
     RUNMOS: NO
     RMOLDSTD: 144
     RMOLDEND: 72
 
   archiving:
-    ATARDIR: /5year/NCEPDEV/emc-global/emc.glopara/JET/Q2FY19/fv3q2fy19retro5
+    archive_to_hpss: NO
+    ATARDIR: /PLACEHOLDER
+    scrub_in_archive_enkf: Yes
+    scrub_in_archive: yes
     scrub_in_archive_end: 72
     arch_warmicfreq: 2
     arch_fcsticfreq: 1
@@ -85,10 +89,6 @@ case:
               OMP_NUM_THREADS: max
               memory_per_rank: 10000
 
- #       - Search: 'gfs/jgfs_analysis*'
- #         partition: !calc doc.platform.partitions.tjet_or_ujet
- #         max_tries: 2
-
         - Search: '**/forecast/*_forecast*'
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
@@ -104,8 +104,8 @@ case:
           resources: !JobRequest
             - batch_memory: "3072M"
               exe: placeholder
-              mpi_ranks: !calc '8*16'
-              walltime: !timedelta '00:15:00'
+              mpi_ranks: !calc '13*12'
+              walltime: !timedelta '00:55:00'
 
         - Search: '**/post/jgdas_post*'
           # Make sure you update "resources" to match "partition"
@@ -115,7 +115,17 @@ case:
             - batch_memory: "3072M"
               exe: placeholder
               mpi_ranks: !calc '12*12'
-              walltime: !timedelta '00:20:00'
+              walltime: !timedelta '00:55:00'
+
+        - Search: '**/post/jgdas_post_anl*'
+          # Make sure you update "resources" to match "partition"
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 3
+          resources: !JobRequest
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: !calc '13*12'
+              walltime: !timedelta '01:25:00'
 
         - Search: '**/enkf/post/jgdas_enkf_post_f*'
           partition: !calc doc.platform.partitions.tjet_or_ujet
@@ -151,11 +161,11 @@ case:
           partition: !calc doc.platform.partitions.tjet_or_ujet
           max_tries: 2
 
-    - otherwise: null
+    - otherwise: []
 
   settings: 
     rocoto_task_throttle: 100
-    rocoto_cycle_throttle: 20
+    rocoto_cycle_throttle: 3
 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
@@ -168,8 +178,8 @@ case:
     BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2015-11-25t00:00:00
-    EDATE: 2016-05-31t18:00:00
+    SDATE: 2016-02-14t00:00:00
+    EDATE: 2016-02-14t12:00:00
     chgres_and_convert_ics: No
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z

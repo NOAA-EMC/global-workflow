@@ -80,7 +80,7 @@ aliases:
     <<: *alias_exclusive
     flag: !calc ( 'gfs' in doc.suite )
     task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
-    alt_resources: !error should not get here
+    alt_resources: !calc doc.exclusive_resources.run_efcs
 
   gdasremap:
     <<: *alias_remap
@@ -110,8 +110,7 @@ aliases:
     <<: *alias_exclusive
     flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
     task: !calc doc.suite.gdas.enkf.forecast.jgdas_enkf_fcst_grp1
-    alt_resources: !error should not get here
-#    alt_resources: !calc doc.exclusive_resources.run_efcs
+    alt_resources: !calc doc.exclusive_resources.run_efcs
 
   eupd: 
     <<: *alias_exclusive
