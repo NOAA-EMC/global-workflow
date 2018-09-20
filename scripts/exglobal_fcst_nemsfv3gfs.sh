@@ -213,6 +213,8 @@ fi
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
+  msg=”"Initial conditions must exist in $DATA/INPUT, ABORT!"
+  postmsg "$jlogfile" "$msg"
   exit 1
 fi
 
