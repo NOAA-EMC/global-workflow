@@ -25,9 +25,9 @@ cd gsi.fd/ush/
 export PATH=$PATH:.
 
 if [ "$target" = wcoss_dell_p3 ]; then
-   ./build_all_cmake.sh "$cwd/gsi.fd"
+   ./build_all_cmake.sh "PRODUCTION" "$cwd/gsi.fd"
 else
-   ./build_all.sh "$gsitarget"
+   ./build_all.sh "PRODUCTION" "$gsitarget"
 fi
 
 exit
