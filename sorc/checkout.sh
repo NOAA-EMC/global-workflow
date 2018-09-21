@@ -21,7 +21,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout fv3da.v1.0.15
+    git checkout fv3da.v1.0.16
     git submodule update
     cd ${topdir}
 else
@@ -44,7 +44,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v5.0.0   
+    git checkout gfs_wafs.v5.0.1   
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'

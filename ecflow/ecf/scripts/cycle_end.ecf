@@ -1,0 +1,8 @@
+#! /bin/sh
+which ecflow_client
+export ECF_PASS=%ECF_PASS%
+export ECF_RID=%ECF_RID%
+export ECF_HOST=%ECF_HOST%
+export ECF_NAME=%ECF_NAME%
+ecflow_client --complete
+echo Cycle complete at $( date )

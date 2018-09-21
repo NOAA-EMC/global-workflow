@@ -26,18 +26,23 @@ then
     do
         icnt=1
         maxtries=180
+        export GRIBFILE=${COMIN}/${RUN}_${PDY}${cyc}f0${fhr}
         while [ $icnt -lt 1000 ]
         do
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
             break
           else
-            let "icnt=icnt+1"
+            msg="The process is waiting ... ${GRIBFILE} file to proceed."
+            postmsg "${jlogfile}" "$msg"
             sleep 20
+            let "icnt=icnt+1"
           fi
           if [ $icnt -ge $maxtries ]
           then
-            msg="ABORTING after 1 hour of waiting for F$fhr to end."
-            err_exit $msg
+            msg="ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
+            postmsg "${jlogfile}" "$msg"
+            export err=7 ; err_chk
+            exit $err
           fi
         done
 

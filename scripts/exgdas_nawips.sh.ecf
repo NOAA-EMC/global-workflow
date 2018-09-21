@@ -111,7 +111,7 @@ while [ $fhcnt -le $fend ] ; do
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
        msg=" $GRIBIN file is missing "
-       postmsg "jlogfile" "$msg"
+       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
@@ -119,7 +119,7 @@ while [ $fhcnt -le $fend ] ; do
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
        msg=" $GRIBIN file is missing "
-       postmsg "jlogfile" "$msg"
+       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
@@ -130,13 +130,17 @@ while [ $fhcnt -le $fend ] ; do
     if [ -r $GRIBIN_chk ] ; then
       break
     else
-      let "icnt=icnt+1"
+      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
+      postmsg "${jlogfile}" "$msg"
       sleep 20
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
+      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
 

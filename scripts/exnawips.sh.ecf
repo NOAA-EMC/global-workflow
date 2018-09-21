@@ -412,13 +412,15 @@ while [ $fhcnt -le $fend ] ; do
     if [[ -r $GRIBIN_chk && -r $GRIBIN_chk1 ]] ; then
       break
     else
-      let "icnt=icnt+1"
       sleep 20
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
       msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
 
@@ -430,13 +432,15 @@ while [ $fhcnt -le $fend ] ; do
     if [ -r $GRIBIN_chk ] ; then
       break
     else
-      let "icnt=icnt+1"
       sleep 20
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
       msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
 

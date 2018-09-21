@@ -15,9 +15,7 @@ module load prod_envir/1.0.2
 module load g2tmpl/1.5.0       
 module load crtm/2.2.5
 module load ESMF/7_1_0r
-
 module unload grib_util/1.0.6   
-module load dev/grib_util/1.1.0
 
 module load NCO/4.7.0   
 module load HDF5-serial/1.10.1
@@ -36,3 +34,6 @@ module load gempak/7.3.1
 module load NCL/6.4.0
 module load bufr_dumplist/1.5.0
 module load dumpjb/4.0.0
+
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
