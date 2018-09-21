@@ -32,8 +32,8 @@ case $case_in in
         export cdmbgwd="0.062,3.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_gfs=1
-        export WRTTASK_PER_GROUP_gfs=24
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="4M"
         ;;
     "C96")
@@ -47,8 +47,8 @@ case $case_in in
         export cdmbgwd="0.125,3.0"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_gfs=1
-        export WRTTASK_PER_GROUP_gfs=24
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="4M"
         ;;
     "C192")
@@ -62,8 +62,8 @@ case $case_in in
         export cdmbgwd="0.2,2.5"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_gfs=2
-        export WRTTASK_PER_GROUP_gfs=24
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="8M"
         ;;
     "C384")
@@ -77,8 +77,8 @@ case $case_in in
         export cdmbgwd="1.0,1.2"  # mountain blocking and gravity wave drag
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_gfs=1
-        export WRTTASK_PER_GROUP_gfs=24
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="16M"
         ;;
     "C768")
@@ -106,8 +106,8 @@ case $case_in in
         export nth_fv3=4
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=84
-        export WRITE_GROUP_gfs=4
-        export WRTTASK_PER_GROUP_gfs=84
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_GFS=84
         export WRTIOBUF="48M"
         ;;
     "C3072")
@@ -120,8 +120,8 @@ case $case_in in
         export nth_fv3=4
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=120
-        export WRITE_GROUP_gfs=4
-        export WRTTASK_PER_GROUP_gfs=120
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_GFS=120
         export WRTIOBUF="64M"
         ;;
     *)
