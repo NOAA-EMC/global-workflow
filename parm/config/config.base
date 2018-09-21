@@ -201,7 +201,11 @@ export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
-export FHCYC=24
+if [[ "$CDUMP" == "gdas" ]] ; then
+   export FHCYC=1
+elif [[ "$CDUMP" == "gfs" ]] ; then
+   export FHCYC=24
+fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
