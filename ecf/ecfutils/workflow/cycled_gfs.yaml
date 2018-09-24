@@ -252,14 +252,13 @@ suite: !Cycle
         DATA: !expand '<cyclestr>&DATAROOT;/gdas_gempak_meta_ncdc_@H</cyclestr>'
         COMIN: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips</cyclestr>'
         COMINgdas: !expand '&COM;/gdas'
-        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
+        COMOUT: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips/meta</cyclestr>'
         COMOUTncdc: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H</cyclestr>'
-        COMOUTmeta: !expand '<cyclestr>&COM;/gdas.@Y@m@d/@H/nawips/meta</cyclestr>'
         COMINukmet: !expand '&COM;/ukmet'
         COMINecmwf: !expand '&COM;/ecmwf'
         COMOUTukmet: !expand '&COM;/ukmet'
         COMOUTecmwf: !expand '&COM;/ecwmf'
-        more_vars: [ SENDCOM, SENDDBN, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgdas, COMOUT, COMOUTncdc, COMOUTmeta, COMINukmet, COMINecmwf, COMOUTukmet, COMOUTecmwf ]
+        more_vars: [ SENDCOM, SENDDBN, FIXgfs, USHgfs, FIXgempak, USHgempak, DATA, COMIN, COMINgdas, COMOUT, COMOUTncdc, COMINukmet, COMINecmwf, COMOUTukmet, COMOUTecmwf ]
         J_JOB_PATH_ROCOTO: !expand "&HOMEgfs;/jobs"
         J_JOB_PATH_ECFLOW: !expand "${{HOMEgfs}}/jobs"
         J_JOB: JGDAS_GEMPAK_META_NCDC

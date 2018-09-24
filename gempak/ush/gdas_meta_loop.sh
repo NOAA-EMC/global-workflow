@@ -283,7 +283,7 @@ ls -l gdasloop.meta
 export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 
 if [ $SENDCOM = "YES" ] ; then
-    mv gdasloop.meta ${COMOUTmeta:-$COMOUT}/gdas_${PDY}_${cyc}_loop
+    mv gdasloop.meta ${COMOUT}/gdas_${PDY}_${cyc}_loop
     export err=$?
     if [[ $err -ne 0 ]] ; then
       echo " File gdasloop.meta does not exist."
@@ -292,7 +292,7 @@ if [ $SENDCOM = "YES" ] ; then
 
     if [ $SENDDBN = "YES" ] ; then
         ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-        ${COMOUTmeta:-$COMOUT}/gdas_${PDY}_${cyc}_loop
+        $COMOUT/gdas_${PDY}_${cyc}_loop
     fi
 fi
 
