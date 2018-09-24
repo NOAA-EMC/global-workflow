@@ -76,7 +76,7 @@ cd ${pwd}/../scripts            ||exit 8
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
 cd ${pwd}/../fix                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/fix/wafs                       wafs
+    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
 
