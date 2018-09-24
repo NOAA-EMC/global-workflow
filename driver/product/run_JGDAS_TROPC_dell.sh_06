@@ -21,7 +21,7 @@ export MP_STDOUTMODE=ordered
 
 export PDY=`date -u +%Y%m%d`
 
-export PDY=20180919
+export PDY=20180923
 
 export PDY1=`expr $PDY - 1`
 

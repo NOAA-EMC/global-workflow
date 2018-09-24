@@ -121,7 +121,7 @@ else
 
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
   export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
-  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
+  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDYm1}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}
