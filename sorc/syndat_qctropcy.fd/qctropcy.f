@@ -11988,29 +11988,15 @@ c     Interpret the abbreviations
          endif
 
          IF(CACCES(NF) .NE. 'DIRECT')  THEN
-
-          if(cstat(nf).eq.'SCRATCH') then
             if(cpos(nf) .eq. ' ')  then
                OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
-     1           ACCESS=cacces(nf),ERR=95,IOSTAT=IOS)
+     1              ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
+     2              ERR=95,IOSTAT=IOS)
             else
                open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1           access=cacces(nf),position=cpos(nf),err=95,iostat=ios)
+     1              access=cacces(nf),position=cpos(nf),
+     2              file=filnam(nf)(1:length),err=95,iostat=ios)
             endif
-          end if
-
-          if(cstat(nf).ne.'SCRATCH') then
-            if(cpos(nf) .eq. ' ')  then
-               OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
-     1           ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
-     2           ERR=95,IOSTAT=IOS)
-            else
-               open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1           access=cacces(nf),position=cpos(nf),
-     2           file=filnam(nf)(1:length),err=95,iostat=ios)
-            endif
-          end if
-
          ELSE
             read(filnam(nf)(length+2:length+2+idgmax-1),37) lrec
    37       format(i7)
