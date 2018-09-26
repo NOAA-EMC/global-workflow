@@ -16,7 +16,9 @@ module load sfcio/1.0.0
 module load gfsio/1.1.0
 module load landsfcutil/2.1.0
 module load bacio/2.0.2
-module load dev/sigio/2.0.3
+
+module use -a /gpfs/hps/nco/ops/nwtest/lib/modulefiles
+module load sigio-intel/2.1.0
 
 #
 export FCMP=ifort
