@@ -23,16 +23,4 @@ export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
 
-###################################
-# Only used when DO_RELOCATE=YES
-# ignore them for now
-###################################
-#export machine=${machine:-WCOSS_C}
-#if [ $machine = WCOSS_C ] ; then
-#   export APRNGETTX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-#   export APRNRELOC="time aprun -q -j1 -n7 -N1 -d24 -cc depth "
-#   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-#fi
-
-
 echo "END: config.prep"
