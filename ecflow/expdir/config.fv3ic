@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.fv3ic ##########
+# Convert GFS initial conditions into FV3 initial conditions
+
+echo "BEGIN: config.fv3ic"
+
+# Task and thread configuration
+export wtime_fv3ic="00:30:00"
+export npe_fv3ic=24
+export npe_node_fv3ic=24
+
+echo "END: config.fv3ic"

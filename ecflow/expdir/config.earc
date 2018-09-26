@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.earc ##########
+# Ensemble archive specific
+
+echo "BEGIN: config.earc"
+
+# Get task specific resources
+. $EXPDIR/config.resources earc
+
+export NMEM_EARCGRP=10
+
+echo "END: config.earc"

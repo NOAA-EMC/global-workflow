@@ -1,0 +1,143 @@
+#!/bin/ksh -x
+
+########## config.fcst ##########
+# Forecast specific
+
+echo "BEGIN: config.fcst"
+
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE
+
+# Get task specific resources
+. $EXPDIR/config.resources fcst
+
+if [ $DONST = "YES" ]; then
+    . $EXPDIR/config.nsst
+fi
+
+export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
+#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
+export FCSTEXECDIR="$HOMEgfs/exec"
+export FCSTEXEC="global_fv3gfs.x"
+export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+
+if [[ "$CDUMP" == "gfs" ]] ; then
+   export npe_fv3=$npe_fcst_gfs
+   export layout_x=$layout_x_gfs
+   export layout_y=$layout_y_gfs
+   export WRITE_GROUP=$WRITE_GROUP_GFS
+   export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+fi
+
+if [ $QUILTING = ".true." ]; then
+    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_fcst=$npe_fv3
+    export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
+fi
+
+# Model configuration
+export TYPE="nh"
+export MONO="non-mono"
+
+# Use stratosphere h2o physics
+export h2o_phys=".true."
+
+# Options of stratosphere O3 physics reaction coefficients
+export new_o3forc="YES"
+
+# Microphysics configuration
+export dnats=0
+export cal_pre=".true."
+export do_sat_adj=".false."
+export random_clds=".true."
+
+if [ $imp_physics -eq 99 ]; then # ZhaoCarr
+    export ncld=1
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+    export nwat=2
+
+elif [ $imp_physics -eq 6 ]; then # WSM6
+    export ncld=2
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+    export nwat=6
+
+elif [ $imp_physics -eq 8 ]; then # Thompson
+    export ncld=2
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+    export nwat=6
+
+elif [ $imp_physics -eq 11 ]; then # GFDL
+    export ncld=5
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+    export nwat=6
+    export dnats=1
+    export cal_pre=".false."
+    export do_sat_adj=".true."
+    export random_clds=".false."
+
+    if [[ "$CDUMP" == "gdas" ]] ; then
+      export hord_mt_nh_nonmono=6
+      export hord_xx_nh_nonmono=6
+    else
+      export hord_mt_nh_nonmono=5
+      export hord_xx_nh_nonmono=5
+    fi
+    export vtdm4_nh_nonmono=0.02
+    export nord=2
+    export dddmp=0.1
+    export d4_bg=0.12
+
+else
+    echo "Unknown microphysics option, ABORT!"
+
+fi
+#---------------------------------------------------------------------
+
+
+# Disable the use of coupler.res; get model start time from model_configure
+export USE_COUPLER_RES="NO"
+
+if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
+
+    # Variables used in DA cycling
+    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+    else
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+    fi
+
+    # Write restart files at next assimilation time
+    export restart_interval=6
+
+elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
+
+    # Write more variables to output
+    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+    else
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
+    fi
+
+fi
+
+# Regrid tiles to global Gaussian grid in NEMSIO
+export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
+if [ $DONST = YES ]; then
+    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da.txt"
+else
+    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da_nonsst.txt"
+fi
+
+# Remap tiles to global latlon grid in NetCDF
+export REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
+export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
+export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
+
+# Global latlon NetCDF to nemsio utility parameters
+export NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
+
+# Remember config.efcs will over-ride these values for ensemble forecasts
+# if these variables are re-defined there.
+# Otherwise, the ensemble forecast will inherit from config.fcst
+
+echo "END: config.fcst"
