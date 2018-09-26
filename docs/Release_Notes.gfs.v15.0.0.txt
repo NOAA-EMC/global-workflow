@@ -52,14 +52,15 @@ JOB CHANGES
    module load impi/18.0.1
    module load lsf/10.1
    module load prod_util/1.1.0
-   module load grib_util/1.0.6
    module load prod_envir/1.0.2
+   module load NCL/6.4.0                         NOTE:DO NOT load module NCAR/6.4.0  (IT DOES NOT WORK WITH FAX CHART)
    #
-   #   This is a test version of UTIL_SHARED.v1.0.8 on DELL
+   #   This is a test version on DELL
    #
-   module load dev/util_shared/1.0.8
-   module load  bufr_dumplist/2.0.0
-   module load  dumpjb/5.0.0
+   module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+   module load grib_util/1.1.0
+   module load bufr_dumplist/2.0.0
+   module load dumpjb/5.0.0
 
    #
    #  This is a test GEMPAK version 7.3.1 on DELL
@@ -70,7 +71,10 @@ JOB CHANGES
    module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
    module load gempak/7.3.1
 
-   The followig jobs, scripts, parm have been modified to meet NCO - EE2 implementation standards.
+FV3 GFS DRIVER:
+   All drivers are used to test downtream jobs in gfs.v15.0.0/driver/run_*__dell.sh_xx   where is xx is cycle
+
+The followig jobs, scripts, parm have been modified to meet NCO - EE2 implementation standards.
 JOB CHANGES
    - Jobs:
      JGDAS_BULLS_NAVY
