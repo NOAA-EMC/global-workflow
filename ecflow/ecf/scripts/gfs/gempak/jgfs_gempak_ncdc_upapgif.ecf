@@ -1,0 +1,109 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_gempak_upapgif_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_gempak_upapgif_%CYC%.o%J
+#BSUB -W 0:30
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=%model:gfs%
+export MODEL=GFS
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+%include <model_ver.h>
+
+# Configuration files 
+export EXPDIR=${HOMEgfs}/ecf/expdir
+
+############################################################
+# Load modules
+############################################################
+module load ips/$ips_ver
+module load impi/$impi_ver
+module load EnvVars/$EnvVars_ver
+module load prod_util/$prod_util_ver
+module load prod_envir/$prod_envir_ver
+module load g2tmpl/$g2tmpl_ver
+module load crtm/$crtm_ver
+module load ESMF/$ESMF_ver
+module load NCO/$NCO_ver
+module load HDF5-serial/$HDF5_serial_ver
+module load NetCDF/$NetCDF_ver
+module load CFP/$CFP_ver
+module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/$gempak_ver
+module unload grib_util
+module load dev/grib_util/$grib_util_ver
+
+module list
+
+%include <ecf_client.h>
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
+export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+
+######################################
+# Set up the GEMPAK directory
+#######################################
+export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
+export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
+export USHgempak=${USHgempak:-$HOMEgempak/ush}
+
+############################################################
+# PDY
+############################################################
+datedir=${DATAROOT}/gfs_gempak_upapgif.date.$$.$RANDOM
+mkdir -p "$datedir"
+pushd "$datedir"
+setpdy.sh
+. ./PDY
+set -u
+export CDATE="$PDY$cyc"
+set +u
+popd
+rm -rf "$datedir"
+
+export COMIN="%COM%/$CDUMP.$PDY/$cyc/nawips"
+export COMINgfs="%COM%/$CDUMP.$PDY/$cyc"
+export COMOUT="%COM%/$CDUMP.$PDY/$cyc"
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
+fi
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGFS_GEMPAK_NCDC_UPAPGIF
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
