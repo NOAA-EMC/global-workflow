@@ -1,5 +1,4 @@
 set -x
-bsub < run_GFS_GEMPAK_dell.sh_18
 bsub < run_JGDAS_GEMPAK_dell.sh_18
 bsub < run_JGDAS_GEMPAK_META_NCDC_dell.sh_18
 bsub < run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_18 
@@ -15,3 +14,4 @@ bsub < run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_18
 bsub < run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_18
 bsub < run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_18 
 bsub < run_JGDAS_TROPC_dell.sh_18
+bsub < run_GFS_GEMPAK_dell.sh_18
