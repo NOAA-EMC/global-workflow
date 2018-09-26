@@ -17,7 +17,7 @@ module load libpng/1.2.59
 module load zlib/1.2.11
 module load g2/3.1.0
 
-module use -a /gpfs/hps/nco/ops/nwtest/lib/modulefiles
-module load sigio-intel/2.1.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load  sigio/2.1.0 
 
 export FC=ifort
