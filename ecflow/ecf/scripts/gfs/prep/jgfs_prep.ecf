@@ -1,0 +1,108 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_prep_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_prep_%CYC%.o%J
+#BSUB -W 0:45
+#BSUB -n 4
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=4]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+%include <model_ver.h>
+
+# Configuration files 
+export EXPDIR=${HOMEgfs}/ecf/expdir
+
+############################################################
+# Load modules
+############################################################
+module load EnvVars/$EnvVars_ver
+module load mktgs/$mktgs_ver
+module load emc-utils/$emc_utils_ver
+module load cmake/$cmake_ver
+module load ips/$ips_ver
+module load NetCDF/$NetCDF_ver
+module load HDF5-serial/$HDF5_serial_ver
+module load bacio/$bacio_ver
+module load sfcio/$sfcio_ver
+module load sp/$sp_ver
+module load w3nco/$w3nco_ver
+module load impi/$impi_ver
+module load nemsio/$nemsio_ver
+module load w3emc/$w3emc_ver
+module load bufr/$bufr_ver
+module load sigio/$sigio_ver
+module load crtm/$crtm_ver
+module load ip/$ip_ver
+module unload grib_util
+module load grib_util/$grib_util_gdasprep_ver
+module load prod_envir/$prod_envir_ver
+module load prod_util/$prod_util_ver
+module load g2tmpl//$g2tmpl_ver
+
+module list
+
+%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+############################################################
+# PDY
+############################################################
+datedir=${DATAROOT}/gfs.prep.date.$$.$RANDOM
+mkdir -p "$datedir"
+pushd "$datedir"
+setpdy.sh
+. ./PDY
+set -u
+export CDATE="$PDY$cyc"
+set +u
+popd
+rm -rf "$datedir"
+
+. ${EXPDIR}/config.base
+. ${EXPDIR}/config.prep
+. ${EXPDIR}/config.prepbufr
+. ${HOMEgfs}/env/WCOSS_DELL_P3.env prep
+. ${EXPDIR}/config.prep_nco
+
+export job=jgdas_prep_%CYC%
+export DATAROOT=${DATAROOT}/${CDATE}/${CDUMP}/prepbufr
+export COMIN_OBS=${DMPDIR}/${CDATE}/${CDUMP}
+export COMSP=${DMPDIR}/${CDATE}/${CDUMP}/${CDUMP}.${cycle}.
+export COMIN=${ROTDIR}/${CDUMP}.${PDY}/${cyc}
+export COMINgdas=${ROTDIR}/gdas.${PDY}/${cyc}
+export COMINgfs=${ROTDIR}/gfs.${PDY}/${cyc}
+
+############################################################
+# CALL executable job script here
+############################################################
+if [ $PROCESS_TROPCY = "YES" ]; then
+  $HOMEgfs/jobs/JGLOBAL_TROPCY_QC_RELOC
+fi
+if [ $DO_MAKEPREPBUFR = "YES" ]; then
+  ${HOMEobsproc_network}/jobs/JGLOBAL_PREP
+fi
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

@@ -1,0 +1,62 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %CPU_PROJECT%
+#BSUB -J gdas.dump.jgdas_dump
+#BSUB -o %ECF_OUT%/%EMCPEN%_%PDY%%CYC%_gdas.dump.jgdas_dump.log
+
+#BSUB -W 0:02
+#BSUB -R rusage[mem=300]
+#BSUB -extsched CRAYLINUX[]
+export NODES=1
+# Set data and logs to locations specified in the suite definition.
+# This is needed when running without write access to the NCO com areas.
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export cycle=t%CYC%z
+export CDATE=%PDY%%CYC%
+export EXPDIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/eib_test/noscrub/emc.glopara/expdir/rtecffv3"
+
+%include <head.h>
+%include <envir-xc40.h>
+
+set -x
+
+export ntasks=2
+export ptile=24
+# No OpenMP in use, so I am not setting $threads
+
+# Workaround for vrfy bug
+mkdir -p %COM%/logs/%PDY%%CYC%/
+
+export HOMEgfs=%HOMEgfs%
+export CDUMP=%RUN%
+
+## don't include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+#. $MODULESHOME/init/sh
+source "$HOMEgfs/ush/load_fv3gfs_modules.sh" exclusive
+module load ecflow
+module list
+export ECF_PORT=%ECF_PORT%
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+
+# Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
+
+###########################################################
+export cyc=%CYC%
+
+# CALL executable job script here
+${HOMEgfs}/jobs/jgdas_dump.sh
+
+%include <tail.h>
+%manual
+# FIXME: Insert manual for this job.
+
+%end
