@@ -17,9 +17,8 @@ module load bufr/11.2.0
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
 module load gempak/7.3.1
 
-module use -a /gpfs/hps/nco/ops/nwtest/lib/modulefiles
-module load sigio-intel/2.1.0
-
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load  sigio/2.1.0 
 
 export myFC=mpiifort
 export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
