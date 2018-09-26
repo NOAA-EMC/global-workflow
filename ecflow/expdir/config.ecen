@@ -1,0 +1,15 @@
+#!/bin/ksh -x
+
+########## config.ecen ##########
+# Ensemble recentering specific
+
+echo "BEGIN: config.ecen"
+
+# Get task specific resources
+. $EXPDIR/config.resources ecen
+
+export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
+
+export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
+
+echo "END: config.ecen"

@@ -1,0 +1,33 @@
+#!/bin/ksh -x
+
+########## config.nsst ##########
+# NSST specific
+
+echo "BEGIN: config.nsst"
+
+# NSST parameters contained within nstf_name
+
+# nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 1 = ON but uncoupled, 2 = ON and coupled
+export NST_MODEL=2
+
+# nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
+export NST_SPINUP=0
+#if [[ "$CDATE" = $SDATE ]]; then
+#    export NST_SPINUP=1
+#fi
+
+# nstf_name(3) : NST_RESV (Reserved, NSST Analysis) : 0 = OFF, 1 = ON
+export NST_RESV=0
+
+# nstf_name(4,5) : ZSEA1, ZSEA2 the two depths to apply vertical average (bias correction)
+export ZSEA1=0
+export ZSEA2=0
+
+export NST_GSI=3          # default 0: No NST info at all;
+                          #         1: Input NST info but not used in GSI;
+                          #         2: Input NST info, used in CRTM simulation, no Tr analysis
+                          #         3: Input NST info, used in both CRTM simulation and Tr analysis
+export NSTINFO=0          # number of elements added in obs. data array (default = 0)
+if [ $NST_GSI -gt 0 ]; then export NSTINFO=4; fi
+
+echo "END: config.nsst"

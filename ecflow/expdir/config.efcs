@@ -1,0 +1,53 @@
+#!/bin/ksh -x
+
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcs"
+
+# Source model specific information that is resolution dependent
+. $EXPDIR/config.fv3 $CASE_ENKF
+
+# Get task specific resources
+. $EXPDIR/config.resources efcs
+
+export npe_fv3=$npe_efcs
+
+if [ $QUILTING = ".true." ]; then
+    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_efcs=$npe_fv3
+fi
+
+export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf"
+export NMEM_EFCSGRP=4
+export RERUN_EFCSGRP="NO"
+
+# Stochastic physics parameters (only for ensemble forecasts)
+export DO_SKEB="NO"
+export SKEB=-999.
+export SKEB_TAU=21600.
+export SKEB_LSCALE=500000.
+export SKEBNORM=1
+export DO_SHUM="YES"
+export SHUM=0.006
+export SHUM_TAU=21600.
+export SHUM_LSCALE=500000.
+export DO_SPPT="YES"
+export SPPT=0.5
+export SPPT_TAU=21600.
+export SPPT_LSCALE=500000.
+export SPPT_LOGIT=".true."
+export SPPT_SFCLIMIT=".true."
+
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+else
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
+fi
+
+# FV3 model namelist parameters to over-ride
+export restart_interval=6
+export k_split=1  # model is unstable with k_split=2, n_split=6 and stochastic physics
+export n_split=12 # make the model stable with k_split=1, n_split=12
+
+echo "END: config.efcs"

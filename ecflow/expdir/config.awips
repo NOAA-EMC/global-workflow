@@ -1,0 +1,17 @@
+#!/bin/ksh -x
+
+########## config.awips ##########
+# GFS awips step specific
+
+echo "BEGIN: config.awips"
+
+# Get task specific resources
+. $EXPDIR/config.resources awips
+
+export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
+
+# No. of concurrent awips jobs
+export NAWIPSGRP=21
+
+echo "END: config.awips"
