@@ -196,7 +196,7 @@ export REDERR="2>"
 
 export SENDECF="NO"
 export SENDCOM="YES"
-export SENDDBN="NO"
+export SENDDBN="YES"
 export SENDSDM="NO"
 
 # Resolution specific parameters
@@ -205,7 +205,12 @@ export CASE="C768"
 export CASE_ENKF="C384"
 
 # Surface cycle update frequency
-export FHCYC=24
+if [[ "$CDUMP" == "gdas" ]] ; then
+   export FHCYC=1
+elif [[ "$CDUMP" == "gfs" ]] ; then
+   export FHCYC=24
+fi
+
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
