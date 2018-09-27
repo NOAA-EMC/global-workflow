@@ -22,7 +22,7 @@ export CDUMP=%RUN%
 %include <model_ver.h>
 
 # Configuration files 
-export EXPDIR=${HOMEgfs}/ecf/expdir
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules
@@ -41,8 +41,9 @@ module load NetCDF/$NetCDF_ver
 module load CFP/$CFP_ver
 module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
 module load gempak/$gempak_ver
-module unload grib_util
-module load dev/grib_util/$grib_util_ver
+module unload grib_util/1.0.6
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/$grib_util_ver
 
 module list
 

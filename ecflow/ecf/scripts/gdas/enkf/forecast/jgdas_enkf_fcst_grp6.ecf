@@ -23,7 +23,7 @@ export CDUMP=%RUN%
 export ENSGRP=%ENSGRP%
 
 # Configuration files 
-export EXPDIR=${HOMEgfs}/ecf/expdir
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules
