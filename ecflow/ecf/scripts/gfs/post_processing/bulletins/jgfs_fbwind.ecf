@@ -22,7 +22,7 @@ export CDUMP=%RUN%
 %include <model_ver.h>
 
 # Configuration files 
-export EXPDIR=${HOMEgfs}/ecf/expdir
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules

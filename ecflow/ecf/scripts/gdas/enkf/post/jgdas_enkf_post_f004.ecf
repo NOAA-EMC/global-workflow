@@ -25,7 +25,7 @@ export FHMAX_EPOS=%FHMAX_EPOS%
 export FHOUT_EPOS=%FHOUT_EPOS%
 
 # Configuration files 
-export EXPDIR=${HOMEgfs}/ecf/expdir
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules

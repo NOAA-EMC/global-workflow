@@ -12,7 +12,7 @@ export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
 
 # Relocation and syndata QC
-export PROCESS_TROPCY="NO"
+export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
 export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
