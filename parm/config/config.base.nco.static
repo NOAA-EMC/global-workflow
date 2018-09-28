@@ -46,13 +46,13 @@ export RTMFIX=$CRTM_FIX
 
 # USER specific paths
 #    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-     export HOMEDIR=$EXPDIR/HOMEDIR
+    export HOMEDIR=$EXPDIR/HOMEDIR
 #    export STMP="/gpfs/dell3/stmp/$USER"
-     export STMP=$DATAROOT
+    export STMP=$DATAROOT
 #    export PTMP="/gpfs/dell3/ptmp/$USER"
-     export PTMP=$ROTDIR
+    export PTMP=$ROTDIR
 #    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-     export NOSCRUB=$EXPDIR/NOSCRUB
+    export NOSCRUB=$EXPDIR/NOSCRUB
 
     # Base directories for various builds
     export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
@@ -124,6 +124,11 @@ export SENDECF="NO"
 export SENDCOM="YES"
 export SENDDBN="YES"
 export SENDSDM="NO"
+
+# Use operational dump if run by nco
+if [ $RUN_ENVIR = "nco" ]; then
+    export COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}
+fi
 
 # Resolution specific parameters
 export LEVS=65
