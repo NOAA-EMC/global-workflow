@@ -1,0 +1,15 @@
+------------------------------------------------------------------------------
+For EMC, the fix fields for running the model are not included in git repository.
+They are saved locally on all platforms
+
+Venus/Mars:  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix
+Surge/Luna: /gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix
+THEIA: /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix 
+
+------------------------------------------------------------------------------
+09/28/2018
+
+In fix/fix_am
+rename current syndat_stmnames to syndat_stmnames_q2fy19  (used for FV3GFS Q2FY19 parallels)
+copy /gpfs/hps/nco/ops/nwprod/global_shared.v14.1.6/fix/syndat_stmnames ./fix/fix_am/syndat_stmnames
+
