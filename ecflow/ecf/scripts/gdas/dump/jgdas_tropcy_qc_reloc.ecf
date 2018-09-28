@@ -1,12 +1,12 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gdas_enkf_fcst_%ENSGRP%_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_fcst_%ENSGRP%_%CYC%.o%J
-#BSUB -W 3:00
-#BSUB -n 168
-#BSUB -R affinity[core(2)]
-#BSUB -R span[ptile=12]
+#BSUB -J %E%gdas_tropcy_qc_reloc_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_tropcy_qc_reloc_%CYC%.o%J
+#BSUB -W 0:05
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
 #BSUB -cwd /tmp
 
 %include <head.h>
@@ -19,8 +19,6 @@ export RUN=%RUN%
 export CDUMP=%RUN%
 
 %include <model_ver.h>
-
-export ENSGRP=%ENSGRP%
 
 # Configuration files 
 export EXPDIR=${HOMEgfs}/parm/config
@@ -42,7 +40,7 @@ module load NetCDF/$NetCDF_ver
 module load CFP/$CFP_ver
 module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
 module load gempak/$gempak_ver
-module unload grib_util
+module unload grib_util/1.0.6
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
 module load grib_util/$grib_util_ver
 
@@ -50,6 +48,7 @@ module list
 
 %include <ecf_client.h>
 export USE_CFP=YES
+export PROCESS_TROPCY=YES
 export ROTDIR=%COM%
 export cyc=%CYC%
 export cycle=t%CYC%z
@@ -57,7 +56,7 @@ export cycle=t%CYC%z
 ############################################################
 # PDY
 ############################################################
-datedir=${DATAROOT}/gdas_enkf_fcst.date.$$.$RANDOM
+datedir=${DATAROOT}/gdas_tropcy_qc_reloc.date.$$.$RANDOM
 mkdir -p "$datedir"
 pushd "$datedir"
 setpdy.sh
@@ -71,7 +70,7 @@ rm -rf "$datedir"
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGDAS_ENKF_FCST
+${HOMEgfs}/jobs/JGLOBAL_TROPCY_QC_RELOC
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
