@@ -9,22 +9,12 @@ echo "BEGIN: config.base"
 export machine="WCOSS_DELL_P3"
 
 # EMC parallel or NCO production
-export RUN_ENVIR="emc"
+export RUN_ENVIR="nco"
 
 # Account, queue, etc.
-if [ $machine = "THEIA" ]; then
-
-    export ACCOUNT="fv3-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
-
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
-
-    export ACCOUNT="FV3GFS-T2O"
-    export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
-
-fi
+export ACCOUNT="FV3GFS-T2O"
+export QUEUE="dev"
+export QUEUE_ARCH="dev_transfer"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -40,98 +30,34 @@ export SCRgfs=$HOMEgfs/scripts
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
 
-    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="LUNA"
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="SURGE"
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    export RTMFIX=$CRTM_FIX
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    if [ -d /gpfs/tp1 ]; then
-        export SITE="MARS"
-        export DMPDIR="/gpfs/tp1/emc/globaldump"
-    elif [ -d /gpfs/gp1 ]; then
-        export SITE="VENUS"
-        export DMPDIR="/gpfs/gp1/emc/globaldump"
-    fi
-    export RTMFIX=$CRTM_FIX
-
+export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+if [ -d /gpfs/tp1 ]; then
+    export SITE="MARS"
+    export DMPDIR="/gpfs/tp1/emc/globaldump"
+elif [ -d /gpfs/gp1 ]; then
+    export SITE="VENUS"
+    export DMPDIR="/gpfs/gp1/emc/globaldump"
 fi
+export RTMFIX=$CRTM_FIX
 
 
 # Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
 
-    # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
-    export STMP="/scratch4/NCEPDEV/stmp3/$USER"
-    export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps3/stmp/$USER"
-    export PTMP="/gpfs/hps3/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    # USER specific paths
+# USER specific paths
 #    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export HOMEDIR=$EXPDIR/HOMEDIR
+     export HOMEDIR=$EXPDIR/HOMEDIR
 #    export STMP="/gpfs/dell3/stmp/$USER"
-    export STMP=$DATAROOT
+     export STMP=$DATAROOT
 #    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export PTMP=$ROTDIR
+     export PTMP=$ROTDIR
 #    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export NOSCRUB=$EXPDIR/NOSCRUB
+     export NOSCRUB=$EXPDIR/NOSCRUB
 
     # Base directories for various builds
     export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
-fi
-
-# Utilities needed in the scripts (mostly post)
-if [ $machine = "THEIA" ]; then
-
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
-
-fi
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
@@ -172,7 +98,7 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=2018080600
-export EDATE=2019123100
+export EDATE=2039123100
 export assim_freq=6
 export PSLOT="rtecffv3"
 export EXPDIR="$EXPDIR"

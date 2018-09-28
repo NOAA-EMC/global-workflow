@@ -176,6 +176,18 @@ done
 
 
 #------------------------------
+#--choose dynamic config.base for EMC installation 
+#--choose static config.base for NCO installation 
+cd $pwd/../parm/config
+[[ -s config.base ]] && rm -f config.base 
+if [ $RUN_ENVIR = nco ] ; then
+ cp -p config.base.nco.static config.base
+else
+ cp -p config.base.emc.dyn config.base
+fi
+#------------------------------
+
+#------------------------------
 #--link docs (release notes)
 #------------------------------
 
