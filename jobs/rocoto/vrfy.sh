@@ -64,7 +64,7 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
        rm -f sflux_outtmp
        $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
        fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}
-       $CNVGRIB21_GFS -g21 sflux_outtmp $fileout
+       $CNVGRIB -g21 sflux_outtmp $fileout
        rm -f sflux_outtmp
        (( fhr = $fhr + 6 ))
     done

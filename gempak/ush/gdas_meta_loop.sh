@@ -33,6 +33,12 @@ export pgm=gdplot2_nc;. prep_step; startmsg
 # Copy in datatype table to define gdfile type
 #
 cp $FIXgempak/datatype.tbl datatype.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File datatype.tbl does not exist."
+   exit $err
+fi
+
 #
 # Define previous days
 #
@@ -65,9 +71,12 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMIN}/gdas_${day}${cycle}f000"
+#  Test with GDAS in PROD
+#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
+         grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf
 GDFILE	= $grid
 GDATTIM	= F00
@@ -166,9 +175,12 @@ for day in $verdays
 
     for cycle in $cycles
         do
-        grid="${COMIN}/gdas_${day}${cycle}f000"
+#  Test with GDAS in PROD
+#        grid="${COMROOT}/nawips/${envir}/gdas.${day}/gdas_${day}${cycle}f000"
+         export COMIN=${COMINgdas}.${day}/${cycle}/nawips
+         grid="${COMINgdas}.${day}/${cycle}/nawips/gdas_${day}${cycle}f000"
    
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 \$MAPFIL = mepowo.gsf
 GDFILE	= $grid
 GDATTIM	= F00
@@ -272,6 +284,12 @@ export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 
 if [ $SENDCOM = "YES" ] ; then
     mv gdasloop.meta ${COMOUT}/gdas_${PDY}_${cyc}_loop
+    export err=$?
+    if [[ $err -ne 0 ]] ; then
+      echo " File gdasloop.meta does not exist."
+      exit $err
+    fi
+
     if [ $SENDDBN = "YES" ] ; then
         ${DBNROOT}/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
         $COMOUT/gdas_${PDY}_${cyc}_loop

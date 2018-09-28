@@ -35,7 +35,7 @@ set -x
 #
 export PS4='OPC_SW_VGF:$SECONDS + '
 workdir="${DATA}/OPC_SW_VGF"
-mkdir -p ${workdir}
+mkdir -p -m 775  ${workdir}
 cd ${workdir}
 
 cp $FIXgempak/datatype.tbl datatype.tbl
@@ -64,7 +64,7 @@ device4="vg|${pacwindname}"
 
 export pgm=gdplot2_vg;. prep_step; startmsg
 
-gdplot2_vg << EOFplt
+$GEMEXE/gdplot2_vg << EOFplt
 GDFILE    = F-${MDL} | ${PDY2}/${cyc}00
 GDATTIM   = F${fhr}
 GAREA     = 25;-84;46;-38

@@ -10,7 +10,7 @@
 set -x
 #
 export PS4='MAR_SKEWT:$SECONDS + '
-mkdir $DATA/MAR_SKEWT
+mkdir -p -m 775 $DATA/MAR_SKEWT
 cd $DATA/MAR_SKEWT
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -25,7 +25,7 @@ for fhr in 000 006 012 018 024 030 036 042 048 054 060 066 072
 do
     export pgm=gdprof;. prep_step; startmsg
 
-gdprof << EOFplt
+$GEMEXE/gdprof << EOFplt
 GDATTIM  = F${fhr}
 GVCORD   = PRES
 GDFILE   = F-${MDL}
@@ -276,7 +276,7 @@ export err=$?;err_chk
 
 done
 
-gpend
+$GEMEXE/gpend
 
 #####################################################
 # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE

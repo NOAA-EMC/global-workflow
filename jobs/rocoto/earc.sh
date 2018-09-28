@@ -137,6 +137,13 @@ if [ $ENSGRP -eq 0 ]; then
 fi
 
 
+<<<<<<< HEAD
+=======
+if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
+    exit 0
+fi
+
+>>>>>>> port2dell2
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then

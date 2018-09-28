@@ -1,0 +1,8 @@
+#%Module################################################
+# Modfule file for gdas_gridbull
+########################################################
+##
+module load ips/18.0.1.163
+
+module load bacio/2.0.2
+module load w3nco/2.0.6

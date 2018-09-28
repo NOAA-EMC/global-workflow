@@ -14,6 +14,7 @@
 #             so remove excution of gfs_flux
 # 2018-03-22 Guang Ping Lou: Making it works for either 1 hourly or 3 hourly output
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
+# 2018-05-30 Guang Ping Lou: Make sure all files are available.
 echo "History: February 2003 - First implementation of this utility script"
 #
 
@@ -89,9 +90,27 @@ do
       hh2=$hh
    fi
 
+#---------------------------------------------------------
+# Make sure all files are available:
+   ic=0
+   while [ $ic -lt 1000 ]
+   do
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.nemsio ]
+      then
+          sleep 10
+          ic=`expr $ic + 1`
+      else
+          break
+      fi
+
+      if [ $ic -ge 360 ]
+      then
+         err_exit "COULD NOT LOCATE logf${hh2} file AFTER 1 HOUR"
+      fi
+   done
+#------------------------------------------------------------------
    ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nemsio sigf${hh} 
    ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nemsio flxf${hh}
-##   ln -sf $COMIN/${RUN}.${cycle}.flxf${hh2}.nemsio flxf${hh}
 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10
@@ -104,10 +123,9 @@ done
 ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 
-export pgm=gfs_bufr
-startmsg
-export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
-${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
-export err=$?
-errchk
-##rm  metflxmrf gfs12.dat 
+#startmsg
+##export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
+##${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
+##mpirun $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
+${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
+export err=$?;err_chk

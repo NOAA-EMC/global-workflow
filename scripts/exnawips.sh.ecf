@@ -1,0 +1,664 @@
+#!/bin/ksh
+###################################################################
+echo "----------------------------------------------------"
+echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
+echo "----------------------------------------------------"
+echo "History: Mar 2000 - First implementation of this new script."
+echo "S Lilly: May 2008 - add logic to make sure that all of the "
+echo "                    data produced from the restricted ECMWF"
+echo "                    data on the CCS is properly protected."
+echo "C. Magee: 10/2013 - swap X and Y for rtgssthr Atl and Pac."
+#####################################################################
+
+set -xa
+
+if [ $NET = wave ]
+then
+  if [ $job = "wave_enp_gempak_"$cyc -o $job = "wave_wna_gempak_"$cyc -o $job = "wave_alaska_gempak_"$cyc -o $job = "wave_multi_2_gempak_"$cyc ]
+  then
+    export RUN=$1
+    export model=$2
+    export DATA=$3
+  fi
+  RUN3=`echo $RUN | cut -c1-3`
+  RUN4=`echo $RUN | cut -c1-4`
+fi
+
+cd $DATA
+
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
+
+#
+NAGRIB_TABLE=${NWROOTp1}/gempak/fix/nagrib.tbl
+utilfix_nam=$FIXshared
+NAGRIB=$GEMEXE/nagrib_nc
+#
+
+entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
+
+if [ "$entry" != "" ] ; then
+  cpyfil=`echo $entry  | awk 'BEGIN {FS="|"} {print $2}'`
+  garea=`echo $entry   | awk 'BEGIN {FS="|"} {print $3}'`
+  gbtbls=`echo $entry  | awk 'BEGIN {FS="|"} {print $4}'`
+  maxgrd=`echo $entry  | awk 'BEGIN {FS="|"} {print $5}'`
+  kxky=`echo $entry    | awk 'BEGIN {FS="|"} {print $6}'`
+  grdarea=`echo $entry | awk 'BEGIN {FS="|"} {print $7}'`
+  proj=`echo $entry    | awk 'BEGIN {FS="|"} {print $8}'`
+  output=`echo $entry  | awk 'BEGIN {FS="|"} {print $9}'`
+else
+  cpyfil=gds
+  garea=dset
+  gbtbls=
+  maxgrd=4999
+  kxky=
+  grdarea=
+  proj=
+  output=T
+fi  
+pdsext=no
+
+#
+# Alert stats.short file if this is the GFDL
+#
+if [ $RUN = "ghm" -a "$GRIB" = "grib.f" -a $SENDDBN = "YES" ] ; then
+  $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE_2} $job \
+   $COMIN/${model}.${PDY}${cyc}.stats.short
+fi
+
+# for gefs
+COMOUT_hold=$COMOUT
+
+maxtries=180
+fhcnt=$fstart
+while [ $fhcnt -le $fend ] ; do
+  if [ $fhcnt -ge 100 ] ; then
+    typeset -Z3 fhr
+  else
+    typeset -Z2 fhr
+  fi
+  fhr=$fhcnt
+  fhcnt3=`expr $fhr % 3`
+
+  fhr3=$fhcnt
+  typeset -Z3 fhr3
+  GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+
+  case $RUN in
+   gfs_goessim) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+                GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
+   gfs_goessim221) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+                   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
+   threats) GEMGRD=${model}_${PDY}${cyc}f${fhr3} ;;
+   nam12) GRIBIN1=$COMIN/${model}.${cycle}.${GRIB1}${fhr}${EXT} ;;
+   nam12carib) GRIBIN1=$COMIN/${model}.${cycle}.${GRIB1}${fhr}${EXT} ;;
+   rucs)  GRIBIN=$COMIN/${model}.${cycle}.pgrbanl 
+          GEMGRD=${RUN}_${PDY}${cyc} 
+          maxtries=30;;
+   ruc2)
+     if [ $fhcnt -eq 00 ] ; then
+       GRIBIN=$COMIN/${model}.${cycle}.pgrbanl
+     fi ;;
+   ruc20)
+     if [ $fhcnt -eq 00 ] ; then
+       GRIBIN=$COMIN/${model}.${cycle}.pgrb20anl
+     fi ;;
+   ruc13)
+     if [ $fhcnt -eq 00 ] ; then
+       GRIBIN=$COMIN/${model}.${cycle}.pgrb13anl.grib2
+     fi
+     NAGRIB=nagrib2 ;;
+   nww3 | akw | wna | nah | enp | nph)  GRIBIN=$COMIN/${model}.${cycle}.${GRIB} 
+                      GEMGRD=${RUN}_${PDY}${cyc} ;;
+   mww3) GRIBIN=$COMIN/multi_1.glo_30m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3ak10m) GRIBIN=$COMIN/multi_1.ak_10m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3ak4m) GRIBIN=$COMIN/multi_1.ak_4m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3wna10m) GRIBIN=$COMIN/multi_1.at_10m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3wna4m) GRIBIN=$COMIN/multi_1.at_4m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3wc10m) GRIBIN=$COMIN/multi_1.wc_10m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3wc4m) GRIBIN=$COMIN/multi_1.wc_4m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mww3enp10m) GRIBIN=$COMIN/multi_1.ep_10m.${cycle}.f${fhr3}.grib2
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         NAGRIB=nagrib2 ;;
+   mwh) GRIBIN=$COMIN/multi_2.glo_30m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhak10m) GRIBIN=$COMIN/multi_2.ak_10m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhak4m) GRIBIN=$COMIN/multi_2.ak_4m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhat10m) GRIBIN=$COMIN/multi_2.at_10m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhat15m) GRIBIN=$COMIN/multi_2.at_15m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhat4m) GRIBIN=$COMIN/multi_2.at_4m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhpa15m) GRIBIN=$COMIN/multi_2.pa_15m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhep10m) GRIBIN=$COMIN/multi_2.ep_10m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhwc10m) GRIBIN=$COMIN/multi_2.wc_10m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   mwhwc4m) GRIBIN=$COMIN/multi_2.wc_4m.${cycle}.${GRIB}
+        GEMGRD=${RUN}_${PDY}${cyc}
+        NAGRIB=nagrib2 ;;
+   wave_ens)  GRIBIN=$COMIN/${model}.glo_60m.${cycle}.grib2
+              GEMGRD=${model}_${PDY}${cyc}
+              NAGRIB=nagrib2 ;;
+
+   ofs)  if [ $fhr3 = "000" ]
+         then
+            fhr3_ofs="n000"
+         else
+            fhr3_ofs="f$fhr3"
+         fi 
+         GRIBIN=$COMIN/${RUN}_atl.${cycle}.${fhr3_ofs}.${model}.${GRIB} 
+         if [ $model = "atl" ]
+         then
+            GEMGRD=watl_${PDY}${cyc}f${fhr3}
+         elif [ $model = "gm" ]
+         then
+            GEMGRD=gmex_${PDY}${cyc}f${fhr3}
+         elif [ $model = "gs" ]
+         then
+            GEMGRD=gstr_${PDY}${cyc}f${fhr3}
+         else
+            GEMGRD=${model}_${PDY}${cyc}f${fhr3}
+         fi
+         ;; 
+   ice)   GRIBIN=$COMIN/${model}${RUN}.${cycle}.grb
+          GEMGRD=${RUN}_${PDY}${cyc} ;;
+   rtma)  GRIBIN=$COMIN/${model}.${cycle}.2dvaranl_ndfd.grb1
+          GEMGRD=${RUN}_${PDY}${cyc}f000 ;;
+   vaftad | hysplit) GRIBIN=$COMOUT/${VNAME}.e${EPDY}${ECYC}.r${PDY}${cyc}.grib
+           vname=`echo $VNAME | tr [A-Z] [a-z]`
+           meteo=`echo $meteo | tr [A-Z] [a-z]`
+           # JY COMOUT=/com/nawips/${envir}/${NET}.${PDY}
+           COMOUT=${COMROOT}/nawips/${envir}/${NET}.${PDY}
+           typeset -Z2 NEWECYC
+           let NEWECYC=\($ECYC+1\)/3*3
+           if test $NEWECYC -eq 24
+           then
+             NEWECYC="00"  
+             NEWEPDY=`/nwprod/util/ush/finddate.sh $EPDY d+1`
+           else
+             NEWEPDY=$EPDY
+           fi
+           GEMGRD=hy_${meteo}_${EPDY}${ECYC}_${vname}
+           echo $COMOUT/$GEMGRD > $DATA/gempak_file.vaftad
+           mkdir -p -m 775 $COMOUT ;;
+   ghm)   GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+          if [ $GRIB = "grib.f" ] ; then
+            GEMGRD=${RUN}g_${PDY}${cyc}f${fhr3}_${model}
+          elif [ $GRIB = "gribn3.f" ] ; then
+            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${model}
+          else
+            GEMGRD=${RUN}6th_${PDY}${cyc}f${fhr3}_${model}
+          fi ;;
+   ghmc)   GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+          if [ $GRIB = "gfdc.grib.f" ] ; then
+            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${model}g
+          else
+            GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}_${model}n
+          fi ;;
+   hwrf)  GRIBIN=$COMIN/${model}.${PDY}${cyc}.${GRIB}${fhr}
+          if [ $GRIB = "hwrfprs_n.grbf" ] ; then
+            GEMGRD=${RUN}n_${PDY}${cyc}f${fhr3}_${model}
+          elif [ $GRIB = "hwrfprs_p.grbf" ] ; then
+            GEMGRD=${RUN}p_${PDY}${cyc}f${fhr3}_${model}
+          else
+            GEMGRD=${RUN}c_${PDY}${cyc}f${fhr3}_${model}
+          fi ;;
+   ecmwf_glob | ecmwf_trop)  GRIBIN=$COMIN/${model}.${cycle}
+          GEMGRD=${RUN}_${PDY}${cyc} ;;
+   ecmwf_hr)
+          GRIBIN=$DATA/${RUN}.t${cyc}z.pgrb${fhr}
+          ;;
+   ecmwf_wave)
+          GRIBIN=$DATA/${RUN}.t${cyc}z.pgrb${fhr}
+          ;;
+   ukmet) GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
+          GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
+   ukmet2)  $WGRIB ukmet2.grib | grep "${fhr}hr" | $WGRIB \
+          -i -grib -o ukmet2.${fhr} ukmet2.grib
+          GRIBIN=ukmet2.${fhr}
+          GEMGRD=ukmet_${PDY}${cyc}f${fhr3} ;;
+   ens*)  GRIBIN=$COMIN/${model}.${member}.${PDY}.${cyc}
+          GEMGRD=${RUN}_${PDY}${cyc} ;;
+    ge*)  if test "$model" = "bc" -o "$model" = "an" -o "$model" = "wt" -o "$model" = "me" -o "$model" = "anv" 
+          then
+             GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${model}f${fhr}
+             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+
+             # create subdirectory for the bc and an gefs files, -- 05/16/2013
+             # so that the mag system can only take the expected gefs files
+             # COMOUT_hold=$COMOUT
+             if test "$model" = "bc" -o "$model" = "an" 
+             then
+                COMOUT=${COMOUT_hold}/${model}
+                mkdir -p -m 775 $COMOUT
+             fi
+          elif test "$model" = "glbanl"
+          then
+             GRIBIN=$COMIN/${model}.${cycle}.pgrba_mdf${fhr}
+             GEMGRD=${model}_${PDYm2}${cyc}f${fhr3}
+          elif test "$model" = "ndgd"
+          then
+             GRIBIN=$COMIN/${RUN}.${cycle}.${model}_conusf${fhr}
+             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+          elif test "$model" = "ndgd_alaska"
+          then
+             GRIBIN=$COMIN/${RUN}.${cycle}.${model}f${fhr}
+             GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+          else
+             GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
+             GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+          fi;;
+   naefs) if test "$model" = "geavganv"
+          then
+             GRIBIN=$COMIN/${RUN}_geavg.${cycle}.pgrba_anvf${fhr}
+             GEMGRD=${model}_${PDY}${cyc}f${fhr3}
+          elif test "$model" = "ndgd"
+          then
+             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${model}_conusf${fhr}
+             GEMGRD=${model}${member}_${PDY}${cyc}f${fhr3}
+          elif test "$model" = "ndgd_alaska"
+          then
+             GRIBIN=$COMIN/${RUN}_${member}.${cycle}.${model}f${fhr}
+             GEMGRD=${model}${member}_${PDY}${cyc}f${fhr3}
+          elif test "$model" = "dvrtma"
+          then
+             if test "$region" = "alaska"
+             then
+               GRIBIN=$COMIN/${model}.${cycle}.ndgd_alaska
+               GEMGRD=${model}_${region}_${PDY}${cyc}
+             else
+               GRIBIN=$COMIN/${model}.${cycle}.ndgd_conus
+               GEMGRD=${model}_${PDY}${cyc}
+             fi
+          else
+             GRIBIN=$COMIN/${RUN}_${model}.${cycle}.pgrba_bcf${fhr}
+             GEMGRD=${model}_${PDY}${cyc}f${fhr3}
+          fi;;
+   cmc_ge*)GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
+          GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
+   fnmoc_ge*) if test "$model" = "bc" -o "$model" = "an" -o "$model" = "wt"
+              then
+                GRIBIN=$COMIN/${RUN}.${cycle}.pgrba_${model}f${fhr}
+                GEMGRD=${RUN}${model}_${PDY}${cyc}f${fhr3}
+              else
+                GRIBIN=$COMIN/${RUN}.${cycle}.pgrbaf${fhr}
+                GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+              fi ;;
+   sref)  if test "$model" = "eta" -o "$model" = "rsm" -o "$model" = "em" -o "$model" = "nmm"
+          then
+             GRIBIN=$COMIN/${RUN}_${model}.${cycle}.pgrb212.${member}
+             GEMGRD=${RUN}_${PDY}${cyc}_${model}_${member}
+          else
+             GRIBIN=$COMIN/${RUN}.${cycle}.pgrb212.${member}
+             GEMGRD=${RUN}_${PDY}${cyc}_${member}
+	     pdsext=YES
+          fi;;
+   mdlngm) GRIBIN=$COMIN/ngmmosgrib.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlngmsvr) GRIBIN=$COMIN/ngmmoscatstmgrb.${cycle}
+              GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlmrf) GRIBIN=$COMIN/mrfmosgrib.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlgfs) GRIBIN=$COMIN/gfsmosgrib.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlgfssvr) GRIBIN=$COMIN/mdl_mavgribtsvr.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlnamsvr) GRIBIN=$COMIN/mdl_metgribtsvr.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   mdlmrfsvr) GRIBIN=$COMIN/mdl_mexgribtsvr.${cycle}
+           GEMGRD=${model}_${PDY}${cyc} ;;
+   nam40)  cp /nwprod/gempak/fix/model/nam/* . ;;
+   dgex) if [ $cyc = 00 -o $cyc = 12 ]
+         then
+            export model=dgex_alaska
+            export GRIB=awp186
+         else
+            export model=dgex_conus
+            export GRIB=awp185
+         fi
+
+         GEMGRD=dgex_${PDY}${cyc}f${fhr3}
+         GRIBIN=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}
+         ;;
+   hiresw) GRIBIN=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}
+           GEMGRD=hiresw_${model}_${PDY}${cyc}f${fhr3} 
+         ;;
+   sst)  GRIBIN=$COMIN/rtgssthr_grb_0.083_awips
+	 GEMGRD=rtgsst_${GRIB}_${PDY}00
+         ;;
+   gfs35_pac | gfs35_atl | gfs40 | gfs_asbkup)  GRIBIN=$COMIN/gfs.t${cyc}z.master.grbf${fhr}
+         GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         ;;
+   navgem) if [ $fhcnt -ge 100 ] ; then
+              GRIBIN=$COMIN/${RUN}_${PDY}${cyc}f${fhr}
+           else
+              GRIBIN=$COMIN/${RUN}_${PDY}${cyc}f0${fhr}
+           fi
+           GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+         ;;
+  esac
+
+  if [ $RUN = "ngm" ] ; then
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+  elif [ $RUN = "gfs" ] ; then
+    if test $fhr -lt 100
+    then
+       fcsthr=0${fhr}
+    else
+       fcsthr=${fhr}
+    fi
+    cp $COMIN/${model}.${cycle}.pgrb2.1p00.f${fcsthr} .
+    $CNVGRIB -g21 ${model}.${cycle}.pgrb2.1p00.f${fcsthr} ${model}.${cycle}.${GRIB}${fhr}
+    GRIBIN=${model}.${cycle}.${GRIB}${fhr}
+    $GRBINDEX ${model}.${cycle}.${GRIB}${fhr} ${model}.${cycle}.pgrbif${fhr}
+    GRIBIN_chk=${model}.${cycle}.pgrbif${fhr}
+  elif [ $RUN = "gfshd" ] ; then
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}${EXT}
+  elif [ $RUN = "gdas" ] ; then
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+  elif [ $RUN = "mrf" ] ; then
+    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrbif${fhr}
+  elif [ $RUN = "nww3" -o $RUN = "akw" -o $RUN = "wna" -o $RUN = "nah" -o $RUN = "enp" -o $RUN = "nph" ] ; then
+    GRIBIN_chk=$COMIN/${model}.${cycle}.${GRIB}done 
+  elif [ $RUN4 = "mww3" -o $RUN3 = "mwh" ]; then
+    GRIBIN_chk=$GRIBIN.idx
+  elif [ $RUN = "dgex" ] ; then
+    GRIBIN_chk=$COMIN/${model}.t${cyc}z.${GRIB}${fhr}${EXT}_icwf
+  elif [ $RUN = "gfs35_pac" -o $RUN = "gfs35_atl" -o $RUN = "gfs40" -o $RUN = "gfs_asbkup" ] ; then
+    GRIBIN_chk=$COMIN/gfs.t${cyc}z.master.grbif${fhr}
+  elif [ $RUN = "ofs" ] ; then
+    GRIBIN_chk=$COMIN/${RUN}_atl.t${cyc}z.${fhr3_ofs}.${model}.$GRIB.grib2.idx
+  elif [ $RUN = "nam12" ] ; then
+    GRIBIN_chk=$GRIBIN
+    GRIBIN_chk1=$GRIBIN1
+  else
+    GRIBIN_chk=$GRIBIN
+  fi
+
+  if [ $RUN = "nam12" ] ; then
+
+  icnt=1
+  while [ $icnt -lt 1000 ]
+  do
+    if [[ -r $GRIBIN_chk && -r $GRIBIN_chk1 ]] ; then
+      break
+    else
+      sleep 20
+      let "icnt=icnt+1"
+    fi
+    if [ $icnt -ge $maxtries ]
+    then
+      msg="ABORTING after 1 hour of waiting for F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
+    fi
+  done
+
+  else
+
+  icnt=1
+  while [ $icnt -lt 1000 ]
+  do
+    if [ -r $GRIBIN_chk ] ; then
+      break
+    else
+      sleep 20
+      let "icnt=icnt+1"
+    fi
+    if [ $icnt -ge $maxtries ]
+    then
+      msg="ABORTING after 1 hour of waiting for F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
+    fi
+  done
+
+  fi
+
+  case $RUN in
+   dgex)
+     cat $GRIBIN $GRIBIN_chk > tmpgrib$fhr
+     $COPYGB -g 104 -x tmpgrib$fhr grib$fhr
+     ;;
+   gfs_asbkup)
+     $COPYGB -g "255 0 90 55 55000 -140000 128 0 -50000 1000 1000 0" -x $GRIBIN grib$fhr
+     ;;
+   sst)
+     if [ $GRIB = "atl" ] ; then
+       $COPYGB -g "255 0 840 540 50000 -100000 128 5000 -30000 083 083 0" -x $GRIBIN grib$fhr
+     else
+       # Assume Pacific region
+       $COPYGB -g "255 0 960 660 60000 -170000 128 5000 -90000 083 083 0" -x $GRIBIN grib$fhr
+     fi
+     ;;
+   nam64)
+       $WGRIB $GRIBIN | grep -f /nwprod/gempak/fix/nam64.awc.parmlist|$WGRIB -i -grib -o temp $GRIBIN
+       $COPYGB -g "255 3 175 139 1000 -145500 8 -107000 64926 64926 0 64 50000 50000" -x temp grib$fhr
+     ;;
+   gfs35_pac)
+         $WGRIB $GRIBIN | grep -f /nwprod/fix/global_1x1_paramlist|$WGRIB -i -grib -o temp $GRIBIN
+         $COPYGB -g "255 0 416 186 75125 -230000 128 17000 -100000 312 312 0" -x temp grib$fhr
+     ;;
+   gfs35_atl)
+         $WGRIB $GRIBIN | grep -f /nwprod/fix/global_1x1_paramlist|$WGRIB -i -grib -o temp $GRIBIN
+         $COPYGB -g "255 0 480 242 75125 -130000 128 -500 20000 312 312 0" -x temp grib$fhr
+     ;;
+   gfs40)
+         $WGRIB $GRIBIN | grep -f /nwprod/fix/global_1x1_paramlist|$WGRIB -i -grib -o temp $GRIBIN
+         $COPYGB -g 212 -x temp grib$fhr
+     ;;
+   nam12carib)
+         $WGRIB -s $GRIBIN | grep -f $utilfix_nam/nam_nam12carib_parmlist|$WGRIB -i -grib -o temp $GRIBIN
+         mv temp grib$fhr
+     ;;
+   nam32)
+         $WGRIB -s $GRIBIN | grep -f $utilfix_nam/nam_grid151.parmlist|$WGRIB -i -grib -o temp $GRIBIN
+         mv temp grib$fhr
+     ;;
+   nam12)
+       if [ $fhcnt3 -eq 0 ] ; then
+         $WGRIB -s $GRIBIN | grep -f $utilfix_nam/wrf4spc12.parmlist|$WGRIB -i -grib -o temp $GRIBIN
+         $WGRIB -s $GRIBIN1 | grep -f $utilfix_nam/wrf4spc12.parmlist_1|$WGRIB -i -grib -o temp1 $GRIBIN1
+         cat temp temp1 > grib$fhr
+       else
+         $WGRIB -s $GRIBIN | grep -f $utilfix_nam/wrf4spc12_hourly.parmlist|$WGRIB -i -grib -o temp $GRIBIN
+         $WGRIB -s $GRIBIN1 | grep -f $utilfix_nam/wrf4spc12_hourly.parmlist_1|$WGRIB -i -grib -o temp1 $GRIBIN1
+         cat temp temp1 > grib$fhr
+       fi
+     ;;
+    ge*)  if test "$model" = "bc" -o "$model" = "me" -o "$model" = "an" -o "$model" = "wt" -o "$model" = "glbanl" -o "$model" = "ndgd" -o "$model" = "ensemble" -o "$model" = "anv"
+          then
+             cp $GRIBIN grib$fhr
+          else
+             GRIBIN_B=$COMIN_B/${RUN}.${cycle}.pgrbbf${fhr}
+             $WGRIB -s $GRIBIN_B | grep "HGT:300 mb" | $WGRIB -i -grib -o temp $GRIBIN_B
+             cat $GRIBIN temp > grib$fhr
+          fi
+     ;;
+   *)
+     cp $GRIBIN grib$fhr
+  esac
+
+  if [ "$model" = "ensemble" -o $RUN = "sref" ] ; then
+    export pgm="nagrib_nc $RUN"
+  else
+    export pgm="nagrib_nc F$fhr"
+  fi
+  startmsg
+
+   $NAGRIB << EOF
+   GBFILE   = grib$fhr
+   INDXFL   = 
+   GDOUTF   = $GEMGRD
+   PROJ     = $proj
+   GRDAREA  = $grdarea
+   KXKY     = $kxky
+   MAXGRD   = $maxgrd
+   CPYFIL   = $cpyfil
+   GAREA    = $garea
+   OUTPUT   = $output
+   GBTBLS   = $gbtbls
+   GBDIAG   = 
+   PDSEXT   = $pdsext
+  l
+  r
+EOF
+  export err=$?;err_chk
+
+  #####################################################
+  # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
+  # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
+  # FOR THIS CASE HERE.
+  #####################################################
+  if [ $model != "ukmet_early" ] ; then
+    ls -l $GEMGRD
+    export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
+  fi
+
+  if [ "$NAGRIB" = "nagrib2" ] ; then
+    gpend
+  fi
+
+  #
+  # Create ZAGL level products for the 40 km NAM grid and the ruc
+  #
+  if [ "$RUN" = "nam40" -o "$RUN" = "ruc2" -o "$RUN" = "ruc20" ] ; then
+     gdvint << EOF
+     GDFILE   = $GEMGRD
+     GDOUTF   = $GEMGRD
+     GDATTIM  = f${fhr}
+     GVCORD   = pres/zagl
+     GLEVEL   = 500-9000-500
+     MAXGRD   = 5000
+     GAREA    = $garea
+     VCOORD   = mslv;esfc
+     l
+     r
+EOF
+  fi
+
+  #
+  # Create theta level products for the 90 and 40 km NAM grids
+  #
+  if [ "$RUN" = "nam40" -o "$RUN" = "nam" ] ; then
+     gdvint << EOF
+     GDFILE   = $GEMGRD
+     GDOUTF   = $GEMGRD
+     GDATTIM  = f${fhr}
+     GVCORD   = pres/thta
+     GLEVEL   = 270-330-3
+     MAXGRD   = 5000
+     GAREA    = $garea
+     VCOORD   = /l
+     l
+     r
+EOF
+  fi
+
+
+  #
+  # Create theta level prodcuts for the RUC
+  # Delete 2 Hour Precip accumulations
+  #
+  if [ "$RUN" = "ruc2" -o "$RUN" = "ruc20" ] ; then
+     gdvint << EOF
+     GDFILE   = $GEMGRD
+     GDOUTF   = $GEMGRD
+     GDATTIM  = f${fhr}
+     GVCORD   = pres/thta
+     GLEVEL   = 270-330-3 
+     MAXGRD   = 5000 
+     GAREA    = 25;-120;50;-60 
+     VCOORD   = /l 
+     l
+     r 
+EOF
+    if [ "$fhr" = "05" -o  "$fhr" = "08" -o "$fhr" = "11" ] ; then
+      gddelt_gn << EOF
+      GDFILE   = $GEMGRD
+      GDATTIM  = f${fhr}
+      GVCORD   = none
+      GLEVEL   = 0
+      GFUNC    = s02m;c02m
+      l
+      r
+EOF
+    fi
+  fi
+  if [ $SENDCOM = "YES" ] ; then
+     if [ $RUN = "ecmwf_hr" -o $RUN = "ecmwf_wave" ] ; then
+       chgrp rstprod $GEMGRD
+       chmod 750 $GEMGRD
+     fi
+     mv $GEMGRD $COMOUT/$GEMGRD
+     if [ $SENDDBN = "YES" ] ; then
+       if [ $RUN = "nam" -a $fhcnt3 -ne 0 ] ; then
+         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE_2} $job \
+            $COMOUT/$GEMGRD
+       else
+         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
+           $COMOUT/$GEMGRD
+       fi
+     else
+       echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
+     fi
+  fi
+
+  if [ $RUN = "ukmet" -a $fhcnt -ge 48 ] ; then
+    let fhcnt=fhcnt+12
+  elif [ $RUN = "gfs" -a $fhcnt -ge 192 ] ; then
+    let fhcnt=fhcnt+12
+  elif [ $RUN = "nam" -a $fhcnt -lt 36 ] ; then
+   let fhcnt=fhcnt+1
+  elif [ $RUN = "nam12" -a $fhcnt -lt 36 ] ; then
+   let fhcnt=fhcnt+1
+  else
+    let fhcnt=fhcnt+finc
+  fi
+done
+
+#####################################################################
+# GOOD RUN
+set +x
+echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+set -x
+#####################################################################
+
+msg='Job completed normally.'
+echo $msg
+postmsg "$jlogfile" "$msg"
+
+############################### END OF SCRIPT #######################

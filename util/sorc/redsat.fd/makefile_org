@@ -1,0 +1,26 @@
+SHELL=/bin/sh
+#
+SRCS= redsat.f	
+
+OBJS= redsat.o	
+
+FC =	ifort  
+LDFLAGS =
+LIBS =	 -L/nwprod/lib -lw3emc_8 -lw3nco_8 -lbacio_8 -lbufr_8_64
+CMD =	 redsat
+PROFLIB =	-lprof
+
+#
+FFLAGS = -O -g -traceback -C -integer-size 64 -real-size 64 -assume byterecl -convert big_endian -assume nobscc -assume noold_ldout_format   
+
+# Lines from here on down should not need to be changed.  They are the
+# actual rules which make uses to build a.out.
+#
+all:		$(CMD)
+
+$(CMD):		$(OBJS)
+	echo 'HEAP=2500000+5000000' >HEAP.RAS2BITY
+	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+
+clean:
+	rm -f $(OBJS) *.mod

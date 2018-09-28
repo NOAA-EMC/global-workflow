@@ -14,6 +14,7 @@
 #   6) 2018-03-22       Guang Ping Lou  Take FV3GFS configuration
 #                          parameters as input; make it work for 
 #                          both FV3GFS and GFS
+#   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
 ################################################################
 set -xa
 
@@ -54,6 +55,7 @@ rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
 # Extract number of vertical levels from $STARTHOUR atmospheric file
+export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
 fhr3=$(printf %03i $STARTHOUR)
 ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
 export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
@@ -126,27 +128,33 @@ fi
 # add appropriate WMO Headers.
 ########################################
 collect=' 1 2 3 4 5 6 7 8 9'
+if [ $machine == "THEIA" -o  $machine == "JET" ]; then
+for m in ${collect}
+do
+sh $USHbufrsnd/gfs_sndp.sh $m
+done
+
+################################################
+# Convert the bufr soundings into GEMPAK files
+################################################
+sh $USHbufrsnd/gfs_bfr2gpk.sh
+
+else
 rm -rf poe_col
 echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
 for m in ${collect}
 do
 echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
-##$USHbufrsnd/gfs_sndp.sh
 done
 
 mv poe_col cmdfile
 
 cat cmdfile
 chmod +x cmdfile
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=cmdfile
-export MP_LABELIO=YES
-export MP_INFOLEVEL=3
-export MP_STDOUTMODE=ordered
 
-export APRUNCFP=${APRUN_POSTSNDCFP:-'aprun -j 1 -n 10 -N 3 -d 1 cfp'}
-$APRUNCFP cmdfile
-
+##mpirun -n 10 cfp cmdfile
+${APRUN_POSTSNDCFP} cmdfile
+fi
 ################################################
 # Convert the bufr soundings into GEMPAK files
 ################################################

@@ -51,6 +51,12 @@ elif [[ -d /dcom && -d /hwrf ]] ; then
         source /usrx/local/Modules/default/init/$__ms_shell
     fi
     module purge
+elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
+    # We are on NOAA Mars or Venus
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+	source /usrx/local/prod/lmod/lmod/init/$__ms_shell
+    fi
+    module purge
 elif [[ -d /glade ]] ; then
     # We are on NCAR Yellowstone
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -70,7 +76,6 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
     else
         __ms_source_etc_profile=no
     fi
-    echo GAEA
     module purge
 # clean up after purge 
     unset _LMFILES_
@@ -78,15 +83,22 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
     unset _LMFILES_001
     unset LOADEDMODULES
     module load modules
-    module use -a /opt/cray/ari/modulefiles
-    module use -a /opt/cray/pe/ari/modulefiles
-    module use -a /opt/cray/pe/craype/default/modulefiles
+    if [[ -d /opt/cray/ari/modulefiles ]] ; then
+        module use -a /opt/cray/ari/modulefiles
+    fi
+    if [[ -d /opt/cray/pe/ari/modulefiles ]] ; then
+        module use -a /opt/cray/pe/ari/modulefiles
+    fi
+    if [[ -d /opt/cray/pe/craype/default/modulefiles ]] ; then
+        module use -a /opt/cray/pe/craype/default/modulefiles
+    fi
     if [[ -s /etc/opt/cray/pe/admin-pe/site-config ]] ; then
-      source /etc/opt/cray/pe/admin-pe/site-config
+        source /etc/opt/cray/pe/admin-pe/site-config
     fi
     export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
-    echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc 
-    module use $NCEPLIBS/modulefiles
+    if [[ -d "$NCEPLIBS" ]] ; then
+        module use $NCEPLIBS/modulefiles
+    fi
     if [[ "$__ms_source_etc_profile" == yes ]] ; then
       source /etc/profile
       unset __ms_source_etc_profile
@@ -100,4 +112,3 @@ unset __ms_ksh_test
 unset __ms_bash_test
 unset $__ms_function_name
 unset __ms_function_name
-

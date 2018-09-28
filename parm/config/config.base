@@ -18,7 +18,7 @@ if [ $machine = "THEIA" ]; then
     export QUEUE="batch"
     export QUEUE_ARCH="service"
 
-elif [ $machine = "WCOSS_C" ]; then
+elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export ACCOUNT="FV3GFS-T2O"
     export QUEUE="dev"
@@ -69,6 +69,17 @@ elif [ $machine = "WCOSS_C" ]; then
     fi
     export RTMFIX=$CRTM_FIX
 
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="MARS"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="VENUS"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
+    fi
+    export RTMFIX=$CRTM_FIX
 fi
 
 
@@ -109,6 +120,18 @@ elif [ $machine = "WCOSS_C" ]; then
     export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
 
+elif [ $machine = "WCOSS_DELL_P3" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export STMP="/gpfs/dell3/stmp/$USER"
+    export PTMP="/gpfs/dell3/ptmp/$USER"
+    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+
+    # Base directories for various builds
+    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+
 fi
 
 # Utilities needed in the scripts (mostly post)
@@ -136,8 +159,7 @@ elif [ $machine = "THEIA" ]; then
     export GRB2INDEX="$NWPROD/util/exec/grb2index"
     export GRBINDEX2="$NWPROD/util/exec/grb2index"
     export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
 
 fi
 
@@ -212,7 +234,11 @@ export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
-export FHCYC=24
+if [[ "$CDUMP" == "gdas" ]] ; then
+   export FHCYC=1
+elif [[ "$CDUMP" == "gfs" ]] ; then
+   export FHCYC=24
+fi
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -225,14 +251,14 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=120
-export FHMAX_GFS_06=120
-export FHMAX_GFS_12=120
-export FHMAX_GFS_18=120
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
-export FHMAX_HF_GFS=0
+export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
@@ -250,7 +276,7 @@ export imp_physics=11
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="YES"
-export l4densvar=".false."
+export l4densvar=".true."
 export lwrite4danl=".false."
 
 # EnKF output frequency
@@ -265,5 +291,22 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# If YES, NSST is turned on in anal and/or fcst steps
-export DONST="NO"
+# turned on nsst in anal and/or fcst steps, and turn off rtgsst
+export DONST="YES"
+if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
+
+# The switch to apply SST elevation correction or not
+export nst_anl=.true.
+
+# Analysis increments to zero in CALCINCEXEC
+export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+
+
+# Archiving options
+export HPSSARCH="YES"        # save data to HPSS archive
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
+export ARCH_WARMICFREQ=2     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+
+
+echo "END: config.base"

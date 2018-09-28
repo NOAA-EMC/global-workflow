@@ -35,6 +35,12 @@ else if ( { test -d /dcom -a -d /hwrf } ) then
         source /usrx/local/Modules/default/init/$__ms_shell
     endif
     module purge
+else if ( { test -L /usrx && sh -c "readlink /usrx 2> /dev/null | grep dell" } ) then
+    # We are on WCOSS Mars or Venus
+    if ( ! { module help >& /dev/null } ) then
+        source /usrx/local/prod/lmod/lmod/init/$__ms_shell
+    endif
+    module purge
 else if ( { test -d /glade } ) then
     # We are on NCAR Yellowstone
     if ( ! { module help >& /dev/null } ) then
@@ -50,20 +56,33 @@ else if ( { test -d /lustre -a -d /ncrc } ) then
         # the module command fails.  Hence we actually have to source
         # /etc/csh.login here.
         source /etc/csh.login
+        set __ms_source_etc_csh_login=yes
+    else
+        set __ms_source_etc_csh_login=no
     endif
     module purge
-# clean up after purge 
-    unset _LMFILES_
-    unset _LMFILES_000
-    unset _LMFILES_001
-    unset LOADEDMODULES
-    module use -a /opt/cray/ari/modulefiles
-    module use -a /opt/cray/pe/ari/modulefiles
-    module use -a /opt/cray/pe/craype/default/modulefiles
-    source /etc/opt/cray/pe/admin-pe/site-config
+    unsetenv _LMFILES_
+    unsetenv _LMFILES_000
+    unsetenv _LMFILES_001
+    unsetenv LOADEDMODULES
+    module load modules
+    if ( { test -d /opt/cray/ari/modulefiles } ) then
+        module use -a /opt/cray/ari/modulefiles
+    endif
+    if ( { test -d /opt/cray/pe/ari/modulefiles } ) then
+        module use -a /opt/cray/pe/ari/modulefiles
+    endif
+    if ( { test -d /opt/cray/pe/craype/default/modulefiles } ) then
+        module use -a /opt/cray/pe/craype/default/modulefiles
+    endif
     setenv NCEPLIBS /lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
-    echo NCEPLIBS HARD SET to  $NCEPLIBS
-    module use $NCEPLIBS/modulefiles
+    if ( { test -d /lustre/f1/pdata/ncep_shared/NCEPLIBS/lib } ) then
+      module use $NCEPLIBS/modulefiles
+    endif
+    if ( "$__ms_source_etc_csh_login" == yes ) then
+      source /etc/csh.login
+      unset __ms_source_etc_csh_login
+    endif
 else
     # Workaround for csh limitation.  Use sh to print to stderr.
     sh -c 'echo WARNING: UNKNOWN PLATFORM 1>&2'

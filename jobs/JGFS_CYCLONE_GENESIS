@@ -128,7 +128,10 @@ export err=$?; err_chk
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
 
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"

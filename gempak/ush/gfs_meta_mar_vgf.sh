@@ -13,7 +13,7 @@ set -x
 #
 export PS4='OPC_MAR_VGF:$SECONDS + '
 workdir="${DATA}/OPC_MAR_VGF"
-mkdir -p ${workdir}
+mkdir -p -m 775 ${workdir}
 cd ${workdir}
 
 cp $FIXgempak/datatype.tbl datatype.tbl
@@ -52,7 +52,7 @@ if [ ${runflag} == "yes" ] ; then
             fi
             vgfile="500_${ocean}_${PDY2}_${cyc}_f${fcsthr}.vgf"
 
-gdplot2_vg << EOF
+$GEMEXE/gdplot2_vg << EOF
 gdfile	= F-${MDL} | ${PDY2}/${cyc}00
 gdattim	= f${fcsthr}
 GLEVEL	= 500
@@ -119,7 +119,7 @@ EOF
 
 # CONTINUE LOOP OF 12 OR 00 UTC CYCLE...
 
-gdplot2_vg << EOF
+$GEMEXE/gdplot2_vg << EOF
 GAREA   = 10;-113;45;-38
 PROJ    = str/90;-67;1/0;0;0;1
 gdattim	= f24
@@ -158,7 +158,7 @@ else
 
 # 06Z AND 18Z CYCLES...
 
-gdplot2_vg << EOFplt
+$GEMEXE/gdplot2_vg << EOFplt
 gdfile  = F-${MDL} | ${PDY2}/${cyc}00
 gdattim = f06
 GLEVEL  = 500
@@ -263,7 +263,7 @@ if [ ${runflag} == "yes" ] ; then
         fi
         vgfile="${mdl}_${PDY2}_${cyc}_${fcsthr}${ocean}sfc.vgf"
 
-gdplot2_vg << EOF
+$GEMEXE/gdplot2_vg << EOF
 gdattim = f${fcsthr}
 garea   = ${garea}
 proj    = ${proj}

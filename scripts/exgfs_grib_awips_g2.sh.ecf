@@ -229,7 +229,7 @@ EOF
       # Convert to grib1 format
       ##############################
 
-      $EXECgfs/cnvgrib21_gfs -g21 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2  gfs_grb211.${cycle}.pgrbf${fcsthrs}
+      $CNVGRIB -g21 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2  gfs_grb211.${cycle}.pgrbf${fcsthrs}
       $GRBINDEX gfs_grb211.${cycle}.pgrbf${fcsthrs}   gfs_grb211.${cycle}.pgrbif${fcsthrs}
 
       ##############################
@@ -253,7 +253,9 @@ EOF
    done
 fi
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ###################################################################################
 # GOOD RUN

@@ -90,11 +90,12 @@ set -x
    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
    cat tmpfile2    tmpfile2b   >  tmpfile
    $WGRIB2 tmpfile | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
-   $EXECgfs/cnvgrib21_gfs  -g21  masterfile  masterfile.grib1
+   $CNVGRIB -g21  masterfile  masterfile.grib1
 
    ln -s masterfile.grib1   fort.11
 
-   $OVERGRIDID << EOF
+#   $OVERGRIDID << EOF
+   ${UTILgfs}/exec/overgridid << EOF
 255
 EOF
 
@@ -121,7 +122,8 @@ EOF
        export FORT11=master.grbf${fcsthrs}
        export FORT31=master.grbif${fcsthrs}
        export FORT51=xtrn.awpgfs${fcsthrs}.${GRID}
-       $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
+#       $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
+       ${UTILgfs}/exec/mkgfsawps < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
        export err=$?; err_chk 
       ##############################
       # Post Files to ${COMOUTwmo}
@@ -150,7 +152,8 @@ EOF
    export FORT11=master.grbf${fcsthrs}
    export FORT31=master.grbif${fcsthrs}
    export FORT51=xtrn.awpgfs${fcsthrs}.${GRID}
-   $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
+#   $MKGFSAWPS < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
+    ${UTILgfs}/exec/mkgfsawps < $PARMwmo/grib_awpgfs${fcsthrs}.${GRID} parm=KWBC >> $pgmout 2>errfile
    export err=$?; err_chk 
    ##############################
    # Post Files to ${COMOUTwmo}
@@ -172,7 +175,9 @@ EOF
       fi
    fi
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ###############################################################################
 # GOOD RUN

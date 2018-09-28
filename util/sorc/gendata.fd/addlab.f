@@ -1,0 +1,172 @@
+C$$$  SUBPROGRAM DOCUMENTATION BLOCK
+C                .      .    .                                       .
+C SUBPROGRAM:    ADDLAB      CREATE AFOS LABELS
+C   PRGMMR: LARRY SAGER      ORG: W/NMC41    DATE: 98-04-22
+C
+C ABSTRACT: ADDLAB CREATES THE THREE HEADER LABELS THAT BEGIN 
+C   THE AFOS SURFACE PLOTFILE.                  
+C
+C PROGRAM HISTORY LOG:
+C
+C   96-12-10  LARRY SAGER
+C
+C   98-04-22  BOB HOLLERN,  MADE THE ROUTINE Y2K COMPLIANT
+C
+C USAGE:    CALL ADDLAB  (OAFOS, CDAT, CHEDA, XHED) 
+C
+C   INPUT ARGUMENT LIST:
+C     OAFOS    - BLOCK OF PACKED OBSERVATIONAL DATA
+C     CDAT     - DATE/TIME OF RUN                 
+C     CHEDA    - DATE INFO        
+C
+C   OUTPUT ARGUMENT LIST:      (INCLUDING WORK ARRAYS)
+C     XHED     - THE LABELS                     
+C
+C REMARKS: LIST CAVEATS, OTHER HELPFUL HINTS OR INFORMATION
+C
+C ATTRIBUTES:
+C   LANGUAGE: FORTRAN 90
+C   MACHINE:  IBM SP
+C
+C$$$
+      SUBROUTINE ADDLAB (OAFOS, CDAT, CHEDA, XHED)
+C 
+      INTEGER     ITM(8),   JTM(8)
+C
+      CHARACTER*1   OAFOS(*)        
+      CHARACTER*1   OWORK(10)
+      CHARACTER*1   OLIN(100)
+      CHARACTER*1   OXLN(60)     
+C
+      CHARACTER*10   CDAT,  CWORK
+C
+      CHARACTER*8   CNMC
+      CHARACTER*8   CTEMP
+      CHARACTER*9   CBYT
+      CHARACTER*10   CHEDA
+C
+      CHARACTER*4   FMON(12),   WDAY(7),   CDAY
+C
+      CHARACTER*100 LINE
+      CHARACTER*60  XLINE
+      CHARACTER*100 XHED
+C
+      EQUIVALENCE(OWORK,CWORK)
+      EQUIVALENCE(OWORK,IWORK)
+      EQUIVALENCE(OLIN,LINE)
+      EQUIVALENCE(OXLN,XLINE)
+C
+      DATA LINE(1:17) /'1260,0074,00000Z,'/
+      DATA FMON /'JAN ','FEB ','MAR ','APR ','MAY ','JUN ',
+     1           'JUL ','AUG ','SEP ','OCT ','NOV ','DEC '/
+      DATA IEND /Z'3B0D0A2020202020'/
+      DATA ISEC /Z'5A2C202020202020'/  
+      DATA IOPN /Z'010040007F003000'/
+      DATA CNMC /'NMCPLT00'/
+      DATA IBYT /Z'1B10040000000000'/
+      DATA IFIL /Z'C580202020202020'/
+      DATA XLINE(11:46)/'A0010200020481536285014250097501688'/
+      DATA LINE(46:70) /' N.AMER. SURFACE OBS.CRA '/
+      DATA ICYC /0/
+C
+      DATA  WDAY / 'SUN ', 'MON ', 'TUE ', 'WED ', 'THU ', 'FRI ',
+     A             'SAT '/
+C
+C     START WITH THE DATE.     
+C
+      CWORK = CDAT    
+C
+      READ(CWORK,100) IYR, IMT, IDY, IHR
+ 100  FORMAT ( I4, 3I2 )
+C
+      JTM(1) = IYR
+      JTM(2) = IMT
+      JTM(3) = IDY
+      JTM(4) = 0
+      JTM(5) = IHR
+      JTM(6) = 0
+      JTM(7) = 0
+      JTM(8) = 0
+C
+C     GET INTEGER DAY OF WEEK
+      CALL W3DOXDAT( JTM, JDOW, JDOY, JDAY )
+C
+      CDAY = WDAY(JDOW)
+C
+C     GET UTC DATE/TIME DATA
+      CALL W3UTCDAT( ITM )
+C
+      ITE = (100*ITM(5)) + ITM(6)
+      CALL BIN2CH(ITE,CTEMP,8,'A99')
+C           
+C     CREATE THE LABELS
+C
+      IWORK = IOPN
+      call byteswap(iwork,8,1)
+C
+      XHED(1:7) = CWORK(1:7)
+C
+      XHED(8:15) = CNMC   
+      XHED(14:16) = CHEDA(1:3)
+      IWORK = IBYT
+      call byteswap(iwork,8,1)
+C
+      XHED(17:24) = CWORK(1:8)
+C
+      IWORK = IFIL
+      call byteswap(iwork,8,1)
+C
+      XLINE(1:2) = CWORK(1:2)
+      XLINE(3:10) = CNMC
+      XLINE(9:11) = CHEDA(1:3)
+C
+      CWORK = CDAT   
+C
+      XLINE(46:47) = CWORK(9:10)
+C
+      XLINE(48:49) = CWORK(7:8)
+C
+      XLINE(50:51) = CWORK(5:6)
+C
+      XLINE(52:53) = CWORK(3:4)
+C
+      XLINE(54:57) = CTEMP(5:8) 
+C
+      IWORK = IEND
+      call byteswap(iwork,8,1)
+      XLINE(58:59) = CWORK(2:3)
+C
+      CWORK = CDAT     
+C
+      LINE(18:19) = CWORK(9:10)
+C
+      LINE(20:21) = 'Z '
+      LINE(22:25) = CDAY(1:4)  
+C
+      LINE(26:27) = CWORK(7:8)
+C
+      LINE(33:36) = CWORK(1:4)
+      LINE(28:28) = ' '
+      LINE(29:32) = FMON(IMT)  
+      LINE(37:37) = ' '
+      CWORK(1:8) = CTEMP
+      LINE(38:39) = CWORK(5:6)
+      LINE(40:41) = CWORK(7:8)
+      LINE(42:42) = ' '
+      LINE(43:45) = CHEDA(1:3)
+      
+      IWORK = IEND
+      call byteswap(iwork,8,1)
+      LINE(71:73) = CWORK(1:3)
+C
+C     STORE THE LABELS INTO THE AFOS PRODUCT ARRAYs
+C
+      DO J = 1,59
+         OAFOS(J) = OXLN(J)
+      END DO
+      DO J = 1,73
+         OAFOS(J+59) = OLIN(J)
+      END DO
+C
+      RETURN
+      END

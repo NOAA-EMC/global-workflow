@@ -45,6 +45,7 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ######################################
 # Set up the GEMPAK directory
@@ -78,11 +79,12 @@ export model=${model:-gfs}
 # Define COM directories
 ##############################################
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/nawips}
-export COMINgfs=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
+export COMINgfs=${COMINgfs:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 export pgmout=OUTPUT.$$

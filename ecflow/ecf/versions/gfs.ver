@@ -1,0 +1,24 @@
+export gfs_ver="v15.0.0pre9"
+
+export ips_ver="18.0.1.163"
+export impi_ver="18.0.1"
+export EnvVars_ver="1.0.2"
+
+export g2tmpl_ver="1.5.0"
+export crtm_ver="2.2.5"
+export ESMF_ver="7_1_0r"
+export util_shared_ver="1.0.8" # NOTE: Presently only exists in dev.
+
+export grib_util_ver="1.1.0"   # NOTE: Presently only exists in dev.
+
+export NCO_ver="4.7.0"
+export HDF5_serial_ver="1.10.1"
+export NetCDF_ver="4.5.0"
+export CFP_ver="2.0.1"
+export USE_CFP=YES
+
+export gempak_ver="7.3.1"
+
+export bufr_dumplist_ver="1.5.0"
+export dumpjb_ver="4.0.0"
+export NCL_ver="6.4.0"

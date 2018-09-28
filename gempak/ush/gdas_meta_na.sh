@@ -32,7 +32,7 @@ fi
 export pgm=gdplot2_nc; prep_step
 startmsg
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 GDFILE	= F-GDAS | ${PDY2}/${cyc}00
 GDATTIM	= FALL
 DEVICE	= $device
@@ -107,6 +107,12 @@ export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 
 if [ $SENDCOM = "YES" ] ; then
   mv gdas.meta ${COMOUT}/gdas_${PDY}_${cyc}_na
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File gdas.meta does not exist."
+    exit $err
+  fi
+
   if [ $SENDDBN = "YES" ] ; then
     $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
      $COMOUT/gdas_${PDY}_${cyc}_na

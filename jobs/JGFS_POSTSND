@@ -78,7 +78,9 @@ env
 $SCRbufrsnd/exgfs_postsnd.sh.ecf
 ########################################################
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 ##########################################
 # Remove the Temporary working directory

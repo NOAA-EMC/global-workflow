@@ -1,0 +1,258 @@
+#!/bin/ksh
+#########################################################################
+#
+#   Script:  exgfs_fax.sh.ecf
+#
+#   This scripts creates GEMPAK .tiff images of forecast fields from
+#   GFS model output for WAF aviation charts.
+#
+#
+#   History:   Ralph Jones     02/16/2005  JIF original version.
+#              Steve Lilly     02/28/2007  Change gdplot3 to gdplot3_tiff
+#                                          and remove gpend
+#              Scott Jacocbs   07/07/2008  Add "tall" labels for C and Z
+#                                          products
+#
+#
+#########################################################################
+
+msg=" Make GEMPAK GIFS utility"
+postmsg "$jlogfile" "$msg"
+job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
+
+cd $DATA
+
+set -x
+
+cp $FIXgempak/tiffprod.tbl .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File tiffprod.tbl does not exist."
+   exit $err
+fi
+
+#  Parse PDY and find base time and month name
+
+imon=`echo $PDY | cut -c5-6`
+
+# MON=`month_name.sh $imon MON`
+MON=`${UTILgfs}/ush/month_name.sh $imon MON`
+DAY=`echo $PDY | cut -c7-8`
+YEAR=`echo $PDY | cut -c1-4`
+
+BASETIME="${cyc}UTC $MON $DAY $YEAR"
+echo "\n BASETIME = $BASETIME \n"
+
+#  Create label files
+
+echo "WIND SPEED IN KNOTS, TEMPS UNSIGNED" > ur_perm.t
+echo "UNLESS POSITIVE" >> ur_perm.t
+
+echo " WORLD AREA FORECAST CENTER " > ur_label.t
+echo " WASHINGTON " >> ur_label.t
+echo "          " >> ur_label.t
+echo " FL LEV   WINDS/TEMPERATURES " >> ur_label.t
+echo "          " >> ur_label.t
+echo " VALID VALDTIME " >> ur_label.t
+echo " BASED ON BASETIME " >> ur_label.t
+echo "          " >> ur_label.t
+echo "          " >> ur_label.t
+echo "          " >> ur_label.t
+ 
+#  Create tall label files
+
+echo "WIND SPEED IN KNOTS" > tall_ur_perm.t
+echo "TEMPS UNSIGNED UNLESS POSITIVE" >> tall_ur_perm.t
+
+echo "WORLD AREA FORECAST " > tall_ur_label.t
+echo "CENTER, WASHINGTON " >> tall_ur_label.t
+echo "WINDS/TEMPERATURES " >> tall_ur_label.t
+echo "FL LEV " >> tall_ur_label.t
+echo "VALID " >> tall_ur_label.t
+echo "VALDTIME " >> tall_ur_label.t
+echo "BASED ON " >> tall_ur_label.t
+echo "BASETIME " >> tall_ur_label.t
+echo "          " >> tall_ur_label.t
+echo "          " >> tall_ur_label.t
+
+#################################
+#  Loop through forecast times
+#################################
+
+for fhr in `echo ${fhr_list}`
+do
+        OUTP=">"
+#        rm chart.list
+        ncharts=0
+
+        ###################################################
+        # Find fourth character of WMO header (based on fhr)
+        ###################################################
+        case $fhr in
+          06)  char4=B  ;;
+          12)  char4=C  ;;
+          18)  char4=D  ;;
+          24)  char4=E  ;;
+          30)  char4=F  ;;
+          36)  char4=G  ;;
+           *)  echo "\n Invalid forecast hour - ABORT \n"
+               exit     ;;
+        esac
+
+        ###################################################
+        # Compute valid time for this forecast hour
+        ###################################################
+#        verfdate.sh $PDY $cyc $fhr
+         ${UTILgfs}/ush/verfdate.sh $PDY $cyc $fhr
+        cat verfdate.txt | read fy fm fd valid dum monvrf
+          echo "\n $fy $fm $fd $valid $monvrf \n"
+
+        VALDTIME="${valid}UTC ${monvrf} ${fd} ${fy}"
+          echo "\n VALDTIME = $VALDTIME \n"
+
+        ###################################################
+        # Set grid date and input file name
+        ###################################################
+        gdattim="`echo ${PDY} | cut -c3-8`/${cyc}00F0${fhr}"
+          echo "\n gdattim = $gdattim \n"
+
+        subdate="`echo ${PDY} | cut -c3-8`\/${cyc}00F0${fhr}"
+          echo " subdate = $subdate \n"
+
+        ###################################################
+        # Make GEMPAK File
+        ###################################################
+        export GRIB=pgrbf
+        export finc=3
+        export EXT=""
+        export DBN_ALERT_TYPE=NONE
+        export fend=$fhr
+        export fstart=$fhr
+        export COMOUT_HOLD=$COMOUT
+        export SENDDBN_HOLD=$SENDDBN
+        export SENDDBN=NO
+        export COMOUT=$DATA
+
+        $HOMEgfs/scripts/exnawips.sh.ecf
+
+        export COMOUT=$COMOUT
+        export SENDDBN=$SENDDBN_HOLD
+
+        mv ${NET}_${PDY}${cyc}f0${fhr} gem_grids.gem
+        gdfile=gem_grids.gem
+
+        ###################################################
+        # Insert GDATTIM for this date and fhr into local
+        # copy of big parm file
+        ###################################################
+        cp $FIXgfs/waf1 .
+        export err=$?
+        if [[ $err -ne 0 ]] ; then
+           echo " File waf1 does not exist."
+           exit $err
+        fi
+        
+        cp $FIXgfs/waf2 .
+        cp $FIXgfs/waf_tiff3.parm .
+        sed s/SUBDATE/$subdate/g waf_tiff3.parm > temp1.t
+        sed s/Q/$char4/g temp1.t > BIG_PARM
+
+        ###################################################
+        # Generate WMO labels
+        ###################################################
+#        for hdr in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+        for hdr in `awk '{print $2}' ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr`
+        do
+           echo $hdr > ${hdr}.wmo 
+        done
+
+        ###################################################
+        # Generate time stamp and level mark main labels
+        ###################################################
+        # Loop through 10 flight levels
+        ###################################################
+        for level in  050 100 140 180 240 300 340 390 450 630
+        do
+
+           ###################################################
+           # Find pressure for this flight level
+           ###################################################
+           case $level in
+                050)  plevel=85;;
+                100)  plevel=70;;
+                140)  plevel=60;;
+                180)  plevel=50;;
+                240)  plevel=40;;
+                300)  plevel=30;;
+                340)  plevel=25;;
+                390)  plevel=20;;
+                450)  plevel=15;;
+                630)  plevel=07;;
+            esac
+
+	    cp ur_label.t temp1.t
+            sed s/LEV/${level}/g temp1.t > temp2.t
+            sed s/BASETIME/"$BASETIME"/g temp2.t > temp1.t
+            sed s/VALDTIME/"$VALDTIME"/g temp1.t > stamp_${plevel}.t
+
+	    cp tall_ur_label.t temp1.t
+            sed s/LEV/${level}/g temp1.t > temp2.t
+            sed s/BASETIME/"$BASETIME"/g temp2.t > temp1.t
+            sed s/VALDTIME/"$VALDTIME"/g temp1.t > tall_stamp_${plevel}.t
+        done
+
+        ##############################################
+        # Execute the GEMPAK program
+        ##############################################
+         $GEMEXE/gdplot3_tiff < BIG_PARM
+
+        ##############################################
+        # Create a file header and send the graphics to TOC
+        ##############################################
+#        for HEADER in `awk '{print $2}' $FIXshared/wafsubset_wmo.tbl.${fhr}hr`
+        for HEADER in `awk '{print $2}' ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr`
+        do
+#           ORIG=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
+           ORIG=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $3}'`
+
+#           FILE=`grep $HEADER $FIXshared/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+           FILE=`grep $HEADER ${UTILgfs}/fix/wafsubset_wmo.tbl.${fhr}hr | awk '{print $4}'`
+
+           PDYHH=${PDY}${cyc}
+           SUB=IMAG2000
+
+           INFILE=$DATA/$HEADER.tiff
+           OUTFILE=${COMOUTwmo}/${FILE}.${job_name}.ntc
+ 
+#           make_NTC_file.pl $HEADER $ORIG $PDYHH $SUB $INFILE $OUTFILE
+           ${UTILgfs}/ush/make_NTC_file.pl $HEADER $ORIG $PDYHH $SUB $INFILE $OUTFILE
+
+           if [ $SENDDBN = YES ]
+           then
+              $DBNROOT/bin/dbn_alert GRIB_LOW ${NET} ${job} $OUTFILE
+           fi
+
+        done
+done
+
+msg=" GEMPAK_GIF ${fhr} hour completed normally"
+postmsg "$jlogfile" "$msg"
+
+#####################################################################
+# GOOD RUN
+set +x
+echo "**************GFS WAF FAX gempak COMPLETED NORMALLY"
+echo "**************GFS WAF FAX gempak COMPLETED NORMALLY"
+echo "**************GFS WAF FAX gempak COMPLETED NORMALLY"
+set -x
+#####################################################################
+
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
+
+msg="HAS COMPLETED NORMALLY!"
+echo $msg
+postmsg "$jlogfile" "$msg"
+
+############## END OF SCRIPT #######################

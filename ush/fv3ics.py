@@ -27,8 +27,10 @@ def set_machine():
 
     if os.path.isdir('/scratch4'):
         return 'THEIA'
-    elif os.path.isdir('/gpfs'):
+    elif os.path.isdir('/gpfs/hps2'):
         return 'WCOSS_C'
+    elif os.path.isdir('/gpfs/dell2'):
+        return 'WCOSS_DELL_P3'
     else:
         raise NotImplementedError('Unknown machine')
 
@@ -41,6 +43,9 @@ def set_paths():
     elif machine in ['WCOSS_C']:
         homegfs = "/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/gfs.v15.0.0"
         stmp = "/gpfs/hps3/stmp/%s" % os.environ['USER']
+    elif machine in ['WCOSS_DELL_P3']:
+        homegfs = "/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/gfs.v15.0.0"
+        stmp = "/gpfs/dell2/stmp/%s" % os.environ['USER']
 
     return homegfs, stmp
 
@@ -50,6 +55,8 @@ def get_accountinfo():
     if machine in ['THEIA']:
         queue, account = 'batch', 'fv3-cpu'
     elif machine in ['WCOSS_C']:
+        queue, account = 'dev', 'FV3GFS-T2O'
+    elif machine in ['WCOSS_DELL_P3']:
         queue, account = 'dev', 'FV3GFS-T2O'
 
     return queue, account
@@ -70,6 +77,22 @@ def get_jobcard():
 #BSUB -W 0:30
 #BSUB -M 3072
 #BSUB -extsched 'CRAYLINUX[]' -R '1*{{select[craylinux && !vnode]}} + 24*{{select[craylinux && vnode]span[ptile=24] cu[type=cabinet]}}'
+#BSUB -e {icsdir}/{date}/<TEMPLATE_CASE>/<TEMPLATE_MEMBER>/fv3ics.log
+#BSUB -o {icsdir}/{date}/<TEMPLATE_CASE>/<TEMPLATE_MEMBER>/fv3ics.log
+#BSUB -cwd {pwd}
+'''.format(**mdict)
+
+    elif machine in ['WCOSS_DELL_P3']:
+
+        strings = '''
+#BSUB -J fv3ics_<TEMPLATE_MEMBER>
+#BSUB -P {account}
+#BSUB -q {queue}
+#BSUB -W 0:30
+#BSUB -M 3072
+#BSUB -n 1 
+#BSUB -R span[ptile=1] 
+#BSUB -R affinity[core(28):distribute=balance]
 #BSUB -e {icsdir}/{date}/<TEMPLATE_CASE>/<TEMPLATE_MEMBER>/fv3ics.log
 #BSUB -o {icsdir}/{date}/<TEMPLATE_CASE>/<TEMPLATE_MEMBER>/fv3ics.log
 #BSUB -cwd {pwd}
@@ -126,6 +149,10 @@ export SFCANL=$INIDIR/<TEMPLATE_SFC>
     if machine in ['WCOSS_C']:
         strings += '''
 export APRUNC="aprun -j 1 -n 1 -N 1 -d $OMP_NUM_THREADS_CH -cc depth"
+
+    if machine in ['WCOSS_DELL_P3']:
+        strings += '''
+export APRUNC="mpirun -n 1"
 target="cray"
 '''
 
@@ -175,6 +202,8 @@ def get_submitcmd():
     if machine in ['THEIA']:
         cmd = 'qsub'
     elif machine in ['WCOSS_C']:
+        cmd = 'bsub <'
+    elif machine in ['WCOSS_DELL_P3']:
         cmd = 'bsub <'
 
     return cmd

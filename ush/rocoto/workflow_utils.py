@@ -25,6 +25,7 @@ SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
                'GAEA':'moab',
                'WCOSS':'lsf',
+               'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
 
 class UnknownMachineError(Exception): pass
@@ -283,22 +284,32 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
+    if machine in [ 'WCOSS_DELL_P3']:
+        threads = cfg['nth_%s' % ltask]
+
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
     memstr = '' if memory is None else str(memory)
+    natstr = ''
 
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C','GAEA']:
+    if machine in ['GAEA', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
+
+        if machine in ['WCOSS_DELL_P3']:
+            natstr = "-R 'affinity[core(%d)]'" % (threads)
+
+            if task in ['arch', 'earc', 'getic']:
+                 natstr = "-R 'affinity[core(1)]'"
 
     elif machine in ['WCOSS']:
         resstr = '<cores>%d</cores>' % tasks
 
     queuestr = '&QUEUE_ARCH;' if task in ['arch', 'earc', 'getic'] else '&QUEUE;'
 
-    return wtimestr, resstr, queuestr, memstr
+    return wtimestr, resstr, queuestr, memstr, natstr
 
 
 def create_crontab(base, cronint=5):

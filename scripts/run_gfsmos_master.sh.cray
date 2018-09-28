@@ -47,12 +47,6 @@ export SENDCOM=YES
 #------------------ 
 
 dateIn=$1
-
-if [ $REALTIME = "YES" ]; then
-    GDATE=`$NDATE -24 $dateIn`
-    dateIn=$GDATE
-fi
-
 export PDY=`echo $dateIn | cut -c 1-8`
 export cyc=`echo $dateIn | cut -c 9-10`
 export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
@@ -108,7 +102,10 @@ fi
 
 # Load modules
 module load prod_util
-module grib_util/1.0.5
+
+module unload grib_util/1.0.3             
+module use /usrx/local/nceplibs/modulefiles
+module load grib_util/1.1.0
 
 # VARIABLES TO SET
 # GFSDIR should be set to the directory containing the input GFS FV3 data
@@ -170,14 +167,17 @@ bsub -J $job \
 ######################################################################## 
 #  JGFSMOS_FORECAST
 ######################################################################## 
-export COMINhourly=$PTMPROOT/hourly.$PDY
-if [[ ! -d $COMINhourly ]]; then
-   mkdir -p $COMINhourly
-fi
-\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}03 $COMINhourly/sfctbl.03
-\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
-\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
-\cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
+if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
+   export COMINhourly=$PTMPROOT/hourly.$PDY
+   if [[ ! -d $COMINhourly ]]; then
+      mkdir -p $COMINhourly
+   fi
+   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}03 $COMINhourly/sfctbl.03
+   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}09 $COMINhourly/sfctbl.09
+   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}15 $COMINhourly/sfctbl.15
+   \cp /gpfs/${siteprefix}d1/mdl/mdlstat/save/rotate/hry/${PDY}21 $COMINhourly/sfctbl.21
+fi 
+
 #
 # Change COMIN to get files from user's PTMP "qprod" area 
 export COMIN=$COMOUT

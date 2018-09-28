@@ -1,0 +1,44 @@
+IAREA      2    09  2600
+IAREA      1    09  2300
+IAREA      4    09   000
+IAREA      5    09   216
+IAREA 000002000003003450
+IAREA      2    11   800
+IAREA      1    11  4400
+IAREA      4    11   116
+IAREA      5    11   096
+IAREA      2    12   800
+IAREA      1    12  3600
+IAREA      4    12   116
+IAREA      5    12   096
+IAREA      2    13   800
+IAREA      1    13  2804
+IAREA      4    13   116
+IAREA      5    13   096
+IAREA      2    14   800
+IAREA      1    14  4400
+IAREA      4    14   032
+IAREA      5    14   096
+IAREA      2    15   800
+IAREA      1    15  3600
+IAREA      4    15   032
+IAREA      5    15   096
+IAREA      2    16   800
+IAREA      1    16  2800
+IAREA      4    16   032
+IAREA      5    16   096
+IAREA      2    17   800
+IAREA      1    17  4400
+IAREA      4    17   110
+IAREA      5    17   096
+IAREA      2    18   800
+IAREA      1    18  3600
+IAREA      4    18   110
+IAREA      5    18   096
+IAREA      2    19   800
+IAREA      1    19  2800
+IAREA      4    19   110
+IAREA      5    19   096
+BOX  1490 1390    4   16
+BOX  1490 2390    4   16
+BOX  1490 6290    4   16

@@ -1,0 +1,148 @@
+#!/bin/sh
+
+set -xa
+export PS4='$SECONDS + '
+date
+
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+
+############################################
+# GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
+############################################
+
+##########################################################
+# obtain unique process id (pid) and make temp directory
+##########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+setpdy.sh
+. PDY
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDECF=${SENDECF:-YES}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export USHgfs=${USHgfs:-$HOMEgfs/ush}
+export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
+export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
+export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
+export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+
+###################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export model=${model:-gfs}
+
+##############################################
+# Define COM directories
+##############################################
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
+
+if [ $SENDCOM = YES ] ; then
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
+fi
+
+export pgmout=OUTPUT.$$
+
+env
+
+####################################
+# Specify Forecast Hour Range
+####################################
+export SHOUR=000
+export FHOUR=180
+export FHINC=003
+
+#######################################
+# Specify Restart File Name to Key Off
+#######################################
+restart_file=$COMIN/${RUN}.t${cyc}z.special.grb2if
+
+####################################
+# Specify Timeout Behavior of Post
+#
+# SLEEP_TIME - Amount of time to wait for
+#              a restart file before exiting
+# SLEEP_INT  - Amount of time to wait between
+#              checking for restart files
+####################################
+export SLEEP_TIME=900
+export SLEEP_INT=5
+
+####################################
+# Check if this is a restart
+####################################
+if test -f $COMIN/$RUN.t${cyc}z.control.goessimpgrb2
+then
+   modelrecvy=`cat < $COMIN/$RUN.t${cyc}z.control.goessimpgrb`
+   recvy_pdy=`echo $modelrecvy | cut -c1-8`
+   recvy_cyc=`echo $modelrecvy | cut -c9-10`
+   recvy_shour=`echo $modelrecvy | cut -c11-13`
+
+   if test $RERUN = "NO"
+   then
+      NEW_SHOUR=`expr $recvy_shour + $FHINC`
+      if test $NEW_SHOUR -ge $SHOUR
+      then
+         export SHOUR=$NEW_SHOUR
+      fi
+      if test $recvy_shour -ge $FHOUR
+      then
+         msg="Forecast Pgrb Generation Already Completed to $FHOUR"
+         postmsg "$jlogfile" "$msg"
+      else
+         msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
+         postmsg "$jlogfile" "$msg"
+      fi
+   fi
+fi
+
+#############################################################
+# Execute the script
+$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh.ecf
+export err=$?;err_chk
+#############################################################
+
+msg="JOB $job HAS COMPLETED NORMALLY!"
+postmsg $jlogfile "$msg"
+
+############################################
+# print exec I/O output
+############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ] ; then
+  rm -rf $DATA
+fi
+
+date

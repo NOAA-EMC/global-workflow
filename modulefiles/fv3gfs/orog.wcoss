@@ -14,4 +14,3 @@ module load bacio/v2.0.2
 module load NetCDF
 
 export FCMP=ifort
-export CCMP=icc

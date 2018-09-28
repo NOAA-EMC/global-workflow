@@ -1,9 +1,7 @@
 #! /usr/bin/env bash
 set -eux
 
-set +e
 source ./machine-setup.sh > /dev/null 2>&1
-set -e
 cwd=`pwd`
 
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
@@ -20,8 +18,9 @@ fi
 
 if [ $target = theia ]; then target=theia.intel ; fi
 
-cd fv3gfs.fd/tests
-FV3=$( cd ../FV3 ; pwd -P )
-
+cd fv3gfs.fd/
+FV3=$( pwd -P )/FV3
+cd tests/
 ./compile.sh "$FV3" "$target" "NCEP64LEV=Y HYDRO=N 32BIT=Y" 1
-mv -f fv3_1.exe ../NEMS/exe/fv3_gfs_nh.prod.32bit.x
+##mv -f fv3_1.exe ../NEMS/exe/fv3_gfs_nh.prod.32bit.x
+mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x

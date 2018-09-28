@@ -16,7 +16,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet ]; then
+if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet -a $target != dell]; then
     echo '$target value set to unknown or unsupported system'
     exit 1
 fi
@@ -26,10 +26,14 @@ LINK="ln -fs"
 
 pwd=$(pwd -P)
 
+#------------------------------
 #--model fix fields
+#------------------------------
 echo "target: $target"
 if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
+elif [ $machine = "dell" ]; then
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $target == "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 elif [ $target == "gaea" ]; then
@@ -57,7 +61,9 @@ if [ ! -z $FIX_DIR ]; then
 fi
 
 
+#------------------------------
 #--add gfs_post file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
@@ -73,7 +79,27 @@ cd ${pwd}/../ush                ||exit 8
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
 
+#------------------------------
+#--add gfs_wafs file if on Dell
+if [ $machine = dell ]; then 
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+cd ${pwd}/../parm               ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
+    $LINK ../sorc/gfs_wafs.fd/parm                           wafs
+cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+cd ${pwd}/../fix                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+fi
+
+
+#------------------------------
 #--add GSI/EnKF file
+#------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
@@ -94,7 +120,9 @@ cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
 
+#------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
+#------------------------------
 cd ${pwd}/../fix                ||exit 8
     [[ -d gdas ]] && rm -rf gdas
     mkdir -p gdas
@@ -130,31 +158,29 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_gnorms.pl    .
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_reduct.pl    .
     $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/ush/ozn_xtrct.sh                     .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_ck_stdout.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_err_rpt.sh             .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_verf_angle.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_verf_bcoef.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_verf_bcor.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v2.0.4/ush/radmon_verf_time.sh           .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_ck_stdout.sh           .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_err_rpt.sh             .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_angle.sh          .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcoef.sh          .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcor.sh           .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
     
+#------------------------------
 #--link executables 
+#------------------------------
 
 cd $pwd/../exec
 
-[[ -s fv3_gfs_nh.prod.32bit.x ]] && rm -f fv3_gfs_nh.prod.32bit.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/fv3_gfs_nh.prod.32bit.x .
+[[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
+$LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-#  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  
-#  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time
-#  cnvgrib copygb copygb2 degrib2 fsync_file grb2index grbindex grib2grib mdate ndate nhour tocgrib tocgrib2 tocgrib2super wgrib wgrib2
-
-if [[ $target != "jet" ]]; then
-    for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x ;do
-        [[ -s $gsiexe ]] && rm -f $gsiexe
-        $LINK ../sorc/gsi.fd/exec/$gsiexe .
+if [ $machine = dell ]; then 
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
 
@@ -178,7 +204,7 @@ if [[ $target == "jet" ]]; then
   done 
 fi
 
-for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
      [[ -s $gsiexe ]] && rm -f $gsiexe
      $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done

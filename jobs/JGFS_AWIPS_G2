@@ -47,6 +47,7 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ###################################
 # Specify NET and RUN Name and model
@@ -84,12 +85,17 @@ chmod 775 $DATA/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=$DATA/poescript
 
-export NODES=1
-export APRUN=${APRUN_AWIPSCFP:-"aprun -n 4 -N 4 -d2 -cc depth cfp"}
+ntasks=${NTASKS_AWIPS:-$(cat $DATA/poescript | wc -l)}
+ptile=${PTILE_AWIPS:-4}
+threads=${NTHREADS_AWIPS:-1}
+export OMP_NUM_THREADS=$threads
+APRUN="mpirun -n $ntasks cfp "
 
-echo " aprun is   $APRUN "
-$APRUN $DATA/poescript
-export err=$?;err_chk
+APRUN_AWIPSCFP=${APRUN_AWIPSCFP:-$APRUN}
+APRUNCFP=$(eval echo $APRUN_AWIPSCFP)
+
+$APRUNCFP $DATA/poescript
+export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"
 postmsg $jlogfile "$msg"

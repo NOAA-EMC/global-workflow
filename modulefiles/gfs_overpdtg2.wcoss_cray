@@ -1,7 +1,6 @@
 #%Module#####################################################
 ## Module file for overpdtg2
 #############################################################
-#module-whatis "overpdtg2"
 
 #
 #  Loading required Cray system modules
@@ -16,13 +15,7 @@
    module load PrgEnv-intel/5.2.56
    module switch intel intel/15.0.6.233
    module load bacio-intel/2.0.1
-   module load w3emc-intel/2.2.0
    module load w3nco-intel/2.0.6
-   module load ip-intel/3.0.0
-   module load sp-intel/2.0.2
-
-   # pre-implemented g2 v3.1.0
-   module use /gpfs/hps/nco/ops/nwtest/lib/modulefiles
    module load g2-intel/3.1.0
 
 # Loading IOBUF

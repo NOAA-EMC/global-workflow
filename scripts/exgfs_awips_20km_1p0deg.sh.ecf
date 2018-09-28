@@ -97,6 +97,11 @@ cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}    tmpfile2${fcsthrs}
 cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}   tmpfile2b${fcsthrs}
 cat tmpfile2${fcsthrs}   tmpfile2b${fcsthrs}  >  tmpfile${fcsthrs}
 $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile${fcsthrs}
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File: masterfile does not exist."
+   exit $err
+fi
 
 $WGRIB2 masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
 $WGRIB2 masterfile | grep -v ":PWAT:entire atmosphere" | $WGRIB2 -i -grib temp_gfs  masterfile
@@ -238,7 +243,9 @@ fi
 
 done
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ############################################################################################
 # GOOD RUN

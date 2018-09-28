@@ -20,7 +20,7 @@ global machines
 global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc
 
 
-machines = ['GAEA','THEIA', 'WCOSS_C']
+machines = ['THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
 
 def makedirs_if_missing(d):
@@ -111,6 +111,8 @@ Create COMROT experiment directory structure'''
         machine = 'THEIA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'
+    elif os.path.exists('/gpfs/dell2'):
+        machine = 'WCOSS_DELL_P3'
     else:
         print 'workflow is currently only supported on: %s' % ' '.join(machines)
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')

@@ -158,7 +158,7 @@ def get_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
 
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
@@ -166,7 +166,7 @@ def get_resources(dict_configs, cdump='gdas'):
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-        strings.append('\t<!ENTITY NATIVE_%s    "">\n'   % (taskstr))
+        strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         strings.append('\n')
 
@@ -185,7 +185,7 @@ def get_postgroups(post, cdump='gdas'):
     if cdump in ['gdas']:
         fhrs = range(fhmin, fhmax+fhout, fhout)
     elif cdump in ['gfs']:
-        fhmax = post['FHMAX_GFS']
+        fhmax = np.max([post['FHMAX_GFS_00'],post['FHMAX_GFS_06'],post['FHMAX_GFS_12'],post['FHMAX_GFS_18']])
         fhout = post['FHOUT_GFS']
         fhmax_hf = post['FHMAX_HF_GFS']
         fhout_hf = post['FHOUT_HF_GFS']
@@ -289,7 +289,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     dependencies = rocoto.create_dependency(dep=deps)
     fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    postenvars = envars + [fhrgrp] + [fhrlst]
+    ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+    postenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
     varname1, varname2, varname3 = 'grp', 'dep', 'lst'
     varval1, varval2, varval3 = get_postgroups(dict_configs['post'], cdump=cdump)
     vardict = {varname2: varval2, varname3: varval3}

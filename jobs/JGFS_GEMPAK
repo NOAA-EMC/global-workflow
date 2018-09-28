@@ -94,6 +94,10 @@ rm -f poescript
 ##################################################################
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.1 " >>poescript
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.2 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.3 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.4 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.5 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.6 " >>poescript
 
 #################################################################
 # Execute the script for the half-degree grib
@@ -101,6 +105,9 @@ echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs 384 GFS_GEMPAK &> $DATA/gfs_1p0.$$.2 
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.1 " >>poescript
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.2 " >>poescript
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.3 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.4 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.5 " >>poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p50 384 GFS_GEMPAK &> $DATA/gfs_0p5.$$.6 " >>poescript
 
 #################################################################
 # Execute the script for the quater-degree grib
@@ -111,6 +118,10 @@ echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.4 " >> poescript
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.5 " >> poescript
 echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.6 " >> poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.7 " >> poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.8 " >> poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.9 " >> poescript
+echo "time $SRCgfs/exgfs_nawips.sh.ecf gfs_0p25 384 GFS_GEMPAK &> $DATA/gfs_0p25.$$.10 " >> poescript
 
 ####################################################################
 # Execute the script to create the 35km Pacific grids for OPC
@@ -138,13 +149,15 @@ export MP_CMDFILE=$DATA/poescript
 
 ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
 ptile=${PTILE_GEMPAK:-4}
-threads=${NTHREADS_GEMPAK:-3}
+threads=${NTHREADS_GEMPAK:-1}
 export OMP_NUM_THREADS=$threads
+APRUN="mpirun -n $ntasks cfp "
 
-APRUN="aprun -n $ntasks -N $ptile -d $threads cfp "
+APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-$APRUN}
+APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
 
-APRUNCFP=${APRUN_GEMPAKCFP:-$APRUN}
 $APRUNCFP $DATA/poescript
+export err=$?; err_chk
 
 cat $DATA/gfs*.$$.?
 

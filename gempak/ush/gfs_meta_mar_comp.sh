@@ -14,7 +14,9 @@
 set -x
 #
 export PS4='MAR_COMP_F${fend}:$SECONDS + '
-mkdir $DATA/MAR_COMP
+rm -Rf $DATA/GEMPAK_META_MAR
+mkdir -p -m 775 $DATA/GEMPAK_META_MAR $DATA/MAR_COMP
+
 cd $DATA/MAR_COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -25,11 +27,35 @@ metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 PDY2=`echo $PDY | cut -c3-`
 #
-export MODEL=/com/nawips/prod
+# BV export MODEL=/com/nawips/prod
 #XXW export HPCGFS=${MODEL}/${mdl}.$PDY
-export HPCGFS=${COMROOT}/nawips/${envir}/${mdl}.$PDY
-export HPCNAM=${COMINROOTnam}/nam.$PDY
-export HPCNGM=${MODEL}/ngm.$PDY
+# BV export HPCGFS=${COMROOT}/nawips/${envir}/${mdl}.$PDY
+export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/nawips
+export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/nawips
+export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/nawips
+export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/nawips
+export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/nawips
+if [ ${cyc} -eq 00 ] ; then
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+elif [ ${cyc} -eq 06 ] ; then
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+elif [ ${cyc} -eq 12 ] ; then
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
+elif [ ${cyc} -eq 18 ] ; then
+   cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_MAR
+   cp $COMIN06/gfs_${PDY}06f* $DATA/GEMPAK_META_MAR
+   cp $COMIN12/gfs_${PDY}12f* $DATA/GEMPAK_META_MAR
+   cp $COMIN18/gfs_${PDY}18f* $DATA/GEMPAK_META_MAR
+fi
+export COMIN=$DATA/GEMPAK_META_MAR
+
+# export HPCNAM=${COMINnam}.$PDY
+export HPCNAM=${COMINnam}.$PDY
+
+# export HPCNGM=${MODEL}/ngm.$PDY
 #
 # DEFINE YESTERDAY
 PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
@@ -101,7 +127,7 @@ if [ ${cyc} -eq 12 ] ; then
                 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -153,15 +179,16 @@ export err=$?;err_chk
         done
         # COMPARE THE 1200 UTC GFS MODEL TO THE 0000 UTC UKMET MODEL
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        export HPCUKMET=${COMINROOTukmet}/ukmet.${PDY}
+        export HPCUKMET=${COMINukmet}.${PDY}
         grid2="F-UKMETHPC | ${PDY2}/0000"
-        for gfsfhr in 00 12 24 36 48 60 84 108
+        # for gfsfhr in 00 12 24 36 48 60 84 108
+        for gfsfhr in 00 12 24 84 108
         do
             ukmetfhr=F`expr ${gfsfhr} + 12`
             gfsfhr=F${gfsfhr}
 	    
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -232,14 +259,14 @@ export err=$?;err_chk
         done
         # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        grid2=${COMINROOTecmwf}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12 
+        grid2=${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12 
         for gfsfhr in 00 24 48 72 96 120
         do
             ecmwffhr=F`expr ${gfsfhr} + 24`
 	    gfsfhr=F${gfsfhr}
 		
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -311,14 +338,14 @@ export err=$?;err_chk
         # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC NAM AND NGM
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         grid2="F-NAMHPC | ${PDY2}/${cyc}00"
-        grid2ngm="F-NGMHPC | ${PDY2}/${cyc}00"
+        # grid2ngm="F-NGMHPC | ${PDY2}/${cyc}00"
         for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84
         do
             namfhr=F${gfsfhr}
-            ngmfhr=F${gfsfhr}
+        #   ngmfhr=F${gfsfhr}
             gfsfhr=F${gfsfhr}
 		
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -360,16 +387,6 @@ TITLE   = 6/-2/~ ? NAM @ HGT (12Z CYAN)!0
 l
 run
 
-CLEAR   = no
-GDFILE  = ${grid2ngm}
-GDATTIM = ${ngmfhr}
-GDPFUN  = sm5s(hght)
-LINE    = 3/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 3/-3/~ ? NGM @ HGT (12Z GREEN)!0
-l
-run
-
 CLEAR   = yes
 GLEVEL  = 0
 GVCORD  = none
@@ -391,16 +408,6 @@ GDATTIM = ${namfhr}
 LINE    = 6/1/3/2
 HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
 TITLE   = 6/-2/~ ? NAM PMSL (12Z CYAN)!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2ngm}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ngmfhr}
-LINE    = 3/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 3/-3/~ ? NGM PMSL (12Z GREEN)!0
 l
 run
 
@@ -428,14 +435,17 @@ if [ ${cyc} = "00" ] ; then
             if [ ${runtime} = "18" ] ; then
                 cyc2="18"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
-		export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${PDYm1}
+		# BV export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${PDYm1}
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
+
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="06"
                 testgfsfhr="114"
             elif [ ${runtime} = "12" ] ; then
                 cyc2="12"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
-		export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${PDYm1}
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
+
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
                 add="12"
                 testgfsfhr="114"
@@ -469,7 +479,7 @@ if [ ${cyc} = "00" ] ; then
                     title2=`echo ${title4}`
                 fi
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -522,14 +532,15 @@ export err=$?;err_chk
         done
         # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC UKMET FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-	export HPCUKMET=${COMINROOTukmet}/ukmet.${PDYm1}
+	export HPCUKMET=${COMINukmet}.${PDYm1}
         grid2="F-UKMETHPC | ${PDY2m1}/1200"
-        for gfsfhr in 00 12 24 36 48 60 84 108
+        # for gfsfhr in 00 12 24 36 48 60 84 108
+        for gfsfhr in 00 12 24 84 108
         do 
             ukmetfhr=F`expr ${gfsfhr} + 12`
             gfsfhr=F${gfsfhr}
 export pgm=gdplot2_nc;. prep_step; startmsg    
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -601,13 +612,13 @@ export err=$?;err_chk
         done
         # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        grid2="${COMINROOTecmwf}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
+        grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
         for gfsfhr in 12 36 60 84 108
         do
             ecmwffhr=F`expr ${gfsfhr} + 12`
             gfsfhr=F${gfsfhr}
 	    
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -680,15 +691,13 @@ export err=$?;err_chk
         # COMPARE THE 0000 UTC GFS MODEL TO THE 0000 UTC NAM AND NGM
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         grid2="F-NAMHPC | ${PDY2}/${cyc}00"
-        grid2ngm="F-NGMHPC | ${PDY2}/${cyc}00"
         for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84
         do
             namfhr=F${gfsfhr}
-            ngmfhr=F${gfsfhr}
             gfsfhr=F${gfsfhr}
 		
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -730,16 +739,6 @@ TITLE   = 6/-2/~ ? NAM @ HGT (00Z CYAN)!0
 l
 run
 
-CLEAR   = no
-GDFILE  = ${grid2ngm}
-GDATTIM = ${ngmfhr}
-GDPFUN  = sm5s(hght)
-LINE    = 3/1/3/2
-HILO    = 6/H#;L#//5/5;5/y
-TITLE   = 3/-3/~ ? NGM @ HGT (00Z GREEN)!0
-l
-run
-
 CLEAR   = yes
 GLEVEL  = 0
 GVCORD  = none
@@ -763,16 +762,6 @@ GDATTIM = ${namfhr}
 LINE    = 6/1/3/2
 HILO    = 5/H#;L#/1018-1060;900-1012/5/10;10/y
 TITLE   = 6/-2/~ ? NAM PMSL (CYAN)!0
-l
-run
-
-CLEAR   = no
-GDFILE  = ${grid2ngm}
-GDPFUN  = sm5s(pmsl)
-GDATTIM = ${ngmfhr}
-LINE    = 3/1/3/2
-HILO    = 6/H#;L#/1018-1060;900-1012/5/10;10/y
-TITLE   = 3/-3/~ ? NGM PMSL (00Z GREEN)!0
 l
 run
 
@@ -839,7 +828,7 @@ if [ ${cyc} -eq "18" ] ; then
                 fi
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes
@@ -916,7 +905,7 @@ if [ ${cyc} -eq "06" ] ; then
             elif [ ${runtime} = "18" ] ; then
                 cyc2="18"
 		#XXW export HPCGFS=${MODEL}/${mdl}.${PDYm1}
-		export HPCGFS=/com/nawips/${envir}/${mdl}.${PDYm1}
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/nawips
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="12"
                 testgfsfhr="72"
@@ -951,7 +940,7 @@ if [ ${cyc} -eq "06" ] ; then
                 fi
 export pgm=gdplot2_nc;. prep_step; startmsg
 
-gdplot2_nc << EOF
+$GEMEXE/gdplot2_nc << EOF
 DEVICE  = ${device}
 MAP     = 1/1/1/yes
 CLEAR   = yes

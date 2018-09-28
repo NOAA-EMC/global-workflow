@@ -1,0 +1,56 @@
+SHELL=/bin/sh
+#
+SRCS=	mkgfsawps.f
+
+OBJS=	mkgfsawps.o
+
+# Tunable parameters
+#
+# FC		Name of the fortran compiling system to use
+# LDFLAGS	Flags to the loader
+# LIBS		List of libraries
+# CMD		Name of the executable
+# PROFLIB	Library needed for profiling
+#
+FC =       ifort     
+
+LDFLAGS =
+IOMP5_LIB=/opt/intel/composer_xe_2015.3.187/compiler/lib/intel64/libiomp5.a 
+
+LIBS =  -Xlinker --start-group ${W3NCO_LIBd} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${BACIO_LIB4} ${IOMP5_LIB}
+
+CMD =		mkgfsawps
+PROFLIB =	-lprof
+
+# To perform the default compilation, use the first line
+# To compile with flowtracing turned on, use the second line
+# To compile giving profile additonal information, use the third line
+# WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
+FFLAGS =        -O3 -g -convert big_endian -r8 -i4 -assume noold_ldout_format
+
+#FFLAGS =	 -F
+#FFLAGS =	 -Wf"-ez"
+
+# Lines from here on down should not need to be changed.  They are the
+# actual rules which make uses to build a.out.
+#
+all:		$(CMD)
+
+$(CMD):		$(OBJS)
+	$(FC) -o $(LDFLAGS) $(@) $(OBJS) $(LIBS)
+	rm -f $(OBJS)
+
+# Make the profiled version of the command and call it a.out.prof
+#
+$(CMD).prof:	$(OBJS)
+	$(FC) -o  $(LDFLAGS)  $(@) $(OBJS) $(LIBS)
+	-rm -f $(OBJS)
+
+clean:
+	-rm -f $(OBJS)
+
+clobber:	clean
+	-rm -f $(CMD) $(CMD).prof
+
+void:	clobber
+	-rm -f $(SRCS) makefile

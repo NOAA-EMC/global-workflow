@@ -31,6 +31,11 @@ PDY2=`echo ${PDY} | cut -c3-`
 # Copy in datatype table to define gdfile type
 #
 cp $FIXgempak/datatype.tbl datatype.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File datatype.tbl does not exist."
+   exit $err
+fi
 
 #
 # DEFINE YESTERDAY
@@ -105,7 +110,7 @@ for area in $areas
 
 # 500 MB HEIGHT METAFILE
 
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 \$MAPFIL = mepowo.gsf
 PROJ     = ${proj}
 GAREA    = ${garea}
@@ -202,6 +207,12 @@ export err=$?;export pgm="GEMPAK CHECK FILE";err_chk
 if [ $SENDCOM = "YES" ] ; then
     mkdir -p -m 775 ${COMOUTecmwf}.${PDY}/meta
     mv ecmwfver.meta ${COMOUTecmwf}.${PDY}/meta/ecmwfver_${PDY}_${cyc}
+    export err=$?
+    if [[ $err -ne 0 ]] ; then
+       echo " File ecmwfver.meta does not exist."
+       exit $err
+    fi
+
     if [ $SENDDBN = "YES" ] ; then
         ${DBNROOT}/bin/dbn_alert MODEL ECMWFVER_HPCMETAFILE $job \
         ${COMOUTecmwf}.${PDY}/meta/ecmwfver_${PDY}_${cyc}

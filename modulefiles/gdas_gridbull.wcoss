@@ -1,9 +1,6 @@
 #%Module################################################
 # Modfule file for gdas_gridbull
 ########################################################
-module-whatis "gridbull"
-
-set ver v14.1.0
 
 # Loading Intel Compiler Suite
 module load ics/12.1

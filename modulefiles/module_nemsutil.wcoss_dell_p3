@@ -1,0 +1,12 @@
+#%Module#####################################################
+## Module file for nemsutil
+#############################################################
+
+module load ips/18.0.1.163
+module load impi/18.0.1
+
+module load bacio/2.0.2
+module load w3nco/2.0.6
+module load nemsio/2.2.3 
+
+export FCMP=ifort

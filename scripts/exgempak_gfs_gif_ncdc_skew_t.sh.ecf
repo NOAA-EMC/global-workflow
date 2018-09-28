@@ -26,18 +26,23 @@ then
     do
         icnt=1
         maxtries=180
+        export GRIBFILE=${COMIN}/${RUN}_${PDY}${cyc}f0${fhr}
         while [ $icnt -lt 1000 ]
         do
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
             break
           else
-            let "icnt=icnt+1"
+            msg="The process is waiting ... ${GRIBFILE} file to proceed."
+            postmsg "${jlogfile}" "$msg"
             sleep 20
+            let "icnt=icnt+1"
           fi
           if [ $icnt -ge $maxtries ]
           then
-            msg="ABORTING after 1 hour of waiting for F$fhr to end."
-            err_exit $msg
+            msg="ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
+            postmsg "${jlogfile}" "$msg"
+            export err=7 ; err_chk
+            exit $err
           fi
         done
 
@@ -74,10 +79,14 @@ export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 cp ${NWROOTp1}/dictionaries/sonde.land.tbl .
 cp ${NWROOTp1}/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-
 cp $COMINgfs/${model}.$cycle.adpupa.tm00.bufr_d fort.40
-
-$RDBFMSUA  >> $pgmout 2> errfile
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File ${model}.$cycle.adpupa.tm00.bufr_d does not exist."
+   exit $err
+fi
+# $RDBFMSUA  >> $pgmout 2> errfile
+${UTILgfs}/exec/rdbfmsua >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 
@@ -107,10 +116,9 @@ set +x
 echo "********** JGFS_GEMPAK_NCDC_UPAPGIF COMPLETED"
 set -x
 ############################################################
-
-cat $pgmout
-
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 msg="HAS COMPLETED NORMALLY!"
-
 
 exit

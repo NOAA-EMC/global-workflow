@@ -1,0 +1,25 @@
+#%Module#####################################################
+## Module file for GFS util
+#############################################################
+#
+#  Loading required system modules
+#
+
+# Loading Intel Compiler Suite
+module load intel/18.1.163
+module load impi/5.1.2.150
+module load ncl/6.3.0
+module load gempak/7.4.2
+
+# Loding nceplibs modules
+module use -a /scratch3/NCEPDEV/nwprod/lib/modulefiles
+module load bacio/v2.0.1
+module load w3emc/v2.2.0
+module load w3nco/v2.0.6
+module load ip/v3.0.0
+module load sp/v2.0.2
+module load bufr/v11.1.0
+module load graphics/v2.0.0
+
+export GEMINC=/apps/gempak/7.4.2/gempak/include
+export GEMOLB=/apps/gempak/7.4.2/os/linux64/lib

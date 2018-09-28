@@ -15,7 +15,7 @@
 #
 set -eux
 
-source ./machine-setup.sh
+source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
 # Check final exec folder exists
@@ -82,16 +82,21 @@ elif [ $target = wcoss_cray ]; then
     #export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
     export FFLAGS="-openmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
-elif [ $target = jet   ]; then
+elif [ $target = wcoss_dell_p3 ]; then
 
-    targetx=theia
-    source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target > /dev/null 2>&1
-    module list
+    targetx=wcoss_dell_p3
+    if [ $USE_PREINST_LIBS = true ]; then
+      source ../modulefiles/modulefile.storm_reloc_v5.1.0.$target           > /dev/null 2>&1
+    else
+      source ../modulefiles/modulefile.storm_reloc_v5.1.0.${target}_userlib > /dev/null 2>&1
+    fi
+    module load  ips/18.0.1.163 impi/18.0.1         
 
-    export LIBS_REL="${W3NCO_LIBd}"
+    export LIBS_REL="${W3NCO_LIB4}"
 
-    export FC=mpiifort
-    export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+    #export FFLAGS="-qopenmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+    export FFLAGS="-qopenmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+
 else
 
     echo "Unknown machine = $target"
@@ -101,7 +106,7 @@ fi
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
 export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
-export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${W3NCO_LIB4} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
+export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
 export LIBS_SIG="${SIGIO_INC4}"
 export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"

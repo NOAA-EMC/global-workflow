@@ -9,7 +9,7 @@
 #
 set -x
 export PS4='qpf:$SECONDS + '
-mkdir $DATA/precip
+mkdir -p -m 775 $DATA/precip
 cd $DATA/precip
 cp $FIXgempak/datatype.tbl datatype.tbl
 
@@ -88,7 +88,7 @@ elif [ ${cyc} = "18" ] ; then
 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
-gdplot2_nc << EOFplt
+$GEMEXE/gdplot2_nc << EOFplt
 gdfile   = F-${MDL} | ${PDY2}/${cyc}00
 garea    = us
 proj     = 
