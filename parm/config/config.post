@@ -22,7 +22,7 @@ export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
 export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 export GOESF=YES                              # goes image
-export GTGF=NO                                # gtg icing product
+export GTGF=YES                               # gtg icing product
 export FLXF=YES                               # grib2 flux file written by post
 export PGB1F=YES
 
