@@ -125,11 +125,6 @@ export SENDCOM="YES"
 export SENDDBN="YES"
 export SENDSDM="NO"
 
-# Use operational dump if run by nco
-if [ $RUN_ENVIR = "nco" ]; then
-    export COMIN_OBS=${ROTDIR}/${RUN}.${PDY}/${cyc}
-fi
-
 # Resolution specific parameters
 export LEVS=65
 export CASE="C768"
