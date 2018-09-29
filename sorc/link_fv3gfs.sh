@@ -187,15 +187,6 @@ else
 fi
 #------------------------------
 
-#------------------------------
-#--link docs (release notes)
-#------------------------------
-
-cd $pwd/../docs
-[[ -s Release_Notes.fv3gfs_da.v15.0.0.txt ]] && rm -f Release_Notes.fv3gfs_da.v15.0.0.txt
-$LINK ../sorc/gsi.fd/doc/Release_Notes.fv3gfs_da.v15.0.0.txt .
-
-
 
 exit 0
 
