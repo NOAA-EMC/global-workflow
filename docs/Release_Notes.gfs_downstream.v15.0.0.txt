@@ -1,5 +1,4 @@
-RELEASE NOTES: gfs.v14.1.0
-        v15.0.0 - released Jan 24, 2019
+RELEASE NOTES: GFS.v15.0.0 downstream products - released Jan 24, 2019
 
 CODE CHANGES
  * No code change

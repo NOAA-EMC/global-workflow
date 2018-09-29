@@ -1,132 +1,182 @@
-FV3GFS DA RELEASE NOTES (v15.0.0)
+GFS RELEASE NOTES (GFS.v15.0.0)  -- January 24, 2019
 
-GIT TAG 
-   * The FV3GFS DA is in NOAA VLAB gerrit:ProdGSI.  The FV3GFS DA tag is intended to be installed
-     as part of the entire FV3GFS package.   Please see FV3GFS release notes for name and location 
-     of FV3GFS tag in NOAA VLAB gerrit.   The FV3GFS tag contains a checkout script which checks out
-     the appropriate FV3GFS DA tag.
+Online Copy:  https://docs.google.com/document/d/1-UFe8jeTfHpIhuK3iY9ZN69AyTHr--7AzSU5irJsUUI/edit
 
+PRELUDE
+   *NOAA/NWS selected the Geophysical Fluid Dynamics Laboratory (GFDL) finite­ volume cubed-sphere (FV3)
+    dynamical core as the Weather Service Next Generation Global Prediction System (NGGPS).  The current 
+    operational GFS, which has a spectral dynamical core, will be replaced by the proposed GFS with FV3 
+    dynamical core and improved physics parameterizations in January, 2019.  Significant changes have 
+    been made to both the science and infrastructure of the GFS system.
 
+    *GFS.v15 maintains a horizontal resolution of 13 km, and has 64 levels in the vertical extending 
+    up to 0.2 hPa.  It uses the same physics package as the current operational GFS except for the 
+    replacement of Zhao-Carr microphysics with the more advanced GFDL microphysics, improved ozone physics
+    and water vapor physics etc. There are also updates to data assimilation techniques, observational 
+    data usage, post-processing and downstream product generation.  For more details please refer to the PNS
+    https://docs.google.com/document/d/112GG7yBDMPmEcrNi1R2ISsoLcivj5WPivSnf9Id_lHw/edit
+   
+    *The current operational GFS.v14 was build upon a vertical directory structure. It contains
+     three independent packages.  The latest versions used in operations are gdas.v14.1.0, gfs.v14.1.2,
+     and global_shared.v14.1.6. 
 
+    *GFS.v15 has been reorganized to use a flat directory structure. The three packages in GFS.v14 have
+     been merged together to form a single package. Therefore, there is no direct comparison and one-to-one
+     correspondence between GFS.v14 and GFS.v15.
 
-DOC CHANGES 
-   * Combine Release_Notes.gdas_da.v14.1.0.txt, Release_Notes.gfs_da.v14.1.0.txt, and 
-     Release_Notes.global_shared_da.v14.1.0.txt into this document.  Update for FV3GFS DA component of 
-     FV3GFS package.
+    *This release note describes the overall changes made to the entire system.  
+     More details about changes in science and structure of the data assimilation system are documented in 
+     .gfs.v15.0.0/sorc/gsi.fd/doc/Release_Notes.fv3gfs_da.v15.0.0.txt.
+     Details about downstream product generation is documented in Release_Notes.gfs_downstream.v15.0.0.txt.
+     
 
+IMPLEMENTATION INSTRUCTIONS
+   * NOAA Valb GIT is used to manage GFS.v15 code. The SPA(s) handling the GFS.v15 implementation need to have 
+     permission to clone Vlab gerrit repositories.  So far Wojciech Cencek has been given access to all GFS.v15
+     related git repositories. Please contact Fanglin.Yang@noaa.gov if there is any VLAB repo access issue and/or
+     the individual code managers listed under item #6) below.  Please follow the following steps to install 
+     the package on WCOSS DELL 
 
+      1) cd  $NWROOTp3
+      2) git clone --recursive gerrit:fv3gfs gfs.v15.0.0
+      3) cd gfs.v15.0.0
+      4) git checkout q2fy19nco
+      5) cd sorc
+      6) ./checkout.sh
+          This script extracts the following GFS components from gerrit
+          MODEL -- tag nemsfv3gfs_beta_v1.0.10     Jun.Wang@noaa.gov
+            GSI -- tag fv3da.v1.0.28               Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov 
+            UPP -- tag ncep_post_gtg.v1.0.4        Wen.Meng@noaa.gov
+           WAFS -- tag gfs_wafs.v5.0.3             Yali.Mao@noaa.gov
+           
+      7) ./build_all.sh
+         *This script compiles all GFS components. Runtime output from the build for each package is written 
+          to log files in directory logs. To build an individual program, for instance, gsi, use build_gsi.sh. 
+      8) ./link_fv3gfs.sh nco dell
 
-
-CODE CHANGES
-   * Data assimilation changes (global_gsi.x and global_enkf.x)
-      * Infrared Atmospheric Sounding Interferometer (IASI) moisture channels
-      * Advanced Technology Microwave Sounder (ATMS) all-sky radiances 
-      * A fix for an issue with the Near Sea Surface Temperature (NSST) in the Florida Strait
-      * An upgrade to the use of Cross-track Infrared Sounder (CrIS) radiances
-      * Addition of NOAA-20 CrIS and ATMS data 
-      * Addition of Megha-Tropiques SAPHIR data
-      * Addition of Advanced Scatterometer (ASCAT) data from MetOp-B
-      * The analysis and the ensemble will increase in horizontal resolution from 35 km to 25 km.
-      * The analysis nemsio file contains layer pressure (dpres) and layer height (delz), whose analysis increments 
-        are computed hydrostatically from the temperature and surface pressure increments.
-      * The analysis nemsio file contains cloud liquid water (clwmr) and cloud ice (icmr), partitioned from the 
-        total cloud condensate analysis.
-      * The analysis nemsio file contains vertical velocity (dzdt), rain (rwmr), snow (snmr), and graupel (grle), 
-        which are copies of the background fields.
-   * New FV3GFS DA code
-      * calc_increment_ens.fd - compute analysis increment used to warm start FV3GFS model
-
+    * Note: 1) ecflow suite definition and scripts are saved in gfs.v15.0.0/ecflow/ecf
+            2) ncep_post_gtg.v1.0.4 contains restricted GTG (Graphic Turbulence Guidance) code provided by 
+               NCAR.  Please do not post the GTG code in any public domain.
 
 
 JOB CHANGES
-   * Update jobs to run within FV3GFS workflow
-   * JGDAS_ANALYSIS_HIGH and JGFS_ANALYSIS have been merged into a single job, JGLOBAL_ANALYSIS.   
-     Job JGLOBAL_ANALYSIS runs in both the GFS and GDAS cycle.
-   * The following jobs have been renamed
-      * JGDAS_ENKF_SELECT_OBS       --> JGLOBAL_ENKF_SELECT_OBS
-      * JGDAS_ENKF_INNOVATE_OBS     --> JGLOBAL_ENKF_INNOVATE_OBS
-      * JGDAS_ENKF_UPDATE           --> JGLOBAL_ENKF_UPDATE
-      * JGDAS_ENKF_INFLATE_RECENTER --> JGDAS_ENKF_RECENTER
-   * Neither the merging of GFS and GDAS analysis jobs into one nor the renaming of the GDAS EnKF jobs 
-     changes workflow dependencies.
+   * EMC has worked with NCO to consolidate and unify the JJOBS used in GFS production and experimental runs.
+     For a few tasks, JGLOBAL_* is now used to replace JGDAS_* and JGFS_* to run for both gfs and gdas steps.
+     Please refer to https://docs.google.com/spreadsheets/d/1rhKnGV1uf73p8eAIEb6Or6uUU9UGvKBqw3bl_TxTcHw/edit#gid=0
+     for a complete list of JJOBS that have been merged, replaced or removed. 
+ 
+   * JGDAS_ANALYSIS_HIGH and JGFS_ANALYSIS             --> merged into JGLOBAL_ANALYSIS   
+   * JGFS_FORECAST_HIGH and JGDAS_FORECAST_HIGH        --> merged into JGLOBAL_FORECAST
+   * JGFS_TROPCY_QC_RELOC and JGDAS_TROPCY_QC_RELOC    --> merged into JGLOBAL_TROPCY_QC_RELOC
+   * JGFS_EMCSFC_SFC_PREP and JGDAS_EMCSFC_SFC_PREP    --> merged into JGLOBAL_EMCSFC_SFC_PREP
+   * JGFS_POST_MANAGER and JGFS_PRDGEN_MANAGER         --> merged into JGLOBAL_POST_MANAGER
+   * JGFS_NCEPPOST and JGDAS_NCEPPOST                  --> merged into JGLOBAL_NCEPPOST
+   * JGFS_PGRB2                                        --> merged into JGLOBAL_NCEPPOST
+
+   * JGFS_AWIPS_1P0DEG and JGFS_AWIPS_20KM             --> merged into JGFS_AWIPS_20KM_1P0DEG
+   * JGFS_GEMPAK_NCDC and JGFS_GEMPAK_UPAPGIF          --> merged into JGFS_GEMPAK_NCDC_UPAPGIF
+   * JGFS_NPOESS_PGRB2_0P5DEG and JGFS_PGRB2_SPEC_POST --> merged into JGFS_PGRB2_SPEC_NPOESS
+   * JGDAS_BULLS and JGDAS_MKNAVYBULLS                 --> merged into JGDAS_BULLS_NAVY
+
+   * JGDAS_ENKF_SELECT_OBS       --> renamed JGLOBAL_ENKF_SELECT_OBS
+   * JGDAS_ENKF_INNOVATE_OBS     --> renamed JGLOBAL_ENKF_INNOVATE_OBS
+   * JGDAS_ENKF_UPDATE           --> renamed JGLOBAL_ENKF_UPDATE
+   * JGDAS_ENKF_INFLATE_RECENTER --> renamed JGDAS_ENKF_RECENTER
+
+   * JGFS_FORECAST_LOW  --> removed
+   * JCPC_GET_GFS_6HR   --> removed
 
 
 
 SCRIPT CHANGES
-   * Update scripts to run within FV3GFS workflow.
-   * The string "fv3gfs" has been added to the name of FV3GFS DA scripts to distinguish them from their non-FV3GFS 
-     counterparts.   For example, exglobal_analysis.sh.ecf is renamed exglobal_analysis_fv3gfs.sh.ecf in the 
-     FV3GFS package.  Below is a mapping between current operational GFS DA scripts and their FV3GFS DA 
-     counterparts
-      * exglobal_analysis.sh.ecf              --> exglobal_analysis_fv3gfs.sh.ecf
-      * exglobal_enkf_innovate_obs.sh.ecf     --> exglobal_innovate_obs_fv3gfs.sh.ecf
-      * exglobal_enkf_update.sh.ecf           --> exglobal_enkf_update_fv3gfs.sh.ecf
-      * exglobal_enkf_inflate_recenter.sh.ecf --> exglobal_enkf_recenter_fv3gfs.sh.ecf
-      * exglobal_enkf_fcst_nems.sh.ecf        --> exglobal_enkf_fcst_fv3gfs.sh.ecf
-      * exglobal_enkf_post.sh.ecf             --> eexglobal_enkf_post_fv3gfs.sh.ecf
-   * Add new script:  exglobal_enkf_innovate_obs_fv3gfs.sh.ecf.   This script is executed from 
-     JGLOBAL_ENKF_INNOVATE_OBS.   It is a wrapper script that invokes exglobal_innovate_obs_fv3gfs.sh.ecf 
-     for each ensemble member in the group processed by the given realization of JGLOBAL_ENKF_INNOVATE_OBS 
+   * Many scripts have been renamed to reflect the new model and DA system and directory structure. 
+     A few new scripts have been added. Below is a mapping between a few current operational GFS 
+     scripts and their GFS.v15 counterparts
+
+       exglobal_fcst_nems.sh.ecf             --> exglobal_fcst_nemsfv3gfs.sh    
+       exglobal_analysis.sh.ecf              --> exglobal_analysis_fv3gfs.sh.ecf
+       exglobal_enkf_innovate_obs.sh.ecf     --> exglobal_innovate_obs_fv3gfs.sh.ecf
+       exglobal_enkf_update.sh.ecf           --> exglobal_enkf_update_fv3gfs.sh.ecf
+       exglobal_enkf_inflate_recenter.sh.ecf --> exglobal_enkf_recenter_fv3gfs.sh.ecf
+       exglobal_enkf_fcst_nems.sh.ecf        --> exglobal_enkf_fcst_fv3gfs.sh.ecf
+       exglobal_enkf_post.sh.ecf             --> eexglobal_enkf_post_fv3gfs.sh.ecf
+       exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  --> new script
+
+   * Note the four scripts beginning with run_gfsmos_master are only used for running MDL MOS 
+     along with EMC gfs parallel experiments.
 
 
+PARM/CONFIG CHANGES
+     All JJOBS except for those used by downstream product generation source config files under 
+     ./gfs.v15.0.0/parm/config to set up job-specific parameters.  config.base is sourced by all 
+     JJOBS to set parameters that are common to either all JJOBS or are shared by more than one JJOBS.
+     config.anal is shared by a few analysis steps.
 
-PARM CHANGES
-   * Update to run within FV3GFS workflow.   Parm or configuration files for FV3GFS components now reside in 
-     parm/config.   Below are the parm (config) files used by each FV3GFS DA job
-      * JGLOBAL_ANALYSIS - config.base, config.anal
-      * JGLOBAL_ENKF_SELECT_OBS - config.base, config.anal, config.eobs
+      Below are the parm (config) files used by each GFS.v15 DA job
+      * JGLOBAL_FORECAST          - config.base, config.fcst
+      * JGLOBAL_NCEPPOST          - config.base, config.post
+      * JGLOBAL_POST_MANAGER      - config.base, config.post
+      * JGLOBAL_TROPCY_QC_RELOC   - config.base, config.prep
+      * JGLOBAL_ANALYSIS          - config.base, config.anal
+      * JGLOBAL_ENKF_SELECT_OBS   - config.base, config.anal, config.eobs
       * JGLOBAL_ENKF_INNOVATE_OBS - config.base, config.anal, config.eobs
-      * JGLOBAL_ENKF_UPDATE - config.base, config.anal, config.eupd
-      * JGDAS_ENKF_RECENTER - config.base, config.ecen
-      * JGDAS_ENKF_FCST - config.base, config.fcst, config.efcs
-      * JGDAS_ENKF_POST - config.base, config.epos
-   Parameters common to all jobs are in config.base.   Analysis jobs share config.anal.   This avoids 
-   duplication of identical parameters across multiple parameter files.
+      * JGLOBAL_ENKF_UPDATE       - config.base, config.anal, config.eupd
+      * JGDAS_ENKF_RECENTER       - config.base, config.ecen
+      * JGDAS_ENKF_FCST           - config.base, config.fcst, config.efcs
+      * JGDAS_ENKF_POST           - config.base, config.epos
 
 
 FIX CHANGES
-   * Updates to run FV3GFS DA
-      * New files / directory
-         * cloudy_radiance_info.txt - new file for all-sky radiance assimilation
-         * Big_Endian/global_berror.l64y770.f77 - add for use in JGLOBAL_ANALYSIS
-         * Add directory fv3_historical to contain historical global_convinfo and global_satinfo files
-      * Modify existing files
-         * global_anavinfo.l64.txt - add EnKF control vector section
-         * global_convinfo.txt - assimilate uv 290, monitor gps 825
-         * global_ozinfo.txt - add NPP OMPSNP in monitor mode
-         * global_satinfo.txt 
-            * add columns for icloud and iaerosol
-            * increase AMSUA channel 15 observation error
-            * assimilate IASI channels 2889, 2958, 2993, 3002, 3049, 3015, 3110, 5381, 5399, 5480, 
-            * monitor Aqua AMSUA channel 6
-            * add Meteosat-11 SEVIRI
-            * update observation errors for NPP and N20 ATMS
-            * remove NPP CrIS
-            * update N20 CrIS-FSR usage flags and observation errors
-            * assimilate Meghat Saphir
-         * global_scaninfo.txt - update atms_n20, cris_npp, cris-fsr_npp, and cris-fsr_n20
-         * prepobs_errtable.global - adjust observation errors for prepbufr report types 134, 135, 
-           180, 181, 182, 183, 187, 234, 235, 280, 281, 282, 283, 284 285, 287
+   * all fixed fields used by the system are placed under gfs.v15.0.0/fix, and further categorized
+     based on the type of applications. During the NCO implementation process, fix_am, fix_fv3, 
+     fix_orog, fix_verif, and fix_fv3_gmted2010 are copied from EMC's local archives. fix_gsi and
+     wafs are copied from two external repositories.
+     The entire package takes 123GB disk space to install. This ./fix directory alone takes 113GB.
 
+     fix_am             -- NEMS GSM fields from GFS.v14 and earlier version.  Some of them are still used for GFS.v15.
+     fix_fv3            -- new fields, defining FV3 model structure for different resolutions, based on TOPO30 terrain 
+     fix_fv3_gmted2010  -- new fields, defining FV3 model structure for different resolutions, based on gmted2010 terrain
+     fix_orog           -- sources of  terrrain data
+     fix_gsi            -- used by data assimilation steps
+     fix_verif          -- bused by VSDB and MET verifications
+     gdas               -- used by DA monitoring programs
+     product            -- used by downstream product generation programs
+     wafs               -- used by WAFS program
+
+
+PRODUCT CHANGES
+   * please refer to https://docs.google.com/spreadsheets/d/1yj0hoHuIzBlelFFzdVLsHfCYRit8HjbvPPhW2KKJdOI/edit#gid=1608491678
+     for changes in file names and variables of post-processed products.
 
 
 RESOURCE INFORMATION
+
    * Frequency of run
       * 6 hourly cycle (00, 06, 12, 18Z) - no change from current operations
 
+   * Commonly used libraries, compiler, and modules are defined in gfs.v15.0.0/modulefiles. For nemsfv3gfs, gsi, upp, wafs  
+     they maintain their own module files under gfs.v15.0.0/sorc/(fv3gfs gsi gfs_post global_wafs).fd/modulefiles
 
-   * All versions of libraries, compiler, and modules used by FV3GFS DA are specified in 
-     modulefiles/modulefile.ProdGSI.wcoss_d
+   * Data retention time under $COMROOThps for GFS.v15 should be the same as GFS.v14.   GFS.v15 is no longer pushing or 
+     extracting data from  $GESROOThps. 
 
-
-   * Data retention for files in $COMROOThps and $GESROOThps are the same as those specified for 
-     the overall FV3GFS package
-
-
-   * Disk space.  Please see disk usage estimates for entire FV3GFS package
+   * Disk space:  The current operational GFS.v14 takes about 4.1 TB online COM disk space per cycle, while GFS.v15 will 
+     require 10.7TB per cycle.
 
 
-   * Computational resources and run times
+   * Computational resources and run times: Please refer to 
+     https://docs.google.com/spreadsheets/d/1Y0MJ9NQ8EC1imQSJsNIMcSa4KkNURpmcGUYHe0t8wfk/edit#gid=48801932
+     for the detail of node usage,threading, and runtime for all jobs.  Information about the major steps are listed below.
+     
+
+      * JGLOBAL_FORECAST (GFS)
+         * 116 nodes, 1624 tasks, ptile=12, 2 threads/task
+         * Runtime:  120 minutes
+
+      * JGLOBAL_FORECAST (GDAS)
+         * 28 nodes, 392 tasks, ptile=12, 2 threads/task
+         * Runtime:  11.7 minutes
+
       * JGLOBAL_ANALYSIS (GFS)
          * 240 nodes, 480 tasks, ptile=2, 14 threads/task
          * Runtime:  26.8 minutes
@@ -157,7 +207,7 @@ RESOURCE INFORMATION
          * 14 nodes, 168 tasks, ptile=12, 2 threads/task
             * Concurrently run 20 realizations of JGDAS_ENKF_FCST.  Each job processes 4 EnKF 
               members.  Total node usage for 20 jobs x 14 nodes each = 280 nodes
-            * 20 EnKF forecast groups for FV3GFS is an increase from the 10 EnKF forecast groups 
+            * 20 EnKF forecast groups for GFS.v15 is an increase from the 10 EnKF forecast groups 
               currently run in operations.
          * Runtime:  19.8 minutes
 
@@ -172,21 +222,20 @@ RESOURCE INFORMATION
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
    * Which production jobs should be tested as part of this implementation?
-      * The FV3GFS DA package needs to tested with the entire FV3GFS suite.
+      * all components of this package need to be tested.                     
 
 
    * Does this change require a 30-day evaluation?
-      * Yes, the entire FV3GFS package requires a 30-day evaluation
+      * Yes, the entire GFS.v15 package requires a 30-day evaluation
 
 
    * Suggested evaluators
-      * Same as those for entire FV3GFS package
-
+      * Please contact fanglin.yang@noaa.gov and russ.treadon@noaa.gov for evaluation.
 
 
 DISSEMINATION INFORMATION
    * Where should this output be sent?
-      * same as current operations
+      * same as current operations.  
 
 
    * Who are the users?
@@ -194,21 +243,26 @@ DISSEMINATION INFORMATION
 
 
    * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-      * Please refer to release notes for FV3GFS package
-
+      * Same as current operation. As there are certain changes in product names and types,
+        EMC will provide support for NCO dataflow team to finalize the list.
 
    * Directory changes
-      * Add cycle to gfs and gdas paths.  FV3GFS paths are $COMROOTp3/gfs/prod/gfs.$PDY/$cyc 
+      * Add cycle to gfs and gdas paths.  GFS.v15 paths are $COMROOTp3/gfs/prod/gfs.$PDY/$cyc 
         and  $COMROOTp3/gfs/prod/gdas.$PDY/$cyc.
       * Add "gdas" to top level EnKF directory --> $COMROOTp3/gfs/prod/enkf.gdas.$PDY.
       * Place EnKF member files in memXXX directories inside $COMROOTp3/gfs/prod/enkf.gdas.$PDY/$cyc
 
+   * File changes.  
+     3-digital forecast hours are applied to all forecast output and post-process products.  Please refer to 
+     https://docs.google.com/spreadsheets/d/1yj0hoHuIzBlelFFzdVLsHfCYRit8HjbvPPhW2KKJdOI/edit#gid=1608491678
+     for a complete list of GFS.v15 product file names and fields.
 
-   * File changes.  Only FV3GFS DA file changes are listed below.
+
+     Changes to files related data assimilation are listed below.
 
       * $COMROOTp3/gfs/prod/gfs.$PDY/$cyc
          * Add
-            * gfs.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model 
+            * gfs.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The GFS.v15 model 
               uses this file to warmstart the forecast model.
          * Remove
             * Relocation is no longer run.  Therefore, remove gdas.t${cyc}z.atm[gm2, gm1, gp1, gp2].nemsio
@@ -216,12 +270,12 @@ DISSEMINATION INFORMATION
       * $COMROOTp3/gfs/prod/gdas.$PDY/$cyc
          * Add 
             * gdas.t${cyc}z.atmanl.ensres.nemsio - used by JGDAS_ENKF_RECENTER
-            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model uses 
+            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The GFS.v15 model uses 
               this file to warmstart the forecast model.
          * Remove
             * Relocation is no longer run.  Therefore, remove gdas.t${cyc}z.atm[gm2, gm1, gp1, gp2].nemsio
-            * gdas.t${cyc}z.nstfXXX.nemsio.   NSST fields are included in FV3GFS gdas.t${cyc}z.sfcfXXX.nemsio
-            * gdas.t${cyc}z.sfcgcy and gdas.t${cyc}z.sfctsk.  Files no longer needed given FV3GFS processing 
+            * gdas.t${cyc}z.nstfXXX.nemsio.   NSST fields are included in GFS.v15 gdas.t${cyc}z.sfcfXXX.nemsio
+            * gdas.t${cyc}z.sfcgcy and gdas.t${cyc}z.sfctsk.  Files no longer needed given GFS.v15 processing 
               of surface files and NSST
 
       * $COMROOTp3/gfs/prod/enkf.$PDY/$cyc
@@ -231,73 +285,30 @@ DISSEMINATION INFORMATION
             * gdas.t${cyc}z.omgstat.grp* --> eomg.grp*
          * Add
             * Ensemble bias correction files:  gdas.t${cyc}z.[abias.air, abias, abias_int, abias_pc].ensmean
-            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The FV3GFS model uses 
+            * gdas.t${cyc}z.atminc.nc - NetCDF file containing analysis increments.  The GFS.v15 model uses 
               this file to warmstart the forecast model.
-            * gdas.t${cyc}z.logfXXX.nemsio - FV3GFS model forecast hour log file
+            * gdas.t${cyc}z.logfXXX.nemsio - GFS.v15 model forecast hour log file
          * Remove
             * remove memXXX" from EnKF member filenames since member files are now in memXXX directories
-            * gdas.t${cyc}z.flxf*.nemsio - fields in this file added to FV3GFS gdas.t${cyc}z.sfcf*nemsio
-            * gdas.t${cyc}z.nstf*.nemsio - fields in this file file added to FV3GFS gdas.t${cyc}z.sfcf*nemsio
+            * gdas.t${cyc}z.flxf*.nemsio - fields in this file added to GFS.v15 gdas.t${cyc}z.sfcf*nemsio
+            * gdas.t${cyc}z.nstf*.nemsio - fields in this file file added to GFS.v15 gdas.t${cyc}z.sfcf*nemsio
             * gdas.t${cyc}z.gcyanl.nemsio, gdas.t${cyc}z.nstanl.nemsio, gdas.t${cyc}z.sfcanl.nemsio - 
-             NSST processing handled differently in FV3GFS
-
-
-
-
-
+             NSST processing handled differently in GFS.v15
 
 
 
 HPSS ARCHIVE
-   * Retention length?
-      * Please refer to release notes for FV3GFS package
-
-
-   * List which output files should be archived
-      * Please refer to release notes for FV3GFS package
-          
-
-
-IMPLEMENTATION INSTRUCTIONS
-   * Please note that the DA components must be installed in conjunction with the entire FV3GFS package.  
-     Thus, the implementation instructions below extract the entire FV3GFS package.   The FV3GFS package is 
-     tagged in NOAA VLAB gerrit:fv3gfs as tag q2fy19_nco.   Implementation instructions for this tag follow
-     below:
-
-      1) cd  $NWROOTp3
-
-      2) mkdir $NWROOTp3/gfs.v15.0.0
-
-      3) cd $NWROOTp3/gfs.v15.0.0
-
-      4) git clone --recursive gerrit:fv3gfs .
-         * Notes:
-            * The "." after fv3gfs is important.  It tells git to clone fv3gfs into the local working directory, 
-              $NWROOTp3/gfs.v15.0.0.
-            * The SPA(s) handling the FV3GFS implementation may encounter "permission denied" messages when 
-             attempting to clone Vlab gerrit repositories.  Code managers need to add the SPA(s) as project 
-             developers.  For the fv3gfs project please contact Fanglin.Yang@noaa.gov or Mark.Potts@noaa.gov.  
-             For the FV3GFS DA project please contact Michael.Lueken@noaa.gov or Mark.Potts@noaa.gov. 
-
-      5) git checkout q2fy19nco
-
-      6) cd sorc
-
-      7) ./checkout.sh
-         * This script extracts the following FV3GFS components from gerrit:  FV3GFS model, FV3GFS DA, 
-           FV3GFS UPP, FV3GFS WAFS
-
-      8) ./build_all.sh
-         * Script build_all.sh compiles all FV3GFS components.   Runtime output from the build for each 
-           package is written to log files in directory logs.  Specifically, FV3GFS DA build information 
-           is written to logs/build_gsi.log.  Script build_gsi.sh invokes gsi.fd/ush/build_all_cmke.sh.
-           This script uses cmake to build FV3GFS DA components.   Script build_all_cmake.sh accepts two 
-           command line options:  build type and directory path to package.  Two build types are 
-           supported - PRODUCTION (default) and DEBUG.
-
-      9) ./link_fv3gfs.sh nco dell
-
-
+   HPSS archive: please refer to https://docs.google.com/spreadsheets/d/14YdtuC_bL-6eybLA-rvKVvW1eLD_f6NFWzxnatYyCMo/edit#gid=0 
+   for current operational GFS.v14 archives and the proposed archives for GFS.v15.
 
 JOB DEPENDENCIES & FLOW DIAGRAM
-   * No change in FV3GFS DA job dependencies with respect to current operations
+   * No change in dependencies with respect to current operations
+
+
+
+===========
+Prepared by 
+Fanglin.Yang@noaa  
+Russ.Treadon@noaa.gov  
+Boi.Vuong@noaa.gov  
+Wen.Meng@noaa.gov
