@@ -32,7 +32,8 @@ export HOMEgfs=${HOMEgfs:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export DATA=${DATA:-$pwd/enkf_fcst.$$}
-export ROTDIR=${ROTDIR:-$pwd}
+export COMIN=${COMIN:-$pwd}
+export COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
@@ -69,7 +70,11 @@ SENDECF=${SENDECF:-"NO"}
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 cd $DATA || exit 99
 DATATOP=$DATA
 
@@ -77,7 +82,7 @@ DATATOP=$DATA
 # Set output data
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
-EFCSGRP=$ROTDIR/enkf.${CDUMP}.${cymd}/$chh/efcs.grp${ENSGRP}
+EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
@@ -203,7 +208,7 @@ $ERRSCRIPT || exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATATOP
+[[ $mkdata = "YES" ]] && rm -rf $DATATOP
 set +x
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXITING $0 with return code $err >&2

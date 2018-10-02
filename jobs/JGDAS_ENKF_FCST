@@ -81,6 +81,10 @@ fi
 
 export CASE=$CASE_ENKF
 
+# COMOUT is used in exglobal script
+# TO DO: Map NCO's directory into these variables
+export COMOUT="$ROTDIR/enkf.$CDUMP.$PDY/$cyc"
+
 
 # Forecast length for EnKF forecast
 export FHMIN=$FHMIN_ENKF
@@ -107,7 +111,7 @@ status=$?
 
 
 # Double check the status of members in ENSGRP
-EFCSGRP=$ROTDIR/enkf.${CDUMP}.$PDY/$cyc/efcs.grp${ENSGRP}
+EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
 npass=0
 if [ -f $EFCSGRP ]; then
     npass=$(grep "PASS" $EFCSGRP | wc -l)
@@ -121,13 +125,23 @@ fi
 
 
 ##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES ] ; then
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_fcsstat $job $EFCSGRP
+fi
+
+
+##############################################
 # End JOB SPECIFIC work
 ##############################################
 
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 
 msg="ENDED NORMALLY."

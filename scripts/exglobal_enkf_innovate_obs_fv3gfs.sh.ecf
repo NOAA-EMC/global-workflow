@@ -64,7 +64,11 @@ export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 cd $DATA || exit 99
 DATATOP=$DATA
 
@@ -185,7 +189,7 @@ $ERRSCRIPT || exit 2
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
+[[ $mkdata = "YES" ]]&& rm -rf $DATATOP
 set +x
 if [ $VERBOSE = "YES" ] ; then
    echo $(date) EXITING $0 with return code $err >&2

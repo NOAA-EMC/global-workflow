@@ -82,25 +82,29 @@ fi
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-
+GDUMP=${GDUMP:-"gdas"}
 
 export OPREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="gdas.t${gcyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
 export GSUFFIX=".nemsio"
 export APREFIX="${CDUMP}.t${cyc}z."
 export ASUFFIX=".nemsio"
 
 
-if [ $RUN_ENVIR = "nco" ]; then
+if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
     export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
 else
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
 fi
 mkdir -m 775 -p $COMOUT
 # COMIN_GES and COMIN_GES_ENS are used in exglobal script
 # TO DO: Map NCO's directory into these variables
-export COMIN_GES="$ROTDIR/gdas.$gPDY/$gcyc"
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc"
 export COMIN_GES_ENS="$ROTDIR/enkf.gdas.$gPDY/$gcyc"
 
 
@@ -127,6 +131,11 @@ fi
 
 # Link observational data
 export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
+if [ ! -f $PREPQC ]; then
+    echo "WARNING: PREPBUFR FILE $PREPQC MISSING"
+    msg="WARNING : Global PREPBUFR file is missing"
+    postmsg "$jlogfile" "$msg"
+fi
 export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 [[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
@@ -157,9 +166,9 @@ status=$?
 # Send Alerts
 ##############################################
 if [ $SENDDBN = YES -a $RUN = gdas ] ; then
-    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias $job $COMOUT/${PREINP}abias
-    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_pc $job $COMOUT/${PREINP}abias_pc
-    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_air $job $COMOUT/${PREINP}abias_air
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias $job $COMOUT/${APREFIX}abias
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_pc $job $COMOUT/${APREFIX}abias_pc
+    $DBNROOT/bin/dbn_alert MODEL GDAS_MSC_abias_air $job $COMOUT/${APREFIX}abias_air
 fi
 
 
@@ -170,7 +179,9 @@ fi
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 
 msg="ENDED NORMALLY."

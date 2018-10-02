@@ -30,19 +30,24 @@ export NWPROD=${NWPROD:-$pwd}
 export HOMEgfs=${HOMEgfs:-$NWPROD}
 export HOMEgsi=${HOMEgsi:-$NWPROD}
 FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-GSIEXEC=${GSIEXEC:-$HOMEgsi/exec/global_gsi}
+GSIEXEC=${GSIEXEC:-$HOMEgsi/exec/global_gsi.x}
 export DATA=${DATA:-$pwd/analysis.$$}
-DMPDIR=${DMPDIR:-$NWPROD}
 export COMIN=${COMIN:-$pwd}
+export COMIN_OBS=${COMIN_OBS:-$COMIN}
 export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
+export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_GES}
+export COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
 export COMOUT=${COMOUT:-$COMIN}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
-CDUMP_OBS=${CDUMP_OBS:-$CDUMP}
+
+# Derived base variables
+GDATE=$($NDATE -$assim_freq $CDATE)
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -108,7 +113,6 @@ export gesenvir=${gesenvir:-$envir}
 # Observations
 OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
-COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP_OBS"}
 PREPQC=${PREPQC:-${COMIN_OBS}/${OPREFIX}prepbufr${OSUFFIX}}
 PREPQCPF=${PREPQCPF:-${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles${OSUFFIX}}
 NSSTBF=${NSSTBF:-${COMIN_OBS}/${OPREFIX}nsstbufr${OSUFFIX}}
@@ -154,6 +158,8 @@ ATMSDB=${ATMSDB:-${COMIN_OBS}/${OPREFIX}atmsdb.tm00.bufr_d${OSUFFIX}}
 SSMITBF=${SSMITBF:-${COMIN_OBS}/${OPREFIX}ssmit.tm00.bufr_d${OSUFFIX}}
 SSMISBF=${SSMISBF:-${COMIN_OBS}/${OPREFIX}ssmisu.tm00.bufr_d${OSUFFIX}}
 SBUVBF=${SBUVBF:-${COMIN_OBS}/${OPREFIX}osbuv8.tm00.bufr_d${OSUFFIX}}
+OMPSNPBF=${OMPSNPBF:-${COMIN_OBS}/${OPREFIX}oznnp8.tm00.bufr_d${OSUFFIX}}
+OMPSTCBF=${OMPSTCBF:-${COMIN_OBS}/${OPREFIX}ozntc8.tm00.bufr_d${OSUFFIX}}
 GOMEBF=${GOMEBF:-${COMIN_OBS}/${OPREFIX}gome.tm00.bufr_d${OSUFFIX}}
 OMIBF=${OMIBF:-${COMIN_OBS}/${OPREFIX}omi.tm00.bufr_d${OSUFFIX}}
 MLSBF=${MLSBF:-${COMIN_OBS}/${OPREFIX}mls.tm00.bufr_d${OSUFFIX}}
@@ -248,13 +254,6 @@ else
     # using write component
     JCAP=${JCAP:-$((LATB-2))}
 fi
-
-#CDATE=${CDATE:-$($NEMSIOGET $ATMGES fcstdate | grep -i "fcstdate_ymdh" | awk -F= '{print $2}')}
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-GDATE=$($NDATE -$assim_freq $CDATE)
-gPDY=$(echo $GDATE | cut -c1-8)
-gcyc=$(echo $GDATE | cut -c9-10)
 
 # Get header information from Ensemble Guess files
 if [ $DOHYBVAR = "YES" ]; then
@@ -357,7 +356,11 @@ fi
 
 ################################################################################
 #  Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 cd $DATA || exit 99
 
 ################################################################################
@@ -373,7 +376,7 @@ rm gpsrobufr
 rm tcvitl
 rm gsndrbufr gsnd1bufr
 rm ssmisbufr ssmitbufr ssmirrbufr tmirrbufr
-rm sbuvbufr gomebufr omibufr mlsbufr msubufr
+rm sbuvbufr gomebufr omibufr mlsbufr msubufr ompsnpbufr ompstcbufr
 rm airsbufr
 rm iasibufr iasibufrears iasibufr_db
 rm amsrebufr amsr2bufr
@@ -460,6 +463,8 @@ $NLN $AMUADB           amsuabufr_db
 $NLN $AMUBDB           amsubbufr_db
 #$NLN $MHSDB            mhsbufr_db
 $NLN $SBUVBF           sbuvbufr
+$NLN $OMPSNPBF         ompsnpbufr
+$NLN $OMPSTCBF         ompstcbufr
 $NLN $GOMEBF           gomebufr
 $NLN $OMIBF            omibufr
 $NLN $MLSBF            mlsbufr
@@ -668,7 +673,7 @@ cat > gsiparm.anl << EOF
   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
   qoption=2,
   gencode=${IGEN:-0},deltim=$DELTIM,
-  factqmin=5.0,factqmax=0.005,
+  factqmin=0.5,factqmax=0.005,
   iguess=-1,
   tzr_qc=$TZR_QC,
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
@@ -761,7 +766,6 @@ OBS_INPUT::
    ssmisbufr      ssmis       f16         ssmis_f16           0.0     1     0
    ssmisbufr      ssmis       f17         ssmis_f17           0.0     1     0
    ssmisbufr      ssmis       f18         ssmis_f18           0.0     1     0
-   ssmisbufr      ssmis       f19         ssmis_f19           0.0     1     0
    gsnd1bufr      sndrd1      g12         sndrD1_g12          0.0     1     0
    gsnd1bufr      sndrd2      g12         sndrD2_g12          0.0     1     0
    gsnd1bufr      sndrd3      g12         sndrD3_g12          0.0     1     0
@@ -785,6 +789,7 @@ OBS_INPUT::
    seviribufr     seviri      m08         seviri_m08          0.0     1     0
    seviribufr     seviri      m09         seviri_m09          0.0     1     0
    seviribufr     seviri      m10         seviri_m10          0.0     1     0
+   seviribufr     seviri      m11         seviri_m11          0.0     1     0
    hirs4bufr      hirs4       metop-b     hirs4_metop-b       0.0     1     1
    amsuabufr      amsua       metop-b     amsua_metop-b       0.0     1     1
    mhsbufr        mhs         metop-b     mhs_metop-b         0.0     1     1
@@ -812,6 +817,8 @@ OBS_INPUT::
    saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
    ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
    rapidscatbufr  uv          null        uv                  0.0     0     0
+   ompsnpbufr     ompsnp      npp       ompsnp_npp            0.0     0     0
+   ompstcbufr     ompstc8     npp       ompstc8_npp           0.0     2     0
 ::
 &SUPEROB_RADAR
   $SUPERRAD
@@ -915,8 +922,8 @@ if [ $DOGCYCLE = "YES" ]; then
     export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
     export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
     [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
-    FNSNOG=${FNSNOG:-$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOG ]] && FNSNOG="$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t1534.3072.1536"
+    FNSNOG=${FNSNOG:-$COMIN_GES_OBS/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+    [[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES_OBS/${GPREFIX}snogrb_t1534.3072.1536"
 
     # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
     if [ $RUN_GETGES = "YES" ]; then
@@ -1015,7 +1022,7 @@ if [ $GENDIAG = "YES" ] ; then
 
    diagtype[0]="conv"
    diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
-   diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
+   diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura ompsnp_npp ompstc8_npp"
    diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 seviri_m11 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
 
    diaglist[0]=listcnv
@@ -1159,14 +1166,14 @@ if [ $SENDDBN = "YES" ]; then
        $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
     fi
     if [ $RUN = "gfs" ]; then
-       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $COMOUT/${APREFIX}abias
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $ABIAS
     fi
 fi
 
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
+[[ $mkdata = "YES" ]] && rm -rf $DATA
 
 set +x
 if [ $VERBOSE = "YES" ]; then

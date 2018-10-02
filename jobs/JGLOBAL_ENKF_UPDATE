@@ -109,13 +109,23 @@ status=$?
 
 
 ##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES  ] ; then
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT_ANL_ENS/${APREFIX}enkfstat
+fi
+
+
+##############################################
 # End JOB SPECIFIC work
 ##############################################
 
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 
 msg="ENDED NORMALLY."

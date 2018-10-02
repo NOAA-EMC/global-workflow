@@ -46,7 +46,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgsi/exec/global_enkf}
+ENKFEXEC=${ENKFEXEC:-$HOMEgsi/exec/global_enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -97,7 +97,11 @@ ENKF_SUFFIX="s"
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 cd $DATA || exit 99
 
 ################################################################################
@@ -178,6 +182,10 @@ if [ $USE_CFP = "YES" ]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
+      rc=$?
+      export ERR=$rc
+      export err=$ERR
+      $ERRSCRIPT || exit 2
    fi
 fi
 
@@ -258,18 +266,19 @@ cat > enkf.nml << EOFnml
    sattypes_rad(50)= 'seviri_m08',    dsis(50)= 'seviri_m08',
    sattypes_rad(51)= 'seviri_m09',    dsis(51)= 'seviri_m09',
    sattypes_rad(52)= 'seviri_m10',    dsis(52)= 'seviri_m10',
-   sattypes_rad(53)= 'amsua_metop-b', dsis(53)= 'amsua_metop-b',
-   sattypes_rad(54)= 'hirs4_metop-b', dsis(54)= 'hirs4_metop-b',
-   sattypes_rad(55)= 'mhs_metop-b',   dsis(55)= 'mhs_metop-b',
-   sattypes_rad(56)= 'iasi_metop-b',  dsis(56)= 'iasi_metop-b',
-   sattypes_rad(57)= 'avhrr_metop-b', dsis(57)= 'avhrr3_metop-b',
-   sattypes_rad(58)= 'atms_npp',      dsis(58)= 'atms_npp',
-   sattypes_rad(59)= 'atms_n20',      dsis(59)= 'atms_n20',
-   sattypes_rad(60)= 'cris_npp',      dsis(60)= 'cris_npp',
-   sattypes_rad(61)= 'cris-fsr_npp',  dsis(61)= 'cris-fsr_npp',
-   sattypes_rad(62)= 'cris-fsr_n20',  dsis(62)= 'cris-fsr_n20',
-   sattypes_rad(63)= 'gmi_gpm',       dsis(63)= 'gmi_gpm',
-   sattypes_rad(64)= 'saphir_meghat', dsis(64)= 'saphir_meghat',
+   sattypes_rad(53)= 'seviri_m11',    dsis(53)= 'seviri_m11',
+   sattypes_rad(54)= 'amsua_metop-b', dsis(54)= 'amsua_metop-b',
+   sattypes_rad(55)= 'hirs4_metop-b', dsis(55)= 'hirs4_metop-b',
+   sattypes_rad(56)= 'mhs_metop-b',   dsis(56)= 'mhs_metop-b',
+   sattypes_rad(57)= 'iasi_metop-b',  dsis(57)= 'iasi_metop-b',
+   sattypes_rad(58)= 'avhrr_metop-b', dsis(58)= 'avhrr3_metop-b',
+   sattypes_rad(59)= 'atms_npp',      dsis(59)= 'atms_npp',
+   sattypes_rad(60)= 'atms_n20',      dsis(60)= 'atms_n20',
+   sattypes_rad(61)= 'cris_npp',      dsis(61)= 'cris_npp',
+   sattypes_rad(62)= 'cris-fsr_npp',  dsis(62)= 'cris-fsr_npp',
+   sattypes_rad(63)= 'cris-fsr_n20',  dsis(63)= 'cris-fsr_n20',
+   sattypes_rad(64)= 'gmi_gpm',       dsis(64)= 'gmi_gpm',
+   sattypes_rad(65)= 'saphir_meghat', dsis(65)= 'saphir_meghat',
    $SATOBS_ENKF
 /
 &ozobs_enkf
@@ -281,6 +290,8 @@ cat > enkf.nml << EOFnml
    sattypes_oz(6) = 'gome_metop-a',
    sattypes_oz(7) = 'gome_metop-b',
    sattypes_oz(8) = 'mls30_aura',
+   sattypes_oz(9) = 'ompsnp_npp',
+   sattypes_oz(10) = 'ompstc8_npp',
    $OZOBS_ENKF
 /
 EOFnml
@@ -302,7 +313,7 @@ cat stdout stderr > $COMOUT_ANL_ENS/$ENKFSTAT
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]]&& rm -rf $DATA
+[[ $mkdata = "YES" ]] && rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2

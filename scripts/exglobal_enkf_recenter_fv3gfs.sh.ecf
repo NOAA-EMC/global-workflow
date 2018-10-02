@@ -31,11 +31,13 @@ export HOMEgfs=${HOMEgfs:-$NWPROD}
 HOMEgsi=${HOMEgsi:-$NWPROD}
 export DATA=${DATA:-$pwd}
 COMIN=${COMIN:-$pwd}
-COMIN_ENS=${COMIN_ENS:-$pwd}
+COMIN_ENS=${COMIN_ENS:-$COMIN}
+COMIN_OBS=${COMIN_OBS:-$COMIN}
+COMIN_GES=${COMIN_GES:-$COMIN}
 COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_ENS}
+COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
 COMOUT=${COMOUT:-$COMIN}
 COMOUT_ENS=${COMOUT_ENS:-$COMIN_ENS}
-DMPDIR=${DMPDIR:-$NWPROD}
 
 CDATE=${CDATE:-"2010010100"}
 DONST=${DONST:-"NO"}
@@ -97,7 +99,11 @@ NTHREADS_CALCINC=${NTHREADS_CALCINC:-${NTHREADS:-1}}
 
 ################################################################################
 # Preprocessing
-if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 cd $DATA || exit 99
 
 ENKF_SUFFIX="s"
@@ -274,12 +280,12 @@ LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
 
 # Global cycle requires these files
-export FNTSFA=${FNTSFA:-$DMPDIR/$CDATE/$CDUMP/${OPREFIX}rtgssthr.grb}
-export FNACNA=${FNACNA:-$DMPDIR/$CDATE/$CDUMP/${OPREFIX}seaice.5min.blend.grb}
-export FNSNOA=${FNSNOA:-$DMPDIR/$CDATE/$CDUMP/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOA ]] && export FNSNOA="$DMPDIR/$CDATE/$CDUMP/${OPREFIX}snogrb_t1534.3072.1536"
-FNSNOG=${FNSNOG:-$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-[[ ! -f $FNSNOG ]] && FNSNOG="$DMPDIR/$GDATE/$GDUMP/${GDUMP}.t${gcyc}z.snogrb_t1534.3072.1536"
+export FNTSFA=${FNTSFA:-'                  '}
+export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
+FNSNOG=${FNSNOG:-$COMIN_GES_OBS/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES_OBS/${GPREFIX}snogrb_t1534.3072.1536"
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 if [ ${RUN_GETGES:-"NO"} = "YES" ]; then
@@ -339,7 +345,7 @@ done
 ################################################################################
 # Postprocessing
 cd $pwd
-[[ ${KEEPDATA:-"NO"} = "NO" ]] && rm -rf $DATA
+[[ $mkdata = "YES" ]] && rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then
    echo $(date) EXITING $0 with return code $err >&2

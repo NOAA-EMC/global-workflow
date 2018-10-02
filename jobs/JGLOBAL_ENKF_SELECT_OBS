@@ -82,7 +82,7 @@ fi
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-
+GDUMP=${GDUMP:-"gdas"}
 
 export CASE=$CASE_ENKF
 export CDUMP_OBS=${CDUMP_OBS:-$CDUMP}
@@ -91,9 +91,16 @@ export CDUMP_OBS=${CDUMP_OBS:-$CDUMP}
 export OPREFIX="${CDUMP_OBS}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 export ASUFFIX=".nemsio"
-export GPREFIX="gdas.t${gcyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
 export GSUFFIX=".ensmean.nemsio"
 
+if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
+else
+    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
+fi
 
 # COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in exglobal script
 # TO DO: Map NCO's directory into these variables
@@ -116,6 +123,11 @@ status=$?
 
 # Link observational data
 export PREPQC="$COMIN_ANL/${OPREFIX}prepbufr"
+if [ ! -f $PREPQC ]; then
+    echo "WARNING: PREPBUFR FILE $PREPQC MISSING"
+    msg="WARNING : Global PREPBUFR file is missing"
+    postmsg "$jlogfile" "$msg"
+fi
 export PREPQCPF="$COMIN_ANL/${OPREFIX}prepbufr.acft_profiles"
 export TCVITL="$COMIN_ANL/${OPREFIX}syndata.tcvitals.tm00"
 [[ $DONST = "YES" ]] && export NSSTBF="$COMIN_ANL/${OPREFIX}nsstbufr"
@@ -167,9 +179,11 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 
+##############################################
+# Send Alerts
+##############################################
 if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_gsistat $job $COMOUT/gsistat_${PDY}${cyc}_ensmean
-   $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $SFCANL
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_gsistat $job $GSISTAT
 fi
 
 
@@ -180,7 +194,9 @@ fi
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 
 msg="ENDED NORMALLY."

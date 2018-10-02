@@ -82,7 +82,7 @@ fi
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-
+GDUMP=${GDUMP:-"gdas"}
 
 export CASE=$CASE_ENKF
 
@@ -102,6 +102,13 @@ export ASUFFIX=".nemsio"
 export GPREFIX="${CDUMP}.t${gcyc}z."
 export GSUFFIX=".nemsio"
 
+if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
+else
+    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
+fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in exglobal script
 # TO DO: Map NCO's directory into these variables
@@ -131,7 +138,9 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
 
 
 msg="ENDED NORMALLY."
