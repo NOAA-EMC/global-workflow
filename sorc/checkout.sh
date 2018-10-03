@@ -34,8 +34,8 @@ if [[ ! -d gfs_post.fd ]] ; then
     #git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    #git checkout ncep_post.v8.0.25
-    git checkout ncep_post_gtg.v1.0.4
+    #git checkout ncep_post.v8.0.26
+    git checkout ncep_post_gtg.v1.0.5
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
