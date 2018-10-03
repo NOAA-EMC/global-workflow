@@ -63,7 +63,6 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
         export job="j${CDUMP}_prep_${cyc}"
         export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
         COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
-        export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
         export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
         export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
         export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
