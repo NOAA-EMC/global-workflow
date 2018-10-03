@@ -27,7 +27,7 @@ export PATH=$PATH:.
 if [ "$target" = wcoss_dell_p3 ]; then
    ./build_all_cmake.sh "PRODUCTION" "$cwd/gsi.fd"
 else
-   ./build_all.sh "PRODUCTION" "$gsitarget"
+   ./build_all.sh "$gsitarget"
 fi
 
 exit
