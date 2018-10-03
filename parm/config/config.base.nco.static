@@ -103,6 +103,7 @@ export assim_freq=6
 export PSLOT="rtecffv3"
 export EXPDIR="$EXPDIR"
 export ROTDIR="$ROTDIR"
+export ROTDIR_DUMP="YES"
 export RUNDIR="$DATAROOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="/gpfs/dell2/ptmp/$USER/FV3ICS"
