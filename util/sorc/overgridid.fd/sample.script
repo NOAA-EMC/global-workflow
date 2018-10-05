@@ -1,0 +1,13 @@
+# THIS SCRIPT READ A FORECAST FILE (UNIT 11), MODIFIES PDS OCTET(8)
+# TO CORRECT THE GRIB GRID ID AND RE-WRITES THE FILE TO UNIT 51.
+
+# STANDARD INPUT IS A 3-DIGIT INTEGER, FOR EXAMPLE 255 (User define grid)
+
+ln -s master.grbf06  fort.11
+
+overgridid << EOF
+255
+EOF
+
+mv fort.51 master.grbf06.new
+rm fort.11

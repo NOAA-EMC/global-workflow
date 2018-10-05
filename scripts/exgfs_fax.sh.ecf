@@ -68,9 +68,14 @@ fi
 # Wait for the availability of the pgrib file
 ###############################################
 icnt=1
-grib2file=${RUN}.${cycle}.pgrb2.1p00.f${fhr}
 while [ $icnt -lt 1000 ]
 do
+  if test $fcsthrs -lt 100
+  then
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f0$fcsthrs
+  else
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f$fcsthrs
+  fi
   if [ -s $COMIN/$grib2file ]
   then
     break
@@ -92,10 +97,29 @@ hr=00
 inc=6
 while [ $hr -le $fhr ]
 do
+  if test $fcsthrs -lt 100
+  then
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f0${hr}
+  else
+      grib2file=${RUN}.${cycle}.pgrb2.1p00.f${hr}
+  fi
   cp $COMIN/$grib2file  .
-  $CNVGRIB -g21 $grib2file pgrbf0${hr}
-  $GRBINDEX pgrbf0${hr}  pgrbif0${hr}
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " File $grib2file does not exist."
+    exit $err
+  fi
+
+  $CNVGRIB -g21 $grib2file pgrbf${hr}
+  export err=$?
+  if [[ $err -ne 0 ]] ; then
+    echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+    exit $err
+  fi
+
+  $GRBINDEX pgrbf${hr}  pgrbif${hr}
   hr=`expr $hr + $inc`
+  if [ $hr -lt 10 ]; then hr=0$hr; fi
 done
 echo $cyc
 if [ $cyc -eq 00 -o $cyc -eq 12 ] 
@@ -116,19 +140,28 @@ then
      sendkey=fax.pepfax$fhr
 
      jobn=_$cyc"_"$PDY
-     mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
+
+#     mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
+     ${UTILgfs}/ush/mkfaxb.sh "$hour" $faxparm $FAXOUT $sendkey
 
      KEYW=NHANL_g
 
-     grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+#     grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+     grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
      if [ ${cyc} = '00' ]; then submn=$sub00; fi
      if [ ${cyc} = '12' ]; then submn=$sub12; fi
 
      echo $FAXOUT $submn $name $Keyword $gif $toc $prt $jobn $lprt
      export FAXOUT submn name Keyword gif toc prt jobn lprt
-     mk_graphics.sh
 
+#     mk_graphics.sh
+     ${UTILgfs}/ush/mk_graphics.sh
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/mk_graphics.sh does not exist."
+        exit $err
+     fi
   fi
 
   set +x
@@ -136,23 +169,37 @@ then
   echo " Part 11) Execute TRPSFPRV for GFS at hour=48"
   echo "##############################################"
   set -x
-
   if [ $fhr -eq 48 -a $cyc = "12" ]
   then
 
      FAXOUT=trpsfprv.faxx.${model}_${cyc}
-     trpsfprv.sh 
+#     trpsfprv.sh 
+     ${UTILgfs}/ush/trpsfprv.sh 
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/trpsfprv.sh does not exist."
+        exit $err
+     fi
+
      jobn=${model}_fax_${cyc}
 
      for KEYW in TRPSFG01 TRPSFG02 TRPSFG03
      do
 
-    grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+#    grep $KEYW ${FIXshared}/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
+    grep $KEYW ${UTILgfs}/fix/identifyfax.tbl | read Keyword sub00 sub06 sub12 sub18 gif toc prt lprt name
 
      submn=$sub12
 
      export FAXOUT submn name Keyword gif toc prt jobn lprt
-     mk_graphics.sh
+
+#    mk_graphics.sh
+     ${UTILgfs}/ush/mk_graphics.sh
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File ${UTILgfs}/ush/mk_graphics.sh does not exist."
+        exit $err
+     fi
 
      done
   fi

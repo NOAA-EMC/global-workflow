@@ -1,0 +1,320 @@
+snd2forgn.names LAST UPDATED Thu Dec 28 11:08:09 EST 2000 Peter Henrichsen
+These maps are made on the cray.
+   this member found on hp36 as:
+       /tmp_mnt/export/sgi73/peterhen/util/fix/ibm/graph_snd2forgn.names.dec28
+          on IBM SP as
+       /nfsuser/g02/wx12ph/util/fix/graph_snd2forgn.names also in
+       /nwprod/util/fix/graph_snd2forgn.names
+                     
+SNDKEY       DBDET TYPE           FOREIGN NAME     
+
+fax.radatanl FAXX radatanl.vae
+
+fax.fm1dotfx FAXX fm1dotfx.vae
+fax.rgl2dotx PWWB_FAXX rgl2dotx.vag
+
+fax.mconv    FAXX mconv.vag
+
+fax.raf06fx0 FAXX raf06fx0.vag     
+fax.raf18fx0 FAXX raf18fx0.vag
+fax.raf18fx2 FAXX raf18fx2.vag
+fax.raf36fx0 FAXX raf36fx0.vag
+fax.raf36fx2 FAXX raf36fx2.vag
+fax.rapfax00 FAXX rapfax00.vag
+fax.rapfax12 FAXX rapfax12.vag
+fax.rapfax24 FAXX rapfax24.vag
+fax.rapfax36 FAXX rapfax36.vag
+fax.rapfax48 FAXX rapfax48.vag
+fax.ngmcgrd24 FAXX cgrdmp24.vag
+fax.ngmcgrd48 FAXX cgrdmp48.vag
+fax.ngmtjfax  FAXX ngmtjfax.vag
+
+fax.gf12nhfx PWWB_FAXX            gf12nhfx.vaf
+fax.gf12shfx FAXX                 gf12shfx.vaf
+
+fax.smshem FAXX smshem.vaa
+
+fax.sst FAXX sst.vaa
+
+fax.smwave FAXX smwave.vaa
+
+fax.plot70mb PWWB_FAXX             plot70mb.vaa        
+
+fax.nam500_12hrchng FAXX nam500_12hrchng
+fax.lfmfax00 FAXX lfmfax00.vae
+fax.lfmvar00 FAXX lfmvar00.vae
+faxnam00.oprnl140 FAXX lfmfax00.vae
+faxnam00.oprnl120 FAXX lfmvar00.vae 
+fax.namfax12 FAXX namfax12.nam
+fax.namvar12 FAXX namvar12.nam
+faxnam12.oprnl140 FAXX namfax12.nam
+faxnam12.oprnl120 FAXX namvar12.nam
+fax.namfax24 FAXX namfax24.nam
+fax.namvar24 FAXX namvar24.nam 
+
+fax.gbpefx06 FAXX gbpefx06.vaf         
+fax.pfxgdas06 FAXX pfxgdas06.vaf        
+ 
+fax.gbpefx18 FAXX gbpefx18.vaf        
+fax.pfxgdas18 FAXX pfxgdas18.vaf        
+
+cgrdet24.nam FAXX cgrdet24.nam
+cgrdet48.nam FAXX cgrdet48.nam
+
+cgrdnam24.nam FAXX cgrdet24.nam
+cgrdnam48.nam FAXX cgrdet48.nam
+
+faxnam24.oprnl140 FAXX namfax24.nam
+faxnam24.oprnl120 FAXX namvar24.nam 
+fax.namfax36 FAXX namfax36.nam
+fax.namvar36 FAXX namvar36.nam
+faxnam36.oprnl140 FAXX namfax36.nam  
+faxnam36.oprnl120 FAXX namvar36.nam  
+
+fax.namfax48 FAXX namfax48.nam
+fax.namvar48 FAXX namvar48.nam
+faxnam48.oprnl140 FAXX namfax48.nam
+faxnam48.oprnl120 FAXX namvar48.nam
+fax.thndstrm FAXX thndstrm.vae
+fax.fmplt250 PWWB                 fmplt250.vae
+
+fax.wndverfx PWWB                 wndverfx.vaa
+
+fax.acarmaps FAXX acarmaps.vae
+
+fax.fdfax    FAXX fdfax.vae
+ 
+fax.fmprecip FAXX fmprecip.vae
+fax.fmwdfcst FAXX fmwdfcst.vae
+fax.popfaxv  FAXX popfaxv.vae
+fax.mxmnbkup FAXX mxmnbkup.vae
+fax.solargrd FAXX solargrd.vae
+fax.cwcvlfmv FAXX cwcvlfmv.vae
+fax.tmpdwp   FAXX tmpdwp.vae
+fax.bndwnd   FAXX bndwnd.vae
+fax.trajfax  FAXX trajfax.vae
+fax.brknel   FAXX brknel.vae
+
+fax.mrf48 FAXX mrf48.vam         
+fax.thck36hr FAXX thck36hr.vaa   
+   
+
+fax.sh4wefax FAXX sh4wefax.vaa   
+fax.shwefx34 FAXX shwefx34.vam   
+
+fax.shwefx5  FAXX shwefx5.vaa    
+fax.shvwefax FAXX shvwefax.vaa   
+
+fax.brknlgfs FAXX brknlgfs.vaa
+fax.extpefax FAXX extpefax.vaa   
+
+fax.alaskanc FAXX alaskanc.vam
+fax.midestrw FAXX midestrw.vam
+fax.peprecip FAXX peprecip.vaa
+fax.xtpeamrf FAXX xtpeamrf.vam   
+fax.xtpebmrf FAXX xtpebmrf.vam   
+
+fax.radbk96  FAXX radbk96        
+fax.radmrf   FAXX radmrf         
+fax.souther1 FAXX souther1.vam   
+fax.souther2 FAXX souther2.vam   
+
+fax.ecmwfmp2 PWWB             ecmwfmp2.vam
+
+
+fax.bcmrfmp1 PWWB            bcmrfmp1.vam
+fax.bcmrfmp2 FAXX            bcmrfmp2.vam
+
+fax.extdmap1 PWWB             extdmap1.vam
+
+blended.mrfecmwf PWWB   mrfecmwf.vmr
+
+fax.cachilv1 FAXX cachilv1.vaf 
+fax.cachilv2 FAXX cachilv2.vaf
+
+ukmetmap.t00z PWWB      ukmet00z.vam
+ukmetmap.t12z PWWB      ukmet12z.vam
+
+fax.ozone    FAXX ozone.vaf
+
+
+fax.hrlycnt1 FAXX hrlycnt1.vrw
+fax.ctrmap1  FAXX ctrmap1.vrw
+fax.ctrmap4  FAXX ctrmap4.vrw
+
+fax.fd250plt PWWB_FAXX          fd250plt.vaw
+fax.fax250plt PWWB       fd250plt.vaw
+
+fax.pfax1    FAXX pfax1.vaa        
+
+         
+
+fax.mk1fax12 FAXX          mk1fax00.vaa  
+fax.mk1fax00 FAXX          mk1fax00.vaa  
+
+fax.avpolar  FAXX avpolar.vaa     
+fax.avmerc   FAXX avmerc.vaa        
+fax.avmrcwfx FAXX avmrcwfx.vaa
+fax.selamerc FAXX selamerc.vaa   
+fax.pvprecip FAXX pvprecip.vaa      
+fax.gmexwv00 FAXX gmexwv00.vaa
+
+fax.nppepfx1 FAXX nppepfx1.vaa     
+fax.nppepfx2 FAXX nppepfx2.vaa   
+
+fax.hnlmerc1 FAXX hnlmerc1.vaa
+fax.hnlmerc2 FAXX hnlmerc2.vaa
+fax.hnlmerc3 FAXX hnlmerc3.vaa
+
+fax.mercfax FAXX mercfax.vaa      
+fax.merckup FAXX mercbkup.vaa            
+
+fax.wndfcstv FAXX wndfcstv.vaa              
+fax.pepfax60 FAXX pepfax60.vaa
+fax.mconv    FAXX mconv.vag
+fax.shipice  FAXX shipice.vaf
+fax.presscng FAXX presscng.vrw
+
+
+FAXPCPSN.00   PWWB             prcpsn00.vaa   2820 2250
+FAXPCPSN.06   PWWB             prcpsn06.vaa   2821 2251
+FAXPCPSN.12   PWWB             prcpsn12.vaa   2822 2252 2830
+FAXPCPSN.18   PWWB             prcpsn18.vaa   2823 2253
+
+
+SURFACE GEOSTROPHIC WIND AND REL VORT:
+
+fax.geowvort FAXX geowvort.vrw
+
+
+
+24 HOUR PRECIP VERIFICATION MAP:
+
+var.qpb24 PWWB                  qpb24fax.vai  9404
+bup.qpb24 PWWB                  qpb24bup.vai  9405
+testqpb   PWWB                  qpb24test.vai 9405
+
+
+
+VAFTAD products: as of 30 mar 1998 13:55L
+
+fax.vaftad1T00Z FAXX vafta10z.vaa 3456
+fax.vaftad2T00Z FAXX vafta20z.vaa 3457
+
+fax.vaftad1T12Z FAXX vafta12z.vaa 3458
+fax.vaftad2T12Z FAXX vafta22z.vaa 3459
+
+
+WAFS PRODUCTS  as of 21 OCT 1998 14:40L
+
+fax.wafs0600Z FAXX wafs0600.vaa  
+fax.wafs1800Z FAXX wafs1800.vaa 
+fax.wafs3000Z FAXX wafs3000.vaa
+ 
+fax.wafs0612Z FAXX wafs0612.vaa 
+fax.wafs1812Z FAXX wafs1812.vaa
+fax.wafs3012Z FAXX wafs3012.vaa
+ 
+ 
+PRODUCTS for NCDC: as of 28 aug 1997 14:10L
+
+fax.hrlycnt2 NCDC_FAXX hrlycnt2.vrw
+
+fax.tropct00z NCDC_FAXX tropc00z.vaa tropc00z ncdcname
+fax.tropct06z NCDC_FAXX tropc06z.vaa tropc06z ncdcname
+fax.tropct12z NCDC_FAXX tropc12z.vaa tropc12z ncdcname
+fax.tropct18z NCDC_FAXX tropc18z.vaa tropc18z ncdcname
+  
+fax.trpic06z NCDC_FAXX      trpic06z.vaf  trpic06z  
+
+fax.trpicmer NCDC_FAXX      trpicmer.vaf  trpicmer ncdcname
+fax.trpismer NCDC_PWWB_FAXX trpismer.vaa  trpismer ncdcname
+fax.offmerc PWWB          trpmerc.vaa
+
+fax.nhfctrmv NCDC_FAXX      nhfctrmv.vrw  nhfctrmv 
+
+fax.wxpxmap3 NCDC_FAXX      wxpxmap3.vrw  wxpxmap3 ncdcname
+fax.wxpxmap4 NCDC_FAXX      wxpxmap4.vrw  wxpxmap4 ncdcname
+
+fax.apfxanl  NCDC_PWWB_FAXX apfxanl.vag   apfxanl  ncdcname
+
+fax.pepfax00 NCDC_FAXX_PWWB pepfax00.vaa  pepfax00 ncdcname
+fax.pepfax12 NCDC_FAXX      pepfax12.vaa  pepfax12 ncdcname 
+fax.pepfax24 NCDC_FAXX      pepfax24.vaa  pepfax24 ncdcname
+fax.pepfax36 NCDC_FAXX      pepfax36.vaa  pepfax36 ncdcname
+fax.pepfax48 NCDC_FAXX      pepfax48.vaa  pepfax48 ncdcname
+
+fax.uab      NCDC_FAXX uab.vaf       uab 
+
+fax.fm2dotfx NCDC_PWWB_FAXX fm2dotfx.vae  fm2dotfx ncdcname 
+
+fax.ganlnhfx NCDC_PWWB_FAXX ganlnhfx.vaf  ganlnhfx ncdcname
+fax.ganlshfx NCDC_FAXX  ganlshfx.vaf  ganlshfx ncdcname
+
+fax.bkwndalf NCDC_FAXX bkwndalf.vae  bkwndalf ncdcname
+
+fax.wndalftf NCDC_FAXX wndalftf.vaa  wndalftf 
+
+fax.probturb NCDC_FAXX probturb.vaa  probturb 
+
+fax.rmksacft NCDC_FAXX rmksacft.vai  rmksacft  
+fax.rmksacf2 NCDC_FAXX rmksacf2.vai  rmksacf2  
+
+fax.opcsigww NCDC_FAXX opcsigww.vaa  opcsigww 
+fax.opcwinds NCDC_FAXX opcwinds.vaa  opcwinds ncdcname 
+fax.opcwindi NCDC_FAXX opcwindi.vaa  opcwindi 
+
+faxmxmn.00.ncdc  NCDC_FAXX   ObsMaximumTmp00Z ObsMaximumTmp00Z ncdcname 2705 
+faxmxmn.12.ncdc  NCDC_FAXX   ObsMinimumTmp12Z ObsMinimumTmp12Z ncdcname 2706
+ 
+faxprcp.12.ncdc  NCDC_FAXX   24Hrprecplot12Z 24Hrprecplot12Z ncdcname  2831
+faxsnow.12.ncdc  NCDC_FAXX   6HrSnowCover12Z 6HrSnowCover12Z ncdcname  2254
+
+
+ALNOTS AND GENOTS : as of 25 NOV 1997 1215L
+
+
+akfax    PWWB_FAXX            var150.vck
+difax    PWWB_FAXX            var151.vck
+honolulu PWWB_FAXX            var152.vck
+wefaxmap PWWB_FAXX            var153.vck
+
+alnot.00 PWWB_FAXX            var154.vck
+alnot.12 PWWB_FAXX            var155.vck
+
+tkfax    PWWB              var150.vck
+tifax    PWWB              var151.vck
+tonolulu PWWB              var152.vck
+tefax    PWWB              var153.vck
+
+tlnot.00 PWWB              var154.vck
+tlnot.12 PWWB              var155.vck
+
+PRODUCTS for TPC: as of 09 feb 2000 11:05
+
+SNDKEY DBNET TYPE         TPC      DFAX  subset source   oldname         
+                          name     slot  num         
+________________________________________________________________________
+
+660X   TPC_6BIT_nhc-hp13 660X.6bt  D291  3456   ig2       VOLASH00ZP1.D291
+661X   TPC_6BIT_nhc-hp13 661X.6bt  D292  3457   ig2       VOLASH00ZP2.D292 
+662X   TPC_6BIT_nhc-hp13 662X.6bt  D293  3458   ig2       VOLASH12ZP1.D293 
+663X   TPC_6BIT_nhc-hp13 663X.6bt  D294  3459   ig2       VOLASH12ZP2.D294
+W.T00Z TPC_6BIT_nhc-hp13 668X.6bt  D186  3657   j552d     00zsfc-wh.D186
+W.T12Z TPC_6BIT_nhc-hp13 669X.6bt  D280  3669   j552p     12zsfc-wh.D280
+
+TEXT PRODUCTS for LDM that will be sent via the weather wire.
+16 apr 2000 peter henrichsen
+
+SNDKEY DBNET_TYPE  DBNET_SUBTYPE
+________________________________________________________________________
+uvbull WAN_TEXT    aeus41_kwbc_uvicac
+
+GIF files for nesdis (VAFTAD) that will be ftp'd to the foreign work station.
+12 May 2000 Peter Henrichsen
+
+SNDKEY     DBNET_TYPE  DBNET_SUBTYPE
+________________________________________________________________________
+vaftad.gif FTP_FILE    hpipb2_/pub/VAFTAD
+
+ 

@@ -9,25 +9,6 @@ NWROOT=${NWROOT:?}
 DATAROOT=${DATAROOT:?}
 COMROOT=${COMROOT:?}
 
-#############################
-# Source relevant config files
-#############################
-configs="base"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env emcsfc
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
@@ -77,7 +58,10 @@ PDY_m6hrs=$(echo $GDATE | cut -c1-8)
 cyc_m6hrs=$(echo $GDATE | cut -c9-10)
 export cycle_m6hrs=t${cyc_m6hrs}z
 
-export COMOUT=${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc
+#### Lin Gan request for change
+#### export COMOUT=${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc
+export COMOUT=${COMOUT:-${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc}
+
 export COMINgfs=${COMINgfs:-$(compath.py $NET/$envir/$RUN.$PDY)/$cyc}
 export COMINgfs_m6hrs=${COMINgfs_m6hrs:-$(compath.py $NET/$envir/$RUN.$PDY_m6hrs)/$cyc_m6hrs} 
 

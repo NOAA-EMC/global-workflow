@@ -35,7 +35,9 @@
 
   echo 0000${PDY}${cyc} > dates
   export FORT55="title.output"
-  $WEBTITLE < dates
+#  $WEBTITLE < dates
+ ${UTILgfs}/exec/webtitle < dates
+
   export TITLE=`cat title.output`
   echo "\n\n TITLE = $TITLE \n"
 

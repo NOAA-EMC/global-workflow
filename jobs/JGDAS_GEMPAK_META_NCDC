@@ -44,10 +44,10 @@ export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ######################################
 # Set up the GEMPAK directory
@@ -87,8 +87,8 @@ export COMINgdas=${COMINgdas:-$(compath.py ${NET}/${envir}/${RUN})}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips/meta}
 export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
 
-export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
-export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
+export COMINukmet=${COMINukmet:-$(compath.py nawips/${envir}/ukmet)}
+export COMINecmwf=${COMINecmwf:-$(compath.py nawips/${envir}/ecmwf)}
 
 
 export COMOUTukmet=${COMOUTukmet:-$(compath.py nawips/${envir}/ukmet)}

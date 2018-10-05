@@ -77,12 +77,16 @@ set -xua
 ARCHSYND=${ARCHSYND:-$COMROOTp1/arch/prod/syndat}
 HOMENHC=${HOMENHC:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
+
+FIXSYND=${FIXSYND:-$HOMEgfs/fix/fix_am}
+USHSYND=${USHSYND:-$HOMEgfs/ush}
+EXECSYND=${EXECSYND:-$HOMEgfs/exec}
+PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
+
 slmask=${slmask:-$FIXSYND/syndat_slmask.t126.gaussian}
 copy_back=${copy_back:-YES}
 SENDCOM=${SENDCOM:-YES}
 files_override=${files_override:-""}
-
-EXECSYND=${EXECSYND:-${HOMESYND}/exec}
 
 cd $DATA
 

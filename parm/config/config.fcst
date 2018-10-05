@@ -18,12 +18,21 @@ fi
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"
-export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
+export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+
+if [[ "$CDUMP" == "gfs" ]] ; then
+   export npe_fv3=$npe_fcst_gfs
+   export layout_x=$layout_x_gfs
+   export layout_y=$layout_y_gfs
+   export WRITE_GROUP=$WRITE_GROUP_GFS
+   export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+fi
 
 if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
+    export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
 
 # Model configuration
@@ -66,8 +75,13 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export do_sat_adj=".true."
     export random_clds=".false."
 
-    export hord_mt_nh_nonmono=6
-    export hord_xx_nh_nonmono=6
+    if [[ "$CDUMP" == "gdas" ]] ; then
+      export hord_mt_nh_nonmono=6
+      export hord_xx_nh_nonmono=6
+    else
+      export hord_mt_nh_nonmono=5
+      export hord_xx_nh_nonmono=5
+    fi
     export vtdm4_nh_nonmono=0.02
     export nord=2
     export dddmp=0.1

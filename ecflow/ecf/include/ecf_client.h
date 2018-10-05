@@ -1,0 +1,7 @@
+export ECF_NAME=%ECF_NAME%
+export ECF_HOST=%ECF_LOGHOST%
+export ECF_PORT=%ECF_PORT%
+export ECF_PASS=%ECF_PASS%
+export ECF_TRYNO=%ECF_TRYNO%
+export ECF_RID=$SAVED_ECF_RID
+

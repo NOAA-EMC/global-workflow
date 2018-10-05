@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180712
+export PDY1=`expr $PDY - 1`
 
 export cyc=00
 export cycle=t${cyc}z
@@ -26,28 +26,23 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 ####################################
-
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
 module load prod_envir/1.0.2
 #
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
+#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/util_shared/1.0.8
-#
-#  This is a test GEMPAK version 7.3.1 on DELL
-#
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
 module load gempak/7.3.1
-
 module list
 
 ############################################
@@ -110,10 +105,9 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}         ### NCO PROD
 else
-#  export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime on DELL
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime on DELL
 
- export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtimea on CRAY
-
+# export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtimea on CRAY
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc} ### Boi PARA
 fi
 

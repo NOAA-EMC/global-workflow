@@ -60,7 +60,14 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
 
 #echo $PDY
 
-   $USHSYND/syndat_qctropcy.sh $cdate10
+   ${USHSYND:-$HOMEgfs/ush}/syndat_qctropcy.sh $cdate10
+   errsc=$?
+   if [ "$errsc" -ne '0' ]; then
+    msg="syndat_qctropcy.sh failed. exit"
+    postmsg "$jlogfile" "$msg"
+    exit $errsc
+   fi
+   
 
    cd $COMOUT
    pwd

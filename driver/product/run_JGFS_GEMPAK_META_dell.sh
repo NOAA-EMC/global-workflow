@@ -15,7 +15,6 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180702
 
 export PDY1=`expr $PDY - 1`
 
@@ -30,30 +29,23 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
 module load prod_envir/1.0.2
 #
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
+#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/util_shared/1.0.8
-#
-#  This is a test GEMPAK version 7.3.0 on DELL
-#
-module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-module load gempak/7.3.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
-# module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-# module load gempak/7.3.1
-
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
 module list
 
 ##############################################
@@ -125,8 +117,8 @@ if [ $envir = "prod" ] ; then
   export COMROOT=/gpfs/hps/nco/ops/com
 
 else
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc}/nawips   ### EMC PARA Realtime on CRAY
-#  export COMINgempak=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1                          ### EMC PARA Realtime on CRAY
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc}/nawips   ### EMC PARA Realtime
+#  export COMINgempak=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1                          ### EMC PARA Realtime
 
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips   ### Boi PARA
   export COMINgempak=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}                         ### Boi PARA

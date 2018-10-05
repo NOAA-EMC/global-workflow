@@ -1,0 +1,2488 @@
+extern /prod00/gdas/forecast
+extern /prod00/gdas/post
+extern /prod00/gdas/enkf/post
+extern /totality_limit:TOTALITY
+suite prod06
+  repeat day 1
+  edit ECF_TRIES '1'
+
+#### Developer overwrite
+  edit ECF_HOME '/gpfs/dell2/emc/modeling/noscrub/Lin.Gan/ecflow-dell'
+
+  edit CYC '06'
+  edit MACHINE 'mars'
+  edit ENVIR 'prod'
+
+#### Developer overwrite
+# edit E 'j'
+  edit E 'jecffv3'
+
+#### Developer overwrite
+  edit EMCPEN 'rtecffv3'
+
+#### Developer overwrite
+  edit ECF_INCLUDE '/gpfs/dell2/emc/modeling/noscrub/Lin.Gan/ecflow-dell/include'
+  edit ECF_OUT '/gpfs/dell2/ptmp/Lin.Gan/comrot/rtecffv3/logs'
+  edit ECF_LOG '/gpfs/dell2/ptmp/Lin.Gan/comrot/rtecffv3/logs/ecf.log'
+  edit DATAROOT '/gpfs/dell2/stmp/Lin.Gan/RUNDIRS/rtecffv3'
+
+  edit QUEUE 'dev'
+  edit QUEUESHARED 'dev_shared'
+  edit QUEUESERV 'dev_transfer'
+
+  family gdas
+    edit PROJ 'FV3GFS-T2O'
+    edit ECF_JOB_CMD 'lsub %ECF_JOB% %ECF_JOBOUT% %MACHINE%'
+
+#### Developer overwrite
+    edit ECF_FILES '/gpfs/dell2/emc/modeling/noscrub/Lin.Gan/ecflow-dell/scripts/gdas'
+    edit COM '/gpfs/dell2/ptmp/Lin.Gan/comrot/rtecffv3'
+
+    edit NET 'gfs'
+    edit RUN 'gdas'
+
+    family dump
+#### NCO will need to add operational dump job here
+      task jgdas_dump_alert
+        trigger jgdas_dump_post:release_gdas06_dump_alert
+      task jgdas_dump_post
+        trigger jgdas_dump == complete
+        event 1 release_gdas06_dump_alert
+      task jmodel_realtime_gdas
+        trigger jgdas_dump_alert == complete
+      task jgdas_tropcy_qc_reloc
+        time 11:45
+      task jgdas_dump
+        event 1 release_sfcprep
+        time 11:50
+    endfamily
+    family prep
+      task jgdas_emcsfc_sfc_prep
+      trigger ../dump/jgdas_dump:release_sfcprep
+      task jgdas_prep
+      trigger ../dump/jgdas_dump == complete and ../dump/jgdas_tropcy_qc_reloc == complete
+    endfamily
+    family analysis
+      task jgdas_analysis_high
+      trigger ../prep/jgdas_prep == complete and ../prep/jgdas_emcsfc_sfc_prep == complete
+    endfamily
+    task jgdas_vminmon
+      trigger analysis/jgdas_analysis_high == complete
+    family forecast
+      task jgdas_forecast_high
+        trigger ../analysis/jgdas_analysis_high == complete and ../enkf/innovate == complete
+    endfamily
+    family post_processing
+      task jgdas_tropc
+        trigger ../post == complete
+    endfamily
+    family gempak
+      task jgdas_gempak
+        trigger ../forecast/jgdas_forecast_high == complete
+      task jgdas_gempak_meta_ncdc
+        trigger ./jgdas_gempak == complete
+    endfamily
+    family post
+      task jgdas_post_manager
+        trigger ../forecast == active
+        event 1 release_postanl
+        event 2 release_post000
+        event 3 release_post001
+        event 4 release_post002
+        event 5 release_post003
+        event 6 release_post004
+        event 7 release_post005
+        event 8 release_post006
+        event 9 release_post007
+        event 10 release_post008
+        event 11 release_post009
+      task jgdas_post_anl
+        edit FHRGRP '000'
+        edit FHRLST 'anl'
+        edit HR 'anl'
+        edit FHR 'anl'
+        trigger ./jgdas_post_manager:release_postanl
+        event 1 release_pgrb2_anl
+      task jgdas_post_f000
+        edit FHR 'f000'
+        edit HR '000'
+        edit FHRGRP '001'
+        edit FHRLST 'f000'
+        trigger ./jgdas_post_manager:release_post000
+      task jgdas_post_f001
+        edit FHR 'f001'
+        edit HR '001'
+        edit FHRGRP '002'
+        edit FHRLST 'f001'
+        trigger ./jgdas_post_manager:release_post001
+      task jgdas_post_f002
+        edit FHR 'f002'
+        edit HR '002'
+        edit FHRGRP '003'
+        edit FHRLST 'f002'
+        trigger ./jgdas_post_manager:release_post002
+      task jgdas_post_f003
+        edit FHR 'f003'
+        edit HR '003'
+        edit FHRGRP '004'
+        edit FHRLST 'f003'
+        trigger ./jgdas_post_manager:release_post003
+      task jgdas_post_f004
+        edit FHR 'f004'
+        edit HR '004'
+        edit FHRGRP '005'
+        edit FHRLST 'f004'
+        trigger ./jgdas_post_manager:release_post004
+      task jgdas_post_f005
+        edit FHR 'f005'
+        edit HR '005'
+        edit FHRGRP '006'
+        edit FHRLST 'f005'
+        trigger ./jgdas_post_manager:release_post005
+      task jgdas_post_f006
+        edit FHR 'f006'
+        edit HR '006'
+        edit FHRGRP '007'
+        edit FHRLST 'f006'
+        trigger ./jgdas_post_manager:release_post006
+      task jgdas_post_f007
+        edit FHR 'f007'
+        edit HR '007'
+        edit FHRGRP '008'
+        edit FHRLST 'f007'
+        trigger ./jgdas_post_manager:release_post007
+      task jgdas_post_f008
+        edit FHR 'f008'
+        edit HR '008'
+        edit FHRGRP '009'
+        edit FHRLST 'f008'
+        trigger ./jgdas_post_manager:release_post008
+      task jgdas_post_f009
+        edit FHR 'f009'
+        edit HR '009'
+        edit FHRGRP '010'
+        edit FHRLST 'f009'
+        trigger ./jgdas_post_manager:release_post009
+    endfamily
+    family enkf
+      task jgdas_enkf_select_obs
+      trigger ../prep/jgdas_prep == complete
+      family innovate
+        trigger ./jgdas_enkf_select_obs == complete
+        task jgdas_enkf_innovate_obs_grp1
+          edit ENSGRP '01'
+        task jgdas_enkf_innovate_obs_grp2
+          edit ENSGRP '02'
+        task jgdas_enkf_innovate_obs_grp3
+          edit ENSGRP '03'
+        task jgdas_enkf_innovate_obs_grp4
+          edit ENSGRP '04'
+        task jgdas_enkf_innovate_obs_grp5
+          edit ENSGRP '05'
+        task jgdas_enkf_innovate_obs_grp6
+          edit ENSGRP '06'
+        task jgdas_enkf_innovate_obs_grp7
+          edit ENSGRP '07'
+        task jgdas_enkf_innovate_obs_grp8
+          edit ENSGRP '08'
+        task jgdas_enkf_innovate_obs_grp9
+          edit ENSGRP '09'
+        task jgdas_enkf_innovate_obs_grp10
+          edit ENSGRP '10'
+      endfamily
+      task jgdas_enkf_update
+        trigger ./innovate == complete
+      task jgdas_enkf_inflate_recenter
+        trigger ./jgdas_enkf_update == complete and ../analysis/jgdas_analysis_high == complete
+      family forecast
+        trigger ./jgdas_enkf_inflate_recenter == complete
+        task jgdas_enkf_fcst_grp1
+          edit ENSGRP '01'
+        task jgdas_enkf_fcst_grp2
+          edit ENSGRP '02'
+        task jgdas_enkf_fcst_grp3
+          edit ENSGRP '03'
+        task jgdas_enkf_fcst_grp4
+          edit ENSGRP '04'
+        task jgdas_enkf_fcst_grp5
+          edit ENSGRP '05'
+        task jgdas_enkf_fcst_grp6
+          edit ENSGRP '06'
+        task jgdas_enkf_fcst_grp7
+          edit ENSGRP '07'
+        task jgdas_enkf_fcst_grp8
+          edit ENSGRP '08'
+        task jgdas_enkf_fcst_grp9
+          edit ENSGRP '09'
+        task jgdas_enkf_fcst_grp10
+          edit ENSGRP '10'
+        task jgdas_enkf_fcst_grp11
+          edit ENSGRP '11'
+        task jgdas_enkf_fcst_grp12
+          edit ENSGRP '12'
+        task jgdas_enkf_fcst_grp13
+          edit ENSGRP '13'
+        task jgdas_enkf_fcst_grp14
+          edit ENSGRP '14'
+        task jgdas_enkf_fcst_grp15
+          edit ENSGRP '15'
+        task jgdas_enkf_fcst_grp16
+          edit ENSGRP '16'
+        task jgdas_enkf_fcst_grp17
+          edit ENSGRP '17'
+        task jgdas_enkf_fcst_grp18
+          edit ENSGRP '18'
+        task jgdas_enkf_fcst_grp19
+          edit ENSGRP '19'
+        task jgdas_enkf_fcst_grp20
+          edit ENSGRP '20'
+      endfamily
+      family post
+        trigger ./forecast == complete
+        task jgdas_enkf_post_f003
+          edit FHMIN_EPOS '003'
+          edit FHMAX_EPOS '003'
+          edit FHOUT_EPOS '003'
+        task jgdas_enkf_post_f004
+          edit FHMIN_EPOS '004'
+          edit FHMAX_EPOS '004'
+          edit FHOUT_EPOS '004'
+        task jgdas_enkf_post_f005
+          edit FHMIN_EPOS '005'
+          edit FHMAX_EPOS '005'
+          edit FHOUT_EPOS '005'
+        task jgdas_enkf_post_f006
+          edit FHMIN_EPOS '006'
+          edit FHMAX_EPOS '006'
+          edit FHOUT_EPOS '006'
+        task jgdas_enkf_post_f007
+          edit FHMIN_EPOS '007'
+          edit FHMAX_EPOS '007'
+          edit FHOUT_EPOS '007'
+        task jgdas_enkf_post_f008
+          edit FHMIN_EPOS '008'
+          edit FHMAX_EPOS '008'
+          edit FHOUT_EPOS '008'
+        task jgdas_enkf_post_f009
+          edit FHMIN_EPOS '009'
+          edit FHMAX_EPOS '009'
+          edit FHOUT_EPOS '009'
+      endfamily
+    endfamily
+    task jgdas_verfrad
+      trigger enkf == complete
+  endfamily
+  family gfs
+    edit ECF_JOB_CMD 'lsub %ECF_JOB% %ECF_JOBOUT% %MACHINE%'
+
+#### Developer overwrite
+    edit ECF_FILES '/gpfs/dell2/emc/modeling/noscrub/Lin.Gan/ecflow-dell/scripts/gfs'
+    edit COM '/gpfs/dell2/ptmp/Lin.Gan/comrot/rtecffv3'
+
+    edit PROJ 'FV3GFS-T2O'
+    edit NET 'gfs'
+    edit RUN 'gfs'
+    family dump
+# NCO will need to add NCO dump job here
+      task jgfs_tropcy_qc_reloc
+        event 1 jtwc_bull_email
+        time 08:41
+      task jgfs_dump
+        event 1 release_sfcprep
+        time 08:47
+      task jgfs_dump_post
+        trigger jgfs_dump eq complete
+        event 1 release_gfs06_dump_alert
+      task jgfs_dump_alert
+        trigger jgfs_dump_post:release_gfs06_dump_alert
+      task jmodel_realtime_gfs
+        trigger jgfs_dump_alert eq complete
+    endfamily
+    family prep
+      task jgfs_emcsfc_sfc_prep
+      trigger ../dump/jgfs_dump:release_sfcprep
+      task jgfs_prep
+        trigger ../dump == complete
+    endfamily
+    task jgfs_analysis
+    trigger prep/jgfs_prep eq complete and prep/jgfs_emcsfc_sfc_prep == complete
+    task jgfs_vminmon
+      trigger jgfs_analysis == complete
+    family forecast
+      task jgfs_forecast_high
+        trigger ../jgfs_analysis == complete
+    endfamily
+    family post
+      task jgfs_post_manager
+        trigger ../jgfs_analysis eq complete
+        event 1 release_postanl
+        event 2 release_post000
+        event 3 release_post001
+        event 4 release_post002
+        event 5 release_post003
+        event 6 release_post004
+        event 7 release_post005
+        event 8 release_post006
+        event 9 release_post007
+        event 10 release_post008
+        event 11 release_post009
+        event 12 release_post010
+        event 13 release_post011
+        event 14 release_post012
+        event 15 release_post013
+        event 16 release_post014
+        event 17 release_post015
+        event 18 release_post016
+        event 19 release_post017
+        event 20 release_post018
+        event 21 release_post019
+        event 22 release_post020
+        event 23 release_post021
+        event 24 release_post022
+        event 25 release_post023
+        event 26 release_post024
+        event 27 release_post025
+        event 28 release_post026
+        event 29 release_post027
+        event 30 release_post028
+        event 31 release_post029
+        event 32 release_post030
+        event 33 release_post031
+        event 34 release_post032
+        event 35 release_post033
+        event 36 release_post034
+        event 37 release_post035
+        event 38 release_post036
+        event 39 release_post037
+        event 40 release_post038
+        event 41 release_post039
+        event 42 release_post040
+        event 43 release_post041
+        event 44 release_post042
+        event 45 release_post043
+        event 46 release_post044
+        event 47 release_post045
+        event 48 release_post046
+        event 49 release_post047
+        event 50 release_post048
+        event 51 release_post049
+        event 52 release_post050
+        event 53 release_post051
+        event 54 release_post052
+        event 55 release_post053
+        event 56 release_post054
+        event 57 release_post055
+        event 58 release_post056
+        event 59 release_post057
+        event 60 release_post058
+        event 61 release_post059
+        event 62 release_post060
+        event 63 release_post061
+        event 64 release_post062
+        event 65 release_post063
+        event 66 release_post064
+        event 67 release_post065
+        event 68 release_post066
+        event 69 release_post067
+        event 70 release_post068
+        event 71 release_post069
+        event 72 release_post070
+        event 73 release_post071
+        event 74 release_post072
+        event 75 release_post073
+        event 76 release_post074
+        event 77 release_post075
+        event 78 release_post076
+        event 79 release_post077
+        event 80 release_post078
+        event 81 release_post079
+        event 82 release_post080
+        event 83 release_post081
+        event 84 release_post082
+        event 85 release_post083
+        event 86 release_post084
+        event 87 release_post085
+        event 88 release_post086
+        event 89 release_post087
+        event 90 release_post088
+        event 91 release_post089
+        event 92 release_post090
+        event 93 release_post091
+        event 94 release_post092
+        event 95 release_post093
+        event 96 release_post094
+        event 97 release_post095
+        event 98 release_post096
+        event 99 release_post097
+        event 100 release_post098
+        event 101 release_post099
+        event 102 release_post100
+        event 103 release_post101
+        event 104 release_post102
+        event 105 release_post103
+        event 106 release_post104
+        event 107 release_post105
+        event 108 release_post106
+        event 109 release_post107
+        event 110 release_post108
+        event 111 release_post109
+        event 112 release_post110
+        event 113 release_post111
+        event 114 release_post112
+        event 115 release_post113
+        event 116 release_post114
+        event 117 release_post115
+        event 118 release_post116
+        event 119 release_post117
+        event 120 release_post118
+        event 121 release_post119
+        event 122 release_post120
+        event 123 release_post123
+        event 124 release_post126
+        event 125 release_post129
+        event 126 release_post132
+        event 127 release_post135
+        event 128 release_post138
+        event 129 release_post141
+        event 130 release_post144
+        event 131 release_post147
+        event 132 release_post150
+        event 133 release_post153
+        event 134 release_post156
+        event 135 release_post159
+        event 136 release_post162
+        event 137 release_post165
+        event 138 release_post168
+        event 139 release_post171
+        event 140 release_post174
+        event 141 release_post177
+        event 142 release_post180
+        event 143 release_post183
+        event 144 release_post186
+        event 145 release_post189
+        event 146 release_post192
+        event 147 release_post195
+        event 148 release_post198
+        event 149 release_post201
+        event 150 release_post204
+        event 151 release_post207
+        event 152 release_post210
+        event 153 release_post213
+        event 154 release_post216
+        event 155 release_post219
+        event 156 release_post222
+        event 157 release_post225
+        event 158 release_post228
+        event 159 release_post231
+        event 160 release_post234
+        event 161 release_post237
+        event 162 release_post240
+        event 163 release_post243
+        event 164 release_post246
+        event 165 release_post249
+        event 166 release_post252
+        event 167 release_post255
+        event 168 release_post258
+        event 169 release_post261
+        event 170 release_post264
+        event 171 release_post267
+        event 172 release_post270
+        event 173 release_post273
+        event 174 release_post276
+        event 175 release_post279
+        event 176 release_post282
+        event 177 release_post285
+        event 178 release_post288
+        event 179 release_post291
+        event 180 release_post294
+        event 181 release_post297
+        event 182 release_post300
+        event 183 release_post303
+        event 184 release_post306
+        event 185 release_post309
+        event 186 release_post312
+        event 187 release_post315
+        event 188 release_post318
+        event 189 release_post321
+        event 190 release_post324
+        event 191 release_post327
+        event 192 release_post330
+        event 193 release_post333
+        event 194 release_post336
+        event 195 release_post339
+        event 196 release_post342
+        event 197 release_post345
+        event 198 release_post348
+        event 199 release_post351
+        event 200 release_post354
+        event 201 release_post357
+        event 202 release_post360
+        event 203 release_post363
+        event 204 release_post366
+        event 205 release_post369
+        event 206 release_post372
+        event 207 release_post375
+        event 208 release_post378
+        event 209 release_post381
+        event 210 release_post384
+      task jgfs_post_anl
+        edit FHRGRP '000'
+        edit FHRLST 'anl'
+        edit HR 'anl'
+        edit FHR 'anl'
+        trigger ./jgfs_post_manager:release_postanl
+        event 1 release_pgrb2_anl
+      task jgfs_post_f000
+        edit FHRGRP '001'
+        edit FHRLST 'f000'
+        edit FHR 'f000'
+        edit HR '000'
+        trigger ./jgfs_post_manager:release_post000
+      task jgfs_post_f001
+        edit FHRGRP '002'
+        edit FHRLST 'f001'
+        edit FHR 'f001'
+        edit HR '001'
+        trigger ./jgfs_post_manager:release_post001
+      task jgfs_post_f002
+        edit FHRGRP '003'
+        edit FHRLST 'f002'
+        edit FHR 'f002'
+        edit HR '002'
+        trigger ./jgfs_post_manager:release_post002
+      task jgfs_post_f003
+        edit FHRGRP '004'
+        edit FHRLST 'f003'
+        edit FHR 'f003'
+        edit HR '003'
+        trigger ./jgfs_post_manager:release_post003
+      task jgfs_post_f004
+        edit FHRGRP '005'
+        edit FHRLST 'f004'
+        edit FHR 'f004'
+        edit HR '004'
+        trigger ./jgfs_post_manager:release_post004
+      task jgfs_post_f005
+        edit FHRGRP '006'
+        edit FHRLST 'f005'
+        edit FHR 'f005'
+        edit HR '005'
+        trigger ./jgfs_post_manager:release_post005
+      task jgfs_post_f006
+        edit FHRGRP '007'
+        edit FHRLST 'f006'
+        edit FHR 'f006'
+        edit HR '006'
+        trigger ./jgfs_post_manager:release_post006
+      task jgfs_post_f007
+        edit FHRGRP '008'
+        edit FHRLST 'f007'
+        edit FHR 'f007'
+        edit HR '007'
+        trigger ./jgfs_post_manager:release_post007
+      task jgfs_post_f008
+        edit FHRGRP '009'
+        edit FHRLST 'f008'
+        edit FHR 'f008'
+        edit HR '008'
+        trigger ./jgfs_post_manager:release_post008
+      task jgfs_post_f009
+        edit FHRGRP '010'
+        edit FHRLST 'f009'
+        edit FHR 'f009'
+        edit HR '009'
+        trigger ./jgfs_post_manager:release_post009
+      task jgfs_post_f010
+        edit FHRGRP '011'
+        edit FHRLST 'f010'
+        edit FHR 'f010'
+        edit HR '010'
+        trigger ./jgfs_post_manager:release_post010
+      task jgfs_post_f011
+        edit FHRGRP '012'
+        edit FHRLST 'f011'
+        edit FHR 'f011'
+        edit HR '011'
+        trigger ./jgfs_post_manager:release_post011
+      task jgfs_post_f012
+        edit FHRGRP '013'
+        edit FHRLST 'f012'
+        edit FHR 'f012'
+        edit HR '012'
+        trigger ./jgfs_post_manager:release_post012
+      task jgfs_post_f013
+        edit FHRGRP '014'
+        edit FHRLST 'f013'
+        edit FHR 'f013'
+        edit HR '013'
+        trigger ./jgfs_post_manager:release_post013
+      task jgfs_post_f014
+        edit FHRGRP '015'
+        edit FHRLST 'f014'
+        edit FHR 'f014'
+        edit HR '014'
+        trigger ./jgfs_post_manager:release_post014
+      task jgfs_post_f015
+        edit FHRGRP '016'
+        edit FHRLST 'f015'
+        edit FHR 'f015'
+        edit HR '015'
+        trigger ./jgfs_post_manager:release_post015
+      task jgfs_post_f016
+        edit FHRGRP '017'
+        edit FHRLST 'f016'
+        edit FHR 'f016'
+        edit HR '016'
+        trigger ./jgfs_post_manager:release_post016
+      task jgfs_post_f017
+        edit FHRGRP '018'
+        edit FHRLST 'f017'
+        edit FHR 'f017'
+        edit HR '017'
+        trigger ./jgfs_post_manager:release_post017
+      task jgfs_post_f018
+        edit FHRGRP '019'
+        edit FHRLST 'f018'
+        edit FHR 'f018'
+        edit HR '018'
+        trigger ./jgfs_post_manager:release_post018
+      task jgfs_post_f019
+        edit FHRGRP '020'
+        edit FHRLST 'f019'
+        edit FHR 'f019'
+        edit HR '019'
+        trigger ./jgfs_post_manager:release_post019
+      task jgfs_post_f020
+        edit FHRGRP '021'
+        edit FHRLST 'f020'
+        edit FHR 'f020'
+        edit HR '020'
+        trigger ./jgfs_post_manager:release_post020
+      task jgfs_post_f021
+        edit FHRGRP '022'
+        edit FHRLST 'f021'
+        edit FHR 'f021'
+        edit HR '021'
+        trigger ./jgfs_post_manager:release_post021
+      task jgfs_post_f022
+        edit FHRGRP '023'
+        edit FHRLST 'f022'
+        edit FHR 'f022'
+        edit HR '022'
+        trigger ./jgfs_post_manager:release_post022
+      task jgfs_post_f023
+        edit FHRGRP '024'
+        edit FHRLST 'f023'
+        edit FHR 'f023'
+        edit HR '023'
+        trigger ./jgfs_post_manager:release_post023
+      task jgfs_post_f024
+        edit FHRGRP '025'
+        edit FHRLST 'f024'
+        edit FHR 'f024'
+        edit HR '024'
+        trigger ./jgfs_post_manager:release_post024
+      task jgfs_post_f025
+        edit FHRGRP '026'
+        edit FHRLST 'f025'
+        edit FHR 'f025'
+        edit HR '025'
+        trigger ./jgfs_post_manager:release_post025
+      task jgfs_post_f026
+        edit FHRGRP '027'
+        edit FHRLST 'f026'
+        edit FHR 'f026'
+        edit HR '026'
+        trigger ./jgfs_post_manager:release_post026
+      task jgfs_post_f027
+        edit FHRGRP '028'
+        edit FHRLST 'f027'
+        edit FHR 'f027'
+        edit HR '027'
+        trigger ./jgfs_post_manager:release_post027
+      task jgfs_post_f028
+        edit FHRGRP '029'
+        edit FHRLST 'f028'
+        edit FHR 'f028'
+        edit HR '028'
+        trigger ./jgfs_post_manager:release_post028
+      task jgfs_post_f029
+        edit FHRGRP '030'
+        edit FHRLST 'f029'
+        edit FHR 'f029'
+        edit HR '029'
+        trigger ./jgfs_post_manager:release_post029
+      task jgfs_post_f030
+        edit FHRGRP '031'
+        edit FHRLST 'f030'
+        edit FHR 'f030'
+        edit HR '030'
+        trigger ./jgfs_post_manager:release_post030
+      task jgfs_post_f031
+        edit FHRGRP '032'
+        edit FHRLST 'f031'
+        edit FHR 'f031'
+        edit HR '031'
+        trigger ./jgfs_post_manager:release_post031
+      task jgfs_post_f032
+        edit FHRGRP '033'
+        edit FHRLST 'f032'
+        edit FHR 'f032'
+        edit HR '032'
+        trigger ./jgfs_post_manager:release_post032
+      task jgfs_post_f033
+        edit FHRGRP '034'
+        edit FHRLST 'f033'
+        edit FHR 'f033'
+        edit HR '033'
+        trigger ./jgfs_post_manager:release_post033
+      task jgfs_post_f034
+        edit FHRGRP '035'
+        edit FHRLST 'f034'
+        edit FHR 'f034'
+        edit HR '034'
+        trigger ./jgfs_post_manager:release_post034
+      task jgfs_post_f035
+        edit FHRGRP '036'
+        edit FHRLST 'f035'
+        edit FHR 'f035'
+        edit HR '035'
+        trigger ./jgfs_post_manager:release_post035
+      task jgfs_post_f036
+        edit FHRGRP '037'
+        edit FHRLST 'f036'
+        edit FHR 'f036'
+        edit HR '036'
+        trigger ./jgfs_post_manager:release_post036
+      task jgfs_post_f037
+        edit FHRGRP '038'
+        edit FHRLST 'f037'
+        edit FHR 'f037'
+        edit HR '037'
+        trigger ./jgfs_post_manager:release_post037
+      task jgfs_post_f038
+        edit FHRGRP '039'
+        edit FHRLST 'f038'
+        edit FHR 'f038'
+        edit HR '038'
+        trigger ./jgfs_post_manager:release_post038
+      task jgfs_post_f039
+        edit FHRGRP '040'
+        edit FHRLST 'f039'
+        edit FHR 'f039'
+        edit HR '039'
+        trigger ./jgfs_post_manager:release_post039
+      task jgfs_post_f040
+        edit FHRGRP '041'
+        edit FHRLST 'f040'
+        edit FHR 'f040'
+        edit HR '040'
+        trigger ./jgfs_post_manager:release_post040
+      task jgfs_post_f041
+        edit FHRGRP '042'
+        edit FHRLST 'f041'
+        edit FHR 'f041'
+        edit HR '041'
+        trigger ./jgfs_post_manager:release_post041
+      task jgfs_post_f042
+        edit FHRGRP '043'
+        edit FHRLST 'f042'
+        edit FHR 'f042'
+        edit HR '042'
+        trigger ./jgfs_post_manager:release_post042
+      task jgfs_post_f043
+        edit FHRGRP '044'
+        edit FHRLST 'f043'
+        edit FHR 'f043'
+        edit HR '043'
+        trigger ./jgfs_post_manager:release_post043
+      task jgfs_post_f044
+        edit FHRGRP '045'
+        edit FHRLST 'f044'
+        edit FHR 'f044'
+        edit HR '044'
+        trigger ./jgfs_post_manager:release_post044
+      task jgfs_post_f045
+        edit FHRGRP '046'
+        edit FHRLST 'f045'
+        edit FHR 'f045'
+        edit HR '045'
+        trigger ./jgfs_post_manager:release_post045
+      task jgfs_post_f046
+        edit FHRGRP '047'
+        edit FHRLST 'f046'
+        edit FHR 'f046'
+        edit HR '046'
+        trigger ./jgfs_post_manager:release_post046
+      task jgfs_post_f047
+        edit FHRGRP '048'
+        edit FHRLST 'f047'
+        edit FHR 'f047'
+        edit HR '047'
+        trigger ./jgfs_post_manager:release_post047
+      task jgfs_post_f048
+        edit FHRGRP '049'
+        edit FHRLST 'f048'
+        edit FHR 'f048'
+        edit HR '048'
+        trigger ./jgfs_post_manager:release_post048
+      task jgfs_post_f049
+        edit FHRGRP '050'
+        edit FHRLST 'f049'
+        edit FHR 'f049'
+        edit HR '049'
+        trigger ./jgfs_post_manager:release_post049
+      task jgfs_post_f050
+        edit FHRGRP '051'
+        edit FHRLST 'f050'
+        edit FHR 'f050'
+        edit HR '050'
+        trigger ./jgfs_post_manager:release_post050
+      task jgfs_post_f051
+        edit FHRGRP '052'
+        edit FHRLST 'f051'
+        edit FHR 'f051'
+        edit HR '051'
+        trigger ./jgfs_post_manager:release_post051
+      task jgfs_post_f052
+        edit FHRGRP '053'
+        edit FHRLST 'f052'
+        edit FHR 'f052'
+        edit HR '052'
+        trigger ./jgfs_post_manager:release_post052
+      task jgfs_post_f053
+        edit FHRGRP '054'
+        edit FHRLST 'f053'
+        edit FHR 'f053'
+        edit HR '053'
+        trigger ./jgfs_post_manager:release_post053
+      task jgfs_post_f054
+        edit FHRGRP '055'
+        edit FHRLST 'f054'
+        edit FHR 'f054'
+        edit HR '054'
+        trigger ./jgfs_post_manager:release_post054
+      task jgfs_post_f055
+        edit FHRGRP '056'
+        edit FHRLST 'f055'
+        edit FHR 'f055'
+        edit HR '055'
+        trigger ./jgfs_post_manager:release_post055
+      task jgfs_post_f056
+        edit FHRGRP '057'
+        edit FHRLST 'f056'
+        edit FHR 'f056'
+        edit HR '056'
+        trigger ./jgfs_post_manager:release_post056
+      task jgfs_post_f057
+        edit FHRGRP '058'
+        edit FHRLST 'f057'
+        edit FHR 'f057'
+        edit HR '057'
+        trigger ./jgfs_post_manager:release_post057
+      task jgfs_post_f058
+        edit FHRGRP '059'
+        edit FHRLST 'f058'
+        edit FHR 'f058'
+        edit HR '058'
+        trigger ./jgfs_post_manager:release_post058
+      task jgfs_post_f059
+        edit FHRGRP '060'
+        edit FHRLST 'f059'
+        edit FHR 'f059'
+        edit HR '059'
+        trigger ./jgfs_post_manager:release_post059
+      task jgfs_post_f060
+        edit FHRGRP '061'
+        edit FHRLST 'f060'
+        edit FHR 'f060'
+        edit HR '060'
+        trigger ./jgfs_post_manager:release_post060
+      task jgfs_post_f061
+        edit FHRGRP '062'
+        edit FHRLST 'f061'
+        edit FHR 'f061'
+        edit HR '061'
+        trigger ./jgfs_post_manager:release_post061
+      task jgfs_post_f062
+        edit FHRGRP '063'
+        edit FHRLST 'f062'
+        edit FHR 'f062'
+        edit HR '062'
+        trigger ./jgfs_post_manager:release_post062
+      task jgfs_post_f063
+        edit FHRGRP '064'
+        edit FHRLST 'f063'
+        edit FHR 'f063'
+        edit HR '063'
+        trigger ./jgfs_post_manager:release_post063
+      task jgfs_post_f064
+        edit FHRGRP '065'
+        edit FHRLST 'f064'
+        edit FHR 'f064'
+        edit HR '064'
+        trigger ./jgfs_post_manager:release_post064
+      task jgfs_post_f065
+        edit FHRGRP '066'
+        edit FHRLST 'f065'
+        edit FHR 'f065'
+        edit HR '065'
+        trigger ./jgfs_post_manager:release_post065
+      task jgfs_post_f066
+        edit FHRGRP '067'
+        edit FHRLST 'f066'
+        edit FHR 'f066'
+        edit HR '066'
+        trigger ./jgfs_post_manager:release_post066
+      task jgfs_post_f067
+        edit FHRGRP '068'
+        edit FHRLST 'f067'
+        edit FHR 'f067'
+        edit HR '067'
+        trigger ./jgfs_post_manager:release_post067
+      task jgfs_post_f068
+        edit FHRGRP '069'
+        edit FHRLST 'f068'
+        edit FHR 'f068'
+        edit HR '068'
+        trigger ./jgfs_post_manager:release_post068
+      task jgfs_post_f069
+        edit FHRGRP '070'
+        edit FHRLST 'f069'
+        edit FHR 'f069'
+        edit HR '069'
+        trigger ./jgfs_post_manager:release_post069
+      task jgfs_post_f070
+        edit FHRGRP '071'
+        edit FHRLST 'f070'
+        edit FHR 'f070'
+        edit HR '070'
+        trigger ./jgfs_post_manager:release_post070
+      task jgfs_post_f071
+        edit FHRGRP '072'
+        edit FHRLST 'f071'
+        edit FHR 'f071'
+        edit HR '071'
+        trigger ./jgfs_post_manager:release_post071
+      task jgfs_post_f072
+        edit FHRGRP '073'
+        edit FHRLST 'f072'
+        edit FHR 'f072'
+        edit HR '072'
+        trigger ./jgfs_post_manager:release_post072
+      task jgfs_post_f073
+        edit FHRGRP '074'
+        edit FHRLST 'f073'
+        edit FHR 'f073'
+        edit HR '073'
+        trigger ./jgfs_post_manager:release_post073
+      task jgfs_post_f074
+        edit FHRGRP '075'
+        edit FHRLST 'f074'
+        edit FHR 'f074'
+        edit HR '074'
+        trigger ./jgfs_post_manager:release_post074
+      task jgfs_post_f075
+        edit FHRGRP '076'
+        edit FHRLST 'f075'
+        edit FHR 'f075'
+        edit HR '075'
+        trigger ./jgfs_post_manager:release_post075
+      task jgfs_post_f076
+        edit FHRGRP '077'
+        edit FHRLST 'f076'
+        edit FHR 'f076'
+        edit HR '076'
+        trigger ./jgfs_post_manager:release_post076
+      task jgfs_post_f077
+        edit FHRGRP '078'
+        edit FHRLST 'f077'
+        edit FHR 'f077'
+        edit HR '077'
+        trigger ./jgfs_post_manager:release_post077
+      task jgfs_post_f078
+        edit FHRGRP '079'
+        edit FHRLST 'f078'
+        edit FHR 'f078'
+        edit HR '078'
+        trigger ./jgfs_post_manager:release_post078
+      task jgfs_post_f079
+        edit FHRGRP '080'
+        edit FHRLST 'f079'
+        edit FHR 'f079'
+        edit HR '079'
+        trigger ./jgfs_post_manager:release_post079
+      task jgfs_post_f080
+        edit FHRGRP '081'
+        edit FHRLST 'f080'
+        edit FHR 'f080'
+        edit HR '080'
+        trigger ./jgfs_post_manager:release_post080
+      task jgfs_post_f081
+        edit FHRGRP '082'
+        edit FHRLST 'f081'
+        edit FHR 'f081'
+        edit HR '081'
+        trigger ./jgfs_post_manager:release_post081
+      task jgfs_post_f082
+        edit FHRGRP '083'
+        edit FHRLST 'f082'
+        edit FHR 'f082'
+        edit HR '082'
+        trigger ./jgfs_post_manager:release_post082
+      task jgfs_post_f083
+        edit FHRGRP '084'
+        edit FHRLST 'f083'
+        edit FHR 'f083'
+        edit HR '083'
+        trigger ./jgfs_post_manager:release_post083
+      task jgfs_post_f084
+        edit FHRGRP '085'
+        edit FHRLST 'f084'
+        edit FHR 'f084'
+        edit HR '084'
+        trigger ./jgfs_post_manager:release_post084
+      task jgfs_post_f085
+        edit FHRGRP '086'
+        edit FHRLST 'f085'
+        edit FHR 'f085'
+        edit HR '085'
+        trigger ./jgfs_post_manager:release_post085
+      task jgfs_post_f086
+        edit FHRGRP '087'
+        edit FHRLST 'f086'
+        edit FHR 'f086'
+        edit HR '086'
+        trigger ./jgfs_post_manager:release_post086
+      task jgfs_post_f087
+        edit FHRGRP '088'
+        edit FHRLST 'f087'
+        edit FHR 'f087'
+        edit HR '087'
+        trigger ./jgfs_post_manager:release_post087
+      task jgfs_post_f088
+        edit FHRGRP '089'
+        edit FHRLST 'f088'
+        edit FHR 'f088'
+        edit HR '088'
+        trigger ./jgfs_post_manager:release_post088
+      task jgfs_post_f089
+        edit FHRGRP '090'
+        edit FHRLST 'f089'
+        edit FHR 'f089'
+        edit HR '089'
+        trigger ./jgfs_post_manager:release_post089
+      task jgfs_post_f090
+        edit FHRGRP '091'
+        edit FHRLST 'f090'
+        edit FHR 'f090'
+        edit HR '090'
+        trigger ./jgfs_post_manager:release_post090
+      task jgfs_post_f091
+        edit FHRGRP '092'
+        edit FHRLST 'f091'
+        edit FHR 'f091'
+        edit HR '091'
+        trigger ./jgfs_post_manager:release_post091
+      task jgfs_post_f092
+        edit FHRGRP '093'
+        edit FHRLST 'f092'
+        edit FHR 'f092'
+        edit HR '092'
+        trigger ./jgfs_post_manager:release_post092
+      task jgfs_post_f093
+        edit FHRGRP '094'
+        edit FHRLST 'f093'
+        edit FHR 'f093'
+        edit HR '093'
+        trigger ./jgfs_post_manager:release_post093
+      task jgfs_post_f094
+        edit FHRGRP '095'
+        edit FHRLST 'f094'
+        edit FHR 'f094'
+        edit HR '094'
+        trigger ./jgfs_post_manager:release_post094
+      task jgfs_post_f095
+        edit FHRGRP '096'
+        edit FHRLST 'f095'
+        edit FHR 'f095'
+        edit HR '095'
+        trigger ./jgfs_post_manager:release_post095
+      task jgfs_post_f096
+        edit FHRGRP '097'
+        edit FHRLST 'f096'
+        edit FHR 'f096'
+        edit HR '096'
+        trigger ./jgfs_post_manager:release_post096
+      task jgfs_post_f097
+        edit FHRGRP '098'
+        edit FHRLST 'f097'
+        edit FHR 'f097'
+        edit HR '097'
+        trigger ./jgfs_post_manager:release_post097
+      task jgfs_post_f098
+        edit FHRGRP '099'
+        edit FHRLST 'f098'
+        edit FHR 'f098'
+        edit HR '098'
+        trigger ./jgfs_post_manager:release_post098
+      task jgfs_post_f099
+        edit FHRGRP '100'
+        edit FHRLST 'f099'
+        edit FHR 'f099'
+        edit HR '099'
+        trigger ./jgfs_post_manager:release_post099
+      task jgfs_post_f100
+        edit FHRGRP '101'
+        edit FHRLST 'f100'
+        edit FHR 'f100'
+        edit HR '100'
+        trigger ./jgfs_post_manager:release_post100
+      task jgfs_post_f101
+        edit FHRGRP '102'
+        edit FHRLST 'f101'
+        edit FHR 'f101'
+        edit HR '101'
+        trigger ./jgfs_post_manager:release_post101
+      task jgfs_post_f102
+        edit FHRGRP '103'
+        edit FHRLST 'f102'
+        edit FHR 'f102'
+        edit HR '102'
+        trigger ./jgfs_post_manager:release_post102
+      task jgfs_post_f103
+        edit FHRGRP '104'
+        edit FHRLST 'f103'
+        edit FHR 'f103'
+        edit HR '103'
+        trigger ./jgfs_post_manager:release_post103
+      task jgfs_post_f104
+        edit FHRGRP '105'
+        edit FHRLST 'f104'
+        edit FHR 'f104'
+        edit HR '104'
+        trigger ./jgfs_post_manager:release_post104
+      task jgfs_post_f105
+        edit FHRGRP '106'
+        edit FHRLST 'f105'
+        edit FHR 'f105'
+        edit HR '105'
+        trigger ./jgfs_post_manager:release_post105
+      task jgfs_post_f106
+        edit FHRGRP '107'
+        edit FHRLST 'f106'
+        edit FHR 'f106'
+        edit HR '106'
+        trigger ./jgfs_post_manager:release_post106
+      task jgfs_post_f107
+        edit FHRGRP '108'
+        edit FHRLST 'f107'
+        edit FHR 'f107'
+        edit HR '107'
+        trigger ./jgfs_post_manager:release_post107
+      task jgfs_post_f108
+        edit FHRGRP '109'
+        edit FHRLST 'f108'
+        edit FHR 'f108'
+        edit HR '108'
+        trigger ./jgfs_post_manager:release_post108
+      task jgfs_post_f109
+        edit FHRGRP '110'
+        edit FHRLST 'f109'
+        edit FHR 'f109'
+        edit HR '109'
+        trigger ./jgfs_post_manager:release_post109
+      task jgfs_post_f110
+        edit FHRGRP '111'
+        edit FHRLST 'f110'
+        edit FHR 'f110'
+        edit HR '110'
+        trigger ./jgfs_post_manager:release_post110
+      task jgfs_post_f111
+        edit FHRGRP '112'
+        edit FHRLST 'f111'
+        edit FHR 'f111'
+        edit HR '111'
+        trigger ./jgfs_post_manager:release_post111
+      task jgfs_post_f112
+        edit FHRGRP '113'
+        edit FHRLST 'f112'
+        edit FHR 'f112'
+        edit HR '112'
+        trigger ./jgfs_post_manager:release_post112
+      task jgfs_post_f113
+        edit FHRGRP '114'
+        edit FHRLST 'f113'
+        edit FHR 'f113'
+        edit HR '113'
+        trigger ./jgfs_post_manager:release_post113
+      task jgfs_post_f114
+        edit FHRGRP '115'
+        edit FHRLST 'f114'
+        edit FHR 'f114'
+        edit HR '114'
+        trigger ./jgfs_post_manager:release_post114
+      task jgfs_post_f115
+        edit FHRGRP '116'
+        edit FHRLST 'f115'
+        edit FHR 'f115'
+        edit HR '115'
+        trigger ./jgfs_post_manager:release_post115
+      task jgfs_post_f116
+        edit FHRGRP '117'
+        edit FHRLST 'f116'
+        edit FHR 'f116'
+        edit HR '116'
+        trigger ./jgfs_post_manager:release_post116
+      task jgfs_post_f117
+        edit FHRGRP '118'
+        edit FHRLST 'f117'
+        edit FHR 'f117'
+        edit HR '117'
+        trigger ./jgfs_post_manager:release_post117
+      task jgfs_post_f118
+        edit FHRGRP '119'
+        edit FHRLST 'f118'
+        edit FHR 'f118'
+        edit HR '118'
+        trigger ./jgfs_post_manager:release_post118
+      task jgfs_post_f119
+        edit FHRGRP '120'
+        edit FHRLST 'f119'
+        edit FHR 'f119'
+        edit HR '119'
+        trigger ./jgfs_post_manager:release_post119
+      task jgfs_post_f120
+        edit FHRGRP '121'
+        edit FHRLST 'f120'
+        edit FHR 'f120'
+        edit HR '120'
+        trigger ./jgfs_post_manager:release_post120
+      task jgfs_post_f123
+        edit FHRGRP '122'
+        edit FHRLST 'f123'
+        edit FHR 'f123'
+        edit HR '123'
+        trigger ./jgfs_post_manager:release_post123
+      task jgfs_post_f126
+        edit FHRGRP '123'
+        edit FHRLST 'f126'
+        edit FHR 'f126'
+        edit HR '126'
+        trigger ./jgfs_post_manager:release_post126
+      task jgfs_post_f129
+        edit FHRGRP '124'
+        edit FHRLST 'f129'
+        edit FHR 'f129'
+        edit HR '129'
+        trigger ./jgfs_post_manager:release_post129
+      task jgfs_post_f132
+        edit FHRGRP '125'
+        edit FHRLST 'f132'
+        edit FHR 'f132'
+        edit HR '132'
+        trigger ./jgfs_post_manager:release_post132
+      task jgfs_post_f135
+        edit FHRGRP '126'
+        edit FHRLST 'f135'
+        edit FHR 'f135'
+        edit HR '135'
+        trigger ./jgfs_post_manager:release_post135
+      task jgfs_post_f138
+        edit FHRGRP '127'
+        edit FHRLST 'f138'
+        edit FHR 'f138'
+        edit HR '138'
+        trigger ./jgfs_post_manager:release_post138
+      task jgfs_post_f141
+        edit FHRGRP '128'
+        edit FHRLST 'f141'
+        edit FHR 'f141'
+        edit HR '141'
+        trigger ./jgfs_post_manager:release_post141
+      task jgfs_post_f144
+        edit FHRGRP '129'
+        edit FHRLST 'f144'
+        edit FHR 'f144'
+        edit HR '144'
+        trigger ./jgfs_post_manager:release_post144
+      task jgfs_post_f147
+        edit FHRGRP '130'
+        edit FHRLST 'f147'
+        edit FHR 'f147'
+        edit HR '147'
+        trigger ./jgfs_post_manager:release_post147
+      task jgfs_post_f150
+        edit FHRGRP '131'
+        edit FHRLST 'f150'
+        edit FHR 'f150'
+        edit HR '150'
+        trigger ./jgfs_post_manager:release_post150
+      task jgfs_post_f153
+        edit FHRGRP '132'
+        edit FHRLST 'f153'
+        edit FHR 'f153'
+        edit HR '153'
+        trigger ./jgfs_post_manager:release_post153
+      task jgfs_post_f156
+        edit FHRGRP '133'
+        edit FHRLST 'f156'
+        edit FHR 'f156'
+        edit HR '156'
+        trigger ./jgfs_post_manager:release_post156
+      task jgfs_post_f159
+        edit FHRGRP '134'
+        edit FHRLST 'f159'
+        edit FHR 'f159'
+        edit HR '159'
+        trigger ./jgfs_post_manager:release_post159
+      task jgfs_post_f162
+        edit FHRGRP '135'
+        edit FHRLST 'f162'
+        edit FHR 'f162'
+        edit HR '162'
+        trigger ./jgfs_post_manager:release_post162
+      task jgfs_post_f165
+        edit FHRGRP '136'
+        edit FHRLST 'f165'
+        edit FHR 'f165'
+        edit HR '165'
+        trigger ./jgfs_post_manager:release_post165
+      task jgfs_post_f168
+        edit FHRGRP '137'
+        edit FHRLST 'f168'
+        edit FHR 'f168'
+        edit HR '168'
+        trigger ./jgfs_post_manager:release_post168
+      task jgfs_post_f171
+        edit FHRGRP '138'
+        edit FHRLST 'f171'
+        edit FHR 'f171'
+        edit HR '171'
+        trigger ./jgfs_post_manager:release_post171
+      task jgfs_post_f174
+        edit FHRGRP '139'
+        edit FHRLST 'f174'
+        edit FHR 'f174'
+        edit HR '174'
+        trigger ./jgfs_post_manager:release_post174
+      task jgfs_post_f177
+        edit FHRGRP '140'
+        edit FHRLST 'f177'
+        edit FHR 'f177'
+        edit HR '177'
+        trigger ./jgfs_post_manager:release_post177
+      task jgfs_post_f180
+        edit FHRGRP '141'
+        edit FHRLST 'f180'
+        edit FHR 'f180'
+        edit HR '180'
+        trigger ./jgfs_post_manager:release_post180
+      task jgfs_post_f183
+        edit FHRGRP '142'
+        edit FHRLST 'f183'
+        edit FHR 'f183'
+        edit HR '183'
+        trigger ./jgfs_post_manager:release_post183
+      task jgfs_post_f186
+        edit FHRGRP '143'
+        edit FHRLST 'f186'
+        edit FHR 'f186'
+        edit HR '186'
+        trigger ./jgfs_post_manager:release_post186
+      task jgfs_post_f189
+        edit FHRGRP '144'
+        edit FHRLST 'f189'
+        edit FHR 'f189'
+        edit HR '189'
+        trigger ./jgfs_post_manager:release_post189
+      task jgfs_post_f192
+        edit FHRGRP '145'
+        edit FHRLST 'f192'
+        edit FHR 'f192'
+        edit HR '192'
+        trigger ./jgfs_post_manager:release_post192
+      task jgfs_post_f195
+        edit FHRGRP '146'
+        edit FHRLST 'f195'
+        edit FHR 'f195'
+        edit HR '195'
+        trigger ./jgfs_post_manager:release_post195
+      task jgfs_post_f198
+        edit FHRGRP '147'
+        edit FHRLST 'f198'
+        edit FHR 'f198'
+        edit HR '198'
+        trigger ./jgfs_post_manager:release_post198
+      task jgfs_post_f201
+        edit FHRGRP '148'
+        edit FHRLST 'f201'
+        edit FHR 'f201'
+        edit HR '201'
+        trigger ./jgfs_post_manager:release_post201
+      task jgfs_post_f204
+        edit FHRGRP '149'
+        edit FHRLST 'f204'
+        edit FHR 'f204'
+        edit HR '204'
+        trigger ./jgfs_post_manager:release_post204
+      task jgfs_post_f207
+        edit FHRGRP '150'
+        edit FHRLST 'f207'
+        edit FHR 'f207'
+        edit HR '207'
+        trigger ./jgfs_post_manager:release_post207
+      task jgfs_post_f210
+        edit FHRGRP '151'
+        edit FHRLST 'f210'
+        edit FHR 'f210'
+        edit HR '210'
+        trigger ./jgfs_post_manager:release_post210
+      task jgfs_post_f213
+        edit FHRGRP '152'
+        edit FHRLST 'f213'
+        edit FHR 'f213'
+        edit HR '213'
+        trigger ./jgfs_post_manager:release_post213
+      task jgfs_post_f216
+        edit FHRGRP '153'
+        edit FHRLST 'f216'
+        edit FHR 'f216'
+        edit HR '216'
+        trigger ./jgfs_post_manager:release_post216
+      task jgfs_post_f219
+        edit FHRGRP '154'
+        edit FHRLST 'f219'
+        edit FHR 'f219'
+        edit HR '219'
+        trigger ./jgfs_post_manager:release_post219
+      task jgfs_post_f222
+        edit FHRGRP '155'
+        edit FHRLST 'f222'
+        edit FHR 'f222'
+        edit HR '222'
+        trigger ./jgfs_post_manager:release_post222
+      task jgfs_post_f225
+        edit FHRGRP '156'
+        edit FHRLST 'f225'
+        edit FHR 'f225'
+        edit HR '225'
+        trigger ./jgfs_post_manager:release_post225
+      task jgfs_post_f228
+        edit FHRGRP '157'
+        edit FHRLST 'f228'
+        edit FHR 'f228'
+        edit HR '228'
+        trigger ./jgfs_post_manager:release_post228
+      task jgfs_post_f231
+        edit FHRGRP '158'
+        edit FHRLST 'f231'
+        edit FHR 'f231'
+        edit HR '231'
+        trigger ./jgfs_post_manager:release_post231
+      task jgfs_post_f234
+        edit FHRGRP '159'
+        edit FHRLST 'f234'
+        edit FHR 'f234'
+        edit HR '234'
+        trigger ./jgfs_post_manager:release_post234
+      task jgfs_post_f237
+        edit FHRGRP '160'
+        edit FHRLST 'f237'
+        edit FHR 'f237'
+        edit HR '237'
+        trigger ./jgfs_post_manager:release_post237
+      task jgfs_post_f240
+        edit FHRGRP '161'
+        edit FHRLST 'f240'
+        edit FHR 'f240'
+        edit HR '240'
+        trigger ./jgfs_post_manager:release_post240
+      task jgfs_post_f243
+        edit FHRGRP '162'
+        edit FHRLST 'f243'
+        edit FHR 'f243'
+        edit HR '243'
+        trigger ./jgfs_post_manager:release_post243
+      task jgfs_post_f246
+        edit FHRGRP '163'
+        edit FHRLST 'f246'
+        edit FHR 'f246'
+        edit HR '246'
+        trigger ./jgfs_post_manager:release_post246
+      task jgfs_post_f249
+        edit FHRGRP '164'
+        edit FHRLST 'f249'
+        edit FHR 'f249'
+        edit HR '249'
+        trigger ./jgfs_post_manager:release_post249
+      task jgfs_post_f252
+        edit FHRGRP '165'
+        edit FHRLST 'f252'
+        edit FHR 'f252'
+        edit HR '252'
+        trigger ./jgfs_post_manager:release_post252
+      task jgfs_post_f255
+        edit FHRGRP '166'
+        edit FHRLST 'f255'
+        edit FHR 'f255'
+        edit HR '255'
+        trigger ./jgfs_post_manager:release_post255
+      task jgfs_post_f258
+        edit FHRGRP '167'
+        edit FHRLST 'f258'
+        edit FHR 'f258'
+        edit HR '258'
+        trigger ./jgfs_post_manager:release_post258
+      task jgfs_post_f261
+        edit FHRGRP '168'
+        edit FHRLST 'f261'
+        edit FHR 'f261'
+        edit HR '261'
+        trigger ./jgfs_post_manager:release_post261
+      task jgfs_post_f264
+        edit FHRGRP '169'
+        edit FHRLST 'f264'
+        edit FHR 'f264'
+        edit HR '264'
+        trigger ./jgfs_post_manager:release_post264
+      task jgfs_post_f267
+        edit FHRGRP '170'
+        edit FHRLST 'f267'
+        edit FHR 'f267'
+        edit HR '267'
+        trigger ./jgfs_post_manager:release_post267
+      task jgfs_post_f270
+        edit FHRGRP '171'
+        edit FHRLST 'f270'
+        edit FHR 'f270'
+        edit HR '270'
+        trigger ./jgfs_post_manager:release_post270
+      task jgfs_post_f273
+        edit FHRGRP '172'
+        edit FHRLST 'f273'
+        edit FHR 'f273'
+        edit HR '273'
+        trigger ./jgfs_post_manager:release_post273
+      task jgfs_post_f276
+        edit FHRGRP '173'
+        edit FHRLST 'f276'
+        edit FHR 'f276'
+        edit HR '276'
+        trigger ./jgfs_post_manager:release_post276
+      task jgfs_post_f279
+        edit FHRGRP '174'
+        edit FHRLST 'f279'
+        edit FHR 'f279'
+        edit HR '279'
+        trigger ./jgfs_post_manager:release_post279
+      task jgfs_post_f282
+        edit FHRGRP '175'
+        edit FHRLST 'f282'
+        edit FHR 'f282'
+        edit HR '282'
+        trigger ./jgfs_post_manager:release_post282
+      task jgfs_post_f285
+        edit FHRGRP '176'
+        edit FHRLST 'f285'
+        edit FHR 'f285'
+        edit HR '285'
+        trigger ./jgfs_post_manager:release_post285
+      task jgfs_post_f288
+        edit FHRGRP '177'
+        edit FHRLST 'f288'
+        edit FHR 'f288'
+        edit HR '288'
+        trigger ./jgfs_post_manager:release_post288
+      task jgfs_post_f291
+        edit FHRGRP '178'
+        edit FHRLST 'f291'
+        edit FHR 'f291'
+        edit HR '291'
+        trigger ./jgfs_post_manager:release_post291
+      task jgfs_post_f294
+        edit FHRGRP '179'
+        edit FHRLST 'f294'
+        edit FHR 'f294'
+        edit HR '294'
+        trigger ./jgfs_post_manager:release_post294
+      task jgfs_post_f297
+        edit FHRGRP '180'
+        edit FHRLST 'f297'
+        edit FHR 'f297'
+        edit HR '297'
+        trigger ./jgfs_post_manager:release_post297
+      task jgfs_post_f300
+        edit FHRGRP '181'
+        edit FHRLST 'f300'
+        edit FHR 'f300'
+        edit HR '300'
+        trigger ./jgfs_post_manager:release_post300
+      task jgfs_post_f303
+        edit FHRGRP '182'
+        edit FHRLST 'f303'
+        edit FHR 'f303'
+        edit HR '303'
+        trigger ./jgfs_post_manager:release_post303
+      task jgfs_post_f306
+        edit FHRGRP '183'
+        edit FHRLST 'f306'
+        edit FHR 'f306'
+        edit HR '306'
+        trigger ./jgfs_post_manager:release_post306
+      task jgfs_post_f309
+        edit FHRGRP '184'
+        edit FHRLST 'f309'
+        edit FHR 'f309'
+        edit HR '309'
+        trigger ./jgfs_post_manager:release_post309
+      task jgfs_post_f312
+        edit FHRGRP '185'
+        edit FHRLST 'f312'
+        edit FHR 'f312'
+        edit HR '312'
+        trigger ./jgfs_post_manager:release_post312
+      task jgfs_post_f315
+        edit FHRGRP '186'
+        edit FHRLST 'f315'
+        edit FHR 'f315'
+        edit HR '315'
+        trigger ./jgfs_post_manager:release_post315
+      task jgfs_post_f318
+        edit FHRGRP '187'
+        edit FHRLST 'f318'
+        edit FHR 'f318'
+        edit HR '318'
+        trigger ./jgfs_post_manager:release_post318
+      task jgfs_post_f321
+        edit FHRGRP '188'
+        edit FHRLST 'f321'
+        edit FHR 'f321'
+        edit HR '321'
+        trigger ./jgfs_post_manager:release_post321
+      task jgfs_post_f324
+        edit FHRGRP '189'
+        edit FHRLST 'f324'
+        edit FHR 'f324'
+        edit HR '324'
+        trigger ./jgfs_post_manager:release_post324
+      task jgfs_post_f327
+        edit FHRGRP '190'
+        edit FHRLST 'f327'
+        edit FHR 'f327'
+        edit HR '327'
+        trigger ./jgfs_post_manager:release_post327
+      task jgfs_post_f330
+        edit FHRGRP '191'
+        edit FHRLST 'f330'
+        edit FHR 'f330'
+        edit HR '330'
+        trigger ./jgfs_post_manager:release_post330
+      task jgfs_post_f333
+        edit FHRGRP '192'
+        edit FHRLST 'f333'
+        edit FHR 'f333'
+        edit HR '333'
+        trigger ./jgfs_post_manager:release_post333
+      task jgfs_post_f336
+        edit FHRGRP '193'
+        edit FHRLST 'f336'
+        edit FHR 'f336'
+        edit HR '336'
+        trigger ./jgfs_post_manager:release_post336
+      task jgfs_post_f339
+        edit FHRGRP '194'
+        edit FHRLST 'f339'
+        edit FHR 'f339'
+        edit HR '339'
+        trigger ./jgfs_post_manager:release_post339
+      task jgfs_post_f342
+        edit FHRGRP '195'
+        edit FHRLST 'f342'
+        edit FHR 'f342'
+        edit HR '342'
+        trigger ./jgfs_post_manager:release_post342
+      task jgfs_post_f345
+        edit FHRGRP '196'
+        edit FHRLST 'f345'
+        edit FHR 'f345'
+        edit HR '345'
+        trigger ./jgfs_post_manager:release_post345
+      task jgfs_post_f348
+        edit FHRGRP '197'
+        edit FHRLST 'f348'
+        edit FHR 'f348'
+        edit HR '348'
+        trigger ./jgfs_post_manager:release_post348
+      task jgfs_post_f351
+        edit FHRGRP '198'
+        edit FHRLST 'f351'
+        edit FHR 'f351'
+        edit HR '351'
+        trigger ./jgfs_post_manager:release_post351
+      task jgfs_post_f354
+        edit FHRGRP '199'
+        edit FHRLST 'f354'
+        edit FHR 'f354'
+        edit HR '354'
+        trigger ./jgfs_post_manager:release_post354
+      task jgfs_post_f357
+        edit FHRGRP '200'
+        edit FHRLST 'f357'
+        edit FHR 'f357'
+        edit HR '357'
+        trigger ./jgfs_post_manager:release_post357
+      task jgfs_post_f360
+        edit FHRGRP '201'
+        edit FHRLST 'f360'
+        edit FHR 'f360'
+        edit HR '360'
+        trigger ./jgfs_post_manager:release_post360
+      task jgfs_post_f363
+        edit FHRGRP '202'
+        edit FHRLST 'f363'
+        edit FHR 'f363'
+        edit HR '363'
+        trigger ./jgfs_post_manager:release_post363
+      task jgfs_post_f366
+        edit FHRGRP '203'
+        edit FHRLST 'f366'
+        edit FHR 'f366'
+        edit HR '366'
+        trigger ./jgfs_post_manager:release_post366
+      task jgfs_post_f369
+        edit FHRGRP '204'
+        edit FHRLST 'f369'
+        edit FHR 'f369'
+        edit HR '369'
+        trigger ./jgfs_post_manager:release_post369
+      task jgfs_post_f372
+        edit FHRGRP '205'
+        edit FHRLST 'f372'
+        edit FHR 'f372'
+        edit HR '372'
+        trigger ./jgfs_post_manager:release_post372
+      task jgfs_post_f375
+        edit FHRGRP '206'
+        edit FHRLST 'f375'
+        edit FHR 'f375'
+        edit HR '375'
+        trigger ./jgfs_post_manager:release_post375
+      task jgfs_post_f378
+        edit FHRGRP '207'
+        edit FHRLST 'f378'
+        edit FHR 'f378'
+        edit HR '378'
+        trigger ./jgfs_post_manager:release_post378
+      task jgfs_post_f381
+        edit FHRGRP '208'
+        edit FHRLST 'f381'
+        edit FHR 'f381'
+        edit HR '381'
+        trigger ./jgfs_post_manager:release_post381
+      task jgfs_post_f384
+        edit FHRGRP '209'
+        edit FHRLST 'f384'
+        edit FHR 'f384'
+        edit HR '384'
+        trigger ./jgfs_post_manager:release_post384
+    endfamily
+    family post_processing
+      task jgfs_wafs_gcip
+        trigger ../post/jgfs_post_f003 == complete
+        time 10:40
+      family fax
+        task jgfs_fax_f00
+          edit FCSTHR '00'
+          trigger ../../post/jgfs_post_f000 == complete and ../../post/jgfs_post_anl == complete
+        task jgfs_fax_anl
+          edit FCSTHR 'anl'
+          trigger ../../post/jgfs_post_anl == complete
+        task jgfs_fax_wafs_f12
+          edit FCSTHR '12'
+          trigger ../../post/jgfs_post_f012 == complete
+        task jgfs_fax_wafs_f24
+          edit FCSTHR '24'
+          trigger ../../post/jgfs_post_f024 == complete
+        task jgfs_fax_wafs_f36
+          edit FCSTHR '36'
+          trigger ../../post/jgfs_post_f036 == complete
+      endfamily
+      family grib_wafs
+        task jgfs_wafs_f00
+          edit FCSTHR '00'
+          trigger ../../post/jgfs_post_f000 == complete and ../../post/jgfs_post_f120 == complete and ../grib2_wafs/jgfs_wafs_grib2 == complete
+        task jgfs_wafs_f06
+          edit FCSTHR '06'
+          trigger ../../post/jgfs_post_f006 == complete and ./jgfs_wafs_f00 == complete
+        task jgfs_wafs_f12
+          edit FCSTHR '12'
+          trigger ../../post/jgfs_post_f012 == complete and ./jgfs_wafs_f06 == complete
+        task jgfs_wafs_f18
+          edit FCSTHR '18'
+          trigger ../../post/jgfs_post_f018 == complete and ./jgfs_wafs_f12 == complete
+        task jgfs_wafs_f24
+          edit FCSTHR '24'
+          trigger ../../post/jgfs_post_f024 == complete and ./jgfs_wafs_f18 == complete
+        task jgfs_wafs_f30
+          edit FCSTHR '30'
+          trigger ../../post/jgfs_post_f030 == complete and ./jgfs_wafs_f24 == complete
+        task jgfs_wafs_f36
+          edit FCSTHR '36'
+          trigger ../../post/jgfs_post_f036 == complete and ./jgfs_wafs_f30 == complete
+        task jgfs_wafs_f42
+          edit FCSTHR '42'
+          trigger ../../post/jgfs_post_f042 == complete and ./jgfs_wafs_f36 == complete
+        task jgfs_wafs_f48
+          edit FCSTHR '48'
+          trigger ../../post/jgfs_post_f048 == complete and ./jgfs_wafs_f42 == complete
+        task jgfs_wafs_f54
+          edit FCSTHR '54'
+          trigger ../../post/jgfs_post_f054 == complete and ./jgfs_wafs_f48 == complete
+        task jgfs_wafs_f60
+          edit FCSTHR '60'
+          trigger ../../post/jgfs_post_f060 == complete and ./jgfs_wafs_f54 == complete
+        task jgfs_wafs_f66
+          edit FCSTHR '66'
+          trigger ../../post/jgfs_post_f066 == complete and ./jgfs_wafs_f60 == complete
+        task jgfs_wafs_f72
+          edit FCSTHR '72'
+          trigger ../../post/jgfs_post_f072 == complete and ./jgfs_wafs_f66 == complete
+        task jgfs_wafs_f78
+          edit FCSTHR '78'
+          trigger ../../post/jgfs_post_f078 == complete and ./jgfs_wafs_f72 == complete
+        task jgfs_wafs_f84
+          edit FCSTHR '84'
+          trigger ../../post/jgfs_post_f084 == complete and ./jgfs_wafs_f78 == complete
+        task jgfs_wafs_f90
+          edit FCSTHR '90'
+          trigger ../../post/jgfs_post_f090 == complete and ./jgfs_wafs_f84 == complete
+        task jgfs_wafs_f96
+          edit FCSTHR '96'
+          trigger ../../post/jgfs_post_f096 == complete and ./jgfs_wafs_f90 == complete
+        task jgfs_wafs_f102
+          edit FCSTHR '102'
+          trigger ../../post/jgfs_post_f102 == complete and ./jgfs_wafs_f96 == complete
+        task jgfs_wafs_f108
+          edit FCSTHR '108'
+          trigger ../../post/jgfs_post_f108 == complete and ./jgfs_wafs_f102 == complete
+        task jgfs_wafs_f114
+          edit FCSTHR '114'
+          trigger ../../post/jgfs_post_f114 == complete and ./jgfs_wafs_f108 == complete
+        task jgfs_wafs_f120
+          edit FCSTHR '120'
+          trigger ../../post/jgfs_post_f120 == complete and ./jgfs_wafs_f114 == complete
+      endfamily
+      family bufr_sounding
+        task jgfs_postsnd
+          trigger ../../post/jgfs_post_manager:release_post000
+      endfamily
+      family bulletins
+        task jgfs_fbwind
+          trigger ../../post/jgfs_post_f006 == complete and ../../post/jgfs_post_f012 == complete and ../../post/jgfs_post_f024 == complete
+      endfamily
+      family grib2_wafs
+        task jgfs_wafs_grib2
+          trigger ../../post/jgfs_post_f000 == complete
+        task jgfs_wafs_blending
+          trigger ./jgfs_wafs_grib2 == complete
+          time 10:33
+      endfamily
+      family awips_20km_1p0
+        task jgfs_awips_f000
+          edit FHRGRP '000'
+          edit FHRLST 'f000'
+          edit FCSTHR '000'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f000 == complete
+        task jgfs_awips_f003
+          edit FHRGRP '003'
+          edit FHRLST 'f003'
+          edit FCSTHR '003'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f003 == complete
+        task jgfs_awips_f006
+          edit FHRGRP '006'
+          edit FHRLST 'f006'
+          edit FCSTHR '006'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f006 == complete
+        task jgfs_awips_f009
+          edit FHRGRP '009'
+          edit FHRLST 'f009'
+          edit FCSTHR '009'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f009 == complete
+        task jgfs_awips_f012
+          edit FHRGRP '012'
+          edit FHRLST 'f012'
+          edit FCSTHR '012'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f012 == complete
+        task jgfs_awips_f015
+          edit FHRGRP '015'
+          edit FHRLST 'f015'
+          edit FCSTHR '015'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f015 == complete
+        task jgfs_awips_f018
+          edit FHRGRP '018'
+          edit FHRLST 'f018'
+          edit FCSTHR '018'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f018 == complete
+        task jgfs_awips_f021
+          edit FHRGRP '021'
+          edit FHRLST 'f021'
+          edit FCSTHR '021'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f021 == complete
+        task jgfs_awips_f024
+          edit FHRGRP '024'
+          edit FHRLST 'f024'
+          edit FCSTHR '024'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f024 == complete
+        task jgfs_awips_f027
+          edit FHRGRP '027'
+          edit FHRLST 'f027'
+          edit FCSTHR '027'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f027 == complete
+        task jgfs_awips_f030
+          edit FHRGRP '030'
+          edit FHRLST 'f030'
+          edit FCSTHR '030'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f030 == complete
+        task jgfs_awips_f033
+          edit FHRGRP '033'
+          edit FHRLST 'f033'
+          edit FCSTHR '033'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f033 == complete
+        task jgfs_awips_f036
+          edit FHRGRP '036'
+          edit FHRLST 'f036'
+          edit FCSTHR '036'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f036 == complete
+        task jgfs_awips_f039
+          edit FHRGRP '039'
+          edit FHRLST 'f039'
+          edit FCSTHR '039'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f039 == complete
+        task jgfs_awips_f042
+          edit FHRGRP '042'
+          edit FHRLST 'f042'
+          edit FCSTHR '042'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f042 == complete
+        task jgfs_awips_f045
+          edit FHRGRP '045'
+          edit FHRLST 'f045'
+          edit FCSTHR '045'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f045 == complete
+        task jgfs_awips_f048
+          edit FHRGRP '048'
+          edit FHRLST 'f048'
+          edit FCSTHR '048'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f048 == complete
+        task jgfs_awips_f051
+          edit FHRGRP '051'
+          edit FHRLST 'f051'
+          edit FCSTHR '051'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f051 == complete
+        task jgfs_awips_f054
+          edit FHRGRP '054'
+          edit FHRLST 'f054'
+          edit FCSTHR '054'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f054 == complete
+        task jgfs_awips_f057
+          edit FHRGRP '057'
+          edit FHRLST 'f057'
+          edit FCSTHR '057'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f057 == complete
+        task jgfs_awips_f060
+          edit FHRGRP '060'
+          edit FHRLST 'f060'
+          edit FCSTHR '060'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f060 == complete
+        task jgfs_awips_f063
+          edit FHRGRP '063'
+          edit FHRLST 'f063'
+          edit FCSTHR '063'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f063 == complete
+        task jgfs_awips_f066
+          edit FHRGRP '066'
+          edit FHRLST 'f066'
+          edit FCSTHR '066'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f066 == complete
+        task jgfs_awips_f069
+          edit FHRGRP '069'
+          edit FHRLST 'f069'
+          edit FCSTHR '069'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f069 == complete
+        task jgfs_awips_f072
+          edit FHRGRP '072'
+          edit FHRLST 'f072'
+          edit FCSTHR '072'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f072 == complete
+        task jgfs_awips_f075
+          edit FHRGRP '075'
+          edit FHRLST 'f075'
+          edit FCSTHR '075'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f075 == complete
+        task jgfs_awips_f078
+          edit FHRGRP '078'
+          edit FHRLST 'f078'
+          edit FCSTHR '078'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f078 == complete
+        task jgfs_awips_f081
+          edit FHRGRP '081'
+          edit FHRLST 'f081'
+          edit FCSTHR '081'
+          edit TRDRUN 'NO'
+          trigger ../../post/jgfs_post_f081 == complete
+        task jgfs_awips_f084
+          edit FHRGRP '084'
+          edit FHRLST 'f084'
+          edit FCSTHR '084'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f084 == complete
+        task jgfs_awips_f090
+          edit FHRGRP '090'
+          edit FHRLST 'f090'
+          edit FCSTHR '090'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f090 == complete
+        task jgfs_awips_f096
+          edit FHRGRP '096'
+          edit FHRLST 'f096'
+          edit FCSTHR '096'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f096 == complete
+        task jgfs_awips_f102
+          edit FHRGRP '102'
+          edit FHRLST 'f102'
+          edit FCSTHR '102'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f102 == complete
+        task jgfs_awips_f108
+          edit FHRGRP '108'
+          edit FHRLST 'f108'
+          edit FCSTHR '108'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f108 == complete
+        task jgfs_awips_f114
+          edit FHRGRP '114'
+          edit FHRLST 'f114'
+          edit FCSTHR '114'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f114 == complete
+        task jgfs_awips_f120
+          edit FHRGRP '120'
+          edit FHRLST 'f120'
+          edit FCSTHR '120'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f120 == complete
+        task jgfs_awips_f126
+          edit FHRGRP '126'
+          edit FHRLST 'f126'
+          edit FCSTHR '126'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f126 == complete
+        task jgfs_awips_f132
+          edit FHRGRP '132'
+          edit FHRLST 'f132'
+          edit FCSTHR '132'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f132 == complete
+        task jgfs_awips_f138
+          edit FHRGRP '138'
+          edit FHRLST 'f138'
+          edit FCSTHR '138'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f138 == complete
+        task jgfs_awips_f144
+          edit FHRGRP '144'
+          edit FHRLST 'f144'
+          edit FCSTHR '144'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f144 == complete
+        task jgfs_awips_f150
+          edit FHRGRP '150'
+          edit FHRLST 'f150'
+          edit FCSTHR '150'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f150 == complete
+        task jgfs_awips_f156
+          edit FHRGRP '156'
+          edit FHRLST 'f156'
+          edit FCSTHR '156'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f156 == complete
+        task jgfs_awips_f162
+          edit FHRGRP '162'
+          edit FHRLST 'f162'
+          edit FCSTHR '162'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f162 == complete
+        task jgfs_awips_f168
+          edit FHRGRP '168'
+          edit FHRLST 'f168'
+          edit FCSTHR '168'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f168 == complete
+        task jgfs_awips_f174
+          edit FHRGRP '174'
+          edit FHRLST 'f174'
+          edit FCSTHR '174'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f174 == complete
+        task jgfs_awips_f180
+          edit FHRGRP '180'
+          edit FHRLST 'f180'
+          edit FCSTHR '180'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f180 == complete
+        task jgfs_awips_f186
+          edit FHRGRP '186'
+          edit FHRLST 'f186'
+          edit FCSTHR '186'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f186 == complete
+        task jgfs_awips_f192
+          edit FHRGRP '192'
+          edit FHRLST 'f192'
+          edit FCSTHR '192'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f192 == complete
+        task jgfs_awips_f198
+          edit FHRGRP '198'
+          edit FHRLST 'f198'
+          edit FCSTHR '198'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f198 == complete
+        task jgfs_awips_f204
+          edit FHRGRP '204'
+          edit FHRLST 'f204'
+          edit FCSTHR '204'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f204 == complete
+        task jgfs_awips_f210
+          edit FHRGRP '210'
+          edit FHRLST 'f210'
+          edit FCSTHR '210'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f210 == complete
+        task jgfs_awips_f216
+          edit FHRGRP '216'
+          edit FHRLST 'f216'
+          edit FCSTHR '216'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f216 == complete
+        task jgfs_awips_f222
+          edit FHRGRP '222'
+          edit FHRLST 'f222'
+          edit FCSTHR '222'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f222 == complete
+        task jgfs_awips_f228
+          edit FHRGRP '228'
+          edit FHRLST 'f228'
+          edit FCSTHR '228'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f228 == complete
+        task jgfs_awips_f234
+          edit FHRGRP '234'
+          edit FHRLST 'f234'
+          edit FCSTHR '234'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f234 == complete
+        task jgfs_awips_f240
+          edit FHRGRP '240'
+          edit FHRLST 'f240'
+          edit FCSTHR '240'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f240 == complete
+      endfamily
+      family awips_g2
+        task jgfs_awips_g2_f000
+          edit FHRGRP '000'
+          edit FHRLST 'f000'
+          edit FCSTHR '000'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f000 == complete
+        task jgfs_awips_g2_f006
+          edit FHRGRP '006'
+          edit FHRLST 'f006'
+          edit FCSTHR '006'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f006 == complete
+        task jgfs_awips_g2_f012
+          edit FHRGRP '012'
+          edit FHRLST 'f012'
+          edit FCSTHR '012'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f012 == complete
+        task jgfs_awips_g2_f018
+          edit FHRGRP '018'
+          edit FHRLST 'f018'
+          edit FCSTHR '018'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f018 == complete
+        task jgfs_awips_g2_f024
+          edit FHRGRP '024'
+          edit FHRLST 'f024'
+          edit FCSTHR '024'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f024 == complete
+        task jgfs_awips_g2_f030
+          edit FHRGRP '030'
+          edit FHRLST 'f030'
+          edit FCSTHR '030'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f030 == complete
+        task jgfs_awips_g2_f036
+          edit FHRGRP '036'
+          edit FHRLST 'f036'
+          edit FCSTHR '036'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f036 == complete
+        task jgfs_awips_g2_f042
+          edit FHRGRP '042'
+          edit FHRLST 'f042'
+          edit FCSTHR '042'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f042 == complete
+        task jgfs_awips_g2_f048
+          edit FHRGRP '048'
+          edit FHRLST 'f048'
+          edit FCSTHR '048'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f048 == complete
+        task jgfs_awips_g2_f054
+          edit FHRGRP '054'
+          edit FHRLST 'f054'
+          edit FCSTHR '054'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f054 == complete
+        task jgfs_awips_g2_f060
+          edit FHRGRP '060'
+          edit FHRLST 'f060'
+          edit FCSTHR '060'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f060 == complete
+        task jgfs_awips_g2_f066
+          edit FHRGRP '066'
+          edit FHRLST 'f066'
+          edit FCSTHR '066'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f066 == complete
+        task jgfs_awips_g2_f072
+          edit FHRGRP '072'
+          edit FHRLST 'f072'
+          edit FCSTHR '072'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f072 == complete
+        task jgfs_awips_g2_f078
+          edit FHRGRP '078'
+          edit FHRLST 'f078'
+          edit FCSTHR '078'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f078 == complete
+        task jgfs_awips_g2_f084
+          edit FHRGRP '084'
+          edit FHRLST 'f084'
+          edit FCSTHR '084'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f084 == complete
+        task jgfs_awips_g2_f090
+          edit FHRGRP '090'
+          edit FHRLST 'f090'
+          edit FCSTHR '090'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f090 == complete
+        task jgfs_awips_g2_f096
+          edit FHRGRP '096'
+          edit FHRLST 'f096'
+          edit FCSTHR '096'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f096 == complete
+        task jgfs_awips_g2_f102
+          edit FHRGRP '102'
+          edit FHRLST 'f102'
+          edit FCSTHR '102'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f102 == complete
+        task jgfs_awips_g2_f108
+          edit FHRGRP '108'
+          edit FHRLST 'f108'
+          edit FCSTHR '108'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f108 == complete
+        task jgfs_awips_g2_f114
+          edit FHRGRP '114'
+          edit FHRLST 'f114'
+          edit FCSTHR '114'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f114 == complete
+        task jgfs_awips_g2_f120
+          edit FHRGRP '120'
+          edit FHRLST 'f120'
+          edit FCSTHR '120'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f120 == complete
+        task jgfs_awips_g2_f126
+          edit FHRGRP '126'
+          edit FHRLST 'f126'
+          edit FCSTHR '126'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f126 == complete
+        task jgfs_awips_g2_f132
+          edit FHRGRP '132'
+          edit FHRLST 'f132'
+          edit FCSTHR '132'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f132 == complete
+        task jgfs_awips_g2_f138
+          edit FHRGRP '138'
+          edit FHRLST 'f138'
+          edit FCSTHR '138'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f138 == complete
+        task jgfs_awips_g2_f144
+          edit FHRGRP '144'
+          edit FHRLST 'f144'
+          edit FCSTHR '144'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f144 == complete
+        task jgfs_awips_g2_f150
+          edit FHRGRP '150'
+          edit FHRLST 'f150'
+          edit FCSTHR '150'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f150 == complete
+        task jgfs_awips_g2_f156
+          edit FHRGRP '156'
+          edit FHRLST 'f156'
+          edit FCSTHR '156'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f156 == complete
+        task jgfs_awips_g2_f162
+          edit FHRGRP '162'
+          edit FHRLST 'f162'
+          edit FCSTHR '162'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f162 == complete
+        task jgfs_awips_g2_f168
+          edit FHRGRP '168'
+          edit FHRLST 'f168'
+          edit FCSTHR '168'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f168 == complete
+        task jgfs_awips_g2_f174
+          edit FHRGRP '174'
+          edit FHRLST 'f174'
+          edit FCSTHR '174'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f174 == complete
+        task jgfs_awips_g2_f180
+          edit FHRGRP '180'
+          edit FHRLST 'f180'
+          edit FCSTHR '180'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f180 == complete
+        task jgfs_awips_g2_f186
+          edit FHRGRP '186'
+          edit FHRLST 'f186'
+          edit FCSTHR '186'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f186 == complete
+        task jgfs_awips_g2_f192
+          edit FHRGRP '192'
+          edit FHRLST 'f192'
+          edit FCSTHR '192'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f192 == complete
+        task jgfs_awips_g2_f198
+          edit FHRGRP '198'
+          edit FHRLST 'f198'
+          edit FCSTHR '198'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f198 == complete
+        task jgfs_awips_g2_f204
+          edit FHRGRP '204'
+          edit FHRLST 'f204'
+          edit FCSTHR '204'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f204 == complete
+        task jgfs_awips_g2_f210
+          edit FHRGRP '210'
+          edit FHRLST 'f210'
+          edit FCSTHR '210'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f210 == complete
+        task jgfs_awips_g2_f216
+          edit FHRGRP '216'
+          edit FHRLST 'f216'
+          edit FCSTHR '216'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f216 == complete
+        task jgfs_awips_g2_f222
+          edit FHRGRP '222'
+          edit FHRLST 'f222'
+          edit FCSTHR '222'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f222 == complete
+        task jgfs_awips_g2_f228
+          edit FHRGRP '228'
+          edit FHRLST 'f228'
+          edit FCSTHR '228'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f228 == complete
+        task jgfs_awips_g2_f234
+          edit FHRGRP '234'
+          edit FHRLST 'f234'
+          edit FCSTHR '234'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f234 == complete
+        task jgfs_awips_g2_f240
+          edit FHRGRP '240'
+          edit FHRLST 'f240'
+          edit FCSTHR '240'
+          edit TRDRUN 'YES'
+          trigger ../../post/jgfs_post_f240 == complete
+      endfamily
+    endfamily
+    family gempak
+      task jgfs_gempak_ncdc_upapgif
+        trigger ./jgfs_gempak == active or ./jgfs_gempak == complete
+      task jgfs_gempak
+        trigger ../jgfs_analysis eq complete
+      task jgfs_gempak_meta
+        trigger ../jgfs_analysis == complete
+      task jgfs_pgrb2_spec_gempak
+        trigger ./jgfs_npoess_pgrb2_0p5deg == complete
+      task jgfs_npoess_pgrb2_0p5deg
+        trigger ../post/jgfs_post_anl eq active or ../post/jgfs_post_anl == complete
+    endfamily
+  endfamily
+  task cycle_end
+# NCO will need to configure for operation here
+    edit ECF_PASS 'FREE'
+endsuite

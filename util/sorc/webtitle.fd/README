@@ -1,0 +1,9 @@
+FF 11/09/12
+no essl library
+intel's mkl blas/others are supposed to be compatible: http://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms
+
+other concerns:
+
+makefile:39: warning: overriding commands for target `webtitle'
+makefile:34: warning: ignoring old commands for target `webtitle'
+

@@ -28,3 +28,6 @@ all:            $(CMD)
 	
 $(CMD):         $(OBJS)
 	$(FC) -o $(@) $(OBJS) $(LIBS) $(LDFLAGS) $(FFLAGS)
+
+clean:
+	-rm -f $(OBJS)

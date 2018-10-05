@@ -22,6 +22,12 @@ fi
 export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
 
+# Do not process the following datasets
+export GSNDBF=${GSNDBF:-/dev/null}
+export AMSREBF=${AMSREBF:-/dev/null}
+export SSMITBF=${SSMITBF:-/dev/null}
+export AMSR2BF=${AMSR2BF:-/dev/null}
+
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then
 
@@ -41,7 +47,9 @@ if [ $REALTIME = "NO" ]; then
     fi
 
 #   Set SATINFO
-    if [[ "$CDATE" -ge "2018021212" ]]; then
+    if [[ "$CDATE" -ge "2018053012" ]]; then
+        export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
+    elif [[ "$CDATE" -ge "2018021212" ]]; then
 	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
     elif [[ "$CDATE" -ge "2017103118" ]]; then
 	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
@@ -69,6 +77,5 @@ if [ $REALTIME = "NO" ]; then
 	echo "WARNING: No SATINFO for $CDATE"
     fi
 fi
-
 
 echo "END: config.anal"

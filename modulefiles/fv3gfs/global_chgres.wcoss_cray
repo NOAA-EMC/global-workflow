@@ -10,7 +10,7 @@ module load craype-haswell
 module load cray-netcdf
 
 # Load NCEPLIBS modules
-module load sigio-intel/2.0.1
+module load sigio-intel/2.1.0
 module load w3nco-intel/2.0.6
 module load w3emc-intel/2.2.0
 module load sp-intel/2.0.2

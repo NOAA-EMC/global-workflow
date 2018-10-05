@@ -14,7 +14,6 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180710
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -30,27 +29,26 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
 module load prod_envir/1.0.2
 #
-#   This is a test version of UTIL_SHARED.v1.0.8 on DELL
+#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/util_shared/1.0.8
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
 module list
 
 ###############################################
 # GDAS BULLS NAVYL BULLETIN PRODUCT GENERATION
 ###############################################
 # set envir=prod or para to test with data in prod or para
-# export envir=para
- export envir=prod
+ export envir=para
+# export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -89,10 +87,10 @@ export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ###################################
 # Specify NET and RUN Name and model
@@ -109,14 +107,17 @@ if [ $envir = "prod" ] ; then
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}         ### NCO PROD
   export COMINm1=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDYm1}         ### NCO PROD
 else
-#  export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMINm1=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMINgdas=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN} ### EMC PARA Realtime
+#  export COMINm1=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
-  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
-  export COMINm1=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
+#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDY}/${cyc} ### EMC PARA Realtime
+#  export COMINgdas=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN} ### EMC PARA Realtime
+#  export COMINm1=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN}.${PDYm1}/${cyc} ### EMC PARA Realtime
 
-#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/svn/${RUN}.${PDY}/${cyc} ### Boi PARA
-#  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/svn/${RUN}.${PDYm1}/${cyc} ### Boi PARA
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
+  export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
+  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

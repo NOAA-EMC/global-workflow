@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 #########################################################################
 #
 #   Script:  gempak_gfs_f00_gif.sh
@@ -16,15 +15,10 @@
 #
 #########################################################################
 
-
-
-
    msg=" Make GEMPAK GIFS utility"
    postmsg "$jlogfile" "$msg"
 
-
   set -x
-
 
   MAPAREA="normal"
 
@@ -33,7 +27,6 @@
   pixels="1728;1472"
 
   cp $FIXgempak/coltbl.spc coltbl.xwp
-
 
 #################################################################
 #                       ANALYSIS CHARTS                         # 
@@ -44,10 +37,10 @@
 
   echo 0000${PDY}${cyc} > dates
   export FORT55="title.output"
-  $WEBTITLE < dates
+#  $WEBTITLE < dates
+  ${UTILgfs}/exec/webtitle < dates
   export TITLE=`cat title.output`
   echo "\n\n TITLE = $TITLE \n"
-
 
 # Define labels and file names for analysis charts
 
@@ -100,18 +93,14 @@
   prswshtroplab="TROPOPAUSE PRESSURE/WIND SHEAR"
   prswshtropdev="gfs_trop_prs_wsh_nh_anl_${cyc}.gif"
 
-
 # Set grid date and input file name
 
   gdattim=`echo ${PDY} | cut -c3-8`/${cyc}00F000
   gdfile=gem_grids${fhr}.gem
 
-
-
 #  Execute the GEMPAK program
 
   $GEMEXE/gdplot2_gif << EOF
-
 
 ! 700MB HEIGHTS/TEMPERATURES
 
@@ -405,8 +394,6 @@
   l
   r
 
-
-
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
   restore $NTS/base_nh
@@ -435,8 +422,6 @@
   TITLE   = 1/3/${hgtvor500lab}
   l
   r
-
-
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
@@ -579,12 +564,9 @@ if [ $SENDCOM = YES ]; then
   cp ${prswshtropdev}   ${COMOUT}
   cp ${rhvvel700dev}    ${COMOUT}
 
-
-
 # Copy the GIF images onto the NCDC area on the public ftp server
 
  if [ $SENDDBN = YES ]; then
-
 
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp700dev}
   $DBNROOT/bin/dbn_alert MODEL NCDCGIF ${job} ${COMOUT}/${hgttmp500dev}
@@ -611,10 +593,8 @@ if [ $SENDCOM = YES ]; then
   export input=${COMOUT}/${hgttmp500dev}
   export HEADER=YES
   export OUTPATH=$DATA/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
-  make_tif.sh
+  ${UTILgfs}/ush/make_tif.sh
 fi 
-
-
 
    msg=" GEMPAK_GIF ${fhr} hour completed normally"
    postmsg "$jlogfile" "$msg"

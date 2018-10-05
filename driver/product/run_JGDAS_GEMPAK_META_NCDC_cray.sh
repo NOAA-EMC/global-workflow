@@ -41,12 +41,6 @@ module load craype-haswell
 module load prod_envir
 module load prod_util
 module load grib_util/1.0.3
-module load util_shared/1.0.6
-#
-#   This is a test version of UTIL_SHARED.v1.0.7 on CRAY
-#
-# module use /usrx/local/nceplibs/util_shared.v1.0.7/modulefiles
-# module load util_shared/1.0.7
 
 ###########################################
 # Now set up GEMPAK/NTRANS environment

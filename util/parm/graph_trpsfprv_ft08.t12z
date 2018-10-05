@@ -1,0 +1,7 @@
+1RUN  OPN2612Z     2                                                            
+ 1000 STRM 24HR                               OPN26   MERCIS     214   2        
+3V4390     VFULL 4390    0    0    0                  24HR1000MB PROG           
+3H4350     HONO  4350 4351    0    0                  24HR1000MB PROG           
+ 1000 STRM 48HR                               OPN26   MERCIS     215   2        
+3V4391     VFULL 4391    0    0    0                  48HR1000MB PROG           
+3H4352     HONO  4352 4353    0    0                  48HR1000MB PROG           

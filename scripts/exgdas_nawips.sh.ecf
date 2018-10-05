@@ -26,13 +26,48 @@ msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
 cp $FIXgfs/g2varswmo2.tbl g2varswmo2.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2varswmo2.tbl file is missing."
+   exit $err
+fi
 cp $FIXgfs/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2vcrdwmo2.tbl file is missing."
+   exit $err
+fi
+
 cp $FIXgfs/g2varsncep1.tbl g2varsncep1.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2varsncep1.tbl file is missing."
+   exit $err
+fi
+
 cp $FIXgfs/g2vcrdncep1.tbl g2vcrdncep1.tbl
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File g2vcrdncep1.tbl file is missing."
+   exit $err
+fi
 
 #
 NAGRIB_TABLE=${NAGRIB_TABLE:-$NWROOTp1/gempak/fix/nagrib.tbl}
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File nagrib.tbl does not exist."
+   exit $err
+fi
+
 NAGRIB=$GEMEXE/nagrib2_nc
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File $GEMEXE/nagrib2_nc is missing."
+   echo " WARNING: module GEMPAK was not loaded"
+   exit $err
+fi
+
 #
 
 entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
@@ -73,9 +108,19 @@ while [ $fhcnt -le $fend ] ; do
 
   if [ $RUN = "gdas_0p25" ]; then 
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
+    if [ ! -f $GRIBIN ] ; then
+       echo "WARNING: $GRIBIN FILE is missing"
+       msg=" $GRIBIN file is missing "
+       postmsg "$jlogfile" "$msg"
+    fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
+    if [ ! -f $GRIBIN ] ; then
+       echo "WARNING: $GRIBIN FILE is missing"
+       msg=" $GRIBIN file is missing "
+       postmsg "$jlogfile" "$msg"
+    fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
@@ -85,17 +130,19 @@ while [ $fhcnt -le $fend ] ; do
     if [ -r $GRIBIN_chk ] ; then
       break
     else
-      let "icnt=icnt+1"
+      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
+      postmsg "${jlogfile}" "$msg"
       sleep 20
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
+      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
-
-  #cat ${COMIN}/${model}.${cycle}.pgrb2.1p00.f${fhr} ${COMIN}/${model}.${cycle}.pgrb2b.1p00.f${fhr} > temp
 
   cp $GRIBIN grib$fhr
 
@@ -123,6 +170,12 @@ EOF
 
   if [ $SENDCOM = "YES" ] ; then
      cp $GEMGRD $COMOUT/.$GEMGRD
+     export err=$?
+     if [[ $err -ne 0 ]] ; then
+        echo " File $GEMGRD does not exist."
+        exit $err
+     fi
+
      mv $COMOUT/.$GEMGRD $COMOUT/$GEMGRD
      if [ $SENDDBN = "YES" ] ; then
          $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \

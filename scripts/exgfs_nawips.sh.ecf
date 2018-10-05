@@ -45,7 +45,7 @@ proj=
 output=T
 pdsext=no
 
-maxtries=180
+maxtries=360
 fhcnt=$fstart
 while [ $fhcnt -le $fend ] ; do
 
@@ -95,13 +95,17 @@ if mkdir lock.$fhcnt  ; then
     if [ -r $GRIBIN_chk ] ; then
       break
     else
-      let "icnt=icnt+1"
+      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
+      postmsg "${jlogfile}" "$msg"
       sleep 10
+      let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1/2 hour of waiting for F$fhr to end."
-      err_exit $msg
+      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
+      postmsg "${jlogfile}" "$msg"
+      export err=7 ; err_chk
+      exit $err
     fi
   done
 

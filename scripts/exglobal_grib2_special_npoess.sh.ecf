@@ -104,9 +104,9 @@ do
     $WGRIB2 pgb2file -s > pgb2ifile
 
 #    DO NOT GENERATE GRIB1
-#    $EXECgfs/cnvgrib21_gfs -g21 pgb2file pgbfile
+#    $CNVGRIB -g21 pgb2file pgbfile
 #    $GRBINDEX pgbfile pgifile
-#    $EXECgfs/cnvgrib21_gfs -g21 pgb2file2 pgbfile2
+#    $CNVGRIB -g21 pgb2file2 pgbfile2
 #    $GRBINDEX pgbfile2 pgifile2
 
     if test $SENDCOM = "YES"
