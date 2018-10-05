@@ -12,7 +12,7 @@ export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
 
 # Relocation and syndata QC
-export PROCESS_TROPCY="NO"
+export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
 export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
@@ -22,17 +22,5 @@ export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
-
-###################################
-# Only used when DO_RELOCATE=YES
-# ignore them for now
-###################################
-#export machine=${machine:-WCOSS_C}
-#if [ $machine = WCOSS_C ] ; then
-#   export APRNGETTX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-#   export APRNRELOC="time aprun -q -j1 -n7 -N1 -d24 -cc depth "
-#   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-#fi
-
 
 echo "END: config.prep"

@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180919
+export PDY=20180925
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -40,11 +40,8 @@ module load prod_envir/1.0.2
 #
 #   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/grib_util/1.1.0
-#
-#   This is a test version of UTIL_SHARED.v1.1.0 on DELL
-#
-# module load dev/util_shared/1.1.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
 module list
 
 ###############################################
@@ -121,7 +118,7 @@ else
 
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
   export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
-  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
+  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDYm1}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

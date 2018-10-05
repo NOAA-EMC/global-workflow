@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180919
+export PDY=20180926
 
 export PDY1=`expr $PDY - 1`
 
@@ -42,8 +42,8 @@ module load NCL/6.4.0
 #
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
 module load grib_util/1.1.0
-module load  bufr_dumplist/2.0.0
-module load  dumpjb/5.0.0
+module load bufr_dumplist/2.0.0
+module load dumpjb/5.0.0
 
 module list
 

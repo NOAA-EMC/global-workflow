@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180920
+export PDY=20180926
 
 export PDY1=`expr $PDY - 1`
 export PDYm1=`expr $PDY - 1`
@@ -118,7 +118,7 @@ else
 
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
   export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
-  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDY}/${cyc} ### Boi PARA
+  export COMINm1=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs/para/${RUN}.${PDYm1}/${cyc} ### Boi PARA
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

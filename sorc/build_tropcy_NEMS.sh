@@ -123,12 +123,12 @@ export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"
 export LIBS_SYN_QCT="${W3NCO_LIB8}"
 
-cd relocate_mv_nvortex.fd
-   make clean
-   make -f makefile_$targetx
-   make install
-   make clean
-   cd ../
+#cd relocate_mv_nvortex.fd
+#   make clean
+#   make -f makefile_$targetx
+#   make install
+#   make clean
+#   cd ../
 cd vint.fd
    make clean
    make -f makefile

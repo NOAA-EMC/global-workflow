@@ -1,0 +1,185 @@
+# This file configures the workflow to run on the cray parts of WCOSS
+
+platform: !Platform
+  <<: *global_platform_common
+
+  # Evaluate: this must be "false" to ensure disk space availability logic
+  # is not run unless this file is for the current platform.
+  Evaluate: false
+
+  # name: the name of this platform; this must match what the underlying
+  # scripts expect.
+  name: sandbox
+
+  # detect: this is a function that returns true iff the user is on GAEA
+  # and false otherwise
+  detect: True
+
+  # skip_if_others_present: if this is true, and at least one other
+  # platform is detected with this flag set to false, then skip this
+  # platform
+  skip_if_others_present: true
+
+  # public_release_ics: location of input conditions that have been 
+  # prepared for the public release.
+  public_release_ics: /gpfs/hps3/emc/global/noscrub/emc.glopara/FV3GFS_V1_RELEASE/ICs
+
+  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
+  # restrict access to NOAA "rstprod" data restriction class.
+  # This only used for observation processing, data assimilation, and
+  # data assimilation archiving, which are not in the public release.
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "/gpfs/hps/nco/ops/nwprod"
+
+  # DMPDIR - location of the global dump data.  This is used by the observation
+  # processing scripts, which are not included in the public release.
+  DMPDIR: !calc doc.user_places.PROJECT_DIR
+  #"/Users/jiankuang/Documents/Eclipse_workspace/ecfutils_007"
+  #DMPDIR: !FirstTrue
+  #  - do: "/gpfs/gp1/emc/globaldump"
+  #    when: !calc tools.isdir(do)
+  #  - do: "/gpfs/tp1/emc/globaldump"
+  #    when: !calc tools.isdir(do)
+  #  - otherwise: !error "Cannot find globaldump directory."
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "$CRTM_FIX"
+
+  # BASE_SVN - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various subversion repositories.  This is used on some platforms
+  # to find executables for this workflow.
+  BASE_SVN: "/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
+
+  # config_base_extras - Additional configuration data to put in the
+  # config.base file
+  config_base_extras: "sandbox"
+  #config_base_extras: |
+  #  if [ -d /gpfs/tp1 ]; then
+  #      export SITE="LUNA"
+  #  elif [ -d /gpfs/gp1 ]; then
+  #      export SITE="SURGE"
+  #  fi
+
+  # Additional variables to send to Rocoto XML entities or ecflow edits.
+  metasched_more: !expand |
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+
+  partitions:
+    Evaluate: false
+    default_exclusive: !calc doc.platform.partitions.sandbox
+    default_service: !calc doc.platform.partitions.sandbox
+    default_shared: !calc doc.platform.partitions.sandbox
+    sandbox:
+      <<: *global_partition_common
+
+      # specification - string to specify to the batch system to
+      # request this partition.  Not relevant for WCOSS Cray
+      specification: null
+
+      # shared_accounting_ref - accounting settings for shared jobs
+      shared_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.shared_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+      # service_accounting_ref - accounting settings for service jobs (jobs
+      # that require tape or network access)
+      service_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.service_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+      # exclusive_accounting_ref - accounting settings for jobs that require
+      # exclusive access to a node.
+      exclusive_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+      # Queues to use for each job type.  This logic automatically
+      # switches between development queues on the backup machine and
+      # development queues on the production machine based on whether the
+      # /gpfs/hps2/ptmp is writable.
+      shared_queue: dev
+      service_queue: dev
+      exclusive_queue: dev
+      #shared_queue: !FirstTrue
+      #  - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+      #    do: dev_shared
+      #  - otherwise: devonprod_shared
+      #service_queue: dev_transfer
+      #exclusive_queue: !FirstTrue
+      #  - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+      #    do: dev
+      #  - otherwise: devonprod
+
+      # Details about the scheduler on this cluster.
+      scheduler_settings:
+        scheduler_name: LSFAlps
+        parallelism_name: LSFAlps
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (64*1024)
+
+      scheduler: !calc |
+        tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+      parallelism: !calc |
+        tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+      nodes: !calc |
+        tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
+
+  # Path to mmlsquota, the program used to get GPFS disk usage information:
+  #mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
+
+  # Automatically detect the least used scrub area the user can access:
+  #least_used_ptmp: !Immediate
+  #  - !FirstMax
+  #    - do: /gpfs/hps3/ptmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps3-ptmp","hps3",mmlsquota) )
+  #      message: Use {do} for long-term temp.
+  #    - do: /gpfs/hps/ptmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps-ptmp","hps",mmlsquota) )
+  #      message: Use {do} for long-term temp.
+  #    - do: /gpfs/hps2/ptmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps2-ptmp","hps2",mmlsquota) )
+  #      message: Use {do} for long-term temp.
+  #least_used_stmp: !Immediate
+  #  - !FirstMax
+  #    - do: /gpfs/hps/stmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps-stmp","hps",mmlsquota) )
+  #      message: Use {do} for short-term temp.
+  #    - do: /gpfs/hps2/stmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps2-stmp","hps2",mmlsquota) )
+  #      message: Use {do} for short-term temp.
+  #    - do: /gpfs/hps3/stmp
+  #      when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"hps3-stmp","hps3",mmlsquota) )
+  #      message: Use {do} for short-term temp.
+
+  # long_term_temp - area for storage of data that must be passed
+  # between jobs or shared with programs external to this workflow.
+  long_term_temp: !calc doc.user_places.PROJECT_DIR 
+  #!expand "{least_used_ptmp}/{tools.env('USER')}"
+
+  # short_term_temp - area for data that is only needed within one job:
+  short_term_temp: !calc doc.user_places.PROJECT_DIR 
+  #!expand "{least_used_stmp}/{tools.env('USER')}"
+
+  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
+  EXP_PARENT_DIR: !calc doc.user_places.PROJECT_DIR
+  #!expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"

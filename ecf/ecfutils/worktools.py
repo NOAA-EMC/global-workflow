@@ -55,7 +55,9 @@ def make_parent_dir(filename):
     loudly_make_dir_if_missing(os.path.dirname(filename))
 
 def find_available_platforms(platdir):
-    available={}
+    matches={}
+    filenames={}
+    can_skip=set()
     for matching_file in glob.glob(f'{platdir}/[a-zA-Z]*.yaml'):
         logger.info(f'{matching_file}: check this platform...')
         plat=from_file('user.yaml',f'{platdir}/_common.yaml',matching_file)
@@ -64,9 +66,31 @@ def find_available_platforms(platdir):
            not 'name' in plat.platform:
             logger.warning(f'{matching_file}: does not contain a '
                            '"platform" map with "detect" and "name"')
+            continue
+        name=plat.platform.name
         if plat.platform.detect:
-            logger.info(f'{matching_file}: platform {plat.platform.name} matches')
-            available[plat.platform.name]=plat
+            logger.info(f'{matching_file}: platform {name} matches')
+            if name in filenames:
+                logger.error(f'{filenames[name]}: same platform name "{name}" as {matching_file}')
+                exit(1)
+            matches[name]=plat
+        if plat.platform.get('skip_if_others_present',False):
+            can_skip.add(name)
+
+    available=copy(matches)
+    for k in can_skip:
+        if k in available: del available[k]
+
+    if available:
+        return available
+    else:
+        # All platforms "can be skipped" so skip none:
+        return matches
+
+def sandbox_platforms(platdir):
+    available={}
+    plat=from_file('user.yaml',f'{platdir}/_common.yaml',f'{platdir}/_sandbox.yaml')
+    available[plat.platform.name]=plat
     return available
 
 def select_platform(requested_platform,valid_platforms):
@@ -186,7 +210,7 @@ def make_config_files_in_expdir(doc,expdir):
         with open(filename,'wt') as fd:
             fd.write(content)
 
-def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,skip_comrot):
+def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,skip_comrot,force_platform_rewrite):
     logger.info(f'{srcdir}: get yaml files from here')
     logger.info(f'{case_name}: use this case')
 
@@ -207,6 +231,10 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
         fd.write('\n\n')
         with open(case_file,'rt') as cfd:
             fd.write(cfd.read())
+        for srcfile in glob.glob(f'{srcdir}/static/*.yaml'):
+            with open(srcfile,'rt') as ifd:
+                fd.write(ifd.read())
+            fd.write('\n\n')
         config_contents=fd.getvalue()
     config=crow.config.from_string(config_contents)
     workflow_file=os.path.join(srcdir,config.places.workflow_file)
@@ -234,7 +262,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
         exit(1)
     elif not gud:
         logger.warning('Target directories already exist.')
-        logger.warning('Received -f, so I will start anyway.')
+        logger.warning('Received -f or -F, so I will start anyway.')
         logger.warning('Will overwrite config, initial COM, and yaml files.')
         logger.warning('All other files will remain unmodified.')
         redo=True
@@ -249,11 +277,13 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
     with open(f'{tgtdir}/names.yaml','wt') as fd:
         fd.write(names_yaml)
 
-    if redo and os.path.exists(f'{tgtdir}/platform.yaml'):
-        logger.warning('I am NOT replacing platform.yaml.  You must edit this manually.')
-        logger.warning('This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
+    if redo and os.path.exists(f'{tgtdir}/platform.yaml') and not force_platform_rewrite:
+        logger.warning('I am NOT replacing platform.yaml.  This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
+        logger.warning('You must edit platform.yaml manually or use -F to force me to overwrite platform.yaml.  Using -F on a running workflow is inadvisable.')
         logger.warning(f'{tgtdir}/platform.yaml: NOT replacing this file.')
     else:
+        if os.path.exists(f'{tgtdir}/platform.yaml') and force_platform_rewrite:
+            logger.warning(f'{tgtdir}/platform.yaml: overwriting due to -F.  This is probably unwise.  You have been warned.')
         logger.info(f'{tgtdir}/platform.yaml: write platform logic')
         with open(f'{tgtdir}/platform.yaml','wt') as fd:
             fd.write(platform_yaml)
@@ -477,7 +507,7 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'dvfcp:D')
+    options,positionals=getopt(command_line_arguments,'sdvfcp:DF')
     options=dict(options)
 
     init_logging('-v' in options,'-d' in options or '-D' in options)
@@ -488,6 +518,8 @@ def setup_case(command_line_arguments):
 
     force='-f' in options
     skip_comrot='-c' in options
+    force_platform_rewrite='-F' in options
+    sandbox = '-s' in options
 
     if '-v' in options:
         logger.setLevel(logging.INFO)
@@ -508,12 +540,18 @@ def setup_case(command_line_arguments):
         exit(1)
 
     requested_platform=options.get('-p',None)
-    valid_platforms=find_available_platforms("platforms/")
-    platdoc=select_platform(requested_platform,valid_platforms)
+    if sandbox:
+        valid_platforms=sandbox_platforms("platforms/")
+        platdoc = select_platform(requested_platform,valid_platforms)
+    else:
+        valid_platforms=find_available_platforms("platforms/")
+        platdoc=select_platform(requested_platform,valid_platforms)
+
     logger.info(f'{platdoc.platform.name}: selected this platform.')
 
     EXPDIR = make_yaml_files_in_expdir(
-        os.path.abspath('.'),case_name,experiment_name,platdoc,force,skip_comrot)
+        os.path.abspath('.'),case_name,experiment_name,platdoc,force,
+        skip_comrot,force_platform_rewrite)
 
     doc=from_dir(EXPDIR,validation_stage='setup')
     suite=Suite(doc.suite)

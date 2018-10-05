@@ -1,76 +1,83 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gdas_enkf_fcst_grp18_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_fcst_grp18_%CYC%.o%J
+#BSUB -J %E%gdas_enkf_fcst_%ENSGRP%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_fcst_%ENSGRP%_%CYC%.o%J
 #BSUB -W 3:00
-#BSUB -x
-#BSUB -R 'affinity[core(2)]'
-#BSUB -R 'span[ptile=12]'
 #BSUB -n 168
+#BSUB -R affinity[core(2)]
+#BSUB -R span[ptile=12]
 #BSUB -cwd /tmp
+
 %include <head.h>
 %include <envir-p3.h>
 
 set -x
 
-
-
-export model=%model:gfs%
 export NET=%NET:gfs%
 export RUN=%RUN%
+export CDUMP=%RUN%
 
 %include <model_ver.h>
+
+export ENSGRP=%ENSGRP%
+
+# Configuration files 
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules
 ############################################################
-#. $MODULESHOME/init/sh
 module load ips/$ips_ver
 module load impi/$impi_ver
 module load EnvVars/$EnvVars_ver
-
+module load prod_util/$prod_util_ver
+module load prod_envir/$prod_envir_ver
 module load g2tmpl/$g2tmpl_ver
 module load crtm/$crtm_ver
 module load ESMF/$ESMF_ver
-module load dev/util_shared/$util_shared_ver  # NOTE: remove dev/ after util_shared upgrade
-
-module unload grib_util
-module load dev/grib_util/$grib_util_ver  # NOTE: remove dev/ after grib_util upgrade
-
 module load NCO/$NCO_ver
 module load HDF5-serial/$HDF5_serial_ver
 module load NetCDF/$NetCDF_ver
 module load CFP/$CFP_ver
-export USE_CFP=YES
-
 module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
 module load gempak/$gempak_ver
-
-module load bufr_dumplist/$bufr_dumplist_ver
-module load dumpjb/$dumpjb_ver
-module load NCL/$NCL_ver
+module unload grib_util
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/$grib_util_ver
 
 module list
 
-# Synonyms expected by scripts:
-export CDUMP="$RUN"
-export ROTDIR="$COMROOT"
-
-
-############################################################
-# WCOSS environment settings
-############################################################
-
-# Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here.
-
-############################################################
+%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
 export cyc=%CYC%
+export cycle=t%CYC%z
 
+############################################################
+# PDY
+############################################################
+datedir=${DATAROOT}/gdas_enkf_fcst.date.$$.$RANDOM
+mkdir -p "$datedir"
+pushd "$datedir"
+setpdy.sh
+. ./PDY
+set -u
+export CDATE="$PDY$cyc"
+set +u
+popd
+rm -rf "$datedir"
 
-export ENSGRP=18
-$HOMEgfs/jobs/JGDAS_ENKF_FCST
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGDAS_ENKF_FCST
 
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
 
 %include <tail.h>
 %manual

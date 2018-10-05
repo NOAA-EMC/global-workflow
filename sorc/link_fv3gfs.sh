@@ -84,13 +84,13 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
 cd ${pwd}/../parm               ||exit 8
     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/*                         .
+    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
 cd ${pwd}/../fix                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/fix/wafs                       wafs
+    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
 #------------------------------
@@ -200,9 +200,16 @@ if [ $target = wcoss_dell_p3 ]; then
     done
 fi
 
+<<<<<<< HEAD
 for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
      [[ -s $gsiexe ]] && rm -f $gsiexe
      $LINK ../sorc/gsi.fd/exec/$gsiexe .
+=======
+
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+>>>>>>> origin/port2dell2
 done
 
 if [ $target = wcoss_dell_p3 ]; then
@@ -226,6 +233,17 @@ echo "GSI  Branch: $gsi_branch"
 echo "POST Branch: $gfspost_branch"
 
 
+#------------------------------
+#--choose dynamic config.base for EMC installation 
+#--choose static config.base for NCO installation 
+cd $pwd/../parm/config
+[[ -s config.base ]] && rm -f config.base 
+if [ $RUN_ENVIR = nco ] ; then
+ cp -p config.base.nco.static config.base
+else
+ cp -p config.base.emc.dyn config.base
+fi
+#------------------------------
 
 
 exit 0

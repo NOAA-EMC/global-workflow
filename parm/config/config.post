@@ -24,7 +24,11 @@ export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 export GOESF=YES                              # goes image
 export GTGF=NO                                # gtg icing product
 export FLXF=YES                               # grib2 flux file written by post
-export PGB1F=YES
+export PGB1F=YES                              
+if [ $RUN_ENVIR = "nco" ]; then
+    export PGB1F=NO
+    export GTGF=YES
+fi
 
 export npe_postgp=$npe_post
 export nth_postgp=1
@@ -36,11 +40,7 @@ export npe_dwn=28
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
 
-if [ $machine = "WCOSS_C" ] ; then
-    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export CRTM_FIX=/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-elif [ $machine = "THEIA" ] ; then
+if [ $machine = "THEIA" ] ; then
     export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
 else
     echo "UPP using CRTM_FIX = $CRTM_FIX"

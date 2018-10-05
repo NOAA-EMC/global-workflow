@@ -11,11 +11,13 @@ module load bacio/2.0.2
 module load sp/2.0.2
 module load nemsio/2.2.3
 module load nemsiogfs/2.0.1
-module load dev/sigio/2.0.3
 
 module load jasper/1.900.1
 module load libpng/1.2.59
 module load zlib/1.2.11
 module load g2/3.1.0
+
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load  sigio/2.1.0 
 
 export FC=ifort

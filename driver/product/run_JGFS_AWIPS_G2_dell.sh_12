@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180919
+export PDY=20180925
 
 export PDY1=`expr $PDY - 1`
 
@@ -39,7 +39,8 @@ module load prod_envir/1.0.2
 #
 #   This is a test version of GRIB_UTIL.v1.1.0 on DELL
 #
-module load dev/grib_util/1.1.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
 module list
 
 ########################################
