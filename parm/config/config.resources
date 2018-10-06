@@ -29,7 +29,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 elif [ $step = "anal" ]; then
 
     export wtime_anal="02:30:00"
-    export npe_anal=120
+    export npe_anal=160
     export npe_node_anal=2
     export nth_anal=12
     export nth_cycle=24
