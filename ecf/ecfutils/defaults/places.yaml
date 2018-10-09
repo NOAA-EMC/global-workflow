@@ -17,4 +17,11 @@ default_places: &default_places
 #  SHORT_TERM_TEMP: !error GOT HERE
 #  LONG_TERM_TEMP:  !error GOT HERE TOO
 
+  ECF_ROOT: !calc tools.env("ECF_ROOT","/dev/null/ECF_ROOT")
   ECF_HOME: !calc tools.env("ECF_HOME","/dev/null")
+  ecflow_def_dir: !expand '{ECF_ROOT}/defs'
+  ECF_INCLUDE: !expand '{ECF_ROOT}/include'
+  ECF_OUT: !expand '{ECF_ROOT}/output'
+
+  YAMLDIR: !calc EXPDIR
+  rocoto_workflow_xml: !expand '{YAMLDIR}/workflow.xml'

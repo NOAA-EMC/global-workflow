@@ -67,6 +67,10 @@ suite_defaults: &suite_defaults
     'Rocoto', 'ecf_file' ]
     rules: !calc doc.suite_overrides
 
+  ecf_file_set:
+    disk_path: !expand "{doc.places.ECF_ROOT}/scripts/{doc.names.experiment}"
+    ECF_FILES: !expand "{doc.places.ECF_ROOT}/scripts/{doc.names.experiment}"
+
   # ecFlow - definition of variables specific to ecFlow suite generation
   ecFlow:
     # suite_def_filename - file to receive the suite definition
