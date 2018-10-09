@@ -54,13 +54,7 @@ def write_poejob_pointstat(poedir, nc, type, vhr, var, var_levels):
 #
 poedir = os.environ.get('poedir')
 g2o_process = os.environ.get('g2o_process')
-type_list = []
-run_upper_air = os.environ.get('run_upper_air')
-if run_upper_air == 'YES':
-    type_list.append('upper_air')
-run_conus_sfc = os.environ.get('run_conus_sfc')
-if run_conus_sfc == 'YES':
-    type_list.append('conus_sfc')
+type_list = os.environ.get('typelist').split(' ')
 #
 if g2o_process == 'pb2nc':
      print('Creating pb2nc poejobs')

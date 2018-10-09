@@ -98,21 +98,22 @@ fi
 if [ "$CDUMP" = "gfs" ] ; then
     if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
         if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
-            export VRFYBACKDATE=24                                          # execute step 1 metplusjob for the previous x hours
-            export VRFYBACKDATE_PRCP=24                                     # additonal back up time for QPF verification data to allow observation data to come in
+            export VRFYBACK_HRS=24                                          # execute step 1 metplusjob for the previous x hours
+            export VRFYBACK_HRS_PRECIP=24                                   # additonal back up time for QPF verification data to allow observation data to come in
             export metplussave="$NOSCRUB/archive/metplus_data"              # place to save METplus database
             export metplushome=$BASE_VERIF_METPLUS                          # location of global verification scripts
             export metplusconfig="$PARMgfs/verif"                           # location of configuration files to run METplus
             export metplusfix="$FIXgfs/fix_verif"                           # location of fix files to run METplus
             export METPLUSSH="$USHgfs/metplusjob.sh"                        # METplus job script
-            export vfhmin=$FHMIN_GFS                                        # start verification forecast hour
-            export vfhmax=$FHMAX_GFS                                        # end verification forecast hour
+            export fhmin=$FHMIN_GFS                                         # start verification forecast hour
+            export fhmax=$FHMAX_GFS                                         # end verification forecast hour
+            export grid2grid_typelist="anom pres sfc"                       # type of verifications to run for grid-to-grid
+            export grid2obs_typelist="conus_sfc upper_air"                  # type of verifications to run for grid-to-obs
             export vhr_rain=$FHMAX_GFS                                      # needed to create 0.25 deg grib1 files
-            export ftyplist="pgbf"                                          # file types: pgbf, pgbq, or flxf
-            export ptyplist="APCP"                                          # precip types in GRIB: PRATE or APCP
+            export ftyplist="pgbf"                                          # file types: pgbf (future support: pgbq and flxf)
+            export ptyplist="APCP"                                          # precip types in GRIB: APCP (future support: PRATE
             export anltype="gfs"                                            # default=gfs, analysis type (gfs or gdas) for verification
-            export rain_bucket=6                                            # accumulation bucket in hours. bucket=0 -- continuous accumulation
-            export g2g_sfc="YES"                                            # include the group of surface variables for grid-to-grid verification
+            export rain_bucket=6                                            # accumulation bucket in hours: 6 (future support: other accums, bucket=0 -- continuous accumulation)
 
             export STEP2_START_DATE="$SDATE"                                # starting date for METplus plots
             export STEP2_END_DATE="$EDATE"                                  # ending date for METplus plots

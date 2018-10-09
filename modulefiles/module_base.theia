@@ -14,8 +14,3 @@ module load gempak/6.7.0
 
 module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
 module load prod_util
-
-# modules used by vrfy
-module use /contrib/modulefiles
-module load met/6.1
-module load anaconda/anaconda2-4.4.0

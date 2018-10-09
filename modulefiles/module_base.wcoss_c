@@ -48,9 +48,6 @@ setenv USE_CFP YES
 module load pm5
 module load prod_envir
 module load util_shared/1.0.6
-module use /usrx/local/dev/modulefiles
-module load met/6.1
-module load python
 
 module load gcc/6.3.0
 module unload grib_util/1.0.3 
