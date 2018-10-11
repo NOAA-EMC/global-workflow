@@ -70,7 +70,7 @@ echo " .... Building ncep_post .... "
 #------------------------------------
 $Build_gfs_wafs  && {
 echo " .... Building gfs_wafs  .... "
-./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs.log 2>&1
 }
 
 #------------------------------------
