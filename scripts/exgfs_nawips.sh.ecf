@@ -77,7 +77,7 @@ if mkdir lock.$fhcnt  ; then
   export opt26=' -set_grib_max_bits 25 -fi -if '
   export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
   export opt28=' -new_grid_interpolation budget -fi '
-  export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
+  export TRIMRH=$HOMEgfs/ush/trim_rh.sh}
 
   if [ $RUN = "gfs_0p50" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
