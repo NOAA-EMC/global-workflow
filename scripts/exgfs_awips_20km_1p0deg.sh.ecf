@@ -88,6 +88,7 @@ export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
 export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
+export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
 
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
@@ -159,6 +160,7 @@ do
         $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid003 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
+   $TRIMRH awps_file_f${fcsthrs}_${GRID}   
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
 
 ###########################################################################
