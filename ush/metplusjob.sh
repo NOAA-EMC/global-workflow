@@ -113,7 +113,7 @@ elif [ $machine = WCOSS_C ]; then
     source /opt/modules/default/init/ksh
     module load hpss
     module use /usrx/local/dev/modulefiles
-    module load python
+    module load python/2.7.14 
     if [ $METver -eq 6.1 ]; then
         module load met/6.1
     elif [ $METver -eq 8.0]; then
