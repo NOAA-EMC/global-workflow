@@ -123,7 +123,7 @@ if [ $CDUMP = "gfs" ]; then
     if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
         if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
 
-            xdate=$(echo $($NDATE -${VRFYBACKDATE} $CDATE) | cut -c1-8)
+            xdate=$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)
             export ARCDIR1="$NOSCRUB/archive"
             export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp"
             export COMROT="$ARCDIR1/dummy"
