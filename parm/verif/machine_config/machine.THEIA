@@ -18,3 +18,9 @@ NCAP2_EXE = /apps/nco/4.4.5-intel/bin/ncap2
 CONVERT_EXE = /bin/convert
 NCDUMP_EXE = /apps/netcdf/4.3.0-intel/bin/ncdump
 EGREP_EXE = /usr/bin/grep
+#
+[config]
+#
+LOG_LEVEL = INFO
+LOG_MET_VERBOSITY = 2
+LOG_MET_OUTPUT_TO_METPLUS = yes
