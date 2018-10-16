@@ -11,10 +11,10 @@ platform: !Platform
   # scripts expect.
   name: WCOSS_DELL_P3
 
-  # detect: this is a function that returns true iff the user is on GAEA
-  # and false otherwise
-  detect: !calc |
-    tools.isdir("/usrx") and "dell" in tools.readlink("/usrx")
+  # detect: this is a function that returns true iff the user is on
+  # WCOSS and false otherwise.  Note that all WCOSSes are detected
+  # from all WCOSSes.
+  detect: !calc ( tools.isdir("/usrx/local") and tools.isdir("/gpfs") )
 
   # public_release_ics: location of input conditions that have been 
   # prepared for the public release.
@@ -72,20 +72,20 @@ platform: !Platform
 
     # shared_accounting_ref - accounting settings for shared jobs
     shared_accounting_ref:
-      queue: !calc metasched.varref('QUEUESHARED')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.shared_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
 
     # service_accounting_ref - accounting settings for service jobs (jobs
     # that require tape or network access)
     service_accounting_ref:
-      queue: !calc metasched.varref('QUEUESERV')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.service_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
 
     # exclusive_accounting_ref - accounting settings for jobs that require
     # exclusive access to a node.
     exclusive_accounting_ref:
-      queue: !calc metasched.varref('QUEUE')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
 
     # Queues to use for each job type.  This logic automatically
     # switches between development queues on the backup machine and
@@ -148,10 +148,10 @@ platform: !Platform
 
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |
-    {metasched.defvar("QUEUE", doc.accounting.exclusive_partition.exclusive_queue)}
-    {metasched.defvar("QUEUESHARED", doc.accounting.shared_partition.shared_queue)}
-    {metasched.defvar("QUEUESERV", doc.accounting.service_partition.service_queue)}
-    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
 
   # Path to mmlsquota, the program used to get GPFS disk usage information:
   mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
@@ -189,3 +189,35 @@ platform: !Platform
 
   # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
   EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+
+  ecflow_module: "ecflow/4.7.1"
+  prod_util_module: "prod_util/1.1.0"
+
+  # four_cycle_mode_modules: this is inserted in every ecf file when
+  # only four ecflow suites are generated.  For all other situations,
+  # the load_modules.sh is used.
+  four_cycle_mode_modules: |
+    module load ips/$ips_ver
+    module load impi/$impi_ver
+    module load EnvVars/$EnvVars_ver
+
+    module load g2tmpl/$g2tmpl_ver
+    module load crtm/$crtm_ver
+    module load ESMF/$ESMF_ver
+    module load dev/util_shared/$util_shared_ver  # NOTE: remove dev/ after util_shared upgrade
+
+    module unload grib_util
+    module load dev/grib_util/$grib_util_ver  # NOTE: remove dev/ after grib_util upgrade
+
+    module load NCO/$NCO_ver
+    module load HDF5-serial/$HDF5_serial_ver
+    module load NetCDF/$NetCDF_ver
+    module load CFP/$CFP_ver
+    export USE_CFP=YES
+
+    module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
+    module load gempak/$gempak_ver
+
+    module load bufr_dumplist/$bufr_dumplist_ver
+    module load dumpjb/$dumpjb_ver
+    module load NCL/$NCL_ver

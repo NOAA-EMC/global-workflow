@@ -7,11 +7,29 @@ case:
   fv3_enkf_settings:
     CASE: C384
     fcst_max_ppn: 12
+    layout_y: 6
+    layout_x: 4
+
+  fv3_gfs_settings:
+    layout_x: 12
+    layout_y: 16
+    WRTTASK_PER_GROUP: 60
+    WRITE_GROUP: 4
+    fv3_settings.hord_mt_nh_nonmono: 5
+    fv3_settings.hord_xx_nh_nonmono: 5
+
+  fv3_gdas_settings:
+    layout_x: 6
+    layout_y: 8
+    WRTTASK_PER_GROUP: 48
+    WRITE_GROUP: 1
+    fv3_settings.hord_mt_nh_nonmono: 6
+    fv3_settings.hord_xx_nh_nonmono: 6
 
   data_assimilation:
     NMEM_ENKF: 80
-    NMEM_EOMGGRP: 10
-    NMEM_EFCSGRP: 10
+    NMEM_EOMGGRP: 8
+    NMEM_EFCSGRP: 4
     NMEM_EARCGRP: 10
     l4densvar: Yes
 
@@ -53,28 +71,24 @@ case:
     arch_fcsticfreq: 1
 
   resources:
-    run_prep: !JobRequest
-      - mpi_ranks: 7
-        max_ppn: 7
-        OMP_NUM_THREADS: 4
-        walltime: !timedelta '01:15:00'
+    postsnd_walltime: !timedelta "02:00:00"
+    gdasfcst_walltime: !timedelta "01:00:00"
 
     run_anal: !JobRequest
-      - mpi_ranks: 490
-        max_ppn: 7
-        OMP_NUM_THREADS: 4
+      - mpi_ranks: 480
+        max_ppn: 2
         walltime: !timedelta '02:30:00'
 
     run_gdaspost: !JobRequest
       - mpi_ranks: 84
         max_ppn: 14
-        walltime: !timedelta '02:00:00'
+        walltime: !timedelta '00:45:00'
         OMP_NUM_THREADS: 1
 
     run_gfspost: !JobRequest
       - mpi_ranks: 84
         max_ppn: 14
-        walltime: !timedelta '06:00:00'
+        walltime: !timedelta '00:30:00'
         OMP_NUM_THREADS: 1
 
     run_gdasvrfy: !JobRequest
@@ -89,42 +103,10 @@ case:
         OMP_NUM_THREADS: 1
         walltime: !timedelta '10:00:00'
 
-    run_eobs: !JobRequest
-      - mpi_ranks: 140
-        max_ppn: 14
-        walltime: !timedelta '00:30:00'
-        OMP_NUM_THREADS: 2
-  
-    run_eomg: !JobRequest
-      - mpi_ranks: 140
-        max_ppn: 14
-        walltime: !timedelta '01:00:00'
-        OMP_NUM_THREADS: 2
-  
-    run_eupd: !JobRequest
-      - mpi_ranks: 360
-        max_ppn: 4
-        walltime: !timedelta '00:30:00'
-        OMP_NUM_THREADS: 4
-  
-    run_ecen: !JobRequest
-      - mpi_ranks: 80
-        max_ppn: 4
-        walltime: !timedelta '01:00:00'
-        OMP_NUM_THREADS: 4
-  
-    run_epos: !JobRequest
-      - mpi_ranks: 80
-        max_ppn: 4
-        walltime: !timedelta '02:00:00'
-        OMP_NUM_THREADS: 4
-
   settings: 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
     max_job_tries: 2
-    rocoto_task_throttle: 25
-    rocoto_cycle_throttle: 5
 
     # This belongs in "places" and putting it here makes it unused.
     # The default values are in platforms/jet.yaml.  You should delete
@@ -133,8 +115,8 @@ case:
     BASE_SVN: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-09-14t00:00:00
-    EDATE: 2018-09-19t00:00:00
+    SDATE: 2018-09-05t06:00:00
+    EDATE: 2018-09-09t18:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4 # run gfs at 0z, 12z

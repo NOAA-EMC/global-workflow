@@ -51,6 +51,7 @@ cycled_suite_alarms: &cycled_suite_alarms
 
   gfs_00_12: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
 
+
 # suite_defaults - this is inherited by the actual suite definitions
 # It sets defaults for various variables that are generally not overridden
 suite_defaults: &suite_defaults
@@ -70,15 +71,12 @@ suite_defaults: &suite_defaults
   ecf_file_set:
     disk_path: !expand "{doc.places.ECF_ROOT}/scripts/{doc.names.experiment}"
     ECF_FILES: !expand "{doc.places.ECF_ROOT}/scripts/{doc.names.experiment}"
-
+    
   # ecFlow - definition of variables specific to ecFlow suite generation
   ecFlow:
     # suite_def_filename - file to receive the suite definition
-    suite_def_filename: !expand "{doc.names.experiment}_%Y%m%d%H.def"
-    suite_def_filename: !FirstTrue
-      - when: !calc doc.settings.four_cycle_mode
-        do:   !expand "{doc.names.experiment}%H.def"
-      - otherwise: !expand "{doc.names.experiment}_%Y%m%d%H.def"
+    suite_def_filename: !expand "{doc.places.ECF_ROOT}/defs/{doc.names.experiment}/{suite.ecFlow.suite_name}.def"
+
     # suite_name - name of the suite (the top-level node in the suite definition)
     suite_name: !FirstTrue
       - when: !calc doc.settings.four_cycle_mode
@@ -131,7 +129,10 @@ suite_defaults: &suite_defaults
         <!ENTITY EXPDIR "{doc.places.EXPDIR}">
         <!ENTITY DATAROOT "{doc.places.DATAROOT}">
         <!ENTITY PSLOT "{doc.names.experiment}">
-      {tools.indent(suite.common_metasched_vars,"  ")}
+        <!ENTITY {doc.schedvar.script_home} "{doc.places.HOMEgfs}">
+        <!ENTITY {doc.schedvar.obsproc_network_home} "{doc.places.HOMEobsproc_network}">
+        <!ENTITY {doc.schedvar.obsproc_prep_home} "{doc.places.HOMEobsproc_prep}">
+        <!ENTITY COM "{doc.places.ROTDIR}">
       {tools.indent(doc.platform.metasched_more,"  ")}
       ]>
       <workflow realtime="F"
@@ -148,36 +149,50 @@ suite_defaults: &suite_defaults
   # definition.  The totality limit line sets an external dependency
   # on a limit that has the effect of throttling the number of jobs
   # the entire ecFlow server can run at a time.
-  before_suite_def:
-    extern /totality_limit:TOTALITY
+  before_suite_def: !FirstTrue
+    - when: doc.settings.ecflow_totality_limit
+      do: "extern /totality_limit:TOTALITY"
+    - otherwise: ""
+
+  ecflow_COM_edit: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: !calc doc.places.COMROOT
+    - otherwise: !calc  doc.places.ROTDIR
 
   ecflow_def: !expand |
     {ecflow_cycling_logic}
     edit ECF_TRIES '{doc.settings.max_job_tries}'
-    edit ECF_HOME '{doc.places.ECF_HOME}'
+    # edit ECF_HOME '{doc.places.ECF_HOME}'
     edit CYC '{tools.strftime(suite.Clock.now,"%H")}'
     edit MACHINE '{doc.accounting.ecflow_machine}'
     edit ENVIR 'prod'
-    edit E 'jecffv3'
-    edit EMCPEN '{doc.names.experiment}'
-    edit DATAROOT '{doc.places.DATAROOT}'
-    edit ECF_OUT '{doc.places.ECF_HOME}/submit'
-    edit ECF_LOG '{doc.places.EXPDIR}/ecf.log'
-    edit RUN 'gfs'
-    edit NET 'gfs'
+    edit ECF_OUT '{doc.places.ECF_OUT}'
+    edit ECF_LOG '{doc.places.ECF_ROOT}/ecf.log'
+    edit E 'j'
+    edit ECF_INCLUDE '{doc.places.ECF_INCLUDE}'
+    edit COM '{ecflow_COM_edit}'
+
+    {"clock real" if doc.settings.ecflow_real_clock else ""}
+    {"clock virtual" if doc.settings.ecflow_virtual_clock else ""}
+    {"clock hybrid" if doc.settings.ecflow_hybrid_clock else ""}
     {common_metasched_vars}
     {doc.platform.metasched_more}
-    inlimit /totality_limit:TOTALITY
+    {emc_overrides}
+
+  emc_overrides: !FirstTrue
+    - when: !calc doc.settings.nco_mode
+      take: ''
+    - otherwise: !expand |
+        # EMC overrides.  Should remove before implementation:
+        edit DATAROOT '{doc.places.DATAROOT}'
+        edit NWROOT '{tools.dirname(doc.places.HOMEgfs)}'
+
+        {"inlimit /totality_limit:TOTALITY" if doc.settings.ecflow_totality_limit else ""}
 
   # common_metasched_vars - variables to write to both the ecFlow
   # suite definitions ("edit" variables) and Rocoto XML (XML
   # entities).  The conversion to text is done by the
   # CROW/crow/metascheduler/ python package.
 
-  common_metasched_vars: !expand |
-    {metasched.defvar("HOMEgfs", doc.places.HOMEgfs)}
-    {metasched.defvar("HOMEobsproc_network", doc.places.HOMEobsproc_network)}
-    {metasched.defvar("HOMEobsproc_prep", doc.places.HOMEobsproc_prep)}
-    {metasched.defvar("DMPDIR", doc.places.DMPDIR)}
-    {metasched.defvar("COM", doc.places.ROTDIR)}
+  common_metasched_vars: ''
 

@@ -12,6 +12,10 @@ places_schema: &places_schema !Template
   ROTDIR: { type: string }
   ICSDIR: { type: string }
 
+  COMROOT:
+    type: string
+    optional: !calc not doc.settings.four_cycle_mode
+
   SHORT_TERM_TEMP: { type: string }
   LONG_TERM_TEMP: { type: string }
 

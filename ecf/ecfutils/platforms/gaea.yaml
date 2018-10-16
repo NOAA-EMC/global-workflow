@@ -71,20 +71,20 @@ platform: !Platform
 
     # shared_accounting_ref - accounting settings for shared jobs
     shared_accounting_ref:
-      queue: !calc metasched.varref('QUEUESHARED')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.shared_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
       
     # service_accounting_ref - accounting settings for service jobs (jobs
     # that require tape or network access)
     service_accounting_ref:
-      queue: !calc metasched.varref('QUEUESERV')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.service_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
 
     # exclusive_accounting_ref - accounting settings for jobs that require
     # exclusive access to a node.
     exclusive_accounting_ref:
-      queue: !calc metasched.varref('QUEUE')
-      project: !calc metasched.varref('CPU_PROJECT')
+      queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
 
     # Queues to use for each job type
     shared_queue: batch
@@ -164,11 +164,11 @@ platform: !Platform
 
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |
-    {metasched.defvar("QUEUE", doc.accounting.exclusive_partition.exclusive_queue)}
-    {metasched.defvar("QUEUESHARED", doc.accounting.shared_partition.shared_queue)}
-    {metasched.defvar("QUEUESERV", doc.accounting.service_partition.service_queue)}
-    {metasched.defvar("CPU_PROJECT", doc.accounting.cpu_project)}
-    {metasched.defvar("SERVICE_PARTITION", "es")}
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+    {metasched.defvar(doc.schedvar.service_partition, "es")}
 
   # Automatically detect the least used scrub area the user can access:
   user_scrub_area: !Immediate

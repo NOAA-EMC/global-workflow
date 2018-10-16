@@ -10,6 +10,12 @@ fv3_settings: !Immediate
       Template: *fv3_settings_template
     - !calc doc.get('user_fv3_settings',{})
 
+schedvar: !Immediate
+  - !MergeMapping
+    - !calc doc.case.get('schedvar',{})
+    - Template: *schedvar_schema
+    - !calc doc.get('schedvar_defaults',{})
+
 fv3_gfs_settings: !Immediate
   - !MergeMapping
     - !calc doc.case.fv3_settings
@@ -83,6 +89,7 @@ settings: !Immediate
     - !calc doc.default_settings
     - !calc doc.case.settings
     - !calc doc.get('user_settings',{})
+    - Template: *settings_schema
 
 archiving: !Immediate
   - !MergeMapping
@@ -105,8 +112,9 @@ validate_me:
   - data_assimilation
   - post
   - downstream
+  - settings
   - places
   - nsst
-  - settings
   - archiving
+  - schedvar
 

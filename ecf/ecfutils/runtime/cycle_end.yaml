@@ -1,0 +1,41 @@
+cycle_end_task: !Task &cycle_end_task
+    <<: *shared_task_template
+    ecflow_def: !expand |
+      edit ECF_PASS 'FREE'
+
+    ecf_file: |
+      #! /bin/sh
+      which ecflow_client
+      export ECF_PASS=%ECF_PASS%
+      export ECF_RID=%ECF_RID%
+      export ECF_HOST=%ECF_HOST%
+      export ECF_NAME=%ECF_NAME%
+      ecflow_client --complete
+      echo Cycle complete at $( date )
+
+    Disable: !calc ( not doc.settings.four_cycle_mode or not metasched.type=="ecflow" )
+
+    ecflow_def: !FirstTrue
+      - when: !calc suite.Clock.now.strftime("%H")=='00'
+        take: |
+          edit ECF_JOB_CMD '%ECF_JOB% 1> %ECF_JOBOUT% 2>&1'
+          edit ECF_KILL_CMD 'kill -15 %ECF_RID%'
+          time 23:00
+      - when: !calc suite.Clock.now.strftime("%H")=='06'
+        take: |
+          edit ECF_JOB_CMD '%ECF_JOB% 1> %ECF_JOBOUT% 2>&1'
+          edit ECF_KILL_CMD 'kill -15 %ECF_RID%'
+          time 23:01
+      - when: !calc suite.Clock.now.strftime("%H")=='12'
+        take: |
+          edit ECF_JOB_CMD '%ECF_JOB% 1> %ECF_JOBOUT% 2>&1'
+          edit ECF_KILL_CMD 'kill -15 %ECF_RID%'
+          time 11:00
+      - when: !calc suite.Clock.now.strftime("%H")=='18'
+        take: |
+          edit ECF_JOB_CMD '%ECF_JOB% 1> %ECF_JOBOUT% 2>&1'
+          edit ECF_KILL_CMD 'kill -15 %ECF_RID%'
+          time 11:01
+      - otherwise: !error "cycle_end only works for hours 0, 6, 12, and 18"
+
+    resources: !calc partition.resources.run_nothing

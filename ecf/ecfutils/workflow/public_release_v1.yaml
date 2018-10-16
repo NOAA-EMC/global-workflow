@@ -12,9 +12,7 @@ suite: !Cycle
   ics: !Family
     Disable: !calc >-
       doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
-    RUN: 'gfs' # useless but required
-    ecflow_def: !expand |
-      edit RUN '{RUN}'
+    model: 'gfs' # useless but required
 
     # The jgfs_emc_getics task pulls GFS GSM data from disk.
     jgfs_emc_getics: !Task
@@ -23,7 +21,7 @@ suite: !Cycle
       resources: !calc partition.resources.run_getic
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
-      RUN: gfs
+      model: gfs
 
     # The jgfs_emc_fv3ic task convers GFS GSM data to FV3 data
     jgfs_emc_fv3ic: !Task
@@ -33,7 +31,7 @@ suite: !Cycle
       resources: !calc partition.resources.run_fv3ic
       J_JOB: rocoto/fv3ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
-      RUN: gfs
+      model: gfs
 
   # The gfs family executes the gfs forecast and post-processing.
   # Were this the full workflow, it would also run the observation
@@ -41,9 +39,7 @@ suite: !Cycle
   # the post-processed data).
   gfs: !Family
     Trigger: !Depend ics
-    RUN: 'gfs'
-    ecflow_def: !expand |
-      edit RUN '{RUN}'
+    model: 'gfs'
 
     # Forecast family: in the old GSM GFS workflow this contains two
     # jobs at two resolutions.  We only have one forecast for FV3.
@@ -54,12 +50,12 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfsfcst
         J_JOB: JGLOBAL_FORECAST
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
-
+        
     # post family - this family runs the UPP to convert FV3 output
     # conditions to GRIB files.  It runs wgrib2 to convert 
     # gaussian grid files to lat-lon.
     post: !TaskArray
-      RUN: !calc up.RUN
+      model: !calc up.model
       Dimensions:
         fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
 
@@ -72,7 +68,7 @@ suite: !Cycle
       # are used to define Rocoto date dependencies in later jobs.
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
-        RUN: !calc up.RUN
+        model: !calc up.model
         Disable: !calc metasched.type == 'rocoto'
         Trigger: !Depend up.forecast.is_running()
         Complete: !Depend up.forecast
@@ -127,5 +123,5 @@ suite: !Cycle
     Disable: !calc not metasched.type=="rocoto"
     resources: !calc partition.resources.run_nothing
     rocoto_command: /bin/true
-    RUN: gfs # useless but required
+    model: gfs # useless but required
 

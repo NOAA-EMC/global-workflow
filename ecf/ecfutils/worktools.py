@@ -335,18 +335,21 @@ def make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles)
     last_analyzed=last_cycle+surrounding_cycles*SIX_HOURS
     first_analyzed=min(suite_clock.end,max(suite_clock.start,first_analyzed))
     last_analyzed=min(suite_clock.end,max(suite_clock.start,last_analyzed))
-    first_cycle=min(last_analyzed,max(first_analyzed,first_cycle))
-    last_cycle=min(last_analyzed,max(first_analyzed,last_cycle))
+#    first_cycle=min(last_analyzed,max(first_analyzed,first_cycle))
+#    last_cycle=min(last_analyzed,max(first_analyzed,last_cycle))
     suite.ecFlow.write_cycles = Clock(
         start=first_cycle,end=last_cycle,step=SIX_HOURS)
     logger.info(f'cycles to write:   {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
     logger.info(f'cycles to analyze: {first_analyzed:%Ft%T} - {last_analyzed:%Ft%T}')
+#    print(f'cycles to write:   {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+#    print(f'cycles to analyze: {first_analyzed:%Ft%T} - {last_analyzed:%Ft%T}')
     suite.ecFlow.analyze_cycles=Clock(
         start=first_analyzed,end=last_analyzed,step=SIX_HOURS)
     return first_cycle, last_cycle, first_analyzed, last_analyzed
 
 def generate_ecflow_suite_in_memory(suite,first_cycle,last_cycle,surrounding_cycles):
     logger.info(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+#    print(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
     first_cycle, last_cycle, first_analyzed, last_analyzed = \
         make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles)
     return to_ecflow(suite), first_cycle, last_cycle
@@ -472,6 +475,7 @@ def create_new_ecflow_workflow(conf,suite,surrounding_cycles=2):
     last_cycle=min(suite.Clock.end,first_cycle+suite.Clock.step*2)
     ecflow_suite, first_cycle, last_cycle = generate_ecflow_suite_in_memory(
         suite,first_cycle,last_cycle,surrounding_cycles)
+#    print(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
     defdir=conf.places.ecflow_def_dir
     ECF_OUT=conf.places.ECF_OUT
     suite_def_files = write_ecflow_suite_to_disk(defdir,ECF_HOME,ecflow_suite)
@@ -526,7 +530,7 @@ def make_rocoto_xml(suite,filename):
 # of as "main programs."
 
 def make_ecflow_files_for_cycles(
-        yamldir,first_cycle_str='1900010100',last_cycle_str='1900010100',
+        yamldir,first_cycle_str='1900010100',last_cycle_str='9999010100',
         surrounding_cycles=2):
     init_logging()
     ECF_HOME=get_target_dir_and_check_ecflow_env()
@@ -616,7 +620,7 @@ def setup_case(command_line_arguments):
         logger.warning('superdebug mode enabled')
         crow.set_superdebug(True)
 
-    force='-f' in options
+    force='-f' in options or '-F' in options
     skip_comrot='-c' in options
     force_platform_rewrite='-F' in options
     sandbox = '-s' in options
@@ -675,5 +679,5 @@ def setup_case(command_line_arguments):
     print('Now you should make a workflow:')
     print()
     print(f'  Rocoto: ./make_rocoto_xml_for.sh {EXPDIR}')
-    print(f'  ecFlow: ./make_ecflow_files_for.sh {EXPDIR}')
+    print(f'  ecFlow: ./make_ecflow_files_for.sh -v {EXPDIR}')
     print()

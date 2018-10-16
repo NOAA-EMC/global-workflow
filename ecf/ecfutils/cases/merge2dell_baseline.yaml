@@ -49,9 +49,9 @@ case:
     COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/"
     ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/gfs/{doc.names.experiment}"
 #    EXPDIR: !expand "{HOMEgfs}/parm/config"
-#    YAMLDIR: !expand "{HOMEgfs}/ecf/ecfutils/expdir/{doc.names.experiment}"
-#    NOSCRUB: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/arch"
-#    HOMEDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/archsave"
+    EXPDIR: !expand "{HOMEgfs}/ecf/ecfutils/expdir/{doc.names.experiment}"
+    NOSCRUB: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/arch"
+    HOMEDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/archsave"
     DATAROOT: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
     SHORT_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
     LONG_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
@@ -127,7 +127,7 @@ case:
   settings: 
 
     # Enable NCO-style suite definitions:
-    four_cycle_mode: yes
+    four_cycle_mode: no
     nco_mode: no
 
     run_vrfy_jobs: yes

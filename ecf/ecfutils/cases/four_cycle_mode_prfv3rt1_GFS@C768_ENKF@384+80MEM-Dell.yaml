@@ -7,11 +7,32 @@ case:
   fv3_enkf_settings:
     CASE: C384
     fcst_max_ppn: 12
+    layout_y: 6
+    layout_x: 4
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 24
+    QUILTING: yes
+
+  fv3_gfs_settings:
+    layout_x: 12
+    layout_y: 16
+    WRTTASK_PER_GROUP: 60
+    WRITE_GROUP: 4
+    hord_mt_nh_nonmono: 5
+    hord_xx_nh_nonmono: 5
+
+  fv3_gdas_settings:
+    layout_x: 6
+    layout_y: 8
+    WRTTASK_PER_GROUP: 48
+    WRITE_GROUP: 1
+    hord_mt_nh_nonmono: 6
+    hord_xx_nh_nonmono: 6
 
   data_assimilation:
     NMEM_ENKF: 80
-    NMEM_EOMGGRP: 10
-    NMEM_EFCSGRP: 10
+    NMEM_EOMGGRP: 8
+    NMEM_EFCSGRP: 4
     NMEM_EARCGRP: 10
     l4densvar: Yes
 
@@ -20,17 +41,20 @@ case:
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 120
     FHOUT_HF_GFS: 1
+    FHOUT_GDAS: 1
 
   places:
+    # DMPDIR: /gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/globaldump
     workflow_file: workflow/cycled_gfs.yaml
-    COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/"
-    ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/gfs/{doc.names.experiment}"
-    EXPDIR: !expand "{HOMEgfs}/ecf/exp/{doc.names.experiment}"
-    NOSCRUB: !expand "/gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/emcstat/{doc.names.experiment}/arch"
-    HOMEDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/emcstat/{doc.names.experiment}/archsave"
-    DATAROOT: /gpfs/dell2/ptmp/emc.fv3/tmpnwprd
-    SHORT_TERM_TEMP: /gpfs/dell2/ptmp/emc.fv3/tmpnwprd
-    LONG_TERM_TEMP: /gpfs/dell2/ptmp/emc.fv3/tmpnwprd
+    COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/"
+    ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/gfs/{doc.names.experiment}"
+    EXPDIR: !expand "{HOMEgfs}/parm/config"
+    YAMLDIR: !expand "{HOMEgfs}/ecf/ecfutils/expdir/{doc.names.experiment}"
+    NOSCRUB: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/arch"
+    HOMEDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/archsave"
+    DATAROOT: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
+    SHORT_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
+    LONG_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
 
   post:
     NPOSTGRP: 10
@@ -61,28 +85,25 @@ case:
     arch_fcsticfreq: 1
 
   resources:
-    run_prep: !JobRequest
-      - mpi_ranks: 7
-        max_ppn: 7
-        OMP_NUM_THREADS: 4
-        walltime: !timedelta '01:15:00'
+    postsnd_walltime: !timedelta "02:00:00"
+    gdasfcst_walltime: !timedelta "01:00:00"
 
     run_anal: !JobRequest
-      - mpi_ranks: 490
-        max_ppn: 7
-        OMP_NUM_THREADS: 4
+      - mpi_ranks: 480
+        max_ppn: 2
+        OMP_NUM_THREADS: max
         walltime: !timedelta '02:30:00'
 
     run_gdaspost: !JobRequest
       - mpi_ranks: 84
         max_ppn: 14
-        walltime: !timedelta '02:00:00'
+        walltime: !timedelta '00:45:00'
         OMP_NUM_THREADS: 1
 
     run_gfspost: !JobRequest
       - mpi_ranks: 84
         max_ppn: 14
-        walltime: !timedelta '06:00:00'
+        walltime: !timedelta '00:30:00'
         OMP_NUM_THREADS: 1
 
     run_gdasvrfy: !JobRequest
@@ -97,41 +118,13 @@ case:
         OMP_NUM_THREADS: 1
         walltime: !timedelta '10:00:00'
 
-    run_eobs: !JobRequest
-      - mpi_ranks: 280
-        max_ppn: 14
-        walltime: !timedelta '00:45:00'
-        OMP_NUM_THREADS: 2
-  
-    run_eomg: !JobRequest
-      - mpi_ranks: 280
-        max_ppn: 14
-        walltime: !timedelta '03:00:00'
-        OMP_NUM_THREADS: 2
-  
-    run_eupd: !JobRequest
-      - mpi_ranks: 350
-        max_ppn: 7
-        walltime: !timedelta '03:00:00'
-        OMP_NUM_THREADS: 4
-  
-    run_ecen: !JobRequest
-      - mpi_ranks: 140
-        max_ppn: 7
-        walltime: !timedelta '02:00:00'
-        OMP_NUM_THREADS: 4
-  
-    run_epos: !JobRequest
-      - mpi_ranks: 81
-        max_ppn: 3
-        walltime: !timedelta '03:00:00'
-        OMP_NUM_THREADS: 8
-
   settings: 
 
     # Enable NCO-style suite definitions:
     four_cycle_mode: yes
-
+    nco_mode: yes
+    #run_vrfy_jobs: no
+    #archive_to_hpss: no
 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
@@ -150,3 +143,7 @@ case:
     realtime: true
     gfs_cyc: 4
     run_gsi: Yes
+
+  schedvar:
+    cpu_project: PROJ
+    

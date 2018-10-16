@@ -170,11 +170,6 @@ aliases:
     flag: false
     alt_resources: !calc doc.exclusive_resources.run_prepbufr
 
-  awips:
-    <<: *alias_exclusive
-    flag: false
-    alt_resources: !calc doc.exclusive_resources.run_awips
-
   awips_g2:
     <<: *alias_exclusive
     flag: !calc ('gfs' in doc.suite and 'awips_g2' in doc.suite.gfs)
@@ -197,9 +192,14 @@ aliases:
     flag: false
     alt_resources: !calc doc.exclusive_resources.run_postsndcfp
 
-  gempak:
+  gfs_gempak:
     <<: *alias_exclusive
     flag: false
-    alt_resources: !calc doc.exclusive_resources.run_gempak
+    alt_resources: !calc doc.exclusive_resources.run_gfs_gempak
+
+  gdas_gempak:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_gdas_gempak
 
   

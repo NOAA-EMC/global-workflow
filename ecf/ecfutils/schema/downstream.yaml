@@ -68,15 +68,15 @@ downstream_schema: &downstream_schema !Template
     description: "Run GFS MOS"
   DO_BUFRSND:
     type: bool
-    default: YES
+    default: NO
     description: "Run GFS_POSTSND"
   DO_GEMPAK:
     type: bool
-    default: YES
+    default: NO
     description: "Run GFS GEMPAK"
   DO_AWIPS:
     type: bool
-    default: YES
+    default: NO
     description: "Run GFS AWIPS"
   
   FHOUT_CYCLONE_GFS:

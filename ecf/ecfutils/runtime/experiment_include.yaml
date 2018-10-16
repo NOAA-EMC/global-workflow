@@ -1,0 +1,36 @@
+ecf_include_experiment:
+
+  # Generates the experiment-XXX.h file that is loaded by the ecf
+  # files.  See the ecf_model_include variable in runtime/task.yaml
+
+  # filename: name of the model-ver.h to make:
+  filename: !expand "experiment-{doc.names.experiment}.h"
+
+  # disable: if True, this file will not be generated:
+  disable: False   # Maybe should be "true" for NCO?
+
+  # content: what goes in the file
+  content: !expand |
+    # These are development overrides.  They are intended to set
+    # variables that would otherwise be set to operational values, and
+    # cause your workflow to fail.
+
+    # EMC experiment configuration file
+    export HOMEgfs="{doc.places.HOMEgfs}"
+    export HOMEobsproc_global="{doc.places.HOMEobsproc_network}"
+    export HOMEobsproc_network="{doc.places.HOMEobsproc_network}"
+    export HOMEobsproc_prep="{doc.places.HOMEobsproc_prep}"
+    export HOMEgfs="{doc.places.HOMEgfs}"
+    export DATAROOT="{doc.places.DATAROOT}"
+    export jlogfile="{doc.places.ROTDIR}/jlogfile"
+    export COMROOT="{doc.places.ROTDIR}"
+    export CDUMP=$RUN
+    export cycle=t%CYC%z
+    export EXPDIR="{doc.places.EXPDIR}"
+    {date_vars}
+
+  # Send in the CDATE if we're not in four cycle mode:
+  date_vars: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: ''
+    - otherwise: "export CDATE=%PDY%%CYC%"
