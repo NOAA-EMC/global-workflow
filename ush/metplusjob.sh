@@ -182,6 +182,10 @@ else
        VRFY_GRID2OBS_STEP1=NO
     fi
 fi
+if [ ${VEND_DATE}${cyc2runmetplus} -le $SDATE ]; then
+    VRFY_GRID2GRID_STEP1=NO
+    VRFY_GRID2OBS_STEP1=NO
+fi
 ## Checks for step 2
 if [ $CHECK_DATE != $STEP2_END_DATE ] ; then
     VRFY_GRID2GRID_STEP2=NO
@@ -219,6 +223,10 @@ else
             VRFY_PRECIP_STEP2=NO 
         fi
     fi   
+fi
+VDATEEND_precip=`$ndate -${VRFYBACK_HRS_PRECIP} ${VEND_DATE}00 |cut -c 1-8 `
+if [ ${VDATEEND_precip}${cyc2runmetplus} -le $SDATE ]; then
+    VRFY_PRECIP_STEP1=NO
 fi
 ##--------------------------------------------------------------------------- 
 
