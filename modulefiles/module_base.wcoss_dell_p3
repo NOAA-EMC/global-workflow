@@ -33,8 +33,8 @@ module load gempak/7.3.1
 
 # modules used by fax
 module load NCL/6.4.0
-module load bufr_dumplist/1.5.0
-module load dumpjb/4.0.0
+module load bufr_dumplist/2.0.0
+module load dumpjb/5.0.0
 
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
 module load grib_util/1.1.0

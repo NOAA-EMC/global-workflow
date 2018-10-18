@@ -1,5 +1,6 @@
 #! /bin/sh
 #set -xue
+# scratch script of starting ecflow workflow
 
 #./setup_case.sh -F -c -p WCOSS_DELL_P3  cases/four_cycle_mode_prfv3rt1_GFS\@C768_ENKF\@384+80MEM-Dell.yaml devtest
 

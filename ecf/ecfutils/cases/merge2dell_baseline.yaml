@@ -138,8 +138,8 @@ case:
     max_job_tries: 2
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-09-20t00:00:00
-    EDATE: 2018-09-21t06:00:00
+    SDATE: 2018-10-18t00:00:00
+    EDATE: 2018-10-20t06:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4
