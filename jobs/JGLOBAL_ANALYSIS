@@ -29,17 +29,10 @@ status=$?
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export job=${job:-"anal"}
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/$jobid"
-else
-    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-    export DATA="$DATAROOT/$job"
-fi
-[[ -d $DATA ]] && rm -rf $DATA
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -50,12 +43,6 @@ cd $DATA
 export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
-
-
-##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ##############################################
@@ -105,7 +92,7 @@ mkdir -m 775 -p $COMOUT
 # COMIN_GES and COMIN_GES_ENS are used in exglobal script
 # TO DO: Map NCO's directory into these variables
 export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc"
-export COMIN_GES_ENS="$ROTDIR/enkf.gdas.$gPDY/$gcyc"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
 
 
 export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
