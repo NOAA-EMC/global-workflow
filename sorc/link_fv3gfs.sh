@@ -22,6 +22,7 @@ if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
 fi
 
 LINK="ln -fs"
+SLINK="ln -fs"
 [[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
 
 pwd=$(pwd -P)
@@ -60,6 +61,24 @@ cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
+
+
+#------------------------------
+#--add gfs_wafs file if on Dell
+#if [ $machine = dell ]; then 
+#------------------------------
+#cd ${pwd}/../jobs               ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+#cd ${pwd}/../parm               ||exit 8
+#    [[ -d wafs ]] && rm -rf wafs
+#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+#cd ${pwd}/../scripts            ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+#cd ${pwd}/../ush                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+#cd ${pwd}/../fix                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#fi
 
 
 #------------------------------
@@ -143,11 +162,38 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
+#if [ $machine = dell ]; then 
+#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+#        [[ -s $wafsexe ]] && rm -f $wafsexe
+#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+#    done
+#fi
+
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
+
+
+#------------------------------
+#--link source code directories
+#------------------------------
+
+cd ${pwd}/../sorc   ||   exit 8
+    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
+    $SLINK gsi.fd/src                                                                      global_enkf.fd
+    $SLINK gsi.fd/src                                                                      global_gsi.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_time.fd       oznmon_time.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radang.fd    radmon_angle.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcoef.fd  radmon_bcoef.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcor.fd   radmon_bcor.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
+    $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
 
 #------------------------------

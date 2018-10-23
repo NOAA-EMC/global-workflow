@@ -38,22 +38,24 @@ IMPLEMENTATION INSTRUCTIONS
  	the package on WCOSS DELL
 
   	1) cd  $NWROOTp3
-  	2) git clone --recursive gerrit:fv3gfs gfs.v15.0.0
-  	3) cd gfs.v15.0.0
-  	4) git checkout q2fy19_nco
-  	5) cd sorc
-  	6) ./checkout.sh
+	2) mkdir gfs.v15.0.0
+	3) cd gfs.v15.0.0
+  	4) git clone --recursive gerrit:fv3gfs .
+  	5) git checkout q2fy19_nco
+  	6) cd sorc
+  	7) ./checkout.sh
       	This script extracts the following GFS components from gerrit
-      		MODEL -- tag nemsfv3gfs_beta_v1.0.11 	Jun.Wang@noaa.gov
-        	GSI -- tag fv3da.v1.0.28   		Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
-        	UPP -- tag ncep_post_gtg.v1.0.4		Wen.Meng@noaa.gov
-       		WAFS -- tag gfs_wafs.v5.0.3         	Yali.Mao@noaa.gov
+      	MODEL -- tag nemsfv3gfs_beta_v1.0.12 		Jun.Wang@noaa.gov
+        GSI -- tag fv3da.v1.0.31           		Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
+        UPP -- tag ncep_post_gtg.v1.0.5    		Wen.Meng@noaa.gov
+       	WAFS -- tag gfs_wafs.v5.0.4         		Yali.Mao@noaa.gov
 
-  	7) ./build_all.sh
+
+  	8) ./build_all.sh
      	*This script compiles all GFS components. Runtime output from the build for each package is written
       	to log files in directory logs. To build an individual program, for instance, gsi, use build_gsi.sh.
   	
-	8) ./link_fv3gfs.sh nco dell
+	9) ./link_fv3gfs.sh nco dell
 
 	* Note: 1) ecflow suite definition and scripts are saved in gfs.v15.0.0/ecflow/ecf
         	2) ncep_post_gtg.v1.0.4 contains restricted GTG (Graphic Turbulence Guidance) code provided by

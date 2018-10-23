@@ -13,7 +13,7 @@ FFLAGS	=$(FFLAGSM)
 OMPFLAG=$(OMPFLAGM)
 LDFLAGS	=$(LDFLAGSM)
 
-CMD	=ml01rg2.x
+CMD	=orog.x
 $(CMD):	$(OBJS)
 	$(LDR) $(LDFLAGS) $(OBJS) $(LIBS) -o $(CMD)
 
