@@ -1,127 +1,356 @@
-RELEASE NOTES: gfs.v14.1.0
-        v15.0.0 - released Jan 24, 2019
+GFS RELEASE NOTES (GFS.v15.0.0)  -- January 24, 2019
 
-CODE CHANGES
- * No code change
-	
+
+PRELUDE
+  	 *NOAA/NWS selected the Geophysical Fluid Dynamics Laboratory (GFDL) finite­ volume cubed-sphere (FV3)
+	dynamical core as the Weather Service Next Generation Global Prediction System (NGGPS).  The current
+	operational GFS, which has a spectral dynamical core, will be replaced by the proposed GFS with FV3
+	dynamical core and improved physics parameterizations in January, 2019.  Significant changes have
+	been made to both the science and infrastructure of the GFS system.
+
+	*GFS.v15 maintains a horizontal resolution of 13 km, and has 64 levels in the vertical extending
+	up to 0.2 hPa.  It uses the same physics package as the current operational GFS except for the
+	replacement of Zhao-Carr microphysics with the more advanced GFDL microphysics, improved ozone physics
+	and water vapor physics etc. There are also updates to data assimilation techniques, observational
+	data usage, post-processing and downstream product generation.  For more details please refer to the PNS
+	https://docs.google.com/document/d/112GG7yBDMPmEcrNi1R2ISsoLcivj5WPivSnf9Id_lHw/edit 
+
+	*The current operational GFS.v14 was built upon a vertical directory structure. It contains
+ 	three independent packages.  The latest versions used in operations are gdas.v14.1.0, gfs.v14.1.2,
+ 	and global_shared.v14.1.6.
+
+	*GFS.v15 has been reorganized to use a flat directory structure. The three packages in GFS.v14 have
+ 	been merged together to form a single package. Therefore, there is no direct comparison and one-to-one
+ 	correspondence between GFS.v14 and GFS.v15.
+
+	*This release note describes the overall changes made to the entire system.
+ 	More details about changes in science and structure of the data assimilation system are documented in
+ 	.gfs.v15.0.0/sorc/gsi.fd/doc/Release_Notes.fv3gfs_da.v15.0.0.txt.
+ 	Details about downstream product generation is documented in Release_Notes.gfs_downstream.v15.0.0.txt.
+
+
+IMPLEMENTATION INSTRUCTIONS
+
+   * NOAA Vlab GIT is used to manage GFS.v15 code. The SPA(s) handling the GFS.v15 implementation need to have
+ 	permission to clone Vlab gerrit repositories.  So far Wojciech Cencek has been given access to all GFS.v15
+ 	related git repositories. Please contact Fanglin.Yang@noaa.gov if there is any VLAB access issue and/or
+ 	the individual code managers listed under item #6) below.  Please follow the following steps to install
+ 	the package on WCOSS DELL
+
+  	1) cd  $NWROOTp3
+  	2) git clone --recursive gerrit:fv3gfs gfs.v15.0.0
+  	3) cd gfs.v15.0.0
+  	4) git checkout q2fy19_nco
+  	5) cd sorc
+  	6) ./checkout.sh
+      	This script extracts the following GFS components from gerrit
+      		MODEL -- tag nemsfv3gfs_beta_v1.0.11 	Jun.Wang@noaa.gov
+        	GSI -- tag fv3da.v1.0.28   		Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
+        	UPP -- tag ncep_post_gtg.v1.0.4		Wen.Meng@noaa.gov
+       		WAFS -- tag gfs_wafs.v5.0.3         	Yali.Mao@noaa.gov
+
+  	7) ./build_all.sh
+     	*This script compiles all GFS components. Runtime output from the build for each package is written
+      	to log files in directory logs. To build an individual program, for instance, gsi, use build_gsi.sh.
+  	
+	8) ./link_fv3gfs.sh nco dell
+
+	* Note: 1) ecflow suite definition and scripts are saved in gfs.v15.0.0/ecflow/ecf
+        	2) ncep_post_gtg.v1.0.4 contains restricted GTG (Graphic Turbulence Guidance) code provided by
+           	NCAR.  Please do not post the GTG code in any public domain.
+
+
+
+
 JOB CHANGES
- * The followig jobs (J-job) have been modified to combine into one job
 
-   - JGFS_AWIPS_20KM_1P0DEG      -----> combined of JGFS_AWIPS_1P0DEG job and JGFS_AWIPS_20KM job
+   * EMC has worked with NCO to consolidate and unify the JJOBS used in GFS production and experimental runs.
+ 	For a few tasks, JGLOBAL_* is now used to replace JGDAS_* and JGFS_* to run for both gfs and gdas steps.
+ 	Please refer to https://docs.google.com/spreadsheets/d/1rhKnGV1uf73p8eAIEb6Or6uUU9UGvKBqw3bl_TxTcHw/edit#gid=0 
+ 	for a complete list of JJOBS that have been merged, replaced or removed.
 
-   - JGFS_GEMPAK_NCDC_UPAPGIF    -----> combined of JGFS_GEMPAK_NCDC job and JGFS_GEMPAK_UPAPGIF job
+   * JGDAS_ANALYSIS_HIGH and JGFS_ANALYSIS      	--> merged into JGLOBAL_ANALYSIS
+   * JGFS_FORECAST_HIGH and JGDAS_FORECAST_HIGH    	--> merged into JGLOBAL_FORECAST
+   * JGFS_TROPCY_QC_RELOC and JGDAS_TROPCY_QC_RELOC	--> merged into JGLOBAL_TROPCY_QC_RELOC
+   * JGFS_EMCSFC_SFC_PREP and JGDAS_EMCSFC_SFC_PREP	--> merged into JGLOBAL_EMCSFC_SFC_PREP
+   * JGFS_POST_MANAGER and JGFS_PRDGEN_MANAGER     	--> merged into JGLOBAL_POST_MANAGER
+   * JGFS_NCEPPOST and JGDAS_NCEPPOST              	--> merged into JGLOBAL_NCEPPOST
+   * JGFS_PGRB2                                    	--> merged into JGLOBAL_NCEPPOST
 
-   - JGFS_PGRB2_SPEC_NPOESS      -----> combined of JGFS_NPOESS_PGRB2_0P5DEG job and JGFS_PGRB2_SPEC_POST job
+   * JGFS_AWIPS_1P0DEG and JGFS_AWIPS_20KM        		--> merged into JGFS_AWIPS_20KM_1P0DEG
+   * JGFS_GEMPAK_NCDC and JGFS_GEMPAK_UPAPGIF     	 	--> merged into JGFS_GEMPAK_NCDC_UPAPGIF
+   * JGFS_NPOESS_PGRB2_0P5DEG and JGFS_PGRB2_SPEC_POST          --> merged into JGFS_PGRB2_SPEC_NPOESS
+   * JGDAS_BULLS and JGDAS_MKNAVYBULLS             		--> merged into JGDAS_BULLS_NAVY
 
-   - JGDAS_BULLS_NAVY            -----> combined of JGDAS_BULLS job and JGDAS_MKNAVYBULLS job
+   * JGDAS_ENKF_SELECT_OBS   		--> renamed JGLOBAL_ENKF_SELECT_OBS
+   * JGDAS_ENKF_INNOVATE_OBS 		--> renamed JGLOBAL_ENKF_INNOVATE_OBS
+   * JGDAS_ENKF_UPDATE       		--> renamed JGLOBAL_ENKF_UPDATE
+   * JGDAS_ENKF_INFLATE_RECENTER	--> renamed JGDAS_ENKF_RECENTER
 
-   The remain GFS downstream jobs are same
+   * JGFS_FORECAST_LOW  	--> removed
+   * JCPC_GET_GFS_6HR   	--> removed
 
-   - JGDAS_GEMPAK
-   - JGDAS_GEMPAK_META_NCDC
-   - JGFS_AWIPS_G2
-   - JGFS_FAX
-   - JGFS_FAX_WAFS
-   - JGFS_FBWIND
-   - JGFS_GEMPAK
-   - JGFS_GEMPAK_META
-   - JGFS_PGRB2_SPEC_GEMPAK
 
-   All Job cards have same setting for testing on DELL with EMS FV3GFS real time data.
-   ( An example: JGFS_GEMPAK )
-   # LSBATCH: User input
-   #BSUB -J gfs_gempak_00
-   #BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
-   #BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
-   #BSUB -q debug
-   #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
-   #BSUB -W 00:30
-   #BSUB -P GFS-T2O
-   #BSUB -n 24                                     # 24 tasks
-   #BSUB -R span[ptile=12]                         # 12 task per node
-   #BSUB -R affinity[core(1):distribute=balance]   # using 12 cores on node and bind to 1
-                                                   # core per task and distribute across sockets
+SCRIPT CHANGES
 
-   ####################################
-   ##  Load the GRIB Utilities modules
-   ####################################
+   * 	Many scripts have been renamed to reflect the new model and DA system and directory structure.
+ 	A few new scripts have been added. Below is a mapping between a few current operational GFS
+ 	scripts and their GFS.v15 counterparts
 
-   module load EnvVars/1.0.2
-   module load ips/18.0.1.163
-   module load CFP/2.0.1
-   module load impi/18.0.1
-   module load lsf/10.1
-   module load prod_util/1.1.0
-   module load grib_util/1.0.6
-   module load prod_envir/1.0.2
-   #
-   #   This is a test version of UTIL_SHARED.v1.0.8 on DELL
-   #
-   module load dev/util_shared/1.0.8
-   module load  bufr_dumplist/2.0.0
-   module load  dumpjb/5.0.0
+   	exglobal_fcst_nems.sh.ecf         	--> exglobal_fcst_nemsfv3gfs.sh
+   	exglobal_analysis.sh.ecf          	--> exglobal_analysis_fv3gfs.sh.ecf
+   	exglobal_enkf_innovate_obs.sh.ecf 	--> exglobal_innovate_obs_fv3gfs.sh.ecf
+   	exglobal_enkf_update.sh.ecf       	--> exglobal_enkf_update_fv3gfs.sh.ecf
+   	exglobal_enkf_inflate_recenter.sh.ecf 	--> exglobal_enkf_recenter_fv3gfs.sh.ecf
+   	exglobal_enkf_fcst_nems.sh.ecf    	--> exglobal_enkf_fcst_fv3gfs.sh.ecf
+   	exglobal_enkf_post.sh.ecf         	--> exglobal_enkf_post_fv3gfs.sh.ecf
+   	exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  	--> new script
+	exgdas_bulletines.sh.ecf  and  exmknavyb.sh.ecf                  	---> exgdasl_bulls_navy3gfs.sh.ecf
+        exgfs_grib_awips_1p0deg.sh.ecf and exgfs_grib_awips_20km.sh.ecf  	---> exgfs_awips_20km_1p0deg.sh.ecf 
+        exgempak_gfs_gif_ncdc.sh.ecf and exgempak_gif_ncdc.sh.ecf             	---> exgempak_gfs_gif_ncdc_skew_t.sh.ecf
+        exglobal_npoess_halfdeg_gfs_g2.sh.ecf and exglobal_grib2_special.sh.ecf ---> exglobal_grib2_special_npoess.sh.ecf
 
-   #
-   #  This is a test GEMPAK version 7.3.1 on DELL
-   #
-   ###########################################
-   # Now set up GEMPAK/NTRANS environment
-   ###########################################
-   module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-   module load gempak/7.3.1
 
-   The followig jobs, scripts, parm have been modified to meet NCO - EE2 implementation standards.
-JOB CHANGES
-   - Jobs:
-     JGDAS_BULLS_NAVY
-     JGDAS_GEMPAK
-     JGDAS_GEMPAK_META_NCDC
-     JGFS_AWIPS_20KM_1P0DEG
-     JGFS_AWIPS_G2
-     JGFS_FAX
-     JGFS_FAX_WAFS
-     JGFS_FBWIND
-     JGFS_GEMPAK
-     JGFS_GEMPAK_META
-     JGFS_GEMPAK_NCDC_UPAPGIF
-     JGFS_PGRB2_SPEC_GEMPAK
-     JGFS_PGRB2_SPEC_NPOESS
+   * Note the four scripts beginning with run_gfsmos_master are only used for running MDL MOS
+ 	along with EMC gfs parallel experiments.
 
-SCRIPTS CHANGES
-   - Scripts
-     exgdas_bulls_navy.sh.ecf
-     exgdas_nawips.sh.ecf
-     exgempak_gdas_gif_ncdc.sh.ecf
-     exgempak_gfs_gif_ncdc_skew_t.sh.ecf
-     exgfs_awips_20km_1p0deg.sh.ecf
-     exgfs_fax.sh.ecf
-     exgfs_fax_wafs.sh.ecf
-     exgfs_fbwind.sh.ecf
-     exgfs_gempak_meta.sh.ecf
-     exgfs_grib_awips_g2.sh.ecf
-     exgfs_grib_awips.sh.ecf
-     exgfs_nawips.sh.ecf
-     exglobal_grib2_special_npoess.sh.ecf
-     exgoes_nawips.sh.ecf
-     exnawips.sh.ecf
 
-USH SCRIPT CHANGES
-   -ush 
-    gfs_postanl2.sh
-    gfs_prdgen.sh
 
-PARM CHANGES
-   -parm
-    All parm cards for AWIPS products have been added Total precipitation accumulation (APCP) and convective precipitation (ACPCP)
-    with continuoues accumulation, instananeous precipitation type (CRAIN, CSNOW, CICEP, CFRZR) and Vertical velocity DZDT (m/s)
-    non-hydrostatic computed in model.
-    
-GEMPAK USH SCRIPT CHANGES
-   -gempak/ush
-    In FV3GFS upgrade (Q2FY19), the output files for MAG will be located on DELL as follow:
-    from
-        /gpfs/hps/nco/ops/com/mag/prod/mag.YYYYMMDD
-    to
-        /gpfs/hps/nco/ops/com/gfs/prod/gfs.YYYYMMDD/xx   where xx is cycle: 00, 06, 12 and 18  
-   - gempak/meta file
-    In FV3GFS upgrade (Q2FY19), the GEMPAK stopped to generate (*.vgf) files. 
+PARM/CONFIG CHANGES
+
+ 	All JJOBS except for those used by downstream product generation source config files under
+ 	./gfs.v15.0.0/parm/config to set up job-specific parameters.  config.base is sourced by all
+ 	JJOBS to set parameters that are common to either all JJOBS or are shared by more than one JJOBS.
+ 	config.anal is shared by a few analysis steps.
+
+  	Below are the parm (config) files used by each GFS.v15 DA job
+  	* JGLOBAL_FORECAST      		- config.base, config.fcst
+  	* JGLOBAL_NCEPPOST      		- config.base, config.post
+  	* JGLOBAL_POST_MANAGER  		- config.base, config.post
+  	* JGLOBAL_TROPCY_QC_RELOC 	  	- config.base, config.prep
+  	* JGLOBAL_ANALYSIS      		- config.base, config.anal
+  	* JGLOBAL_ENKF_SELECT_OBS 	  	- config.base, config.anal, config.eobs
+  	* JGLOBAL_ENKF_INNOVATE_OBS	 	- config.base, config.anal, config.eobs
+  	* JGLOBAL_ENKF_UPDATE   		- config.base, config.anal, config.eupd
+  	* JGDAS_ENKF_RECENTER   		- config.base, config.ecen
+  	* JGDAS_ENKF_FCST       		- config.base, config.fcst, config.efcs
+  	* JGDAS_ENKF_POST       		- config.base, config.epos
+
+
+
+FIX CHANGES
+
+   *	 All fixed fields used by the system are placed under gfs.v15.0.0/fix, and further categorized
+ 	based on the type of applications. During the NCO implementation process, fix_am, fix_fv3,
+ 	fix_orog, fix_verif, and fix_fv3_gmted2010 are copied from EMC's local archives. fix_gsi and
+ 	wafs are copied from two external repositories.
+ 	The entire package takes 123GB disk space to install. This ./fix directory alone takes 113GB.
+
+ 	fix_am     	-- NEMS GSM fields from GFS.v14 and earlier version.  Some of them are still used for GFS.v15.
+ 	fix_fv3     	-- new fields, defining FV3 model structure for different resolutions, based on TOPO30 terrain
+ 	fix_fv3_gmted2010 
+			-- new fields, defining FV3 model structure for different resolutions, based on gmted2010 terrain
+ 	fix_orog       	-- sources of  terrain data
+ 	fix_gsi        	-- used by data assimilation steps
+ 	fix_verif      	-- bused by VSDB and MET verifications
+ 	gdas           	-- used by DA monitoring programs
+ 	product        	-- used by downstream product generation programs
+ 	wafs           	-- used by WAFS program
+
+
+PRODUCT CHANGES
+
+   * please refer to https://docs.google.com/spreadsheets/d/1KjiV2tDu55IDMxb-HFT-TL-DimVEQxGgWfpRmfl6PCw/edit#gid=1608491678 
+ 	for changes of file names and variables of UPP post-processed products .
+   * Please refer to the PNS https://docs.google.com/document/d/112GG7yBDMPmEcrNi1R2ISsoLcivj5WPivSnf9Id_lHw/edit for a detailed description of all changes made to post and downstream products and data delivery to the public.
+
+
+RESOURCE INFORMATION
+
+   * Frequency of run
+  	* 6 hourly cycle (00, 06, 12, 18Z) - no change from current operations
+
+   * Commonly used libraries, compiler, and modules are defined in gfs.v15.0.0/modulefiles. For nemsfv3gfs, gsi, upp, wafs
+ 	they maintain their own module files under gfs.v15.0.0/sorc/(fv3gfs gsi gfs_post global_wafs).fd/modulefiles
+
+   * Data retention time under $COMROOThps for GFS.v15 should be the same as GFS.v14.   GFS.v15 is no longer pushing or
+ 	extracting data from  $GESROOThps.
+
+   * Disk space:  The current operational GFS.v14 takes about 4.1 TB online COM disk space per cycle, while GFS.v15 will
+ 	require 10.7TB per cycle.
+
+
+   * Computational resources and run times: Please refer to
+ 	https://docs.google.com/spreadsheets/d/1Y0MJ9NQ8EC1imQSJsNIMcSa4KkNURpmcGUYHe0t8wfk/edit#gid=48801932 
+ 	for the detail of node usage,threading, and runtime for all jobs.  Information about the major steps are listed below.
+
+
+  	* JGLOBAL_FORECAST (GFS)
+     	* 116 nodes, 1624 tasks, ptile=12, 2 threads/task
+     	* Runtime:  120 minutes
+
+  	* JGLOBAL_FORECAST (GDAS)
+     	* 28 nodes, 392 tasks, ptile=12, 2 threads/task
+     	* Runtime:  11.7 minutes
+
+  	* JGLOBAL_ANALYSIS (GFS)
+     	* 240 nodes, 480 tasks, ptile=2, 14 threads/task
+     	* Runtime:  26.8 minutes
+
+  	* JGLOBAL_ANALYSIS (GDAS)
+     	* 240 nodes, 480 tasks, ptile=2, 14 threads/task
+     	* Runtime:  30.7 minutes
+
+  	* JGLOBAL_ENKF_SELECT_OBS
+     	* 10 nodes, 140 tasks, ptile=14, 2 threads/task
+     	* Runtime:  3.4 minutes
+
+  	* JGLOBAL_ENKF_INNOVATE_OBS
+     	* 10 nodes, 140 tasks, ptile=14, 2 threads/task
+        	* Concurrently run 10 realizations of JGLOBAL_ENKF_INNOVATE_OBS.  Each job processes
+          	8 EnKF members.	Total node usage for 10 jobs x 10 nodes each = 100 nodes.
+     	* Runtime:  15.0 minutes
+
+  	* JGLOBAL_ENKF_UPDATE
+     	* 90 nodes, 360 tasks, ptile=4, 7 threads/task
+     	* Runtime:  6.5 minutes
+
+	* JGLOBAL_EMCSFC_SFC_PREP
+	* Serial process, 2GB memory
+	* Runtime: 60 seconds
+
+  	* JGDAS_ENKF_RECENTER
+     	* 20 nodes, 80 tasks, ptile=4, 7 threads/task
+     	* Runtime:  4.4 minutes
+
+
+  	* JGDAS_ENKF_FCST
+     	* 14 nodes, 168 tasks, ptile=12, 2 threads/task
+        	* Concurrently run 20 realizations of JGDAS_ENKF_FCST.  Each job processes 4 EnKF
+          	members.  Total node usage for 20 jobs x 14 nodes each = 280 nodes
+        	* 20 EnKF forecast groups for GFS.v15 is an increase from the 10 EnKF forecast groups
+          	currently run in operations.
+     	* Runtime:  19.8 minutes
+
+  	* JGDAS_ENKF_POST
+     	* 20 nodes, 80 nodes, ptile=4, 7 threads/task
+        	* Concurrently run 7 realizations of JGDAS_ENKF_POST.  7 forecasts processed, one
+          	per job.   Total node usage for 7 jobs x 20 nodes each = 140 nodes.
+        	* 7 EnKF post groups is an increase from the single EnKF post job currently run in operations
+     	* Runtime:  4.9 minutes
+
+
+PRE-IMPLEMENTATION TESTING REQUIREMENTS
+
+   * Which production jobs should be tested as part of this implementation?
+	* all components of this package need to be tested.  EMC is running a real-time parallel using the same system.  We will work with the SPA to provide initial conditions from this parallel to run the NCO parallel during the implementation process. We will compare results from EMC and NCO parallels to ensure they reproduce each other.
+
+
+   * Does this change require a 30-day evaluation?
+  	* Yes, the entire GFS.v15 package requires a 30-day evaluation
+
+
+   * Suggested evaluators
+  	* Please contact fanglin.yang@noaa.gov and russ.treadon@noaa.gov for evaluation.
+
+
+DISSEMINATION INFORMATION
+
+   * Where should this output be sent?
+  	* same as current operations.
+
+
+   * Who are the users?
+  	* same as current operations
+
+
+   * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
+  	* Same as current operation. As there are certain changes in product names and types,
+    	EMC will provide support for NCO dataflow team to finalize the list.
+
+   * Directory changes
+  	* Add cycle to gfs and gdas paths.  GFS.v15 paths are $COMROOTp3/gfs/prod/gfs.$PDY/$cyc
+    	and  $COMROOTp3/gfs/prod/gdas.$PDY/$cyc.
+  	* Add "gdas" to top level EnKF directory --> $COMROOTp3/gfs/prod/enkf.gdas.$PDY.
+  	* Place EnKF member files in memXXX directories inside $COMROOTp3/gfs/prod/enkf.gdas.$PDY/$cyc
+
+
+   * File changes.
+  	*3-digital forecast hours are applied to all forecast output and post-process products.  
+
+  	*For file name conventions of post-processed products please refer to 
+         https://docs.google.com/spreadsheets/d/1KjiV2tDu55IDMxb-HFT-TL-DimVEQxGgWfpRmfl6PCw/edit#gid=1608491678
+ 	
+        *Changes related to forecast and data assimilation cycles are listed below.
+
+	In $COMROOTp3/gfs/prod/gfs.$PDY/$cyc	
+		Unchanged:  gfs.tHHz.atmanl.nemsio    gfs.tHHz.sfcanl.nemsio
+			    gfs.tHHz.atmfhhh.nemsio  gfs.tHHz.sfcfhhh.nemsio   gfs.tHHz.logfhhh.nemsio 
+			    gfs.tHHz.atmges.nemsio      gfs.tHHz.atmgm3.nemsio    gfs.tHHz.atmgp3.nemsio
+		Removed :   gfs.tHHz.flxfhhh.nemsio   gfs.tHHz.nstfhhh.nemsio  gfs.t00z.nstanl.nemsio gfs.tHHz.dtfanl.bin4
+		            gfs.tHHz.atmgm1.nemsio    gfs.tHHz.atmgm2.nemsio  
+	                    gfs.tHHz.atmgp1.nemsio     gfs.tHHz.atmgp2.nemsio
+		Added:      gfs.tHHz.atminc.nc  gfs.tHHz.dtfanl.nc
+	   .                /RESTART  (a directory contains 6 tiled files for warm restart)
+
+
+	In $COMROOTp3/gfs/prod/gdas.$PDY/$cyc	
+		Unchanged:  gdas.tHHz.atmanl.nemsio    gdas.tHHz.sfcanl.nemsio
+			    gdas.tHHz.atmfhhh.nemsio   gdas.tHHz.sfcfhhh.nemsio   gdas.tHHz.logfhhh.nemsio 
+			    gdas.tHHz.atmges.nemsio    gdas.tHHz.atmgm3.nemsio    gdas.tHHz.atmgp3.nemsio
+		Removed :   gdas.tHHz.flxfhhh.nemsio   gdas.tHHz.nstfhhh.nemsio   gdas.t00z.nstanl.nemsio 
+                            gdas.tHHz.dtfanl.bin4
+			    gdas.tHHz.atmgm1.nemsio    gdas.tHHz.atmgm2.nemsio  
+			    gdas.tHHz.atmgp1.nemsio    gdas.tHHz.atmgp2.nemsio   
+			    gdas.tHHz.sfcgcy and gdas.tHHz.sfcts
+		Added:      gdas.tHHz.atminc.nc  gdas.tHHz.dtfanl.nc
+			    gdas.tHHz.atmanl.ensres.nemsio
+			   ./RESTART  (a directory contains 39 files on tiled  surface for warm restart) 
+
+ 	
+  	In  $COMROOTp3/gfs/prod/enkf.gdas.$PDY/$cyc
+		Move:	 member EnKF files into ./memXXX subdirectories
+		Rename:  gdas.tHHz.fcsstat.grp* --> efcs.grp*
+			 gdas.tHHz.omgstat.grp* --> eomg.grp*
+		Remove
+			“memXXX" from EnKF member filenames since member files are now in memXXX directories
+			gdas.tHHz.flxfhhh.memxxx.nemsio
+			gdas.tHHz.nstfhhh.memxxx.nemsio         	
+			gdas.tHHz.gcyanl.memxxx.nemsio
+			gdas.tHHz.nstanl.memxxx.nemsio 
+			gdas.tHHz.sfcanl.memxxx.nemsio
+			gdas.tHHz.biascr_int.ensmean
+		Add
+			gdas.tHHz.[abias.air, abias, abias_int, abias_pc].ensmean
+			gdas.tHHz.abias.ensmean  
+			Inside each member memXXX, where XXX=001 to 080,  add
+			gdas.tHHz.abias  gdas.tHHz.abias_air  gdas.tHHz.abias_int  gdas.tHHz.abias_pc
+			gdas.t00z.atminc.nc
+			gdas.tHHz.logfXXX.nemsio 
+			./RESTART  (a directory contains 39 files on model tiles for warm restart)
+
+
+HPSS ARCHIVE
+
+   HPSS archive: please refer to https://docs.google.com/spreadsheets/d/14YdtuC_bL-6eybLA-rvKVvW1eLD_f6NFWzxnatYyCMo/edit#gid=0 
+   for current operational GFS.v14 archives and the proposed archives for GFS.v15.
+   Note that we are proposing to restructure GFS HPSS archive and use new tarball names to 
+   1) follow GFS.v15 restart file style and, 2) to better serve the needs of different users. 
+
+
+JOB DEPENDENCIES & FLOW DIAGRAM
+   * No change in dependencies with respect to current operations.  NCO’s GDAS and GFS flow charts 
+     were copied and slightly modified
+     GFS  https://docs.google.com/drawings/d/1bbhKCtkvB7MhyvMR5hdqIw9AnT2kDQ08hJV8GqK3KSc/edit
+     GDAS  https://docs.google.com/drawings/d/1PANAubjIWF3usl1mVanr0eWLNPfiIcTbc9vumezHEVs/edit 
+
+
+
+===========
+Prepared by
+Fanglin.Yang@noaa
+Russ.Treadon@noaa.gov
+Boi.Vuong@noaa.gov
+Wen.Meng@noaa.gov
+
+

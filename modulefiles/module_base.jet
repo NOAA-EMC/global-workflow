@@ -1,4 +1,3 @@
-#%Module######################################################################
 ##
 ##      nems prerequisites
 ##
@@ -30,3 +29,4 @@ module load hpss
 module load mpiserial
 
 module load gempak/7.4.2
+

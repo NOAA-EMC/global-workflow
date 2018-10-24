@@ -1,0 +1,99 @@
+case:
+  fv3_settings:
+    CASE: C768
+    LEVS: 65
+
+  gfs_output_settings:
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHOUT_GDAS: 1
+    FHMAX_HF_GFS: 0
+
+  places:
+    workflow_file: workflow/free_forecast_gfs.yaml
+
+  post:
+    NPOSTGRP: 42
+    downset: 2
+    
+  downstream:
+    DO_BUFRSND: No
+    DO_GEMPAK: No
+    DO_AWIPS: No
+    VRFYFITS: YES
+    VSDB_STEP1: YES
+    VSDB_STEP2: NO
+    VRFYG2OBS: YES
+    VRFYPRCP: YES
+    VRFYRAD: YES
+    VRFYOZN: YES
+    VRFYMINMON: YES
+    VRFYTRAK: YES
+    VRFYGENESIS: YES
+    RUNMOS: NO
+    RMOLDSTD: 144
+    RMOLDEND: 72
+
+  archiving:
+    ATARDIR: /5year/NCEPDEV/emc-global/emc.glopara/JET/Q2FY19/fv3q2fy19retro5_dell_restart
+    scrub_in_archive: No
+    scrub_in_archive_end: 72
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+
+  resources:
+    run_postsnd: !JobRequest
+      - batch_memory: "254M"
+        mpi_ranks: 12
+        max_ppn: 1
+        walltime: !timedelta '04:30'
+        exe: placeholder
+
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/forecast/*_forecast*'
+          partition: !calc doc.platform.partitions.sjet
+          max_tries: 2
+
+        - Search: '**/post/jgfs_post*'
+          # Make sure you update "resources" to match "partition"
+          partition: !calc doc.platform.partitions.ujet
+          max_tries: 3
+          resources: !JobRequest
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: !calc '13*12'
+              walltime: !timedelta '00:15:00'
+
+        - Search: 'gfs/post_processing/bufr_sounding/j*'
+          partition: !calc doc.platform.partitions.ujet
+          max_tries: 2
+
+        - Search: '**/*_emc_vrfy'
+          partition: !calc doc.platform.partitions.sjet
+          max_tries: 2
+
+    - otherwise: []
+
+  settings: 
+    rocoto_task_throttle: 100
+    rocoto_cycle_throttle: 3
+
+    # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
+    # unless overridden by that job's max_tries variable.
+    max_job_tries: 2
+
+    # This belongs in "places" and putting it here makes it unused.
+    # The default values are in platforms/jet.yaml.  You should delete
+    # these lines:
+    BASE_GIT: /mnt/lfs3/projects/hfv3gfs/glopara/git
+    BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
+
+    IC_CDUMP: gfs # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2016-02-14t00:00:00
+    EDATE: 2016-02-14t12:00:00
+    chgres_and_convert_ics: No
+    realtime: false
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: No

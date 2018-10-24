@@ -118,7 +118,11 @@ fi
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 mkdir -p $DATA/RESTART $DATA/INPUT
 cd $DATA || exit 8
 
@@ -953,7 +957,7 @@ fi
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ $KEEPDATA = "NO" ]; then rm -rf $DATA; fi
+if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
 set +x

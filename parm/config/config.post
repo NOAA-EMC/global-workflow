@@ -12,7 +12,7 @@ echo "BEGIN: config.post"
 #-------------------------------------------
 
 # No. of concurrent post jobs [0 implies sequential]
-export NPOSTGRP=42
+export NPOSTGRP=20
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
 export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
@@ -24,23 +24,27 @@ export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 export GOESF=YES                              # goes image
 export GTGF=NO                                # gtg icing product
 export FLXF=YES                               # grib2 flux file written by post
-export PGB1F=YES
+export PGB1F=YES                              
+if [ $RUN_ENVIR = "nco" ]; then
+    export PGB1F=NO
+    export GTGF=YES
+fi
 
 export npe_postgp=$npe_post
 export nth_postgp=1
 
 export GFS_DOWNSTREAM="YES"
 export downset=2
-export npe_dwn=28
+if [ $machine = "WCOSS_DELL_P3" ]; then
+    export npe_dwn=28
+else
+    export npe_dwn=24
+fi
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
 
-if [ $machine = "WCOSS_C" ] ; then
-    export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export CRTM_FIX=/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-elif [ $machine = "THEIA" ] ; then
+if [ $machine = "THEIA" ] ; then
     export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
 else
     echo "UPP using CRTM_FIX = $CRTM_FIX"

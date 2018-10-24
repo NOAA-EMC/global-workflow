@@ -14,7 +14,7 @@ module load zlib-intel-haswell/1.2.7
 module load bacio-intel/2.0.1
 module load w3emc-intel/2.2.0
 module load w3nco-intel/2.0.6
-module load sigio-intel/2.0.1
+module load sigio-intel/2.1.0
 module load sp-intel/2.0.2
 module load nemsio-intel/2.2.2
 module load nemsiogfs-intel/2.0.1

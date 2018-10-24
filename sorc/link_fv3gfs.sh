@@ -51,16 +51,6 @@ if [ ! -r $FIX_DIR ]; then
    exit -1
 fi
 
-if [ ! -z $FIX_DIR ]; then
- if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
- cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-     [[ -d $dir ]] && rm -rf $dir
- done
- $LINK $FIX_DIR/* .
-fi
-
-
 #------------------------------
 #--add gfs_post file
 #------------------------------
@@ -170,19 +160,16 @@ cd ${pwd}/../ush                ||exit 8
 #------------------------------
 
 cd $pwd/../exec
-
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-if [ $machine = dell ]; then 
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
 
 if [[ $target == "gaea" ]]; then
   if [[ -f /lustre/f1/pdata/ncep_shared/exec/wgrib2 ]]; then
@@ -203,6 +190,17 @@ if [[ $target == "jet" ]]; then
       fi
   done 
 fi
+#------------------------------
+#--choose dynamic config.base for EMC installation 
+#--choose static config.base for NCO installation 
+cd $pwd/../parm/config
+[[ -s config.base ]] && rm -f config.base 
+if [ $RUN_ENVIR = nco ] ; then
+ cp -p config.base.nco.static config.base
+else
+ cp -p config.base.emc.dyn config.base
+fi
+#------------------------------
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
      [[ -s $gsiexe ]] && rm -f $gsiexe

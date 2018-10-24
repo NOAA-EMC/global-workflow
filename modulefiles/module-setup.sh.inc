@@ -31,7 +31,7 @@ elif [[ -d /scratch3 ]] ; then
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-	source /opt/modules/default/init/$__ms_shell
+       source /opt/modules/default/init/$__ms_shell
     fi
     module purge
     module purge

@@ -5,18 +5,21 @@
 
 echo "BEGIN: config.base"
 
-export RUN_ENVIR="nco"
+# Machine environment
 export machine="WCOSS_DELL_P3"
 
-export ACCOUNT="GFS-OPS"
-export QUEUE="prod"
+# EMC parallel or NCO production
+export RUN_ENVIR="nco"
+
+# Account, queue, etc.
+export ACCOUNT="FV3GFS-T2O"
+export QUEUE="dev"
 export QUEUE_ARCH="dev_transfer"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
 
-export gfs_ver=v15.0.0
-export HOMEgfs=$NWROOT/gfs.${gfs_ver}
+# Directories relative to installation areas:
 export PARMgfs=$HOMEgfs/parm
 export FIXgfs=$HOMEgfs/fix
 export USHgfs=$HOMEgfs/ush
@@ -24,23 +27,16 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
-
 ########################################################################
 
-for exetest in hsi htar ; do
-    if ( ! which $exetest ) ; then
-        echo "$exetest: executable missing after \"module load\"" 1>&2
-        exit 2
-    fi
-done
-
-########################################################################
 # GLOBAL static environment parameters
 
-export NWPROD="$NWROOT"                 
+export NWPROD="/gpfs/dell1/nco/ops/nwprod"
 if [ -d /gpfs/tp1 ]; then
+    export SITE="MARS"
     export DMPDIR="/gpfs/tp1/emc/globaldump"
 elif [ -d /gpfs/gp1 ]; then
+    export SITE="VENUS"
     export DMPDIR="/gpfs/gp1/emc/globaldump"
 fi
 export RTMFIX=$CRTM_FIX
@@ -49,24 +45,34 @@ export RTMFIX=$CRTM_FIX
 # Machine specific paths used everywhere
 
 # USER specific paths
-export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-export STMP="/gpfs/dell2/stmp/$USER"
-export PTMP="/gpfs/dell2/ptmp/$USER"
-export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+#    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export HOMEDIR=$EXPDIR/HOMEDIR
+#    export STMP="/gpfs/dell3/stmp/$USER"
+    export STMP=$DATAROOT
+#    export PTMP="/gpfs/dell3/ptmp/$USER"
+    export PTMP=$ROTDIR
+#    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
+    export NOSCRUB=$EXPDIR/NOSCRUB
 
-# Base directories for various builds
-export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+    # Base directories for various builds
+    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
 export DO_GEMPAK="YES"
 export DO_AWIPS="YES"
 
-# Use NO for retrospective parallel; Use YES for real-time parallel
+# NO for retrospective parallel; YES for real-time parallel
 export REALTIME="YES"
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+####################################################
+# DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
+# IF YOU HAVE TO MAKE MACHINE SPECIFIC CHANGES BELOW
+# FEEL FREE TO MOVE THEM ABOVE THIS LINE TO KEEP IT
+# CLEAR
+####################################################
 # Build paths relative to $HOMEgfs
 export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
@@ -90,52 +96,65 @@ export BASE_ENV="$HOMEgfs/env"
 export BASE_JOB="$HOMEgfs/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
-export SDATE=2018020100
-export EDATE=2018020300
-
+export SDATE=2018080600
+export EDATE=2039123100
 export assim_freq=6
-export PSLOT="nco_prod"
-export EXPDIR="/gpfs/dell2/ptmp/$USER/$PSLOT"
-export ROTDIR="$COMROOT/gfs/prod"
-export RUNDIR="$STMP/$PSLOT"
+export PSLOT="test"
+export EXPDIR="$EXPDIR"
+export ROTDIR="$ROTDIR"
+export ROTDIR_DUMP="YES"
+export RUNDIR="$DATAROOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
-export ICSDIR="$ICSDIR"
+export ICSDIR="/gpfs/dell2/ptmp/$USER/FV3ICS"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"
-export RUN=${RUN:-"gfs"}
-export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
-export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
+export RUN=${RUN:-${CDUMP:-"gfs"}}
+export jlogfile="${ROTDIR}/logs/jlogfile"
+export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LOGSCRIPT=${LOGSCRIPT:-""}
+#export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
+#export LOGSCRIPT=${LOGSCRIPT:-"startmsg"}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF=${SENDECF:-"YES"}
-export SENDCOM=${SENDCOM:-"YES"}
-export SENDDBN=${SENDDBN:-"YES"}
-export SENDSDM=${SENDSDM:-"YES"}
-
+export SENDECF="NO"
+export SENDCOM="YES"
+export SENDDBN="YES"
+export SENDSDM="NO"
 
 # Resolution specific parameters
 export LEVS=65
-export CASE=C768
-export CASE_ENKF=C384
+export CASE="C768"
+export CASE_ENKF="C384"
 
 # Surface cycle update frequency
-export FHCYC=24
+if [[ "$CDUMP" == "gdas" ]] ; then
+   export FHCYC=1
+elif [[ "$CDUMP" == "gfs" ]] ; then
+   export FHCYC=24
+fi
+
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
-export FHOUT=1
+export FHOUT=3
 
 # GFS cycle info
-export gfs_cyc=4
+export gfs_cyc=4 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0
-export FHMAX_GFS=384
+
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
+export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
+
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
@@ -170,8 +189,10 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# If YES, NSST is turned on in anal and/or fcst steps
+# turned on nsst in anal and/or fcst steps, and turn off rtgsst
+
 export DONST="YES"
+if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
@@ -179,8 +200,13 @@ export nst_anl=.true.
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
-#--save data to HPSS archive
-export HPSSARCH="NO"
+
+# Archiving options
+export DELETE_COM_IN_ARCHIVE_JOB=YES
+export HPSSARCH="NO"         # save data to HPSS archive
+export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
+export ARCH_WARMICFREQ=1     # Archive frequency in days for warm_start capability
+export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 
 echo "END: config.base"

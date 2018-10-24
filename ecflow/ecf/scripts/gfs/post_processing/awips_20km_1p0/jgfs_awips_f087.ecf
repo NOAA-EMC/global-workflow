@@ -1,85 +1,63 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_awips_f087
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_awips_f087_%CYC%.o%J
-
+#BSUB -J %E%gfs_awips_%FCSTHR%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_awips_%FCSTHR%_%CYC%.o%J
 #BSUB -W 0:06
-#BSUB -x
-#BSUB -R 'affinity[core(1)]'
-#BSUB -R 'span[ptile=28]'
 #BSUB -n 28
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=28]
+#BSUB -cwd /tmp
 
 %include <head.h>
 %include <envir-p3.h>
 
 set -x
 
-
-
-export model=gfs
-export NET=gfs
+export model=%model:gfs%
+export NET=%NET:gfs%
 export RUN=%RUN%
+export CDUMP=%RUN%
 
-export NWROOT=%NWROOT%   # EMC override
-export DATAROOT=%DATAROOT% # EMC override
 %include <model_ver.h>
 
+# Configuration files 
+export EXPDIR=${HOMEgfs}/parm/config
 
 ############################################################
 # Load modules
 ############################################################
-#. $MODULESHOME/init/sh
-module load ips/18.0.1.163
-module load impi/18.0.1
-module load EnvVars/1.0.2
-
-module load g2tmpl/1.5.0       
-module load crtm/2.2.5
-module load ESMF/7_1_0r
-module load dev/util_shared/1.0.8
-
-module unload grib_util/1.0.6   
-module load dev/grib_util/1.1.0
-
-module load NCO/4.7.0
-module load HDF5-serial/1.10.1
-module load NetCDF/4.5.0
-module load CFP/2.0.1
-export USE_CFP=YES
-
+module load ips/$ips_ver
+module load impi/$impi_ver
+module load EnvVars/$EnvVars_ver
+module load g2tmpl/$g2tmpl_ver
+module load crtm/$crtm_ver
+module load ESMF/$ESMF_ver
+module load NCO/$NCO_ver
+module load HDF5-serial/$HDF5_serial_ver
+module load NetCDF/$NetCDF_ver
+module load CFP/$CFP_ver
 module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
-module load gempak/7.3.1
-
-module load bufr_dumplist/1.5.0
-module load dumpjb/4.0.0
-module load NCL/6.4.0
+module load gempak/$gempak_ver
+module load NCL/$NCL_ver
+module unload grib_util/1.0.6
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/$grib_util_ver
+module load util_shared/$util_shared_ver
+module load bufr_dumplist/$bufr_dumplist_ver
+module load dumpjb/$dumpjb_ver
 
 module list
-export ECF_PORT=%ECF_PORT%  # workaround for bug in ecflow module
 
+%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
 export cyc=%CYC%
 export cycle=t%CYC%z
-export jlogfile=/%COM%/logs/jlogfile
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config} # where to get config files
-
-# Development overrides
-export DATAROOT=%DATAROOT%
-export COMROOT=/%COM%
-
-# Development synonyms
-export CDUMP="$RUN"
-export ROTDIR="$COMROOT"
-
 
 ############################################################
-# WCOSS environment settings
+# PDY
 ############################################################
-
-# When running in ecFlow four cycle mode, the date is unknown
-# at the workflow level, so it must be set in the j-job.  The
-# Rocoto-style j-job files lack the necessary logic, so it is
-# here instead:
 datedir=/tmp/date.$$.$RANDOM
 mkdir -p "$datedir"
 pushd "$datedir"
@@ -93,18 +71,29 @@ set +u
 popd
 rm -rf "$datedir"
 
-
-############################################################
-export cyc=%CYC%
-export job=jgfs_awips_f087_%CYC%
+export CDATEm1=$($NDATE -24 $CDATE)
+export PDYm1=$(echo $CDATEm1 | cut -c1-8)
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMOUTwmo="$ROTDIR/$CDUMP.$PDY/$cyc/wmo"
 
 # CALL executable job script here
-export fcsthrs=%FHR%
+export FHRGRP=%FHRGRP% FHRLST=%FHRLST% FCSTHR=%FCSTHR% TRDRUN=%TRDRUN% fcsthrs=%FCSTHR%
+export job=jgfs_awips_f%FCSTHR%_%CYC%
+
+############################################################
+# CALL executable job script here
+############################################################
 $HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
 
 
 %include <tail.h>
 %manual
-# FIXME: Insert manual for this job.
 
 %end

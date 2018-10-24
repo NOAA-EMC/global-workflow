@@ -250,11 +250,8 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-<<<<<<< HEAD
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, partition))
-=======
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
->>>>>>> port2dell2
 
         dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
@@ -301,11 +298,7 @@ def get_hyb_resources(dict_configs):
             strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
             strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
             strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-<<<<<<< HEAD
             strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, compute_partition))
-=======
-            strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
->>>>>>> port2dell2
 
             dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
@@ -326,11 +319,7 @@ def get_hyb_resources(dict_configs):
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-<<<<<<< HEAD
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, compute_partition ))
-=======
-        strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
->>>>>>> port2dell2
 
         dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
