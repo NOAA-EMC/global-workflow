@@ -41,6 +41,7 @@
 # 2016-05-01  Yanqiu Zhu     Add RADCLOUDINFO and use satinfo with icloud & iaerosol
 # 2016-05-10  J. Jung        Added RARS and direct broadcast data
 # 2016-08-28  X. Li          Introduce USE_READIN_ANL_SFCMASK for surface mask consistency between analysis and ensemble grids
+# 2018-10-24  Karina Apodaca add processing of GOES-GLM light 
 #
 # Usage:  global_analysis.sh SFCGES SIGGES NSTGES GBIAS GBIASPC GRADSTAT GBIASAIR
 #                            SFCANL SIGANL NSTANL ABIAS ABIASPC ABIASAIR IGEN
@@ -164,6 +165,8 @@
 #                   defaults to ${COMIN}/${PREINP}cnvstat
 #     OZNSTAT       Output ozone observation assimilation statistics
 #                   defaults to ${COMIN}/${PREINP}oznstat
+#     LIGSTAT       Output lightning observation assimilation statistics
+#                   defaults to ${COMIN}/${PREINP}ligstat
 #     GINCOUT       Output increment to guess
 #                   defaults to ${COMIN}/${PREINP}gesfile_out
 #     BIASOUT       Output bias correction to guess
@@ -240,6 +243,8 @@
 #                   defaults to ${FIXgsm}/global_scaninfo.txt
 #     HYBENSINFO    Input hybrid ensemble localization information file
 #                   defaults to ${FIXgsm}/global_hybens_locinfo.l${LEVS}.txt
+#     LIGHTINFO     Input lightning information file
+#                   defaults to ${FIXgsm}/global_lightinfo.txt
 #     PREPQC        Input QC-ed observation BUFR file
 #                   defaults to ${COMIN}/${PREINP}prepbufr${SUFINP}
 #     PREPQCPF      Input QC-ed observation profile BUFR file
@@ -254,6 +259,8 @@
 #                   defaults to ${COMIN}/${PREINP}goesnd.tm00.bufr_d${SUFINP}
 #     GSNDBF1       Input GOES 1x1 sounder radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}goesfv.tm00.bufr_d${SUFINP}
+#     GLMBF         Input GOES-16/GLM lightning flash rate file
+#                   defaults to ${COMIN}/${PREINP}glm.tm00.bufr_d${SUFINP}
 #     B1HRS2        Input HIRS/2 radiance file (bufr format)
 #                   defaults to ${COMIN}/${PREINP}1bhrs2.tm00.bufr_d${SUFINP}
 #     B1MSU         Input MSU radiance file (bufr format)
@@ -506,6 +513,7 @@
 #                  $SMIPCP
 #                  $TMIPCP
 #                  $GPSROBF
+#                  $G16GLMBF
 #                  $TCVITL
 #                  $NSSTBF
 #                  $B1AVHAM
@@ -522,6 +530,7 @@
 #                  $PCPSTAT
 #                  $CNVSTAT
 #                  $OZNSTAT
+#                  $LIGSTAT
 #                  $GINCOUT
 #                  $BIASOUT
 #                  $PGMOUT
@@ -636,6 +645,7 @@ export PCPINFO=${PCPINFO:-${FIXgsi}/global_pcpinfo.txt}
 export AEROINFO=${AEROINFO:-${FIXgsi}/global_aeroinfo.txt}
 export SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 export HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_locinfo.l${LEVS}.txt}
+export LIGHTINFO=${LIGHTINFO:-${FIXgsi}/global_lightinfo.txt}
 export OBERROR=${OBERROR:-${FIXgsi}/prepobs_errtable.global}
 export PREPQC=${PREPQC:-${COMIN}/${PREINP}prepbufr${SUFINP}}
 export PREPQCPF=${PREPQCPF:-${COMIN}/${PREINP}prepbufr.acft_profiles${SUFINP}}
@@ -740,6 +750,7 @@ export GSISTAT=${GSISTAT:-${COMOUT}/${PREINP}gsistat}
 export PCPSTAT=${PCPSTAT:-${COMOUT}/${PREINP}pcpstat}
 export CNVSTAT=${CNVSTAT:-${COMOUT}/${PREINP}cnvstat}
 export OZNSTAT=${OZNSTAT:-${COMOUT}/${PREINP}oznstat}
+export LIGSTAT=${LIGSTAT:-${COMOUT}/${PREINP}ligstat}
 export RUN_SELECT=${RUN_SELECT:-"NO"}
 export USE_SELECT=${USE_SELECT:-"NO"}
 export SELECT_OBS=${SELECT_OBS:-${COMOUT}/${PREINP}obsinput}
@@ -922,6 +933,7 @@ $FCPLN $PCPINFO  pcpinfo
 $FCPLN $AEROINFO aeroinfo
 $FCPLN $SCANINFO scaninfo
 $FCPLN $HYBENSINFO hybens_info
+$FCPLN $LIGHTINFO lightinfo
 $FCPLN $OBERROR  errtable
 
 # CRTM Spectral and Transmittance coefficients
@@ -993,6 +1005,7 @@ $FCPLN $ATMSDB   atmsbufr_db
 $FCPLN $SSMITBF  ssmitbufr
 $FCPLN $SSMISBF  ssmisbufr
 $FCPLN $GPSROBF  gpsrobufr
+$FCPLN $GLMBF    glmbufr
 $FCPLN $TCVITL   tcvitl
 $FCPLN $NSSTBF   nsstbufr
 $FCPLN $B1AVHAM  avhambufr
@@ -1362,6 +1375,7 @@ OBS_INPUT::
    saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
    ahibufr        ahi         himawari8   ahi_himawari8       0.0     3     0
    rapidscatbufr  uv          null        uv                  0.0     0     0
+   glmbufr        light       g16         light               0.0     0     0
 ::
  &SUPEROB_RADAR
    $SUPERRAD
@@ -1513,16 +1527,19 @@ diagtype[0]="conv"
 diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
 diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura"
 diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 seviri_m11 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
+diagtype[4]="light"
 
 diaglist[0]=listcnv
 diaglist[1]=listpcp
 diaglist[2]=listozn
 diaglist[3]=listrad
+diaglist[4]=listlig
 
 diagfile[0]=$CNVSTAT
 diagfile[1]=$PCPSTAT
 diagfile[2]=$OZNSTAT
 diagfile[3]=$RADSTAT
+diagfile[4]=$LIGSTAT
 
 numfile[0]=0
 numfile[1]=0
