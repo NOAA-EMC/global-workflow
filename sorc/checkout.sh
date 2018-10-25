@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout nemsfv3gfs_beta_v1.0.11
+    git checkout nemsfv3gfs_beta_v1.0.12
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -46,7 +46,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v5.0.3   
+    git checkout gfs_wafs.v5.0.4   
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'

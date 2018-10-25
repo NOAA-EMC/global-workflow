@@ -253,12 +253,10 @@ while [ $GDATE -le $GDATEEND ]; do
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
-	if [[ -s "$rocotolog" ]] ; then
+	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
             [[ $rc -eq 0 ]] && rm -rf $COMIN
-	else
-	    rm -rf $COMIN
 	fi
     fi
 
