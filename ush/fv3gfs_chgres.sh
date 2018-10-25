@@ -59,7 +59,7 @@ fi
 
 export PSLOT=fv3test
 export CDUMP=gdas
-export CASE_HIGH=C768            
+export CASE_HIGH=C768
 export CASE_ENKF=C384
 export CDATE=2018050100
 
@@ -174,7 +174,25 @@ if [ -s $COMROOT/gfs/prod/${CDUMP}.${ymd} ]; then
 else   ##get data from HPSS archive
 #................................................
 
-if [ $CDATE -le 2017072012 ]; then
+if [ $CDATE -lt 2014050100 ]; then
+
+   HPSSPATH=/NCEPPROD/hpssprod/runhistory/rh$yy/$yy$mm/$yy$mm$dd      ##use operational nems gfs nems gfs ics
+   nst=" "
+   if [ $CDUMP = gdas ]; then
+     tarball_high=com_gfs_prod_${CDUMP}.${CDATE}.tar
+     atm=./gdas1.t${cyc}z.sanl
+     sfc=./gdas1.t${cyc}z.sfcanl
+     biascr=./gdas1.t${cyc}z.abias
+     biascr_pc=" "
+     radstat=./gdas1.t${cyc}z.radstat
+     aircraft_t_bias=" "
+   else
+     tarball_high=com_gfs_prod_${CDUMP}.${CDATE}.anl.tar
+     atm=./gfs.t${cyc}z.sanl
+     sfc=./gfs.t${cyc}z.sfcanl
+   fi
+
+elif [ $CDATE -le 2017072012 ]; then
    if [ $CDATE -ge 2016110100 ]; then
      oldexp=prnemsrn
    elif [ $CDATE -ge 2016050100 ]; then
@@ -240,12 +258,15 @@ cat > read_hpss.sh <<EOF1
    if [ $CDUMP = gdas ]; then
       cd $COMROT 
       htar -xvf  $HPSSPATH/$tarball_high $biascr $biascr_pc $aircraft_t_bias $radstat
-      if [ $CDATE -le 2017072000 ]; then
-          mv biascr.${CDUMP}.$CDATE            ${CDUMP}.t${cyc}z.abias 
-          mv biascr_pc.${CDUMP}.$CDATE         ${CDUMP}.t${cyc}z.abias_pc
-          mv aircraft_t_bias.${CDUMP}.$CDATE   ${CDUMP}.t${cyc}z.abias_air
-          mv radstat.${CDUMP}.$CDATE           ${CDUMP}.t${cyc}z.radstat
-      fi
+
+      [[ '$biascr' = ./gdas1.t${cyc}z.abias ]] && mv $biascr ./gdas.t${cyc}z.abias
+      [[ '$radstat' = ./gdas1.t${cyc}z.radstat ]] && mv $radstat ./gdas.t${cyc}z.radstat
+
+      [[ '$biascr' = biascr.${CDUMP}.$CDATE ]] && mv biascr.${CDUMP}.$CDATE  ${CDUMP}.t${cyc}z.abias 
+      [[ '${biascr_pc}' = biascr_pc.${CDUMP}.$CDATE ]] &&  mv biascr_pc.${CDUMP}.$CDATE ${CDUMP}.t${cyc}z.abias_pc
+      [[ '$aircraft_t_bias' = aircraft_t_bias.${CDUMP}.$CDATE ]] && mv aircraft_t_bias.${CDUMP}.$CDATE ${CDUMP}.t${cyc}z.abias_air
+      [[ '$radstat' = radstat.${CDUMP}.$CDATE ]] &&  mv radstat.${CDUMP}.$CDATE  ${CDUMP}.t${cyc}z.radstat
+
    fi
 EOF1
 chmod u+x read_hpss.sh
@@ -268,6 +289,8 @@ if [ ! -s $testfile ]; then
   exit 1
 fi
 
+[[ $atm = ./gdas1.t${cyc}z.sanl ]] && mv $INIDIR/$atm $INIDIR/gdas.t${cyc}z.sanl
+[[ $sfc = ./gdas1.t${cyc}z.sfcanl ]] && mv $INIDIR/$sfc $INIDIR/gdas.t${cyc}z.sfcanl
 
 #------------------------------
 if [ $NSTSMTH = "YES" ]; then
@@ -306,7 +329,7 @@ fi
 
 
 [[ $CDUMP = gfs ]] && exit
-
+[[ $CDATE -lt 2012052100 ]] && exit  # no enkf data before this date
 
 #----------------------------
 #----------------------------
@@ -330,7 +353,11 @@ if [ -s $COMROOT/gfs/prod/enkf.${ymd}/${cyc} ]; then
 #................................................
 else   ## extract data from HPSS                      
 #................................................
-if [ $CDATE -le 2017072012 ]; then
+if [ $CDATE -lt 2014050100 ]; then
+  HPSSPATH=/NCEPPROD/hpssprod/runhistory/rh$yy/$yy$mm/$yy$mm$dd      ##use operational nems gfs nems gfs ics
+  tarball_enkf_atm=com_gfs_prod_enkf.${ymd}_${cyc}.anl.tar    
+  testfile=$INIDIR/siganl_${CDATE}_mem080
+elif [ $CDATE -le 2017072012 ]; then
    if [ $CDATE -ge 2016110100 ]; then
      oldexp=prnemsrn
    elif [ $CDATE -ge 2016050100 ]; then
@@ -378,7 +405,7 @@ cat > read_hpss.sh <<EOF
 
    cd $INIDIR
    htar -xvf  $HPSSPATH/$tarball_enkf_atm 
-   if [ $CDATE -le 2017072000 ]; then
+   if [ $CDATE -le 2017072000 ] && [ $CDATE -gt 2014050100 ]; then
       htar -xvf  $HPSSPATH/$tarball_enkf_sfcnst 
    fi
 EOF
@@ -414,12 +441,21 @@ export DATA=$INIDIR/$mchar
 rm -rf $OUTDIR $DATA
 mkdir -p $OUTDIR $DATA
 
-atm=${CDUMP}.t${cyc}z.atmanl.nemsio
-sfc=${CDUMP}.t${cyc}z.sfcanl.nemsio
-nst=${CDUMP}.t${cyc}z.nstanl.nemsio
-rm -rf $atm $sfc $nst 
+if [ $CDATE -lt 2014050100 ]; then
+  atm=gdas.t${cyc}z.sanl
+  sfc=gdas.t${cyc}z.sfcanl
+  rm -fr $atm $sfc 
+else
+  atm=${CDUMP}.t${cyc}z.atmanl.nemsio
+  sfc=${CDUMP}.t${cyc}z.sfcanl.nemsio
+  nst=${CDUMP}.t${cyc}z.nstanl.nemsio
+  rm -rf $atm $sfc $nst 
+fi
 
-if [ $CDATE -le 2017072000 ]; then
+if [ $CDATE -lt 2014050100 ]; then
+   ln -fs siganl_${CDATE}_$mchar $atm
+   ln -fs sfcanl_${CDATE}_$mchar $sfc
+elif [ $CDATE -le 2017072000 ]; then
    ln -fs siganl_${CDATE}_$mchar $atm
    ln -fs sfcanl_${CDATE}_$mchar $sfc
    ln -fs nstanl_${CDATE}_$mchar $nst
@@ -462,7 +498,4 @@ n=$((n+1))
 done
 #---------------------------
 
-
 exit
-
-
