@@ -83,8 +83,6 @@ else
     export DATA="$DATAROOT/$job"
 fi
 
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 export COMOUTwmo="$ROTDIR/$CDUMP.$PDY/$cyc/wmo"
 export job="jgfs_awips_f${fcsthrs}_${cyc}"
@@ -96,7 +94,6 @@ $HOMEgfs/jobs/JGFS_AWIPS_G2
 
 ###############################################################
 # Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
