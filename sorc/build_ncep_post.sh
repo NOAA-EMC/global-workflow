@@ -21,7 +21,7 @@ fi
 # Cheats until moving through commit process with post
 if [[ $target == 'jet' || $target == 'gaea' ]]; then
     cp -f build_ncep_post_native.sh gfs_post.fd/sorc
-    cp -f ../modulefiles/fv3gfs/post/v7.0.0-${target} gfs_post.fd/modulefiles/post
+    cp -f ../modulefiles/fv3gfs/post/v8.0.0-${target} gfs_post.fd/modulefiles/post
     cd gfs_post.fd/sorc
     sh build_ncep_post_native.sh
     exit 0

@@ -89,7 +89,7 @@ fi
 # Lin Gan modifiy to use NCO vertical structure prefix for NCO deployment - 20160131
 moduledir=`dirname $(readlink -f ../modulefiles/post)`
 module use ${moduledir}
-module load post/v7.0.0-${machine}
+module load post/v8.0.0-${machine}
 module list
 
 cd ncep_post.fd

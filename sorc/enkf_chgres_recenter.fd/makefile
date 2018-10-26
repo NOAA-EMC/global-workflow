@@ -4,7 +4,7 @@ LIBS= $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIBd) $(IP_LIBd) $(SP_LIBd)
 
 CMD= chgres_recenter.exe
 
-OBJS = driver.o output_data.o setup.o utils.o grid2grid.o printrusage.o
+OBJS = driver.o output_data.o input_data.o setup.o utils.o grid2grid.o printrusage.o
 
 $(CMD):	$(OBJS)
 	$(FC) $(FFLAGS) -o $(CMD) $(OBJS) $(LIBS)
@@ -15,7 +15,10 @@ printrusage.o: printrusage.c
 driver.o:  setup.o output_data.o grid2grid.o driver.f90
 	$(FC) $(FFLAGS) -I$(NEMSIO_INC) -c driver.f90
 
-output_data.o: setup.o utils.o grid2grid.o output_data.f90
+input_data.o: input_data.f90
+	$(FC) $(FFLAGS) -I$(NEMSIO_INC) -c input_data.f90
+
+output_data.o: setup.o utils.o grid2grid.o input_data.o output_data.f90
 	$(FC) $(FFLAGS) -I$(NEMSIO_INC) -c output_data.f90
 
 setup.o:  setup.f90
