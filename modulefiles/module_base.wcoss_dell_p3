@@ -22,10 +22,10 @@ module load NCO/4.7.0
 module load HDF5-serial/1.10.1
 module load NetCDF/4.5.0
 module load CFP/2.0.1
-setenv USE_CFP YES
+#setenv USE_CFP YES
 
 # modules used by vrfy
-module load pm5
+module load pm5/1.0
 
 # for jobs that use gempak
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/

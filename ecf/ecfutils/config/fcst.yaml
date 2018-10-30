@@ -39,7 +39,7 @@ config_fcst:
     export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
     #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
     export FCSTEXECDIR="$HOMEgfs/exec"
-    export FCSTEXEC="fv3_gfs_nh.prod.32bit.x"
+    export FCSTEXEC="global_fv3gfs.x"
     export npe_fv3=$npe_fcst # This is model resolution dependent, see note above    
    
     # Model configuration

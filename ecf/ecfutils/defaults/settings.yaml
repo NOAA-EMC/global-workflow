@@ -19,6 +19,11 @@ default_settings: &default_settings
   # sure it is consistent among the yaml files:
   REALTIME: !calc realtime
 
+  ROTDIR_DUMP: NO
+
+  # awips setting
+  NAWIPSGRP: 21
+
   mkdir_before_running_ecflow: !FirstTrue
     - when: !calc doc.settings.four_cycle_mode
       take: null

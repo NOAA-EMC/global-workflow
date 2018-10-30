@@ -24,4 +24,7 @@ config_awips:
     export COMOUTwmo="$COMOUT/wmo"
     export PCOM="$COMOUT/wmo"
 
+    # No. of concurrent awips jobs
+    export NAWIPSGRP={doc.settings.NAWIPSGRP}
+
     echo "END: config.awips"

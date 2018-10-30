@@ -63,6 +63,8 @@ config_base:
     export DO_BUFRSND="{tools.YES_NO(doc.downstream.DO_BUFRSND)}" # Run GFS_POSTSND
     export DO_GEMPAK="{tools.YES_NO(doc.downstream.DO_GEMPAK)}"  # Run GFS GEMPAK
     export DO_AWIPS="{tools.YES_NO(doc.downstream.DO_AWIPS)}"   # Run GFS AWIPS
+
+    export REALTIME="{tools.YES_NO(doc.settings.REALTIME)}"
     
     ####################################################
     # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -95,11 +97,11 @@ config_base:
     # EXPERIMENT specific environment parameters
     export SDATE={tools.to_YMDH(doc.settings.SDATE)}
     export EDATE={tools.to_YMDH(doc.settings.EDATE)}
-    export REALTIME="{tools.YES_NO(doc.settings.REALTIME)}"   # Run GFS AWIPS
     export assim_freq={doc.data_assimilation.assim_freq}
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
+    export ROTDIR_DUMP="{doc.settings.ROTDIR_DUMP}"
     export RUNDIR="{doc.places.DATAROOT}"
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
     export ICSDIR="{doc.places.ICSDIR}"
