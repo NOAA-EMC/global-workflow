@@ -201,16 +201,10 @@ if [ $target = wcoss_dell_p3 ]; then
     done
 fi
 
-<<<<<<< HEAD
-for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
-     [[ -s $gsiexe ]] && rm -f $gsiexe
-     $LINK ../sorc/gsi.fd/exec/$gsiexe .
-=======
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
->>>>>>> origin/port2dell2
 done
 
 if [ $target = wcoss_dell_p3 ]; then
@@ -220,18 +214,18 @@ if [ $target = wcoss_dell_p3 ]; then
     done
 fi
  
-cd ${pwd}
-cd gsi.fd
-gsi_branch=`git branch | grep \*`
-cd ../fv3gfs.fd
-fv3gfs_branch=`git branch | grep \*`
-cd ../gfs_post.fd
-gfspost_branch=`git branch | grep \*`
+#cd ${pwd}
+#cd gsi.fd
+#gsi_branch=`git branch | grep \*`
+#cd ../fv3gfs.fd
+#fv3gfs_branch=`git branch | grep \*`
+#cd ../gfs_post.fd
+#gfspost_branch=`git branch | grep \*`
 
-set +x
-echo "FV3  Branch: $fv3gfs_branch"
-echo "GSI  Branch: $gsi_branch"
-echo "POST Branch: $gfspost_branch"
+#set +x
+#echo "FV3  Branch: $fv3gfs_branch"
+#echo "GSI  Branch: $gsi_branch"
+#echo "POST Branch: $gfspost_branch"
 
 
 #------------------------------
