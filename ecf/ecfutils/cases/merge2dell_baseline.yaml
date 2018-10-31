@@ -1,11 +1,11 @@
 case:
   fv3_settings:
-    CASE: C768
+    CASE: C384
     LEVS: 65
     fcst_max_ppn: 12
 
   fv3_enkf_settings:
-    CASE: C384
+    CASE: C192
     fcst_max_ppn: 12
     layout_y: 6
     layout_x: 4
@@ -61,19 +61,19 @@ case:
     downset: 2
     
   downstream:
-    DO_BUFRSND: YES 
-    DO_GEMPAK: YES
-    DO_AWIPS: YES
-    VRFYFITS: YES
-    VSDB_STEP1: YES
+    DO_BUFRSND: NO
+    DO_GEMPAK: NO
+    DO_AWIPS: NO
+    VRFYFITS: NO
+    VSDB_STEP1: NO
     VSDB_STEP2: NO
-    VRFYG2OBS: YES
-    VRFYPRCP: YES
-    VRFYRAD: YES
-    VRFYOZN: YES
-    VRFYMINMON: YES
-    VRFYTRAK: YES
-    VRFYGENESIS: YES
+    VRFYG2OBS: NO
+    VRFYPRCP: NO
+    VRFYRAD: NO
+    VRFYOZN: NO
+    VRFYMINMON: NO
+    VRFYTRAK: NO
+    VRFYGENESIS: NO
     RUNMOS: NO
     RMOLDSTD: 144
 
@@ -130,7 +130,7 @@ case:
     four_cycle_mode: no
     nco_mode: no
 
-    run_vrfy_jobs: yes
+    run_vrfy_jobs: NO
     archive_to_hpss: yes
 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
