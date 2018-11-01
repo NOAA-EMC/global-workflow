@@ -1,11 +1,11 @@
 case:
   fv3_settings:
-    CASE: C384
+    CASE: C768
     LEVS: 65
     fcst_max_ppn: 12
 
   fv3_enkf_settings:
-    CASE: C192
+    CASE: C384
     fcst_max_ppn: 12
     layout_y: 6
     layout_x: 4
