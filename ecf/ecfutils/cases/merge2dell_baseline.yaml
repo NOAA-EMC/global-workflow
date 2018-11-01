@@ -44,7 +44,7 @@ case:
     hord_xx_nh_nonmono: 6
 
   places:
-    DMPDIR: /gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/globaldump
+#    DMPDIR: /gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/globaldump
     workflow_file: workflow/cycled_gfs.yaml
     COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/"
     ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/gfs/{doc.names.experiment}"
