@@ -679,5 +679,5 @@ def setup_case(command_line_arguments):
     print('Now you should make a workflow:')
     print()
     print(f'  Rocoto: ./make_rocoto_xml_for.sh {EXPDIR}')
-    print(f'  ecFlow: ./make_ecflow_files_for.sh -v {EXPDIR}')
+    print(f'  ecFlow: ./make_ecflow_files_for.sh -v {EXPDIR} SDATE EDATE')
     print()
