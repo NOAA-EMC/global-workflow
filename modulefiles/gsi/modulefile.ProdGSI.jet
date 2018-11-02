@@ -38,6 +38,10 @@ module load w3nco-intel-sandybridge/2.0.6
 module load sigio-intel-sandybridge/2.0.1
 module load sfcio-intel-sandybridge/1.0.0
 
+# Used to get ndate as $NDATE
+module use /lfs3/projects/hwrf-vd/soft/modulefiles
+module load prod_util/1.0.18
+
 #export BACIO_LIB4=${CAREPATH}/bacio/v2.0.2/libbacio_v2.0.2_4.a
 #export BUFR_LIBd=$CAREPATH/bufr/v11.1.0/libbufr_v11.1.0_d_64.a
 #export CRTM_LIB=$CAREPATH/crtm/v2.2.4/libcrtm_v2.2.4.a

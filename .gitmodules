@@ -1,0 +1,3 @@
+[submodule "ecf/ecfutils/CROW"]
+    path = ecf/ecfutils/CROW
+    url = gerrit:CROW
