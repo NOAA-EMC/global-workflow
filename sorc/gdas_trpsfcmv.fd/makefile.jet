@@ -1,0 +1,33 @@
+SHELL=/bin/sh
+#
+SRCS= gdas_trpsfcmv.f getgb1.f 
+
+OBJS= gdas_trpsfcmv.o getgb1.o 
+
+FC =    ifort 
+LDFLAGS =  -L$(NCARG_LIB) \
+           -lncarg -lncarg_gks -lncarg_c -lX11 -lXext -lcairo -lfontconfig -lpixman-1 \
+	   -lfreetype -lexpat -lpthread -lXrender -lgfortran
+#	            -lfreetype -lexpat -lpng -lz -lpthread -lbz2 -lXrender -lgfortran
+
+LIBS     = $(IP_LIB4) \
+	$(SP_LIB4) \
+	$(BACIO_LIB4) \
+	$(W3NCO_LIB4) \
+	$(BUFR_LIB4)
+
+CMD =     gdas_trpsfcmv 
+PROFLIB =       -lprof
+
+FFLAGS = -O -g -traceback -C -openmp -assume byterecl -convert big_endian -assume nobscc -assume noold_ldout_format -warn usage
+
+# Lines from here on down should not need to be changed.  They are the
+# actual rules which make uses to build a.out.
+#
+all:            $(CMD)
+	
+$(CMD):         $(OBJS)
+	$(FC) -o $(@) $(OBJS) $(LIBS) $(LDFLAGS) $(FFLAGS)
+
+clean:
+	-rm -f $(OBJS)
