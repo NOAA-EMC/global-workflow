@@ -27,6 +27,15 @@ export OPREFIX="${CDUMP}.t${cyc}z."
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
+###############################################################
+# If ROTDIR_DUMP=YES, copy dump files to rotdir 
+if [ $ROTDIR_DUMP = "YES" ]; then
+    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDATE}/${CDUMP}${DUMP_SUFFIX} $ROTDIR/${CDUMP}.${PDY}/${cyc}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+fi
+
+###############################################################
 
 ###############################################################
 # For running real-time parallels on WCOSS_C, execute tropcy_qc and 
@@ -46,18 +55,25 @@ if [ $PROCESS_TROPCY = "YES" ]; then
         fi
     fi
 
+    [[ $ROTDIR_DUMP = "YES" ]] && rm $COMOUT${CDUMP}.t${cyc}z.syndata.tcvitals.tm00
+
     $HOMEgfs/jobs/JGLOBAL_TROPCY_QC_RELOC
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
 else
-    cp $DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/.
+    [[ $ROTDIR_DUMP = "NO" ]] && cp $DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/
 fi
 
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
+    if [ $ROTDIR_DUMP = "YES" ]; then
+	rm $COMOUT/${OPREFIX}prepbufr
+	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
+	rm $COMOUT/${OPREFIX}nsstbufr
+    fi
     if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
 
         export job="j${CDUMP}_prep_${cyc}"
@@ -79,9 +95,11 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
         exit 1
     fi
 else
-    $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-    $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-    [[ $DONST = "YES" ]] && $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+    if [ $ROTDIR_DUMP = "NO" ]; then
+	$NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+	$NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+	[[ $DONST = "YES" ]] && $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+    fi
 fi
 
 ################################################################################
