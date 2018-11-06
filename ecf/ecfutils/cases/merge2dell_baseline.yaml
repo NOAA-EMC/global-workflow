@@ -125,7 +125,7 @@ case:
     nco_mode: no
 
     run_vrfy_jobs: NO
-    archive_to_hpss: yes
+    archive_to_hpss: NO
 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
