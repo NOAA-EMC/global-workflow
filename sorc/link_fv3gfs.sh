@@ -51,6 +51,15 @@ if [ ! -r $FIX_DIR ]; then
    exit -1
 fi
 
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
+
 #------------------------------
 #--add gfs_post file
 #------------------------------
@@ -201,11 +210,6 @@ else
  cp -p config.base.emc.dyn config.base
 fi
 #------------------------------
-
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
-     [[ -s $gsiexe ]] && rm -f $gsiexe
-     $LINK ../sorc/gsi.fd/exec/$gsiexe .
-done
 
 cd ${pwd}
 cd gsi.fd
