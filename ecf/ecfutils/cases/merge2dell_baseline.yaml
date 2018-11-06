@@ -1,11 +1,11 @@
 case:
   fv3_settings:
-    CASE: C384
+    CASE: C768
     LEVS: 65
     fcst_max_ppn: 12
 
   fv3_enkf_settings:
-    CASE: C192
+    CASE: C384
     fcst_max_ppn: 12
     layout_y: 6
     layout_x: 4
@@ -19,13 +19,13 @@ case:
     NMEM_EFCSGRP: 4
     NMEM_EARCGRP: 10
     l4densvar: Yes
+    DO_EMCSFC: NO
 
   gfs_output_settings:
     FHMAX_GFS: 384
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 120
     FHOUT_HF_GFS: 1
-    FHOUT_GDAS: 1
 
   fv3_gfs_settings:
     layout_x: 12
@@ -44,26 +44,20 @@ case:
     hord_xx_nh_nonmono: 6
 
   places:
-    DMPDIR: /gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/globaldump
     workflow_file: workflow/cycled_gfs.yaml
-    COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/"
-    ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/gfs/{doc.names.experiment}"
-#    EXPDIR: !expand "{HOMEgfs}/parm/config"
-    EXPDIR: !expand "{HOMEgfs}/ecf/ecfutils/expdir/{doc.names.experiment}"
-    NOSCRUB: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/arch"
-    HOMEDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/emcstat/{doc.names.experiment}/archsave"
-    DATAROOT: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
-    SHORT_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
-    LONG_TERM_TEMP: /gpfs/dell2/ptmp/Jian.Kuang/tmpnwprd
 
   post:
     NPOSTGRP: 10
     downset: 2
     
   downstream:
+    DO_POST_PROCESSING: NO
     DO_BUFRSND: NO
     DO_GEMPAK: NO
     DO_AWIPS: NO
+    DO_FAX: NO
+    DO_WAFS: NO
+    DO_BULLETINS: NO
     VRFYFITS: NO
     VSDB_STEP1: NO
     VSDB_STEP2: NO
@@ -136,10 +130,11 @@ case:
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
     max_job_tries: 2
+    rocoto_task_throttle: 15
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-10-18t00:00:00
-    EDATE: 2018-10-20t06:00:00
+    SDATE: 2018-11-05t06:00:00
+    EDATE: 2018-11-05t12:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4

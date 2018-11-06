@@ -66,6 +66,10 @@ downstream_schema: &downstream_schema !Template
     type: bool
     default: YES
     description: "Run GFS MOS"
+  DO_POST_PROCESSING:
+    type: bool
+    default: NO
+    description: "Run post processing tasks (BUFRSND, GEMPAK, AWIPS, FAX, WAFS, BULLETINS"
   DO_BUFRSND:
     type: bool
     default: NO
@@ -73,11 +77,23 @@ downstream_schema: &downstream_schema !Template
   DO_GEMPAK:
     type: bool
     default: NO
-    description: "Run GFS GEMPAK"
+    description: "Run GEMPAK"
   DO_AWIPS:
     type: bool
     default: NO
-    description: "Run GFS AWIPS"
+    description: "Run AWIPS"
+  DO_FAX:
+    type: bool
+    default: NO
+    description: "Run FAX"
+  DO_WAFS:
+    type: bool
+    default: NO
+    description: "Run WAFS"
+  DO_BULLETINS:
+    type: bool
+    default: NO
+    description: "Run BULLETINS"
   
   FHOUT_CYCLONE_GFS:
     type: int

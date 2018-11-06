@@ -77,8 +77,8 @@ config_base:
     export FIXgsi="{doc.places.get('FIXgsi','$HOMEgfs/fix/fix_gsi')}"
     export HOMEfv3gfs="{doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
     export HOMEpost="{doc.places.get('HOMEpost','$HOMEgfs')}"
-    export HOMEobsproc_prep="{doc.places.get('HOMEobsproc_prep', '$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs')}"
-    export HOMEobsproc_network="{doc.places.get('HOMEobsproc_network', '$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs')}"
+    export HOMEobsproc_prep="{doc.places.get('HOMEobsproc_prep', '$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0')}"
+    export HOMEobsproc_network="{doc.places.get('HOMEobsproc_network', '$BASE_GIT/obsproc/obsproc_global_RB-3.2.0')}"
     export BASE_VERIF="{doc.places.get('BASE_VERIF', '$BASE_SVN/verif/global/tags/vsdb')}"
     
     # CONVENIENT utility scripts and other environment parameters
@@ -140,7 +140,11 @@ config_base:
     export CASE_ENKF="{doc.fv3_enkf_settings.CASE}"
     
     # Surface cycle update frequency
-    export FHCYC={doc.fv3_enkf_settings.FHCYC}
+    if [ "$CDUMP" == "gdas" ] ; then
+        export FHCYC={doc.fv3_enkf_settings.FHCYC_GDAS}
+    elif [ "$CDUMP" == "gfs" ] ; then
+        export FHCYC={doc.fv3_enkf_settings.FHCYC_GFS}
+    fi
     
     # Output frequency of the forecast model (for cycling)
     export FHMIN={doc.gfs_output_settings.FHMIN_GDAS}
@@ -187,6 +191,7 @@ config_base:
     
     # If YES, NSST is turned on in anal and/or fcst steps
     export DONST="{tools.YES_NO(doc.fv3_settings.DONST)}"
+    if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
     
     # The switch to apply SST elevation correction or not
     export nst_anl={tools.fort(doc.fv3_settings.nst_anl)}

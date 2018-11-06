@@ -103,7 +103,17 @@ fv3_settings_template: !Template &fv3_settings_template
   FHCYC: 
     type: int
     default: 24
-    description: Surface cycle update frequency
+    description: Surface cycle update frequency (gdas=1,gfs=24)
+
+  FHCYC_GDAS: 
+    type: int
+    default: 1
+    description: Surface cycle update frequency for the GDAS
+
+  FHCYC_GFS: 
+    type: int
+    default: 24
+    description: Surface cycle update frequency for the GFS
 
   QUILTING: 
     type: bool

@@ -37,6 +37,11 @@ data_assimilation_template: !Template &data_assimilation_template
     type: bool
     default: no
 
+  DO_EMCSFC:
+    type: bool
+    default: NO
+    description: "Whether to run EMC SFC job"
+
   PROCESS_TROPCY:
     type: bool
     default: no

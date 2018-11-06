@@ -35,6 +35,10 @@ config_post:
     export GTGF={tools.YES_NO(doc.post.GTGF)}     # gtg icing product
     export FLXF={tools.YES_NO(doc.post.FLXF)}     # grib2 flux file written by post
     export PGB1F={tools.YES_NO(doc.post.PGB1F)}
+    if [ $RUN_ENVIR = "nco" ]; then
+        export PGB1F=NO
+        export GTGF=YES
+    fi
     
     if [[ "$CDUMP" == gdas ]] ; then
         export nth_postgp={doc.aliases.gdaspost.nth}

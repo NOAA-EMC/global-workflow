@@ -40,11 +40,11 @@ places_schema: &places_schema !Template
   HOMEobsproc_prep:
     type: string
     optional: true
-    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep.iss-46886.fv3gfs"
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
   HOMEobsproc_network:
     type: string
     optional: true
-    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global.iss-46886.fv3gfs"
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
   BASE_VERIF: { type: string, optional: true }
   BASE_SVN:
     type: string

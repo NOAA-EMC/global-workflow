@@ -74,6 +74,7 @@ suite: !Cycle
         (jgdas_emc_dump_waiter.updated_status | dump.jgdas_dump.release_sfcprep ) & up.gdas.forecast.at('-6:00:00')
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_emcsfc_sfc_prep: !Task
+        Disable: !calc not doc.data_assimilation.DO_EMCSFC
         <<: *exclusive_task_template
         Trigger: !Depend 'up.dump.jgdas_dump.release_sfcprep | up.jgdas_emc_dump_waiter.updated_status'
         ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
@@ -120,8 +121,10 @@ suite: !Cycle
         J_JOB: JGLOBAL_FORECAST
 
     post_processing: !Family
+      Disable: !calc not doc.downstream.DO_POST_PROCESSING
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       bulletins: !Family
+        Disable: !calc not doc.downstream.DO_BULLETINS
         jgdas_bulls_navy: !Task
           <<: *exclusive_task_template
           Dummy: True  # job is broken
@@ -131,6 +134,7 @@ suite: !Cycle
           J_JOB: JGDAS_BULLS_NAVY
 
     gempak: !Family
+      Disable: !calc not doc.downstream.DO_GEMPAK
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgdas_gempak: !Task
         <<: *exclusive_task_template
@@ -245,7 +249,10 @@ suite: !Cycle
           J_JOB: JGLOBAL_ENKF_INNOVATE_OBS
           ENSGRP: !expand "{dimval.groupid:02d}"
           # Lin wants ENSGRP to be outside the ecflow suite definition:
-          rocoto_command: !expand  "/usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}"
+          #rocoto_command: !expand  "/usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}"
+          rocoto_command: !expand >-
+            {rocoto_load_modules} ;
+            /usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}
           ecflow_command: !expand |
             export ENSGRP={ENSGRP}
             $HOMEgfs/jobs/{J_JOB}
@@ -279,7 +286,10 @@ suite: !Cycle
           ENSGRP: !expand "{dimval.groupid:02d}"
           
           # Lin wants ENSGRP to be outside the ecflow suite definition:
-          rocoto_command: !expand "/usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}"
+          #rocoto_command: !expand "/usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}"
+          rocoto_command: !expand >-
+            {rocoto_load_modules} ;
+            /usr/bin/env ENSGRP={ENSGRP} &HOMEgfs;/jobs/{J_JOB}
           ecflow_command: !expand |
             export ENSGRP={ENSGRP}
             $HOMEgfs/jobs/{J_JOB}
@@ -371,6 +381,7 @@ suite: !Cycle
       Trigger: !Depend ( ( jgfs_emc_dump_waiter.updated_status | dump.jgfs_dump.release_sfcprep ) & up.gdas.forecast.at('-6:00:00') )
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_emcsfc_sfc_prep: !Task
+        Disable: !calc not doc.data_assimilation.DO_EMCSFC
         <<: *exclusive_task_template
         Trigger: !Depend 'up.dump.jgfs_dump.release_sfcprep | up.jgfs_emc_dump_waiter.updated_status'
         resources: !calc partition.resources.run_sfc_prep
@@ -482,7 +493,7 @@ suite: !Cycle
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
-          export post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
+          /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_pgrb2_spec_post: !FirstTrue
         - when: !calc max(doc.gfs_output_settings.gfs_forecast_hours)>=384
@@ -495,7 +506,9 @@ suite: !Cycle
     #endfamily post
 
     post_processing: !Family
+      Disable: !calc not doc.downstream.DO_POST_PROCESSING
       fax: !Family
+        Disable: !calc not doc.downstream.DO_FAX
         jgfs_fax_f000: !Task
           <<: *fax_task_template
           FCSTHR: '00'
@@ -525,6 +538,7 @@ suite: !Cycle
           Trigger: !Depend up.up.post.jgfs_post_f036
 
       grib_wafs: !TaskArray
+        Disable: !calc not doc.downstream.DO_WAFS
         Dimensions:
           fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
         jgfs_wafs: !TaskElement
@@ -546,18 +560,21 @@ suite: !Cycle
           config_list: [ base, wafs ]
 
       bufr_sounding: !Family
+        Disable: !calc not doc.downstream.DO_BUFRSND
         jgfs_postsnd: !Task
           <<: *exclusive_task_template
           Trigger: !Depend up.up.post.jgfs_post_f144
           resources: !calc partition.resources.run_postsnd
 
       bulletins: !Family
+        Disable: !calc not doc.downstream.DO_BULLETINS
         jgfs_fbwind: !Task
           <<: *exclusive_task_template
           Trigger: !Depend ( up.up.post.jgfs_post_f006 & up.up.post.jgfs_post_f012 & up.up.post.jgfs_post_f024 )
           resources: !calc partition.resources.run_small_downstream
 
       grib2_wafs: !Family
+        Disable: !calc not doc.downstream.DO_WAFS
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
           Trigger: !Depend up.up.post.jgfs_post_f000
@@ -582,6 +599,7 @@ suite: !Cycle
           J_JOB: JGFS_WAFS_GCIP
 
       awips_20km_1p0: !TaskArray
+        Disable: !calc not doc.downstream.DO_AWIPS
         Dimensions:
           fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_20km_1p0_hours))) "
         # tasks every 6 hours till f240
@@ -598,6 +616,7 @@ suite: !Cycle
           more_vars: { fcsthrs: FHR }
 
       awips_g2: !TaskArray
+        Disable: !calc not doc.downstream.DO_AWIPS
         Dimensions:
           fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_g2_hours))) "
         jgfs_awips: !TaskElement
@@ -612,6 +631,7 @@ suite: !Cycle
     #endfamily post_processing
 
     gempak: !Family
+      Disable: !calc not doc.downstream.DO_GEMPAK
       jgfs_gempak: !Task
         <<: *exclusive_task_template
         resources: !calc partition.resources.run_gfs_gempak
@@ -706,7 +726,7 @@ suite: !Cycle
       Disable: !calc doc.settings.gfs_cyc == 0
       Complete: !Depend ~ suite.has_cycle('-6:00:00')
       AlarmName: gfs
-      Trigger: !Depend up.gfs.jgfs_emc_vrfy
+      Trigger: !Depend up.gfs
       resources: !calc partition.resources.run_arch
       ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
       J_JOB: rocoto/arch.sh

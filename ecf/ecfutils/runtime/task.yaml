@@ -36,7 +36,7 @@ task_template: &task_template
      {rocoto_config_source} ;
      {J_JOB_PATH}/{J_JOB}
 
-  config_list: [ ]
+  config_list: [ base ]
 
   rocoto_config_source: !FirstTrue
     - when: !calc not config_list

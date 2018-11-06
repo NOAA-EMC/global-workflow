@@ -46,17 +46,6 @@ config_prep:
     export COMINgdas="$ROTDIR/gdas.$PDY/$cyc"
     export COMINgfs="$ROTDIR/gfs.$PDY/$cyc"
 
-    ###################################
-    # Only used when DO_RELOCATE=YES
-    # ignore them for now
-    ###################################
-    #export machine=${{machine:-WCOSS_C}}
-    #if [ $machine = WCOSS_C ] ; then
-    #   export APRNGETTX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-    #   export APRNRELOC="time aprun -q -j1 -n7 -N1 -d24 -cc depth "
-    #   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
-    #fi
-    
     # If PROCESS_TROPCY=NO, copy over tcvitals files to COMROT
     if [ $PROCESS_TROPCY = "NO" ]; then
        cp $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}syndata.tcvitals.tm00 $COMOUT/.

@@ -57,7 +57,7 @@ config_fcst:
     export cal_pre="{tools.fort(doc.fv3_settings.cal_pre)}"
     export do_sat_adj="{tools.fort(doc.fv3_settings.do_sat_adj)}"
     export random_clds="{tools.fort(doc.fv3_settings.random_clds)}"
-    export cnvcld="{tools.fort(doc.fv3_settings.cnvcld)}"
+    #export cnvcld="{tools.fort(doc.fv3_settings.cnvcld)}"
     export ncld={doc.fv3_settings.ncld}
     export FIELD_TABLE="{doc.fv3_settings.FIELD_TABLE}"
     export nwat={doc.fv3_settings.nwat}

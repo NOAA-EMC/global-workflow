@@ -10,7 +10,7 @@ if [ -z $target ]; then
     exit 1
 fi
 
-RUN_ENVIR=${1}
+RUN_ENVIR=${1:-emc}
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
@@ -174,13 +174,6 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
-
-if [[ $target != "jet" ]]; then
-    for gsiexe in  global_gsi global_enkf calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x ;do
-	[[ -s $gsiexe ]] && rm -f $gsiexe
-	$LINK ../sorc/gsi.fd/exec/$gsiexe .
-    done
-fi
 
 if [[ $target == "jet" ]]; then
   util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
