@@ -348,7 +348,7 @@ default_resources: &default_resources
 
   efcs_walltime: !calc doc.enkf_resource_table.efcs_wall
   gfsfcst_walltime: !calc doc.gfs_resource_table.gfsfcst_wall
-  gdas_walltime: !calc doc.gfs_resource_table.gdasfcst_wall
+  gdasfcst_walltime: !calc doc.gfs_resource_table.gdasfcst_wall
   
   run_gfsfcst: !JobRequest
     - batch_memory: "1024M"
