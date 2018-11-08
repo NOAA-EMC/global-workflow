@@ -30,9 +30,22 @@ export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir 
 if [ $ROTDIR_DUMP = "YES" ]; then
-    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDATE}/${CDUMP}${DUMP_SUFFIX} $ROTDIR/${CDUMP}.${PDY}/${cyc}
+    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDATE}/${CDUMP}${DUMP_SUFFIX} $COMOUT
     status=$?
     [[ $status -ne 0 ]] && exit $status
+
+#   Ensure previous cycle gdas dumps are available (used by cycle & downstream)
+    GDATE=$($NDATE -$assim_freq $CDATE)
+    gPDY=$(echo $GDATE | cut -c1-8)
+    gcyc=$(echo $GDATE | cut -c9-10)
+    GDUMP=gdas
+    gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc"
+    if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
+     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDATE}/${GDUMP}${DUMP_SUFFIX} $gCOMOUT
+     status=$?
+     [[ $status -ne 0 ]] && exit $status
+    fi
+    
 fi
 
 ###############################################################
