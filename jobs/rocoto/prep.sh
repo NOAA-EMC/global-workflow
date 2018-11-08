@@ -41,7 +41,7 @@ if [ $ROTDIR_DUMP = "YES" ]; then
     GDUMP=gdas
     gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc"
     if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
-     $HOMEgfs/ush/getdump.sh $GDATE $gCDUMP $DMPDIR/${GDATE}/${GDUMP}${DUMP_SUFFIX} $gCOMOUT
+     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDATE}/${GDUMP}${DUMP_SUFFIX} $gCOMOUT
      status=$?
      [[ $status -ne 0 ]] && exit $status
     fi
