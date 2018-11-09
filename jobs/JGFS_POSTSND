@@ -5,9 +5,6 @@ set -xa
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
-#Specify whether the run is production or development
-#
-export envir=${envir:-prod}
 
 ############################
 export MP_EUIDEVELOP=min
@@ -22,27 +19,17 @@ export MP_MPILIB=mpich2
 export MP_LABELIO=yes
 ####################################
 # obtain unique process id (pid) and make temp directories
-export DATA=${DATA:-$DATAROOT/${jobid}}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir $DATA
 cd $DATA 
-
-####################################
-# File To Log Msgs
-####################################
-export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 ####################################
 # Determine Job Output Name on System
 ####################################
 export outid="LL$job"
-export jobid="${outid}.o${pid}"
 export pgmout="OUTPUT.${pid}"
 
 export cycle=t${cyc}z 
-
-export SENDCOM=${SENDCOM:-YES}
-export SENDECF=${SENDECF:-YES}
-export SENDDBN=${SENDDBN:-YES}
 
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -66,11 +53,11 @@ setpdy.sh
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}}
-export pcom=${pcom:-${COMOUT}/${cyc}/wmo}
-mkdir -p $COMOUT $pcom
-export COMAWP=${COMAWP:-${COMOUT}/${cyc}/nawips}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export pcom=${pcom:-${COMOUT}/wmo}
+export COMAWP=${COMAWP:-${COMOUT}/gempak}
+mkdir -p $COMOUT $pcom $COMAWP
 env
 
 ########################################################
