@@ -19,10 +19,11 @@ if [[ "$target" == jet ]]; then
         if [ -d gsi.fd/modulefiles ]; then
             cp ../modulefiles/gsi/modulefile.ProdGSI.jet gsi.fd/modulefiles
             cp ../modulefiles/gsi/setCompilerFlags.cmake gsi.fd/cmake/Modules
+            cp ../modulefiles/gsi/build_all_cmake.sh gsi.fd/ush
+            cp ../modulefiles/gsi/CMakeLists.txt gsi.fd/
         fi
     fi
 fi    
-
 
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then

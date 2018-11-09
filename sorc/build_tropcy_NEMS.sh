@@ -105,7 +105,7 @@ elif [ $target = jet ]; then
 
     export LIBS_REL="${W3NCO_LIBd}"
     export FC=mpiifort
-    export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+    export FFLAGS="-openmp -O3 -g -traceback -r8 -axSSE4.2,AVX,CORE-AVX2 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
 else
 
