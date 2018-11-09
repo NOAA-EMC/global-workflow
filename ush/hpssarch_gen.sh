@@ -7,7 +7,7 @@ set -x
 ###################################################
 
 
-type=${1:-gfs}                ##gfs, gdas, enkf.gdas or enkf.ggfs
+type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 
 CDATE=${CDATE:-2018010100}
 PDY=$(echo $CDATE | cut -c 1-8)
@@ -209,7 +209,7 @@ fi   ##end of gdas
 
 
 #-----------------------------------------------------
-if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
+if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 #-----------------------------------------------------
 
   NMEM_ENKF=${NMEM_ENKF:-80}
@@ -219,28 +219,28 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
   NTARS2=$((NTARS/2))
 
-  dirname="./enkf.${CDUMP}.${PDY}/${cyc}/"
+  dirname="./enkf${CDUMP}.${PDY}/${cyc}/"
   head="${CDUMP}.t${cyc}z."
 
   #..................
-  rm -f enkf.${CDUMP}.txt
-  touch enkf.${CDUMP}.txt
+  rm -f enkf${CDUMP}.txt
+  touch enkf${CDUMP}.txt
 
-  echo  "${dirname}${head}cnvstat.ensmean            " >>enkf.${CDUMP}.txt
-  echo  "${dirname}${head}enkfstat                   " >>enkf.${CDUMP}.txt
-  echo  "${dirname}${head}gsistat.ensmean            " >>enkf.${CDUMP}.txt
-  echo  "${dirname}${head}oznstat.ensmean            " >>enkf.${CDUMP}.txt
-  echo  "${dirname}${head}radstat.ensmean            " >>enkf.${CDUMP}.txt
-  echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf.${CDUMP}.txt
+  echo  "${dirname}${head}cnvstat.ensmean            " >>enkf${CDUMP}.txt
+  echo  "${dirname}${head}enkfstat                   " >>enkf${CDUMP}.txt
+  echo  "${dirname}${head}gsistat.ensmean            " >>enkf${CDUMP}.txt
+  echo  "${dirname}${head}oznstat.ensmean            " >>enkf${CDUMP}.txt
+  echo  "${dirname}${head}radstat.ensmean            " >>enkf${CDUMP}.txt
+  echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf${CDUMP}.txt
   for fstep in eobs eomg ecen eupd efcs epos ; do
-   echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf.${CDUMP}.txt
+   echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
   done
 
   fh=3
   while [ $fh -le 9 ]; do
     fhr=$(printf %03i $fh)
-    echo  "${dirname}${head}atmf${fhr}.ensmean.nc4      " >>enkf.${CDUMP}.txt
-    echo  "${dirname}${head}atmf${fhr}.ensspread.nc4    " >>enkf.${CDUMP}.txt
+    echo  "${dirname}${head}atmf${fhr}.ensmean.nc4      " >>enkf${CDUMP}.txt
+    echo  "${dirname}${head}atmf${fhr}.ensspread.nc4    " >>enkf${CDUMP}.txt
     fh=$((fh+3))
   done
 
@@ -249,46 +249,46 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
   while [ $n -le $NTARS ]; do
   #...........................
 
-  rm -f enkf.${CDUMP}_grp${n}.txt
-  rm -f enkf.${CDUMP}_restarta_grp${n}.txt
-  rm -f enkf.${CDUMP}_restartb_grp${n}.txt
-  touch enkf.${CDUMP}_grp${n}.txt
-  touch enkf.${CDUMP}_restarta_grp${n}.txt
-  touch enkf.${CDUMP}_restartb_grp${n}.txt
+  rm -f enkf${CDUMP}_grp${n}.txt
+  rm -f enkf${CDUMP}_restarta_grp${n}.txt
+  rm -f enkf${CDUMP}_restartb_grp${n}.txt
+  touch enkf${CDUMP}_grp${n}.txt
+  touch enkf${CDUMP}_restarta_grp${n}.txt
+  touch enkf${CDUMP}_restartb_grp${n}.txt
 
   m=1
   while [ $m -le $NMEM_EARCGRP ]; do
      nm=$(((n-1)*NMEM_EARCGRP+m))
      mem=$(printf %03i $nm)
-     dirname="./enkf.${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+     dirname="./enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
      head="${CDUMP}.t${cyc}z."
 
     #---
     if [ $n -le $NTARS2 ]; then
-     echo "${dirname}${head}ratmanl.nemsio      " >>enkf.${CDUMP}_grp${n}.txt
+     echo "${dirname}${head}ratmanl.nemsio      " >>enkf${CDUMP}_grp${n}.txt
     fi
-    echo "${dirname}${head}atmf006.nemsio       " >>enkf.${CDUMP}_grp${n}.txt
-    echo "${dirname}${head}cnvstat              " >>enkf.${CDUMP}_grp${n}.txt
-    echo "${dirname}${head}gsistat              " >>enkf.${CDUMP}_grp${n}.txt
+    echo "${dirname}${head}atmf006.nemsio       " >>enkf${CDUMP}_grp${n}.txt
+    echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_grp${n}.txt
+    echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
 
 
     #---
-    echo "${dirname}${head}atminc.nc            " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias                " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_air            " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_int            " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_pc             " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}radstat              " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}cnvstat              " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>enkf.${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}abias_air            " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}abias_int            " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}abias_pc             " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}radstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
 
     #---
-    echo "${dirname}RESTART                     " >>enkf.${CDUMP}_restartb_grp${n}.txt
+    echo "${dirname}RESTART                     " >>enkf${CDUMP}_restartb_grp${n}.txt
 
     m=$((m+1))
   done
@@ -301,7 +301,7 @@ if [ $type = "enkf.gdas" -o $type = "enkf.gfs" ]; then
 
 
 #-----------------------------------------------------
-fi   ##end of enkf.gdas or enkf.gfs
+fi   ##end of enkfgdas or enkfgfs
 #-----------------------------------------------------
 
 
