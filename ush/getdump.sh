@@ -19,6 +19,7 @@ if [ ! -s $TARGET_DIR ]; then mkdir -p $TARGET_DIR ;fi
 
 
 # Set file prefix
+cyc=`echo $CDATE |cut -c 9-10`
 prefix="$CDUMP.t${cyc}z."
 
 
