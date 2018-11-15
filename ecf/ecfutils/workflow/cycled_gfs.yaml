@@ -89,13 +89,15 @@ suite: !Cycle
           edit model 'obsproc_global'
         resources: !calc partition.resources.run_prep
         ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-        J_JOB: JGLOBAL_PREP
+        #J_JOB: JGLOBAL_PREP
+        J_JOB: rocoto/prep.sh
+        #J_JOB_PATH: '$HOMEobsproc_global/jobs'
         model: obsproc_global    # for four cycle mode
-        J_JOB_PATH: '$HOMEobsproc_global/jobs'
         config_list: [ base, prep, prepbufr ]
 
     jgdas_tropcy_cp: !Task
       <<: *exclusive_task_template
+      Dummy: true
       Trigger: !Depend prep.jgdas_prep
       resources: !calc partition.resources.run_one_hour_exclusive
       J_JOB: rocoto/tropcy_cp.sh
@@ -400,13 +402,15 @@ suite: !Cycle
         ecf_environment_settings: !expand |
           {doc.settings.ecflow_rocoto_cdate_workaround}
           export DATAROOT="$DATAROOT.$job"
-        J_JOB: JGLOBAL_PREP
+        #J_JOB: JGLOBAL_PREP
+        J_JOB: rocoto/prep.sh
+        #J_JOB_PATH: '$HOMEobsproc_global/jobs'
         model: obsproc_global    # for four cycle mode
-        J_JOB_PATH: '$HOMEobsproc_global/jobs'
         config_list: [ base, prep, prepbufr ]
 
     jgfs_tropcy_cp: !Task
       <<: *exclusive_task_template
+      Dummy: true
       Trigger: !Depend prep.jgfs_prep
       resources: !calc partition.resources.run_one_hour_exclusive
       ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
