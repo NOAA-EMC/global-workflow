@@ -55,7 +55,7 @@ do
     # Start Looping for the 
     # existence of the restart files
     ###############################
-    set +x
+#    set +x
     export pgm="postcheck"
     ic=1
     while [ $ic -le $SLEEP_LOOP_MAX ]

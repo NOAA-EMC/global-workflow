@@ -36,6 +36,7 @@ export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
 export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
+export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
 
 if test "$num" -ge 1
 then
@@ -140,6 +141,7 @@ do
         $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid254 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
+   $TRIMRH awps_file_f${fcsthrs}_${GRID}
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
 
 # Processing AWIPS GRIB2 grids with WMO headers
@@ -223,6 +225,7 @@ EOF
       export grid211="lambert:265.0:25.0:25.0 226.541:93:81271 12.19:65:81271"
       $WGRIB2 tmpfile_211 $opt1uv $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid211 gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
 
+      $TRIMRH gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2
       $WGRIB2 -s gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2 > gfs_grb211.${cycle}.pgrbf${fcsthrs}.grib2.idx
 
       ##############################

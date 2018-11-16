@@ -12,6 +12,10 @@ places_schema: &places_schema !Template
   ROTDIR: { type: string }
   ICSDIR: { type: string }
 
+  COMROOT:
+    type: string
+    optional: !calc not doc.settings.four_cycle_mode
+
   SHORT_TERM_TEMP: { type: string }
   LONG_TERM_TEMP: { type: string }
 
@@ -33,8 +37,14 @@ places_schema: &places_schema !Template
   FIXgsi: { type: string, optional: true }
   HOMEfv3gfs: { type: string, optional: true }
   HOMEpost: { type: string, optional: true }
-  HOMEobsproc_prep: { type: string, optional: true }
-  HOMEobsproc_network: { type: string, optional: true }
+  HOMEobsproc_prep:
+    type: string
+    optional: true
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
+  HOMEobsproc_network:
+    type: string
+    optional: true
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
   BASE_VERIF: { type: string, optional: true }
   BASE_SVN:
     type: string

@@ -17,7 +17,7 @@ data_assimilation_template: !Template &data_assimilation_template
   RECENTER_ENKF:  { type: bool,     default: YES }
   SMOOTH_ENKF:    { type: bool,     default: YES }
   assim_freq:     { type: int,      default: 6 }
-  l4densvar:      { type: bool,     default: NO }
+  l4densvar:      { type: bool,     default: YES }
   lwrite4danl:    { type: bool,     default: NO }
 
   NSPLIT:
@@ -37,6 +37,11 @@ data_assimilation_template: !Template &data_assimilation_template
     type: bool
     default: no
 
+  DO_EMCSFC:
+    type: bool
+    default: NO
+    description: "Whether to run EMC SFC job"
+
   PROCESS_TROPCY:
     type: bool
     default: no
@@ -49,6 +54,11 @@ data_assimilation_template: !Template &data_assimilation_template
     type: bool
     default: YES
     description: If NO, will copy prepbufr from globaldump.  Otherwise, generates prepbufr file anew.
+
+  OPREFIX:
+    type: string
+    default: "$CDUMP.$cycle."
+    description: Format for dump file name prefix
 
   RERUN_EFCSGRP:
     type: bool

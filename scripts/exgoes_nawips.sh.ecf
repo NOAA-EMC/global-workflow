@@ -63,13 +63,13 @@ while [ $fhcnt -le $fend ] ; do
 
   fhr3=$fhcnt
   typeset -Z3 fhr3
-  GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+  GRIBIN=$COMIN/${NET}.${cycle}.${GRIB}${fhr}${EXT}
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
 #  case $RUN in
-#   gfs_goessim) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+#   gfs_goessim) GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
 #                GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-#   gfs_goessim221) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
+#   gfs_goessim221) GRIBIN=$COMIN/${RUN}.${cycle}.${GRIB}${fhr}${EXT}
 #                   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
 #  esac
 

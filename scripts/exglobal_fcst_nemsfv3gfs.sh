@@ -29,7 +29,6 @@ VERBOSE=${VERBOSE:-"YES"}
 if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXECUTING $0 $* >&2
   set -x
-  module list
 fi
 
 machine=${machine:-"WCOSS_C"}
@@ -118,11 +117,7 @@ fi
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
 mkdir -p $DATA/RESTART $DATA/INPUT
 cd $DATA || exit 8
 
@@ -917,7 +912,6 @@ fi
 
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
 export OMP_NUM_THREADS=$NTHREADS_FV3
-module list
 $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
@@ -957,7 +951,7 @@ fi
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
+if [ $KEEPDATA = "NO" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
 set +x

@@ -4,16 +4,14 @@ suite: !Cycle
   ics: !Family
     Disable: !calc >-
       doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
-    RUN: 'gfs' # useless but required
-    ecflow_def: !expand |
-      edit RUN '{RUN}'
+    model: 'gfs' # useless but required
     jgfs_emc_getics: !Task
       <<: *service_task_template
       Disable: !calc doc.settings.get("IC_CDUMP","") 
       resources: !calc partition.resources.run_getic
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
-      RUN: gfs
+      model: gfs
 
     jgfs_emc_fv3ic: !Task
       <<: *exclusive_task_template
@@ -22,13 +20,11 @@ suite: !Cycle
       resources: !calc partition.resources.run_fv3ic
       J_JOB: rocoto/fv3ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
-      RUN: gfs
+      model: gfs
 
   gfs: !Family
     Trigger: !Depend ics
-    RUN: 'gfs'
-    ecflow_def: !expand |
-      edit RUN '{RUN}'
+    model: 'gfs'
 
     forecast: !Family
       jgfs_forecast_high: !Task
@@ -37,12 +33,12 @@ suite: !Cycle
         J_JOB: JGLOBAL_FORECAST
 
     post: !TaskArray
-      RUN: !calc up.RUN
+      model: !calc up.model
       Dimensions:
         fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
-        RUN: !calc up.RUN
+        model: !calc up.model
         Disable: !calc metasched.type == 'rocoto'
         Trigger: !Depend up.forecast.is_running()
         Complete: !Depend up.forecast
@@ -63,7 +59,7 @@ suite: !Cycle
 
       jgfs_post_anl: !Task
         <<: *exclusive_task_template
-        RUN: !calc up.RUN
+        model: !calc up.model
         FHRGRP: '000'
         FHRLST: anl
         more_vars: [ FHRGRP, FHRLST, FHR, HR ]
@@ -122,7 +118,7 @@ suite: !Cycle
       Disable: !calc not doc.archiving.archive_to_hpss
       J_JOB: rocoto/arch.sh
       ecf_module_commands: "# arch.sh will load modules instead"
-      RUN: gfs
+      model: gfs
       ecflow_def:
         time +00:10
 
@@ -131,5 +127,5 @@ suite: !Cycle
     Disable: !calc not metasched.type=="rocoto"
     resources: !calc partition.resources.run_nothing
     rocoto_command: /bin/true
-    RUN: gfs # useless but required
+    model: gfs # useless but required
 

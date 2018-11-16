@@ -20,14 +20,6 @@ make_next_cycles: &make_next_cycles_task !Task
     workdir=/tmp/$USER.dump_waiter.$$.$RANDOM
     mkdir -p "$workdir"
     cd "$workdir"
-    export WORKFLOW_FIRST_CYCLE=%WORKFLOW_FIRST_CYCLE:1970010100%
-    export WORKFLOW_LAST_CYCLE=%WORKFLOW_LAST_CYCLE:ETERNITY%
-    export WORKFLOW_CYCLES_TO_GENERATE=%WORKFLOW_CYCLES_TO_GENERATE:5%
-    export WORKFLOW_CROW_HOME=%WORKFLOW_CROW_HOME%
-    export WORKFLOW_EXPDIR=%WORKFLOW_EXPDIR%
-    export ECF_HOME=%ECF_HOME%
-    export ECF_ROOT=%ECF_ROOT:X%
-
     if [[ "$ECF_ROOT" == X ]] ; then
       export ECF_ROOT=$( cd "$ECF_HOME" ; cd .. ; pwd -P )
     fi
@@ -38,8 +30,19 @@ make_next_cycles: &make_next_cycles_task !Task
     setpdy.sh
     source ./PDY
 
-    module load prod_util
-    module load ecflow
+    module load {doc.settings.prod_util_module}
+    module load {doc.settings.ecflow_module}
+
+    export WORKFLOW_FIRST_CYCLE=%WORKFLOW_FIRST_CYCLE:1970010100%
+    export WORKFLOW_LAST_CYCLE=%WORKFLOW_LAST_CYCLE:ETERNITY%
+    export WORKFLOW_CYCLES_TO_GENERATE=%WORKFLOW_CYCLES_TO_GENERATE:5%
+    export WORKFLOW_CROW_HOME=%WORKFLOW_CROW_HOME%
+    export WORKFLOW_EXPDIR=%WORKFLOW_EXPDIR%
+    export ECF_HOME=%ECF_HOME%
+    export ECF_ROOT=%ECF_ROOT:X%
+    export ECF_OUT=%ECF_OUT%
+    export ECF_PORT=%ECF_PORT%
+    export ECF_HOST=%ECF_HOST%
 
     set -uex
 

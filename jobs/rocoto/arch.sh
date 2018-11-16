@@ -14,7 +14,6 @@
 
 ###############################################################
 # Source FV3GFS workflow modules
-
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
@@ -161,9 +160,7 @@ if [ $CDUMP = "gfs" ]; then
     done
 
     #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
-    #for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
-    # Removed gfs_nemsiob to reduce HPSS troughput because too many retros are running at once T.McG
-    for targrp in gfs_flux gfs_nemsioa; do
+    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
@@ -255,11 +252,12 @@ while [ $GDATE -le $GDATEEND ]; do
     gcyc=$(echo $GDATE | cut -c9-10)
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
-#        rocotolog="$EXPDIR/logs/${GDATE}.log"
-#        testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-#        rc=$?
-#        [[ $rc -eq 0 ]] && rm -rf $COMIN
-       rm -rf $COMIN
+        rocotolog="$EXPDIR/logs/${GDATE}.log"
+	if [ -f $rocotolog ]; then
+            testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
+            rc=$?
+            [[ $rc -eq 0 ]] && rm -rf $COMIN
+	fi
     fi
 
     # Remove any empty directories

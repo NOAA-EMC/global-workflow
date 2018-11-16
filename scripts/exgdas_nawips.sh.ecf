@@ -12,13 +12,13 @@ echo "                    data on the CCS is properly protected."
 set -xa
 
 cd $DATA
-RUN=$1
+GEMPAK_RUN=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
-export 'PS4=$RUN:$SECONDS + '
+export 'PS4=$GEMPAK_RUN:$SECONDS + '
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$GEMPAK_RUN
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
@@ -70,7 +70,7 @@ fi
 
 #
 
-entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
+entry=`grep "^$GEMPAK_RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
 
 if [ "$entry" != "" ] ; then
   cpyfil=`echo $entry  | awk 'BEGIN {FS="|"} {print $2}'`
@@ -104,24 +104,24 @@ while [ $fhcnt -le $fend ] ; do
   fhr3=$fhcnt
   typeset -Z3 fhr3
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${GEMPAK_RUN}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN = "gdas_0p25" ]; then 
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
+  if [ $GEMPAK_RUN = "gdas_0p25" ]; then 
+    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
        msg=" $GRIBIN file is missing "
        postmsg "$jlogfile" "$msg"
     fi
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
-    export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
+    export GRIBIN=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
        msg=" $GRIBIN file is missing "
        postmsg "$jlogfile" "$msg"
     fi
-    GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
+    GRIBIN_chk=$COMIN/${RUN}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
 
   icnt=1
@@ -196,9 +196,9 @@ $GEMEXE/gpend
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $GEMPAK_RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 

@@ -1,0 +1,41 @@
+fax_wafs_task_template: &fax_wafs_task_template !Task
+  <<: *exclusive_task_template
+  resources: !calc partition.resources.run_small_downstream
+
+  # The ecflow_command is dumped into the ecf file where the
+  # J-Job would normally be called.  This job is never run by
+  # Rocoto, so we don't need the equivalent Rocoto code.
+  ecflow_command: !expand |
+    export fhr_list='{fhr_list}'
+    export fcsthrs=%FCSTHR%
+
+    ###########################################################
+    # CALL executable job script here
+    ${{HOMEgfs}}/jobs/JGFS_FAX_WAFS
+
+  rocoto_more_vars: !expand |
+    <envar><name>fhr_list</name><value>{fhr_list}<value></envar>
+    <envar><name>FCSTHR</name><value>{FCSTHR}<value></envar>
+
+  ecflow_def: !expand "edit FCSTHR '{FCSTHR}'"
+    
+fax_task_template: &fax_task_template !Task
+  <<: *exclusive_task_template
+  resources: !calc partition.resources.run_small_downstream
+
+  # The ecflow_command is dumped into the ecf file where the
+  # J-Job would normally be called.  This job is never run by
+  # Rocoto, so we don't need the equivalent Rocoto code.
+  ecflow_command: !expand |
+    export fcsthrs=%FCSTHR%
+
+    ###########################################################
+    # CALL executable job script here
+    ${{HOMEgfs}}/jobs/JGFS_FAX
+
+  rocoto_more_vars: !expand |
+    <envar><name>FCSTHR</name><value>{FCSTHR}<value></envar>
+    
+  ecflow_def: !expand "edit FCSTHR '{FCSTHR}'"
+  
+  config_list: [ base, fax, wafs ]

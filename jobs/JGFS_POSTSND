@@ -5,8 +5,8 @@ set -xa
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
+
 #Specify whether the run is production or development
-#
 export envir=${envir:-prod}
 
 ############################
@@ -20,6 +20,7 @@ export MP_COLLECTIVE_OFFLOAD=no
 export MP_SHARED_MEMORY=yes
 export MP_MPILIB=mpich2
 export MP_LABELIO=yes
+
 ####################################
 # obtain unique process id (pid) and make temp directories
 export DATA=${DATA:-$DATAROOT/${jobid}}
@@ -30,13 +31,6 @@ cd $DATA
 # File To Log Msgs
 ####################################
 export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
-
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL$job"
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
 
 export cycle=t${cyc}z 
 

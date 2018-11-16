@@ -1,0 +1,57 @@
+schedvar_schema: &schedvar_schema !Template
+  cpu_project:
+    type: string
+    default: CPU_PROJECT
+    description: name of the metascheduler variable for the project whose CPU allocation should be used
+
+  shared_queue: 
+    type: string
+    default: QUEUESHARED
+    description: Name of the metascheduler variable for the queue that should receive jobs that can share nodes with others, but do not need external resources such as network access.
+
+  service_queue: 
+    type: string
+    default: QUEUESERV
+    description: Name of the metascheduler variable for the queue that receives jobs which need external resources such as network access.
+
+  exclusive_queue: 
+    type: string
+    default: QUEUE
+    description: Name of the metascheduler variable for the queue that receives jobs that are too large to share nodes with other jobs.
+
+  partition: 
+    type: string
+    default: PARTITION
+    description: Name of the metascheduler variable that specifies the machine partition for all jobs.
+
+  shared_partition: 
+    type: string
+    default: SHARED_PARTITION
+    description: Name of the metascheduler variable that specifies the machine partition for shared_queue jobs.
+
+  service_partition: 
+    type: string
+    default: SERVICE_PARTITION
+    description: Name of the metascheduler variable that specifies the machine partition for service_queue jobs.
+
+  exclusive_partition: 
+    type: string
+    default: EXCLUSIVE_PARTITION
+    description: Name of the metascheduler variable that specifies the machine partition for exclusive_queue jobs.
+
+  script_home:
+    type: string
+    default: HOMEgfs
+    description: "Installation area of the FV3 GFS.  This is the parent directory of ush, scripts, jobs, etc."
+
+  obsproc_network_home:
+    type: string
+    default: HOMEobsproc_network
+    description: "Installation area of the global obsproc."
+
+  obsproc_prep_home:
+    type: string
+    default: HOMEobsproc_prep
+    description: "Installation area of the global obsproc prep."
+
+  

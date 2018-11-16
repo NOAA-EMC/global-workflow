@@ -57,12 +57,12 @@ cd $ROTDIR
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
-if [ $ENSGRP -gt 0 ] && [[ $HPSSARCH = "YES" ]]; then
+firstday=$($NDATE +24 $SDATE)
+if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
-   firstday=$($NDATE +24 $SDATE)
    mm=`echo $CDATE|cut -c 5-6`
    dd=`echo $CDATE|cut -c 7-8`
    nday=$(( (mm-1)*30+dd ))
@@ -129,7 +129,7 @@ if [ $ENSGRP -eq 0 ]; then
     $NCP $ROTDIR/enkf.${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat       enkfstat.${CDUMP}.$CDATE
     $NCP $ROTDIR/enkf.$CDUMP.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
-    if [ $CDUMP_ENKF != "gdas" ]; then
+    if [ $CDUMP_ENKF != "GDAS" ]; then
 		$NCP $ROTDIR/enkf.gfs.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
 		$NCP $ROTDIR/enkf.gfs.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
@@ -144,11 +144,6 @@ fi
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then
-
-    if [[ "${DELETE_COM_IN_ARCHIVE_JOB_ENKF:-YES}" == NO ]] ; then
-        exit 0
-    fi
-
     ###############################################################
     # Clean up previous cycles; various depths
     # PRIOR CYCLE: Leave the prior cycle alone

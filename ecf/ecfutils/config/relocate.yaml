@@ -1,0 +1,50 @@
+# This file is used to generate config.relocate, which controls
+# observation pre-processing.  The output of this is sent into the GFS
+# or GDAS analysis.  The observation processing system is not part of
+# this public release, so this file is ignored.
+
+config_relocate:
+  filename: config.relocate
+  content: !expand |
+    #!/bin/ksh -x
+    
+    ########## config.relocate ##########
+    # Prep step specific
+    
+    echo "BEGIN: config.relocate"
+    
+    set -x    
+    # Relocation and syndata QC
+    export PROCESS_TROPCY="{tools.YES_NO(doc.data_assimilation.PROCESS_TROPCY)}"
+    [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
+    export DO_RELOCATE="{tools.YES_NO(doc.data_assimilation.DO_RELOCATE)}"
+    export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
+    export SENDCOM="YES"
+    
+    export HOMERELO=$HOMEgfs
+    export EXECRELO=${{HOMERELO}}/exec
+    export FIXRELO=${{HOMERELO}}/fix/fix_am
+    export USHRELO=${{HOMERELO}}/ush
+
+    export cycle="t\"$cyc\"z"
+    export OPREFIX="{doc.data_assimilation.OPREFIX}"
+    
+    ###################################
+    # Only used when DO_RELOCATE=YES
+    # ignore them for now
+    ###################################
+    #export machine=${{machine:-WCOSS_C}}
+    #if [ $machine = WCOSS_C ] ; then
+    #   export APRNGETTX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
+    #   export APRNRELOC="time aprun -q -j1 -n7 -N1 -d24 -cc depth "
+    #   export APRNSYNDX="time aprun -q -j1 -n1 -N1 -d1 -cc depth"
+    #fi
+
+    # If PROCESS_TROPCY=NO, copy over tcvitals files to COMROT
+    if [ $PROCESS_TROPCY = "NO" ]; then
+       cp $DMPDIR/$CDATE/$CDUMP/{doc.data_assimilation.OPREFIX}syndata.tcvitals.tm00 $COMOUT/.
+    fi
+    set +x
+    
+    echo "END: config.relocate"
+    

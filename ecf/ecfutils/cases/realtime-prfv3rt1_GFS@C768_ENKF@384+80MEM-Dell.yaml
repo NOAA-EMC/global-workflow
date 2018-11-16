@@ -1,0 +1,123 @@
+case:
+  fv3_settings:
+    CASE: C768
+    LEVS: 65
+    fcst_max_ppn: 12
+
+  fv3_enkf_settings:
+    CASE: C384
+    fcst_max_ppn: 12
+    layout_y: 6
+    layout_x: 4
+
+  fv3_gfs_settings:
+    layout_x: 12
+    layout_y: 16
+    WRTTASK_PER_GROUP: 60
+    WRITE_GROUP: 4
+    fv3_settings.hord_mt_nh_nonmono: 5
+    fv3_settings.hord_xx_nh_nonmono: 5
+
+  fv3_gdas_settings:
+    layout_x: 6
+    layout_y: 8
+    WRTTASK_PER_GROUP: 48
+    WRITE_GROUP: 1
+    fv3_settings.hord_mt_nh_nonmono: 6
+    fv3_settings.hord_xx_nh_nonmono: 6
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 8
+    NMEM_EFCSGRP: 4
+    NMEM_EARCGRP: 10
+    l4densvar: Yes
+
+  gfs_output_settings:
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHMAX_HF_GFS: 120
+    FHOUT_HF_GFS: 1
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+
+  post:
+    NPOSTGRP: 10
+    downset: 2
+    
+  downstream:
+    DO_BUFRSND: YES 
+    DO_GEMPAK: YES
+    DO_AWIPS: YES
+    VRFYFITS: YES
+    VSDB_STEP1: YES
+    VSDB_STEP2: NO
+    VRFYG2OBS: YES
+    VRFYPRCP: YES
+    VRFYRAD: YES
+    VRFYOZN: YES
+    VRFYMINMON: YES
+    VRFYTRAK: YES
+    VRFYGENESIS: YES
+    RUNMOS: NO
+    RMOLDSTD: 144
+
+  archiving:
+    ATARDIR: "/NCEPDEV/$HPSS_PROJECT/5year/$USER/$machine/Q2FY19/$PSLOT"
+    arch_cyc: 00
+    scrub_in_archive_end: 72
+    arch_warmicfreq: 4
+    arch_fcsticfreq: 1
+
+  resources:
+    postsnd_walltime: !timedelta "02:00:00"
+    gdasfcst_walltime: !timedelta "01:00:00"
+
+    run_anal: !JobRequest
+      - mpi_ranks: 480
+        max_ppn: 2
+        walltime: !timedelta '02:30:00'
+
+    run_gdaspost: !JobRequest
+      - mpi_ranks: 84
+        max_ppn: 14
+        walltime: !timedelta '00:45:00'
+        OMP_NUM_THREADS: 1
+
+    run_gfspost: !JobRequest
+      - mpi_ranks: 84
+        max_ppn: 14
+        walltime: !timedelta '00:30:00'
+        OMP_NUM_THREADS: 1
+
+    run_gdasvrfy: !JobRequest
+      - mpi_ranks: 1
+        max_ppn: 1
+        OMP_NUM_THREADS: 1
+        walltime: !timedelta '03:00:00'
+
+    run_gfsvrfy: !JobRequest
+      - mpi_ranks: 1
+        max_ppn: 1
+        OMP_NUM_THREADS: 1
+        walltime: !timedelta '10:00:00'
+
+  settings: 
+    # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
+    # unless overridden by that job's max_tries variable.
+    max_job_tries: 2
+
+    # This belongs in "places" and putting it here makes it unused.
+    # The default values are in platforms/jet.yaml.  You should delete
+    # these lines:
+    BASE_GIT: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git
+    BASE_SVN: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git
+
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2018-09-05t06:00:00
+    EDATE: 2018-09-09t18:00:00
+    chgres_and_convert_ics: No
+    realtime: true
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: Yes

@@ -1,0 +1,223 @@
+# This file configures the workflow to run on the dell parts of WCOSS
+
+platform: !Platform
+  <<: *global_platform_common
+
+  # Evaluate: this must be "false" to ensure disk space availability logic
+  # is not run unless this file is for the current platform.
+  Evaluate: false
+
+  # name: the name of this platform; this must match what the underlying
+  # scripts expect.
+  name: WCOSS_DELL_P3
+
+  # detect: this is a function that returns true iff the user is on
+  # WCOSS and false otherwise.  Note that all WCOSSes are detected
+  # from all WCOSSes.
+  detect: !calc ( tools.isdir("/usrx/local") and tools.isdir("/gpfs") )
+
+  # public_release_ics: location of input conditions that have been 
+  # prepared for the public release.
+  public_release_ics: /gpfs/hps3/emc/global/noscrub/emc.glopara/FV3GFS_V1_RELEASE/ICs
+
+  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
+  # restrict access to NOAA "rstprod" data restriction class.
+  # This only used for observation processing, data assimilation, and
+  # data assimilation archiving, which are not in the public release.
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "/gpfs/dell1/nco/ops/nwprod"
+
+  # DMPDIR - location of the global dump data.  This is used by the observation
+  # processing scripts, which are not included in the public release.
+  DMPDIR: !FirstTrue
+    - do: "/gpfs/gp1/emc/globaldump"
+      when: !calc tools.isdir(do)
+    - do: "/gpfs/tp1/emc/globaldump"
+      when: !calc tools.isdir(do)
+    - otherwise: !error "Cannot find globaldump directory."
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "$CRTM_FIX"
+
+  # BASE_SVN - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various subversion repositories.  This is used on some platforms
+  # to find executables for this workflow.
+  BASE_SVN: "/gpfs/dell2/emc/modeling/noscrub/emc.glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+
+  # config_base_extras - Additional configuration data to put in the
+  # config.base file
+  config_base_extras: |
+    if [ -d /gpfs/tp1 ]; then
+        export SITE="MARS"
+    elif [ -d /gpfs/gp1 ]; then
+        export SITE="VENUS"
+    fi
+
+  partition_common: &partition_common
+    <<: *global_partition_common
+    # Settings common to all partitions of this machine
+
+    # shared_accounting_ref - accounting settings for shared jobs
+    shared_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.shared_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+    # service_accounting_ref - accounting settings for service jobs (jobs
+    # that require tape or network access)
+    service_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.service_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+    # exclusive_accounting_ref - accounting settings for jobs that require
+    # exclusive access to a node.
+    exclusive_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+    # Queues to use for each job type.  This logic automatically
+    # switches between development queues on the backup machine and
+    # development queues on the production machine based on whether the
+    # /gpfs/hps2/ptmp is writable.
+    shared_queue: !FirstTrue
+      - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+        do: dev_shared
+      - otherwise: devonprod_shared
+    service_queue: dev_transfer
+    exclusive_queue: !FirstTrue
+      - when: !calc ( tools.can_write("/gpfs/hps2/ptmp") )
+        do: dev
+      - otherwise: devonprod
+
+    scheduler: !calc |
+      tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+    parallelism: !calc |
+      tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+    nodes: !calc |
+      tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
+
+  partitions:
+    Evaluate: false
+    exclusive_p3:
+      <<: *partition_common
+      specification: exclusive_p3
+      # Details about the scheduler on this cluster
+      scheduler_settings:
+        scheduler_name: LSF
+        use_task_geometry: False
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 28
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (120*1024)
+        specify_memory: False
+
+    shared_p3:
+      <<: *partition_common
+      specification: shared_p3
+      # Details about the scheduler on this cluster
+      scheduler_settings:
+        scheduler_name: LSF
+        use_task_geometry: False
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 1
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (120*1024)
+        specify_memory: True
+
+    default_exclusive: !calc doc.platform.partitions.exclusive_p3
+    default_service: !calc doc.platform.partitions.shared_p3
+    default_shared: !calc doc.platform.partitions.shared_p3
+
+  # Additional variables to send to Rocoto XML entities or ecflow edits.
+  metasched_more: !expand |
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+
+  # Path to mmlsquota, the program used to get GPFS disk usage information:
+  mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
+
+  # Automatically detect the least used scrub area the user can access:
+  least_used_ptmp: !Immediate
+    - !FirstMax
+      - do: /gpfs/dell3/ptmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell3-ptmp","gpfs-dell3",mmlsquota) )
+        message: Use {do} for long-term temp.
+      - do: /gpfs/dell1/ptmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell1-ptmp","gpfs-dell1",mmlsquota) )
+        message: Use {do} for long-term temp.
+      - do: /gpfs/dell2/ptmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell2-ptmp","gpfs-dell2",mmlsquota) )
+        message: Use {do} for long-term temp.
+  least_used_stmp: !Immediate
+    - !FirstMax
+      - do: /gpfs/dell1/stmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell1-stmp","gpfs-dell1",mmlsquota) )
+        message: Use {do} for short-term temp.
+      - do: /gpfs/dell2/stmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell2-stmp","gpfs-dell2",mmlsquota) )
+        message: Use {do} for short-term temp.
+      - do: /gpfs/dell3/stmp
+        when: !calc ( int(tools.can_write(do)) * tools.gpfs_gb(do,"dell3-stmp","gpfs-dell3",mmlsquota) )
+        message: Use {do} for short-term temp.
+
+  # long_term_temp - area for storage of data that must be passed
+  # between jobs or shared with programs external to this workflow.
+  long_term_temp: !expand "{least_used_ptmp}/{tools.env('USER')}"
+
+  # short_term_temp - area for data that is only needed within one job:
+  short_term_temp: !expand "{least_used_stmp}/{tools.env('USER')}"
+
+  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+
+  ecflow_module: "ecflow/4.7.1"
+  prod_util_module: "prod_util/1.1.0"
+
+  # four_cycle_mode_modules: this is inserted in every ecf file when
+  # only four ecflow suites are generated.  For all other situations,
+  # the load_modules.sh is used.
+  four_cycle_mode_modules: |
+    module load ips/$ips_ver
+    module load impi/$impi_ver
+    module load EnvVars/$EnvVars_ver
+
+    module load g2tmpl/$g2tmpl_ver
+    module load crtm/$crtm_ver
+    module load ESMF/$ESMF_ver
+    module load dev/util_shared/$util_shared_ver  # NOTE: remove dev/ after util_shared upgrade
+
+    module unload grib_util
+    module load dev/grib_util/$grib_util_ver  # NOTE: remove dev/ after grib_util upgrade
+
+    module load NCO/$NCO_ver
+    module load HDF5-serial/$HDF5_serial_ver
+    module load NetCDF/$NetCDF_ver
+    module load CFP/$CFP_ver
+    export USE_CFP=YES
+
+    module use /gpfs/dell1/nco/ops/nwpara/modulefiles/
+    module load gempak/$gempak_ver
+
+    module load bufr_dumplist/$bufr_dumplist_ver
+    module load dumpjb/$dumpjb_ver
+    module load NCL/$NCL_ver

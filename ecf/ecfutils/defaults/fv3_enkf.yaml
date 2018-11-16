@@ -14,7 +14,7 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   dspheat: YES
   shal_cnv: NO
   FHZER: 6
-  FHCYC: 24
+  FHCYC: 1
   restart_interval: 6
   FHMAX: 6
 

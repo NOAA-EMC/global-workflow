@@ -73,11 +73,7 @@ if [ $ics_from = "opsgfs" ]; then
         fanal[2]="./${CDUMP}${str1}.t${cyc}z.sanl"
         fanal[3]="./${CDUMP}${str1}.t${cyc}z.sfcanl"
         flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
-	if [ $CDATE -ge "2016051000" ]; then
-             tarpref="com2"
-        else
-             tarpref="com"
-        fi
+        tarpref="com2"
     fi
 
     # First check the COMROOT for files, if present copy over

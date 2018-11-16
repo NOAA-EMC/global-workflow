@@ -40,8 +40,18 @@ maybe_verbose_source() {
 
 find_python36() {
     if ( ! which python3 > /dev/null 2>&1 || \
-	     ! python3 -c 'import yaml ; f{"1+1"}' > /dev/null 2>&1 ) ; then
-	python36=/gpfs/hps3/emc/nems/noscrub/Samuel.Trahan/python/3.6.1-emc/bin/python3.6
+	     ! python3 -c 'import yaml ; f"{1+1}"' > /dev/null 2>&1 ) ; then
+	python36="/dev/null/python"
+	if [[ ! -x "$python36" && -d /usrx ]] ; then
+	    if ( readlink /usrx | grep dell > /dev/null ) ; then
+		module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
+		module load python/intel-3.6.2-emc
+		python36="$( which python3.6 )"
+	    fi
+	fi
+	if [[ ! -x "$python36" && -s /etc/SuSE-release ]] ; then
+	    python36=/gpfs/hps3/emc/nems/noscrub/Samuel.Trahan/python/3.6.1-emc/bin/python3.6
+	fi
         if [[ ! -x "$python36" && -d /scratch4 ]] ; then
             module load intelpython
             python36="$( which python3.6 )"
@@ -58,5 +68,9 @@ find_python36() {
         fi
     else
 	python36="$( which python3 )"
+    fi
+    if [[ ! -x "$python36" ]] ; then
+	echo "ERROR: cannot find python 3.6" 1>&2
+	exit 1
     fi
 }

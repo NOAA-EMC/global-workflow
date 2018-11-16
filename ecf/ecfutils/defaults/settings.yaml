@@ -3,13 +3,46 @@
 # override the settings in the case file instead.
 
 default_settings: &default_settings
-  # ecf_log_path: sets the stdout/stderr log path for batch jobs when using ecFlow
-#  ecf_log_path: !calc ("%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".%j.log")
-  ecf_log_path: !calc ("%ECF_OUT%/%EMCPEN%_%PDY%%CYC%_"+task_path_var+".log")
+  ecf_log_path: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      # in four cycle mode ,the log name is the last path component,
+      # with the leading "j" removed.
+      do: !calc ( '%COM%/output/%ENVIR%/today/' + task_path_list[-1][1:] + '_%CYC%.o%J' )
+    - otherwise: !calc ( '%COM%/logs/%PDY%%CYC%/'+ task_path_var + '.log.%J')
 
   # rocoto_log_path: sets the stdout/stderr log path for batch jobs
   # when using Rocoto.  This is inserted in the <join> tag of the
   # task's <task> tag.
   rocoto_log_path: !calc ("<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")
 
+  # REALTIME and realtime - an alias that should be removed once we're
+  # sure it is consistent among the yaml files:
   REALTIME: !calc realtime
+
+  ROTDIR_DUMP: NO
+
+  # awips setting
+  NAWIPSGRP: 21
+
+  mkdir_before_running_ecflow: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: null
+    - otherwise: !expand '{doc.places.ROTDIR}/logs/%Y%m%d%H'
+
+  ecflow_rocoto_cdate_workaround: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: |
+        # When sourcing config files, the $PDY must be set:
+        datedir=/tmp/date.$$.$RANDOM
+        mkdir -p "$datedir"
+        pushd "$datedir"
+        export cyc="%CYC%"
+        export cycle="t%CYC%z"
+        setpdy.sh
+        . ./PDY
+        set -u
+        export CDATE="$PDY$cyc"
+        set +u
+        popd
+        rm -rf "$datedir"
+    - otherwise: '# date variables will be set by header file.'

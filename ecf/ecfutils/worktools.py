@@ -55,7 +55,9 @@ def make_parent_dir(filename):
     loudly_make_dir_if_missing(os.path.dirname(filename))
 
 def find_available_platforms(platdir):
-    available={}
+    matches={}
+    filenames={}
+    can_skip=set()
     for matching_file in glob.glob(f'{platdir}/[a-zA-Z]*.yaml'):
         logger.info(f'{matching_file}: check this platform...')
         plat=from_file('user.yaml',f'{platdir}/_common.yaml',matching_file)
@@ -64,9 +66,31 @@ def find_available_platforms(platdir):
            not 'name' in plat.platform:
             logger.warning(f'{matching_file}: does not contain a '
                            '"platform" map with "detect" and "name"')
+            continue
+        name=plat.platform.name
         if plat.platform.detect:
-            logger.info(f'{matching_file}: platform {plat.platform.name} matches')
-            available[plat.platform.name]=plat
+            logger.info(f'{matching_file}: platform {name} matches')
+            if name in filenames:
+                logger.error(f'{filenames[name]}: same platform name "{name}" as {matching_file}')
+                exit(1)
+            matches[name]=plat
+        if plat.platform.get('skip_if_others_present',False):
+            can_skip.add(name)
+
+    available=copy(matches)
+    for k in can_skip:
+        if k in available: del available[k]
+
+    if available:
+        return available
+    else:
+        # All platforms "can be skipped" so skip none:
+        return matches
+
+def sandbox_platforms(platdir):
+    available={}
+    plat=from_file('user.yaml',f'{platdir}/_common.yaml',f'{platdir}/_sandbox.yaml')
+    available[plat.platform.name]=plat
     return available
 
 def select_platform(requested_platform,valid_platforms):
@@ -162,12 +186,13 @@ def find_case_yaml_file_for(case_name):
         logger.error(f"{case_name}: no such case; pick one from in cases/")
         exit(1)
 
-def read_yaml_suite(dir):
+def read_yaml_suite(dir,stage=''):
     logger.info(f'{dir}: read yaml files specified in _main.yaml')
     conf=from_dir(dir)
     assert(conf.suite._path)
     for scope_name in conf.validate_me:
-        crow.config.validate(conf[scope_name])
+        logger.info(f'{scope_name}: validate scope.')
+        crow.config.validate(conf[scope_name],stage=stage)
     suite=Suite(conf.suite)
     assert(suite.viewed._path)
     return conf,suite
@@ -179,6 +204,7 @@ def make_config_files_in_expdir(doc,expdir):
         if not isinstance(value,collections.Mapping): continue
         if not 'filename' in value or not 'content' in value:
             logger.warning(f'{key}: config files require "filename" and "content" entries.')
+        if value.get('disable',False): continue #
         filename=os.path.join(expdir,str(value.filename))
         logger.debug(f'{filename}: expand')
         content=str(value.content)
@@ -186,7 +212,7 @@ def make_config_files_in_expdir(doc,expdir):
         with open(filename,'wt') as fd:
             fd.write(content)
 
-def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,skip_comrot):
+def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,skip_comrot,force_platform_rewrite):
     logger.info(f'{srcdir}: get yaml files from here')
     logger.info(f'{case_name}: use this case')
 
@@ -207,15 +233,20 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
         fd.write('\n\n')
         with open(case_file,'rt') as cfd:
             fd.write(cfd.read())
+        for srcfile in glob.glob(f'{srcdir}/static/*.yaml'):
+            with open(srcfile,'rt') as ifd:
+                fd.write(ifd.read())
+            fd.write('\n\n')
         config_contents=fd.getvalue()
     config=crow.config.from_string(config_contents)
     workflow_file=os.path.join(srcdir,config.places.workflow_file)
-    tgtdir=config.places.EXPDIR
+    tgtdir=config.places.EXPDIR		# previously configdir
     rotdir=config.places.ROTDIR
     redo=False
 
     logger.info(f'{rotdir}: COM files will be here')
-    logger.info(f'{tgtdir}: send yaml files to here')
+    logger.info(f'{tgtdir}: YAML files will be here')
+    logger.info(f'{tgtdir}: config files will be here')
 
     gud=True
     if os.path.exists(tgtdir):
@@ -234,7 +265,7 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
         exit(1)
     elif not gud:
         logger.warning('Target directories already exist.')
-        logger.warning('Received -f, so I will start anyway.')
+        logger.warning('Received -f or -F, so I will start anyway.')
         logger.warning('Will overwrite config, initial COM, and yaml files.')
         logger.warning('All other files will remain unmodified.')
         redo=True
@@ -249,11 +280,13 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
     with open(f'{tgtdir}/names.yaml','wt') as fd:
         fd.write(names_yaml)
 
-    if redo and os.path.exists(f'{tgtdir}/platform.yaml'):
-        logger.warning('I am NOT replacing platform.yaml.  You must edit this manually.')
-        logger.warning('This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
+    if redo and os.path.exists(f'{tgtdir}/platform.yaml') and not force_platform_rewrite:
+        logger.warning('I am NOT replacing platform.yaml.  This is a safeguard to prevent automatic scrub space detection from switching scrub spaces mid-workflow.')
+        logger.warning('You must edit platform.yaml manually or use -F to force me to overwrite platform.yaml.  Using -F on a running workflow is inadvisable.')
         logger.warning(f'{tgtdir}/platform.yaml: NOT replacing this file.')
     else:
+        if os.path.exists(f'{tgtdir}/platform.yaml') and force_platform_rewrite:
+            logger.warning(f'{tgtdir}/platform.yaml: overwriting due to -F.  This is probably unwise.  You have been warned.')
         logger.info(f'{tgtdir}/platform.yaml: write platform logic')
         with open(f'{tgtdir}/platform.yaml','wt') as fd:
             fd.write(platform_yaml)
@@ -298,41 +331,87 @@ def make_yaml_files_in_expdir(srcdir,case_name,experiment_name,platdoc,force,ski
 
 def make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles):
     suite_clock=copy(suite.Clock)
-    logger.info(f'cycles to write:   {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+    first_analyzed=first_cycle-surrounding_cycles*SIX_HOURS
+    last_analyzed=last_cycle+surrounding_cycles*SIX_HOURS
+    first_analyzed=min(suite_clock.end,max(suite_clock.start,first_analyzed))
+    last_analyzed=min(suite_clock.end,max(suite_clock.start,last_analyzed))
+#    first_cycle=min(last_analyzed,max(first_analyzed,first_cycle))
+#    last_cycle=min(last_analyzed,max(first_analyzed,last_cycle))
     suite.ecFlow.write_cycles = Clock(
         start=first_cycle,end=last_cycle,step=SIX_HOURS)
-    first_analyzed=max(suite_clock.start,first_cycle-surrounding_cycles*SIX_HOURS)
-    last_analyzed=min(suite_clock.end,last_cycle+surrounding_cycles*SIX_HOURS)
+    logger.info(f'cycles to write:   {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
     logger.info(f'cycles to analyze: {first_analyzed:%Ft%T} - {last_analyzed:%Ft%T}')
+#    print(f'cycles to write:   {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+#    print(f'cycles to analyze: {first_analyzed:%Ft%T} - {last_analyzed:%Ft%T}')
     suite.ecFlow.analyze_cycles=Clock(
         start=first_analyzed,end=last_analyzed,step=SIX_HOURS)
+    return first_cycle, last_cycle, first_analyzed, last_analyzed
 
 def generate_ecflow_suite_in_memory(suite,first_cycle,last_cycle,surrounding_cycles):
     logger.info(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
-    make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles)
-    suite_defs, ecf_files = to_ecflow(suite)
-    return suite_defs, ecf_files
+#    print(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+    first_cycle, last_cycle, first_analyzed, last_analyzed = \
+        make_clocks_for_cycle_range(suite,first_cycle,last_cycle,surrounding_cycles)
+    return to_ecflow(suite), first_cycle, last_cycle
 
-def write_ecflow_suite_to_disk(targetdir, suite_defs, ecf_files):
+def make_ecflow_job_and_out_directories(jobsdir, outdir, ecflow_suite):
+    print(f'   job directories: {jobsdir}')
+    for suite_name,suite_file,suite_def in ecflow_suite.each_suite():
+        for family_path in ecflow_suite.each_family_path():
+            family_dir=os.path.join(jobsdir,suite_name,family_path)
+            loudly_make_dir_if_missing(family_dir)
+
+    if jobsdir == outdir: return
+
+    print(f'   output directories: {outdir}')
+    for suite_name,suite_file,suite_def in ecflow_suite.each_suite():
+        for family_path in ecflow_suite.each_family_path():
+            family_dir=os.path.join(outdir,suite_name,family_path)
+            loudly_make_dir_if_missing(family_dir)
+
+def make_log_directories(conf,suite,first_cycle,last_cycle):
+
+    if conf.settings.four_cycle_mode:
+        logger.warning('Four cycle (NCO) mode enabled; not making log directories.')
+
+    cyc=first_cycle
+    step=suite.Clock.step
+    now=first_cycle
+    while now<=last_cycle:
+        format=conf.settings.get('mkdir_before_running_ecflow',None)
+        if format:
+            makeme=now.strftime(format)
+            loudly_make_dir_if_missing(makeme)
+        now += step
+        if now <= first_cycle:
+            logger.error(f'Suite clock step is zero or negative.  Abort.')
+
+def write_ecflow_suite_to_disk(defdir, scriptdir, ecflow_suite):
     written_suite_defs=OrderedDict()
-    logger.info(f'{targetdir}: write suite here')
-    for deffile in suite_defs.keys():
-        defname = suite_defs[deffile]['name']
-        defcontents = suite_defs[deffile]['def']
-        filename=os.path.realpath(os.path.join(targetdir,'defs',deffile))
+
+    print(f'   suite definition files: {defdir}')
+    for defname,deffile,defcontents in ecflow_suite.each_suite():
+        filename=os.path.realpath(os.path.join(defdir,deffile))
         make_parent_dir(filename)
         logger.info(f'{defname}: {filename}: write suite definition')
-        with open(os.path.join(targetdir,filename),'wt') as fd:
+        with open(os.path.join(defdir,filename),'wt') as fd:
             fd.write(defcontents)
         written_suite_defs[defname]=filename
-        for setname in ecf_files:
-            logger.info(f'{defname}: write ecf file set {setname}')
-            for filename in ecf_files[setname]:
-                full_fn=os.path.realpath(os.path.join(targetdir,defname,filename)+'.ecf')
-                logger.debug(f'{defname}: {setname}: write ecf file {full_fn}')
-                make_parent_dir(full_fn)
-                with open(full_fn,'wt') as fd:
-                    fd.write(ecf_files[setname][filename])
+    del defname,deffile,defcontents,filename
+
+    for setname,setpath in ecflow_suite.each_ecf_file_set():
+        print(f'   ecf files for "{setname}" node: {setpath}')
+        count=0
+        for filename,filedata in ecflow_suite.each_ecf_file(setname):
+            count+=1
+            full_fn=os.path.realpath(os.path.join(setpath,filename)+'.ecf')
+            logger.debug(f'{full_fn}: write ecf file')
+            make_parent_dir(full_fn)
+            with open(full_fn,'wt') as fd:
+                fd.write(filedata)
+        if not count:
+            logger.warning(f'{setpath}: no files to write for {setname}!')
+
     return written_suite_defs
 
 def get_target_dir_and_check_ecflow_env():
@@ -358,24 +437,67 @@ def get_target_dir_and_check_ecflow_env():
         
     return ECF_HOME
 
-def create_new_ecflow_workflow(suite,surrounding_cycles=2):
+def check_or_populate_ecf_include(conf):
+    ECF_HOME=conf.places.ECF_HOME
+    ECF_INCLUDE=conf.places.ECF_INCLUDE
+
+    loudly_make_dir_if_missing(ECF_INCLUDE)
+
+    # print(f'   include files: {ECF_INCLUDE}')
+    # for file in [ 'head.h', 'tail.h', 'envir-xc40.h' ]:
+    #     yourfile=os.path.join(ECF_INCLUDE,file)
+    #     if not os.path.exists(yourfile):
+    #         logger.warning(f'{yourfile}: does not exist.  I will get one for you.')
+    #         use_this=os.path.join(ECFNETS_INCLUDE,file)
+    #         logger.warning(f'{yourfile}: will use {use_this}')
+    #         os.symlink(yourfile,use_this)
+    #     else:
+    #         logger.info(f'{yourfile}: exists.')
+
+    for key in conf.keys():
+        if not key.startswith('ecf_include_'): continue
+        value=conf[key]
+        if not isinstance(value,collections.Mapping): continue
+        if 'filename' not in value or 'content' not in value:
+            logger.warning(f'{key}: ecf include files require "filename" and "content" entries.')
+        if value.get('disable',False): continue # 
+        filename=os.path.join(ECF_INCLUDE,str(value.filename))
+        logger.debug(f'{filename}: expand')
+        content=str(value.content)
+        logger.info(f'{filename}: write')
+        with open(filename,'wt') as fd:
+            fd.write(content)
+
+def create_new_ecflow_workflow(conf,suite,surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
     if not ECF_HOME: return None,None,None,None
     first_cycle=suite.Clock.start
     last_cycle=min(suite.Clock.end,first_cycle+suite.Clock.step*2)
-    suite_defs, ecf_files = generate_ecflow_suite_in_memory(
+    ecflow_suite, first_cycle, last_cycle = generate_ecflow_suite_in_memory(
         suite,first_cycle,last_cycle,surrounding_cycles)
-    suite_def_files = write_ecflow_suite_to_disk(
-        ECF_HOME,suite_defs,ecf_files)
+#    print(f'make suite for cycles: {first_cycle:%Ft%T} - {last_cycle:%Ft%T}')
+    defdir=conf.places.ecflow_def_dir
+    ECF_OUT=conf.places.ECF_OUT
+    suite_def_files = write_ecflow_suite_to_disk(defdir,ECF_HOME,ecflow_suite)
+    check_or_populate_ecf_include(conf)
+    make_log_directories(conf,suite,first_cycle,last_cycle)
+    make_ecflow_job_and_out_directories(ECF_HOME, ECF_OUT, ecflow_suite)
     return ECF_HOME, suite_def_files, first_cycle, last_cycle
 
 def update_existing_ecflow_workflow(suite,first_cycle,last_cycle,
                                     surrounding_cycles=2):
     ECF_HOME=get_target_dir_and_check_ecflow_env()
-    suite_defs, ecf_files = generate_ecflow_suite_in_memory(
+    if first_cycle > conf.suite.Clock.end:
+        print('First cycle is after end of suite.  Nothing to do.')
+        exit(0)
+    ecflow_suite, first_cycle, last_cycle = generate_ecflow_suite_in_memory(
         suite,first_cycle,last_cycle,surrounding_cycles)
+    defdir=conf.places.ecflow_def_dir
+    ECF_OUT=conf.places.ECF_OUT
+    make_log_directories(conf,suite,first_cycle,last_cycle)
+    make_ecflow_job_and_out_directories(ECF_HOME, ECF_OUT, ecflow_suite)
     suite_def_files = write_ecflow_suite_to_disk(
-        ECF_HOME,suite_defs,ecf_files)
+        defdir,ECF_HOME,ecflow_suite)
     return ECF_HOME, suite_def_files
 
 def load_ecflow_suites(ECF_HOME,suite_def_files):
@@ -407,8 +529,8 @@ def make_rocoto_xml(suite,filename):
 # These functions are called directly from scripts, and can be thought
 # of as "main programs."
 
-def remake_ecflow_files_for_cycles(
-        yamldir,first_cycle_str,last_cycle_str,
+def make_ecflow_files_for_cycles(
+        yamldir,first_cycle_str='1900010100',last_cycle_str='9999010100',
         surrounding_cycles=2):
     init_logging()
     ECF_HOME=get_target_dir_and_check_ecflow_env()
@@ -421,10 +543,15 @@ def remake_ecflow_files_for_cycles(
     last_cycle=datetime.datetime.strptime(last_cycle_str,'%Y%m%d%H')
     last_cycle=max(first_cycle,min(suite.Clock.end,last_cycle))
 
-    suite_defs, ecf_files = generate_ecflow_suite_in_memory(
+    ecflow_suite, first_cycle, last_cycle = generate_ecflow_suite_in_memory(
         suite,first_cycle,last_cycle,surrounding_cycles)
+    defdir=conf.places.ecflow_def_dir
+    ECF_OUT=conf.places.ECF_OUT
+    check_or_populate_ecf_include(conf)
+    make_log_directories(conf,suite,first_cycle,last_cycle)
+    make_ecflow_job_and_out_directories(ECF_HOME, ECF_OUT, ecflow_suite)
     written_suite_defs = write_ecflow_suite_to_disk(
-        ECF_HOME, suite_defs, ecf_files)
+        defdir, ECF_HOME, ecflow_suite)
     print(f'''Suite definition files and ecf files have been written to:
 
   {ECF_HOME}
@@ -440,7 +567,7 @@ def create_and_load_ecflow_workflow(yamldir,surrounding_cycles=2,begin=False):
     conf,suite=read_yaml_suite(yamldir)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     ECF_HOME, suite_def_files, first_cycle, last_cycle = \
-        create_new_ecflow_workflow(suite,surrounding_cycles)
+        create_new_ecflow_workflow(conf,suite,surrounding_cycles)
     if not ECF_HOME:
         logger.error('Could not create workflow files.  See prior errors for details.')
         return False
@@ -454,14 +581,21 @@ def add_cycles_to_running_ecflow_workflow_at(
     conf,suite=read_yaml_suite(yamldir)
     first_cycle=datetime.datetime.strptime(first_cycle_str,'%Y%m%d%H')
     last_cycle=datetime.datetime.strptime(last_cycle_str,'%Y%m%d%H')
+
+    if first_cycle > suite.Clock.end:
+        print(f'First cycle to generate ({first_cycle:%Y%m%d%H}) is after end of suite ({suite.Clock.end:%Y%m%d%H}).')
+        print("Diligently doing nothing, as requested.")
+        exit(0)
+
     ECF_HOME, suite_def_files = update_existing_ecflow_workflow(
-        suite,first_cycle,last_cycle,surrounding_cycles)
+        conf,suite,first_cycle,last_cycle,surrounding_cycles)
     load_ecflow_suites(ECF_HOME,suite_def_files)    
     begin_ecflow_suites(ECF_HOME,suite_def_files)    
 
 def make_rocoto_xml_for(yamldir):
     init_logging()
     conf,suite=read_yaml_suite(yamldir)
+    workflow_xml=conf.places.get('rocoto_workflow_xml',f'{yamldir}/workflow.xml')
     assert(suite.viewed._path)
     loudly_make_dir_if_missing(f'{conf.places.ROTDIR}/logs')
     make_rocoto_xml(suite,f'{yamldir}/workflow.xml')
@@ -477,7 +611,7 @@ def setup_case_usage(why=None):
     exit(1)
 
 def setup_case(command_line_arguments):
-    options,positionals=getopt(command_line_arguments,'dvfcp:D')
+    options,positionals=getopt(command_line_arguments,'sdvfcp:DF')
     options=dict(options)
 
     init_logging('-v' in options,'-d' in options or '-D' in options)
@@ -486,8 +620,10 @@ def setup_case(command_line_arguments):
         logger.warning('superdebug mode enabled')
         crow.set_superdebug(True)
 
-    force='-f' in options
+    force='-f' in options or '-F' in options
     skip_comrot='-c' in options
+    force_platform_rewrite='-F' in options
+    sandbox = '-s' in options
 
     if '-v' in options:
         logger.setLevel(logging.INFO)
@@ -508,12 +644,18 @@ def setup_case(command_line_arguments):
         exit(1)
 
     requested_platform=options.get('-p',None)
-    valid_platforms=find_available_platforms("platforms/")
-    platdoc=select_platform(requested_platform,valid_platforms)
+    if sandbox:
+        valid_platforms=sandbox_platforms("platforms/")
+        platdoc = select_platform(requested_platform,valid_platforms)
+    else:
+        valid_platforms=find_available_platforms("platforms/")
+        platdoc=select_platform(requested_platform,valid_platforms)
+
     logger.info(f'{platdoc.platform.name}: selected this platform.')
 
     EXPDIR = make_yaml_files_in_expdir(
-        os.path.abspath('.'),case_name,experiment_name,platdoc,force,skip_comrot)
+        os.path.abspath('.'),case_name,experiment_name,platdoc,force,
+        skip_comrot,force_platform_rewrite)
 
     doc=from_dir(EXPDIR,validation_stage='setup')
     suite=Suite(doc.suite)
@@ -537,5 +679,5 @@ def setup_case(command_line_arguments):
     print('Now you should make a workflow:')
     print()
     print(f'  Rocoto: ./make_rocoto_xml_for.sh {EXPDIR}')
-    print(f'  ecFlow: ./load_ecflow_workflow.sh {EXPDIR}')
+    print(f'  ecFlow: ./make_ecflow_files_for.sh -v {EXPDIR} SDATE EDATE')
     print()

@@ -8,9 +8,9 @@ date
 # GFS GEMPAK PRODUCT GENERATION
 ############################################
 
-##########################################################
+###########################################################
 # obtain unique process id (pid) and make temp directory
-##########################################################
+###########################################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
@@ -45,6 +45,7 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ######################################
 # Set up the GEMPAK directory
@@ -65,6 +66,7 @@ export model=${model:-gfs}
 export GRIB=${GRIB:-pgrb2f}
 export EXT=""
 export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
 
 ###################################
 # Specify NET and RUN Name and model

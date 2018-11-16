@@ -1,15 +1,41 @@
 settings_schema: !Template &settings_schema
 
+  dev_safeguards:
+    type: bool
+    default: true
+    description: "Add backup triggers in workflow to handle scheduling delays, such as the forecast finishing any posts start.  Only turn this off for NCO operational deliveries."
+
   realtime:
     type: bool
     default: false
     description: "Simulation of an event that is currently happening (ie.: a forecast)"
 
+  run_vrfy_jobs:
+    type: bool
+    default: true
+    description: "Run the EMC product generation jobs."
+    
   four_cycle_mode:
     type: bool
-    description: "Enable NCO-like four cycle suite.  Not well tested.  Do not use unless you know what you're doing."
+    description: "Enable NCO-like four cycle suite.  Requires a special setup for your ecFlow server, and a prepared directory structure designed to look like NCEP production.  Do not use unless you know what you're doing."
     default: false
+    if_present: !FirstTrue
+      - when: !calc four_cycle_mode
+        take: !FirstTrue
+          - when: !calc ( doc.names.experiment in [ "prod", "para", "test" ] )
+            message: !expand "Running four cycle mode with envir={doc.names.experiment}"
+            take: null
+          - otherwise: !error "In four cycle mode, the experiment must be prod, para, or test, not {doc.names.experiment}."
+      - otherwise: null
 
+#  ecf_module_commands:
+#    type: str
+#    default: !FirstTrue
+#      - when: !calc four_cycle_mode
+#        take: !calc doc.platform.four_cycle_mode_modules
+#      - otherwise: !expand |
+#          source "$HOMEgfs/ush/load_fv3gfs_modules.sh" {task_type}
+          
   rocoto_cycle_throttle:
     type: int
     description: "Maximum number of cycles active at once in a Rocoto workflow"
@@ -19,6 +45,41 @@ settings_schema: !Template &settings_schema
     type: int
     description: "Maximum number of tasks active (queued/running) at once in a Rocoto workflow"
     default: 5
+
+  use_nco_ecflow_headers:
+    type: bool
+    description: "Use the NCO model-ver.h instead of experiment-specific paths.  This will cause you to use the scripts and code in NCEP Operational areas instead of your own scripts and code.  Only use this option if you know what you're doing."
+    default: !calc four_cycle_mode
+
+  prod_util_module:
+    type: str
+    default: !calc doc.platform.get("prod_util_module","prod_util")
+    description: Name of the unix modulefile to load to obtain NCEP production shell utilities.
+
+  ecflow_module:
+    type: str
+    default: !calc doc.platform.get("ecflow_module","ecflow")
+    description: Name of the unix modulefile to load to obtain ecflow_client.
+
+  ecflow_real_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a real clock
+
+  ecflow_virtual_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a virtual clock
+  
+  ecflow_hybrid_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a hybrid clock
+
+  ecflow_totality_limit:
+    type: bool
+    default: yes
+    description: 'Place the entire suite in the "/totality_limit:TOTALITY" limit so that the server can limit the total number of jobs running.'
 
   run_gsi:
     type: bool

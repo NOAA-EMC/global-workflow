@@ -29,13 +29,20 @@ config_anal:
     export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
     export npe_gsi=$npe_anal
 
+    export GSNDBF=/dev/null
+    export AMSREBF=/dev/null
+    export SSMITBF=/dev/null
+    export AMSR2BF=/dev/null
+
     export REALTIME="{tools.YES_NO(doc.settings.REALTIME)}"   # Run GFS AWIPS
     
     # Set CONVINFO and SATINFO for retrospective parallels
     if [ $REALTIME = "NO" ]; then
 
       # Set CONVINFO
-      if [[ "$CDATE" -ge "2018022818" ]]; then
+      if [[ "$CDATE" -ge "2018053012" ]]; then
+        export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018053012
+      elif [[ "$CDATE" -ge "2018022818" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
       elif [[ "$CDATE" -ge "2018010512" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
@@ -50,7 +57,9 @@ config_anal:
       fi
 
       # Set SATINFO
-      if [[ "$CDATE" -ge "2018021212" ]]; then
+      if [[ "$CDATE" -ge "2018053012" ]]; then
+        export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
+      elif [[ "$CDATE" -ge "2018021212" ]]; then
         export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
       elif [[ "$CDATE" -ge "2017103118" ]]; then
         export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
