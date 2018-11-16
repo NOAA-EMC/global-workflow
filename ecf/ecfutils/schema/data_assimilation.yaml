@@ -60,6 +60,21 @@ data_assimilation_template: !Template &data_assimilation_template
     default: "$CDUMP.$cycle."
     description: Format for dump file name prefix
 
+  COM_OBS:
+    type: string
+    default: "$DMPDIR"
+    description: Top folder for COMIN_OBS (DMPDIR or COMROOT)
+
+  COMIN_OBS:
+    type: string
+    description: Location to draw observation data from (global dump archive or com)
+    default: !FirstTrue
+      - when: !calc ( COM_OBS=="$DMPDIR" )
+        do: "$DMPDIR/$CDATE/$CDUMP$DUMP_SUFFIX"
+      - when: !calc ( COM_OBS=="$COMROOT" )
+        do: "$COMROOT/$CDUMP.$PDY/$CYC"
+      - otherwise: !error "Unknown COM_OBS value: {COM_OBS}"
+
   RERUN_EFCSGRP:
     type: bool
     default: NO

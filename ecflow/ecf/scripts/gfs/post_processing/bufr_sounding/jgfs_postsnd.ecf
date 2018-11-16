@@ -85,17 +85,12 @@ export DATA="${DATAROOT}/$job"
 . ${EXPDIR}/config.postsnd
 . ${HOMEgfs}/env/WCOSS_DELL_P3.env postsnd
 
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
-
 export SENDDBN="YES"
 
 ############################################################
 # CALL executable job script here
 ############################################################
 ${HOMEgfs}/jobs/JGFS_POSTSND
-
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
