@@ -19,18 +19,17 @@ export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
 export VRFYPRCP="YES"             # Precip threat scores
+export VRFYRAD="YES"              # Radiance data assimilation monitoring
+export VRFYOZN="YES"              # Ozone data assimilation monitoring
+export VRFYMINMON="YES"           # GSI minimization monitoring
+export VRFYTRAK="YES"              # Hurricane track verification
+export VRFYGENESIS="YES"           # Cyclone genesis verification
+export RUNMOS="NO"                # whether to run entire MOS package
 export VRFY_STEP1="YES"           # Run METplus verification step 1: partial sum and/or contingency table counts
 export VRFY_STEP2="NO"            # Run METplus verification step 2: make plots
 export VRFY_GRID2GRID="YES"       # Run METplus desired steps for grid-to-grid verification
 export VRFY_GRID2OBS="YES"        # Run METplus desired steps for grid-to-obs verification
 export VRFY_PRECIP="YES"          # Run METplus desired steps for precipitation verification
-export VRFYRAD="YES"              # Radiance data assimilation monitoring
-export VRFYOZN="YES"              # Ozone data assimilation monitoring
-export VRFYMINMON="YES"           # GSI minimization monitoring
-export VRFYTRAK="NO"              # Hurricane track verification
-export VRFYGENESIS="NO"           # Cyclone genesis verification
-export RUNMOS="NO"       # whether to run entire MOS package
-
 
 #-------------------------------------------------
 # Fit to Observations
