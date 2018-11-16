@@ -6,7 +6,8 @@ COMP=   ifort
 ##LIBS=   -L/contrib/nceplibs/nwprod/lib -lw3emc_d -lw3nco_d -lg2_d -lbacio_4 -ljasper -lpng -lz
 LDFLAGS=
 # FFLAGS= -O3 -I $(INC)  -i$(ISIZE) -r$(RSIZE)
-FFLAGS= -O2 -g -traceback -check all -debug all -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE)
+# DEBUG= -check all -debug all -traceback
+FFLAGS= -O2 -g -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE)
 
 vint:      vint.f
 	@echo " "

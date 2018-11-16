@@ -1,0 +1,501 @@
+#!/bin/ksh
+USAGE="usage: snd2forgn <TYPE> <foreign-file/model> <flag/job> <local-file> dir"
+MEMBER=snd2forgn
+VERS="version: ${MEMBER} 2000-03-23 10:55L "
+#______________________________________________________________________________
+# NAME     : snd2forgn
+# Author   : Peter Henrichsen
+# Purpose  : This script calls dbn_alert to post or copy files to a foreign 
+#          : system for local use.
+#          : 
+# History  : 97-04-17 Peter Henrichsen
+#          : 1999-06-08 Peter Henrichsen modify to run on the IBM ncosp.
+#          : 1999-06-11 Peter Henrichsen modify to remove logic for sending
+#          : to the intergraph machines.
+#          : 1999-07-01 Peter Henrichsen modified to: removed xc, changed
+#            sutilities to UTILush and changed comments "CRAY" to "IBM".
+#          : 2000-01-20 Peter Henrichsen modified to: use USHutil
+#            and to write error messages and set sndfrc=1 when
+#            ERROR.
+#          : 2000-03-23 Peter Henrichsen modified to: remove un need logic
+#            to place MINSEC at end of dbn_net subtype which could be
+#            printer name.
+#           : 2002-03-12 Krishna Kumar modified to : remove AFOS transmission
+#             completely as NWS fossilized AFOS.
+#
+# Location : This script is found on hp36 as:
+#          : /tmp_mnt/export/sgi73/peterhen/util/scripts/ibm/snd2forgn
+#          : on ncosp as: 
+#          : /nfsuser/g02/wx12ph/util/ush/snd2forgn or
+#            ${NWROOT}/nwprod/util/ush/snd2forgn
+#
+# Remarks  : This script assumes that the following values have been 
+#            exported by the parent shell:
+#            job JOBID USHutil UTILhome jlogfile model COMOUTwmo 
+#            DBNROOT is exported in the production Profile.
+#
+# FOR TESTING 
+#          : Arg5 is an optional arg is the check out script directory
+#            where child scripts are found ie /nwtest or
+#            /nfsuser/g02/wx12ph . a sixth arg is allowed if it is send
+#            then the product is sent!
+#            
+#            
+#          :
+#          : Arg1 (TYPE)
+#            As of 98-06-05 Current valid TYPES are:
+#
+# TYPE                   FUNCTIONS
+#
+# AFOS,                  Posts AFOS utf map file to IBM OSO'S statusfile.
+# AWIP,                  Posts AWIP map file to IBM OSO'S statusfile.
+# AWPS_RB,               Posts AWPS_RB map file to IBM OSO'S statusfile.
+# FAXX,                  Posts nmc6bit map file to IBM OSO'S statusfile.
+# GRIB,                  Posts wmo grib file to IBM OSO'S statusfile.
+# TRAN,                  Posts wmo bulletin file to IBM OSO'S statusfile.
+# XTRN,                  Posts xtrn file to IBM OSO'S statusfile.
+# NCDC                   Sends nmc6bit file to NCDC.
+# PWWB_FAXX              Sends nmc6bit file to an HP printer at WWB & OSO.
+# PWWB                   Sends nmc6bit file to an HP printer at WWB
+# NHC_6BIT_nhc-hp13,     Sends nmc6bit file to nhc-hp13 at NHC..
+# OSO_6BIT_nhc-hp13,     Posts nmc6bit file to IBM OSO'S statusfile and then 
+#	                 Sends nmc6bit file to nhc-hp13 at NHC.	
+# NCDC_FAXX              Sends nmc6bit file to NCDC and then POST the file 
+#                        the IBM OSO'S statusfile. 
+# NCDC_PWWB_FAXX         Sends nmc6bit file to NCDC, to an HP printer & OSO.
+#
+#          : Arg2 is one of three items:
+#            (foreign-file), model-name or subtype
+#            The foreign directory path for files going to lzr_srv1 will   
+#            always be: "/usr/mgs/import/data_direct/" therfore arg2 is 
+#            only the file (base) name desired on lzr_srv1.
+#
+#          : The foreign directory path for files going to nhc-hp13 will
+#            always be: "/dbnet/data/nmc6bit/" therfore arg2 is only 
+#            the file (base) name desired on nhc-hp13 .
+#
+#          : For files going to other machines arg2 will be the full
+#            path on the foreign machine. The minsec will be appended 
+#            at end of these foreign files.
+#          
+#
+#          : Arg3 (flag) or job name
+#            This is a flag indicating data type. This flag may be used
+#            on the foreign machine to start a process.
+#
+#          : Arg4 (local-file)
+#            This is the full path of the local file to be posted or 
+#            copied to a foreign machine.
+#
+# Examples :
+#
+#   an example where TYPE is FAXX.
+#
+#           Arg1  Arg2    Arg3     Arg4
+# snd2forgn FAXX  model   FNhp6   /tmp/fnfax/atl12Zsfc.D168
+#
+#   an example where TYPE is AFOS.
+#
+#           Arg1  Arg2    Arg3     Arg4
+# snd2forgn AFOS  model   FNhp6    /tmp/fnafos/95b2012.utf
+#       
+#   an example where TYPE is NHC_6BIT_nhc-hp13
+#
+#           Arg1              Arg2           Arg3     Arg4
+# snd2forgn NHC_6BIT_nhc-hp13 atl12Zsfc.D168 nmc6bit  /tmp/igfax/atl12Zsfc.D168
+# 
+#   an example where TYPE is TRAN
+#
+#           Arg1  Arg2     Arg3     Arg4
+# snd2forgn TRAN  model    FNhp66  /tmp/fnbuls/asus1.bul18090756
+# 
+#_______________________________________________________________________________
+#  
+#_______________________________________________________________________________
+#
+#
+#
+cd $DATA
+integer   istat
+print "$USAGE"
+print "$VERS"
+
+#   check to see if the required number of input args are present!
+
+if test $# -ge 4
+then
+ echo "snd2forgn has $# args!"
+else
+  echo "Error $VERS needs 4 args!"
+  echo "Error: $USAGE"
+  exit
+fi
+if test $# -ge 5
+then
+ 
+#   !!!!!!! _______this section of script used in checkout_____ !!!!!!!!!!!!
+
+set -x 
+ whatdir=$LOGNAME
+  mkdir -m 775 -p $DATA  >/dev/null 2>&1
+  mkdir -m 775 -p $COMOUTwmo  >/dev/null 2>&1
+  jlogfile=$DATA/snd2forgn_log
+  reqid=${$}
+  PID=$$
+  JOB=$LOGNAME
+  model=test
+  export  PID
+  pgmout=output.$PID
+  jobid="${JOB}.o${reqid}"
+  USHutil=${NWROOT}/util/ush
+  UTILhome="$5"
+ if test $# -eq 6
+ then
+  SENDDBN=NO
+ else 
+  SENDDBN=NO 
+ fi
+  export  model jlogfile jobid reqid  COMOUTwmo pgmout 
+  export  JOB DATA PID 
+  cd $DATA
+  
+
+ # run setup to initialize working directory and utility scripts
+
+  # sh $USHutil/setup.sh
+  
+   PATH=$PATH:.
+   export PATH 
+     
+#     !!!!!!!!!!!!! ____________ END CHECK OUT SECTION __________ !!!!!!!!
+else
+
+#   check to see if $SENDDBN is missing
+
+
+  if [ -z "$SENDDBN" ] ; then
+    SENDDBN=NO
+    export SENDDBN
+  fi
+  set +x  
+fi
+set -x
+  
+export DBNROOT=${DBNROOT:-/gpfs/a/nco/dbnet}
+# load input args
+
+TYPE="$1"
+ttype=$TYPE
+
+outfil="$2"
+flg="$3"
+INFILE="$4"
+set -x
+export filename=`basename ${INFILE}`
+export FLG=`echo  $flg | tr '[a-z]' '[A-Z]' `
+export CONCARD=card$flg{$$}
+
+# get the number of characters in TYPE !
+
+NUM=${#TYPE}
+
+# get the number of sub types in TYPE!
+
+numprt=`echo $TYPE  | awk -F_ '{print NF}'`
+
+if [ $numprt -gt 1 ]
+then
+  WASNCDC=NO
+  WASPWWB=NO
+
+# remove the under score separators from $TYPE.
+
+  newstr=""
+    group=`echo $TYPE \ | awk -F_ '{for(i=1;i<=NF;i++) \
+    {if(i<NF) printf("%s ", $i);\
+     else printf("%s",$i);}}'`
+
+#   loop through the group to parse out the special cases:
+#   NCDC and PWWB !
+
+  i=0 
+  for SUBTYP in $group
+ 
+  do
+   case $SUBTYP in
+    "NCDC")
+     i=`expr $i + 1` 
+     WASNCDC=YES    
+           
+#  THIS file is to go to NCDC
+
+     sndncdc  ${outfil}  ${INFILE}
+ 	;;
+    "PWWB")
+    
+#  This file is to be printed at the WWB
+
+     WASPWWB=YES
+     i=`expr $i + 1`
+     smember=sndfaxwwb
+     export smember
+     $smember ${INFILE}
+ 	;;
+    "AFOS")
+     snd=NO	
+     i=`expr $i + 1`
+     	;;
+    "AWIP")
+     snd=YES
+     i=`expr $i + 1`	
+	;;	 	
+    "FAXX")
+     snd=YES
+     i=`expr $i + 1`	
+	;;
+    "TRAN")
+     snd=YES
+     i=`expr $i + 1` 	
+	;;
+    "XTRAN")
+      snd=YES
+     i=`expr $i + 1` 	
+	;;
+       *)
+       i=`expr $i + 1`
+       if [ $i -lt $numprt ]
+       then
+        newstr="${newstr}${SUBTYP}_"
+       elif  [ $i -eq $numprt ]
+         then
+         newstr="${newstr}${SUBTYP}"
+       else
+         :
+       fi            
+	;;
+   esac
+   if test "$snd" = 'YES'  
+   then
+     if test "$SENDDBN" = 'YES'    
+     then
+       if [ -z "$model" ] ; then
+        model=unkown
+        export model
+       fi 
+         $DBNROOT/bin/dbn_alert $SUBTYP $model $3 ${INFILE} 
+ 
+       export istat=$?
+       echo dbn_alert: Ended with return code = $istat
+       if test "$istat" = 0 
+       then
+         msg="Posting $filename with ${SUBTYP}!"
+       else
+         msg="ERROR FROM dbn_alert = $istat, Posting $filename with ${SUBTYP}!"
+        sndfrc=1
+        echo $sndfrc >$DATA/sndfrc
+       fi   
+      else
+       set -x
+       msg="snd2forgn testing, $SUBTYP $filename not sent!" 
+       set +x   
+
+      fi
+   fi
+  snd=NO  
+ done
+ 
+#  have removed all the special cases !
+
+ echo "WASNCDC=$WASNCDC !"
+ echo "WASPWWB=$WASPWWB !"
+
+ 
+  if [ -z "$newstr" ] ; then
+   echo " newstr > is empty < will exit!"
+   postmsg "$jlogfile" "$msg"
+   exit
+  fi
+    ttype=${newstr}     
+  echo "$ttype is the remaining TYPE flag!"
+
+elif [ $numprt -eq 1 ]
+then
+ echo "There is only one type= ${TYPE}!"
+ 
+#   check for the special cases:
+#   NCDC and PWWB !
+ 
+
+ case $TYPE in
+   "NCDC") 
+    WASNCDC=YES    
+           
+#  THIS file is to go to NCDC
+
+    $USHutil/sndncdc  ${outfil}  ${INFILE}
+    
+   echo "$TYPE was only NCDC so EXIT!"
+   exit 0     
+ 	;;
+    "PWWB")
+    
+#  This file is to be printed at the WWB
+
+     WASPWWB=YES
+     smember=sndfaxwwb
+     export smember
+     $smember ${INFILE}
+    
+   echo "$TYPE was only PWWB so EXIT!"
+   exit 0 
+ 	;;
+     "AFOS")
+     snd=NO	 
+	;;
+     "AWIP")
+     snd=YES	
+	;;	 	
+     "FAXX")
+     snd=YES 	
+	;;
+     "TRAN")
+     snd=YES 	
+	;;
+     "XTRAN")
+      snd=YES 	
+	;;          	
+       *)
+    esac
+    if test "$snd" = 'YES'    
+    then
+
+       if test "$SENDDBN" = 'YES'    
+       then         
+         $DBNROOT/bin/dbn_alert $TYPE $2 $3 ${INFILE}
+        export istat=$?
+        echo dbn_alert: Ended with return code = $istat
+         if test "$istat" = 0 
+         then
+          msg="Posting $filename with $TYPE!"
+         else
+          msg="ERROR FROM dbn_alert = $istat, Posting $filename with ${TYPE}!"
+          sndfrc=1
+          echo $sndfrc >$DATA/sndfrc
+         fi     
+       else
+        msg="snd2forgn testing, ${TYPE} $filename not sent!"       
+       fi 
+     postmsg "$jlogfile" "$msg"
+     snd=NO  
+     exit 0
+    fi          
+else
+ msg "ERROR TYPE MISSING BECAUSE $numprt is ZERO!"
+ postmsg "$jlogfile" "$msg"
+ exit 
+fi
+
+
+JAG=${ttype}
+ echo "${JAG} is the TYPE flag"
+export JAG 
+
+
+cat <<strt1EOH > $CONCARD
+${JAG} is the TYPE flag
+strt1EOH
+   cat $CONCARD
+  actn="Copying"   
+
+#______________________________________________________________
+#
+#     check to see if this a nmc 6bit file or is to go to
+#     nhc-hp13.
+#   
+#______________________________________________________________
+    
+
+istat=`egrep -c "NHC_6BIT" ${CONCARD}`
+ if test "$istat" -ne 0
+ then
+
+
+# this a nmc6bit file that is only to be sent to nhc-hp13.
+#
+   actn="Sending"   
+   echo "$actn a nmc6bit file with $JAG."
+
+   base=`basename ${outfil}`
+   FORFIL=/dbnet/data/nmc6bit/$base
+
+ else
+   istat=`egrep -c "AWPS_RB|OSO" ${CONCARD}`
+    if test "$istat" -ne 0
+    then      
+       FORFIL=$outfil
+        actn="Posting"
+        if test "$JAG" = "AWPS_RB"
+        then
+          JAG="GRIB"
+        fi
+ 
+    else 
+        actn="Copying"
+        FORFIL=$outfil
+    fi
+ fi
+
+#echo I should now calldbn_alert! 
+istat=0
+
+export INFILE
+export FORFIL
+export JAG
+
+#______________________________________________________________
+#    call dbn_alert to move file to foreign host
+#______________________________________________________________
+
+if test "$SENDDBN" = 'YES'    
+then
+         $DBNROOT/bin/dbn_alert $JAG $FORFIL $FLG $INFILE 
+
+  istat=$?
+  export istat
+  export actn
+  echo dbn_alert: Ended with return code = $istat
+#
+#______________________________________________________________
+#      make message for jlogfile.
+#_______________________________________________________________
+#
+  if test "$istat" = 0 
+  then
+  if [ "$actn"  = "Posting" ]
+   then 
+    msg="$actn $filename with $JAG !"
+
+   elif [ "$actn"  = "Posting-copying" ]
+    then
+     msg="POSTING file to OSO and COPYING into $FORFIL!"
+   elif [ "$actn"  = "Copying" ]
+    then
+     msg="COPYING into file: $FORFIL!"
+   elif [ "$actn"  = "Sending" ]
+    then 
+      msg="$actn a nmc6bit file with $JAG."            
+    else  
+      msg="COPYING into file: $FORFIL!"  
+    fi
+  else
+    msg="ERROR FROM dbn_alert = $istat, trying to $actn with $JAG ! "
+     sndfrc=1
+     echo $sndfrc >$DATA/sndfrc 
+  fi
+else
+       msg="snd2forgn testing, $JAG $FORFIL $FLG $INFILE not sent!"    
+fi
+ postmsg "$jlogfile" "$msg"
+
+rm ${CONCARD}
+exit 0

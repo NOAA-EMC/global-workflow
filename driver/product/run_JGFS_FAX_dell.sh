@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#BSUB -J gfs_fax_f00_00
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f012_00.o%J
-#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f012_00.o%J
+#BSUB -J gfs_fax_anl_00
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_anl_00.o%J
+#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_anl_00.o%J
 #BSUB -q debug
 #BSUB -n 1                      # number of tasks
 #BSUB -R span[ptile=1]          # 1 task per node
@@ -14,11 +14,9 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20180710
 
 export PDY1=`expr $PDY - 1`
 
-# export cyc=06
 export cyc=00
 export cycle=t${cyc}z
 
@@ -29,24 +27,23 @@ date
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
 module load prod_util/1.1.0
-module load grib_util/1.0.6
 module load prod_envir/1.0.2
 module load ips/18.0.1.163
-module load bufr_dumplist/1.5.0
-module load dumpjb/4.0.0
 module load NCL/6.4.0
+#
+#   This is a test version of GRIB_UTIL.v1.1.0 on DELL
+#
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+module load grib_util/1.1.0
+module load  bufr_dumplist/2.0.0
+module load  dumpjb/5.0.0
 
-#
-#   This is a test version of UTIL_SHARED.v1.0.7 on DELL
-#
-module load dev/util_shared/1.0.8
 module list
 
 ############################################
@@ -95,7 +92,9 @@ export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
-export TMPDIR=/gpfs/hps3/ptmp/Boi.Vuong/output
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+
+# export TMPDIR=/gpfs/hps3/ptmp/Boi.Vuong/output
 
 ###################################
 # Specify NET and RUN Name and model
@@ -111,8 +110,8 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
 else
-#  export COMIN=/gpfs/dell2/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-   export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
+#   export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc} ### EMC PARA Realtime
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}   ### Boi PARA
 
 fi

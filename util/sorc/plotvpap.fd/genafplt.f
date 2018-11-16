@@ -1,0 +1,462 @@
+      SUBROUTINE GENAFPLT(ITOUT,LVLDES,C8NAME,KTTYP,IOPTN,
+     1              ALAT,ALONG,c1stncirc,ND1,
+     2              IHFF,IHZZZ,ihtt,ihdewpt,ihhgtchg,IRET_AFP)
+C                                              27-JAN-1997/DSS
+C     ... SPLIT GENAFPLT() FROM IN-LINE OF B4PLOTX()
+C     ... IN ORDER TO ISOLATE THE AFOS PRODUCT GENERATOR FROM THE FAX;
+C     ... THIS GENAFPLT() IS CALLED ONLY FROM B4PLOTX()
+C
+C     ... TO FORMAT AN AFOS PLTFILE ENTRY FOR ONE REPORT:
+C     ...       iiii,jjjj,PSOWDT,,72520,N,DDFFF,PPP,-TT,TD,,,+DZ;
+C     ... -------------------------------------------------------------
+      EXTERNAL  LASTCH
+      INTEGER   LASTCH			!... int function lastch
+
+      COMMON  /ISPACE/LBLOCK,ICNTOT
+      CHARACTER*1     LBLOCK(16384)
+C                          
+C USAGE: CALL GENAFPLT(ITOUT,LVLDES,C8NAME,KTTYP,IOPTN,
+C ...     1              ALAT,ALONG,XI,XJ,VSCALE,JO,JCORN,L,ND1,
+C ...     2              IHFF,IHZZZ,ihtt,ihdewpt,ihhgtchg,IRET_AFP)
+C     
+      INTEGER      ITOUT
+      INTEGER      LVLDES
+      CHARACTER*8  C8NAME
+      INTEGER      KTTYP
+      INTEGER      IOPTN
+      REAL         ALAT,ALONG
+      REAL         XI,XJ
+      CHARACTER*1  c1stncirc
+      INTEGER      ND1
+      CHARACTER*4  IHFF
+      CHARACTER*4  ihtt
+      CHARACTER*4  ihdewpt		!... ihdewpt(1:NDCHAR)
+      CHARACTER*4  ihhgtchg
+      CHARACTER*4  IHZZZ
+      INTEGER      IRET_AFP
+C     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+
+      INTEGER      KZZZB
+      DATA         KZZZB     / Z'00000020' /
+
+      INTEGER      KFFFB
+      DATA         KFFFB     / Z'00000010' /
+
+      INTEGER      KDEWB
+      DATA         KDEWB      / Z'00000008' /
+
+      INTEGER      KTTB
+      DATA         KTTB      / Z'00000004' /
+C     ...ABOVE BITS ARE FOR IOPTN FOR S/R PLTDAT
+
+C     ... CALLS SUBR TRUIJ()
+C     ...            AFZOOM()
+C ...   ihhgtchg(4CHAR)(:C4MISF, :C4LVRB)
+C ...   ihhgtchg(3CHAR) ... WHICH IS HGT-CHANGE ??? WHY IS HGT CHG IN WIND?
+
+
+      CHARACTER*4  C4LVRB
+      DATA         C4LVRB  /'LV$ '/
+      CHARACTER*4  C4MISF
+      DATA         C4MISF  /'M$  '/
+
+      CHARACTER*1  COMMA
+      DATA         COMMA     / ',' /
+      CHARACTER*1  SEMICO
+      DATA         SEMICO    / ';' /
+
+      character*1  csomedef(8)
+      integer      isomedef
+      equivalence (isomedef,csomedef(1))
+C                                 1 2 3
+      data         isomedef  / X'000A0D0000000000' /
+
+      CHARACTER*1  LNULL		!... X'00'
+      equivalence (csomedef(1),LNULL)
+      CHARACTER*1  LINFED		!... X'0A'
+      equivalence (csomedef(2),LINFED)
+      CHARACTER*1  CARRET		!... X'0D'
+      equivalence (csomedef(3),CARRET)
+      
+
+      CHARACTER*1  LITBLK
+      DATA         LITBLK    / ' ' /
+
+      CHARACTER*1  LITPND
+      DATA         LITPND    / '#' /
+
+
+      CHARACTER*1  LIT0
+      DATA         LIT0 /'0'/
+      CHARACTER*1  LIT8
+      DATA         LIT8 /'8'/
+      CHARACTER*1  LITA
+      DATA         LITA /'A'/
+      CHARACTER*1  LITS
+      DATA         LITS /'S'/
+
+      INTEGER      MAXIDOTS
+      DATA         MAXIDOTS   / 2048 /
+
+      INTEGER      MAXJDOTS
+      DATA         MAXJDOTS   / 1536 /
+
+      CHARACTER*1  PSOWDT(6)
+
+      INTEGER       JBCD
+      CHARACTER*8   CBCD
+      EQUIVALENCE  (JBCD,CBCD)
+
+      REAL          VSCALE
+      INTEGER       JO
+      INTEGER       ICORN,JCORN
+
+C     ... -------------------------------------------------------------
+C
+C     FORM THE ONE-STATION ENTRY FOR AFOS PLOTFILE.
+C
+C     ... THIS AFOS GENERATOR ACCEPTS ONLY ITOUT=2; OR ITOUT=9;
+C     ..         ALL OTHER ITOUT VALUES RETURN DOING NOTHING
+C
+      IRET_AFP = 0
+     
+      IF(ITOUT .EQ. 2) THEN
+        KEIL = 1		!... THE LFM GRID
+        VERTLN = 105.0
+
+        VSCALE = 37.5
+
+        KEIL_1 = 12		!... 53 X 57  LFM GRID
+        ICORN = 0
+        JCORN = 0
+C
+        CALL TRUIJX(ALAT,ALONG,XI,XJ,KEIL_1,IRET_TIJ)
+        IF(IRET_TIJ .NE. 0) THEN
+          IRET_AFP = -2
+          GO TO 999
+        ENDIF
+
+        IN = NINT((XI - 1.0) * VSCALE)
+        JN = nint((XJ - 4.0) * VSCALE)
+C
+C     ...WHICH SUBTRACTED 3 GI  IN JGRID TO COMPENSATE FOR THE
+C     ...DIFFERENCE BETWEEN 53 X 57 LFM BACKGROUND AND THAT USED
+C     ...BY AFOS...
+        IN = IN + ICORN
+        JN = JN + JCORN
+
+        IF((IN .LE. 0) .OR. (IN .GE. MAXIDOTS)) THEN
+          IRET_AFP = 1
+          GO TO 999
+        ENDIF
+
+        IF((JN .LE. 0) .OR. (JN .GE. MAXJDOTS)) THEN
+          IRET_AFP = 2
+          GO TO 999
+        ENDIF
+
+        GO TO 499
+
+      ELSE IF(ITOUT .EQ. 9) THEN
+C       ...COMES HERE FOR WINDS ALOFT PLOT ON PN2601 ...
+        KEIL = 4
+        VERTLN = 98.0
+        VSCALE = 28.846154
+C       ... BUT THOSE FOR ITOUT==9 ARE IGNORED; AND GO WITH KEIL1=7
+C       ... 
+        KEIL_1 = 7		!... LARGE NH 1:20M 105W FRONT 2/3
+        ICORN = 0
+        JCORN = 0
+
+C       ...TO GET I,J ON NORTH AMERICAN GRID
+        CALL TRUIJX(ALAT,ALONG,XI,XJ,KEIL_1,IRET_TIJ)
+        IF(IRET_TIJ .NE. 0) THEN
+          IRET_AFP = -2
+          GO TO 999
+        ENDIF
+        XI = XI - 28.0
+        XJ = XJ -  5.0
+        IN = nint((XI-1.0)*37.5)
+        JN = nint((XJ-1.0)*37.5)
+        IN = IN + ICORN
+        JN = JN + JCORN
+        IF((IN .LE. 0) .OR. (IN .GE. MAXIDOTS)) THEN
+          IRET_AFP = 1
+          GO TO 999
+        ENDIF
+
+        IF((JN .LE. 0) .OR. (JN .GE. MAXJDOTS)) THEN
+          IRET_AFP = 2
+          GO TO 999
+        ENDIF
+C
+        go to 499
+
+      ELSE
+C       ... YOU SHOULD NOT HAVE CALLED ME WITH OTHER ITOUT VALUES ...
+        IRET_AFP = -1
+        GO TO 999		!... exit on all other ITOUT values
+      ENDIF
+C
+  499 CONTINUE
+      ICNTOB = ICNTOT
+
+
+      IF(IN .GE. 1000) THEN
+        NCHAR = 4
+      ELSE IF(IN .GE. 100) THEN
+        NCHAR = 3
+      ELSE IF(IN .GE. 10) THEN
+        NCHAR = 2
+      ELSE
+        NCHAR = 1
+      ENDIF
+
+      CALL BIN2CH(IN,CBCD,NCHAR,'A999')
+C     ... MOVE CBCD(1:NCHAR) INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),CBCD,NCHAR)
+C ...      CALL EB2ASC(NCHAR,JBCD,LBLOCK(ICNTOT),IERR)
+C
+      ICNTOT = ICNTOT + NCHAR
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+
+C     . . . . . . . . . . .   THAT FINISHED THE IDOT,
+
+      IF(JN .GE. 1000) THEN
+        NCHAR = 4
+      ELSE IF(JN .GE. 100) THEN
+        NCHAR = 3
+      ELSE IF(JN .GE. 10) THEN
+        NCHAR = 2
+      ELSE
+        NCHAR = 1
+      ENDIF
+
+      CALL BIN2CH(JN,CBCD,NCHAR,'A999')
+C     ... MOVE CBCD(1:NCHAR) INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),CBCD,NCHAR)
+C ...      CALL EB2ASC(NCHAR,JBCD,LBLOCK(ICNTOT),IERR)
+C
+      ICNTOT = ICNTOT + NCHAR
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . . . . . . .  THAT FINISHED THE JDOT,
+C     ... ALL OF WHICH SETS THE STATION I/J IN PLACE ...
+C
+C     ... CALL SUB AFZOOM TO GET PSOWDT ...
+C
+      CALL AFZOOM(C8NAME,KTTYP,PSOWDT)
+C
+C     ... PUT THE PSOWDT IN LBLOCK ...
+C
+      CALL XMOVEX(LBLOCK(ICNTOT),PSOWDT,6)
+
+      ICNTOT = ICNTOT + 6
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . . . . THAT FINISHED THE PSOWDT,  . . . . . . . . .
+C
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     ... THIS EXTRA COMMA IS FOR THE TIME PARAMETER WHICH I AM OMITTING.
+C
+C      MAY 31, 1984... AT THE REQUEST OF THE NATIONAL CLIMATIC DATA
+C      CENTER, THE AFOS DATA REVIEW GROUP ASKED THAT ALL UPPER-AIR
+C      PLOTFILE DATA CARRY STATION NAMES OR IDENTIFIERS.
+C
+C     ...SKIP STATION NAME IF OPTION WORD DOESN'T CALL FOR IT
+      call byteswap(C8NAME, 8, 1)
+      NCHAR = LASTCH(C8NAME(1:6))
+      IF(NCHAR .GT. 0) THEN
+C       ... MOVE NCHAR OF C8NAME INTO LBLOCK(ICNTOT) ...
+        CALL XMOVEX(LBLOCK(ICNTOT),c8name,NCHAR)
+
+        ICNTOT = ICNTOT + NCHAR
+      ENDIF
+C
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . . . . . . . THAT FINISHED THE STATION NAME, . . . 
+C
+C     ...THE SOLID OR HOLLOW STATION SYMBOL IS PASSED VIA THE SKY COVER.
+C     ... MOVE 1 CHAR FROM c1stncirc INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),c1stncirc,1)
+
+      ICNTOT = ICNTOT + 1
+C
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . . . . . . . THAT FINISHED THE STATION CIRCLE, . . . 
+C
+      IF(ND1.EQ.999) GO TO 426
+C     ...SKIP WIND IF IT IS MISSING
+      CALL BIN2CH(ND1,CBCD,2,'A999')
+C     ... MOVE 2 CHARS FROM JBCD  INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),CBCD,2)
+
+C ...      CALL EB2ASC(2,JBCD,LBLOCK(ICNTOT),IERR)
+      ICNTOT = ICNTOT + 2
+C     ... MOVE 3 CHARS FROM IHFF1 INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),IHFF,3)
+
+C ...      CALL EB2ASC(3,IHFF1,LBLOCK(ICNTOT),IERR)
+      ICNTOT = ICNTOT + 3
+  426 CONTINUE
+C
+C     . . . . . . THAT FINISHED THE WIND (BUT NOT THE DELIMITING COMMA)
+C
+      IF(ITOUT .EQ. 9) THEN
+        IF((LVLDES .EQ. 22) .OR. (LVLDES .EQ. 24)) THEN
+C        ...FOR LVLS 22 AND 24 OF WIND ALOFT END AFOS STRING AFTER WIND
+          GO TO 432		!... JUMP OUT TO CLEAN-UP
+        ENDIF
+      ENDIF
+C
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . THAT PUT DELIMITER COMMA AFTER THE DDFFF WIND GROUP 
+C
+      ITEMP=IAND(IOPTN,KZZZB)
+      IF(ITEMP.EQ.0) GO TO 428
+C     ...SKIP HEIGHT IF OPTION WORD DOESN'T CALL FOR IT
+C     ... MOVE 3 CHARS FROM IHZZZ INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),IHZZZ,3)
+
+      ICNTOT = ICNTOT + 3
+C     . . . . . THAT FINISHED THE HEIGHT (BUT NOT THE DELIMITING COMMA)
+C
+  428 CONTINUE
+C
+C     ... TERMINATE THE SATWND REPORTS FOLLOWING THIS HEIGHT.
+C
+      IF((KTTYP .EQ. 12) .OR. (KTTYP .EQ. 13)) GO TO 432
+C
+C     ... OTHERWISE,
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . . . . . THAT PUT DELIMITER COMMA AFTER THE ZZZ HEIGHT GROUP 
+C
+      ITEMP=IAND(IOPTN,KTTB)
+      IF(ITEMP.EQ.0) GO TO 429
+C     ...SKIP TEMP IF OPTION WORD DOESN'T CALL FOR IT
+C        ... MOVE 3 CHARS FROM ihtt INTO LBLOCK(ICNTOT) ...
+      CALL XMOVEX(LBLOCK(ICNTOT),ihtt,3)
+
+      ICNTOT = ICNTOT + 3
+C     . . . THAT FINISHED THE TEMPERATURE (BUT NOT THE DELIMITING COMMA)
+C
+  429 CONTINUE
+C     ... FOR WINDS ALOFT, END AFOS STRING HERE
+      IF(ITOUT .EQ. 9) GO TO 432
+C
+C     ... TERMINATE SIRSOBS HERE.
+      IF(KTTYP .EQ. 11) GO TO 432
+C
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C
+C     . . . .  THAT PUT DELIMITER COMMA AFTER THE TTT TEMPERATURE GROUP 
+C
+      ITEMP=IAND(IOPTN,KDEWB)
+      IF(ITEMP.EQ.0) GO TO 431
+C     ...SKIP DEW-POINT DEPRESSION IF OPTION WORD DOESN'T CALL FOR IT.
+        NDCHAR = LASTCH(IHDEWPT(1:4))
+        IF(NDCHAR .NE. 0) THEN
+          CALL XMOVEX(LBLOCK(ICNTOT),ihdewpt,NDCHAR)
+        
+          ICNTOT = ICNTOT + NDCHAR
+        ENDIF
+  431 CONTINUE
+C
+C     . . . THAT FINISHED THE DEWPOINT (BUT NOT THE DELIMITING COMMA)
+C
+      ITEMP = IAND(IOPTN,KFFFB)
+      IF(ITEMP .EQ. 0) GO TO 432
+C     ...SKIP THE 12-HR HT CHANGE IF THAT FIELD IS NOT ON IN IOPTN AND
+C     ...TERMINATE THIS REPORT...
+      IF((ihhgtchg(1:4) .EQ. C4MISF(1:4)) .OR.
+     1   (ihhgtchg(1:4) .EQ. C4LVRB(1:4))) THEN
+         GOTO 432
+C     ...WHICH ALSO SKIPS THIS PARAMETER IF IT REPORTS MISSING
+C     ...OR LIGHT AND VARIABLE WINDS...
+      ENDIF
+
+C     ... OTHERWISE FOLLOW THE DEW-POINT DEPRESSION WITH A COMMA.
+      LBLOCK(ICNTOT) = COMMA
+      ICNTOT = ICNTOT + 1
+C     ... AND ADD TWO COMMAS FOR NO PRESENT WEATHER OR VISIBILITY.
+      LBLOCK(ICNTOT) = COMMA
+      LBLOCK(ICNTOT+1) = COMMA
+      ICNTOT = ICNTOT + 2
+
+      CALL XMOVEX(LBLOCK(ICNTOT),ihhgtchg,3)
+
+C ...      CALL EB2ASC(3,ihhgtchg,LBLOCK(ICNTOT),IERR)
+      ICNTOT = ICNTOT + 3
+C
+C     . . . THAT FINISHED THE HEIGHT CHG (BUT NOT THE DELIMITING COMMA)
+C
+C
+  432 CONTINUE
+C
+C     DELETE TRAILING COMMAS AND IMBEDDED SPACES OR ILLEGAL CHARACTERS.
+C
+      DO 435 I=1,10
+        ISAVE = I
+        IF(LBLOCK(ICNTOT-I) .EQ. COMMA) THEN
+          GO TO 436
+        ENDIF
+  435 CONTINUE
+
+  436 CONTINUE
+      IF(ISAVE .EQ. 1) GO TO 437
+C     ...FOR THEN THERE ARE NO TRAILING COMMAS...
+      I = ISAVE - 1
+C     ...AND I NOW DENOTES THE NUMBER OF TRAILING COMMAS...UP TO NINE...
+      ICNTOT = ICNTOT - I
+C     ...WHICH DISCARDS THOSE UNWANTED BEASTIES...
+
+C     . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+  437 CONTINUE
+      IMAX = ICNTOT - 1
+      DO 438 I=ICNTOB,IMAX
+        ISAVE = I
+        IF(LBLOCK(I) .EQ. LITBLK) GO TO 439
+        IF(LBLOCK(I) .EQ. LNULL) GO TO 439
+        IF(LBLOCK(I) .EQ. LITPND) GO TO 439
+C       ...TEST FOR OTHER ILLEGAL OR UNWANTED CHARACTERS HERE...
+  438 CONTINUE
+      GO TO 4399
+
+  439 CONTINUE
+C       ...WITH THE BUGGER SPOTTED, REMOVE IT AND CLOSE UP RANKS...
+        JMAX = ICNTOT - 2
+        DO 4391 J=ISAVE,JMAX
+          LBLOCK(J) = LBLOCK(J+1)
+ 4391   CONTINUE
+        ICNTOT = IMAX
+        GO TO 437
+C       . . . . . . . . . . . . . . . .  . . . . . . . 
+
+ 4399 CONTINUE
+C
+      LBLOCK(ICNTOT) = SEMICO
+      ICNTOT = ICNTOT + 1
+      LBLOCK(ICNTOT) = CARRET
+      ICNTOT = ICNTOT + 1
+      LBLOCK(ICNTOT) = LINFED
+      ICNTOT = ICNTOT + 1
+      go to 999
+C
+C     ... which is end of one report to AFOS PLTFILE in LBLOCK() ...
+  999 continue
+      return 
+      end  

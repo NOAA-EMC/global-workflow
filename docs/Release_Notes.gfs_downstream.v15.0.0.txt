@@ -1,0 +1,130 @@
+RELEASE NOTES: GFS.v15.0.0 downstream products - released Jan 24, 2019
+
+CODE CHANGES
+ * No code change
+	
+JOB CHANGES
+ * The followig jobs (J-job) have been modified to combine into one job
+
+   - JGFS_AWIPS_20KM_1P0DEG      -----> combined of JGFS_AWIPS_1P0DEG job and JGFS_AWIPS_20KM job
+
+   - JGFS_GEMPAK_NCDC_UPAPGIF    -----> combined of JGFS_GEMPAK_NCDC job and JGFS_GEMPAK_UPAPGIF job
+
+   - JGFS_PGRB2_SPEC_NPOESS      -----> combined of JGFS_NPOESS_PGRB2_0P5DEG job and JGFS_PGRB2_SPEC_POST job
+
+   - JGDAS_BULLS_NAVY            -----> combined of JGDAS_BULLS job and JGDAS_MKNAVYBULLS job
+
+   The remain GFS downstream jobs are same
+
+   - JGDAS_GEMPAK
+   - JGDAS_GEMPAK_META_NCDC
+   - JGFS_AWIPS_G2
+   - JGFS_FAX
+   - JGFS_FAX_WAFS
+   - JGFS_FBWIND
+   - JGFS_GEMPAK
+   - JGFS_GEMPAK_META
+   - JGFS_PGRB2_SPEC_GEMPAK
+
+   All Job cards have same setting for testing on DELL with EMS FV3GFS real time data.
+   ( An example: JGFS_GEMPAK )
+   # LSBATCH: User input
+   #BSUB -J gfs_gempak_00
+   #BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
+   #BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_00.o%J
+   #BSUB -q debug
+   #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
+   #BSUB -W 00:30
+   #BSUB -P GFS-T2O
+   #BSUB -n 24                                     # 24 tasks
+   #BSUB -R span[ptile=12]                         # 12 task per node
+   #BSUB -R affinity[core(1):distribute=balance]   # using 12 cores on node and bind to 1
+                                                   # core per task and distribute across sockets
+
+   ####################################
+   ##  Load the GRIB Utilities modules
+   ####################################
+
+   module load EnvVars/1.0.2
+   module load ips/18.0.1.163
+   module load CFP/2.0.1
+   module load impi/18.0.1
+   module load lsf/10.1
+   module load prod_util/1.1.0
+   module load prod_envir/1.0.2
+   module load NCL/6.4.0                         NOTE:DO NOT load module NCAR/6.4.0  (IT DOES NOT WORK WITH FAX CHART)
+   #
+   #   This is a test version on DELL
+   #
+   module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+   module load grib_util/1.1.0
+   module load bufr_dumplist/2.0.0
+   module load dumpjb/5.0.0
+
+   #
+   #  This is a test GEMPAK version 7.3.1 on DELL
+   #
+   ###########################################
+   # Now set up GEMPAK/NTRANS environment
+   ###########################################
+   module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+   module load gempak/7.3.1
+
+FV3 GFS DRIVER:
+   All drivers are used to test downtream jobs in gfs.v15.0.0/driver/run_*__dell.sh_xx   where is xx is cycle
+
+The followig jobs, scripts, parm have been modified to meet NCO - EE2 implementation standards.
+JOB CHANGES
+   - Jobs:
+     JGDAS_BULLS_NAVY
+     JGDAS_GEMPAK
+     JGDAS_GEMPAK_META_NCDC
+     JGFS_AWIPS_20KM_1P0DEG
+     JGFS_AWIPS_G2
+     JGFS_FAX
+     JGFS_FAX_WAFS
+     JGFS_FBWIND
+     JGFS_GEMPAK
+     JGFS_GEMPAK_META
+     JGFS_GEMPAK_NCDC_UPAPGIF
+     JGFS_PGRB2_SPEC_GEMPAK
+     JGFS_PGRB2_SPEC_NPOESS
+
+SCRIPTS CHANGES
+   - Scripts
+     exgdas_bulls_navy.sh.ecf
+     exgdas_nawips.sh.ecf
+     exgempak_gdas_gif_ncdc.sh.ecf
+     exgempak_gfs_gif_ncdc_skew_t.sh.ecf
+     exgfs_awips_20km_1p0deg.sh.ecf
+     exgfs_fax.sh.ecf
+     exgfs_fax_wafs.sh.ecf
+     exgfs_fbwind.sh.ecf
+     exgfs_gempak_meta.sh.ecf
+     exgfs_grib_awips_g2.sh.ecf
+     exgfs_grib_awips.sh.ecf
+     exgfs_nawips.sh.ecf
+     exglobal_grib2_special_npoess.sh.ecf
+     exgoes_nawips.sh.ecf
+     exnawips.sh.ecf
+
+USH SCRIPT CHANGES
+   -ush 
+    gfs_postanl2.sh
+    gfs_prdgen.sh
+
+PARM CHANGES
+   -parm
+    All parm cards for AWIPS products have been added Total precipitation accumulation (APCP) and convective precipitation (ACPCP)
+    with continuoues accumulation, instananeous precipitation type (CRAIN, CSNOW, CICEP, CFRZR) and Vertical velocity DZDT (m/s)
+    non-hydrostatic computed in model.
+    
+GEMPAK USH SCRIPT CHANGES
+   -gempak/ush
+    In FV3GFS upgrade (Q2FY19), the output files for MAG will be located on DELL as follow:
+    from
+        /gpfs/hps/nco/ops/com/mag/prod/mag.YYYYMMDD
+    to
+        /gpfs/hps/nco/ops/com/gfs/prod/gfs.YYYYMMDD/xx   where xx is cycle: 00, 06, 12 and 18  
+   - gempak/meta file
+    In FV3GFS upgrade (Q2FY19), the GEMPAK stopped to generate (*.vgf) files. 

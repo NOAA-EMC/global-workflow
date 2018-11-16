@@ -189,13 +189,13 @@ fi
 
 if [ $machine = "WCOSS_C" ] ; then
     export ens_tracker_ver=v1.1.13.1
-    export HOMEens_tracker=/gpfs/hps3/emc/global/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
+    export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
     export ens_tracker_ver=v1.1.13.1
-    export HOMEens_tracker=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/ens_tracker.${ens_tracker_ver}
+    export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" ] ; then
-    export ens_tracker_ver=v2.0.1
-    export HOMEens_tracker=/scratch4/NCEPDEV/global/save/glopara/svn/gfs/branches/gfs_q3fy17/ens_tracker.${ens_tracker_ver}
+    export ens_tracker_ver=v1.1.13.2
+    export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 else
     echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
     export VRFYGENESIS="NO"
@@ -222,12 +222,8 @@ fi
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ] ; then
+    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ] ; then
         export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
-    elif [ $machine = "THEIA" ] ; then
-        export GENESISSH="$HOMEens_tracker/gfs_genesis_para_fv3gfs.sh"	
-        export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
-        export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
     else
         echo "WARNING: Genesis verification is not enabled on $machine!"
         export VRFYGENESIS="NO"

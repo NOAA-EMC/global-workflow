@@ -88,6 +88,7 @@ export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
 export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
+export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
 
 ###############################################################
 #    Process GFS GRIB AWIP PRODUCTS IN GRIB2                  #
@@ -97,6 +98,11 @@ cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}    tmpfile2${fcsthrs}
 cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}   tmpfile2b${fcsthrs}
 cat tmpfile2${fcsthrs}   tmpfile2b${fcsthrs}  >  tmpfile${fcsthrs}
 $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile${fcsthrs}
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File: masterfile does not exist."
+   exit $err
+fi
 
 $WGRIB2 masterfile -match ":PWAT:entire atmosphere" -grib gfs_pwat.grb
 $WGRIB2 masterfile | grep -v ":PWAT:entire atmosphere" | $WGRIB2 -i -grib temp_gfs  masterfile
@@ -154,6 +160,7 @@ do
         $WGRIB2  tmp_masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid003 awps_file_f${fcsthrs}_${GRID}
         ;;
    esac
+   $TRIMRH awps_file_f${fcsthrs}_${GRID}   
    $GRB2INDEX awps_file_f${fcsthrs}_${GRID}  awps_file_fi${fcsthrs}_${GRID}
 
 ###########################################################################
@@ -238,7 +245,9 @@ fi
 
 done
 
-cat $pgmout
+if [ -e "$pgmout" ] ; then
+   cat $pgmout
+fi
 
 ############################################################################################
 # GOOD RUN

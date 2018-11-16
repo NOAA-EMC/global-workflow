@@ -64,7 +64,7 @@ export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
 ##############################################
-# Define COM, PCOM, COMIN  directories
+# Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 
 # set envir=prod or para to test with data in prod or para

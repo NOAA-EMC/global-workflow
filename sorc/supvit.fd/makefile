@@ -6,7 +6,8 @@ COMP=   ifort
 LDFLAGS= 
 ##ccs FFLAGS= -O -qflttrap=ov:zero:inv:enable -qcheck -qextchk -qwarn64 -qintsize=$(ISIZE) -qrealsize=$(RSIZE)
 # FFLAGS= -O2 -check bounds -check format -xHost -fpe0
-FFLAGS= -O2 -g -check bounds -check format -i$(ISIZE) -r$(RSIZE)
+# DEBUG= -check bounds -check format
+FFLAGS= -O2 -g -i$(ISIZE) -r$(RSIZE)
 
 supvit:     supvit_main.f supvit_modules.o
 	@echo " "

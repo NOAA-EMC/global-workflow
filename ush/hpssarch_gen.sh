@@ -157,7 +157,7 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}atmanl.nemsio              " >>gdas.txt
   echo  "${dirname}${head}sfcanl.nemsio              " >>gdas.txt
   for fstep in prep anal fcst vrfy radmon minmon oznmon; do
-   if [ -s ./logs/${CDATE}/gdas${fstep}.log ]; then
+   if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
      echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
    fi
   done

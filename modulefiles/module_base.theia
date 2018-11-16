@@ -5,6 +5,7 @@
 
 module load intel/16.1.150
 module load impi/5.1.2.150
+module load EnvVars/v1.0.2
 module load wgrib2
 module load hpss
 module load netcdf

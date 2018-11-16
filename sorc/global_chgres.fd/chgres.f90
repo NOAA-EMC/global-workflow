@@ -250,7 +250,7 @@
       REAL,ALLOCATABLE        :: GEOLAT(:,:), GEOLON(:,:), TMPVAR(:,:)
       REAL,ALLOCATABLE        :: TMPLAT(:,:), TMPLON(:,:)
       REAL                    :: FCSTHOUR, NSST_FHOUR
-      INTEGER                 :: IOLPL3,NLPL3
+      INTEGER                 :: IOLPL3,NLPL3,FILESZ
       INTEGER,ALLOCATABLE     :: LPL3(:)
       REAL, ALLOCATABLE       :: AK(:), BK(:), CK(:), VCOORD(:,:),   &
                                  VCOORDI(:,:), VCOORDO(:,:)
@@ -1230,7 +1230,10 @@
 
       IF (NSFCO == 0) GOTO 80
 
-      INQUIRE (FILE="./chgres.inp.nst", EXIST=DO_NSST)
+      FILESZ=0
+      DO_NSST=.FALSE.
+      INQUIRE (FILE="./chgres.inp.nst", SIZE=FILESZ)
+      IF (FILESZ > 0) DO_NSST=.TRUE.
       IF (DO_NSST .AND. NSFCO == 0) THEN
         PRINT*,'FATAL ERROR: WHEN CONVERTING AN NSST RESTART FILE,'
         PRINT*,'YOU MUST ALSO CONVERT A SURFACE RESTART FILE.'
