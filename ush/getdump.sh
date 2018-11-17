@@ -4,7 +4,7 @@ set -x
 CDATE=${1:-""}
 CDUMP=${2:-""}
 SOURCE_DIR=${3:-$DMPDIR/$CDATE/$CDUMP}
-TARGET_DIR=${4:-ROTDIR/${CDUMP}.${PDY}/$cyc}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
 
 
 # Exit if SORUCE_DIR does not exist
