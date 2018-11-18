@@ -5,24 +5,12 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4='$SECONDS + '
 date
 
-NWROOT=${NWROOT:?}
-DATAROOT=${DATAROOT:?}
-COMROOT=${COMROOT:?}
-
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export job=${job:-"emcsfc_sfc_prep"}
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/${job}.${pid}"
-else
-    export DATA="$DATAROOT/$job"
-fi
-
-[[ -d $DATA ]] && rm -rf $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -33,12 +21,6 @@ cd $DATA
 export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
-
-
-##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ##############################################

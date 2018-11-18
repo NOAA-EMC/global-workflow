@@ -4,7 +4,7 @@ set -x
 CDATE=${1:-""}
 CDUMP=${2:-""}
 SOURCE_DIR=${3:-$DMPDIR/$CDATE/$CDUMP}
-TARGET_DIR=${4:-ROTDIR/${CDUMP}.${PDY}/$cyc}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
 
 
 # Exit if SORUCE_DIR does not exist
@@ -19,6 +19,7 @@ if [ ! -s $TARGET_DIR ]; then mkdir -p $TARGET_DIR ;fi
 
 
 # Set file prefix
+cyc=`echo $CDATE |cut -c 9-10`
 prefix="$CDUMP.t${cyc}z."
 
 
