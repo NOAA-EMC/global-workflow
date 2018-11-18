@@ -20,7 +20,7 @@ metatype="mar_ql"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
 PDY2=`echo $PDY | cut -c3-`
-fend=180
+# fend=180
 
 export pgm=gdplot2_nc;. prep_step; startmsg
 
