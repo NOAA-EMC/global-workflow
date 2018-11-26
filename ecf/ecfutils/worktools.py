@@ -138,7 +138,7 @@ def create_COMROT(conf,force):
     idate = conf.settings.SDATE
     detdir = f'{cdump}.{idate:%Y%m%d}/{idate:%H}'
     nens = conf.data_assimilation.NMEM_ENKF
-    enkfdir = f'enkf.{cdump}.{idate:%Y%m%d}/{idate:%H}'
+    enkfdir = f'enkf{cdump}.{idate:%Y%m%d}/{idate:%H}'
     idatestr = f'{idate:%Y%m%d%H}'
 
     print(f'Input conditions from model: {cdump.upper()}')

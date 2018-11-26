@@ -136,8 +136,8 @@ case:
     rocoto_task_throttle: 15
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-11-15t06:00:00
-    EDATE: 2018-11-15t12:00:00
+    SDATE: 2018-11-26t06:00:00
+    EDATE: 2018-11-26t12:00:00
     chgres_and_convert_ics: No
     realtime: true
     gfs_cyc: 4
