@@ -33,7 +33,7 @@ if [[ ! ( -d /scratch4 && -d /scratch3 || \
           -d /lfs3 || \
           -d /lustre/f1 ) \
     ]] ; then
-   echo "ERROR: This script only runs on WCOSS Cray, Jet, and Theia" 1>&2
+   echo "ERROR: This script only runs on Jet and Theia" 1>&2
    exit 1
 fi
 

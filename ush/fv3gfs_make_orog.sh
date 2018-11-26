@@ -53,7 +53,7 @@ else
 fi
 
 export indir=$hist_dir
-export executable=$exec_dir/ml01rg2.x
+export executable=$exec_dir/orog.x
 if [ ! -s $executable ]; then
   echo "executable does not exist"
   exit 1 

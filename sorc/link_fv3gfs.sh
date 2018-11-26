@@ -22,6 +22,7 @@ if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != 
 fi
 
 LINK="ln -fs"
+SLINK="ln -fs"
 [[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
 
 pwd=$(pwd -P)
@@ -32,7 +33,7 @@ pwd=$(pwd -P)
 echo "target: $target"
 if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "dell" ]; then
+elif [ $target = "wcoss_dell_p3" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $target == "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
@@ -44,6 +45,20 @@ elif [ $target == "jet" ]; then
 else
     echo 'CRITICAL: links to fix files not set'
     exit 1
+fi
+
+if [ ! -r $FIX_DIR ]; then
+   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
+   exit -1
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
 fi
 
 if [ ! -r $FIX_DIR ]; then
@@ -80,13 +95,13 @@ cd ${pwd}/../ush                ||exit 8
 
 #------------------------------
 #--add gfs_wafs file if on Dell
-if [ $machine = dell ]; then 
+if [ $target = wcoss_dell_p3 ]; then
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
 cd ${pwd}/../parm               ||exit 8
     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm                           wafs
+    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
 cd ${pwd}/../ush                ||exit 8
@@ -94,7 +109,6 @@ cd ${pwd}/../ush                ||exit 8
 cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
-
 
 #------------------------------
 #--add GSI/EnKF file
@@ -175,6 +189,26 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
+if [[ $target == "jet" ]]; then
+  util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
+  #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  for util_exec_dirs in grib_utils prod_util ;do
+      if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
+       $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
+      else
+       echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
+      fi
+  done 
+fi
+
+if [ $target = wcoss_dell_p3 ]; then
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
+
+
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
@@ -199,6 +233,47 @@ if [[ $target == "jet" ]]; then
       fi
   done 
 fi
+if [ $target = wcoss_dell_p3 ]; then
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
+ 
+#cd ${pwd}
+#cd gsi.fd
+#gsi_branch=`git branch | grep \*`
+#cd ../fv3gfs.fd
+#fv3gfs_branch=`git branch | grep \*`
+#cd ../gfs_post.fd
+#gfspost_branch=`git branch | grep \*`
+
+#set +x
+#echo "FV3  Branch: $fv3gfs_branch"
+#echo "GSI  Branch: $gsi_branch"
+#echo "POST Branch: $gfspost_branch"
+
+
+#------------------------------
+#--link source code directories
+#------------------------------
+
+cd ${pwd}/../sorc   ||   exit 8
+    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
+    $SLINK gsi.fd/src                                                                      global_enkf.fd
+    $SLINK gsi.fd/src                                                                      global_gsi.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_time.fd       oznmon_time.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radang.fd    radmon_angle.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcoef.fd  radmon_bcoef.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcor.fd   radmon_bcor.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
+    $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
+
+
 #------------------------------
 #--choose dynamic config.base for EMC installation 
 #--choose static config.base for NCO installation 

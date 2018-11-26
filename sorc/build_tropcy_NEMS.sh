@@ -82,6 +82,17 @@ elif [ $target = wcoss_cray ]; then
     #export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
     export FFLAGS="-openmp -O1 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
+elif [ $target = jet   ]; then
+
+    targetx=theia
+    source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target > /dev/null 2>&1
+    module list
+
+    export LIBS_REL="${W3NCO_LIBd}"
+
+    export FC=mpiifort
+    export FFLAGS="-openmp -O3 -g -traceback -r8 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
+
 elif [ $target = wcoss_dell_p3 ]; then
 
     targetx=wcoss_dell_p3

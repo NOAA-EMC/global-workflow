@@ -84,7 +84,7 @@ suite: !Cycle
 
       jgdas_prep: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( ( up.dump.jgdas_dump & up.jgdas_emc_dump_waiter ) & up.up.gdas.post.at('-6:00:00') )
+        Trigger: !Depend ( ( up.dump.jgdas_dump & up.jgdas_emc_dump_waiter & up.jgdas_emc_dump_waiter.updated_status ) & up.up.gdas.post.at('-6:00:00') )
         ecflow_def:
           edit model 'obsproc_global'
         resources: !calc partition.resources.run_prep
@@ -105,7 +105,7 @@ suite: !Cycle
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_analysis_high: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.jgdas_tropcy_cp & up.enkf.post.at('-6:00:00') )
+        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.post.at('-6:00:00') )
         #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep )
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_anal
@@ -231,7 +231,7 @@ suite: !Cycle
     enkf: !Family
       jgdas_enkf_select_obs: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend  ( up.prep.jgdas_prep & post.at('-6:00:00') & up.jgdas_tropcy_cp )
+        Trigger: !Depend  up.prep.jgdas_prep & post.at('-6:00:00')
         resources: !calc partition.resources.run_eobs
         Complete: !Depend ~ suite.has_cycle('-6:00:00') 
         J_JOB: JGLOBAL_ENKF_SELECT_OBS
@@ -395,7 +395,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         ecflow_def:
           edit model 'obsproc_global'
-        Trigger: !Depend up.dump
+        Trigger: !Depend up.dump & up.jgfs_emc_dump_waiter.updated_status
         resources: !calc partition.resources.run_prep
         ecf_environment_settings: !expand |
           {doc.settings.ecflow_rocoto_cdate_workaround}
@@ -414,7 +414,7 @@ suite: !Cycle
 
     jgfs_analysis: !Task
       <<: *exclusive_task_template
-      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & jgfs_tropcy_cp & up.gdas.enkf.post.at('-6:00:00') )
+      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & up.gdas.enkf.post.at('-6:00:00') )
       #Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep )
       resources: !calc partition.resources.run_anal
       J_JOB: JGLOBAL_ANALYSIS

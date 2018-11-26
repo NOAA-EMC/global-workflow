@@ -6,11 +6,11 @@ source ./machine-setup.sh > /dev/null 2>&1
 set -e
 cwd=`pwd`
 
-USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+USE_PREINST_LIBS=${USE_PREINST_LIBS:-"false"}
 if [ $USE_PREINST_LIBS = true ]; then
   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
 else
-  export MOD_PATH=${cwd}/lib/modulefiles
+  export MOD_PATH=${cwd}/../modulefiles
 fi
 
 # Check final exec folder exists

@@ -7,6 +7,8 @@ mode="${1:-exclusive}"
 
 mode="${1:-exclusive}"
 
+mode="${1:-exclusive}"
+
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
@@ -39,7 +41,7 @@ elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
 elif [[ -d /glade ]] ; then
-    # We are on NCAR Yellowstone
+    # We are on NCAR Cheyenne
 	module load module_base.cheyenne 
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA.

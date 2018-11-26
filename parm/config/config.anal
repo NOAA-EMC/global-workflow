@@ -31,21 +31,24 @@ export AMSR2BF=${AMSR2BF:-/dev/null}
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then
 
-#   Set CONVINFO
-    if [[ "$CDATE" -ge "2018022818" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
-    elif [[ "$CDATE" -ge "2018010512" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
-    elif [[ "$CDATE" -ge "2017071912" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2017071912
-    elif [[ "$CDATE" -ge "2016031512" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2016031512
-    elif [[ "$CDATE" -ge "2014041400" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
-    else
-	echo "WARNING: No CONVINFO for $CDATE"
-    fi
+  # Set CONVINFO
+  if [[ "$CDATE" -ge "2018053012" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018053012
+  elif [[ "$CDATE" -ge "2018022818" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
+  elif [[ "$CDATE" -ge "2018010512" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
+  elif [[ "$CDATE" -ge "2017071912" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2017071912
+  elif [[ "$CDATE" -ge "2016031512" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2016031512
+  elif [[ "$CDATE" -ge "2014041400" ]]; then
+    export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
+  else
+    echo "WARNING: No CONVINFO for $CDATE"
+  fi
 
+<<<<<<< HEAD
 #   Set SATINFO
     if [[ "$CDATE" -ge "2018053012" ]]; then
         export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
