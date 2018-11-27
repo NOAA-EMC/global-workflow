@@ -11,16 +11,9 @@
 
 cd $DATA
 
-COMIN=${COMIN:-${COMROOT}/$NET/$envir/$RUN.$PDY}
-cyc=${cyc:-00}
-cycle=${cycle:-t00z}
-# PARMgraph=${PARMgraph:-${NWROOT}/util/parm}
-# FIXgraph=${FIXgraph:-${NWROOT}/util/fix}
-# EXECgraph=${EXECgraph:-${NWROOT}/util/exec}
 model=${model:-gfs}
-COMOUTwmo=${COMOUTwmo:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/wmo}
-
 set +x
+
 echo "######################################"
 echo " Execute TRPSFPRV"
 echo "######################################"
@@ -29,14 +22,58 @@ set -x
 ###################################
 # Copy Grib files
 ###################################
-cp ${COMIN}/${RUN}.${cycle}.pgrbf24 pgrbf24
-cp ${COMIN}/${RUN}.${cycle}.pgrbf48 pgrbf48
-cp ${COMIN}/${RUN}.${cycle}.pgrbif24 pgrbif24
-cp ${COMIN}/${RUN}.${cycle}.pgrbif48 pgrbif48
-cp $PARMshared/graph_trpsfprv_ft08.$cycle trpsfprv_ft08.$cycle
-cp $PARMshared/graph_trpsfprv_ft05.$cycle trpsfprv_ft05.$cycle
-cp $FIXshared/graph_awpseed awpseed
-cp ${FIXshared}/graph_gphbg/mr4002.pur mr4002.pur
+cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f024  .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File gfs.$cycle.pgrb2.1p00.f024 does not exist."
+   exit $err
+fi
+
+cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f048  .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File gfs.$cycle.pgrb2.1p00.f048 does not exist."
+   exit $err
+fi
+
+$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f024 pgrbf24
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+   exit $err
+fi
+
+$GRBINDEX pgrbf24 pgrbif24
+err1=$?
+
+$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f048 pgrbf48
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+   exit $err
+fi
+$GRBINDEX pgrbf48 pgrbif48
+err2=$?
+
+tot=`expr $err1 + $err2`
+if test "$tot" -ne 0
+then
+  msg="File not yet available in com"
+  postmsg "$jlogfile" "$msg"
+  err_exit
+fi
+
+# cp $PARMshared/graph_trpsfprv_ft08.$cycle trpsfprv_ft08.$cycle
+cp ${UTILgfs}/parm/graph_trpsfprv_ft08.$cycle trpsfprv_ft08.$cycle
+
+# cp $PARMshared/graph_trpsfprv_ft05.$cycle trpsfprv_ft05.$cycle
+cp ${UTILgfs}/parm/graph_trpsfprv_ft05.$cycle trpsfprv_ft05.$cycle
+
+# cp $FIXshared/graph_awpseed awpseed
+cp ${UTILgfs}/fix/graph_awpseed awpseed
+
+# cp ${FIXshared}/graph_gphbg/mr4002.pur mr4002.pur
+cp ${UTILgfs}/fix/graph_gphbg/mr4002.pur mr4002.pur
   
 export pgm=trpsfprv;. prep_step
   
@@ -60,9 +97,13 @@ export FORT81="trpsfprv.faxx.${model}_${cyc}"
 msg="$pgm start"
 postmsg "$jlogfile" "$msg"
   
-# $EXECshared/trpsfprv  < trpsfprv_ft05.$cycle >> $pgmout 2> errfile
-$TRPSFPRV < trpsfprv_ft05.$cycle >> $pgmout 2> errfile
-err=$?;export err;err_chk
-  
+# $TRPSFPRV < trpsfprv_ft05.$cycle >> $pgmout 2> errfile
+${UTILgfs}/exec/trpsfprv < trpsfprv_ft05.$cycle >> $pgmout 2> errfile
+export err=$?
+if [[ $err -ne 0 ]] ; then
+   echo " File ${UTILgfs}/exec/trpsfprv does not exist."
+   exit $err
+fi
+
 echo "Leaving trpsfprv.sh"
 exit

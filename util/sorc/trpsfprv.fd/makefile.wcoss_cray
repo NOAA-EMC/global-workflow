@@ -1,0 +1,49 @@
+SHELL=/bin/sh
+#
+SRCS=	lcntr.f j2i.f lputlab.f get3.f shftl.f stream3.f i3to53.o  shftr.f \
+	errmsg.f land.f lor.f encode.f  CLOSEF.f CLOSES.f CLOSET.f FAXSHD.f \
+	FLIPTR.f GETGES.f IDCHCK.f ISOTAC.f MAPX.f MERCIN.f POTEX.f REDFLD.f \
+	REDUCX.f RNCNTL.f SLTCRD.f SPCHK.f STR.f TITLES.f UVCLIP.f WNDPLO.f \
+	WWNDR.f w3fp02_fake.f main.f main.block.data.f getgb1.f centre.f  \
+        reblkfx4.F
+
+OBJS=	lcntr.o j2i.o lputlab.o get3.o shftl.o  stream3.o i3to53.o shftr.o \
+	errmsg.o land.o lor.o encode.o  CLOSEF.o CLOSES.o CLOSET.o FAXSHD.o \
+	FLIPTR.o GETGES.o IDCHCK.o ISOTAC.o MAPX.o MERCIN.o POTEX.o REDFLD.o \
+	REDUCX.o RNCNTL.o SLTCRD.o SPCHK.o STR.o TITLES.o UVCLIP.o WNDPLO.o \
+	WWNDR.o w3fp02_fake.o main.o main.block.data.o getgb1.o centre.o \
+        reblkfx4.o
+
+FC =     ifort 
+#
+LIBS = ${GPHCNTR_LIB8} ${GPHFONT_LIB8} ${GPH_LIB8} ${UTIL_LIB}  \
+       ${IP_LIB8} ${SP_LIB8} ${W3EMC_LIB8} ${W3NCO_LIB8} ${BACIO_LIB8} ${BUFR_LIB8}
+
+CMD =      trpsfprv
+# 
+FFLAGS = -D_LITTLE_ENDIAN -g -i8 -r8  -qopenmp -assume byterecl -convert big_endian \
+         -assume nobscc -assume noold_ldout_format -warn usage
+
+LDFLAGS =  -openmp
+
+# Lines from here on down should not need to be changed.  They are the
+# actual rules which make uses to build a.out.
+#
+all:		$(CMD)
+
+$(CMD):		$(OBJS)
+	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+
+# Make the profiled version of the command and call it a.out.prof
+#
+$(CMD).prof:	$(OBJS)
+	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(PROFLIB) $(LIBS)
+
+clean:
+	-rm -f $(OBJS)
+
+clobber:	clean
+	-rm -f $(CMD) $(CMD).prof
+
+void:	clobber
+	-rm -f $(SRCS) makefile
