@@ -23,50 +23,43 @@ set -x
 # Copy Grib files
 ###################################
 
-# Check for PGRB (GRIB1) files exist or not
+cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f024  .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+    echo " File gfs.$cycle.pgrb2.1p00.f024 does not exist."
+    exit $err
+fi
 
-if test -f pgrbf24 
+cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f048  .
+export err=$?
+if [[ $err -ne 0 ]] ; then
+    echo " File gfs.$cycle.pgrb2.1p00.f048 does not exist."
+    exit $err
+fi
+$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f024 pgrbf24
+export err=$?
+if [[ $err -ne 0 ]] ; then
+    echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+    exit $err
+fi
+$GRBINDEX pgrbf24 pgrbif24
+err1=$?
+
+$CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f048 pgrbf48
+export err=$?
+if [[ $err -ne 0 ]] ; then
+    echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
+    exit $err
+fi
+$GRBINDEX pgrbf48 pgrbif48
+err2=$?
+
+tot=`expr $err1 + $err2`
+if test "$tot" -ne 0
 then
-   echo " File pgrbf24 GRIB1 exist."
-   break
-else
-   cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f024  .
-   export err=$?
-   if [[ $err -ne 0 ]] ; then
-       echo " File gfs.$cycle.pgrb2.1p00.f024 does not exist."
-       exit $err
-   fi
-
-   cp ${COMIN}/gfs.$cycle.pgrb2.1p00.f048  .
-   export err=$?
-   if [[ $err -ne 0 ]] ; then
-       echo " File gfs.$cycle.pgrb2.1p00.f048 does not exist."
-      exit $err
-   fi
-   $CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f024 pgrbf24
-   export err=$?
-   if [[ $err -ne 0 ]] ; then
-       echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
-       exit $err
-   fi
-   $GRBINDEX pgrbf24 pgrbif24
-   err1=$?
-
-   $CNVGRIB -g21 gfs.$cycle.pgrb2.1p00.f048 pgrbf48
-   export err=$?
-   if [[ $err -ne 0 ]] ; then
-      echo " CNVGRIB failed to convert GRIB2 to GRIB1 "
-      exit $err
-   fi
-   $GRBINDEX pgrbf48 pgrbif48
-   err2=$?
-   tot=`expr $err1 + $err2`
-   if test "$tot" -ne 0
-   then
-     msg="File not yet available in com"
-     postmsg "$jlogfile" "$msg"
-     err_exit
-   fi
+   msg="File not yet available in com"
+   postmsg "$jlogfile" "$msg"
+   err_exit
 fi
 
 # cp $PARMshared/graph_trpsfprv_ft08.$cycle trpsfprv_ft08.$cycle
