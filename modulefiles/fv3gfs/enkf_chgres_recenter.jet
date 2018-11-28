@@ -2,10 +2,9 @@
 ## enkf_chgres_recenter component - theia
 #############################################################
 
+module load newdefaults intel/15.0.3.187 impi/5.1.3.181
 
-module load newdefaults
-module load intel/15.0.3.187
-
+module load szip hdf5 netcdf4
 module use $NCEPLIBS/modulefiles
 module load nemsio-intel-sandybridge/2.2.3
 module load bacio-intel-sandybridge/2.0.2
