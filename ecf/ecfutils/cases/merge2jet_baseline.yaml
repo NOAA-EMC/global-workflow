@@ -26,22 +26,25 @@ case:
     downset: 2
     
   downstream:
-    DO_BUFRSND: No
-    DO_GEMPAK: No
-    DO_AWIPS: No
+    DO_POST_PROCESSING: NO
+    DO_BUFRSND: NO
+    DO_GEMPAK: NO
+    DO_AWIPS: NO
+    DO_FAX: NO
+    DO_WAFS: NO
+    DO_BULLETINS: NO
     VRFYFITS: NO
-    VSDB_STEP1: YES
+    VSDB_STEP1: NO
     VSDB_STEP2: NO
-    VRFYG2OBS: YES
-    VRFYPRCP: YES
-    VRFYRAD: YES
-    VRFYOZN: YES
-    VRFYMINMON: YES
+    VRFYG2OBS: NO
+    VRFYPRCP: NO
+    VRFYRAD: NO
+    VRFYOZN: NO
+    VRFYMINMON: NO
     VRFYTRAK: NO
     VRFYGENESIS: NO
     RUNMOS: NO
     RMOLDSTD: 144
-    RMOLDEND: 72
 
   archiving:
     ATARDIR: /5year/NCEPDEV/emc-global/emc.glopara/JET/Q2FY19/fv3q2fy19retro5
