@@ -160,7 +160,7 @@ case:
     four_cycle_mode: no
     nco_mode: no
 
-
+    DUMP_SUFFIX: "p"
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
     max_job_tries: 2
@@ -172,8 +172,8 @@ case:
     BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2015-11-25t00:00:00
-    EDATE: 2016-05-31t18:00:00
+    SDATE: 2018-11-15t06:00:00
+    EDATE: 2018-11-15t12:00:00
     chgres_and_convert_ics: No
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z

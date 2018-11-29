@@ -30,10 +30,10 @@ export EXPDIR="$1"
 export FIRST_CYCLE="$2"
 export LAST_CYCLE="$3"
 
-if [[ ! -d /usrx/local ]] ; then
-   echo "ERROR: This script only runs on WCOSS" 1>&2
-   exit 1
-fi
+#if [[ ! -d /usrx/local ]] ; then
+#   echo "ERROR: This script only runs on WCOSS" 1>&2
+#   exit 1
+#fi
 
 check_ecf_variables
 
