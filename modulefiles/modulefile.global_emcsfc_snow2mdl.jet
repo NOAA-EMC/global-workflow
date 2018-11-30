@@ -29,4 +29,4 @@ module load zlib-intel-sandybridge/1.2.7
 module load png-intel-sandybridge/1.2.44
 #module load png-intel-sandybridge/1.2.59  <-- would like
 module load g2-intel-sandybridge/3.1.0
-module load landsfcutil-intel-sandybridge/2.1.0
+module load landsfcutil-intel/2.1.0

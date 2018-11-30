@@ -26,11 +26,11 @@ driver.o: snowdat.o model_grid.o snow2mdl.o program_setup.o driver.f
 program_setup.o: program_setup.f
 	$(FCOMP) $(FFLAGS) -c program_setup.f
 snowdat.o: program_setup.o model_grid.o snowdat.f
-	$(FCOMP) $(FFLAGS) -I$(G2_INCd) -c snowdat.f
+	$(FCOMP) $(FFLAGS) -I$(IP_INCd) -I$(G2_INCd) -c snowdat.f
 model_grid.o: program_setup.o model_grid.f
 	$(FCOMP) $(FFLAGS) -I$(G2_INCd) -c model_grid.f
 snow2mdl.o: snowdat.o program_setup.o model_grid.o snow2mdl.f
-	$(FCOMP) $(FFLAGS) -I$(LANDSFCUTIL_INCd) -I$(G2_INCd) -c snow2mdl.f
+	$(FCOMP) $(FFLAGS) -I$(IP_INCd) -I$(LANDSFCUTIL_INCd) -I$(G2_INCd) -c snow2mdl.f
 grib_utils.o: grib_utils.f
 	$(FCOMP) $(FFLAGS) -I$(G2_INCd) -c grib_utils.f
 all: check_prereqs $(CMD)
