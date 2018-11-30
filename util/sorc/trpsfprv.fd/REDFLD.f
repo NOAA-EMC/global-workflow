@@ -139,10 +139,11 @@ c     new grib variables
       dimension jpds(25)
       equivalence(jpds,kds)
       character*4 ctextt 
-       dimension krot_pri(2)
+      dimension krot_pri(2)
+      INTEGER   IERR
 C                                                                       
 c*************************  END OF SPECIFICATIONS  ***********
-      
+      IERR=0 
       do 9,k=1,9
       do 9 kk=1,25
   9   kkds(kk,k)=-1

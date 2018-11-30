@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#BSUB -J gfs_fax_f00_12
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f00_12.o%J
-#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f00_12.o%J
+#BSUB -J gfs_fax_f48_12
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f48_12.o%J
+#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fax_f48_12.o%J
 #BSUB -q debug
 #BSUB -n 1                      # number of tasks
 #BSUB -R span[ptile=1]          # 1 task per node
@@ -14,7 +14,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20181126
+export PDY=20181130
 
 export PDY1=`expr $PDY - 1`
 
