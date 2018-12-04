@@ -23,35 +23,35 @@
  OUTFILE = "./gfs_ctrl.nc"
 
  ERROR = NF__CREATE(OUTFILE, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), INITAL, FSIZE, NCID)
- CALL NETCDF_ERR(ERROR, 'Creating file '//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'Creating file '//TRIM(OUTFILE) )
 
  ERROR = NF_DEF_DIM(NCID, 'nvcoord', NVCOORD, DIM_NVCOORD)
- CALL NETCDF_ERR(ERROR, 'define dimension nvcoord for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'define dimension nvcoord for file='//TRIM(OUTFILE) )
 
  ERROR = NF_DEF_DIM(NCID, 'levsp', LEVS_P1, DIM_LEVSP)
- CALL NETCDF_ERR(ERROR, 'define dimension levsp for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'define dimension levsp for file='//TRIM(OUTFILE) )
 
  ERROR = NF_DEF_VAR(NCID, 'ntrac', NF_INT, 0, (/0/), ID_NTRAC)
- CALL NETCDF_ERR(ERROR, 'define var ntrac for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'define var ntrac for file='//TRIM(OUTFILE) )
 
  ERROR = NF_DEF_VAR(NCID, 'vcoord', NF_DOUBLE, 2, (/DIM_LEVSP, DIM_NVCOORD/), ID_VCOORD)
- CALL NETCDF_ERR(ERROR, 'define var vcoord for file='//TRIM(OUTFILE) )   
+ CALL NETCDF_ERROR(ERROR, 'define var vcoord for file='//TRIM(OUTFILE) )   
 
  ERROR = NF__ENDDEF(NCID, HEADER_BUFFER_VAL,4,0,4)
- CALL NETCDF_ERR(ERROR, 'end meta define for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'end meta define for file='//TRIM(OUTFILE) )
 
  ERROR = NF_PUT_VAR_INT( NCID, ID_NTRAC, NTRACM)
- CALL NETCDF_ERR(ERROR, 'write var ntrac for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'write var ntrac for file='//TRIM(OUTFILE) )
 
  TMP(1:LEVS_P1,:) = VCOORD(LEVS_P1:1:-1,:)
  ERROR = NF_PUT_VAR_DOUBLE( NCID, ID_VCOORD, TMP)
- CALL NETCDF_ERR(ERROR, 'write var vcoord for file='//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'write var vcoord for file='//TRIM(OUTFILE) )
 
  ERROR = NF_CLOSE(NCID)
 
  END SUBROUTINE WRITE_FV3_ATMS_HEADER_NETCDF
 
- subroutine netcdf_err( err, string )
+ subroutine netcdf_error( err, string )
  implicit none
  integer, intent(in) :: err
  character(len=*), intent(in) :: string
@@ -66,7 +66,7 @@
  call errexit(999)
 
  return
- end subroutine netcdf_err
+ end subroutine netcdf_error
 
  subroutine write_fv3_sfc_data_netcdf(lonb, latb, lsoil, sfcoutput, f10m, &
                            t2m, q2m, uustar, ffmm, ffhh, tprcp, srflag, tile, &
@@ -139,290 +139,290 @@
 
 !--- open the file
  error = NF__CREATE(outfile, IOR(NF_NETCDF4,NF_CLASSIC_MODEL), inital, fsize, ncid)
- call netcdf_err(error, 'CREATING FILE='//trim(outfile) )
+ call netcdf_error(error, 'CREATING FILE='//trim(outfile) )
 
 !--- define dimension
  error = nf_def_dim(ncid, 'lon', lonb, dim_lon)
- call netcdf_err(error, 'DEFINING LON DIMENSION' )
+ call netcdf_error(error, 'DEFINING LON DIMENSION' )
  error = nf_def_dim(ncid, 'lat', latb, dim_lat)
- call netcdf_err(error, 'DEFINING LAT DIMENSION' )
+ call netcdf_error(error, 'DEFINING LAT DIMENSION' )
  error = nf_def_dim(ncid, 'lsoil', lsoil, dim_lsoil)
- call netcdf_err(error, 'DEFINING LSOIL DIMENSION' )
+ call netcdf_error(error, 'DEFINING LSOIL DIMENSION' )
 
  !--- define field
  error = nf_def_var(ncid, 'lon', NF_FLOAT, 1, (/dim_lon/), id_lon)
- call netcdf_err(error, 'DEFINING LON FIELD' )
+ call netcdf_error(error, 'DEFINING LON FIELD' )
  error = nf_put_att_text(ncid, id_lon, "cartesian_axis", 1, "X")
- call netcdf_err(error, 'WRITING LON FIELD' )
+ call netcdf_error(error, 'WRITING LON FIELD' )
  error = nf_def_var(ncid, 'lat', NF_FLOAT, 1, (/dim_lat/), id_lat)
- call netcdf_err(error, 'DEFINING LAT FIELD' )
+ call netcdf_error(error, 'DEFINING LAT FIELD' )
  error = nf_put_att_text(ncid, id_lat, "cartesian_axis", 1, "Y")
- call netcdf_err(error, 'WRITING LAT FIELD' )
+ call netcdf_error(error, 'WRITING LAT FIELD' )
  error = nf_def_var(ncid, 'lsoil', NF_FLOAT, 1, (/dim_lsoil/), id_lsoil)
- call netcdf_err(error, 'DEFINING LSOIL FIELD' )
+ call netcdf_error(error, 'DEFINING LSOIL FIELD' )
  error = nf_put_att_text(ncid, id_lsoil, "cartesian_axis", 1, "Z")
- call netcdf_err(error, 'WRITING LSOIL FIELD' )
+ call netcdf_error(error, 'WRITING LSOIL FIELD' )
  error = nf_def_var(ncid, 'geolon', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_geolon)
- call netcdf_err(error, 'DEFINING GEOLON' )
+ call netcdf_error(error, 'DEFINING GEOLON' )
  error = nf_def_var(ncid, 'geolat', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_geolat)
- call netcdf_err(error, 'DEFINING GEOLAT' )
+ call netcdf_error(error, 'DEFINING GEOLAT' )
  error = nf_def_var(ncid, 'slmsk', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_slmsk)
- call netcdf_err(error, 'DEFINING SLMSK' )
+ call netcdf_error(error, 'DEFINING SLMSK' )
  error = nf_def_var(ncid, 'tsea', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tsea)
- call netcdf_err(error, 'DEFINING TSEA' )
+ call netcdf_error(error, 'DEFINING TSEA' )
  error = nf_def_var(ncid, 'sheleg', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_sheleg)
- call netcdf_err(error, 'DEFINING SHELEG' )
+ call netcdf_error(error, 'DEFINING SHELEG' )
  error = nf_def_var(ncid, 'tg3', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tg3)
- call netcdf_err(error, 'DEFINING TG3' )
+ call netcdf_error(error, 'DEFINING TG3' )
  error = nf_def_var(ncid, 'zorl', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_zorl)
- call netcdf_err(error, 'DEFINING ZORL' )
+ call netcdf_error(error, 'DEFINING ZORL' )
  error = nf_def_var(ncid, 'alvsf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_alvsf)
- call netcdf_err(error, 'DEFINING ALVSF' )
+ call netcdf_error(error, 'DEFINING ALVSF' )
  error = nf_def_var(ncid, 'alvwf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_alvwf)
- call netcdf_err(error, 'DEFINING ALVWF' )
+ call netcdf_error(error, 'DEFINING ALVWF' )
  error = nf_def_var(ncid, 'alnsf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_alnsf)
- call netcdf_err(error, 'DEFINING ALNSF' )
+ call netcdf_error(error, 'DEFINING ALNSF' )
  error = nf_def_var(ncid, 'alnwf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_alnwf)
- call netcdf_err(error, 'DEFINING ALNWF' )
+ call netcdf_error(error, 'DEFINING ALNWF' )
  error = nf_def_var(ncid, 'vfrac', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_vfrac)
- call netcdf_err(error, 'DEFINING VFRAC' )
+ call netcdf_error(error, 'DEFINING VFRAC' )
  error = nf_def_var(ncid, 'canopy', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_canopy)
- call netcdf_err(error, 'DEFINING CANOPY' )
+ call netcdf_error(error, 'DEFINING CANOPY' )
  error = nf_def_var(ncid, 'f10m', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_f10m)
- call netcdf_err(error, 'DEFINING F10M' )
+ call netcdf_error(error, 'DEFINING F10M' )
  error = nf_def_var(ncid, 't2m', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_t2m)
- call netcdf_err(error, 'DEFINING T2M' )
+ call netcdf_error(error, 'DEFINING T2M' )
  error = nf_def_var(ncid, 'q2m', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_q2m)
- call netcdf_err(error, 'DEFINING Q2M' )
+ call netcdf_error(error, 'DEFINING Q2M' )
  error = nf_def_var(ncid, 'vtype', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_vtype)
- call netcdf_err(error, 'DEFINING VTYPE' )
+ call netcdf_error(error, 'DEFINING VTYPE' )
  error = nf_def_var(ncid, 'stype', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_stype)
- call netcdf_err(error, 'DEFINING STYPE' )
+ call netcdf_error(error, 'DEFINING STYPE' )
  error = nf_def_var(ncid, 'facsf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_facsf)
- call netcdf_err(error, 'DEFINING FACSF' )
+ call netcdf_error(error, 'DEFINING FACSF' )
  error = nf_def_var(ncid, 'facwf', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_facwf)
- call netcdf_err(error, 'DEFINING FACWF' )
+ call netcdf_error(error, 'DEFINING FACWF' )
  error = nf_def_var(ncid, 'uustar', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_uustar)
- call netcdf_err(error, 'DEFINING UUSTAR' )
+ call netcdf_error(error, 'DEFINING UUSTAR' )
  error = nf_def_var(ncid, 'ffmm', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ffmm)
- call netcdf_err(error, 'DEFINING FFMM' )
+ call netcdf_error(error, 'DEFINING FFMM' )
  error = nf_def_var(ncid, 'ffhh', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ffhh)
- call netcdf_err(error, 'DEFINING FFHH' )
+ call netcdf_error(error, 'DEFINING FFHH' )
  error = nf_def_var(ncid, 'hice', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_hice)
- call netcdf_err(error, 'DEFINING HICE' )
+ call netcdf_error(error, 'DEFINING HICE' )
  error = nf_def_var(ncid, 'fice', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_fice)
- call netcdf_err(error, 'DEFINING FICE' )
+ call netcdf_error(error, 'DEFINING FICE' )
  error = nf_def_var(ncid, 'tisfc', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tisfc)
- call netcdf_err(error, 'DEFINING TISFC' )
+ call netcdf_error(error, 'DEFINING TISFC' )
  error = nf_def_var(ncid, 'tprcp', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tprcp)
- call netcdf_err(error, 'DEFINING TPRCP' )
+ call netcdf_error(error, 'DEFINING TPRCP' )
  error = nf_def_var(ncid, 'srflag', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_srflag)
- call netcdf_err(error, 'DEFINING SRFLAG' )
+ call netcdf_error(error, 'DEFINING SRFLAG' )
  error = nf_def_var(ncid, 'snwdph', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_snwdph)
- call netcdf_err(error, 'DEFINING SNWDPH' )
+ call netcdf_error(error, 'DEFINING SNWDPH' )
  error = nf_def_var(ncid, 'shdmin', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_shdmin)
- call netcdf_err(error, 'DEFINING SHDMIN' )
+ call netcdf_error(error, 'DEFINING SHDMIN' )
  error = nf_def_var(ncid, 'shdmax', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_shdmax)
- call netcdf_err(error, 'DEFINING SHDMAX' )
+ call netcdf_error(error, 'DEFINING SHDMAX' )
  error = nf_def_var(ncid, 'slope', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_slope)
- call netcdf_err(error, 'DEFINING SLOPE' )
+ call netcdf_error(error, 'DEFINING SLOPE' )
  error = nf_def_var(ncid, 'snoalb', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_snoalb)
- call netcdf_err(error, 'DEFINING SNOALB' )
+ call netcdf_error(error, 'DEFINING SNOALB' )
  error = nf_def_var(ncid, 'stc', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lsoil/), id_stc)
- call netcdf_err(error, 'DEFINING STC' )
+ call netcdf_error(error, 'DEFINING STC' )
  error = nf_def_var(ncid, 'smc', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lsoil/), id_smc)
- call netcdf_err(error, 'DEFINING SMC' )
+ call netcdf_error(error, 'DEFINING SMC' )
  error = nf_def_var(ncid, 'slc', NF_FLOAT, 3, (/dim_lon,dim_lat,dim_lsoil/), id_slc)
- call netcdf_err(error, 'DEFINING SLC' )
+ call netcdf_error(error, 'DEFINING SLC' )
  if (write_nsst) then
    error = nf_def_var(ncid, 'tref', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_tref)
-   call netcdf_err(error, 'DEFINING TREF' )
+   call netcdf_error(error, 'DEFINING TREF' )
    error = nf_def_var(ncid, 'z_c', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_z_c)
-   call netcdf_err(error, 'DEFINING Z_C' )
+   call netcdf_error(error, 'DEFINING Z_C' )
    error = nf_def_var(ncid, 'c_0', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_c_0)
-   call netcdf_err(error, 'DEFINING C_0' )
+   call netcdf_error(error, 'DEFINING C_0' )
    error = nf_def_var(ncid, 'c_d', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_c_d)
-   call netcdf_err(error, 'DEFINING C_D' )
+   call netcdf_error(error, 'DEFINING C_D' )
    error = nf_def_var(ncid, 'w_0', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_w_0)
-   call netcdf_err(error, 'DEFINING W_0' )
+   call netcdf_error(error, 'DEFINING W_0' )
    error = nf_def_var(ncid, 'w_d', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_w_d)
-   call netcdf_err(error, 'DEFINING W_D' )
+   call netcdf_error(error, 'DEFINING W_D' )
    error = nf_def_var(ncid, 'xt', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xt)
-   call netcdf_err(error, 'DEFINING XT' )
+   call netcdf_error(error, 'DEFINING XT' )
    error = nf_def_var(ncid, 'xs', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xs)
-   call netcdf_err(error, 'DEFINING XS' )
+   call netcdf_error(error, 'DEFINING XS' )
    error = nf_def_var(ncid, 'xu', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xu)
-   call netcdf_err(error, 'DEFINING XU' )
+   call netcdf_error(error, 'DEFINING XU' )
    error = nf_def_var(ncid, 'xv', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xv)
-   call netcdf_err(error, 'DEFINING XV' )
+   call netcdf_error(error, 'DEFINING XV' )
    error = nf_def_var(ncid, 'xz', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xz)
-   call netcdf_err(error, 'DEFINING XZ' )
+   call netcdf_error(error, 'DEFINING XZ' )
    error = nf_def_var(ncid, 'zm', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_zm)
-   call netcdf_err(error, 'DEFINING ZM' )
+   call netcdf_error(error, 'DEFINING ZM' )
    error = nf_def_var(ncid, 'xtts', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xtts)
-   call netcdf_err(error, 'DEFINING XTTS' )
+   call netcdf_error(error, 'DEFINING XTTS' )
    error = nf_def_var(ncid, 'xzts', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_xzts)
-   call netcdf_err(error, 'DEFINING XZTS' )
+   call netcdf_error(error, 'DEFINING XZTS' )
    error = nf_def_var(ncid, 'd_conv', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_d_conv)
-   call netcdf_err(error, 'DEFINING D_CONV' )
+   call netcdf_error(error, 'DEFINING D_CONV' )
    error = nf_def_var(ncid, 'ifd', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_ifd)
-   call netcdf_err(error, 'DEFINING IFD' )
+   call netcdf_error(error, 'DEFINING IFD' )
    error = nf_def_var(ncid, 'dt_cool', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_dt_cool)
-   call netcdf_err(error, 'DEFINING DT_COOL' )
+   call netcdf_error(error, 'DEFINING DT_COOL' )
    error = nf_def_var(ncid, 'qrain', NF_FLOAT, 2, (/dim_lon,dim_lat/), id_qrain)
-   call netcdf_err(error, 'DEFINING QRAIN' )
+   call netcdf_error(error, 'DEFINING QRAIN' )
  endif
 
  error = nf__enddef(ncid, header_buffer_val,4,0,4)
- call netcdf_err(error, 'DEFINING HEADER' )
+ call netcdf_error(error, 'DEFINING HEADER' )
 
  allocate(dum2d(lonb,latb))
 
  dum2d = reshape(sfcoutput%lons, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_lon, dum2d(:,1))
- call netcdf_err(error, 'WRITING LON HEADER RECORD' )
+ call netcdf_error(error, 'WRITING LON HEADER RECORD' )
 
  dum2d = reshape(sfcoutput%lats, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_lat, dum2d(1,:))
- call netcdf_err(error, 'WRITING LAT HEADER RECORD' )
+ call netcdf_error(error, 'WRITING LAT HEADER RECORD' )
 
  do i = 1, lsoil
    lsoil_data(i) = float(i)
  enddo
  error = nf_put_var_real( ncid, id_lsoil, lsoil_data)
- call netcdf_err(error, 'WRITING LSOIL HEADER' )
+ call netcdf_error(error, 'WRITING LSOIL HEADER' )
 
  dum2d = reshape(sfcoutput%lons, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_geolon, dum2d)
- call netcdf_err(error, 'WRITING GEOLON RECORD' )
+ call netcdf_error(error, 'WRITING GEOLON RECORD' )
 
  dum2d = reshape(sfcoutput%lats, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_geolat, dum2d)
- call netcdf_err(error, 'WRITING GEOLAT RECORD' )
+ call netcdf_error(error, 'WRITING GEOLAT RECORD' )
 
  dum2d = reshape(sfcoutput%lsmask, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_slmsk, dum2d)
- call netcdf_err(error, 'WRITING SLMSK RECORD' )
+ call netcdf_error(error, 'WRITING SLMSK RECORD' )
 
  dum2d = reshape(sfcoutput%skin_temp, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_tsea, dum2d)
- call netcdf_err(error, 'WRITING TSEA RECORD' )
+ call netcdf_error(error, 'WRITING TSEA RECORD' )
 
  dum2d = reshape(sfcoutput%snow_liq_equiv, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_sheleg, dum2d)
- call netcdf_err(error, 'WRITING SHELEG RECORD' )
+ call netcdf_error(error, 'WRITING SHELEG RECORD' )
 
  dum2d = reshape(sfcoutput%substrate_temp, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_tg3, dum2d)
- call netcdf_err(error, 'WRITING TG3 RECORD' )
+ call netcdf_error(error, 'WRITING TG3 RECORD' )
 
  dum2d = reshape(sfcoutput%z0, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_zorl, dum2d)
- call netcdf_err(error, 'WRITING ZORL RECORD' )
+ call netcdf_error(error, 'WRITING ZORL RECORD' )
 
  dum2d = reshape(sfcoutput%alvsf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_alvsf, dum2d)
- call netcdf_err(error, 'WRITING ALVSF RECORD' )
+ call netcdf_error(error, 'WRITING ALVSF RECORD' )
 
  dum2d = reshape(sfcoutput%alvwf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_alvwf, dum2d)
- call netcdf_err(error, 'WRITING ALVWF RECORD' )
+ call netcdf_error(error, 'WRITING ALVWF RECORD' )
 
  dum2d = reshape(sfcoutput%alnsf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_alnsf, dum2d)
- call netcdf_err(error, 'WRITING ALNSF RECORD' )
+ call netcdf_error(error, 'WRITING ALNSF RECORD' )
 
  dum2d = reshape(sfcoutput%alnwf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_alnwf, dum2d)
- call netcdf_err(error, 'WRITING ALNWF RECORD' )
+ call netcdf_error(error, 'WRITING ALNWF RECORD' )
 
  dum2d = reshape(sfcoutput%greenfrc, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_vfrac, dum2d)
- call netcdf_err(error, 'WRITING VFRAC RECORD' )
+ call netcdf_error(error, 'WRITING VFRAC RECORD' )
 
  dum2d = reshape(sfcoutput%canopy_mc, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_canopy, dum2d)
- call netcdf_err(error, 'WRITING CANOPY RECORD' )
+ call netcdf_error(error, 'WRITING CANOPY RECORD' )
 
  dum2d = f10m
  error = nf_put_var_real( ncid, id_f10m, dum2d)
- call netcdf_err(error, 'WRITING F10M RECORD' )
+ call netcdf_error(error, 'WRITING F10M RECORD' )
 
  dum2d = t2m
  error = nf_put_var_real( ncid, id_t2m, dum2d)
- call netcdf_err(error, 'WRITING T2M RECORD' )
+ call netcdf_error(error, 'WRITING T2M RECORD' )
 
  dum2d = q2m
  error = nf_put_var_real( ncid, id_q2m, dum2d)
- call netcdf_err(error, 'WRITING Q2M RECORD' )
+ call netcdf_error(error, 'WRITING Q2M RECORD' )
 
  dum2d = reshape(float(sfcoutput%veg_type), (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_vtype, dum2d)
- call netcdf_err(error, 'WRITING VTYPE RECORD' )
+ call netcdf_error(error, 'WRITING VTYPE RECORD' )
 
  dum2d = reshape(float(sfcoutput%soil_type), (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_stype, dum2d)
- call netcdf_err(error, 'WRITING STYPE RECORD' )
+ call netcdf_error(error, 'WRITING STYPE RECORD' )
 
  dum2d = reshape(sfcoutput%facsf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_facsf, dum2d)
- call netcdf_err(error, 'WRITING FACSF RECORD' )
+ call netcdf_error(error, 'WRITING FACSF RECORD' )
 
  dum2d = reshape(sfcoutput%facwf, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_facwf, dum2d)
- call netcdf_err(error, 'WRITING FACWF RECORD' )
+ call netcdf_error(error, 'WRITING FACWF RECORD' )
 
  dum2d = uustar
  error = nf_put_var_real( ncid, id_uustar, dum2d)
- call netcdf_err(error, 'WRITING UUSTAR RECORD' )
+ call netcdf_error(error, 'WRITING UUSTAR RECORD' )
 
  dum2d = ffmm
  error = nf_put_var_real( ncid, id_ffmm, dum2d)
- call netcdf_err(error, 'WRITING FFMM RECORD' )
+ call netcdf_error(error, 'WRITING FFMM RECORD' )
 
  dum2d = ffhh
  error = nf_put_var_real( ncid, id_ffhh, dum2d)
- call netcdf_err(error, 'WRITING FFHH RECORD' )
+ call netcdf_error(error, 'WRITING FFHH RECORD' )
 
  dum2d = reshape(sfcoutput%sea_ice_depth, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_hice, dum2d)
- call netcdf_err(error, 'WRITING HICE RECORD' )
+ call netcdf_error(error, 'WRITING HICE RECORD' )
 
  dum2d = reshape(sfcoutput%sea_ice_fract, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_fice, dum2d)
- call netcdf_err(error, 'WRITING FICE RECORD' )
+ call netcdf_error(error, 'WRITING FICE RECORD' )
 
  dum2d = reshape(sfcoutput%sea_ice_temp, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_tisfc, dum2d)
- call netcdf_err(error, 'WRITING TISFC RECORD' )
+ call netcdf_error(error, 'WRITING TISFC RECORD' )
 
  dum2d = tprcp
  error = nf_put_var_real( ncid, id_tprcp, dum2d)
- call netcdf_err(error, 'WRITING TPRCP RECORD' )
+ call netcdf_error(error, 'WRITING TPRCP RECORD' )
 
  dum2d = srflag
  error = nf_put_var_real( ncid, id_srflag, dum2d)
- call netcdf_err(error, 'WRITING SRFLAG RECORD' )
+ call netcdf_error(error, 'WRITING SRFLAG RECORD' )
 
  dum2d = reshape(sfcoutput%snow_depth, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_snwdph, dum2d)
- call netcdf_err(error, 'WRITING SNWDPH RECORD' )
+ call netcdf_error(error, 'WRITING SNWDPH RECORD' )
 
  dum2d = reshape(sfcoutput%greenfrc_min, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_shdmin, dum2d)
- call netcdf_err(error, 'WRITING SHDMIN RECORD' )
+ call netcdf_error(error, 'WRITING SHDMIN RECORD' )
 
  dum2d = reshape(sfcoutput%greenfrc_max, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_shdmax, dum2d)
- call netcdf_err(error, 'WRITING SHDMAX RECORD' )
+ call netcdf_error(error, 'WRITING SHDMAX RECORD' )
 
  dum2d = reshape(float(sfcoutput%slope_type), (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_slope, dum2d)
- call netcdf_err(error, 'WRITING SLOPE RECORD' )
+ call netcdf_error(error, 'WRITING SLOPE RECORD' )
 
  dum2d = reshape(sfcoutput%mxsnow_alb, (/lonb,latb/) )
  error = nf_put_var_real( ncid, id_snoalb, dum2d)
- call netcdf_err(error, 'WRITING SNOALB RECORD' )
+ call netcdf_error(error, 'WRITING SNOALB RECORD' )
 
  deallocate (dum2d)
 
@@ -430,15 +430,15 @@
 
  dum3d = reshape(sfcoutput%soil_temp, (/lonb,latb,lsoil/) )
  error = nf_put_var_real( ncid, id_stc, dum3d)
- call netcdf_err(error, 'WRITING STC RECORD' )
+ call netcdf_error(error, 'WRITING STC RECORD' )
 
  dum3d = reshape(sfcoutput%soilm_tot, (/lonb,latb,lsoil/) )
  error = nf_put_var_real( ncid, id_smc, dum3d)
- call netcdf_err(error, 'WRITING SMC RECORD' )
+ call netcdf_error(error, 'WRITING SMC RECORD' )
 
  dum3d = reshape(sfcoutput%soilm_liq, (/lonb,latb,lsoil/) )
  error = nf_put_var_real( ncid, id_slc, dum3d)
- call netcdf_err(error, 'WRITING SLC RECORD' )
+ call netcdf_error(error, 'WRITING SLC RECORD' )
 
  deallocate (dum3d)
 
@@ -448,75 +448,75 @@
 
    dum2d = reshape(nsst_output(:,17), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_tref, dum2d)
-   call netcdf_err(error, 'WRITING TREF RECORD' )
+   call netcdf_error(error, 'WRITING TREF RECORD' )
 
    dum2d = reshape(nsst_output(:,10), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_z_c, dum2d)
-   call netcdf_err(error, 'WRITING Z_C RECORD' )
+   call netcdf_error(error, 'WRITING Z_C RECORD' )
 
    dum2d = reshape(nsst_output(:,11), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_c_0, dum2d)
-   call netcdf_err(error, 'WRITING C_0 RECORD' )
+   call netcdf_error(error, 'WRITING C_0 RECORD' )
 
    dum2d = reshape(nsst_output(:,12), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_c_d, dum2d)
-   call netcdf_err(error, 'WRITING C_D RECORD' )
+   call netcdf_error(error, 'WRITING C_D RECORD' )
 
    dum2d = reshape(nsst_output(:,13), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_w_0, dum2d)
-   call netcdf_err(error, 'WRITING W_0 RECORD' )
+   call netcdf_error(error, 'WRITING W_0 RECORD' )
 
    dum2d = reshape(nsst_output(:,14), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_w_d, dum2d)
-   call netcdf_err(error, 'WRITING W_D RECORD' )
+   call netcdf_error(error, 'WRITING W_D RECORD' )
 
    dum2d = reshape(nsst_output(:,1), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xt, dum2d)
-   call netcdf_err(error, 'WRITING XT RECORD' )
+   call netcdf_error(error, 'WRITING XT RECORD' )
 
    dum2d = reshape(nsst_output(:,2), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xs, dum2d)
-   call netcdf_err(error, 'WRITING XS RECORD' )
+   call netcdf_error(error, 'WRITING XS RECORD' )
 
    dum2d = reshape(nsst_output(:,3), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xu, dum2d)
-   call netcdf_err(error, 'WRITING XU RECORD' )
+   call netcdf_error(error, 'WRITING XU RECORD' )
 
    dum2d = reshape(nsst_output(:,4), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xv, dum2d)
-   call netcdf_err(error, 'WRITING XV RECORD' )
+   call netcdf_error(error, 'WRITING XV RECORD' )
 
    dum2d = reshape(nsst_output(:,5), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xz, dum2d)
-   call netcdf_err(error, 'WRITING XZ RECORD' )
+   call netcdf_error(error, 'WRITING XZ RECORD' )
 
    dum2d = reshape(nsst_output(:,6), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_zm, dum2d)
-   call netcdf_err(error, 'WRITING ZM RECORD' )
+   call netcdf_error(error, 'WRITING ZM RECORD' )
 
    dum2d = reshape(nsst_output(:,7), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xtts, dum2d)
-   call netcdf_err(error, 'WRITING XTTS RECORD' )
+   call netcdf_error(error, 'WRITING XTTS RECORD' )
 
    dum2d = reshape(nsst_output(:,8), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_xzts, dum2d)
-   call netcdf_err(error, 'WRITING XZTS RECORD' )
+   call netcdf_error(error, 'WRITING XZTS RECORD' )
 
    dum2d = reshape(nsst_output(:,15), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_d_conv, dum2d)
-   call netcdf_err(error, 'WRITING D_CONV RECORD' )
+   call netcdf_error(error, 'WRITING D_CONV RECORD' )
 
    dum2d = reshape(nsst_output(:,16), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_ifd, dum2d)
-   call netcdf_err(error, 'WRITING IFD RECORD' )
+   call netcdf_error(error, 'WRITING IFD RECORD' )
 
    dum2d = reshape(nsst_output(:,9), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_dt_cool, dum2d)
-   call netcdf_err(error, 'WRITING DT_COOL RECORD' )
+   call netcdf_error(error, 'WRITING DT_COOL RECORD' )
 
    dum2d = reshape(nsst_output(:,18), (/lonb,latb/) )
    error = nf_put_var_real(ncid, id_qrain, dum2d)
-   call netcdf_err(error, 'WRITING QRAIN RECORD' )
+   call netcdf_error(error, 'WRITING QRAIN RECORD' )
 
    deallocate(dum2d)
 
@@ -548,19 +548,19 @@
  WRITE(TILEFILE, "(A,I1)") "chgres.fv3.grd.t", TILE_NUM
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ CALL NETCDF_ERROR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'nx', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NX)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX' )
 
  ERROR=NF90_INQ_DIMID(NCID, 'ny', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NY)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY' )
 
  IF ((NX/2) /= IMO .OR. (NY/2) /= JMO) THEN
    PRINT*,'FATAL ERROR: DIMENSIONS IN GRID FILE WRONG.'
@@ -570,16 +570,16 @@
  ALLOCATE(TMPVAR(NX,NY))
 
  ERROR=NF90_INQ_VARID(NCID, 'x', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING X ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, TMPVAR)
- CALL NETCDF_ERR(ERROR, 'ERROR READING X RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X RECORD' )
 
  GEOLON(1:IMO,1:JMO)     = TMPVAR(2:NX:2,2:NY:2)
 
  ERROR=NF90_INQ_VARID(NCID, 'y', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, TMPVAR)
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y RECORD' )
 
  GEOLAT(1:IMO,1:JMO)     = TMPVAR(2:NX:2,2:NY:2)
 
@@ -613,19 +613,19 @@
  PRINT*,'WILL READ GRID DIMENSIONS FROM: ', TRIM(TILEFILE)
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING: '//TRIM(TILEFILE) )
+ CALL NETCDF_ERROR(ERROR, 'OPENING: '//TRIM(TILEFILE) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'lon', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'READING LON ID' )
+ CALL NETCDF_ERROR(ERROR, 'READING LON ID' )
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=IMO)
- CALL NETCDF_ERR(ERROR, 'READING LON VALUE' )
+ CALL NETCDF_ERROR(ERROR, 'READING LON VALUE' )
 
  PRINT*,'I-DIRECTION GRID DIM: ',IMO
 
  ERROR=NF90_INQ_DIMID(NCID, 'lat', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'READING LAT ID' )
+ CALL NETCDF_ERROR(ERROR, 'READING LAT ID' )
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=JMO)
- CALL NETCDF_ERR(ERROR, 'READING LAT VALUE' )
+ CALL NETCDF_ERROR(ERROR, 'READING LAT VALUE' )
 
  PRINT*,'J-DIRECTION GRID DIM: ',JMO
 
@@ -661,12 +661,12 @@
  PRINT*,'WILL READ ',TRIM(FIELD), ' FROM: ', TRIM(TILEFILE)
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING: '//TRIM(TILEFILE) )
+ CALL NETCDF_ERROR(ERROR, 'OPENING: '//TRIM(TILEFILE) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'lon', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'READING LON ID' )
+ CALL NETCDF_ERROR(ERROR, 'READING LON ID' )
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=LON)
- CALL NETCDF_ERR(ERROR, 'READING LON VALUE' )
+ CALL NETCDF_ERROR(ERROR, 'READING LON VALUE' )
 
  PRINT*,'LON IS ',LON
  IF(LON/=IMO) THEN
@@ -675,9 +675,9 @@
  ENDIF
 
  ERROR=NF90_INQ_DIMID(NCID, 'lat', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'READING LAT ID' )
+ CALL NETCDF_ERROR(ERROR, 'READING LAT ID' )
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=LAT)
- CALL NETCDF_ERR(ERROR, 'READING LAT VALUE' )
+ CALL NETCDF_ERROR(ERROR, 'READING LAT VALUE' )
 
  PRINT*,'LAT IS ',LAT
  IF(LAT/=JMO) THEN
@@ -686,9 +686,9 @@
  ENDIF
 
  ERROR=NF90_INQ_VARID(NCID, FIELD, ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'READING FIELD ID' )
+ CALL NETCDF_ERROR(ERROR, 'READING FIELD ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, SFCDATA)
- CALL NETCDF_ERR(ERROR, 'READING FIELD' )
+ CALL NETCDF_ERROR(ERROR, 'READING FIELD' )
 
  ERROR = NF_CLOSE(NCID)
 
@@ -809,19 +809,19 @@
  PRINT*, "READ FV3 GRID INFO FROM: "//TRIM(TILEFILE)
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ CALL NETCDF_ERROR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'nx', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NX)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX' )
 
  ERROR=NF90_INQ_DIMID(NCID, 'ny', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NY)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY' )
 
  IF (MOD(NX,2) /= 0) THEN
    PRINT*,'FATAL ERROR: NX IS NOT EVEN'
@@ -840,14 +840,14 @@
  ALLOCATE(GEOLAT(NX+1,NY+1))
 
  ERROR=NF90_INQ_VARID(NCID, 'x', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING X ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, GEOLON)
- CALL NETCDF_ERR(ERROR, 'ERROR READING X RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X RECORD' )
 
  ERROR=NF90_INQ_VARID(NCID, 'y', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, GEOLAT)
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y RECORD' )
 
  ERROR = NF_CLOSE(NCID2)
 
@@ -857,292 +857,292 @@
 
  WRITE(OUTFILE, '(A, I1, A)'), 'gfs_bndy.tile', 7, '.nc'
  ERROR = NF__CREATE(OUTFILE, IOR(NF_NETCDF4,NF_CLASSIC_MODEL),INITAL, FSIZE, NCID2)
- CALL NETCDF_ERR(ERROR, 'CREATING FILE: '//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'CREATING FILE: '//TRIM(OUTFILE) )
 
  ERROR = NF90_DEF_DIM(NCID2, 'lon', IM, DIM_LON)
- CALL NETCDF_ERR(ERROR, 'DEFINING LON DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LON DIMENSION')
 
  JM2 = JM - (2*HALO)
  ERROR = NF90_DEF_DIM(NCID2, 'lat', JM2, DIM_LAT)
- CALL NETCDF_ERR(ERROR, 'DEFINING LAT DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LAT DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'lonp', (IM+1), DIM_LONP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LONP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LONP DIMENSION')
 
  JM2 = (JM + 1) - (2*HALO_P1)
  ERROR = NF90_DEF_DIM(NCID2, 'latm', JM2, DIM_LATM)
- CALL NETCDF_ERR(ERROR, 'DEFINING LATM DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LATM DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'halo', HALO, DIM_HALO)
- CALL NETCDF_ERR(ERROR, 'DEFINING HALO DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING HALO DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'halop', HALO_P1, DIM_HALOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING HALOP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING HALOP DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'lev', LEVSO, DIM_LEV)
- CALL NETCDF_ERR(ERROR, 'DEFINING LEV DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LEV DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'levp', LEVSO_P1, DIM_LEVP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LEVP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LEVP DIMENSION')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_bottom', NF90_INT, &
                              (/DIM_LON/), ID_I_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_bottom', NF90_INT, &
                              (/DIM_HALO/), ID_J_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_top', NF90_INT, &
                              (/DIM_LON/), ID_I_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_top', NF90_INT, &
                              (/DIM_HALO/), ID_J_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_right', NF90_INT, &
                              (/DIM_HALO/), ID_I_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_right', NF90_INT, &
                              (/DIM_LAT/), ID_J_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_left', NF90_INT, &
                              (/DIM_HALO/), ID_I_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_left', NF90_INT, &
                              (/DIM_LAT/), ID_J_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'ps_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO/), ID_PS_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING PS_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING PS_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'ps_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO/), ID_PS_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING PS_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING PS_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'ps_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT/), ID_PS_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING PS_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING PS_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'ps_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT/), ID_PS_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING PS_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING PS_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'w_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_W_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING W_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'w_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_W_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING W_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'w_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_W_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING W_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'w_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_W_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING W_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'zh_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEVP/), ID_ZH_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING ZH_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING ZH_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'zh_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEVP/), ID_ZH_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING ZH_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING ZH_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'zh_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEVP/), ID_ZH_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING ZH_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING ZH_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'zh_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEVP/), ID_ZH_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING ZH_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING ZH_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'sphum_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_SPHUM_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING SPHUM_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING SPHUM_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'sphum_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_SPHUM_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING SPHUM_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING SPHUM_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'sphum_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_SPHUM_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING SPHUM_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING SPHUM_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'sphum_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_SPHUM_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING SPHUM_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING SPHUM_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'o3mr_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_O3MR_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING O3MR_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING O3MR_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'o3mr_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_O3MR_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING O3MR_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING O3MR_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'o3mr_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_O3MR_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING O3MR_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING O3MR_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'o3mr_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_O3MR_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING O3MR_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING O3MR_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'liq_wat_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_CLWMR_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING LIQ_WAT_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LIQ_WAT_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'liq_wat_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALO, DIM_LEV/), ID_CLWMR_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LIQ_WAT_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LIQ_WAT_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'liq_wat_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_CLWMR_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING LIQ_WAT_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LIQ_WAT_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'liq_wat_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LAT, DIM_LEV/), ID_CLWMR_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING LIQ_WAT_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LIQ_WAT_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_w_bottom', NF90_INT, &
                              (/DIM_LONP/), ID_I_W_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_W_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_w_bottom', NF90_INT, &
                              (/DIM_HALO/), ID_J_W_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_W_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_w_top', NF90_INT, &
                              (/DIM_LONP/), ID_I_W_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_W_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_w_top', NF90_INT, &
                              (/DIM_HALO/), ID_J_W_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_W_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_w_right', NF90_INT, &
                              (/DIM_HALOP/), ID_I_W_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_W_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_w_right', NF90_INT, &
                              (/DIM_LAT/), ID_J_W_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_W_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_w_left', NF90_INT, &
                              (/DIM_HALOP/), ID_I_W_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_W_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_w_left', NF90_INT, &
                              (/DIM_LAT/), ID_J_W_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_W_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_w_bottom', NF90_FLOAT, &
                              (/DIM_LONP, DIM_HALO, DIM_LEV/), ID_U_W_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_W_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_w_top', NF90_FLOAT, &
                              (/DIM_LONP, DIM_HALO, DIM_LEV/), ID_U_W_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_W_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_w_right', NF90_FLOAT, &
                              (/DIM_HALOP, DIM_LAT, DIM_LEV/), ID_U_W_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_W_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_w_left', NF90_FLOAT, &
                              (/DIM_HALOP, DIM_LAT, DIM_LEV/), ID_U_W_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_W_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_w_bottom', NF90_FLOAT, &
                              (/DIM_LONP, DIM_HALO, DIM_LEV/), ID_V_W_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_W_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_w_top', NF90_FLOAT, &
                              (/DIM_LONP, DIM_HALO, DIM_LEV/), ID_V_W_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_W_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_w_right', NF90_FLOAT, &
                              (/DIM_HALOP, DIM_LAT, DIM_LEV/), ID_V_W_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_W_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_w_left', NF90_FLOAT, &
                              (/DIM_HALOP, DIM_LAT, DIM_LEV/), ID_V_W_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_W_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_s_bottom', NF90_INT, &
                              (/DIM_LON/), ID_I_S_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_S_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_s_bottom', NF90_INT, &
                              (/DIM_HALOP/), ID_J_S_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_S_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_s_top', NF90_INT, &
                              (/DIM_LON/), ID_I_S_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_S_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_s_top', NF90_INT, &
                              (/DIM_HALOP/), ID_J_S_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_S_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_s_right', NF90_INT, &
                              (/DIM_HALO/), ID_I_S_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_S_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_s_right', NF90_INT, &
                              (/DIM_LATM/), ID_J_S_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_S_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'i_s_left', NF90_INT, &
                              (/DIM_HALO/), ID_I_S_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING I_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING I_S_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'j_s_left', NF90_INT, &
                              (/DIM_LATM/), ID_J_S_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING J_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING J_S_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_s_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALOP, DIM_LEV/), ID_U_S_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_S_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_s_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALOP, DIM_LEV/), ID_U_S_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_S_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_s_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LATM, DIM_LEV/), ID_U_S_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_S_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_s_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LATM, DIM_LEV/), ID_U_S_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_S_LEFT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_s_bottom', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALOP, DIM_LEV/), ID_V_S_BOTTOM)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_S_BOTTOM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_s_top', NF90_FLOAT, &
                              (/DIM_LON, DIM_HALOP, DIM_LEV/), ID_V_S_TOP)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_S_TOP')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_s_right', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LATM, DIM_LEV/), ID_V_S_RIGHT)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_S_RIGHT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_s_left', NF90_FLOAT, &
                              (/DIM_HALO, DIM_LATM, DIM_LEV/), ID_V_S_LEFT)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_S_LEFT')
 
  ERROR = NF__ENDDEF(NCID2, HEADER_BUFFER_VAL, 4, 0, 4)
- CALL NETCDF_ERR(ERROR, 'DEFINING END OF HEADER')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING END OF HEADER')
 
 !----------------------------------------------------------------------------------
 ! "Bottom" boundary.
@@ -1162,7 +1162,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1171,7 +1171,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1193,7 +1193,7 @@
  HALO_2D_4BYTE = REAL(HALO_2D,4)
 
  ERROR = NF90_PUT_VAR(NCID2, ID_PS_BOTTOM, HALO_2D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING PS_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING PS_BOTTOM')
 
  DEALLOCATE(HALO_2D, HALO_2D_4BYTE)
 
@@ -1206,7 +1206,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_SPHUM_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING SPHUM_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING SPHUM_BOTTOM')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,2), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1214,7 +1214,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_O3MR_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING O3MR_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING O3MR_BOTTOM')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,3), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1222,7 +1222,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_CLWMR_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING LIQ_WAT_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING LIQ_WAT_BOTTOM')
 
  CALL GL2ANY(0, LEVSO, W, LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1230,7 +1230,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_W_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING W_BOTTOM')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
 
@@ -1243,7 +1243,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_ZH_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING ZH_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING ZH_BOTTOM')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1262,7 +1262,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_W_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_W_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1271,7 +1271,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_W_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_W_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1297,14 +1297,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_W_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_W_BOTTOM')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_W_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_W_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_W_BOTTOM')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1323,7 +1323,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_S_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_S_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1332,7 +1332,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_S_BOTTOM, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_S_BOTTOM')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1358,14 +1358,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_S_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_S_BOTTOM')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_S_BOTTOM, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_S_BOTTOM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_S_BOTTOM')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1388,7 +1388,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_TOP')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1397,7 +1397,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_TOP')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1419,7 +1419,7 @@
  HALO_2D_4BYTE = REAL(HALO_2D,4)
 
  ERROR = NF90_PUT_VAR(NCID2, ID_PS_TOP, HALO_2D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING PS_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING PS_TOP')
 
  DEALLOCATE(HALO_2D, HALO_2D_4BYTE)
 
@@ -1432,7 +1432,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_SPHUM_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING SPHUM_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING SPHUM_TOP')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,2), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1440,7 +1440,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_O3MR_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING O3MR_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING O3MR_TOP')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,3), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1448,7 +1448,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_CLWMR_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING CLWMR_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING CLWMR_TOP')
 
  CALL GL2ANY(0, LEVSO, W, LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1456,7 +1456,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_W_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING W_TOP')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
 
@@ -1469,7 +1469,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_ZH_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING ZH_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING ZH_TOP')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1488,7 +1488,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_W_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_W_TOP')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1497,7 +1497,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_W_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_W_TOP')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1523,14 +1523,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_W_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_W_TOP')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_W_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_W_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_W_TOP')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1549,7 +1549,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_S_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_S_TOP')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1558,7 +1558,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_S_TOP, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_S_TOP')
 
  DEALLOCATE(IDUM)
 
@@ -1585,14 +1585,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_S_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_S_TOP')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_S_TOP, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_S_TOP')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_S_TOP')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1615,7 +1615,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1624,7 +1624,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1646,7 +1646,7 @@
  HALO_2D_4BYTE = REAL(HALO_2D,4)
 
  ERROR = NF90_PUT_VAR(NCID2, ID_PS_LEFT, HALO_2D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING PS_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING PS_LEFT')
 
  DEALLOCATE(HALO_2D, HALO_2D_4BYTE)
 
@@ -1659,7 +1659,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_SPHUM_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING SPHUM_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING SPHUM_LEFT')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,2), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1667,7 +1667,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_O3MR_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING O3MR_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING O3MR_LEFT')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,3), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1675,7 +1675,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_CLWMR_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING CLWMR_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING CLWMR_LEFT')
 
  CALL GL2ANY(0, LEVSO, W, LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1683,7 +1683,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_W_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING W_LEFT')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
 
@@ -1696,7 +1696,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_ZH_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING ZH_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING ZH_LEFT')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1715,7 +1715,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_W_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_W_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1724,7 +1724,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_W_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_W_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1750,14 +1750,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_W_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_W_LEFT')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_W_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_W_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_W_LEFT')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1776,7 +1776,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_S_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_S_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1785,7 +1785,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_S_LEFT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_S_LEFT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1811,14 +1811,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_S_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_S_LEFT')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_S_LEFT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_S_LEFT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_S_LEFT')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1841,7 +1841,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1850,7 +1850,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1872,7 +1872,7 @@
  HALO_2D_4BYTE = REAL(HALO_2D,4)
 
  ERROR = NF90_PUT_VAR(NCID2, ID_PS_RIGHT, HALO_2D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING PS_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING PS_RIGHT')
 
  DEALLOCATE(HALO_2D, HALO_2D_4BYTE)
 
@@ -1885,7 +1885,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_SPHUM_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING SPHUM_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING SPHUM_RIGHT')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,2), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1893,7 +1893,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_O3MR_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING O3MR_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING O3MR_RIGHT')
 
  CALL GL2ANY(0, LEVSO, Q(:,:,:,3), LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1901,7 +1901,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_CLWMR_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING CLWMR_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING CLWMR_RIGHT')
 
  CALL GL2ANY(0, LEVSO, W, LONB, LATB, HALO_3D, IHALO, JHALO, GEOLON_HALO, GEOLAT_HALO)
  DO K = 1, LEVSO
@@ -1909,7 +1909,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_W_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING W_RIGHT')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
 
@@ -1922,7 +1922,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_ZH_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING ZH_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING ZH_RIGHT')
 
  DEALLOCATE(HALO_3D, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -1941,7 +1941,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_W_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_W_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -1950,7 +1950,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_W_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_W_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -1976,14 +1976,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_W_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_W_RIGHT')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_W_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_W_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_W_RIGHT')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -2002,7 +2002,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_I_S_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING I_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING I_S_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(IDUM(JSTART:JEND))
@@ -2011,7 +2011,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_J_S_RIGHT, IDUM)
- CALL NETCDF_ERR(ERROR, 'WRITING J_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING J_S_RIGHT')
  DEALLOCATE(IDUM)
 
  ALLOCATE(GEOLAT_HALO(ISTART:IEND,JSTART:JEND))
@@ -2037,14 +2037,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_S_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_S_RIGHT')
 
  DO K = 1, LEVSO
    HALO_3D_4BYTE(:,:,LEVSO-K+1) = REAL(HALO_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_S_RIGHT, HALO_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_S_RIGHT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_S_RIGHT')
 
  DEALLOCATE(HALO_3D, HALO_3D2, HALO_3D_4BYTE)
  DEALLOCATE(GEOLAT_HALO, GEOLON_HALO)
@@ -2139,19 +2139,19 @@
  ENDIF
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF_NOWRITE,NCID)
- CALL NETCDF_ERR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
+ CALL NETCDF_ERROR(ERROR, 'OPENING FILE: '//TRIM(TILEFILE) )
 
  ERROR=NF90_INQ_DIMID(NCID, 'nx', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NX)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NX' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NX' )
 
  ERROR=NF90_INQ_DIMID(NCID, 'ny', ID_DIM)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY ID' )
 
  ERROR=NF90_INQUIRE_DIMENSION(NCID,ID_DIM,LEN=NY)
- CALL NETCDF_ERR(ERROR, 'ERROR READING NY' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING NY' )
 
  IF (MOD(NX,2) /= 0) THEN
    PRINT*,'FATAL ERROR: NX IS NOT EVEN'
@@ -2195,9 +2195,9 @@
  ALLOCATE(GEOLON_S(ISTART:IEND,JSTART:JEND+1))
 
  ERROR=NF90_INQ_VARID(NCID, 'x', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING X ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, TMPVAR)
- CALL NETCDF_ERR(ERROR, 'ERROR READING X RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING X RECORD' )
 
  DO J = JSTART, JEND
  DO I = ISTART, IEND
@@ -2224,9 +2224,9 @@
  ENDDO
 
  ERROR=NF90_INQ_VARID(NCID, 'y', ID_VAR) 
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y ID' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y ID' )
  ERROR=NF90_GET_VAR(NCID, ID_VAR, TMPVAR)
- CALL NETCDF_ERR(ERROR, 'ERROR READING Y RECORD' )
+ CALL NETCDF_ERROR(ERROR, 'ERROR READING Y RECORD' )
 
  ERROR = NF_CLOSE(NCID)
 
@@ -2267,83 +2267,83 @@
  ENDIF
 
  ERROR = NF__CREATE(OUTFILE, IOR(NF_NETCDF4,NF_CLASSIC_MODEL),INITAL, FSIZE, NCID2)
- CALL NETCDF_ERR(ERROR, 'CREATING FILE: '//TRIM(OUTFILE) )
+ CALL NETCDF_ERROR(ERROR, 'CREATING FILE: '//TRIM(OUTFILE) )
 
  ERROR = NF90_DEF_DIM(NCID2, 'lon', IM_OUT, DIM_LON)
- CALL NETCDF_ERR(ERROR, 'DEFINING LON DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LON DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'lat', JM_OUT, DIM_LAT)
- CALL NETCDF_ERR(ERROR, 'DEFINING LAT DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LAT DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'lonp', (IM_OUT+1), DIM_LONP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LONP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LONP DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'latp', (JM_OUT+1), DIM_LATP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LATP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LATP DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'lev', LEVSO, DIM_LEV)
- CALL NETCDF_ERR(ERROR, 'DEFINING LEV DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LEV DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'levp', LEVSO_P1, DIM_LEVP)
- CALL NETCDF_ERR(ERROR, 'DEFINING LEVP DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LEVP DIMENSION')
 
  ERROR = NF90_DEF_DIM(NCID2, 'ntracer', NTRACM, DIM_TRACER)
- CALL NETCDF_ERR(ERROR, 'DEFINING NTRACER DIMENSION')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING NTRACER DIMENSION')
 
  ERROR = NF90_DEF_VAR(NCID2, 'lon', NF90_FLOAT, DIM_LON, ID_LON)
- CALL NETCDF_ERR(ERROR, 'DEFINING LON VARIABLE')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LON VARIABLE')
 
  ERROR = NF_PUT_ATT_TEXT(NCID2, ID_LON, "cartesian_axis", 1, "X")
- CALL NETCDF_ERR(ERROR, 'DEFINING X-AXIS')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING X-AXIS')
 
  ERROR = NF90_DEF_VAR(NCID2, 'lat', NF90_FLOAT, DIM_LAT, ID_LAT)
- CALL NETCDF_ERR(ERROR, 'DEFINING LAT VARIABLE')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LAT VARIABLE')
 
  ERROR = NF_PUT_ATT_TEXT(NCID2, ID_LAT, "cartesian_axis", 1, "Y")
- CALL NETCDF_ERR(ERROR, 'DEFINING Y-AXIS')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING Y-AXIS')
 
  ERROR = NF90_DEF_VAR(NCID2, 'ps', NF90_FLOAT, &
                              (/DIM_LON, DIM_LAT/), ID_PS)
- CALL NETCDF_ERR(ERROR, 'DEFINING PS')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING PS')
  
  ERROR = NF90_DEF_VAR(NCID2, 'w', NF90_FLOAT,  &
                              (/DIM_LON, DIM_LAT, DIM_LEV/), ID_W)
- CALL NETCDF_ERR(ERROR, 'DEFINING W')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING W')
 
  ERROR = NF90_DEF_VAR(NCID2, 'zh', NF90_FLOAT,  &
                              (/DIM_LON, DIM_LAT, DIM_LEVP/), ID_ZH)
- CALL NETCDF_ERR(ERROR, 'DEFINING ZH')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING ZH')
 
  ERROR = NF90_DEF_VAR(NCID2, 'sphum', NF90_FLOAT, &
                              (/DIM_LON, DIM_LAT, DIM_LEV/), ID_SPHUM)
- CALL NETCDF_ERR(ERROR, 'DEFINING SPHUM')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING SPHUM')
 
  ERROR = NF90_DEF_VAR(NCID2, 'o3mr', NF90_FLOAT, &
                              (/DIM_LON, DIM_LAT, DIM_LEV/), ID_O3MR)
- CALL NETCDF_ERR(ERROR, 'DEFINING O3MR')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING O3MR')
 
  ERROR = NF90_DEF_VAR(NCID2, 'liq_wat', NF90_FLOAT, &
                              (/DIM_LON, DIM_LAT, DIM_LEV/), ID_CLWMR)
- CALL NETCDF_ERR(ERROR, 'DEFINING LIQ_WAT')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING LIQ_WAT')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_w', NF90_FLOAT, &
                              (/DIM_LONP, DIM_LAT, DIM_LEV/), ID_U_W)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_W')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_W')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_w', NF90_FLOAT, &
                              (/DIM_LONP, DIM_LAT, DIM_LEV/), ID_V_W)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_W')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_W')
 
  ERROR = NF90_DEF_VAR(NCID2, 'u_s', NF90_FLOAT,  &
                              (/DIM_LON, DIM_LATP, DIM_LEV/), ID_U_S)
- CALL NETCDF_ERR(ERROR, 'DEFINING U_S')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING U_S')
 
  ERROR = NF90_DEF_VAR(NCID2, 'v_s', NF90_FLOAT,  &
                              (/DIM_LON, DIM_LATP, DIM_LEV/), ID_V_S)
- CALL NETCDF_ERR(ERROR, 'DEFINING V_S')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING V_S')
 
  ERROR = NF__ENDDEF(NCID2, HEADER_BUFFER_VAL, 4, 0, 4)
- CALL NETCDF_ERR(ERROR, 'DEFINING END OF HEADER')
+ CALL NETCDF_ERROR(ERROR, 'DEFINING END OF HEADER')
 
 !------------------------------------------------------------------
 ! Write out data.  fv3 convention: lowest model level is levso.
@@ -2354,17 +2354,17 @@
 
  CUBE_2D_4BYTE = REAL(GEOLON,4)
  ERROR = NF90_PUT_VAR(NCID2, ID_LON, CUBE_2D_4BYTE(:,JSTART))
- CALL NETCDF_ERR(ERROR, 'WRITING LON')
+ CALL NETCDF_ERROR(ERROR, 'WRITING LON')
 
  CUBE_2D_4BYTE = REAL(GEOLAT,4)
  ERROR = NF90_PUT_VAR(NCID2, ID_LAT, CUBE_2D_4BYTE(ISTART,:))
- CALL NETCDF_ERR(ERROR, 'WRITING LAT')
+ CALL NETCDF_ERROR(ERROR, 'WRITING LAT')
 
  CALL GL2ANY(0,1,PS,LONB,LATB,CUBE_2D,IM_OUT,JM_OUT,GEOLON, GEOLAT)
  CUBE_2D_4BYTE = REAL(CUBE_2D,4)
 
  ERROR = NF90_PUT_VAR(NCID2, ID_PS, CUBE_2D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING PS')
+ CALL NETCDF_ERROR(ERROR, 'WRITING PS')
     
  DEALLOCATE(CUBE_2D_4BYTE, CUBE_2D)
 
@@ -2377,7 +2377,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_W, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING W')
+ CALL NETCDF_ERROR(ERROR, 'WRITING W')
 
  DEALLOCATE(CUBE_3D_4BYTE, CUBE_3D)
 
@@ -2390,7 +2390,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_ZH, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING ZH')
+ CALL NETCDF_ERROR(ERROR, 'WRITING ZH')
 
  DEALLOCATE(CUBE_3D, CUBE_3D_4BYTE)
 
@@ -2403,7 +2403,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_SPHUM, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING SPHUM')
+ CALL NETCDF_ERROR(ERROR, 'WRITING SPHUM')
 
  CALL GL2ANY(0,LEVSO,Q(:,:,:,2),LONB,LATB,CUBE_3D,IM_OUT,JM_OUT,GEOLON, GEOLAT)
  DO K = 1, LEVSO
@@ -2411,7 +2411,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_O3MR, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING O3MR')
+ CALL NETCDF_ERROR(ERROR, 'WRITING O3MR')
 
  CALL GL2ANY(0,LEVSO,Q(:,:,:,3),LONB,LATB,CUBE_3D,IM_OUT,JM_OUT,GEOLON, GEOLAT)
  DO K = 1, LEVSO
@@ -2419,7 +2419,7 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_CLWMR, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING CLWMR')
+ CALL NETCDF_ERROR(ERROR, 'WRITING CLWMR')
 
  DEALLOCATE (CUBE_3D, CUBE_3D_4BYTE)
 
@@ -2434,14 +2434,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_W, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_W')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_W')
 
  DO K = 1, LEVSO
    CUBE_3D_4BYTE(:,:,LEVSO-K+1) = REAL(CUBE_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_W, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_W')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_W')
 
  DEALLOCATE (CUBE_3D, CUBE_3D2, CUBE_3D_4BYTE)
 
@@ -2456,14 +2456,14 @@
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_U_S, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING U_S')
+ CALL NETCDF_ERROR(ERROR, 'WRITING U_S')
 
  DO K = 1, LEVSO
    CUBE_3D_4BYTE(:,:,LEVSO-K+1) = REAL(CUBE_3D2(:,:,K),4)
  ENDDO
 
  ERROR = NF90_PUT_VAR(NCID2, ID_V_S, CUBE_3D_4BYTE)
- CALL NETCDF_ERR(ERROR, 'WRITING V_S')
+ CALL NETCDF_ERROR(ERROR, 'WRITING V_S')
 
  ERROR = NF_CLOSE(NCID2)
 

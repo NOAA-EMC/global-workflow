@@ -258,7 +258,7 @@
                                   nsoil_input, hour, month,   &
                                   day, year, fhour,           &
                                   kgds_input, input, ialb,    &
-                                  isot, ivegsrc, merge, iret)
+                                  isot, ivegsrc, tile_num, merge, iret)
 !$$$ subprogram documentation block
 !
 ! subprogram: surface_chgres_driver  driver routine for this module
@@ -334,6 +334,7 @@
  integer, intent(in)               :: kgds_output(200)
  integer, intent(in)               :: nsoil_input
  integer, intent(in)               :: nsoil_output
+ integer, intent(in)               :: tile_num
 
  logical, intent(in)               :: merge
 
@@ -371,11 +372,13 @@
      jindx_output(ij)=j
    enddo
  enddo
+
  print*,'- CALL CYCLE TO GET SURFACE STATIC/CLIMO FIELDS ON OUTPUT GRIDS.'
  call get_ext_climo_global(ijmdl_output, output%lsmask, output%orog, &
                            orog_uf,use_ufo,nst_anl,                  &
                            output, hour, month, day, year, fhour,    &
-                           ialb, isot, ivegsrc)
+                           ialb, isot, ivegsrc, iindx_output,        &
+                           jindx_output, tile_num)
 
  print*,"- CALL INTERP ROUTINE"
 
@@ -2329,7 +2332,8 @@
  subroutine get_ext_climo_global(ijmdl_output, lsmask_output, orog_output, &
                                  orog_uf, use_ufo, nst_anl, output,        &
                                  hour, month, day,                         &
-                                 year, fhour, ialb, isot, ivegsrc)
+                                 year, fhour, ialb, isot, ivegsrc,         &
+                                 iindx_output, jindx_output, tile_num)
 !$$$ subprogram documentation block
 !
 ! subprogram: get_ext_climo_global    get climo fields on global grid
@@ -2405,11 +2409,18 @@
 
  implicit none
 
+ integer, parameter                    :: sz_nml = 1
+
+ character(len=4)                      :: input_nml_file(sz_nml)
+ character(len=5)                      :: tile_num_ch
+
  integer, intent(in)                   :: hour, month, day, year, ialb
  integer, intent(in)                   :: ijmdl_output, isot, ivegsrc
+ integer, intent(in)                   :: iindx_output(ijmdl_output)
+ integer, intent(in)                   :: jindx_output(ijmdl_output)
+ integer, intent(in)                   :: tile_num
  integer                               :: lsoil
  integer, parameter                    :: lugb = 51
- integer, parameter                    :: sz_nml = 1
  integer                               :: nlunit
 
  real, intent(in)                      :: fhour
@@ -2418,14 +2429,12 @@
  real, intent(in)                      :: orog_uf     (ijmdl_output)
  logical,intent(in)                    :: use_ufo, nst_anl
 
- character(len=4)                      :: input_nml_file(sz_nml)
-
  real (kind=kind_io8), allocatable :: sig1t(:), &
       slmask(:), orog(:),  sihfcs(:), sicfcs(:), sitfcs(:),&
       swdfcs(:), slcfcs(:,:), vmnfcs(:), vmxfcs(:),   &
       slpfcs(:), absfcs(:),  TSFFCS(:), SNOFCS(:), ZORFCS(:), &
       ALBFCS(:,:), TG3FCS(:), CNPFCS(:), SMCFCS(:,:), STCFCS(:,:),  &
-      slifcs(:), AISFCS(:), F10M(:), vegfcs(:), vetfcs(:), &
+      slifcs(:), AISFCS(:), vegfcs(:), vetfcs(:), &
       sotfcs(:), ALFFCS(:,:), CVFCS(:), CVBFCS(:), CVTFCS(:), &
       lats(:), lons(:)
 
@@ -2433,7 +2442,10 @@
 
  type(sfc1d), intent(in)   :: output
 
- input_nml_file="NULL"
+ input_nml_file = "NULL"
+
+ write(tile_num_ch, "(a4,i1)") "tile", tile_num
+
  lsoil = 4
  deltsfc = 0.0
  fh = fhour
@@ -2449,7 +2461,7 @@
            ALBFCS(ijmdl_output,4), tg3fcs(ijmdl_output),  &
            CNPFCS(ijmdl_output), SMCFCS(ijmdl_output,lsoil),  &
            STCFCS(ijmdl_output,lsoil), slifcs(ijmdl_output), &
-           AISFCS(ijmdl_output), F10M(ijmdl_output),         &
+           AISFCS(ijmdl_output),          &
            vegfcs(ijmdl_output), vetfcs(ijmdl_output),       &
            sotfcs(ijmdl_output), ALFFCS(ijmdl_output,2),     &
            CVFCS(ijmdl_output), CVBFCS(ijmdl_output),        &
@@ -2468,7 +2480,7 @@
  slcfcs = 0.0; vmnfcs = 0.0; vmxfcs = 0.0; slpfcs = 0.0
  absfcs = 0.0; tsffcs = 0.0; snofcs = 0.0; zorfcs = 0.0
  albfcs = 0.0; tg3fcs = 0.0; cnpfcs = 0.0; smcfcs = 0.0
- stcfcs = 0.0; slifcs = 0.0; aisfcs = 0.0; f10m   = 0.0
+ stcfcs = 0.0; slifcs = 0.0; aisfcs = 0.0; 
  vegfcs = 0.0; vetfcs = 0.0; sotfcs = 0.0; alffcs = 0.0
  cvfcs  = 0.0; cvbfcs = 0.0; cvtfcs = 0.0; sitfcs = 0.0
  lats=output%lats; lons=output%lons
@@ -2479,10 +2491,11 @@
                SWDFCS,SLCFCS,                                    &
                VMNFCS, VMXFCS, SLPFCS, ABSFCS,                   &
                TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,               &
-               CNPFCS,SMCFCS,STCFCS,slifcs,AISFCS,F10M,          &
+               CNPFCS,SMCFCS,STCFCS,slifcs,AISFCS,               &
                VEGFCS, VETFCS, SOTFCS, ALFFCS,                   &
-               CVFCS,CVBFCS,CVTFCS,0,NLUNIT, &
-               SZ_NML, INPUT_NML_FILE, IALB,ISOT,IVEGSRC)
+               CVFCS,CVBFCS,CVTFCS,0,NLUNIT,                     &
+               SZ_NML, INPUT_NML_FILE, IALB, ISOT, IVEGSRC,      &
+               TILE_NUM_CH, IINDX_OUTPUT, JINDX_OUTPUT)
 !-----------------------------------------------------------------------
 ! if an array is deallocated, the rest of code knows to interpolate
 ! that field from the input grid.
@@ -2531,7 +2544,7 @@
  deallocate (sig1t, slmask, orog, sihfcs, sicfcs, swdfcs, &
              slcfcs, vmnfcs, vmxfcs, slpfcs, absfcs, sitfcs,   &
              TSFFCS, SNOFCS, zorfcs, ALBFCS, tg3fcs,      &
-             CNPFCS, SMCFCS, STCFCS, slifcs, AISFCS, F10M,&
+             CNPFCS, SMCFCS, STCFCS, slifcs, AISFCS, &
              vegfcs, vetfcs, sotfcs, ALFFCS, CVFCS, CVBFCS, CVTFCS, &
              lats, lons)
 
