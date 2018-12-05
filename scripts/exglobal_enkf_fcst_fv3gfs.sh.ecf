@@ -67,6 +67,7 @@ RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 
 # Ops related stuff
 SENDECF=${SENDECF:-"NO"}
+SENDDBN=${SENDDBN:-"NO"}
 
 ################################################################################
 # Preprocessing
@@ -176,6 +177,17 @@ for imem in $(seq $ENSBEG $ENSEND); do
 
       ((rc+=ra))
 
+   fi
+
+   if [ $SENDDBN = YES ]; then
+     fhr=$FHOUT
+     while [ $fhr -le $FHMAX ]; do
+       FH3=$(printf %03i $fhr)
+       if [ $(expr $fhr % 3) -eq 0 ]; then
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/${CDUMP}.t${cyc}z.sfcf${FH3}.nemsio
+       fi
+       fhr=$((fhr+FHOUT))
+     done
    fi
 
    cd $DATATOP

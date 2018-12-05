@@ -9,6 +9,7 @@ date
 #############################
 # Source relevant config files
 #############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 configs="base fcst efcs"
 for config in $configs; do

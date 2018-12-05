@@ -55,6 +55,7 @@ export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
+export CATEXEC=${CATEXEC:-$HOMEgsi/exec/nc_diag_cat_serial.x}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -85,9 +86,6 @@ APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 export CASE=${CASE:-"C384"}
 ntiles=${ntiles:-6}
 
-# Write component specific
-QUILTING=${QUILTING:-".true."}
-
 # Microphysics in the model; 99:ZC, 11:GFDLMP
 imp_physics=${imp_physics:-99}
 lupp=${lupp:-".true."}
@@ -96,6 +94,7 @@ lupp=${lupp:-".true."}
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".false."}
 binary_diag=${binary_diag:-".true."}
+
 
 # Dependent Scripts and Executables
 NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
@@ -158,8 +157,8 @@ ATMSDB=${ATMSDB:-${COMIN_OBS}/${OPREFIX}atmsdb.tm00.bufr_d${OSUFFIX}}
 SSMITBF=${SSMITBF:-${COMIN_OBS}/${OPREFIX}ssmit.tm00.bufr_d${OSUFFIX}}
 SSMISBF=${SSMISBF:-${COMIN_OBS}/${OPREFIX}ssmisu.tm00.bufr_d${OSUFFIX}}
 SBUVBF=${SBUVBF:-${COMIN_OBS}/${OPREFIX}osbuv8.tm00.bufr_d${OSUFFIX}}
-OMPSNPBF=${OMPSNPBF:-${COMIN_OBS}/${OPREFIX}oznnp8.tm00.bufr_d${OSUFFIX}}
-OMPSTCBF=${OMPSTCBF:-${COMIN_OBS}/${OPREFIX}ozntc8.tm00.bufr_d${OSUFFIX}}
+OMPSNPBF=${OMPSNPBF:-${COMIN_OBS}/${OPREFIX}ompsn8.tm00.bufr_d${OSUFFIX}}
+OMPSTCBF=${OMPSTCBF:-${COMIN_OBS}/${OPREFIX}ompst8.tm00.bufr_d${OSUFFIX}}
 GOMEBF=${GOMEBF:-${COMIN_OBS}/${OPREFIX}gome.tm00.bufr_d${OSUFFIX}}
 OMIBF=${OMIBF:-${COMIN_OBS}/${OPREFIX}omi.tm00.bufr_d${OSUFFIX}}
 MLSBF=${MLSBF:-${COMIN_OBS}/${OPREFIX}mls.tm00.bufr_d${OSUFFIX}}
@@ -215,6 +214,9 @@ USE_RADSTAT=${USE_RADSTAT:-"YES"}
 SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
 GENDIAG=${GENDIAG:-"YES"}
 DIAG_SUFFIX=${DIAG_SUFFIX:-""}
+if [ $netcdf_diag = ".true." ] ; then
+   DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
+fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
@@ -238,43 +240,23 @@ INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 # Get header information from Guess files
 LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-status=$?
-[[ $status -ne 0 ]] && exit $status
 LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-status=$?
-[[ $status -ne 0 ]] && exit $status
 LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-status=$?
-[[ $status -ne 0 ]] && exit $status
-if [ $QUILTING = ".false." ]; then
-   JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   status=$?
-   [[ $status -ne 0 ]] && exit $status
-else
-    # using write component
-    JCAP=${JCAP:-$((LATB-2))}
-fi
+JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+[ $JCAP -eq -9999 -a $LATB -ne -9999 ] && JCAP=$((LATB-2))
+[ $LONB -eq -9999 -o $LATB -eq -9999 -o $LEVS -eq -9999 -o $JCAP -eq -9999 ] && exit -9999
 
 # Get header information from Ensemble Guess files
 if [ $DOHYBVAR = "YES" ]; then
    SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
    ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
    LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   status=$?
-   [[ $status -ne 0 ]] && exit $status
    LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-   status=$?
-   [[ $status -ne 0 ]] && exit $status
    NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
    NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
-   if [ $QUILTING = ".false." ]; then
-      JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
-      status=$?
-      [[ $status -ne 0 ]] && exit $status
-   else
-       # using write component
-       JCAP_ENKF=${JCAP_ENKF:-$((LATB_ENKF-2))}
-   fi
+   JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}
+   [ $JCAP_ENKF -eq -9999 -a $LATB_ENKF -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
+   [ $LONB_ENKF -eq -9999 -o $LATB_ENKF -eq -9999 -o $LEVS_ENKF -eq -9999 -o $JCAP_ENKF -eq -9999 ] && exit -9999
 fi
 
 # Get dimension information based on CASE
@@ -299,7 +281,7 @@ NLAT_A=${NLAT_A:-$(($LATA+2))}
 DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
 
 # GSI Fix files
-RTMFIX=${RTMFIX:-$NWROOT/lib/crtm/${crtm_ver}/fix}
+RTMFIX=${RTMFIX:-${CRTM_FIX}}
 BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
@@ -613,11 +595,12 @@ if [ $USE_RADSTAT = "YES" ]; then
      cat > $DATA/unzip.sh << EOFunzip
 #!/bin/sh
    diag_file=\$1
+   diag_suffix=\$2
    fname=\$(echo \$diag_file | cut -d'.' -f1)
    fdate=\$(echo \$diag_file | cut -d'.' -f2)
    $UNCOMPRESS \$diag_file
    fnameges=\$(echo \$fname | sed 's/_ges//g')
-   $NMV \$fname.\$fdate \$fnameges
+   $NMV \$fname.\$fdate\$diag_suffix \$fnameges
 EOFunzip
      chmod 755 $DATA/unzip.sh
    fi
@@ -626,13 +609,13 @@ EOFunzip
    for type in $listdiag; do
       diag_file=$(echo $type | cut -d',' -f1)
       if [ $USE_CFP = "YES" ] ; then
-         echo "$DATA/unzip.sh $diag_file" | tee -a $DATA/mp_unzip.sh
+         echo "$DATA/unzip.sh $diag_file $DIAG_SUFFIX" | tee -a $DATA/mp_unzip.sh
       else
          fname=$(echo $diag_file | cut -d'.' -f1)
          date=$(echo $diag_file | cut -d'.' -f2)
          $UNCOMPRESS $diag_file
          fnameges=$(echo $fname|sed 's/_ges//g')
-         $NMV $fname.$date $fnameges
+         $NMV $fname.$date$DIAG_SUFFIX $fnameges
       fi
    done
 
@@ -1020,7 +1003,7 @@ if [ $GENDIAG = "YES" ] ; then
    # Set up lists and variables for various types of diagnostic files.
    ntype=3
 
-   diagtype[0]="conv"
+   diagtype[0]="conv conv_gps conv_ps conv_q conv_sst conv_t conv_uv"
    diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
    diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura ompsnp_npp ompstc8_npp"
    diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 seviri_m11 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_n18 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8"
@@ -1052,19 +1035,24 @@ if [ $GENDIAG = "YES" ] ; then
       cat > $DATA/diag.sh << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1
-type=\$2
-loop=\$3
-string=\$4
-CDATE=\$5
-DIAG_COMPRESS=\$6
-DIAG_SUFFIX=\$7
+binary_diag=\$2
+type=\$3
+loop=\$4
+string=\$5
+CDATE=\$6
+DIAG_COMPRESS=\$7
+DIAG_SUFFIX=\$8
 if [ \$lrun_subdirs = ".true." ]; then
    prefix=" dir.*/"
 else
    prefix="pe*"
 fi
 file=diag_\${type}_\${string}.\${CDATE}\${DIAG_SUFFIX}
-cat \${prefix}\${type}_\${loop}* > \$file
+if [ \$binary_diag = ".true." ]; then
+   cat \${prefix}\${type}_\${loop}* > \$file
+else
+   $CATEXEC -o \$file \${prefix}\${type}_\${loop}*
+fi
 if [ \$DIAG_COMPRESS = "YES" ]; then
    $COMPRESS \$file
 fi
@@ -1097,7 +1085,7 @@ EOFdiag
             count=$(ls ${prefix}${type}_${loop}* | wc -l)
             if [ $count -gt 0 ]; then
                if [ $USE_CFP = "YES" ]; then
-                  echo "$DATA/diag.sh $lrun_subdirs $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+                  echo "$DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
                else
                   cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
                fi
@@ -1163,7 +1151,7 @@ fi # End diagnostic file generation block - if [ $GENDIAG = "YES" ]
 # Send alerts
 if [ $SENDDBN = "YES" ]; then
     if [ $RUN = "gdas" ]; then
-       $DBNROOT/bin/dbn_alert MODEL GDAS1RADSTAT $job $RADSTAT
+       $DBNROOT/bin/dbn_alert MODEL GDASRADSTAT $job $RADSTAT
     fi
     if [ $RUN = "gfs" ]; then
        $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $ABIAS
