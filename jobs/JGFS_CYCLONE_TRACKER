@@ -29,17 +29,13 @@ status=$?
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export job=${job:-"gfs_cyclone_tracker"}
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
 if [ $RUN_ENVIR = "nco" ]; then
-    export DATA="$DATAROOT/${job}.${pid}"
+    export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 else
-    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-    export DATA="$DATAROOT/$job"
+    export job="gfs_cyclone_tracker"
+    export DATA="$DATAROOT/${job}$$"
+    [[ -d $DATA ]] && rm -rf $DATA
 fi
-[[ -d $DATA ]] && rm -rf $DATA
 mkdir -p $DATA
 cd $DATA
 
@@ -57,11 +53,6 @@ setpdy.sh
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-
-##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 
 ##############################################

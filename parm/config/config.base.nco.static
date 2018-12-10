@@ -13,7 +13,7 @@ export RUN_ENVIR="nco"
 
 # Account, queue, etc.
 export ACCOUNT="FV3GFS-T2O"
-export QUEUE="dev"
+export QUEUE="prod"
 export QUEUE_ARCH="dev_transfer"
 
 # Project to use in mass store:
@@ -113,7 +113,6 @@ export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
-export jlogfile="${ROTDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}

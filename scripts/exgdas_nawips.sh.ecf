@@ -128,6 +128,7 @@ while [ $fhcnt -le $fend ] ; do
   while [ $icnt -lt 1000 ]
   do
     if [ -r $GRIBIN_chk ] ; then
+      sleep 5
       break
     else
       msg="The process is waiting ... ${GRIBIN_chk} file to proceed."

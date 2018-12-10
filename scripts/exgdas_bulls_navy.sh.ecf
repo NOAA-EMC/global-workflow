@@ -47,7 +47,7 @@ echo $cyc > parm.job1
 
 # Copy in SFCSHP file for use as input data set
 
-cp ${COMIN}/${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr SFCSHP
+cp ${COMIN}/${cyc}/${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr SFCSHP
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File ${RUN}.${cycle}.sfcshp.tm00.bufr_d.nr does not exist."
@@ -120,7 +120,7 @@ if test $err1 -eq 0 -o $err2 -eq 0; then
   if test $SENDCOM = 'YES'
   then
     cp ship.cntl $COMOUT/ship.cntl.$cyc
-    cp navybull.tran.${cyc} $COMOUT
+    cp navybull.tran.${cyc} $COMOUT/${cyc}
   fi
 
   msg=" navybull bulletin successfully made"
