@@ -8,16 +8,11 @@ export F_COMP_MPI=mpiifort
 export C_COMP=icc
 export C_COMP_MP=mpiicc
 
-
-#module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
-
 module load newdefaults
 module load intel/15.0.3.187
 module load  impi/5.1.3.181
 
-export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-
-
+export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
 module use $NCEPLIBS/modulefiles
 module load nemsio-intel-sandybridge/2.2.2
 module load sigio-intel-sandybridge/2.0.1

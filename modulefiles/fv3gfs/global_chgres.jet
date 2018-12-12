@@ -12,7 +12,7 @@
 module load intel/14.0.3
 module load  mvapich2/1.8
 
-export NCEPLIBS=/lfs3/projects/hfv3gfs/gwv/lj/lib/          
+#export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
 module use $NCEPLIBS/modulefiles
 module load sigio-intel-sandybridge/2.0.1
 module load w3nco-intel-sandybridge/2.0.6

@@ -96,6 +96,7 @@ suite: !Cycle
 
     jgdas_tropcy_cp: !Task
       <<: *exclusive_task_template
+      Dummy: True
       Trigger: !Depend prep.jgdas_prep
       resources: !calc partition.resources.run_one_hour_exclusive
       J_JOB: rocoto/tropcy_cp.sh
@@ -407,6 +408,7 @@ suite: !Cycle
 
     jgfs_tropcy_cp: !Task
       <<: *exclusive_task_template
+      Dummy: True
       Trigger: !Depend prep.jgfs_prep
       resources: !calc partition.resources.run_one_hour_exclusive
       ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround

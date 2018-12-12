@@ -4,8 +4,8 @@
 
 module load newdefaults
 module load intel/15.0.3.187
-module load  impi/5.1.3.181
-module use NCEPLIBS/modulefiles                                  
+module load impi/5.1.3.181
+module use $NCEPLIBS/modulefiles
 
 module load sigio-intel-sandybridge/2.0.1
 module load sfcio-intel-sandybridge/1.0.0
