@@ -128,8 +128,8 @@ if [ $MEMBER -lt 0 ]; then
   rprefix=$rCDUMP
   memchar=""
 else
-  prefix=enkf.$CDUMP
-  rprefix=enkf.$rCDUMP
+  prefix=enkf$CDUMP
+  rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
 PDY=$(echo $CDATE | cut -c1-8)

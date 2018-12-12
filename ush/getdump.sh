@@ -6,7 +6,7 @@ gpdy=$(echo $CDATE | cut -c9-10)
 gcyc=$(echo $CDATE | cut -c9-10)
 CDUMP=${2:-""}
 SOURCE_DIR=${3:-$DMPDIR/$CDATE/$CDUMP}
-TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${gpdy}/$gcyc}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
 
 # Exit if SORUCE_DIR does not exist
 if [ ! -s $SOURCE_DIR ]; then 
@@ -20,8 +20,8 @@ if [ ! -s $TARGET_DIR ]; then mkdir -p $TARGET_DIR ;fi
 
 
 # Set file prefix
-prefix="$CDUMP.t${gcyc}z."
-
+cyc=`echo $CDATE |cut -c 9-10`
+prefix="$CDUMP.t${cyc}z."
 
 # Link dump files from SOURCE_DIR to TARGET_DIR
 cd $SOURCE_DIR

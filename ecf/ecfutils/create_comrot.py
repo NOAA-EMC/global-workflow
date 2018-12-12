@@ -26,7 +26,7 @@ def create_COMROT(conf):
     idate = conf.case.SDATE
     detdir = f'{cdump}.{idate:%Y%m%d}/{idate:%H}'
     nens = conf.data_assimilation.NMEM_ENKF
-    enkfdir = f'enkf.{cdump}.{idate:%Y%m%d}/{idate:%H}'
+    enkfdir = f'enkf{cdump}.{idate:%Y%m%d}/{idate:%H}'
     idatestr = f'{idate:%Y%m%d%H}'
 
     logger.info(f'Input conditions: {icsdir}')

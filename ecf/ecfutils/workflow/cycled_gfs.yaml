@@ -106,8 +106,7 @@ suite: !Cycle
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_analysis_high: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.jgdas_tropcy_cp & up.enkf.post.at('-6:00:00') )
-        #Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep )
+        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.post.at('-6:00:00') )
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_anal
         J_JOB: JGLOBAL_ANALYSIS
@@ -416,8 +415,7 @@ suite: !Cycle
 
     jgfs_analysis: !Task
       <<: *exclusive_task_template
-      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & jgfs_tropcy_cp & up.gdas.enkf.post.at('-6:00:00') )
-      #Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep )
+      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & up.gdas.enkf.post.at('-6:00:00') )
       resources: !calc partition.resources.run_anal
       J_JOB: JGLOBAL_ANALYSIS
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 

@@ -27,8 +27,8 @@ if [[ "$1" == "-v" ]] ; then
     shift 1
 fi
 export EXPDIR="$1"
-export FIRST_CYCLE="$2"
-export LAST_CYCLE="$3"
+export FIRST_CYCLE="${2:-}"
+export LAST_CYCLE="${3:-}"
 
 #if [[ ! -d /usrx/local ]] ; then
 #   echo "ERROR: This script only runs on WCOSS" 1>&2
@@ -61,9 +61,12 @@ fi
 #   '$EXPDIR',
 #   '$FIRST_CYCLE',
 #   '$LAST_CYCLE')''' ; cProfile.run(cmd) "
-
-#$python36 -c "import worktools ; worktools.make_ecflow_files_for_cycles('$EXPDIR') "
-$python36 -c "import worktools ; worktools.make_ecflow_files_for_cycles(
+if [[ $FIRST_CYCLE == '' ]] ; then
+    echo "no dates"
+    $python36 -c "import worktools ; worktools.make_ecflow_files_for_cycles('$EXPDIR') "
+else
+    $python36 -c "import worktools ; worktools.make_ecflow_files_for_cycles(
   '$EXPDIR',
   '$FIRST_CYCLE',
   '$LAST_CYCLE') "
+fi

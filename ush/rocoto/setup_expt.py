@@ -50,7 +50,7 @@ def create_COMROT():
     makedirs_if_missing(comrot)
 
     # Link ensemble member initial conditions
-    enkfdir = 'enkf.%s.%s/%s' % (cdump, cymd, chh)
+    enkfdir = 'enkf%s.%s/%s' % (cdump, cymd, chh)
     makedirs_if_missing(os.path.join(comrot, enkfdir))
     for i in range(1, nens + 1):
         makedirs_if_missing(os.path.join(comrot, enkfdir, 'mem%03d' % i))
