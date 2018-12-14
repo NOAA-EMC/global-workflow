@@ -31,6 +31,8 @@ export AMSR2BF=${AMSR2BF:-/dev/null}
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then
 
+    CDATE=${CDATE:-9999}   # provide default in case CDATE undefined
+
 #   Set CONVINFO
     if [[ "$CDATE" -ge "2018022818" ]]; then
 	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818

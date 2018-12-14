@@ -37,7 +37,7 @@ module list
 
 dirlist="faxmakr faxmakrx fxcompoz gendata overgridid plotvpap ras2bit 
          ras2bity rdbfmsua redsat rsonde rsondplt sixbitb sixbitb2 
-         trpanl trpsfcmv upaprep webtitle wndanftf mkgfsawps"
+         trpanl trpsfcmv trpsfprv upaprep webtitle wndanftf mkgfsawps"
 set -x
 
 for dir in $dirlist
