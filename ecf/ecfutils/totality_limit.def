@@ -1,3 +1,0 @@
-suite totality_limit
-  limit TOTALITY 12
-endsuite
