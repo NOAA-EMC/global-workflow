@@ -1,0 +1,483 @@
+# This file specifies the resource requirements for all jobs.  This
+# includes jobs from the full DA-cycled workflow, as well as the jobs
+# in the public release workflow.
+
+# Note on threads:
+#  max = use the largest number of threads possible for the platform,
+#        ranks, and processors per node
+#  null = do not specify threading settings.  The underlying scripts
+#        and batch system will fill in settings.
+#  a number = use this many threads per MPI rank
+
+gfs_resource_table: !Select
+  select: !calc doc.fv3_gfs_settings.CASE
+  otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"
+  cases:
+    C192:
+      #          ranks   ppn wallclock            threads MB_per_rank
+      prep:     [  12,   12, !timedelta "00:15:00", null, null ]
+      anal:     [ 144,    6, !timedelta "01:30:00", max, null  ]
+      gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
+      gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
+      gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
+      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null, null ]
+      gdasfcst_wall:  !timedelta "00:15:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
+      gdasfcst_ppn: 12
+      gfsfcst_ppn: 12
+      post_manager_wallclock_extra: !timedelta "00:15:00"
+    C384:
+      #          ranks   ppn wallclock            threads MB_per_rank
+      prep:     [  12,   12, !timedelta "00:15:00", null, null ]
+      anal:     [ 144,    6, !timedelta "01:30:00", max, null  ]
+      gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
+      gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
+      gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
+      gfsvrfy:  [   5,    1, !timedelta "03:00:00", null, null ]
+      gdasfcst_wall:  !timedelta "00:15:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
+      gdasfcst_ppn: 12
+      gfsfcst_ppn: 12
+      post_manager_wallclock_extra: !timedelta "00:15:00"
+    C768:
+      #          ranks ppn  wallclock            threads  MB_per_rank
+      prep:     [   4,    4, !timedelta "00:45:00", max,  null  ]
+      anal:     [ 360,    6, !timedelta "05:30:00", max,  7000  ]
+      gdaspost: [  84,   12, !timedelta "00:45:00", null, 3770  ]
+      gfspost:  [  84,   12, !timedelta "00:30:00", null, 3770  ]
+      gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null  ]
+      gfsvrfy:  [   5, null, !timedelta "06:00:00", null, null  ]
+      gdasfcst_mem_per_rank: 3.124e+3
+      gfsfcst_mem_per_rank:  3.124e+3
+      gdasfcst_wall:  !timedelta "01:00:00"
+      gfsfcst_wall:  !timedelta "06:00:00"
+      gdasfcst_ppn: 12
+      gfsfcst_ppn: 12
+      post_manager_wallclock_extra: !timedelta "00:15:00"
+
+enkf_resource_table: !Select
+  select: !calc doc.fv3_enkf_settings.CASE
+  otherwise: !error "Unknown FV3 ENKF grid: {doc.fv3_enkf_settings.CASE}"
+  cases:
+    C192:
+      #          ranks ppn  wallclock          threads  MB_per_rank
+      ecen:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
+      eobs:     [  72,    6, !timedelta "00:45:00", 4,  null  ]
+      eomg:     [  72,    6, !timedelta "01:00:00", 2,  null  ]
+      eupd:     [ 120,   12, !timedelta "00:30:00", 4,  null  ]
+      epos:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
+      efcs_wall:  !timedelta "01:00:00"
+      efcs_ppn: 12
+    C384:
+      #          ranks ppn  wallclock           threads  MB_per_rank
+      eobs:     [ 140,   14, !timedelta "00:30:00", max, 4.2e+3  ]
+      eomg:     [ 140,   14, !timedelta "01:00:00", max, 4.0e+3  ]
+      eupd:     [ 360,    4, !timedelta "00:30:00", max, 1.5e+3  ]
+      ecen:     [  80,    4, !timedelta "01:00:00", max, 15.7e+3 ]
+      epos:     [  80,    4, !timedelta "02:00:00", max, 8.6e+3 ]
+      efcs_wall:  !timedelta "03:00:00"
+      efcs_ppn: 12
+    C768:
+      #          ranks ppn  wallclock          threads  MB_per_rank
+      eobs:     [ 144,   12, !timedelta "00:30:00", 2,  null  ]
+      eomg:     [ 144,   12, !timedelta "01:00:00", 2,  null  ]
+      eupd:     [ 240,    4, !timedelta "00:30:00", 4,  null  ]
+      ecen:     [  80,    4, !timedelta "01:00:00", 2,  null  ]
+      epos:     [  80,    3, !timedelta "02:00:00", 2,  null  ]
+      efcs_wall:  !timedelta "03:00:00"
+      efcs_ppn: 12
+
+default_resources: &default_resources
+
+  # Constant resources; ones that do not change regardless of configuration.
+  run_dwn: !JobRequest
+    - mpi_ranks: 24
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+  
+  run_awips_g2: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 2
+      max_ppn: 2
+      walltime: !timedelta "00:06:00"
+      exe: placeholder
+
+  run_awips_20km_1p0: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 28
+      max_ppn: 28
+      walltime: !timedelta "00:06:00"
+      exe: placeholder
+
+
+  postsnd_walltime: !timedelta "04:00:00"
+
+  run_postsnd: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 12
+      max_ppn: 3
+      walltime: !calc postsnd_walltime
+      exe: placeholder
+      
+  run_postsndcfp: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 10
+      max_ppn: 3
+      walltime: !timedelta "02:00:00"
+      exe: placeholder
+      
+  run_gempak: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 20
+      max_ppn: 4
+      walltime: !timedelta "02:00:00"
+      OMP_NUM_THREADS: 3
+      exe: placeholder
+
+  run_verfrad: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 1
+      max_ppn: 1
+      exclusive: true
+      walltime: !timedelta "00:20:00"
+      exe: placeholder
+
+  run_vminmon: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 1
+      max_ppn: 1
+      exclusive: true
+      walltime: !timedelta "00:10:00"
+      exe: placeholder
+      
+  run_gfs_gempak: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 28
+      max_ppn: 4
+      walltime: !timedelta "03:00:00"
+      OMP_NUM_THREADS: 3
+      exe: placeholder
+
+  run_gdas_gempak: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 2
+      max_ppn: 1
+      walltime: !timedelta "00:03:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_gfs_gempak_meta: !JobRequest    # never used
+    - batch_memory: "3072M"
+      mpi_ranks: 28
+      max_ppn: 14
+      walltime: !timedelta "00:30:00"
+      exe: placeholder
+       
+  run_gdas_gempak: !JobRequest   # never used
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:03:00"
+      max_ppn: 1
+      mpi_ranks: 2
+      exe: placeholder
+       
+  run_gdas_gempak_meta_ncdc: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 2
+      exe: placeholder
+
+  run_one_node_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 1
+      exe: placeholder
+
+  run_big_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 2
+      exe: placeholder
+
+  run_small_downstream: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:02:00"
+      max_ppn: 2
+      mpi_ranks: 2
+      exe: placeholder
+       
+  run_npoess: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: 1
+      max_ppn: 1
+      walltime: !timedelta "01:00:00"
+      OMP_NUM_THREADS: 1
+      exe: placeholder
+      
+  run_bulls_navy: !JobRequest
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:30:00"
+      max_ppn: 1
+      mpi_ranks: 1
+      exe: placeholder
+      
+  run_prepbufr: !JobRequest     # never used
+    - batch_memory: "3072M"
+      walltime: !timedelta "00:15:00"
+      max_ppn: 4
+      mpi_ranks: 4
+      exe: placeholder
+
+  run_fv3ic: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 24
+      max_ppn: 24
+      walltime: !timedelta "00:30:00"
+      exe: placeholder
+  
+  run_dump_waiter: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !FirstTrue
+        - when: !calc doc.settings.REALTIME
+          do: !timedelta "01:00:00"
+        - otherwise: !timedelta "00:05:00"
+            
+  run_make_next_cycles: !JobRequest
+    - memory: "600M"
+      exe: placeholder
+      walltime: !timedelta "00:15:00"
+      
+  run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
+    - memory: "300M"
+      exe: placeholder
+      mpi_ranks: 2
+      walltime: !timedelta "00:02:00"
+      exclusive: true
+  
+  run_chgres: !JobRequest
+    - exe: time
+      OMP_NUM_THREADS: 12
+      args:
+        - placeholder
+  
+  run_nothing: !JobRequest # Special placeholder for "do nothing"
+    - memory: "300M"
+      exe: placeholder
+      walltime: !timedelta "00:02:00"
+      exclusive: false
+
+  run_getic: !JobRequest
+    - batch_memory: "3072M"
+      exclusive: false
+      mpi_ranks: 1
+      walltime: !timedelta "06:00:00"
+      exe: placeholder
+      max_ppn: 1
+  
+  run_arch: !JobRequest
+    - batch_memory: "3072M"
+      exclusive: false
+      mpi_ranks: 1
+      walltime: !timedelta "06:00:00"
+      exe: placeholder
+      max_ppn: 1
+
+  run_earc: !JobRequest
+    - batch_memory: "3072M"
+      mpi_ranks: 1
+      walltime: !timedelta "06:00:00"
+      exe: placeholder
+      max_ppn: 1
+      exclusive: false
+
+  run_sfc_prep: !JobRequest    # never used
+    - memory: "1024M"
+      mpi_ranks: 1
+      walltime: !timedelta "00:02:00"
+      exe: placeholder
+      max_ppn: 1
+
+  run_final: !JobRequest
+    - memory: "1024M"
+      mpi_ranks: 1
+      walltime: !timedelta "00:01:00"
+      exe: placeholder
+      max_ppn: 1
+  
+  # Calculated resources; ones that can be determined entirely from
+  # other variables throughout the document.
+
+  run_gdasfcst: !JobRequest
+    - batch_memory: "1024M"
+      mpi_ranks: !calc >-
+          doc.fv3_gdas_settings.layout_x *
+          doc.fv3_gdas_settings.layout_y * 6 + 
+          ( ( doc.fv3_gdas_settings.WRITE_GROUP * 
+          doc.fv3_gdas_settings.WRTTASK_PER_GROUP )
+          if doc.fv3_gdas_settings.QUILTING else 0 )
+      max_ppn: !calc "doc.fv3_gdas_settings.get('fcst_max_ppn',None)"
+      walltime: !calc gdasfcst_walltime
+      OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
+      memory_per_rank: !calc doc.gfs_resource_table.get('gdasfcst_mem_per_rank',None)
+  
+  no_gdasfcst_remap: !JobRequest
+    - mpi_ranks: !calc (min(240,doc.default_resources.run_gdasfcst.total_ranks()))
+      OMP_NUM_THREADS: 2
+      max_ppn: !calc (doc.accounting.exclusive_partition.nodes.max_ranks_per_node(doc.default_resources.run_gdasfcst[0]))
+
+  remap_resource_template: &remap_resource_template
+    mpi_ranks: !calc >-
+      min(240,resources.total_ranks())
+    OMP_NUM_THREADS: 2
+    max_ppn: !calc partition.nodes.max_ranks_per_node(resources[0])
+  
+  run_efcs: !JobRequest
+    - batch_memory: "254M"
+      mpi_ranks: !calc >-
+          doc.fv3_enkf_settings.layout_x *
+          doc.fv3_enkf_settings.layout_y * 6 + 
+          ( ( doc.fv3_enkf_settings.WRITE_GROUP * 
+          doc.fv3_enkf_settings.WRTTASK_PER_GROUP )
+          if doc.fv3_enkf_settings.QUILTING else 0 )
+      max_ppn: !calc "doc.fv3_enkf_settings.get('fcst_max_ppn',None)"
+      OMP_NUM_THREADS: !calc doc.fv3_enkf_settings.fv3_threads
+      walltime: !calc efcs_walltime
+
+  efcs_walltime: !calc doc.enkf_resource_table.efcs_wall
+  gfsfcst_walltime: !calc doc.gfs_resource_table.gfsfcst_wall
+  gdasfcst_walltime: !calc doc.gfs_resource_table.gdasfcst_wall
+  
+  run_gfsfcst: !JobRequest
+    - batch_memory: "1024M"
+      mpi_ranks: !calc >-
+          doc.fv3_gfs_settings.layout_x *
+          doc.fv3_gfs_settings.layout_y * 6 + 
+          ( ( doc.fv3_gfs_settings.WRITE_GROUP * 
+          doc.fv3_gfs_settings.WRTTASK_PER_GROUP )
+          if doc.fv3_gfs_settings.QUILTING else 0 )
+      max_ppn: !calc "doc.fv3_gfs_settings.get('fcst_max_ppn',None)"
+      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
+      walltime: !calc gfsfcst_walltime
+      memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
+  
+  fallback_run_gfsremap: !JobRequest
+    # Used to generate the config files if the gfs remap is not run in the workflow.
+    - mpi_ranks: !calc >-
+          min(240,doc.exclusive_resources.run_gfsfcst.total_ranks())
+      OMP_NUM_THREADS: 2
+      max_ppn: !calc >-
+          partition.nodes.max_ranks_per_node(
+            doc.exclusive_resources.run_gfsfcst[0])
+  
+  run_gdas_post_manager: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !calc doc.gfs_resource_table.gdasfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
+  
+  run_gfs_post_manager: !JobRequest
+    - memory: "300M"
+      exe: placeholder
+      walltime: !calc doc.gfs_resource_table.gfsfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
+
+  run_ecen: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.enkf_resource_table.ecen[0]
+      max_ppn: !calc doc.enkf_resource_table.ecen[1]
+      walltime: !calc doc.enkf_resource_table.ecen[2]
+      OMP_NUM_THREADS: !calc doc.enkf_resource_table.ecen[3]
+      memory_per_rank: !calc doc.enkf_resource_table.ecen[4]
+  
+  run_eobs: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.enkf_resource_table.eobs[0]
+      max_ppn: !calc doc.enkf_resource_table.eobs[1]
+      walltime: !calc doc.enkf_resource_table.eobs[2]
+      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eobs[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eobs[4]
+  
+  run_eomg: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.enkf_resource_table.eomg[0]
+      max_ppn: !calc doc.enkf_resource_table.eomg[1]
+      walltime: !calc doc.enkf_resource_table.eomg[2]
+      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eomg[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eomg[4]
+  
+  run_eupd: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.enkf_resource_table.eupd[0]
+      max_ppn: !calc doc.enkf_resource_table.eupd[1]
+      walltime: !calc doc.enkf_resource_table.eupd[2]
+      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eupd[3]
+      memory_per_rank: !calc doc.enkf_resource_table.eupd[4]
+  
+  run_epos: !JobRequest
+    - batch_memory: "254M"
+      exe: placeholder
+      mpi_ranks: !calc doc.enkf_resource_table.epos[0]
+      max_ppn: !calc doc.enkf_resource_table.epos[1]
+      walltime: !calc doc.enkf_resource_table.epos[2]
+      OMP_NUM_THREADS: !calc doc.enkf_resource_table.epos[3]
+      memory_per_rank: !calc doc.enkf_resource_table.epos[4]
+
+  run_prep: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.prep[0]
+      max_ppn: !calc doc.gfs_resource_table.prep[1]
+      walltime: !calc doc.gfs_resource_table.prep[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.prep[3]
+      memory_per_rank: !calc  doc.gfs_resource_table.prep[4]
+
+  run_anal: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.anal[0]
+      max_ppn: !calc doc.gfs_resource_table.anal[1]
+      walltime: !calc doc.gfs_resource_table.anal[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.anal[3]
+      memory_per_rank: !calc  doc.gfs_resource_table.anal[4]
+
+  run_gdaspost: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.gdaspost[0]
+      max_ppn: !calc doc.gfs_resource_table.gdaspost[1]
+      walltime: !calc doc.gfs_resource_table.gdaspost[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdaspost[3]
+      memory_per_rank: !calc doc.gfs_resource_table.gdaspost[4]
+      
+  run_gfspost: !JobRequest
+    - batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.gfspost[0]
+      max_ppn: !calc doc.gfs_resource_table.gfspost[1]
+      walltime: !calc doc.gfs_resource_table.gfspost[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gfspost[3]
+      memory_per_rank: !calc doc.gfs_resource_table.gfspost[4]
+
+  run_gfsvrfy: !JobRequest
+    - compute_memory: "16384M"
+      batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.gfsvrfy[0]
+      max_ppn: !calc doc.gfs_resource_table.gfsvrfy[1]
+      walltime: !calc doc.gfs_resource_table.gfsvrfy[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gfsvrfy[3]
+
+  run_gdasvrfy: !JobRequest
+    - compute_memory: "16384M"
+      batch_memory: "3072M"
+      exe: placeholder
+      mpi_ranks: !calc doc.gfs_resource_table.gdasvrfy[0]
+      max_ppn: !calc doc.gfs_resource_table.gdasvrfy[1]
+      walltime: !calc doc.gfs_resource_table.gdasvrfy[2]
+      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdasvrfy[3]
+            

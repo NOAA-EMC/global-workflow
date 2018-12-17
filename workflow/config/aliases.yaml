@@ -1,0 +1,205 @@
+
+# This file is used to generate the thread and processor information
+# for the various config files.  Such information must be in the
+# config files even if it is not used, and must match any actual
+# resources in the suite definition.  Hence, if a free forecast is
+# requested, the GDAS and ENKF resource requirements must be
+# available.  If the GFS forecast is in tJet and GDAS forecast is in
+# xJet, then they must be appropriate for 12-core and 24-core nodes,
+# respectively.
+
+aliases:
+  alias_template: &alias_template
+    resources: !FirstTrue
+      - when: !calc flag
+        do: !calc task.resources
+      - otherwise: !calc alt_resources
+    partition: !FirstTrue
+      - when: !calc flag
+        do: !calc task.partition
+      - otherwise: !calc alt_partition
+    nth: !calc partition.nodes.omp_threads_for(resources[0] if len(resources)<2 else resources[1])
+    npe: !calc resources.total_ranks()
+    npe_node: !calc partition.nodes.max_ranks_per_node(resources[0] if len(resources)<2 else resources[1])
+    
+  alias_exclusive: &alias_exclusive
+    <<: *alias_template
+    alt_partition: !calc doc.accounting.exclusive_partition
+
+  alias_remap: &alias_remap
+    <<: *alias_template
+    alt_partition: !calc doc.accounting.exclusive_partition
+    resources: !FirstTrue
+      - when: !calc flag
+        do: !calc task.resources_remap
+      - otherwise: !calc alt_resources
+
+  prep:
+    <<: *alias_exclusive
+    flag: !calc ( 'prep' in doc.suite.gfs )
+    task: !calc doc.suite.gfs.prep.jgfs_prep
+    alt_resources: !calc doc.exclusive_resources.run_prep
+
+  epos:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.enkf.post.jgdas_enkf_post_f006
+    alt_resources: !calc doc.exclusive_resources.run_epos
+
+  anal:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'analysis' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.analysis.jgdas_analysis_high
+    alt_resources: !calc doc.exclusive_resources.run_anal
+
+  gfsvrfy:
+    <<: *alias_exclusive
+    flag: !calc ( 'gfs' in doc.suite and 'jgfs_emc_vrfy' in doc.suite.gfs )
+    task: !calc doc.suite.gfs.jgfs_emc_vrfy
+    alt_resources: !calc doc.exclusive_resources.run_gfsvrfy
+
+  gdasvrfy:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'jgdas_emc_vrfy' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.jgdas_emc_vrfy
+    alt_resources: !calc doc.exclusive_resources.run_gdasvrfy
+
+  eobs:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite )
+    task: !calc doc.suite.gdas.enkf.jgdas_enkf_select_obs
+    alt_resources: !calc doc.exclusive_resources.run_eobs
+
+  gdasfcst:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite )
+    task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
+    alt_resources: !calc doc.exclusive_resources.run_gfsfcst
+
+  gfsfcst:
+    <<: *alias_exclusive
+    flag: !calc ( 'gfs' in doc.suite )
+    task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
+    alt_resources: !calc doc.exclusive_resources.run_efcs
+
+  gdasremap:
+    <<: *alias_remap
+    flag: !calc ( 'gdas' in doc.suite )
+    task: !calc doc.suite.gdas.forecast.jgdas_forecast_high
+    alt_resources: !calc doc.default_resources.no_gdasfcst_remap
+
+  gfsremap:
+    <<: *alias_remap
+    flag: !calc ( 'gfs' in doc.suite )
+    task: !calc doc.suite.gfs.forecast.jgfs_forecast_high
+    alt_resources: !error doc.exclusive_resources.run_gfsremap
+
+  gdaspost:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite )
+    task: !calc doc.suite.gdas.post.jgdas_post_f000
+    alt_resources: !calc doc.exclusive_resources.run_gdaspost
+
+  gfspost:
+    <<: *alias_exclusive
+    flag: !calc ( 'gfs' in doc.suite )
+    task: !calc doc.suite.gfs.post.jgfs_post_anl
+    alt_resources: !calc doc.exclusive_resources.run_gfspost
+
+  efcs:
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.enkf.forecast.jgdas_enkf_fcst_grp1
+    alt_resources: !calc doc.exclusive_resources.run_efcs
+
+  eupd: 
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.enkf.jgdas_enkf_update
+    alt_resources: !calc doc.exclusive_resources.run_eupd
+
+  eomg: 
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.enkf.innovate.jgdas_enkf_innovate_obs_grp
+    alt_resources: !calc doc.exclusive_resources.run_eomg
+
+  ecen: 
+    <<: *alias_exclusive
+    flag: !calc ( 'gdas' in doc.suite and 'enkf' in doc.suite.gdas )
+    task: !calc doc.suite.gdas.enkf.jgdas_enkf_inflate_recenter
+    alt_resources: !calc doc.exclusive_resources.run_ecen
+
+  dwn:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_dwn
+
+  fv3ic:
+    <<: *alias_exclusive
+    flag: !calc ( 'ics' in doc.suite and 'jgfs_emc_fv3ic' in doc.suite.ics )
+    task: !calc doc.suite.ics.jgfs_emc_fv3ic
+    alt_resources: !calc doc.exclusive_resources.run_fv3ic
+
+  getic:
+    <<: *alias_exclusive
+    flag: !calc ( 'ics' in doc.suite and 'jgfs_emc_getics' in doc.suite.ics )
+    task: !calc doc.suite.ics.jgfs_emc_getics
+    alt_resources: !calc doc.service_resources.run_getic
+
+  earc:
+    <<: *alias_exclusive
+    flag: !calc ( 'archive' in doc.suite and 'jgfs_enkf_archive' in doc.suite.archive )
+    task: !calc doc.suite.archive.jgdas_enkf_archive.grp
+    alt_resources: !calc doc.service_resources.run_earc
+
+  arch:
+    <<: *alias_exclusive
+    flag: !calc ( 'archive' in doc.suite )
+    task: !calc doc.suite.archive.jgfs_archive
+    alt_resources: !calc doc.service_resources.run_arch
+
+  ######################################################################
+
+  # PLACEHOLDERS - replace when jobs exist
+
+  ######################################################################
+
+  prepbufr:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_prepbufr
+
+  awips_g2:
+    <<: *alias_exclusive
+    flag: !calc ('gfs' in doc.suite and 'awips_g2' in doc.suite.gfs)
+    task: doc.suite.awips_g2.jgfs_awips_g2_f000
+    alt_resources: !calc doc.exclusive_resources.run_awips_g2
+
+  awips_20km_1p0:
+    <<: *alias_exclusive
+    flag: !calc ('gfs' in doc.suite and 'awips_20km_1p0' in doc.suite.gfs)
+    task: doc.suite.awips_20km_1p0.jgfs_awips_f000
+    alt_resources: !calc doc.exclusive_resources.run_awips_20km_1p0
+
+  postsnd:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_postsnd
+
+  postsndcfp:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_postsndcfp
+
+  gfs_gempak:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_gfs_gempak
+
+  gdas_gempak:
+    <<: *alias_exclusive
+    flag: false
+    alt_resources: !calc doc.exclusive_resources.run_gdas_gempak
+
+  

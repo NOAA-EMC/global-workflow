@@ -1,0 +1,154 @@
+# This file configures the workflow to run on Theia
+
+platform: !Platform
+  <<: *global_platform_common
+
+  # Evaluate: this must be "false" to ensure disk space availability logic
+  # is not run unless this file is for the current platform.
+  Evaluate: false
+
+  # name: the name of this platform; this must match what the underlying
+  # scripts expect.
+  name: THEIA
+
+  # detect: this is a function that returns true iff the user is on GAEA
+  # and false otherwise
+  detect: !calc tools.isdir("/scratch4") and tools.isdir("/scratch3")
+
+  # public_release_ics: location of input conditions that have been 
+  # prepared for the public release.
+  public_release_ics: /scratch4/NCEPDEV/global/noscrub/glopara/FV3GFS_V1_RELEASE/ICs
+
+  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
+  # restrict access to NOAA "rstprod" data restriction class.
+  # This only used for observation processing, data assimilation, and
+  # data assimilation archiving, which are not in the public release.
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "/scratch4/NCEPDEV/global/save/glopara/nwpara"
+
+  # DMPDIR - location of the global dump data.  This is used by the observation
+  # processing scripts, which are not included in the public release.
+  DMPDIR: "/scratch4/NCEPDEV/global/noscrub/dump"
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+
+  # BASE_SVN - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various repositories.  This is used on some platforms to find
+  # executables for this workflow.
+  BASE_SVN: "/scratch4/NCEPDEV/global/save/glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/scratch4/NCEPDEV/global/save/glopara/git"
+
+  # config_base_extras - Additional configuration data to put in the
+  # config.base file.  On Theia, we use this to specify the location
+  # of some programs.
+  config_base_extras: !expand |
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export CNVGRIB21_GFS="/apps/cnvgrib/1.4.0/bin/cnvgrib"
+    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/sorc/g2tmpl/params_grib2_tbl_new"
+
+  # Additional variables to send to Rocoto XML entities or ecflow edits.
+  metasched_more: !expand |
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+
+  partitions:
+    Evaluate: false
+    default_shared: !calc doc.platform.partitions.theia
+    default_exclusive: !calc doc.platform.partitions.theia
+    default_service: !calc doc.platform.partitions.theia
+    theia:
+      <<: *global_partition_common
+      specification: null
+      # shared_accounting_ref - accounting settings for shared jobs
+      shared_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.shared_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+        
+      # service_accounting_ref - accounting settings for service jobs (jobs
+      # that require tape or network access)
+      service_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.service_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+      # exclusive_accounting_ref - accounting settings for jobs that require
+      # exclusive access to a node.
+      exclusive_accounting_ref:
+        queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+        project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+      # Queues to use for each job type
+      shared_queue: batch
+      service_queue: service
+      exclusive_queue: batch
+
+      # Details about the scheduler on this cluster.
+      scheduler_settings: &scheduler_settings
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (64*1024)
+
+      # Generate the actual Python objects for the scheduler, parallelism,
+      # and nodes:
+      scheduler: !calc |
+        tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+      parallelism: !calc |
+        tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+      nodes: !calc |
+        tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
+
+  # Path to pan_df, the program used to get Panasas disk usage information:
+  pan_df: pan_df
+
+  # Automatically detect the least used scrub area the user can access:
+  least_used_temp: !Immediate 
+    - !FirstMax
+      - do: /scratch3/NCEPDEV/stmp1
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch3/NCEPDEV/stmp2
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch4/NCEPDEV/stmp3
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: /scratch4/NCEPDEV/stmp4
+        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+      - do: !expand "{doc.user_places.PROJECT_DIR}/scrub"
+        when: !calc tools.panasas_gb(do)/4
+        message: "{do}: use project directory as scrub space"
+
+  # long_term_temp - area for storage of data that must be passed
+  # between jobs or shared with programs external to this workflow.
+  long_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+
+  # short_term_temp - area for data that is only needed within one job:
+  short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+
+  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"

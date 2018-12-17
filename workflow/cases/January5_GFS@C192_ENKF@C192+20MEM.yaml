@@ -1,0 +1,32 @@
+case:
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C192
+
+  data_assimilation:
+    NMEM_ENKF: 20
+
+  gfs_output_settings:
+    FHMAX_GFS: 120
+    FHOUT_GFS: 3
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+    ICSDIR: !FirstTrue
+      - when: !calc doc.platform.name == "THEIA"
+        do: "/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
+      - when: !calc doc.platform.name == "WCOSS_C"
+        do: "/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS"
+      - otherwise: !error "No ICs for platform {doc.platform.name}"
+
+  settings: 
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2018-01-05t00:00:00
+    EDATE: 2018-01-05t12:00:00
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: Yes
+    chgres_and_convert_ics: No
+

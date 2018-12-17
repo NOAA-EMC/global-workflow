@@ -1,0 +1,268 @@
+# This file configures the workflow to run on the xJet partition of Jet
+
+platform: !Platform
+  <<: *global_platform_common
+
+  # Evaluate: this must be "false" to ensure disk space availability logic
+  # is not run unless this file is for the current platform.
+  Evaluate: false
+
+  # name: the name of this platform; this must match what the underlying
+  # scripts expect.  Note that the name does not specify the jet partition.
+  name: JET
+
+  # detect: this is a function that returns true iff the user is on GAEA
+  # and false otherwise
+  detect: !calc tools.isdir("/lfs3")
+
+  # public_release_ics: location of input conditions that have been 
+  # prepared for the public release.
+  public_release_ics: /lfs3/projects/hfv3gfs/Samuel.Trahan/FV3GFS_V1_RELEASE/ICs
+
+  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
+  # restrict access to NOAA "rstprod" data restriction class.
+  # This only used for observation processing, data assimilation, and
+  # data assimilation archiving, which are not in the public release.
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "/lfs3/projects/hfv3gfs/nwprod"
+
+  # DMPDIR - location of the global dump data.  This is used by the observation
+  # processing scripts, which are not included in the public release.
+  DMPDIR: "/mnt/lfs3/projects/hfv3gfs/glopara/noscrub/dump"
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/crtm/v2.2.5/fix"
+
+  # BASE_SVN - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various repositories.  This is used on some platforms to find
+  # executables for this workflow.
+  BASE_SVN: "/dev/null/global/save/glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/mnt/lfs3/projects/hfv3gfs/glopara/git"
+
+  # config_base_extras - Additional configuration data to put in the
+  # config.base file
+  config_base_extras: |
+    export POSTGRB2TBL=/lfs3/projects/hfv3gfs/glopara/nwpara/lib/g2tmpl/v1.5.0/src/params_grib2_tbl_new
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export GRB2INDEX="$NWPROD/util/exec/grb2index"
+    export GRBINDEX2="$NWPROD/util/exec/grb2index"
+    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
+
+    # A CFP wrapper is installed as part of the "mpiserial" module on Jet.
+    export USE_CFP=YES
+
+  # Additional variables to send to Rocoto XML entities or ecflow edits.
+  metasched_more: !expand |
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+
+  # long_term_temp - area for storage of data that must be passed
+  # between jobs or shared with programs external to this workflow.
+  long_term_temp: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}/scrub"
+
+  # short_term_temp - area for data that is only needed within one job:
+  short_term_temp: !calc long_term_temp
+
+  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
+
+  # NOSCRUB_DIR - directory for data that needs to be retained for an
+  # indefinite amount of time after the simulation ends.
+  NOSCRUB_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/noscrub"
+
+  # SAVE_DIR - directory for small, important, files that should be
+  # backed up to tape.
+  SAVE_DIR: !expand "{doc.places.PROJECT_DIR}/{tools.env('USER')}/save"
+
+  ######################################################################
+
+  # Jet partitions:
+
+  partition_common: &partition_common
+    <<: *global_partition_common
+    # shared_accounting_ref - accounting settings for shared jobs
+    shared_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.shared_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+      partition: !calc metasched.varref(doc.schedvar.partition)
+
+    # service_accounting_ref - accounting settings for service jobs (jobs
+    # that require tape or network access)
+    service_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.service_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+      partition: service
+
+    # exclusive_accounting_ref - accounting settings for jobs that require
+    # exclusive access to a node.
+    exclusive_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+      partition: !calc metasched.varref(doc.schedvar.partition)
+
+    # Queues to use for each job type
+    shared_queue: batch
+    service_queue: service
+    exclusive_queue: batch
+
+    scheduler: !calc |
+      tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+    parallelism: !calc |
+      tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+    nodes: !calc |
+      tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
+
+  partitions:
+    Evaluate: false
+
+    tjet_or_wherever:
+      <<: *partition_common
+      specification: "tjet:ujet:sjet:vjet:xjet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 12
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (23.5*1024)
+
+    bigmem:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: bigmem 
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (250*1024)
+
+    xjet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: xjet
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (63.5*1024)
+
+    vjet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "vjet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 16
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (63.5*1024)
+
+    sjet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "sjet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 16
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (31.5*1024)
+
+    sjet_or_vjet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "sjet:vjet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 16
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (31.5*1024)
+
+    service:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "service"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 2
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (24*1024)
+
+    tjet_or_ujet:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "tjet:ujet"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 12
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (23.5*1024)
+
+    bigmem:
+      <<: *partition_common
+      # Details about the scheduler on this cluster.
+      specification: "bigmem"
+      scheduler_settings:
+        scheduler_name: MoabTorque
+        parallelism_name: HydraIMPI
+        node_type: generic
+        physical_cores_per_node: 24
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (251.5*1024)
+        
+    #default_shared: !calc doc.platform.partitions.xjet
+    #default_exclusive: !calc doc.platform.partitions.xjet
+    default_shared: !calc doc.platform.partitions.xjet
+    default_exclusive: !calc doc.platform.partitions.xjet
+    default_service: !calc doc.platform.partitions.service

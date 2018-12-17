@@ -1,0 +1,48 @@
+dump_waiter: &dump_waiter_task !Task
+  <<: *exclusive_task_template
+  manual: |
+    The dump_waiter task is a special job needed to run this
+    workflow outside of the production suite.  It handles the
+    external dependency on the dump and the associated
+    (approximate) time dependency.
+    In ecflow:
+      The dump_waiter is started when the cycle is allowed to
+      begin, and waits for the dump to be available.  It sets
+      the "updated_status" event when the dump is available.
+    In Rocoto:
+      The dump_waiter is never run; it is defined so that the
+      updated_status data event can be used as a data dependency
+      in the prep job.
+
+  Disable: !calc metasched.type=='rocoto'
+
+  resources: !ref partition.resources.run_dump_waiter
+
+  updated_status: !DataEvent
+    file: !expand >-
+      {doc.places.DMPDIR}/@Y@m@d@H/{up.CDUMP}/{up.CDUMP}.t@Hz.updated.status.tm00.bufr_d
+
+  ecflow_WAITFILE: !expand '%DUMPDIR%/${{PDY}}%CYC%/{CDUMP}/{CDUMP}.t%CYC%z.updated.status.tm00.bufr_d'
+
+  # The ecflow_command is dumped into the ecf file where the
+  # J-Job would normally be called.  This job is never run by
+  # Rocoto, so we don't need the equivalent Rocoto code.
+  ecflow_command: !expand |
+    workdir=/tmp/$USER.dump_waiter.$$.$RANDOM
+    mkdir -p "$workdir"
+    cd "$workdir"
+    export cycle="t${{cyc}}z"
+    export jlogfile=${{jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${{job}}.${{pid}}}}
+    export job=${{job:-"anal"}}
+    setpdy.sh
+    source ./PDY
+    WAITFILE={ecflow_WAITFILE}
+    while [[ ! -s "$WAITFILE" ]] ; do
+      echo "$WAITFILE: nope"
+      sleep 37
+    done
+    env | grep ECF_
+    echo "$WAITFILE: yup"
+    ecflow_client --event updated_status
+    cd /
+    rm -rf "$workdir"

@@ -1,0 +1,103 @@
+# This file is used by the downstream product generation.  That
+# includes all steps of product generation after the post master file
+# and lat-lon files are created.  For example, the tracker, VSDB, and
+# AWIPS files.  These are not included in this release, so this file
+# should be left unmodified.  These variables must still be defined to
+# ensure validation logic elsewhere is satisfied.
+
+downstream_schema: &downstream_schema !Template
+  VDUMP:
+    type: string
+    default: "gfs"
+    description: verifying dump
+  CDUMPFCST:
+    type: string
+    default: "gdas"
+    description: Fit-to-obs with GDAS/GFS prepbufr
+  CDFNL:
+    type: string
+    default: "gdas"
+    description: Scores verification against GDAS/GFS analysis
+
+  MKPGB4PRCP:
+    type: bool
+    default: yes
+    description: make 0.25-deg pgb files in ARCDIR for precip verification
+  VRFYFITS:
+    type: bool
+    default: YES
+    description: "Fit to observations"
+  VSDB_STEP1:
+    type: bool
+    default: YES
+    description: "populate VSDB database"
+  VSDB_STEP2:
+    type: bool
+    default: NO
+  VRFYG2OBS:
+    type: bool
+    default: YES
+    description: "Grid to observations, see note below if turning ON"
+  VRFYPRCP:
+    type: bool
+    default: YES
+    description: "Precip threat scores"
+  VRFYRAD:
+    type: bool
+    default: YES
+    description: "Radiance data assimilation monitoring"
+  VRFYOZN:
+    type: bool
+    default: YES
+    description: "Ozone data assimilation monitoring"
+  VRFYMINMON:
+    type: bool
+    default: YES
+    description: "GSI minimization monitoring"
+  VRFYTRAK:
+    type: bool
+    default: YES
+    description: "Hurricane track verification"
+  VRFYGENESIS:
+    type: bool
+    default: YES
+    description: "Cyclone genesis verification"
+  RUNMOS:
+    type: bool
+    default: YES
+    description: "Run GFS MOS"
+  DO_POST_PROCESSING:
+    type: bool
+    default: NO
+    description: "Run post processing tasks (BUFRSND, GEMPAK, AWIPS, FAX, WAFS, BULLETINS"
+  DO_BUFRSND:
+    type: bool
+    default: NO
+    description: "Run GFS_POSTSND"
+  DO_GEMPAK:
+    type: bool
+    default: NO
+    description: "Run GEMPAK"
+  DO_AWIPS:
+    type: bool
+    default: NO
+    description: "Run AWIPS"
+  DO_FAX:
+    type: bool
+    default: NO
+    description: "Run FAX"
+  DO_WAFS:
+    type: bool
+    default: NO
+    description: "Run WAFS"
+  DO_BULLETINS:
+    type: bool
+    default: NO
+    description: "Run BULLETINS"
+  
+  FHOUT_CYCLONE_GFS:
+    type: int
+    default: 6
+  FHOUT_CYCLONE_GDAS:
+    type: int
+    default: 3

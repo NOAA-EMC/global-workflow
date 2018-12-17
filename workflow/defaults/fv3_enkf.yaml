@@ -1,0 +1,40 @@
+# This file is used to configure the ENKF-related config files.  The
+# ENKF is not included in this release, so these settings are not
+# needed.  However, they do need to be set to valid values because
+# there is validation of the fv3_enkf_settings variables elsewhere in
+# the YAML documents.
+
+fv3_enkf_defaults: &fv3_enkf_defaults
+  FHSWR: 3600.
+  FHLWR: 3600.
+  IEMS: 1
+  ISOL: 2
+  IAER: 111
+  ICO2: 2
+  dspheat: YES
+  shal_cnv: NO
+  FHZER: 6
+  FHCYC: 1
+  restart_interval: 6
+  FHMAX: 6
+
+# Stochastic physics parameters (only for ensemble forecasts)
+  DO_SKEB: NO
+  SKEB: -999.
+  SKEB_TAU: 21600.
+  SKEB_LSCALE: 500000.
+  SKEBNORM: 1
+  DO_SHUM: YES
+  SHUM: 0.006
+  SHUM_TAU: 21600.
+  SHUM_LSCALE: 500000.
+  DO_SPPT: YES
+  SPPT: 0.5
+  SPPT_TAU: 21600.
+  SPPT_LSCALE: 500000.
+  SPPT_LOGIT: YES
+  SPPT_SFCLIMIT: YES
+
+  k_split: 1
+  n_split: 12
+  consv_te: 1.

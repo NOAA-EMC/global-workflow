@@ -1,0 +1,307 @@
+# fv3_settings_template - sets the namelist values for the fv3
+# forecast.  See the physcs and model documentation for full
+# information on these variables.
+
+fv3_settings_template: !Template &fv3_settings_template
+  imp_physics:
+    type: int
+    allowed: [ 99, 8, 6, 10, 11 ]
+    default: 11
+    description: "Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL"
+    if_present: !FirstTrue
+      - when: !calc ( imp_physics==99 )
+        do: !Template
+          ncld: { type: int, override: 1 }
+          nwat: { type: int, override: 2 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+      - when: !calc ( imp_physics == 6 )
+        do: !Template
+          ncld: { type: int, override: 2 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+      - when: !calc ( imp_physics == 8 )
+        do: !Template
+          ncld: { type: int, override: 2 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+      - when: !calc ( imp_physics == 11 )
+        do: !Template
+          ncld: { type: int, override: 5 }
+          nwat: { type: int, override: 6 }
+          FIELD_TABLE:
+            type: string
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+          dnats: { type: int, override: 1 }
+          cal_pre: { type: bool, default: false }
+          do_sat_adj: { type: bool, default: true }
+          random_clds: { type: bool, default: false }
+          hord_mt_nh_nonmono: { type: int, default: 6 }
+          hord_xx_nh_nonmono: { type: int, default: 6 }
+          vtdm4_nh_nonmono:   { type: float, default: 0.02 }
+          nord: { type: int, default: 2 }
+          dddmp: { type: float, default: 0.1 }
+          d4_bg: { type: float, default: 0.12 }
+      - otherwise: !error "Unknown imp_physics value: {imp_physics}"
+
+  new_o3force:
+    type: bool
+    default: yes
+    description: Options of stratosphere O3 physics reaction coefficients
+  h2o_phys:
+    type: bool
+    default: yes
+    description: Use stratosphere h2o physics
+  do_vort_damp:
+    type: bool
+    default: yes
+    description: vorticity and divergence damping
+  consv_te: 
+    type: float
+    default: 1.
+    description: conserve total energy
+  fv_sg_adj:
+    type: int
+    default: 450
+    description: time-scale to remove 2dz instability
+  dspheat:
+    type: bool
+    default: YES
+    description: dissipative heating
+  shal_cnv:
+    type: bool
+    default: YES
+    description: shallow convection flag
+  agrid_vel_rst:
+    type: bool
+    default: yes
+    description: "write velocity restarts on A grid?"
+
+  cal_pre:          { type: bool, default: true }
+  do_sat_adjust:    { type: bool, default: false }
+  random_clds:      { type: bool, default: true }
+  cnvcld:           { type: bool,  default: true }
+  dnats:            { type: int,  default: 0 }
+  IEMS:             { type: int,  default: 1 }
+  IALB:             { type: int,  default: 1 }
+  ISOL:             { type: int,  default: 2 }
+  IAER:             { type: int,  default: 111 }
+  ICO2:             { type: int,  default: 2 }
+  warm_start:       { type: bool, default: true }
+  read_increment:   { type: bool, default: no }
+  restart_interval: { type: int,  default: 6 }
+
+  LEVS:
+    type: int
+    description: Number of vertical levels in FV3
+
+  FHCYC: 
+    type: int
+    default: 24
+    description: Surface cycle update frequency (gdas=1,gfs=24)
+
+  FHCYC_GDAS: 
+    type: int
+    default: 1
+    description: Surface cycle update frequency for the GDAS
+
+  FHCYC_GFS: 
+    type: int
+    default: 24
+    description: Surface cycle update frequency for the GFS
+
+  QUILTING: 
+    type: bool
+    default: YES
+    description: Should output quilting be used?
+
+  WRITE_NEMSIOFILE:
+    type: bool
+    default: YES
+    description: Should nemsio output be used (yes/true) instead of netcdf (no/false)?
+
+  WRITE_NEMSIOFLIP: { type: bool, default: yes }
+  nst_anl:          { type: bool, default: yes }
+  lprecip_accu:     { type: bool, default: yes,
+    description: "Precipitation accumulation, true--no bucket, false--bucket=FHZER" }
+
+  DONST:  { type: bool, default: YES }
+
+  MONO:
+    type: string
+    default: "non-mono"
+    allowed: [ mono, non-mono ]
+
+  MEMBER:
+    type: int
+    stage: [ execution ]
+    default: -1
+    description: "-1: control, 0: ensemble mean, >0: ensemble member $MEMBER"
+
+  d4_bg: { type: float, default: 0.15 }
+  dddmp: { type: float, default: 0.2 }
+
+  ISEED:
+    type: int
+    default: 0
+    stage: [ execution ]
+    description: >
+      Default seed for shum, skeb, and sppt, if specific seeds
+      are not specified.
+
+  SET_STP_SEED:
+    type: bool
+    default: YES
+    description: >
+      Automatically set seeds for SKEB, SHUM, and SPPT at execution
+      time based on simulation date and member.
+
+  DO_SHUM:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc DO_SHUM
+        do:
+          ISEED_SHUM:  { type: int,    optional: true }
+          SHUM:        { type: float,  default: -999. }
+          SHUM_TAU:    { type: float,  default: -999. }
+          SHUM_LSCALE: { type: float,  default: -999. }
+      - otherwise: null
+
+  DO_SKEB:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc DO_SKEB
+        do:
+          ISEED_SHUM:  { type: int,   optional: true }
+          SKEB_TAU:    { type: float, default: -999. }
+          SKEB_LSCALE: { type: float, default: -999. }
+          SKEBNORM:    { type: int,   default: 1     }
+          SKEB:        { type: float, default: -999. }
+      - otherwise: null
+
+  DO_SPPT:
+    type: bool
+    default: NO
+    if_present: !FirstTrue
+      - when: !calc DO_SPPT==True
+        do:
+          ISEED_SHUM:  { type: int,   optional: true }
+          SPPT:        { type: float }
+          SPPT_TAU:    { type: float, default: -999. }
+          SPPT_LSCALE: { type: float, default: -999. }
+          SPPT_SFCLIMIT: { type: bool, default: yes }
+      - otherwise: !Message "Don't SPPT"
+
+  RUN_EFCSGRP:     { type: bool,   default: NO }
+  ncld:            { type: int,    default: 1 }
+  nwat:            { type: int,    default: 2 }
+  zhao_mic:        { type: bool,   default: YES }
+  nh_type:         { type: string, default: 'nh' }
+  USE_COUPLER_RES: { type: bool,   default: NO }
+  cdmbgwd:         { type: string, optional: true }
+
+  CDUMP:
+    type: string
+    allowed: [ gfs, gdas ]
+
+  CASE:
+    type: string
+    allowed: [ 'C48', 'C96', 'C192', 'C384', 'C768', 'C1152', 'C3072' ]
+    if_present: !FirstTrue
+      - when: !calc (CASE == "C48")
+        do: !Template
+          DELTIM: { type: int, default: 450 }
+          layout_x: { type: int, default: 2 }
+          layout_y: { type: int, default: 4 }
+          fv3_threads: { type: int, default: 1 }
+          cdmbgwd:
+            type: string
+            default: "0.062,3.5"
+            description: "mountain blocking and gravity wave drag"
+          WRITE_GROUP: { type: int, default: 1 }
+          WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTIOBUF: { type: string, default: "4M" }
+
+      - when: !calc (CASE == "C96")
+        do: !Template
+          DELTIM: { type: int, default: 450 }
+          layout_x: { type: int, default: 4 }
+          layout_y: { type: int, default: 4 }
+          fv3_threads: { type: int, default: 1 }
+          cdmbgwd:
+            type: string
+            default: "0.125,3.0"
+            description: "mountain blocking and gravity wave drag"
+          WRITE_GROUP: { type: int, default: 1 }
+          WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTIOBUF: { type: string, default: "4M" }
+
+      - when: !calc (CASE == "C192")
+        do: !Template
+          DELTIM: { type: int, default: 450 }
+          layout_x: { type: int, default: 4 }
+          layout_y: { type: int, default: 6 }
+          fv3_threads: { type: int, default: 2 }
+          cdmbgwd:
+            type: string
+            default: "0.2,2.5"
+            description: "mountain blocking and gravity wave drag"
+          WRITE_GROUP: { type: int, default: 2 }
+          WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTIOBUF: { type: string, default: "8M" }
+
+      - when: !calc (CASE == "C384")
+        do: !Template
+          DELTIM: { type: int, default: 300 }
+          layout_x: { type: int, default: 4 }
+          layout_y: { type: int, default: 8 }
+          fv3_threads: { type: int, default: 2 }
+          cdmbgwd:
+            type: string
+            default: "1.0,1.2"
+            description: "mountain blocking and gravity wave drag"
+          WRITE_GROUP: { type: int, default: 3 }
+          WRTTASK_PER_GROUP: { type: int, default: 24 }
+          WRTIOBUF: { type: string, default: "16M" }
+
+      - when: !calc (CASE == "C768")
+        do: !Template
+          DELTIM: { type: int, default: 225 }
+          layout_x: { type: int, default: 8 }
+          layout_y: { type: int, default: 16 }
+          fv3_threads: { type: int, default: 2 }
+          cdmbgwd:
+            type: string
+            default: "3.5,0.25"
+            description: "mountain blocking and gravity wave drag"
+          WRITE_GROUP: { type: int, default: 4 }
+          WRTTASK_PER_GROUP: { type: int, default: 60 }
+          WRTIOBUF: { type: string, default: "32M" }
+
+      - when: !calc (CASE == "C1152")
+        do: !Template
+          DELTIM: { type: int, default: 150 }
+          layout_x: { type: int, default: 8 }
+          layout_y: { type: int, default: 16 }
+          fv3_threads: { type: int, default: 4 }
+          WRITE_GROUP: { type: int, default: 4 }
+          WRTTASK_PER_GROUP: { type: int, default: 84 }
+          WRTIOBUF: { type: string, default: "48M" }
+
+      - when: !calc (CASE == "C3072")
+        do: !Template
+          DELTIM: { type: int, default: 90 }
+          layout_x: { type: int, default: 16 }
+          layout_y: { type: int, default: 32 }
+          fv3_threads: { type: int, default: 4 }
+          WRITE_GROUP: { type: int, default: 4 }
+          WRTTASK_PER_GROUP: { type: int, default: 120 }
+          WRTIOBUF: { type: string, default: "64M" }
+      - otherwise: !error "Unknown case: {CASE}"

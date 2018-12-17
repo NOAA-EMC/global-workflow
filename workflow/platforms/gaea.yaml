@@ -1,0 +1,214 @@
+# This file configures the workflow to run on GAEA.  
+
+platform: !Platform
+  <<: *global_platform_common
+
+  # Evaluate: this must be "false" to ensure disk space availability logic
+  # is not run unless this file is for the current platform.
+  Evaluate: false
+
+  # name: the name of this platform; this must match what the underlying
+  # scripts expect.
+  name: GAEA
+
+  # detect: this is a function that returns true iff the user is on GAEA
+  # and false otherwise
+  detect: !calc tools.isdir("/lustre/f1")
+
+  # public_release_ics: location of input conditions that have been 
+  # prepared for the public release.
+  public_release_ics: /lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/ICs
+
+  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
+  # restrict access to NOAA "rstprod" data restriction class.
+  # This only used for observation processing, data assimilation, and
+  # data assimilation archiving, which are not in the public release.
+  CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
+
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "//dev/null/global/save/glopara/nwpara"
+
+  # DMPDIR - location of the global dump data.  This is used by the observation
+  # processing scripts, which are not included in the public release.
+  DMPDIR: "/dev/null/global/noscrub/dump"
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "/dev/null/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+
+  # BASE_SVN - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various repositories.  This is used on some platforms to find
+  # executables for this workflow.
+  BASE_SVN: "/dev/null/global/save/glopara/svn"
+
+  # BASE_GIT - a directory maintained by emc global model developers
+  # that contains recent versions of source code and executables for
+  # various git repositories. This is used on some platforms to find
+  # executables for this workflow.
+  BASE_GIT: "/dev/null/global/save/glopara/git"
+
+  # rocoto_platform_vars - additional variables sent to the rocoto xml
+  # file for each job to set platform-specific batch card settings.
+  rocoto_platform_vars: |
+    <!-- On GAEA, we must specify -S /bin/bash for the module command
+    to work properly in a bash script run by a user whose default
+    shell is tcsh. -->
+    <native>-S /bin/bash</native>
+
+  # config_base_extras - Additional configuration data to put in the
+  # config.base file
+  config_base_extras: |
+    export POSTGRB2TBL=$PARMgfs/g2tmpl-1.5.0/params_grib2_tbl_new
+    export WGRIB2="aprun -n 1 -j 1 -N 1 -d 1 -cc depth $EXECgfs/wgrib2"
+
+  partition_common: &partition_common
+    <<: *global_partition_common
+    # Settings common to all partitions of this machine
+
+    # shared_accounting_ref - accounting settings for shared jobs
+    shared_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.shared_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+      
+    # service_accounting_ref - accounting settings for service jobs (jobs
+    # that require tape or network access)
+    service_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.service_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+    # exclusive_accounting_ref - accounting settings for jobs that require
+    # exclusive access to a node.
+    exclusive_accounting_ref:
+      queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
+      project: !calc metasched.varref(doc.schedvar.cpu_project)
+
+    # Queues to use for each job type
+    shared_queue: batch
+    service_queue: rdtn
+    exclusive_queue: batch
+    
+    # Generate the actual Python objects for the scheduler, parallelism,
+    # and nodes:
+    scheduler: !calc |
+      tools.get_scheduler(scheduler_settings.scheduler_name, scheduler_settings)
+    parallelism: !calc |
+      tools.get_parallelism(scheduler_settings.parallelism_name, scheduler_settings)
+    nodes: !calc |
+      tools.node_tool_for(scheduler_settings.node_type, scheduler_settings)
+
+  partitions:
+    Evaluate: false
+    c4:
+      <<: *partition_common
+      specification: c4
+      # Details about the scheduler on this cluster.
+      scheduler_settings:
+        scheduler_name: MoabAlps
+        parallelism_name: AprunCrayMPI
+        node_type: generic
+        physical_cores_per_node: 36
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (64*1024)
+
+    es:
+      <<: *partition_common
+      specification: es
+      # Details about the scheduler on this cluster.
+      scheduler_settings:
+        scheduler_name: MoabAlps
+        parallelism_name: AprunCrayMPI
+        node_type: generic
+        physical_cores_per_node: 2
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+
+    c3:
+      <<: *partition_common
+      specification: c3
+      # Details about the scheduler on this cluster.
+      scheduler_settings:
+        scheduler_name: MoabAlps
+        parallelism_name: AprunCrayMPI
+        node_type: generic
+        physical_cores_per_node: 32
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (64*1024)
+
+    c3_or_c4:
+      <<: *partition_common
+      specification: 'c3:c4'
+      # Details about the scheduler on this cluster.
+      scheduler_settings: &c4_scheduler_settings
+        scheduler_name: MoabAlps
+        parallelism_name: AprunCrayMPI
+        node_type: generic
+        physical_cores_per_node: 32
+        logical_cpus_per_core: 2
+        hyperthreading_allowed: true
+        indent_text: "  "
+        memory_per_node: !calc (64*1024)
+
+    # Default partitions for each common job type:
+    default_shared: !calc doc.platform.partitions.c3_or_c4
+    default_exclusive: !calc doc.platform.partitions.c3_or_c4
+    default_service: !calc doc.platform.partitions.es
+
+  # Additional variables to send to Rocoto XML entities or ecflow edits.
+  metasched_more: !expand |
+    {metasched.defvar(doc.schedvar.exclusive_queue, doc.accounting.exclusive_partition.exclusive_queue)}
+    {metasched.defvar(doc.schedvar.shared_queue, doc.accounting.shared_partition.shared_queue)}
+    {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
+    {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
+    {metasched.defvar(doc.schedvar.service_partition, "es")}
+
+  # Automatically detect the least used scrub area the user can access:
+  user_scrub_area: !Immediate
+    - !FirstTrue
+      - do: /lustre/f1
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/ncep
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.esrl.rocoto
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.bgrp-account
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.ccsp-users
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.cm3
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.cmip6
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.decp
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.esm2g
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.esm2m
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.fre_test
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.hrao
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.ogrp-account
+        when: !calc tools.can_write(do)
+      - do: /lustre/f1/oar.gfdl.ssam
+        when: !calc tools.can_write(do)
+      - otherwise: !error "Cannot find project area.  Please set manually."
+
+  # long_term_temp - area for storage of data that must be passed
+  # between jobs or shared with programs external to this workflow.
+  long_term_temp: !expand "{user_scrub_area}/{tools.env('USER')}"
+
+  # short_term_temp - area for data that is only needed within one job:
+  short_term_temp: !expand "{user_scrub_area}/{tools.env('USER')}"
+
+  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/{tools.env('USER')}"

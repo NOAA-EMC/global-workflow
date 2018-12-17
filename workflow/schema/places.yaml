@@ -1,0 +1,67 @@
+# Configures disk locations.  See the defaults/places.yaml and
+# user.yaml.default file for documentation.
+
+places_schema: &places_schema !Template
+  PROJECT_DIR: { type: string }
+  HOMEgfs: { type: string }
+  HOMEcrow: { type: string }
+  NWPROD: { type: string }
+  DMPDIR: { type: string }
+  RTMFIX: { type: string }
+  EXPDIR: { type: string }
+  ROTDIR: { type: string }
+  ICSDIR: { type: string }
+
+  COMROOT:
+    type: string
+    optional: !calc not doc.settings.four_cycle_mode
+
+  SHORT_TERM_TEMP: { type: string }
+  LONG_TERM_TEMP: { type: string }
+
+  HOMEDIR:
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.get('SAVE_DIR','')
+        do: !calc doc.platform.SAVE_DIR
+      - otherwise: !expand "{doc.places.PROJECT_DIR}/save/{tools.env('USER')}"
+
+  NOSCRUB:
+    type: string
+    default: !FirstTrue
+      - when: !calc doc.platform.get('NOSCRUB_DIR','')
+        do: !calc doc.platform.NOSCRUB_DIR
+      - otherwise: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+    description: "Disk area used to store reduced output, verification statistics, and other small files that may be desired between runs.  The workflow will not scrub this."
+
+  FIXgsi: { type: string, optional: true }
+  HOMEfv3gfs: { type: string, optional: true }
+  HOMEpost: { type: string, optional: true }
+  HOMEobsproc_prep:
+    type: string
+    optional: true
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
+  HOMEobsproc_network:
+    type: string
+    optional: true
+    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
+  BASE_VERIF: { type: string, optional: true }
+  BASE_SVN:
+    type: string
+    default: !calc doc.platform.BASE_SVN
+  BASE_GIT:
+    type: string
+    default: !calc doc.platform.BASE_GIT
+
+  ics_from:
+    type: string
+    default: opsgfs
+    allowed: [ opsgfs, pargfs ]
+    description: initial conditions from opsgfs or pargfs
+    if_present: !Template
+      parexp: 
+        type: string
+        default: prnemsrn
+      HPSS_PAR_PATH:
+        type: string
+        default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
