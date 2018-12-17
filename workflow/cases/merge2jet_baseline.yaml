@@ -20,7 +20,6 @@ case:
 
   places:
     workflow_file: workflow/cycled_gfs.yaml
-    HOMEgfs: /mnt/lfs3/projects/hfv3gfs/Jian.Kuang/merge2jet/  
 
   post:
     NPOSTGRP: 42
