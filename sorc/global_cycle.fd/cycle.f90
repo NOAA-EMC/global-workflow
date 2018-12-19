@@ -194,10 +194,13 @@
  INTEGER, PARAMETER  :: NLUNIT=35
  INTEGER, PARAMETER  :: SZ_NML=1
 
- CHARACTER*500       :: GSI_FILE
+ CHARACTER(LEN=5)    :: TILE_NUM
+ CHARACTER(LEN=500)  :: GSI_FILE
  CHARACTER(LEN=4)    :: INPUT_NML_FILE(SZ_NML)
 
  INTEGER             :: I, IERR
+ INTEGER             :: I_INDEX(LENSFC), J_INDEX(LENSFC)
+ INTEGER             :: IDUM(IDIM,JDIM)
 
  REAL                :: SLMASK(LENSFC), OROG(LENSFC)
  REAL                :: SIHFCS(LENSFC), SICFCS(LENSFC)
@@ -343,7 +346,19 @@
 ! READ THE OROGRAPHY AND GRID POINT LAT/LONS FOR THE CUBED-SPHERE TILE.
 !--------------------------------------------------------------------------------
 
- CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,IDIM,JDIM,LENSFC)
+ CALL READ_LAT_LON_OROG(RLA,RLO,OROG,OROG_UF,TILE_NUM,IDIM,JDIM,LENSFC)
+
+ DO I = 1, IDIM
+   IDUM(I,:) = I
+ ENDDO
+
+ I_INDEX = RESHAPE(IDUM, (/LENSFC/))
+
+ DO I = 1, JDIM
+   IDUM(:,I) = I
+ ENDDO
+
+ J_INDEX = RESHAPE(IDUM, (/LENSFC/) )
 
  IF (DO_NSST) THEN
    PRINT*
@@ -420,11 +435,11 @@
                SIHFCS,SICFCS,SITFCS,SWDFCS,SLCFCS,       &
                VMNFCS,VMXFCS,SLPFCS,ABSFCS,              &
                TSFFCS,SNOFCS,ZORFCS,ALBFCS,TG3FCS,       &
-               CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,F10M,  &
+               CNPFCS,SMCFCS,STCFCS,SLIFCS,AISFCS,       &
                VEGFCS,VETFCS,SOTFCS,ALFFCS,              &
                CVFCS,CVBFCS,CVTFCS,MYRANK,NLUNIT,        &
                SZ_NML, INPUT_NML_FILE,                   &
-               IALB,ISOT,IVEGSRC)
+               IALB,ISOT,IVEGSRC,TILE_NUM,I_INDEX,J_INDEX)
  ENDIF
 
 !--------------------------------------------------------------------------------
@@ -528,7 +543,7 @@
  INTEGER                  :: ISTART, IEND, JSTART, JEND
  INTEGER                  :: MASK_TILE, MASK_FG_TILE
  INTEGER                  :: ITILE, JTILE
- INTEGER                  :: MAX_SEARCH, I, J
+ INTEGER                  :: MAX_SEARCH, J
  INTEGER                  :: IGAUSP1, JGAUSP1
  INTEGER, ALLOCATABLE     :: ID1(:,:), ID2(:,:), JDC(:,:)
 

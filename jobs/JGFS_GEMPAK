@@ -11,7 +11,7 @@ date
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -26,22 +26,13 @@ export cycle=${cycle:-t${cyc}z}
 setpdy.sh
 . PDY
 
-############################################
-# SENDCOM=YES--Copy output file to /com
-# SENDECF=YES--Allow to talk back to ECF
-# SENDDBN=YES--Alert output file to TOC
-# KEEPDATA=NO--Remove temporary working
-############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
-
 ################################
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
@@ -77,7 +68,7 @@ export model=${model:-gfs}
 # Define COM directories
 ##############################################
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/nawips}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

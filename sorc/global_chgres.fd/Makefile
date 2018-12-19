@@ -49,7 +49,7 @@ physcons.o:     physcons.f90 machine_8.o
 machine_8.o:      machine_8.f90
 	$(FC90) $(FFLAGS) $(RECURS) -c machine_8.f90
 sfcsub.o:      machine_8.o sfcsub.F
-	$(FC) $(FFLAGS) $(OMPFLAG) -c sfcsub.F
+	$(FC) $(FFLAGS) $(OMPFLAG) $(INCMOD) -c sfcsub.F
 surface_chgres.o: sfcsub.o machine_8.o surface_chgres.f90
 	$(FC90) $(FFLAGS) $(INCMOD) $(RECURS) -c surface_chgres.f90
 chgres.o: surface_chgres.o funcphys.o chgres.f90

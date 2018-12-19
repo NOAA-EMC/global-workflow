@@ -435,7 +435,7 @@ mem=$(printf %03i $n)
 mchar=mem$(printf %03i $n)
 
 
-export COMROT=$ROTDIR/enkf.gdas.$ymd/$cyc/$mchar
+export COMROT=$ROTDIR/enkfgdas.$ymd/$cyc/$mchar
 export OUTDIR=$COMROT/INPUT
 export DATA=$INIDIR/$mchar
 rm -rf $OUTDIR $DATA

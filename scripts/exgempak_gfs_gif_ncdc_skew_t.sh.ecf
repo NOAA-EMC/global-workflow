@@ -30,6 +30,7 @@ then
         while [ $icnt -lt 1000 ]
         do
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
+	    sleep 5  
             break
           else
             msg="The process is waiting ... ${GRIBFILE} file to proceed."

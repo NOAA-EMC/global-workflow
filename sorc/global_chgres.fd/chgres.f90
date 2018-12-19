@@ -1452,7 +1452,7 @@
                                  LSOILI, IDATE4O(1), IDATE4O(2),   &
                                  IDATE4O(3), IDATE4O(4), FCSTHOUR, &           
                                  KGDS_INPUT, SFCINPUT, IALB,       &
-                                 ISOT, IVEGSRC, MERGE, IRET)
+                                 ISOT, IVEGSRC, TILE_NUM, MERGE, IRET)
 
       IF (IRET /= 0) THEN
         PRINT*, "FATAL ERROR IN SURFACE CHGRES DRIVER. IRET: ", IRET

@@ -62,7 +62,7 @@ do
       pgrbfile="sstgrb"
       pgrbifile="sstgrb.index"
 #      cp $COMIN/${RUN}.${cycle}.${pgrbfile}  ${pgrbfile}
-      cp $COMIN/${RUN}.${cycle}.${pgrbfile}.grib2  .
+      cp $COMIN/${cyc}/${RUN}.${cycle}.${pgrbfile}.grib2  .
       export err=$?
       if [[ $err -ne 0 ]] ; then
          echo " File ${RUN}.${cycle}.${pgrbfile}.grib2 does not exist."
@@ -78,7 +78,7 @@ do
    fi
    if test ! -f $pgrbfile
    then
-      cp $COMIN/${RUN}.${cycle}.$pgrb2file .
+      cp $COMIN/${cyc}/${RUN}.${cycle}.$pgrb2file .
       export err=$?
       if [[ $err -ne 0 ]] ; then
          echo " File ${RUN}.${cycle}.$pgrb2file does not exist."
