@@ -36,8 +36,6 @@ def write_poejob(poedir, nc, type, var, var_levels):
             poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_anom_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
     elif type == 'sfc':
         poejob_file.write(metplushome+'/ush/master_metplus.py -c '+metplusconfig+'/metplus_config/METplus-'+metplusver+'/mpmd_confs/grid2grid_sfc_step1a.conf -c '+metplusconfig+'/machine_config/machine.'+machine+'\n')
-    poejob_file.write('mv '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc)+'/'+VDATE+'00/grid_stat/* '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/'+VDATE+'00/grid_stat/. \n')
-    poejob_file.write('rm -r '+rundir_g2g1+'/make_met_data/'+type+'/'+exp+'/poejob'+str(nc))
 #
 type_list = os.environ.get('typelist').split(' ')
 poedir = os.environ.get('poedir')
