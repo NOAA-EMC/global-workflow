@@ -102,10 +102,12 @@ if [ $machine = THEIA ]; then
     module load anaconda/anaconda2-4.4.0
     if [ $METver -eq 6.1 ]; then
         module load met/6.1
+        export met_install_dir="/contrib/met/${METver}"
     elif [ $METver -eq 8.0]; then
         module load met/8.0
+        export met_install_dir="/contrib/met/${METver}"
     else
-        echo "EXIT ERROR: METV${METver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
+        echo "EXIT ERROR: METV${METver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME ON ${machine}. EXITING metplusjob.sh!"
         exit
     fi
     export STMP=${STMP:-/scratch4/NCEPDEV/stmp3/${USER}}                                 # temporary directory
@@ -113,7 +115,7 @@ if [ $machine = THEIA ]; then
     export gstat=/scratch4/NCEPDEV/global/noscrub/stat                                   # global stats directory
     export prepbufr_arch_dir=/scratch4/NCEPDEV/global/noscrub/stat/prepbufr              # prepbufr archive directory
     export ndate=${NDATE:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/ndate}  # date executable
-    export nhour=${NHOUR:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/nhour}
+    export nhour=${NHOUR:-/scratch4/NCEPDEV/global/save/glopara/nwpara/util/exec/nhour}  # hour executable
 elif [ $machine = WCOSS_C ]; then
     source /opt/modules/default/init/ksh
     module use /usrx/local/prod/modulefiles 
@@ -122,11 +124,13 @@ elif [ $machine = WCOSS_C ]; then
     module load python/2.7.14 
     if [ $METver -eq 6.1 ]; then
         module load met/6.1
+        export met_install_dir="/usrx/local/dev/met/${METver}"
     elif [ $METver -eq 8.0]; then
         module use /gpfs/hps3/emc/global/noscrub/Julie.Prestopnik/modulefiles
         module load met/8.0
+        export met_install_dir="/gpfs/hps3/emc/global/noscrub/Julie.Prestopnik/met/${METver}"
     else
-        echo "EXIT ERROR: METV${METver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
+        echo "EXIT ERROR: METV${METver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME ON ${machine}. EXITING metplusjob.sh!"
         exit
     fi
     export STMP=${STMP:-/gpfs/hps3/stmp/${USER}}                                         # temporary directory
@@ -134,6 +138,30 @@ elif [ $machine = WCOSS_C ]; then
     export gstat=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/stat                         # global stats directory
     export prepbufr_arch_dir=/gpfs/hps3/emc/global/noscrub/Fanglin.Yang/prepbufr         # prepbufr archive directory
     export ndate=${NDATE:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/ndate}         # date executable
+    export nhour=${NHOUR:-/gpfs/hps/nco/ops/nwprod/prod_util.v1.0.24/exec/nhour}         # hour executable
+elif [ $machine = WCOSS_DELL_P3 ] ; then
+    . /usrx/local/prod/lmot/lmod/init/profile
+    module load ips/18.0.1.163
+    module load impi/18.0.1    
+    module load lsf/10.1       
+    module load EnvVars/1.0.2
+    module load HPSS/5.0.2.5
+    module use -a /usrx/local/dev/modulefiles
+    module load python/2.7.14
+    if [ $METver -eq 8.0 ]; then
+        module use /gpfs/dell2/emc/verification/noscrub/Julie.Prestopnik/modulefiles
+        module load met/8.0
+        export met_install_dir="/gpfs/dell2/emc/verification/noscrub/Julie.Prestopnik/met/${METver}"
+    else
+        echo "EXIT ERROR: METV${METver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME ON ${machine}. EXITING metplusjob.sh!"
+        exit
+    fi
+    export STMP=${STMP:-/gpfs/dell3/stmp/$USER}                                               # temporary directory
+    export PTMP=${PTMP:-/gpfs/dell3/ptmp/$USER}                                               # temporary directory
+    export gstat=/gpfs/dell2/emc/modeling/noscrub/Fanglin.Yang/stat                           # global stats directory
+    export prepbufr_arch_dir=/gpfs/dell2/emc/modeling/noscrub/Fanglin.Yang/prepbufr           # prepbufr archive directory
+    export ndate=${NDATE:-/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.0/exec/ips/ndate}         # date executable
+    export nhour=${NHOUR:-/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.0/exec/ips/nhour}         # hour executable
 else
     echo "EXIT ERROR: ${machine} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
     exit
@@ -144,7 +172,7 @@ if [ -s ${metplushome} ]; then
     export PATH="${metplushome}/ush:${PATH}"
     export PYTHONPATH="${metplushome}/ush:${PYTHONPATH}"
 else
-    echo "EXIT ERROR: ${METPLUSver} IS NOT CURRENTLY SUPPORTED IN metplusjob.sh AT THIS TIME. EXITING metplusjob.sh!"
+    echo "EXIT ERROR: ${METPLUSver} DOES NOT EXIST. EXITING metplusjob.sh!"
     exit
 fi
 ##---------------------------------------------------------------------------
@@ -562,7 +590,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         echo "mv ${gdas_prepbufr_file} ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.sh
                         if [ $machine = THEIA ]; then
                             qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -N get_gdas_prepbufr.${VDATE}${vhr} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.sh
-                        elif [ $machine = WCOSS_C ]; then
+                        elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                             echo "cray"
                         fi
                     fi
@@ -654,7 +682,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                             echo "mv ${ndas1} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.sh
                             if [ $machine = THEIA ]; then
                                 qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -N get_ndas1_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.sh
-                            elif [ $machine = WCOSS_C ]; then
+                            elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                                 echo "cray"
                             fi
                         fi
@@ -667,7 +695,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                                 echo "mv ${ndas2} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.sh
                                 if [ $machine = THEIA ]; then
                                     qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -N get_ndas2_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.sh
-                                elif [ $machine = WCOSS_C ]; then
+                                elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                                     echo "cray"
                                 fi
                             fi
@@ -681,7 +709,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                                 echo "mv ${ndas3} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.sh
                                 if [ $machine = THEIA ]; then
                                     qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -N get_ndas3_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.sh
-                                elif [ $machine = WCOSS_C ]; then
+                                elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                                     echo "cray"
                                 fi
                             fi
@@ -726,7 +754,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                             echo "mv ${bufrfile} ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}" >> ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.sh
                             if [ $machine = THEIA ]; then
                                 qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -N get_nam_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.sh
-                            elif [ $machine = WCOSS_C ]; then
+                            elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                                 echo "cray"
                             fi
                         fi
@@ -1038,7 +1066,7 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
                     echo "mv ccpa.${VDATE}12.24h ${rundir_precip1}/data/CCPA/${type}/." >> ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
                     if [ $machine = THEIA ]; then
                         qsub -l procs=1,walltime=0:10:00 -q service -A fv3-cpu -o ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -e ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -N get_ccpa.${VDATE}12.24h -W umask=022 ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
-                    elif [ $machine = WCOSS_C ]; then
+                    elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
                         echo "cray"
                         #bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -e ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -N get_ccpa.${VDATE}12.24h -J get_ccpa.${VDATE}12.24h -M 100 -R affinity[core(1)] ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
                     fi
