@@ -1,0 +1,60 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_wafs_blending_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_wafs_blending_%CYC%.o%J
+#BSUB -W 0:30
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=%model:gfs%
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load EnvVars/$EnvVars_ver
+module load ips/$ips_ver
+module load impi/$impi_ver
+module load lsf/$lsf_ver
+module load grib_util/$grib_util_ver
+
+module list
+
+#%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+export SHOUR=06
+export EHOUR=36
+export FHINC=03
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGFS_WAFS_BLENDING
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

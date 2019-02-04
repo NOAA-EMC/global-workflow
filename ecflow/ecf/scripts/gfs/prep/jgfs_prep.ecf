@@ -1,0 +1,60 @@
+#BSUB -J %E%%RUN%_prep_%CYC%
+#BSUB -o  /%COM%/output/%ENVIR%/today/%RUN%_prep_%CYC%.o%J
+#BSUB -cwd /tmp
+#BSUB -q %QUEUE%
+#BSUB -L /bin/sh
+#BSUB -P %PROJ%
+##BSUB -W 00:30
+#BSUB -W 00:35
+#BSUB -R span[ptile=3]; -R affinity[core]
+#BSUB -n 3
+#BSUB -M 18000
+
+%include <head.h>
+%include <envir-p3.h>
+
+export NODES=1
+
+export model=obsproc_global
+%include <model_ver.h>
+
+#############################################################
+## Load modules
+##############################################################
+#. $MODULESHOME/init/sh
+module load EnvVars/$EnvVars_ver
+module load ips/$ips_ver
+module load impi/$impi_ver
+module load CFP/$cfp_ver
+module list
+
+#############################################################
+## WCOSS_C environment settings
+##############################################################
+
+################################################
+# EXPORT list here
+
+set -x
+
+export cyc=%CYC%
+
+# CALL executable job script here
+${HOMEobsproc_global}/jobs/JGLOBAL_PREP
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose:
+#
+#
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end

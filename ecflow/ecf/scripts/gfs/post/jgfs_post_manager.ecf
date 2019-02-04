@@ -1,0 +1,54 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_post_manager_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_post_manager_%CYC%.o%J
+#BSUB -W 6:15
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+# Configuration files 
+export EXPDIR=${HOMEgfs}/parm/config
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+#%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export job=gfs_post_manager_%CYC%
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_POST_MANAGER
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

@@ -1,0 +1,52 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gdas_vminmon_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_vminmon_%CYC%.o%J
+#BSUB -W 0:10
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=%model:gdas%
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load pm5/$pm5_ver
+module load ips/$ips_ver
+
+module list
+
+#%include <ecf_client.h>
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+############################################################
+# CALL executable job script here
+############################################################
+$HOMEgfs/jobs/JGDAS_VMINMON
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

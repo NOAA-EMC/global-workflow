@@ -1,0 +1,58 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gdas_enkf_post_f%FHOUT_EPOS%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_post_f%FHOUT_EPOS%_%CYC%.o%J
+#BSUB -W 2:00
+#BSUB -n 80
+#BSUB -R affinity[core(7)]
+#BSUB -R span[ptile=4]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+export FHMIN_EPOS=%FHMIN_EPOS%
+export FHMAX_EPOS=%FHMAX_EPOS%
+export FHOUT_EPOS=%FHOUT_EPOS%
+
+############################################################
+# Load modules
+############################################################
+module load EnvVars/$EnvVars_ver
+module load lsf/$lsf_ver
+module load ips/$ips_ver
+module load impi/$impi_ver
+
+module list
+
+#%include <ecf_client.h>
+export USE_CFP=YES
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+
+############################################################
+# CALL executable job script here
+############################################################
+$HOMEgfs/jobs/JGDAS_ENKF_POST
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
