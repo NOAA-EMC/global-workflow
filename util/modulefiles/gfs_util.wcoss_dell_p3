@@ -9,7 +9,7 @@
    module load NCL/6.4.0
 
 # Loading GEMPAK module
-   module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+   module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
    module load gempak/7.3.1
 
 # Loading Intel-Compiled NCEP Libraries
@@ -21,8 +21,4 @@
    module load g2/3.1.0
    module load bufr/11.2.0
 
-#
-# NCO installed graphics libray versin 2.0 in NWPARA on DELL 
-#
-module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
 module load graphics/2.0.0

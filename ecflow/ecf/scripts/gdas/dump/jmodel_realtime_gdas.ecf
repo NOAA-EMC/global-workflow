@@ -1,0 +1,53 @@
+#BSUB -J %E%model_realtime_gdas_%CYC%
+#BSUB -o /com/output/%ENVIR%/today/model_realtime_gdas_%CYC%.o%J
+#BSUB -e /com/output/%ENVIR%/today/model_realtime_gdas_%CYC%.o%J
+#BSUB -L /bin/sh
+#BSUB -q prod_serv2
+#BSUB -cwd /tmp
+#BSUB -W 00:45
+#BSUB -R rusage[mem=500]
+#BSUB -R affinity[core]
+#BSUB -R "span[ptile=8]"
+#BSUB -n 16
+#BSUB -P %PROJ%
+#BSUB -a poe
+##BSUB MP_TASK_AFFINITY=cpu:1
+
+%include <head.h>
+%include <envir-p1-old.h>
+
+# EXPORT list here
+set -x
+export NET=gfs
+export RUNM=gdas
+export cyc=%CYC%
+
+export job=model_realtime_${NET}_${cyc}
+export output=/com/output/${envir}/today/model_realtime_${NET}_${cyc}
+export error=/com/output/${envir}/today/model_realtime_${NET}_${cyc}
+
+# CALL executable job script here
+VERSION_FILE=/nw${envir}/versions/models_realtime.ver
+if [ -f $VERSION_FILE ]; then
+  . $VERSION_FILE
+else
+  ecflow_client --msg="***JOB ${ECFNAME} ERROR: Version File $VERSION_FILE does not exist ***"
+  ecflow_client --abort
+  exit
+fi
+
+/nw${envir}/models_realtime.${code_ver}/jobs/JMODELS_REALTIME
+
+%include <tail.h>
+%manual
+######################################################################
+# PURPOSE:  To read the hourly and its monthly mean data dump counts and compares
+#          to the monthly averages.
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+%end
