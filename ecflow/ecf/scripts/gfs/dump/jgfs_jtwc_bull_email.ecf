@@ -1,0 +1,53 @@
+#BSUB -J %E%gfs_jtwc_bull_email_%CYC%
+#BSUB -o /%COM%/output/%ENVIR%/today/gfs_jtwc_bull_email_%CYC%.o%J
+#BSUB -cwd /tmp
+#BSUB -W 00:15
+#BSUB -R rusage[mem=500] -R affinity[core]
+#BSUB -n 1
+#BSUB -q %QUEUESERV%
+#BSUB -L /bin/sh
+#BSUB -P %PROJ%
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=?????
+%include <model_ver.h>
+
+#############################################################
+## Load modules
+##############################################################
+. $MODULESHOME/init/sh
+module list
+
+#############################################################
+## WCOSS_C environment settings
+##############################################################
+
+################################################
+# EXPORT list here
+set -x
+export cyc=%CYC%
+export NET=gfs
+export RUN=gfs
+
+# CALL executable job script here
+${NWROOTprod}/util_shared.${util_shared_ver}/jobs/JEMAIL_OUT
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that prepares initial condition for
+#          gfs.
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
