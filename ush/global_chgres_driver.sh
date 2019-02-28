@@ -159,7 +159,7 @@ export VEGTYPE_OUT=igbp
 export FNZORC=igbp
 
 export SIGLEVEL=${FIXam}/global_hyblev.l${LEVS}.txt
-if [ $LEVS = 128 ]; then export SIGLEVEL=${FIXam}/global_hyblev.l${LEVS}B.txt; fi
+if [ $LEVS = 128 ]; then export SIGLEVEL=${FIXam}/global_hyblev.l${LEVS}C.txt; fi
 export FNGLAC=${FIXam}/global_glacier.2x2.grb
 export FNMXIC=${FIXam}/global_maxice.2x2.grb
 export FNTSFC=${FIXam}/cfs_oi2sst1x1monclim19822001.grb
