@@ -135,6 +135,7 @@ COMOUT=${COMOUT:-$(pwd)}
 #  Filenames.
 XC=${XC}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
+SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l65.txt}
 
 CDATE=${CDATE:?}
 
@@ -195,7 +196,7 @@ $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile4.nc   ./orog.tile4.nc
 $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile5.nc   ./orog.tile5.nc
 $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile6.nc   ./orog.tile6.nc
 
-$NLN $FIXam/global_hyblev.l65.txt             ./vcoord.txt
+$NLN $SIGLEVEL                                 ./vcoord.txt
 
 # output gaussian global surface analysis files
 $NLN $COMOUT/${APREFIX}sfcanl${ASUFFIX} ./sfc.gaussian.nemsio
