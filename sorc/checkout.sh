@@ -23,6 +23,8 @@ if [[ ! -d gsi.fd ]] ; then
     cd gsi.fd
     git checkout fv3da.v1.0.38
     git submodule update
+    cd fix
+    git checkout fix_l127
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
