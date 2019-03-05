@@ -35,7 +35,11 @@ export nth_postgp=1
 
 export GFS_DOWNSTREAM="YES"
 export downset=2
-export npe_dwn=28
+if [ $machine = "WCOSS_DELL_P3" ]; then
+    export npe_dwn=28
+else
+    export npe_dwn=24
+fi
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
