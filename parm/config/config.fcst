@@ -50,6 +50,7 @@ export dnats=0
 export cal_pre=".true."
 export do_sat_adj=".false."
 export random_clds=".true."
+SUITE_DIR=$HOMEgfs/sorc/fv3gfs.fd/ccpp/suites                                        #JKH
 
 if [ $imp_physics -eq 99 ]; then # ZhaoCarr
     export ncld=1
@@ -89,6 +90,7 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export dddmp=0.1
     export d4_bg=0.12
 
+    export CCPP_SUITE=$SUITE_DIR/suite_FV3_GFS_2017_updated_gfdlmp.xml
 else
     echo "Unknown microphysics option, ABORT!"
 

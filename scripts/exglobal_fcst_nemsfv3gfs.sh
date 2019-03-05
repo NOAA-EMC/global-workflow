@@ -473,6 +473,7 @@ cat $DIAG_TABLE >> diag_table
 
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
+$NCP $CCPP_SUITE  ccpp_suite.xml
 
 #------------------------------------------------------------------
 rm -f nems.configure
@@ -557,6 +558,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
+  ccpp_suite = 'ccpp_suite.xml'
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT

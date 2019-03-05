@@ -241,6 +241,10 @@ export OUTPUT_FILE="nemsio"
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
 
+# Convection Options: 2-SASAS, 3-GF
+export imfdeepcnv=2
+export imfshalcnv=2
+
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
