@@ -16,8 +16,7 @@
 # 2017-03-24  Fanglin Yang   Updated to use NEMS FV3GFS with IPD4
 # 2017-05-24  Rahul Mahajan  Updated for cycling with NEMS FV3GFS
 # 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
-#
-# $Id$
+# 2019-03-05  Rahul Mahajan  Implemented IAU
 #
 # Attributes:
 #   Language: Portable Operating System Interface (POSIX) Shell
@@ -74,10 +73,16 @@ NMV=${NMV:-"/bin/mv"}
 SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 KEEPDATA=${KEEPDATA:-"NO"}
+NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${NWPROD}/exec/nemsio_chgdate"}
 
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+
+# IAU options
+DOIAU=${DOIAU:-"NO"}
+IAUFHRS=${IAUFHRS:-0}
+IAU_DELTHRS=${IAU_DELTHRS:-0}
 
 # Model specific stuff
 FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
@@ -146,21 +151,39 @@ gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
+if [[ "$DOIAU" = "YES" ]]; then
+  sCDATE=$($NDATE -3 $CDATE)
+  sPDY=$(echo $sCDATE | cut -c1-8)
+  scyc=$(echo $sCDATE | cut -c9-10)
+else
+  sCDATE=$CDATE
+  sPDY=$PDY
+  scyc=$cyc
+fi
+
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
-read_increment=${read_increment:-".false."}
 restart_interval=${restart_interval:-0}
+read_increment=${read_increment:-".false."}
+res_latlon_dynamics="''"
 
 # Determine if this is a warm start or cold start
-if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
+if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.coupler.res ]; then
   export warm_start=".true."
+fi
+
+# Ensure IAU is enabled with warm start
+if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
+  echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
+  echo "Abort!"
+  exit 99
 fi
 
 if [ $warm_start = ".true." ]; then
 
   # Link all (except sfc_data) restart files from $gmemdir
-  for file in $gmemdir/RESTART/${PDY}.${cyc}0000.*.nc; do
+  for file in $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
     file2=$(echo $(basename $file))
     file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
     fsuf=$(echo $file2 | cut -d. -f1)
@@ -170,7 +193,7 @@ if [ $warm_start = ".true." ]; then
   done
 
   # Link sfcanl_data restart files from $memdir
-  for file in $memdir/RESTART/${PDY}.${cyc}0000.*.nc; do
+  for file in $memdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
     file2=$(echo $(basename $file))
     file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
     fsufanl=$(echo $file2 | cut -d. -f1)
@@ -180,29 +203,45 @@ if [ $warm_start = ".true." ]; then
     fi
   done
 
-  # Handle coupler.res file for DA cycling
-  if [ ${USE_COUPLER_RES:-"NO"} = "YES" ]; then
-    # In DA, this is not really a "true restart",
-    # and the model start time is the analysis time
-    # The alternative is to replace
-    # model start time with current model time in coupler.res
-    file=$gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res
-    file2=$(echo $(basename $file))
-    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-    $NLN $file $DATA/INPUT/$file2
+  # Need a coupler.res when doing IAU
+  if [ $DOIAU = "YES" ]; then
+    rm -f $DATA/INPUT/coupler.res
+    cat >> $DATA/INPUT/coupler.res << EOF
+     2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+  ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
+  ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
+EOF
   fi
 
-  increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
-  if [ -f $increment_file ]; then
-    $NLN $increment_file $DATA/INPUT/fv3_increment.nc
+  # Link increments
+  if [ $DOIAU = "YES" ]; then
+    for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
+      incfhr=$(printf %02i $i)
+      if [ $incfhr = "06" ]; then
+        increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+      else
+        increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+      fi
+      if [ ! -f $increment_file ]; then
+        echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
+        echo "Abort!"
+        exit 1
+      fi
+      $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
+      IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+    done
     read_increment=".true."
-    res_latlon_dynamics="fv3_increment.nc"
+    res_latlon_dynamics="fv_increment6.nc"
   else
-    read_increment=".false."
-    res_latlon_dynamics="''"
+    increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+    if [ -f $increment_file ]; then
+      $NLN $increment_file $DATA/INPUT/fv_increment6.nc
+      read_increment=".true."
+      res_latlon_dynamics="fv_increment6.nc"
+    fi
   fi
 
-else ## cold start                            
+else ## cold start
 
   for file in $memdir/INPUT/*.nc; do
     file2=$(echo $(basename $file))
@@ -212,7 +251,7 @@ else ## cold start
     fi
   done
 
-fi 
+fi
 
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
@@ -220,6 +259,12 @@ if [ $nfiles -le 0 ]; then
   msg=”"Initial conditions must exist in $DATA/INPUT, ABORT!"
   postmsg "$jlogfile" "$msg"
   exit 1
+fi
+
+# If doing IAU, change forecast hours
+if [[ "$DOIAU" = "YES" ]]; then
+  FHMAX=$((FHMAX+3))
+  FHMAX_HF=$((FHMAX_HF+3))
 fi
 
 #--------------------------------------------------------------------------
@@ -419,7 +464,7 @@ if [ $warm_start = ".true." ]; then # warm start from restart file
   external_ic=".false."
   mountain=".true."
   if [ $read_increment = ".true." ]; then # add increment on the fly to the restarts
-    res_latlon_dynamics="fv3_increment.nc"
+    res_latlon_dynamics="fv_increment.nc"
   else
     res_latlon_dynamics='""'
   fi
@@ -450,15 +495,6 @@ JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 LONB_STP=${LONB_STP:-$LONB_CASE}
 LATB_STP=${LATB_STP:-$LATB_CASE}
 
-# build the date for curr_date and diag_table from CDATE
-SYEAR=$(echo  $CDATE | cut -c1-4)
-SMONTH=$(echo $CDATE | cut -c5-6)
-SDAY=$(echo   $CDATE | cut -c7-8)
-SHOUR=$(echo  $CDATE | cut -c9-10)
-curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
-rsecs=$((restart_interval*3600))
-restart_secs=${rsecs:-0}
-
 # copy over the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
@@ -467,7 +503,7 @@ FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 # build the diag_table with the experiment name and date stamp
 cat > diag_table << EOF
 FV3 Forecast
-$SYEAR $SMONTH $SDAY $SHOUR 0 0
+${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${sPDY:8:2} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
 
@@ -489,10 +525,10 @@ cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_FV3
-start_year:              $SYEAR
-start_month:             $SMONTH
-start_day:               $SDAY
-start_hour:              $SHOUR
+start_year:              ${sPDY:0:4}
+start_month:             ${sPDY:4:2}
+start_day:               ${sPDY:6:2}
+start_hour:              ${sPDY:8:2}
 start_minute:            0
 start_second:            0
 nhours_fcst:             $FHMAX
@@ -708,9 +744,25 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
+EOF
+
+# Add namelist for IAU
+if [ $DOIAU = "YES" ]; then
+  cat >> input.nml << EOF
+  iaufhrs      = ${IAUFHRS}
+  iau_delthrs  = ${IAU_DELTHRS}
+  iau_inc_files= ${IAU_INC_FILES}
+EOF
+fi
+
+cat > input.nml <<EOF
   $gfs_physics_nml
 /
+EOF
 
+echo "" >> input.nml
+
+cat > input.nml <<EOF
 &gfdl_cloud_microphysics_nml
   sedi_transport = .true.
   do_sedi_heat = .false.
@@ -891,9 +943,17 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     atmi=atmf${FH3}.$OUTPUT_FILE
     sfci=sfcf${FH3}.$OUTPUT_FILE
     logi=logf${FH3}
-    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+    if [ $DOIAU = "YES" ]; then
+      fhri=$((fhr-3))
+      [[ $fhri -lt 0 ]] && FH3i="m${fhri#-}" || FH3i=$(printf %03i $fhri)
+      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3i}.$OUTPUT_FILE
+      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3i}.$OUTPUT_FILE
+      logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3i}.$OUTPUT_FILE
+    else
+      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
+      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
+      logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+    fi
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
@@ -922,6 +982,30 @@ $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err
+
+
+#------------------------------------------------------------------
+# change nfhour in the output nemsio file if IAU
+if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+  if [ $DOIAU = "YES" ]; then
+    fhr=$FHMIN
+    while [ $fhr -le $FHMAX ]; do
+      FH3=$(printf %03i $fhr)
+      atmi=atmf${FH3}.$OUTPUT_FILE
+      sfci=sfcf${FH3}.$OUTPUT_FILE
+      fhri=$((fhr-3))
+      if [ $fhri -ge 0 ]; then
+        $NEMSIOCHGDATE $atmi $CDATE $fhri
+        $NEMSIOCHGDATE $sfci $CDATE $fhri
+      fi
+      FHINC=$FHOUT
+      if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
+        FHINC=$FHOUT_HF
+      fi
+      fhr=$((fhr+FHINC))
+    done
+  fi
+fi
 
 #------------------------------------------------------------------
 if [ $SEND = "YES" ]; then
