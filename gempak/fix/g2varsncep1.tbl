@@ -226,3 +226,12 @@
 010 003 193 000 Extra Tropical Storm Surge       m                    ETSRG            0  -9999.00
 010 003 194 000 Ocean Surface Elev Rel to Geoid  m                    OCELEV           0  -9999.00
 010 003 250 000 ExtraTropStrmSrg Cmb Surge_Tide  m                    ETCWL            0  -9999.00
+! Forecast Radar Imagery
+000 016 196 000 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 001 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 002 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 005 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 008 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 009 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 011 Composite reflectivity           dbZ                  REFC             0  -9999.00
+000 016 196 012 Composite reflectivity           dbZ                  REFC             0  -9999.00

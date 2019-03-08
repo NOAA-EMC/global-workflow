@@ -121,10 +121,10 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF="NO"
-export SENDCOM="YES"
-export SENDDBN="YES"
-export SENDSDM="NO"
+export SENDECF=${SENDECF:-"NO"}
+export SENDCOM=${SENDCOM:-"YES"}
+export SENDDBN=${SENDDBN:-"YES"}
+export SENDSDM=${SENDSDM:-"NO"}
 
 # Resolution specific parameters
 export LEVS=65

@@ -78,6 +78,8 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export cal_pre=".false."
     export do_sat_adj=".true."
     export random_clds=".false."
+    export lgfdlmprad=".true."
+    export effr_in=".true."
 
     if [[ "$CDUMP" == "gdas" ]] ; then
       export hord_mt_nh_nonmono=6

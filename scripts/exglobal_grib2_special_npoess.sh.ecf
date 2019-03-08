@@ -44,11 +44,91 @@ export opt28=' -new_grid_interpolation budget -fi '
 
 SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
 
+##############################################################################
+# Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
+##############################################################################
+export SHOUR=000
+export FHOUR=024
 export fhr=$SHOUR
 typeset -Z3 fhr
 ############################################################
 # Loop Through the Post Forecast Files 
 ############################################################
+while test $fhr -le $FHOUR
+do
+
+    ###############################
+    # Start Looping for the
+    # existence of the restart files
+    ###############################
+    export pgm="postcheck"
+    ic=1
+    while [ $ic -le $SLEEP_LOOP_MAX ]
+    do
+       if test -f $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}.idx
+       then
+          break
+       else
+          ic=`expr $ic + 1`
+          sleep $SLEEP_INT
+       fi
+       ###############################
+       # If we reach this point assume
+       # fcst job never reached restart
+       # period and error exit
+       ###############################
+       if [ $ic -eq $SLEEP_LOOP_MAX ]
+       then
+          export err=9
+          err_chk
+       fi
+    done
+
+######################################################################
+# Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
+######################################################################
+    set -x
+    msg="Starting half degree grib generation for fhr=$fhr"
+    postmsg "$jlogfile" "$msg"
+
+    paramlist=${PARMproduct}/global_npoess_paramlist_g2
+    cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
+    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}  tmpfile2b
+    cat tmpfile2    tmpfile2b   > tmpfile
+    $WGRIB2 tmpfile | grep -F -f $paramlist | $WGRIB2 -i -grib  pgb2file tmpfile
+    export err=$?; err_chk
+
+    if test $SENDCOM = "YES"
+    then
+       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
+
+       if test $SENDDBN = "YES"
+       then
+          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
+       else
+          msg="File ${RUN}.${cycle}.pgrb2f${fhr}.npoess not posted to db_net."
+          postmsg "$msg"
+       fi
+       echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
+    fi
+    rm tmpfile pgb2file
+    export fhr=`expr $fhr + $FHINC`
+    typeset -Z3 fhr
+
+done
+
+################################################################
+# Specify Forecast Hour Range F000 - F180 for GOESSIMPGRB files 
+################################################################
+export SHOUR=000
+export FHOUR=180
+export fhr=$SHOUR
+typeset -Z3 fhr
+
+#################################
+# Process GFS PGRB2_SPECIAL_POST
+#################################
+
 while test $fhr -le $FHOUR
 do
     ###############################
@@ -149,38 +229,6 @@ do
 
     export fhr=`expr $fhr + $FHINC`
     typeset -Z3 fhr
-done
-
-######################################################################
-# Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
-######################################################################
-for fhr in 000 003 006 009 012 015 018 021 024
-do
-    set -x
-    msg="Starting half degree grib generation for fhr=$fhr"
-    postmsg "$jlogfile" "$msg"
-
-    paramlist=${PARMproduct}/global_npoess_paramlist_g2
-    cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
-    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}  tmpfile2b
-    cat tmpfile2    tmpfile2b   > tmpfile
-    $WGRIB2 tmpfile | grep -F -f $paramlist | $WGRIB2 -i -grib  pgb2file tmpfile
-    export err=$?; err_chk
-
-    if test $SENDCOM = "YES"
-    then
-       cp pgb2file $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
-
-       if test $SENDDBN = "YES"
-       then
-          $DBNROOT/bin/dbn_alert MODEL GFS_PGBNPOESS $job $COMOUT/${RUN}.${cycle}.pgrb2f${fhr}.npoess
-       else
-          msg="File ${RUN}.${cycle}.pgrb2f${fhr}.npoess not posted to db_net."
-          postmsg "$msg"
-       fi
-       echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
-    fi
-    rm tmpfile pgb2file
 done
 
 ########################################################

@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout nemsfv3gfs_beta_v1.0.12
+    git checkout nemsfv3gfs_beta_v1.0.16
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -21,7 +21,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout fv3da.v1.0.38
+    git checkout fv3da.v1.0.40
     git submodule update
     cd fix
     git checkout fix_l127
