@@ -47,6 +47,7 @@ fi
 
 # FV3 model namelist parameters to over-ride
 export restart_interval=6
+[ [ $DOIAU_ENKF = "YES" ] -a [ "$CDATE" = "$SDATE" ] ] && export restart_interval=3
 export k_split=1  # model is unstable with k_split=2, n_split=6 and stochastic physics
 export n_split=12 # make the model stable with k_split=1, n_split=12
 
