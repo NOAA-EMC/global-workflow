@@ -52,7 +52,7 @@ case $case_in in
         export WRTIOBUF="4M"
         ;;
     "C192")
-        if [ $LEVS = "128"];then
+        if [ $LEVS = "128" ];then
            export DELTIM=300
         else
            export DELTIM=450
