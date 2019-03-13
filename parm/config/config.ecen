@@ -12,6 +12,8 @@ export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
 
 export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
 
-export SIGLEVEL="$FIXgfs/fix_am/global_hyblev.l128C.txt"
+if [ $LEVS = 128 ];then
+   export SIGLEVEL="$FIXgfs/fix_am/global_hyblev.l128C.txt"
+fi
 
 echo "END: config.ecen"
