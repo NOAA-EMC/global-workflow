@@ -79,12 +79,12 @@ def edit_baseconfig():
     top = os.path.abspath(os.path.join(
         os.path.abspath(here), '../..'))
 
-    # make a copy of the default before editing
-    shutil.copy(base_config, base_config + '.default')
+    if os.path.exists(base_config):
+        os.unlink(base_config)
 
     print '\nSDATE = %s\nEDATE = %s' % (idate, edate)
-    with open(base_config + '.default', 'rt') as fi:
-        with open(base_config + '.new', 'wt') as fo:
+    with open(base_config + '.emc.dyn', 'rt') as fi:
+        with open(base_config, 'wt') as fo:
             for line in fi:
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
@@ -102,12 +102,10 @@ def edit_baseconfig():
                 if 'ICSDIR' in line:
                     continue
                 fo.write(line)
-    os.unlink(base_config)
-    os.rename(base_config + '.new', base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
-    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
+    print 'DEFAULT: %s/config.base.emc.dyn is for reference only.' % expdir
     print 'Please verify and delete the default file before proceeding.'
     print ''
 
