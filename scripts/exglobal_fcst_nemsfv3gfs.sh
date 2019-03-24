@@ -503,7 +503,7 @@ FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 # build the diag_table with the experiment name and date stamp
 cat > diag_table << EOF
 FV3 Forecast
-${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${sPDY:8:2} 0 0
+${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
 
@@ -528,7 +528,7 @@ PE_MEMBER01:             $NTASKS_FV3
 start_year:              ${sPDY:0:4}
 start_month:             ${sPDY:4:2}
 start_day:               ${sPDY:6:2}
-start_hour:              ${sPDY:8:2}
+start_hour:              ${scyc}
 start_minute:            0
 start_second:            0
 nhours_fcst:             $FHMAX
@@ -755,14 +755,14 @@ if [ $DOIAU = "YES" ]; then
 EOF
 fi
 
-cat > input.nml <<EOF
+cat >> input.nml <<EOF
   $gfs_physics_nml
 /
 EOF
 
 echo "" >> input.nml
 
-cat > input.nml <<EOF
+cat >> input.nml <<EOF
 &gfdl_cloud_microphysics_nml
   sedi_transport = .true.
   do_sedi_heat = .false.
