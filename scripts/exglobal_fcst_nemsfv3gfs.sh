@@ -175,9 +175,11 @@ fi
 
 # Ensure IAU is enabled with warm start
 if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
-  echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
-  echo "Abort!"
-  exit 99
+  export DOAIU="NO"
+  echo "turning off IAU since warm_start = $warm_start"
+  #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
+  #echo "Abort!"
+  #exit 99
 fi
 
 if [ $warm_start = ".true." ]; then
@@ -323,6 +325,9 @@ io_layout="1,1"
 JCAP_CASE=$((2*res-2))
 LONB_CASE=$((4*res))
 LATB_CASE=$((2*res))
+if [ $LATB_CASE -eq 192 ]; then
+  LATB_CASE=190 # berror file is at this resolution
+fi
 
 JCAP=${JCAP:-$JCAP_CASE}
 LONB=${LONB:-$LONB_CASE}
@@ -334,8 +339,7 @@ LATB_JMO=${LATB_JMO:-$LATB_CASE}
 # Fix files
 FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
 FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
-FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
-FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
+eNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
 FNZORC=${FNZORC:-"igbp"}
 FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
 FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
