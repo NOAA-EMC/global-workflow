@@ -120,7 +120,10 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
 
+    # Write gfs restart files to rerun fcst from any break point         
+     export restart_interval=${restart_interval_gfs:-0}
 fi
+
 
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
