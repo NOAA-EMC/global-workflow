@@ -40,15 +40,15 @@ IMPLEMENTATION INSTRUCTIONS
   	1) cd  $NWROOTp3
 	2) mkdir gfs.v15.0.0
 	3) cd gfs.v15.0.0
-  	4) git clone --recursive gerrit:fv3gfs .
+  	4) git clone --recursive gerrit:global-workflow .
   	5) git checkout q2fy19_nco
   	6) cd sorc
   	7) ./checkout.sh
       	This script extracts the following GFS components from gerrit
-      		MODEL -- tag nemsfv3gfs_beta_v1.0.12 		Jun.Wang@noaa.gov
-        	GSI -- tag fv3da.v1.0.34       			Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
-        	UPP -- tag ncep_post_gtg.v1.0.6    		Wen.Meng@noaa.gov
-       		WAFS -- tag gfs_wafs.v5.0.5         		Yali.Mao@noaa.gov
+      		MODEL -- tag nemsfv3gfs_beta_v1.0.17 		Jun.Wang@noaa.gov
+        	GSI -- tag fv3da.v1.0.41       			Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
+        	UPP -- tag ncep_post_gtg.v1.0.6a   		Wen.Meng@noaa.gov
+       		WAFS -- tag gfs_wafs.v5.0.7         		Yali.Mao@noaa.gov
 
 
   	8) ./build_all.sh
