@@ -263,6 +263,14 @@ export lobsdiag_forenkf=.true.
 export netcdf_diag=.false.
 export binary_diag=.true.
 export letkf_flag=.true.
+export getkf=.true.
+export denkf=.true.
+export nobsl_max=10000
+export analpertwt=0.85
+export readin_localization_enkf=.false.
+export corrlength=1250
+export lnsigcutoff=2.5
+export DOGAUSFCANL="NO"
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
