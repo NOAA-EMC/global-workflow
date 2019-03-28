@@ -73,7 +73,7 @@ NMV=${NMV:-"/bin/mv"}
 SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 KEEPDATA=${KEEPDATA:-"NO"}
-NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${NWPROD}/exec/nemsio_chgdate"}
+NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${HOMEgfs}/exec/nemsio_chgdate"}
 
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -265,8 +265,8 @@ fi
 
 # If doing IAU, change forecast hours
 if [[ "$DOIAU" = "YES" ]]; then
-  FHMAX=$((FHMAX+3))
-  FHMAX_HF=$((FHMAX_HF+3))
+  FHMAX=$((FHMAX+6))
+  FHMAX_HF=$((FHMAX_HF+6))
 fi
 
 #--------------------------------------------------------------------------
@@ -525,6 +525,48 @@ runSeq::
 EOF
 
 rm -f model_configure
+if [[ "$DOIAU" = "YES" ]]; then
+cat > model_configure <<EOF
+total_member:            $ENS_NUM
+print_esmf:              ${print_esmf:-.true.}
+PE_MEMBER01:             $NTASKS_FV3
+start_year:              ${gPDY:0:4}
+start_month:             ${gPDY:4:2}
+start_day:               ${gPDY:6:2}
+start_hour:              ${gcyc}
+start_minute:            0
+start_second:            0
+nhours_fcst:             $FHMAX
+RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
+ENS_SPS:                 ${ENS_SPS:-".false."}
+
+dt_atmos:                $DELTIM
+calendar:                ${calendar:-'julian'}
+cpl:                     ${cpl:-".false."}
+memuse_verbose:          ${memuse_verbose:-".false."}
+atmos_nthreads:          $NTHREADS_FV3
+use_hyper_thread:        ${hyperthread:-".false."}
+ncores_per_node:         $cores_per_node
+restart_interval:        $restart_interval
+
+quilting:                $QUILTING
+write_groups:            ${WRITE_GROUP:-1}
+write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+num_files:               ${NUM_FILES:-2}
+filename_base:           'atm' 'sfc'
+output_grid:             $OUTPUT_GRID
+output_file:             $OUTPUT_FILE
+write_nemsioflip:        $WRITE_NEMSIOFLIP
+write_fsyncflag:         $WRITE_FSYNCFLAG
+imo:                     $LONB_IMO
+jmo:                     $LATB_JMO
+
+nfhout:                  $FHOUT
+nfhmax_hf:               $FHMAX_HF
+nfhout_hf:               $FHOUT_HF
+nsout:                   $NSOUT
+EOF
+else
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
@@ -565,6 +607,7 @@ nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
 EOF
+fi
 
 #&coupler_nml
 #  months = ${months:-0}
@@ -948,7 +991,7 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     sfci=sfcf${FH3}.$OUTPUT_FILE
     logi=logf${FH3}
     if [ $DOIAU = "YES" ]; then
-      fhri=$((fhr-3))
+      fhri=$((fhr-6))
       [[ $fhri -lt 0 ]] && FH3i="m${fhri#-}" || FH3i=$(printf %03i $fhri)
       atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3i}.$OUTPUT_FILE
       sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3i}.$OUTPUT_FILE
@@ -997,7 +1040,7 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
       FH3=$(printf %03i $fhr)
       atmi=atmf${FH3}.$OUTPUT_FILE
       sfci=sfcf${FH3}.$OUTPUT_FILE
-      fhri=$((fhr-3))
+      fhri=$((fhr-6))
       if [ $fhri -ge 0 ]; then
         $NEMSIOCHGDATE $atmi $CDATE $fhri
         $NEMSIOCHGDATE $sfci $CDATE $fhri
