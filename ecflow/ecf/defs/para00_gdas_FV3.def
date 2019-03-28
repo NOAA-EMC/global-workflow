@@ -1,0 +1,247 @@
+  family gdas_FV3
+    edit CYC '00'
+    edit ECF_FILES '/ecf/ecfnets/scripts/para/gdas_FV3'
+    edit PROJ 'GDAS-T2O'
+    edit NET 'gfs'
+    edit RUN 'gdas'
+    edit COM '/gpfs/dell1/nco/ops/com'
+    edit QUEUESHARED 'prod_shared'
+    edit QUEUESERV 'prod_transfer'
+    edit QUEUE 'prod'
+    edit ENVIR 'eval'
+    family dump
+      task jgdas_tropcy_qc_reloc
+        time 05:45
+      task jgdas_dump
+        event 1 release_sfcprep
+        time 05:50
+      task jgdas_dump_post
+        trigger jgdas_dump == complete
+        event 1 release_gdas00_dump_alert
+      task jgdas_dump_alert
+        trigger jgdas_dump_post:release_gdas00_dump_alert
+      task jmodel_realtime_gdas
+        trigger jgdas_dump_alert == complete
+    endfamily
+    family prep
+      task jgdas_emcsfc_sfc_prep
+        trigger ../dump/jgdas_dump:release_sfcprep
+      task jgdas_prep
+        trigger ../dump/jgdas_dump == complete and ../dump/jgdas_tropcy_qc_reloc == complete
+      task jgdas_prep_post
+        trigger jgdas_prep == complete and ../analysis/jgdas_analysis_high == complete
+    endfamily
+    family analysis
+      task jgdas_analysis_high
+        trigger ../prep/jgdas_prep == complete and ../prep/jgdas_emcsfc_sfc_prep == complete
+        event 1 release_fcst
+    endfamily
+    task jgdas_vminmon
+      trigger analysis/jgdas_analysis_high == complete
+    family forecast
+      task jgdas_forecast_high
+        trigger ../analysis/jgdas_analysis_high:release_fcst
+    endfamily
+    family post_processing
+      family bulletins
+        task jgdas_mknavybulls
+          trigger ../../dump/jgdas_dump_post == complete
+      endfamily
+    endfamily
+    family gempak
+      task jgdas_gempak
+        trigger ../forecast/jgdas_forecast_high == complete
+      task jgdas_gempak_meta_ncdc
+        trigger ./jgdas_gempak == complete
+    endfamily
+    family post
+      task jgdas_post_manager
+        trigger ../forecast == active
+        event 1 release_postanl
+        event 2 release_post000
+        event 3 release_post001
+        event 4 release_post002
+        event 5 release_post003
+        event 6 release_post004
+        event 7 release_post005
+        event 8 release_post006
+        event 9 release_post007
+        event 10 release_post008
+        event 11 release_post009
+      task jgdas_post_anl
+        trigger ./jgdas_post_manager:release_postanl
+        edit FHRGRP '000'
+        edit FHRLST 'anl'
+        edit HR 'anl'
+        edit FHR 'anl'
+        event 1 release_pgrb2_anl
+      task jgdas_post_f000
+        trigger ./jgdas_post_manager:release_post000
+        edit FHR 'f000'
+        edit HR '000'
+        edit FHRGRP '001'
+        edit FHRLST 'f000'
+      task jgdas_post_f001
+        trigger ./jgdas_post_manager:release_post001
+        edit FHR 'f001'
+        edit HR '001'
+        edit FHRGRP '002'
+        edit FHRLST 'f001'
+      task jgdas_post_f002
+        trigger ./jgdas_post_manager:release_post002
+        edit FHR 'f002'
+        edit HR '002'
+        edit FHRGRP '003'
+        edit FHRLST 'f002'
+      task jgdas_post_f003
+        trigger ./jgdas_post_manager:release_post003
+        edit FHR 'f003'
+        edit HR '003'
+        edit FHRGRP '004'
+        edit FHRLST 'f003'
+      task jgdas_post_f004
+        trigger ./jgdas_post_manager:release_post004
+        edit FHR 'f004'
+        edit HR '004'
+        edit FHRGRP '005'
+        edit FHRLST 'f004'
+      task jgdas_post_f005
+        trigger ./jgdas_post_manager:release_post005
+        edit FHR 'f005'
+        edit HR '005'
+        edit FHRGRP '006'
+        edit FHRLST 'f005'
+      task jgdas_post_f006
+        trigger ./jgdas_post_manager:release_post006
+        edit FHR 'f006'
+        edit HR '006'
+        edit FHRGRP '007'
+        edit FHRLST 'f006'
+      task jgdas_post_f007
+        trigger ./jgdas_post_manager:release_post007
+        edit FHR 'f007'
+        edit HR '007'
+        edit FHRGRP '008'
+        edit FHRLST 'f007'
+      task jgdas_post_f008
+        trigger ./jgdas_post_manager:release_post008
+        edit FHR 'f008'
+        edit HR '008'
+        edit FHRGRP '009'
+        edit FHRLST 'f008'
+      task jgdas_post_f009
+        trigger ./jgdas_post_manager:release_post009
+        edit FHR 'f009'
+        edit HR '009'
+        edit FHRGRP '010'
+        edit FHRLST 'f009'
+    endfamily
+    family enkf
+      task jgdas_enkf_select_obs
+        trigger ../prep/jgdas_prep == complete
+      family innovate
+        trigger ./jgdas_enkf_select_obs == complete
+        task jgdas_enkf_innovate_obs_grp1
+          edit ENSGRP '01'
+        task jgdas_enkf_innovate_obs_grp2
+          edit ENSGRP '02'
+        task jgdas_enkf_innovate_obs_grp3
+          edit ENSGRP '03'
+        task jgdas_enkf_innovate_obs_grp4
+          edit ENSGRP '04'
+        task jgdas_enkf_innovate_obs_grp5
+          edit ENSGRP '05'
+        task jgdas_enkf_innovate_obs_grp6
+          edit ENSGRP '06'
+        task jgdas_enkf_innovate_obs_grp7
+          edit ENSGRP '07'
+        task jgdas_enkf_innovate_obs_grp8
+          edit ENSGRP '08'
+        task jgdas_enkf_innovate_obs_grp9
+          edit ENSGRP '09'
+        task jgdas_enkf_innovate_obs_grp10
+          edit ENSGRP '10'
+      endfamily
+      task jgdas_enkf_update
+        trigger ./innovate == complete
+      task jgdas_enkf_inflate_recenter
+        trigger ./jgdas_enkf_update == complete and ../analysis/jgdas_analysis_high == complete
+      family forecast
+        trigger ./jgdas_enkf_inflate_recenter == complete
+        task jgdas_enkf_fcst_grp1
+          edit ENSGRP '01'
+        task jgdas_enkf_fcst_grp2
+          edit ENSGRP '02'
+        task jgdas_enkf_fcst_grp3
+          edit ENSGRP '03'
+        task jgdas_enkf_fcst_grp4
+          edit ENSGRP '04'
+        task jgdas_enkf_fcst_grp5
+          edit ENSGRP '05'
+        task jgdas_enkf_fcst_grp6
+          edit ENSGRP '06'
+        task jgdas_enkf_fcst_grp7
+          edit ENSGRP '07'
+        task jgdas_enkf_fcst_grp8
+          edit ENSGRP '08'
+        task jgdas_enkf_fcst_grp9
+          edit ENSGRP '09'
+        task jgdas_enkf_fcst_grp10
+          edit ENSGRP '10'
+        task jgdas_enkf_fcst_grp11
+          edit ENSGRP '11'
+        task jgdas_enkf_fcst_grp12
+          edit ENSGRP '12'
+        task jgdas_enkf_fcst_grp13
+          edit ENSGRP '13'
+        task jgdas_enkf_fcst_grp14
+          edit ENSGRP '14'
+        task jgdas_enkf_fcst_grp15
+          edit ENSGRP '15'
+        task jgdas_enkf_fcst_grp16
+          edit ENSGRP '16'
+        task jgdas_enkf_fcst_grp17
+          edit ENSGRP '17'
+        task jgdas_enkf_fcst_grp18
+          edit ENSGRP '18'
+        task jgdas_enkf_fcst_grp19
+          edit ENSGRP '19'
+        task jgdas_enkf_fcst_grp20
+          edit ENSGRP '20'
+      endfamily
+      family post
+        trigger ./forecast == complete
+        task jgdas_enkf_post_f003
+          edit FHMIN_EPOS '003'
+          edit FHMAX_EPOS '003'
+          edit FHOUT_EPOS '003'
+        task jgdas_enkf_post_f004
+          edit FHMIN_EPOS '004'
+          edit FHMAX_EPOS '004'
+          edit FHOUT_EPOS '004'
+        task jgdas_enkf_post_f005
+          edit FHMIN_EPOS '005'
+          edit FHMAX_EPOS '005'
+          edit FHOUT_EPOS '005'
+        task jgdas_enkf_post_f006
+          edit FHMIN_EPOS '006'
+          edit FHMAX_EPOS '006'
+          edit FHOUT_EPOS '006'
+        task jgdas_enkf_post_f007
+          edit FHMIN_EPOS '007'
+          edit FHMAX_EPOS '007'
+          edit FHOUT_EPOS '007'
+        task jgdas_enkf_post_f008
+          edit FHMIN_EPOS '008'
+          edit FHMAX_EPOS '008'
+          edit FHOUT_EPOS '008'
+        task jgdas_enkf_post_f009
+          edit FHMIN_EPOS '009'
+          edit FHMAX_EPOS '009'
+          edit FHOUT_EPOS '009'
+      endfamily
+    endfamily
+    task jgdas_verfrad
+      trigger enkf == complete
+  endfamily
+
