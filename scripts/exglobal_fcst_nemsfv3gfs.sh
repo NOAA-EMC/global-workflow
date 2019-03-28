@@ -218,8 +218,8 @@ EOF
   # Link increments
   if [ $DOIAU = "YES" ]; then
     for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
-      incfhr=$(printf %02i $i)
-      if [ $incfhr = "06" ]; then
+      incfhr=$(printf %03i $i)
+      if [ $incfhr = "006" ]; then
         increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
       else
         increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
@@ -232,8 +232,8 @@ EOF
       $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
       IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
     done
-    read_increment=".true."
-    res_latlon_dynamics="fv_increment6.nc"
+    read_increment=".false."
+    res_latlon_dynamics=""
   else
     increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
     if [ -f $increment_file ]; then
