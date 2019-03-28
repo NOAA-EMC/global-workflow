@@ -1,0 +1,23 @@
+#!/bin/ksh -x
+
+########## config.eupd ##########
+# Ensemble update specific, dependency config.anal
+
+echo "BEGIN: config.eupd"
+
+# Get task specific resources
+. $EXPDIR/config.resources eupd
+
+export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
+export npe_enkf=$npe_eupd
+
+export letkf_flag=.true.
+export getkf=.true.
+export denkf=.true.
+export nobsl_max=10000
+export analpertwt=0.85
+export readin_localization_enkf=.false.
+export corrlength=1250
+export lnsigcutoff=2.5
+
+echo "END: config.eupd"
