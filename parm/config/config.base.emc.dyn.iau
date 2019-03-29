@@ -257,10 +257,9 @@ export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="YES"
 export l4densvar=".true."
 export lwrite4danl=".true."
-export lobsdiag_forenkf=.true.
-export netcdf_diag=.false.
-export binary_diag=.true.
-export DOGAUSFCANL="NO"
+export lobsdiag_forenkf=".true."
+export netcdf_diag=".false."
+export binary_diag=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
