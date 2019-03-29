@@ -174,9 +174,11 @@ if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.coupler.res ]; then
 fi
 
 # Ensure IAU is enabled with warm start
+DOIAU_coldstart="NO"
 if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   export DOAIU="NO"
   echo "turning off IAU since warm_start = $warm_start"
+  DOIAU_coldstart="YES"
   #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
   #echo "Abort!"
   #exit 99
@@ -1081,6 +1083,15 @@ if [ $SEND = "YES" ]; then
     for file in ${rPDY}.${rcyc}0000.* ; do
       $NCP $file $memdir/RESTART/$file
     done
+    if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
+       # if IAU is on, save two consective restarts
+       RDATE=$($NDATE +$restart_interval $RDATE)
+       rPDY=$(echo $RDATE | cut -c1-8)
+       rcyc=$(echo $RDATE | cut -c9-10)
+       for file in ${rPDY}.${rcyc}0000.* ; do
+          $NCP $file $memdir/RESTART/$file
+       done
+    fi
 
   fi
 
