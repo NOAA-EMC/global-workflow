@@ -110,7 +110,8 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Write restart files at next assimilation time
     export restart_interval=6
-	if [ $DOIAU = "YES" -a "$CDATE" = "$SDATE" ]; then export restart_interval=3; fi
+    # For IAU, write restarts at beginning of window also
+    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
 
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
