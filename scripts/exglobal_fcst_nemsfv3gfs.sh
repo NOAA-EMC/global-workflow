@@ -151,16 +151,6 @@ gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
-if [[ "$DOIAU" = "YES" ]]; then
-  sCDATE=$($NDATE -3 $CDATE)
-  sPDY=$(echo $sCDATE | cut -c1-8)
-  scyc=$(echo $sCDATE | cut -c9-10)
-else
-  sCDATE=$CDATE
-  sPDY=$PDY
-  scyc=$cyc
-fi
-
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
@@ -182,6 +172,16 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
   #echo "Abort!"
   #exit 99
+fi
+
+if [[ "$DOIAU" = "YES" ]]; then
+  sCDATE=$($NDATE -3 $CDATE)
+  sPDY=$(echo $sCDATE | cut -c1-8)
+  scyc=$(echo $sCDATE | cut -c9-10)
+else
+  sCDATE=$CDATE
+  sPDY=$PDY
+  scyc=$cyc
 fi
 
 if [ $warm_start = ".true." ]; then
