@@ -1036,7 +1036,7 @@ $ERRSCRIPT || exit $err
 #------------------------------------------------------------------
 # change nfhour in the output nemsio file if IAU
 if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-  if [ $DOIAU = "YES" ] && [ $DOIAU_coldstart = "NO" ]; then
+  if [ $DOIAU = "YES" ]; then
     fhr=$FHMIN
     while [ $fhr -le $FHMAX ]; do
       FH3=$(printf %03i $fhr)
