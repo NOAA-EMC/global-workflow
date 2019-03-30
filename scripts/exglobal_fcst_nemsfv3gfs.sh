@@ -176,7 +176,7 @@ fi
 # Ensure IAU is enabled with warm start
 DOIAU_coldstart="NO"
 if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
-  export DOAIU="NO"
+  export DOIAU="NO"
   echo "turning off IAU since warm_start = $warm_start"
   DOIAU_coldstart="YES"
   #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
