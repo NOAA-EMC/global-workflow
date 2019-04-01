@@ -243,9 +243,9 @@ EOF
   else
     increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
     if [ -f $increment_file ]; then
-      $NLN $increment_file $DATA/INPUT/fv_increment6.nc
+      $NLN $increment_file $DATA/INPUT/fv_increment.nc
       read_increment=".true."
-      res_latlon_dynamics="fv_increment6.nc"
+      res_latlon_dynamics="fv_increment.nc"
     fi
   fi
 
