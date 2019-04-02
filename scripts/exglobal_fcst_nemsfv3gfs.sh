@@ -74,6 +74,7 @@ SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 KEEPDATA=${KEEPDATA:-"NO"}
 NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${HOMEgfs}/exec/nemsio_chgdate"}
+IAU_CHGDATE=${IAU_CHGDATE:-"YES"}
 
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -272,7 +273,9 @@ fi
 # If doing IAU, change forecast hours
 if [[ "$DOIAU" = "YES" ]]; then
   FHMAX=$((FHMAX+6))
-  FHMAX_HF=$((FHMAX_HF+6))
+  if [ $FHMAX_HF -gt 0 ]; then
+     FHMAX_HF=$((FHMAX_HF+6))
+  fi
 fi
 
 #--------------------------------------------------------------------------
@@ -511,11 +514,19 @@ DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 # build the diag_table with the experiment name and date stamp
+if [ $DOIAU = "YES" ]; then
+cat > diag_table << EOF
+FV3 Forecast
+${gPDY:0:4} ${gPDY:4:2} ${gPDY:6:2} ${gcyc} 0 0
+EOF
+cat $DIAG_TABLE >> diag_table
+else
 cat > diag_table << EOF
 FV3 Forecast
 ${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
+fi
 
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
@@ -588,6 +599,7 @@ RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
 
 dt_atmos:                $DELTIM
+output_1st_tstep_rst:    .false.
 calendar:                ${calendar:-'julian'}
 cpl:                     ${cpl:-".false."}
 memuse_verbose:          ${memuse_verbose:-".false."}
@@ -647,10 +659,6 @@ cat > input.nml <<EOF
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
   fdiag = $FDIAG
-  fhmax = $FHMAX
-  fhout = $FHOUT
-  fhmaxhf = $FHMAX_HF
-  fhouthf = $FHOUT_HF
   $atmos_model_nml
 /
 
@@ -1040,7 +1048,7 @@ $ERRSCRIPT || exit $err
 #------------------------------------------------------------------
 # change nfhour in the output nemsio file if IAU
 if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-  if [ $DOIAU = "YES" ]; then
+  if [ $DOIAU = "YES" ] && [ $IAU_CHGDATE = "YES" ]; then
     fhr=$FHMIN
     while [ $fhr -le $FHMAX ]; do
       FH3=$(printf %03i $fhr)
