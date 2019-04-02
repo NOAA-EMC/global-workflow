@@ -1,4 +1,4 @@
-RELEASE NOTES: GFS.v15.0.0 downstream products - released Jan 24, 2019
+RELEASE NOTES: GFS.v15.1.0 downstream products - released Jan 24, 2019
 
 CODE CHANGES
  * No code change
@@ -71,7 +71,7 @@ JOB CHANGES
    module load gempak/7.3.1
 
 FV3 GFS DRIVER:
-   All drivers are used to test downtream jobs in gfs.v15.0.0/driver/run_*__dell.sh_xx   where is xx is cycle
+   All drivers are used to test downtream jobs in gfs.v15.1.0/driver/run_*__dell.sh_xx   where is xx is cycle
 
 The followig jobs, scripts, parm have been modified to meet NCO - EE2 implementation standards.
 JOB CHANGES
