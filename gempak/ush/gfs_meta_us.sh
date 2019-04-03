@@ -19,6 +19,11 @@ cd $DATA
 
 set -xa
 
+rm -rf $DATA/us
+mkdir -p -m 775 $DATA/us
+cd $DATA/us
+cp $FIXgempak/datatype.tbl datatype.tbl
+
 device="nc | gfs.meta"
 PDY2=`echo $PDY | cut -c3-`
 
