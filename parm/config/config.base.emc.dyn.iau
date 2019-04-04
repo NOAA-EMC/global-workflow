@@ -215,6 +215,10 @@ export FHMIN=0
 export FHMAX=9
 export FHOUT=3
 
+# cycle to run EnKF
+export EUPD_CYC="BOTH"
+#export EUPD_CYC="GDAS"
+
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
