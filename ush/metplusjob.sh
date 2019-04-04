@@ -591,7 +591,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                         if [ $machine = THEIA ]; then
                             qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -N get_gdas_prepbufr.${VDATE}${vhr} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.sh
                         elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                            bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -N get_gdas_prepbufr.${VDATE}${vhr} -J get_gdas_prepbufr.${VDATE}${vhr} -M 100 -R affinity[core(1)] ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.sh
+                            bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.out -N get_gdas_prepbufr.${VDATE}${vhr} -J get_gdas_prepbufr.${VDATE}${vhr} -M 100 -R affinity[mem=100] ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr}.sh
                         fi
                     fi
                     if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_upper_air}/prepbufr.${VDATE}${vhr} ]; then
@@ -683,7 +683,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                             if [ $machine = THEIA ]; then
                                 qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -N get_ndas1_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.sh
                             elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                                bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -N get_ndas1_prepbufr.${DATE} -J get_ndas1_prepbufr.${DATE} -M 100 -R affinity[core(1)] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.sh
+                                bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.out -N get_ndas1_prepbufr.${DATE} -J get_ndas1_prepbufr.${DATE} -M 100 -R affinity[mem=100] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.1.sh
                             fi
                         fi
                         #check second file if first not found
@@ -696,7 +696,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                                 if [ $machine = THEIA ]; then
                                     qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -N get_ndas2_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.sh
                                 elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                                    bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -N get_ndas2_prepbufr.${DATE} -J get_ndas2_prepbufr.${DATE} -M 100 -R affinity[core(1)] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.sh
+                                    bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.out -N get_ndas2_prepbufr.${DATE} -J get_ndas2_prepbufr.${DATE} -M 100 -R affinity[mem=100] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.2.sh
                                 fi
                             fi
                         fi
@@ -710,7 +710,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                                 if [ $machine = THEIA ]; then
                                     qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -N get_ndas3_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.sh
                                 elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                                    bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -N get_ndas3_prepbufr.${DATE} -J get_ndas3_prepbufr.${DATE} -M 100 -R affinity[core(1)] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.sh
+                                    bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.out -N get_ndas3_prepbufr.${DATE} -J get_ndas3_prepbufr.${DATE} -M 100 -R affinity[mem=100] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.3.sh
                                 fi
                             fi
                         fi
@@ -755,7 +755,7 @@ if [ $VRFY_GRID2OBS_STEP1 = YES ] ; then
                             if [ $machine = THEIA ]; then
                                 qsub -l procs=1,walltime=0:05:00 -q service -A fv3-cpu -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -N get_nam_prepbufr.${DATE} -W umask=022 ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.sh
                             elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                                bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -N get_nam_prepbufr.${DATE} -J get_nam_prepbufr.${DATE} -M 100 -R affinity[core(1)] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.sh
+                                bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -e ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.out -N get_nam_prepbufr.${DATE} -J get_nam_prepbufr.${DATE} -M 100 -R affinity[mem=100] ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE}.sh
                             fi
                         fi
                         if [ ! -s ${rundir_g2o1}/data/prepbufr/${prepbufr_conus_sfc}/prepbufr.${DATE} ]; then
@@ -1067,7 +1067,7 @@ if [ $VRFY_PRECIP_STEP1 = YES ] ; then
                     if [ $machine = THEIA ]; then
                         qsub -l procs=1,walltime=0:10:00 -q service -A fv3-cpu -o ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -e ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -N get_ccpa.${VDATE}12.24h -W umask=022 ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
                     elif [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
-                        bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -e ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -N get_ccpa.${VDATE}12.24h -J get_ccpa.${VDATE}12.24h -M 100 -R affinity[core(1)] ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
+                        bsub -W 0:10 -q dev_transfer -P GFS_T2O -o ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -e ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.out -N get_ccpa.${VDATE}12.24h -J get_ccpa.${VDATE}12.24h -M 100 -R affinity[mem=100] ${rundir_precip1}/data/CCPA/${type}/get_ccpa.${VDATE}12.24h.sh
                     fi
                     #wait for transfer
                     nsleeps=1
