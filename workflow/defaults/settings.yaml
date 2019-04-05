@@ -19,6 +19,9 @@ default_settings: &default_settings
   # sure it is consistent among the yaml files:
   REALTIME: !calc realtime
 
+  four_cycle_mode: NO
+  nco_mode: NO
+
   ROTDIR_DUMP: NO
 
   # awips setting
