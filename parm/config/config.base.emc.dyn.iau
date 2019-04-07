@@ -259,8 +259,8 @@ export imp_physics=11
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="YES"
-export netcdf_diag=".false."
-export binary_diag=".true."
+export netcdf_diag=".true."
+export binary_diag=".false."
 export l4densvar=".true."
 export lwrite4danl=".true."
 export lobsdiag_forenkf=".true."
@@ -289,7 +289,7 @@ export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 
 # Archiving options
-export HPSSARCH="NO"         # save data to HPSS archive
+export HPSSARCH="YES"         # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
