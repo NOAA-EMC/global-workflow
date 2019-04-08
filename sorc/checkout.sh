@@ -21,7 +21,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout EXP-locfix
+    git checkout EXP-locfix-io
     git submodule update
     cd gsi.fd/fix
     git checkout fix_l127
