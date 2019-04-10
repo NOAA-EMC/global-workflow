@@ -62,6 +62,7 @@ post: !Immediate
   
 downstream: !Immediate
   - !MergeMapping
+    - !calc doc.downstream_defaults
     - { Template: *downstream_schema }
     - !calc doc.case.get('downstream',{})
     - !calc doc.get('user_downstream',{})
