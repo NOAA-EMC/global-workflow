@@ -558,6 +558,7 @@ RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
 
 dt_atmos:                $DELTIM
+output_1st_tstep_rst:    .false.
 calendar:                ${calendar:-'julian'}
 cpl:                     ${cpl:-".false."}
 memuse_verbose:          ${memuse_verbose:-".false."}
