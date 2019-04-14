@@ -22,9 +22,11 @@ export lobsdiag_forenkf=".true."
 
 export USE_RADSTAT="NO" # This can be only used when bias correction is non-zero.
 export GENDIAG="YES"    # Diagnostic files must be created for EnKF
-export DIAG_TARBALL="YES"
-if [[ "$CDUMP" = "gfs" ]] ; then
-   unset SETUP
+if [[ lobsdiag_forenkf = ".true." ]]; then
+   export DIAG_TARBALL="YES"  # make sure diag tarballs are saved for EnKF
+   if [[ "$CDUMP" = "gfs" ]] ; then
+      unset SETUP # revert to default (same as used for GDAS cycle)
+   fi
 fi
 
 echo "END: config.eobs"
