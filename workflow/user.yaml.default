@@ -19,6 +19,7 @@ user_places: &user_places
 
 accounting: &accounting
   # Project for CPU accounting.
+  user_email: none # only when you want automatic status report
   cpu_project: !error What accounting code do I use to submit jobs? # ie.: global
   hpss_project: !error Where do I put data on HPSS?   # ie.: emc-global
   ecflow_machine: venus   # only relevant on WCOSS using ecFlow
