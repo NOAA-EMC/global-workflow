@@ -20,11 +20,11 @@ case "$machine" in
 	case "${unameOut}" in
     		Linux*)
 			SCRIPTDIR=$(dirname $(readlink -f "$0") )
-			echo SUB ${FUNCNAME[0]}: Current Script locates in $SCRIPTDIR.
+			echo SUB ${FUNCNAME[0]}: Linux environment. Current Script locates in $SCRIPTDIR.
 			;;
     		Darwin*)
                         SCRIPTDIR=$(pwd)
-                        echo SUB ${FUNCNAME[0]}: Current Script locates in $SCRIPTDIR.
+                        echo SUB ${FUNCNAME[0]}: MacOS environment. Current Script locates in $SCRIPTDIR.
 			;;
     		CYGWIN*)    echo CYGWIN ;;
     		MINGW*)     echo MinGw ;;
