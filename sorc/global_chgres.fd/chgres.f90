@@ -186,6 +186,28 @@
       USE SURFACE_CHGRES
 
       IMPLICIT NONE
+
+      INTERFACE
+        SUBROUTINE WRITE_FV3_SFC_DATA_NETCDF(IMO,JMO,LSOILO,SFCOUTPUT,F10MO, &
+                           T2MO,Q2MO,UUSTARO,FFMMO,FFHHO,TPRCPO, &
+                           SRFLAGO,TILE_NUM,NUM_NSST_FIELDS,NSST_OUTPUT)
+        USE SURFACE_CHGRES
+        IMPLICIT NONE
+        INTEGER, INTENT(IN)            :: IMO, JMO, LSOILO, TILE_NUM
+        INTEGER, INTENT(IN)            :: NUM_NSST_FIELDS
+        REAL, INTENT(IN)               :: F10MO(IMO,JMO)
+        REAL, INTENT(IN)               :: Q2MO(IMO,JMO)
+        REAL, INTENT(IN)               :: T2MO(IMO,JMO)
+        REAL, INTENT(IN)               :: UUSTARO(IMO,JMO)
+        REAL, INTENT(IN)               :: FFMMO(IMO,JMO)
+        REAL, INTENT(IN)               :: FFHHO(IMO,JMO)
+        REAL, INTENT(IN)               :: TPRCPO(IMO,JMO)
+        REAL, INTENT(IN)               :: SRFLAGO(IMO,JMO)
+        REAL, INTENT(IN), OPTIONAL     :: NSST_OUTPUT(IMO*JMO,NUM_NSST_FIELDS)       
+        TYPE(SFC1D)                    :: SFCOUTPUT
+        END SUBROUTINE WRITE_FV3_SFC_DATA_NETCDF
+      END INTERFACE
+
       INTEGER:: LEVS=0,NTRAC=0,LONB=0,LATB=0,                      &
                 IDVC=0,IDVM=0,IDSL=0,MQUICK=0,IDVT=0,        &
                 LATCH=8,LSOIL=0,IVSSFC=0,NVCOORD=0,                &
