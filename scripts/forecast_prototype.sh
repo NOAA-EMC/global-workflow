@@ -15,19 +15,32 @@
 set_environment(){		# Do we really need this block?
 echo SUB ${FUNCNAME[0]}: Setting up environment
 case "$machine" in
-	'sandbox')
-  		# environment commands here
-  		echo SUB: environment loaded for $machine platform
-  		;;
-  	'WCOSS_C')
-  		echo SUB: environment loaded for $machine platform
-  		;;
-  	'WCOSS_DELL_P3')
-  		echo SUB: environment loaded for $machine platform
-  		;;
-	'theia')
-  		echo SUB: environment loaded for $machine platform
-  		;;
+'sandbox')
+	local unameOut="$(uname -s)"
+	case "${unameOut}" in
+    		Linux*)
+			SCRIPTDIR=$(dirname $(readlink -f "$0") )
+			echo SUB ${FUNCNAME[0]}: Current Script locates in $SCRIPTDIR.
+			;;
+    		Darwin*)
+                        SCRIPTDIR=$(pwd)
+                        echo SUB ${FUNCNAME[0]}: Current Script locates in $SCRIPTDIR.
+			;;
+    		CYGWIN*)    echo CYGWIN ;;
+    		MINGW*)     echo MinGw ;;
+    		*)          echo "UNKNOWN:${unameOut}"
+	esac
+echo SUB ${FUNCNAME[0]}: environment loaded for $machine platform
+  ;;
+'WCOSS_C')
+echo SUB: environment loaded for $machine platform
+  ;;
+'WCOSS_DELL_P3')
+echo SUB: environment loaded for $machine platform
+  ;;
+'theia')
+echo SUB: environment loaded for $machine platform
+  ;;
 esac
 echo SUB ${FUNCNAME[0]}: Environment set for $machine
 # More platforms here
@@ -406,9 +419,6 @@ fi
 #######################
 # Main body starts here
 #######################
-
-SCRIPTDIR=$(dirname $(readlink -f "$0") )
-echo MAIN: Current Script locates in $SCRIPTDIR.
 
 cplflx=${CPLFLX:-0} # default off,import from outside source
 cplwav=${CPLWAV:-0} # ? how to control 1-way/2-way?
