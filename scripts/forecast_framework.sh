@@ -15,80 +15,68 @@
 #######################
 # These are flags of the status of each component
 
-ATMOSPHERE_ON=FALSE
-OCEAN_ON=FALSE
-WAVE_ON=FALSE
-CHEMISTRY_ON=FALSE
+# 1. change all variable names;
+# 2, selection logics for nems_configure
+
+export cplflx=${CPLFLX:-FALSE} # default off,import from outside source
+export cplwav=${CPLWAV:-FALSE} # ? how to control 1-way/2-way?
+export cplchem=${CPLCHEM:-FALSE} #
 
 #######################
 # Function definition #
 #######################
 
-set_environment(){
-if [ $1 = 'sandbox' ] ; then
-  # environment commands here
-  echo "SUB: environment loaded for $1 platform"
-fi
+set_environment(){		# Do we really need this block?
+case "$machine" in
+	'sandbox')
+  		# environment commands here
+  		echo "SUB: environment loaded for $machine platform"
+  		;;
+  	'WCOSS_C')
+  		echo "SUB: environment loaded for $machine platform"
+  		;;
+  	'WCOSS_DELL_P3')
+  		echo "SUB: environment loaded for $machine platform"
+  		;;
+	'theia')
+  		echo "SUB: environment loaded for $machine platform"
+  		;;
+esac
 # More platforms here
 }
 
-components(){
-# manipulate component switches (external) based
-# on compset selected by users 
-# Argument:
-#   Compset: directly from second argument of main script
-case "$2" in
-	'ATM')
-	    ATMOSPHERE_ON=TRUE
-        WAVE_ON=FALSE
-        OCEAN_ON=FALSE
-        CHEMISTRY_ON=FALSE
-            case "$1" in
-        	'theia')
-        		echo "SUB: Component set $2 is not supported on $1, exiting"
-        		exit 1
-        	esac
-		;;
-	'ATM_WAVE')
-	    ATMOSPHERE_ON=TRUE
-        WAVE_ON=TRUE
-        OCEAN_ON=FALSE
-        CHEMISTRY_ON=FALSE
-		;;
-    'ATM_WAVE_CHEM')
-        ATMOSPHERE_ON=TRUE
-        WAVE_ON=TRUE
-        OCEAN_ON=FALSE
-        CHEMISTRY_ON=TRUE
-		;;
-	*)
-        echo "SUB: Component set $2 is not supported, exiting"
-        exit 1
-esac
+select_combination(){
+	if [ $cplflx = FALSE -a $cplwav = FALSE -a $cplchem = FALSE ]; then
+		combination='ATM'
+	elif [ $cplflx = FALSE -a $cplwav = TRUE -a $cplchem = FALSE ]; then
+		combination='ATM_WAVE'
+	elif [ $cplflx = FALSE -a $cplwav = TRUE -a $cplchem = FALSE ]; then
+		combination='ATM_WAVE_CHEM'
+	else
+		echo "SUB: Combination currently not supported. Exit now!"
+		exit
+	fi
 }
 
 data_link(){
 # data in take for all active components
 # Arguments: None 
 # 
-if [ $ATMOSPHERE_ON = TRUE ]
+echo 'SUB: Linking input data for FV3'
+# soft link commands insert here
+if [ $cplwav = TRUE ]
 then
-	  echo 'linking input data for FV3'
+	  echo 'SUB: Linking input data for WW3'
 	  # soft link commands insert here
 fi
-if [ $WAVE_ON = TRUE ]
+if [ $cplflx = TRUE ]	#cplflx
 then
-	  echo 'linking input data for WW3'
+	  echo 'SUB: Linking input data for HYCOM'
 	  # soft link commands insert here
 fi
-if [ $OCEAN_ON = TRUE ]
+if [ $cplchem = TRUE ]
 then
-	  echo 'linking input data for HYCOM'
-	  # soft link commands insert here
-fi
-if [ $CHEMISTRY_ON = TRUE ]
-then
-	  echo 'linking input data for GSD'
+	  echo 'SUB: Linking input data for GSD'
 	  # soft link commands insert here
 fi
 # More components
@@ -97,24 +85,30 @@ fi
 namelist_and_diagtable()
 {
 # namelist output for a certain component
-if [ $ATMOSPHERE_ON = TRUE ]
+echo 'SUB: Creating name lists and model configure file for FV3'
+
+# Call child scripts in current script directory
+source $(dirname "$0")/parsing_namelists_FV3_toy.sh
+source $(dirname "$0")/parsing_model_configure_FV3_toy.sh
+
+echo 'SUB: FV3 name lists and model configure file created'
+
+if [ $cplwav = TRUE ]
 then
-	  echo 'creating name list for FV3'
+	  echo 'SUB: Creating name list for WW3'
+	  sh parsing_namelist_WW3.sh
 	  # name list insert here
 fi
-if [ $WAVE_ON = TRUE ]
+if [ $cplflx = TRUE ]
 then
-	  echo 'creating name list for WW3'
+	  echo 'SUB: Creating name list for HYCOM'
+	  sh parsing_namelist_HYCOM.sh
 	  # name list insert here
 fi
-if [ $OCEAN_ON = TRUE ]
+if [ $cplchem = TRUE ]
 then
-	  echo 'creating name list for HYCOM'
-	  # name list insert here
-fi
-if [ $CHEMISTRY_ON = TRUE ]
-then
-	  echo 'creating name list for GSD'
+	  echo 'SUB: Creating name list for GSD'
+	  sh parsing_namelist_GSD.sh
 	  # name list insert here
 fi
 # More components
@@ -127,20 +121,21 @@ nems_config_writing()
 #   Compset: directly from second argument of main script
 # echo 'This section writes nems configuration file for a compset'
 case "$1" in
-	'ATM')
-		echo "SUB: No nems_config needed"
-		;;
-	'ATM_WAVE')
-		echo "SUB: Writing nems_config for FV3-WW3"
-		# nems_config for FV#-WW3 here
-		;;
-	'ATM_WAVE_CHEM')
-		echo "SUB: Writing nems_config for FV3-WW3-GSD"
-		# nems_config for FV#-WW3 here
-		;;
-    *)
-        echo "SUB: Component set not supported, exiting"
-        exit 1
+'ATM')
+rm -f nems.configure
+source $(dirname "$0")/nems.configure_temp_fv3.sh
+;;
+'ATM_WAVE')
+echo "SUB: Writing nems_config for FV3-WW3"
+# nems_config for FV#-WW3 here
+;;
+'ATM_WAVE_CHEM')
+echo "SUB: Writing nems_config for FV3-WW3-GSD"
+# nems_config for FV#-WW3 here
+;;
+*)
+echo "SUB: Component set not supported, exiting"
+exit 1
 esac
 }
 
@@ -150,7 +145,7 @@ execution()
 # Argument:
 # 
 echo "SUB: !!Only output the command instead of actually executing it."
-case "$2" in
+case "$1" in
   	'ATM')
   		echo "SUB: mpirun -np XX executable_FV3\n"
   		;;
@@ -161,7 +156,7 @@ case "$2" in
         echo "SUB: mpirun -np XX executable_FV3-WW3-GSD\n"
         ;;
     *)
-        echo "SUB: Component set $2 not supported, exiting\n"
+        echo "SUB: Component set $1 not supported, exiting\n"
         exit 1
 esac
 }
@@ -171,22 +166,20 @@ data_out()
 # data in take for all active components
 # Arguments: None 
 # 
-if [ $ATMOSPHERE_ON = TRUE ]
-then
-	  echo "SUB: copying output data for FV3"
-	  # copy commands insert here
-fi
-if [ $WAVE_ON = TRUE ]
+echo "SUB: copying output data for FV3"
+# copy commands insert here
+
+if [ $cplwav = TRUE ]
 then
 	  echo "SUB: copying output data for WW3"
 	  # copy commands insert here
 fi
-if [ $OCEAN_ON = TRUE ]
+if [ $cplflx = TRUE ]
 then
 	  echo "SUB: copying output data for HYCOM"
 	  # copy commands insert here
 fi
-if [ $CHEMISTRY_ON = TRUE ]
+if [ $cplchem = TRUE ]
 then
 	  echo "SUB: copying output data for GSD"
 	  # copy commands insert here
@@ -195,47 +188,42 @@ fi
 # More components
 }
 
-final()
-{
-# report finish status
-  return 0
-}
-
 #######################
 # Main body starts here
 #######################
 
-echo "MAIN: Forecast script started for $2 on $1\n"
+if [ -z $machine ]; then
+	machine=sandbox
+fi
+
+select_combination
+echo "MAIN: $combination selected\n"
+
+echo "MAIN: Forecast script started for $combination on $machine\n"
 set_environment $1
 echo "MAIN: ENV Configured to run\n"
-sleep 1s
-components $1 $2
-echo "MAIN: Active components set\n"
 
 echo "MAIN: Loading variables"
-X=3
-Y=4
-if [ $ATMOSPHERE_ON = TRUE ]
-then
-	Z=5
-fi
-if [ $WAVE_ON = TRUE ]
-then
-	A=6
-fi
+source forecast_def_toy.sh
 echo "MAIN: Finish loading variables\n"
 
+echo "MAIN: Linking input data\n"
 data_link
 echo "MAIN: Input data linked\n"
+
+echo "MAIN: Writing name lists and model configuration\n"
 namelist_and_diagtable
 echo "MAIN: Namelist written\n"
-nems_config_writing $2
+
+echo "MAIN: Configuring NEMS\n"
+nems_config_writing $combination
 echo "MAIN: NEMS configured\n"
-execution $1 $2
+
+execution $combination
 sleep 1s
 
 data_out
 sleep 1s
 echo "MAIN: Output copied to COMROT\n"
-echo "MAIN: $2 Forecast completed at normal status\n"
+echo "MAIN: $combination Forecast completed at normal status\n"
 #return final()
