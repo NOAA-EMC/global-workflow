@@ -18,9 +18,12 @@
 # 1. change all variable names;
 # 2, selection logics for nems_configure
 
-export cplflx=${CPLFLX:-FALSE} # default off,import from outside source
-export cplwav=${CPLWAV:-FALSE} # ? how to control 1-way/2-way?
-export cplchem=${CPLCHEM:-FALSE} #
+SCRIPTDIR=$(dirname $(readlink -f "$0") )
+echo MAIN: Current Script locates in $SCRIPTDIR.
+
+export cplflx=${CPLFLX:-0} # default off,import from outside source
+export cplwav=${CPLWAV:-0} # ? how to control 1-way/2-way?
+export cplchem=${CPLCHEM:-0} #
 
 #######################
 # Function definition #
@@ -46,11 +49,11 @@ esac
 }
 
 select_combination(){
-	if [ $cplflx = FALSE -a $cplwav = FALSE -a $cplchem = FALSE ]; then
+	if [ $cplflx = 0 -a $cplwav = 0 -a $cplchem = 0 ]; then
 		combination='ATM'
-	elif [ $cplflx = FALSE -a $cplwav = TRUE -a $cplchem = FALSE ]; then
+	elif [ $cplflx = 0 -a $cplwav = 1 -a $cplchem = 0 ]; then
 		combination='ATM_WAVE'
-	elif [ $cplflx = FALSE -a $cplwav = TRUE -a $cplchem = FALSE ]; then
+	elif [ $cplflx = 0 -a $cplwav = 1 -a $cplchem = 1 ]; then
 		combination='ATM_WAVE_CHEM'
 	else
 		echo "SUB: Combination currently not supported. Exit now!"
