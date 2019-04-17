@@ -236,8 +236,8 @@ echo 'SUB: Creating name lists and model configure file for FV3'
 
 # Call child scripts in current script directory
 
-source $(dirname "$0")/parsing_namelists_FV3.sh
-source $(dirname "$0")/parsing_model_configure_FV3.sh
+source $pwd/parsing_namelists_FV3.sh
+source $pwd/parsing_model_configure_FV3.sh
 
 echo 'SUB: FV3 name lists and model configure file created'
 if [ $cplwav = TRUE ]
@@ -269,8 +269,10 @@ nems_config_writing()
 # echo 'This section writes nems configuration file for a compset'
 case "$1" in
 'ATM')
-rm -f nems.configure
-source $(dirname "$0")/nems.configure_temp_fv3.sh
+if [ -e nems.configure ]; then
+	rm -f nems.configure
+fi
+source $pwd/nems.configure_temp_fv3.sh
 ;;
 'ATM_WAVE')
 echo "SUB: Writing nems_config for FV3-WW3"
@@ -430,6 +432,10 @@ echo "MAIN: Finish loading variables\n"
 data_link
 echo "MAIN: Input data linked\n"
 
+if [ $machine = 'sandbox' ]; then
+	cd $pwd
+	echo "MAIN: Sandbox mode, writing to local"
+fi
 echo "MAIN: Writing name lists and model configuration\n"
 namelist_and_diagtable
 echo "MAIN: Name lists and model configuration written"
@@ -452,9 +458,13 @@ sleep 1s
 #	 ATM
 #::
 #EOF
-		
-data_out
-sleep 1s
+
+if [ $machine != 'sandbox' ]; then		
+	data_out
+	sleep 1s
+else
+	echo "MAIN: Running on sandbox mode, no output linking"
+fi
 echo "MAIN: Output copied to COMROT\n"
 
 #------------------------------------------------------------------

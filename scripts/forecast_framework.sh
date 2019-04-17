@@ -88,8 +88,9 @@ namelist_and_diagtable()
 echo 'SUB: Creating name lists and model configure file for FV3'
 
 # Call child scripts in current script directory
-source $(dirname "$0")/parsing_namelists_FV3_toy.sh
-source $(dirname "$0")/parsing_model_configure_FV3_toy.sh
+
+source parsing_namelists_FV3_toy.sh
+source parsing_model_configure_FV3_toy.sh
 
 echo 'SUB: FV3 name lists and model configure file created'
 
@@ -123,7 +124,7 @@ nems_config_writing()
 case "$1" in
 'ATM')
 rm -f nems.configure
-source $(dirname "$0")/nems.configure_temp_fv3.sh
+source nems.configure_temp_fv3.sh
 ;;
 'ATM_WAVE')
 echo "SUB: Writing nems_config for FV3-WW3"
@@ -222,8 +223,25 @@ echo "MAIN: NEMS configured\n"
 execution $combination
 sleep 1s
 
-data_out
-sleep 1s
+if [ $machine != 'sandbox' ]; then		
+	data_out
+	sleep 1s
+else
+	echo "MAIN: Running on sandbox mode, no output linking"
+fi
 echo "MAIN: Output copied to COMROT\n"
+
+#------------------------------------------------------------------
+# Clean up before leaving
+if [ $KEEPDATA = "NO" ]; then 
+	rm -rf $DATA
+fi
+
+#------------------------------------------------------------------
+set +x
+#if [ $VERBOSE = "YES" ] ; then
+#  echo $(date) EXITING $0 with return code $err >&2
+#fi
+
 echo "MAIN: $combination Forecast completed at normal status\n"
-#return final()
+exit 0
