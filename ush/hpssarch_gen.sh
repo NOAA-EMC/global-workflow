@@ -212,6 +212,9 @@ fi   ##end of gdas
 if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 #-----------------------------------------------------
 
+  IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
+  lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+  nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
   NMEM_ENKF=${NMEM_ENKF:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
@@ -231,7 +234,13 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   echo  "${dirname}${head}gsistat.ensmean            " >>enkf${CDUMP}.txt
   echo  "${dirname}${head}oznstat.ensmean            " >>enkf${CDUMP}.txt
   echo  "${dirname}${head}radstat.ensmean            " >>enkf${CDUMP}.txt
-  echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf${CDUMP}.txt
+  for FHR in $nfhrs; do  # loop over analysis times in window
+     if [ $FHR -eq 6 ]; then
+        echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf${CDUMP}.txt
+     else
+        echo  "${dirname}${head}atmanl00${FHR}.ensmean.nemsio      " >>enkf${CDUMP}.txt
+     fi 
+  done # loop over FHR
   for fstep in eobs eomg ecen eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
   done
@@ -258,28 +267,38 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
   m=1
   while [ $m -le $NMEM_EARCGRP ]; do
-     nm=$(((n-1)*NMEM_EARCGRP+m))
-     mem=$(printf %03i $nm)
-     dirname="./enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
-     head="${CDUMP}.t${cyc}z."
+    nm=$(((n-1)*NMEM_EARCGRP+m))
+    mem=$(printf %03i $nm)
+    dirname="./enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    head="${CDUMP}.t${cyc}z."
 
     #---
-    if [ $n -le $NTARS2 ]; then
-     echo "${dirname}${head}ratmanl.nemsio      " >>enkf${CDUMP}_grp${n}.txt
+    for FHR in $nfhrs; do  # loop over analysis times in window
+      if [ $FHR -eq 6 ]; then
+         if [ $n -le $NTARS2 ]; then
+            echo "${dirname}${head}ratmanl.nemsio      " >>enkf${CDUMP}_grp${n}.txt
+         fi
+         echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+      else
+         if [ $n -le $NTARS2 ]; then
+            echo "${dirname}${head}ratmanl00${FHR}.nemsio      " >>enkf${CDUMP}_grp${n}.txt
+         fi
+         echo "${dirname}${head}atmi00${FHR}.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+      fi 
+      echo "${dirname}${head}atmf00${FHR}.nemsio       " >>enkf${CDUMP}_grp${n}.txt
+    done # loop over FHR
+
+    if [[ lobsdiag_forenkf = ".false." ]] ; then
+       echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_grp${n}.txt
+       echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
+       echo "${dirname}${head}radstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
+       echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
     fi
-    echo "${dirname}${head}atmf006.nemsio       " >>enkf${CDUMP}_grp${n}.txt
-    echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_grp${n}.txt
-    echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
-
-
     #---
-    echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}${head}abias_air            " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}${head}abias_int            " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}${head}abias_pc             " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}radstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
