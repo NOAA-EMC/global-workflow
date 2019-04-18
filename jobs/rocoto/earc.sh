@@ -80,11 +80,13 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
    fi
 
-   htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
-   status=$?
-   if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-       echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
-       exit $status
+   if [ $CDATE -gt $SDATE ]; then
+       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
+       status=$?
+       if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+           echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+           exit $status
+       fi
    fi
 
    if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then

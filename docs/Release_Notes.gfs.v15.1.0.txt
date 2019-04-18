@@ -1,23 +1,23 @@
-GFS RELEASE NOTES (GFS.v15.0.0)  -- January 24, 2019
+GFS RELEASE NOTES (GFS.v15.1.0)  -- April 1, 2019
 
 
 PRELUDE
   	 *NOAA/NWS selected the Geophysical Fluid Dynamics Laboratory (GFDL) finite­ volume cubed-sphere (FV3)
 	dynamical core as the Weather Service Next Generation Global Prediction System (NGGPS).  The current
 	operational GFS, which has a spectral dynamical core, will be replaced by the proposed GFS with FV3
-	dynamical core and improved physics parameterizations in January, 2019.  Significant changes have
+	dynamical core and improved physics parameterizations in June, 2019.  Significant changes have
 	been made to both the science and infrastructure of the GFS system.
 
 	*GFS.v15 maintains a horizontal resolution of 13 km, and has 64 levels in the vertical extending
 	up to 0.2 hPa.  It uses the same physics package as the current operational GFS except for the
 	replacement of Zhao-Carr microphysics with the more advanced GFDL microphysics, improved ozone physics
 	and water vapor physics etc. There are also updates to data assimilation techniques, observational
-	data usage, post-processing and downstream product generation.  For more details please refer to the PNS
-	https://docs.google.com/document/d/112GG7yBDMPmEcrNi1R2ISsoLcivj5WPivSnf9Id_lHw/edit 
+	data usage, post-processing and downstream product generation.  For more details please refer to the    
+        Science Change Notice https://drive.google.com/open?id=1OaYWNsQSTcDPIjL6EMt4iH1Rm5rSkc0aeP_jcqzDg0s
 
 	*The current operational GFS.v14 was built upon a vertical directory structure. It contains
  	three independent packages.  The latest versions used in operations are gdas.v14.1.0, gfs.v14.1.2,
- 	and global_shared.v14.1.6.
+ 	and global_shared.v14.1.7.
 
 	*GFS.v15 has been reorganized to use a flat directory structure. The three packages in GFS.v14 have
  	been merged together to form a single package. Therefore, there is no direct comparison and one-to-one
@@ -25,8 +25,8 @@ PRELUDE
 
 	*This release note describes the overall changes made to the entire system.
  	More details about changes in science and structure of the data assimilation system are documented in
- 	.gfs.v15.0.0/sorc/gsi.fd/doc/Release_Notes.fv3gfs_da.v15.0.0.txt.
- 	Details about downstream product generation is documented in Release_Notes.gfs_downstream.v15.0.0.txt.
+ 	.gfs.v15.1.0/sorc/gsi.fd/doc/Release_Notes.fv3gfs_da.v15.txt.
+ 	Details about downstream product generation is documented in Release_Notes.gfs_downstream.v15.1.0.txt.
 
 
 IMPLEMENTATION INSTRUCTIONS
@@ -38,17 +38,17 @@ IMPLEMENTATION INSTRUCTIONS
  	the package on WCOSS DELL
 
   	1) cd  $NWROOTp3
-	2) mkdir gfs.v15.0.0
-	3) cd gfs.v15.0.0
-  	4) git clone --recursive gerrit:fv3gfs .
+	2) mkdir gfs.v15.1.0
+	3) cd gfs.v15.1.0
+  	4) git clone --recursive gerrit:global-workflow .
   	5) git checkout q2fy19_nco
   	6) cd sorc
   	7) ./checkout.sh
       	This script extracts the following GFS components from gerrit
-      		MODEL -- tag nemsfv3gfs_beta_v1.0.12 		Jun.Wang@noaa.gov
-        	GSI -- tag fv3da.v1.0.34       			Mark.Potts@noaa.gov and Michael.Lueken@noaa.gov
-        	UPP -- tag ncep_post_gtg.v1.0.6    		Wen.Meng@noaa.gov
-       		WAFS -- tag gfs_wafs.v5.0.5         		Yali.Mao@noaa.gov
+      		MODEL -- tag nemsfv3gfs_beta_v1.0.18 		Jun.Wang@noaa.gov
+        	GSI -- tag fv3da.v1.0.42       			Russ.Treadon@noaa.gov
+        	UPP -- tag ncep_post_gtg.v1.0.6c   		Wen.Meng@noaa.gov
+       		WAFS -- tag gfs_wafs.v5.0.8         		Yali.Mao@noaa.gov
 
 
   	8) ./build_all.sh
@@ -57,8 +57,8 @@ IMPLEMENTATION INSTRUCTIONS
   	
 	9) ./link_fv3gfs.sh nco dell
 
-	* Note: 1) ecflow suite definition and scripts are saved in gfs.v15.0.0/ecflow/ecf
-        	2) ncep_post_gtg.v1.0.4 contains restricted GTG (Graphic Turbulence Guidance) code provided by
+	* Note: 1) ecflow suite definition and scripts are saved in gfs.v15.1.0/ecflow/ecf
+        	2) ncep_post_gtg.v1.0.6c contains restricted GTG (Graphic Turbulence Guidance) code provided by
            	NCAR.  Please do not post the GTG code in any public domain.
 
 
@@ -121,7 +121,7 @@ SCRIPT CHANGES
 PARM/CONFIG CHANGES
 
  	All JJOBS except for those used by downstream product generation source config files under
- 	./gfs.v15.0.0/parm/config to set up job-specific parameters.  config.base is sourced by all
+ 	./gfs.v15.1.0/parm/config to set up job-specific parameters.  config.base is sourced by all
  	JJOBS to set parameters that are common to either all JJOBS or are shared by more than one JJOBS.
  	config.anal is shared by a few analysis steps.
 
@@ -142,7 +142,7 @@ PARM/CONFIG CHANGES
 
 FIX CHANGES
 
-   *	 All fixed fields used by the system are placed under gfs.v15.0.0/fix, and further categorized
+   *	 All fixed fields used by the system are placed under gfs.v15.1.0/fix, and further categorized
  	based on the type of applications. During the NCO implementation process, fix_am, fix_fv3,
  	fix_orog, fix_verif, and fix_fv3_gmted2010 are copied from EMC's local archives. fix_gsi and
  	wafs are copied from two external repositories.
@@ -172,8 +172,8 @@ RESOURCE INFORMATION
    * Frequency of run
   	* 6 hourly cycle (00, 06, 12, 18Z) - no change from current operations
 
-   * Commonly used libraries, compiler, and modules are defined in gfs.v15.0.0/modulefiles. For nemsfv3gfs, gsi, upp, wafs
- 	they maintain their own module files under gfs.v15.0.0/sorc/(fv3gfs gsi gfs_post global_wafs).fd/modulefiles
+   * Commonly used libraries, compiler, and modules are defined in gfs.v15.1.0/modulefiles. For nemsfv3gfs, gsi, upp, wafs
+ 	they maintain their own module files under gfs.v15.1.0/sorc/(fv3gfs gsi gfs_post global_wafs).fd/modulefiles
 
    * Data retention time under $COMROOThps for GFS.v15 should be the same as GFS.v14.   GFS.v15 is no longer pushing or
  	extracting data from  $GESROOThps.
@@ -337,7 +337,9 @@ HPSS ARCHIVE
    HPSS archive: please refer to https://docs.google.com/spreadsheets/d/14YdtuC_bL-6eybLA-rvKVvW1eLD_f6NFWzxnatYyCMo/edit#gid=0 
    for current operational GFS.v14 archives and the proposed archives for GFS.v15.
    Note that we are proposing to restructure GFS HPSS archive and use new tarball names to 
-   1) follow GFS.v15 restart file style and, 2) to better serve the needs of different users. 
+   follow GFS.v15 restart file style and to better serve the needs of different users. 
+   Updated archive scripts for operation are saved on Venus at 
+   /gpfs/dell2/emc/modeling/noscrub/Fanglin.Yang/git/fv3gfs/hpsslist/runhistory.v2.2.44
 
 
 JOB DEPENDENCIES & FLOW DIAGRAM
