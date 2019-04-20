@@ -951,6 +951,8 @@ EOF
   skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
   skebnorm = ${SKEBNORM:-"1"}
+  skeb_npass = ${SKEB_nPASS:-"30"}
+  skeb_vdof = ${SKEB_VDOF:-"5"}
 EOF
   fi
 
