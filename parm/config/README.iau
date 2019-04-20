@@ -2,6 +2,7 @@ config*iau:  turns on IAU, netcdf diag files, linearized H for EnKF,
              LETKF with model space localization, analyses computed
              at beginning, middle, end of window,
              EnKF for both GFS and GDAS cycles.  
+             SKEB turned on.
 
 Notes:
 
