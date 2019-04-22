@@ -135,7 +135,7 @@ COMOUT=${COMOUT:-$(pwd)}
 #  Filenames.
 XC=${XC}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
-SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l65.txt}
+SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l${LEVS}.txt}
 
 CDATE=${CDATE:?}
 
