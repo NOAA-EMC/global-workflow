@@ -317,6 +317,15 @@ if [ $IAER -gt 0 ] ; then
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
   done
 fi
+
+#### Copy over WW3 inputs
+if [ $cplwav = ".true." ]; then
+  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
+  $NLN $FIX_WW3/mod_def.glo_30m                $DATA/mod_def.glo_30m
+  $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
+  $NLN $FIX_WW3/ww3_multi.inp                  $DATA/ww3_multi.inp
+fi
+
 #------------------------------------------------------------------
 # changeable parameters
 # dycore definitions
@@ -537,6 +546,43 @@ runSeq::
   ATM
 ::
 EOF
+
+#### ww3 version of nems.configure
+if [ $cplwav = ".true." ]; then
+####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
+####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
+  atm_petlist_bounds=" 0   311"
+  wav_petlist_bounds=" 312 431"
+  coupling_interval_sec=${coupling_interval_sec:-1800}
+  rm -f nems.configure
+cat > nems.configure <<EOF
+EARTH_component_list: ATM WAV
+EARTH_attributes::
+  Verbosity = 0
+::
+
+ATM_model:                      fv3
+ATM_petlist_bounds:             ${atm_petlist_bounds}
+ATM_attributes::
+  Verbosity = 0
+  DumpFields = false
+::
+
+WAV_model:                      ww3
+WAV_petlist_bounds:             ${wav_petlist_bounds}
+WAV_attributes::
+  Verbosity = 0
+::
+
+runSeq::
+  @${coupling_interval_sec}
+    ATM -> WAV
+    ATM
+    WAV
+  @
+::
+EOF
+fi
 
 rm -f model_configure
 cat > model_configure <<EOF
@@ -762,6 +808,7 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
+  cplwav       = ${cplwav:-".false."}
   $gfs_physics_nml
 /
 
