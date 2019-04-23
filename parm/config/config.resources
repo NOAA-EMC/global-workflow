@@ -34,7 +34,7 @@ elif [ $step = "anal" ]; then
     export nth_anal=12
     export nth_cycle=24
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-    	export nth_anal=14
+        export nth_anal=14
         export nth_cycle=28
     fi
     if [[ "$machine" == "WCOSS_C" ]]; then

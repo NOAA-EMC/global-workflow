@@ -54,12 +54,12 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
-  echo  "${dirname}avn.t${cyc}z.cyclone.trackatcfunix      " >>gfsa.txt
-  echo  "${dirname}gfso.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
+  echo  "${dirname}avno.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
+  echo  "${dirname}avnop.t${cyc}z.cyclone.trackatcfunix    " >>gfsa.txt
+  echo  "${dirname}trak.gfso.atcfunix.${PDY}${cyc}         " >>gfsa.txt
+  echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcf_gen.${PDY}${cyc}         " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcf_gen.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
   echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
   echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt

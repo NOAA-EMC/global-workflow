@@ -160,6 +160,10 @@ export FHOUT_GFS=3
 export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 
+# frequency for saving restart files. set to 6,12,24,48 etc 
+export restart_interval_gfs=12
+
+
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf

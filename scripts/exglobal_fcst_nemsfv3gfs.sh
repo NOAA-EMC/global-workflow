@@ -17,6 +17,9 @@
 # 2017-05-24  Rahul Mahajan  Updated for cycling with NEMS FV3GFS
 # 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
 # 2019-03-05  Rahul Mahajan  Implemented IAU
+# 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
+#
+# $Id$
 #
 # Attributes:
 #   Language: Portable Operating System Interface (POSIX) Shell
@@ -47,6 +50,9 @@ FHOUT_HF=${FHOUT_HF:-1}
 NSOUT=${NSOUT:-"-1"}
 FDIAG=$FHOUT
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
+
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo $CDATE | cut -c9-10)
 
 # Directories.
 pwd=$(pwd)
@@ -128,8 +134,38 @@ if [ ! -d $DATA ]; then
    mkdata=YES
    mkdir -p $DATA
 fi
-mkdir -p $DATA/RESTART $DATA/INPUT
 cd $DATA || exit 8
+mkdir -p $DATA/INPUT
+if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
+    RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+    if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
+    $NLN $RSTDIR_TMP RESTART
+else
+    mkdir -p $DATA/RESTART
+fi
+
+#-------------------------------------------------------
+# determine if restart IC exists to continue from a previous forecast
+RERUN="NO"
+filecount=$(find $RSTDIR_TMP -type f | wc -l) 
+if [ $CDUMP = "gfs" -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
+    SDATE=$($NDATE +$FHMAX $CDATE)
+    EDATE=$($NDATE +$restart_interval $CDATE)
+    while [ $SDATE -gt $EDATE ]; do
+        PDYS=$(echo $SDATE | cut -c1-8)
+        cycs=$(echo $SDATE | cut -c9-10)
+        flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
+        flag2=$RSTDIR_TMP/coupler.res
+        if [ -s $flag1 ]; then
+            mv $flag1 ${flag1}.old
+            if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
+            RERUN="YES"
+            CDATE_RST=$($NDATE -$restart_interval $SDATE)
+            break
+        fi 
+        SDATE=$($NDATE -$restart_interval $SDATE)
+    done
+fi
 
 #-------------------------------------------------------
 # member directory
@@ -142,8 +178,6 @@ else
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
 memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
@@ -189,7 +223,12 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   #exit 99
 fi
 
-if [ $warm_start = ".true." ]; then
+#-------------------------------------------------------
+if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
+#-------------------------------------------------------
+#.............................
+  if [ $RERUN = "NO" ]; then
+#.............................
 
   # Link all (except sfc_data) restart files from $gmemdir
   for file in $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
@@ -250,7 +289,21 @@ EOF
     fi
   fi
 
-else ## cold start
+#.............................
+  else  ##RERUN                         
+
+    PDYT=$(echo $CDATE_RST | cut -c1-8)
+    cyct=$(echo $CDATE_RST | cut -c9-10)
+    for file in $RSTDIR_TMP/${PDYT}.${cyct}0000.*; do
+      file2=$(echo $(basename $file))
+      file2=$(echo $file2 | cut -d. -f3-) 
+      $NLN $file $DATA/INPUT/$file2
+    done
+
+  fi
+#.............................
+
+else ## cold start                            
 
   for file in $memdir/INPUT/*.nc; do
     file2=$(echo $(basename $file))
@@ -260,7 +313,9 @@ else ## cold start
     fi
   done
 
-fi
+#-------------------------------------------------------
+fi 
+#-------------------------------------------------------
 
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
@@ -348,7 +403,7 @@ LATB_JMO=${LATB_JMO:-$LATB_CASE}
 # Fix files
 FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
 FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
-eNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
+FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
 FNZORC=${FNZORC:-"igbp"}
 FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
 FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
@@ -1077,25 +1132,12 @@ fi
 
 #------------------------------------------------------------------
 if [ $SEND = "YES" ]; then
-  # Copy model restart files
-  cd $DATA/RESTART
-  mkdir -p $memdir/RESTART
 
-  # Only save restarts at single time in RESTART directory
-  # Either at restart_interval or at end of the forecast
-  if [ $restart_interval -eq 0 -o $restart_interval -eq $FHMAX ]; then
+  # Copy gdas and enkf member restart files
+  if [ $CDUMP = "gdas" -a $restart_interval -gt 0 ]; then
+    cd $DATA/RESTART
+    mkdir -p $memdir/RESTART
 
-    # Add time-stamp to restart files at FHMAX
-    RDATE=$($NDATE +$FHMAX $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for file in $(ls * | grep -v 0000); do
-      $NMV $file ${rPDY}.${rcyc}0000.$file
-    done
-
-  else
-
-    # time-stamp exists at restart_interval time, just copy
     RDATE=$($NDATE +$restart_interval $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     rcyc=$(echo $RDATE | cut -c9-10)
