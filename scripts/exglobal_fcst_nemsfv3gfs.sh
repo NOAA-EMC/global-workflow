@@ -403,6 +403,7 @@ LATB_JMO=${LATB_JMO:-$LATB_CASE}
 # Fix files
 FNGLAC=${FNGLAC:-"$FIX_AM/global_glacier.2x2.grb"}
 FNMXIC=${FNMXIC:-"$FIX_AM/global_maxice.2x2.grb"}
+FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
 FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
 FNZORC=${FNZORC:-"igbp"}
 FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
