@@ -561,6 +561,7 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
+output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
