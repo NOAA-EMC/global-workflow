@@ -195,7 +195,7 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
-    $SLINK gfs_post.fd/ncep_post.fd                                                        gfs_ncep_post.fd
+    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                        gfs_ncep_post.fd
     $SLINK fre-nctools.fd/tools/filter_topo                                                filter_topo.fd
     $SLINK fre-nctools.fd/tools/fregrid                                                    fregrid.fd
     $SLINK fre-nctools.fd/tools/make_hgrid                                                 make_hgrid.fd
@@ -203,12 +203,12 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK fre-nctools.fd/tools/shave.fd                                                   shave.fd
 
     if [ $machine = dell ]; then
-        $SLINK gfs_wafs.fd/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        $SLINK gfs_wafs.fd/wafs_blending.fd                                                wafs_blending.fd
-        $SLINK gfs_wafs.fd/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        $SLINK gfs_wafs.fd/wafs_gcip.fd                                                    wafs_gcip.fd
-        $SLINK gfs_wafs.fd/wafs_makewafs.fd                                                wafs_makewafs.fd
-        $SLINK gfs_wafs.fd/wafs_setmissing.fd                                              wafs_setmissing.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
 
 #------------------------------
