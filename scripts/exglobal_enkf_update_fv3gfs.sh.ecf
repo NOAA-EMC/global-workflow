@@ -279,6 +279,8 @@ cat > enkf.nml << EOFnml
    sattypes_rad(63)= 'cris-fsr_n20',  dsis(63)= 'cris-fsr_n20',
    sattypes_rad(64)= 'gmi_gpm',       dsis(64)= 'gmi_gpm',
    sattypes_rad(65)= 'saphir_meghat', dsis(65)= 'saphir_meghat',
+   sattypes_rad(66)= 'amsua_metop-c', dsis(66)= 'amsua_metop-c',
+   sattypes_rad(67)= 'mhs_metop-c',   dsis(67)= 'mhs_metop-c',
    $SATOBS_ENKF
 /
 &ozobs_enkf
