@@ -293,12 +293,12 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
        echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
        echo "${dirname}${head}radstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
        echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
+       echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
+       echo "${dirname}${head}abias_air            " >>enkf${CDUMP}_restarta_grp${n}.txt
+       echo "${dirname}${head}abias_int            " >>enkf${CDUMP}_restarta_grp${n}.txt
+       echo "${dirname}${head}abias_pc             " >>enkf${CDUMP}_restarta_grp${n}.txt
     fi
     #---
-    echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_air            " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_int            " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}${head}abias_pc             " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
     echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
