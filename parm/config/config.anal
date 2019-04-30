@@ -80,4 +80,8 @@ if [ $REALTIME = "NO" ]; then
     fi
 fi
 
+if [ $LEVS = "128" ]; then
+   export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
+fi
+
 echo "END: config.anal"

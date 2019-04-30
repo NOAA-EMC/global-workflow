@@ -33,7 +33,7 @@ export RUNMOS="NO"       # whether to run entire MOS package
 if [ $VRFYFITS = "YES" ]; then
 
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l65.txt
+    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
     if [ $machine = "WCOSS_C" ]; then
