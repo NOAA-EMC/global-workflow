@@ -52,11 +52,6 @@ case $case_in in
         export WRTIOBUF="4M"
         ;;
     "C192")
-        if [ $LEVS = "128" ];then
-           export DELTIM=300
-        else
-           export DELTIM=450
-        fi
         export layout_x=4
         export layout_y=6
         export layout_x_gfs=4

@@ -39,10 +39,6 @@ fi
 export TYPE="nh"
 export MONO="non-mono"
 
-if [ $LEVS = "128" ]; then
-   export n_sponge="126"
-fi
-
 # Use stratosphere h2o physics
 export h2o_phys=".true."
 
