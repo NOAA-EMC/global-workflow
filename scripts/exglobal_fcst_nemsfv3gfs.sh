@@ -319,11 +319,21 @@ if [ $IAER -gt 0 ] ; then
 fi
 
 #### Copy over WW3 inputs
-if [ $cplwav = ".true." ]; then
-  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
-  $NLN $FIX_WW3/mod_def.glo_30m                $DATA/mod_def.glo_30m
-  $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
-  $NLN $FIX_WW3/ww3_multi.inp                  $DATA/ww3_multi.inp
+# At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
+if [ $cplwav = ".true." -a $CDUMP = "gfs" ]; then
+#  Variable FIX_WW3 is local to this script only
+#  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
+  FIX_WW3=${COMINwave:-${FIX_WW3:-$FIX_DIR/fix_ww3}}/${WAV_MOD_ID}.${PDY}/${cyc}
+#  $NLN $FIX_WW3/mod_def.glo_30m                $DATA/mod_def.glo_30m
+#  $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
+  $NLN $FIX_WW3/ww3_multi.inp                   $DATA/ww3_multi.inp
+  $NLN $FIX_WW3/ww3.mod_def.points              $DATA/mod_def.points
+  $NLN $FIX_WW3/ww3.mod_def.glo_30m             $DATA/mod_def.glo_30m
+  $NLN $FIX_WW3/ww3.mod_def.icean_5m            $DATA/mod_def.icean_5m
+  $NLN $FIX_WW3/ww3.icean_5m.${PDY}${cyc}.ice   $DATA/ice.icean_5m
+####  $NLN $FIX_WW3/ww3_multi.gwes.t${cyc}z.inp     $DATA/ww3_multi.inp
+####  $NLN  /scratch3/NCEPDEV/stmp2/Jessica.Meixner/TempForLin/ww3_multi.inp   $DATA/ww3_multi.inp
+
 fi
 
 #------------------------------------------------------------------
@@ -615,6 +625,7 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -1040,6 +1051,16 @@ if [ $SEND = "YES" ]; then
     done
   fi
 
+fi
+
+#------------------------------------------------------------------
+#### ww3 output
+if [ $cplwav = ".true." -a $CDUMP = "gfs" ]; then
+  $NCP out_grd.gwes_glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_grd.gwes_glo_30m.${CDATE}
+  $NCP out_pnt.points ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_pnt.points.2019023100.${CDATE}
+  $NCP mww3.log ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/mww3.log.${CDATE}
+  $NCP gwes_glo_30m.log ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/gwes_glo_30m.log.${CDATE}
+  $NCP restart.001 ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.restart.gwes_glo_30m.${CDATE}
 fi
 
 #------------------------------------------------------------------
