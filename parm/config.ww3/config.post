@@ -1,0 +1,53 @@
+#!/bin/ksh -x
+
+########## config.post ##########
+# Post specific
+
+echo "BEGIN: config.post"
+
+# Get task specific resources
+. $EXPDIR/config.resources post
+
+# Convert nemsio files to grib files using post job
+#-------------------------------------------
+
+# No. of concurrent post jobs [0 implies sequential]
+export NPOSTGRP=20 
+
+# Post driver job that calls gfs_nceppost.sh and downstream jobs
+export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
+export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
+
+export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+export GOESF=YES                              # goes image
+export GTGF=NO                                # gtg icing product
+export FLXF=YES                               # grib2 flux file written by post
+export PGB1F=YES                              
+if [ $RUN_ENVIR = "nco" ]; then
+    export PGB1F=NO
+    export GTGF=YES
+fi
+
+export npe_postgp=$npe_post
+export nth_postgp=1
+
+export GFS_DOWNSTREAM="YES"
+export downset=2
+if [ $machine = "WCOSS_DELL_P3" ]; then
+    export npe_dwn=28
+else
+    export npe_dwn=24
+fi
+
+export GRIBVERSION='grib2'
+export SENDCOM="YES"
+
+if [ $machine = "THEIA" ] ; then
+    export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
+else
+    echo "UPP using CRTM_FIX = $CRTM_FIX"
+fi
+
+echo "END: config.post"

@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.postsnd ##########
+# GFS bufr sounding step specific
+
+echo "BEGIN: config.postsnd"
+
+# Get task specific resources
+. $EXPDIR/config.resources postsnd
+
+export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
+
+echo "END: config.postsnd"

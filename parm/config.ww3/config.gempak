@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.gempak ##########
+# GFS gempak step specific
+
+echo "BEGIN: config.gempak"
+
+# Get task specific resources
+. $EXPDIR/config.resources gempak
+
+export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK
+
+echo "END: config.gempak"

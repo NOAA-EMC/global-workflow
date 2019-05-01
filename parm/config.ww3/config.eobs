@@ -1,0 +1,24 @@
+#!/bin/ksh -x
+
+########## config.eobs config.eomg ##########
+# Ensemble innovation specific, dependency config.anal
+
+echo "BEGIN: config.eobs"
+
+# Get task specific resources
+. $EXPDIR/config.resources eobs
+
+export INVOBSSH="$HOMEgsi/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
+export ENKFINVOBSSH="$HOMEgsi/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
+export NMEM_EOMGGRP=8  
+export RERUN_EOMGGRP="YES"
+export npe_gsi=$npe_eobs
+
+# GSI namelist options related to observer for EnKF
+export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0"
+export OBSQC_INVOBS="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+
+export USE_RADSTAT="NO" # This can be only used when bias correction is non-zero.
+export GENDIAG="YES"    # Diagnostic files must be created for EnKF
+
+echo "END: config.eobs"

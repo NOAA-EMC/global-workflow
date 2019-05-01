@@ -1,0 +1,21 @@
+#!/bin/ksh -x
+
+########## config.prepbufr ##########
+# PREPBUFR specific configuration
+
+echo "BEGIN: config.prepbufr"
+
+# Get task specific resources
+. $EXPDIR/config.resources prepbufr
+
+# Set variables
+
+#------------------------------
+if [ $machine = "THEIA" ]; then
+#------------------------------
+
+    export GESROOT=/scratch4/NCEPDEV/rstprod/nwges/prod   # set by module prod_envir on WCOSS_C
+
+fi
+
+echo "END: config.prepbufr"
