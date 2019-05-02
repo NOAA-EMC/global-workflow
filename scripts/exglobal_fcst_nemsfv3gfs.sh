@@ -561,8 +561,10 @@ EOF
 if [ $cplwav = ".true." ]; then
 ####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
 ####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
-  atm_petlist_bounds=" 0   311"
-  wav_petlist_bounds=" 312 431"
+####  atm_petlist_bounds=" 0   311"
+  atm_petlist_bounds=$atm_petlist_bounds
+####  wav_petlist_bounds=" 312 431"
+  wav_petlist_bounds=$wav_petlist_bounds
   coupling_interval_sec=${coupling_interval_sec:-1800}
   rm -f nems.configure
 cat > nems.configure <<EOF
@@ -1056,11 +1058,11 @@ fi
 #------------------------------------------------------------------
 #### ww3 output
 if [ $cplwav = ".true." -a $CDUMP = "gfs" ]; then
-  $NCP out_grd.gwes_glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_grd.gwes_glo_30m.${CDATE}
-  $NCP out_pnt.points ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_pnt.points.2019023100.${CDATE}
-  $NCP mww3.log ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/mww3.log.${CDATE}
-  $NCP gwes_glo_30m.log ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/gwes_glo_30m.log.${CDATE}
-  $NCP restart.001 ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.restart.gwes_glo_30m.${CDATE}
+  $NCP out_grd.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_grd.glo_30m.${CDATE}
+  $NCP out_pnt.points ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_pnt.points.${CDATE}
+  $NCP log.mww3 ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/mww3.log.${CDATE}
+  $NCP log.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/glo_30m.log.${CDATE}
+  $NCP restart001.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.restart.glo_30m.${CDATE}
 fi
 
 #------------------------------------------------------------------
