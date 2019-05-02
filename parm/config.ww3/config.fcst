@@ -38,8 +38,12 @@ fi
 #### WW3 resource
 if [ $cplwav = ".true." ]; then
 #    export npe_fv3=$(echo " $layout_x + $layout_y * 6 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    export npe_fv3=432
-    export npe_wav=$(echo " 4 * $WRTTASK_PER_GROUP" | bc)
+#    export npe_fv3=432
+    export npe_wav=$(echo " 5 * $WRTTASK_PER_GROUP" | bc)
+    npe_fcst_wav=$(echo " $npe_fv3 + $npe_wav" | bc)
+    export atm_petlist_bounds=" 0 $((npe_fv3-1))"
+    export wav_petlist_bounds=" $((npe_fv3)) $((npe_fcst_wav-1))"
+    export npe_fv3=$npe_fcst_wav
 fi
 
 # Model configuration
