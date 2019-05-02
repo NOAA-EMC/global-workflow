@@ -186,6 +186,28 @@
       USE SURFACE_CHGRES
 
       IMPLICIT NONE
+
+      INTERFACE
+        SUBROUTINE WRITE_FV3_SFC_DATA_NETCDF(IMO,JMO,LSOILO,SFCOUTPUT,F10MO, &
+                           T2MO,Q2MO,UUSTARO,FFMMO,FFHHO,TPRCPO, &
+                           SRFLAGO,TILE_NUM,NUM_NSST_FIELDS,NSST_OUTPUT)
+        USE SURFACE_CHGRES
+        IMPLICIT NONE
+        INTEGER, INTENT(IN)            :: IMO, JMO, LSOILO, TILE_NUM
+        INTEGER, INTENT(IN)            :: NUM_NSST_FIELDS
+        REAL, INTENT(IN)               :: F10MO(IMO,JMO)
+        REAL, INTENT(IN)               :: Q2MO(IMO,JMO)
+        REAL, INTENT(IN)               :: T2MO(IMO,JMO)
+        REAL, INTENT(IN)               :: UUSTARO(IMO,JMO)
+        REAL, INTENT(IN)               :: FFMMO(IMO,JMO)
+        REAL, INTENT(IN)               :: FFHHO(IMO,JMO)
+        REAL, INTENT(IN)               :: TPRCPO(IMO,JMO)
+        REAL, INTENT(IN)               :: SRFLAGO(IMO,JMO)
+        REAL, INTENT(IN), OPTIONAL     :: NSST_OUTPUT(IMO*JMO,NUM_NSST_FIELDS)       
+        TYPE(SFC1D)                    :: SFCOUTPUT
+        END SUBROUTINE WRITE_FV3_SFC_DATA_NETCDF
+      END INTERFACE
+
       INTEGER:: LEVS=0,NTRAC=0,LONB=0,LATB=0,                      &
                 IDVC=0,IDVM=0,IDSL=0,MQUICK=0,IDVT=0,        &
                 LATCH=8,LSOIL=0,IVSSFC=0,NVCOORD=0,                &
@@ -250,7 +272,7 @@
       REAL,ALLOCATABLE        :: GEOLAT(:,:), GEOLON(:,:), TMPVAR(:,:)
       REAL,ALLOCATABLE        :: TMPLAT(:,:), TMPLON(:,:)
       REAL                    :: FCSTHOUR, NSST_FHOUR
-      INTEGER                 :: IOLPL3,NLPL3
+      INTEGER                 :: IOLPL3,NLPL3,FILESZ
       INTEGER,ALLOCATABLE     :: LPL3(:)
       REAL, ALLOCATABLE       :: AK(:), BK(:), CK(:), VCOORD(:,:),   &
                                  VCOORDI(:,:), VCOORDO(:,:)
@@ -1230,7 +1252,10 @@
 
       IF (NSFCO == 0) GOTO 80
 
-      INQUIRE (FILE="./chgres.inp.nst", EXIST=DO_NSST)
+      FILESZ=0
+      DO_NSST=.FALSE.
+      INQUIRE (FILE="./chgres.inp.nst", SIZE=FILESZ)
+      IF (FILESZ > 0) DO_NSST=.TRUE.
       IF (DO_NSST .AND. NSFCO == 0) THEN
         PRINT*,'FATAL ERROR: WHEN CONVERTING AN NSST RESTART FILE,'
         PRINT*,'YOU MUST ALSO CONVERT A SURFACE RESTART FILE.'
@@ -1449,7 +1474,7 @@
                                  LSOILI, IDATE4O(1), IDATE4O(2),   &
                                  IDATE4O(3), IDATE4O(4), FCSTHOUR, &           
                                  KGDS_INPUT, SFCINPUT, IALB,       &
-                                 ISOT, IVEGSRC, MERGE, IRET)
+                                 ISOT, IVEGSRC, TILE_NUM, MERGE, IRET)
 
       IF (IRET /= 0) THEN
         PRINT*, "FATAL ERROR IN SURFACE CHGRES DRIVER. IRET: ", IRET

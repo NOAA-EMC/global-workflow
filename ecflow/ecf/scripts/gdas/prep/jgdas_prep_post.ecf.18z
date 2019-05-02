@@ -1,0 +1,60 @@
+#BSUB -J %E%gdas_prep_post_%CYC%
+#BSUB -o /%COM%/output/%ENVIR%/today/gdas_prep_post_%CYC%.o%J
+#BSUB -L /bin/sh
+#BSUB -q %QUEUESERV%
+#BSUB -cwd /tmp
+#BSUB -W 00:30
+#BSUB -P %PROJ%
+#BSUB -M 1000
+##BSUB -extsched 'CRAYLINUX[]'
+
+%include <head.h>
+%include <envir-xc40.h>
+
+set -x
+export NODES=1
+
+export model=obsproc_global
+%include <model_ver.h>
+
+#############################################################
+## Load modules
+##############################################################
+. $MODULESHOME/init/sh
+module load cfp-intel-sandybridge/${cfp_intel_sandybridge_ver}
+module load grib_util/${grib_util_ver}
+module list
+
+#############################################################
+## WCOSS_C environment settings
+##############################################################
+
+################################################
+# EXPORT list here
+set -x
+export cyc=%CYC%
+
+#export PROCESS_ALL_REPORT_COUNTS=NO
+
+export REBUILD_MAINPAGE=YES
+export monsummary_dat=$PDY
+
+# CALL executable job script here
+$HOMEobsproc_global/jobs/JGDAS_PREP_POST
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: Job to execute the GFS  PREPBUFR post-processing for
+#          the 00Z cycle (creating unrestricted PREPBUFR files)
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
+

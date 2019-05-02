@@ -164,12 +164,12 @@ elif [ $machine = "THEIA" ]; then
 fi
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="YES"
-export DO_GEMPAK="YES"
-export DO_AWIPS="YES"
+export DO_BUFRSND="NO"
+export DO_GEMPAK="NO"
+export DO_AWIPS="NO"
 
 # NO for retrospective parallel; YES for real-time parallel
-export REALTIME="YES"
+export REALTIME="NO"
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -254,14 +254,14 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=384
-export FHMAX_GFS_06=384
-export FHMAX_GFS_12=384
-export FHMAX_GFS_18=384
+export FHMAX_GFS_00=240
+export FHMAX_GFS_06=180
+export FHMAX_GFS_12=180
+export FHMAX_GFS_18=180
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
-export FHMAX_HF_GFS=120
+export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS

@@ -95,20 +95,20 @@ cd ${pwd}/../ush                ||exit 8
 
 #------------------------------
 #--add gfs_wafs file if on Dell
-if [ $target = wcoss_dell_p3 ]; then
+#if [ $machine = dell ]; then 
 #------------------------------
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
-cd ${pwd}/../parm               ||exit 8
-    [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
-cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
-cd ${pwd}/../fix                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-fi
+#cd ${pwd}/../jobs               ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+#cd ${pwd}/../parm               ||exit 8
+#    [[ -d wafs ]] && rm -rf wafs
+#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+#cd ${pwd}/../scripts            ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+#cd ${pwd}/../ush                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+#cd ${pwd}/../fix                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#fi
 
 #------------------------------
 #--add GSI/EnKF file
@@ -201,12 +201,12 @@ if [[ $target == "jet" ]]; then
   done 
 fi
 
-if [ $target = wcoss_dell_p3 ]; then
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
+#if [ $machine = dell ]; then 
+#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+#        [[ -s $wafsexe ]] && rm -f $wafsexe
+#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+#    done
+#fi
 
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do

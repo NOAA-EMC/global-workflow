@@ -64,27 +64,9 @@ env
 ########################################################
 # Execute the script.
 #########################################################
-mkdir -m 775 awips_g1 awips_g2
-cd awips_g2
-echo "$HOMEgfs/scripts/exgfs_grib_awips_g2.sh.ecf $fcsthrs" > $DATA/poescript
-
+mkdir -m 775 awips_g1
 cd $DATA/awips_g1
-echo "$HOMEgfs/scripts/exgfs_grib_awips.sh.ecf $fcsthrs" >> $DATA/poescript
-
-chmod 775 $DATA/poescript
-export MP_PGMMODEL=mpmd
-export MP_CMDFILE=$DATA/poescript
-
-ntasks=${NTASKS_AWIPS:-$(cat $DATA/poescript | wc -l)}
-ptile=${PTILE_AWIPS:-4}
-threads=${NTHREADS_AWIPS:-1}
-export OMP_NUM_THREADS=$threads
-APRUN="mpirun -n $ntasks cfp "
-
-APRUN_AWIPSCFP=${APRUN_AWIPSCFP:-$APRUN}
-APRUNCFP=$(eval echo $APRUN_AWIPSCFP)
-
-$APRUNCFP $DATA/poescript
+$HOMEgfs/scripts/exgfs_grib_awips.sh.ecf $fcsthrs
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

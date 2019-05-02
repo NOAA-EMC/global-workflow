@@ -1,0 +1,53 @@
+#BSUB -J %E%gdas_tcvital_copy_%CYC%
+#BSUB -o  /%COM%/output/%ENVIR%/today/gdas_tcvital_copy_%CYC%.o%J
+#BSUB -e  /%COM%/output/%ENVIR%/today/gdas_tcvital_copy_%CYC%.o%J
+#BSUB -cwd /tmp
+#BSUB -R rusage[mem=1000]; -R span[ptile=1]; -R affinity[core]
+#BSUB -n 1
+#BSUB -q %QUEUESERV%
+#BSUB -W 00:15
+#BSUB -L /bin/sh
+#BSUB -P %PROJ%
+
+%include <head.h>
+%include <envir-p3.h>
+
+# EXPORT list here
+module load EnvVars/$EnvVars_ver
+module load ips/$ips_ver
+module load impi/$impi_ver
+module load CFP/$cfp_ver
+
+set -x
+export cyc=%CYC%
+export mod=nhc
+export RUN=gdas
+
+# CALL executable job script here
+VERSION_FILE=$NWROOT/versions/gfs.ver
+if [ -f $VERSION_FILE ]; then
+   . $VERSION_FILE
+else
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR: Version File $VERSION_FILE does not exist ***"
+   ecflow_client --abort
+   exit
+fi
+
+$NWROOT/gdas.${gdas_ver}/jobs/JTCVITAL_COPY
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose:
+#
+#
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end

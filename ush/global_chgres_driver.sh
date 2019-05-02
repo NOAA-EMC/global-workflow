@@ -152,7 +152,7 @@ fi  # is input data old or new format?
 
 # to use new albedo, soil/veg type
 export CLIMO_FIELDS_OPT=3
-export LANDICE_OPT=2
+export LANDICE_OPT=${LANDICE_OPT:-2}
 export IALB=1
 export SOILTYPE_OUT=statsgo
 export VEGTYPE_OUT=igbp
@@ -190,7 +190,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 # Convert atmospheric file.
 #------------------------------------------------
 
-  export CHGRESVARS="use_ufo=.false.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+  export CHGRESVARS="use_ufo=.false.,idvc=2,nvcoord=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
   export SIGINP=$ATMANL
   export SFCINP=NULL
   export NSTINP=NULL
@@ -214,7 +214,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 # Convert surface and nst files one tile at a time.
 #---------------------------------------------------
 
-  export CHGRESVARS="use_ufo=.true.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+  export CHGRESVARS="use_ufo=.true.,idvc=2,nvcoord=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
   export SIGINP=NULL
   export SFCINP=$SFCANL
   export NSTINP=$NSTANL
@@ -247,7 +247,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 
 else # REGIONAL = 2, just generate boundary data
 
-  export CHGRESVARS="use_ufo=.false.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+  export CHGRESVARS="use_ufo=.false.,nst_anl=$nst_anl,idvc=2,nvcoord=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
   export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmf${bchour}.nemsio
   export SIGINP=$ATMANL
   export SFCINP=NULL

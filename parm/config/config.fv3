@@ -86,6 +86,21 @@ case $case_in in
         export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="16M"
         ;;
+    "C768")
+        export DELTIM=225
+        export layout_x=12
+        export layout_y=8
+        export layout_x_gfs=8 
+        export layout_y_gfs=24
+        export npe_node_fcst=12
+        export nth_fv3=2
+        export cdmbgwd="3.5,0.25" # mountain blocking and gravity wave drag
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=48
+        export WRITE_GROUP_GFS=3
+        export WRTTASK_PER_GROUP_GFS=48
+        export WRTIOBUF="32M"
+        ;;
     "C1152")
         export DELTIM=150
         export layout_x=8

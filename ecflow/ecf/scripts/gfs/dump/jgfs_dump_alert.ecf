@@ -1,0 +1,52 @@
+#BSUB -J %E%gfs_dump_alert_%CYC%
+#BSUB -o /%COM%/output/%ENVIR%/today/gfs_dump_alert_%CYC%.o%J
+#BSUB -L /bin/sh
+#BSUB -q %QUEUESERV%
+#BSUB -R rusage[mem=1000]
+#BSUB -R affinity[core]
+#BSUB -cwd /tmp
+#BSUB -W 00:30
+#BSUB -P %PROJ%
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=obsproc_dump_alert
+%include <model_ver.h>
+
+#############################################################
+# Load modules
+#############################################################
+. $MODULESHOME/init/sh
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+
+# EXPORT list here
+set -x
+export cyc=%CYC%
+export NET=gfs
+export RUN=gfs
+
+# CALL executable job script here
+$HOMEobsproc_dump_alert/jobs/JDUMP_ALERT
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: Job to execute the gfs data dump alert processing for the
+#          00Z cycle
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end

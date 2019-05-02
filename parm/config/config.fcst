@@ -79,6 +79,8 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export cal_pre=".false."
     export do_sat_adj=".true."
     export random_clds=".false."
+    export lgfdlmprad=".true."
+    export effr_in=".true."
 
     if [[ "$CDUMP" == "gdas" ]] ; then
       export hord_mt_nh_nonmono=6
@@ -146,7 +148,10 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     export hord_xx_nh_nonmono="5"
     export hord_mt_nh_nonmono="5"
 
+    # Write gfs restart files to rerun fcst from any break point         
+     export restart_interval=${restart_interval_gfs:-0}
 fi
+
 
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
