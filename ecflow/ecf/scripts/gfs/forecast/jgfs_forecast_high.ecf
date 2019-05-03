@@ -4,7 +4,7 @@
 #BSUB -J %E%gfs_forecast_high_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_forecast_high_%CYC%.o%J
 #BSUB -W 6:00
-#BSUB -n 1392
+#BSUB -n 1776
 #BSUB -R affinity[core(2)]
 #BSUB -R span[ptile=12]
 #BSUB -cwd /tmp
